@@ -1,0 +1,43 @@
+{
+  "type": "Layout",
+  "dependencies": ["statics/plugins/layout/classic-widgets.json"],
+  "data": [
+    {
+      "id": "ZoomIn_Classic_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "ZoomIn_Classic",
+      "props": {
+        "position": "bottom-left",
+        "offset": [10, 126],
+        "group": "ZoomControl"
+      }
+    },
+    {
+      "id": "ZoomOut_Classic_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "ZoomOut_Classic",
+      "props": {
+        "position": "bottom-left",
+        "group": "ZoomControl"
+      }
+    },
+    {
+      "id": "FullScreen_Classic_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "FullScreen_Classic",
+      "props": {
+        "position": "bottom-left",
+        "offset": [10, 84]
+      }
+    },
+    {
+      "id": "MapTypeSwitch_Classic_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "MapTypeSwitch_Classic",
+      "props": {
+        "position": "bottom-left",
+        "offset": [10, 42]
+      }
+    }
+  ]
+}

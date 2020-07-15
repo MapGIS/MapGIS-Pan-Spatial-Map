@@ -1,0 +1,122 @@
+{
+  "type": "Component",
+  "dependencies": [],
+  "data": [
+    {
+      "id": "ZoomIn",
+      "icon": "statics/plugins/workspace/images/zoomin.svg",
+      "label": "放大",
+      "type": "Component",
+      "component": "MpZoomIn",
+      "props": {}
+    },
+    {
+      "id": "ZoomOut",
+      "icon": "statics/plugins/workspace/images/zoomout.svg",
+      "label": "缩小",
+      "type": "Component",
+      "component": "MpZoomOut",
+      "props": {}
+    },
+    {
+      "id": "DataCatalog",
+      "icon": "statics/plugins/workspace/images/datacatalog.svg",
+      "label": "目录树",
+      "type": "Component",
+      "component": "MpDataCatalog",
+      "props": {}
+    },
+    {
+      "id": "FullScreen",
+      "icon": "statics/plugins/workspace/images/fullscreen.svg",
+      "label": "全屏",
+      "type": "Component",
+      "component": "MpFullScreen",
+      "props": {}
+    },
+    {
+      "id": "MapTypeSwitch",
+      "icon": "statics/plugins/workspace/images/maptypeswitch.svg",
+      "label": "全屏",
+      "type": "Component",
+      "component": "MpMapTypeSwitch",
+      "props": {}
+    },
+    {
+      "id": "LayerManager",
+      "icon": "statics/plugins/workspace/images/layers.svg",
+      "label": "图层列表",
+      "type": "Component",
+      "component": "MpLayerManager",
+      "props": {}
+    },
+    {
+      "id": "MapClear",
+      "icon": "statics/plugins/workspace/images/clear.svg",
+      "label": "清除",
+      "type": "Component",
+      "component": "MpMapClear",
+      "props": {}
+    },
+    {
+      "id": "BaseMapSwitch",
+      "icon": "statics/plugins/workspace/images/layerswitch.svg",
+      "label": "切换底图",
+      "type": "Component",
+      "component": "MpBaseMapSwitch",
+      "props": {}
+    },
+    {
+      "id": "LayoutManager",
+      "icon": "statics/plugins/workspace/images/layout.svg",
+      "label": "布局配置",
+      "type": "Component",
+      "component": "MpLayoutManager",
+      "props": {
+        "data": [
+          {
+            "id": "Classic",
+            "name": "经典布局",
+            "desc": "全空间一张图经典布局"
+          },
+          {
+            "id": "Standard",
+            "name": "标准布局",
+            "desc": "全空间一张图标准布局"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ThemeManager",
+      "icon": "statics/plugins/workspace/images/theme.svg",
+      "label": "主题配置",
+      "type": "Component",
+      "component": "MpThemeManager",
+      "props": {
+        "data": [
+          {
+            "color": "bg-title",
+            "name": "标题背景色",
+            "desc": "标题背景色"
+          },
+          {
+            "color": "text-title",
+            "name": "标题文字颜色",
+            "desc": "标题文字颜色"
+          },
+          {
+            "color": "bg-container",
+            "name": "内容背景色",
+            "desc": "内容背景色"
+          },
+          {
+            "color": "text-container",
+            "name": "内容文字颜色",
+            "desc": "内容文字颜色"
+          }
+        ]
+      }
+    }
+  ]
+}

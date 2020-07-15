@@ -1,0 +1,7 @@
+{
+  "whiteList": ["/login"],
+  "loginPath": "/login",
+  "proxyTable": {
+    "^/onemap": "http://localhost:9015"
+  }
+}

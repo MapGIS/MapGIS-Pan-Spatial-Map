@@ -1,0 +1,33 @@
+{
+  "name": "@mapgis/quasar-app-extension-pan-spatial-map-plugin-layout",
+  "version": "0.0.1",
+  "description": "全空间一张图布局扩展插件",
+  "author": "MapGIS",
+  "license": "Apache-2.0",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "homepage": "",
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "peerDependencies": {
+    "axios": "^0.19.2",
+    "vue-router": "^3.3.2",
+    "vuex": "^3.4.0"
+  },
+  "dependencies": {
+    "@mapgis/pan-spatial-map-plugin-layout-ui": "^0.0.1"
+  },
+  "devDependencies": {
+    "typescript": "~3.7.0"
+  }
+}

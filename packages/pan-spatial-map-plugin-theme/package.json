@@ -1,0 +1,31 @@
+{
+  "name": "@mapgis/quasar-app-extension-pan-spatial-map-plugin-theme",
+  "version": "0.0.1",
+  "description": "全空间一张图核心主题插件",
+  "author": "MapGIS",
+  "license": "Apache-2.0",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "homepage": "",
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "peerDependencies": {
+    "axios": "^0.19.2"
+  },
+  "dependencies": {
+    "vue-property-decorator": "^8.3.0"
+  },
+  "devDependencies": {
+    "typescript": "~3.7.0"
+  }
+}

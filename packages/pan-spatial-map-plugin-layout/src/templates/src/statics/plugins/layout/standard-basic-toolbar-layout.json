@@ -1,0 +1,52 @@
+{
+  "type": "Layout",
+  "dependencies": ["statics/plugins/layout/standard-widgets.json"],
+  "data": [
+    {
+      "id": "ZoomIn_Standard_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "ZoomIn_Standard",
+      "props": {
+        "position": "top-left",
+        "offset": [10, 10],
+        "group": "ZoomControl"
+      }
+    },
+    {
+      "id": "ZoomOut_Standard_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "ZoomOut_Standard",
+      "props": {
+        "position": "top-left",
+        "group": "ZoomControl"
+      }
+    },
+    {
+      "id": "DataCatalog_Standard_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "DataCatalog_Standard",
+      "props": {
+        "position": "top-left",
+        "offset": [10, 84]
+      }
+    },
+    {
+      "id": "FullScreen_Standard_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "FullScreen_Standard",
+      "props": {
+        "position": "top-left",
+        "offset": [10, 126]
+      }
+    },
+    {
+      "id": "MapTypeSwitch_Standard_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "MapTypeSwitch_Standard",
+      "props": {
+        "position": "bottom-left",
+        "offset": [10, 42]
+      }
+    }
+  ]
+}

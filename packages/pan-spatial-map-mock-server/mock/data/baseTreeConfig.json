@@ -1,0 +1,123 @@
+﻿{
+  "paramConfig": {
+    "CHECKED": "Checked",
+    "CHILDREN": "Children",
+    "NAME": "Label",
+    "IMAGE": "Icon",
+    "TITLE": "Describe",
+    "SERVERNAME": "Target",
+    "SCENEMODEL": "Model",
+    "SERVERIP": "Ip",
+    "SERVERPORT": "Port",
+    "EXTENT": "Extent",
+    "SERVERURL": "ServerUrl",
+    "BINDDATALIST": "BindDataList",
+    "LAYERSERVICETYPE": "LayerServiceType",
+    "WFSURL": "",
+    "TOKEN": "Token",
+    "GUID": "Guid",
+    "SEARCHNAME": "SearchName",
+    "PARENT": "Parent",
+    "TIP": "Tip",
+    "LAYERINDEX": "LayerIndex",
+    "STATUS": "Status",
+    "DATA": "Data",
+    "SHOWICON": "true"
+  },
+  "iconConfig": {
+    "1": "/upload/1.png",
+    "2": "/upload/2.png",
+    "3": "/upload/3.png",
+    "4": "/upload/4.png",
+    "5": "/upload/5.png",
+    "6": "/upload/6.png",
+    "7": "/upload/7.png",
+    "8": "/upload/8.png"
+  },
+  "urlConfig": {
+    "treeDataUrl": "/upload/ADMIN_26Tree.json",
+    "nonSpatialUrl": "ftp://192.168.88.49:21",
+    "getFileUrl": "http://172.168.58.10/MajorService/temp/",
+    "downloadUrl": "http://172.168.58.10/MajorService/ServiceStack/doc/download"
+  },
+  "otherConfig": {
+    "nonSpatial": "非空间数据（点击查看详情）",
+    "searchTip": "_SL",
+    "filtTree": false,
+    "fontSize": "",
+    "expandType": "one",
+    "nonSpatialId": ""
+  },
+  "treeConfig": {
+    "useLocalData": true,
+    "useLocalParam": true,
+    "treeData": [
+      {
+        "label": "矢量文档",
+        "describe": "矢量文档",
+        "children": [
+          {
+            "label": "湖北省行政区划图",
+            "describe": "湖北省行政区划图",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSIMAGE",
+            "name": "Hubei4326",
+            "searchName": "",
+            "token": "",
+            "guid": "",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "status": "",
+            "vtStyle": "",
+            "gdbTypeList": "Local,Local,Local"
+          },
+          {
+            "label": "北京市",
+            "describe": "北京市",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSIMAGE",
+            "name": "北京市1",
+            "searchName": "",
+            "token": "",
+            "guid": "",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "status": "",
+            "vtStyle": "",
+            "gdbTypeList": "Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local"
+          }
+        ]
+      }
+    ]
+  },
+  "defaultParam": {
+    "CHECKED": "checked",
+    "CHILDREN": "children",
+    "NAME": "label",
+    "IMAGE": "icon",
+    "TITLE": "describe",
+    "SERVERNAME": "name",
+    "SCENEMODEL": "model",
+    "SERVERIP": "ip",
+    "SERVERPORT": "port",
+    "EXTENT": "extent",
+    "SERVERURL": "serverUrl",
+    "BINDDATALIST": "bindDataList",
+    "LAYERSERVICETYPE": "layerServiceType",
+    "WFSURL": "wfsUrl",
+    "TOKEN": "token",
+    "GUID": "guid",
+    "SEARCHNAME": "searchName",
+    "PARENT": "parent",
+    "TIP": "tip",
+    "LAYERINDEX": "layerIndex",
+    "STATUS": "status",
+    "DATA": "data",
+    "VTSTYLE": "vtStyle"
+  },
+  "defaultNonSpatial": "非空间数据"
+}

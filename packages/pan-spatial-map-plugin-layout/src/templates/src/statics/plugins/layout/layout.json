@@ -1,0 +1,77 @@
+{
+  "type": "Layout",
+  "dependencies": ["statics/plugins/layout/widgets.json"],
+  "data": [
+    {
+      "id": "ZoomIn_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "ZoomIn",
+      "props": {
+        "position": "top-left",
+        "offset": [10, 10],
+        "group": "ZoomControl"
+      }
+    },
+    {
+      "id": "ZoomOut_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "ZoomOut",
+      "props": {
+        "position": "top-left",
+        "group": "ZoomControl"
+      }
+    },
+    {
+      "id": "DataCatalog_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "DataCatalog",
+      "props": {
+        "position": "top-left",
+        "offset": [10, 84]
+      }
+    },
+    {
+      "id": "FullScreen_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "FullScreen",
+      "props": {
+        "position": "top-left",
+        "offset": [10, 126]
+      }
+    },
+    {
+      "id": "MapTypeSwitch_Basic_Toolbar",
+      "block": "Absolute",
+      "widgetId": "MapTypeSwitch",
+      "props": {
+        "position": "bottom-left",
+        "offset": [10, 42]
+      }
+    },
+    {
+      "id": "LayerManager_Navbar",
+      "block": "Navbar",
+      "widgetId": "LayerManager"
+    },
+    {
+      "id": "MapClear_Navbar",
+      "block": "Navbar",
+      "widgetId": "MapClear"
+    },
+    {
+      "id": "BaseMapSwitch_Navbar",
+      "block": "Navbar",
+      "widgetId": "BaseMapSwitch"
+    },
+    {
+      "id": "ThemeManager_Navbar",
+      "block": "Navbar",
+      "widgetId": "ThemeManager"
+    },
+    {
+      "id": "LayoutManager_Navbar",
+      "block": "Navbar",
+      "widgetId": "LayoutManager"
+    }
+  ]
+}

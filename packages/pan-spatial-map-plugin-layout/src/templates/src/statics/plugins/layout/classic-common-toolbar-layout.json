@@ -1,0 +1,21 @@
+{
+  "type": "Layout",
+  "dependencies": ["statics/plugins/layout/classic-widgets.json"],
+  "data": [
+    {
+      "id": "LayerManager_Classic_Common_Toolbar",
+      "block": "Toolbar",
+      "widgetId": "LayerManager_Classic"
+    },
+    {
+      "id": "MapClear_Classic_Common_Toolbar",
+      "block": "Toolbar",
+      "widgetId": "MapClear_Classic"
+    },
+    {
+      "id": "BaseMapSwitch_Classic_Common_Toolbar",
+      "block": "Toolbar",
+      "widgetId": "BaseMapSwitch_Classic"
+    }
+  ]
+}

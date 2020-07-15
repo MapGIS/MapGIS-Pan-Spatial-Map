@@ -1,0 +1,34 @@
+{
+  "name": "@mapgis/pan-spatial-map-mock-server",
+  "version": "0.0.1",
+  "description": "全空间一张图Mock服务器",
+  "author": "MapGIS",
+  "license": "MIT",
+  "scripts": {
+    "mock": "cd mock && ts-node-dev mock-server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "faker": "^4.1.0",
+    "morgan": "^1.10.0",
+    "yamljs": "^0.3.0",
+    "express": "4.17.1",
+    "compression": "^1.7.4"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.0",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.6",
+    "@types/faker": "^4.1.11",
+    "@types/morgan": "^1.9.0",
+    "@types/yamljs": "^0.2.30",
+    "swagger-routes-express": "^3.1.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "~3.7.0",
+    "concurrently": "^5.2.0"
+  }
+}

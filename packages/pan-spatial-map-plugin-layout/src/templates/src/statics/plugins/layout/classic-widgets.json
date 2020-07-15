@@ -1,0 +1,87 @@
+{
+  "type": "Widget",
+  "dependencies": ["statics/plugins/layout/components.json"],
+  "data": [
+    {
+      "id": "ZoomIn_Classic",
+      "componentId": "ZoomIn",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "ZoomOut_Classic",
+      "componentId": "ZoomOut",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "DataCatalog_Classic",
+      "componentId": "DataCatalog",
+      "position": {
+        "position": "top-left",
+        "offset": [56, 10],
+        "bottom": 36
+      }
+    },
+    {
+      "id": "FullScreen_Classic",
+      "componentId": "FullScreen",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "MapTypeSwitch_Classic",
+      "componentId": "MapTypeSwitch",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "LayerManager_Classic",
+      "componentId": "LayerManager",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 60],
+        "bottom": 36
+      }
+    },
+    {
+      "id": "MapClear_Classic",
+      "componentId": "MapClear",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "BaseMapSwitch_Classic",
+      "componentId": "BaseMapSwitch",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 60],
+        "bottom": 36
+      }
+    },
+
+    {
+      "id": "LayoutManager_Classic",
+      "componentId": "LayoutManager",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 60],
+        "bottom": 36
+      }
+    },
+    {
+      "id": "ThemeManager_Classic",
+      "componentId": "ThemeManager",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 60],
+        "bottom": 36
+      }
+    }
+  ]
+}

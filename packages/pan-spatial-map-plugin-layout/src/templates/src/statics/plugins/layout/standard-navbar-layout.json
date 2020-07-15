@@ -1,0 +1,31 @@
+{
+  "type": "Layout",
+  "dependencies": ["statics/plugins/layout/standard-widgets.json"],
+  "data": [
+    {
+      "id": "LayerManager_Standard_Navbar",
+      "block": "Navbar",
+      "widgetId": "LayerManager_Standard"
+    },
+    {
+      "id": "MapClear_Standard_Navbar",
+      "block": "Navbar",
+      "widgetId": "MapClear_Standard"
+    },
+    {
+      "id": "BaseMapSwitch_Standard_Navbar",
+      "block": "Navbar",
+      "widgetId": "BaseMapSwitch_Standard"
+    },
+    {
+      "id": "ThemeManager_Standard_Navbar",
+      "block": "Navbar",
+      "widgetId": "ThemeManager_Standard"
+    },
+    {
+      "id": "LayoutManager_Standard_Navbar",
+      "block": "Navbar",
+      "widgetId": "LayoutManager_Standard"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "type": "Layout",
+  "dependencies": ["statics/plugins/layout/classic-widgets.json"],
+  "data": []
+}

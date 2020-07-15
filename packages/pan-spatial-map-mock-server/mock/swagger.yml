@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  description: Mock API for MapGIS-Pan-Spatial-Map.
+  version: 1.0.0
+  title: MapGIS-Pan-Spatial-Map Mock API
+  contact:
+    email: admin@mapgis.com
+  license:
+    name: Apache-2.0
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: /
+tags:
+  - name: users
+    description: Users related api.
+  - name: configs
+    description: Configs related api.
+paths:
+  /UserArea/Login:
+    post:
+      tags:
+        - users
+      summary: Logs user into the system
+      description: Use username and password to login.
+      operationId: login
+      parameters:
+      responses:
+  /WebService/GetConfig:
+    get:
+      tags:
+        - configs
+      summary: Get config
+      description: Get config.
+      operationId: getConfigById
+      security:
+        - AccessTokenAuth: []
+      parameters:

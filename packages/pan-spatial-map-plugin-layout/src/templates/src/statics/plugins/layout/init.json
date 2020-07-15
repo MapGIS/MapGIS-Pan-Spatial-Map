@@ -1,0 +1,111 @@
+{
+  "active": "Standard",
+  "defaultMainJson": "statics/plugins/layout/layout.json",
+  "defaultThemeJson": "statics/plugins/layout/theme.json",
+  "layouts": [
+    {
+      "id": "Standard",
+      "mainJson": "statics/plugins/layout/standard-layout.json",
+      "themeJson": "statics/plugins/layout/standard-theme.json",
+      "component": "MpDynamicLayout",
+      "blocks": [
+        {
+          "name": "Navbar",
+          "slotName": "header",
+          "component": "MpStandardNavbar",
+          "props": {
+            "icons": 5,
+            "title": "MapGIS全空间一张图",
+            "subtitle": "全空间专业GIS应用框架",
+            "logo": "statics/plugins/layout/images/app-logo.svg"
+          }
+        },
+        {
+          "name": "Footer",
+          "slotName": "footer",
+          "component": "MpFooter",
+          "props": {}
+        },
+        {
+          "name": "Main",
+          "slotName": "main",
+          "component": "MpMainContainer",
+          "props": {
+            "map": {
+              "component": "MpMapContainer",
+              "props": {
+                "is2D": true
+              }
+            }
+          }
+        },
+        {
+          "name": "Absolute",
+          "slotName": "absolute",
+          "component": "MpAbsoluteContainer",
+          "props": {}
+        }
+      ]
+    },
+    {
+      "id": "Classic",
+      "mainJson": "statics/plugins/layout/classic-layout.json",
+      "themeJson": "statics/plugins/layout/classic-theme.json",
+      "component": "MpDynamicLayout",
+      "blocks": [
+        {
+          "name": "Navbar",
+          "slotName": "header",
+          "component": "MpClassicNavbar",
+          "props": {
+            "title": "MapGIS全空间一张图",
+            "subtitle": "全空间专业GIS应用框架",
+            "logo": "statics/plugins/layout/images/app-logo.svg"
+          }
+        },
+        {
+          "name": "Left",
+          "slotName": "left",
+          "component": "MpClassicLeftDrawer",
+          "props": {}
+        },
+        {
+          "name": "Toolbar",
+          "slotName": "absolute",
+          "component": "MpClassicToolbar",
+          "props": { "icons": 8 }
+        },
+        {
+          "name": "Footer",
+          "slotName": "footer",
+          "component": "MpFooter",
+          "props": {
+            "resultSet": {
+              "component": "MpResultSet",
+              "props": {}
+            }
+          }
+        },
+        {
+          "name": "Main",
+          "slotName": "main",
+          "component": "MpMainContainer",
+          "props": {
+            "map": {
+              "component": "MpMapContainer",
+              "props": {
+                "is2D": true
+              }
+            }
+          }
+        },
+        {
+          "name": "Absolute",
+          "slotName": "absolute",
+          "component": "MpAbsoluteContainer",
+          "props": {}
+        }
+      ]
+    }
+  ]
+}

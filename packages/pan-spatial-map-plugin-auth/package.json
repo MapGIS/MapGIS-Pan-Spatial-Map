@@ -1,0 +1,38 @@
+{
+  "name": "@mapgis/quasar-app-extension-pan-spatial-map-plugin-auth",
+  "version": "0.0.1",
+  "description": "全空间一张图权限认证扩展插件",
+  "author": "MapGIS",
+  "license": "MIT",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "homepage": "",
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "peerDependencies": {
+    "axios": "^0.19.2",
+    "vue-router": "^3.3.2",
+    "vuex": "^3.4.0"
+  },
+  "dependencies": {
+    "mockjs": "^1.1.0",
+    "js-cookie": "^2.2.1"
+  },
+  "devDependencies": {
+    "typescript": "~3.7.0",
+    "@types/qs": "^6.9.3",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "ts-loader": "^7.0.5"
+  }
+}

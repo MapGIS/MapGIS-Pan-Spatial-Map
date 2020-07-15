@@ -1,0 +1,32 @@
+{
+  "name": "@mapgis/pan-spatial-map-store",
+  "version": "0.0.1",
+  "description": "全空间一张图全局上下文环境&存储结构",
+  "author": "MapGIS",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "homepage": "",
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "peerDependencies": {
+    "axios": "^0.19.2"
+  },
+  "dependencies": {
+    "@mapgis/webclient-store": "^1.0.0",
+    "vue-property-decorator": "^8.3.0"
+  },
+  "devDependencies": {
+    "typescript": "~3.7.0"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "type": "Layout",
+  "dependencies": ["statics/plugins/layout/classic-widgets.json"],
+  "data": [
+    {
+      "id": "DataCatalog_Classic_Left",
+      "block": "Left",
+      "widgetId": "DataCatalog_Classic",
+      "props": {
+        "category_icon": "statics/plugins/workspace/images/datacatalog.svg",
+        "category_label": "目录树",
+        "width": 360
+      }
+    },
+    {
+      "id": "ThemeManager_Classic_Left",
+      "block": "Left",
+      "widgetId": "ThemeManager_Classic",
+      "props": {
+        "category_icon": "statics/plugins/layout/images/setting.svg",
+        "category_label": "系统配置"
+      }
+    },
+    {
+      "id": "LayoutManager_Classic_Left",
+      "block": "Left",
+      "widgetId": "LayoutManager_Classic",
+      "props": {
+        "category_icon": "statics/plugins/layout/images/setting.svg",
+        "category_label": "系统配置"
+      }
+    }
+  ]
+}

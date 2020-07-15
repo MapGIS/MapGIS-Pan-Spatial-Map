@@ -1,0 +1,11 @@
+{
+  "type": "Layout",
+  "dependencies": [
+    "statics/plugins/layout/classic-navbar-layout.json",
+    "statics/plugins/layout/classic-left-layout.json",
+    "statics/plugins/layout/classic-basic-toolbar-layout.json",
+    "statics/plugins/layout/classic-common-toolbar-layout.json",
+    "statics/plugins/layout/classic-footer-layout.json"
+  ],
+  "data": []
+}

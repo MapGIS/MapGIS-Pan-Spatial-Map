@@ -1,0 +1,40 @@
+{
+  "name": "@mapgis/pan-spatial-map",
+  "version": "0.0.1",
+  "description": "一个更易于帮助构建全空间专业GIS应用的开发框架",
+  "productName": "MapGIS Pan-Spatial Map",
+  "author": "MapGIS",
+  "license": "Apache-2.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "serve": "concurrently \"yarn mock\" \"yarn dev\"",
+    "dev": "cd packages/pan-spatial-map-framework && quasar dev",
+    "build": "cd packages/pan-spatial-map-framework && quasar build",
+    "postinstall": "yarn invoke",
+    "invoke": "yarn invoke-theme && yarn invoke-layout && yarn invoke-auth && yarn invoke-workspace",
+    "invoke-theme": "cd packages/pan-spatial-map-framework && quasar ext invoke @mapgis/pan-spatial-map-plugin-theme",
+    "invoke-layout": "cd packages/pan-spatial-map-framework && quasar ext invoke @mapgis/pan-spatial-map-plugin-layout",
+    "invoke-auth": "cd packages/pan-spatial-map-framework && quasar ext invoke @mapgis/pan-spatial-map-plugin-auth",
+    "invoke-workspace": "cd packages/pan-spatial-map-framework && quasar ext invoke @mapgis/pan-spatial-map-plugin-workspace",
+    "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ./",
+    "lint:fix": "npm run lint -- --fix",
+    "mock": "cd packages/pan-spatial-map-mock-server/mock && ts-node-dev mock-server.ts",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.17.0",
+    "@typescript-eslint/parser": "^2.17.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-vue": "^6.1.2",
+    "concurrently": "^5.2.0"
+  },
+  "dependencies": {}
+}

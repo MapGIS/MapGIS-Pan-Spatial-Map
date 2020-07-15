@@ -1,0 +1,87 @@
+{
+  "type": "Widget",
+  "dependencies": ["statics/plugins/layout/components.json"],
+  "data": [
+    {
+      "id": "ZoomIn_Standard",
+      "componentId": "ZoomIn",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "ZoomOut_Standard",
+      "componentId": "ZoomOut",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "DataCatalog_Standard",
+      "componentId": "DataCatalog",
+      "position": {
+        "position": "top-left",
+        "offset": [56, 10],
+        "bottom": 36
+      }
+    },
+    {
+      "id": "FullScreen_Standard",
+      "componentId": "FullScreen",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "MapTypeSwitch_Standard",
+      "componentId": "MapTypeSwitch",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "LayerManager_Standard",
+      "componentId": "LayerManager",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 10],
+        "bottom": 36
+      }
+    },
+    {
+      "id": "MapClear_Standard",
+      "componentId": "MapClear",
+      "props": {
+        "noUI": true
+      }
+    },
+    {
+      "id": "BaseMapSwitch_Standard",
+      "componentId": "BaseMapSwitch",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 10],
+        "bottom": 36
+      }
+    },
+
+    {
+      "id": "LayoutManager_Standard",
+      "componentId": "LayoutManager",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 10],
+        "bottom": 36
+      }
+    },
+    {
+      "id": "ThemeManager_Standard",
+      "componentId": "ThemeManager",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 10],
+        "bottom": 36
+      }
+    }
+  ]
+}
