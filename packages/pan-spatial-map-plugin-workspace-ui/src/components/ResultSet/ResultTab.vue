@@ -3,7 +3,9 @@
     <q-tabs
       align="left"
       v-model="tab"
-      class="col-auto bg-title text-title width100"
+      narrow-indicator
+      class="col-auto full-width"
+      dense
     >
       <q-tab
         v-for="{ id, label } in tables"
@@ -16,7 +18,8 @@
     <q-tab-panels
       animated
       v-model="tab"
-      class="col bg-container text-container width100"
+      keep-alive
+      class="col bg-container text-container full-width"
     >
       <q-tab-panel
         v-for="{ id } in tables"
@@ -37,17 +40,41 @@
             @request="request"
             @row-click="rowClick"
             @row-dblclick="rowDblclick"
-            class="full-height"
+            class="full-height q-pb-md"
+            loading-label="正在加载..."
+            no-data-label="没有数据"
+            dense
           >
-            <template v-slot:top class="q-pa-none">
-              <q-btn
-                flat
-                label="按地图范围过滤"
-                @click="filterWithMap = !filterWithMap"
-                :class="{ 'text-primary': filterWithMap }"
-              />
-              <q-btn flat label="清除所有" icon="clear" @click="clear" />
-              <slot />
+            <template v-slot:top="props">
+              <div
+                class="q-gutter-sm flex full-width"
+                style="background: #eee;padding: 2px 0 2px 4px;"
+              >
+                <q-btn
+                  dense
+                  flat
+                  label="按地图范围过滤"
+                  @click="filterWithMap = !filterWithMap"
+                  :class="{ 'text-primary': filterWithMap }"
+                />
+                <q-btn
+                  dense
+                  flat
+                  label="清除所有"
+                  icon="clear"
+                  @click="clear"
+                />
+                <slot />
+                <q-space />
+                <q-btn
+                  dense
+                  flat
+                  round
+                  :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                  @click="props.toggleFullscreen"
+                  class="q-ml-md"
+                />
+              </div>
             </template>
           </q-table>
         </div>
@@ -339,8 +366,9 @@ export default class MpResultTab extends Mixins(MapTypeChanageMixin) {
   }
 }
 </script>
-<style lang="scss" scoped>
-.width100 {
-  width: 100%;
+<style lang="scss">
+.q-table--dense .q-table__top {
+  padding: 0;
+  border-bottom: 1px solid #b5bcc7;
 }
 </style>

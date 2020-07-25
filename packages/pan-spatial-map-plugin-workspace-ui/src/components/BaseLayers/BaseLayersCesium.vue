@@ -17,7 +17,7 @@
     <cesium-arcgis-layer
       v-for="layer in arcgisLayers"
       :key="layer.id"
-      :url="layer.url"
+      :url="layer.baseURL"
       :show="true"
     />
 

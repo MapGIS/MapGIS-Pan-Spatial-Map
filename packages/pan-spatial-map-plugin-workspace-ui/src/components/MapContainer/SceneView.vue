@@ -9,6 +9,7 @@
     <div v-for="l in rasters" :key="l.id">
       <cesium-igs-tile-layer
         v-if="isIgsTileLayer(l.subtype)"
+        :show="l.show"
         :url="l.url"
         :ip="l.ip"
         :port="l.port"
@@ -33,6 +34,11 @@
         :url="l.url"
         :serverName="l.serverName"
       />
+      <cesium-arcgis-layer
+        v-if="isArcgisLayer(l.subtype)"
+        :url="l.serverUrl"
+        :show="l.show"
+      />
     </div>
     <map-state-cesium />
   </cesium-web-globe>
@@ -46,6 +52,7 @@ import CesiumIgsWmsLayer from '../CesiumLayers/CesiumIgsWmsLayer.vue'
 import CesiumIgsWmtsLayer from '../CesiumLayers/CesiumIgsWmtsLayer.vue'
 import CesiumIgsTileLayer from '../CesiumLayers/CesiumIgsTileLayer.vue'
 import BaseLayersCesium from '../BaseLayers/BaseLayersCesium.vue'
+import CesiumArcgisLayer from '../CesiumLayers/CesiumArcgisLayer.vue'
 
 const { IDocument, Layer, VectorTile } = require('@mapgis/webclient-store')
 const {
@@ -65,7 +72,8 @@ const { Convert } = VectorTile
     CesiumIgsWmsLayer,
     CesiumIgsWmtsLayer,
     CesiumIgsTileLayer,
-    BaseLayersCesium
+    BaseLayersCesium,
+    CesiumArcgisLayer
   }
 })
 export default class MpSceneView extends Mixins(MapDocumentMixin) {
@@ -146,6 +154,10 @@ export default class MpSceneView extends Mixins(MapDocumentMixin) {
 
   isIgsWmtsLayer(subtype: string) {
     return subtype === IgsLayerType.IgsWmtsLayer
+  }
+
+  isArcgisLayer(subtype: string) {
+    return subtype === 'vectortile'
   }
 }
 </script>

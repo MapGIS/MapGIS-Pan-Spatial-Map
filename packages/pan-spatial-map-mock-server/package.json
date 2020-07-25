@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-mock-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "全空间一张图Mock服务器",
   "author": "MapGIS",
   "license": "MIT",

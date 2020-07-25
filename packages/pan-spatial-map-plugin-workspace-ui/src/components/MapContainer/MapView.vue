@@ -8,7 +8,7 @@
     @load="getMap"
     :style="{ height: pageHeight }"
   >
-    <base-layers-mapbox :crs="mapCrs" />
+    <base-layers-mapbox />
     <div v-for="l in rasters" :key="l.id">
       <mapbox-raster-layer
         v-if="isRasterLayer(l.subtype)"
@@ -23,7 +23,6 @@
         :layerId="l.id"
         :sourceId="l.id"
         :url="l.url"
-        :zoomOffset="1"
         :ip="l.ip"
         :port="l.port"
         :serverName="l.serverName"
@@ -48,27 +47,22 @@
         :port="l.port"
         :gdbps="l.gdbps"
       />
-      <mapbox-igs-wms-layer
+      <mapbox-wms-layer
         v-if="isIgsWmsLayer(l.subtype)"
         :layer="l"
-        :layerId="l.id"
-        :sourceId="l.id"
-        :ip="l.ip"
-        :port="l.port"
-        :serverType="l.wmsServerType"
-        :serverName="l.serverName"
-        :layers="l.layers"
+        :url="l.serverUrl"
       />
-      <mapbox-igs-wmts-layer
+      <mapbox-wmts-layer
         v-if="isIgsWmtsLayer(l.subtype)"
+        :layer="l"
+        :url="l.serverUrl"
+      />
+      <mapbox-arcgis-layer
+        v-if="isArcgisLayer(l.subtype)"
         :layer="l"
         :layerId="l.id"
         :sourceId="l.id"
-        :ip="l.ip"
-        :port="l.port"
-        :wmtsLayer="l.serverName"
-        :tileMatrixSet="getWmtsInfo(l)"
-        :zoomOffset="1"
+        :url="l.serverUrl"
       />
     </div>
     <map-state-mapbox />
@@ -87,6 +81,8 @@ import {
 import defaultStyle from '../../style/default-style.js'
 import BaseLayersMapbox from '../BaseLayers/BaseLayersMapbox.vue'
 import MapStateMapbox from '../MapState/MapStateMapbox.vue'
+import MapboxWmtsLayer from '../MapboxLayers/MapboxWmtsLayer.vue'
+import MapboxWmsLayer from '../MapboxLayers/MapboxWmsLayer.vue'
 
 const { IDocument, VectorTile, Layer } = require('@mapgis/webclient-store')
 const {
@@ -96,9 +92,8 @@ const {
   MapboxIgsTileLayer,
   MapboxIgsDocLayer,
   MapboxIgsVectorLayer,
-  MapboxIgsWmsLayer,
-  MapboxIgsWmtsLayer,
-  MapboxScaleControl
+  MapboxScaleControl,
+  MapboxArcgisLayer
 } = require('@mapgis/webclient-vue-mapboxgl')
 
 const { Convert } = VectorTile
@@ -113,11 +108,12 @@ const { IgsLayerType } = Layer
     MapboxIgsTileLayer,
     MapboxIgsDocLayer,
     MapboxIgsVectorLayer,
-    MapboxIgsWmsLayer,
-    MapboxIgsWmtsLayer,
+    MapboxWmsLayer,
+    MapboxWmtsLayer,
     MapboxScaleControl,
     BaseLayersMapbox,
-    MapStateMapbox
+    MapStateMapbox,
+    MapboxArcgisLayer
   }
 })
 export default class MpMapView extends Mixins(MapDocumentMixin) {
@@ -196,6 +192,10 @@ export default class MpMapView extends Mixins(MapDocumentMixin) {
 
   isIgsWmtsLayer(subtype: string) {
     return subtype === IgsLayerType.IgsWmtsLayer
+  }
+
+  isArcgisLayer(subtype: string) {
+    return subtype === 'vectortile'
   }
 
   async getWmtsInfo(layer: any) {

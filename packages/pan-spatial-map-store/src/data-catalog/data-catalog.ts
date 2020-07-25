@@ -449,6 +449,14 @@ export class DataCatalog {
           subtype: 'IgsVectorLayer',
           gdbps: layer[this.nodeParam.SERVERNAME]
         }
+      } else if (
+        layerServiceType === this.layerServiceType.IMAGEARCGIS ||
+        layerServiceType === this.layerServiceType.TILEARCGIS
+      ) {
+        obj = {
+          type: 'RasterTile',
+          subtype: 'Raster'
+        }
       }
       const tempLayer = { ...layer, ...obj }
       tempLayers.push(tempLayer)

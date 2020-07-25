@@ -231,6 +231,16 @@ export class ResultSetOper implements IResultSet {
     return category
   }
 
+  public removeCategory(info: IResultSetCategory) {
+    const index = this.categories.findIndex(category => {
+      return category.id === info.id
+    })
+
+    if (index > -1) {
+      this.categories.splice(index, 1)
+    }
+  }
+
   public updateTableInfo(info: IResultSetTable) {
     for (let i = 0; i < this.categories.length; i += 1) {
       const { tables } = this.categories[i]

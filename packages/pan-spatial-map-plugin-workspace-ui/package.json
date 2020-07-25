@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-plugin-workspace-ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "全空间一张图工作空间UI组件",
   "author": "MapGIS",
   "license": "Apache-2.0",
@@ -20,7 +20,7 @@
     "yarn": ">= 1.6.0"
   },
   "dependencies": {
-    "@mapgis/pan-spatial-map-store": "^0.0.1",
+    "@mapgis/pan-spatial-map-store": "^0.0.2",
     "@mapgis/mapbox-gl": "^1.9.3",
     "@mapgis/webclient-store": "^1.0.0",
     "@mapgis/webclient-vue-cesium": "^1.0.0",

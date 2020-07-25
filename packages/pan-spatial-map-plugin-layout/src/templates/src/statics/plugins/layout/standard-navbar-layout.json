@@ -18,6 +18,16 @@
       "widgetId": "BaseMapSwitch_Standard"
     },
     {
+      "id": "Measure_Standard_Navbar",
+      "block": "Navbar",
+      "widgetId": "Measure_Standard"
+    },
+    {
+      "id": "MarkerManager_Standard_Navbar",
+      "block": "Navbar",
+      "widgetId": "MarkerManager_Standard"
+    },
+    {
       "id": "ThemeManager_Standard_Navbar",
       "block": "Navbar",
       "widgetId": "ThemeManager_Standard"

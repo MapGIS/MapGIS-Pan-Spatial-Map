@@ -83,7 +83,7 @@ export default class BaseLayersMixin extends Vue {
                 break
               case 'arcgis':
                 // eslint-disable-next-line no-case-declarations
-                let tempLayerType: string
+                let tempLayerType: string = layerType
                 if (
                   layerType === 'Zondy.Enum.Map.ArcGISLayerType.ImageryWorld2D'
                 ) {
@@ -101,12 +101,13 @@ export default class BaseLayersMixin extends Vue {
                   // ArcGIS晕渲图
                   tempLayerType = 'NGS_Topo_US_2D'
                 }
-                templateUrl = `http://services.arcgisonline.com/ArcGIS/rest/services/${tempLayerType}/MapServer`
+                templateUrl = `http://services.arcgisonline.com/ArcGIS/rest/services/{layerType}/MapServer/tile/{z}/{y}/{x}.jpg`
                 layer = this.baseLayerManager.CreateArcgisLayer({
                   ip: serverip,
                   port: serverport,
-                  layerType,
+                  layerType: tempLayerType,
                   id,
+                  baseURL: `http://services.arcgisonline.com/ArcGIS/rest/services/${tempLayerType}/MapServer`,
                   url: templateUrl
                 })
                 break

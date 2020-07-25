@@ -16,6 +16,16 @@
       "id": "BaseMapSwitch_Classic_Common_Toolbar",
       "block": "Toolbar",
       "widgetId": "BaseMapSwitch_Classic"
+    },
+    {
+      "id": "Measure_Classic_Common_Toolbar",
+      "block": "Toolbar",
+      "widgetId": "Measure_Classic"
+    },
+    {
+      "id": "MarkerManager_Classic_Common_Toolbar",
+      "block": "Toolbar",
+      "widgetId": "MarkerManager_Classic"
     }
   ]
 }

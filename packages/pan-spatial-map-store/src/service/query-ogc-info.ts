@@ -37,7 +37,8 @@ class QueryOGCInfo {
           scaleDenominator,
           bounds: WGS84BoundingBox,
           url: baseUrl,
-          origin
+          origin,
+          title
         }
       })
       const obj = wmtsInfo[0]

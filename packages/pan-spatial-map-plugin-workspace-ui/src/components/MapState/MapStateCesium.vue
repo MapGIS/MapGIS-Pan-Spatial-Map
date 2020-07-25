@@ -109,7 +109,7 @@ export default class MapStateCesium extends Mixins(MapDocumentMixin) {
 }
 
 .state-mouse-position {
-  margin-left: 12em;
+  margin-left: 8em;
   width: 10em;
 }
 </style>

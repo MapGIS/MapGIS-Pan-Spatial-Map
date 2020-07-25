@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/quasar-app-extension-pan-spatial-map-plugin-auth",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "全空间一张图权限认证扩展插件",
   "author": "MapGIS",
   "license": "MIT",

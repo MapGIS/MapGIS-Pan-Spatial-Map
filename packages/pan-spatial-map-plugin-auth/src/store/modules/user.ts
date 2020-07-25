@@ -78,8 +78,18 @@ const actions: ActionTree<IUserState, any> = {
     }
   },
 
-  logout({ commit }: ActionContext<IUserState, any>) {
-    commit('UNSET_USER')
+  async logout(
+    { commit }: ActionContext<IUserState, any>,
+    payload: () => Promise<string>
+  ) {
+    try {
+      const flag = await payload()
+      commit('UNSET_USER')
+      return flag
+    } catch (e) {
+      console.warn('[DEBUG]: 用户登出失败', e)
+      return false
+    }
   },
 
   resetToken({ commit }: ActionContext<IUserState, any>) {

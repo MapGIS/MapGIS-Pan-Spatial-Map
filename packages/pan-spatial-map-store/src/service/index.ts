@@ -39,3 +39,5 @@ export {
   ESGeoCodeFeatures,
   LayerInfoQueryParam
 } from './query-features'
+
+export { default as ExportMarkersToFileInstance } from './export-markers-to-file'

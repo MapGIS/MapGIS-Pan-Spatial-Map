@@ -3,6 +3,7 @@
     <q-page-container>
       <q-page class="flex bg-image flex-center">
         <q-card
+          style="opacity: 0.9"
           v-bind:style="$q.screen.lt.sm ? { width: '80%' } : { width: '30%' }"
         >
           <q-card-section>
@@ -117,7 +118,7 @@ export default class Login extends Mixins(LoginMixin) {
 
 <style lang="scss">
 .bg-image {
-  background-image: url('/statics/plugins/auth/images/login_bg.jpg');
+  background-image: url('../assets/images/login_bg.jpg');
   background-repeat: no-repeat;
   background-position: center center;
   -webkit-background-size: cover;

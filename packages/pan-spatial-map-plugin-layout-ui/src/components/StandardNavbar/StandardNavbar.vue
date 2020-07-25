@@ -34,6 +34,7 @@
         <q-tooltip>{{ widgetToBlock.applicationLabel }}</q-tooltip>
       </q-btn>
       <q-btn
+        v-if="componentWidgets.length > maxIcon"
         round
         flat
         icon="more_vert"
@@ -41,9 +42,69 @@
       >
         <q-tooltip>更多</q-tooltip>
       </q-btn>
+
+      <q-separator dark vertical />
+
+      <q-btn dense flat no-wrap v-if="user">
+        <q-avatar size="30px" icon="account_circle" />
+        <q-icon name="arrow_drop_down" size="16px" />
+
+        <q-menu
+          auto-close
+          fit
+          anchor="bottom right"
+          self="top right"
+          :offset="[0, 10]"
+        >
+          <q-list dense style="min-width: 100px">
+            <q-item
+              v-for="item in user"
+              :key="item.label"
+              clickable
+              @click="handleUserItem(item)"
+            >
+              <q-item-section>
+                <q-avatar
+                  dense
+                  size="24px"
+                  font-size="18px"
+                  :icon="`img:${item.icon}`"
+                  color="grey"
+                  text-color="white"
+                />
+              </q-item-section>
+              <q-item-section>{{ item.label }}</q-item-section>
+
+              <component
+                :is="item.component"
+                :ref="item.component"
+                v-show="false"
+                v-bind="item.props"
+              />
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+
+      <q-btn
+        flat
+        dense
+        size="12px"
+        v-if="about"
+        :icon="`img:${about.icon}`"
+        @click="handleAbout(about)"
+      >
+        <q-tooltip>{{ about.label }}</q-tooltip>
+        <component
+          :is="about.component"
+          :ref="about.component"
+          v-show="false"
+          v-bind="mergeProps(getOwnProps(), about.props)"
+        />
+      </q-btn>
     </div>
     <q-dialog v-model="showMoreDialog" title="功能列表">
-      <q-card>
+      <q-card class="more-widgets-container">
         <q-item class="bg-title text-title">
           <q-item-section>
             <div class="text-h6">
@@ -60,9 +121,10 @@
           </q-item-section>
         </q-item>
         <q-card-section class="bg-grey-5 text-container">
-          <div class="row wrap items-center">
+          <div class="row items-start content-center">
             <q-item
-              class="column col-3 cursor-pointer relative-positon"
+              class="cursor-pointer relative-positon"
+              :class="[isCol3 ? 'col-3' : 'col', isCol3 ? 'q-px-none' : '']"
               v-ripple
               clickable
               v-for="widgetToBlock in componentWidgets.slice(maxIcon)"
@@ -70,16 +132,16 @@
               :title="widgetToBlock.applicationLabel"
               @click="handleClick(widgetToBlock)"
             >
-              <q-item-section class="text-center items-center">
-                <q-icon
-                  :name="`img:${widgetToBlock.applicationIcon}`"
-                  style="font-size: 3em"
-                />
-                <q-item-label
-                  v-if="$q.screen.gt.sm"
-                  class="text-weight-light q-my-xs"
-                  >{{ widgetToBlock.applicationLabel }}</q-item-label
-                >
+              <q-item-section>
+                <div class="column items-center">
+                  <q-icon
+                    :name="`img:${widgetToBlock.applicationIcon}`"
+                    style="font-size: 2em"
+                  />
+                  <q-item-label class="text-weight-light q-py-xs"
+                    >{{ widgetToBlock.applicationLabel }}
+                  </q-item-label>
+                </div>
               </q-item-section>
             </q-item>
           </div>
@@ -123,6 +185,12 @@ export default class MpStandardNavbar extends Vue {
   })
   readonly icons!: number
 
+  @Prop()
+  readonly user?: []
+
+  @Prop()
+  readonly about?: object
+
   private showMoreDialog = false
 
   private maxIcon!: number
@@ -155,9 +223,14 @@ export default class MpStandardNavbar extends Vue {
     })
   }
 
+  private get isCol3() {
+    return this.componentWidgets.slice(this.maxIcon).length > 3
+  }
+
   private handleClick(widgetToBlock: LayoutWidgetToBlock) {
     this.closeShowMore()
-    this.closeAll()
+    if (!widgetToBlock.info.props || !widgetToBlock.info.props.noUI)
+      this.closeAll()
     this.toggleWidget(widgetToBlock.info)
   }
 
@@ -168,5 +241,37 @@ export default class MpStandardNavbar extends Vue {
   private closeShowMore() {
     this.showMoreDialog = false
   }
+
+  private getOwnProps() {
+    return {
+      logo: this.logo,
+      title: this.title,
+      subtitle: this.subtitle
+    }
+  }
+
+  private mergeProps(...args: Record<string, unknown>[]) {
+    let props: Record<string, unknown> = {}
+    args.forEach(arg => {
+      props = { ...props, ...arg }
+    })
+    return props
+  }
+
+  private handleUserItem(item) {
+    const { click } = this.$refs[item.component][0] as any
+    if (typeof click === 'function') {
+      this.$refs[item.component][0].click()
+    }
+  }
+
+  private handleAbout(about) {
+    const { click } = this.$refs[about.component] as any
+    if (typeof click === 'function') {
+      this.$refs[about.component].click()
+    }
+  }
 }
 </script>
+
+<style lang="scss"></style>

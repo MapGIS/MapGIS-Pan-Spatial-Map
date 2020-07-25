@@ -3,19 +3,32 @@
     <q-tabs
       align="left"
       v-model="currentCategoryId"
-      class="col-auto bg-title text-title width100"
+      class="col-auto bg-title text-title full-width"
+      dense
     >
       <q-tab
+        class="category-tab"
         v-for="category in categories"
         :key="category.id"
         :name="category.id"
         :label="category.label"
-      />
+      >
+        <q-badge
+          class="transparent category-tab-badge"
+          floating
+          clickable
+          round
+          @click.stop="closeCategory(category)"
+        >
+          <q-icon name="close" color="white" />
+        </q-badge>
+      </q-tab>
     </q-tabs>
     <q-tab-panels
       animated
       v-model="currentCategoryId"
-      class="col bg-container text-container width100"
+      keep-alive
+      class="col bg-container text-container full-width"
     >
       <q-tab-panel
         v-for="category in categories"
@@ -47,48 +60,79 @@ export default class MpResultSet extends Mixins(ResultSetMixin) {
   @Watch('categories')
   private categoriesChanged() {
     const { length } = this.categories
-    if (length > 0) {
-      this.currentCategoryId = this.categories[length - 1].id
+
+    const index = this.categories.findIndex(category => {
+      return category.id === this.currentCategoryId
+    })
+
+    if (index === -1) {
+      if (length > 0) {
+        this.currentCategoryId = this.categories[length - 1].id
+      } else {
+        this.currentCategoryId = ''
+      }
     }
+  }
+
+  private closeCategory(category) {
+    this.removeCategory(category)
   }
 }
 </script>
 
 <style lang="scss">
 .result-set-container {
-  height: 30em;
-}
-.width100 {
-  width: 100%;
-}
-tr th {
-  position: sticky;
-  z-index: 2;
-  background: #fff;
-}
+  height: 100%;
 
-thead tr:last-child th {
-  top: 4em;
-  z-index: 3;
-  background-color: #eeeeee;
-}
+  .category-tab-badge {
+    display: none;
+  }
 
-thead tr:first-child th {
-  top: 0;
-  z-index: 1;
-}
+  .category-tab:hover .category-tab-badge {
+    display: block;
+  }
 
-tr:first-child th:first-child {
-  z-index: 3;
-}
+  td:first-child {
+    /* bg color is important for td; just specify one */
+    background-color: #eeeeee !important;
+  }
 
-td:first-child {
-  z-index: 1;
-}
+  tr th {
+    position: sticky;
+    /* higher than z-index for td below */
+    z-index: 2;
+    /* bg color is important; just specify one */
+    background: #eeeeee;
+  }
 
-td:first-child,
-th:first-child {
-  position: sticky;
-  left: 0;
+  /* this will be the loading indicator */
+  thead tr:last-child th {
+    /* highest z-index */
+    z-index: 3;
+  }
+
+  thead tr:first-child th {
+    top: 0;
+    z-index: 1;
+  }
+
+  tr:first-child th:first-child {
+    /* highest z-index */
+    z-index: 3;
+  }
+
+  td:first-child {
+    z-index: 1;
+  }
+
+  td:first-child,
+  th:first-child {
+    position: sticky;
+    left: 0;
+  }
+
+  .q-table tbody td {
+    font-size: 12px;
+  }
 }
 </style>

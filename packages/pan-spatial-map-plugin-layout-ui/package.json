@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-plugin-layout-ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "全空间一张图布局UI组件",
   "author": "MapGIS",
   "license": "Apache-2.0",

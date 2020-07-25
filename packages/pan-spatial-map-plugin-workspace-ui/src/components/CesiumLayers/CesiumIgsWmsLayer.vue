@@ -57,7 +57,7 @@ export default class CesiumIgsWmsLayer extends Mixins(CesiumLayerMixin) {
     }
     otherOpt = {
       format: 'image/png',
-      service: 'WMS ',
+      service: 'WMS',
       version: obj.version || '1.3.0',
       request: 'GetMap',
       transparent: true,

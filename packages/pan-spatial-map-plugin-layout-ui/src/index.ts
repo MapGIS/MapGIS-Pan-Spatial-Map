@@ -35,7 +35,7 @@ const components = [
 
 const install = (Vue: VueConstructor) => {
   components.forEach(component => {
-    Vue.component(component.name, component)
+    Vue.component((component as any).options.name, component)
   })
 }
 

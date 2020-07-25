@@ -205,6 +205,13 @@ export default class MpWidgetPanel extends Vue {
     }
   }
 
+  @Watch('height', { deep: true })
+  updateHeight() {
+    if (this.height) {
+      this.heightPixel = `${this.height}px`
+    }
+  }
+
   // 获取相对于屏幕的偏移
   private getToScreenOffset() {
     const { body = {} } = this

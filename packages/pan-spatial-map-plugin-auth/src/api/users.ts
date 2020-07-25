@@ -6,3 +6,7 @@ export const userLogin = (data: any) =>
     method: 'post',
     data
   })
+
+export const userLogout = () => {
+  return Promise.resolve({ data: { code: 0 } })
+}

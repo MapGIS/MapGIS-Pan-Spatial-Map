@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr lFf">
-    <q-header elevated class="transparent">
+    <q-header ref="headerContainer" elevated class="transparent">
       <slot name="header" :toggle-left-drawer="toggleLeftDrawer" />
     </q-header>
     <q-drawer
@@ -27,14 +27,25 @@
         <q-btn
           :icon="footer | footerBtnIcon"
           color="title"
-          @click="footer = !footer"
+          @click="switchFooter"
           class="footer-btn"
         />
       </q-page-sticky>
     </q-page-container>
     <slot name="absolute" />
     <slot />
-    <q-footer elevated class="transparent" v-model="footer">
+    <q-footer
+      elevated
+      class="transparent"
+      v-model="footer"
+      :style="{ height: `${footerHeight}px` }"
+    >
+      <!-- Top Resize Handle -->
+      <div
+        v-touch-pan.prevent.mouse="resizeFooter"
+        style="position: relative; left: 0; right: 0; top: 0; cursor: ns-resize; height: 7px;"
+        class="bg-title"
+      />
       <slot
         name="footer"
         :open-footer="openFooter"
@@ -45,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Ref } from 'vue-property-decorator'
 
 @Component({
   name: 'MpDynamicLayout',
@@ -56,6 +67,8 @@ import { Vue, Component } from 'vue-property-decorator'
   }
 })
 export default class MpDynamicLayout extends Vue {
+  @Ref() readonly headerContainer!: any
+
   private left = false
 
   private leftWidth = 300
@@ -68,10 +81,25 @@ export default class MpDynamicLayout extends Vue {
 
   private showFooterToggle = false
 
-  private mounted() {
+  private footerHeight = 100
+
+  private initFooterHeight = 100
+
+  private maxFooterHeight = 200
+
+  mounted() {
     this.left = !!this.$scopedSlots.left
     this.right = !!this.$scopedSlots.right
     this.showFooterToggle = !!this.$scopedSlots.footer
+
+    const viewHeight =
+      document.documentElement.clientHeight -
+      this.headerContainer.$el.offsetHeight
+
+    this.initFooterHeight = viewHeight / 2
+    this.maxFooterHeight = viewHeight
+
+    this.footerHeight = this.initFooterHeight
   }
 
   private toggleLeftDrawer() {
@@ -84,6 +112,16 @@ export default class MpDynamicLayout extends Vue {
 
   private openFooter() {
     this.footer = true
+    if (this.footerHeight === 0) {
+      this.footerHeight = this.initFooterHeight
+    }
+  }
+
+  private switchFooter() {
+    this.footer = !this.footer
+    if (this.footer && this.footerHeight === 0) {
+      this.footerHeight = this.initFooterHeight
+    }
   }
 
   private changeLeftWidth(width: number) {
@@ -93,12 +131,25 @@ export default class MpDynamicLayout extends Vue {
   private changeRightWidth(width: number) {
     this.rightWidth = width
   }
+
+  private resizeFooter(event: any): void {
+    const delta = event.delta.y
+    const height = this.footerHeight - delta
+
+    if (height > this.maxFooterHeight) {
+      this.footerHeight = this.maxFooterHeight
+    } else if (height < 10) {
+      this.footerHeight = 0
+    } else {
+      this.footerHeight = height
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 .footer-btn {
-  font-size: 8px;
+  font-size: 9px;
   width: 8em;
   height: 2em;
   border-radius: 8px 8px 0 0;

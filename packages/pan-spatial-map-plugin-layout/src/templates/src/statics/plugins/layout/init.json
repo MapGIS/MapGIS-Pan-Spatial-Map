@@ -16,8 +16,20 @@
           "props": {
             "icons": 5,
             "title": "MapGIS全空间一张图",
-            "subtitle": "全空间专业GIS应用框架",
-            "logo": "statics/plugins/layout/images/app-logo.svg"
+            "subtitle": "全行业一张图应用平台",
+            "logo": "statics/plugins/layout/images/app-logo.svg",
+            "user": [
+              {
+                "icon": "statics/plugins/auth/images/logout.svg",
+                "label": "退出",
+                "component": "MpLogout"
+              }
+            ],
+            "about": {
+              "icon": "statics/plugins/auth/images/about.svg",
+              "label": "关于",
+              "component": "MpAbout"
+            }
           }
         },
         {
@@ -59,8 +71,20 @@
           "component": "MpClassicNavbar",
           "props": {
             "title": "MapGIS全空间一张图",
-            "subtitle": "全空间专业GIS应用框架",
-            "logo": "statics/plugins/layout/images/app-logo.svg"
+            "subtitle": "全行业一张图应用平台",
+            "logo": "statics/plugins/layout/images/app-logo.svg",
+            "user": [
+              {
+                "icon": "statics/plugins/auth/images/logout.svg",
+                "label": "退出",
+                "component": "MpLogout"
+              }
+            ],
+            "about": {
+              "icon": "statics/plugins/auth/images/about.svg",
+              "label": "关于",
+              "component": "MpAbout"
+            }
           }
         },
         {

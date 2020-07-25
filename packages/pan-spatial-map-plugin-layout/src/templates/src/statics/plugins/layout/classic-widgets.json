@@ -64,7 +64,24 @@
         "bottom": 36
       }
     },
-
+    {
+      "id": "Measure_Classic",
+      "componentId": "Measure",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 60],
+        "bottom": 36
+      }
+    },
+    {
+      "id": "MarkerManager_Classic",
+      "componentId": "MarkerManager",
+      "position": {
+        "position": "top-right",
+        "offset": [10, 60],
+        "bottom": 36
+      }
+    },
     {
       "id": "LayoutManager_Classic",
       "componentId": "LayoutManager",

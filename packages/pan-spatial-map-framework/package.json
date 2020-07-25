@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-framework",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "全空间一张图基于Quasar的框架",
   "productName": "MapGIS全空间一张图",
   "cordovaId": "com.mapgis.pan-spatial-map.app",

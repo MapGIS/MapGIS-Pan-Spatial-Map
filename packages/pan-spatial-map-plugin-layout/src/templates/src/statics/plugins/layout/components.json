@@ -67,6 +67,22 @@
       "props": {}
     },
     {
+      "id": "Measure",
+      "icon": "statics/plugins/mapeditor/images/measure.svg",
+      "label": "测量",
+      "type": "Component",
+      "component": "MpMeasure",
+      "props": {}
+    },
+    {
+      "id": "MarkerManager",
+      "icon": "statics/plugins/mapeditor/images/map-marker.svg",
+      "label": "添加标注",
+      "type": "Component",
+      "component": "MpMarkerManager",
+      "props": {}
+    },
+    {
       "id": "LayoutManager",
       "icon": "statics/plugins/workspace/images/layout.svg",
       "label": "布局配置",

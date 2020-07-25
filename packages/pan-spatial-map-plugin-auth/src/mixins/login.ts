@@ -1,7 +1,7 @@
 import { Store } from 'vuex'
 import { Vue, Component } from 'vue-property-decorator'
 import qs from 'qs'
-import { userLogin } from '../api/users'
+import { userLogin, userLogout } from '../api/users'
 
 @Component({})
 export default class LoginMixin extends Vue {
@@ -29,6 +29,26 @@ export default class LoginMixin extends Vue {
       const flag = await this.$store.dispatch('user/login', () =>
         login(options)
       )
+      return flag
+    } catch (error) {
+      return false
+    }
+  }
+
+  public async doLogout() {
+    let { logout } = this as any
+
+    // logout
+    if (typeof logout !== 'function') {
+      logout = async () => {
+        await userLogout()
+        return true
+      }
+    }
+
+    try {
+      // 提交action
+      const flag = await this.$store.dispatch('user/logout', () => logout())
       return flag
     } catch (error) {
       return false

@@ -53,6 +53,927 @@
     "useLocalParam": true,
     "treeData": [
       {
+        "describe": "分类:基础地理与区划综合信息库",
+        "label": "基础地理与区划综合信息库",
+        "bindData": {
+          "describe": "分类:基础地理与区划综合信息库",
+          "label": "基础地理与区划综合信息库",
+          "bindData": {
+            "describe": "分类:基础地理与区划综合信息库",
+            "label": "基础地理与区划综合信息库"
+          },
+          "type": "normal"
+        },
+        "type": "normal",
+        "children": [
+          {
+            "describe": "专题:全国陆地基础地理综合信息库",
+            "label": "全国陆地基础地理综合信息库",
+            "bindData": {
+              "describe": "专题:全国陆地基础地理综合信息库",
+              "label": "全国陆地基础地理综合信息库",
+              "bindData": {
+                "describe": "专题:全国陆地基础地理综合信息库",
+                "label": "全国陆地基础地理综合信息库"
+              },
+              "type": "normal"
+            },
+            "type": "normal",
+            "children": [
+              {
+                "describe": "专题:全国水系",
+                "label": "全国水系",
+                "bindData": {
+                  "describe": "专题:全国水系",
+                  "label": "全国水系",
+                  "bindData": {
+                    "describe": "专题:全国水系",
+                    "label": "全国水系"
+                  },
+                  "type": "normal"
+                },
+                "type": "normal",
+                "children": [
+                  {
+                    "label": "全国1：100万水系（2008年）",
+                    "describe": "全国1：100万水系（2008年）",
+                    "name": "shuixi",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/shuixi/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS",
+                    "bindData": {
+                      "label": "全国1：100万水系（2008年）",
+                      "describe": "全国1：100万水系（2008年）",
+                      "name": "shuixi",
+                      "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/shuixi/wmts",
+                      "ip": "",
+                      "port": "",
+                      "layerServiceType": "WMTS",
+                      "bindData": {
+                        "label": "全国1：100万水系（2008年）",
+                        "describe": "全国1：100万水系（2008年）",
+                        "name": "shuixi",
+                        "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/shuixi/wmts",
+                        "ip": "",
+                        "port": "",
+                        "layerServiceType": "WMTS"
+                      },
+                      "type": "server"
+                    },
+                    "type": "server"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "describe": "专题:全国交通",
+            "label": "全国交通",
+            "bindData": {
+              "describe": "专题:全国交通",
+              "label": "全国交通",
+              "bindData": {
+                "describe": "专题:全国交通",
+                "label": "全国交通"
+              },
+              "type": "normal"
+            },
+            "type": "normal",
+            "children": [
+              {
+                "label": "全国铁路网分布（2015年）",
+                "describe": "全国铁路网分布（2015年）",
+                "name": "quanguotieluwang",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguotieluwang/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国铁路网分布（2015年）",
+                  "describe": "全国铁路网分布（2015年）",
+                  "name": "quanguotieluwang",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguotieluwang/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国铁路网分布（2015年）",
+                    "describe": "全国铁路网分布（2015年）",
+                    "name": "quanguotieluwang",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguotieluwang/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国地铁线路分布（2015年）",
+                "describe": "全国地铁线路分布（2015年）",
+                "name": "quanguoditiexianlu",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoditiexianlu/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国地铁线路分布（2015年）",
+                  "describe": "全国地铁线路分布（2015年）",
+                  "name": "quanguoditiexianlu",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoditiexianlu/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国地铁线路分布（2015年）",
+                    "describe": "全国地铁线路分布（2015年）",
+                    "name": "quanguoditiexianlu",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoditiexianlu/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国国道分布（2015年）",
+                "describe": "全国国道分布（2015年）",
+                "name": "quanguoguodao",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoguodao/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国国道分布（2015年）",
+                  "describe": "全国国道分布（2015年）",
+                  "name": "quanguoguodao",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoguodao/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国国道分布（2015年）",
+                    "describe": "全国国道分布（2015年）",
+                    "name": "quanguoguodao",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoguodao/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国省道分布（2015年）",
+                "describe": "全国省道分布（2015年）",
+                "name": "quanguoshengdao",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoshengdao/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国省道分布（2015年）",
+                  "describe": "全国省道分布（2015年）",
+                  "name": "quanguoshengdao",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoshengdao/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国省道分布（2015年）",
+                    "describe": "全国省道分布（2015年）",
+                    "name": "quanguoshengdao",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoshengdao/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国高速公路网分布（2015年）",
+                "describe": "全国高速公路网分布（2015年）",
+                "name": "quanguogaosugongluwa",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguogaosugongluwa/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国高速公路网分布（2015年）",
+                  "describe": "全国高速公路网分布（2015年）",
+                  "name": "quanguogaosugongluwa",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguogaosugongluwa/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国高速公路网分布（2015年）",
+                    "describe": "全国高速公路网分布（2015年）",
+                    "name": "quanguogaosugongluwa",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguogaosugongluwa/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国都市高速公路网分布（2015年）",
+                "describe": "全国都市高速公路网分布（2015年）",
+                "name": "quanguodoushigsgl",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguodoushigsgl/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国都市高速公路网分布（2015年）",
+                  "describe": "全国都市高速公路网分布（2015年）",
+                  "name": "quanguodoushigsgl",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguodoushigsgl/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国都市高速公路网分布（2015年）",
+                    "describe": "全国都市高速公路网分布（2015年）",
+                    "name": "quanguodoushigsgl",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguodoushigsgl/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国轮渡线路分布（2015年）",
+                "describe": "全国轮渡线路分布（2015年）",
+                "name": "quanguoluduxianlu",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoluduxianlu/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国轮渡线路分布（2015年）",
+                  "describe": "全国轮渡线路分布（2015年）",
+                  "name": "quanguoluduxianlu",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoluduxianlu/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国轮渡线路分布（2015年）",
+                    "describe": "全国轮渡线路分布（2015年）",
+                    "name": "quanguoluduxianlu",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoluduxianlu/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国县道分布（2015年）",
+                "describe": "全国县道分布（2015年）",
+                "name": "quanguoxiandao",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoxiandao/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国县道分布（2015年）",
+                  "describe": "全国县道分布（2015年）",
+                  "name": "quanguoxiandao",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoxiandao/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国县道分布（2015年）",
+                    "describe": "全国县道分布（2015年）",
+                    "name": "quanguoxiandao",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguoxiandao/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国乡镇村道分布（2015年）",
+                "describe": "全国乡镇村道分布（2015年）",
+                "name": "qgxzcd",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgxzcd/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国乡镇村道分布（2015年）",
+                  "describe": "全国乡镇村道分布（2015年）",
+                  "name": "qgxzcd",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgxzcd/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国乡镇村道分布（2015年）",
+                    "describe": "全国乡镇村道分布（2015年）",
+                    "name": "qgxzcd",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgxzcd/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              }
+            ]
+          },
+          {
+            "describe": "专题:全国行政区划",
+            "label": "全国行政区划",
+            "bindData": {
+              "describe": "专题:全国行政区划",
+              "label": "全国行政区划",
+              "bindData": {
+                "describe": "专题:全国行政区划",
+                "label": "全国行政区划"
+              },
+              "type": "normal"
+            },
+            "type": "normal",
+            "children": [
+              {
+                "label": "中国国界（2008年）",
+                "describe": "中国国界（2008年）",
+                "name": "zhongguoguojie",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoguojie/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "中国国界（2008年）",
+                  "describe": "中国国界（2008年）",
+                  "name": "zhongguoguojie",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoguojie/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "中国国界（2008年）",
+                    "describe": "中国国界（2008年）",
+                    "name": "zhongguoguojie",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoguojie/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "中国省界（2008年）",
+                "describe": "中国省界（2008年）",
+                "name": "zhongguoshengjie1",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoshengjie1/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "中国省界（2008年）",
+                  "describe": "中国省界（2008年）",
+                  "name": "zhongguoshengjie1",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoshengjie1/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "中国省界（2008年）",
+                    "describe": "中国省界（2008年）",
+                    "name": "zhongguoshengjie1",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoshengjie1/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "中国地市界（2008年）",
+                "describe": "中国地市界（2008年）",
+                "name": "zhongguodishijie",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguodishijie/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "中国地市界（2008年）",
+                  "describe": "中国地市界（2008年）",
+                  "name": "zhongguodishijie",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguodishijie/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "中国地市界（2008年）",
+                    "describe": "中国地市界（2008年）",
+                    "name": "zhongguodishijie",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguodishijie/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "中国县界（2008年）",
+                "describe": "中国县界（2008年）",
+                "name": "zhongguoxianjie",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoxianjie/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "中国县界（2008年）",
+                  "describe": "中国县界（2008年）",
+                  "name": "zhongguoxianjie",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoxianjie/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "中国县界（2008年）",
+                    "describe": "中国县界（2008年）",
+                    "name": "zhongguoxianjie",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/zhongguoxianjie/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "describe": "分类:遥感影像综合信息库",
+        "label": "遥感影像综合信息库",
+        "bindData": {
+          "describe": "分类:遥感影像综合信息库",
+          "label": "遥感影像综合信息库",
+          "bindData": {
+            "describe": "分类:遥感影像综合信息库",
+            "label": "遥感影像综合信息库"
+          },
+          "type": "normal"
+        },
+        "type": "normal",
+        "children": [
+          {
+            "describe": "专题:全国影像",
+            "label": "全国影像",
+            "bindData": {
+              "describe": "专题:全国影像",
+              "label": "全国影像",
+              "bindData": {
+                "describe": "专题:全国影像",
+                "label": "全国影像"
+              },
+              "type": "normal"
+            },
+            "type": "normal",
+            "children": [
+              {
+                "label": "全国TM遥感影像-30米（2014年）",
+                "describe": "全国TM遥感影像-30米（2014年）",
+                "name": "qgtmygyx",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgtmygyx/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国TM遥感影像-30米（2014年）",
+                  "describe": "全国TM遥感影像-30米（2014年）",
+                  "name": "qgtmygyx",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgtmygyx/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国TM遥感影像-30米（2014年）",
+                    "describe": "全国TM遥感影像-30米（2014年）",
+                    "name": "qgtmygyx",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgtmygyx/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国资源3号遥感影像-2米（2015年）",
+                "describe": "全国资源3号遥感影像-2米（2015年）",
+                "name": "qgzs2m",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgzs2m/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国资源3号遥感影像-2米（2015年）",
+                  "describe": "全国资源3号遥感影像-2米（2015年）",
+                  "name": "qgzs2m",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgzs2m/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国资源3号遥感影像-2米（2015年）",
+                    "describe": "全国资源3号遥感影像-2米（2015年）",
+                    "name": "qgzs2m",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgzs2m/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国GF-1遥感正射影像-16米（2015年）",
+                "describe": "全国GF-1遥感正射影像-16米（2015年）",
+                "name": "2015qggf1ygzsyx",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2015qggf1ygzsyx/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国GF-1遥感正射影像-16米（2015年）",
+                  "describe": "全国GF-1遥感正射影像-16米（2015年）",
+                  "name": "2015qggf1ygzsyx",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2015qggf1ygzsyx/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国GF-1遥感正射影像-16米（2015年）",
+                    "describe": "全国GF-1遥感正射影像-16米（2015年）",
+                    "name": "2015qggf1ygzsyx",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2015qggf1ygzsyx/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "全国GF-1遥感影像-16米（2017年）",
+                "describe": "全国GF-1遥感影像-16米（2017年）",
+                "name": "quanguogf1",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguogf1/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "全国GF-1遥感影像-16米（2017年）",
+                  "describe": "全国GF-1遥感影像-16米（2017年）",
+                  "name": "quanguogf1",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguogf1/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "全国GF-1遥感影像-16米（2017年）",
+                    "describe": "全国GF-1遥感影像-16米（2017年）",
+                    "name": "quanguogf1",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguogf1/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              }
+            ]
+          },
+          {
+            "describe": "专题:重点城市遥感影像",
+            "label": "重点城市遥感影像",
+            "bindData": {
+              "describe": "专题:重点城市遥感影像",
+              "label": "重点城市遥感影像",
+              "bindData": {
+                "describe": "专题:重点城市遥感影像",
+                "label": "重点城市遥感影像"
+              },
+              "type": "normal"
+            },
+            "type": "normal",
+            "children": [
+              {
+                "describe": "专题:北京市遥感影像（2005-2018年）",
+                "label": "北京市遥感影像（2005-2018年）",
+                "bindData": {
+                  "describe": "专题:北京市遥感影像（2005-2018年）",
+                  "label": "北京市遥感影像（2005-2018年）",
+                  "bindData": {
+                    "describe": "专题:北京市遥感影像（2005-2018年）",
+                    "label": "北京市遥感影像（2005-2018年）"
+                  },
+                  "type": "normal"
+                },
+                "type": "normal",
+                "children": [
+                  {
+                    "label": "北京市遥感影像spot（2005年）",
+                    "describe": "北京市遥感影像spot（2005年）",
+                    "name": "bj2005spot",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/bj2005spot/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS",
+                    "bindData": {
+                      "label": "北京市遥感影像spot（2005年）",
+                      "describe": "北京市遥感影像spot（2005年）",
+                      "name": "bj2005spot",
+                      "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/bj2005spot/wmts",
+                      "ip": "",
+                      "port": "",
+                      "layerServiceType": "WMTS",
+                      "bindData": {
+                        "label": "北京市遥感影像spot（2005年）",
+                        "describe": "北京市遥感影像spot（2005年）",
+                        "name": "bj2005spot",
+                        "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/bj2005spot/wmts",
+                        "ip": "",
+                        "port": "",
+                        "layerServiceType": "WMTS"
+                      },
+                      "type": "server"
+                    },
+                    "type": "server"
+                  }
+                ]
+              },
+              {
+                "label": "北京市遥感影像spot（2009年）",
+                "describe": "北京市遥感影像spot（2009年）",
+                "name": "beijing2009spot",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2009spot/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "北京市遥感影像spot（2009年）",
+                  "describe": "北京市遥感影像spot（2009年）",
+                  "name": "beijing2009spot",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2009spot/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "北京市遥感影像spot（2009年）",
+                    "describe": "北京市遥感影像spot（2009年）",
+                    "name": "beijing2009spot",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2009spot/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "北京市遥感影像zy3（2013年）",
+                "describe": "北京市遥感影像zy3（2013年）",
+                "name": "beijing2013",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2013/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "北京市遥感影像zy3（2013年）",
+                  "describe": "北京市遥感影像zy3（2013年）",
+                  "name": "beijing2013",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2013/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "北京市遥感影像zy3（2013年）",
+                    "describe": "北京市遥感影像zy3（2013年）",
+                    "name": "beijing2013",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2013/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "北京市遥感影像2米（2015年）",
+                "describe": "北京市遥感影像2米（2015年）",
+                "name": "beijing2015",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2015/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "北京市遥感影像2米（2015年）",
+                  "describe": "北京市遥感影像2米（2015年）",
+                  "name": "beijing2015",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2015/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "北京市遥感影像2米（2015年）",
+                    "describe": "北京市遥感影像2米（2015年）",
+                    "name": "beijing2015",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/beijing2015/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "北京市GF-1遥感影像（2017年）",
+                "describe": "北京市GF-1遥感影像（2017年）",
+                "name": "2017bjygyx",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2017bjygyx/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "北京市GF-1遥感影像（2017年）",
+                  "describe": "北京市GF-1遥感影像（2017年）",
+                  "name": "2017bjygyx",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2017bjygyx/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "北京市GF-1遥感影像（2017年）",
+                    "describe": "北京市GF-1遥感影像（2017年）",
+                    "name": "2017bjygyx",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2017bjygyx/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              },
+              {
+                "label": "北京市GF-1遥感影像2米（2018年）",
+                "describe": "北京市GF-1遥感影像2米（2018年）",
+                "name": "2018bjsygyx2m",
+                "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2018bjsygyx2m/wmts",
+                "ip": "",
+                "port": "",
+                "layerServiceType": "WMTS",
+                "bindData": {
+                  "label": "北京市GF-1遥感影像2米（2018年）",
+                  "describe": "北京市GF-1遥感影像2米（2018年）",
+                  "name": "2018bjsygyx2m",
+                  "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2018bjsygyx2m/wmts",
+                  "ip": "",
+                  "port": "",
+                  "layerServiceType": "WMTS",
+                  "bindData": {
+                    "label": "北京市GF-1遥感影像2米（2018年）",
+                    "describe": "北京市GF-1遥感影像2米（2018年）",
+                    "name": "2018bjsygyx2m",
+                    "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2018bjsygyx2m/wmts",
+                    "ip": "",
+                    "port": "",
+                    "layerServiceType": "WMTS"
+                  },
+                  "type": "server"
+                },
+                "type": "server"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "label": "第三方数据服务",
+        "describe": "专题:OtherService",
+        "bindData": {
+          "label": "第三方数据服务",
+          "describe": "专题:OtherService",
+          "bindData": {
+            "label": "第三方数据服务",
+            "describe": "专题:OtherService"
+          },
+          "type": "normal"
+        },
+        "type": "normal",
+        "children": [
+          {
+            "label": "ArcGIS IMAGE REST",
+            "describe": "ArcGIS IMAGE REST",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IMAGEARCGIS",
+            "name": "MAS12P51000011/M",
+            "searchName": "",
+            "token": "",
+            "guid": "",
+            "serverUrl": "http://219.142.81.85/arcgis/rest/services/MAS12P51000011/MapServer",
+            "wfsUrl": "",
+            "extent": "",
+            "status": "",
+            "vtStyle": ""
+          },
+          {
+            "label": "ArcGIS_WMS",
+            "describe": "ArcGIS_WMS",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "WMS",
+            "name": "10wanZH__",
+            "searchName": "",
+            "token": "",
+            "guid": "",
+            "serverUrl": "http://219.142.81.85/arcgis/services/10wanZH/MapServer/WMSServer?request=GetCapabilities&service=WMS",
+            "wfsUrl": "",
+            "extent": "",
+            "status": "",
+            "vtStyle": ""
+          },
+          {
+            "label": "ArcGIS-WMTS",
+            "describe": "25wanHC-WMTS",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "WMTS",
+            "name": "25wanHC",
+            "searchName": "",
+            "token": "",
+            "guid": "",
+            "serverUrl": "http://219.142.81.85/arcgis/rest/services/25wanHC/MapServer/WMTS",
+            "wfsUrl": "",
+            "extent": "",
+            "status": "",
+            "vtStyle": "",
+            "bindData": {
+              "label": "25wanHC-WMTS",
+              "describe": "25wanHC-WMTS",
+              "ip": "",
+              "port": "",
+              "layerServiceType": "WMTS",
+              "name": "25wanHC",
+              "searchName": "",
+              "token": "",
+              "guid": "",
+              "serverUrl": "http://219.142.81.85/arcgis/rest/services/25wanHC/MapServer/WMTS",
+              "wfsUrl": "",
+              "extent": "",
+              "status": "",
+              "vtStyle": ""
+            },
+            "type": "server"
+          }
+        ]
+      },
+      {
         "label": "矢量文档",
         "describe": "矢量文档",
         "children": [
@@ -89,6 +1010,164 @@
             "status": "",
             "vtStyle": "",
             "gdbTypeList": "Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local"
+          }
+        ]
+      },
+      {
+        "label": "三维数据",
+        "describe": "三维数据",
+        "children": [
+          {
+            "label": "三维地形",
+            "describe": "三维地形",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "terrain",
+            "searchName": "",
+            "model": "globe",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "三维模型",
+            "describe": "三维模型",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "ModelM3D",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "倾斜摄影数据",
+            "describe": "倾斜摄影数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "DaYanTa",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "M3D缓存数据",
+            "describe": "M3D缓存数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "M3D",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "景观模型",
+            "describe": "景观模型",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "ZondyModels",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "BIM模型",
+            "describe": "BIM模型",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "school",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "地质体",
+            "describe": "地质体",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "钻孔分层点_Sur_000_Ent",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "钻孔模型",
+            "describe": "钻孔模型",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "钻孔_2_钻孔模型s",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "建模粗模",
+            "describe": "建模粗模",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "buildings",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          },
+          {
+            "label": "地质体网格",
+            "describe": "地质体网格",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "地质体网格2",
+            "searchName": "",
+            "model": "surface",
+            "guid": "",
+            "serverUrl": "",
+            "status": ""
+          }
+        ]
+      },
+      {
+        "label": "瓦片数据",
+        "describe": "瓦片数据",
+        "children": [
+          {
+            "label": "250DEM",
+            "describe": "250DEM",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSTILED",
+            "name": "250DEM",
+            "searchName": "",
+            "token": "",
+            "guid": "",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "status": "",
+            "vtStyle": ""
           }
         ]
       }

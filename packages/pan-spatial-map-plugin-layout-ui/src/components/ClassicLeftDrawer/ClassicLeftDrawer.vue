@@ -17,7 +17,7 @@
           class="full-width"
           style="font-size: 12px"
         >
-          <q-icon :name="`img:${icon}`" class="q-mt-md q-mb-sm" />
+          <q-icon size="24px" :name="`img:${icon}`" class="q-mt-md q-mb-sm" />
           <div class="ellipsis">{{ label }}</div>
         </q-btn>
       </div>

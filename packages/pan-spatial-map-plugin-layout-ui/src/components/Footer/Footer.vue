@@ -1,5 +1,5 @@
 <template>
-  <component :is="resultSet.component" v-if="visible" @open="openFooter">
+  <component :is="resultSet.component" @open="openFooter">
     <q-btn
       v-for="widgetToBlock in data"
       :key="widgetToBlock.id"
@@ -12,12 +12,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { MapDocumentMixin } from '@mapgis/pan-spatial-map-store'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import { LayoutWidgetToBlock } from '../types/widget-to-block'
 
 @Component({ name: 'MpFooter' })
-export default class MpFooter extends Mixins(MapDocumentMixin) {
+export default class MpFooter extends Vue {
   @Prop(Function) openFooter!: Function
 
   @Prop(Function) closeFooter!: Function
@@ -38,17 +37,9 @@ export default class MpFooter extends Mixins(MapDocumentMixin) {
   })
   readonly resultSet!: object
 
-  private visible = false
-
-  @Watch('map', { immediate: true })
-  mapLoaded(map: unknown) {
-    if (map) {
-      this.visible = true
-    }
-  }
-
   private handleClick(widgetToBlock: LayoutWidgetToBlock) {
-    this.closeAll()
+    if (!widgetToBlock.info.props || !widgetToBlock.info.props.noUI)
+      this.closeAll()
     this.toggleWidget(widgetToBlock.info)
   }
 

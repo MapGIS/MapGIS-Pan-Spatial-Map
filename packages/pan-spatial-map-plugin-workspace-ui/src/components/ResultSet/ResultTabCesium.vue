@@ -148,7 +148,10 @@ export default class ResultTabCesium extends Mixins(MapDocumentMixin) {
         this.entityNames.push(name)
         cesiumUtilInstance.appendPolygon(
           name,
-          coords.join(',').split(','),
+          coords
+            .join(',')
+            .split(',')
+            .map(Number),
           fillColor,
           fillOutlineColor
         )

@@ -1,80 +1,22 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component } from 'vue-property-decorator'
 import resultSetOperInstance, {
   IResultSetColumn,
   ResultSetColumnOper,
   IResultSetCategory
 } from '../result-set/result-set'
-import dataCatalogInstance from '../data-catalog/data-catalog'
-import queryFeaturesInstance from '../service/query-features'
-import systemConfigInstance from '../config/system'
 
 @Component({})
 export default class ResultSetMixin extends Vue {
   private readonly resultSetOper = resultSetOperInstance
 
-  private readonly dataCatalog = dataCatalogInstance
-
-  created() {
-    this.dataCatalog.init()
-  }
-
-  public get checkedLayerIds() {
-    return this.dataCatalog.checkedLayerIds
-  }
-
-  public get systemConfig() {
-    return systemConfigInstance.config
-  }
-
-  @Watch('checkedLayerIds')
-  public checkedLayersChanged() {
-    const arr = this.dataCatalog.getCheckedLayers()
-    arr.forEach(async ({ id, ip, port, label, name }) => {
-      let category = this.categories.find(x => x.id === id)
-      if (!category) {
-        const categoryInfo: IResultSetCategory = {
-          id,
-          ip: ip || this.systemConfig.ip,
-          port: Number(port || this.systemConfig.port),
-          label,
-          docName: name,
-          tables: []
-        }
-        const data = await queryFeaturesInstance.getDocInfo({
-          protocol: 'http',
-          ip: categoryInfo.ip,
-          port: categoryInfo.port!.toString(),
-          serverName: categoryInfo.docName!
-        })
-        if (data) {
-          const {
-            MapInfos: [mapInfo]
-          } = data
-          if (mapInfo.CatalogLayer) {
-            const { CatalogLayer } = mapInfo
-            const layerIndexs = queryFeaturesInstance
-              .getVectorIndex(CatalogLayer)
-              .join(',')
-            queryFeaturesInstance
-              .getVectorByIndex(layerIndexs, CatalogLayer)
-              .forEach(layer => {
-                categoryInfo.tables!.push({
-                  label: layer.LayerName!,
-                  layerIndex: layer.layerIndex
-                })
-              })
-          }
-        }
-        category = this.addCategory(categoryInfo)
-        this.currentCategoryId = category.id
-      }
-    })
-  }
-
-  // #region 方法 addCategory[添加分类信息] activeTable[激活表格] createColumn[创建表头项]
+  // #region 方法 addCategory[添加分类信息] removeCategory[移除分类信息] activeTable[激活表格] createColumn[创建表头项]
   public addCategory(info: IResultSetCategory) {
     return this.resultSetOper.addCategory(info)
+  }
+
+  public removeCategory(info: IResultSetCategory) {
+    this.resultSetOper.removeCategory(info)
   }
 
   public activeTable(categoryId: string, tableId: string) {

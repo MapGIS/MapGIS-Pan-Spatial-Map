@@ -47,7 +47,8 @@ export {
   FeatureIGS,
   GeoCodeFeature,
   ESGeoCodeFeatures,
-  LayerInfoQueryParam
+  LayerInfoQueryParam,
+  ExportMarkersToFileInstance
 } from './service'
 
 export {

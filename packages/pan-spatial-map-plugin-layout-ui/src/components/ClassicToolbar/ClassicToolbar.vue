@@ -9,6 +9,7 @@
         class="bg-title text-title row items-center no-wrap rounded-borders "
       >
         <q-toolbar
+          v-if="componentWidgets.length"
           class="shadow-2 col q-px-none rounded-borders"
           style="min-height: 36px; height: 36px"
         >
@@ -33,7 +34,14 @@
               <q-separator dark vertical :key="`${widgetToBlock.id} + '0'`" />
             </template>
 
-            <q-btn round dense flat icon="more_vert" @click="handleShowMore">
+            <q-btn
+              v-if="componentWidgets.length > maxIcon"
+              round
+              dense
+              flat
+              icon="more_vert"
+              @click="handleShowMore"
+            >
               <q-tooltip>更多</q-tooltip>
             </q-btn>
           </div>
@@ -145,7 +153,7 @@ export default class MpClassicToolbar extends Vue {
     }[] = []
     widgets.forEach(widgetToBlock => {
       const { props = {} } = widgetToBlock
-      const { group = 'default' } = props as Record<string, any>
+      const { group = '未分组' } = props as Record<string, any>
       let item = items.find(item => item.group === group)
       if (!item) {
         item = {
@@ -161,7 +169,8 @@ export default class MpClassicToolbar extends Vue {
 
   private handleClick(widgetToBlock: LayoutWidgetToBlock) {
     this.showMore = false
-    this.closeAll()
+    if (!widgetToBlock.info.props || !widgetToBlock.info.props.noUI)
+      this.closeAll()
     this.toggleWidget(widgetToBlock.info)
   }
 

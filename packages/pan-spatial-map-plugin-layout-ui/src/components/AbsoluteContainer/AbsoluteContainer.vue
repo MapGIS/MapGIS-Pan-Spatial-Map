@@ -83,7 +83,8 @@ export default class MpAbsoluteContainer extends Vue {
   }
 
   private handleClick(widgetToBlock: LayoutWidgetToBlock) {
-    this.closeAll()
+    if (!widgetToBlock.info.props || !widgetToBlock.info.props.noUI)
+      this.closeAll()
     this.toggleWidget(widgetToBlock.info)
   }
 

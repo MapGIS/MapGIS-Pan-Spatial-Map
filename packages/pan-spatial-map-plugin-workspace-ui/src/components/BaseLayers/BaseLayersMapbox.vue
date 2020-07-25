@@ -9,7 +9,6 @@
       :baseURL="layer.baseURL"
       :token="layer.token"
       :before="getBeforeLayerId()"
-      :crs="crs"
     />
     <mapbox-igs-wmts-layer
       v-for="layer in wmtsLayers"
@@ -21,9 +20,7 @@
       :port="layer.port"
       :wmtsLayer="layer.serverName"
       :tileMatrixSet="getWmtsInfo(layer)"
-      :zoomOffset="1"
       :before="getBeforeLayerId()"
-      :crs="crs"
     />
     <mapbox-igs-tile-layer
       v-for="layer in tileLayers"
@@ -32,12 +29,10 @@
       :layerId="layer.id"
       :sourceId="layer.id"
       :url="layer.url"
-      :zoomOffset="1"
       :ip="layer.ip"
       :port="layer.port"
       :serverName="layer.serverName"
       :before="getBeforeLayerId()"
-      :crs="crs"
     />
     <mapbox-igs-doc-layer
       v-for="layer in docLayers"
@@ -50,7 +45,6 @@
       :port="layer.port"
       :serverName="layer.serverName"
       :before="getBeforeLayerId()"
-      :crs="crs"
     />
     <mapbox-arcgis-layer
       v-for="layer in arcgisLayers"
@@ -58,9 +52,9 @@
       :layer="layer"
       :layerId="layer.id"
       :sourceId="layer.id"
+      :layerType="layer.layerType"
       :url="layer.url"
       :before="getBeforeLayerId()"
-      :crs="crs"
     />
     <mapbox-google-layer
       v-for="layer in googleLayers"
@@ -71,13 +65,12 @@
       :url="layer.url"
       :layerType="layer.layerType"
       :before="getBeforeLayerId()"
-      :crs="crs"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Inject, Watch } from 'vue-property-decorator'
+import { Component, Mixins, Inject, Watch } from 'vue-property-decorator'
 import {
   BaseLayersMixin,
   queryOGCInfoInstance
@@ -104,8 +97,6 @@ const {
 })
 export default class BaseLayersMapbox extends Mixins(BaseLayersMixin) {
   @Inject('map') map: any
-
-  @Prop(String) readonly crs!: string
 
   @Watch('defaultBaseLayerId')
   getBeforeLayerId() {
