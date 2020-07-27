@@ -10,9 +10,11 @@
     "packages/*"
   ],
   "scripts": {
-    "serve": "concurrently \"yarn mock\" \"yarn dev\"",
     "dev": "cd packages/pan-spatial-map-framework && quasar dev",
+    "dev:mock": "concurrently \"yarn mock\" \"yarn dev\"",
     "build": "cd packages/pan-spatial-map-framework && quasar build",
+    "serve": "cd packages/pan-spatial-map-framework && quasar serve dist/spa --history",
+    "serve:mock": "concurrently \"yarn mock\" \"yarn serve\"",
     "postinstall": "yarn invoke",
     "invoke": "yarn invoke-theme && yarn invoke-layout && yarn invoke-auth && yarn invoke-workspace && yarn invoke-mapeditor",
     "invoke-theme": "cd packages/pan-spatial-map-framework && quasar ext invoke @mapgis/pan-spatial-map-plugin-theme",

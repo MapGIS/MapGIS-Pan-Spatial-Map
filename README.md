@@ -4,6 +4,10 @@
 MapGIS全空间一张图（MapGIS Pan-Spatial Map）是以全空间信息模型为基础，实现空中、地表、地上以及地下数据的二三维一体化管理、综合展示以及专业应用，为全行业一张图开发提供支撑框架。
 </div>
 
+## 线上文档
+
+[文档](https://mapgis.github.io/mapgis-pan-spatial-map-docs/zh)
+
 ## 特性
 
 - 🐒 **工程**：开箱即用的工程配置，支持 ES6+、TypeScript、样式方案（Sass）等
@@ -46,19 +50,28 @@ MapGIS全空间一张图（MapGIS Pan-Spatial Map）是以全空间信息模型�
 yarn install
 ```
 
-### 运行项目
+### 运行项目（开发）
 
 ```bash
 # develop
 yarn dev
-# mock & develop
-yarn serve
+# develop with mock
+yarn dev:mock
 ```
 
 ### 打包项目
 
 ```bash
 yarn build
+```
+
+### 运行项目（正式）
+
+```bash
+# start an server on App's distributables
+yarn serve
+# start an server on App's distributables with mock
+yarn serve:mock
 ```
 
 ### 安装插件（开发扩展中）
