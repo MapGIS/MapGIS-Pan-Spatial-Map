@@ -28,8 +28,8 @@ MapGIS全空间一张图（MapGIS Pan-Spatial Map）是以全空间信息模型�
    |── pan-spatial-map-plugin-workspace-ui    # 工作空间插件UI
    |── pan-spatial-map-store                  # 全局上下文环境&存储结构
 |── .editorconfig                             # editor配置
-├── .eslintignore                             # ESlint忽略路径
-├── .eslintrc.js                              # ESlint配置
+|── .eslintignore                             # ESlint忽略路径
+|── .eslintrc.js                              # ESlint配置
 |── .gitignore                                # GIT忽略路径
 |── .prettierrc                               # 代码格式化配置
 |── package.json                              # npm脚本和依赖项

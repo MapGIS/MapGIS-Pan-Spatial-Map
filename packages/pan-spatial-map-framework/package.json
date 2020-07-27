@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@quasar/app": "^1.6.2",
-    "@quasar/cli": "^1.0.7",
+    "@quasar/cli": "1.0.0",
     "@types/node": "^10.17.15"
   },
   "engines": {

@@ -37,7 +37,7 @@
     {
       "id": "MapTypeSwitch",
       "icon": "statics/plugins/workspace/images/maptypeswitch.svg",
-      "label": "全屏",
+      "label": "二三维切换",
       "type": "Component",
       "component": "MpMapTypeSwitch",
       "props": {}
