@@ -7,4 +7,4 @@
  *              webpack-theme-color-replacer 默认规则无法达到我们的要求时使用。
  */
 const cssResolve = require('./resolve.config')
-module.exports = {cssResolve}
+module.exports = { cssResolve }

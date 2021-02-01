@@ -8,7 +8,7 @@ const options = {
     {
       path: '/login',
       name: '登录页',
-      component: () => import('@/pages/login')
+      component: () => import('@/pages/login'),
     },
     {
       path: '*',
@@ -30,9 +30,9 @@ const options = {
           path: 'demo',
           name: '演示页',
           meta: {
-            icon: 'file-ppt'
+            icon: 'file-ppt',
           },
-          component: () => import('@/pages/demo')
+          component: () => import('@/pages/demo'),
         },
         {
           path: 'parent1',
@@ -46,14 +46,14 @@ const options = {
               path: 'demo1',
               name: '演示页面1',
               component: () => import('@/pages/demo'),
-            }
-          ]
+            },
+          ],
         },
         {
           path: 'parent2',
           name: '父级路由2',
           meta: {
-            icon: 'form'
+            icon: 'form',
           },
           component: PageView,
           children: [
@@ -61,8 +61,8 @@ const options = {
               path: 'demo2',
               name: '演示页面2',
               component: () => import('@/pages/demo'),
-            }
-          ]
+            },
+          ],
         },
         {
           path: 'exception',
@@ -75,19 +75,19 @@ const options = {
             {
               path: '404',
               name: 'Exp404',
-              component: () => import('@/pages/exception/404')
+              component: () => import('@/pages/exception/404'),
             },
             {
               path: '403',
               name: 'Exp403',
-              component: () => import('@/pages/exception/403')
+              component: () => import('@/pages/exception/403'),
             },
             {
               path: '500',
               name: 'Exp500',
-              component: () => import('@/pages/exception/500')
-            }
-          ]
+              component: () => import('@/pages/exception/500'),
+            },
+          ],
         },
         {
           name: '验权页面',
@@ -96,14 +96,14 @@ const options = {
             icon: 'file-ppt',
             authority: {
               permission: 'form',
-              role: 'manager'
+              role: 'manager',
             },
-            component: () => import('@/pages/demo')
-          }
-        }
-      ]
-    }
-  ]
+            component: () => import('@/pages/demo'),
+          },
+        },
+      ],
+    },
+  ],
 }
 
 export default options

@@ -7,6 +7,6 @@ const Plugins = {
     Vue.use(VueI18nPlugin)
     Vue.use(AuthorityPlugin)
     Vue.use(TabsPagePlugin)
-  }
+  },
 }
 export default Plugins

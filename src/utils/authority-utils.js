@@ -11,7 +11,13 @@ function hasPermission(authority, permissions) {
   } else if (typeof authority === 'object') {
     required = authority.permission
   }
-  return required === '*' || (permissions && permissions.findIndex(item => item === required || item.id === required) !== -1)
+  return (
+    required === '*' ||
+    (permissions &&
+      permissions.findIndex(
+        (item) => item === required || item.id === required
+      ) !== -1)
+  )
 }
 
 /**
@@ -36,12 +42,19 @@ function hasRole(authority, roles) {
 function hasAnyRole(required, roles) {
   if (!required) {
     return false
-  } else if(Array.isArray(required)) {
-    return roles.findIndex(role => {
-      return required.findIndex(item => item === role || item === role.id) !== -1
-    }) !== -1
+  } else if (Array.isArray(required)) {
+    return (
+      roles.findIndex((role) => {
+        return (
+          required.findIndex((item) => item === role || item === role.id) !== -1
+        )
+      }) !== -1
+    )
   } else {
-    return roles.findIndex(role => role === required || role.id === required) !== -1
+    return (
+      roles.findIndex((role) => role === required || role.id === required) !==
+      -1
+    )
   }
 }
 
@@ -69,7 +82,7 @@ function hasAuthority(route, permissions, roles) {
  * @param roles
  */
 function filterMenu(menuData, permissions, roles) {
-  return menuData.filter(menu => {
+  return menuData.filter((menu) => {
     if (menu.meta && menu.meta.invisible === undefined) {
       if (!hasAuthority(menu, permissions, roles)) {
         return false
@@ -82,4 +95,4 @@ function filterMenu(menuData, permissions, roles) {
   })
 }
 
-export {filterMenu, hasAuthority}
+export { filterMenu, hasAuthority }

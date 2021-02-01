@@ -1,8 +1,8 @@
-import {isDef, isRegExp, remove} from '@/utils/util'
+import { isDef, isRegExp, remove } from '@/utils/util'
 
 const patternTypes = [String, RegExp, Array]
 
-function matches (pattern, name) {
+function matches(pattern, name) {
   if (Array.isArray(pattern)) {
     if (pattern.indexOf(name) > -1) {
       return true
@@ -23,18 +23,19 @@ function matches (pattern, name) {
   return false
 }
 
-function getComponentName (opts) {
+function getComponentName(opts) {
   return opts && (opts.Ctor.options.name || opts.tag)
 }
 
-function getComponentKey (vnode) {
-  const {componentOptions, key} = vnode
+function getComponentKey(vnode) {
+  const { componentOptions, key } = vnode
   return key == null
-    ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
+    ? componentOptions.Ctor.cid +
+        (componentOptions.tag ? `::${componentOptions.tag}` : '')
     : key + componentOptions.Ctor.cid
 }
 
-function getFirstComponentChild (children) {
+function getFirstComponentChild(children) {
   if (Array.isArray(children)) {
     for (let i = 0; i < children.length; i++) {
       const c = children[i]
@@ -45,7 +46,7 @@ function getFirstComponentChild (children) {
   }
 }
 
-function pruneCache (keepAliveInstance, filter) {
+function pruneCache(keepAliveInstance, filter) {
   const { cache, keys, _vnode } = keepAliveInstance
   for (const key in cache) {
     const cachedNode = cache[key]
@@ -68,7 +69,7 @@ function pruneCacheEntry2(cache, key, keys) {
   remove(keys, key)
 }
 
-function pruneCacheEntry (cache, key, keys, current) {
+function pruneCacheEntry(cache, key, keys, current) {
   const cached = cache[key]
   if (cached && (!current || cached.tag !== current.tag)) {
     cached.componentInstance.$destroy()
@@ -89,18 +90,18 @@ export default {
     exclude: patternTypes,
     excludeKeys: patternTypes,
     max: [String, Number],
-    clearCaches: Array
+    clearCaches: Array,
   },
   watch: {
-    clearCaches: function(val) {
+    clearCaches: function (val) {
       if (val && val.length > 0) {
-        const {cache, keys} = this
-        val.forEach(key => {
+        const { cache, keys } = this
+        val.forEach((key) => {
           pruneCacheEntry2(cache, key, keys)
         })
         this.$emit('clear', [])
       }
-    }
+    },
   },
 
   created() {
@@ -108,25 +109,25 @@ export default {
     this.keys = []
   },
 
-  destroyed () {
+  destroyed() {
     for (const key in this.cache) {
       pruneCacheEntry(this.cache, key, this.keys)
     }
   },
 
-  mounted () {
-    this.$watch('include', val => {
+  mounted() {
+    this.$watch('include', (val) => {
       pruneCache(this, (name) => matches(val, name))
     })
-    this.$watch('exclude', val => {
+    this.$watch('exclude', (val) => {
       pruneCache(this, (name) => !matches(val, name))
     })
-    this.$watch('excludeKeys', val => {
+    this.$watch('excludeKeys', (val) => {
       pruneCache(this, (name, key) => !matches(val, key))
     })
   },
 
-  render () {
+  render() {
     const slot = this.$slots.default
     const vnode = getFirstComponentChild(slot)
     const componentOptions = vnode && vnode.componentOptions
@@ -146,11 +147,13 @@ export default {
       }
 
       const { cache, keys } = this
-      const key = vnode.key == null
-        // same constructor may get registered as different local components
-        // so cid alone is not enough (#3269)
-        ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
-        : vnode.key + componentOptions.Ctor.cid
+      const key =
+        vnode.key == null
+          ? // same constructor may get registered as different local components
+            // so cid alone is not enough (#3269)
+            componentOptions.Ctor.cid +
+            (componentOptions.tag ? `::${componentOptions.tag}` : '')
+          : vnode.key + componentOptions.Ctor.cid
       if (cache[key]) {
         vnode.componentInstance = cache[key].componentInstance
         // make current key freshest
@@ -168,5 +171,5 @@ export default {
       vnode.data.keepAlive = true
     }
     return vnode || (slot && slot[0])
-  }
+  },
 }

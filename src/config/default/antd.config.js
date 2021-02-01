@@ -6,14 +6,14 @@ const ANTD = {
     success: '#52c41a',
     error: '#f5222d',
     light: {
-      menuColors: ['#000c17', '#001529', '#002140']
+      menuColors: ['#000c17', '#001529', '#002140'],
     },
     dark: {
-      menuColors: ['#000c17', '#001529', '#002140']
+      menuColors: ['#000c17', '#001529', '#002140'],
     },
     night: {
       menuColors: ['#151515', '#1f1f1f', '#1e1e1e'],
-    }
+    },
   },
   theme: {
     dark: {
@@ -78,7 +78,7 @@ const ANTD = {
       'menu-dark-highlight-color': '#fefefe',
       'menu-dark-arrow-color': '#fefefe',
       'btn-primary-color': '#141414',
-    }
-  }
+    },
+  },
 }
 module.exports = ANTD

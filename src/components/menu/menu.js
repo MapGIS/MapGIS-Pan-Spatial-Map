@@ -34,56 +34,56 @@
 import Menu from 'ant-design-vue/es/menu'
 import Icon from 'ant-design-vue/es/icon'
 import fastEqual from 'fast-deep-equal'
-import {getI18nKey} from '@/utils/routerUtil'
+import { getI18nKey } from '@/utils/routerUtil'
 
-const {Item, SubMenu} = Menu
+const { Item, SubMenu } = Menu
 
 export default {
   name: 'IMenu',
   props: {
     options: {
       type: Array,
-      required: true
+      required: true,
     },
     theme: {
       type: String,
       required: false,
-      default: 'dark'
+      default: 'dark',
     },
     mode: {
       type: String,
       required: false,
-      default: 'inline'
+      default: 'inline',
     },
     collapsed: {
       type: Boolean,
       required: false,
-      default: false
+      default: false,
     },
     i18n: Object,
-    openKeys: Array
+    openKeys: Array,
   },
-  data () {
+  data() {
     return {
       selectedKeys: [],
       sOpenKeys: [],
-      cachedOpenKeys: []
+      cachedOpenKeys: [],
     }
   },
   computed: {
     menuTheme() {
       return this.theme == 'light' ? this.theme : 'dark'
-    }
+    },
   },
-  created () {
+  created() {
     this.updateMenu()
     if (this.options.length > 0 && !this.options[0].fullPath) {
       this.formatOptions(this.options, '')
     }
     // 自定义国际化配置
-    if(this.i18n && this.i18n.messages) {
+    if (this.i18n && this.i18n.messages) {
       const messages = this.i18n.messages
-      Object.keys(messages).forEach(key => {
+      Object.keys(messages).forEach((key) => {
         this.$i18n.mergeLocaleMessage(key, messages[key])
       })
     }
@@ -95,14 +95,14 @@ export default {
       }
     },
     i18n(val) {
-      if(val && val.messages) {
+      if (val && val.messages) {
         const messages = this.i18n.messages
-        Object.keys(messages).forEach(key => {
+        Object.keys(messages).forEach((key) => {
           this.$i18n.mergeLocaleMessage(key, messages[key])
         })
       }
     },
-    collapsed (val) {
+    collapsed(val) {
       if (val) {
         this.cachedOpenKeys = this.sOpenKeys
         this.sOpenKeys = []
@@ -110,60 +110,81 @@ export default {
         this.sOpenKeys = this.cachedOpenKeys
       }
     },
-    '$route': function () {
+    $route: function () {
       this.updateMenu()
     },
     sOpenKeys(val) {
       this.$emit('openChange', val)
       this.$emit('update:openKeys', val)
-    }
+    },
   },
   methods: {
     renderIcon: function (h, icon, key) {
       if (this.$scopedSlots.icon && icon && icon !== 'none') {
-        const vnodes = this.$scopedSlots.icon({icon, key})
-        vnodes.forEach(vnode => {
+        const vnodes = this.$scopedSlots.icon({ icon, key })
+        vnodes.forEach((vnode) => {
           vnode.data.class = vnode.data.class ? vnode.data.class : []
           vnode.data.class.push('anticon')
         })
         return vnodes
       }
-      return !icon || icon == 'none' ? null : h(Icon, {props: {type:  icon}})
+      return !icon || icon == 'none' ? null : h(Icon, { props: { type: icon } })
     },
     renderMenuItem: function (h, menu) {
       let tag = 'router-link'
-      let config = {props: {to: menu.fullPath}, attrs: {style: 'overflow:hidden;white-space:normal;text-overflow:clip;'}}
+      let config = {
+        props: { to: menu.fullPath },
+        attrs: {
+          style: 'overflow:hidden;white-space:normal;text-overflow:clip;',
+        },
+      }
       if (menu.meta && menu.meta.link) {
         tag = 'a'
-        config = {attrs: {style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: menu.meta.link, target: '_blank'}}
+        config = {
+          attrs: {
+            style: 'overflow:hidden;white-space:normal;text-overflow:clip;',
+            href: menu.meta.link,
+            target: '_blank',
+          },
+        }
       }
-      return h(
-        Item, {key: menu.fullPath},
-        [
-          h(tag, config,
-            [
-              this.renderIcon(h, menu.meta ? menu.meta.icon : 'none', menu.fullPath),
-              this.$t(getI18nKey(menu.fullPath))
-            ]
-          )
-        ]
-      )
+      return h(Item, { key: menu.fullPath }, [
+        h(tag, config, [
+          this.renderIcon(
+            h,
+            menu.meta ? menu.meta.icon : 'none',
+            menu.fullPath
+          ),
+          this.$t(getI18nKey(menu.fullPath)),
+        ]),
+      ])
     },
     renderSubMenu: function (h, menu) {
       let this_ = this
-      let subItem = [h('span', {slot: 'title', attrs: {style: 'overflow:hidden;white-space:normal;text-overflow:clip;'}},
-        [
-          this.renderIcon(h, menu.meta ? menu.meta.icon : 'none', menu.fullPath),
-          this.$t(getI18nKey(menu.fullPath))
-        ]
-      )]
+      let subItem = [
+        h(
+          'span',
+          {
+            slot: 'title',
+            attrs: {
+              style: 'overflow:hidden;white-space:normal;text-overflow:clip;',
+            },
+          },
+          [
+            this.renderIcon(
+              h,
+              menu.meta ? menu.meta.icon : 'none',
+              menu.fullPath
+            ),
+            this.$t(getI18nKey(menu.fullPath)),
+          ]
+        ),
+      ]
       let itemArr = []
       menu.children.forEach(function (item) {
         itemArr.push(this_.renderItem(h, item))
       })
-      return h(SubMenu, {key: menu.fullPath},
-        subItem.concat(itemArr)
-      )
+      return h(SubMenu, { key: menu.fullPath }, subItem.concat(itemArr))
     },
     renderItem: function (h, menu) {
       const meta = menu.meta
@@ -179,7 +200,9 @@ export default {
             }
           }
         }
-        return (menu.children && renderChildren) ? this.renderSubMenu(h, menu) : this.renderMenuItem(h, menu)
+        return menu.children && renderChildren
+          ? this.renderSubMenu(h, menu)
+          : this.renderMenuItem(h, menu)
       }
     },
     renderMenu: function (h, menuTree) {
@@ -191,7 +214,7 @@ export default {
       return menuArr
     },
     formatOptions(options, parentPath) {
-      options.forEach(route => {
+      options.forEach((route) => {
         let isFullPath = route.path.substring(0, 1) == '/'
         route.fullPath = isFullPath ? route.path : parentPath + '/' + route.path
         if (route.children) {
@@ -199,20 +222,24 @@ export default {
         }
       })
     },
-    updateMenu () {
-      const matchedRoutes = this.$route.matched.filter(item => item.path !== '')
+    updateMenu() {
+      const matchedRoutes = this.$route.matched.filter(
+        (item) => item.path !== ''
+      )
       this.selectedKeys = this.getSelectedKey(this.$route)
-      let openKeys = matchedRoutes.map(item => item.path)
-      openKeys = openKeys.slice(0, openKeys.length -1)
+      let openKeys = matchedRoutes.map((item) => item.path)
+      openKeys = openKeys.slice(0, openKeys.length - 1)
       if (!fastEqual(openKeys, this.sOpenKeys)) {
-        this.collapsed || this.mode === 'horizontal' ? this.cachedOpenKeys = openKeys : this.sOpenKeys = openKeys
+        this.collapsed || this.mode === 'horizontal'
+          ? (this.cachedOpenKeys = openKeys)
+          : (this.sOpenKeys = openKeys)
       }
     },
-    getSelectedKey (route) {
-      return route.matched.map(item => item.path)
-    }
+    getSelectedKey(route) {
+      return route.matched.map((item) => item.path)
+    },
   },
-  render (h) {
+  render(h) {
     return h(
       Menu,
       {
@@ -220,7 +247,7 @@ export default {
           theme: this.menuTheme,
           mode: this.$props.mode,
           selectedKeys: this.selectedKeys,
-          openKeys: this.openKeys ? this.openKeys : this.sOpenKeys
+          openKeys: this.openKeys ? this.openKeys : this.sOpenKeys,
         },
         on: {
           'update:openKeys': (val) => {
@@ -229,9 +256,10 @@ export default {
           click: (obj) => {
             obj.selectedKeys = [obj.key]
             this.$emit('select', obj)
-          }
-        }
-      }, this.renderMenu(h, this.options)
+          },
+        },
+      },
+      this.renderMenu(h, this.options)
     )
-  }
+  },
 }

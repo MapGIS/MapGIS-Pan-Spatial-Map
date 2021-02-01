@@ -1,5 +1,5 @@
-import {LOGIN, ROUTES} from '@/services/api'
-import {request, METHOD, removeAuthorization} from '@/utils/request'
+import { LOGIN, ROUTES } from '@/services/api'
+import { request, METHOD, removeAuthorization } from '@/utils/request'
 
 /**
  * 登录服务
@@ -10,7 +10,7 @@ import {request, METHOD, removeAuthorization} from '@/utils/request'
 export async function login(name, password) {
   return request(LOGIN, METHOD.POST, {
     name: name,
-    password: password
+    password: password,
   })
 }
 
@@ -30,5 +30,5 @@ export function logout() {
 export default {
   login,
   logout,
-  getRoutesConfig
+  getRoutesConfig,
 }
