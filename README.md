@@ -1,65 +1,82 @@
-简体中文 | [English](./README.en-US.md)
-
-<h1 align="center">Vue Antd Admin</h1>
+<h1 align="center">MapGIS Pan-Spatial Map</h1>
 
 <div align="center">
-  
-[Ant Design Pro](https://github.com/ant-design/ant-design-pro) 的 Vue 实现版本  
-开箱即用的中后台前端/设计解决方案
-
-[![MIT](https://img.shields.io/github/license/iczer/vue-antd-admin)](https://github.com/iczer/vue-antd-admin/blob/master/LICENSE)
-[![Dependence](https://img.shields.io/david/iczer/vue-antd-admin)](https://david-dm.org/iczer/vue-antd-admin)
-[![DevDependencies](https://img.shields.io/david/dev/iczer/vue-antd-admin)](https://david-dm.org/iczer/vue-antd-admin?type=dev)
-[![Release](https://img.shields.io/github/v/release/iczer/vue-antd-admin)](https://github.com/iczer/vue-antd-admin/releases/latest)
-![image](./src/assets/img/preview.png)
-
-多种主题模式可选：  
-![image](./src/assets/img/preview-nine.png)
-
+MapGIS全空间一张图（MapGIS Pan-Spatial Map）是以全空间信息模型为基础，实现空中、地表、地上以及地下数据的二三维一体化管理、综合展示以及专业应用，为全行业一张图开发提供支撑框架。
 </div>
 
-- 预览地址：https://iczer.gitee.io/vue-antd-admin
-- 使用文档：https://iczer.gitee.io/vue-antd-admin-docs
-- 常见问题：https://iczer.gitee.io/vue-antd-admin-docs/start/faq.html
-- 国内镜像：https://gitee.com/iczer/vue-antd-admin
+## 线上文档
 
-## 浏览器支持
+[文档](https://mapgis.github.io/mapgis-pan-spatial-map-docs/zh)
 
-现代浏览器及 IE10
+## 特性
 
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| IE10, Edge                                                                                                                                                                                                      | last 2 versions                                                                                                                                                                                                   | last 2 versions                                                                                                                                                                                               | last 2 versions                                                                                                                                                                                               | last 2 versions                                                                                                                                                                                           |
+- 🐒 **工程**：开箱即用的工程配置，支持 ES6+、TypeScript、样式方案（Sass）等
+- 🐌 **插件体系**：提供插件机制，可以扩展框架的核心功能
+- 🐘 **TypeScript**：默认使用 TypeScript
 
-## 使用
+## 目录结构
 
-### clone
+```text
+|── packages
+   |── pan-spatial-map-framework              # 框架应用
+   |── pan-spatial-map-mock-server            # mock
+   |── pan-spatial-map-plugin-launch          # 应用启动插件
+   |── pan-spatial-map-plugin-auth            # 授权插件
+   |── pan-spatial-map-plugin-theme           # 主题插件
+   |── pan-spatial-map-plugin-workspace       # 工作空间插件
+   |── pan-spatial-map-plugin-mapeditor       # 地图编辑器插件
+   |── pan-spatial-map-store                  # 全局上下文环境&存储结构
+|── .editorconfig                             # editor配置
+|── .eslintignore                             # ESlint忽略路径
+|── .eslintrc.js                              # ESlint配置
+|── .gitignore                                # GIT忽略路径
+|── .prettierrc                               # 代码格式化配置
+|── package.json                              # npm脚本和依赖项
+|── README.md                                 # 您的网站/应用程序的自述文件
+|── tsconfig.json                             # ts配置
+```
+
+## 地址
+
+- **主库**: https://github.com/MapGIS/MapGIS-Pan-Spatial-Map
+- **码云**: https://gitee.com/osmapgis/MapGIS-Pan-Spatial-Map
+
+## 开始
+
+### 安装依赖
 
 ```bash
-$ git clone https://github.com/iczer/vue-antd-admin.git
+yarn install
 ```
 
-### yarn
+### 运行项目（开发）
 
 ```bash
-$ yarn install
-$ yarn serve
+# develop
+yarn dev
+# develop with mock
+yarn dev:mock
 ```
 
-### or npm
+### 打包项目
 
+```bash
+yarn build
 ```
-$ npm install
-$ npm run serve
+
+### 运行项目（正式）
+
+```bash
+# start an server on App's distributables
+yarn serve
+# start an server on App's distributables with mock
+yarn serve:mock
 ```
 
-更多信息参考 [使用文档](https://iczer.gitee.io/vue-antd-admin-docs)
+## 在线服务
 
-## 参与贡献
+[问答社区-云听](http://www.smaryun.com/cloudlisten/index.php)
 
-我们非常欢迎你的贡献，你可以通过以下方式和我们一起共建 :star2:：
+## 在线资源
 
-- 在你的公司或个人项目中使用 Vue Antd Admin。
-- 通过 [Issue](https://github.com/iczer/vue-antd-admin/issues) 报告:bug:或进行咨询。
-- 提交 [Pull Request](https://github.com/iczer/vue-antd-admin/pulls) 改进 Admin 的代码。
-- 加入社群，与小伙伴们一同交流心得。QQ 群：812277510、610090280（已满）
+[MapGIS-Pan-Spatial-Map](http://www.smaryun.com/dev/resource_center.html#/type27/tag204/page1)
