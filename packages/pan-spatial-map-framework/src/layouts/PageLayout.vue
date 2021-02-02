@@ -40,13 +40,13 @@ export default {
   data() {
     return {
       page: {},
-      pageHeaderHeight: 0,
+      pageHeaderHeight: 0
     }
   },
   watch: {
     $route() {
       this.page = this.$route.meta.page
-    },
+    }
   },
   updated() {
     if (!this._inactive) {
@@ -74,7 +74,7 @@ export default {
       'multiPage',
       'pageMinHeight',
       'pageWidth',
-      'customTitles',
+      'customTitles'
     ]),
     pageTitle() {
       let pageTitle = this.page && this.page.title
@@ -94,7 +94,7 @@ export default {
       let breadcrumb = page && page.breadcrumb
       if (breadcrumb) {
         let i18nBreadcrumb = []
-        breadcrumb.forEach((item) => {
+        breadcrumb.forEach(item => {
           i18nBreadcrumb.push(this.$t(item))
         })
         return i18nBreadcrumb
@@ -104,14 +104,14 @@ export default {
     },
     marginCorrect() {
       return this.multiPage ? 24 : 0
-    },
+    }
   },
   methods: {
     ...mapMutations('setting', ['correctPageMinHeight']),
     getRouteBreadcrumb() {
       let routes = this.$route.matched
       let breadcrumb = []
-      routes.forEach((route) => {
+      routes.forEach(route => {
         const path = route.path.length === 0 ? '/home' : route.path
         breadcrumb.push(this.$t(getI18nKey(path)))
       })
@@ -130,8 +130,8 @@ export default {
     ) {
       this.correctPageMinHeight(this.pageHeaderHeight - newHeight)
       this.pageHeaderHeight = newHeight
-    },
-  },
+    }
+  }
 }
 </script>
 

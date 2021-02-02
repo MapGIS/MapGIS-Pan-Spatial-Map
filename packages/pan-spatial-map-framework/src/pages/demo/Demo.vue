@@ -16,8 +16,8 @@ export default {
     ...mapState('setting', ['pageMinHeight']),
     desc() {
       return this.$t('description')
-    },
-  },
+    }
+  }
 }
 </script>
 

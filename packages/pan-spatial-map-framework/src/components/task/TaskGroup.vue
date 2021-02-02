@@ -28,7 +28,7 @@ const dragOptions = {
   animation: 150,
   ghostClass: 'dragable-ghost',
   chosenClass: 'dragable-chose',
-  dragClass: 'dragable-drag',
+  dragClass: 'dragable-drag'
 }
 
 export default {
@@ -37,14 +37,14 @@ export default {
   props: ['title', 'group'],
   data() {
     return {
-      dragOptions: { ...dragOptions, group: this.group },
+      dragOptions: { ...dragOptions, group: this.group }
     }
   },
   computed: {
     count() {
       return this.$slots.default.length
-    },
-  },
+    }
+  }
 }
 </script>
 

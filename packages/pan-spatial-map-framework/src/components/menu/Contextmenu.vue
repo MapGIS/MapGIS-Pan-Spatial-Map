@@ -20,13 +20,13 @@ export default {
     visible: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     itemList: {
       type: Array,
       required: true,
-      default: () => [],
-    },
+      default: () => []
+    }
   },
   data() {
     return {
@@ -34,16 +34,16 @@ export default {
       top: 0,
       target: null,
       meta: null,
-      selectedKeys: [],
+      selectedKeys: []
     }
   },
   computed: {
     style() {
       return {
         left: this.left + 'px',
-        top: this.top + 'px',
+        top: this.top + 'px'
       }
-    },
+    }
   },
   created() {
     window.addEventListener('click', this.closeMenu)
@@ -66,8 +66,8 @@ export default {
     handleClick({ key }) {
       this.$emit('select', key, this.target, this.meta)
       this.closeMenu()
-    },
-  },
+    }
+  }
 }
 </script>
 

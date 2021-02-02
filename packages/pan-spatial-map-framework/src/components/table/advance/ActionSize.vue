@@ -24,14 +24,14 @@ export default {
   inject: ['table'],
   data() {
     return {
-      selectedKeys: ['middle'],
+      selectedKeys: ['middle']
     }
   },
   methods: {
     onClick({ key }) {
       this.$emit('input', key)
-    },
-  },
+    }
+  }
 }
 </script>
 

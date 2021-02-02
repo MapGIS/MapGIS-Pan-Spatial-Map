@@ -70,7 +70,7 @@ export default {
   data() {
     return {
       loading: false,
-      show: false,
+      show: false
     }
   },
   computed: {},
@@ -84,8 +84,8 @@ export default {
       setTimeout(() => {
         this.loadding = false
       }, 1000)
-    },
-  },
+    }
+  }
 }
 </script>
 

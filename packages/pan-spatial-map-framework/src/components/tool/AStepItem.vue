@@ -15,8 +15,8 @@ const Group = {
       default: 'center',
       validator(value) {
         return ['left', 'center', 'right'].indexOf(value) != -1
-      },
-    },
+      }
+    }
   },
   render(h) {
     return h(
@@ -27,10 +27,10 @@ const Group = {
           'div',
           { attrs: { style: 'text-align: left; display: inline-block;' } },
           [this.$slots.default]
-        ),
+        )
       ]
     )
-  },
+  }
 }
 
 export default {
@@ -43,8 +43,8 @@ export default {
       if (link) {
         this.$router.push(link)
       }
-    },
-  },
+    }
+  }
 }
 </script>
 

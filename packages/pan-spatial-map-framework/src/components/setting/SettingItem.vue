@@ -8,7 +8,7 @@
 <script>
 export default {
   name: 'SettingItem',
-  props: ['title'],
+  props: ['title']
 }
 </script>
 

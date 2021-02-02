@@ -16,44 +16,44 @@ const Group = {
     multiple: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     defaultValues: {
       type: Array,
       required: false,
-      default: () => [],
-    },
+      default: () => []
+    }
   },
   data() {
     return {
       values: [],
-      options: [],
+      options: []
     }
   },
   provide() {
     return {
-      groupContext: this,
+      groupContext: this
     }
   },
   watch: {
-    values: function (value) {
+    values: function(value) {
       this.$emit('change', value)
       // // 此条件是为解决单选时，触发两次chang事件问题
       // if (!(newVal.length === 1 && oldVal.length === 1 && newVal[0] === oldVal[0])) {
       //   this.$emit('change', this.values)
       // }
-    },
+    }
   },
   methods: {
     handleChange(option) {
       if (!option.checked) {
         if (this.values.indexOf(option.value) > -1) {
-          this.values = this.values.filter((item) => item != option.value)
+          this.values = this.values.filter(item => item != option.value)
         }
       } else {
         if (!this.multiple) {
           this.values = [option.value]
-          this.options.forEach((item) => {
+          this.options.forEach(item => {
             if (item.value != option.value) {
               item.sChecked = false
             }
@@ -62,17 +62,17 @@ const Group = {
           this.values.push(option.value)
         }
       }
-    },
+    }
   },
   render(h) {
     return h(
       'div',
       {
-        attrs: { style: 'display: flex' },
+        attrs: { style: 'display: flex' }
       },
       [this.$slots.default]
     )
-  },
+  }
 }
 
 export default {
@@ -82,35 +82,35 @@ export default {
     checked: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     img: {
       type: String,
-      required: true,
+      required: true
     },
     value: {
-      required: true,
+      required: true
     },
-    title: String,
+    title: String
   },
   data() {
     return {
-      sChecked: this.initChecked(),
+      sChecked: this.initChecked()
     }
   },
   inject: ['groupContext'],
   watch: {
-    sChecked: function () {
+    sChecked: function() {
       const option = {
         value: this.value,
-        checked: this.sChecked,
+        checked: this.sChecked
       }
       this.$emit('change', option)
       const groupContext = this.groupContext
       if (groupContext) {
         groupContext.handleChange(option)
       }
-    },
+    }
   },
   created() {
     const groupContext = this.groupContext
@@ -137,8 +137,8 @@ export default {
       } else {
         return groupContext.defaultValues[0] == this.value
       }
-    },
-  },
+    }
+  }
 }
 </script>
 

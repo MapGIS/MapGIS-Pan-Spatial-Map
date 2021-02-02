@@ -3,7 +3,7 @@ const { cssResolve } = require('../config/replacer')
 function resolveCss(output, srcArr) {
   let regExps = []
   // 提取 resolve 配置中所有的正则配置
-  Object.keys(cssResolve).forEach((key) => {
+  Object.keys(cssResolve).forEach(key => {
     let isRegExp = false
     let reg = {}
     try {
@@ -22,7 +22,7 @@ function resolveCss(output, srcArr) {
 
   // 处理 css
   let outArr = []
-  srcArr.forEach((text) => {
+  srcArr.forEach(text => {
     // 转换为 css 对象
     let cssObj = parseCssObj(text)
     // 根据selector匹配配置，匹配成功，则按配置处理 css
@@ -81,9 +81,9 @@ function parseCssObj(cssText) {
   const ruleBody = cssText.substring(ruleIndex + 1, cssText.length - 1)
   const rules = ruleBody.split(';')
   css.rules = rules
-  css.toText = function () {
+  css.toText = function() {
     let body = ''
-    this.rules.forEach((item) => {
+    this.rules.forEach(item => {
       body += item + ';'
     })
     return `${this.selector}{${body}}`

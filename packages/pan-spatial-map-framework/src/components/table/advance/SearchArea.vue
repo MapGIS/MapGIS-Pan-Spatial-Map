@@ -19,18 +19,18 @@
           :checked-children="
             (col.search.switchOptions &&
               col.search.switchOptions.checkedText) ||
-            '是'
+              '是'
           "
           :un-checked-children="
             (col.search.switchOptions &&
               col.search.switchOptions.uncheckedText) ||
-            '否'
+              '否'
           "
         />
         <a-icon
           v-if="col.search.value !== undefined"
           class="close"
-          @click="(e) => onCloseClick(e, col)"
+          @click="e => onCloseClick(e, col)"
           type="close-circle"
           theme="filled"
         />
@@ -49,7 +49,7 @@
           v-model="col.search.value"
           placeholder="选择时间"
           @change="(time, timeStr) => onCalendarChange(time, timeStr, col)"
-          @openChange="(open) => onCalendarOpenChange(open, col)"
+          @openChange="open => onCalendarOpenChange(open, col)"
           class="time-picker"
           size="small"
           :get-popup-container="() => $refs.root"
@@ -86,7 +86,7 @@
           :format="col.search.format"
           v-model="col.search.value"
           @change="(date, dateStr) => onCalendarChange(date, dateStr, col)"
-          @openChange="(open) => onCalendarOpenChange(open, col)"
+          @openChange="open => onCalendarOpenChange(open, col)"
           class="datetime-picker"
           size="small"
           show-time
@@ -167,7 +167,7 @@
         </a-popover>
         <a-icon
           v-if="col.search.value"
-          @click="(e) => onCloseClick(e, col)"
+          @click="e => onCloseClick(e, col)"
           class="close"
           type="close-circle"
           theme="filled"
@@ -204,21 +204,21 @@ export default {
           this.$emit('change', this.conditions, this.searchOptions)
         }
       }
-    },
+    }
   },
   data() {
     return {
       conditions: {},
-      searchOptions: [],
+      searchOptions: []
     }
   },
   computed: {
     searchCols() {
-      return this.columns.filter((item) => item.searchAble)
+      return this.columns.filter(item => item.searchAble)
     },
     searchIdPrefix() {
       return this.table.id + '-ipt-'
-    },
+    }
   },
   methods: {
     onCloseClick(e, col) {
@@ -299,12 +299,12 @@ export default {
       const conditions = {}
       columns
         .filter(
-          (item) =>
+          item =>
             item.search.value !== undefined &&
             item.search.value !== '' &&
             item.search.value !== null
         )
-        .forEach((col) => {
+        .forEach(col => {
           const { value, format } = col.search
           if (this.formatConditions && format) {
             if (typeof format === 'function') {
@@ -326,7 +326,7 @@ export default {
     getSearchOptions(columns) {
       return columns
         .filter(
-          (item) =>
+          item =>
             item.search.value !== undefined &&
             item.search.value !== '' &&
             item.search.value !== null
@@ -334,7 +334,7 @@ export default {
         .map(({ dataIndex, search }) => ({
           field: dataIndex,
           value: search.value,
-          format: search.format,
+          format: search.format
         }))
     },
     onVisibleChange(col, index) {
@@ -367,16 +367,16 @@ export default {
       return false
     },
     formatColumns(columns) {
-      columns.forEach((item) => {
+      columns.forEach(item => {
         this.$set(item, 'search', {
           ...item.search,
           visible: false,
           value: undefined,
-          format: this.getFormat(item),
+          format: this.getFormat(item)
         })
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

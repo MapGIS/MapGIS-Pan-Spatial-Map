@@ -15,7 +15,7 @@ const loginIgnore = {
    */
   includes(route) {
     return this.names.includes(route.name) || this.paths.includes(route.path)
-  },
+  }
 }
 
 /**

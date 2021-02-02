@@ -8,7 +8,7 @@
 <script>
 export default {
   name: 'HeadInfo',
-  props: ['title', 'content', 'bordered'],
+  props: ['title', 'content', 'bordered']
 }
 </script>
 

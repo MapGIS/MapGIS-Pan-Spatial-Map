@@ -4,10 +4,10 @@ export default {
     user: undefined,
     permissions: null,
     roles: null,
-    routesConfig: null,
+    routesConfig: null
   },
   getters: {
-    user: (state) => {
+    user: state => {
       if (!state.user) {
         try {
           const user = localStorage.getItem(process.env.VUE_APP_USER_KEY)
@@ -18,7 +18,7 @@ export default {
       }
       return state.user
     },
-    permissions: (state) => {
+    permissions: state => {
       if (!state.permissions) {
         try {
           const permissions = localStorage.getItem(
@@ -32,7 +32,7 @@ export default {
       }
       return state.permissions
     },
-    roles: (state) => {
+    roles: state => {
       if (!state.roles) {
         try {
           const roles = localStorage.getItem(process.env.VUE_APP_ROLES_KEY)
@@ -44,7 +44,7 @@ export default {
       }
       return state.roles
     },
-    routesConfig: (state) => {
+    routesConfig: state => {
       if (!state.routesConfig) {
         try {
           const routesConfig = localStorage.getItem(
@@ -57,7 +57,7 @@ export default {
         }
       }
       return state.routesConfig
-    },
+    }
   },
   mutations: {
     setUser(state, user) {
@@ -81,6 +81,6 @@ export default {
         process.env.VUE_APP_ROUTES_KEY,
         JSON.stringify(routesConfig)
       )
-    },
-  },
+    }
+  }
 }

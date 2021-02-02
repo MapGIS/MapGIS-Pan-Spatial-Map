@@ -15,7 +15,7 @@ function hasPermission(authority, permissions) {
     required === '*' ||
     (permissions &&
       permissions.findIndex(
-        (item) => item === required || item.id === required
+        item => item === required || item.id === required
       ) !== -1)
   )
 }
@@ -44,16 +44,15 @@ function hasAnyRole(required, roles) {
     return false
   } else if (Array.isArray(required)) {
     return (
-      roles.findIndex((role) => {
+      roles.findIndex(role => {
         return (
-          required.findIndex((item) => item === role || item === role.id) !== -1
+          required.findIndex(item => item === role || item === role.id) !== -1
         )
       }) !== -1
     )
   } else {
     return (
-      roles.findIndex((role) => role === required || role.id === required) !==
-      -1
+      roles.findIndex(role => role === required || role.id === required) !== -1
     )
   }
 }
@@ -82,7 +81,7 @@ function hasAuthority(route, permissions, roles) {
  * @param roles
  */
 function filterMenu(menuData, permissions, roles) {
-  return menuData.filter((menu) => {
+  return menuData.filter(menu => {
     if (menu.meta && menu.meta.invisible === undefined) {
       if (!hasAuthority(menu, permissions, roles)) {
         return false

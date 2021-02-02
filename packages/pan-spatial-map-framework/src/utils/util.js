@@ -22,12 +22,12 @@ export function isRegExp(v) {
 
 export function enquireScreen(call) {
   const handler = {
-    match: function () {
+    match: function() {
       call && call(true)
     },
-    unmatch: function () {
+    unmatch: function() {
       call && call(false)
-    },
+    }
   }
   enquireJs.register('only screen and (max-width: 767.99px)', handler)
 }

@@ -4,7 +4,7 @@
     <a-auto-complete
       ref="input"
       :getPopupContainer="
-        (e) => {
+        e => {
           return e.parentNode || document.body
         }
       "
@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       dataSource: ['选项一', '选项二'],
-      searchMode: false,
+      searchMode: false
     }
   },
   methods: {
@@ -35,8 +35,8 @@ export default {
     leaveSearchMode() {
       this.searchMode = false
       setTimeout(() => this.$emit('active', false), 300)
-    },
-  },
+    }
+  }
 }
 </script>
 

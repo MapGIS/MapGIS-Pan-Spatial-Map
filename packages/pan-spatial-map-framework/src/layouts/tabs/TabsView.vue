@@ -57,7 +57,7 @@ export default {
     PageToggleTransition,
     Contextmenu,
     AdminLayout,
-    AKeepAlive,
+    AKeepAlive
   },
   data() {
     return {
@@ -66,7 +66,7 @@ export default {
       activePage: '',
       menuVisible: false,
       refreshing: false,
-      excludeKeys: [],
+      excludeKeys: []
     }
   },
   computed: {
@@ -75,26 +75,26 @@ export default {
       'cachePage',
       'animate',
       'layout',
-      'pageWidth',
+      'pageWidth'
     ]),
     menuItemList() {
       return [
         { key: '1', icon: 'vertical-right', text: this.$t('closeLeft') },
         { key: '2', icon: 'vertical-left', text: this.$t('closeRight') },
         { key: '3', icon: 'close', text: this.$t('closeOthers') },
-        { key: '4', icon: 'sync', text: this.$t('refresh') },
+        { key: '4', icon: 'sync', text: this.$t('refresh') }
       ]
     },
     tabsOffset() {
       return this.multiPage ? 24 : 0
-    },
+    }
   },
   created() {
     this.loadCacheConfig(this.$router?.options?.routes)
     this.loadCachedTabs()
     const route = this.$route
     if (
-      this.pageList.findIndex((item) => item.fullPath === route.fullPath) === -1
+      this.pageList.findIndex(item => item.fullPath === route.fullPath) === -1
     ) {
       this.pageList.push(this.createPage(route))
     }
@@ -114,18 +114,17 @@ export default {
     this.correctPageMinHeight(this.tabsOffset)
   },
   watch: {
-    '$router.options.routes': function (val) {
+    '$router.options.routes': function(val) {
       this.excludeKeys = []
       this.loadCacheConfig(val)
     },
-    $route: function (newRoute) {
+    $route: function(newRoute) {
       this.activePage = newRoute.fullPath
       if (!this.multiPage) {
         this.pageList = [this.createPage(newRoute)]
       } else if (
-        this.pageList.findIndex(
-          (item) => item.fullPath === newRoute.fullPath
-        ) === -1
+        this.pageList.findIndex(item => item.fullPath === newRoute.fullPath) ===
+        -1
       ) {
         this.pageList.push(this.createPage(newRoute))
       }
@@ -135,7 +134,7 @@ export default {
         })
       }
     },
-    multiPage: function (newVal) {
+    multiPage: function(newVal) {
       if (!newVal) {
         this.pageList = [this.createPage(this.$route)]
         this.removeListener()
@@ -145,7 +144,7 @@ export default {
     },
     tabsOffset(newVal, oldVal) {
       this.correctPageMinHeight(oldVal - newVal)
-    },
+    }
   },
   methods: {
     changePage(key) {
@@ -157,10 +156,10 @@ export default {
         return this.$message.warning(this.$t('warn'))
       }
       //清除缓存
-      let index = this.pageList.findIndex((item) => item.fullPath === key)
+      let index = this.pageList.findIndex(item => item.fullPath === key)
       this.clearCaches = this.pageList
         .splice(index, 1)
-        .map((page) => page.cachedKey)
+        .map(page => page.cachedKey)
       if (next) {
         this.$router.push(next)
       } else if (key === this.activePage) {
@@ -170,7 +169,7 @@ export default {
       }
     },
     refresh(key, page) {
-      page = page || this.pageList.find((item) => item.fullPath === key)
+      page = page || this.pageList.find(item => item.fullPath === key)
       page.loading = true
       this.clearCache(page)
       if (key === this.activePage) {
@@ -208,10 +207,10 @@ export default {
     closeOthers(pageKey) {
       // 清除缓存
       const clearPages = this.pageList.filter(
-        (item) => item.fullPath !== pageKey && !item.unclose
+        item => item.fullPath !== pageKey && !item.unclose
       )
-      this.clearCaches = clearPages.map((item) => item.cachedKey)
-      this.pageList = this.pageList.filter((item) => !clearPages.includes(item))
+      this.clearCaches = clearPages.map(item => item.cachedKey)
+      this.pageList = this.pageList.filter(item => !clearPages.includes(item))
       // 判断跳转
       if (this.activePage != pageKey) {
         this.activePage = pageKey
@@ -219,29 +218,29 @@ export default {
       }
     },
     closeLeft(pageKey) {
-      const index = this.pageList.findIndex((item) => item.fullPath === pageKey)
+      const index = this.pageList.findIndex(item => item.fullPath === pageKey)
       // 清除缓存
       const clearPages = this.pageList.filter(
         (item, i) => i < index && !item.unclose
       )
-      this.clearCaches = clearPages.map((item) => item.cachedKey)
-      this.pageList = this.pageList.filter((item) => !clearPages.includes(item))
+      this.clearCaches = clearPages.map(item => item.cachedKey)
+      this.pageList = this.pageList.filter(item => !clearPages.includes(item))
       // 判断跳转
-      if (!this.pageList.find((item) => item.fullPath === this.activePage)) {
+      if (!this.pageList.find(item => item.fullPath === this.activePage)) {
         this.activePage = pageKey
         this.$router.push(this.activePage)
       }
     },
     closeRight(pageKey) {
       // 清除缓存
-      const index = this.pageList.findIndex((item) => item.fullPath === pageKey)
+      const index = this.pageList.findIndex(item => item.fullPath === pageKey)
       const clearPages = this.pageList.filter(
         (item, i) => i > index && !item.unclose
       )
-      this.clearCaches = clearPages.map((item) => item.cachedKey)
-      this.pageList = this.pageList.filter((item) => !clearPages.includes(item))
+      this.clearCaches = clearPages.map(item => item.cachedKey)
+      this.pageList = this.pageList.filter(item => !clearPages.includes(item))
       // 判断跳转
-      if (!this.pageList.find((item) => item.fullPath === this.activePage)) {
+      if (!this.pageList.find(item => item.fullPath === this.activePage)) {
         this.activePage = pageKey
         this.$router.push(this.activePage)
       }
@@ -303,7 +302,7 @@ export default {
      * 页面 unload 事件监听器，添加页签到 session 缓存，用于刷新时保留页签
      */
     unloadListener() {
-      const tabs = this.pageList.map((item) => ({ ...item, _init_: false }))
+      const tabs = this.pageList.map(item => ({ ...item, _init_: false }))
       sessionStorage.setItem(process.env.VUE_APP_TBAS_KEY, JSON.stringify(tabs))
     },
     createPage(route) {
@@ -313,7 +312,7 @@ export default {
         loading: false,
         title: route.meta && route.meta.page && route.meta.page.title,
         unclose:
-          route.meta && route.meta.page && route.meta.page.closable === false,
+          route.meta && route.meta.page && route.meta.page.closable === false
       }
     },
     /**
@@ -321,9 +320,7 @@ export default {
      * @param route 页面对应的路由
      */
     setCachedKey(route) {
-      const page = this.pageList.find(
-        (item) => item.fullPath === route.fullPath
-      )
+      const page = this.pageList.find(item => item.fullPath === route.fullPath)
       page.unclose =
         route.meta && route.meta.page && route.meta.page.closable === false
       if (!page._init_) {
@@ -351,7 +348,7 @@ export default {
       }
     },
     loadCacheConfig(routes, pCache = true) {
-      routes.forEach((item) => {
+      routes.forEach(item => {
         const cacheAble = item.meta?.page?.cacheAble ?? pCache ?? true
         if (!cacheAble) {
           this.excludeKeys.push(new RegExp(`${item.fullPath}\\d+$`))
@@ -361,8 +358,8 @@ export default {
         }
       })
     },
-    ...mapMutations('setting', ['correctPageMinHeight']),
-  },
+    ...mapMutations('setting', ['correctPageMinHeight'])
+  }
 }
 </script>
 

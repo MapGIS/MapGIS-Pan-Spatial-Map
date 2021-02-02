@@ -7,28 +7,28 @@ const timeList = [
   {
     CN: '早上好',
     HK: '早晨啊',
-    US: 'Good morning',
+    US: 'Good morning'
   },
   {
     CN: '上午好',
     HK: '上午好',
-    US: 'Good morning',
+    US: 'Good morning'
   },
   {
     CN: '中午好',
     HK: '中午好',
-    US: 'Good afternoon',
+    US: 'Good afternoon'
   },
   {
     CN: '下午好',
     HK: '下午好',
-    US: 'Good afternoon',
+    US: 'Good afternoon'
   },
   {
     CN: '晚上好',
     HK: '晚上好',
-    US: 'Good evening',
-  },
+    US: 'Good evening'
+  }
 ]
 
 Random.extend({
@@ -53,5 +53,5 @@ Random.extend({
   },
   position() {
     return this.pick(positions)
-  },
+  }
 })

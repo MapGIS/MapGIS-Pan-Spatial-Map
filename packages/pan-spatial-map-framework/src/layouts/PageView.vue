@@ -23,7 +23,7 @@ export default {
   components: { PageToggleTransition, PageLayout },
   data() {
     return {
-      page: {},
+      page: {}
     }
   },
   computed: {
@@ -36,14 +36,14 @@ export default {
     },
     extraImage() {
       return this.page.extraImage
-    },
+    }
   },
   mounted() {
     this.page = this.$refs.page
   },
   updated() {
     this.page = this.$refs.page
-  },
+  }
 }
 </script>
 

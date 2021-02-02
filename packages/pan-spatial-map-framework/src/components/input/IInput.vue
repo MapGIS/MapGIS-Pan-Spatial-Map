@@ -29,7 +29,7 @@ export default {
   name: 'IInput',
   model: {
     prop: 'value',
-    event: 'change.value',
+    event: 'change.value'
   },
   props: [
     'addonAfter',
@@ -43,22 +43,22 @@ export default {
     'suffix',
     'type',
     'value',
-    'allowClear',
+    'allowClear'
   ],
   data() {
     return {
-      sValue: this.value || this.defaultValue || '',
+      sValue: this.value || this.defaultValue || ''
     }
   },
   watch: {
     value(val) {
       this.sValue = val
-    },
+    }
   },
   computed: {
     lenSuffix() {
       return this.maxLength && `${(this.sValue + '').length}/${this.maxLength}`
-    },
+    }
   },
   methods: {
     onChange(e) {
@@ -73,7 +73,7 @@ export default {
     },
     onKeydown(e) {
       this.$emit('keydown', e)
-    },
-  },
+    }
+  }
 }
 </script>

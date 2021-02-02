@@ -43,37 +43,37 @@ export default {
   props: {
     options: {
       type: Array,
-      required: true,
+      required: true
     },
     theme: {
       type: String,
       required: false,
-      default: 'dark',
+      default: 'dark'
     },
     mode: {
       type: String,
       required: false,
-      default: 'inline',
+      default: 'inline'
     },
     collapsed: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     i18n: Object,
-    openKeys: Array,
+    openKeys: Array
   },
   data() {
     return {
       selectedKeys: [],
       sOpenKeys: [],
-      cachedOpenKeys: [],
+      cachedOpenKeys: []
     }
   },
   computed: {
     menuTheme() {
       return this.theme == 'light' ? this.theme : 'dark'
-    },
+    }
   },
   created() {
     this.updateMenu()
@@ -83,7 +83,7 @@ export default {
     // 自定义国际化配置
     if (this.i18n && this.i18n.messages) {
       const messages = this.i18n.messages
-      Object.keys(messages).forEach((key) => {
+      Object.keys(messages).forEach(key => {
         this.$i18n.mergeLocaleMessage(key, messages[key])
       })
     }
@@ -97,7 +97,7 @@ export default {
     i18n(val) {
       if (val && val.messages) {
         const messages = this.i18n.messages
-        Object.keys(messages).forEach((key) => {
+        Object.keys(messages).forEach(key => {
           this.$i18n.mergeLocaleMessage(key, messages[key])
         })
       }
@@ -110,19 +110,19 @@ export default {
         this.sOpenKeys = this.cachedOpenKeys
       }
     },
-    $route: function () {
+    $route: function() {
       this.updateMenu()
     },
     sOpenKeys(val) {
       this.$emit('openChange', val)
       this.$emit('update:openKeys', val)
-    },
+    }
   },
   methods: {
-    renderIcon: function (h, icon, key) {
+    renderIcon: function(h, icon, key) {
       if (this.$scopedSlots.icon && icon && icon !== 'none') {
         const vnodes = this.$scopedSlots.icon({ icon, key })
-        vnodes.forEach((vnode) => {
+        vnodes.forEach(vnode => {
           vnode.data.class = vnode.data.class ? vnode.data.class : []
           vnode.data.class.push('anticon')
         })
@@ -130,13 +130,13 @@ export default {
       }
       return !icon || icon == 'none' ? null : h(Icon, { props: { type: icon } })
     },
-    renderMenuItem: function (h, menu) {
+    renderMenuItem: function(h, menu) {
       let tag = 'router-link'
       let config = {
         props: { to: menu.fullPath },
         attrs: {
-          style: 'overflow:hidden;white-space:normal;text-overflow:clip;',
-        },
+          style: 'overflow:hidden;white-space:normal;text-overflow:clip;'
+        }
       }
       if (menu.meta && menu.meta.link) {
         tag = 'a'
@@ -144,8 +144,8 @@ export default {
           attrs: {
             style: 'overflow:hidden;white-space:normal;text-overflow:clip;',
             href: menu.meta.link,
-            target: '_blank',
-          },
+            target: '_blank'
+          }
         }
       }
       return h(Item, { key: menu.fullPath }, [
@@ -155,11 +155,11 @@ export default {
             menu.meta ? menu.meta.icon : 'none',
             menu.fullPath
           ),
-          this.$t(getI18nKey(menu.fullPath)),
-        ]),
+          this.$t(getI18nKey(menu.fullPath))
+        ])
       ])
     },
-    renderSubMenu: function (h, menu) {
+    renderSubMenu: function(h, menu) {
       let this_ = this
       let subItem = [
         h(
@@ -167,8 +167,8 @@ export default {
           {
             slot: 'title',
             attrs: {
-              style: 'overflow:hidden;white-space:normal;text-overflow:clip;',
-            },
+              style: 'overflow:hidden;white-space:normal;text-overflow:clip;'
+            }
           },
           [
             this.renderIcon(
@@ -176,17 +176,17 @@ export default {
               menu.meta ? menu.meta.icon : 'none',
               menu.fullPath
             ),
-            this.$t(getI18nKey(menu.fullPath)),
+            this.$t(getI18nKey(menu.fullPath))
           ]
-        ),
+        )
       ]
       let itemArr = []
-      menu.children.forEach(function (item) {
+      menu.children.forEach(function(item) {
         itemArr.push(this_.renderItem(h, item))
       })
       return h(SubMenu, { key: menu.fullPath }, subItem.concat(itemArr))
     },
-    renderItem: function (h, menu) {
+    renderItem: function(h, menu) {
       const meta = menu.meta
       if (!meta || !meta.invisible) {
         let renderChildren = false
@@ -205,16 +205,16 @@ export default {
           : this.renderMenuItem(h, menu)
       }
     },
-    renderMenu: function (h, menuTree) {
+    renderMenu: function(h, menuTree) {
       let this_ = this
       let menuArr = []
-      menuTree.forEach(function (menu, i) {
+      menuTree.forEach(function(menu, i) {
         menuArr.push(this_.renderItem(h, menu, '0', i))
       })
       return menuArr
     },
     formatOptions(options, parentPath) {
-      options.forEach((route) => {
+      options.forEach(route => {
         let isFullPath = route.path.substring(0, 1) == '/'
         route.fullPath = isFullPath ? route.path : parentPath + '/' + route.path
         if (route.children) {
@@ -223,11 +223,9 @@ export default {
       })
     },
     updateMenu() {
-      const matchedRoutes = this.$route.matched.filter(
-        (item) => item.path !== ''
-      )
+      const matchedRoutes = this.$route.matched.filter(item => item.path !== '')
       this.selectedKeys = this.getSelectedKey(this.$route)
-      let openKeys = matchedRoutes.map((item) => item.path)
+      let openKeys = matchedRoutes.map(item => item.path)
       openKeys = openKeys.slice(0, openKeys.length - 1)
       if (!fastEqual(openKeys, this.sOpenKeys)) {
         this.collapsed || this.mode === 'horizontal'
@@ -236,8 +234,8 @@ export default {
       }
     },
     getSelectedKey(route) {
-      return route.matched.map((item) => item.path)
-    },
+      return route.matched.map(item => item.path)
+    }
   },
   render(h) {
     return h(
@@ -247,19 +245,19 @@ export default {
           theme: this.menuTheme,
           mode: this.$props.mode,
           selectedKeys: this.selectedKeys,
-          openKeys: this.openKeys ? this.openKeys : this.sOpenKeys,
+          openKeys: this.openKeys ? this.openKeys : this.sOpenKeys
         },
         on: {
-          'update:openKeys': (val) => {
+          'update:openKeys': val => {
             this.sOpenKeys = val
           },
-          click: (obj) => {
+          click: obj => {
             obj.selectedKeys = [obj.key]
             this.$emit('select', obj)
-          },
-        },
+          }
+        }
       },
       this.renderMenu(h, this.options)
     )
-  },
+  }
 }

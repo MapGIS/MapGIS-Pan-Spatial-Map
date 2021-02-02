@@ -16,8 +16,8 @@ export default {
     ...mapState('setting', ['pageMinHeight']),
     minHeight() {
       return this.pageMinHeight ? this.pageMinHeight + 'px' : '100vh'
-    },
-  },
+    }
+  }
 }
 </script>
 

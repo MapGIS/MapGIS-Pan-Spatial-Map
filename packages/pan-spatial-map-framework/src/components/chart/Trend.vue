@@ -14,38 +14,38 @@ export default {
   props: {
     term: {
       type: String,
-      required: true,
+      required: true
     },
     target: {
       type: Number,
       required: false,
-      default: 0,
+      default: 0
     },
     value: {
       type: Number,
       required: false,
-      default: 0,
+      default: 0
     },
     isIncrease: {
       type: Boolean,
       required: false,
-      default: null,
+      default: null
     },
     percent: {
       type: Number,
       required: false,
-      default: null,
+      default: null
     },
     scale: {
       type: Number,
       required: false,
-      default: 2,
-    },
+      default: 2
+    }
   },
   data() {
     return {
       trend: this.isIncrease ? 'up' : 'down',
-      rate: this.percent,
+      rate: this.percent
     }
   },
   created() {
@@ -63,8 +63,8 @@ export default {
       let isIncrease =
         this.isIncrease === null ? this.value >= this.target : this.isIncrease
       return isIncrease ? 'up' : 'down'
-    },
-  },
+    }
+  }
 }
 </script>
 

@@ -19,16 +19,16 @@ export default {
       showTrigger: false,
       collapsed: true,
       screenWidth: document.body.clientWidth,
-      checkAll: false,
+      checkAll: false
     }
   },
   watch: {
-    screenWidth: function () {
+    screenWidth: function() {
       this.showTrigger = this.needTrigger()
     },
-    collapsed: function (val) {
+    collapsed: function(val) {
       this.$el.style.maxHeight = val ? '39px' : '78px'
-    },
+    }
   },
   mounted() {
     let _this = this
@@ -55,7 +55,7 @@ export default {
       this.collapsed = !this.collapsed
     },
     getAllTags() {
-      const tagList = this.$children.filter((item) => {
+      const tagList = this.$children.filter(item => {
         return item.isTagSelectOption
       })
       return tagList
@@ -63,11 +63,11 @@ export default {
     toggleCheck() {
       this.checkAll = !this.checkAll
       const tagList = this.getAllTags()
-      tagList.forEach((item) => {
+      tagList.forEach(item => {
         item.checked = this.checkAll
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

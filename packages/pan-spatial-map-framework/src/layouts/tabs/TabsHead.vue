@@ -9,8 +9,8 @@
         {
           affixed: affixed,
           'fixed-header': fixedHeader,
-          collapsed: adminLayout.collapsed,
-        },
+          collapsed: adminLayout.collapsed
+        }
       ]"
       :active-key="active"
       :hide-add="true"
@@ -27,13 +27,13 @@
         <div
           slot="tab"
           class="tab"
-          @contextmenu="(e) => onContextmenu(page.fullPath, e)"
+          @contextmenu="e => onContextmenu(page.fullPath, e)"
         >
           <a-icon
             @click="onRefresh(page)"
             :class="[
               'icon-sync',
-              { hide: page.fullPath !== active && !page.loading },
+              { hide: page.fullPath !== active && !page.loading }
             ]"
             :type="page.loading ? 'loading' : 'sync'"
           />
@@ -63,26 +63,26 @@ export default {
     messages: {
       CN: {
         lock: '点击锁定页签头',
-        unlock: '点击解除锁定',
+        unlock: '点击解除锁定'
       },
       HK: {
         lock: '點擊鎖定頁簽頭',
-        unlock: '點擊解除鎖定',
+        unlock: '點擊解除鎖定'
       },
       US: {
         lock: 'click to lock the tabs head',
-        unlock: 'click to unlock',
-      },
-    },
+        unlock: 'click to unlock'
+      }
+    }
   },
   props: {
     pageList: Array,
     active: String,
-    fixed: Boolean,
+    fixed: Boolean
   },
   data() {
     return {
-      affixed: false,
+      affixed: false
     }
   },
   inject: ['adminLayout'],
@@ -95,11 +95,11 @@ export default {
       'pageWidth',
       'fixedHeader',
       'fixedTabs',
-      'customTitles',
+      'customTitles'
     ]),
     lockTitle() {
       return this.$t(this.fixedTabs ? 'unlock' : 'lock')
-    },
+    }
   },
   methods: {
     ...mapMutations('setting', ['setFixedTabs']),
@@ -129,14 +129,14 @@ export default {
     },
     pageName(page) {
       const pagePath = page.fullPath.split('?')[0]
-      const custom = this.customTitles.find((item) => item.path === pagePath)
+      const custom = this.customTitles.find(item => item.path === pagePath)
       return (
         (custom && custom.title) ||
         page.title ||
         this.$t(getI18nKey(page.keyPath))
       )
-    },
-  },
+    }
+  }
 }
 </script>
 

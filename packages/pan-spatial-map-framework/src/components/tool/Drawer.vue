@@ -28,24 +28,24 @@ export default {
   },
   model: {
     prop: 'visible',
-    event: 'change',
+    event: 'change'
   },
   props: {
     visible: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     placement: {
       type: String,
       required: false,
-      default: 'left',
+      default: 'left'
     },
     showHandler: {
       type: Boolean,
       required: false,
-      default: true,
-    },
+      default: true
+    }
   },
   methods: {
     open() {
@@ -56,8 +56,8 @@ export default {
     },
     toggle() {
       this.$emit('change', !this.visible)
-    },
-  },
+    }
+  }
 }
 </script>
 

@@ -52,7 +52,7 @@
           ...$props,
           columns: visibleColumns,
           title: undefined,
-          loading: false,
+          loading: false
         }"
         :size="sSize"
         @expandedRowsChange="onExpandedRowsChange"
@@ -119,11 +119,11 @@ export default {
     customRow: Function,
     getPopupContainer: Function,
     transformCellText: Function,
-    formatConditions: Boolean,
+    formatConditions: Boolean
   },
   provide() {
     return {
-      table: this,
+      table: this
     }
   },
   data() {
@@ -131,21 +131,21 @@ export default {
       id: `${new Date().getTime()}-${Math.floor(Math.random() * 10)}`,
       sSize: this.size || 'default',
       fullScreen: false,
-      conditions: {},
+      conditions: {}
     }
   },
   computed: {
     slots() {
-      return Object.keys(this.$slots).filter((slot) => slot !== 'title')
+      return Object.keys(this.$slots).filter(slot => slot !== 'title')
     },
     scopedSlots() {
       return Object.keys(this.$scopedSlots).filter(
-        (slot) => slot !== 'expandedRowRender' && slot !== 'title'
+        slot => slot !== 'expandedRowRender' && slot !== 'title'
       )
     },
     visibleColumns() {
-      return this.columns.filter((col) => col.visible)
-    },
+      return this.columns.filter(col => col.visible)
+    }
   },
   created() {
     this.addListener()
@@ -240,8 +240,8 @@ export default {
       if (e.target.id === this.id) {
         this.fullScreen = !this.fullScreen
       }
-    },
-  },
+    }
+  }
 }
 </script>
 

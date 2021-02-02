@@ -20,7 +20,7 @@
 <script>
 export default {
   name: 'Result',
-  props: ['isSuccess', 'title', 'description'],
+  props: ['isSuccess', 'title', 'description']
 }
 </script>
 

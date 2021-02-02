@@ -33,34 +33,34 @@ export default {
     collapsible: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     collapsed: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     menuData: {
       type: Array,
-      required: true,
+      required: true
     },
     theme: {
       type: String,
       required: false,
-      default: 'dark',
-    },
+      default: 'dark'
+    }
   },
   computed: {
     sideTheme() {
       return this.theme == 'light' ? this.theme : 'dark'
     },
-    ...mapState('setting', ['isMobile', 'systemName']),
+    ...mapState('setting', ['isMobile', 'systemName'])
   },
   methods: {
     onSelect(obj) {
       this.$emit('menuSelect', obj)
-    },
-  },
+    }
+  }
 }
 </script>
 

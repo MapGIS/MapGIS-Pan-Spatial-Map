@@ -21,7 +21,7 @@ export default {
   props: ['type', 'homeRoute'],
   data() {
     return {
-      config: Config,
+      config: Config
     }
   },
   methods: {
@@ -30,8 +30,8 @@ export default {
         this.$router.push(this.homeRoute)
       }
       this.$emit('backHome', this.type)
-    },
-  },
+    }
+  }
 }
 </script>
 

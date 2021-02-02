@@ -14,7 +14,7 @@
     </setting-item>
     <setting-item :title="$t('theme.title')">
       <img-checkbox-group
-        @change="(values) => setTheme({ ...theme, mode: values[0] })"
+        @change="values => setTheme({ ...theme, mode: values[0] })"
         :default-values="[theme.mode]"
       >
         <img-checkbox
@@ -51,7 +51,7 @@
     <a-divider />
     <setting-item :title="$t('navigate.title')">
       <img-checkbox-group
-        @change="(values) => setLayout(values[0])"
+        @change="values => setLayout(values[0])"
         :default-values="[layout]"
       >
         <img-checkbox
@@ -152,7 +152,7 @@
             :checked="animate.disabled"
             slot="actions"
             size="small"
-            @change="(val) => setAnimate({ ...animate, disabled: val })"
+            @change="val => setAnimate({ ...animate, disabled: val })"
           />
         </a-list-item>
         <a-list-item>
@@ -160,7 +160,7 @@
           <a-select
             :value="animate.name"
             :getPopupContainer="getPopupContainer"
-            @change="(val) => setAnimate({ ...animate, name: val })"
+            @change="val => setAnimate({ ...animate, name: val })"
             class="select-item"
             size="small"
             slot="actions"
@@ -178,7 +178,7 @@
           <a-select
             :value="animate.direction"
             :getPopupContainer="getPopupContainer"
-            @change="(val) => setAnimate({ ...animate, direction: val })"
+            @change="val => setAnimate({ ...animate, direction: val })"
             class="select-item"
             size="small"
             slot="actions"
@@ -233,17 +233,17 @@ export default {
     ImgCheckbox,
     ColorCheckboxGroup,
     ColorCheckbox,
-    SettingItem,
+    SettingItem
   },
   data() {
     return {
       copyConfig: 'Sorry, you have copied nothing O(∩_∩)O~',
-      isDev: process.env.NODE_ENV === 'development',
+      isDev: process.env.NODE_ENV === 'development'
     }
   },
   computed: {
     directions() {
-      return this.animates.find((item) => item.name == this.animate.name)
+      return this.animates.find(item => item.name == this.animate.name)
         .directions
     },
     ...mapState('setting', [
@@ -257,13 +257,13 @@ export default {
       'fixedHeader',
       'fixedSideBar',
       'hideSetting',
-      'pageWidth',
-    ]),
+      'pageWidth'
+    ])
   },
   watch: {
-    'animate.name': function (val) {
+    'animate.name': function(val) {
       this.setAnimate({ name: val, direction: this.directions[0] })
-    },
+    }
   },
   methods: {
     getPopupContainer() {
@@ -312,7 +312,7 @@ export default {
         onOk() {
           localStorage.removeItem(process.env.VUE_APP_SETTING_KEY)
           window.location.reload()
-        },
+        }
       })
     },
     //提取配置
@@ -320,7 +320,7 @@ export default {
       let config = {}
       let mySetting = this.$store.state.setting
       let dftSetting = local ? deepMerge(setting, sysConfig) : setting
-      Object.keys(mySetting).forEach((key) => {
+      Object.keys(mySetting).forEach(key => {
         const dftValue = dftSetting[key],
           myValue = mySetting[key]
         if (dftValue != undefined && !fastEqual(dftValue, myValue)) {
@@ -338,9 +338,9 @@ export default {
       'setFixedHeader',
       'setAnimate',
       'setHideSetting',
-      'setPageWidth',
-    ]),
-  },
+      'setPageWidth'
+    ])
+  }
 }
 </script>
 

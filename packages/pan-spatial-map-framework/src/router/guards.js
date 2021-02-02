@@ -66,7 +66,7 @@ const authorityGuard = (to, from, next, options) => {
  */
 const redirectGuard = (to, from, next, options) => {
   const { store } = options
-  const getFirstChild = (routes) => {
+  const getFirstChild = routes => {
     const route = routes[0]
     if (!route.children || route.children.length === 0) {
       return route
@@ -75,7 +75,7 @@ const redirectGuard = (to, from, next, options) => {
   }
   if (store.state.setting.layout === 'mix') {
     const firstMenu = store.getters['setting/firstMenu']
-    if (firstMenu.find((item) => item.fullPath === to.fullPath)) {
+    if (firstMenu.find(item => item.fullPath === to.fullPath)) {
       store.commit('setting/setActivatedFirst', to.fullPath)
       const subMenu = store.getters['setting/subMenu']
       if (subMenu.length > 0) {
@@ -100,5 +100,5 @@ const progressDone = () => {
 
 export default {
   beforeEach: [progressStart, loginGuard, authorityGuard, redirectGuard],
-  afterEach: [progressDone],
+  afterEach: [progressDone]
 }

@@ -3,7 +3,7 @@
     :class="[
       'detail-list',
       size === 'small' ? 'small' : 'large',
-      layout === 'vertical' ? 'vertical' : 'horizontal',
+      layout === 'vertical' ? 'vertical' : 'horizontal'
     ]"
   >
     <div v-if="title" class="title">{{ title }}</div>
@@ -20,13 +20,13 @@ const Item = {
   props: {
     term: {
       type: String,
-      required: false,
-    },
+      required: false
+    }
   },
   inject: {
     col: {
-      type: Number,
-    },
+      type: Number
+    }
   },
   methods: {
     renderTerm(h, term) {
@@ -35,8 +35,8 @@ const Item = {
             'div',
             {
               attrs: {
-                class: 'term',
-              },
+                class: 'term'
+              }
             },
             [term]
           )
@@ -47,12 +47,12 @@ const Item = {
         'div',
         {
           attrs: {
-            class: 'content',
-          },
+            class: 'content'
+          }
         },
         [content]
       )
-    },
+    }
   },
   render(h) {
     const term = this.renderTerm(h, this.$props.term)
@@ -60,18 +60,18 @@ const Item = {
     return h(
       ACol,
       {
-        props: responsive[this.col],
+        props: responsive[this.col]
       },
       [term, content]
     )
-  },
+  }
 }
 
 const responsive = {
   1: { xs: 24 },
   2: { xs: 24, sm: 12 },
   3: { xs: 24, sm: 12, md: 8 },
-  4: { xs: 24, sm: 12, md: 6 },
+  4: { xs: 24, sm: 12, md: 6 }
 }
 
 export default {
@@ -80,29 +80,29 @@ export default {
   props: {
     title: {
       type: String,
-      required: false,
+      required: false
     },
     col: {
       type: Number,
       required: false,
-      default: 3,
+      default: 3
     },
     size: {
       type: String,
       required: false,
-      default: 'large',
+      default: 'large'
     },
     layout: {
       type: String,
       required: false,
-      default: 'horizontal',
-    },
+      default: 'horizontal'
+    }
   },
   provide() {
     return {
-      col: this.col > 4 ? 4 : this.col,
+      col: this.col > 4 ? 4 : this.col
     }
-  },
+  }
 }
 </script>
 

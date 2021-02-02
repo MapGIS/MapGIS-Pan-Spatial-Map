@@ -5,7 +5,7 @@ const user = Mock.mock({
   name: '@ADMIN',
   avatar: '@AVATAR',
   address: '@CITY',
-  position: '@POSITION',
+  position: '@POSITION'
 })
 Mock.mock(`${process.env.VUE_APP_API_BASE_URL}/login`, 'post', ({ body }) => {
   let result = { data: {} }

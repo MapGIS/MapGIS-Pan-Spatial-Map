@@ -31,7 +31,7 @@
         <a-list-item>
           <a-checkbox
             v-model="col.visible"
-            @change="(e) => onCheckChange(e, col)"
+            @change="e => onCheckChange(e, col)"
           />
           <template v-if="col.title"> {{ col.title }}: </template>
           <slot
@@ -92,7 +92,7 @@ export default {
       indeterminate: false,
       checkAll: true,
       checkedCounts: this.columns.length,
-      backColumns: cloneDeep(this.columns),
+      backColumns: cloneDeep(this.columns)
     }
   },
   watch: {
@@ -105,7 +105,7 @@ export default {
         this.checkedCounts = newVal.length
         this.formatColumns(newVal)
       }
-    },
+    }
   },
   created() {
     this.formatColumns(this.columns)
@@ -161,22 +161,22 @@ export default {
     onCheckAllChange(e) {
       if (e.target.checked) {
         this.checkedCounts = this.columns.length
-        this.columns.forEach((col) => (col.visible = true))
+        this.columns.forEach(col => (col.visible = true))
       } else {
         this.checkedCounts = 0
-        this.columns.forEach((col) => (col.visible = false))
+        this.columns.forEach(col => (col.visible = false))
       }
     },
     getConditions(columns) {
       const conditions = {}
       columns
         .filter(
-          (item) =>
+          item =>
             item.search.value !== undefined &&
             item.search.value !== '' &&
             item.search.value !== null
         )
-        .forEach((col) => {
+        .forEach(col => {
           conditions[col.dataIndex] = col.search.value
         })
       return conditions
@@ -190,8 +190,8 @@ export default {
           this.checkedCounts -= 1
         }
       }
-    },
-  },
+    }
+  }
 }
 </script>
 

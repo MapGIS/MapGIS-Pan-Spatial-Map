@@ -29,7 +29,7 @@
 <script>
 export default {
   name: 'ChartCard',
-  props: ['title', 'total', 'loading'],
+  props: ['title', 'total', 'loading']
 }
 </script>
 

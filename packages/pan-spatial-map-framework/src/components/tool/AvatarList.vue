@@ -13,34 +13,34 @@ const Item = {
     size: {
       type: String,
       required: false,
-      default: 'small',
+      default: 'small'
     },
     src: {
       type: String,
-      required: true,
+      required: true
     },
     tips: {
       type: String,
-      required: false,
-    },
+      required: false
+    }
   },
   methods: {
     renderAvatar(h, size, src) {
       return h(AAvatar, { props: { size: size, src: src } }, [])
-    },
+    }
   },
   render(h) {
     const avatar = this.renderAvatar(h, this.$props.size, this.$props.src)
     return h('li', { class: 'avatar-item' }, [
       this.$props.tips
         ? h(ATooltip, { props: { title: this.$props.tips } }, [avatar])
-        : avatar,
+        : avatar
     ])
-  },
+  }
 }
 export default {
   name: 'AvatarList',
-  Item: Item,
+  Item: Item
 }
 </script>
 

@@ -17,14 +17,14 @@ export default {
   props: {
     disabled: {
       type: Boolean,
-      default: false,
+      default: false
     },
     animate: {
       type: String,
       validator(value) {
-        return animates.findIndex((item) => item.name == value) != -1
+        return animates.findIndex(item => item.name == value) != -1
       },
-      default: 'bounce',
+      default: 'bounce'
     },
     direction: {
       type: String,
@@ -49,15 +49,15 @@ export default {
             'bottomLeft',
             'topLeft',
             'bottomRight',
-            'default',
+            'default'
           ].indexOf(value) > -1
         )
-      },
+      }
     },
     reverse: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   computed: {
     enterAnimate() {
@@ -65,11 +65,11 @@ export default {
     },
     leaveAnimate() {
       return this.activeClass(true)
-    },
+    }
   },
   methods: {
     activeClass(isLeave) {
-      let animate = animates.find((item) => this.animate == item.name)
+      let animate = animates.find(item => this.animate == item.name)
       if (animate == undefined) {
         return ''
       }
@@ -77,7 +77,7 @@ export default {
       if (this.direction == undefined) {
         direction = animate.directions[0]
       } else {
-        direction = animate.directions.find((item) => item == this.direction)
+        direction = animate.directions.find(item => item == this.direction)
       }
       direction =
         direction == undefined || direction === 'default' ? '' : direction
@@ -98,8 +98,8 @@ export default {
       let index = directions.indexOf(direction)
       index = index % 2 == 1 ? index - 1 : index + 1
       return directions[index]
-    },
-  },
+    }
+  }
 }
 </script>
 

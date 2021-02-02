@@ -16,8 +16,8 @@ export default {
   name: 'BlankView',
   components: { PageToggleTransition },
   computed: {
-    ...mapState('setting', ['multiPage', 'animate']),
-  },
+    ...mapState('setting', ['multiPage', 'animate'])
+  }
 }
 </script>
 

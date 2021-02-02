@@ -8,7 +8,7 @@ Object.defineProperty(Object.prototype, 'assignProps', {
   writable: false,
   enumerable: false,
   configurable: true,
-  value: function (keys, value) {
+  value: function(keys, value) {
     let props = this
     for (let i = 0; i < keys.length; i++) {
       let key = keys[i]
@@ -20,5 +20,5 @@ Object.defineProperty(Object.prototype, 'assignProps', {
       }
     }
     return this
-  },
+  }
 })

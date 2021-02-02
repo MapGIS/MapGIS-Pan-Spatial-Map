@@ -12,7 +12,7 @@
         :style="{
           backgroundColor: color,
           width: percent + '%',
-          height: height,
+          height: height
         }"
       />
     </div>
@@ -22,7 +22,7 @@
 <script>
 export default {
   name: 'MiniProgress',
-  props: ['target', 'color', 'percent', 'height'],
+  props: ['target', 'color', 'percent', 'height']
 }
 </script>
 

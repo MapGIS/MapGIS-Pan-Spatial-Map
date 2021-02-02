@@ -27,7 +27,7 @@ const resp401 = {
       message.error('无此权限')
     }
     return Promise.reject(error)
-  },
+  }
 }
 
 const resp403 = {
@@ -45,7 +45,7 @@ const resp403 = {
       message.error('请求被拒绝')
     }
     return Promise.reject(error)
-  },
+  }
 }
 
 const reqCommon = {
@@ -77,10 +77,10 @@ const reqCommon = {
     const { message } = options
     message.error(error.message)
     return Promise.reject(error)
-  },
+  }
 }
 
 export default {
   request: [reqCommon], // 请求拦截
-  response: [resp401, resp403], // 响应拦截
+  response: [resp401, resp403] // 响应拦截
 }

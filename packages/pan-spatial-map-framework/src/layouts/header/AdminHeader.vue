@@ -32,7 +32,7 @@
       <div :class="['admin-header-right', headerTheme]">
         <header-search
           class="header-item"
-          @active="(val) => (searchActive = val)"
+          @active="val => (searchActive = val)"
         />
         <a-tooltip class="header-item" title="帮助文档" placement="bottom">
           <a href="https://iczer.gitee.io/vue-antd-admin-docs/" target="_blank">
@@ -44,7 +44,7 @@
         <a-dropdown class="lang header-item">
           <div><a-icon type="global" /> {{ langAlias }}</div>
           <a-menu
-            @click="(val) => setLang(val.key)"
+            @click="val => setLang(val.key)"
             :selected-keys="[lang]"
             slot="overlay"
           >
@@ -74,9 +74,9 @@ export default {
       langList: [
         { key: 'CN', name: '简体中文', alias: '简体' },
         { key: 'HK', name: '繁體中文', alias: '繁體' },
-        { key: 'US', name: 'English', alias: 'English' },
+        { key: 'US', name: 'English', alias: 'English' }
       ],
-      searchActive: false,
+      searchActive: false
     }
   },
   computed: {
@@ -86,7 +86,7 @@ export default {
       'layout',
       'systemName',
       'lang',
-      'pageWidth',
+      'pageWidth'
     ]),
     headerTheme() {
       if (
@@ -99,7 +99,7 @@ export default {
       return this.theme.mode
     },
     langAlias() {
-      let lang = this.langList.find((item) => item.key == this.lang)
+      let lang = this.langList.find(item => item.key == this.lang)
       return lang.alias
     },
     menuWidth() {
@@ -107,7 +107,7 @@ export default {
       const headWidth = layout === 'head' ? '100% - 188px' : '100%'
       const extraWidth = searchActive ? '600px' : '400px'
       return `calc(${headWidth} - ${extraWidth})`
-    },
+    }
   },
   methods: {
     toggleCollapse() {
@@ -116,8 +116,8 @@ export default {
     onSelect(obj) {
       this.$emit('menuSelect', obj)
     },
-    ...mapMutations('setting', ['setLang']),
-  },
+    ...mapMutations('setting', ['setLang'])
+  }
 }
 </script>
 

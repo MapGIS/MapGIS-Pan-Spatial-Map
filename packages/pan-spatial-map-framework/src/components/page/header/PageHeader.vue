@@ -38,24 +38,24 @@ export default {
   props: {
     title: {
       type: [String, Boolean],
-      required: false,
+      required: false
     },
     breadcrumb: {
       type: Array,
-      required: false,
+      required: false
     },
     logo: {
       type: String,
-      required: false,
+      required: false
     },
     avatar: {
       type: String,
-      required: false,
-    },
+      required: false
+    }
   },
   computed: {
-    ...mapState('setting', ['layout', 'showPageTitle', 'pageWidth']),
-  },
+    ...mapState('setting', ['layout', 'showPageTitle', 'pageWidth'])
+  }
 }
 </script>
 

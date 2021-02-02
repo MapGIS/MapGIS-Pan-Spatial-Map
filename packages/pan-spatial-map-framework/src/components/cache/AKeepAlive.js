@@ -83,25 +83,25 @@ export default {
   abstract: true,
   model: {
     prop: 'clearCaches',
-    event: 'clear',
+    event: 'clear'
   },
   props: {
     include: patternTypes,
     exclude: patternTypes,
     excludeKeys: patternTypes,
     max: [String, Number],
-    clearCaches: Array,
+    clearCaches: Array
   },
   watch: {
-    clearCaches: function (val) {
+    clearCaches: function(val) {
       if (val && val.length > 0) {
         const { cache, keys } = this
-        val.forEach((key) => {
+        val.forEach(key => {
           pruneCacheEntry2(cache, key, keys)
         })
         this.$emit('clear', [])
       }
-    },
+    }
   },
 
   created() {
@@ -116,13 +116,13 @@ export default {
   },
 
   mounted() {
-    this.$watch('include', (val) => {
-      pruneCache(this, (name) => matches(val, name))
+    this.$watch('include', val => {
+      pruneCache(this, name => matches(val, name))
     })
-    this.$watch('exclude', (val) => {
-      pruneCache(this, (name) => !matches(val, name))
+    this.$watch('exclude', val => {
+      pruneCache(this, name => !matches(val, name))
     })
-    this.$watch('excludeKeys', (val) => {
+    this.$watch('excludeKeys', val => {
       pruneCache(this, (name, key) => !matches(val, key))
     })
   },
@@ -171,5 +171,5 @@ export default {
       vnode.data.keepAlive = true
     }
     return vnode || (slot && slot[0])
-  },
+  }
 }

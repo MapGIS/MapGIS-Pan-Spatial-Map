@@ -5,7 +5,7 @@
  * @returns {Permission}
  */
 const getRoutePermission = (permissions, route) =>
-  permissions.find((item) => item.id === route.meta.authority.permission)
+  permissions.find(item => item.id === route.meta.authority.permission)
 /**
  * 获取路由需要的角色
  * @param roles
@@ -16,8 +16,7 @@ const getRouteRole = (roles, route) => {
   const requiredRoles = route.meta.authority.role
   return requiredRoles
     ? roles.filter(
-        (item) =>
-          requiredRoles.findIndex((required) => required === item.id) !== -1
+        item => requiredRoles.findIndex(required => required === item.id) !== -1
       )
     : []
 }
@@ -26,7 +25,7 @@ const getRouteRole = (roles, route) => {
  * @param method
  * @returns {boolean}
  */
-const hasInjected = (method) =>
+const hasInjected = method =>
   method.toString().indexOf('//--auth-inject') !== -1
 
 /**
@@ -38,7 +37,7 @@ const hasInjected = (method) =>
  * @param roles
  * @returns {boolean}
  */
-const auth = function (authConfig, permission, role, permissions, roles) {
+const auth = function(authConfig, permission, role, permissions, roles) {
   const { check, type } = authConfig
   if (check && typeof check === 'function') {
     return check.apply(this, [permission, role, permissions, roles])
@@ -58,7 +57,7 @@ const auth = function (authConfig, permission, role, permissions, roles) {
  * @param permission 权限
  * @returns {boolean}
  */
-const checkFromPermission = function (check, permission) {
+const checkFromPermission = function(check, permission) {
   return (
     permission &&
     permission.operation &&
@@ -72,7 +71,7 @@ const checkFromPermission = function (check, permission) {
  * @param roles 角色数组
  * @returns {boolean}
  */
-const checkFromRoles = function (check, roles) {
+const checkFromRoles = function(check, roles) {
   if (!roles) {
     return false
   }
@@ -85,7 +84,7 @@ const checkFromRoles = function (check, roles) {
   return false
 }
 
-const checkInject = function (el, binding, vnode) {
+const checkInject = function(el, binding, vnode) {
   const type = binding.arg
   const check = binding.value
   const instance = vnode.context
@@ -97,7 +96,7 @@ const checkInject = function (el, binding, vnode) {
   }
 }
 
-const addDisabled = function (el) {
+const addDisabled = function(el) {
   if (el.tagName === 'BUTTON') {
     el.disabled = true
   } else {
@@ -106,7 +105,7 @@ const addDisabled = function (el) {
   el.setAttribute('title', '无此权限')
 }
 
-const removeDisabled = function (el) {
+const removeDisabled = function(el) {
   el.disabled = false
   el.classList.remove('disabled')
   el.removeAttribute('title')
@@ -123,13 +122,13 @@ const AuthorityPlugin = {
       },
       unbind(el) {
         removeDisabled(el)
-      },
+      }
     })
     Vue.mixin({
       beforeCreate() {
         if (this.$options.authorize) {
           const authorize = this.$options.authorize
-          Object.keys(authorize).forEach((key) => {
+          Object.keys(authorize).forEach(key => {
             if (this.$options.methods[key]) {
               const method = this.$options.methods[key]
               if (!hasInjected(method)) {
@@ -139,7 +138,7 @@ const AuthorityPlugin = {
                     ? { check: authConfig }
                     : authConfig
                 const { check, type, onFailure } = authConfig
-                this.$options.methods[key] = function () {
+                this.$options.methods[key] = function() {
                   //--auth-inject
                   if (this.$auth(check, type)) {
                     return method.apply(this, arguments)
@@ -176,12 +175,12 @@ const AuthorityPlugin = {
             permission,
             role,
             permissions,
-            roles,
+            roles
           ])
-        },
-      },
+        }
+      }
     })
-  },
+  }
 }
 
 export default AuthorityPlugin

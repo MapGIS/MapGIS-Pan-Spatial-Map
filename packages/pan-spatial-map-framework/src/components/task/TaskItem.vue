@@ -7,7 +7,7 @@
 <script>
 export default {
   name: 'TaskItem',
-  props: ['content'],
+  props: ['content']
 }
 </script>
 

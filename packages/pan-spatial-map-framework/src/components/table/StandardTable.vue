@@ -36,7 +36,7 @@
         slot-scope="text, record, index"
         :slot="slot"
         v-for="slot in Object.keys($scopedSlots).filter(
-          (key) => key !== 'expandedRowRender'
+          key => key !== 'expandedRowRender'
         )"
       >
         <slot :name="slot" v-bind="{ text, record, index }"></slot>
@@ -67,19 +67,19 @@ export default {
     dataSource: Array,
     rowKey: {
       type: [String, Function],
-      default: 'key',
+      default: 'key'
     },
     pagination: {
       type: [Object, Boolean],
-      default: true,
+      default: true
     },
     selectedRows: Array,
     expandedRowKeys: Array,
-    expandedRowRender: Function,
+    expandedRowRender: Function
   },
   data() {
     return {
-      needTotalList: [],
+      needTotalList: []
     }
   },
   methods: {
@@ -89,11 +89,11 @@ export default {
     },
     initTotalList(columns) {
       const totalList = columns
-        .filter((item) => item.needTotal)
-        .map((item) => {
+        .filter(item => item.needTotal)
+        .map(item => {
           return {
             ...item,
-            total: 0,
+            total: 0
           }
         })
       return totalList
@@ -104,14 +104,14 @@ export default {
     },
     onChange(pagination, filters, sorter, { currentDataSource }) {
       this.$emit('change', pagination, filters, sorter, { currentDataSource })
-    },
+    }
   },
   created() {
     this.needTotalList = this.initTotalList(this.columns)
   },
   watch: {
     selectedRows(selectedRows) {
-      this.needTotalList = this.needTotalList.map((item) => {
+      this.needTotalList = this.needTotalList.map(item => {
         return {
           ...item,
           total: selectedRows.reduce((sum, val) => {
@@ -125,20 +125,20 @@ export default {
             }
             v = !isNaN(parseFloat(v)) ? parseFloat(v) : 0
             return sum + v
-          }, 0),
+          }, 0)
         }
       })
-    },
+    }
   },
   computed: {
     selectedRowKeys() {
-      return this.selectedRows.map((record) => {
+      return this.selectedRows.map(record => {
         return typeof this.rowKey === 'function'
           ? this.rowKey(record)
           : record[this.rowKey]
       })
-    },
-  },
+    }
+  }
 }
 </script>
 

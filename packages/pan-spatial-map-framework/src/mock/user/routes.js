@@ -16,23 +16,23 @@ Mock.mock(`${process.env.VUE_APP_API_BASE_URL}/routes`, 'get', () => {
               name: 'demo1',
               authority: {
                 permission: 'demo',
-                role: 'admin',
-              },
-            },
-          ],
+                role: 'admin'
+              }
+            }
+          ]
         },
         {
           router: 'parent2',
           children: [
             {
               router: 'demo',
-              name: 'demo2',
-            },
-          ],
+              name: 'demo2'
+            }
+          ]
         },
         {
           router: 'exception',
-          children: ['exp404', 'exp403', 'exp500'],
+          children: ['exp404', 'exp403', 'exp500']
         },
         {
           router: 'demo',
@@ -41,11 +41,11 @@ Mock.mock(`${process.env.VUE_APP_API_BASE_URL}/routes`, 'get', () => {
           name: '验权页面',
           authority: {
             permission: 'form',
-            role: 'manager',
-          },
-        },
-      ],
-    },
+            role: 'manager'
+          }
+        }
+      ]
+    }
   ]
   return result
 })

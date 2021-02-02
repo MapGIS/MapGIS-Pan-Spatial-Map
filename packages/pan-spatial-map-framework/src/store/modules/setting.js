@@ -21,7 +21,7 @@ export default {
     activatedFirst: undefined,
     customTitles,
     ...config,
-    ...localSetting,
+    ...localSetting
   },
   getters: {
     menuData(state, getters, rootState) {
@@ -36,7 +36,7 @@ export default {
       if (menuData.length > 0 && !menuData[0].fullPath) {
         formatFullPath(menuData)
       }
-      return menuData.map((item) => {
+      return menuData.map(item => {
         const menuItem = { ...item }
         delete menuItem.children
         return menuItem
@@ -47,9 +47,9 @@ export default {
       if (menuData.length > 0 && !menuData[0].fullPath) {
         formatFullPath(menuData)
       }
-      const current = menuData.find((menu) => menu.fullPath === activatedFirst)
+      const current = menuData.find(menu => menu.fullPath === activatedFirst)
       return (current && current.children) || []
-    },
+    }
   },
   mutations: {
     setDevice(state, isMobile) {
@@ -102,7 +102,7 @@ export default {
     },
     setCustomTitle(state, { path, title }) {
       if (title) {
-        const obj = state.customTitles.find((item) => item.path === path)
+        const obj = state.customTitles.find(item => item.path === path)
         if (obj) {
           obj.title = title
         } else {
@@ -113,6 +113,6 @@ export default {
           JSON.stringify(state.customTitles)
         )
       }
-    },
-  },
+    }
+  }
 }

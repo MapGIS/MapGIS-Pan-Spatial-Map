@@ -13,8 +13,8 @@ export default {
   name: 'CommonLayout',
   components: { PageFooter },
   computed: {
-    ...mapState('setting', ['footerLinks', 'copyright']),
-  },
+    ...mapState('setting', ['footerLinks', 'copyright'])
+  }
 }
 </script>
 
