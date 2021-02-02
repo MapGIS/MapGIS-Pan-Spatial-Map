@@ -217,7 +217,7 @@ export default {
       return this.columns.filter(item => item.searchAble)
     },
     searchIdPrefix() {
-      return this.table.id + '-ipt-'
+      return `${this.table.id  }-ipt-`
     }
   },
   methods: {
@@ -276,7 +276,7 @@ export default {
       if (col.search && col.search.format) {
         return col.search.format
       }
-      const dataType = col.dataType
+      const {dataType} = col
       switch (dataType) {
         case 'time':
           return 'HH:mm:ss'
@@ -357,7 +357,7 @@ export default {
     momentEqual(target, source, format) {
       if (target === source) {
         return true
-      } else if (
+      } if (
         target &&
         source &&
         target.format(format) === source.format(format)

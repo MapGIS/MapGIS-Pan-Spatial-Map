@@ -30,7 +30,7 @@ const METHOD = {
  * @param params 请求参数
  * @returns {Promise<AxiosResponse<T>>}
  */
-async function request(url, method, params, config) {
+function request(url, method, params, config) {
   switch (method) {
     case METHOD.GET:
       return axios.get(url, { params, ...config })
@@ -49,7 +49,7 @@ async function request(url, method, params, config) {
 function setAuthorization(auth, authType = AUTH_TYPE.BEARER) {
   switch (authType) {
     case AUTH_TYPE.BEARER:
-      Cookie.set(xsrfHeaderName, 'Bearer ' + auth.token, {
+      Cookie.set(xsrfHeaderName, `Bearer ${auth.token}`, {
         expires: auth.expireAt
       })
       break

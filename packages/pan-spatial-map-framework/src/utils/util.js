@@ -14,6 +14,7 @@ export function remove(arr, item) {
       return arr.splice(index, 1)
     }
   }
+  return arr
 }
 
 export function isRegExp(v) {
@@ -22,10 +23,10 @@ export function isRegExp(v) {
 
 export function enquireScreen(call) {
   const handler = {
-    match: function() {
+    match() {
       call && call(true)
     },
-    unmatch: function() {
+    unmatch() {
       call && call(false)
     }
   }

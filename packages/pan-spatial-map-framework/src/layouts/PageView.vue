@@ -14,9 +14,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import PageLayout from './PageLayout'
 import PageToggleTransition from '../components/transition/PageToggleTransition'
-import { mapState } from 'vuex'
 
 export default {
   name: 'PageView',

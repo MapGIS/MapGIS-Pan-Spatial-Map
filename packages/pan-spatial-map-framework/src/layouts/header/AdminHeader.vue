@@ -59,11 +59,11 @@
 </template>
 
 <script>
+import IMenu from '@/components/menu/menu'
+import { mapState, mapMutations } from 'vuex'
 import HeaderSearch from './HeaderSearch'
 import HeaderNotice from './HeaderNotice'
 import HeaderAvatar from './HeaderAvatar'
-import IMenu from '@/components/menu/menu'
-import { mapState, mapMutations } from 'vuex'
 
 export default {
   name: 'AdminHeader',
@@ -99,7 +99,7 @@ export default {
       return this.theme.mode
     },
     langAlias() {
-      let lang = this.langList.find(item => item.key == this.lang)
+      const lang = this.langList.find(item => item.key == this.lang)
       return lang.alias
     },
     menuWidth() {

@@ -50,7 +50,7 @@ export default {
             'topLeft',
             'bottomRight',
             'default'
-          ].indexOf(value) > -1
+          ].includes(value)
         )
       }
     },
@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     activeClass(isLeave) {
-      let animate = animates.find(item => this.animate == item.name)
+      const animate = animates.find(item => this.animate == item.name)
       if (animate == undefined) {
         return ''
       }
@@ -88,7 +88,7 @@ export default {
             : direction
         direction = direction[0].toUpperCase() + direction.substring(1)
       }
-      let t = isLeave ? 'Out' : 'In'
+      const t = isLeave ? 'Out' : 'In'
       return animate.name + t + direction
     },
     reversePosition(direction, directions) {

@@ -44,11 +44,11 @@ const auth = function(authConfig, permission, role, permissions, roles) {
   }
   if (type === 'permission') {
     return checkFromPermission(check, permission)
-  } else if (type === 'role') {
+  } if (type === 'role') {
     return checkFromRoles(check, role)
-  } else {
+  } 
     return checkFromPermission(check, permission) || checkFromRoles(check, role)
-  }
+  
 }
 
 /**
@@ -75,7 +75,7 @@ const checkFromRoles = function(check, roles) {
   if (!roles) {
     return false
   }
-  for (let role of roles) {
+  for (const role of roles) {
     const { operation } = role
     if (operation && operation.indexOf(check) !== -1) {
       return true
@@ -88,7 +88,7 @@ const checkInject = function(el, binding, vnode) {
   const type = binding.arg
   const check = binding.value
   const instance = vnode.context
-  const $auth = instance.$auth
+  const {$auth} = instance
   if (!$auth || !$auth(check, type)) {
     addDisabled(el)
   } else {
@@ -127,7 +127,7 @@ const AuthorityPlugin = {
     Vue.mixin({
       beforeCreate() {
         if (this.$options.authorize) {
-          const authorize = this.$options.authorize
+          const {authorize} = this.$options
           Object.keys(authorize).forEach(key => {
             if (this.$options.methods[key]) {
               const method = this.$options.methods[key]
@@ -139,18 +139,18 @@ const AuthorityPlugin = {
                     : authConfig
                 const { check, type, onFailure } = authConfig
                 this.$options.methods[key] = function() {
-                  //--auth-inject
+                  // --auth-inject
                   if (this.$auth(check, type)) {
                     return method.apply(this, arguments)
-                  } else {
+                  } 
                     if (onFailure && typeof onFailure === 'function') {
                       this[`$${check}Failure`] = onFailure
                       return this[`$${check}Failure`](check)
-                    } else {
+                    } 
                       this.$message.error(`对不起，您没有操作权限：${check}`)
-                    }
+                    
                     return 0
-                  }
+                  
                 }
               }
             }

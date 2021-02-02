@@ -10,6 +10,7 @@
 
 <script>
 import TagSelectOption from './TagSelectOption'
+
 export default {
   name: 'TagSelect',
   Option: TagSelectOption,
@@ -23,15 +24,15 @@ export default {
     }
   },
   watch: {
-    screenWidth: function() {
+    screenWidth() {
       this.showTrigger = this.needTrigger()
     },
-    collapsed: function(val) {
+    collapsed(val) {
       this.$el.style.maxHeight = val ? '39px' : '78px'
     }
   },
   mounted() {
-    let _this = this
+    const _this = this
     // 此处延迟执行，是为解决mouted未完全完成情况下引发的trigger显示bug
     setTimeout(() => {
       _this.showTrigger = _this.needTrigger()

@@ -1,20 +1,20 @@
 // 语句模式
 const MODE = {
-  STATEMENTS: 's', //语句模式
-  PHRASAL: 'p' //词组模式
+  STATEMENTS: 's', // 语句模式
+  PHRASAL: 'p' // 词组模式
 }
 
 const VueI18nPlugin = {
-  install: function(Vue) {
+  install(Vue) {
     Vue.mixin({
       methods: {
         $ta(syntaxKey, mode) {
-          let _mode = mode || MODE.STATEMENTS
-          let keys = syntaxKey.split('|')
-          let _this = this
-          let locale = this.$i18n.locale
+          const _mode = mode || MODE.STATEMENTS
+          const keys = syntaxKey.split('|')
+          const _this = this
+          const {locale} = this.$i18n
           let message = ''
-          let splitter = locale == 'US' ? ' ' : ''
+          const splitter = locale == 'US' ? ' ' : ''
           // 拼接 message
           keys.forEach(key => {
             message += _this.$t(key) + splitter

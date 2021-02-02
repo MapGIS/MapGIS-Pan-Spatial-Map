@@ -4,19 +4,20 @@ const patternTypes = [String, RegExp, Array]
 
 function matches(pattern, name) {
   if (Array.isArray(pattern)) {
-    if (pattern.indexOf(name) > -1) {
+    if (pattern.includes(name)) {
       return true
-    } else {
-      for (let item of pattern) {
-        if (isRegExp(item) && item.test(name)) {
-          return true
-        }
-      }
-      return false
     }
-  } else if (typeof pattern === 'string') {
-    return pattern.split(',').indexOf(name) > -1
-  } else if (isRegExp(pattern)) {
+    for (const item of pattern) {
+      if (isRegExp(item) && item.test(name)) {
+        return true
+      }
+    }
+    return false
+  }
+  if (typeof pattern === 'string') {
+    return pattern.split(',').includes(name)
+  }
+  if (isRegExp(pattern)) {
     return pattern.test(name)
   }
   /* istanbul ignore next */
@@ -93,7 +94,7 @@ export default {
     clearCaches: Array
   },
   watch: {
-    clearCaches: function(val) {
+    clearCaches(val) {
       if (val && val.length > 0) {
         const { cache, keys } = this
         val.forEach(key => {

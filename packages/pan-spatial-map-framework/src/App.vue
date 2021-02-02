@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import { enquireScreen } from './utils/util'
 import { mapState, mapMutations } from 'vuex'
 import themeUtil from '@/utils/themeUtil'
 import { getI18nKey } from '@/utils/routerUtil'
+import { enquireScreen } from './utils/util'
 
 export default {
   name: 'App',
@@ -37,18 +37,18 @@ export default {
       this.setHtmlTitle()
     },
     'theme.mode': function(val) {
-      let closeMessage = this.$message.loading(
+      const closeMessage = this.$message.loading(
         `您选择了主题模式 ${val}, 正在切换...`
       )
       themeUtil.changeThemeColor(this.theme.color, val).then(closeMessage)
     },
     'theme.color': function(val) {
-      let closeMessage = this.$message.loading(
+      const closeMessage = this.$message.loading(
         `您选择了主题色 ${val}, 正在切换...`
       )
       themeUtil.changeThemeColor(val, this.theme.mode).then(closeMessage)
     },
-    layout: function() {
+    layout() {
       window.dispatchEvent(new Event('resize'))
     }
   },
@@ -85,7 +85,7 @@ export default {
         route.path === '/'
           ? 'home.name'
           : getI18nKey(route.matched[route.matched.length - 1].path)
-      document.title = process.env.VUE_APP_NAME + ' | ' + this.$t(key)
+      document.title = `${process.env.VUE_APP_NAME  } | ${  this.$t(key)}`
     },
     popContainer() {
       return document.getElementById('popContainer')

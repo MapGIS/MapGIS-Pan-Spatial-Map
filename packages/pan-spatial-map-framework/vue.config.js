@@ -1,9 +1,9 @@
-let path = require('path')
+const path = require('path')
 const webpack = require('webpack')
 const ThemeColorReplacer = require('webpack-theme-color-replacer')
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
 const { getThemeColors, modifyVars } = require('./src/utils/themeUtil')
 const { resolveCss } = require('./src/utils/theme-color-replacer-extend')
-const CompressionWebpackPlugin = require('compression-webpack-plugin')
 
 const productionGzipExtensions = ['js', 'css']
 const isProd = process.env.NODE_ENV === 'production'
@@ -72,7 +72,7 @@ module.exports = {
       config.plugins.push(
         new CompressionWebpackPlugin({
           algorithm: 'gzip',
-          test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+          test: new RegExp(`\\.(${  productionGzipExtensions.join('|')  })$`),
           threshold: 10240,
           minRatio: 0.8
         })

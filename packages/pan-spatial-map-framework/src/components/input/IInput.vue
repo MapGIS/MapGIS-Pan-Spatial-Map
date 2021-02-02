@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     lenSuffix() {
-      return this.maxLength && `${(this.sValue + '').length}/${this.maxLength}`
+      return this.maxLength && `${(`${this.sValue  }`).length}/${this.maxLength}`
     }
   },
   methods: {

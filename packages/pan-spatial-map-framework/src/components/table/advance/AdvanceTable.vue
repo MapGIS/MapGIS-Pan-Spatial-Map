@@ -87,6 +87,7 @@
 import ActionSize from '@/components/table/advance/ActionSize'
 import ActionColumns from '@/components/table/advance/ActionColumns'
 import SearchArea from '@/components/table/advance/SearchArea'
+
 export default {
   name: 'AdvanceTable',
   components: { SearchArea, ActionColumns, ActionSize },
@@ -174,13 +175,13 @@ export default {
       if (el.requestFullscreen) {
         el.requestFullscreen()
         return true
-      } else if (el.webkitRequestFullScreen) {
+      } if (el.webkitRequestFullScreen) {
         el.webkitRequestFullScreen()
         return true
-      } else if (el.mozRequestFullScreen) {
+      } if (el.mozRequestFullScreen) {
         el.mozRequestFullScreen()
         return true
-      } else if (el.msRequestFullscreen) {
+      } if (el.msRequestFullscreen) {
         el.msRequestFullscreen()
         return true
       }

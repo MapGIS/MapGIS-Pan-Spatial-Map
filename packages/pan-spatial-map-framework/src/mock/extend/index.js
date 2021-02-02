@@ -1,7 +1,7 @@
 import Mock from 'mockjs'
 import { positions, avatars, admins } from '../common'
 
-const Random = Mock.Random
+const {Random} = Mock
 
 const timeList = [
   {

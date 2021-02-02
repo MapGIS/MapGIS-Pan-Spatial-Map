@@ -6,6 +6,7 @@
 
 <script>
 import { mapState } from 'vuex'
+
 export default {
   name: 'Demo',
   i18n: require('./i18n'),

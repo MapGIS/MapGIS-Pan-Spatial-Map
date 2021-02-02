@@ -6,17 +6,17 @@
  */
 function formatConfig(obj, dep) {
   dep = dep || 1
-  const LN = '\n',
-    TAB = '  '
+  const LN = '\n';
+    const TAB = '  '
   let indent = ''
   for (let i = 0; i < dep; i++) {
     indent += TAB
   }
-  let isArray = false,
-    arrayLastIsObj = false
-  let str = '',
-    prefix = '{',
-    subfix = '}'
+  let isArray = false;
+    let arrayLastIsObj = false
+  let str = '';
+    let prefix = '{';
+    let subfix = '}'
   if (Array.isArray(obj)) {
     isArray = true
     prefix = '['
@@ -24,17 +24,17 @@ function formatConfig(obj, dep) {
     str = obj
       .map((item, index) => {
         let format = ''
-        if (typeof item == 'function') {
+        if (typeof item === 'function') {
           //
-        } else if (typeof item == 'object') {
+        } else if (typeof item === 'object') {
           arrayLastIsObj = true
           format = `${LN}${indent}${formatConfig(item, dep + 1)},`
         } else if (
-          (typeof item == 'number' && !isNaN(item)) ||
-          typeof item == 'boolean'
+          (typeof item === 'number' && !isNaN(item)) ||
+          typeof item === 'boolean'
         ) {
           format = `${item},`
-        } else if (typeof item == 'string') {
+        } else if (typeof item === 'string') {
           format = `'${item}',`
         }
         if (index == obj.length - 1) {
@@ -45,21 +45,21 @@ function formatConfig(obj, dep) {
         return format
       })
       .join('')
-  } else if (typeof obj != 'function' && typeof obj == 'object') {
+  } else if (typeof obj !== 'function' && typeof obj === 'object') {
     str = Object.keys(obj)
       .map((key, index, keys) => {
         const val = obj[key]
         let format = ''
-        if (typeof val == 'function') {
+        if (typeof val === 'function') {
           //
-        } else if (typeof val == 'object') {
+        } else if (typeof val === 'object') {
           format = `${LN}${indent}${key}: ${formatConfig(val, dep + 1)},`
         } else if (
-          (typeof val == 'number' && !isNaN(val)) ||
-          typeof val == 'boolean'
+          (typeof val === 'number' && !isNaN(val)) ||
+          typeof val === 'boolean'
         ) {
           format = `${LN}${indent}${key}: ${val},`
-        } else if (typeof val == 'string') {
+        } else if (typeof val === 'string') {
           format = `${LN}${indent}${key}: '${val}',`
         }
         if (index == keys.length - 1) {

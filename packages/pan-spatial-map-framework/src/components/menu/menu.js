@@ -30,7 +30,7 @@
  *     HK: {dashboard: {name: '監控中心'}}
  *   }
  * }
- **/
+ * */
 import Menu from 'ant-design-vue/es/menu'
 import Icon from 'ant-design-vue/es/icon'
 import fastEqual from 'fast-deep-equal'
@@ -82,7 +82,7 @@ export default {
     }
     // 自定义国际化配置
     if (this.i18n && this.i18n.messages) {
-      const messages = this.i18n.messages
+      const {messages} = this.i18n
       Object.keys(messages).forEach(key => {
         this.$i18n.mergeLocaleMessage(key, messages[key])
       })
@@ -96,7 +96,7 @@ export default {
     },
     i18n(val) {
       if (val && val.messages) {
-        const messages = this.i18n.messages
+        const {messages} = this.i18n
         Object.keys(messages).forEach(key => {
           this.$i18n.mergeLocaleMessage(key, messages[key])
         })
@@ -110,7 +110,7 @@ export default {
         this.sOpenKeys = this.cachedOpenKeys
       }
     },
-    $route: function() {
+    $route() {
       this.updateMenu()
     },
     sOpenKeys(val) {
@@ -119,7 +119,7 @@ export default {
     }
   },
   methods: {
-    renderIcon: function(h, icon, key) {
+    renderIcon(h, icon, key) {
       if (this.$scopedSlots.icon && icon && icon !== 'none') {
         const vnodes = this.$scopedSlots.icon({ icon, key })
         vnodes.forEach(vnode => {
@@ -130,7 +130,7 @@ export default {
       }
       return !icon || icon == 'none' ? null : h(Icon, { props: { type: icon } })
     },
-    renderMenuItem: function(h, menu) {
+    renderMenuItem(h, menu) {
       let tag = 'router-link'
       let config = {
         props: { to: menu.fullPath },
@@ -159,9 +159,9 @@ export default {
         ])
       ])
     },
-    renderSubMenu: function(h, menu) {
-      let this_ = this
-      let subItem = [
+    renderSubMenu(h, menu) {
+      const this_ = this
+      const subItem = [
         h(
           'span',
           {
@@ -180,17 +180,17 @@ export default {
           ]
         )
       ]
-      let itemArr = []
+      const itemArr = []
       menu.children.forEach(function(item) {
         itemArr.push(this_.renderItem(h, item))
       })
       return h(SubMenu, { key: menu.fullPath }, subItem.concat(itemArr))
     },
-    renderItem: function(h, menu) {
-      const meta = menu.meta
+    renderItem(h, menu) {
+      const {meta} = menu
       if (!meta || !meta.invisible) {
         let renderChildren = false
-        const children = menu.children
+        const {children} = menu
         if (children != undefined) {
           for (let i = 0; i < children.length; i++) {
             const childMeta = children[i].meta
@@ -205,9 +205,9 @@ export default {
           : this.renderMenuItem(h, menu)
       }
     },
-    renderMenu: function(h, menuTree) {
-      let this_ = this
-      let menuArr = []
+    renderMenu(h, menuTree) {
+      const this_ = this
+      const menuArr = []
       menuTree.forEach(function(menu, i) {
         menuArr.push(this_.renderItem(h, menu, '0', i))
       })
@@ -215,8 +215,8 @@ export default {
     },
     formatOptions(options, parentPath) {
       options.forEach(route => {
-        let isFullPath = route.path.substring(0, 1) == '/'
-        route.fullPath = isFullPath ? route.path : parentPath + '/' + route.path
+        const isFullPath = route.path.substring(0, 1) == '/'
+        route.fullPath = isFullPath ? route.path : `${parentPath  }/${  route.path}`
         if (route.children) {
           this.formatOptions(route.children, route.fullPath)
         }

@@ -118,7 +118,7 @@ export default {
       this.excludeKeys = []
       this.loadCacheConfig(val)
     },
-    $route: function(newRoute) {
+    $route(newRoute) {
       this.activePage = newRoute.fullPath
       if (!this.multiPage) {
         this.pageList = [this.createPage(newRoute)]
@@ -134,7 +134,7 @@ export default {
         })
       }
     },
-    multiPage: function(newVal) {
+    multiPage(newVal) {
       if (!newVal) {
         this.pageList = [this.createPage(this.$route)]
         this.removeListener()
@@ -155,7 +155,7 @@ export default {
       if (this.pageList.length === 1) {
         return this.$message.warning(this.$t('warn'))
       }
-      //清除缓存
+      // 清除缓存
       let index = this.pageList.findIndex(item => item.fullPath === key)
       this.clearCaches = this.pageList
         .splice(index, 1)

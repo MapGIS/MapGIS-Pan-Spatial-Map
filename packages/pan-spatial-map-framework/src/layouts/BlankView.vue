@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import PageToggleTransition from '../components/transition/PageToggleTransition'
 import { mapState } from 'vuex'
+import PageToggleTransition from '../components/transition/PageToggleTransition'
 
 export default {
   name: 'BlankView',

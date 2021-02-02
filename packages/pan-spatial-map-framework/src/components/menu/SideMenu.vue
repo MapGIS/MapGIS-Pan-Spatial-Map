@@ -24,8 +24,9 @@
 </template>
 
 <script>
-import IMenu from './menu'
 import { mapState } from 'vuex'
+import IMenu from './menu'
+
 export default {
   name: 'SideMenu',
   components: { IMenu },

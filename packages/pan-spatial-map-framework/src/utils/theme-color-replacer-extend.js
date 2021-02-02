@@ -1,7 +1,7 @@
 const { cssResolve } = require('../config/replacer')
 // 修正 webpack-theme-color-replacer 插件提取的 css 结果
 function resolveCss(output, srcArr) {
-  let regExps = []
+  const regExps = []
   // 提取 resolve 配置中所有的正则配置
   Object.keys(cssResolve).forEach(key => {
     let isRegExp = false
@@ -21,22 +21,22 @@ function resolveCss(output, srcArr) {
   srcArr = dropDuplicate(srcArr)
 
   // 处理 css
-  let outArr = []
+  const outArr = []
   srcArr.forEach(text => {
     // 转换为 css 对象
-    let cssObj = parseCssObj(text)
+    const cssObj = parseCssObj(text)
     // 根据selector匹配配置，匹配成功，则按配置处理 css
     if (cssResolve[cssObj.selector] != undefined) {
-      let cfg = cssResolve[cssObj.selector]
+      const cfg = cssResolve[cssObj.selector]
       if (cfg) {
         outArr.push(cfg.resolve(text, cssObj))
       }
     } else {
       let cssText = ''
       // 匹配不成功，则测试是否有匹配的正则配置，有则按正则对应的配置处理
-      for (let regExp of regExps) {
+      for (const regExp of regExps) {
         if (regExp[0].test(cssObj.selector)) {
-          let cssCfg = regExp[1]
+          const cssCfg = regExp[1]
           cssText = cssCfg ? cssCfg.resolve(text, cssObj) : ''
           break
         }
@@ -54,9 +54,9 @@ function resolveCss(output, srcArr) {
 
 // 数组去重
 function dropDuplicate(arr) {
-  let map = {}
-  let r = []
-  for (let s of arr) {
+  const map = {}
+  const r = []
+  for (const s of arr) {
     if (!map[s]) {
       r.push(s)
       map[s] = 1
@@ -75,7 +75,7 @@ function dropDuplicate(arr) {
  * }}
  */
 function parseCssObj(cssText) {
-  let css = {}
+  const css = {}
   const ruleIndex = cssText.indexOf('{')
   css.selector = cssText.substring(0, ruleIndex)
   const ruleBody = cssText.substring(ruleIndex + 1, cssText.length - 1)
@@ -84,7 +84,7 @@ function parseCssObj(cssText) {
   css.toText = function() {
     let body = ''
     this.rules.forEach(item => {
-      body += item + ';'
+      body += `${item};`
     })
     return `${this.selector}{${body}}`
   }

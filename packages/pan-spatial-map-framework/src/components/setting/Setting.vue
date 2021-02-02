@@ -213,7 +213,6 @@
 </template>
 
 <script>
-import SettingItem from './SettingItem'
 import { ColorCheckbox, ImgCheckbox } from '@/components/checkbox'
 import Clipboard from 'clipboard'
 import { mapState, mapMutations } from 'vuex'
@@ -222,6 +221,7 @@ import { setting } from '@/config/default'
 import sysConfig from '@/config/config'
 import fastEqual from 'fast-deep-equal'
 import deepMerge from 'deepmerge'
+import SettingItem from './SettingItem'
 
 const ColorCheckboxGroup = ColorCheckbox.Group
 const ImgCheckboxGroup = ImgCheckbox.Group
@@ -270,15 +270,15 @@ export default {
       return this.$el.parentNode
     },
     copyCode() {
-      let config = this.extractConfig(false)
+      const config = this.extractConfig(false)
       this.copyConfig = `// 自定义配置，参考 ./default/setting.config.js，需要自定义的属性在这里配置即可
       module.exports = ${formatConfig(config)}
       `
-      let clipboard = new Clipboard('#copyBtn')
+      const clipboard = new Clipboard('#copyBtn')
       clipboard.on('success', () => {
         this.$message
           .success(
-            `复制成功，覆盖文件 src/config/config.js 然后重启项目即可生效`
+            '复制成功，覆盖文件 src/config/config.js 然后重启项目即可生效'
           )
           .then(() => {
             const localConfig = localStorage.getItem(
@@ -315,14 +315,14 @@ export default {
         }
       })
     },
-    //提取配置
+    // 提取配置
     extractConfig(local = false) {
-      let config = {}
-      let mySetting = this.$store.state.setting
-      let dftSetting = local ? deepMerge(setting, sysConfig) : setting
+      const config = {}
+      const mySetting = this.$store.state.setting
+      const dftSetting = local ? deepMerge(setting, sysConfig) : setting
       Object.keys(mySetting).forEach(key => {
-        const dftValue = dftSetting[key],
-          myValue = mySetting[key]
+        const dftValue = dftSetting[key];
+          const myValue = mySetting[key]
         if (dftValue != undefined && !fastEqual(dftValue, myValue)) {
           config[key] = myValue
         }

@@ -29,7 +29,7 @@ const TabsPagePlugin = {
       },
       computed: {
         customTitle() {
-          const customTitles = this.$store.state.setting.customTitles
+          const {customTitles} = this.$store.state.setting
           const path = this.$route.path.split('?')[0]
           const custom = customTitles.find(item => item.path === path)
           return custom && custom.title

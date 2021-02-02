@@ -5,7 +5,7 @@ const {
   getAntdColors,
   getThemeToggleColors,
   getFunctionalColors
-} = require('../utils/colors')
+} = require('./colors')
 const { ANTD } = require('../config/default')
 
 function getThemeColors(color, $theme) {
@@ -26,14 +26,14 @@ function getThemeColors(color, $theme) {
 }
 
 function changeThemeColor(newColor, $theme) {
-  let promise = client.changer.changeColor({
+  const promise = client.changer.changeColor({
     newColors: getThemeColors(newColor, $theme)
   })
   return promise
 }
 
 function modifyVars(color) {
-  let _color = color || theme.color
+  const _color = color || theme.color
   const palettes = getAntdColors(_color, theme.mode)
   const menuColors = getMenuColors(_color, theme.mode)
   const { success, warning, error } = getFunctionalColors(theme.mode)

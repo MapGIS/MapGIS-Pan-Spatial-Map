@@ -99,6 +99,23 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'prefer-promise-reject-errors': 'off',
 
+    eqeqeq: 'off',
+    'global-require': 'off',
+    'no-unused-expressions': 'off',
+    'prefer-rest-params': 'off',
+    'prefer-destructuring': 'off',
+    'no-return-assign': 'off',
+    'no-shadow': 'off',
+    'no-nested-ternary': 'off',
+    'no-restricted-syntax': 'off',
+    'no-extend-native': 'off',
+    'no-eval': 'off',
+    'no-new-object': 'off',
+    'no-restricted-globals': 'off',
+    'consistent-return': 'off',
+    'import/order': 'off',
+    'guard-for-in': 'off',
+
     // TypeScript
     quotes: ['warn', 'single'],
     '@typescript-eslint/explicit-function-return-type': 'off',

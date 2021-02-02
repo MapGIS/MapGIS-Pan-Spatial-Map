@@ -71,12 +71,12 @@
 </template>
 
 <script>
+import { mapState, mapMutations, mapGetters } from 'vuex'
 import AdminHeader from './header/AdminHeader'
 import PageFooter from './footer/PageFooter'
 import Drawer from '../components/tool/Drawer'
 import SideMenu from '../components/menu/SideMenu'
 import Setting from '../components/setting/Setting'
-import { mapState, mapMutations, mapGetters } from 'vuex'
 
 // const minHeight = window.innerHeight - 64 - 122
 
@@ -127,11 +127,11 @@ export default {
       return this.collapsed ? '80px' : '256px'
     },
     headerStyle() {
-      let width =
+      const width =
         this.fixedHeader && this.layout !== 'head' && !this.isMobile
           ? `calc(100% - ${this.sideMenuWidth})`
           : '100%'
-      let position = this.fixedHeader ? 'fixed' : 'static'
+      const position = this.fixedHeader ? 'fixed' : 'static'
       return `width: ${width}; position: ${position};`
     },
     headMenuData() {
@@ -153,10 +153,10 @@ export default {
     },
     setActivated(route) {
       if (this.layout === 'mix') {
-        let matched = route.matched
+        let {matched} = route
         matched = matched.slice(0, matched.length - 1)
         const { firstMenu } = this
-        for (let menu of firstMenu) {
+        for (const menu of firstMenu) {
           if (matched.findIndex(item => item.path === menu.fullPath) !== -1) {
             this.setActivatedFirst(menu.fullPath)
             break

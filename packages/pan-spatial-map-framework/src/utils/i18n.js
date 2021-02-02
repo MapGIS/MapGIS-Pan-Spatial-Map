@@ -12,7 +12,7 @@ import { getI18nKey } from '@/utils/routerUtil'
  */
 function initI18n(locale, fallback) {
   Vue.use(VueI18n)
-  let i18nOptions = {
+  const i18nOptions = {
     locale,
     fallbackLocale: fallback,
     silentFallbackWarn: true
@@ -29,8 +29,8 @@ function initI18n(locale, fallback) {
  */
 function generateI18n(lang, routes, valueKey) {
   routes.forEach(route => {
-    let keys = getI18nKey(route.fullPath).split('.')
-    let value =
+    const keys = getI18nKey(route.fullPath).split('.')
+    const value =
       valueKey === 'path'
         ? route[valueKey]
             .split('/')
@@ -52,12 +52,12 @@ function generateI18n(lang, routes, valueKey) {
  */
 function formatFullPath(routes, parentPath = '') {
   routes.forEach(route => {
-    let isFullPath = route.path.substring(0, 1) === '/'
+    const isFullPath = route.path.substring(0, 1) === '/'
     route.fullPath = isFullPath
       ? route.path
       : parentPath === '/'
       ? parentPath + route.path
-      : parentPath + '/' + route.path
+      : `${parentPath  }/${  route.path}`
     if (route.children) {
       formatFullPath(route.children, route.fullPath)
     }
@@ -75,7 +75,7 @@ function mergeI18nFromRoutes(i18n, routes) {
   const US = generateI18n(new Object(), routes, 'path')
   i18n.mergeLocaleMessage('CN', CN)
   i18n.mergeLocaleMessage('US', US)
-  const messages = routesI18n.messages
+  const {messages} = routesI18n
   Object.keys(messages).forEach(lang => {
     i18n.mergeLocaleMessage(lang, messages[lang])
   })

@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
-import { initRouter } from './router'
 import './theme/index.less'
 import Antd from 'ant-design-vue'
 import Viser from 'viser-vue'
 import '@/mock'
-import store from './store'
 import 'animate.css/source/animate.css'
 import Plugins from '@/plugins'
 import { initI18n } from '@/utils/i18n'
 import bootstrap from '@/bootstrap'
+import store from './store'
+import { initRouter } from './router'
 import 'moment/locale/zh-cn'
 
 const router = initRouter(store.state.setting.asyncRoutes)

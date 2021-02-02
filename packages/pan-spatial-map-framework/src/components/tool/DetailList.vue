@@ -15,6 +15,7 @@
 
 <script>
 import ACol from 'ant-design-vue/es/grid/Col'
+
 const Item = {
   name: 'DetailListItem',
   props: {
@@ -76,7 +77,7 @@ const responsive = {
 
 export default {
   name: 'DetailList',
-  Item: Item,
+  Item,
   props: {
     title: {
       type: String,

@@ -14,7 +14,7 @@ const Group = {
       type: String,
       default: 'center',
       validator(value) {
-        return ['left', 'center', 'right'].indexOf(value) != -1
+        return ['left', 'center', 'right'].includes(value)
       }
     }
   },
@@ -35,11 +35,11 @@ const Group = {
 
 export default {
   name: 'AStepItem',
-  Group: Group,
+  Group,
   props: ['title', 'icon', 'link', 'titleStyle', 'iconStyle'],
   methods: {
     go() {
-      const link = this.link
+      const {link} = this
       if (link) {
         this.$router.push(link)
       }

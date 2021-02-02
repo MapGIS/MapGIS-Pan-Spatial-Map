@@ -4,8 +4,8 @@ import Router from 'vue-router'
 import deepMerge from 'deepmerge'
 import basicOptions from '@/router/async/config.async'
 
-//应用配置
-let appOptions = {
+// 应用配置
+const appOptions = {
   router: undefined,
   i18n: undefined,
   store: undefined
@@ -28,11 +28,11 @@ function setAppOptions(options) {
  * @param routerMap 本地路由组件注册配置
  */
 function parseRoutes(routesConfig, routerMap) {
-  let routes = []
+  const routes = []
   routesConfig.forEach(item => {
     // 获取注册在 routerMap 中的 router，初始化 routeCfg
-    let router = undefined,
-      routeCfg = {}
+    let router;
+      let routeCfg = {}
     if (typeof item === 'string') {
       router = routerMap[item]
       routeCfg = { path: router.path || item, router: item }
@@ -92,8 +92,8 @@ function parseRoutes(routesConfig, routerMap) {
  * @param routesConfig {RouteConfig[]} 路由配置
  */
 function loadRoutes(routesConfig) {
-  //兼容 0.6.1 以下版本
-  /*************** 兼容 version < v0.6.1 *****************/
+  // 兼容 0.6.1 以下版本
+  /** ************* 兼容 version < v0.6.1 **************** */
   if (arguments.length > 0) {
     const arg0 = arguments[0]
     if (arg0.router || arg0.i18n || arg0.store) {
@@ -106,7 +106,7 @@ function loadRoutes(routesConfig) {
       )
     }
   }
-  /*************** 兼容 version < v0.6.1 *****************/
+  /** ************* 兼容 version < v0.6.1 **************** */
 
   // 应用配置
   const { router, store, i18n } = appOptions
@@ -118,7 +118,7 @@ function loadRoutes(routesConfig) {
     routesConfig = store.getters['account/routesConfig']
   }
   // 如果开启了异步路由，则加载异步路由配置
-  const asyncRoutes = store.state.setting.asyncRoutes
+  const {asyncRoutes} = store.state.setting
   if (asyncRoutes) {
     if (routesConfig && routesConfig.length > 0) {
       const routes = parseRoutes(routesConfig, routerMap)
@@ -198,7 +198,7 @@ function formatRoutes(routes) {
   routes.forEach(route => {
     const { path } = route
     if (!path.startsWith('/') && path !== '*') {
-      route.path = '/' + path
+      route.path = `/${  path}`
     }
   })
   formatAuthority(routes)
@@ -211,7 +211,7 @@ function formatRoutes(routes) {
  */
 function formatAuthority(routes, pAuthorities = []) {
   routes.forEach(route => {
-    const meta = route.meta
+    const {meta} = route
     const defaultAuthority = pAuthorities[pAuthorities.length - 1] || {
       permission: '*'
     }

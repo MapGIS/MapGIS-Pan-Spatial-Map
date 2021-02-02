@@ -7,6 +7,7 @@
 <script>
 import AAvatar from 'ant-design-vue/es/avatar/Avatar'
 import ATooltip from 'ant-design-vue/es/tooltip/Tooltip'
+
 const Item = {
   name: 'AvatarListItem',
   props: {
@@ -26,7 +27,7 @@ const Item = {
   },
   methods: {
     renderAvatar(h, size, src) {
-      return h(AAvatar, { props: { size: size, src: src } }, [])
+      return h(AAvatar, { props: { size, src } }, [])
     }
   },
   render(h) {
@@ -40,7 +41,7 @@ const Item = {
 }
 export default {
   name: 'AvatarList',
-  Item: Item
+  Item
 }
 </script>
 

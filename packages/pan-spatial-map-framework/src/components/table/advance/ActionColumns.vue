@@ -182,7 +182,7 @@ export default {
       return conditions
     },
     formatColumns(columns) {
-      for (let col of columns) {
+      for (const col of columns) {
         if (col.visible === undefined) {
           this.$set(col, 'visible', true)
         }
