@@ -175,13 +175,16 @@ export default {
       if (el.requestFullscreen) {
         el.requestFullscreen()
         return true
-      } if (el.webkitRequestFullScreen) {
+      }
+      if (el.webkitRequestFullScreen) {
         el.webkitRequestFullScreen()
         return true
-      } if (el.mozRequestFullScreen) {
+      }
+      if (el.mozRequestFullScreen) {
         el.mozRequestFullScreen()
         return true
-      } if (el.msRequestFullscreen) {
+      }
+      if (el.msRequestFullscreen) {
         el.msRequestFullscreen()
         return true
       }

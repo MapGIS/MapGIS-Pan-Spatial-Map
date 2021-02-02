@@ -85,7 +85,7 @@ export default {
         route.path === '/'
           ? 'home.name'
           : getI18nKey(route.matched[route.matched.length - 1].path)
-      document.title = `${process.env.VUE_APP_NAME  } | ${  this.$t(key)}`
+      document.title = `${process.env.VUE_APP_NAME} | ${this.$t(key)}`
     },
     popContainer() {
       return document.getElementById('popContainer')

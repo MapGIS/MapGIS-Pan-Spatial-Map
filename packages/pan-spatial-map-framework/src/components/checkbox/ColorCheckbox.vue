@@ -53,15 +53,15 @@ const Group = {
           this.values = this.values.filter(item => item != option.value)
         }
       } else if (!this.multiple) {
-          this.values = [option.value]
-          this.options.forEach(item => {
-            if (item.value != option.value) {
-              item.sChecked = false
-            }
-          })
-        } else {
-          this.values.push(option.value)
-        }
+        this.values = [option.value]
+        this.options.forEach(item => {
+          if (item.value != option.value) {
+            item.sChecked = false
+          }
+        })
+      } else {
+        this.values.push(option.value)
+      }
     }
   },
   render(h) {
@@ -103,14 +103,14 @@ export default {
         checked: this.sChecked
       }
       this.$emit('change', value)
-      const {groupContext} = this
+      const { groupContext } = this
       if (groupContext) {
         groupContext.handleChange(value)
       }
     }
   },
   created() {
-    const {groupContext} = this
+    const { groupContext } = this
     if (groupContext) {
       groupContext.options.push(this)
     }
@@ -122,14 +122,14 @@ export default {
       }
     },
     initChecked() {
-      const {groupContext} = this
+      const { groupContext } = this
       if (!groupContext) {
         return this.checked
-      } if (groupContext.multiple) {
+      }
+      if (groupContext.multiple) {
         return groupContext.defaultValues.indexOf(this.value) > -1
-      } 
-        return groupContext.defaultValues[0] == this.value
-      
+      }
+      return groupContext.defaultValues[0] == this.value
     }
   }
 }

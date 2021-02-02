@@ -29,29 +29,27 @@ export default {
     direction: {
       type: String,
       validator(value) {
-        return (
-          [
-            'x',
-            'y',
-            'left',
-            'right',
-            'up',
-            'down',
-            'downLeft',
-            'upRight',
-            'downRight',
-            'upLeft',
-            'downBig',
-            'upBig',
-            'downLeft',
-            'downRight',
-            'topRight',
-            'bottomLeft',
-            'topLeft',
-            'bottomRight',
-            'default'
-          ].includes(value)
-        )
+        return [
+          'x',
+          'y',
+          'left',
+          'right',
+          'up',
+          'down',
+          'downLeft',
+          'upRight',
+          'downRight',
+          'upLeft',
+          'downBig',
+          'upBig',
+          'downLeft',
+          'downRight',
+          'topRight',
+          'bottomLeft',
+          'topLeft',
+          'bottomRight',
+          'default'
+        ].includes(value)
       }
     },
     reverse: {

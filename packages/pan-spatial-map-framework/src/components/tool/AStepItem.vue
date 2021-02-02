@@ -39,7 +39,7 @@ export default {
   props: ['title', 'icon', 'link', 'titleStyle', 'iconStyle'],
   methods: {
     go() {
-      const {link} = this
+      const { link } = this
       if (link) {
         this.$router.push(link)
       }

@@ -19,7 +19,7 @@ module.exports = {
       closeRight: 'close right',
       closeOthers: 'close others',
       refresh: 'refresh the page',
-      warn: 'This is the last page, you can\'t close it'
+      warn: "This is the last page, you can't close it"
     }
   }
 }

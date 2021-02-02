@@ -321,8 +321,8 @@ export default {
       const mySetting = this.$store.state.setting
       const dftSetting = local ? deepMerge(setting, sysConfig) : setting
       Object.keys(mySetting).forEach(key => {
-        const dftValue = dftSetting[key];
-          const myValue = mySetting[key]
+        const dftValue = dftSetting[key]
+        const myValue = mySetting[key]
         if (dftValue != undefined && !fastEqual(dftValue, myValue)) {
           config[key] = myValue
         }

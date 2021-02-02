@@ -153,7 +153,7 @@ export default {
     },
     setActivated(route) {
       if (this.layout === 'mix') {
-        let {matched} = route
+        let { matched } = route
         matched = matched.slice(0, matched.length - 1)
         const { firstMenu } = this
         for (const menu of firstMenu) {

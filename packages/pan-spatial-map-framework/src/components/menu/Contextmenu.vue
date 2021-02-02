@@ -40,8 +40,8 @@ export default {
   computed: {
     style() {
       return {
-        left: `${this.left  }px`,
-        top: `${this.top  }px`
+        left: `${this.left}px`,
+        top: `${this.top}px`
       }
     }
   },

@@ -6,17 +6,17 @@
  */
 function formatConfig(obj, dep) {
   dep = dep || 1
-  const LN = '\n';
-    const TAB = '  '
+  const LN = '\n'
+  const TAB = '  '
   let indent = ''
   for (let i = 0; i < dep; i++) {
     indent += TAB
   }
-  let isArray = false;
-    let arrayLastIsObj = false
-  let str = '';
-    let prefix = '{';
-    let subfix = '}'
+  let isArray = false
+  let arrayLastIsObj = false
+  let str = ''
+  let prefix = '{'
+  let subfix = '}'
   if (Array.isArray(obj)) {
     isArray = true
     prefix = '['

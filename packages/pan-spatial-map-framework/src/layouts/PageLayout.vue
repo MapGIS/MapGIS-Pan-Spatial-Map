@@ -90,7 +90,7 @@ export default {
       return this.$t(getI18nKey(route.matched[route.matched.length - 1].path))
     },
     breadcrumb() {
-      const {page} = this
+      const { page } = this
       const breadcrumb = page && page.breadcrumb
       if (breadcrumb) {
         const i18nBreadcrumb = []
@@ -98,9 +98,8 @@ export default {
           i18nBreadcrumb.push(this.$t(item))
         })
         return i18nBreadcrumb
-      } 
-        return this.getRouteBreadcrumb()
-      
+      }
+      return this.getRouteBreadcrumb()
     },
     marginCorrect() {
       return this.multiPage ? 24 : 0

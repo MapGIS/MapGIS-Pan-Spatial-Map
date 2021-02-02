@@ -82,7 +82,7 @@ export default {
     }
     // 自定义国际化配置
     if (this.i18n && this.i18n.messages) {
-      const {messages} = this.i18n
+      const { messages } = this.i18n
       Object.keys(messages).forEach(key => {
         this.$i18n.mergeLocaleMessage(key, messages[key])
       })
@@ -96,7 +96,7 @@ export default {
     },
     i18n(val) {
       if (val && val.messages) {
-        const {messages} = this.i18n
+        const { messages } = this.i18n
         Object.keys(messages).forEach(key => {
           this.$i18n.mergeLocaleMessage(key, messages[key])
         })
@@ -187,10 +187,10 @@ export default {
       return h(SubMenu, { key: menu.fullPath }, subItem.concat(itemArr))
     },
     renderItem(h, menu) {
-      const {meta} = menu
+      const { meta } = menu
       if (!meta || !meta.invisible) {
         let renderChildren = false
-        const {children} = menu
+        const { children } = menu
         if (children != undefined) {
           for (let i = 0; i < children.length; i++) {
             const childMeta = children[i].meta
@@ -216,7 +216,7 @@ export default {
     formatOptions(options, parentPath) {
       options.forEach(route => {
         const isFullPath = route.path.substring(0, 1) == '/'
-        route.fullPath = isFullPath ? route.path : `${parentPath  }/${  route.path}`
+        route.fullPath = isFullPath ? route.path : `${parentPath}/${route.path}`
         if (route.children) {
           this.formatOptions(route.children, route.fullPath)
         }

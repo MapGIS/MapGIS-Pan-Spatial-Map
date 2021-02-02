@@ -7,13 +7,15 @@ const themeMode = ADMIN.theme.mode
 
 // 获取 ant design 色系
 function getAntdColors(color, mode) {
-  const options = mode && mode == themeMode.NIGHT ? { theme: 'dark' } : undefined
+  const options =
+    mode && mode == themeMode.NIGHT ? { theme: 'dark' } : undefined
   return generate(color, options)
 }
 
 // 获取功能性颜色
 function getFunctionalColors(mode) {
-  const options = mode && mode == themeMode.NIGHT ? { theme: 'dark' } : undefined
+  const options =
+    mode && mode == themeMode.NIGHT ? { theme: 'dark' } : undefined
   let { success, warning, error } = ANTD.primary
   const { success: s1, warning: w1, error: e1 } = Config.theme
   success = success && s1
@@ -33,15 +35,15 @@ function getFunctionalColors(mode) {
 function getMenuColors(color, mode) {
   if (mode == themeMode.NIGHT) {
     return ANTD.primary.night.menuColors
-  } if (color == ANTD.primary.color) {
+  }
+  if (color == ANTD.primary.color) {
     return ANTD.primary.dark.menuColors
-  } 
-    return [
-      varyColor.darken(color, 0.93),
-      varyColor.darken(color, 0.83),
-      varyColor.darken(color, 0.73)
-    ]
-  
+  }
+  return [
+    varyColor.darken(color, 0.93),
+    varyColor.darken(color, 0.83),
+    varyColor.darken(color, 0.73)
+  ]
 }
 
 // 获取主题模式切换色系

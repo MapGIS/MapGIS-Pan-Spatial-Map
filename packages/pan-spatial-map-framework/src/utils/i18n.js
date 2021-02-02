@@ -57,7 +57,7 @@ function formatFullPath(routes, parentPath = '') {
       ? route.path
       : parentPath === '/'
       ? parentPath + route.path
-      : `${parentPath  }/${  route.path}`
+      : `${parentPath}/${route.path}`
     if (route.children) {
       formatFullPath(route.children, route.fullPath)
     }
@@ -75,7 +75,7 @@ function mergeI18nFromRoutes(i18n, routes) {
   const US = generateI18n(new Object(), routes, 'path')
   i18n.mergeLocaleMessage('CN', CN)
   i18n.mergeLocaleMessage('US', US)
-  const {messages} = routesI18n
+  const { messages } = routesI18n
   Object.keys(messages).forEach(lang => {
     i18n.mergeLocaleMessage(lang, messages[lang])
   })

@@ -44,11 +44,11 @@ const auth = function(authConfig, permission, role, permissions, roles) {
   }
   if (type === 'permission') {
     return checkFromPermission(check, permission)
-  } if (type === 'role') {
+  }
+  if (type === 'role') {
     return checkFromRoles(check, role)
-  } 
-    return checkFromPermission(check, permission) || checkFromRoles(check, role)
-  
+  }
+  return checkFromPermission(check, permission) || checkFromRoles(check, role)
 }
 
 /**
@@ -88,7 +88,7 @@ const checkInject = function(el, binding, vnode) {
   const type = binding.arg
   const check = binding.value
   const instance = vnode.context
-  const {$auth} = instance
+  const { $auth } = instance
   if (!$auth || !$auth(check, type)) {
     addDisabled(el)
   } else {
@@ -127,7 +127,7 @@ const AuthorityPlugin = {
     Vue.mixin({
       beforeCreate() {
         if (this.$options.authorize) {
-          const {authorize} = this.$options
+          const { authorize } = this.$options
           Object.keys(authorize).forEach(key => {
             if (this.$options.methods[key]) {
               const method = this.$options.methods[key]
@@ -142,15 +142,14 @@ const AuthorityPlugin = {
                   // --auth-inject
                   if (this.$auth(check, type)) {
                     return method.apply(this, arguments)
-                  } 
-                    if (onFailure && typeof onFailure === 'function') {
-                      this[`$${check}Failure`] = onFailure
-                      return this[`$${check}Failure`](check)
-                    } 
-                      this.$message.error(`对不起，您没有操作权限：${check}`)
-                    
-                    return 0
-                  
+                  }
+                  if (onFailure && typeof onFailure === 'function') {
+                    this[`$${check}Failure`] = onFailure
+                    return this[`$${check}Failure`](check)
+                  }
+                  this.$message.error(`对不起，您没有操作权限：${check}`)
+
+                  return 0
                 }
               }
             }

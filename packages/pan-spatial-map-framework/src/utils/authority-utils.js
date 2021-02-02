@@ -42,7 +42,8 @@ function hasRole(authority, roles) {
 function hasAnyRole(required, roles) {
   if (!required) {
     return false
-  } if (Array.isArray(required)) {
+  }
+  if (Array.isArray(required)) {
     return (
       roles.findIndex(role => {
         return (
@@ -50,11 +51,10 @@ function hasAnyRole(required, roles) {
         )
       }) !== -1
     )
-  } 
-    return (
-      roles.findIndex(role => role === required || role.id === required) !== -1
-    )
-  
+  }
+  return (
+    roles.findIndex(role => role === required || role.id === required) !== -1
+  )
 }
 
 /**

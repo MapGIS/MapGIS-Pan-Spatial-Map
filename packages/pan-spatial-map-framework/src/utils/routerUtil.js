@@ -31,8 +31,8 @@ function parseRoutes(routesConfig, routerMap) {
   const routes = []
   routesConfig.forEach(item => {
     // 获取注册在 routerMap 中的 router，初始化 routeCfg
-    let router;
-      let routeCfg = {}
+    let router
+    let routeCfg = {}
     if (typeof item === 'string') {
       router = routerMap[item]
       routeCfg = { path: router.path || item, router: item }
@@ -118,7 +118,7 @@ function loadRoutes(routesConfig) {
     routesConfig = store.getters['account/routesConfig']
   }
   // 如果开启了异步路由，则加载异步路由配置
-  const {asyncRoutes} = store.state.setting
+  const { asyncRoutes } = store.state.setting
   if (asyncRoutes) {
     if (routesConfig && routesConfig.length > 0) {
       const routes = parseRoutes(routesConfig, routerMap)
@@ -198,7 +198,7 @@ function formatRoutes(routes) {
   routes.forEach(route => {
     const { path } = route
     if (!path.startsWith('/') && path !== '*') {
-      route.path = `/${  path}`
+      route.path = `/${path}`
     }
   })
   formatAuthority(routes)
@@ -211,7 +211,7 @@ function formatRoutes(routes) {
  */
 function formatAuthority(routes, pAuthorities = []) {
   routes.forEach(route => {
-    const {meta} = route
+    const { meta } = route
     const defaultAuthority = pAuthorities[pAuthorities.length - 1] || {
       permission: '*'
     }

@@ -12,7 +12,7 @@ const VueI18nPlugin = {
           const _mode = mode || MODE.STATEMENTS
           const keys = syntaxKey.split('|')
           const _this = this
-          const {locale} = this.$i18n
+          const { locale } = this.$i18n
           let message = ''
           const splitter = locale == 'US' ? ' ' : ''
           // 拼接 message
