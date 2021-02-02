@@ -13,7 +13,7 @@
     "dev": "cd packages/pan-spatial-map-framework && yarn serve",
     "dev:mock": "concurrently \"yarn mock\" \"yarn serve\"",
     "build": "cd packages/pan-spatial-map-framework && yarn build",
-    "serve": "cd packages/pan-spatial-map-framework && serve dist/spa",
+    "serve": "cd packages/pan-spatial-map-framework && serve dist",
     "serve:mock": "concurrently \"yarn mock\" \"yarn serve\"",
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ./",
     "lint:fix": "npm run lint -- --fix"

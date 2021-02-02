@@ -19,6 +19,7 @@ module.exports = {
       closeRight: 'close right',
       closeOthers: 'close others',
       refresh: 'refresh the page',
+      // eslint-disable-next-line quotes
       warn: "This is the last page, you can't close it"
     }
   }

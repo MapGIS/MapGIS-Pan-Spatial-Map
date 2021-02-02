@@ -115,6 +115,7 @@ module.exports = {
     'consistent-return': 'off',
     'import/order': 'off',
     'guard-for-in': 'off',
+    'no-console': 'off',
 
     // TypeScript
     quotes: ['warn', 'single'],
