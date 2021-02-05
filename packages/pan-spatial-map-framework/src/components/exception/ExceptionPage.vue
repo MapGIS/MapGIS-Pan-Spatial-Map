@@ -18,7 +18,7 @@ import Config from './typeConfig'
 
 export default {
   name: 'ExceptionPage',
-  props: ['type', 'homeRoute'],
+  props: ['type', 'homeRoute', 'url'],
   data() {
     return {
       config: Config

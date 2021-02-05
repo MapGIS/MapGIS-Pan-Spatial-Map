@@ -6,11 +6,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title><%= process.env.VUE_APP_NAME %></title>
-    <!-- require cdn assets css -->
-    <% for (var i in htmlWebpackPlugin.options.cdn &&
-    htmlWebpackPlugin.options.cdn.css) { %>
-    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" />
-    <% } %>
   </head>
   <body>
     <noscript>
@@ -27,14 +22,6 @@
     >
       <div id="app"></div>
     </div>
-    <!-- require cdn assets js -->
-    <% for (var i in htmlWebpackPlugin.options.cdn &&
-    htmlWebpackPlugin.options.cdn.js) { %>
-    <script
-      type="text/javascript"
-      src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
-    ></script>
-    <% } %>
     <!-- built files will be auto injected -->
   </body>
 </html>

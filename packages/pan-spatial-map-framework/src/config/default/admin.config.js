@@ -10,17 +10,12 @@ const ADMIN = {
     '#722ed1',
     '#eb2f96'
   ],
-  animates: require('./animate.config').preset,
   theme: {
     mode: {
       DARK: 'dark',
       LIGHT: 'light',
       NIGHT: 'night'
     }
-  },
-  layout: {
-    SIDE: 'side',
-    HEAD: 'head'
   }
 }
 
