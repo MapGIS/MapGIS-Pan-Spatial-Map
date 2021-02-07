@@ -9,6 +9,8 @@ import { initRouter } from './router'
 import 'moment/locale/zh-cn'
 
 import Auth from '@mapgis/pan-spatial-map-plugin-auth'
+import Launch from '@mapgis/pan-spatial-map-plugin-launch'
+import Theme from '@mapgis/pan-spatial-map-plugin-Theme'
 
 const router = initRouter()
 const i18n = initI18n('CN', 'US')
@@ -21,6 +23,8 @@ Vue.use(Auth, {
   router,
   loginIgnore: { whiteList: ['/login'], loginPath: '/login' }
 })
+Vue.use(Launch, { router })
+Vue.use(Theme)
 
 new Vue({
   router,

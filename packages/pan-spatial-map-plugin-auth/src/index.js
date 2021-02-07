@@ -1,5 +1,3 @@
-import VueRouter from 'vue-router'
-import { Store } from 'vuex'
 import {
   userModule,
   configRouterPermission

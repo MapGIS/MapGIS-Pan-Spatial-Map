@@ -10,7 +10,7 @@ MapGIS全空间一张图（MapGIS Pan-Spatial Map）是以全空间信息模型�
 
 ## 特性
 
-- 🐒 **工程**：开箱即用的工程配置，支持 ES6+、TypeScript、样式方案（Sass）等
+- 🐒 **工程**：开箱即用的工程配置，支持 ES6+、TypeScript、样式方案（Less）等
 - 🐌 **插件体系**：提供插件机制，可以扩展框架的核心功能
 - 🐘 **TypeScript**：默认使用 TypeScript
 

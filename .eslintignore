@@ -1,0 +1,6 @@
+build/
+test/
+tests/
+node_modules/
+dist/
+out/

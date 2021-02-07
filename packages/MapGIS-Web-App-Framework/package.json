@@ -1,0 +1,43 @@
+{
+  "name": "@mapgis/web-app-framework",
+  "version": "0.1.0",
+  "description": "MapGIS Web应用框架",
+  "author": "MapGIS",
+  "license": "MIT",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ./",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "homepage": "",
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "peerDependencies": {
+    "axios": "^0.19.2"
+  },
+  "dependencies": {
+    "@mapgis/mapbox-gl": "^1.9.3",
+    "@mapgis/webclient-store": "^1.0.0",
+    "@mapgis/webclient-es6-service": "^1.0.0",
+    "@mapgis/webclient-vue-cesium": "^1.0.0",
+    "@mapgis/webclient-vue-mapboxgl": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-vue": "^6.1.2"
+  }
+}
