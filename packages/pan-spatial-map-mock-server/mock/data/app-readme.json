@@ -1,0 +1,267 @@
+// 这个文件描述应用配置信息
+{
+  //可选，地图名称
+  "name": "黑夜地图",
+  //可选，当前激活图层
+  "current": {
+    "id": "地铁注记",
+    "type": "VectorTile",
+    "name": "地铁"
+  },
+  // 可选，背景图层
+  "backgrounds": [
+    {
+      "title": "OSM地图",
+      "name": "OSM街道地图",
+      "id": "osmstreets",
+      "key": "osmstreets",
+      "icon": "icon-background",
+      "type": "background",
+      "tileUrl": "https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
+      "imgUrl": "https://user-images.githubusercontent.com/23654117/56859980-16e31c80-69c4-11e9-9e15-0980bd7ff947.png"
+    }
+  ],
+  // 可选，图标配置
+  "sprite": "http://localhost:6163/igs/rest/mrms/vtiles/sprite",
+  // 可选，字体配置
+  "glyphs": "http://localhost:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf",
+  // 可选，地图引擎，默认值为mapboxgl
+  "maprender": "mapboxgl",
+  // 可选，地图范围
+  "bounds": {
+    "west": 140.633011765174,
+    "south": 70.06446685647148,
+    "east": 73.8138337900829,
+    "north": 80.58786997831027
+  },
+  // 可选，地图坐标参考系统
+  "crs": {
+    "epsg": "EPSG:4326"
+  },
+  // 可选，地图图层列表
+  "layers": [
+    {
+      "title": "栅格瓦片",
+      "name": "栅格瓦片",
+      "key": "栅格瓦片组图层",
+      "id": "栅格瓦片组图层",
+      "description": "栅格瓦片",
+      "info": "栅格瓦片",
+      "icon": "icon-group",
+      "type": "GroupLayer",
+      "children": [{}],
+      "layout": {
+        "visible": false
+      }
+    }
+  ],
+  // 可选，地图数据源
+  "sources": {
+    "IGServer": {
+      "name": "IGServer",
+      "type": "VectorTile",
+      "url": "http://localhost:6163/igs/rest/mrms/tile/OSM全中国经纬度/{z}/{y}/{x}?type=cpbf&returnError=false",
+      "min": 0,
+      "max": 24,
+      "description": "IGServer矢量瓦片数据源测试案例."
+    }
+  },
+  // 可选，服务集合
+  "service": {},
+
+  // 可选，应用logo，默认值为images/app-logo.svg
+  "logo": "images/logo.png",
+  // 可选，应用标题
+  "title": "MapGIS Web Application",
+  // 可选，应用副标题
+  "subtitle": "A configurable web application",
+
+  //可选. 应用包含的外链列表
+  "links": [
+    {
+      "url": "http://www.smaryun.com",
+      "label": "MapGIS Cloud"
+    }
+  ],
+
+  // 必须，主题
+  "theme": {
+    // 主题名称，指向themes/name主题
+    "name": "BillboardTheme",
+
+    // 可选，系统主题风格，如果不存在，则使用customStyle
+    "style": "ocean",
+
+    // 可选，自定义主题风格，必须跟style至少存在一个
+    "customStyle": {
+      "color": "accen",
+      "theme": "bg-accent text-white"
+    }
+  },
+
+  // 地图widgets
+  "mapWidgets": {
+    // 可选，地图上所有inPanel为true的widget所展示的面板，显示位置根据widget自动计算弹出，
+    // 如果不指定，使用系统默认面板MpMapWidgetPanel
+    "panel": {
+      // 面板组件名
+      "component": "MpMapWidgetPanel",
+      // 可选，显示模式（single/multi），只有relativeTo为map才有效
+      // 如果没有指定，则默认为single
+      "mode": "multi"
+    },
+
+    // widget
+    "widgets": [
+      {
+        // widgetId，builder时动态生成
+        "id": "widget_1",
+
+        // widget标识
+        "uri": "widgets/Scalebar",
+
+        // 可选，如果没有设置，使用widget目录内图标（manifest.json指向的icon）
+        "icon": "",
+
+        // 可选，如果没有设置，使用widget名称（manifest.json指向的name）
+        "label": "",
+
+        // 可选，widget位置，如果没有设置，默认是相对于map的left=0，top=0
+        "position": {
+          // 可选，widget位置锚点，默认值为top-left，可以设置为top-right、top-left、bottom-right、bottom-left、top、right、bottom、left
+          "anchor": "top-left",
+          // 可选，widget水平和垂直方向偏移,默认值为0
+          "horizontalOffset": 0,
+          "verticalOffset": 0
+        },
+
+        // 可选，下面的样式提供给widget所在dom节点，主要用于地图上占位widget
+        "cssStyle": {
+          "width": "56px !important",
+          "height": "56px !important",
+          "padding": "8px",
+          "border": "1px solid transport",
+          "border-radius": "12px"
+        },
+
+        // 可选，如果没有设置，默认指向widget配置config.json（只要manifest.json的hasConfig为true）
+        // 如果设置为字符串，表示自定义的config的位置，例："config": "configs/Scalebar/config.json"
+        // 如果设置为对象，表示本widget实际的配置参数
+        "config": {},
+
+        // 可选，表示是否在应用启动的时候打开该widget，默认值为false
+        // 只有对于能够在面板中展示的widget有效
+        // 如果有多个在地图上的widget设置为true，只有第一个有效
+        // 如果有多个在内容区域中的widget设置为true，由内容区域决定如何去打开
+        "openAtStart": true,
+
+        // 可选，表示能否在设计器中进行位置调整，默认为true
+        // 对于某些widget，只能在固定位置，需要设置为false
+        "dragable": false,
+
+        // 可选，表示是否可见，默认为true，可以通过设置其为false，来进行隐藏
+        "visible": false,
+
+        // 可选，表示是否是占位微件，默认为false，占位微件一般在主题布局中定义，在搭建时进行定义
+        "placeholder": true
+      }
+    ]
+  },
+
+  // 内容widgets，由布局的内容区域去使用
+  "contentWidgets": {
+    // 内容widgets分为多组，每组对应布局中的一个内容区域（主题manifest.json中的contents）
+    "groups": [
+      {
+        // 组名
+        "content": "launch",
+        // 该内容区域包含的widget集合，可以有多个，因为内容区域中的widget只要inPanel为true，
+        // 就会放到面板中显示，所以不需要指定position和cssStyle
+        "widgets": [
+          {
+            // widgetId，builder时动态生成
+            "id": "widget_2",
+
+            // widget标识
+            "uri": "widgets/Scalebar",
+
+            // 可选，如果没有设置，使用widget目录内图标（manifest.json指向的icon）
+            "icon": "",
+
+            // 可选，如果没有设置，使用widget名称（manifest.json指向的name）
+            "label": ""
+          }
+        ],
+
+        // 可选，定义widget结构，用于分类，形成菜单或扩展项
+        "widgetStructure": [
+          {
+            "id": "widget_2"
+          },
+          {
+            "id": "folder_1",
+
+            // 可选，类型：folder，默认为widget
+            "type": "folder",
+
+            // 图标
+            "icon": "",
+
+            // 名称
+            "label": "",
+
+            // 子widgets
+            "children": [
+              {
+                "id": "widget_3"
+              },
+              {
+                "id": "folder_1_1",
+                "type": "folder",
+                "icon": "",
+                "label": "",
+
+                "children": [
+                  {
+                    "id": "widget_4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+
+        // 可选，该内容区域widgets中所有inPanel为true的widget所展示的面板
+        // 如果没有指定，则使用系统默认模板MpContentWidgetPanel
+        "panel": {
+          // 面板组件名
+          "component": "MpContentWidgetPanel",
+          // 可选，指定弹出面板相对的元素（map/content）
+          // 如果没有指定，则默认相对于map
+          "relativeTo": "content",
+          // 可选，显示模式（single/multi），只有relativeTo为map才有效
+          // 如果没有指定，则默认为single
+          "mode": "multi",
+          // 可选，面板弹出位置，只有relativeTo为map才有效
+          "position": {
+            // 可选，面板位置锚点，默认值为top-right，可以设置为top-right、top-left、bottom-right、bottom-left、top、right、bottom、left
+            "anchor": "top-right",
+            // 可选，面板水平和垂直方向偏移,默认值为0
+            "horizontalOffset": 0,
+            "verticalOffset": 0,
+            // 可选，是否展开，当anchor为top、bottom、left、right时生效
+            "expand": false,
+            // 可选，宽度，默认值为360
+            "width": 360,
+            // 可选，高度，默认为null，指定高度值后忽略top和bottom
+            "height": 600,
+            // 可选，相对于主视图顶的距离，默认值为0，当height没有指定，且anchor为'bottom-left', 'bottom-right', 'bottom'时生效
+            "top": 0,
+            // 可选，相对于主视图底的距离，默认值为0，当height没有指定，且anchor为'top-left', 'top-right', 'top'时生效
+            "bottom": 0
+          }
+        }
+      }
+    ]
+  }
+}

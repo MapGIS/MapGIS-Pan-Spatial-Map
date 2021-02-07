@@ -1,0 +1,33 @@
+[
+  {
+    "year": "2018",
+    "defaults": {
+      "text": "中国",
+      "level": "1",
+      "docName": "rest_api_wuhan_wfs",
+      "code": "",
+      "queryWay": "gdbp",
+      "ip": "develop.smaryun.com",
+      "port": "6163",
+      "combine": ""
+    },
+    "gdbpInfos": [
+      {
+        "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
+        "codeField": "ID",
+        "nameField": "ID",
+        "level": "2",
+        "layerName": "行政区",
+        "layerGdbp": "gdbp://MapGisLocal/平台基础示例数据/ds/武汉市区/sfcls/行政区",
+        "FldName": [
+          "ID",
+          "名称",
+          "LayerID",
+          "mpArea",
+          "mpPerimeter",
+          "mpLayer"
+        ]
+      }
+    ]
+  }
+]

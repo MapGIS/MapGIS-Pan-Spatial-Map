@@ -1,0 +1,15 @@
+{
+  "name": "标注",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpMarkerManager",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><defs><style/></defs><path d=\"M658.286 365.714q0-60.562-42.862-103.424T512 219.43t-103.424 42.86-42.862 103.424 42.862 103.424T512 512t103.424-42.862 42.862-103.424zm146.285 0q0 62.318-18.87 102.254L577.682 910.263q-9.143 18.87-27.136 29.696T512 950.784t-38.546-10.825-26.551-29.696L238.299 467.968q-18.87-40.01-18.87-102.254 0-121.124 85.723-206.848T512 73.143t206.848 85.723 85.723 206.848z\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

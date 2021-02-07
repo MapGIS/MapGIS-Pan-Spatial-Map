@@ -8,12 +8,19 @@ import store from './store'
 import { initRouter } from './router'
 import 'moment/locale/zh-cn'
 
-const router = initRouter(store.state.setting.asyncRoutes)
+import Auth from '@mapgis/pan-spatial-map-plugin-auth'
+
+const router = initRouter()
 const i18n = initI18n('CN', 'US')
 
 Vue.use(Antd)
 Vue.config.productionTip = false
 Vue.use(Plugins)
+Vue.use(Auth, {
+  store,
+  router,
+  loginIgnore: { whiteList: ['/login'], loginPath: '/login' }
+})
 
 new Vue({
   router,

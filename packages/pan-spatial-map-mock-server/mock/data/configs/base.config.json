@@ -1,0 +1,91 @@
+{
+  "ip": "develop.smaryun.com",
+  "port": "6163",
+  "globeIp": "develop.smaryun.com",
+  "globePort": "6163",
+  "globeLoadWay": "webgl",
+  "DataStoreIp": "192.168.96.101",
+  "DataStorePort": "9091",
+  "IGServerXIp": "192.168.91.123",
+  "IGServerXPort": "9381",
+  "serverType": "IGServer",
+  "OGCServerTypeName": "WMTS",
+  "OGCServerUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgtmygyx/wmts",
+  "TileMatrixSetLink": "guobiao",
+  "defaultMapName": "北京市",
+  "xmin": "115.40448659815915",
+  "ymin": "39.097281800000005",
+  "xmax": "117.46520008794508",
+  "ymax": "41.05780257931024",
+  "initZoom": 8,
+  "name": "索引底图",
+  "image": "/upload/basemap.png",
+  "globeBaseMapType": "map",
+  "initMode": "map",
+  "beginZoom": 0,
+  "endZoom": 19,
+  "gdbIp": "develop.smaryun.com",
+  "gdbPort": "6163",
+  "serverName": "MapGISLocal",
+  "gdbName": "Templates",
+  "userName": "",
+  "password": "",
+  "projection": "EPSG:4326",
+  "mouseProjection": "EPSG:4326",
+  "projectionName": "WGS1984_度",
+  "mouseProjectionName": "WGS1984_度",
+  "defaultMapType": "tile",
+  "commonProjection": "DEFAULT Sref,地理坐标系(北京)_度,地理坐标系(北京)_分,地理坐标系(北京)_秒,地理坐标系(西安)_度,地理坐标系(西安)_分",
+  "center": "116.43484334305211,40.07754218965512",
+  "resolutions": "0.7031249999891483,0.3515624999945742,0.1757812499972871,0.08789062499864354,0.04394531249932177,0.021972656249660886,0.010986328124830443,0.0054931640624152215,0.0027465820312076107,0.0013732910156038054,0.0006866455078019027,0.00034332275390095134,0.00017166137695047567,0.00008583068847523784,0.00004291534423761892,0.00002145767211880946,0.00001072883605940473,0.000005364418029702365,0.0000026822090148511824,0.0000013411045074255912",
+  "scales": "295829355.45,147914677.725,73957338.8625,36978669.43125,18489334.715625,9244667.3578125,4622333.67890625,2311166.839453125,1155583.4197265625,577791.7098632812,288895.8549316406,144447.9274658203,72223.96373291015,36111.98186645508,18055.99093322754,9027.99546661377,4513.997733306885,2256.9988666534423,1128.4994333267211,564.2497166633606",
+  "colorConfig": {
+    "label": {
+      "text": {
+        "color": "rgba(0,0,0,1)",
+        "opacity": "1",
+        "fontSize": "10",
+        "fontFamily": "华文行楷"
+      },
+      "image": {
+        "defaultImg": "/upload/marker.png",
+        "selectedImg": "/upload/marker-selected.png"
+      }
+    },
+    "feature": {
+      "reg": {
+        "color": "rgba(255,153,51,1)",
+        "opacity": "1"
+      },
+      "line": {
+        "color": "rgba(255,153,51,1)",
+        "opacity": "1",
+        "size": "2"
+      },
+      "pnt": {
+        "color": "rgba(255,153,51,1)",
+        "opacity": "1",
+        "size": "4",
+        "style": "五边形",
+        "szie": ""
+      }
+    },
+    "showFillColor": "false",
+    "fillColor": "",
+    "strokeStyle": {
+      "width": "",
+      "fillColor": "#CC33CC"
+    },
+    "textStyle": {
+      "fillColor": "#66CCCC",
+      "strokeStyle": {
+        "width": "2",
+        "fillColor": "#6633CC"
+      }
+    },
+    "imageStyle": {}
+  },
+  "originType": "LeftTop",
+  "originX": "-180",
+  "originY": "90"
+}

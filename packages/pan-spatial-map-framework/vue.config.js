@@ -4,9 +4,11 @@ const ThemeColorReplacer = require('webpack-theme-color-replacer')
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 const { getThemeColors, modifyVars } = require('./src/utils/themeUtil')
 const { resolveCss } = require('./src/utils/theme-color-replacer-extend')
+const defaultSettings = require('./src/config/default/setting.config.js')
 
 const productionGzipExtensions = ['js', 'css']
 const isProd = process.env.NODE_ENV === 'production'
+const name = defaultSettings.title
 
 module.exports = {
   devServer: {},
@@ -17,6 +19,7 @@ module.exports = {
     }
   },
   configureWebpack: config => {
+    config.name = name
     config.entry.app = ['babel-polyfill', 'whatwg-fetch', './src/main.js']
     config.performance = {
       hints: false

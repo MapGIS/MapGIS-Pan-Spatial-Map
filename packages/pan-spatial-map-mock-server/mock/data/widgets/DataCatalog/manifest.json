@@ -1,0 +1,15 @@
+{
+  "name": "数据目录",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpDataCatalog",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 18 18\"><path d=\"M1 3.9L9 1l8 2.9-8 2.8zm0 2.8L7.9 9v8L1 14.7zm16 0L10.1 9v8l6.9-2.5z\" clip-rule=\"evenodd\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

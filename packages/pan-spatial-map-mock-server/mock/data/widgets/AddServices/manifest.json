@@ -1,0 +1,15 @@
+{
+  "name": "添加服务",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpAddServices",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><defs><style/></defs><path d=\"M64 384h320V64H64v320zM0 0h448v448H0V0zm64 896h320V576H64v320zM0 512h448v448H0V512zm576 64v320h320V576H576zm-64-64h448v448H512V512zm64-448v320h320V64H576zM512 0h448v448H512V0z\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

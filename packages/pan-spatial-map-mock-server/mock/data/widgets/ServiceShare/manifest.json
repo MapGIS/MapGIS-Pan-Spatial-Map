@@ -1,0 +1,15 @@
+{
+  "name": "资源目录",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpServiceShare",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"><defs><style type=\"text/css\"></style></defs><path d=\"M158.22 63.98v896.04L488.4 677.06h47.18l330.18 282.96V63.98H158.22z m613.2 707.4L535.59 582.74h-47.18L252.58 771.38V158.3h518.84v613.08z\" p-id=\"797\"></path></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

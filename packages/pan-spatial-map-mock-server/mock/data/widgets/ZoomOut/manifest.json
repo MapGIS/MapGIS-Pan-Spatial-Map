@@ -1,0 +1,14 @@
+{
+  "name": "缩小",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpZoomOut",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><path clip-rule=\"evenodd\" d=\"M2 7h12v2H2z\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": false,
+    "hasConfig": false,
+    "hasSettingPage": false
+  }
+}

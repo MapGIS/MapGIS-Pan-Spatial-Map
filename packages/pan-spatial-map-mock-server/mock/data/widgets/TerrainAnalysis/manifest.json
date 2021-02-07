@@ -1,0 +1,15 @@
+{
+  "name": "地形分析",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpTerrainAnalysis",
+  "icon": "<svg t=\"1607415205240\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"6802\" width=\"200\" height=\"200\"><path d=\"M139.1 830H886v-41.5H139.1V830z m145.2-368.5l209.1 244h60.7L403.8 529.6l260.9-322 209.8 497.9h53.1L679.3 111 370 490.1l-99.5-116.4-173 331.8h60.6l126.2-244z m590.3 244.2H261.1l0.1-0.1H158l0.1-0.1H97.6V747h829.9v-41.5h-53l0.1 0.2zM180.6 913h663.9v-41.5H180.6V913z\" p-id=\"6803\"></path></svg>",
+  "properties": {
+    "2D": false,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

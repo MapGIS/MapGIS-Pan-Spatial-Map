@@ -1,0 +1,31 @@
+{
+    "gdbpInfo": [
+        "gdbp://MapGisLocal/hn01/sfcls/市级区划GEO"
+    ],
+    "codeNo": "权属代码",
+    "codeName": "权属名称",
+    "mapType": [
+        {
+        "name": "矢量地图服务",
+        "type": "doc"
+        },
+        {
+        "name": "瓦片服务",
+        "type": "tile"
+        },
+        {
+        "name": "wms",
+        "type": "wms"
+        },
+        {
+        "name": "wfs",
+        "type": "wfs"
+        },
+        {
+        "name": "wmts",
+        "type": "wmts"
+        }
+    ],
+    "code": "43",
+    "titleName": "湖南国土空间基础信息平台->资源目录"
+}

@@ -1,0 +1,75 @@
+openapi: 3.0.0
+info:
+  description: Mock API for MapGIS-Pan-Spatial-Map.
+  version: 1.0.0
+  title: MapGIS-Pan-Spatial-Map Mock API
+  contact:
+    email: admin@mapgis.com
+  license:
+    name: Apache-2.0
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: /
+tags:
+  - name: auth
+    description: Auth related api.
+  - name: config
+    description: Config related api.
+  - name: app
+    description: App related api.
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Logs user into the system
+      description: Use username and password to login.
+      operationId: login
+      parameters:
+      responses:
+  /auth/logout:
+    delete:
+      tags:
+        - auth
+      summary: Logs out current logged in user session
+      description: Log out current session.
+      operationId: logout
+      responses:
+  /auth/app-info:
+    get:
+      tags:
+        - auth
+      summary: Get app information
+      description: Get app information.
+      operationId: getAppInfo
+      responses:
+  /api/config/{name}:
+    get:
+      tags:
+        - config
+      summary: Get config
+      description: Get config.
+      operationId: getConfig
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: config name.
+      responses:
+  /api/app/widget-config:
+    put:
+      tags:
+        - app
+      summary: Save widget config
+      description: Save widget config
+      operationId: saveWidgetConfig
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: config name.
+        - name: config
+          in: query
+          required: true
+          description: config value.
+      responses:

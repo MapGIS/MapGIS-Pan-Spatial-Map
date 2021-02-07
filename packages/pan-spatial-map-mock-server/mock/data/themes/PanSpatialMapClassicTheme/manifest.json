@@ -1,0 +1,56 @@
+{
+  "name": "全空间一张图经典主题",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpPanSpatialMapClassicTheme",
+  "styles": [
+    {
+      "name": "ocean",
+      "description": "海洋风格",
+      "color": "accent",
+      "theme": "bg-accent text-white"
+    },
+    {
+      "name": "dark",
+      "description": "深色风格",
+      "color": "dark",
+      "theme": "bg-dark text-white"
+    },
+    {
+      "name": "light",
+      "description": "浅色风格",
+      "color": "dark",
+      "theme": "bg-grey-2 text-dark"
+    },
+    {
+      "name": "blue",
+      "description": "蓝色风格",
+      "color": "blue-6",
+      "theme": "bg-blue-6 text-white"
+    },
+    {
+      "name": "red",
+      "description": "红色风格",
+      "color": "red-6",
+      "theme": "bg-red-6 text-white"
+    }
+  ],
+  "contents": [
+    {
+      "name": "navbar",
+      "description": "导航条",
+      "component": "MpPanSpatialMapClassicNavbar"
+    },
+    {
+      "name": "toolbar",
+      "description": "工具条",
+      "component": "MpPanSpatialMapClassicToolbar",
+      "maxWidgets": 6
+    },
+    {
+      "name": "footer",
+      "description": "页脚",
+      "component": "MpPanSpatialMapFooter"
+    }
+  ]
+}

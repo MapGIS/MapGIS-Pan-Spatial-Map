@@ -1,0 +1,15 @@
+{
+  "name": "卷帘",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpCompareMap",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><defs><style/></defs><path d=\"M426.667 917.333H85.333V106.667h341.334V0H512v1024h-85.333V917.333zM853.333 832V192h-256v-85.333h341.334v810.666H597.333V832h256z\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": false,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

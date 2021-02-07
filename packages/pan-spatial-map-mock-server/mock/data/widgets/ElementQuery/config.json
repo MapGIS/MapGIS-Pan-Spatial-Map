@@ -1,0 +1,10 @@
+{
+  "queryType": [
+    { "icon": "icon-point", "name": "点" },
+    { "icon": "icon-polygon", "name": "圆" },
+    { "icon": "icon-line", "name": "线" },
+    { "icon": "icon-polygon", "name": "面" },
+    { "icon": "icon-box", "name": "矩形" }
+  ],
+  "limitsArray": [0, 0.1, 0.5, 1, 5]
+}
