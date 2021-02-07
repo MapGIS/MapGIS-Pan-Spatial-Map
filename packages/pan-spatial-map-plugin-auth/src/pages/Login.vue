@@ -136,10 +136,19 @@ export default {
   background-color: @layout-body-background;
   background-image: url('../assets/images/login_bg.png');
   background-repeat: no-repeat;
-  background-position-x: center;
-  background-position-y: 110px;
+  background-position-x: 50%;
+  background-position-y: center;
   background-size: 100%;
   .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 50vw;
+    @media screen and (max-width: 480px) {
+      margin-left: 0;
+    }
+
     padding: 32px 0;
     flex: 1;
     @media (min-width: 768px) {
