@@ -3,14 +3,16 @@ import { MpPanSpatialMapFooter } from './components'
 import {
   MpPanSpatialMapClassicTheme,
   MpPanSpatialMapClassicNavbar,
-  MpPanSpatialMapClassicToolbar
+  MpPanSpatialMapClassicToolbar,
+  MpPanSpatialMapClassicLeftSidebar
 } from './themes'
 
 const components = [
   MpPanSpatialMapFooter,
   MpPanSpatialMapClassicTheme,
   MpPanSpatialMapClassicNavbar,
-  MpPanSpatialMapClassicToolbar
+  MpPanSpatialMapClassicToolbar,
+  MpPanSpatialMapClassicLeftSidebar
 ]
 
 const install = Vue => {

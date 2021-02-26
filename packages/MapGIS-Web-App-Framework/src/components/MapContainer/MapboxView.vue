@@ -97,7 +97,6 @@ import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
 import { IDocument, VectorTile, Layer } from '@mapgis/webclient-store'
 import {
   MapboxMap,
-  MapboxVectorLayer,
   MapboxRasterLayer,
   MapboxIgsTileLayer,
   MapboxIgsDocLayer,
@@ -118,7 +117,6 @@ export default {
   name: 'MpMapboxView',
   components: {
     MapboxMap,
-    MapboxVectorLayer,
     MapboxRasterLayer,
     MapboxIgsTileLayer,
     MapboxIgsDocLayer,
@@ -257,8 +255,8 @@ export default {
       const layers = convert.docTomvtLayers(idoc, false)
       this.sources = convert.docTomvtSources(idoc)
       const vectors = layers.filter(l => {
-        if (l.subtype === 'VectorTileLayer'){
-        // if (l.subtype === LayerType.VectorTile) {
+        if (l.subtype === 'VectorTileLayer') {
+          // if (l.subtype === LayerType.VectorTile) {
           l.sourceId = l.source
           return true
         }

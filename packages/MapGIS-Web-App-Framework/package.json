@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@mapgis/mapbox-gl": "^1.9.3",
-    "@mapgis/webclient-store": "^1.0.0",
+    "@mapgis/webclient-store": "link:../../../Webclient-Store",
     "@mapgis/webclient-es6-service": "^1.0.0",
     "@mapgis/webclient-vue-cesium": "^1.0.0",
     "@mapgis/webclient-vue-mapboxgl": "^1.0.0"
