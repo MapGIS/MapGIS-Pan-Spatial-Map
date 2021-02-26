@@ -7,6 +7,7 @@ import { initI18n } from '@/utils/i18n'
 import store from './store'
 import { initRouter } from './router'
 import 'moment/locale/zh-cn'
+import Components from '@/components'
 
 import Auth from '@mapgis/pan-spatial-map-plugin-auth'
 import Launch from '@mapgis/pan-spatial-map-plugin-launch'
@@ -18,6 +19,8 @@ const i18n = initI18n('CN', 'US')
 Vue.use(Antd)
 Vue.config.productionTip = false
 Vue.use(Plugins)
+Vue.use(Components)
+
 Vue.use(Auth, {
   store,
   router,

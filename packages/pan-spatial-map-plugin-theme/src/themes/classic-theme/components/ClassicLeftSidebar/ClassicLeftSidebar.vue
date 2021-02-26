@@ -9,12 +9,13 @@
         position: 'fixed',
         left: 0
       }"
+      :theme="themeMode"
       class="beauty-scroll"
       v-model="collapsed"
       :collapsedWidth="sidebarWidth"
       collapsible
     >
-      <a-menu theme="dark" :default-selected-keys="['1']" mode="inline">
+      <a-menu :theme="themeMode" :default-selected-keys="['1']" mode="inline">
         <a-menu-item key="1">
           <a-icon type="pie-chart" />
           <span>Option 1</span>
@@ -54,6 +55,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'MpPanSpatialMapClassicLeftSidebar',
   data() {
@@ -63,6 +66,10 @@ export default {
     }
   },
   computed: {
+    ...mapState('setting', ['theme']),
+    themeMode() {
+      return this.theme.mode == 'light' ? this.theme.mode : 'dark'
+    },
     sidebarWidth() {
       return this.collapsed ? this.initSidebarWidth : 200
     }

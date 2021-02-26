@@ -106,14 +106,14 @@ export default {
     position: absolute;
     width: 64px;
     left: calc(50% - 32px);
-    top: -1em;
+    top: calc(-1em - 2px);
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    background-color: #fff;
+    background-color: @base-bg-color;
     border-radius: 4px 4px 0 0;
-    border: 1px solid #eee;
+    border: 1px solid @border-color;
     border-bottom-color: transparent;
     cursor: pointer;
 
@@ -128,7 +128,7 @@ export default {
 
     .resize-line {
       width: 100%;
-      border: 1px solid #eee;
+      border: 1px solid @border-color;
       cursor: ns-resize;
 
       &:hover {

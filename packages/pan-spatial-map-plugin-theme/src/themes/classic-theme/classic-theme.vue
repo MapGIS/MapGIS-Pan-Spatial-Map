@@ -1,5 +1,11 @@
 <template>
   <a-layout class="pan-spatial-map-wrapper">
+    <mp-drawer v-if="!hideSetting" v-model="showSetting" placement="right">
+      <div class="setting" slot="handler">
+        <a-icon :type="showSetting ? 'close' : 'setting'" />
+      </div>
+      <mp-setting />
+    </mp-drawer>
     <component
       :is="navbarContentComponent"
       ref="headerContainer"
@@ -39,6 +45,7 @@
 import { ThemeMixin } from '@mapgis/web-app-framework'
 import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import { mapState } from 'vuex'
 
 export default {
   name: 'MpPanSpatialMapClassicTheme',
@@ -50,10 +57,12 @@ export default {
   data() {
     return {
       pageHeight: '',
-      maxFooterHeight: 0
+      maxFooterHeight: 0,
+      showSetting: false
     }
   },
   computed: {
+    ...mapState('setting', ['hideSetting']),
     navbarContentComponent() {
       return this.parseContentComponent('navbar')
     },
@@ -104,4 +113,15 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.setting {
+  background-color: @primary-color;
+  color: @base-bg-color;
+  border-radius: 5px 0 0 5px;
+  line-height: 40px;
+  font-size: 22px;
+  width: 40px;
+  height: 40px;
+  box-shadow: -2px 0 8px @shadow-color;
+}
+</style>

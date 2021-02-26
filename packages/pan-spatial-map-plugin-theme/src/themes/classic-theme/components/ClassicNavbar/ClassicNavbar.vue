@@ -2,7 +2,7 @@
   <a-layout-header class="classic-navbar-wrap">
     <div class="logo" />
     <a-menu
-      theme="dark"
+      :theme="themeMode"
       mode="horizontal"
       :default-selected-keys="['2']"
       :style="{ lineHeight: '48px' }"
@@ -21,7 +21,17 @@
 </template>
 
 <script>
-export default { name: 'MpPanSpatialMapClassicNavbar' }
+import { mapState } from 'vuex'
+
+export default {
+  name: 'MpPanSpatialMapClassicNavbar',
+  computed: {
+    ...mapState('setting', ['theme']),
+    themeMode() {
+      return this.theme.mode == 'light' ? this.theme.mode : 'dark'
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
