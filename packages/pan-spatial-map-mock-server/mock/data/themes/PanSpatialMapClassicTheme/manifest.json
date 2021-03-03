@@ -50,8 +50,7 @@
     {
       "name": "leftsidebar",
       "description": "左侧导航条",
-      "component": "MpPanSpatialMapClassicLeftSidebar",
-      "maxWidgets": 6
+      "component": "MpPanSpatialMapClassicLeftSidebar"
     },
     {
       "name": "footer",

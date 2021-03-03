@@ -2,6 +2,7 @@ export { AppManager, WidgetManager } from './managers'
 
 export {
   AppMixin,
+  WidgetInfoMixin,
   WidgetMixin,
   ThemeMixin,
   ThemeContentMixin,

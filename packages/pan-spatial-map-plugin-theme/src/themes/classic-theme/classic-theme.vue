@@ -52,7 +52,8 @@ export default {
   mixins: [ThemeMixin],
   props: {
     navbar: Object,
-    toolbar: Object
+    toolbar: Object,
+    leftsidebar: Object
   },
   data() {
     return {

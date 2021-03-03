@@ -182,7 +182,21 @@
           {
             "id": "widget_10e5628f-35aa-49d3-9f1b-450edcb409fb",
             "uri": "widgets/KibanaV"
-          },
+          }
+        ],
+        "widgetStructure": [],
+        "panel": {
+          "position": {
+            "anchor": "top-right",
+            "horizontalOffset": 10,
+            "verticalOffset": 10,
+            "bottom": 10
+          }
+        }
+      },
+      {
+        "content": "leftsidebar",
+        "widgets": [
           {
             "id": "widget_f1064fd1-69ec-4a4f-97e7-d178d9ea0203",
             "uri": "widgets/ServiceShare"
@@ -210,12 +224,7 @@
         ],
         "widgetStructure": [],
         "panel": {
-          "position": {
-            "anchor": "top-right",
-            "horizontalOffset": 10,
-            "verticalOffset": 10,
-            "bottom": 10
-          }
+          "relativeTo": "content"
         }
       },
       {

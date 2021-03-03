@@ -18,12 +18,7 @@
       "id": "背景",
       "type": "background",
       "paint": {
-        "background-color": {
-          "stops": [
-            [6, "#4a5768"],
-            [8, "#424d5c"]
-          ]
-        }
+        "background-color": "rgba(255,255,255,0)"
       }
     }
   ]

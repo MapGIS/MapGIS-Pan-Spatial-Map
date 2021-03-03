@@ -3,62 +3,59 @@
     <div :style="{ width: sidebarWidth + 'px', overflow: 'hidden' }" />
 
     <a-layout-sider
-      :style="{
-        overflow: 'auto',
-        height: 'calc(100% - 48px)',
-        position: 'fixed',
-        left: 0
-      }"
       :theme="themeMode"
-      class="beauty-scroll"
+      :class="[sidebarTheme, 'classic-siderbar-wrapper']"
       v-model="collapsed"
       :collapsedWidth="sidebarWidth"
-      collapsible
+      :collapsible="true"
+      :trigger="null"
     >
-      <a-menu :theme="themeMode" :default-selected-keys="['1']" mode="inline">
-        <a-menu-item key="1">
-          <a-icon type="pie-chart" />
-          <span>Option 1</span>
-        </a-menu-item>
-        <a-menu-item key="2">
-          <a-icon type="desktop" />
-          <span>Option 2</span>
-        </a-menu-item>
-        <a-sub-menu key="sub1">
-          <span slot="title"><a-icon type="user" /><span>User</span></span>
-          <a-menu-item key="3">
-            Tom
-          </a-menu-item>
-          <a-menu-item key="4">
-            Bill
-          </a-menu-item>
-          <a-menu-item key="5">
-            Alex
-          </a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu key="sub2">
-          <span slot="title"><a-icon type="team" /><span>Team</span></span>
-          <a-menu-item key="6">
-            Team 1
-          </a-menu-item>
-          <a-menu-item key="8">
-            Team 2
-          </a-menu-item>
-        </a-sub-menu>
-        <a-menu-item key="9">
-          <a-icon type="file" />
-          <span>File</span>
-        </a-menu-item>
-      </a-menu>
+      <div class="side-menu">
+        <div class="side-menu-content beauty-scroll">
+          <a-menu
+            class="menu"
+            :theme="themeMode"
+            @select="onSelect"
+            mode="inline"
+          >
+            <a-menu-item v-for="widget in widgets" :key="widget.id">
+              <mp-icon :icon="getWidgetIcon(widget)" class="icon" />
+              <span>{{ getWidgetLabel(widget) }}</span>
+            </a-menu-item>
+          </a-menu>
+        </div>
+        <div class="sider-links">
+          <a-menu
+            class="menu"
+            :theme="themeMode"
+            :inlineIndent="16"
+            :selectedKeys="[]"
+            :openKeys="[]"
+            mode="inline"
+          >
+            <a-menu-item
+              class="sider-collapsed-button"
+              title=""
+              @click="collapsed = !collapsed"
+            >
+              <a-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'" />
+            </a-menu-item>
+          </a-menu>
+        </div>
+      </div>
     </a-layout-sider>
   </div>
 </template>
 
 <script>
+import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
+import MpIcon from '../Icon/Icon.vue'
 
 export default {
   name: 'MpPanSpatialMapClassicLeftSidebar',
+  components: { MpIcon },
+  mixins: [ThemeContentMixin],
   data() {
     return {
       collapsed: false,
@@ -67,11 +64,23 @@ export default {
   },
   computed: {
     ...mapState('setting', ['theme']),
+    sidebarTheme() {
+      return this.theme.mode
+    },
     themeMode() {
       return this.theme.mode == 'light' ? this.theme.mode : 'dark'
     },
     sidebarWidth() {
       return this.collapsed ? this.initSidebarWidth : 200
+    }
+  },
+  methods: {
+    onSelect({ item, key, selectedKeys }) {
+      WidgetManager.getInstance().triggerWidgetOpen(
+        this.widgets.find(val => {
+          return val.id === key
+        })
+      )
     }
   }
 }
@@ -79,4 +88,53 @@ export default {
 
 <style lang="less">
 @import '../../../index.less';
+</style>
+
+<style lang="less" scoped>
+.classic-siderbar-wrapper {
+  overflow: auto;
+  height: calc(100% - 48px);
+  position: fixed;
+  left: 0;
+
+  .sider-collapsed-button {
+    border-top: 1px solid rgba(0, 0, 0, 0.25);
+    .anticon {
+      font-size: 16px;
+    }
+  }
+
+  &.light {
+    .sider-collapsed-button {
+      border-top: 1px solid @border-color;
+    }
+  }
+
+  .side-menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .side-menu-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      .menu {
+        box-shadow: none;
+
+        .icon {
+          margin-right: 10px;
+        }
+      }
+    }
+
+    .sider-links {
+      background: transparent;
+    }
+    .anticon anticon-menu-fold {
+      background: transparent;
+    }
+  }
+}
 </style>

@@ -5,6 +5,28 @@
     .ant-menu-item,
     .ant-menu-submenu .ant-menu-submenu-title {
       padding: 0 16px !important;
+
+      .mp-icon-container {
+        font-size: 16px;
+        & + span {
+          display: inline-block;
+          max-width: 0;
+          opacity: 0;
+        }
+      }
     }
   }
+
+  .ant-menu-item,
+  .ant-menu-submenu .ant-menu-submenu-title {
+    .mp-icon-container + span {
+      opacity: 1;
+      transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+        width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+  }
+}
+
+.ant-menu-inline-collapsed-tooltip .mp-icon-container {
+  display: none;
 }

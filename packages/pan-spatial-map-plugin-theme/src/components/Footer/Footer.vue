@@ -1,5 +1,5 @@
 <template>
-  <a-layout-footer class="footer-wrap" style="padding: 0">
+  <a-layout-footer class="footer-wrapper" style="padding: 0">
     <mp-attribute-table :max-view-height="maxFooterHeight" :init-open="true" />
   </a-layout-footer>
 </template>
