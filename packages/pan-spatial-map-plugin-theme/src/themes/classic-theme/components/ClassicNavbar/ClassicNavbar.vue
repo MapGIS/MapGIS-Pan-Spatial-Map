@@ -85,8 +85,6 @@ export default {
 
     .logo {
       display: inline-block;
-      padding: 0 12px 0 24px;
-      cursor: pointer;
       padding: 0 12px 0 0;
 
       .icon {

@@ -1,47 +1,43 @@
 <template>
-  <div>
-    <div :style="{ width: sidebarWidth + 'px', overflow: 'hidden' }" />
-
+  <div class="classic-sidebar-wrapper">
     <a-layout-sider
       :theme="themeMode"
-      :class="[sidebarTheme, 'classic-siderbar-wrapper']"
+      :class="[sidebarTheme, 'sidebar-menu-wrapper']"
       v-model="collapsed"
       :collapsedWidth="sidebarWidth"
       :collapsible="true"
       :trigger="null"
     >
-      <div class="side-menu">
-        <div class="side-menu-content beauty-scroll">
-          <a-menu
-            class="menu"
-            :theme="themeMode"
-            @select="onSelect"
-            mode="inline"
+      <div class="sidebar-menu beauty-scroll">
+        <a-menu
+          class="menu"
+          :theme="themeMode"
+          @select="onSelect"
+          mode="inline"
+        >
+          <a-menu-item v-for="widget in widgets" :key="widget.id">
+            <mp-icon :icon="getWidgetIcon(widget)" class="icon" />
+            <span>{{ getWidgetLabel(widget) }}</span>
+          </a-menu-item>
+        </a-menu>
+      </div>
+      <div class="sidebar-links">
+        <a-menu
+          class="menu"
+          :theme="themeMode"
+          :inlineIndent="16"
+          :selectedKeys="[]"
+          :openKeys="[]"
+          mode="inline"
+        >
+          <a-menu-item
+            class="sidebar-collapsed-button"
+            title=""
+            @click="collapsed = !collapsed"
           >
-            <a-menu-item v-for="widget in widgets" :key="widget.id">
-              <mp-icon :icon="getWidgetIcon(widget)" class="icon" />
-              <span>{{ getWidgetLabel(widget) }}</span>
-            </a-menu-item>
-          </a-menu>
-        </div>
-        <div class="sider-links">
-          <a-menu
-            class="menu"
-            :theme="themeMode"
-            :inlineIndent="16"
-            :selectedKeys="[]"
-            :openKeys="[]"
-            mode="inline"
-          >
-            <a-menu-item
-              class="sider-collapsed-button"
-              title=""
-              @click="collapsed = !collapsed"
-            >
-              <a-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'" />
-            </a-menu-item>
-          </a-menu>
-        </div>
+            <a-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'" />
+          </a-menu-item>
+        </a-menu>
       </div>
     </a-layout-sider>
   </div>
@@ -91,31 +87,29 @@ export default {
 </style>
 
 <style lang="less" scoped>
-.classic-siderbar-wrapper {
+.classic-sidebar-wrapper {
   overflow: auto;
-  height: calc(100% - 48px);
-  position: fixed;
-  left: 0;
+  height: calc(100vh - 48px);
 
-  .sider-collapsed-button {
+  .sidebar-collapsed-button {
     border-top: 1px solid rgba(0, 0, 0, 0.25);
     .anticon {
       font-size: 16px;
     }
   }
 
-  &.light {
-    .sider-collapsed-button {
-      border-top: 1px solid @border-color;
-    }
-  }
-
-  .side-menu {
+  .sidebar-menu-wrapper {
     display: flex;
     flex-direction: column;
     height: 100%;
 
-    .side-menu-content {
+    &.light {
+      .sidebar-collapsed-button {
+        border-top: 1px solid @border-color;
+      }
+    }
+
+    .sidebar-menu {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
@@ -129,7 +123,7 @@ export default {
       }
     }
 
-    .sider-links {
+    .sidebar-links {
       background: transparent;
     }
     .anticon anticon-menu-fold {
