@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { ThemeContentMixin } from '@mapgis/web-app-framework'
+import { AppMixin } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
 import MpIcon from '../Icon/Icon.vue'
 import MpHeaderAvatar from './HeaderAvatar.vue'
@@ -23,7 +23,7 @@ import MpHeaderAvatar from './HeaderAvatar.vue'
 export default {
   name: 'MpPanSpatialMapHeader',
   components: { MpIcon, MpHeaderAvatar },
-  mixins: [ThemeContentMixin],
+  mixins: [AppMixin],
   props: {
     themeMode: {
       type: String,

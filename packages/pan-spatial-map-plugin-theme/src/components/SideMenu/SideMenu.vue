@@ -2,11 +2,11 @@
   <a-layout-sider
     :theme="sideTheme"
     :class="[themeMode, 'side-menu-wrapper']"
-    v-model="collapsed"
-    :collapsedWidth="sidebarWidth"
+    v-model="collapsedVal"
+    :collapsedWidth="collapsedWidth"
     :collapsible="collapsible"
     :trigger="null"
-    :width="208"
+    :width="width"
   >
     <div class="side-menu beauty-scroll">
       <a-menu class="menu" :theme="sideTheme" @select="onSelect" mode="inline">
@@ -16,7 +16,7 @@
         </a-menu-item>
       </a-menu>
     </div>
-    <div class="side-links">
+    <div class="side-links" v-if="collapsible">
       <a-menu
         class="menu"
         :theme="sideTheme"
@@ -28,9 +28,9 @@
         <a-menu-item
           class="side-collapsed-button"
           title=""
-          @click="collapsed = !collapsed"
+          @click="collapsedVal = !collapsedVal"
         >
-          <a-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'" />
+          <a-icon :type="collapsedVal ? 'menu-unfold' : 'menu-fold'" />
         </a-menu-item>
       </a-menu>
     </div>
@@ -47,28 +47,38 @@ export default {
   components: { MpIcon },
   mixins: [ThemeContentMixin],
   props: {
+    width: {
+      type: Number,
+      default: 208
+    },
     collapsible: {
       type: Boolean,
       required: false,
       default: false
+    },
+    collapsed: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    collapsedWidth: {
+      type: Number,
+      default: 48
+    },
+    themeMode: {
+      type: String,
+      required: false,
+      default: 'dark'
     }
   },
   data() {
     return {
-      collapsed: false,
-      initSidebarWidth: 48
+      collapsedVal: this.collapsed
     }
   },
   computed: {
-    ...mapState('setting', ['theme']),
     sideTheme() {
-      return this.theme.mode == 'light' ? this.theme.mode : 'dark'
-    },
-    themeMode() {
-      return this.theme.mode
-    },
-    sidebarWidth() {
-      return this.collapsed ? this.initSidebarWidth : 200
+      return this.themeMode == 'light' ? this.themeMode : 'dark'
     }
   },
   methods: {

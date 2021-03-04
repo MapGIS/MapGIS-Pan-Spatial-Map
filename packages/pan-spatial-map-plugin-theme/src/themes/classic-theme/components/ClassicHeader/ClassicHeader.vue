@@ -1,5 +1,5 @@
 <template>
-  <mp-pan-spatial-map-header :theme-mode="headerTheme">
+  <mp-pan-spatial-map-header :theme-mode="themeMode">
     <div
       slot="header-content"
       class="header-menu"
@@ -7,7 +7,7 @@
     >
       <a-menu
         class="menu"
-        :theme="headerTheme"
+        :theme="menuTheme"
         mode="horizontal"
         @select="onSelect"
       >
@@ -32,18 +32,12 @@ export default {
   mixins: [ThemeContentMixin],
   computed: {
     ...mapState('setting', { themeMode: state => state.theme.mode }),
-    headerTheme() {
-      if (this.themeMode == 'dark') {
-        return 'light'
-      }
-      return this.themeMode
+    menuTheme() {
+      return this.themeMode == 'light' ? this.themeMode : 'dark'
     },
     menuWidth() {
       return 'calc(100% - 500px)'
     }
-  },
-  mounted() {
-    console.log(this.themeMode)
   },
   methods: {
     onSelect({ item, key, selectedKeys }) {

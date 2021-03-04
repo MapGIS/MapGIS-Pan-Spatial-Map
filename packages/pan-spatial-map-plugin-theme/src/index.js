@@ -7,6 +7,7 @@ import {
 import {
   MpPanSpatialMapClassicTheme,
   MpPanSpatialMapClassicHeader,
+  MpPanSpatialMapClassicLeft,
   MpPanSpatialMapClassicToolbar
 } from './themes'
 
@@ -16,6 +17,7 @@ const components = [
   MpPanSpatialMapFooter,
   MpPanSpatialMapClassicTheme,
   MpPanSpatialMapClassicHeader,
+  MpPanSpatialMapClassicLeft,
   MpPanSpatialMapClassicToolbar
 ]
 

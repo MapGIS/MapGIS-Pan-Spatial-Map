@@ -50,7 +50,7 @@
     {
       "name": "left",
       "description": "左侧导航条",
-      "component": "MpPanSpatialMapSideMenu"
+      "component": "MpPanSpatialMapClassicLeft"
     },
     {
       "name": "footer",
