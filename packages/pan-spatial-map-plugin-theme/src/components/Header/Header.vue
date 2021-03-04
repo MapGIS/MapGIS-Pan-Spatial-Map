@@ -1,25 +1,13 @@
 <template>
-  <a-layout-header :class="[headerTheme, 'classic-navbar-wrapper']">
+  <a-layout-header :class="[themeMode, 'header-wrapper']">
     <div class="header-wide">
-      <div :class="['logo', headerTheme]">
+      <div :class="['logo', themeMode]">
         <mp-icon :icon="application.logo" class="icon" />
         <h1>{{ application.title }}</h1>
         <h2>{{ application.subtitle }}</h2>
       </div>
-      <div class="header-menu" :style="`width: ${menuWidth};`">
-        <a-menu
-          class="menu"
-          :theme="themeMode"
-          mode="horizontal"
-          @select="onSelect"
-        >
-          <a-menu-item v-for="widget in widgets" :key="widget.id">
-            <mp-icon :icon="getWidgetIcon(widget)" class="icon" />
-            <span>{{ getWidgetLabel(widget) }}</span>
-          </a-menu-item>
-        </a-menu>
-      </div>
-      <div :class="['header-right', headerTheme]">
+      <slot name="header-content"></slot>
+      <div :class="['header-right', themeMode]">
         <mp-header-avatar class="header-item" />
       </div>
     </div>
@@ -27,73 +15,49 @@
 </template>
 
 <script>
-import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
+import { ThemeContentMixin } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
 import MpIcon from '../Icon/Icon.vue'
-import MpHeaderAvatar from './HeaderAvatar'
+import MpHeaderAvatar from './HeaderAvatar.vue'
 
 export default {
-  name: 'MpPanSpatialMapClassicNavbar',
+  name: 'MpPanSpatialMapHeader',
   components: { MpIcon, MpHeaderAvatar },
   mixins: [ThemeContentMixin],
-  computed: {
-    ...mapState('setting', ['theme']),
-    headerTheme() {
-      return this.theme.mode
-    },
-    themeMode() {
-      return this.theme.mode == 'light' ? this.theme.mode : 'dark'
-    },
-    menuWidth() {
-      return 'calc(100% - 500px)'
-    }
-  },
-  methods: {
-    onSelect({ item, key, selectedKeys }) {
-      WidgetManager.getInstance().triggerWidgetOpen(
-        this.widgets.find(val => {
-          return val.id === key
-        })
-      )
+  props: {
+    themeMode: {
+      type: String,
+      required: false,
+      default: 'dark'
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.classic-navbar-wrapper {
+.header-wrapper {
   height: 48px;
   line-height: 48px;
   padding: 0;
-  box-shadow: @shadow-down;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
   position: relative;
   background: @base-bg-color;
-
   &.dark {
     background: @header-bg-color-dark;
     color: white;
   }
-
-  &.night {
-    .menu {
-      background: @base-bg-color;
-    }
-  }
-
   .header-wide {
     padding-left: 8px;
-
     .logo {
       display: inline-block;
       padding: 0 12px 0 0;
-
       .icon {
         color: @primary-color;
         font-size: 32px;
         margin-right: 8px;
         vertical-align: -0.2em;
       }
-
       h1 {
         color: inherit;
         display: inline-block;
@@ -106,18 +70,6 @@ export default {
         padding-left: 6px;
       }
     }
-
-    .header-menu {
-      display: inline-block;
-
-      .menu {
-        box-shadow: none;
-        .icon {
-          margin-right: 10px;
-        }
-      }
-    }
-
     .header-right{
       float: right;
       display: flex;

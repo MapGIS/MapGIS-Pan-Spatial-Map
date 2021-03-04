@@ -109,7 +109,7 @@
   "contentWidgets": {
     "groups": [
       {
-        "content": "navbar",
+        "content": "header",
         "widgets": [
           {
             "id": "widget_3e8667b6-71ce-492d-be6f-f8193360b4d2",
@@ -195,7 +195,7 @@
         }
       },
       {
-        "content": "leftsidebar",
+        "content": "left",
         "widgets": [
           {
             "id": "widget_f1064fd1-69ec-4a4f-97e7-d178d9ea0203",

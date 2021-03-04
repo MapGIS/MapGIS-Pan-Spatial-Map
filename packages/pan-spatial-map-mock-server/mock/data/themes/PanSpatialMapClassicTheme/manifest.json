@@ -37,9 +37,9 @@
   ],
   "contents": [
     {
-      "name": "navbar",
-      "description": "导航条",
-      "component": "MpPanSpatialMapClassicNavbar"
+      "name": "header",
+      "description": "头部导航条",
+      "component": "MpPanSpatialMapClassicHeader"
     },
     {
       "name": "toolbar",
@@ -48,9 +48,9 @@
       "maxWidgets": 6
     },
     {
-      "name": "leftsidebar",
+      "name": "left",
       "description": "左侧导航条",
-      "component": "MpPanSpatialMapClassicLeftSidebar"
+      "component": "MpPanSpatialMapSideMenu"
     },
     {
       "name": "footer",

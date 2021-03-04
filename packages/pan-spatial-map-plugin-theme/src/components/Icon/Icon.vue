@@ -1,5 +1,5 @@
 <template>
-  <div class="mp-icon-container">
+  <div class="mp-icon-wrapper">
     <i v-if="isSvg" class="icon" v-html="icon"> </i>
     <img v-else :src="icon" fit="contain" />
   </div>
@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style lang="less">
-.mp-icon-container {
+.mp-icon-wrapper {
   display: inline;
   .icon {
     line-height: 0;

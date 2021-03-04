@@ -7,15 +7,17 @@
       <mp-setting />
     </mp-drawer>
     <component
-      :is="navbarContentComponent"
+      :is="headerContentComponent"
       ref="headerContainer"
-      v-bind="parseContentProps('navbar')"
+      v-bind="parseContentProps('header')"
     />
     <a-layout>
       <component
-        :is="leftSidebarContentComponent"
-        v-bind="parseContentProps('leftsidebar')"
+        :is="leftContentComponent"
+        v-bind="parseContentProps('left')"
       />
+      <mp-pan-spatial-map-side-panel :width="panelWidth" />
+      <mp-pan-spatial-map-adjust-line @line-move="onPanelLineMove" />
       <a-layout>
         <a-layout-content>
           <mp-map-container
@@ -46,29 +48,33 @@ import { ThemeMixin } from '@mapgis/web-app-framework'
 import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { mapState } from 'vuex'
+import MpPanSpatialMapSidePanel from '../../components/SidePanel/SidePanel.vue'
+import MpPanSpatialMapAdjustLine from '../../components/AdjustLine/AdjustLine.vue'
 
 export default {
   name: 'MpPanSpatialMapClassicTheme',
+  components: { MpPanSpatialMapSidePanel, MpPanSpatialMapAdjustLine },
   mixins: [ThemeMixin],
   props: {
-    navbar: Object,
+    header: Object,
     toolbar: Object,
-    leftsidebar: Object
+    left: Object
   },
   data() {
     return {
       pageHeight: '',
       maxFooterHeight: 0,
-      showSetting: false
+      showSetting: false,
+      panelWidth: 320
     }
   },
   computed: {
     ...mapState('setting', ['hideSetting']),
-    navbarContentComponent() {
-      return this.parseContentComponent('navbar')
+    headerContentComponent() {
+      return this.parseContentComponent('header')
     },
-    leftSidebarContentComponent() {
-      return this.parseContentComponent('leftsidebar')
+    leftContentComponent() {
+      return this.parseContentComponent('left')
     },
     toolbarContentComponent() {
       return this.parseContentComponent('toolbar')
@@ -109,6 +115,9 @@ export default {
       window.onresize = () => {
         this.calcMaxFooterHeight()
       }
+    },
+    onPanelLineMove(offset) {
+      this.panelWidth += offset
     }
   }
 }

@@ -20,7 +20,7 @@
       >
         <img-checkbox
           :title="$t('theme.dark')"
-          img="https://gw.alipayobjects.com/zos/rmsportal/LCkqqYNmvBEbokSDscrm.svg"
+          img="https://gw.alipayobjects.com/zos/antfincdn/x8Ob%26B8cy8/LCkqqYNmvBEbokSDscrm.svg"
           value="dark"
         />
         <img-checkbox
