@@ -1,10 +1,22 @@
 <template>
   <div
-    class="adjust-line-wrapper adjust-line-wrapper-v"
+    :class="[
+      'adjust-line-wrapper',
+      isLineVertical ? 'adjust-line-wrapper-v' : 'adjust-line-wrapper-h'
+    ]"
     @mousedown="onMousedown"
   >
-    <div class="adjust-line adjust-line-v"></div>
-    <div class="adjust-button">
+    <div
+      :class="[
+        'adjust-line',
+        isLineVertical ? 'adjust-line-v' : 'adjust-line-h'
+      ]"
+    ></div>
+    <div
+      v-if="resizeButton"
+      :class="['adjust-button', direction]"
+      :style="{ 'z-index': zIndex }"
+    >
       <div class="indicator"></div>
     </div>
   </div>
@@ -13,15 +25,61 @@
 <script>
 export default {
   name: 'MpPanSpatialMapAdjustLine',
+  props: {
+    direction: {
+      validator(value) {
+        const allowedValues = ['left', 'right', 'top', 'bottom']
+        return typeof value === 'string' && allowedValues.includes(value)
+      },
+      default: 'right'
+    },
+    resizeButton: {
+      type: Boolean,
+      default: true
+    },
+    zIndex: {
+      type: Number,
+      default: 1
+    }
+  },
+  computed: {
+    isLineVertical() {
+      return this.direction === 'left' || this.direction === 'right'
+    },
+    isLineHorizonal() {
+      return this.direction === 'top' || this.direction === 'bottom'
+    }
+  },
   methods: {
     onMousedown(e) {
       let startX = e.clientX
+      let startY = e.clientY
       const move = moveEvent => {
         moveEvent.preventDefault()
         moveEvent.stopPropagation()
-        const offset = startX - moveEvent.clientX
+
+        let offset = 0
+
+        switch (this.direction) {
+          case 'left':
+            offset = startX - moveEvent.clientX
+            startX -= offset
+            break
+          case 'right':
+            offset = moveEvent.clientX - startX
+            startX += offset
+            break
+          case 'top':
+            offset = startY - moveEvent.clientY
+            startY -= offset
+            break
+          default:
+            offset = moveEvent.clientY - startY
+            startY += offset
+            break
+        }
+
         this.$emit('line-move', offset)
-        startX -= offset
       }
 
       const up = moveEvent => {
@@ -40,24 +98,20 @@ export default {
   .adjust-line {
     border: 1px solid #eee;
   }
-
   .adjust-line-h {
     width: 100%;
   }
-
   .adjust-line-v {
     height: 100%;
   }
-
   .adjust-button {
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto;
     width: 30px;
     height: 10px;
     background-color: #fff;
-
     .indicator {
       margin: 0 auto;
       width: 10px;
@@ -65,44 +119,37 @@ export default {
       background-color: #ccd5db;
     }
   }
-
   &:hover {
     .adjust-button {
       background-color: @primary-color;
     }
-
     .adjust-line {
       border-color: @primary-color;
     }
   }
 }
-
 .adjust-line-wrapper-h {
+  position: relative;
   cursor: ns-resize;
-
-  .adjust-tip {
-    letter-spacing: 1px;
-    padding: 0;
-    height: 24px;
-    margin: 2px auto 0;
-    text-align: center;
-    line-height: 24px;
-    font-size: 12px;
-    color: #868484;
-    vertical-align: middle;
+  .adjust-button {
+    left: 50%;
+    &.top {
+      bottom: 0;
+    }
   }
 }
-
 .adjust-line-wrapper-v {
   position: relative;
-  height: calc(100vh - 64px);
   cursor: ew-resize;
-
   .adjust-button {
-    position: absolute;
-    right: -10px;
     top: 50%;
     transform: rotate(90deg);
+    &.left {
+      right: -10px;
+    }
+    &.right {
+      left: -10px;
+    }
   }
 }
 </style>

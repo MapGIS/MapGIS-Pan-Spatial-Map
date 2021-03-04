@@ -17,7 +17,10 @@
         v-bind="parseContentProps('left')"
       />
       <mp-pan-spatial-map-side-panel :width="panelWidth" />
-      <mp-pan-spatial-map-adjust-line @line-move="onPanelLineMove" />
+      <mp-pan-spatial-map-adjust-line
+        direction="right"
+        @line-move="onPanelLineMove"
+      />
       <a-layout>
         <a-layout-content>
           <mp-map-container
