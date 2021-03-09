@@ -26,12 +26,6 @@
     }
   }
 
-  .ant-layout-sider-children {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
   .ant-menu-light {
     border-right-color: transparent;
   }
@@ -47,4 +41,9 @@
 
 .ant-menu-submenu-popup .mp-icon-wrapper > .icon {
   margin-right: 10px;
+}
+
+.ant-layout-sider {
+  // 防止拖动延迟
+  transition: none !important;
 }

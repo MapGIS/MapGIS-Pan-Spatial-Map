@@ -22,7 +22,7 @@
 
 <script>
 export default {
-  name: 'MpDrawer',
+  name: 'Drawer',
   data() {
     return {}
   },
@@ -70,7 +70,7 @@ export default {
   top: 0;
   background-color: @shadow-color;
   transition: all 0.5s;
-  z-index: 100;
+  z-index: 10000;
   &.open {
     display: inline-block;
   }
@@ -82,7 +82,7 @@ export default {
   position: fixed;
   transition: all 0.5s;
   height: 100vh;
-  z-index: 100;
+  z-index: 10000;
   &.left {
     left: 0px;
     &.open {

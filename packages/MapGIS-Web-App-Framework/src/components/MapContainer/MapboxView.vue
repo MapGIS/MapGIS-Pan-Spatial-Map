@@ -6,7 +6,7 @@
     :mapStyle="mapStyle"
     :crs="crs"
     @load="handleLoad"
-    :style="{ height: pageHeight, width: '100%' }"
+    style="height: 100%; width: 100%"
   >
     <div v-for="l in rasters" :key="l.id">
       <mapbox-raster-layer
@@ -129,10 +129,6 @@ export default {
     MapboxVectortileLayer
   },
   props: {
-    pageHeight: {
-      type: String,
-      default: 'calc(100vh - 100px)'
-    },
     mapStyle: {
       type: Object,
       required: true

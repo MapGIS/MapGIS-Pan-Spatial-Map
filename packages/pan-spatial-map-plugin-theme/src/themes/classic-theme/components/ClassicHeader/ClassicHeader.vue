@@ -1,10 +1,6 @@
 <template>
   <mp-pan-spatial-map-header :theme-mode="themeMode">
-    <div
-      slot="header-content"
-      class="header-menu"
-      :style="`width: ${menuWidth};`"
-    >
+    <div slot="header-content" class="header-menu">
       <a-menu
         class="menu"
         :theme="menuTheme"
@@ -34,9 +30,6 @@ export default {
     ...mapState('setting', { themeMode: state => state.theme.mode }),
     menuTheme() {
       return this.themeMode == 'light' ? this.themeMode : 'dark'
-    },
-    menuWidth() {
-      return 'calc(100% - 500px)'
     }
   },
   methods: {
@@ -60,7 +53,6 @@ export default {
   }
   .header-wide {
     .header-menu {
-      display: inline-block;
       .menu {
         box-shadow: none;
         .icon {

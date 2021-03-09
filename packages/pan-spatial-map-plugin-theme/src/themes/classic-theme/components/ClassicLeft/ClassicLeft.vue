@@ -1,7 +1,7 @@
 <template>
   <mp-pan-spatial-map-side-menu
     :theme-mode="sideTheme"
-    :collapsible="true"
+    :collapsible="false"
     :collapsed="true"
     :content="content"
     :widgets="widgets"

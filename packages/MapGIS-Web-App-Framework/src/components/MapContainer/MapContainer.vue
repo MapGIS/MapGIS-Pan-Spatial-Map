@@ -2,7 +2,6 @@
   <div class="mp-map-container">
     <mp-mapbox-view
       v-show="mapRender === mapboxRender"
-      :page-height="pageHeight"
       :document="document"
       :map-style="style"
       v-bind="mapOptions"
@@ -10,7 +9,6 @@
     <keep-alive>
       <mp-cesium-view
         v-show="mapRender === cesiumRender"
-        :page-height="pageHeight"
         :document="document"
         :map-style="style"
         :lib-path="cesiumLibPath"
@@ -36,7 +34,6 @@ export default {
     MpCesiumView
   },
   props: {
-    pageHeight: String,
     cesiumLibPath: {
       type: String
     },
@@ -57,8 +54,7 @@ export default {
 
 <style lang="less" scoped>
 .mp-map-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 </style>

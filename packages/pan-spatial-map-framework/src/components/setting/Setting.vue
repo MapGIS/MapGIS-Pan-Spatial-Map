@@ -83,7 +83,7 @@ import deepMerge from 'deepmerge'
 const ColorCheckboxGroup = ColorCheckbox.Group
 const ImgCheckboxGroup = ImgCheckbox.Group
 export default {
-  name: 'MpSetting',
+  name: 'Setting',
   i18n: require('./i18n'),
   components: {
     ImgCheckboxGroup,

@@ -7,7 +7,7 @@
     :baseLayerPicker="false"
     :animation="false"
     :fullscreenButton="false"
-    :style="{ height: pageHeight }"
+    style="height: 100%; width: 100%"
   >
     <div v-for="l in rasters" :key="l.id">
       <cesium-igs-tile-layer
@@ -145,10 +145,6 @@ export default {
     CesiumTerrainLayer
   },
   props: {
-    pageHeight: {
-      type: String,
-      default: 'calc(100vh - 100px)'
-    },
     mapStyle: {
       type: Object,
       required: true

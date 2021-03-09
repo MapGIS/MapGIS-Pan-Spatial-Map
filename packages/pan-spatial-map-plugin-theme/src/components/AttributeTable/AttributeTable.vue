@@ -1,6 +1,6 @@
 <template>
   <div class="mp-attribute-table">
-    <template v-if="!closeable">
+    <template v-if="closeable">
       <span class="switch-button" @click="switchAttributeTable">
         <a-icon :type="iconType" />
       </span>
@@ -20,8 +20,8 @@ export default {
   name: 'MpAttributeTable',
   props: {
     maxViewHeight: { type: Number, required: false, default: 400 },
-    initOpen: { type: Boolean, default: true },
-    closeable: { type: Boolean, required: false, default: false }
+    initOpen: { type: Boolean, default: false },
+    closeable: { type: Boolean, required: false, default: true }
   },
   data() {
     return {
@@ -52,21 +52,22 @@ export default {
   methods: {
     resizeAttributeTable(event) {
       let startY = event.clientY
+      const self = this
       const move = moveEvent => {
         moveEvent.preventDefault()
         moveEvent.stopPropagation()
         const offset = startY - moveEvent.clientY
         startY -= offset
 
-        const height = this.viewHeight + offset
+        const height = self.viewHeight + offset
 
-        if (height > this.maxViewHeight) {
-          this.viewHeight = this.maxViewHeight
+        if (height > self.maxViewHeight) {
+          self.viewHeight = self.maxViewHeight
         } else if (height < 10) {
-          this.viewHeight = 0
-          this.open = false
+          self.viewHeight = 0
+          self.open = false
         } else {
-          this.viewHeight = height
+          self.viewHeight = height
         }
       }
 
@@ -101,6 +102,7 @@ export default {
 .mp-attribute-table {
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .switch-button {
     position: absolute;

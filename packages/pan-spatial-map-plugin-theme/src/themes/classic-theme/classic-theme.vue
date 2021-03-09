@@ -1,11 +1,11 @@
 <template>
   <a-layout class="pan-spatial-map-wrapper">
-    <mp-drawer v-if="!hideSetting" v-model="showSetting" placement="right">
+    <drawer v-if="!hideSetting" v-model="showSetting" placement="right">
       <div class="setting" slot="handler">
         <a-icon :type="showSetting ? 'close' : 'setting'" />
       </div>
-      <mp-setting />
-    </mp-drawer>
+      <setting />
+    </drawer>
     <component
       :is="headerContentComponent"
       ref="headerContainer"
@@ -16,31 +16,28 @@
         :is="leftContentComponent"
         v-bind="parseContentProps('left')"
       />
-      <mp-pan-spatial-map-side-panel :width="panelWidth" />
-      <mp-pan-spatial-map-adjust-line
-        direction="right"
-        @line-move="onPanelLineMove"
-      />
+      <mp-pan-spatial-map-side-panel />
       <a-layout>
-        <a-layout-content>
+        <a-layout-content class="content-wrapper">
           <mp-map-container
-            :page-height="pageHeight"
+            class="map-wrapper"
             cesium-lib-path="cesium/Cesium.js"
             cesium-plugin-path="cesium/webclient-cesium-plugins.js"
             :map-options="mapOptions"
           />
-          <!-- <component
+          <component
             :is="toolbarContentComponent"
             v-bind="parseContentProps('toolbar')"
-          /> -->
+          />
           <!-- <slot v-if="mapInitialized" name="map" /> -->
         </a-layout-content>
-        <component
-          :is="footerContentComponent"
-          ref="footerContainer"
-          v-bind="parseContentProps('footer')"
-          :max-footer-height="maxFooterHeight"
-        />
+        <a-layout-footer class="footer-wrapper" style="padding: 0">
+          <component
+            :is="footerContentComponent"
+            v-bind="parseContentProps('footer')"
+            :max-view-height="maxFooterHeight"
+          />
+        </a-layout-footer>
       </a-layout>
     </a-layout>
   </a-layout>
@@ -49,14 +46,14 @@
 <script>
 import { ThemeMixin } from '@mapgis/web-app-framework'
 import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
-import elementResizeDetectorMaker from 'element-resize-detector'
 import { mapState } from 'vuex'
 import MpPanSpatialMapSidePanel from '../../components/SidePanel/SidePanel.vue'
-import MpPanSpatialMapAdjustLine from '../../components/AdjustLine/AdjustLine.vue'
 
 export default {
   name: 'MpPanSpatialMapClassicTheme',
-  components: { MpPanSpatialMapSidePanel, MpPanSpatialMapAdjustLine },
+  components: {
+    MpPanSpatialMapSidePanel
+  },
   mixins: [ThemeMixin],
   props: {
     header: Object,
@@ -65,10 +62,8 @@ export default {
   },
   data() {
     return {
-      pageHeight: '',
       maxFooterHeight: 0,
-      showSetting: false,
-      panelWidth: 320
+      showSetting: false
     }
   },
   computed: {
@@ -94,22 +89,10 @@ export default {
     }
   },
   mounted() {
-    this.calcPageHeight()
-    this.watchFooterSize()
-
     this.calcMaxFooterHeight()
     this.watchWindowSize()
   },
   methods: {
-    calcPageHeight() {
-      this.pageHeight = `calc(100vh - ${this.$refs.headerContainer.$el.offsetHeight}px - ${this.$refs.footerContainer.$el.offsetHeight}px)`
-    },
-    watchFooterSize() {
-      const erd = elementResizeDetectorMaker()
-      erd.listenTo(this.$refs.footerContainer.$el, element => {
-        this.calcPageHeight()
-      })
-    },
     calcMaxFooterHeight() {
       this.maxFooterHeight =
         window.innerHeight - this.$refs.headerContainer.$el.offsetHeight
@@ -118,15 +101,28 @@ export default {
       window.onresize = () => {
         this.calcMaxFooterHeight()
       }
-    },
-    onPanelLineMove(offset) {
-      this.panelWidth += offset
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.pan-spatial-map-wrapper {
+  .content-wrapper {
+    position: relative;
+    padding: 0;
+    .map-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+  .footer-wrapper {
+    z-index: 500;
+  }
+}
 .setting {
   background-color: @primary-color;
   color: @base-bg-color;

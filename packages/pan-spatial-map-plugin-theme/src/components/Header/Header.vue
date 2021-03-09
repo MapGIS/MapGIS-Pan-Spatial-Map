@@ -6,7 +6,9 @@
         <h1>{{ application.title }}</h1>
         <h2>{{ application.subtitle }}</h2>
       </div>
-      <slot name="header-content"></slot>
+      <div class="header-content">
+        <slot name="header-content" />
+      </div>
       <div :class="['header-right', themeMode]">
         <mp-header-avatar class="header-item" />
       </div>
@@ -39,7 +41,7 @@ export default {
   height: 48px;
   line-height: 48px;
   padding: 0;
-  z-index: 2;
+  z-index: 2000;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
   position: relative;
   background: @base-bg-color;
@@ -49,9 +51,9 @@ export default {
   }
   .header-wide {
     padding-left: 8px;
+    display: flex;
     .logo {
-      display: inline-block;
-      padding: 0 12px 0 0;
+      min-width: 240px;
       .icon {
         color: @primary-color;
         font-size: 32px;
@@ -62,17 +64,23 @@ export default {
         color: inherit;
         display: inline-block;
         font-size: 16px;
+        margin: 0 0 0 12px;
       }
       h2 {
         color: inherit;
         display: inline-block;
         font-size: 14px;
         padding-left: 6px;
+        margin: 0 0 0 12px;
       }
     }
+    .header-content {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
     .header-right{
-      float: right;
       display: flex;
+      min-width: 280px;
       color: inherit;
       .header-item{
         color: inherit;

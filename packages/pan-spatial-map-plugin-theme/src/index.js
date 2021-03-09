@@ -1,7 +1,7 @@
 import {
   MpPanSpatialMapHeader,
   MpPanSpatialMapSideMenu,
-  MpPanSpatialMapFooter
+  MpAttributeTable
 } from './components'
 
 import {
@@ -14,7 +14,7 @@ import {
 const components = [
   MpPanSpatialMapHeader,
   MpPanSpatialMapSideMenu,
-  MpPanSpatialMapFooter,
+  MpAttributeTable,
   MpPanSpatialMapClassicTheme,
   MpPanSpatialMapClassicHeader,
   MpPanSpatialMapClassicLeft,

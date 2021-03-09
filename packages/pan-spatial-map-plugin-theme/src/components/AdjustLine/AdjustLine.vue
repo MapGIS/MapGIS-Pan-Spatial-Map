@@ -96,7 +96,7 @@ export default {
 <style lang="less">
 .adjust-line-wrapper {
   .adjust-line {
-    border: 1px solid #eee;
+    border: 1px solid @border-color;
   }
   .adjust-line-h {
     width: 100%;
@@ -111,12 +111,12 @@ export default {
     justify-content: center;
     width: 30px;
     height: 10px;
-    background-color: #fff;
+    background-color: @base-bg-color;
     .indicator {
       margin: 0 auto;
       width: 10px;
       height: 1px;
-      background-color: #ccd5db;
+      background-color: @border-color;
     }
   }
   &:hover {
@@ -125,12 +125,13 @@ export default {
     }
     .adjust-line {
       border-color: @primary-color;
+      background-color: @primary-color;
     }
   }
 }
 .adjust-line-wrapper-h {
   position: relative;
-  cursor: ns-resize;
+  cursor: row-resize;
   .adjust-button {
     left: 50%;
     &.top {
@@ -140,7 +141,7 @@ export default {
 }
 .adjust-line-wrapper-v {
   position: relative;
-  cursor: ew-resize;
+  cursor: col-resize;
   .adjust-button {
     top: 50%;
     transform: rotate(90deg);

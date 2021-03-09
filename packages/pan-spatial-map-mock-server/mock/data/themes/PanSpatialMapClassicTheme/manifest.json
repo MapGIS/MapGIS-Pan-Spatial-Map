@@ -55,7 +55,7 @@
     {
       "name": "footer",
       "description": "页脚",
-      "component": "MpPanSpatialMapFooter"
+      "component": "MpAttributeTable"
     }
   ]
 }

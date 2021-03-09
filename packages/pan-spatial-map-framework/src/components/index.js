@@ -1,7 +1,7 @@
-import MpDrawer from './tool/Drawer.vue'
-import MpSetting from './setting/Setting.vue'
+import Drawer from './tool/Drawer.vue'
+import Setting from './setting/Setting.vue'
 
-const components = [MpDrawer, MpSetting]
+const components = [Drawer, Setting]
 
 const install = Vue => {
   components.forEach(component => {
