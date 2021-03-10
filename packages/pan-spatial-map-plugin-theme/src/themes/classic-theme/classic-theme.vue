@@ -14,11 +14,13 @@
     <a-layout>
       <component
         :is="leftContentComponent"
+        ref="leftContainer"
         v-bind="parseContentProps('left')"
       />
       <mp-pan-spatial-map-side-panel
         v-bind="left.panel"
         :widgets="left.widgets"
+        @update-widget-visible="onUpdateWidgetVisible('left', $event)"
       />
       <a-layout>
         <a-layout-content class="content-wrapper">
@@ -104,6 +106,10 @@ export default {
       window.onresize = () => {
         this.calcMaxFooterHeight()
       }
+    },
+    onUpdateWidgetVisible(contentName, e) {
+      const contentComponent = this.$refs[`${contentName}Container`]
+      if (contentComponent) contentComponent.onUpdateWidgetVisible(e)
     }
   }
 }

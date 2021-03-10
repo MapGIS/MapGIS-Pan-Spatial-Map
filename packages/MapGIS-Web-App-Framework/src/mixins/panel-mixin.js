@@ -71,6 +71,8 @@ export default {
       if (!visible) {
         WidgetManager.getInstance().closeWidget(widget)
       }
+
+      this.$emit('update-widget-visible', { widget, visible })
     }
   }
 }

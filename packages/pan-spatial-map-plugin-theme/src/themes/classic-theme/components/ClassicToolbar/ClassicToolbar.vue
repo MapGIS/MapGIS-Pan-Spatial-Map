@@ -58,6 +58,7 @@ export default {
   .toolbar-collapse-button {
     font-size: 16px;
     padding: 4px 0;
+    cursor: pointer;
     &:hover {
       color: @primary-color;
     }

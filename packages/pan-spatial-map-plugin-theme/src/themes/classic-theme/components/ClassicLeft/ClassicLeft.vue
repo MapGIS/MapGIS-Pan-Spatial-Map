@@ -7,6 +7,7 @@
     :widgets="widgets"
     :widgetStructure="widgetStructure"
     :panel="panel"
+    ref="sideMenu"
   />
 </template>
 
@@ -26,6 +27,11 @@ export default {
         return 'light'
       }
       return this.themeMode
+    }
+  },
+  methods: {
+    onUpdateWidgetVisible(e) {
+      this.$refs.sideMenu.onUpdateWidgetVisible(e)
     }
   }
 }

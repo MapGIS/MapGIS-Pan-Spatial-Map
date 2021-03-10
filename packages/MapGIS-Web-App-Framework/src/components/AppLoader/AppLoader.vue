@@ -1,5 +1,5 @@
 <template>
-  <component :is="themeComponent" v-bind="contents">
+  <component :is="themeComponent" v-bind="contents" ref="themeContainer">
     <template v-slot:map="{}">
       <!--地图微件 -->
       <template v-if="mapWidgets">
@@ -24,6 +24,7 @@
           :is="contentWidgetPanelComponents[i]"
           v-bind="group.panel"
           :widgets="group.widgets"
+          @update-widget-visible="onUpdateWidgetVisible(group.content, $event)"
         />
       </template>
     </template>
@@ -98,6 +99,11 @@ export default {
       }
 
       return components
+    }
+  },
+  methods: {
+    onUpdateWidgetVisible(contentName, e) {
+      this.$refs.themeContainer.onUpdateWidgetVisible(contentName, e)
     }
   }
 }

@@ -42,6 +42,7 @@ export default {
       }
 
       return widget.manifest.name
-    }
+    },
+    onUpdateWidgetVisible(e) {}
   }
 }

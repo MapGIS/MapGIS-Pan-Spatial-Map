@@ -99,6 +99,11 @@ export default {
       if (currentWidget) {
         WidgetManager.getInstance().triggerWidgetOpen(currentWidget)
       }
+    },
+    onUpdateWidgetVisible({ widget, visible }) {
+      if (!visible && this.selectedKeys[0] === widget.id) {
+        this.selectedKeys = []
+      }
     }
   }
 }

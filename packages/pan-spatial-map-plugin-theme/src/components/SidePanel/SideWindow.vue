@@ -5,7 +5,14 @@
     :width="resizeWidth"
     v-show="syncedVisible"
   >
-    <slot />
+    <a-card
+      size="small"
+      :title="title"
+      :style="{ width: resizeWidth + 'px', transition: 'none' }"
+    >
+      <a-icon class="close-button" type="close" slot="extra" @click="onClose" />
+      <slot />
+    </a-card>
     <mp-pan-spatial-map-adjust-line
       direction="right"
       :resize-button="false"
@@ -81,5 +88,12 @@ export default {
 .side-panel-wrapper {
   z-index: 500;
   height: calc(100vh - 48px);
+
+  .close-button {
+    cursor: pointer;
+    &:hover {
+      color: @primary-color;
+    }
+  }
 }
 </style>

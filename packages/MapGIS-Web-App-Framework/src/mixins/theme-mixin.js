@@ -56,6 +56,7 @@ export default {
         this.mapInitialized = true
       }
     },
+    onUpdateWidgetVisible(contentName, e) {},
     parseContentComponent(contentName) {
       const content = this.getContent(contentName)
 
