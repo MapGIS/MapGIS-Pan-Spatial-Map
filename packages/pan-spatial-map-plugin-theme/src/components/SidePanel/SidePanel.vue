@@ -1,69 +1,33 @@
 <template>
-  <a-layout-sider
-    theme="light"
-    :class="[themeMode, 'side-panel-wrapper']"
-    :width="panelWidth"
-  >
-    <slot />
-    <mp-pan-spatial-map-adjust-line
-      direction="right"
-      :resize-button="false"
-      @line-move="onPanelLineMove"
+  <div class="mp-side-widget-panel">
+    <mp-pan-spatial-map-side-card
+      v-for="widget in widgetsInPanel('content')"
+      :key="widget.uri"
+      :widget="widget"
+      :visible="isWidgetVisible(widget, 'content')"
+      @update:visible="updateWidgetVisible($event, widget)"
+      :class="{ active: isWidgetActive(widget) }"
+      @mousedown.native.capture="onPanelClick(widget)"
     />
-  </a-layout-sider>
+  </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import MpPanSpatialMapAdjustLine from '../AdjustLine/AdjustLine.vue'
+import { WidgetManager, PanelMixin } from '@mapgis/web-app-framework'
+import MpPanSpatialMapSideCard from './SideCard.vue'
 
 export default {
+  // 组件名称，统一以"Mp"开头
   name: 'MpPanSpatialMapSidePanel',
-  components: { MpPanSpatialMapAdjustLine },
-  props: {
-    width: {
-      type: Number,
-      default: 320
-    },
-    // 是否显示
-    visible: { type: Boolean, default: false }
-  },
-  data() {
-    return {
-      panelWidth: this.width
-    }
-  },
-  computed: {
-    ...mapState('setting', ['theme']),
-    themeMode() {
-      return this.theme.mode
-    }
-  },
+  components: { MpPanSpatialMapSideCard },
+  mixins: [PanelMixin],
   methods: {
-    onPanelLineMove(offset) {
-      this.panelWidth += offset
-      if (this.panelWidth < 2) {
-        this.panelWidth = 2
-      }
+    onPanelClick(widget) {
+      console.log('panel click')
+      this.activateWidget(widget)
     }
   }
 }
 </script>
 
-<style lang="less">
-.side-panel-wrapper {
-  z-index: 500;
-  .ant-layout-sider-children {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    justify-content: flex-end;
-  }
-}
-</style>
-
-<style lang="less">
-.side-panel-wrapper {
-  height: calc(100vh - 48px);
-}
-</style>
+<style lang="less" scoped></style>

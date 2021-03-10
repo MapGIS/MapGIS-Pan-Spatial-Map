@@ -1,7 +1,7 @@
 <template>
   <div class="mp-map-widget-panel">
     <mp-map-widget-card
-      v-for="widget in widgetsInPanel"
+      v-for="widget in widgetsInPanel()"
       :key="widget.uri"
       :position="position"
       :widget="widget"

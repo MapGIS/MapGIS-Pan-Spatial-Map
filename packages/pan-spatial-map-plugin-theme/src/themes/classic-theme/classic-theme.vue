@@ -16,7 +16,10 @@
         :is="leftContentComponent"
         v-bind="parseContentProps('left')"
       />
-      <mp-pan-spatial-map-side-panel />
+      <mp-pan-spatial-map-side-panel
+        v-bind="left.panel"
+        :widgets="left.widgets"
+      />
       <a-layout>
         <a-layout-content class="content-wrapper">
           <mp-map-container

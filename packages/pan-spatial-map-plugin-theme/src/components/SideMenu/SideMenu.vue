@@ -9,7 +9,13 @@
     :width="width"
   >
     <div class="side-menu beauty-scroll">
-      <a-menu class="menu" :theme="sideTheme" @select="onSelect" mode="inline">
+      <a-menu
+        class="menu"
+        :theme="sideTheme"
+        @click="onClick"
+        mode="inline"
+        v-model="selectedKeys"
+      >
         <a-menu-item v-for="widget in widgets" :key="widget.id">
           <mp-icon :icon="getWidgetIcon(widget)" class="icon" />
           <span>{{ getWidgetLabel(widget) }}</span>
@@ -38,7 +44,7 @@
 </template>
 
 <script>
-import { ThemeContentMixin } from '@mapgis/web-app-framework'
+import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
 import MpIcon from '../Icon/Icon.vue'
 
@@ -73,7 +79,8 @@ export default {
   },
   data() {
     return {
-      collapsedVal: this.collapsed
+      collapsedVal: this.collapsed,
+      selectedKeys: []
     }
   },
   computed: {
@@ -82,7 +89,17 @@ export default {
     }
   },
   methods: {
-    onSelect({ item, key, selectedKeys }) {}
+    onClick({ item, key, keyPath }) {
+      if (this.selectedKeys[0] === key) {
+        this.selectedKeys = []
+      }
+
+      const currentWidget = this.widgets.find(widget => widget.id === key)
+
+      if (currentWidget) {
+        WidgetManager.getInstance().triggerWidgetOpen(currentWidget)
+      }
+    }
   }
 }
 </script>

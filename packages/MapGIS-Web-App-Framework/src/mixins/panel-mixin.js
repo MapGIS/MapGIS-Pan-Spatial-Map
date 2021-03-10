@@ -25,20 +25,20 @@ export default {
     }
   },
   computed: {
-    isPanelRelativeToMap() {
-      return !this.relativeTo || this.relativeTo === 'map'
-    },
     widgetsInPanel() {
-      if (!this.isPanelRelativeToMap) return []
+      return function(rel = 'map') {
+        if ((!this.relativeTo && rel !== 'map') || this.relativeTo !== rel)
+          return []
 
-      return this.widgets.filter(widget => {
-        // 没有清单文件就不能弹面板
-        if (!widget.manifest) return false
+        return this.widgets.filter(widget => {
+          // 没有清单文件就不能弹面板
+          if (!widget.manifest) return false
 
-        const { properties = { inPanel: true } } = widget.manifest
+          const { properties = { inPanel: true } } = widget.manifest
 
-        return properties.inPanel
-      })
+          return properties.inPanel
+        })
+      }
     },
     isWidgetActive() {
       return function(widget) {
@@ -46,11 +46,11 @@ export default {
       }
     },
     isWidgetVisible() {
-      return function(widget) {
+      return function(widget, rel = 'map') {
         // 单面板模式,只能一次显示一个微件
         if (widget.state === WidgetState.ACTIVE && this.mode === 'single') {
           // 将所有可在面板中显示的其他微件的状态全部设置为关闭
-          this.widgetsInPanel.forEach(item => {
+          this.widgetsInPanel(rel).forEach(item => {
             if (item !== widget) {
               WidgetManager.getInstance().closeWidget(item)
             }
@@ -61,6 +61,9 @@ export default {
     }
   },
   methods: {
+    isPanelRelativeTo(rel) {
+      return !this.relativeTo || this.relativeTo === 'map'
+    },
     activateWidget(widget) {
       return WidgetManager.getInstance().activateWidget(widget)
     },

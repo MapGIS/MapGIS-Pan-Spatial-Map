@@ -233,12 +233,7 @@
         ],
         "widgetStructure": [],
         "panel": {
-          "position": {
-            "anchor": "top-right",
-            "horizontalOffset": 10,
-            "verticalOffset": 10,
-            "bottom": 10
-          }
+          "relativeTo": "content"
         }
       }
     ]
