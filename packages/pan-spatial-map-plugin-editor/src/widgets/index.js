@@ -1,0 +1,7 @@
+export { default as MpMeasurement } from './measurement/measurement.vue'
+export { default as MpMarkerManager } from './marker-manager/marker-manager.vue'
+export { default as MpAddData } from './add-data/add-data.vue'
+export { default as MpComprehensiveQuery } from './comprehensive-query/comprehensive-query.vue'
+export { default as MpThematicMap } from './thematic-map/thematic-map.vue'
+export { default as MpVectorTileCarto } from './vector-tile-carto/vector-tile-carto.vue'
+export { default as MpFeatureQuery } from './feature-query/feature-query.vue'

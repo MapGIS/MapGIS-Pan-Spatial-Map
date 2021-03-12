@@ -87,7 +87,7 @@
   // 必须，主题
   "theme": {
     // 主题名称，指向themes/name主题
-    "name": "BillboardTheme",
+    "name": "billboard-theme",
 
     // 可选，系统主题风格，如果不存在，则使用customStyle
     "style": "ocean",
@@ -118,7 +118,7 @@
         "id": "widget_1",
 
         // widget标识
-        "uri": "widgets/Scalebar",
+        "uri": "widgets/scalebar",
 
         // 可选，如果没有设置，使用widget目录内图标（manifest.json指向的icon）
         "icon": "",
@@ -183,7 +183,7 @@
             "id": "widget_2",
 
             // widget标识
-            "uri": "widgets/Scalebar",
+            "uri": "widgets/scalebar",
 
             // 可选，如果没有设置，使用widget目录内图标（manifest.json指向的icon）
             "icon": "",

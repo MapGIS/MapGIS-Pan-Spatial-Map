@@ -8,13 +8,13 @@
     </drawer>
     <component
       :is="headerContentComponent"
-      ref="headerContainer"
+      ref="headerContent"
       v-bind="parseContentProps('header')"
     />
     <a-layout>
       <component
         :is="leftContentComponent"
-        ref="leftContainer"
+        ref="leftContent"
         v-bind="parseContentProps('left')"
       />
       <mp-pan-spatial-map-side-panel
@@ -100,16 +100,12 @@ export default {
   methods: {
     calcMaxFooterHeight() {
       this.maxFooterHeight =
-        window.innerHeight - this.$refs.headerContainer.$el.offsetHeight
+        window.innerHeight - this.$refs.headerContent.$el.offsetHeight
     },
     watchWindowSize() {
       window.onresize = () => {
         this.calcMaxFooterHeight()
       }
-    },
-    onUpdateWidgetVisible(contentName, e) {
-      const contentComponent = this.$refs[`${contentName}Container`]
-      if (contentComponent) contentComponent.onUpdateWidgetVisible(e)
     }
   }
 }

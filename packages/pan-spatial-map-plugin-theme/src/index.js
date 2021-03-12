@@ -1,8 +1,4 @@
-import {
-  MpPanSpatialMapHeader,
-  MpPanSpatialMapSideMenu,
-  MpAttributeTable
-} from './components'
+import { MpPanSpatialMapHeader, MpPanSpatialMapSideMenu } from './components'
 
 import {
   MpPanSpatialMapClassicTheme,
@@ -14,7 +10,6 @@ import {
 const components = [
   MpPanSpatialMapHeader,
   MpPanSpatialMapSideMenu,
-  MpAttributeTable,
   MpPanSpatialMapClassicTheme,
   MpPanSpatialMapClassicHeader,
   MpPanSpatialMapClassicLeft,

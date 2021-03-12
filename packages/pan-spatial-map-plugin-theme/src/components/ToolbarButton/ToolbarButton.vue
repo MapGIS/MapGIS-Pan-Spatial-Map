@@ -1,7 +1,7 @@
 <template>
   <div class="command" @click="$emit('click')">
     <mp-icon :icon="widgetInfo.icon" class="icon" />
-    <span>{{ widgetInfo.label }}</span>
+    <span class="label">{{ widgetInfo.label }}</span>
   </div>
 </template>
 
@@ -27,6 +27,10 @@ export default {
   .icon {
     font-size: 16px;
     margin-right: 8px;
+  }
+  .label {
+    font-size: 12px;
+    vertical-align: 0.1em;
   }
 }
 </style>

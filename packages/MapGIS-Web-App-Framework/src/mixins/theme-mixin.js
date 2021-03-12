@@ -31,7 +31,8 @@ export default {
       actions: {},
       mapboxInitialized: false,
       cesiumInitialized: false,
-      mapInitialized: false
+      mapInitialized: false,
+      refSuffix: 'Content'
     }
   },
   created() {
@@ -56,7 +57,10 @@ export default {
         this.mapInitialized = true
       }
     },
-    onUpdateWidgetVisible(contentName, e) {},
+    onUpdateWidgetVisible(contentName, e) {
+      const contentComponent = this.$refs[`${contentName}${this.refSuffix}`]
+      if (contentComponent) contentComponent.onUpdateWidgetVisible(e)
+    },
     parseContentComponent(contentName) {
       const content = this.getContent(contentName)
 

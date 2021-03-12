@@ -12,6 +12,10 @@ import Components from '@/components'
 import Auth from '@mapgis/pan-spatial-map-plugin-auth'
 import Launch from '@mapgis/pan-spatial-map-plugin-launch'
 import Theme from '@mapgis/pan-spatial-map-plugin-Theme'
+import Workspace from '@mapgis/pan-spatial-map-plugin-workspace'
+import Editor from '@mapgis/pan-spatial-map-plugin-editor'
+import Analysis from '@mapgis/pan-spatial-map-plugin-analysis'
+import Visualization from '@mapgis/pan-spatial-map-plugin-visualization'
 
 const router = initRouter()
 const i18n = initI18n('CN', 'US')
@@ -28,6 +32,10 @@ Vue.use(Auth, {
 })
 Vue.use(Launch, { router })
 Vue.use(Theme)
+Vue.use(Workspace)
+Vue.use(Editor)
+Vue.use(Analysis)
+Vue.use(Visualization)
 
 new Vue({
   router,

@@ -7,8 +7,7 @@
     @update:visible="updateVisible"
   >
     <template>
-      <!-- <component :is="widget.manifest.component" :widget="widget" /> -->
-      <div>{{ widgetInfo.label }}</div>
+      <component :is="widget.manifest.component" :widget="widget" />
     </template>
   </mp-pan-spatial-map-side-window>
 </template>

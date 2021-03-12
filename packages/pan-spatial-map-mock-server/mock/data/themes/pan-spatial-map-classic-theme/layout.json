@@ -1,0 +1,113 @@
+{
+  "mapWidgets": {
+    "widgets": [
+      {
+        "uri": "widgets/zoom-in",
+        "position": {
+          "anchor": "bottom-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 64
+        }
+      },
+      {
+        "uri": "widgets/zoom-out",
+        "position": {
+          "anchor": "bottom-left",
+          "horizontalOffset": 50,
+          "verticalOffset": 64
+        }
+      },
+      {
+        "uri": "widgets/data-catalog",
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 10
+        }
+      },
+      {
+        "uri": "widgets/about",
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 60,
+          "verticalOffset": 10
+        }
+      },
+      {
+        "uri": "widgets/map-mode-picker",
+        "position": {
+          "anchor": "bottom-left",
+          "horizontalOffset": 90,
+          "verticalOffset": 64
+        }
+      },
+      {
+        "uri": "widgets/legend",
+        "position": {
+          "anchor": "bottom-right",
+          "horizontalOffset": 10,
+          "verticalOffset": 10
+        }
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 55,
+          "verticalOffset": 10
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 105,
+          "verticalOffset": 10
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 155,
+          "verticalOffset": 10
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 205,
+          "verticalOffset": 10
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 255,
+          "verticalOffset": 10
+        },
+        "placeholder": true
+      }
+    ]
+  },
+  "contentWidgets": {
+    "groups": [
+      {
+        "content": "header",
+        "widgets": []
+      },
+      {
+        "content": "left",
+        "widgets": [],
+        "panel": {
+          "relativeTo": "content"
+        }
+      },
+      {
+        "content": "toolbar",
+        "widgets": []
+      }
+    ]
+  }
+}
