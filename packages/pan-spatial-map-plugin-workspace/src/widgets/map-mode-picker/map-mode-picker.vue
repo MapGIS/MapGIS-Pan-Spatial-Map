@@ -1,11 +1,9 @@
 <template>
-  <div
+  <mp-map-widget-button
     class="mp-widget-map-mode-picker"
     :widget="widget"
     @click="switchMapMode"
-  >
-    二三维模式切换
-  </div>
+  />
 </template>
 
 <script>
@@ -17,4 +15,4 @@ export default {
 }
 </script>
 
-<style lang="less"></style>
+<style lang="less" scoped></style>

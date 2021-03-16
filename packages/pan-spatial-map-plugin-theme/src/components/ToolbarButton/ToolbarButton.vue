@@ -7,11 +7,9 @@
 
 <script>
 import { WidgetInfoMixin } from '@mapgis/web-app-framework'
-import MpIcon from '../Icon/Icon.vue'
 
 export default {
   name: 'MpPanSpatialMapToolbarButton',
-  components: { MpIcon },
   mixins: [WidgetInfoMixin]
 }
 </script>

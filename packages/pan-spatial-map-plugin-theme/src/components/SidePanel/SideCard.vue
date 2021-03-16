@@ -1,10 +1,11 @@
 <template>
   <mp-pan-spatial-map-side-window
+    ref="sideWindow"
     :title="widgetInfo.label"
     :icon="widgetInfo.icon"
     :is-full-screen="widgetInfo.properties.windowSize === 'max'"
     :visible="visible"
-    @update:visible="updateVisible"
+    @update:visible="onUpdateVisible"
   >
     <template>
       <component :is="widget.manifest.component" :widget="widget" />
@@ -29,11 +30,11 @@ export default {
   computed: {},
   watch: {},
   methods: {
-    updateVisible(value) {
+    onUpdateVisible(value) {
       this.$emit('update:visible', value)
     }
   }
 }
 </script>
 
-<style lang="less"></style>
+<style lang="less" scoped></style>

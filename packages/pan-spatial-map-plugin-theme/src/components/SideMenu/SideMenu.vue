@@ -46,11 +46,9 @@
 <script>
 import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
-import MpIcon from '../Icon/Icon.vue'
 
 export default {
   name: 'MpPanSpatialMapSideMenu',
-  components: { MpIcon },
   mixins: [ThemeContentMixin],
   props: {
     width: {

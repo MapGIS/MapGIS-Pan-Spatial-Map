@@ -1,5 +1,4 @@
 import AppMixin from './app-mixin'
-import IconMixin from './icon-mixin'
 
 import {
   defaultWidgetPosition,
@@ -8,7 +7,7 @@ import {
 } from '../utils/app-config.js'
 
 export default {
-  mixins: [AppMixin, IconMixin],
+  mixins: [AppMixin],
   props: {
     widget: Object
   },

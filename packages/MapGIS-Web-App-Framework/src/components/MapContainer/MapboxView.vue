@@ -2,8 +2,8 @@
   <mapbox-map
     :center="center"
     :zoom="zoom"
-    :accessToken="accessToken"
-    :mapStyle="mapStyle"
+    :access-token="accessToken"
+    :map-style="mapStyle"
     :crs="crs"
     @load="handleLoad"
     style="height: 100%; width: 100%"

@@ -1,10 +1,10 @@
 <template>
   <mp-window
     v-bind="position"
-    :theme-style="themeStyle"
     :title="widgetInfo.label"
     :icon="widgetInfo.icon"
     :is-full-screen="widgetInfo.properties.windowSize === 'max'"
+    :z-index="zIndex"
     :visible="visible"
     @update:visible="updateVisible"
   >
@@ -24,7 +24,9 @@ export default {
     position: {
       type: Object
     },
-    visible: { type: Boolean, default: true }
+    visible: { type: Boolean, default: true },
+    // 层级
+    zIndex: { type: Number, default: 1 }
   },
   data() {
     return {}

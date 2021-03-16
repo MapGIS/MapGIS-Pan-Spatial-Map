@@ -1,12 +1,12 @@
 <template>
   <cesium-web-globe
     :libPath="libPath"
-    :pluginPath="pluginPath"
+    :plugin-path="pluginPath"
     @load="handleLoad"
-    :keyEventEnable="false"
-    :baseLayerPicker="false"
+    :key-event-enable="false"
+    :base-layer-picker="false"
     :animation="false"
-    :fullscreenButton="false"
+    :fullscreen-button="false"
     style="height: 100%; width: 100%"
   >
     <div v-for="l in rasters" :key="l.id">

@@ -27,18 +27,23 @@
           @update-widget-visible="onUpdateWidgetVisible(group.content, $event)"
         />
       </template>
+
+      <!--普通的地图面板集 -->
+      <mp-map-panel v-for="panel in panels" :key="panel.id" :panel="panel" />
     </template>
   </component>
 </template>
 
 <script>
 import MpMapWidgetContainer from '../WidgetsContainer/MapWidgetContainer.vue'
+import MpMapPanel from '../Panels/MapPanel.vue'
+import PanelManager from '../../managers/panel-manager'
 
 export default {
   // 组件名称，统一以"Mp"开头
   name: 'MpAppLoader',
   // 依赖的组件
-  components: { MpMapWidgetContainer },
+  components: { MpMapWidgetContainer, MpMapPanel },
   props: { application: Object, designTime: { type: Boolean, default: false } },
   provide() {
     return {
@@ -48,6 +53,11 @@ export default {
       getDesignTime: () => {
         return this.designTime
       }
+    }
+  },
+  data() {
+    return {
+      panels: PanelManager.getInstance().getPanels()
     }
   },
   computed: {

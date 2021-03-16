@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div v-if="designTime" class="mp-map-widget-placeholder"></div>
 </template>
 
 <script>
@@ -14,11 +14,15 @@ export default {
 
 <style lang="less" scoped>
 .mp-map-widget-placeholder {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   cursor: default;
-  background-color: #000000;
+  background: @base-bg-color;
   opacity: 0.5;
-  border: 1px dashed #a0acbf;
+  box-shadow: 0px 1px 2px 0px @shadow-color;
+  border: 1px dashed @border-color;
+  &:hover {
+    border: 1px dashed @primary-color;
+  }
 }
 </style>

@@ -20,11 +20,10 @@
 import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
 import MpPanSpatialMapHeader from '../../../../components/Header/Header.vue'
-import MpIcon from '../../../../components/Icon/Icon.vue'
 
 export default {
   name: 'MpPanSpatialMapClassicHeader',
-  components: { MpPanSpatialMapHeader, MpIcon },
+  components: { MpPanSpatialMapHeader },
   mixins: [ThemeContentMixin],
   computed: {
     ...mapState('setting', { themeMode: state => state.theme.mode }),

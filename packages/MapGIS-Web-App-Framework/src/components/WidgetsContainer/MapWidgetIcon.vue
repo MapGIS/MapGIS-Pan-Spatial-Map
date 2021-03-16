@@ -1,15 +1,20 @@
 <template>
-  <div>{{ widgetInfo.label }}</div>
+  <mp-button
+    :label="widgetInfo.label"
+    :icon="widgetInfo.icon"
+    @click="onClick"
+  />
 </template>
 
 <script>
+import MpButton from '../Button/Button.vue'
 import { WidgetInfoMixin } from '../../mixins'
-import WidgetState from '../../utils/widget-state'
 import WidgetManager from '../../managers/widget-manager'
 
 export default {
   // 组件名称，统一以"Mp"开头
   name: 'MpMapWidgetIcon',
+  components: { MpButton },
   mixins: [WidgetInfoMixin],
   methods: {
     onClick() {
@@ -19,11 +24,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-.mp-map-widget-icon {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  background-color: #555;
-}
-</style>
+<style lang="less" scoped></style>

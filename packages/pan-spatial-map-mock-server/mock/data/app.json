@@ -223,7 +223,15 @@
             "uri": "widgets/kibana-v"
           }
         ],
-        "widgetStructure": []
+        "widgetStructure": [],
+        "panel": {
+          "position": {
+            "anchor": "top-right",
+            "horizontalOffset": 10,
+            "verticalOffset": 52,
+            "bottom": 10
+          }
+        }
       }
     ]
   }

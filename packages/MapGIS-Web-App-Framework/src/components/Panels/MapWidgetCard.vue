@@ -1,11 +1,11 @@
 <template>
   <mp-window
     v-bind="normalizePosition"
-    :theme-style="themeStyle"
     :title="widgetInfo.label"
     :icon="widgetInfo.icon"
-    :shrinkAction="false"
-    :fullScreenAction="false"
+    :shrink-action="false"
+    :full-screen-action="false"
+    :z-index="zIndex"
     :visible="visible"
     @update:visible="updateVisible"
     drag-range
@@ -26,7 +26,9 @@ export default {
     position: {
       type: Object
     },
-    visible: { type: Boolean, default: true }
+    visible: { type: Boolean, default: true },
+    // 层级
+    zIndex: { type: Number, default: 1 }
   },
   computed: {
     width() {

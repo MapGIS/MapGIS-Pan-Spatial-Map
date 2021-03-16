@@ -22,7 +22,7 @@
         :widgets="left.widgets"
         @update-widget-visible="onUpdateWidgetVisible('left', $event)"
       />
-      <a-layout>
+      <a-layout class="main-wrapper">
         <a-layout-content class="content-wrapper">
           <mp-map-container
             class="map-wrapper"
@@ -34,7 +34,7 @@
             :is="toolbarContentComponent"
             v-bind="parseContentProps('toolbar')"
           />
-          <!-- <slot v-if="mapInitialized" name="map" /> -->
+          <slot v-if="mapInitialized" name="map" />
         </a-layout-content>
         <a-layout-footer class="footer-wrapper" style="padding: 0">
           <component
@@ -113,19 +113,22 @@ export default {
 
 <style lang="less" scoped>
 .pan-spatial-map-wrapper {
-  .content-wrapper {
-    position: relative;
-    padding: 0;
-    .map-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+  .main-wrapper {
+    overflow-y: hidden;
+    .content-wrapper {
+      position: relative;
+      padding: 0;
+      .map-wrapper {
+        position: fixed;
+        top: 48px;
+        left: 48px;
+        width: calc(100vw - 48px);
+        height: calc(100vh - 48px);
+      }
     }
-  }
-  .footer-wrapper {
-    z-index: 500;
+    .footer-wrapper {
+      z-index: 500;
+    }
   }
 }
 .setting {

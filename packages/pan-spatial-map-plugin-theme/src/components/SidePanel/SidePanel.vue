@@ -1,8 +1,10 @@
 <template>
   <div class="mp-side-widget-panel">
+    <div :style="{ display: 'inline-block', width: `${stuffWidth}px` }"></div>
     <mp-pan-spatial-map-side-card
       v-for="widget in widgetsInPanel('content')"
       :key="widget.uri"
+      :ref="widget.id"
       :widget="widget"
       :visible="isWidgetVisible(widget, 'content')"
       @update:visible="updateWidgetVisible($event, widget)"
@@ -21,13 +23,29 @@ export default {
   name: 'MpPanSpatialMapSidePanel',
   components: { MpPanSpatialMapSideCard },
   mixins: [PanelMixin],
+  computed: {
+    stuffWidth() {
+      const visibleWidget = this.widgets.find(widget =>
+        this.isWidgetVisible(widget, 'content')
+      )
+
+      if (visibleWidget) {
+        return this.$refs[visibleWidget.id][0].$refs.sideWindow.resizeWidth
+      }
+
+      return 0
+    }
+  },
   methods: {
     onPanelClick(widget) {
-      console.log('panel click')
       this.activateWidget(widget)
     }
   }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.mp-side-widget-panel {
+  position: relative;
+}
+</style>

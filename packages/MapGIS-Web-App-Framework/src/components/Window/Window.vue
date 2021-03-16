@@ -1,13 +1,107 @@
 <template>
-  <div>{{ title }}</div>
+  <mp-placement
+    class="mp-window-wrapper"
+    :position="anchor"
+    :offset="[currentHorizontalOffset, currentVerticalOffset]"
+    v-show="syncedVisible"
+    :style="{ width: currentWidth, height: currentHeight }"
+    :z-index="zIndex"
+    ref="windowContainer"
+  >
+    <div
+      class="window-head"
+      :style="{
+        cursor: canDragable ? 'all-scroll' : 'auto'
+      }"
+      @mousedown="onMousedown(onDrag, $event)"
+      ref="headerContainer"
+    >
+      <div class="title">{{ title }}</div>
+      <div class="actions">
+        <a-icon
+          v-if="shrinkAction"
+          class="action"
+          :type="shrink ? 'up' : 'down'"
+          @click="shrink = !shrink"
+        />
+        <a-icon
+          v-if="fullScreenAction"
+          class="action"
+          :type="fullScreen ? 'fullscreen-exit' : 'fullscreen'"
+          @click="fullScreen = !fullScreen"
+        />
+        <a-icon class="action" type="close" @click="onClose" />
+      </div>
+    </div>
+    <div
+      v-show="!shrink"
+      class="beauty-scroll window-content"
+      ref="contentContainer"
+    >
+      <slot />
+      <div
+        @mousedown="onMousedown(onResizeWindow, $event)"
+        style="position: absolute; bottom: 2px; right: 2px; cursor: nw-resize; width: 15px; height: 15px;"
+      />
+    </div>
+  </mp-placement>
 </template>
 
 <script>
-import { ThemeStyleMixin, IconMixin } from '@mapgis/web-app-framework'
+const SPECIAL_CHARS_REGEXP = /([:-_]+(.))/g
+const MOZ_HACK_REGEXP = /^moz([A-Z])/
+
+const camelCase = function(name) {
+  return name
+    .replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+      return offset ? letter.toUpperCase() : letter
+    })
+    .replace(MOZ_HACK_REGEXP, 'Moz$1')
+}
+
+const getStyle =
+  Number(document.documentMode) < 9
+    ? function(element, styleName) {
+        if (!element || !styleName) return null
+        styleName = camelCase(styleName)
+        if (styleName === 'float') {
+          styleName = 'styleFloat'
+        }
+        try {
+          switch (styleName) {
+            case 'opacity':
+              try {
+                return element.filters.item('alpha').opacity / 100
+              } catch (e) {
+                return 1.0
+              }
+            default:
+              return element.style[styleName] || element.currentStyle
+                ? element.currentStyle[styleName]
+                : null
+          }
+        } catch (e) {
+          return element.style[styleName]
+        }
+      }
+    : function(element, styleName) {
+        if (!element || !styleName) return null
+        styleName = camelCase(styleName)
+        if (styleName === 'float') {
+          styleName = 'cssFloat'
+        }
+        try {
+          const computed = document.defaultView.getComputedStyle(element, '')
+          return element.style[styleName] || computed
+            ? computed[styleName]
+            : null
+        } catch (e) {
+          return element.style[styleName]
+        }
+      }
 
 export default {
   name: 'MpWindow',
-  mixins: [ThemeStyleMixin, IconMixin],
   props: {
     // 窗体方位
     // top-left | top | top-right | right | bottom-right | bottom | bottom-left | left
@@ -57,7 +151,9 @@ export default {
     // 是否调整窗口大小
     resizable: { type: Boolean, default: true },
     // 是否全屏
-    isFullScreen: { type: Boolean, default: false }
+    isFullScreen: { type: Boolean, default: false },
+    // 层级
+    zIndex: { type: Number, default: 1 }
   },
   data() {
     return {
@@ -68,15 +164,11 @@ export default {
       // 拖拽之后的位置，默认为初始位置
       dragHorizontalOffset: this.horizontalOffset,
       dragVerticalOffset: this.verticalOffset,
-      // 相对于屏幕的偏移
-      leftToScreen: 0,
-      rightToScreen: 0,
-      topToScreen: 0,
-      bottomToScreen: 0,
       heightPixel: '100px',
       // 调整大小后的大小，默认未初始大小
       resizeWidth: this.width,
-      resizeHeight: this.height
+      resizeHeight: this.height,
+      relParentEl: null
     }
   },
   computed: {
@@ -100,7 +192,7 @@ export default {
       return ['left', 'right'].includes(this.anchor)
     },
     // 是否允许拖动
-    // 全屏以及扩展时不允许拖动
+    // 全屏以及展开时不允许拖动
     canDragable() {
       return this.dragable && !this.fullScreen && !this.expand
     },
@@ -117,27 +209,28 @@ export default {
       return 0
     },
     // 当前的内容宽度
-    // 全屏(fullScreen)|水平展开(expand && isHorizontal)：计算q-page的宽度
+    // 全屏(fullScreen)|水平展开(expand && isHorizontal)：计算宽度
     // 正常情况：使用传入的宽度
     currentWidth() {
-      this.calcToScreenOffset()
-
       if (this.fullScreen || (this.expand && this.isHorizontal))
-        // 全屏|水平展开：总宽度减去左右布局宽度
-        return `calc(100vw - ${this.leftToScreen}px - ${this.rightToScreen}px)`
+        // 全屏|水平展开：100%
+        return '100%'
       return `${this.resizeWidth}px`
     },
     // 当前的内容高度
-    // 全屏(fullScreen)|垂直展开(expand && isVertical)：计算q-page的高度并减去title的高度
+    // 全屏(fullScreen)|垂直展开(expand && isVertical)：计算高度并减去title的高度
     // 正常情况：使用传入的高度
     currentHeight() {
-      this.calcToScreenOffset()
+      if (this.shrink) {
+        return '36px'
+      }
 
       if (this.fullScreen || (this.expand && this.isVertical)) {
-        // 全屏|垂直展开：总高度减去上下布局高度减去title高度
-        return `calc(100vh - ${this.topToScreen}px - ${this.bottomToScreen}px - 32px)`
+        // 全屏|垂直展开：高度100%
+        return '100%'
       }
-      return this.heightPixel
+      // 布局高度加上title高度
+      return `calc(${this.heightPixel} + 36px)`
     }
   },
   watch: {
@@ -158,39 +251,36 @@ export default {
   created() {
     if (this.height) {
       this.heightPixel = `${this.height}px`
+    } else {
+      // 如果height为undefined
+      if (['top-left', 'top-right', 'top'].includes(this.anchor)) {
+        this.heightPixel = `calc(100% - 36px - ${this.verticalOffset}px - ${this.bottom}px)`
+      } else if (
+        ['bottom-left', 'bottom-right', 'bottom'].includes(this.anchor)
+      ) {
+        this.heightPixel = `calc(100% - 36px - ${this.verticalOffset}px - ${this.top}px)`
+      }
     }
-
-    this.$nextTick(() => {
-      this.calcToScreenOffset()
-    })
   },
   methods: {
-    // 获取相对于屏幕的偏移
-    calcToScreenOffset() {
-      if (!this.$refs.windowContainer) return
-
-      const { left, right, top, bottom } = this.$refs.windowContainer
-      this.leftToScreen = left
-      this.rightToScreen = right
-      this.topToScreen = top
-      this.bottomToScreen = bottom
-
-      // 如果height为undefined
-      if (!this.height) {
-        if (['top-left', 'top-right', 'top'].includes(this.anchor)) {
-          this.heightPixel = `calc(100vh - ${this.topToScreen}px - ${this.bottomToScreen}px - 32px - ${this.verticalOffset}px - ${this.bottom}px)`
-        } else if (
-          ['bottom-left', 'bottom-right', 'bottom'].includes(this.anchor)
-        ) {
-          this.heightPixel = `calc(100vh - ${this.topToScreen}px - ${this.bottomToScreen}px - 32px - ${this.verticalOffset}px - ${this.top}px)`
-        }
+    /**
+     *  获取拖拽元素相对位置参考元素
+     */
+    getRelativeEl(el) {
+      let parent = el.parentNode
+      while (
+        parent !== document.documentElement &&
+        getStyle(parent, 'position') === 'static'
+      ) {
+        parent = parent.parentNode
       }
+      return parent
     },
     // 拖拽事件
     // 只有在允许拖拽的时候生效
     // 通过此次拖拽的相对位置以及上次的位置计算新的位置
     // 注意xy的加减问题
-    onDrag({ delta: { x, y }, position: { top, left } }) {
+    onDrag({ delta: { x, y } }) {
       if (this.canDragable) {
         // 基于左右计算x轴偏移量
         let offsetX
@@ -204,16 +294,11 @@ export default {
         if (this.dragRange) {
           minOffsetX = 0
           maxOffsetX =
-            document.body.clientWidth -
-            this.$refs.windowContainer.left -
-            this.$refs.windowContainer.right -
-            this.$refs.bodyContainer.$el.clientWidth
+            this.relParentEl.clientWidth -
+            this.$refs.windowContainer.$el.clientWidth
         } else {
-          minOffsetX = -this.$refs.bodyContainer.$el.clientWidth
-          maxOffsetX =
-            document.body.clientWidth -
-            this.$refs.windowContainer.left -
-            this.$refs.windowContainer.right
+          minOffsetX = -this.$refs.windowContainer.$el.clientWidth
+          maxOffsetX = this.relParentEl.clientWidth
         }
 
         // 保证在可视范围内
@@ -229,34 +314,26 @@ export default {
           if (this.dragRange) {
             minOffsetY = 0
             maxOffsetY =
-              document.body.clientHeight -
-              this.$refs.windowContainer.top -
-              this.$refs.windowContainer.bottom -
-              this.$refs.bodyContainer.$el.clientHeight
+              this.relParentEl.clientHeight -
+              this.$refs.windowContainer.$el.clientHeight
           } else {
             minOffsetY = 0
             maxOffsetY =
-              document.body.clientHeight -
-              this.$refs.windowContainer.top -
-              this.$refs.windowContainer.bottom -
-              this.$refs.barContainer.$el.clientHeight
+              this.relParentEl.clientHeight -
+              this.$refs.headerContainer.clientHeight
           }
         } else {
           offsetY = this.dragVerticalOffset - y
           if (this.dragRange) {
             minOffsetY = 0
             maxOffsetY =
-              document.body.clientHeight -
-              this.$refs.windowContainer.top -
-              this.$refs.windowContainer.bottom -
-              this.$refs.bodyContainer.$el.clientHeight
+              this.relParentEl.clientHeight -
+              this.$refs.windowContainer.$el.clientHeight
           } else {
-            minOffsetY = -this.$refs.mainContainer.clientHeight
+            minOffsetY = -this.$refs.contentContainer.clientHeight
             maxOffsetY =
-              document.body.clientHeight -
-              this.$refs.windowContainer.top -
-              this.$refs.windowContainer.bottom -
-              this.$refs.bodyContainer.$el.clientHeight
+              this.relParentEl.clientHeight -
+              this.$refs.windowContainer.$el.clientHeight
           }
         }
         // 保证在可视范围内
@@ -266,8 +343,37 @@ export default {
         this.dragVerticalOffset = offsetY
       }
     },
+    onMousedown(func, e) {
+      // 从DOM树向上查找定位元素，如无，就取documentElement
+      this.relParentEl = this.getRelativeEl(this.$el)
+
+      let startX = e.clientX
+      let startY = e.clientY
+
+      const move = moveEvent => {
+        moveEvent.preventDefault()
+        moveEvent.stopPropagation()
+
+        let offsetX = 0
+        let offsetY = 0
+
+        offsetX = moveEvent.clientX - startX
+        startX += offsetX
+        offsetY = moveEvent.clientY - startY
+        startY += offsetY
+
+        func({ delta: { x: offsetX, y: offsetY } })
+      }
+
+      const up = moveEvent => {
+        document.removeEventListener('mousemove', move, true)
+        document.removeEventListener('mouseup', up, true)
+      }
+      document.addEventListener('mousemove', move, true)
+      document.addEventListener('mouseup', up, true)
+    },
     // 调整大小（暂时没有考虑dragRange）
-    onResizeWindow({ delta: { x, y }, position: { top, left } }) {
+    onResizeWindow({ delta: { x, y } }) {
       if (!this.resizable) return
       let rx = x
 
@@ -288,10 +394,7 @@ export default {
 
       let ry = y
       const maxHeight =
-        document.body.clientHeight -
-        this.$refs.windowContainer.top -
-        this.$refs.windowContainer.bottom -
-        this.$refs.barContainer.$el.clientHeight
+        this.relParentEl.clientHeight - this.$refs.headerContainer.clientHeight
 
       if (this.resizeHeight + y <= this.height) {
         ry = this.height - this.resizeHeight
@@ -319,4 +422,39 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.mp-window-wrapper {
+  background-color: @base-bg-color;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0px 1px 2px 0px @shadow-color;
+  .window-head {
+    display: flex;
+    padding: 0 12px;
+    font-size: 14px;
+    height: 36px;
+    border-bottom: 1px solid @border-color;
+    .title {
+      flex: auto;
+      padding: 8px 0;
+      color: @heading-color;
+    }
+    .actions {
+      padding: 8px 0;
+      .action {
+        cursor: pointer;
+        padding-left: 8px;
+        &:hover {
+          color: @primary-color;
+        }
+      }
+    }
+  }
+  .window-content {
+    padding: 12px;
+    flex: auto;
+    overflow-y: auto;
+  }
+}
+</style>

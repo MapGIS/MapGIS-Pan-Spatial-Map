@@ -1,7 +1,9 @@
 <template>
-  <div class="mp-widget-zoom-in" :widget="widget" @click="onClickWidget">
-    放大
-  </div>
+  <mp-map-widget-button
+    class="mp-widget-zoom-in"
+    :widget="widget"
+    @click="onClickWidget"
+  />
 </template>
 
 <script>
@@ -20,4 +22,4 @@ export default {
 }
 </script>
 
-<style lang="less"></style>
+<style lang="less" scoped></style>

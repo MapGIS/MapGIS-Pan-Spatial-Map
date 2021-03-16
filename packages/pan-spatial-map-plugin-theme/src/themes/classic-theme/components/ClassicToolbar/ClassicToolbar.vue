@@ -56,7 +56,7 @@ export default {
     color: @text-color;
     border-radius: 2px;
     background: @base-bg-color;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    box-shadow: 0px 1px 2px 0px @shadow-color;
     display: flex;
     align-items: center;
     .toolbar-collapse-button {

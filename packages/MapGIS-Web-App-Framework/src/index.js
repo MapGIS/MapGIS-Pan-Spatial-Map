@@ -8,8 +8,7 @@ export {
   ThemeContentMixin,
   ThemeStyleMixin,
   PanelMixin,
-  MapMixin,
-  IconMixin
+  MapMixin
 } from './mixins'
 
 export { MpMapboxView, MpCesiumView } from './components'
@@ -19,27 +18,31 @@ export { WidgetState } from './utils'
 import {
   MpAppLoader,
   MpMapContainer,
+  MpMapboxView,
+  MpCesiumView,
+  MpPlacement,
+  MpIcon,
   MpMapWidgetButton,
-  MpContentWidgetButton,
   MpMapWidgetContainer,
   MpWindow,
+  MpWindowWrapper,
   MpContentWidgetPanel,
-  MpMapWidgetPanel,
-  MpMapboxView,
-  MpCesiumView
+  MpMapWidgetPanel
 } from './components'
 
 const components = [
   MpAppLoader,
   MpMapContainer,
+  MpMapboxView,
+  MpCesiumView,
+  MpPlacement,
+  MpIcon,
   MpMapWidgetButton,
-  MpContentWidgetButton,
   MpMapWidgetContainer,
   MpWindow,
+  MpWindowWrapper,
   MpContentWidgetPanel,
-  MpMapWidgetPanel,
-  MpMapboxView,
-  MpCesiumView
+  MpMapWidgetPanel
 ]
 
 const install = Vue => {

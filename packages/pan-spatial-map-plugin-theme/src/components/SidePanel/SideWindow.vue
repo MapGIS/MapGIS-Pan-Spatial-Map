@@ -8,7 +8,11 @@
     <a-card
       size="small"
       :title="title"
-      :style="{ width: resizeWidth + 'px', transition: 'none' }"
+      :style="{
+        flex: 'auto',
+        transition: 'none',
+        border: 'none'
+      }"
     >
       <a-icon class="close-button" type="close" slot="extra" @click="onClose" />
       <slot />
@@ -86,9 +90,11 @@ export default {
 
 <style lang="less" scoped>
 .side-panel-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
   z-index: 500;
   height: calc(100vh - 48px);
-
   .close-button {
     cursor: pointer;
     &:hover {

@@ -7,7 +7,7 @@
       :widget="widget"
       :visible="isWidgetVisible(widget)"
       @update:visible="updateWidgetVisible($event, widget)"
-      :class="{ active: isWidgetActive(widget) }"
+      :z-index="isWidgetActive(widget) ? 2 : 1"
       @mousedown.native.capture="onPanelClick(widget)"
     />
   </div>
@@ -25,17 +25,10 @@ export default {
   mixins: [PanelMixin],
   methods: {
     onPanelClick(widget) {
-      console.log('panel click')
       this.activateWidget(widget)
     }
   }
 }
 </script>
 
-<style lang="less" scoped>
-.mp-content-widget-panel {
-  .active {
-    z-index: 1;
-  }
-}
-</style>
+<style lang="less" scoped></style>
