@@ -2,7 +2,7 @@
   "mapWidgets": {
     "widgets": [
       {
-        "uri": "widgets/zoom-in",
+        "uri": "widgets/map-mode-picker",
         "position": {
           "anchor": "bottom-left",
           "horizontalOffset": 10,
@@ -10,11 +10,11 @@
         }
       },
       {
-        "uri": "widgets/zoom-out",
+        "uri": "widgets/zoom",
         "position": {
           "anchor": "bottom-left",
-          "horizontalOffset": 50,
-          "verticalOffset": 64
+          "horizontalOffset": 10,
+          "verticalOffset": 106
         }
       },
       {
@@ -29,16 +29,8 @@
         "uri": "widgets/about",
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 60,
+          "horizontalOffset": 52,
           "verticalOffset": 10
-        }
-      },
-      {
-        "uri": "widgets/map-mode-picker",
-        "position": {
-          "anchor": "bottom-left",
-          "horizontalOffset": 90,
-          "verticalOffset": 64
         }
       },
       {
@@ -52,7 +44,7 @@
       {
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 55,
+          "horizontalOffset": 94,
           "verticalOffset": 10
         },
         "placeholder": true
@@ -60,7 +52,7 @@
       {
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 105,
+          "horizontalOffset": 136,
           "verticalOffset": 10
         },
         "placeholder": true
@@ -68,7 +60,7 @@
       {
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 155,
+          "horizontalOffset": 178,
           "verticalOffset": 10
         },
         "placeholder": true
@@ -76,15 +68,7 @@
       {
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 205,
-          "verticalOffset": 10
-        },
-        "placeholder": true
-      },
-      {
-        "position": {
-          "anchor": "top-left",
-          "horizontalOffset": 255,
+          "horizontalOffset": 220,
           "verticalOffset": 10
         },
         "placeholder": true

@@ -1,6 +1,5 @@
 import {
-  MpZoomIn,
-  MpZoomOut,
+  MpZoom,
   MpMapModePicker,
   MpAbout,
   MpScalebar,
@@ -12,8 +11,7 @@ import {
 } from './widgets'
 
 const components = [
-  MpZoomIn,
-  MpZoomOut,
+  MpZoom,
   MpMapModePicker,
   MpAbout,
   MpScalebar,

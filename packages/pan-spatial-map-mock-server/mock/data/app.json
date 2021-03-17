@@ -18,8 +18,8 @@
   "mapWidgets": {
     "widgets": [
       {
-        "id": "widget_9832ede9-8e67-415e-8964-d97a363e247f",
-        "uri": "widgets/zoom-in",
+        "id": "widget_9b4aaff5-c4b1-4402-be60-d2cc4eca0476",
+        "uri": "widgets/map-mode-picker",
         "position": {
           "anchor": "bottom-left",
           "horizontalOffset": 10,
@@ -27,12 +27,12 @@
         }
       },
       {
-        "id": "widget_3a75ceba-77fb-48e5-9cea-fc6b53bfa75c",
-        "uri": "widgets/zoom-out",
+        "id": "widget_9832ede9-8e67-415e-8964-d97a363e247f",
+        "uri": "widgets/zoom",
         "position": {
           "anchor": "bottom-left",
-          "horizontalOffset": 50,
-          "verticalOffset": 64
+          "horizontalOffset": 10,
+          "verticalOffset": 106
         }
       },
       {
@@ -50,17 +50,8 @@
         "uri": "widgets/about",
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 60,
+          "horizontalOffset": 52,
           "verticalOffset": 10
-        }
-      },
-      {
-        "id": "widget_9b4aaff5-c4b1-4402-be60-d2cc4eca0476",
-        "uri": "widgets/map-mode-picker",
-        "position": {
-          "anchor": "bottom-left",
-          "horizontalOffset": 90,
-          "verticalOffset": 64
         }
       },
       {
@@ -75,32 +66,32 @@
       {
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 10,
-          "verticalOffset": 60
+          "horizontalOffset": 94,
+          "verticalOffset": 10
         },
         "placeholder": true
       },
       {
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 10,
-          "verticalOffset": 110
+          "horizontalOffset": 136,
+          "verticalOffset": 10
         },
         "placeholder": true
       },
       {
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 10,
-          "verticalOffset": 160
+          "horizontalOffset": 178,
+          "verticalOffset": 10
         },
         "placeholder": true
       },
       {
         "position": {
           "anchor": "top-left",
-          "horizontalOffset": 10,
-          "verticalOffset": 210
+          "horizontalOffset": 220,
+          "verticalOffset": 10
         },
         "placeholder": true
       }

@@ -1,5 +1,5 @@
 <template>
-  <a-tooltip :title="label" :overlay-style="{ zIndex }">
+  <a-tooltip :title="label" :overlay-style="{ zIndex }" placement="right">
     <div class="mp-button" @click="onClick">
       <mp-icon :icon="icon" />
     </div>

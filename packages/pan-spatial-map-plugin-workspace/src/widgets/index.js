@@ -1,5 +1,4 @@
-export { default as MpZoomIn } from './zoom-in/zoom-in.vue'
-export { default as MpZoomOut } from './zoom-out/zoom-out.vue'
+export { default as MpZoom } from './zoom/zoom.vue'
 export { default as MpMapModePicker } from './map-mode-picker/map-mode-picker.vue'
 export { default as MpAbout } from './about/about.vue'
 export { default as MpLayerList } from './layer-list/layer-list.vue'

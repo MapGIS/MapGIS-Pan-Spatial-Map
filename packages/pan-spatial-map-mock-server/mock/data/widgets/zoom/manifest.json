@@ -1,0 +1,14 @@
+{
+  "name": "缩放",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpZoom",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1040 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"203.125\" height=\"200\"><defs><style/></defs><path d=\"M48.703 359.52h861.59v120.528H48.703zm8.348 465.957h861.59v120.527H57.05z\"/><path d=\"M550.992 42.377l-2.822 744.545-120.528-.48 2.822-744.545z\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": false,
+    "hasConfig": false,
+    "hasSettingPage": false
+  }
+}
