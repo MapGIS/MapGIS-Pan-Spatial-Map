@@ -2,13 +2,12 @@
   <div class="mp-widget-visual-analysis">可视域分析</div>
 </template>
 
-<script>
+<script lang="ts">
+import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-export default {
-  name: 'MpVisualAnalysis',
-  mixins: [WidgetMixin]
-}
+@Component({ name: 'MpVisualAnalysis' })
+export default class MpVisualAnalysis extends Mixins(WidgetMixin) {}
 </script>
 
 <style lang="less" scoped></style>

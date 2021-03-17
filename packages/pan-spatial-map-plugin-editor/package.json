@@ -4,7 +4,7 @@
   "description": "全空间一张图制图编辑插件",
   "author": "MapGIS",
   "license": "Apache-2.0",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "test": "echo \"No test specified\" && exit 0"
   },
@@ -20,7 +20,10 @@
     "yarn": ">= 1.6.0"
   },
   "dependencies": {
-    "@mapgis/web-app-framework": "^0.1.0"
+    "@mapgis/web-app-framework": "^0.1.0",
+    "vue-property-decorator": "^8.3.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "typescript": "~3.7.0"
+  }
 }

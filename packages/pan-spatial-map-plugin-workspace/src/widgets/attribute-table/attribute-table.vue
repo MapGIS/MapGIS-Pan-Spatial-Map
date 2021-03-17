@@ -19,32 +19,37 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'MpAttributeTable',
-  props: {
-    maxViewHeight: { type: Number, required: false, default: 400 },
-    initOpen: { type: Boolean, default: false },
-    closeable: { type: Boolean, required: false, default: true }
-  },
-  data() {
-    return {
-      viewHeight: this.maxViewHeight / 3,
-      initViewHeight: this.maxViewHeight / 3,
-      open: this.initOpen
-    }
-  },
-  computed: {
-    iconType() {
-      return `${this.open ? 'down' : 'up'}`
-    }
-  },
-  watch: {
-    maxViewHeight() {
-      this.viewHeight = this.maxViewHeight / 3
-      this.initViewHeight = this.maxViewHeight / 3
-    }
-  },
+<script lang="ts">
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
+import { WidgetMixin } from '@mapgis/web-app-framework'
+
+@Component({ name: 'MpAttributeTable' })
+export default class MpAttributeTable extends Mixins(WidgetMixin) {
+  @Prop({ type: Number, required: false, default: 400 })
+  readonly maxViewHeight!: number
+
+  @Prop({ type: Boolean, default: false })
+  readonly initOpen!: boolean
+
+  @Prop({ type: Boolean, required: false, default: true })
+  readonly closeable!: boolean
+
+  viewHeight = this.maxViewHeight / 3
+
+  initViewHeight = this.maxViewHeight / 3
+
+  open = this.initOpen
+
+  get iconType() {
+    return `${this.open ? 'down' : 'up'}`
+  }
+
+  @Watch('maxViewHeight')
+  onMaxViewHeightChanged() {
+    this.viewHeight = this.maxViewHeight / 3
+    this.initViewHeight = this.maxViewHeight / 3
+  }
+
   created() {
     this.$root.$on(
       'switch-attribute-table',
@@ -55,52 +60,54 @@ export default {
       'close-attribute-table',
       this.onCloseAttributeTable.bind(this)
     )
-  },
-  methods: {
-    onResizeAttributeTable(event) {
-      let startY = event.clientY
-      const self = this
-      const move = moveEvent => {
-        moveEvent.preventDefault()
-        moveEvent.stopPropagation()
-        const offset = startY - moveEvent.clientY
-        startY -= offset
+  }
 
-        const height = self.viewHeight + offset
+  onResizeAttributeTable(event) {
+    let startY = event.clientY
+    const self = this
+    const move = moveEvent => {
+      moveEvent.preventDefault()
+      moveEvent.stopPropagation()
+      const offset = startY - moveEvent.clientY
+      startY -= offset
 
-        if (height > self.maxViewHeight) {
-          self.viewHeight = self.maxViewHeight
-        } else if (height < 10) {
-          self.viewHeight = 0
-          self.open = false
-        } else {
-          self.viewHeight = height
-        }
-      }
+      const height = self.viewHeight + offset
 
-      const up = moveEvent => {
-        document.removeEventListener('mousemove', move, true)
-        document.removeEventListener('mouseup', up, true)
+      if (height > self.maxViewHeight) {
+        self.viewHeight = self.maxViewHeight
+      } else if (height < 10) {
+        self.viewHeight = 0
+        self.open = false
+      } else {
+        self.viewHeight = height
       }
-      document.addEventListener('mousemove', move, true)
-      document.addEventListener('mouseup', up, true)
-    },
-    onSwitchAttributeTable() {
-      this.open = !this.open
-      if (this.open && this.viewHeight === 0) {
-        this.viewHeight = this.initViewHeight
-      }
-    },
-    onOpenAttributeTable() {
-      this.open = true
-
-      if (this.open && this.viewHeight === 0) {
-        this.viewHeight = this.initViewHeight
-      }
-    },
-    onCloseAttributeTable() {
-      this.open = false
     }
+
+    const up = moveEvent => {
+      document.removeEventListener('mousemove', move, true)
+      document.removeEventListener('mouseup', up, true)
+    }
+    document.addEventListener('mousemove', move, true)
+    document.addEventListener('mouseup', up, true)
+  }
+
+  onSwitchAttributeTable() {
+    this.open = !this.open
+    if (this.open && this.viewHeight === 0) {
+      this.viewHeight = this.initViewHeight
+    }
+  }
+
+  onOpenAttributeTable() {
+    this.open = true
+
+    if (this.open && this.viewHeight === 0) {
+      this.viewHeight = this.initViewHeight
+    }
+  }
+
+  onCloseAttributeTable() {
+    this.open = false
   }
 }
 </script>

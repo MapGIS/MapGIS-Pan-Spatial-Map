@@ -2,13 +2,12 @@
   <div class="mp-widget-func-warehouse">功能仓库</div>
 </template>
 
-<script>
+<script lang="ts">
+import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-export default {
-  name: 'MpFuncWarehouse',
-  mixins: [WidgetMixin]
-}
+@Component({ name: 'MpFuncWarehouse' })
+export default class MpFuncWarehouse extends Mixins(WidgetMixin) {}
 </script>
 
 <style lang="less" scoped></style>

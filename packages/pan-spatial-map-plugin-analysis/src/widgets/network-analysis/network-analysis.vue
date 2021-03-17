@@ -2,13 +2,12 @@
   <div class="mp-widget-network-analysis">网络分析</div>
 </template>
 
-<script>
+<script lang="ts">
+import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-export default {
-  name: 'MpNetworkAnalysis',
-  mixins: [WidgetMixin]
-}
+@Component({ name: 'MpNetworkAnalysis' })
+export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {}
 </script>
 
 <style lang="less" scoped></style>

@@ -13,22 +13,21 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-export default {
-  name: 'MpZoom',
-  mixins: [WidgetMixin],
-  methods: {
-    onZoomIn() {
-      if (this.map) {
-        this.map.zoomIn()
-      }
-    },
-    onZoomOut() {
-      if (this.map) {
-        this.map.zoomOut()
-      }
+@Component({ name: 'MpZoom' })
+export default class MpZoom extends Mixins(WidgetMixin) {
+  onZoomIn() {
+    if (this.map) {
+      this.map.zoomIn()
+    }
+  }
+
+  onZoomOut() {
+    if (this.map) {
+      this.map.zoomOut()
     }
   }
 }

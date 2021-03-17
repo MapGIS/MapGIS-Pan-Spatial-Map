@@ -6,13 +6,12 @@
   />
 </template>
 
-<script>
+<script lang="ts">
+import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-export default {
-  name: 'MpMapModePicker',
-  mixins: [WidgetMixin]
-}
+@Component({ name: 'MpMapModePicker' })
+export default class MpMapModePicker extends Mixins(WidgetMixin) {}
 </script>
 
 <style lang="less" scoped></style>

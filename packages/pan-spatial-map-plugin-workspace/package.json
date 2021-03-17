@@ -4,7 +4,7 @@
   "description": "全空间一张图工作空间插件",
   "author": "MapGIS",
   "license": "Apache-2.0",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "test": "echo \"No test specified\" && exit 0"
   },
@@ -21,7 +21,10 @@
   },
   "dependencies": {
     "@mapgis/web-app-framework": "^0.1.0",
+    "vue-property-decorator": "^8.3.0",
     "element-resize-detector": "^1.2.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "typescript": "~3.7.0"
+  }
 }
