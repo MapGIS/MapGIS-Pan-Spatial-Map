@@ -4,7 +4,7 @@
     :position="anchor"
     :offset="[currentHorizontalOffset, currentVerticalOffset]"
     v-show="syncedVisible"
-    :style="{ width: currentWidth, height: currentHeight }"
+    :style="style"
     :z-index="zIndex"
     ref="windowContainer"
   >
@@ -40,6 +40,7 @@
     >
       <slot />
       <div
+        v-show="canResizable"
         @mousedown="onMousedown(onResizeWindow, $event)"
         style="position: absolute; bottom: 2px; right: 2px; cursor: nw-resize; width: 15px; height: 15px;"
       />
@@ -135,13 +136,13 @@ export default {
     // 是否显示
     visible: { type: Boolean, default: false },
     // 内容宽度
-    width: { type: Number, default: 360 },
+    width: { type: Number, required: false },
     // 内容高度
     height: { type: Number, required: false },
     // 相对于主视图顶的距离
-    top: { type: Number, default: 0 },
+    top: { type: Number },
     // 相对于主视图底的距离
-    bottom: { type: Number, default: 0 },
+    bottom: { type: Number },
     // 是否有收缩动作
     shrinkAction: { type: Boolean, default: true },
     // 是否有全屏动作
@@ -157,6 +158,12 @@ export default {
   },
   data() {
     return {
+      // 最小宽度和最大宽度
+      minWidthPixel: '240px',
+      maxWidthPixel: '100%',
+      // 最小高度和最大高度
+      minHeightPixel: '48px',
+      maxHeightPixel: '100%',
       // 是否收缩面板
       shrink: false,
       // 是否全屏
@@ -164,8 +171,8 @@ export default {
       // 拖拽之后的位置，默认为初始位置
       dragHorizontalOffset: this.horizontalOffset,
       dragVerticalOffset: this.verticalOffset,
-      heightPixel: '100px',
-      // 调整大小后的大小，默认未初始大小
+      heightPixel: null,
+      // 调整大小后的大小，默认为初始大小
       resizeWidth: this.width,
       resizeHeight: this.height,
       relParentEl: null
@@ -196,6 +203,9 @@ export default {
     canDragable() {
       return this.dragable && !this.fullScreen && !this.expand
     },
+    canResizable() {
+      return this.resizable && (this.width || this.height)
+    },
     // 当前的水平偏移，主要为了保证全屏的时候在0位置
     currentHorizontalOffset() {
       if (this.canDragable) return this.dragHorizontalOffset
@@ -211,16 +221,21 @@ export default {
     // 当前的内容宽度
     // 全屏(fullScreen)|水平展开(expand && isHorizontal)：计算宽度
     // 正常情况：使用传入的宽度
-    currentWidth() {
+    currentWidthPixel() {
       if (this.fullScreen || (this.expand && this.isHorizontal))
         // 全屏|水平展开：100%
         return '100%'
-      return `${this.resizeWidth}px`
+
+      if (this.width) {
+        return `${this.resizeWidth}px`
+      }
+
+      return null
     },
     // 当前的内容高度
     // 全屏(fullScreen)|垂直展开(expand && isVertical)：计算高度并减去title的高度
     // 正常情况：使用传入的高度
-    currentHeight() {
+    currentHeightPixel() {
       if (this.shrink) {
         return '36px'
       }
@@ -229,8 +244,32 @@ export default {
         // 全屏|垂直展开：高度100%
         return '100%'
       }
+
       // 布局高度加上title高度
-      return `calc(${this.heightPixel} + 36px)`
+      if (this.heightPixel) {
+        return `calc(${this.heightPixel} + 36px)`
+      }
+
+      return null
+    },
+    style() {
+      const styleObj = {}
+
+      if (this.currentWidthPixel) {
+        this.$set(styleObj, 'width', this.currentWidthPixel)
+      } else {
+        this.$set(styleObj, 'minWidth', this.minWidthPixel)
+        this.$set(styleObj, 'maxWidth', this.maxWidthPixel)
+      }
+
+      if (this.currentHeightPixel) {
+        this.$set(styleObj, 'height', this.currentHeightPixel)
+      } else {
+        this.$set(styleObj, 'minHeight', this.minHeightPixel)
+        this.$set(styleObj, 'maxHeight', this.maxHeightPixel)
+      }
+
+      return styleObj
     }
   },
   watch: {
@@ -249,14 +288,21 @@ export default {
     }
   },
   created() {
+    if (!this.width) {
+    }
+
     if (this.height) {
       this.heightPixel = `${this.height}px`
     } else {
       // 如果height为undefined
-      if (['top-left', 'top-right', 'top'].includes(this.anchor)) {
+      if (
+        ['top-left', 'top-right', 'top'].includes(this.anchor) &&
+        typeof this.bottom != 'undefined'
+      ) {
         this.heightPixel = `calc(100% - 36px - ${this.verticalOffset}px - ${this.bottom}px)`
       } else if (
-        ['bottom-left', 'bottom-right', 'bottom'].includes(this.anchor)
+        ['bottom-left', 'bottom-right', 'bottom'].includes(this.anchor) &&
+        typeof this.top != 'undefined'
       ) {
         this.heightPixel = `calc(100% - 36px - ${this.verticalOffset}px - ${this.top}px)`
       }
@@ -375,12 +421,23 @@ export default {
     // 调整大小（暂时没有考虑dragRange）
     onResizeWindow({ delta: { x, y } }) {
       if (!this.resizable) return
+
+      // 只处理宽度有值的面板
+      if (!this.width) return
+
       let rx = x
+      const maxWidth = this.relParentEl.clientWidth
 
       if (this.resizeWidth + x <= this.width) {
         rx = this.width - this.resizeWidth
 
         this.resizeWidth = this.width
+      }
+      // 不能将窗口调整到主视图外面去，否则将调不回来
+      else if (this.resizeWidth + x >= maxWidth) {
+        rx = maxWidth - this.resizeWidth
+
+        this.resizeWidth = maxWidth
       } else {
         this.resizeWidth += x
       }

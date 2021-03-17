@@ -21,7 +21,7 @@ export const defaultWidgetPanelPosition = {
   horizontalOffset: 0,
   verticalOffset: 0,
   expand: false,
-  width: 360,
+  width: null,
   height: null,
   top: 0,
   bottom: 0

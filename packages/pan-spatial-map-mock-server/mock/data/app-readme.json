@@ -251,10 +251,10 @@
             "verticalOffset": 0,
             // 可选，是否展开，当anchor为top、bottom、left、right时生效
             "expand": false,
-            // 可选，宽度，默认值为360
-            "width": 360,
-            // 可选，高度，默认为null，指定高度值后忽略top和bottom
-            "height": 600,
+            // 可选，面板内容宽度，如果没有传，由内容自适应
+            "width": 240,
+            // 可选，面板内容高度，如果没有传，查看是否有top或bottom，如果有，将根据距离进行自适应，如果也没有，将根据内容自适应
+            "height": 480,
             // 可选，相对于主视图顶的距离，默认值为0，当height没有指定，且anchor为'bottom-left', 'bottom-right', 'bottom'时生效
             "top": 0,
             // 可选，相对于主视图底的距离，默认值为0，当height没有指定，且anchor为'top-left', 'top-right', 'top'时生效

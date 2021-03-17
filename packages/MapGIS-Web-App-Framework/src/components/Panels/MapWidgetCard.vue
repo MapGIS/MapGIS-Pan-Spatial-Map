@@ -31,20 +31,10 @@ export default {
     zIndex: { type: Number, default: 1 }
   },
   computed: {
-    width() {
-      return (this.position && this.position.width) || 400
-    },
-    height() {
-      return (this.position && this.position.height) || 410
-    },
     normalizePosition() {
-      const position = {
-        ...this.widgetInfo.position,
-        width: this.width,
-        height: this.height
-      }
+      const position = { ...this.widgetInfo.position }
 
-      position.verticalOffset += 43
+      position.verticalOffset += 42
 
       return position
     }
