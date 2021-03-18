@@ -1,6 +1,6 @@
 <template>
   <mp-window
-    v-bind="normalizePosition"
+    v-bind="propObject"
     :title="widgetInfo.label"
     :icon="widgetInfo.icon"
     :shrink-action="false"
@@ -26,17 +26,20 @@ export default {
     position: {
       type: Object
     },
+    styles: {
+      type: Object
+    },
     visible: { type: Boolean, default: true },
     // 层级
     zIndex: { type: Number, default: 1 }
   },
   computed: {
-    normalizePosition() {
+    propObject() {
       const position = { ...this.widgetInfo.position }
 
       position.verticalOffset += 42
 
-      return position
+      return { ...position, ...this.styles }
     }
   },
   watch: {},

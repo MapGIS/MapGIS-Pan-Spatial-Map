@@ -13,7 +13,7 @@
       :style="{
         cursor: canDragable ? 'all-scroll' : 'auto'
       }"
-      @mousedown="onMousedown(onDrag, $event)"
+      @mousedown="onMousedown(onDrag, onBeforeDrag, $event)"
       ref="headerContainer"
     >
       <div class="title">{{ title }}</div>
@@ -41,7 +41,7 @@
       <slot />
       <div
         v-show="canResizable"
-        @mousedown="onMousedown(onResizeWindow, $event)"
+        @mousedown="onMousedown(onResizeWindow, onBeforeResizeWindow, $event)"
         style="position: absolute; bottom: 2px; right: 2px; cursor: nw-resize; width: 15px; height: 15px;"
       />
     </div>
@@ -139,6 +139,14 @@ export default {
     width: { type: Number, required: false },
     // 内容高度
     height: { type: Number, required: false },
+    // 内容最小宽度
+    minWidth: { type: Number, required: false },
+    // 内容最大宽度
+    maxWidth: { type: Number, required: false },
+    // 内容最小宽度
+    minHeight: { type: Number, required: false },
+    // 内容最大宽度
+    maxHeight: { type: Number, required: false },
     // 相对于主视图顶的距离
     top: { type: Number },
     // 相对于主视图底的距离
@@ -158,12 +166,6 @@ export default {
   },
   data() {
     return {
-      // 最小宽度和最大宽度
-      minWidthPixel: '240px',
-      maxWidthPixel: '100%',
-      // 最小高度和最大高度
-      minHeightPixel: '48px',
-      maxHeightPixel: '100%',
       // 是否收缩面板
       shrink: false,
       // 是否全屏
@@ -175,7 +177,9 @@ export default {
       // 调整大小后的大小，默认为初始大小
       resizeWidth: this.width,
       resizeHeight: this.height,
-      relParentEl: null
+      relParentEl: null,
+      // 拖拽数据
+      dragState: {}
     }
   },
   computed: {
@@ -252,6 +256,25 @@ export default {
 
       return null
     },
+    // 最小宽度和最大宽度
+    minWidthPixel() {
+      return this.minWidth ? `${this.minWidth}px` : '240px'
+    },
+    maxWidthPixel() {
+      return this.maxWidth
+        ? `${this.maxWidth}px`
+        : `calc(100% - ${this.currentHorizontalOffset}px)`
+    },
+    // 最小高度和最大高度
+    minHeightPixel() {
+      return this.minHeight ? `${this.minHeight}px` : '48px'
+    },
+    maxHeightPixel() {
+      return this.maxHeight
+        ? `${this.maxHeight}px`
+        : `calc(100% - ${this.currentVerticalOffset}px)`
+    },
+
     style() {
       const styleObj = {}
 
@@ -322,6 +345,12 @@ export default {
       }
       return parent
     },
+    onBeforeDrag() {
+      this.dragState.windowWidth = this.$refs.windowContainer.$el.clientWidth
+      this.dragState.windowHeight = this.$refs.windowContainer.$el.clientHeight
+      this.dragState.contentHeight = this.$refs.contentContainer.clientHeight
+      this.dragState.headerHeight = this.$refs.headerContainer.clientHeight
+    },
     // 拖拽事件
     // 只有在允许拖拽的时候生效
     // 通过此次拖拽的相对位置以及上次的位置计算新的位置
@@ -339,14 +368,13 @@ export default {
 
         if (this.dragRange) {
           minOffsetX = 0
-          maxOffsetX =
-            this.relParentEl.clientWidth -
-            this.$refs.windowContainer.$el.clientWidth
+          maxOffsetX = this.relParentEl.clientWidth - this.dragState.windowWidth
         } else {
-          minOffsetX = -this.$refs.windowContainer.$el.clientWidth
+          minOffsetX = -this.dragState.windowWidth
           maxOffsetX = this.relParentEl.clientWidth
         }
 
+        console.log(`${offsetX} ${minOffsetX} ${maxOffsetX}`)
         // 保证在可视范围内
         if (offsetX > maxOffsetX) offsetX = maxOffsetX
         if (offsetX < minOffsetX) offsetX = minOffsetX
@@ -360,26 +388,22 @@ export default {
           if (this.dragRange) {
             minOffsetY = 0
             maxOffsetY =
-              this.relParentEl.clientHeight -
-              this.$refs.windowContainer.$el.clientHeight
+              this.relParentEl.clientHeight - this.dragState.windowHeight
           } else {
             minOffsetY = 0
             maxOffsetY =
-              this.relParentEl.clientHeight -
-              this.$refs.headerContainer.clientHeight
+              this.relParentEl.clientHeight - this.dragState.headerHeight
           }
         } else {
           offsetY = this.dragVerticalOffset - y
           if (this.dragRange) {
             minOffsetY = 0
             maxOffsetY =
-              this.relParentEl.clientHeight -
-              this.$refs.windowContainer.$el.clientHeight
+              this.relParentEl.clientHeight - this.dragState.windowHeight
           } else {
-            minOffsetY = -this.$refs.contentContainer.clientHeight
+            minOffsetY = -this.dragState.contentHeight
             maxOffsetY =
-              this.relParentEl.clientHeight -
-              this.$refs.windowContainer.$el.clientHeight
+              this.relParentEl.clientHeight - this.dragState.windowHeight
           }
         }
         // 保证在可视范围内
@@ -389,9 +413,11 @@ export default {
         this.dragVerticalOffset = offsetY
       }
     },
-    onMousedown(func, e) {
+    onMousedown(func, beforeFunc, e) {
       // 从DOM树向上查找定位元素，如无，就取documentElement
       this.relParentEl = this.getRelativeEl(this.$el)
+
+      beforeFunc()
 
       let startX = e.clientX
       let startY = e.clientY
@@ -418,6 +444,7 @@ export default {
       document.addEventListener('mousemove', move, true)
       document.addEventListener('mouseup', up, true)
     },
+    onBeforeResizeWindow() {},
     // 调整大小（暂时没有考虑dragRange）
     onResizeWindow({ delta: { x, y } }) {
       if (!this.resizable) return
@@ -486,6 +513,7 @@ export default {
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0px 1px 2px 0px @shadow-color;
+  white-space: nowrap;
   .window-head {
     display: flex;
     padding: 0 12px;

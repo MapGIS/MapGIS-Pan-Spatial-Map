@@ -4,6 +4,7 @@
       v-for="widget in widgetsInPanel()"
       :key="widget.uri"
       :position="position"
+      :styles="styles"
       :widget="widget"
       :visible="isWidgetVisible(widget)"
       @update:visible="updateWidgetVisible($event, widget)"

@@ -4,8 +4,6 @@ export const defaultWidgetPosition = {
   verticalOffset: 0
 }
 
-export const defaultWidgetStyle = {}
-
 export const defaultWidgetProperties = {
   '2D': true,
   '3D': false,
@@ -20,9 +18,12 @@ export const defaultWidgetPanelPosition = {
   anchor: 'top-right',
   horizontalOffset: 0,
   verticalOffset: 0,
-  expand: false,
-  width: null,
-  height: null,
   top: 0,
   bottom: 0
+}
+
+export const defaultWidgetPanelStyle = {
+  expand: false,
+  width: null,
+  height: null
 }

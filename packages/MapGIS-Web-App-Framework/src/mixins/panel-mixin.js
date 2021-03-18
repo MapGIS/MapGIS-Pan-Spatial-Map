@@ -1,5 +1,8 @@
 import AppMixin from './app-mixin'
-import { defaultWidgetPanelPosition } from '../utils/app-config.js'
+import {
+  defaultWidgetPanelPosition,
+  defaultWidgetPanelStyle
+} from '../utils/app-config.js'
 import WidgetManager from '../managers/widget-manager'
 import WidgetState from '../utils/widget-state'
 
@@ -20,6 +23,14 @@ export default {
       default() {
         return {
           position: defaultWidgetPanelPosition
+        }
+      }
+    },
+    styles: {
+      type: Object,
+      default() {
+        return {
+          styles: defaultWidgetPanelStyle
         }
       }
     }

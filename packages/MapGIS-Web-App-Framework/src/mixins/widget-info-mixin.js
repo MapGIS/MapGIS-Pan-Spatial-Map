@@ -2,7 +2,6 @@ import AppMixin from './app-mixin'
 
 import {
   defaultWidgetPosition,
-  defaultWidgetStyle,
   defaultWidgetProperties
 } from '../utils/app-config.js'
 
@@ -33,7 +32,6 @@ export default {
         openAtStart,
         visible,
         dragable,
-        cssStyle: this.parseCssStyle(this.widget),
         properties: this.parseProperties(this.widget)
       }
     }
@@ -43,18 +41,6 @@ export default {
       // 解析微件位置
       const { position = defaultWidgetPosition } = widget
       return position
-    },
-    parseCssStyle(widget) {
-      // 解析微件样式,对于占位的使用默认样式
-      if (widget.manifest) {
-        if (widget.manifest.properties.inPanel) {
-          const { cssStyle = defaultWidgetStyle } = widget
-          return cssStyle
-        }
-        return widget.cssStyle
-      }
-
-      return defaultWidgetStyle
     },
     parseProperties(widget) {
       // 解析微件属性

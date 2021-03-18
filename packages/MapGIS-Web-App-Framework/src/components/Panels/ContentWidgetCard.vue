@@ -1,6 +1,6 @@
 <template>
   <mp-window
-    v-bind="position"
+    v-bind="propObject"
     :title="widgetInfo.label"
     :icon="widgetInfo.icon"
     :is-full-screen="widgetInfo.properties.windowSize === 'max'"
@@ -24,6 +24,9 @@ export default {
     position: {
       type: Object
     },
+    styles: {
+      type: Object
+    },
     visible: { type: Boolean, default: true },
     // 层级
     zIndex: { type: Number, default: 1 }
@@ -31,7 +34,11 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    propObject() {
+      return { ...this.position, ...this.styles }
+    }
+  },
   watch: {},
   methods: {
     updateVisible(value) {

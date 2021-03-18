@@ -135,15 +135,6 @@
           "verticalOffset": 0
         },
 
-        // 可选，下面的样式提供给widget所在dom节点，主要用于地图上占位widget
-        "cssStyle": {
-          "width": "56px !important",
-          "height": "56px !important",
-          "padding": "8px",
-          "border": "1px solid transport",
-          "border-radius": "12px"
-        },
-
         // 可选，如果没有设置，默认指向widget配置config.json（只要manifest.json的hasConfig为true）
         // 如果设置为字符串，表示自定义的config的位置，例："config": "configs/Scalebar/config.json"
         // 如果设置为对象，表示本widget实际的配置参数
@@ -176,7 +167,7 @@
         // 组名
         "content": "launch",
         // 该内容区域包含的widget集合，可以有多个，因为内容区域中的widget只要inPanel为true，
-        // 就会放到面板中显示，所以不需要指定position和cssStyle
+        // 就会放到面板中显示，所以不需要指定position
         "widgets": [
           {
             // widgetId，builder时动态生成
@@ -246,19 +237,30 @@
           "position": {
             // 可选，面板位置锚点，默认值为top-right，可以设置为top-right、top-left、bottom-right、bottom-left、top、right、bottom、left
             "anchor": "top-right",
-            // 可选，面板水平和垂直方向偏移,默认值为0
+            // 可选，面板水平和垂直方向偏移,默认值为0（单位：像素）
             "horizontalOffset": 0,
             "verticalOffset": 0,
-            // 可选，是否展开，当anchor为top、bottom、left、right时生效
-            "expand": false,
-            // 可选，面板内容宽度，如果没有传，由内容自适应
-            "width": 240,
-            // 可选，面板内容高度，如果没有传，查看是否有top或bottom，如果有，将根据距离进行自适应，如果也没有，将根据内容自适应
-            "height": 480,
-            // 可选，相对于主视图顶的距离，默认值为0，当height没有指定，且anchor为'bottom-left', 'bottom-right', 'bottom'时生效
+            // 可选，相对于主视图顶的距离，默认值为0（单位：像素），当height没有指定，且anchor为'bottom-left', 'bottom-right', 'bottom'时生效
             "top": 0,
-            // 可选，相对于主视图底的距离，默认值为0，当height没有指定，且anchor为'top-left', 'top-right', 'top'时生效
+            // 可选，相对于主视图底的距离，默认值为0（单位：像素），当height没有指定，且anchor为'top-left', 'top-right', 'top'时生效
             "bottom": 0
+          },
+          // 可选，面板样式
+          "styles": {
+            // 可选，是否展开，当position.anchor为top、bottom、left、right时生效
+            "expand": false,
+            // 可选，面板内容宽度，如果没有传，可设置最小宽度和最大宽度并由内容自适应
+            "width": 240,
+            // 可选，面板内容高度，如果没有传，查看是否有top或bottom，如果有，将根据距离进行自适应，如果也没有，可设置最小高度和最大高度并由内容自适应
+            "height": 480,
+            // 可选，面板默认最小内容宽度，默认值240（单位：像素）
+            "minWidth": 240,
+            // 可选，面板默认最大内容宽度，默认值为100%，只支持像素单位设置
+            "maxWidth": 240,
+            // 可选，面板默认最小内容宽度，默认值48（单位：像素）
+            "minHeight": 48,
+            // 可选，面板默认最大内容宽度，默认值为100%，只支持像素单位设置
+            "maxHeight": 48
           }
         }
       }
