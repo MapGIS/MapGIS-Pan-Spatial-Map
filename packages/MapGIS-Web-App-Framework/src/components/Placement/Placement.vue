@@ -12,7 +12,17 @@ export default {
       type: String,
       default: 'bottom-right',
       validator: v =>
-        ['top-right', 'top-left', 'bottom-right', 'bottom-left'].includes(v)
+        [
+          'top-right',
+          'top-left',
+          'bottom-right',
+          'bottom-left',
+          'top-center',
+          'bottom-center',
+          'center-right',
+          'center-left',
+          'center-center'
+        ].includes(v)
     },
     offset: {
       type: Array,
@@ -64,6 +74,31 @@ export default {
   &.center {
     top: 50%;
     left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  &.top-center {
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+  &.bottom-center {
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
+  &.center-left {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &.center-right {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &.center-center {
+    left: 50%;
+    top: 50%;
     transform: translate(-50%, -50%);
   }
 }
