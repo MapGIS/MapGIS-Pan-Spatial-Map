@@ -36,7 +36,10 @@
           />
           <slot v-if="mapInitialized" name="map" />
         </a-layout-content>
-        <a-layout-footer class="footer-wrapper" style="padding: 0">
+        <a-layout-footer
+          class="footer-wrapper"
+          style="padding: 0;background: none"
+        >
           <component
             :is="footerContentComponent"
             v-bind="parseContentProps('footer')"
