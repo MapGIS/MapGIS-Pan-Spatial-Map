@@ -218,12 +218,8 @@
         "panel": {
           "position": {
             "anchor": "top-right",
-            "horizontalOffset": 800,
+            "horizontalOffset": 10,
             "verticalOffset": 52
-          },
-          "styles": {
-            "minWidth": 100,
-            "minHeight": 50
           }
         }
       }

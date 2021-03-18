@@ -16,8 +16,11 @@
       @mousedown="onMousedown(onDrag, onBeforeDrag, $event)"
       ref="headerContainer"
     >
-      <div class="title">{{ title }}</div>
-      <div class="actions">
+      <div class="title">
+        <slot name="title">{{ title }}</slot>
+      </div>
+      <slot name="toolbar"> </slot>
+      <div :class="toolbarClass">
         <a-icon
           v-if="shrinkAction"
           class="action"
@@ -30,7 +33,12 @@
           :type="fullScreen ? 'fullscreen-exit' : 'fullscreen'"
           @click="fullScreen = !fullScreen"
         />
-        <a-icon class="action" type="close" @click="onClose" />
+        <a-icon
+          v-if="closeAction"
+          class="action"
+          type="close"
+          @click="onClose"
+        />
       </div>
     </div>
     <div
@@ -105,7 +113,8 @@ export default {
   name: 'MpWindow',
   props: {
     // 窗体方位
-    // top-left | top | top-right | right | bottom-right | bottom | bottom-left | left
+    // top-left | top | top-right | right | bottom-right | bottom | bottom-left | left |
+    // top-center | bottom-center | center-right |  center-left | center-center
     anchor: {
       type: String,
       default: 'top-right'
@@ -155,6 +164,8 @@ export default {
     shrinkAction: { type: Boolean, default: true },
     // 是否有全屏动作
     fullScreenAction: { type: Boolean, default: true },
+    // 是否有关闭动作
+    closeAction: { type: Boolean, default: true },
     // 是否窗口范围内拖动
     dragRange: { type: Boolean, default: true },
     // 是否调整窗口大小
@@ -274,7 +285,6 @@ export default {
         ? `${this.maxHeight}px`
         : `calc(100% - ${this.currentVerticalOffset}px)`
     },
-
     style() {
       const styleObj = {}
 
@@ -293,6 +303,11 @@ export default {
       }
 
       return styleObj
+    },
+    toolbarClass() {
+      return {
+        actions: true
+      }
     }
   },
   watch: {
@@ -362,19 +377,32 @@ export default {
         let minOffsetX
         let maxOffsetX
 
-        offsetX = this.anchor.includes('left')
-          ? this.dragHorizontalOffset + x
-          : this.dragHorizontalOffset - x
+        if (this.anchor.includes('left')) {
+          offsetX = this.dragHorizontalOffset + x
 
-        if (this.dragRange) {
-          minOffsetX = 0
-          maxOffsetX = this.relParentEl.clientWidth - this.dragState.windowWidth
+          if (this.dragRange) {
+            minOffsetX = 0
+            maxOffsetX =
+              this.relParentEl.clientWidth - this.dragState.windowWidth
+          } else {
+            minOffsetX = -this.dragState.windowWidth
+            maxOffsetX = this.relParentEl.clientWidth
+          }
+        } else if (this.anchor.includes('right')) {
+          offsetX = this.dragHorizontalOffset - x
+
+          if (this.dragRange) {
+            minOffsetX = 0
+            maxOffsetX =
+              this.relParentEl.clientWidth - this.dragState.windowWidth
+          } else {
+            minOffsetX = -this.dragState.windowWidth
+            maxOffsetX = this.relParentEl.clientWidth
+          }
         } else {
-          minOffsetX = -this.dragState.windowWidth
-          maxOffsetX = this.relParentEl.clientWidth
+          offsetX = this.dragHorizontalOffset
         }
 
-        console.log(`${offsetX} ${minOffsetX} ${maxOffsetX}`)
         // 保证在可视范围内
         if (offsetX > maxOffsetX) offsetX = maxOffsetX
         if (offsetX < minOffsetX) offsetX = minOffsetX
@@ -394,7 +422,7 @@ export default {
             maxOffsetY =
               this.relParentEl.clientHeight - this.dragState.headerHeight
           }
-        } else {
+        } else if (this.anchor.includes('bottom')) {
           offsetY = this.dragVerticalOffset - y
           if (this.dragRange) {
             minOffsetY = 0
@@ -405,7 +433,10 @@ export default {
             maxOffsetY =
               this.relParentEl.clientHeight - this.dragState.windowHeight
           }
+        } else {
+          offsetY = this.dragVerticalOffset
         }
+
         // 保证在可视范围内
         if (offsetY > maxOffsetY) offsetY = maxOffsetY
         if (offsetY < minOffsetY) offsetY = minOffsetY
