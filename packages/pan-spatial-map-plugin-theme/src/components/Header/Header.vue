@@ -2,17 +2,19 @@
   <a-layout-header :class="[themeMode, 'header-wrapper']">
     <div class="header-wide">
       <div class="header-left">
-        <div :class="['logo', themeMode]">
-          <mp-icon :icon="application.logo" class="icon" />
-          <h1>{{ application.title }}</h1>
-          <h2>{{ application.subtitle }}</h2>
-        </div>
+        <slot name="header-left">
+          <div :class="['logo', themeMode]">
+            <mp-icon :icon="application.logo" class="icon" />
+            <h1>{{ application.title }}</h1>
+            <h2>{{ application.subtitle }}</h2>
+          </div>
+        </slot>
       </div>
       <div class="header-content">
         <slot name="header-content" />
       </div>
       <div :class="['header-right', themeMode]">
-        <mp-header-avatar class="header-item" />
+        <slot name="header-right" />
       </div>
     </div>
   </a-layout-header>
@@ -20,12 +22,9 @@
 
 <script>
 import { AppMixin } from '@mapgis/web-app-framework'
-import { mapState } from 'vuex'
-import MpHeaderAvatar from './HeaderAvatar.vue'
 
 export default {
   name: 'MpPanSpatialMapHeader',
-  components: { MpHeaderAvatar },
   mixins: [AppMixin],
   props: {
     themeMode: {
@@ -43,7 +42,7 @@ export default {
   line-height: 48px;
   padding: 0;
   z-index: 2000;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   position: relative;
   background: @base-bg-color;
   &.dark {
@@ -89,15 +88,27 @@ export default {
       flex: 1 1 0%;
       min-width: 0;
     }
-    .header-right{
+  }
+}
+</style>
+
+<style lang="less">
+.header-wrapper {
+  .header-wide {
+    .header-right {
       display: flex;
-      min-width: 280px;
+      float: right;
+      height: 48px;
+      overflow: hidden;
+      padding-right: 8px;
       color: inherit;
-      .header-item{
+      .header-item {
+        height: 100%;
+        display: flex;
+        align-items: center;
         color: inherit;
         padding: 0 12px;
         cursor: pointer;
-        align-self: center;
         a{
           color: inherit;
           i{
@@ -106,8 +117,8 @@ export default {
         }
       }
       each(@theme-list, {
-        &.@{value} .header-item{
-          &:hover{
+        &.@{value} .header-item {
+          &:hover {
             @class: ~'hover-bg-color-@{value}';
             background-color: @@class;
           }

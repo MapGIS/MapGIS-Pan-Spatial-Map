@@ -7,6 +7,8 @@ import {
 } from 'vuex'
 import { getToken, setToken, removeToken } from '../../utils/cookies'
 
+const USER_KEY = 'mapgis_pan_spatial_map_access_user'
+
 // Interfaces
 interface IUserState {
   token: string
@@ -30,7 +32,18 @@ const getters: GetterTree<IUserState, any> = {
   },
 
   getName(state: IUserState): string {
-    return state.name ? state.name : ''
+    if (!state.name) {
+      try {
+        const user = localStorage.getItem(USER_KEY)
+        if (user) {
+          state.name = user
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    return state.name
   },
 
   getToken(state: IUserState): string {
@@ -47,6 +60,7 @@ const mutations: MutationTree<IUserState> = {
 
   SET_NAME(state: IUserState, name) {
     state.name = name
+    localStorage.setItem(USER_KEY, name)
   },
 
   UNSET_USER(state: IUserState) {

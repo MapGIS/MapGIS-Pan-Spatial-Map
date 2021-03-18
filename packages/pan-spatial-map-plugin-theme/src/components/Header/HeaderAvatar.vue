@@ -1,6 +1,7 @@
 <template>
   <a-dropdown>
     <div class="header-avatar" style="cursor: pointer">
+      <a-icon type="user" class="avatar" />
       <span class="name">{{ getName }}</span>
     </div>
     <a-menu :class="['avatar-menu']" slot="overlay">
@@ -40,6 +41,7 @@ export default {
   }
   .avatar {
     margin-right: 8px;
+    font-size: 20px;
   }
   .name {
     font-weight: 500;

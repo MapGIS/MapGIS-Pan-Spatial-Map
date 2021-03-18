@@ -20,7 +20,7 @@ app.use(morgan('dev'))
 app.use(
   cors({
     origin: true,
-    methods: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'content-type',
     credentials: true,
     maxAge: 3600,

@@ -100,6 +100,9 @@ export default {
     this.calcMaxFooterHeight()
     this.watchWindowSize()
   },
+  beforeDestroy() {
+    window.onresize = null
+  },
   methods: {
     calcMaxFooterHeight() {
       this.maxFooterHeight =

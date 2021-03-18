@@ -13,6 +13,35 @@
         </a-menu-item>
       </a-menu>
     </div>
+    <template #header-right>
+      <mp-header-avatar class="header-item" />
+      <a-tooltip placement="bottom">
+        <template slot="title">
+          <span>关于</span>
+        </template>
+        <a-icon
+          type="info-circle"
+          class="header-item"
+          @click="onShowAboutInfo"
+        />
+        <mp-window-wrapper :visible="aboutWindowVisible">
+          <template v-slot:default="slotProps">
+            <mp-window
+              title="关于"
+              :visible.sync="aboutWindowVisible"
+              :anchor="'center-center'"
+              :shrink-action="false"
+              :full-screen-action="false"
+              v-bind="slotProps"
+            >
+              <template>
+                关于MapGIS Pan-Spatial Map
+              </template>
+            </mp-window>
+          </template>
+        </mp-window-wrapper>
+      </a-tooltip>
+    </template>
   </mp-pan-spatial-map-header>
 </template>
 
@@ -20,11 +49,17 @@
 import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
 import MpPanSpatialMapHeader from '../../../../components/Header/Header.vue'
+import MpHeaderAvatar from '../../../../components/Header/HeaderAvatar.vue'
 
 export default {
   name: 'MpPanSpatialMapClassicHeader',
-  components: { MpPanSpatialMapHeader },
+  components: { MpPanSpatialMapHeader, MpHeaderAvatar },
   mixins: [ThemeContentMixin],
+  data() {
+    return {
+      aboutWindowVisible: false
+    }
+  },
   computed: {
     ...mapState('setting', { themeMode: state => state.theme.mode }),
     menuTheme() {
@@ -38,6 +73,9 @@ export default {
           return val.id === key
         })
       )
+    },
+    onShowAboutInfo() {
+      this.aboutWindowVisible = true
     }
   }
 }
@@ -52,7 +90,10 @@ export default {
   }
   .header-wide {
     .header-menu {
+      height: 100%;
       .menu {
+        height: 100%;
+        border: none;
         box-shadow: none;
         .icon {
           margin-right: 10px;
