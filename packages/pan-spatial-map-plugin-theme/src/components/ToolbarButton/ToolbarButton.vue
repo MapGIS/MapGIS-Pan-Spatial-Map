@@ -28,7 +28,6 @@ export default {
   }
   .label {
     font-size: 12px;
-    vertical-align: 0.1em;
   }
 }
 </style>

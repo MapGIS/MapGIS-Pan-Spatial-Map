@@ -24,11 +24,11 @@ export default {
 <style lang="less">
 .mp-icon-wrapper {
   display: inline;
+  vertical-align: middle;
   .icon {
     line-height: 0;
     text-align: center;
     text-transform: none;
-    vertical-align: -0.075em;
     > svg {
       width: 1em;
       height: 1em;

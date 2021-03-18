@@ -1,10 +1,12 @@
 <template>
   <a-layout-header :class="[themeMode, 'header-wrapper']">
     <div class="header-wide">
-      <div :class="['logo', themeMode]">
-        <mp-icon :icon="application.logo" class="icon" />
-        <h1>{{ application.title }}</h1>
-        <h2>{{ application.subtitle }}</h2>
+      <div class="header-left">
+        <div :class="['logo', themeMode]">
+          <mp-icon :icon="application.logo" class="icon" />
+          <h1>{{ application.title }}</h1>
+          <h2>{{ application.subtitle }}</h2>
+        </div>
       </div>
       <div class="header-content">
         <slot name="header-content" />
@@ -49,28 +51,38 @@ export default {
     color: white;
   }
   .header-wide {
-    padding-left: 8px;
     display: flex;
-    .logo {
+    height: 100%;
+    padding-left: 8px;
+    .header-left {
+      display: flex;
       min-width: 240px;
-      .icon {
-        color: @primary-color;
-        font-size: 32px;
-        margin-right: 8px;
-        vertical-align: -0.2em;
-      }
-      h1 {
-        color: inherit;
-        display: inline-block;
-        font-size: 16px;
-        margin: 0 0 0 12px;
-      }
-      h2 {
-        color: inherit;
-        display: inline-block;
-        font-size: 14px;
-        padding-left: 6px;
-        margin: 0 0 0 12px;
+      .logo {
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        .icon {
+          color: @primary-color;
+          font-size: 32px;
+          margin-right: 8px;
+          vertical-align: middle;
+        }
+        h1 {
+          display: inline-block;
+          margin: 0 0 0 12px;
+          font-weight: 400;
+          font-size: 16px;
+          vertical-align: top;
+          color: inherit;
+        }
+        h2 {
+          display: inline-block;
+          margin: 0 0 0 12px;
+          font-weight: 400;
+          font-size: 14px;
+          vertical-align: top;
+          color: inherit;
+        }
       }
     }
     .header-content {
