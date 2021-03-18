@@ -399,8 +399,24 @@ export default {
             minOffsetX = -this.dragState.windowWidth
             maxOffsetX = this.relParentEl.clientWidth
           }
-        } else {
-          offsetX = this.dragHorizontalOffset
+        } else if (this.anchor.includes('-center')) {
+          offsetX = this.dragHorizontalOffset + x
+
+          if (this.dragRange) {
+            minOffsetX =
+              -(this.relParentEl.clientWidth - this.dragState.windowWidth) / 2
+            maxOffsetX =
+              this.relParentEl.clientWidth -
+              this.dragState.windowWidth -
+              (this.relParentEl.clientWidth - this.dragState.windowWidth) / 2
+          } else {
+            minOffsetX =
+              -this.dragState.windowWidth -
+              (this.relParentEl.clientWidth - this.dragState.windowWidth) / 2
+            maxOffsetX =
+              this.relParentEl.clientWidth -
+              (this.relParentEl.clientWidth - this.dragState.windowWidth) / 2
+          }
         }
 
         // 保证在可视范围内
@@ -433,8 +449,23 @@ export default {
             maxOffsetY =
               this.relParentEl.clientHeight - this.dragState.windowHeight
           }
-        } else {
-          offsetY = this.dragVerticalOffset
+        } else if (this.anchor.includes('center-')) {
+          offsetY = this.dragVerticalOffset + y
+          if (this.dragRange) {
+            minOffsetY =
+              -(this.relParentEl.clientHeight - this.dragState.windowHeight) / 2
+            maxOffsetY =
+              this.relParentEl.clientHeight -
+              this.dragState.windowHeight -
+              (this.relParentEl.clientHeight - this.dragState.windowHeight) / 2
+          } else {
+            minOffsetY =
+              -(this.relParentEl.clientHeight - this.dragState.windowHeight) / 2
+            maxOffsetY =
+              this.relParentEl.clientHeight -
+              this.dragState.headerHeight -
+              (this.relParentEl.clientHeight - this.dragState.windowHeight) / 2
+          }
         }
 
         // 保证在可视范围内
