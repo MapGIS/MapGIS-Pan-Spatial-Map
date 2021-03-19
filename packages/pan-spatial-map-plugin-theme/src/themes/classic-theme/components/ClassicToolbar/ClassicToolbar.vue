@@ -8,7 +8,7 @@
       />
       <div class="toolbar-content" v-show="!collapsed">
         <a-divider type="vertical" />
-        <template v-for="(widget, index) in widgets">
+        <template v-for="(widget, index) in currentWidgets">
           <toolbar-button
             :widget="widget"
             :key="widget.id"
@@ -33,6 +33,12 @@ export default {
   data() {
     return {
       collapsed: false
+    }
+  },
+  computed: {
+    currentWidgets() {
+      console.log(this.is2DMapMode)
+      return this.is2DMapMode ? this.widgets2d : this.widgets3d
     }
   },
   methods: {

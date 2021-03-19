@@ -1,4 +1,5 @@
 import AppMixin from './app-mixin'
+import { defaultWidgetProperties } from '../utils/app-config.js'
 
 export default {
   mixins: [AppMixin],
@@ -14,6 +15,22 @@ export default {
   },
   data() {
     return {}
+  },
+  computed: {
+    widgets2d() {
+      return this.widgets.filter(widget => {
+        const properties = this.getWidgetProperties(widget)
+        return properties['2D']
+      })
+    },
+    widgets3d() {
+      return this.widgets.filter(widget => {
+        const properties = this.getWidgetProperties(widget)
+        return properties['3D']
+      })
+    },
+    widgetStructure2d() {},
+    widgetStructure3d() {}
   },
   methods: {
     getWidgetIcon(widget) {
@@ -42,6 +59,15 @@ export default {
       }
 
       return widget.manifest.name
+    },
+    getWidgetProperties(widget) {
+      // 解析微件属性
+      if (widget.manifest) {
+        const { properties = defaultWidgetProperties } = widget.manifest
+        return properties
+      }
+
+      return {}
     },
     onUpdateWidgetVisible(e) {}
   }
