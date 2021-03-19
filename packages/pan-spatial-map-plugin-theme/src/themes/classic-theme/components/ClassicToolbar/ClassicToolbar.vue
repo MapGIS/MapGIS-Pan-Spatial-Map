@@ -59,6 +59,7 @@ export default {
     box-shadow: 0px 1px 2px 0px @shadow-color;
     display: flex;
     align-items: center;
+    white-space: nowrap;
     .toolbar-collapse-button {
       font-size: 16px;
       cursor: pointer;
