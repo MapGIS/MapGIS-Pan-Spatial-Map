@@ -18,28 +18,28 @@
         }
       },
       {
-        "uri": "widgets/data-catalog",
-        "position": {
-          "anchor": "top-left",
-          "horizontalOffset": 10,
-          "verticalOffset": 10
-        }
-      },
-      {
-        "uri": "widgets/about",
-        "position": {
-          "anchor": "top-left",
-          "horizontalOffset": 52,
-          "verticalOffset": 10
-        }
-      },
-      {
         "uri": "widgets/legend",
         "position": {
           "anchor": "bottom-right",
           "horizontalOffset": 10,
-          "verticalOffset": 10
+          "verticalOffset": 0
         }
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 10
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 52,
+          "verticalOffset": 10
+        },
+        "placeholder": true
       },
       {
         "position": {
@@ -61,14 +61,6 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 178,
-          "verticalOffset": 10
-        },
-        "placeholder": true
-      },
-      {
-        "position": {
-          "anchor": "top-left",
-          "horizontalOffset": 220,
           "verticalOffset": 10
         },
         "placeholder": true
