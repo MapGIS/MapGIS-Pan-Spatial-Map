@@ -37,7 +37,6 @@ export default {
   },
   computed: {
     currentWidgets() {
-      console.log(this.is2DMapMode)
       return this.is2DMapMode ? this.widgets2d : this.widgets3d
     }
   },

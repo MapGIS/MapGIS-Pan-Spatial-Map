@@ -1,5 +1,7 @@
 import AppMixin from './app-mixin'
 import { defaultWidgetProperties } from '../utils/app-config.js'
+import WidgetState from '../utils/widget-state'
+import WidgetManager from '../managers/widget-manager'
 
 export default {
   mixins: [AppMixin],
@@ -31,6 +33,22 @@ export default {
     },
     widgetStructure2d() {},
     widgetStructure3d() {}
+  },
+  watch: {
+    is2DMapMode(newIs2DMapMode, oldNewIs2DMapMode) {
+      // 如果微件跟当前的地图模式不匹配，需要将相应的widget关闭
+      this.widgets.forEach(widget => {
+        if (widget.state !== WidgetState.CLOSED) {
+          const properties = this.getWidgetProperties(widget)
+          if (
+            (newIs2DMapMode && !properties['2D']) ||
+            (!newIs2DMapMode && !properties['3D'])
+          ) {
+            WidgetManager.getInstance().closeWidget(widget)
+          }
+        }
+      })
+    }
   },
   methods: {
     getWidgetIcon(widget) {
