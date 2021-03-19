@@ -11,15 +11,17 @@
       ref="headerContent"
       v-bind="parseContentProps('header')"
     />
-    <a-layout>
+    <a-layout ref="bodyContent">
       <component
         :is="leftContentComponent"
         ref="leftContent"
         v-bind="parseContentProps('left')"
       />
       <mp-pan-spatial-map-side-panel
+        v-if="getMaxWidthFunc"
         v-bind="left.panel"
         :widgets="left.widgets"
+        :max-width="getMaxWidthFunc"
         @update-widget-visible="onUpdateWidgetVisible('left', $event)"
       />
       <a-layout class="main-wrapper">
@@ -71,7 +73,8 @@ export default {
   data() {
     return {
       maxFooterHeight: 0,
-      showSetting: false
+      showSetting: false,
+      getMaxWidthFunc: null
     }
   },
   computed: {
@@ -99,11 +102,18 @@ export default {
   mounted() {
     this.calcMaxFooterHeight()
     this.watchWindowSize()
+    this.getMaxWidthFunc = this.getSidePanelMaxWidth
   },
   beforeDestroy() {
     window.onresize = null
   },
   methods: {
+    getSidePanelMaxWidth() {
+      return (
+        this.$refs.bodyContent.$el.clientWidth -
+        this.$refs.leftContent.$el.clientWidth
+      )
+    },
     calcMaxFooterHeight() {
       this.maxFooterHeight =
         window.innerHeight - this.$refs.headerContent.$el.offsetHeight

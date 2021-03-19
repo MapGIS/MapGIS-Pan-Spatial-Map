@@ -41,7 +41,7 @@ export default {
   }
   .avatar {
     margin-right: 8px;
-    font-size: 20px;
+    font-size: 18px;
   }
   .name {
     font-weight: 500;

@@ -128,7 +128,7 @@
 
         // 可选，widget位置，如果没有设置，默认是相对于map的left=0，top=0
         "position": {
-          // 可选，widget位置锚点，默认值为top-left，可以设置为top-right、top-left、bottom-right、bottom-left、top、right、bottom、left
+          // 可选，widget位置锚点，默认值为top-left，可以设置为top-right、top-left、bottom-right、bottom-left、top-center、center-right、bottom-center、center-left、center-center
           "anchor": "top-left",
           // 可选，widget水平和垂直方向偏移,默认值为0
           "horizontalOffset": 0,
@@ -235,19 +235,19 @@
           "mode": "multi",
           // 可选，面板弹出位置，只有relativeTo为map才有效
           "position": {
-            // 可选，面板位置锚点，默认值为top-right，可以设置为top-right、top-left、bottom-right、bottom-left、top、right、bottom、left
+            // 可选，面板位置锚点，默认值为top-right，可以设置为top-right、top-left、bottom-right、bottom-left、top-center、center-right、bottom-center、center-left、center-center
             "anchor": "top-right",
             // 可选，面板水平和垂直方向偏移,默认值为0（单位：像素）
             "horizontalOffset": 0,
             "verticalOffset": 0,
-            // 可选，相对于主视图顶的距离，默认值为0（单位：像素），当height没有指定，且anchor为'bottom-left', 'bottom-right', 'bottom'时生效
+            // 可选，相对于主视图顶的距离，默认值为0（单位：像素），当height没有指定，且anchor为'bottom-left', 'bottom-right', 'bottom-center'时生效
             "top": 0,
-            // 可选，相对于主视图底的距离，默认值为0（单位：像素），当height没有指定，且anchor为'top-left', 'top-right', 'top'时生效
+            // 可选，相对于主视图底的距离，默认值为0（单位：像素），当height没有指定，且anchor为'top-left', 'top-right', 'top-center'时生效
             "bottom": 0
           },
           // 可选，面板样式
           "styles": {
-            // 可选，是否展开，当position.anchor为top、bottom、left、right时生效
+            // 可选，是否展开，当position.anchor为top-center、bottom-center、center-left、center-right、center-center时生效
             "expand": false,
             // 可选，面板内容宽度，如果没有传，可设置最小宽度和最大宽度并由内容自适应
             "width": 240,

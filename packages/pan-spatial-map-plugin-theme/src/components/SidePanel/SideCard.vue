@@ -4,6 +4,7 @@
     :title="widgetInfo.label"
     :icon="widgetInfo.icon"
     :is-full-screen="widgetInfo.properties.windowSize === 'max'"
+    :max-width="maxWidth"
     :visible="visible"
     @update:visible="onUpdateVisible"
   >
@@ -22,7 +23,8 @@ export default {
   components: { MpPanSpatialMapSideWindow },
   mixins: [WidgetInfoMixin],
   props: {
-    visible: { type: Boolean, default: true }
+    visible: { type: Boolean, default: true },
+    maxWidth: { type: [Number, Function] }
   },
   data() {
     return {}

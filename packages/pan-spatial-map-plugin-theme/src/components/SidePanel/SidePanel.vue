@@ -6,6 +6,7 @@
       :key="widget.uri"
       :ref="widget.id"
       :widget="widget"
+      :max-width="maxWidth"
       :visible="isWidgetVisible(widget, 'content')"
       @update:visible="updateWidgetVisible($event, widget)"
       :class="{ active: isWidgetActive(widget) }"
@@ -23,6 +24,9 @@ export default {
   name: 'MpPanSpatialMapSidePanel',
   components: { MpPanSpatialMapSideCard },
   mixins: [PanelMixin],
+  props: {
+    maxWidth: { type: [Number, Function] }
+  },
   computed: {
     stuffWidth() {
       const visibleWidget = this.widgets.find(widget =>
@@ -30,7 +34,7 @@ export default {
       )
 
       if (visibleWidget) {
-        return this.$refs[visibleWidget.id][0].$refs.sideWindow.resizeWidth
+        return this.$refs[visibleWidget.id][0].$refs.sideWindow.currentWidth
       }
 
       return 0

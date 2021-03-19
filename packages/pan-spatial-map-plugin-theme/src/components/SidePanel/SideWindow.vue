@@ -2,7 +2,7 @@
   <a-layout-sider
     theme="light"
     :class="[themeMode, 'side-panel-wrapper']"
-    :width="resizeWidth"
+    :width="currentWidth"
     v-show="syncedVisible"
   >
     <a-card
@@ -18,6 +18,7 @@
       <slot />
     </a-card>
     <mp-pan-spatial-map-adjust-line
+      v-if="!isFullScreen"
       direction="right"
       :resize-button="false"
       @line-move="onPanelLineMove"
@@ -40,7 +41,11 @@ export default {
     // 是否显示
     visible: { type: Boolean, default: false },
     // 内容宽度
-    width: { type: Number, default: 240 }
+    width: { type: Number, default: 240 },
+    // 是否全屏
+    isFullScreen: { type: Boolean, default: false },
+    // 最大宽度，支持数值和函数，函数必须返回数值
+    maxWidth: { type: [Number, Function] }
   },
   data() {
     return {
@@ -60,13 +65,41 @@ export default {
       set(value) {
         this.$emit('update:visible', value)
       }
+    },
+    currentWidth() {
+      if (this.isFullScreen) {
+        const width = this.getMaxWidth()
+        if (width) {
+          return width
+        }
+      }
+
+      return this.resizeWidth
     }
   },
   methods: {
+    // 获取地图容器元素
+    getMaxWidth() {
+      if (!this.maxWidth) return null
+
+      const type = typeof this.maxWidth
+      if (type === 'function') {
+        return this.maxWidth()
+      } else if (this.maxWidth instanceof Number) {
+        return this.maxWidth
+      }
+      return null
+    },
     onPanelLineMove(offset) {
       this.resizeWidth += offset
       if (this.resizeWidth < 2) {
         this.resizeWidth = 2
+      } else {
+        const maxWidth = this.getMaxWidth()
+
+        if (maxWidth && this.resizeWidth >= maxWidth) {
+          this.resizeWidth = maxWidth
+        }
       }
     },
     // 关闭事件

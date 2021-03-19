@@ -16,8 +16,9 @@ export default {
 
 <style lang="less" scoped>
 .command {
-  display: inline-block;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  height: 32px;
   cursor: pointer;
   &:hover {
     color: @primary-color;

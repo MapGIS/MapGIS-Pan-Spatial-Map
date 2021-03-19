@@ -206,12 +206,16 @@ export default {
     // 是否是水平布局
     // 上下悬停
     isHorizontal() {
-      return ['top', 'bottom'].includes(this.anchor)
+      return ['top-center', 'bottom-center', 'center-center'].includes(
+        this.anchor
+      )
     },
     // 是否是垂直布局
     // 左右悬停
     isVertical() {
-      return ['left', 'right'].includes(this.anchor)
+      return ['center-left', 'center-right', 'center-center'].includes(
+        this.anchor
+      )
     },
     // 是否允许拖动
     // 全屏以及展开时不允许拖动

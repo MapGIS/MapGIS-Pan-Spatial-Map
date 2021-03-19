@@ -50,8 +50,8 @@ export default {
   top: 10px;
   .toolbar-button-list {
     box-sizing: content-box;
-    padding: 8px;
-    height: 16px;
+    padding: 0 8px;
+    height: 32px;
     line-height: 16px;
     color: @text-color;
     border-radius: 2px;

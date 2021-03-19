@@ -179,6 +179,10 @@
           {
             "id": "widget_144B68C3-F095-B053-9B47-0B6DB9B7F6FE",
             "uri": "widgets/feature-query"
+          },
+          {
+            "id": "widget_219be6f7-034a-4f06-ba0f-1be9d3b093bd",
+            "uri": "widgets/map-data-v"
           }
         ],
         "widgetStructure": [],
@@ -205,10 +209,7 @@
             "id": "widget_bfe8faf2-4568-466b-98fd-877e856ccbd9",
             "uri": "widgets/retrospect"
           },
-          {
-            "id": "widget_219be6f7-034a-4f06-ba0f-1be9d3b093bd",
-            "uri": "widgets/map-data-v"
-          },
+
           {
             "id": "widget_10e5628f-35aa-49d3-9f1b-450edcb409fb",
             "uri": "widgets/kibana-v"
