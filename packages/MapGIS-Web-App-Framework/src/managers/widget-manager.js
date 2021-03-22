@@ -50,6 +50,10 @@ export default class WidgetManager {
     return widget.state === WidgetState.ACTIVE
   }
 
+  isWidgetVisible(widget) {
+    return widget.state !== WidgetState.CLOSED
+  }
+
   closeWidget(widget) {
     if (widget.state !== WidgetState.CLOSED) {
       if (this.activeWidget && this.activeWidget.id === widget.id) {

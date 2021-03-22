@@ -31,8 +31,35 @@ export default {
         return properties['3D']
       })
     },
-    widgetStructure2d() {},
-    widgetStructure3d() {}
+    widgetStructure2d() {
+      if (!this.widgetStructure || this.widgetStructure.length == 0) {
+        return this.widgets2d
+      }
+
+      const widgetTree = []
+
+      this.filterWidgetStructure(
+        this.widgetStructure,
+        this.widgets2d,
+        widgetTree
+      )
+      return widgetTree
+    },
+    widgetStructure3d() {
+      if (!this.widgetStructure || this.widgetStructure.length == 0) {
+        return this.widgets3d
+      }
+
+      const widgetTree = []
+
+      this.filterWidgetStructure(
+        this.widgetStructure,
+        this.widgets3d,
+        widgetTree
+      )
+
+      return widgetTree
+    }
   },
   watch: {
     is2DMapMode(newIs2DMapMode, oldNewIs2DMapMode) {
@@ -87,6 +114,34 @@ export default {
 
       return {}
     },
-    onUpdateWidgetVisible(e) {}
+    onUpdateWidgetVisible(e) {},
+    filterWidgetStructure(widgetStructure, widgets, newStructure) {
+      for (const widget of widgetStructure) {
+        const { id, type = 'widget' } = widget
+        if (type == 'widget') {
+          const existedWidget = widgets.find(item => item.id == id)
+          if (existedWidget) {
+            newStructure.push(existedWidget)
+          }
+        } else if (type == 'folder') {
+          if (widget.children && widget.children.length) {
+            const newSubStructure = []
+            this.filterWidgetStructure(
+              widget.children,
+              widgets,
+              newSubStructure
+            )
+
+            if (newSubStructure.length) {
+              const existedWidgetFolder = {
+                ...widget,
+                children: newSubStructure
+              }
+              newStructure.push(existedWidgetFolder)
+            }
+          }
+        }
+      }
+    }
   }
 }

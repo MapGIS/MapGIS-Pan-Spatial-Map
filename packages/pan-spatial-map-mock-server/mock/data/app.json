@@ -155,12 +155,12 @@
             "uri": "widgets/bookmark"
           },
           {
-            "id": "widget_144B68C3-F095-B053-9B47-0B6DB9B7F6FE",
-            "uri": "widgets/feature-query"
-          },
-          {
             "id": "widget_0967bc93-d737-41c2-9344-3c93540cad45",
             "uri": "widgets/marker-manager"
+          },
+          {
+            "id": "widget_144B68C3-F095-B053-9B47-0B6DB9B7F6FE",
+            "uri": "widgets/feature-query"
           },
           {
             "id": "widget_9e4f4ab9-8ab6-400d-ba01-7adab2963fcc",
@@ -211,7 +211,86 @@
             "uri": "widgets/terrain-analysis"
           }
         ],
-        "widgetStructure": [],
+        "widgetStructure": [
+          {
+            "id": "widget_878815b5-3f97-4026-80a9-46e683c053b1"
+          },
+          {
+            "id": "widget_3e8667b6-71ce-492d-be6f-f8193360b4d2"
+          },
+          {
+            "id": "widget_b886364f-684a-4efb-98b7-7b98418f943a"
+          },
+          {
+            "id": "widget_b21e6ee1-d398-4824-a005-b9f50f7bafae"
+          },
+          {
+            "id": "widget_83408190-a0d8-4192-969a-200c48469a52"
+          },
+          {
+            "id": "widget_0967bc93-d737-41c2-9344-3c93540cad45"
+          },
+          {
+            "id": "widget_144B68C3-F095-B053-9B47-0B6DB9B7F6FE"
+          },
+          {
+            "id": "widget_9e4f4ab9-8ab6-400d-ba01-7adab2963fcc"
+          },
+          {
+            "id": "folder_86c9b153-0d1e-4617-2bc3-09fbae5e6715",
+            "type": "folder",
+            "label": "对比分析",
+            "children": [
+              {
+                "id": "widget_8c5d3d2e-b05b-49be-a109-8e3254a9e428"
+              },
+              {
+                "id": "widget_bfe8faf2-4568-466b-98fd-877e856ccbd9"
+              },
+              {
+                "id": "widget_59be6878-b0c1-415b-bab4-f6bd4248e980"
+              }
+            ]
+          },
+          {
+            "id": "folder_42a60a3c-ba22-03b3-de91-5c7932e45612",
+            "type": "folder",
+            "label": "矢量分析",
+            "children": [
+              {
+                "id": "widget_98e8c014-e015-400e-8f57-b4a22606c91a"
+              },
+              {
+                "id": "widget_72e58aa3-ef5a-4f9c-892d-d7c0cac782a3"
+              },
+              {
+                "id": "widget_af11a3c9-c5cc-464e-acf6-d3fb24560c71"
+              }
+            ]
+          },
+          {
+            "id": "folder_566d9d41-b02d-e9a6-ab99-28ce895c91de",
+            "type": "folder",
+            "label": "三维分析",
+            "children": [
+              {
+                "id": "widget_fa2ea6fd-c838-46bc-9b89-de82fc102e67"
+              },
+              {
+                "id": "widget_cad68d22-8084-4616-96f3-a9152cf23444"
+              },
+              {
+                "id": "widget_10f0d71e-454c-4a05-b271-de3d86e958db"
+              },
+              {
+                "id": "widget_b446da3a-4d4d-465c-8d41-0f6822924265"
+              },
+              {
+                "id": "widget_dd8e6669-d0c3-4460-9db6-41fc4682b51e"
+              }
+            ]
+          }
+        ],
         "panel": {
           "position": {
             "anchor": "top-right",
