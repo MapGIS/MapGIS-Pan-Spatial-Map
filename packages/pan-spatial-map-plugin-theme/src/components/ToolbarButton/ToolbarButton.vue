@@ -26,6 +26,7 @@ export default {
   .icon {
     font-size: 16px;
     margin-right: 8px;
+    height: 16px;
   }
   .label {
     font-size: 12px;
