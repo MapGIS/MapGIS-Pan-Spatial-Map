@@ -90,12 +90,12 @@
     "name": "billboard-theme",
 
     // 可选，系统主题风格，如果不存在，则使用customStyle
-    "style": "ocean",
+    "style": "blue",
 
     // 可选，自定义主题风格，必须跟style至少存在一个
     "customStyle": {
-      "color": "accen",
-      "theme": "bg-accent text-white"
+      "color": "#1890ff",
+      "theme": "dark"
     }
   },
 

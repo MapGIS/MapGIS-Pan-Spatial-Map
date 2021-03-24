@@ -11,8 +11,8 @@
   "theme": {
     "name": "pan-spatial-map-classic-theme",
     "customStyle": {
-      "color": "blue-6",
-      "theme": "bg-blue-6 text-white"
+      "color": "#1890ff",
+      "theme": "dark"
     }
   },
   "mapWidgets": {

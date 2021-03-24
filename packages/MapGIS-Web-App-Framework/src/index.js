@@ -6,14 +6,11 @@ export {
   WidgetMixin,
   ThemeMixin,
   ThemeContentMixin,
-  ThemeStyleMixin,
   PanelMixin,
   MapMixin
 } from './mixins'
 
 export { MpMapboxView, MpCesiumView } from './components'
-
-export { WidgetState } from './utils'
 
 import {
   MpAppLoader,

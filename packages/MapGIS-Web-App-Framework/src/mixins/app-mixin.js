@@ -62,27 +62,6 @@ export default {
         default:
           return true
       }
-    },
-    themeStyle() {
-      if (this.theme) {
-        if (this.theme.style) {
-          if (this.theme.manifest) {
-            const style = this.theme.manifest.styles.find(item => {
-              return item.name === this.theme.style
-            })
-
-            if (style) {
-              return {
-                color: style.color,
-                theme: style.theme
-              }
-            }
-          }
-        } else if (this.theme.customStyle) {
-          return this.theme.customStyle
-        }
-      }
-      return { theme: 'bg-accent text-white', color: 'blue-grey-11' }
     }
   },
   methods: {
