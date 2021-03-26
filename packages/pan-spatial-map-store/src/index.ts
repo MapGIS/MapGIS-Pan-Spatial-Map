@@ -2,23 +2,13 @@ import { defaultServer } from './service/query-default-server'
 
 import * as api from './api'
 
-export { userModule } from './store'
-
 export { api }
 
-export {
-  request,
-  configRouterPermission,
-  utilInstance,
-  cesiumUtilInstance,
-  Parser
-} from './utils'
+export { getRequest, utilInstance, cesiumUtilInstance, Parser } from './utils'
 
 export { default as eventBus } from './event-bus'
 
-export { default as envInstance, loadEnv } from './env'
-
-export { LoginMixin, ResultSetMixin, AddServicesMixin } from './mixins'
+export { ResultSetMixin, AddServicesMixin } from './mixins'
 
 export { baseConfigInstance, loadConfigs } from './config'
 

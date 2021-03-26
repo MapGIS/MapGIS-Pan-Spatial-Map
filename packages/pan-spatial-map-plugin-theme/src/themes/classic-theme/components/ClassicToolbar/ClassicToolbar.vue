@@ -178,6 +178,7 @@ export default {
 .toolbar-more-panel {
   &.ant-collapse {
     border: none;
+    background: @base-bg-color;
     box-shadow: 0px 1px 2px 0px @shadow-color;
     border-radius: 2px;
   }
@@ -187,6 +188,9 @@ export default {
     .ant-collapse-arrow {
       left: 10px;
     }
+  }
+  &.ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
+    border-radius: 0;
   }
   &.ant-collapse > .ant-collapse-item {
     border-bottom: none;

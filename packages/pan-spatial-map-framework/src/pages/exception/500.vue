@@ -2,7 +2,7 @@
   <exception-page
     home-route="/"
     style="`min-height: ${minHeight}`"
-    type="404"
+    type="500"
   />
 </template>
 
@@ -11,7 +11,7 @@ import ExceptionPage from '@/components/Exception/ExceptionPage'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'Exp404',
+  name: 'Exp500',
   components: { ExceptionPage },
   computed: {
     ...mapState('setting', ['pageMinHeight']),

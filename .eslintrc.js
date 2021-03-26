@@ -119,6 +119,8 @@ module.exports = {
     'no-lonely-if': 'off',
     'no-else-return': 'off',
     'object-shorthand': 'off',
+    'no-case-declarations': 'off',
+    'no-bitwise': 'off',
 
     // TypeScript
     quotes: ['warn', 'single'],

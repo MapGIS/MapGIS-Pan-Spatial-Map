@@ -18,7 +18,10 @@ export const login = (req: Request, res: Response) => {
     if (user.username === username && user.password === password) {
       return res.json({
         user: {
-          nickName: user.nickName
+          user: {
+            username: username,
+            nickName: user.nickName
+          }
         },
         token: `${username}-token`
       })

@@ -1,11 +1,5 @@
 <template>
   <a-layout class="pan-spatial-map-wrapper">
-    <drawer v-if="!hideSetting" v-model="showSetting" placement="right">
-      <div class="setting" slot="handler">
-        <a-icon :type="showSetting ? 'close' : 'setting'" />
-      </div>
-      <setting />
-    </drawer>
     <component
       :is="headerContentComponent"
       ref="headerContent"
@@ -18,7 +12,7 @@
         v-bind="parseContentProps('left')"
       />
       <mp-pan-spatial-map-side-panel
-        v-if="getMaxWidthFunc"
+        v-if="getMaxWidthFunc && mapInitialized"
         v-bind="left.panel"
         :widgets="left.widgets"
         :max-width="getMaxWidthFunc"
@@ -27,6 +21,7 @@
       <a-layout class="main-wrapper">
         <a-layout-content class="content-wrapper">
           <mp-map-container
+            v-if="configInitialized"
             class="map-wrapper"
             cesium-lib-path="cesium/Cesium.js"
             cesium-plugin-path="cesium/webclient-cesium-plugins.js"
@@ -55,7 +50,7 @@
 
 <script>
 import { ThemeMixin } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance, loadConfigs } from '@mapgis/pan-spatial-map-store'
 import { mapState } from 'vuex'
 import MpPanSpatialMapSidePanel from '../../components/SidePanel/SidePanel.vue'
 
@@ -74,7 +69,8 @@ export default {
     return {
       maxFooterHeight: 0,
       showSetting: false,
-      getMaxWidthFunc: null
+      getMaxWidthFunc: null,
+      configInitialized: false
     }
   },
   computed: {
@@ -103,6 +99,10 @@ export default {
     this.calcMaxFooterHeight()
     this.watchWindowSize()
     this.getMaxWidthFunc = this.getSidePanelMaxWidth
+  },
+  async created() {
+    await loadConfigs()
+    this.configInitialized = true
   },
   beforeDestroy() {
     window.onresize = null
@@ -146,15 +146,5 @@ export default {
       z-index: 500;
     }
   }
-}
-.setting {
-  background-color: @primary-color;
-  color: @base-bg-color;
-  border-radius: 5px 0 0 5px;
-  line-height: 40px;
-  font-size: 22px;
-  width: 40px;
-  height: 40px;
-  box-shadow: -2px 0 8px @shadow-color;
 }
 </style>

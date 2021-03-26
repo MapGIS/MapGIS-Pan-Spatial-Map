@@ -14,8 +14,11 @@
       </a-menu>
     </div>
     <template #header-right>
-      <mp-header-avatar class="header-item" />
-      <a-tooltip placement="bottom">
+      <mp-pan-spatial-map-header-avatar
+        v-if="isHeaderAvatarComponentExist"
+        class="header-item"
+      />
+      <a-tooltip placement="bottom" v-if="isAboutComponentExist">
         <template slot="title">
           <span>关于</span>
         </template>
@@ -29,13 +32,14 @@
             <mp-window
               title="关于"
               :visible.sync="aboutWindowVisible"
-              :anchor="'center-center'"
+              :anchor="'top-center'"
+              :verticalOffset="150"
               :shrink-action="false"
               :full-screen-action="false"
               v-bind="slotProps"
             >
               <template>
-                关于MapGIS Pan-Spatial Map
+                <mp-pan-spatial-map-about />
               </template>
             </mp-window>
           </template>
@@ -48,12 +52,16 @@
 <script>
 import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
-import MpPanSpatialMapHeader from '../../../../components/Header/Header.vue'
-import MpHeaderAvatar from '../../../../components/Header/HeaderAvatar.vue'
+import {
+  MpPanSpatialMapHeader,
+  isExternalLayoutElementComponentExist
+} from '../../../../components'
 
 export default {
   name: 'MpPanSpatialMapClassicHeader',
-  components: { MpPanSpatialMapHeader, MpHeaderAvatar },
+  components: {
+    MpPanSpatialMapHeader
+  },
   mixins: [ThemeContentMixin],
   data() {
     return {
@@ -64,6 +72,14 @@ export default {
     ...mapState('setting', { themeMode: state => state.theme.mode }),
     menuTheme() {
       return this.themeMode == 'light' ? this.themeMode : 'dark'
+    },
+    isHeaderAvatarComponentExist() {
+      return isExternalLayoutElementComponentExist(
+        'MpPanSpatialMapHeaderAvatar'
+      )
+    },
+    isAboutComponentExist() {
+      return isExternalLayoutElementComponentExist('MpPanSpatialMapAbout')
     }
   },
   methods: {

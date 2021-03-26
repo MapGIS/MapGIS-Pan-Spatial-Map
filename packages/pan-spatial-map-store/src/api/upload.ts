@@ -1,7 +1,7 @@
-import request from '../utils/request'
+import { getRequest } from '../utils/request'
 
 export function imagesUpload(data) {
-  return request({
+  return getRequest()({
     url: 'api/local-storage/pictures',
     method: 'post',
     data

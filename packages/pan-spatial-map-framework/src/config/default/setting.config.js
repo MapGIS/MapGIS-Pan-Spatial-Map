@@ -11,5 +11,8 @@ module.exports = {
   },
   weekMode: false, // 色弱模式，true:开启，false:不开启
   systemName: 'MapGIS全空间一张图', // 系统名称
-  copyright: '2021 武汉中地数码科技有限公司 Version 10.5.3.10' // copyright
+  copyright: '2021 武汉中地数码科技有限公司 Version 10.5.3.10', // copyright
+  asyncRoutes: false, // 异步加载路由，true:开启，false:不开启
+  showPageTitle: true, // 是否显示页面标题（PageLayout 布局中的页面标题），true:显示，false:不显示
+  filterMenu: true // 根据权限过滤菜单，true:过滤，false:不过滤
 }

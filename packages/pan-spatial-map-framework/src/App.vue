@@ -5,9 +5,10 @@
 </template>
 
 <script>
+import { enquireScreen } from './utils/util'
 import { mapState, mapMutations } from 'vuex'
 import themeUtil from '@/utils/themeUtil'
-import { enquireScreen } from './utils/util'
+import { getI18nKey } from '@/utils/routerUtil'
 
 export default {
   name: 'App',
@@ -17,6 +18,7 @@ export default {
     }
   },
   created() {
+    this.setHtmlTitle()
     this.setLanguage(this.lang)
     enquireScreen(isMobile => this.setDevice(isMobile))
   },
@@ -29,6 +31,10 @@ export default {
     },
     lang(val) {
       this.setLanguage(val)
+      this.setHtmlTitle()
+    },
+    $route() {
+      this.setHtmlTitle()
     },
     'theme.mode': function(val) {
       const closeMessage = this.$message.loading(
@@ -41,10 +47,13 @@ export default {
         `您选择了主题色 ${val}, 正在切换...`
       )
       themeUtil.changeThemeColor(val, this.theme.mode).then(closeMessage)
+    },
+    layout: function() {
+      window.dispatchEvent(new Event('resize'))
     }
   },
   computed: {
-    ...mapState('setting', ['theme', 'weekMode', 'lang'])
+    ...mapState('setting', ['layout', 'theme', 'weekMode', 'lang'])
   },
   methods: {
     ...mapMutations('setting', ['setDevice']),
@@ -69,6 +78,14 @@ export default {
           this.locale = require('ant-design-vue/es/locale-provider/en_US').default
           break
       }
+    },
+    setHtmlTitle() {
+      const route = this.$route
+      const key =
+        route.path === '/'
+          ? 'home.name'
+          : getI18nKey(route.matched[route.matched.length - 1].path)
+      document.title = `${process.env.VUE_APP_NAME} | ${this.$t(key)}`
     },
     popContainer() {
       return document.getElementById('popContainer')

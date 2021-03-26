@@ -5,12 +5,8 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { AppManager } from '@mapgis/web-app-framework'
-import {
-  envInstance,
-  loadEnv,
-  api,
-  loadConfigs
-} from '@mapgis/pan-spatial-map-store'
+import { getAppInfo } from '@/services/user'
+import { BASE_URL } from '@/services/api'
 
 export default {
   data() {
@@ -22,16 +18,12 @@ export default {
     ...mapState('setting', ['theme'])
   },
   async created() {
-    await loadEnv()
-
-    await loadConfigs()
-
-    const appInfo = await api.getAppInfo()
+    const appInfo = await getAppInfo()
 
     await AppManager.getInstance().loadConfig(
-      envInstance.config.baseApi,
-      appInfo.configPath,
-      appInfo.assetsPath
+      BASE_URL,
+      appInfo.data.configPath,
+      appInfo.data.assetsPath
     )
 
     this.application = AppManager.getInstance().getApplication()

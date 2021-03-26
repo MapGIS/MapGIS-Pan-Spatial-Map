@@ -2,10 +2,10 @@
   <a-dropdown>
     <div class="header-avatar" style="cursor: pointer">
       <a-icon type="user" class="avatar" />
-      <span class="name">{{ getName }}</span>
+      <span class="name">{{ user.nickName || user.username }}</span>
     </div>
     <a-menu :class="['avatar-menu']" slot="overlay">
-      <a-menu-item @click="handleLogout">
+      <a-menu-item @click="logout">
         <a-icon style="margin-right: 8px;" type="poweroff" />
         <span>退出登录</span>
       </a-menu-item>
@@ -15,17 +15,16 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { LoginMixin } from '@mapgis/pan-spatial-map-store'
+import { logout } from '@/services/user'
 
 export default {
-  name: 'MpHeaderAvatar',
-  mixins: [LoginMixin],
+  name: 'HeaderAvatar',
   computed: {
-    ...mapGetters('user', ['getName'])
+    ...mapGetters('account', ['user'])
   },
   methods: {
-    async handleLogout() {
-      await this.doLogout()
+    logout() {
+      logout()
       this.$router.push('/login')
     }
   }
@@ -41,7 +40,6 @@ export default {
   }
   .avatar {
     margin-right: 8px;
-    font-size: 18px;
   }
   .name {
     font-weight: 500;

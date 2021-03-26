@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'content-type',
+    allowedHeaders: 'content-type,mapgis_pan_spatial_map_access_token',
     credentials: true,
     maxAge: 3600,
     optionsSuccessStatus: 200

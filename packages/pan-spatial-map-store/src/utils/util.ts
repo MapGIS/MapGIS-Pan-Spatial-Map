@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Crs } from '@mapgis/webclient-store'
 import baseConfigInstance from '../config/base'
 import { GFeature } from '../service/query-features'
-import request from './request'
+import { getRequest } from './request'
 
 class Util {
   /**
@@ -72,7 +72,6 @@ class Util {
         center = geometry.coordinates
         break
       case 'LineString':
-        // eslint-disable-next-line no-case-declarations
         const a = Math.floor(geometry.coordinates.length / 2)
         center = geometry.coordinates[a]
         break
@@ -80,7 +79,7 @@ class Util {
         center = this.getCenterOfGravityPoint(geometry.coordinates[0])
         break
       case 'MultiPolygon':
-        let coordinates = geometry.coordinates
+        const coordinates = geometry.coordinates
         const centers: number[][] = []
         for (let i = 0; i < coordinates.length; i += 1) {
           const tempCenter = this.getCenterOfGravityPoint(coordinates[i][0])
@@ -359,7 +358,7 @@ class Util {
    * @return {*}
    * @memberof Util
    */
-  async getFrameNoList(
+  getFrameNoList(
     scale: string,
     page = 1,
     count = 20,
@@ -371,7 +370,7 @@ class Util {
     const objSrsId = baseConfigInstance.config.projectionName
     const igsUrl = `http://${ip}:${port}/onemap/cliprect/clipList`
     const url = '/onemap/WebService/GetFrameNoList'
-    return request.get(url, {
+    return getRequest().get(url, {
       params: {
         f: 'json',
         scale,
@@ -489,11 +488,13 @@ class Util {
     if (!color.includes('rgb')) {
       return color
     }
-    var rgb = color.split(',')
-    var r = parseInt(rgb[0].split('(')[1])
-    var g = parseInt(rgb[1])
-    var b = parseInt(rgb[2].split(')')[0])
-    var hex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+    const rgb = color.split(',')
+    const r = parseInt(rgb[0].split('(')[1])
+    const g = parseInt(rgb[1])
+    const b = parseInt(rgb[2].split(')')[0])
+    const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b)
+      .toString(16)
+      .slice(1)}`
     return hex.toLocaleUpperCase()
   }
 
@@ -529,23 +530,22 @@ class Util {
    * @returns {boolean}
    */
   isNumeric(val) {
-    let regPos = /^\d+(\.\d+)?$/ //非负浮点数
-    let regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/ //负浮点数
+    const regPos = /^\d+(\.\d+)?$/ // 非负浮点数
+    const regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/ // 负浮点数
     if (regPos.test(val) || regNeg.test(val)) {
       if (val.length > 1 && val.substr(0, 1) === '0') {
-        //如果是0开始的长度大于1的字符串则认为是字符串
+        // 如果是0开始的长度大于1的字符串则认为是字符串
         return false
       } else {
         return true
       }
-      return true
     } else {
       return false
     }
   }
 
   isNumberType(type) {
-    let numberTypes = [
+    const numberTypes = [
       'double',
       'FldDouble',
       'float',
@@ -559,7 +559,7 @@ class Util {
       'short',
       'FldShort'
     ]
-    if (numberTypes.indexOf(type) > -1) {
+    if (numberTypes.includes(type)) {
       return true
     } else {
       return false

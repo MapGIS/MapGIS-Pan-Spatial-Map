@@ -19,6 +19,10 @@ export default class AppManager {
     return this.instance
   }
 
+  getRequest() {
+    return this.configService.getRequest()
+  }
+
   getApplication() {
     return this.app
   }

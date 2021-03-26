@@ -3,6 +3,7 @@
     <div class="content">
       <div class="top">
         <div class="header">
+          <img alt="logo" class="logo" src="@/assets/img/logo.png" />
           <span class="title">{{ systemName }}</span>
         </div>
         <div class="desc"></div>
@@ -23,7 +24,7 @@
               autocomplete="autocomplete"
               size="large"
               v-decorator="[
-                'username',
+                'name',
                 {
                   rules: [
                     {
@@ -81,16 +82,18 @@
 </template>
 
 <script>
-import { LoginMixin } from '@mapgis/pan-spatial-map-store'
+import { login } from '@/services/user'
+import { setAuthorization } from '@/utils/request'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'Login',
-  mixins: [LoginMixin],
   data() {
     return {
       logging: false,
       error: '',
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      redirect: undefined
     }
   },
   computed: {
@@ -101,24 +104,43 @@ export default {
       return this.$store.state.setting.copyright
     }
   },
+  watch: {
+    $route: {
+      handler: function(route) {
+        this.redirect = route.query && route.query.redirect
+      },
+      immediate: true
+    }
+  },
   methods: {
+    ...mapMutations('account', ['setUser']),
     onSubmit(e) {
       e.preventDefault()
       const self = this
-      this.form.validateFields(async err => {
+      this.form.validateFields(err => {
         if (!err) {
-          self.logging = true
-          const username = self.form.getFieldValue('username')
-          const password = self.form.getFieldValue('password')
-          const flag = await self.checkLogin({ username, password })
-          self.logging = false
-          if (flag) {
-            self.$router.push('/')
-          } else {
-            self.error = '登录失败'
-          }
+          this.logging = true
+          const name = this.form.getFieldValue('name')
+          const password = this.form.getFieldValue('password')
+          login(name, password)
+            .then(this.afterLogin)
+            .catch(error => {
+              this.logging = false
+              this.error = error.response.data.message
+            })
         }
       })
+    },
+    afterLogin(res) {
+      this.logging = false
+      const loginRes = res.data
+      const { user } = loginRes
+      this.setUser(user.user)
+      setAuthorization({
+        token: loginRes.token,
+        expireAt: new Date(new Date().getTime() + 30 * 60 * 1000)
+      })
+      this.$router.push({ path: this.redirect || '/map' })
     },
     onClose() {
       this.error = false
@@ -134,7 +156,7 @@ export default {
   height: 100vh;
   overflow: auto;
   background-color: @layout-body-background;
-  background-image: url('../assets/images/login_bg.png');
+  background-image: url('../../assets/img/login_bg.png');
   background-repeat: no-repeat;
   background-position-x: 50%;
   background-position-y: center;
@@ -148,13 +170,11 @@ export default {
     @media screen and (max-width: 480px) {
       margin-left: 0;
     }
-
     padding: 32px 0;
     flex: 1;
     @media (min-width: 768px) {
       padding: 112px 0 24px;
     }
-
     .top {
       text-align: center;
       .header {
@@ -210,7 +230,6 @@ export default {
       }
     }
   }
-
   .footer {
     padding: 48px 16px 24px;
     /*margin: 48px 0 24px;*/

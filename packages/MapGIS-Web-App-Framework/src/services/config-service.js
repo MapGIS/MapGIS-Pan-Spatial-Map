@@ -8,6 +8,10 @@ export default class ConfigService {
     this.request = createAxiosInstance(baseAPI)
   }
 
+  getRequest() {
+    return this.request
+  }
+
   getAppConfig() {
     return this.request({
       url: this.appConfigPath,

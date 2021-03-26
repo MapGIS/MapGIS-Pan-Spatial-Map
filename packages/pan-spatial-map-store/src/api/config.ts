@@ -1,7 +1,7 @@
-import request from '../utils/request'
+import { getRequest } from '../utils/request'
 
 export function getConfig(name) {
-  return request({
+  return getRequest()({
     url: `api/config/${name}`,
     method: 'get'
   })
@@ -13,14 +13,14 @@ export interface WidgetConfigData {
 }
 
 export function getWidgetConfig(name) {
-  return request({
+  return getRequest()({
     url: `api/app/widget-config?name=${name}`,
     method: 'get'
   })
 }
 
 export function saveWidgetConfig(data: WidgetConfigData) {
-  return request({
+  return getRequest()({
     url: 'api/app/widget-config',
     method: 'put',
     data

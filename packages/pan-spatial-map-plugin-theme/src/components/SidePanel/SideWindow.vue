@@ -112,6 +112,9 @@ export default {
 
 <style lang="less">
 .side-panel-wrapper {
+  &.ant-layout-sider-light {
+    background-color: @base-bg-color;
+  }
   .ant-layout-sider-children {
     display: flex;
     flex-direction: row;
