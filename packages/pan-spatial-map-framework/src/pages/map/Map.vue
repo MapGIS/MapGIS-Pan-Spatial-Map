@@ -31,8 +31,6 @@ export default {
     const style = this.themeStyle()
 
     this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
-
-    console.log(this.application)
   },
   methods: {
     ...mapMutations('setting', ['setTheme']),

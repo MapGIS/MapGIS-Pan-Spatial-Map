@@ -27,7 +27,7 @@ export default {
           this.onClose()
         }
 
-        console.log(`${this.widget.uri} ${oldState} -> ${newState}`)
+        // console.log(`${this.widget.uri} ${oldState} -> ${newState}`)
       }
     }
   },
