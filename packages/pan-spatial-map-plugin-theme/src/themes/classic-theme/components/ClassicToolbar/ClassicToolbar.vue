@@ -10,12 +10,16 @@
           <toolbar-button
             :widget="widget"
             :key="widget.id"
+            :active="selectWidgetId == widget.id"
             @click="onWidgetClick(widget)"
           />
         </template>
         <div class="toolbar-more">
           <a-divider type="vertical" />
-          <div class="toolbar-more-button" @click="onMoreButtonClick">
+          <div
+            :class="{ 'toolbar-more-button': true, active: morePanel }"
+            @click="onMoreButtonClick"
+          >
             <a-icon type="more" />
           </div>
         </div>
@@ -65,7 +69,8 @@ export default {
   data() {
     return {
       collapsed: false,
-      morePanel: false
+      morePanel: false,
+      selectWidgetId: ''
     }
   },
   computed: {
@@ -107,6 +112,7 @@ export default {
   },
   methods: {
     onWidgetClick(widget) {
+      this.selectWidgetId = widget.id
       this.morePanel = false
       WidgetManager.getInstance().triggerWidgetOpen(widget)
     },
@@ -115,12 +121,22 @@ export default {
       WidgetManager.getInstance().triggerWidgetOpen(widget)
     },
     onMoreButtonClick() {
+      this.selectWidgetId = ''
       this.morePanel = !this.morePanel
       this.widgets.forEach(widget => {
         if (WidgetManager.getInstance().isWidgetVisible(widget)) {
           WidgetManager.getInstance().closeWidget(widget)
         }
       })
+    },
+    onUpdateWidgetVisible({ widget, visible }) {
+      if (visible) {
+        this.selectWidgetId = widget.id
+      } else {
+        if (this.selectWidgetId == widget.id) {
+          this.selectWidgetId = ''
+        }
+      }
     }
   }
 }
@@ -150,7 +166,8 @@ export default {
       line-height: 32px;
       font-size: 16px;
       cursor: pointer;
-      &:hover {
+      &:hover,
+      &.active {
         color: @primary-color;
       }
     }

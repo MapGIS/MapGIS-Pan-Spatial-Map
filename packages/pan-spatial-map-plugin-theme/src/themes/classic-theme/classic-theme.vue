@@ -29,6 +29,7 @@
           />
           <component
             :is="toolbarContentComponent"
+            ref="toolbarContent"
             v-bind="parseContentProps('toolbar')"
           />
           <slot v-if="mapInitialized" name="map" />

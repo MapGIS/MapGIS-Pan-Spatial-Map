@@ -1,5 +1,5 @@
 <template>
-  <div class="command" @click="$emit('click')">
+  <div :class="{ command: true, active: active }" @click="$emit('click')">
     <mp-icon :icon="widgetInfo.icon" class="icon" />
     <span class="label">{{ widgetInfo.label }}</span>
   </div>
@@ -10,7 +10,10 @@ import { WidgetInfoMixin } from '@mapgis/web-app-framework'
 
 export default {
   name: 'MpPanSpatialMapToolbarButton',
-  mixins: [WidgetInfoMixin]
+  mixins: [WidgetInfoMixin],
+  props: {
+    active: { type: Boolean, default: false }
+  }
 }
 </script>
 
@@ -20,7 +23,8 @@ export default {
   align-items: center;
   height: 32px;
   cursor: pointer;
-  &:hover {
+  &:hover,
+  &.active {
     color: @primary-color;
   }
   .icon {

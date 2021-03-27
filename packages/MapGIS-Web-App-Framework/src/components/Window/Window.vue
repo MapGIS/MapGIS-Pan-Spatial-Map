@@ -9,7 +9,7 @@
     ref="windowContainer"
   >
     <div
-      class="window-head"
+      :class="{ 'window-head': true, shrink: shrink }"
       :style="{
         cursor: canDragable ? 'all-scroll' : 'auto'
       }"
@@ -586,6 +586,9 @@ export default {
     font-size: 14px;
     height: 36px;
     border-bottom: 1px solid @border-color;
+    &.shrink {
+      border-bottom: none;
+    }
     .title {
       flex: auto;
       padding: 8px 0;
