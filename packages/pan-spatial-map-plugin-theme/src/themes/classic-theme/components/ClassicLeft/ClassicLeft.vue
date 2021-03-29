@@ -30,8 +30,8 @@ export default {
     }
   },
   methods: {
-    onUpdateWidgetVisible(e) {
-      this.$refs.sideMenu.onUpdateWidgetVisible(e)
+    onUpdateWidgetState(e) {
+      this.$refs.sideMenu.onUpdateWidgetState(e)
     }
   }
 }

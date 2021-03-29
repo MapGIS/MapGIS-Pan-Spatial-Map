@@ -44,7 +44,11 @@
 </template>
 
 <script>
-import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
+import {
+  ThemeContentMixin,
+  WidgetManager,
+  WidgetState
+} from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
 
 export default {
@@ -98,8 +102,11 @@ export default {
         WidgetManager.getInstance().triggerWidgetOpen(currentWidget)
       }
     },
-    onUpdateWidgetVisible({ widget, visible }) {
-      if (!visible && this.selectedKeys[0] === widget.id) {
+    onUpdateWidgetState({ widget, newState, oldState }) {
+      if (
+        newState == WidgetState.CLOSED &&
+        this.selectedKeys[0] === widget.id
+      ) {
         this.selectedKeys = []
       }
     }

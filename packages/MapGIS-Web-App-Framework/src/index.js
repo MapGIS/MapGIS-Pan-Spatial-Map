@@ -12,6 +12,8 @@ export {
 
 export { MpMapboxView, MpCesiumView } from './components'
 
+export { WidgetState } from './utils'
+
 import {
   MpAppLoader,
   MpMapContainer,

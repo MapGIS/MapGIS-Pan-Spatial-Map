@@ -53,7 +53,7 @@
 import {
   ThemeContentMixin,
   WidgetManager,
-  widgetState
+  WidgetState
 } from '@mapgis/web-app-framework'
 import { UUID } from '@mapgis/webclient-store/src/utils'
 import ToolbarButton from '../../../../components/ToolbarButton/ToolbarButton.vue'
@@ -112,7 +112,6 @@ export default {
   },
   methods: {
     onWidgetClick(widget) {
-      this.selectWidgetId = widget.id
       this.morePanel = false
       WidgetManager.getInstance().triggerWidgetOpen(widget)
     },
@@ -121,7 +120,6 @@ export default {
       WidgetManager.getInstance().triggerWidgetOpen(widget)
     },
     onMoreButtonClick() {
-      this.selectWidgetId = ''
       this.morePanel = !this.morePanel
       this.widgets.forEach(widget => {
         if (WidgetManager.getInstance().isWidgetVisible(widget)) {
@@ -129,8 +127,8 @@ export default {
         }
       })
     },
-    onUpdateWidgetVisible({ widget, visible }) {
-      if (visible) {
+    onUpdateWidgetState({ widget, newState, oldState }) {
+      if (newState !== WidgetState.CLOSED) {
         this.selectWidgetId = widget.id
       } else {
         if (this.selectWidgetId == widget.id) {
@@ -198,25 +196,32 @@ export default {
     background: @base-bg-color;
     box-shadow: 0px 1px 2px 0px @shadow-color;
     border-radius: 2px;
-  }
-  &.ant-collapse > .ant-collapse-item > .ant-collapse-header {
-    padding: 0 0 0 32px;
-    line-height: 32px;
-    .ant-collapse-arrow {
-      left: 10px;
+    > .ant-collapse-item {
+      border-bottom: none;
+      > .ant-collapse-header {
+        padding: 0 0 0 32px;
+        line-height: 32px;
+        .ant-collapse-arrow {
+          left: 10px;
+        }
+      }
+      &:last-child > .ant-collapse-header {
+        border-radius: 0;
+      }
+      &.ant-collapse-item-active {
+        > .ant-collapse-header {
+          > .ant-collapse-arrow {
+            color: @primary-color;
+          }
+        }
+      }
     }
-  }
-  &.ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
-    border-radius: 0;
-  }
-  &.ant-collapse > .ant-collapse-item {
-    border-bottom: none;
   }
   .ant-collapse-content {
     border-top: none;
-  }
-  .ant-collapse-content > .ant-collapse-content-box {
-    padding: 0;
+    > .ant-collapse-content-box {
+      padding: 0;
+    }
   }
   .ant-list-grid .ant-col > .ant-list-item {
     margin-bottom: 0;

@@ -6,10 +6,14 @@
     :is-full-screen="widgetInfo.properties.windowSize === 'max'"
     :z-index="zIndex"
     :visible="visible"
-    @update:visible="updateVisible"
+    @update:visible="onUpdateVisible"
   >
     <template>
-      <component :is="widget.manifest.component" :widget="widget" />
+      <component
+        :is="widget.manifest.component"
+        :widget="widget"
+        @update-widget-state="$emit('update-widget-state', $event)"
+      />
     </template>
   </mp-window>
 </template>
@@ -41,7 +45,7 @@ export default {
   },
   watch: {},
   methods: {
-    updateVisible(value) {
+    onUpdateVisible(value) {
       this.$emit('update:visible', value)
     }
   }

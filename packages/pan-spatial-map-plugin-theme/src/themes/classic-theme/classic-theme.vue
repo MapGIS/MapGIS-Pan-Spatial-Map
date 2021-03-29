@@ -16,7 +16,7 @@
         v-bind="left.panel"
         :widgets="left.widgets"
         :max-width="getMaxWidthFunc"
-        @update-widget-visible="onUpdateWidgetVisible('left', $event)"
+        @update-widget-state="onUpdateWidgetState('left', $event)"
       />
       <a-layout class="main-wrapper">
         <a-layout-content class="content-wrapper">

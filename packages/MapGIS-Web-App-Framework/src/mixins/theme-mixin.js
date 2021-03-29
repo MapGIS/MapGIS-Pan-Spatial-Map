@@ -57,9 +57,9 @@ export default {
         this.mapInitialized = true
       }
     },
-    onUpdateWidgetVisible(contentName, e) {
+    onUpdateWidgetState(contentName, e) {
       const contentComponent = this.$refs[`${contentName}${this.refSuffix}`]
-      if (contentComponent) contentComponent.onUpdateWidgetVisible(e)
+      if (contentComponent) contentComponent.onUpdateWidgetState(e)
     },
     parseContentComponent(contentName) {
       const content = this.getContent(contentName)

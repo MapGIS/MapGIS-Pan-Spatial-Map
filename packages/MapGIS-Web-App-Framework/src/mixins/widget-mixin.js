@@ -27,6 +27,12 @@ export default {
           this.onClose()
         }
 
+        this.$emit('update-widget-state', {
+          widget: this.widget,
+          newState,
+          oldState
+        })
+
         // console.log(`${this.widget.uri} ${oldState} -> ${newState}`)
       }
     }

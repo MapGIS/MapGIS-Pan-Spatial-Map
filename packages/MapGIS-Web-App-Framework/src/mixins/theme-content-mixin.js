@@ -114,7 +114,7 @@ export default {
 
       return {}
     },
-    onUpdateWidgetVisible(e) {},
+    onUpdateWidgetState(e) {},
     filterWidgetStructure(widgetStructure, widgets, newStructure) {
       for (const widget of widgetStructure) {
         const { id, type = 'widget' } = widget

@@ -24,7 +24,7 @@
           :is="contentWidgetPanelComponents[i]"
           v-bind="group.panel"
           :widgets="group.widgets"
-          @update-widget-visible="onUpdateWidgetVisible(group.content, $event)"
+          @update-widget-state="onUpdateWidgetState(group.content, $event)"
         />
       </template>
 
@@ -112,8 +112,8 @@ export default {
     }
   },
   methods: {
-    onUpdateWidgetVisible(contentName, e) {
-      this.$refs.themeContainer.onUpdateWidgetVisible(contentName, e)
+    onUpdateWidgetState(contentName, e) {
+      this.$refs.themeContainer.onUpdateWidgetState(contentName, e)
     }
   }
 }

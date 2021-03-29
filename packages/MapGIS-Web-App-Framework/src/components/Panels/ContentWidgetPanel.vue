@@ -8,6 +8,7 @@
       :widget="widget"
       :visible="isWidgetVisible(widget)"
       @update:visible="updateWidgetVisible($event, widget)"
+      @update-widget-state="$emit('update-widget-state', $event)"
       :z-index="isWidgetActive(widget) ? 2 : 1"
       @mousedown.native.capture="onPanelClick(widget)"
     />

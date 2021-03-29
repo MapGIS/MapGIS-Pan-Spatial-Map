@@ -9,6 +9,7 @@
       :max-width="maxWidth"
       :visible="isWidgetVisible(widget, 'content')"
       @update:visible="updateWidgetVisible($event, widget)"
+      @update-widget-state="$emit('update-widget-state', $event)"
       :class="{ active: isWidgetActive(widget) }"
       @mousedown.native.capture="onPanelClick(widget)"
     />

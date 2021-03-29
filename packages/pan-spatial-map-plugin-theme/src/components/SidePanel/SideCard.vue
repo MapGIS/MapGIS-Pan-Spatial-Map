@@ -9,7 +9,11 @@
     @update:visible="onUpdateVisible"
   >
     <template>
-      <component :is="widget.manifest.component" :widget="widget" />
+      <component
+        :is="widget.manifest.component"
+        :widget="widget"
+        @update-widget-state="$emit('update-widget-state', $event)"
+      />
     </template>
   </mp-pan-spatial-map-side-window>
 </template>
