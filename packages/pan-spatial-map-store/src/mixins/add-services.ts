@@ -165,8 +165,8 @@ export default class AddServicesMixin extends Vue {
         break
       case 'google':
       case 'googleExt':
-        let tempLayerType: any = undefined
-        let pType: any = undefined
+        let tempLayerType: any
+        let pType: any
         if (type === 'googleExt') {
           pType = layerType
         } else {

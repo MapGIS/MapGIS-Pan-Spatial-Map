@@ -15,6 +15,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import { queryOGCInfoInstance } from '@mapgis/pan-spatial-map-store'
+
 const { MapboxIgsWmsLayer } = require('@mapgis/webclient-vue-mapboxgl')
 
 @Component({ name: 'MapboxWmsLayer', components: { MapboxIgsWmsLayer } })
@@ -55,12 +56,12 @@ export default class MapboxWmsLayer extends Vue {
     if (!url) {
       return
     }
-    let token: any = undefined
-    if (url.indexOf('token') > -1 || url.indexOf('tk') > -1) {
+    let token: any
+    if (url.includes('token') || url.includes('tk')) {
       let str
-      if (url.indexOf('token') > -1) {
+      if (url.includes('token')) {
         str = url.split('token=')[1]
-      } else if (url.indexOf('tk') > -1) {
+      } else if (url.includes('tk')) {
         str = url.split('tk=')[1]
       }
       if (str.indexOf('&') > -1) {
@@ -70,7 +71,7 @@ export default class MapboxWmsLayer extends Vue {
       }
     }
     url = obj.url || this.url
-    if (url.toLowerCase().indexOf('tianditu') > -1 && !token) {
+    if (url.toLowerCase().includes('tianditu') && !token) {
       token = '4c27d6e0e8a90715b23a989d42272fd8'
     }
     this.options = {
@@ -81,7 +82,7 @@ export default class MapboxWmsLayer extends Vue {
       this.options.token = token
     }
     this.options.baseURL = url
-    if (url.indexOf('?') > -1) {
+    if (url.includes('?')) {
       this.options.baseURL = url.split('?')[0]
     }
   }

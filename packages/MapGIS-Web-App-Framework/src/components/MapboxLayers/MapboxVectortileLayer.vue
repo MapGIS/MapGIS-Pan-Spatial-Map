@@ -1,7 +1,7 @@
 <template>
   <div>
     <mapbox-vector-layer
-      v-for="l in layers" 
+      v-for="l in layers"
       :key="l.id"
       :layerId="l.id"
       :layer="l"
@@ -14,7 +14,7 @@
 <script lang="ts">
 import { Component, Vue, Inject, Prop, Watch } from 'vue-property-decorator'
 import { MapboxVectorLayer } from '@mapgis/webclient-vue-mapboxgl'
-import { eventBus} from '@mapgis/pan-spatial-map-store'
+import { eventBus } from '@mapgis/pan-spatial-map-store'
 import axios from 'axios'
 
 @Component({ name: 'MapboxVectortileLayer', components: { MapboxVectorLayer } })
@@ -38,11 +38,11 @@ export default class MapboxVectortileLayer extends Vue {
   })
   readonly url!: string
 
-  async mounted() {
-    eventBus.$on('update-layers',(layers)=>{
+  mounted() {
+    eventBus.$on('update-layers', layers => {
       this.layers = layers
     })
-    await this.showLayer()
+    this.showLayer()
   }
 
   @Watch('url')
@@ -53,13 +53,13 @@ export default class MapboxVectortileLayer extends Vue {
 
   async addVectortile() {
     let url = this.url
-    if (this.url && this.url.indexOf(',') > -1) {
+    if (this.url && this.url.includes(',')) {
       const urls = this.url.split(',')
       url = urls[0]
     }
     const { data } = await axios.get(url)
-    this.sources =data.sources;
-    this.layers = data.layers;
+    this.sources = data.sources
+    this.layers = data.layers
   }
 
   remove() {}

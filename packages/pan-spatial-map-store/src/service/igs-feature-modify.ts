@@ -31,7 +31,7 @@ class QueryFeatures {
       const port = params.port || this.systemConfig.port
       domain = `${protocol}://${ip}:${port}`
     }
-    let tempParams: Record<string, any> = {}
+    const tempParams: Record<string, any> = {}
     tempParams.f = params.f || 'json'
     const tempUrl = `${domain}/igs/rest/mrcs/systemlibraries`
     const promise = new Promise((resolve, reject) => {
@@ -74,7 +74,7 @@ class QueryFeatures {
       const port = params.port || this.systemConfig.port
       domain = `${protocol}://${ip}:${port}`
     }
-    let tempParams: Record<string, any> = {}
+    const tempParams: Record<string, any> = {}
     tempParams.type = params.geomType
     tempParams.systemLib = params.systemLibName
     tempParams.page = params.page || 0
@@ -157,7 +157,7 @@ class QueryFeatures {
     if (!params || !params.gdbp || !params.featureSet) {
       return
     }
-    let tempParams: Record<string, any> = {}
+    const tempParams: Record<string, any> = {}
     tempParams.gdbp = params.gdbp
     tempParams.featureSet = params.featureSet
     tempParams.ip = params.ip || this.systemConfig.ip

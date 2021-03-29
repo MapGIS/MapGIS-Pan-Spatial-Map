@@ -6,7 +6,7 @@ import { FeatureGeoJSON, GFeature, Bound } from './query-features'
  * ArcGIS查询参数结构
  */
 export interface ArcGISQueryParam {
-  serverUrl: string //服务地址
+  serverUrl: string // 服务地址
   protocol?: string // 网络协议
   ip?: string // 服务ip
   port?: string // 服务port
@@ -123,21 +123,20 @@ class QueryArcgisInfo {
     if (!params || !params.serverUrl) {
       return
     }
-    let tempParams: Record<string, any> = this.getQueryParams(params)
+    const tempParams: Record<string, any> = this.getQueryParams(params)
     tempParams.returnCountOnly = false
     const page = params.page || 0
     const pageCount = params.pageCount || 0
     tempParams.resultOffset = page * pageCount || 0
     tempParams.resultRecordCount = params.pageCount || 20
     tempParams.objectIdsTotal = params.totalCount
-    var url = tempParams.serverUrl + '/' + tempParams.layerIndex + '/query'
+    const url = `${tempParams.serverUrl}/${tempParams.layerIndex}/query`
     const promise = new Promise((resolve, reject) => {
       axios.get(url, { params: tempParams }).then(res => {
         const { data } = res
         if (!data) {
           resolve(undefined)
         } else {
-          console.log(data)
           // 将data转geojson
           const geojsonFeatures: FeatureGeoJSON = {
             type: 'FeatureCollection',
@@ -150,7 +149,7 @@ class QueryArcgisInfo {
             let type = ''
             let bound: Record<string, any> = {}
             if (geometryType === 'esriGeometryPoint') {
-              //如果为点要素
+              // 如果为点要素
               coordinates = [features[i].geometry.x, features[i].geometry.y]
               type = 'Point'
               bound = {
@@ -160,12 +159,12 @@ class QueryArcgisInfo {
                 ymax: features[i].geometry.y
               }
             } else if (geometryType === 'esriGeometryPolyline') {
-              //如果为线要素
+              // 如果为线要素
               const path = features[i].geometry.paths[0]
-              let xmin = path[0][0],
-                xmax = path[0][0],
-                ymin = path[0][1],
-                ymax = path[0][1]
+              let xmin = path[0][0]
+              let xmax = path[0][0]
+              let ymin = path[0][1]
+              let ymax = path[0][1]
               for (let j = 0; j < path.length; j += 1) {
                 xmin = xmin < path[j][0] ? xmin : path[j][0]
                 xmax = xmax > path[j][0] ? xmax : path[j][0]
@@ -177,13 +176,13 @@ class QueryArcgisInfo {
               type = 'LineString'
               bound = { xmin: xmin, ymin: ymin, xmax: xmax, ymax: ymax }
             } else if (geometryType === 'esriGeometryPolygon') {
-              //如果为面要素
-              let path = features[i].geometry.rings[0]
+              // 如果为面要素
+              const path = features[i].geometry.rings[0]
               const arc: any[] = []
-              let xmin = path[0][0],
-                xmax = path[0][0],
-                ymin = path[0][1],
-                ymax = path[0][1]
+              let xmin = path[0][0]
+              let xmax = path[0][0]
+              let ymin = path[0][1]
+              let ymax = path[0][1]
               for (let j = 0; j < path.length; j += 1) {
                 xmin = xmin < path[j][0] ? xmin : path[j][0]
                 xmax = xmax > path[j][0] ? xmax : path[j][0]
@@ -220,7 +219,7 @@ class QueryArcgisInfo {
 
   getQueryParams(params: ArcGISQueryParam) {
     this.systemConfig = baseConfigInstance.config
-    let tempParams: Record<string, any> = {}
+    const tempParams: Record<string, any> = {}
     tempParams.where = params.where || '1=1'
     tempParams.geometryPrecision = params.geometryPrecision || 3
     tempParams.outFields = params.outFields || '*'
@@ -277,6 +276,8 @@ class QueryArcgisInfo {
     if (params.geometry) {
       const geoType = params.geometry.getGeometryType()
       const geometry = params.geometry
+      const pointArr: any[] = []
+      let i = 0
       if (geoType == 'rect') {
         tempParams.geometry = JSON.stringify({
           xmin: geometry.xmin,
@@ -287,7 +288,7 @@ class QueryArcgisInfo {
             // EPSG: Zondy.OneMap.defaultData.projection.split(':')[1]
             EPSG: 4326
           }
-        }) //[geometry.xmin, geometry.ymin, geometry.xmax, geometry.ymax].toString();
+        }) // [geometry.xmin, geometry.ymin, geometry.xmax, geometry.ymax].toString();
         tempParams.geometryType = 'esriGeometryEnvelope'
         tempParams.distance = params.geometry.nearDis || ''
       } else if (geoType == 'point') {
@@ -295,14 +296,13 @@ class QueryArcgisInfo {
           x: geometry.x,
           y: geometry.y,
           spatialReference: { EPSG: EPSGNo }
-        }) //[geometry.x, geometry.y].toString();
+        }) // [geometry.x, geometry.y].toString();
         tempParams.geometryType = 'esriGeometryPoint'
         tempParams.distance = params.geometry.nearDis || ''
       } else if (geoType == 'polygon') {
         tempParams.geometryType = 'esriGeometryPolygon'
         tempParams.distance == params.geometry.nearDis || ''
-        var pointArr: any[] = []
-        for (var i = 0; i < geometry.pointArr.length; i++) {
+        for (i = 0; i < geometry.pointArr.length; i++) {
           pointArr.push([geometry.pointArr[i].x, geometry.pointArr[i].y])
         }
         tempParams.geometry = JSON.stringify({
@@ -312,8 +312,7 @@ class QueryArcgisInfo {
       } else if (geoType == 'line') {
         tempParams.geometryType = 'esriGeometryPolyline'
         tempParams.distance == params.geometry.nearDis || ''
-        var pointArr: any[] = []
-        for (var i = 0; i < geometry.pointArr.length; i++) {
+        for (i = 0; i < geometry.pointArr.length; i++) {
           pointArr.push([geometry.pointArr[i].x, geometry.pointArr[i].y])
         }
         tempParams.geometry = JSON.stringify({
@@ -321,12 +320,11 @@ class QueryArcgisInfo {
           spatialReference: { EPSG: EPSGNo }
         })
       } else if (geoType == 'Circle') {
-        //ArcGIS没有圆几何，将圆构造为polygon
+        // ArcGIS没有圆几何，将圆构造为polygon
         // tempParams.geometryType = "esriGeometryPolygon";
         // tempParams.distance ==params.geometry.nearDis||'';
-        // var pointArr:any[] = [];
-        // var Circle = new ol.geom.Circle([geometry.point.x, geometry.point.y], geometry.radious);
-        // var polygon = new ol.geom.Polygon.fromCircle(Circle,16);
+        // const Circle = new ol.geom.Circle([geometry.point.x, geometry.point.y], geometry.radious);
+        // const polygon = new ol.geom.Polygon.fromCircle(Circle,16);
         // tempParams.geometry = JSON.stringify({ "rings": [polygon.getCoordinates()[0]], "spatialReference": { "EPSG": EPSGNo } });
       }
     }
@@ -373,7 +371,7 @@ class QueryArcgisInfo {
     if (!params.serverUrl) {
       return
     }
-    let tempParams: Record<string, any> = this.getQueryParams(params)
+    const tempParams: Record<string, any> = this.getQueryParams(params)
     tempParams.returnDistinctValues = false
     if (params.totalCount) {
       return params.totalCount
@@ -381,15 +379,13 @@ class QueryArcgisInfo {
     tempParams.returnIdsOnly = false
     tempParams.returnCountOnly = true
     tempParams.layerIndex = params.layerIndex || '0'
-    const url = tempParams.serverUrl + '/' + tempParams.layerIndex + '/query'
+    const url = `${tempParams.serverUrl}/${tempParams.layerIndex}/query`
     const promise = new Promise((resolve, reject) => {
       axios.get(url, { params: tempParams }).then(res => {
         const { data } = res
         if (!data) {
           resolve(undefined)
         } else {
-          console.log(data)
-          resolve(data)
         }
       })
     })
@@ -414,7 +410,7 @@ class QueryArcgisInfo {
     if (!queryParams || !queryParams.serverUrl) {
       return
     }
-    let tempParams: Record<string, any> = {}
+    const tempParams: Record<string, any> = {}
     tempParams.where = '1=1'
     tempParams.outFields = queryParams.outFields || '*'
     tempParams.f = 'pjson'
@@ -425,21 +421,20 @@ class QueryArcgisInfo {
     tempParams.returnCountOnly = false
     tempParams.resultOffset = queryParams.page * queryParams.pageCount || 0
     tempParams.resultRecordCount = queryParams.pageCount || 1
-    var url = tempParams.serverUrl + '/' + tempParams.layerIndex + '/query'
+    const url = `${tempParams.serverUrl}/${tempParams.layerIndex}/query`
     const promise = new Promise((resolve, reject) => {
       axios.get(url, { params: tempParams }).then(res => {
         const { data } = res
         if (!data) {
           resolve(undefined)
         } else {
-          console.log(data)
           const { fields } = data
           if (!fields) {
             resolve(undefined)
           } else {
-            let tempFields: Record<string, any>[] = []
+            const tempFields: Record<string, any>[] = []
             const value: string[] = []
-            for (var m = 0; m < fields.length; m++) {
+            for (let m = 0; m < fields.length; m++) {
               let type = ''
               if (fields[m].type == 'esriFieldTypeOID') {
                 type = 'int'
@@ -459,7 +454,7 @@ class QueryArcgisInfo {
               tempFields.push({ name: fields[m].name, type })
             }
             if (tempParams.outFields && tempParams.outFields !== '*') {
-              //获取单个属性的属性值
+              // 获取单个属性的属性值
               const { features } = data
               for (let i = 0; i < features.length; i += 1) {
                 const item = features[i].attributes[tempParams.outFields]

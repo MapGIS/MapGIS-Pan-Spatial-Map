@@ -115,7 +115,6 @@ module.exports = {
     'consistent-return': 'off',
     'import/order': 'off',
     'guard-for-in': 'off',
-    'no-console': 'off',
     'no-lonely-if': 'off',
     'no-else-return': 'off',
     'object-shorthand': 'off',

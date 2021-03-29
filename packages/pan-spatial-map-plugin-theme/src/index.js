@@ -22,7 +22,10 @@ const components = [
 
 const install = (Vue, opts = {}) => {
   components.forEach(component => {
-    Vue.component(component.name, component)
+    Vue.component(
+      (component.options && component.options.name) || component.name,
+      component
+    )
   })
 
   if (opts.components) {

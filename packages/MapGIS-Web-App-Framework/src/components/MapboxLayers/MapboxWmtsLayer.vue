@@ -57,6 +57,7 @@ export default class MapboxWmtsLayer extends Vue {
   async mounted() {
     await this.getWMTSInfo()
   }
+
   @Watch('wmtsInfos', { deep: true, immediate: true })
   @Watch('url')
   async getWMTSInfo() {
@@ -83,12 +84,12 @@ export default class MapboxWmtsLayer extends Vue {
         }
       }
     }
-    if (this.url.toLowerCase().indexOf('tianditu') > -1 && !token) {
+    if (this.url.toLowerCase().includes('tianditu') && !token) {
       token = '4c27d6e0e8a90715b23a989d42272fd8'
     }
     let url = obj.url || this.url
     if (url.toLowerCase().indexOf('.xml') > -1) {
-      url = url.split('WMTSServer')[0] + 'WMTSServer'
+      url = `${url.split('WMTSServer')[0]}'WMTSServer'`
     }
     const name = obj.title || this.serverName
     if (!name) {
@@ -98,7 +99,7 @@ export default class MapboxWmtsLayer extends Vue {
       url: url,
       serverName: name,
       tilematrixSet: obj.tilematrixSet,
-      //wmts服务名称
+      // wmts服务名称
       layer: name,
       token: token !== '' ? token : null
     }

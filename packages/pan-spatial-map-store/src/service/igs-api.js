@@ -703,6 +703,8 @@ export function dataStorePgQueryFeature(gdbp, option) {
       case 'point':
         queryParam.geometry = `POINT(${option.geometry.x} ${option.geometry.y})`
         break
+      default:
+        break
     }
   }
   if (option.where) {

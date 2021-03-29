@@ -32,8 +32,8 @@ export default class CesiumLayerMixin extends Vue {
 
   public layerInfo: any = {}
 
-  async mounted() {
-    await this.showLayer()
+  mounted() {
+    this.showLayer()
   }
 
   beforeDestroy() {

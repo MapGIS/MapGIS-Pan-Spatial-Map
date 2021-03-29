@@ -5,12 +5,15 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import CesiumLayerMixin from './mixins/cesium-layer'
+
 import { vectorTileListInstance } from '@mapgis/pan-spatial-map-store'
+
 declare const CesiumZondy: any
 
 @Component({ name: 'CesiumVectortileLayer', components: {} })
 export default class CesiumVectortileLayer extends Mixins(CesiumLayerMixin) {
   private vectorTileList = vectorTileListInstance
+
   showLayer() {
     this.remove()
     if (!this.url) {
@@ -21,7 +24,7 @@ export default class CesiumVectortileLayer extends Mixins(CesiumLayerMixin) {
 
   addVectortile() {
     let url = this.url
-    if (this.url && this.url.indexOf(',') > -1) {
+    if (this.url && this.url.includes(',')) {
       const urls = this.url.split(',')
       url = urls[0]
     }
