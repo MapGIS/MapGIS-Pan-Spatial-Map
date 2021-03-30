@@ -72,9 +72,6 @@ export default {
     }
   },
   methods: {
-    isPanelRelativeTo(rel) {
-      return !this.relativeTo || this.relativeTo === 'map'
-    },
     activateWidget(widget) {
       return WidgetManager.getInstance().activateWidget(widget)
     },

@@ -87,7 +87,7 @@
   // 必须，主题
   "theme": {
     // 主题名称，指向themes/name主题
-    "name": "billboard-theme",
+    "name": "launchpad-theme",
 
     // 可选，系统主题风格，如果不存在，则使用customStyle
     "style": "blue",

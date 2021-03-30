@@ -139,7 +139,7 @@ export default {
       default: true
     },
     // 显示标题
-    title: { type: String, default: 'Title' },
+    title: { type: String, default: '' },
     // 显示图标
     icon: { type: String, required: false },
     // 是否显示
@@ -152,9 +152,9 @@ export default {
     minWidth: { type: Number, required: false },
     // 内容最大宽度
     maxWidth: { type: Number, required: false },
-    // 内容最小宽度
+    // 内容最小高度
     minHeight: { type: Number, required: false },
-    // 内容最大宽度
+    // 内容最大高度
     maxHeight: { type: Number, required: false },
     // 相对于主视图顶的距离
     top: { type: Number },
@@ -252,8 +252,8 @@ export default {
       return null
     },
     // 当前的内容高度
-    // 全屏(fullScreen)|垂直展开(expand && isVertical)：计算高度并减去title的高度
-    // 正常情况：使用传入的高度
+    // 全屏(fullScreen)|垂直展开(expand && isVertical)
+    // 正常情况：使用传入的高度并加上title的高度
     currentHeightPixel() {
       if (this.shrink) {
         return '36px'

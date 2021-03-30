@@ -145,10 +145,6 @@ export default {
     CesiumTerrainLayer
   },
   props: {
-    mapStyle: {
-      type: Object,
-      required: true
-    },
     document: {
       type: Object,
       required: true
