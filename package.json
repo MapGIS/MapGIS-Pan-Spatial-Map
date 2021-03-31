@@ -18,7 +18,8 @@
     "serve:mock": "concurrently \"yarn mock\" \"yarn serve\"",
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ./",
     "lint:fix": "npm run lint -- --fix",
-    "mock": "cd packages/pan-spatial-map-mock-server/mock && ts-node-dev mock-server.ts"
+    "mock": "cd packages/pan-spatial-map-mock-server/mock && ts-node-dev mock-server.ts",
+    "svgo": "svgo -r -f icons --config=icons/svgo.yml"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.17.0",
@@ -30,6 +31,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-loader": "^3.0.3",
     "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-vue": "^6.1.2"
+    "eslint-plugin-vue": "^6.1.2",
+    "svgo": "1.2.0"
   }
 }
