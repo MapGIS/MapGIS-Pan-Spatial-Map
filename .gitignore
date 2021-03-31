@@ -18,3 +18,7 @@ selenium-debug.log
 *.sln
 package-lock.json
 .env.production.local
+
+# Svgo files
+icons/
+!icons/svgo.yml
