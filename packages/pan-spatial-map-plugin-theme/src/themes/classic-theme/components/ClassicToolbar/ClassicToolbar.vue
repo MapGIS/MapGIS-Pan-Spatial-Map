@@ -218,6 +218,7 @@ export default {
     }
   }
   .ant-collapse-content {
+    background: none;
     border-top: none;
     > .ant-collapse-content-box {
       padding: 0;
