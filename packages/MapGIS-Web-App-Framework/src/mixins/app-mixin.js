@@ -30,6 +30,9 @@ export default {
         this.application.document = doc
       }
     },
+    baseUrl() {
+      return this.application.baseAPI === '/' ? '' : this.application.baseAPI
+    },
     appConfigUrl() {
       return `${this.application.baseAPI}${this.application.appConfigPath}`
     },
