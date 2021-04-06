@@ -23,8 +23,10 @@
           <mp-map-container
             v-if="configInitialized"
             class="map-wrapper"
-            cesium-lib-path="cesium/Cesium.js"
-            cesium-plugin-path="cesium/webclient-cesium-plugins.js"
+            :cesium-lib-path="publicPath + 'cesium/Cesium.js'"
+            :cesium-plugin-path="
+              publicPath + 'cesium/webclient-cesium-plugins.js'
+            "
             :map-options="mapOptions"
           />
           <component
@@ -68,6 +70,7 @@ export default {
   },
   data() {
     return {
+      publicPath: process.env.BASE_URL,
       maxFooterHeight: 0,
       showSetting: false,
       getMaxWidthFunc: null,
@@ -87,6 +90,12 @@ export default {
     },
     footerContentComponent() {
       return this.parseContentComponent('footer')
+    },
+    cesiumLibPath() {
+      return `${process.env.BASE_URL}cesium/Cesium.js`
+    },
+    cesiumPluginPath() {
+      return `${process.env.BASE_URL}cesium/webclient-cesium-plugins.js`
     },
     mapOptions() {
       const lnglat = baseConfigInstance.config.center.split(',')

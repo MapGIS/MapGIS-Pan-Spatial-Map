@@ -1,10 +1,9 @@
 <template>
   <div class="about">
     <div class="header">
-      <img alt="logo" class="logo" src="@/assets/img/logo.png" />
+      <img alt="logo" class="logo" src="@/assets/img/logo-blue.png" />
       <span class="title">{{ systemName }}</span>
     </div>
-    <a-divider />
     <div class="footer">
       <div class="copyright">
         Copyright<a-icon type="copyright" />{{ copyright }}
@@ -29,28 +28,29 @@ export default {
 
 <style lang="less">
 .about {
+  padding: 0 8px;
   .header {
-    height: 44px;
-    line-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 4px 0 16px 0;
+    border-bottom: 1px solid @border-color;
     a {
       text-decoration: none;
     }
     .logo {
-      height: 44px;
-      vertical-align: top;
-      margin-right: 16px;
+      height: 32px;
+      margin-right: 10px;
     }
     .title {
       font-size: 20px;
       color: @title-color;
       font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-      font-weight: 600;
+      font-weight: 400;
       position: relative;
-      top: 2px;
     }
   }
   .footer {
-    padding: 0 0 16px 0;
+    padding: 12px 0 0px 0;
     text-align: center;
     .copyright {
       color: @text-color-second;

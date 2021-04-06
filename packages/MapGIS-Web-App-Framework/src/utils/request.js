@@ -24,7 +24,7 @@ const interceptorsResponse = [
 ]
 
 // create axios instance
-const createAxiosInstance = function(baseApi = './') {
+const createAxiosInstance = function(baseApi) {
   const axiosInstance = axios.create({
     baseURL: baseApi,
     timeout: 20000
@@ -36,4 +36,3 @@ const createAxiosInstance = function(baseApi = './') {
 }
 
 export default createAxiosInstance
-export const localRequest = createAxiosInstance()
