@@ -2,26 +2,49 @@ import * as Zondy from '@mapgis/webclient-es6-service'
 import axios from 'axios'
 
 class QueryOGCInfo {
+  /**
+   *
+   *
+   * @type {Record<string, any>}
+   * @memberof QueryOGCInfo
+   */
   public wmtsInfos: Record<string, any> = {}
 
   public wmsInfos: Record<string, any> = {}
 
+  /**
+   * 用于缓存请求回来的wmts服务的元数据信息
+   * 以服务的url为key.
+   *
+   * @type {Record<string, any>}
+   * @memberof QueryOGCInfo
+   */
   public wmtsCompleteInfos: Record<string, any> = {}
 
+  /**
+   * 用于缓存请求回来的wms服务的元数据信息
+   * 以服务的url为key.
+   * @type {Record<string, any>}
+   * @memberof QueryOGCInfo
+   */
   public wmsCompleteInfos: Record<string, any> = {}
 
   public async getWMTSInfo(url: string) {
     if (!url) {
       return null
     }
+
     if (this.wmtsInfos[url]) {
       return this.wmtsInfos[url]
     }
+
     try {
       const result: any = await this.requestWMTSInfo(url)
       const urls = result.OperationsMetadata.GetCapabilities.DCP.HTTP.Get
       const baseUrl = urls[urls.length - 1].href
       const { Layer: layers } = result.Contents
+      // TODO:该函数拿图层的title去查找图层对应的矩阵集不妥，为何不拿TileMatrixSetLink中的信息去查找？
+      // 马原野 2021年02月01日
       const wmtsInfo = layers.map(({ Title: title, WGS84BoundingBox }) => {
         const {
           tilematrixSet,
@@ -53,7 +76,7 @@ class QueryOGCInfo {
 
   private getTilematrixInfo(tileMatrixSet: Array<Record<string, any>>, name) {
     let matrixSet = tileMatrixSet[0]
-    let tileMatrixSetArr: Record<string, any>[] = [] //所有矩阵集参数
+    const tileMatrixSetArr: Record<string, any>[] = [] // 所有矩阵集参数
     for (let i = 0; i < tileMatrixSet.length; i += 1) {
       const item = tileMatrixSet[i]
       const id: string = item.Identifier
@@ -64,6 +87,9 @@ class QueryOGCInfo {
         matrixSet = item
         break
       }
+
+      // TODO:什么情况下需要这么处理，依据是什么？
+      // 马原野 2021年02月01日
       const ids = item.TileMatrix.map(({ Identifier: id }) => {
         const end = new RegExp(/\d+$/)
         return end.exec(id)
@@ -142,6 +168,8 @@ class QueryOGCInfo {
       return this.wmtsCompleteInfos[url]
     }
 
+    // 修改说明： webclient-es6-service中的OGCWMTSInfo、OGCWMSInfo接口只支持对接IGS发布的OGC服务，故这里需要自已拼接请求元数据的URL.
+    // 修改人：马原野 2021年03月30日
     const tempUrl = this.generateWMTSGetCapabilitiesURL(url)
 
     const promise = new Promise((resolve, reject) => {

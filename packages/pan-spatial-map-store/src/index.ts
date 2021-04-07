@@ -8,11 +8,11 @@ export { getRequest, utilInstance, cesiumUtilInstance, Parser } from './utils'
 
 export { default as eventBus } from './event-bus'
 
-export { ResultSetMixin, AddServicesMixin } from './mixins'
+export { ResultSetMixin, AddServicesMixin, BaseLayersMixin } from './mixins'
 
 export { baseConfigInstance, loadConfigs } from './config'
 
-export { dataCatalogInstance } from './data-catalog'
+export { dataCatalogManagerInstance, DataCatalogManager } from './data-catalog'
 export { vectorTileListInstance } from './vector-tile-list'
 
 export {

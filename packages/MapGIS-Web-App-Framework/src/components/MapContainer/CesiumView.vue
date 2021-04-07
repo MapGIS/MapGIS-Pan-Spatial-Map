@@ -123,6 +123,7 @@ import CesiumPointcloudLayer from '../CesiumLayers/CesiumPointcloudLayer.vue'
 import CesiumVectortileLayer from '../CesiumLayers/CesiumVectortileLayer.vue'
 import CesiumTdtLayer from '../CesiumLayers/CesiumTdtLayer.vue'
 import CesiumTerrainLayer from '../CesiumLayers/CesiumTerrainLayer.vue'
+import { Map } from '../../store/layer/document'
 
 const { SubLayerType, LayerType } = Layer
 const { Convert } = VectorTile
@@ -166,7 +167,7 @@ export default {
       this.changePageHeight()
     },
     document: {
-      deep: true,
+      deep: false,
       handler() {
         this.parseDocument()
       }
@@ -182,21 +183,9 @@ export default {
     parseRasterTile() {
       if (!this.document) return
 
-      const doc = IDocument.deepclone(this.document)
-      const layers = new Convert().docTomvtLayers(doc, false)
-      const rasters = layers.filter(l => {
-        l.source = { type: 'raster', tiles: [l.url] }
-        if (!l.layout) {
-          l.show = true
-        } else if (l.layout.visibility === 'none') {
-          l.show = false
-        } else {
-          l.show = true
-        }
-        // return l.type === 'raster'
-        return l
-      })
-      this.rasters = rasters
+      const { defaultMap } = this.document
+
+      this.rasters = defaultMap.allLayers
     },
     handleLoad(payload) {
       const { Cesium } = payload

@@ -1,117 +1,248 @@
-import axios from 'axios'
-import QueryOGCInfo from '../service/query-ogc-info'
+import {
+  Layer,
+  LayerType,
+  LoadStatus,
+  LOD,
+  TileInfo,
+  TileLayer,
+  MapImageLayer,
+  IGSTileLayer,
+  IGSMapImageLayer,
+  IGSVectorLayer,
+  OGCWMTSLayer,
+  OGCWMSLayer
+} from '@mapgis/web-app-framework/src/store/layer'
 import baseConfigInstance from '../config/base'
+import { queryIgsServicesInfoInstance } from '../service'
 
-export class DataCatalog {
+/**
+ * 数据目录树管理类
+ *
+ * @author Yuanye Ma
+ * @date 02/03/2021
+ * @export
+ * @class DataCatalog
+ */
+export class DataCatalogManager {
   /**
-   * igs发布的地图文档名称集合
+   * 获取数据目录管理对象实例
+   *
+   * @author Yuanye Ma
+   * @date 05/03/2021
+   * @static
+   * @return {*} 数据目录管理对象实例
+   * @memberof DataCatalogManager
    */
-  private docList: string[] = []
-
-  /**
-   * igs发布的瓦片名称集合
-   */
-  private tileList: string[] = []
-
-  /**
-   * 目录树参数对象
-   * @enum {string}
-   * @type {Object}
-   */
-  public readonly nodeParam = {
-    /**
-     * 子节点
-     */
-    CHILDREN: 'children',
-    /**
-     * 目录树显示名称
-     */
-    NAME: 'label',
-    /**
-     * 标题
-     */
-    TITLE: 'describe',
-    /**
-     * 服务名
-     */
-    SERVERNAME: 'name',
-    /**
-     * 三维模式
-     */
-    SCENEMODEL: 'sceneModel',
-    /**
-     * 服务ip
-     */
-    SERVERIP: 'ip',
-    /**
-     * 服务port
-     */
-    SERVERPORT: 'port',
-    /**
-     * 范围
-     */
-    EXTENT: 'extent',
-    /**
-     * 服务地址
-     */
-    SERVERURL: 'serverUrl',
-    /**
-     * 服务绑定数据
-     */
-    BINDDATALIST: 'bindDataList',
-    /**
-     * 服务类型
-     */
-    LAYERSERVICETYPE: 'layerServiceType',
-    /**
-     * OGCWFS服务地址
-     */
-    WFSURL: 'wfsUrl',
-    /**
-     * token
-     */
-    TOKEN: 'token',
-    /**
-     * guid
-     */
-    GUID: 'guid',
-    /**
-     * 查询服务名
-     */
-    SEARCHNAME: 'searchName',
-    /**
-     * 父节点
-     */
-    PARENT: 'parent',
-    /**
-     * 过滤字段
-     */
-    TIP: 'tip',
-    /**
-     * 索引号
-     */
-    LAYERINDEX: 'layerIndex',
-    /**
-     * 状态
-     */
-    STATUS: 'status',
-    /**
-     * 其他信息
-     */
-    DATA: 'data',
-    /**
-     * 是否展现图标
-     */
-    SHOWICON: 'true'
+  public static getInstance() {
+    if (!this._instance) {
+      this._instance = new DataCatalogManager()
+    }
+    return this._instance
   }
 
   /**
-   * 地图服务类型
-   * @constant
-   * @enum {string}
-   * @type {object}
+   * 根据目录树中图层节点的配置信息生成webclient-store对应的图层
+   * 注意：当前webClient-store中图层类型和图层对象的定义不够规范和成熟，如:LayerType和SubLayerType的划分标准不统一。图层类型对象不全面、
+   * 图层的属性不全，如：缺少ogcWMTS图层、igsDocLayer缺少，等。故暂时只用其ILayer图层，将图层的配置参数作为ILayer的外挂属性layerConfig处理。
+   * @author Yuanye Ma
+   * @date 05/03/2021s
+   * @static
+   * @param {*} layerConfig 图层配置信息
+   * @memberof DataCatalogManager
    */
-  public readonly layerServiceType = {
+  public static generateLayerByConfig(layerConfig: any): Layer | undefined {
+    // 修改说明：当前webClient-store中图层类型和图层对象的定义不够规范和成熟，如:LayerType和SubLayerType的划分标准不统一。图层类型对象不全面、
+    // 图层的属性不全：如：缺少ogcWMTS图层、igsDocLayer缺少子图层等。故使用web-app-framework中定义的图层。
+    // 修改人：马原野 2021年03月09日
+
+    let layer: Layer | undefined
+
+    const defaultIp = baseConfigInstance.config.ip
+    const defaultPort = baseConfigInstance.config.port
+
+    let ip = ''
+    let port = ''
+    let serverName = ''
+    let url = ''
+    const layerID = layerConfig.guid
+    const layerTitle = layerConfig.name
+
+    switch (layerConfig.serverType) {
+      case LayerType.IGSTile:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        } else {
+          ip = layerConfig.ip || defaultIp
+          port = layerConfig.port || defaultPort
+          serverName = layerConfig.serverName
+
+          url = `http://${ip}:${port}/igs/rest/mrms/tile/${serverName}`
+        }
+
+        layer = new IGSTileLayer({ url })
+
+        break
+      case LayerType.IGSMapImage:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        } else {
+          ip = layerConfig.ip || defaultIp
+          port = layerConfig.port || defaultPort
+          serverName = layerConfig.serverName
+
+          url = `http://${ip}:${port}/igs/rest/mrms/docs/${serverName}`
+        }
+
+        layer = new IGSMapImageLayer({ url })
+        break
+      case LayerType.IGSVector:
+        // 在老的图层配置中serverURL存的是gdbps。
+        ip = layerConfig.ip || defaultIp
+        port = layerConfig.port || defaultPort
+
+        url = `http://${ip}:${port}/igs/rest/mrms/layers`
+
+        layer = new IGSVectorLayer({ url, gdbps: layerConfig.gdbps })
+        break
+      case LayerType.OGCWMTS:
+        layer = new OGCWMTSLayer({ url })
+        break
+      case LayerType.OGCWMS:
+        url = layerConfig.serverURL
+        layer = new OGCWMSLayer({ url })
+        break
+      default:
+        break
+    }
+
+    if (layer) {
+      layer.title = layerTitle
+      layer.id = layerID
+    }
+
+    return layer
+  }
+
+  /**
+   * 通过目录树配置初始化目录树管理对象
+   *
+   * @author Yuanye Ma
+   * @date 05/03/2021
+   * @param {*} dataCatalogConfig 目录树配置信息
+   * @memberof DataCatalogManager
+   */
+  public init(dataCatalogConfig: any) {
+    this.config = dataCatalogConfig
+  }
+
+  /**
+   * 更新目录树
+   * 目录树有过滤功能,会过滤掉不可用配置项。当服务更新后,可通过该接口更新目录树.
+   *
+   * @author Yuanye Ma
+   * @date 05/03/2021
+   * @memberof DataCatalogManager
+   */
+  public update() {}
+
+  /**
+   * 根据节点的id获取对应的服务图层配置信息
+   *
+   * @author Yuanye Ma
+   * @date 05/03/2021
+   * @param {string} id 目录树配置中节点的guid,由后台生成,通过该id唯一标识一个服务图层配置项
+   * @memberof DataCatalogManager
+   */
+  public getLayerConfigByID(id: string) {}
+
+  /**
+   * 获取处理过的目录树信息
+   * 处理包括：
+   * 1.格式转换：从一张图vue ant design版本之前的配置转换为新的配置。
+   * 2.根据参数决定是否过滤不可用的配置项。过滤功能目前只考虑在基本配置中指定的服务器上发布的IGS服务(即ip和port为空的节点)。
+   * 3.对目录树节点添加级别信息
+   *
+   * @author Yuanye Ma
+   * @date 05/03/2021
+   * @memberof DataCatalogManager
+   */
+  public async getDataCatalogTreeData(isFilterInvalidLayer = true) {
+    if (isFilterInvalidLayer) {
+      this.isFilterInvalidLayerConfig = isFilterInvalidLayer
+      // 1.获取基本配置中指定的服务器上发布的IGS服务列表。
+      const defaultIp = baseConfigInstance.config.ip
+      const defaultPort = baseConfigInstance.config.port
+
+      let tileList: any[] = []
+      let docList: any[] = []
+
+      let tileServiceInfo: any = {}
+      let docServiceInfo: any = {}
+
+      await queryIgsServicesInfoInstance
+        .getTiles({ ip: defaultIp, port: defaultPort })
+        .then(tiles => {
+          tileServiceInfo = tiles
+        })
+        .catch(err => {})
+
+      await queryIgsServicesInfoInstance
+        .getDocs({ ip: defaultIp, port: defaultPort })
+        .then(docs => {
+          docServiceInfo = docs
+        })
+        .catch(err => {})
+
+      // 对请求回来的结果进行处理:考虑有嵌套的服务列表,应该全部展开后放到一个数组中。
+      tileList = this.processServiceInfo(tileServiceInfo, 'HDFNames', 'DirHDFs')
+      docList = this.processServiceInfo(docServiceInfo, 'DOCNames', 'DirDOCs')
+
+      this.defaultServerList = { tileList, docList }
+
+      // 2.格式转换、为节点添加级别信息、判断服务是否可用。
+      this.convertConfigData()
+    } else if (this.configConverted.treeConfig.treeData === undefined) {
+      this.convertConfigData()
+    }
+
+    return this.configConverted.treeConfig.treeData
+  }
+
+  /**
+   * 判断节点是否为图层节点
+   *
+   * @author Yuanye Ma
+   * @date 10/03/2021
+   * @memberof DataCatalogManager
+   */
+  public isLayerNode(layerConfig: any) {
+    if (layerConfig.serverType && layerConfig.serverType !== '') {
+      return true
+    }
+
+    return false
+  }
+
+  // 目录树管理采用单例模式，不允许外部构造
+  private constructor() {}
+
+  // 数据目录管理对象实例
+  private static _instance: DataCatalogManager
+
+  // 数据目录的配置信息对象
+  private config: any = {}
+
+  // 转换后的数据目录的配置信息对象
+  private configConverted: any = {}
+
+  // 默认服务器上的服务列表,用于实现服务的过滤功能
+  private defaultServerList: any = {}
+
+  // 是否过滤不可用的图层节点
+  private isFilterInvalidLayerConfig = true
+
+  // 老版数据目录配置中记录的地图服务类型
+  private readonly layerServiceType = {
     /**
      * 地图文档
      * @type {string}
@@ -233,361 +364,209 @@ export class DataCatalog {
     VIDEO: 'VIDEO'
   }
 
-  private configTreeData = []
-
-  public baseTreeData = undefined
-
-  public ticked: string[] = []
-
-  public checkedLayers = []
-
-  private _checkedLayerIds: string[] = []
-
-  private static _instance: DataCatalog
-
-  private constructor() {
-    this.configTreeData = []
-  }
-
-  public static getInstance() {
-    if (!this._instance) {
-      this._instance = new DataCatalog()
+  // 将老版本的配置转换为新版本的配置
+  private convertConfigData() {
+    // 1.转换keyConfig
+    const keyConfig = {
+      name: this.config.paramConfig.NAME, // 节点名称
+      description: this.config.paramConfig.TITLE, // 节点描述
+      icon: this.config.paramConfig.IMAGE, // 节点的图标(可选)
+      level: 'level', // 节点的层次
+      children: this.config.paramConfig.CHILDREN, // 子节点数组
+      guid: this.config.paramConfig.GUID, // 图层唯一标识
+      serverName: this.config.paramConfig.SERVERNAME, // 服务名(可选)
+      serverType: 'serverType', // 服务类型
+      serverSubType: 'serverSubType', // 服务子类型
+      serverURL: this.config.paramConfig.SERVERURL, // 服务URL(可选)
+      tokenName: 'tokenName', // token名称(可选)
+      tokenValue: this.config.paramConfig.TOKEN, // token值(可选)
+      ip: this.config.paramConfig.SERVERIP, // 服务ip(可选)
+      port: this.config.paramConfig.SERVERPORT, // 服务端口(可选)
+      bindData: 'bindData', // 绑定数据：与该服务图层相关联的服务信息,比如：与该瓦片服务对应的地图服务。应用中利用该字段可实现对瓦片服务的查询功能
+      gdbps: 'gdbps' // 图层的gdbp地址，允许多个图层
     }
-    return this._instance
-  }
 
-  /**
-   * 配置目录树数据
-   * @param data 目录树数据
-   */
-  public setConfigTreeData(data) {
-    this.configTreeData = data
-  }
+    this.configConverted.keyConfig = keyConfig
 
-  /**
-   * 获取目录树数据
-   * @param refresh 是否刷新目录树
-   */
-  public async getBaseTreeData(refresh?: boolean) {
-    if (!this.baseTreeData || refresh) {
-      const defaultIp = baseConfigInstance.config.ip
-      const defaultPort = baseConfigInstance.config.port
-      const fun1 = this.getIgsMapList('docs', defaultIp, defaultPort)
-      const fun2 = this.getIgsMapList('tiles', defaultIp, defaultPort)
-      await Promise.all([fun1, fun2])
-        .then(result => {
-          ;[this.docList, this.tileList] = result
-        })
-        .catch(error => {
-          console.warn(error)
-        })
-      this.baseTreeData = this.formatBaseTreeData(this.configTreeData, 0)
+    // 2.转换iconConfig
+    this.configConverted.iconConfig = this.config.iconConfig
+
+    // 3.转换treeConfig
+    const treeData: any = this.convertTreeData(
+      this.config.treeConfig.treeData,
+      0
+    )
+    const treeConfig: any = {
+      isShowIcon: false, // 是否显示基础目录树节点图标
+      // isShowIcon: this.config.paramConfig.SHOWICON, // 是否显示基础目录树节点图标
+      treeData // 目录树配置
     }
-    return this.baseTreeData
+
+    this.configConverted.treeConfig = treeConfig
   }
 
-  /**
-   * 递归给每一级加id,level,title
-   * @param treeData
-   * @param k
-   */
-  private formatBaseTreeData(treeData: any[], k: number, parentTitle?: string) {
-    const data: any = []
-    for (let i = 0; i < treeData.length; i += 1) {
-      data[i] = { ...treeData[i] }
-      if (!data[i].id) {
-        data[i].id = this.newGuid()
-      }
-      data[i].title =
-        (parentTitle ? `${parentTitle} ` : '') + data[i][this.nodeParam.NAME]
-      data[i].level = k
-      /**
-       * @修改说明 挡节点包含layerServiceType或者不包含children字段，都是图层节点。
-       * @修改人 龚瑞强
-       */
-      if (
-        treeData[i][this.nodeParam.CHILDREN] &&
-        treeData[i][this.nodeParam.LAYERSERVICETYPE] === undefined
-      ) {
-        let str = ''
-        if (k > 0) {
-          str = data[i].title
-        }
-        data[i].children = this.formatBaseTreeData(
-          treeData[i].children,
-          k + 1,
-          str
-        )
-      } else {
-        data[i].label = treeData[i][this.nodeParam.NAME] || ''
-        data[i].serverName = treeData[i][this.nodeParam.SERVERNAME] || ''
-        data[i].sceneModel = treeData[i][this.nodeParam.SCENEMODEL] || ''
-        data[i].extent = treeData[i][this.nodeParam.EXTENT] || ''
-        data[i].serverUrl = treeData[i][this.nodeParam.SERVERURL] || ''
-        data[i].bindDataList = treeData[i][this.nodeParam.BINDDATALIST] || ''
-        data[i].layerServiceType =
-          treeData[i][this.nodeParam.LAYERSERVICETYPE] || ''
-        data[i].wfsUrl = treeData[i][this.nodeParam.WFSURL] || ''
-        data[i].token = treeData[i][this.nodeParam.TOKEN] || ''
-        data[i].guid = treeData[i][this.nodeParam.GUID] || ''
-        data[i].searchName = treeData[i][this.nodeParam.SEARCHNAME] || ''
-        data[i].layerIndex = treeData[i][this.nodeParam.LAYERINDEX] || ''
-        const layerServiceType =
-          treeData[i][this.nodeParam.LAYERSERVICETYPE] || ''
-        if (layerServiceType === this.layerServiceType.IGSVECTOR) {
-          data[i].gdbps = treeData[i][this.nodeParam.SERVERURL] || ''
-        }
-        const ip = treeData[i][this.nodeParam.SERVERIP] || ''
-        const port = treeData[i][this.nodeParam.SERVERPORT] || ''
-        if (!ip || ip === '' || !port || port === '') {
-          data[i].ip = baseConfigInstance.config.ip
-          data[i].port = baseConfigInstance.config.port
-          if (
-            layerServiceType === this.layerServiceType.IGSDOC ||
-            layerServiceType === this.layerServiceType.IGSTILE
-          ) {
-            let mapList: string[] = []
-            if (layerServiceType === this.layerServiceType.IGSDOC) {
-              mapList = this.docList
-            } else if (layerServiceType === this.layerServiceType.IGSTILE) {
-              mapList = this.tileList
-            }
+  // 转换目录树配置信息
+  private convertTreeData(nodeArray: any[], nodeLevel: number) {
+    const nodeArrayConverted: Array<any> = []
+    if (nodeArray && nodeArray.length > 0) {
+      nodeArray.forEach(node => {
+        let nodeConverted: any = {}
+        let isLayerInvalid = true
 
-            // TODO 测试专题添加图例功能，暂时屏蔽disable功能
-            /**
-             * @修改人 龚瑞强，后续上传图例功能测试完毕，此处注释要打开
-             */
-            // if (!mapList.includes(data[i].serverName)) {
-            //   data[i].disabled = true
-            // }
+        // 通用信息
+        const commonInfo: any = {
+          name: node[this.configConverted.keyConfig.name] || '', // 节点名称
+          description: node[this.configConverted.keyConfig.description] || '', // 节点描述
+          icon: node[this.configConverted.keyConfig.icon] || '', // 节点的图标(可选)
+          level: nodeLevel
+        }
+
+        let guid: string = node[this.configConverted.keyConfig.guid]
+
+        // todo:按设计图层节点的guid应该在服务器端生成,并且保持不变,在后台不支持该功能的情况下先在前端处理。
+        // 除图层节点外,其它节点在config中的guid不是必需的，这里生成guid是为满足UI显示的需要。
+        if (guid === undefined || guid === '') {
+          guid = this.genGUID()
+        }
+
+        commonInfo.guid = guid
+
+        const layerServeiceType = node[this.config.paramConfig.LAYERSERVICETYPE]
+
+        if (layerServeiceType && layerServeiceType !== '') {
+          // 服务图层节点
+          const serverLayerInfo: any = {
+            children:
+              node[this.configConverted.keyConfig.children] || undefined, // 子节点数组
+            serverName: node[this.configConverted.keyConfig.serverName] || '', // 服务名(可选)
+            serverURL: node[this.configConverted.keyConfig.serverURL] || '', // 服务URL(可选)
+            tokenName: node[this.configConverted.keyConfig.tokenName] || '', // token名称(可选)
+            tokenValue: node[this.configConverted.keyConfig.tokenValue] || '', // token值(可选)
+            ip: node[this.configConverted.keyConfig.ip] || '', // 服务ip(可选)
+            port: node[this.configConverted.keyConfig.port] || '', // 服务端口(可选)
+            gdbps:
+              node[this.configConverted.keyConfig.gdbps] ||
+              node[this.configConverted.keyConfig.serverURL] // 图层的gdbp地址，允许多个图层
           }
-        }
-      }
-    }
-    return data
-  }
 
-  /**
-   * 根据id获取数据,获取的是末级节点数据
-   * @param id
-   */
-  public getLayerInfoById(id: string) {
-    const layerInfo = this.getCheckedData([id], this.baseTreeData)[0]
-    return layerInfo
-  }
+          // 根据layerServiceType计算serverType
+          const serverType = this.convertLayerServiceType(layerServeiceType)
 
-  public get checkedLayerIds() {
-    return this._checkedLayerIds
-  }
+          serverLayerInfo.serverType = serverType // 服务类型
 
-  public set checkedLayerIds(ids: string[]) {
-    this._checkedLayerIds = ids
-  }
+          // 绑定数据：与该服务图层相关联的服务信息,比如：与该瓦片服务对应的地图服务。应用中利用该字段可实现对瓦片服务的查询功能
+          // 老版本的配置中仅支持通过searchName指定与瓦片图层同一服务器上发布的在线地图文档
+          const searchName = node[this.config.paramConfig.SEARCHNAME]
 
-  public getCheckedLayers() {
-    return this.getCheckedData(this._checkedLayerIds, this.baseTreeData)
-  }
+          if (searchName && searchName !== '') {
+            const bindData: any = serverLayerInfo
 
-  /**
-   * 获取选中的图层,获取的是末级节点数据集合
-   * @param ids 选中节点id集合
-   */
-  public async getLayersByIds(ids: Array<string>) {
-    this.checkedLayers = this.getCheckedData(ids, this.baseTreeData)
-    const tempLayers: any[] = []
-    let obj: any = {}
-    for (let i = 0; i < this.checkedLayers.length; i += 1) {
-      const layer = this.checkedLayers[i]
-      const layerServiceType = layer[this.nodeParam.LAYERSERVICETYPE]
-      const tempUrl: string = layer[this.nodeParam.SERVERURL]
-      if (layerServiceType === this.layerServiceType.WMS) {
-        // eslint-disable-next-line no-await-in-loop
-        const wmsInfo = await QueryOGCInfo.getWMSInfo(tempUrl)
-        let wmsInfoObj = {}
-        if (wmsInfo) {
-          const { layers, version, bounds, wmsServerType } = wmsInfo
-          wmsInfoObj = {
-            layers,
-            version,
-            bounds,
-            wmsServerType
+            bindData.serverName = searchName
+            bindData.serverType = LayerType.IGSMapImage
+
+            serverLayerInfo.bindData = bindData
           }
-        }
-        obj = {
-          type: 'RasterTile',
-          subtype: 'OgcWmsLayer',
-          ...wmsInfoObj
-        }
-      } else if (layerServiceType === this.layerServiceType.WMTS) {
-        // eslint-disable-next-line no-await-in-loop
-        const wmtsInfo = await QueryOGCInfo.getWMTSInfo(tempUrl)
-        let wmtsInfoObj = {}
-        if (wmtsInfo) {
-          const {
-            tilematrixSet,
-            tilematrixIds,
-            pro,
-            scaleDenominator,
-            bounds,
-            url,
-            origin
-            // eslint-disable-next-line no-await-in-loop
-          } = await QueryOGCInfo.getWMTSInfo(tempUrl)
-          wmtsInfoObj = {
-            tilematrixSet,
-            tilematrixIds,
-            pro,
-            scaleDenominator,
-            bounds,
-            url,
-            origin
+
+          nodeConverted = { ...commonInfo, ...serverLayerInfo }
+
+          // 图层过滤。
+          if (this.isFilterInvalidLayerConfig) {
+            isLayerInvalid = this.isServiceVaild(nodeConverted)
           }
+        } else {
+          nodeConverted = { ...commonInfo }
+          // 组节点
+          nodeConverted.children = this.convertTreeData(
+            node[this.configConverted.keyConfig.children],
+            nodeLevel + 1
+          )
         }
-        obj = {
-          type: 'RasterTile',
-          subtype: 'OgcWmtsLayer',
-          ...wmtsInfoObj
-        }
-      } else if (layerServiceType === this.layerServiceType.IGSDOC) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'IgsDocLayer'
-        }
-      } else if (layerServiceType === this.layerServiceType.IGSTILE) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'IgsTileLayer'
-        }
-      } else if (layerServiceType === this.layerServiceType.IGSVECTOR) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'IgsVectorLayer',
-          gdbps: layer[this.nodeParam.SERVERURL]
-        }
-      } else if (
-        layerServiceType === this.layerServiceType.IMAGEARCGIS ||
-        layerServiceType === this.layerServiceType.TILEARCGIS
-      ) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'RasterArcgisLayer'
-        }
-      } else if (
-        layerServiceType === this.layerServiceType.IGSDOC3D ||
-        layerServiceType === this.layerServiceType.IGSIMAGE3D
-      ) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'IgsDoc3dLayer'
-        }
-      } else if (layerServiceType === this.layerServiceType.TILE3D) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'IgsTile3dLayer'
-        }
-      } else if (layerServiceType === this.layerServiceType.POINTCLOUD) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'PointCloudLayer'
-        }
-      } else if (layerServiceType === this.layerServiceType.VECTORTILE) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'VectorTileLayer'
-        }
-      } else if (layerServiceType === this.layerServiceType.TERRAIN) {
-        obj = {
-          type: 'RasterTile',
-          subtype: 'Terrain'
-        }
-      }
 
-      /**
-       * @修改说明 children字段与 idoc.getConvertLayers里面的key值冲突，在这里去除掉。
-       * @修改人 龚瑞强
-       */
-      const { children, ...coustomer } = layer
-      // delete coustomer.children
-      // delete coustomer.bindData
-      // delete coustomer.tip
-      // delete coustomer.icon1
-      const tempLayer = { ...coustomer, ...obj }
-      tempLayers.push(tempLayer)
-    }
-    return tempLayers
-  }
-
-  /**
-   * 找出两个图层数组中不同的图层
-   * @param ticked
-   * @param oldTicked
-   */
-  public getTickedDiff(ticked: string[], oldTicked: string[]) {
-    return ticked
-      .concat(oldTicked)
-      .filter((currentValue: string, index: number, arr: string[]) => {
-        return arr.indexOf(currentValue) === arr.lastIndexOf(currentValue)
+        if (isLayerInvalid) {
+          nodeArrayConverted.push(nodeConverted)
+        }
       })
-  }
-
-  /**
-   * 递归获取最后一级选中的数据
-   * @param ids
-   * @param treeData
-   */
-  private getCheckedData(ids: Array<string>, treeData: any) {
-    let data: any = []
-    for (let i = 0; i < treeData.length; i += 1) {
-      /**
-       * @修改说明 挡节点包含layerServiceType或者不包含children字段，都是图层节点。
-       * @修改人 龚瑞强
-       */
-      if (
-        treeData[i][this.nodeParam.LAYERSERVICETYPE] ||
-        !treeData[i].children
-      ) {
-        if (ids.includes(treeData[i].id)) {
-          data.push(treeData[i])
-        }
-      } else {
-        const checkedData: any = this.getCheckedData(ids, treeData[i].children)
-        data = [...data, ...checkedData]
-      }
     }
-    return data
+
+    return nodeArrayConverted
   }
 
-  /**
-   * 通过名称，递归获取最后一级选中的数据
-   * @param name 节点名称
-   */
-  public getLayerByName(name: string, treeData: any = this.baseTreeData) {
-    let node: any = []
-    // const treeData: Record<string, any>[] = this.baseTreeData || []
-    for (let i = 0; i < treeData.length; i += 1) {
-      /**
-       * @修改说明 挡节点包含layerServiceType或者不包含children字段，都是图层节点。
-       * @修改人 龚瑞强
-       */
-      if (
-        treeData[i][this.nodeParam.LAYERSERVICETYPE] ||
-        !treeData[i].children
-      ) {
-        if (treeData[i].name === name) {
-          node.push(treeData[i])
-        }
-      } else {
-        const item: any = this.getLayerByName(name, treeData[i].children)
-        node = [...node, ...item]
-      }
+  // 根据layerServiceType计算serverType和serverSubType
+  private convertLayerServiceType(layerServiceType: string) {
+    let serverType = LayerType.unknown
+
+    switch (layerServiceType) {
+      case this.layerServiceType.IGSDOC:
+        serverType = LayerType.IGSMapImage
+        break
+      case this.layerServiceType.IGSTILE:
+        serverType = LayerType.IGSTile
+        break
+      case this.layerServiceType.IGSVECTOR:
+        serverType = LayerType.IGSVector
+        break
+      case this.layerServiceType.WMS:
+        serverType = LayerType.OGCWMS
+        break
+      case this.layerServiceType.WMTS:
+        serverType = LayerType.OGCWMTS
+        break
+      case this.layerServiceType.TILEARCGIS:
+        break
+      case this.layerServiceType.IGSDOC3D:
+      case this.layerServiceType.IGSIMAGE3D:
+        break
+      case this.layerServiceType.TILE3D:
+        break
+      case this.layerServiceType.POINTCLOUD:
+        break
+      case this.layerServiceType.VECTORTILE:
+        serverType = LayerType.vectorTile
+        break
+      case this.layerServiceType.TERRAIN:
+        break
+      default:
+        break
     }
-    return node
+
+    return serverType
   }
 
-  /**
-   * 生成一个新的guid
-   */
-  public newGuid() {
+  // 判断服务是否可用.当前,只有服务类型为IGSDoc、IGSTile,且ip和port为空时,才能支持过滤。
+  private isServiceVaild(layerConfig: any) {
+    let isServiceVaild = true
+    const { ip, port, serverName, serverType } = layerConfig
+    let serverList: string[] = []
+    switch (serverType) {
+      case LayerType.IGSMapImage:
+        serverList = this.defaultServerList.docList
+        if (ip === '' && port === '') {
+          if (!serverList.includes(serverName)) {
+            isServiceVaild = false
+          }
+        }
+        break
+      case LayerType.IGSTile:
+        serverList = this.defaultServerList.tileList
+        if (ip === '' && port === '') {
+          if (!serverList.includes(serverName)) {
+            isServiceVaild = false
+          }
+        }
+
+        break
+      default:
+        break
+    }
+
+    return isServiceVaild
+  }
+
+  // 根据图层配置生成栅格瓦片图层
+  private static generateRasterTileLayerByConfig(layerConfig: any) {}
+
+  // 生成guid
+  private genGUID() {
     let guid = ''
     for (let i = 1; i <= 32; i += 1) {
       const n = Math.floor(Math.random() * 16.0).toString(16)
@@ -597,119 +576,30 @@ export class DataCatalog {
     return guid
   }
 
-  /**
-   * 获取地图文档下所有图层数组
-   * @param {Array} res 地图文档信息,Cataloglayer
-   * @param {Array|null} array 图层存放数组
-   * @param {Array|null} extent 范围
-   * @parma {Array|null} gdbps gdbp存放数组
-   */
-  public getVectorsFromDocInfo(res, array, extent, gdbps) {
-    if (!array) {
-      array = []
-    }
-    if (!gdbps) {
-      gdbps = []
-    }
-    for (let i = 0; i < res.length; i++) {
-      if (res[i].Type === 'Layer') {
-        if (!extent) {
-          array.push(res[i])
-        } else {
-          const range = res[i].ProjTransRange
-          if (range) {
-            if (
-              range.xmax < extent[0] ||
-              range.xmin > extent[2] ||
-              range.ymax < extent[1] ||
-              range.ymin > extent[3]
-            ) {
-              // eslint-disable-next-line no-continue
-              continue
-            }
-            if (gdbps.indexOf(res[i].URL) < 0) {
-              if (array.indexOf(res[i]) < 0) {
-                array.push(res[i])
-                gdbps.push(res[i].URL)
-              }
-            }
-          }
-        }
-      } else {
-        array = this.getVectorsFromDocInfo(
-          res[i].GroupMapLayerInfo,
-          array,
-          extent,
-          null
-        )
+  // 处理服务列表的返回结果:将直接发布的服务和通地目录发布的服务合并为一个列表
+  private processServiceInfo(
+    serviceInfo: any,
+    serviceListKey: string,
+    dirKey: string
+  ) {
+    let serviceList: any[] = []
+
+    if (serviceInfo) {
+      if (serviceInfo[serviceListKey]) {
+        serviceList = [...serviceInfo[serviceListKey]]
+      }
+
+      const dirList: [] = serviceInfo[dirKey]
+      if (dirList) {
+        dirList.forEach(dirItem => {
+          const dirServiceList: [] = dirItem[serviceListKey]
+          serviceList = [...serviceList, ...dirServiceList]
+        })
       }
     }
-    return array
-  }
 
-  /**
-   * 请求igs已发布地图文档和瓦片的列表
-   * @param type 地图文档（docs）|瓦片（tiles）
-   * @param ip
-   * @param port
-   * @param domain 服务域名
-   * @param protocol 网络协议
-   */
-  public getIgsMapList(
-    type: string,
-    ip?: string,
-    port?: string,
-    domain?: string,
-    protocol?: string
-  ) {
-    let tempDomain = domain || null
-    if (!domain) {
-      const tempProtocol = protocol || 'http'
-      const tempIp = ip || baseConfigInstance.config.ip
-      const tempPort = port || baseConfigInstance.config.port
-      tempDomain = `${tempProtocol}://${tempIp}:${tempPort}`
-    }
-    const url = `${tempDomain}/igs/rest/mrcs/${type}?f=json&v=2`
-    const promise = new Promise<string[]>(resolve => {
-      axios.get(url).then(
-        res => {
-          const { data } = res
-          if (!data) {
-            resolve([])
-          } else {
-            let dataNodeLabel: string[] = []
-            if (type === 'docs') {
-              dataNodeLabel = ['DOCNames', 'DirDOCs']
-            } else if (type === 'tiles') {
-              dataNodeLabel = ['HDFNames', 'DirHDFs']
-            }
-            let names: string[] = []
-            if (data[dataNodeLabel[0]]) {
-              names = [...data[dataNodeLabel[0]]]
-            }
-            if (data[dataNodeLabel[1]] && data[dataNodeLabel[1]].length > 0) {
-              for (let i = 0; i < data[dataNodeLabel[1]].length; i += 1) {
-                if (data[dataNodeLabel[1]][i][dataNodeLabel[0]]) {
-                  names = [
-                    ...names,
-                    ...data[dataNodeLabel[1]][i][dataNodeLabel[0]]
-                  ]
-                }
-              }
-            }
-            resolve(names)
-          }
-        },
-        error => {
-          console.warn(error)
-          resolve([])
-        }
-      )
-    })
-    return promise.then(data => {
-      return data
-    })
+    return serviceList
   }
 }
 
-export default DataCatalog.getInstance()
+export default DataCatalogManager.getInstance()

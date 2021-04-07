@@ -1,6 +1,7 @@
 import axios from 'axios'
 import baseConfigInstance from '../config/base'
 import { FeatureGeoJSON, GFeature, Bound } from './query-features'
+import qs from 'qs'
 
 /**
  * ArcGIS查询参数结构
@@ -132,85 +133,92 @@ class QueryArcgisInfo {
     tempParams.objectIdsTotal = params.totalCount
     const url = `${tempParams.serverUrl}/${tempParams.layerIndex}/query`
     const promise = new Promise((resolve, reject) => {
-      axios.get(url, { params: tempParams }).then(res => {
-        const { data } = res
-        if (!data) {
-          resolve(undefined)
-        } else {
-          // 将data转geojson
-          const geojsonFeatures: FeatureGeoJSON = {
-            type: 'FeatureCollection',
-            features: [],
-            dataCount: params.totalCount
-          }
-          const { features, geometryType } = data
-          for (let i = 0; i < features.length; i += 1) {
-            let coordinates: any[] = []
-            let type = ''
-            let bound: Record<string, any> = {}
-            if (geometryType === 'esriGeometryPoint') {
-              // 如果为点要素
-              coordinates = [features[i].geometry.x, features[i].geometry.y]
-              type = 'Point'
-              bound = {
-                xmin: features[i].geometry.x,
-                ymin: features[i].geometry.y,
-                xmax: features[i].geometry.x,
-                ymax: features[i].geometry.y
-              }
-            } else if (geometryType === 'esriGeometryPolyline') {
-              // 如果为线要素
-              const path = features[i].geometry.paths[0]
-              let xmin = path[0][0]
-              let xmax = path[0][0]
-              let ymin = path[0][1]
-              let ymax = path[0][1]
-              for (let j = 0; j < path.length; j += 1) {
-                xmin = xmin < path[j][0] ? xmin : path[j][0]
-                xmax = xmax > path[j][0] ? xmax : path[j][0]
-                ymin = ymin < path[j][1] ? ymin : path[j][1]
-                ymax = ymax > path[j][1] ? ymax : path[j][1]
-                const coord = [...path[j]]
-                coordinates.push(coord)
-              }
-              type = 'LineString'
-              bound = { xmin: xmin, ymin: ymin, xmax: xmax, ymax: ymax }
-            } else if (geometryType === 'esriGeometryPolygon') {
-              // 如果为面要素
-              const path = features[i].geometry.rings[0]
-              const arc: any[] = []
-              let xmin = path[0][0]
-              let xmax = path[0][0]
-              let ymin = path[0][1]
-              let ymax = path[0][1]
-              for (let j = 0; j < path.length; j += 1) {
-                xmin = xmin < path[j][0] ? xmin : path[j][0]
-                xmax = xmax > path[j][0] ? xmax : path[j][0]
-                ymin = ymin < path[j][1] ? ymin : path[j][1]
-                ymax = ymax > path[j][1] ? ymax : path[j][1]
-                const coord = [path[j].x, path[j].y]
-                arc.push(coord)
-              }
-              coordinates.push(arc)
-              type = 'Polygon'
-              bound = { xmin: xmin, ymin: ymin, xmax: xmax, ymax: ymax }
+      axios
+        .get(url, {
+          paramsSerializer(param) {
+            return qs.stringify(param)
+          },
+          params: tempParams
+        })
+        .then(res => {
+          const { data } = res
+          if (!data) {
+            resolve(undefined)
+          } else {
+            // 将data转geojson
+            const geojsonFeatures: FeatureGeoJSON = {
+              type: 'FeatureCollection',
+              features: [],
+              dataCount: params.totalCount
             }
-            const geometry = {
-              type,
-              coordinates
-            }
+            const { features, geometryType } = data
+            for (let i = 0; i < features.length; i += 1) {
+              let coordinates: any[] = []
+              let type = ''
+              let bound: Record<string, any> = {}
+              if (geometryType === 'esriGeometryPoint') {
+                // 如果为点要素
+                coordinates = [features[i].geometry.x, features[i].geometry.y]
+                type = 'Point'
+                bound = {
+                  xmin: features[i].geometry.x,
+                  ymin: features[i].geometry.y,
+                  xmax: features[i].geometry.x,
+                  ymax: features[i].geometry.y
+                }
+              } else if (geometryType === 'esriGeometryPolyline') {
+                // 如果为线要素
+                const path = features[i].geometry.paths[0]
+                let xmin = path[0][0]
+                let xmax = path[0][0]
+                let ymin = path[0][1]
+                let ymax = path[0][1]
+                for (let j = 0; j < path.length; j += 1) {
+                  xmin = xmin < path[j][0] ? xmin : path[j][0]
+                  xmax = xmax > path[j][0] ? xmax : path[j][0]
+                  ymin = ymin < path[j][1] ? ymin : path[j][1]
+                  ymax = ymax > path[j][1] ? ymax : path[j][1]
+                  const coord = [...path[j]]
+                  coordinates.push(coord)
+                }
+                type = 'LineString'
+                bound = { xmin, ymin, xmax, ymax }
+              } else if (geometryType === 'esriGeometryPolygon') {
+                // 如果为面要素
+                const path = features[i].geometry.rings[0]
+                const arc: any[] = []
+                let xmin = path[0][0]
+                let xmax = path[0][0]
+                let ymin = path[0][1]
+                let ymax = path[0][1]
+                for (let j = 0; j < path.length; j += 1) {
+                  xmin = xmin < path[j][0] ? xmin : path[j][0]
+                  xmax = xmax > path[j][0] ? xmax : path[j][0]
+                  ymin = ymin < path[j][1] ? ymin : path[j][1]
+                  ymax = ymax > path[j][1] ? ymax : path[j][1]
+                  const coord = [path[j].x, path[j].y]
+                  arc.push(coord)
+                }
+                coordinates.push(arc)
+                type = 'Polygon'
+                bound = { xmin, ymin, xmax, ymax }
+              }
+              const geometry = {
+                type,
+                coordinates
+              }
 
-            const feature: GFeature = {
-              type: 'Feature',
-              properties: { ...features[i].attributes },
-              geometry,
-              bound
+              const feature: GFeature = {
+                type: 'Feature',
+                properties: { ...features[i].attributes },
+                geometry,
+                bound
+              }
+              geojsonFeatures.features.push(feature)
             }
-            geojsonFeatures.features.push(feature)
+            resolve(geojsonFeatures)
           }
-          resolve(geojsonFeatures)
-        }
-      })
+        })
     })
     return promise.then(data => {
       return data
@@ -230,25 +238,25 @@ class QueryArcgisInfo {
     tempParams.spatialRel = params.spatialRel || ''
     tempParams.relationParam = params.relationParam || ''
     tempParams.maxAllowableOffset = params.maxAllowableOffset || ''
-    tempParams.orderByFields = params.orderByFields || 'OBJECTID ASC'
+    tempParams.orderByFields = params.orderByFields
     tempParams.groupByFieldsForStatistics =
       params.groupByFieldsForStatistics || ''
     tempParams.gdbVersion = params.gdbVersion || ''
     tempParams.outStatistics = params.outStatistics || ''
     tempParams.returnGeometry =
-      params.returnGeometry == undefined ? params.returnGeometry : true
+      params.returnGeometry === undefined ? params.returnGeometry : true
     tempParams.returnIdsOnly =
-      params.returnIdsOnly == undefined ? params.returnIdsOnly : false
+      params.returnIdsOnly === undefined ? params.returnIdsOnly : false
     tempParams.returnCountOnly =
-      params.returnCountOnly == undefined ? params.returnCountOnly : false
-    tempParams.returnZ = params.returnZ == undefined ? params.returnZ : false
-    tempParams.returnM = params.returnM == undefined ? params.returnM : false
+      params.returnCountOnly === undefined ? params.returnCountOnly : false
+    tempParams.returnZ = params.returnZ === undefined ? params.returnZ : false
+    tempParams.returnM = params.returnM === undefined ? params.returnM : false
     tempParams.returnDistinctValues =
-      params.returnDistinctValues == undefined
+      params.returnDistinctValues === undefined
         ? params.returnDistinctValues
         : false
     tempParams.returnExtentsOnly =
-      params.returnExtentsOnly == undefined ? params.returnExtentsOnly : false
+      params.returnExtentsOnly === undefined ? params.returnExtentsOnly : false
     tempParams.rtnLabel =
       params.rtnLabel !== undefined ? params.rtnLabel : false
     tempParams.layerIndex = params.layerIndex || 0
@@ -260,7 +268,7 @@ class QueryArcgisInfo {
       tempParams.queryByDistance = params.geometry.nearDis
     } else tempParams.queryByDistance = ''
     let EPSGNo = ''
-    let inSR = params.inSR
+    let { inSR } = params
     if (params.inSR) {
       EPSGNo = params.inSR.split(':')[1]
     } else {
@@ -268,17 +276,17 @@ class QueryArcgisInfo {
       inSR = this.systemConfig.projection
     }
     tempParams.inSR = inSR || ''
-    let outSR = params.outSR
+    let { outSR } = params
     if (!params.outSR) {
       outSR = this.systemConfig.projection
     }
     tempParams.outSR = outSR || ''
     if (params.geometry) {
       const geoType = params.geometry.getGeometryType()
-      const geometry = params.geometry
+      const { geometry } = params
       const pointArr: any[] = []
       let i = 0
-      if (geoType == 'rect') {
+      if (geoType === 'rect') {
         tempParams.geometry = JSON.stringify({
           xmin: geometry.xmin,
           ymin: geometry.ymin,
@@ -291,7 +299,7 @@ class QueryArcgisInfo {
         }) // [geometry.xmin, geometry.ymin, geometry.xmax, geometry.ymax].toString();
         tempParams.geometryType = 'esriGeometryEnvelope'
         tempParams.distance = params.geometry.nearDis || ''
-      } else if (geoType == 'point') {
+      } else if (geoType === 'point') {
         tempParams.geometry = JSON.stringify({
           x: geometry.x,
           y: geometry.y,
@@ -299,9 +307,9 @@ class QueryArcgisInfo {
         }) // [geometry.x, geometry.y].toString();
         tempParams.geometryType = 'esriGeometryPoint'
         tempParams.distance = params.geometry.nearDis || ''
-      } else if (geoType == 'polygon') {
+      } else if (geoType === 'polygon') {
         tempParams.geometryType = 'esriGeometryPolygon'
-        tempParams.distance == params.geometry.nearDis || ''
+        tempParams.distance === params.geometry.nearDis || ''
         for (i = 0; i < geometry.pointArr.length; i++) {
           pointArr.push([geometry.pointArr[i].x, geometry.pointArr[i].y])
         }
@@ -309,9 +317,9 @@ class QueryArcgisInfo {
           rings: [pointArr],
           spatialReference: { EPSG: EPSGNo }
         })
-      } else if (geoType == 'line') {
+      } else if (geoType === 'line') {
         tempParams.geometryType = 'esriGeometryPolyline'
-        tempParams.distance == params.geometry.nearDis || ''
+        tempParams.distance === params.geometry.nearDis || ''
         for (i = 0; i < geometry.pointArr.length; i++) {
           pointArr.push([geometry.pointArr[i].x, geometry.pointArr[i].y])
         }
@@ -319,10 +327,10 @@ class QueryArcgisInfo {
           paths: [pointArr],
           spatialReference: { EPSG: EPSGNo }
         })
-      } else if (geoType == 'Circle') {
+      } else if (geoType === 'Circle') {
         // ArcGIS没有圆几何，将圆构造为polygon
         // tempParams.geometryType = "esriGeometryPolygon";
-        // tempParams.distance ==params.geometry.nearDis||'';
+        // tempParams.distance === params.geometry.nearDis||'';
         // const Circle = new ol.geom.Circle([geometry.point.x, geometry.point.y], geometry.radious);
         // const polygon = new ol.geom.Polygon.fromCircle(Circle,16);
         // tempParams.geometry = JSON.stringify({ "rings": [polygon.getCoordinates()[0]], "spatialReference": { "EPSG": EPSGNo } });
@@ -386,6 +394,7 @@ class QueryArcgisInfo {
         if (!data) {
           resolve(undefined)
         } else {
+          resolve(data)
         }
       })
     })
@@ -436,19 +445,19 @@ class QueryArcgisInfo {
             const value: string[] = []
             for (let m = 0; m < fields.length; m++) {
               let type = ''
-              if (fields[m].type == 'esriFieldTypeOID') {
+              if (fields[m].type === 'esriFieldTypeOID') {
                 type = 'int'
-              } else if (fields[m].type == 'esriFieldTypeDouble') {
+              } else if (fields[m].type === 'esriFieldTypeDouble') {
                 type = 'double'
-              } else if (fields[m].type == 'esriFieldTypeString') {
+              } else if (fields[m].type === 'esriFieldTypeString') {
                 type = 'string'
-              } else if (fields[m].type == 'esriFieldTypeInteger') {
+              } else if (fields[m].type === 'esriFieldTypeInteger') {
                 type = 'int'
-              } else if (fields[m].type == 'esriFieldTypeFloat') {
+              } else if (fields[m].type === 'esriFieldTypeFloat') {
                 type = 'float'
-              } else if (fields[m].type == 'esriFieldTypeDate') {
+              } else if (fields[m].type === 'esriFieldTypeDate') {
                 type = 'date'
-              } else if (fields[m].type == 'esriFieldTypeSmallInteger') {
+              } else if (fields[m].type === 'esriFieldTypeSmallInteger') {
                 type = 'smallInteger'
               }
               tempFields.push({ name: fields[m].name, type })

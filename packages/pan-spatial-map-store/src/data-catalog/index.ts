@@ -1,2 +1,2 @@
-export { default as dataCatalogInstance } from './data-catalog'
-export { DataCatalog } from './data-catalog'
+export { default as dataCatalogManagerInstance } from './data-catalog'
+export { DataCatalogManager } from './data-catalog'

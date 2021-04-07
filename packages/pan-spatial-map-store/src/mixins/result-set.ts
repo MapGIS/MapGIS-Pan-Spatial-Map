@@ -10,13 +10,17 @@ import resultSetOperInstance, {
 export default class ResultSetMixin extends Vue {
   private readonly resultSetOper = resultSetOperInstance
 
-  // #region 方法 addCategory[添加分类信息] removeCategory[移除分类信息] activeTable[激活表格] createColumn[创建表头项]
+  // #region 方法 addCategory[添加分类信息] removeCategory[移除分类信息]
   public addCategory(info: IResultSetCategory) {
     return this.resultSetOper.addCategory(info)
   }
 
   public removeCategory(info: IResultSetCategory) {
     this.resultSetOper.removeCategory(info)
+  }
+
+  public removeTable(key: string) {
+    this.resultSetOper.removeTable(key)
   }
 
   public activeTable(categoryId: string, tableId: string) {
@@ -47,12 +51,12 @@ export default class ResultSetMixin extends Vue {
   public set currentTableId(val: string) {
     this.resultSetOper.currentTableId = val
   }
-  // #endregion
 
+  // #endregion
   // #region tableColumns[当前激活表头信息]
   public get tableColumns() {
     if (this.currentTable) {
-      return this.currentTable.columns
+      return this.currentTable.columns as ResultSetColumnOper[]
     }
     return []
   }
@@ -67,7 +71,7 @@ export default class ResultSetMixin extends Vue {
   // #region extraWhere[当前激活额外查询条件]
   public get extraWhere() {
     if (this.currentTable) {
-      return this.currentTable.extraWhere
+      return this.currentTable.extraWhere as string
     }
     return ''
   }
@@ -109,40 +113,6 @@ export default class ResultSetMixin extends Vue {
 
   public get currentTable() {
     return this.resultSetOper.currentTable
-  }
-
-  public get param() {
-    if (this.currentCategory && this.currentTable) {
-      const { ip, port, docName } = this.currentCategory
-      const {
-        layerIndex,
-        gdbp,
-        where,
-        extraWhere,
-        geometry
-      } = this.currentTable
-      let finalWhere = ''
-      if (where) {
-        finalWhere = where
-      }
-      if (extraWhere) {
-        if (finalWhere) {
-          finalWhere = `(${finalWhere}) and (${extraWhere})`
-        } else {
-          finalWhere = extraWhere
-        }
-      }
-      return {
-        ip,
-        port,
-        docName,
-        layerIndex,
-        gdbp,
-        where: finalWhere,
-        geometry
-      }
-    }
-    return undefined
   }
 
   // #region visibleColumns[当前激活显示的列]

@@ -1,3 +1,4 @@
+import { Component } from 'vue-property-decorator'
 /**
  * 结果集操作对象
  */
@@ -106,6 +107,18 @@ export interface IResultSetTable {
   columns?: IResultSetColumn[]
   // geometry
   geometry?: Record<string, unknown>
+  // 服务IP
+  ip?: string
+  // 服务PORT
+  port?: number
+  // 服务名称
+  serverName?: string
+  // 服务类型
+  serverType?: string
+  // 服务路径
+  serverUrl?: string
+
+  component?: string
 }
 
 export class ResultSetTableOper implements IResultSetTable {
@@ -125,6 +138,18 @@ export class ResultSetTableOper implements IResultSetTable {
 
   geometry: Record<string, unknown> | undefined
 
+  ip: string | undefined
+
+  port: number | undefined
+
+  serverName: string | undefined
+
+  serverType: string | undefined
+
+  serverUrl: string | undefined
+
+  component: string | undefined
+
   constructor(info: IResultSetTable) {
     this.id = info.id || Math.random().toString()
     this.label = info.label
@@ -134,6 +159,12 @@ export class ResultSetTableOper implements IResultSetTable {
     this.extraWhere = info.extraWhere || ''
     this.columns = (info.columns || []).map(x => new ResultSetColumnOper(x))
     this.geometry = info.geometry
+    this.ip = info.ip
+    this.port = info.port
+    this.serverName = info.serverName
+    this.serverType = info.serverType
+    this.serverUrl = info.serverUrl
+    this.component = info.component || 'MpResultTab'
   }
 }
 
@@ -155,9 +186,15 @@ export interface IResultSetCategory {
   serverType?: string
   // 服务路径
   serverUrl?: string
+  // 子tabs活跃的tab
+  tab?: string
   // 表格列表
-  tables?: IResultSetTable[]
+  tables: IResultSetTable[]
   component?: string
+  // gdbp地址，图层查询
+  gdbp?: string
+  // geometry
+  geometry?: Record<string, unknown>
 }
 
 const defaultIp = '127.0.0.1'
@@ -177,9 +214,15 @@ export class ResultSetCategoryOper implements IResultSetCategory {
 
   serverUrl: string
 
-  tables: ResultSetTableOper[]
+  tab: string
+
+  tables: IResultSetTable[]
 
   component: string
+
+  gdbp: string
+
+  geometry: Record<string, unknown>
 
   constructor(info: IResultSetCategory) {
     this.id = info.id || Math.random().toString()
@@ -190,7 +233,14 @@ export class ResultSetCategoryOper implements IResultSetCategory {
     this.serverType = info.serverType || ''
     this.serverUrl = info.serverUrl || ''
     this.tables = (info.tables || []).map(x => new ResultSetTableOper(x))
+    this.geometry = (info.geometry as Record<string, unknown>) || undefined
+    if (info.tables.length > 0) {
+      this.tab = info.tables[info.tables.length - 1].id as string
+    } else {
+      this.tab = ''
+    }
     this.component = info.component || 'MpResultTab'
+    this.gdbp = info.gdbp || ''
   }
 }
 
@@ -208,10 +258,16 @@ export interface IResultSet {
   currentTableId: string
 
   // 当前表格对象
-  currentTable: ResultSetTableOper | undefined
+  currentTable: IResultSetTable | undefined
 
   // 添加分类
   addCategory(info: IResultSetCategory): ResultSetCategoryOper
+
+  // 移除分类
+  removeCategory(info: IResultSetCategory): void
+
+  // 移除二级菜单
+  removeTable(key: string): void
 }
 
 /**
@@ -222,7 +278,13 @@ export class ResultSetOper implements IResultSet {
 
   currentCategoryId = ''
 
-  currentTableId = ''
+  public get currentTableId() {
+    return (this.currentCategory as ResultSetCategoryOper).tab
+  }
+
+  public set currentTableId(key: string) {
+    ;(this.currentCategory as ResultSetCategoryOper).tab = key
+  }
 
   public get currentCategory() {
     return this.categories.find(x => x.id === this.currentCategoryId)
@@ -230,15 +292,51 @@ export class ResultSetOper implements IResultSet {
 
   public get currentTable() {
     if (this.currentCategory) {
-      return this.currentCategory.tables.find(x => x.id === this.currentTableId)
+      return this.currentCategory.tables.find(
+        x => x.id === (this.currentCategory as ResultSetCategoryOper).tab
+      )
     }
     return undefined
   }
 
   public addCategory(info: IResultSetCategory) {
     const category = new ResultSetCategoryOper(info)
-    this.categories.push(category)
-    return category
+    if (this.categories.length > 0) {
+      const index = this.categories.findIndex(item => item.id === category.id)
+      if (index > -1) {
+        const item = this.categories[index]
+        const { tables = [] } = item
+        if (category.tables.length > 0) {
+          const i = tables.findIndex(
+            row => category.tables && row.id === (category.tables || [{}])[0].id
+          )
+          if (i > -1) {
+            tables.splice(i, 1)
+          }
+          tables.push(new ResultSetTableOper(category.tables[0]))
+        }
+        this.categories[index] = { ...category, tables }
+      } else {
+        this.categories.push(category)
+      }
+    } else {
+      this.categories.push(category)
+    }
+
+    this.categories = this.categories.map(item => {
+      if (item.tables.length > 0) {
+        item.tab = item.tables[item.tables.length - 1].id as string
+      } else {
+        item.tab = ''
+      }
+      return item
+    })
+
+    const categoryItem = this.categories.find(
+      x => x.id === category.id
+    ) as ResultSetCategoryOper
+
+    return categoryItem
   }
 
   public removeCategory(info: IResultSetCategory) {
@@ -251,15 +349,21 @@ export class ResultSetOper implements IResultSet {
     }
   }
 
-  public updateTableInfo(info: IResultSetTable) {
-    for (let i = 0; i < this.categories.length; i += 1) {
-      const { tables } = this.categories[i]
-      for (let j = 0; j < tables.length; j += 1) {
-        const table = tables[j]
-        if (table.id === info.id) {
-          Object.assign(table, info)
-          return
+  public removeTable(key: string) {
+    const index = (this
+      .currentCategory as ResultSetCategoryOper).tables.findIndex(
+      x => x.id === key
+    )
+    if (index > -1) {
+      ;(this.currentCategory as ResultSetCategoryOper).tables.splice(index, 1)
+      // 当移除的table是正在展示的table的时候，需要将激活的table设置为最后一个,如果table为空，则删除父层
+      const { tables } = this.currentCategory as ResultSetCategoryOper
+      if (tables.length > 0) {
+        if (this.currentTableId === key) {
+          this.currentTableId = tables[tables.length - 1].id as string
         }
+      } else {
+        this.removeCategory(this.currentCategory as ResultSetCategoryOper)
       }
     }
   }

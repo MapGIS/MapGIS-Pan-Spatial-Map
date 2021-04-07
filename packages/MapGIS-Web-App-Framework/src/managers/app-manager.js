@@ -2,8 +2,7 @@ import ConfigService from '../services/config-service'
 import { deepClone } from '../utils'
 import { default2DMapRender } from '../utils/map-render'
 import WidgetState from '../utils/widget-state'
-
-const { IDocument } = require('@mapgis/webclient-store')
+import { Document } from '../store/layer/document'
 
 export default class AppManager {
   constructor() {
@@ -45,9 +44,9 @@ export default class AppManager {
     this.config = await this.configService.getAppConfig()
     // 创建document
     if (this.config.layers) {
-      this.app.document = IDocument.deepclone(this.config)
+      this.app.document = new Document()
     } else {
-      this.app.document = { layers: [], maprender: default2DMapRender }
+      this.app.document = new Document()
     }
     // 拷贝应用logo、标题和链接列表
     this.app.logo = this.config.logo
