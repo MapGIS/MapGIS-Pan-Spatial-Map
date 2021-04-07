@@ -8,14 +8,14 @@
     <a-card
       size="small"
       :title="title"
-      :style="{
-        flex: 'auto',
-        transition: 'none',
-        border: 'none'
-      }"
+      class="window-wrapper"
+      :headStyle="{ height: '36px' }"
+      :bodyStyle="{ height: 'calc(100% - 36px)' }"
     >
       <a-icon class="close-button" type="close" slot="extra" @click="onClose" />
-      <slot />
+      <div class="beauty-scroll window-content">
+        <slot />
+      </div>
     </a-card>
     <mp-pan-spatial-map-adjust-line
       v-if="!isFullScreen"
@@ -131,10 +131,21 @@ export default {
   top: 0;
   z-index: 500;
   height: calc(100vh - 48px);
-  .close-button {
-    cursor: pointer;
-    &:hover {
-      color: @primary-color;
+  .window-wrapper {
+    flex: auto;
+    transition: none;
+    border: none;
+    overflow-x: hidden;
+    .close-button {
+      cursor: pointer;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+    .window-content {
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
   }
 }

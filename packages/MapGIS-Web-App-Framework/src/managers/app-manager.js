@@ -48,6 +48,8 @@ export default class AppManager {
     } else {
       this.app.document = new Document()
     }
+    this.app.document.maprender = default2DMapRender
+
     // 拷贝应用logo、标题和链接列表
     this.app.logo = this.config.logo
     this.app.title = this.config.title

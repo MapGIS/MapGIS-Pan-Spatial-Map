@@ -4,10 +4,14 @@ import Cookie from 'js-cookie'
 // 跨域认证信息 header 名
 const xsrfHeaderName = 'mapgis_pan_spatial_map_access_token'
 
-axios.defaults.timeout = 5000
-axios.defaults.withCredentials = true
-axios.defaults.xsrfHeaderName = xsrfHeaderName
-axios.defaults.xsrfCookieName = xsrfHeaderName
+// 创建axios实例
+const service = axios.create({
+  timeout: 5000
+})
+
+service.defaults.withCredentials = true
+service.defaults.xsrfHeaderName = xsrfHeaderName
+service.defaults.xsrfCookieName = xsrfHeaderName
 
 // 认证类型
 const AUTH_TYPE = {
@@ -34,13 +38,13 @@ const METHOD = {
 function request(url, method, params, config) {
   switch (method) {
     case METHOD.GET:
-      return axios.get(url, { params, ...config })
+      return service.get(url, { params, ...config })
     case METHOD.POST:
-      return axios.post(url, params, config)
+      return service.post(url, params, config)
     case METHOD.DELETE:
-      return axios.delete(url, params, config)
+      return service.delete(url, params, config)
     default:
-      return axios.get(url, { params, ...config })
+      return service.get(url, { params, ...config })
   }
 }
 
@@ -118,7 +122,7 @@ function loadInterceptors(interceptors, options) {
     if (!onRejected || typeof onRejected !== 'function') {
       onRejected = error => Promise.reject(error)
     }
-    axios.interceptors.request.use(
+    service.interceptors.request.use(
       config => onFulfilled(config, options),
       error => onRejected(error, options)
     )
@@ -132,7 +136,7 @@ function loadInterceptors(interceptors, options) {
     if (!onRejected || typeof onRejected !== 'function') {
       onRejected = error => Promise.reject(error)
     }
-    axios.interceptors.response.use(
+    service.interceptors.response.use(
       response => onFulfilled(response, options),
       error => onRejected(error, options)
     )
