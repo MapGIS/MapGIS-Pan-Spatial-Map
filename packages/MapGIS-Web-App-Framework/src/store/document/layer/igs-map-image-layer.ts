@@ -69,6 +69,22 @@ export class Sublayer {
   visible = true
 
   /**
+   * 几何类型
+   *
+   * @date 09/04/2021
+   * @memberof Sublayer
+   */
+  geomType = ''
+
+  /**
+   * 系统库GUID
+   *
+   * @date 09/04/2021
+   * @memberof Sublayer
+   */
+  sysLibraryGuid = ''
+
+  /**
    * 通过json对象初始化该对象
    *
    * @date 30/03/2021
@@ -90,6 +106,11 @@ export class Sublayer {
     if (jsonObject.LayerName) this.title = jsonObject.LayerName
 
     if (jsonObject.URL) this.url = jsonObject.URL
+
+    if (jsonObject.SysLibraryGuid)
+      this.sysLibraryGuid = jsonObject.SysLibraryGuid
+
+    if (jsonObject.GeomType) this.geomType = jsonObject.GeomType
   }
 
   /**
