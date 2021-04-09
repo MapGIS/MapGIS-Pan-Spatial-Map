@@ -79,7 +79,6 @@
 
 <script>
 import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
-import { IDocument } from '@mapgis/webclient-store'
 import {
   Layer,
   LayerType,
@@ -93,7 +92,7 @@ import {
   IGSVectorLayer,
   OGCWMTSLayer,
   OGCWMSLayer
-} from '@mapgis/web-app-framework/src/store/layer'
+} from '@mapgis/web-app-framework'
 
 import {
   MapboxMap,
@@ -176,8 +175,6 @@ export default {
       let mapboxLayerComponentProps = {}
       let allLayerNames = []
 
-      const mapImageLayerClone = {}
-
       switch (layer.type) {
         case LayerType.IGSTile:
         case LayerType.IGSMapImage:
@@ -188,7 +185,7 @@ export default {
             url: layer.url,
             layer: {},
             sourceId: layer.id,
-            serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.估这里给空值。
+            serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
           }
 
           break

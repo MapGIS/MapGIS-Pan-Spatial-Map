@@ -2,7 +2,7 @@ import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import axios from 'axios'
 import { LoadStatus, LayerType, Layer } from './layer'
-import { ObjectTool } from '../utils/object-tool'
+import { ObjectTool } from '../../utils/object-tool'
 /**
  * OGCWMSLayer的子图层
  *

@@ -11,7 +11,7 @@ import {
   IGSVectorLayer,
   OGCWMTSLayer,
   OGCWMSLayer
-} from '@mapgis/web-app-framework/src/store/layer'
+} from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
 import { queryIgsServicesInfoInstance } from '../service'
 

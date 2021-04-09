@@ -1,5 +1,5 @@
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
-import { ObjectTool } from '../utils/object-tool'
+import { ObjectTool } from '../../utils/object-tool'
 /**
  * 图层加载状态
  *

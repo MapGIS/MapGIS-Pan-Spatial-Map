@@ -1,7 +1,7 @@
 import * as Zondy from '@mapgis/webclient-es6-service'
 import { MapImageLayer } from './map-image-layer'
 import { LoadStatus, LayerType, Layer } from './layer'
-import { ObjectTool } from '../utils/object-tool'
+import { ObjectTool } from '../../utils/object-tool'
 
 /**
  * IGSMapImageLayer的子图层

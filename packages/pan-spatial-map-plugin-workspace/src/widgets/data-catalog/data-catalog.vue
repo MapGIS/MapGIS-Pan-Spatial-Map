@@ -11,9 +11,7 @@
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import { Document } from '@mapgis/web-app-framework/src/store/layer/Document'
-import { Map } from '@mapgis/web-app-framework/src/store/layer/Map'
+import { WidgetMixin, Document, Map } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
   DataCatalogManager

@@ -14,6 +14,23 @@ export { MpMapboxView, MpCesiumView } from './components'
 
 export { WidgetState } from './utils'
 
+export {
+  Layer,
+  LayerType,
+  LoadStatus,
+  LOD,
+  TileInfo,
+  TileLayer,
+  MapImageLayer,
+  IGSTileLayer,
+  IGSMapImageLayer,
+  IGSVectorLayer,
+  OGCWMTSLayer,
+  OGCWMSLayer
+} from './store/document/layer'
+
+export { Document, Map } from './store/document'
+
 import {
   MpAppLoader,
   MpMapContainer,

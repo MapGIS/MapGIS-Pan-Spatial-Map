@@ -1,5 +1,5 @@
-import { Layer } from './layer'
-import { GroupLayer } from './group-layer'
+import { Layer } from './layer/layer'
+import { GroupLayer } from './layer/group-layer'
 import { ObjectTool } from '../utils/object-tool'
 
 /**

@@ -3,7 +3,7 @@ import * as Zondy from '@mapgis/webclient-es6-service'
 import axios from 'axios'
 import { LoadStatus, LayerType, Layer } from './layer'
 import { TileInfo } from './tile-layer'
-import { ObjectTool } from '../utils/object-tool'
+import { ObjectTool } from '../../utils/object-tool'
 
 /**
  * OGCWMTS服务瓦片矩阵集

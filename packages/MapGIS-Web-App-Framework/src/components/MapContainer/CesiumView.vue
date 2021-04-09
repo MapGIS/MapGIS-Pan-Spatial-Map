@@ -123,7 +123,7 @@ import CesiumPointcloudLayer from '../CesiumLayers/CesiumPointcloudLayer.vue'
 import CesiumVectortileLayer from '../CesiumLayers/CesiumVectortileLayer.vue'
 import CesiumTdtLayer from '../CesiumLayers/CesiumTdtLayer.vue'
 import CesiumTerrainLayer from '../CesiumLayers/CesiumTerrainLayer.vue'
-import { Map } from '../../store/layer/document'
+import { Map } from '../../store/document'
 
 const { SubLayerType, LayerType } = Layer
 const { Convert } = VectorTile
