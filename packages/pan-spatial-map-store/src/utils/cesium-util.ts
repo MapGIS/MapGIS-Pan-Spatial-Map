@@ -1215,8 +1215,8 @@ class CesiumUtil {
    * @return {Cartographic}  Cartographic 数据坐标
    */
   dgreeToDataPostion(position, transform) {
-    //度转迪卡尔
-    var c3 = this.Cesium.Cartesian3.fromDegrees(
+    // 度转迪卡尔
+    const c3 = this.Cesium.Cartesian3.fromDegrees(
       position.x,
       position.y,
       position.z
@@ -1224,17 +1224,17 @@ class CesiumUtil {
     if (!this.webGlobe.viewer.scene) {
       return null
     }
-    //笛卡尔转屏幕
-    var cartesian2 = this.Cesium.SceneTransforms.wgs84ToWindowCoordinates(
+    // 笛卡尔转屏幕
+    const cartesian2 = this.Cesium.SceneTransforms.wgs84ToWindowCoordinates(
       this.webGlobe.viewer.scene,
       c3
     )
-    //屏幕转数据
-    var car3 = new this.Cesium.Cartesian3()
+    // 屏幕转数据
+    let car3 = new this.Cesium.Cartesian3()
     car3 = this.webGlobe.viewer.getCartesian3Position(cartesian2, car3)
-    var matrixInver = new this.Cesium.Matrix4()
+    let matrixInver = new this.Cesium.Matrix4()
     matrixInver = this.Cesium.Matrix4.inverse(transform, matrixInver)
-    var maxCar = new this.Cesium.Cartographic()
+    const maxCar = new this.Cesium.Cartographic()
     this.Cesium.Matrix4.multiplyByPoint(matrixInver, car3, maxCar)
     return maxCar
   }
@@ -1246,13 +1246,13 @@ class CesiumUtil {
    * @return {object}  Position 经纬度坐标
    */
   dataPostionToDgree(position, transform) {
-    var car3 = new this.Cesium.Cartesian3()
+    let car3 = new this.Cesium.Cartesian3()
     car3 = this.Cesium.Matrix4.multiplyByPoint(transform, position, car3)
-    var cartographic = this.Cesium.Cartographic.fromCartesian(car3)
-    var lonDegree = this.Cesium.Math.toDegrees(cartographic.longitude)
-    var latDegree = this.Cesium.Math.toDegrees(cartographic.latitude)
-    var heightDegree = cartographic.height //Cesium.Math.toDegrees(radiusPoint.height);鼠标Z值代表真实Z值
-    var positions = { x: lonDegree, y: latDegree, z: heightDegree }
+    const cartographic = this.Cesium.Cartographic.fromCartesian(car3)
+    const lonDegree = this.Cesium.Math.toDegrees(cartographic.longitude)
+    const latDegree = this.Cesium.Math.toDegrees(cartographic.latitude)
+    const heightDegree = cartographic.height // Cesium.Math.toDegrees(radiusPoint.height);鼠标Z值代表真实Z值
+    const positions = { x: lonDegree, y: latDegree, z: heightDegree }
     return positions
   }
 
@@ -1267,13 +1267,13 @@ class CesiumUtil {
     centerMinPoint.x = extend3D.xmin
     centerMinPoint.y = extend3D.ymin
     centerMinPoint.z = extend3D.zmin
-    const positions1 = this.dataPostionToDgree(centerMinPoint, transform) //数据坐标转经纬度坐标
+    const positions1 = this.dataPostionToDgree(centerMinPoint, transform) // 数据坐标转经纬度坐标
 
     const centerMaxPoint = new this.Cesium.Cartesian3()
     centerMaxPoint.x = extend3D.xmax
     centerMaxPoint.y = extend3D.ymax
     centerMaxPoint.z = extend3D.zmax
-    const positions2 = this.dataPostionToDgree(centerMaxPoint, transform) //数据坐标转经纬度坐标
+    const positions2 = this.dataPostionToDgree(centerMaxPoint, transform) // 数据坐标转经纬度坐标
     const bound = {
       xmin: positions1.x,
       ymin: positions1.y,

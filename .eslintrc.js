@@ -120,6 +120,7 @@ module.exports = {
     'object-shorthand': 'off',
     'no-case-declarations': 'off',
     'no-bitwise': 'off',
+    'no-dupe-class-members': 'off',
 
     // TypeScript
     quotes: ['warn', 'single'],

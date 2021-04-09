@@ -231,7 +231,6 @@ class Parser {
         break
       default:
         throw new Error(`未实现类型:${type}`)
-        break
     }
 
     return geometry.toTangram()
