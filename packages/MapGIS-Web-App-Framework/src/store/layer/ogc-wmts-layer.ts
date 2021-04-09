@@ -378,6 +378,13 @@ export class WMTSSublayer {
  * @class OGCWMTSLayer
  */
 export class OGCWMTSLayer extends Layer {
+  /**
+   * 创建一个深度克隆的OGCWMTSLayer
+   *
+   * @date 08/04/2021
+   * @return {*}  {Layer}
+   * @memberof OGCWMTSLayer
+   */
   clone(): Layer {
     const result = new OGCWMTSLayer()
 
@@ -386,6 +393,7 @@ export class OGCWMTSLayer extends Layer {
       const valueIndex = 1
 
       if (key === '_allSublayers') {
+      } else if (key === 'activeLayer') {
       } else if (key === 'sublayers') {
         const sublayers = element[valueIndex]
         const sublayersCopy: WMTSSublayer[] = []
@@ -401,6 +409,10 @@ export class OGCWMTSLayer extends Layer {
         })
 
         result[key] = sublayersCopy
+
+        // 给activeLayer赋值
+        if (this.activeLayer)
+          result.activeLayer = result.findSublayerById(this.activeLayer.id)
       } else {
         result[key] = this._deepClone(element[valueIndex])
       }

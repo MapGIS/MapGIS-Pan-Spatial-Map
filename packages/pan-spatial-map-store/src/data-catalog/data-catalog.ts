@@ -105,6 +105,7 @@ export class DataCatalogManager {
         layer = new IGSVectorLayer({ url, gdbps: layerConfig.gdbps })
         break
       case LayerType.OGCWMTS:
+        url = layerConfig.serverURL
         layer = new OGCWMTSLayer({ url })
         break
       case LayerType.OGCWMS:
