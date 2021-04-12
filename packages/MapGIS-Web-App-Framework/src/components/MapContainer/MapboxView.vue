@@ -152,7 +152,7 @@ export default {
   },
   watch: {
     document: {
-      deep: false,
+      deep: true,
       handler() {
         this.parseDocument()
       }
@@ -175,6 +175,11 @@ export default {
       let mapboxLayerComponentProps = {}
       let allLayerNames = []
 
+      const layerStyle = {
+        layout: { visibility: layer.isVisible ? 'visible' : 'none' },
+        paint: { 'raster-opacity': layer.opacity }
+      }
+
       switch (layer.type) {
         case LayerType.IGSTile:
         case LayerType.IGSMapImage:
@@ -183,7 +188,6 @@ export default {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            layer: {},
             sourceId: layer.id,
             serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
           }
@@ -194,7 +198,6 @@ export default {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            layer: {},
             sourceId: layer.id,
             gdbps: layer.gdbps
           }
@@ -203,7 +206,6 @@ export default {
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            layer: {},
             sourceId: layer.id,
             baseUrl: layer.url,
             wmtsLayer: layer.activeLayer.id,
@@ -223,7 +225,6 @@ export default {
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            layer: {},
             sourceId: layer.id,
             baseUrl: layer.url,
             layers: allLayerNames,
@@ -237,23 +238,29 @@ export default {
           break
       }
 
+      mapboxLayerComponentProps.layer = layerStyle
+
       return mapboxLayerComponentProps
     },
     parseDocument() {
       if (!this.document) return
 
       // 先将图层置空，避免图层重复添加
-      this.layers = []
+      const layers = []
 
       this.document.defaultMap.getFlatLayers().forEach(async layer => {
-        await layer.load()
+        if (layer.loadStatus === LoadStatus.notLoaded) await layer.load()
 
-        const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
-          layer
-        )
+        if (layer.loadStatus === LoadStatus.loaded) {
+          const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
+            layer
+          )
 
-        this.layers.push(mapboxLayerComponentProps)
+          layers.push(mapboxLayerComponentProps)
+        }
       })
+
+      this.layers = layers
     },
     isIgsDocLayer(type) {
       return type === LayerType.IGSMapImage
