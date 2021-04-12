@@ -21,8 +21,9 @@
   },
   "dependencies": {
     "@mapgis/web-app-framework": "^0.1.0",
-    "vue-property-decorator": "^8.3.0",
-    "element-resize-detector": "^1.2.1"
+    "element-resize-detector": "^1.2.1",
+    "vue-color": "^2.8.1",
+    "vue-property-decorator": "^8.3.0"
   },
   "devDependencies": {
     "typescript": "~3.7.0"

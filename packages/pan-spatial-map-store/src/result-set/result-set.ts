@@ -195,6 +195,8 @@ export interface IResultSetCategory {
   gdbp?: string
   // geometry
   geometry?: Record<string, unknown>
+
+  where?: string
 }
 
 const defaultIp = '127.0.0.1'
@@ -224,6 +226,8 @@ export class ResultSetCategoryOper implements IResultSetCategory {
 
   geometry: Record<string, unknown>
 
+  where: string
+
   constructor(info: IResultSetCategory) {
     this.id = info.id || Math.random().toString()
     this.ip = info.ip || defaultIp
@@ -232,6 +236,7 @@ export class ResultSetCategoryOper implements IResultSetCategory {
     this.serverName = info.serverName || ''
     this.serverType = info.serverType || ''
     this.serverUrl = info.serverUrl || ''
+    this.where = info.where || ''
     this.tables = (info.tables || []).map(x => new ResultSetTableOper(x))
     this.geometry = (info.geometry as Record<string, unknown>) || undefined
     if (info.tables.length > 0) {

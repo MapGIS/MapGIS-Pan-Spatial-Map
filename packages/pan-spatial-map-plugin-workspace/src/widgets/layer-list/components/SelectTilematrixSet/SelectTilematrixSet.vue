@@ -20,14 +20,14 @@ export default class MpSelectTilematrixSet extends Vue {
   @Prop() layer!: OGCWMTSLayer
 
   private get tileMatrixSets() {
-    if (this.layer.activeLayer) {
+    if (this.layer && this.layer.activeLayer) {
       return this.layer.activeLayer.tileMatrixSets || []
     }
     return []
   }
 
   private get tileMatrixSetId() {
-    if (this.layer.activeLayer) {
+    if (this.layer && this.layer.activeLayer) {
       return this.layer.activeLayer.tileMatrixSetId || ''
     }
     return ''

@@ -1,0 +1,270 @@
+<template>
+  <div class="filter">
+    <a-row class="filter-toolbar" type="flex" align="middle">
+      <a-button type="link" icon="plus" @click="handleAddFilter">
+        添加表达式
+      </a-button>
+      <a-button type="link" icon="plus" @click="handleAddGroup">
+        添加集合
+      </a-button>
+      <a-col flex="auto">
+        <a-radio-group
+          v-if="
+            showGroupOptions ||
+              (filterItems.length > 0 && filterGroups.length > 0)
+          "
+          v-model="oper"
+        >
+          <a-radio value="AND">
+            匹配所有表达式
+          </a-radio>
+          <a-radio value="OR">
+            匹配任意表达式
+          </a-radio>
+        </a-radio-group>
+      </a-col>
+    </a-row>
+    <div class="filter-content">
+      <div :class="{ 'filter-items': filterItems.length > 0 }">
+        <a-radio-group
+          v-if="filterItems.length > 1"
+          v-model="itemsOper"
+          style="margin:5px 0"
+        >
+          <a-radio value="AND">
+            匹配所有表达式
+          </a-radio>
+          <a-radio value="OR">
+            匹配任意表达式
+          </a-radio>
+        </a-radio-group>
+        <filter-item
+          style="padding:5px 0"
+          v-for="({ id }, index) in filterItems"
+          :key="id"
+          :queryParams="queryParams"
+          @change="
+            val => {
+              updateFilterItems(val, index)
+            }
+          "
+          @close="handleDel(index)"
+        />
+      </div>
+      <filter-group
+        v-for="(item, index) in filterGroups"
+        :key="item.id"
+        :queryParams="queryParams"
+        :filterItems.sync="item.filterItems"
+        :oper.sync="item.oper"
+        @close="handleDelGroup(index)"
+      />
+    </div>
+    <a-space direction="vertical" class="filter-sql">
+      <div>SQL表达式</div>
+      <a-textarea
+        v-model="where"
+        :auto-size="{ minRows: 5, maxRows: 5 }"
+        disabled
+      />
+    </a-space>
+    <a-space class="filter-btn">
+      <a-button type="primary" @click="handleOK">
+        应用
+      </a-button>
+      <a-button type="primary" @click="closeFilter">
+        取消
+      </a-button>
+    </a-space>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+import FilterGroup from './FilterGroup.vue'
+import FilterItem, { SelectOptionItem } from './FilterItem.vue'
+
+@Component({ name: 'MpFilter', components: { FilterGroup, FilterItem } })
+export default class MpFilter extends Vue {
+  @Prop(Object) readonly queryParams!: Record<string, any>
+
+  private filterGroups: {
+    id: string
+    oper: 'AND'
+    filterItems: { id: string; where: string }[]
+  }[] = []
+
+  // 所有的条件项
+  private filterItems: { id: string; where: string }[] = [this.createItem()]
+
+  private oper = 'AND'
+
+  private itemsOper = 'AND'
+
+  private where = ''
+
+  private get showGroupOptions() {
+    return this.filterGroups.length > 1
+  }
+
+  @Watch('oper', { deep: true, immediate: true })
+  @Watch('itemsOper', { deep: true, immediate: true })
+  @Watch('filterItems', { deep: true, immediate: true })
+  @Watch('filterGroups', { deep: true, immediate: true })
+  changeFilterItems() {
+    const itemsLength = this.filterItems.length
+    const groupsLength = this.filterGroups.length
+
+    let itemsStr = ''
+    itemsStr = this.getFilterItemsStr(this.filterItems, this.itemsOper)
+
+    let groupStr = ''
+    if (groupsLength === 1) {
+      groupStr = this.getFilterItemsStr(
+        this.filterGroups[0].filterItems,
+        this.filterGroups[0].oper
+      )
+    } else if (groupsLength > 1) {
+      const self = this
+      groupStr = this.filterGroups
+        .map(x => {
+          return self.getFilterItemsStr(x.filterItems, x.oper)
+        })
+        .join(` ${this.oper} `)
+    }
+    if (itemsStr !== '' && groupStr !== '') {
+      this.where = [itemsStr, groupStr].join(` ${this.oper} `)
+    } else if (itemsStr !== '' && groupStr === '') {
+      this.where = itemsStr
+    } else if (itemsStr === '' && groupStr !== '') {
+      this.where = groupStr
+    }
+  }
+
+  getFilterItemsStr(filterItems, oper) {
+    const itemsLength = filterItems.length
+    let itemsStr = ''
+    if (itemsLength === 1) {
+      itemsStr = filterItems[0].where
+    } else if (itemsLength > 0) {
+      itemsStr = filterItems
+        .map(x => x.where)
+        .filter(x => !!x)
+        .join(` ${oper} `)
+    }
+    return itemsStr
+  }
+
+  // 创建条件项
+  private createItem() {
+    return { id: Math.random().toString(), where: '' }
+  }
+
+  private handleAddGroup() {
+    const obj = [
+      {
+        id: Math.random().toString(),
+        where: ''
+      },
+      {
+        id: Math.random().toString(),
+        where: ''
+      }
+    ]
+    this.filterGroups.push({
+      id: Math.random().toString(),
+      oper: 'AND',
+      filterItems: obj
+    })
+  }
+
+  private handleAddFilter() {
+    this.filterItems.push({
+      id: Math.random().toString(),
+      where: ''
+    })
+  }
+
+  private handleDelGroup(index: number) {
+    this.filterGroups.splice(index, 1)
+  }
+
+  // 删除条件项, 删除最后一条之后提交删除分组事件
+  private handleDel(index: number) {
+    this.filterItems.splice(index, 1)
+  }
+
+  private handleOK() {
+    this.$emit('filterVal', this.where)
+  }
+
+  private updateFilterItems(val, index) {
+    // 这样处理，vue才能监听到filterItems的更新
+    const item = this.filterItems[index]
+    this.$set(this.filterItems, index, { ...item, where: val })
+  }
+
+  private closeFilter() {
+    this.where = ''
+    this.$emit('close')
+  }
+}
+</script>
+
+<style lang="less" scoped>
+@import '~ant-design-vue/lib/style/themes/default.less';
+.filter-items {
+  border-bottom: 1px solid @border-color-base;
+}
+.filter {
+  // 容器
+  height: 100%;
+  padding: 0 5px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .filter-toolbar {
+    // 顶部工具条
+    border-bottom: 1px solid @border-color-base;
+  }
+
+  .filter-content {
+    flex: 1;
+    overflow-y: scroll;
+  }
+
+  .filter-filter-group {
+    // 可视化过滤条件组
+    max-height: 300px;
+    padding: 5px 0;
+  }
+
+  .filter-sql {
+    // sql语句
+    border-top: 1px solid @border-color-base;
+    padding: 8px 5px;
+
+    textarea {
+      resize: none;
+      height: 100px;
+    }
+  }
+
+  .filter-btn {
+    // 底部操作
+    border-top: 1px solid @border-color-base;
+    padding: 6px;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+// .filter-group {
+//   // 条件组
+
+//   &-item {
+//     // 条件项
+//   }
+// }
+</style>

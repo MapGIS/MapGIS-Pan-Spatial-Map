@@ -1,76 +1,80 @@
 <template>
   <div class="unify-modify">
-    <div
-      v-for="key in Object.keys(info)"
-      :key="key"
-      class="row items-center top-02em"
+    <a-form
+      :label-col="{ span: 10 }"
+      :wrapper-col="{ span: 14 }"
+      labelAlign="left"
     >
-      <label class="col-4">{{ getShowKey(key) }}</label>
-      <q-select
-        v-if="key === 'FillMode'"
-        class="col-7"
-        dense
-        outlined
-        v-model="info.FillMode"
-        :options="fillModes"
-        emit-value
-        map-options
-      />
-      <q-select
-        v-else-if="key === 'OverMethod'"
-        class="col-7"
-        dense
-        outlined
-        v-model="info.OverMethod"
-        :options="overMethods"
-        emit-value
-        map-options
-      />
-      <q-input
-        v-else-if="key.toLocaleLowerCase().includes('color')"
-        class="col-7"
-        dense
-        outlined
-        v-model="info[key]"
-        type="number"
+      <a-form-item
+        v-for="key in Object.keys(info)"
+        :key="key"
+        :label="getShowKey(key)"
       >
-        <template v-slot:append>
-          <q-icon name="colorize" class="cursor-pointer">
-            <q-popup-proxy transition-show="scale" transition-hide="scale">
-              <q-color
-                v-model="tempColor"
-                default-view="palette"
-                format-model="hex"
-                @change="getColorNo(key)"
-              />
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </q-input>
-      <q-input
-        v-else
-        class="col-7"
-        dense
-        outlined
-        v-model="info[key]"
-        type="number"
-        min="1"
-        @focus="showSymbol(key)"
-      />
-    </div>
-    <div class="row items-center top-02em">
-      <div style="width:100%;text-align: center">
-        <q-btn color="primary" label="确定" @click="sureClick"> </q-btn>
-      </div>
-    </div>
+        <a-select
+          class="fill-width"
+          v-if="key === 'FillMode'"
+          v-model="info.FillMode"
+          :options="fillModes"
+        >
+          <a-select-option
+            v-for="{ value, label } in fillModes"
+            :key="value"
+            :value="value"
+          >
+            {{ label }}
+          </a-select-option>
+        </a-select>
+        <a-select
+          class="fill-width"
+          v-else-if="key === 'OverMethod'"
+          v-model="info.OverMethod"
+          :options="overMethods"
+        >
+          <a-select-option
+            v-for="{ value, label } in overMethods"
+            :key="value"
+            :value="value"
+          >
+            {{ label }}
+          </a-select-option>
+        </a-select>
+        <a-input
+          v-else-if="key.toLocaleLowerCase().includes('color')"
+          v-model="info[key]"
+          type="number"
+        >
+          <span slot="addonAfter">
+            <a-popover trigger="click">
+              <template slot="content">
+                <sketch-picker
+                  :value="tempColor"
+                  @input="val => getColorNo(val, key)"
+                />
+              </template>
+              <a-icon type="edit" />
+            </a-popover>
+          </span>
+        </a-input>
+        <a-input-number
+          class="fill-width"
+          v-else
+          v-model="info[key]"
+          :min="1"
+          @focus="showSymbol(key)"
+        />
+      </a-form-item>
+      <a-form-item :wrapper-col="{ offset: 10 }">
+        <a-button type="primary" @click="sureClick">
+          确定
+        </a-button>
+      </a-form-item>
+    </a-form>
     <mp-window-wrapper :visible="showSymbolWin">
       <mp-window
         title="选择符号"
         :width="300"
         :height="400"
-        :theme-style="themeStyle"
         :visible.sync="showSymbolWin"
-        :position="'top'"
       >
         <template>
           <mp-symbol :queryParams="unifyModifyParams" @symbolNo="getSymbolNo" />
@@ -82,7 +86,7 @@
 
 <script lang="ts">
 import { Component, Mixins, Watch, Prop } from 'vue-property-decorator'
-import { ThemeStyleMixin } from '@mapgis/web-app-framework'
+import { AppMixin, LayerType } from '@mapgis/web-app-framework'
 import {
   ResultSetMixin,
   queryFeaturesInstance,
@@ -90,20 +94,22 @@ import {
   igsFeatureModifyInstance,
   utilInstance
 } from '@mapgis/pan-spatial-map-store'
-const { IDocument, Layer } = require('@mapgis/webclient-store')
-const { LayerType, SubLayerType } = Layer
+import { Slider, Sketch, Chrome } from 'vue-color'
 import MpSymbol from './Symbol.vue'
-import { Notify } from 'quasar'
 
 @Component({
   name: 'MpUnifyModify',
-  components: { MpSymbol }
+  components: {
+    'mp-symbol': MpSymbol,
+    'slider-picker': Slider,
+    'sketch-picker': Sketch,
+    'chrome-picker': Chrome
+  }
 })
-export default class MpUnifyModify extends Mixins(
-  ThemeStyleMixin,
-  ResultSetMixin
-) {
+export default class MpUnifyModify extends Mixins(AppMixin, ResultSetMixin) {
   @Prop(Object) readonly unifyModifyParams!: Record<string, any>
+
+  private form = this.$form.createForm(this, { name: 'coordinated' })
 
   private infoType = 3
 
@@ -141,16 +147,16 @@ export default class MpUnifyModify extends Mixins(
 
   private showSymbolWin = false
 
-  private tempColor = ''
+  private tempColor = '#000000'
 
   @Watch('unifyModifyParams', { deep: true })
   async changeParams() {
-    //console.log(this.unifyModifyParams)
-    await this.queryFeatures(1)
+    // console.log(this.unifyModifyParams)
+    const res = await this.queryFeatures(1)
   }
 
   async mounted() {
-    await this.queryFeatures(1)
+    const res = await this.queryFeatures(1)
   }
 
   async queryFeatures(pageCount) {
@@ -161,15 +167,14 @@ export default class MpUnifyModify extends Mixins(
       return
     }
     const {
-      subtype,
+      serverType,
       ip,
       port,
       serverName,
-      layerIndex,
-      serverUrl
+      layerIndex
     } = this.unifyModifyParams
-    if (subtype === SubLayerType.IgsVectorLayer) {
-      //地图文档的图层
+    if (serverType === LayerType.IGSMapImage) {
+      // 地图文档的图层
       const result = await queryFeaturesInstance.query({
         ip,
         port: port.toString(),
@@ -182,23 +187,26 @@ export default class MpUnifyModify extends Mixins(
         IncludeWebGraphic: true,
         IncludeGeometry: false
       })
-      //console.log(result)
+      // console.log(result)
       const graphic = result.SFEleArray[0].GraphicInfo
       this.infoType = graphic.InfoType
-      if (graphic.InfoType == 1) {
+      if (graphic.InfoType === 1) {
         this.info = graphic.PntInfo
-      } else if (graphic.InfoType == 2) {
+      } else if (graphic.InfoType === 2) {
         this.info = graphic.LinInfo
-      } else if (graphic.InfoType == 3) {
+      } else if (graphic.InfoType === 3) {
         this.info = graphic.RegInfo
       }
+      // eslint-disable-next-line consistent-return
       return result
     }
+    // eslint-disable-next-line consistent-return
+    return {}
   }
 
   getShowKey(key) {
     let showKey = key
-    if (this.infoType == 1) {
+    if (this.infoType === 1) {
       switch (key) {
         case 'SymID':
           showKey = '符号ID'
@@ -222,7 +230,7 @@ export default class MpUnifyModify extends Mixins(
           showKey = key
           break
       }
-    } else if (this.infoType == 2) {
+    } else if (this.infoType === 2) {
       switch (key) {
         case 'LinWidth':
           showKey = '线宽'
@@ -246,7 +254,7 @@ export default class MpUnifyModify extends Mixins(
           showKey = key
           break
       }
-    } else if (this.infoType == 3) {
+    } else if (this.infoType === 3) {
       switch (key) {
         case 'PatID':
           showKey = '填充图案ID'
@@ -303,35 +311,34 @@ export default class MpUnifyModify extends Mixins(
     }
   }
 
-  async getColorNo(key) {
-    //console.log(this.tempColor)
-    const color = utilInstance.colorRGBtoHex(this.tempColor)
+  async getColorNo(val, key) {
+    this.tempColor = val.hex
     const { ip, port } = this.unifyModifyParams
     const res = await igsFeatureModifyInstance.getColorNo({
       ip,
       port,
       color: this.tempColor
     })
-    //console.log(res)
+    // console.log(res)
     this.info[key] = res.value
   }
 
   async sureClick() {
     const result = await this.queryFeatures(10000)
-    //console.log(result)
+    // console.log(result)
     if (result && result.TotalCount > 0) {
     }
     const graphic = result.SFEleArray[0].GraphicInfo
     let infoName = ''
-    if (graphic.InfoType == 1) {
+    if (graphic.InfoType === 1) {
       infoName = 'PntInfo'
-    } else if (graphic.InfoType == 2) {
+    } else if (graphic.InfoType === 2) {
       infoName = 'LinInfo'
-    } else if (graphic.InfoType == 3) {
+    } else if (graphic.InfoType === 3) {
       infoName = 'RegInfo'
     }
     if (result && result.TotalCount > 0) {
-      for (var i = 0; i < result.SFEleArray.length; i++) {
+      for (let i = 0; i < result.SFEleArray.length; i++) {
         result.SFEleArray[i].GraphicInfo[infoName] = this.info
       }
     }
@@ -344,19 +351,16 @@ export default class MpUnifyModify extends Mixins(
       updateAttribute: false,
       updateGeometry: false
     })
-    //console.log(res)
-    if (res.success) {
-      Notify.create({
-        message: '修改成功',
-        timeout: 1000,
-        position: 'center'
-      })
+    // console.log(res)
+    debugger
+    if (res.succeed) {
+      this.$message.success('修改成功')
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .unify-modify {
   margin: 0.5em;
 }
@@ -366,5 +370,8 @@ export default class MpUnifyModify extends Mixins(
 }
 .top-02em {
   margin-top: 0.2em;
+}
+.fill-width {
+  width: 100%;
 }
 </style>
