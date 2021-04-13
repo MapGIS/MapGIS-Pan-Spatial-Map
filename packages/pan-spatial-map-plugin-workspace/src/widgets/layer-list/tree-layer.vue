@@ -221,30 +221,38 @@ export default class TreeLayer extends Mixins(
 
   @Watch('document.defaultMap', { deep: true, immediate: true })
   documentChange(newValue, oldValue) {
-    if (!this.isArrayEquals(newValue.layers(), oldValue.layers())) {
+    if (
+      this.document &&
+      this.document.defaultMap &&
+      this.document.defaultMap.layers() &&
+      newValue &&
+      oldValue
+    ) {
+      if (!this.isArrayEquals(newValue.layers(), oldValue.layers())) {
+        this.halfCheckedKeys = []
+        this.halfCheckedKeysOld = []
+      }
+      const layers: Array<unknown> = this.document.clone().defaultMap.layers()
+      const arr = []
+      for (let index = 0; index < layers.length; index++) {
+        const item = layers[index]
+        item.key = index.toString()
+        item.scopedSlots = { title: 'custom' }
+        item.visiblePopover = false
+        if (
+          !this.halfCheckedKeys.includes(item.key) &&
+          (item.isVisible || item.visible)
+        ) {
+          arr.push(item.key)
+        }
+        if (item.sublayers && item.sublayers.length > 0) {
+          this.setSublayers(item.sublayers, item.key, arr)
+        }
+      }
+      this.layers = layers
+      this.ticked = arr
       this.halfCheckedKeys = []
-      this.halfCheckedKeysOld = []
     }
-    const layers: Array<unknown> = this.document.clone().defaultMap.layers()
-    const arr = []
-    for (let index = 0; index < layers.length; index++) {
-      const item = layers[index]
-      item.key = index.toString()
-      item.scopedSlots = { title: 'custom' }
-      item.visiblePopover = false
-      if (
-        !this.halfCheckedKeys.includes(item.key) &&
-        (item.isVisible || item.visible)
-      ) {
-        arr.push(item.key)
-      }
-      if (item.sublayers && item.sublayers.length > 0) {
-        this.setSublayers(item.sublayers, item.key, arr)
-      }
-    }
-    this.layers = layers
-    this.ticked = arr
-    this.halfCheckedKeys = []
   }
 
   // 这里是判断document的layer与之前是否相等，不相等则清除记录的半勾选数组，防止影响新的document图层可见状态
@@ -255,7 +263,7 @@ export default class TreeLayer extends Mixins(
     const oldArr = oldValue.map(item => {
       return item.id
     })
-    return newArr.toString() === oldValue.toString()
+    return newArr.toString() === oldArr.toString()
   }
 
   tickedChange(val: Array<string>, e) {
@@ -522,7 +530,6 @@ export default class TreeLayer extends Mixins(
 
 <style lang="less" scoped>
 .tree-layer-container {
-  padding: 0 10px;
   width: 100%;
   height: 100%;
   overflow: auto;
