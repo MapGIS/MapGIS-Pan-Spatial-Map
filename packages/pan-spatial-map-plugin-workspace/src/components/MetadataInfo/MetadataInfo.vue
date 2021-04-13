@@ -261,10 +261,11 @@ export default class MpMetadataInfo extends Vue {
 
 <style lang="less" scoped>
 .metadata-info-container {
-  margin: 10px;
-  // overflow-x: hidden;
-  // overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
   color: #8c8c8c;
+  white-space: normal !important;
   .label {
     color: #434343;
     font-weight: bold;

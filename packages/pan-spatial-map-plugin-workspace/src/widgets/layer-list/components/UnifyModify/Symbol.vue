@@ -1,28 +1,27 @@
 <template>
-  <q-card-section class="symbol-container row items-start">
-    <div
+  <a-card class="symbol-container">
+    <a-card-grid
       v-for="item in symbols"
       :key="item.Name"
-      class="col-4 q-pa-xs column items-center cursor-pointer symbol-item"
+      class="symbol-item"
       @click="toggle(item.SymbolNo)"
     >
       <img
         class="img-style"
         :src="`data:image/png;base64,${item.SymbolData}`"
       />
-      <span>{{ item.Name }}</span>
-    </div>
-  </q-card-section>
+      <p>{{ item.Name }}</p>
+    </a-card-grid>
+  </a-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+
 import {
   queryFeaturesInstance,
   igsFeatureModifyInstance
 } from '@mapgis/pan-spatial-map-store'
-const { IDocument, Layer } = require('@mapgis/webclient-store')
-const { LayerType, SubLayerType } = Layer
 
 @Component({
   name: 'MpSymbol',
@@ -76,24 +75,44 @@ export default class MpSymbol extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.symbol {
-  margin: 0.5em;
-}
-.table {
-  margin-right: 2em;
-  height: 11em;
-}
-.top-02em {
-  margin-top: 0.2em;
-}
-.img-style {
-  width: 30px;
-  height: 30px;
-  margin: 5px;
-}
-.symbol-item:hover {
-  border: 1px solid #dcdcdc;
-  border-radius: 2px;
-  box-shadow: 1px 1px 1px 1px #999999;
+.symbol-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  .symbol {
+    margin: 0.5em;
+  }
+  .table {
+    margin-right: 2em;
+    height: 11em;
+  }
+  .top-02em {
+    margin-top: 0.2em;
+  }
+  .img-style {
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+  }
+  .symbol-item {
+    width: 33.33%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 10px 3px;
+    p {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0 3px;
+      text-align: center;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 </style>

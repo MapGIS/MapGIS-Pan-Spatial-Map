@@ -53,10 +53,7 @@
               自定义查询
             </a-list-item>
             <a-list-item
-              v-if="
-                (isSubLayer(item) && !isIgsArcgisLayer(item)) ||
-                  isIgsVectorLayer(item)
-              "
+              v-if="isSubLayer(item) && isIgsDocLayer(item)"
               @click="unifyMode(item)"
             >
               要素统改
@@ -86,10 +83,9 @@
         title="元数据信息"
         :width="550"
         :height="400"
-        :theme-style="themeStyle"
         :icon="widgetInfo.icon"
         :visible.sync="showMetadataInfo"
-        :position="'top'"
+        anchor="top-center"
       >
         <template>
           <mp-metadata-info :currentLayerInfo="currentLayerInfo" />
@@ -102,10 +98,9 @@
         title="自定义查询"
         :width="550"
         :height="400"
-        :theme-style="themeStyle"
         :icon="widgetInfo.icon"
         :visible.sync="showCustomQuery"
-        :anchor="'top'"
+        anchor="top-center"
       >
         <template>
           <mp-custom-query :queryParams="queryParams" />
@@ -118,10 +113,9 @@
         title="切换矩阵集"
         :width="300"
         :height="60"
-        :theme-style="themeStyle"
         :icon="widgetInfo.icon"
         :visible.sync="showSelectTilematrixSet"
-        :anchor="'top'"
+        anchor="top-center"
       >
         <template>
           <mp-select-tilematrix-set
@@ -137,11 +131,13 @@
         title="要素统改"
         :width="300"
         :height="400"
-        :theme-style="themeStyle"
         :icon="widgetInfo.icon"
         :visible.sync="showUnifyModify"
-        :anchor="'top'"
+        anchor="top-center"
       >
+        <template>
+          <mp-unify-modify :unifyModifyParams="unifyModifyParams" />
+        </template>
       </mp-window>
     </mp-window-wrapper>
   </div>
@@ -157,12 +153,13 @@ import {
   Mixins
 } from 'vue-property-decorator'
 import {
-  MapMixin,
-  AppMixin,
   LayerType,
   IGSMapImageLayer,
   IGSVectorLayer,
-  OGCWMTSLayer
+  OGCWMTSLayer,
+  Sublayer,
+  MapMixin,
+  AppMixin
 } from '@mapgis/web-app-framework'
 import {
   ResultSetMixin,
@@ -175,14 +172,14 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
-// import MpUnifyModify from '../../components/UnifyModify/UnifyModify.vue'
+import MpUnifyModify from './components/UnifyModify/UnifyModify.vue'
 import MpSelectTilematrixSet from './components/SelectTilematrixSet/SelectTilematrixSet.vue'
 
 @Component({
   components: {
     MpMetadataInfo,
     MpCustomQuery,
-    // MpUnifyModify,
+    MpUnifyModify,
     MpSelectTilematrixSet
   }
 })
@@ -212,6 +209,9 @@ export default class TreeLayer extends Mixins(
   // 记录半勾选的key
   private halfCheckedKeys: Array<string> = []
 
+  // 记录上次半勾选的key
+  private halfCheckedKeysOld: Array<string> = []
+
   // 当前选中的wmts图层的serverUrl
   currentWmts: OGCWMTSLayer = null
 
@@ -220,7 +220,11 @@ export default class TreeLayer extends Mixins(
   unifyModifyParams: Record<string, any> = {}
 
   @Watch('document.defaultMap', { deep: true, immediate: true })
-  documentChange() {
+  documentChange(newValue, oldValue) {
+    if (!this.isArrayEquals(newValue.layers(), oldValue.layers())) {
+      this.halfCheckedKeys = []
+      this.halfCheckedKeysOld = []
+    }
     const layers: Array<unknown> = this.document.clone().defaultMap.layers()
     const arr = []
     for (let index = 0; index < layers.length; index++) {
@@ -243,13 +247,25 @@ export default class TreeLayer extends Mixins(
     this.halfCheckedKeys = []
   }
 
+  // 这里是判断document的layer与之前是否相等，不相等则清除记录的半勾选数组，防止影响新的document图层可见状态
+  isArrayEquals(newValue, oldValue) {
+    const newArr = newValue.map(item => {
+      return item.id
+    })
+    const oldArr = oldValue.map(item => {
+      return item.id
+    })
+    return newArr.toString() === oldValue.toString()
+  }
+
   tickedChange(val: Array<string>, e) {
-    const includeHanlfCheckArr = val.concat(e.halfCheckedKeys)
+    const includeHanlfCheckArrNew = val.concat(e.halfCheckedKeys)
+    const includeHanlfCheckArrOld = this.ticked.concat(this.halfCheckedKeysOld)
     const doc = this.document.clone()
     const layers: Array<unknown> = doc.defaultMap.layers()
     // 查找出与前一次check不同的数据，相同数据则不用处理提升效率
-    const diffArr: Array<string> = includeHanlfCheckArr
-      .concat(this.ticked)
+    const diffArr: Array<string> = includeHanlfCheckArrNew
+      .concat(includeHanlfCheckArrOld)
       .filter(function(v, i, arr) {
         return arr.indexOf(v) === arr.lastIndexOf(v)
       })
@@ -274,6 +290,7 @@ export default class TreeLayer extends Mixins(
     })
     this.document = doc
     this.halfCheckedKeys = e.halfCheckedKeys
+    this.halfCheckedKeysOld = e.halfCheckedKeys
     // this.ticked = val
   }
 
@@ -343,20 +360,23 @@ export default class TreeLayer extends Mixins(
   }
 
   unifyMode(layer) {
+    const parentLayer: IGSMapImageLayer = layer.dataRef.layer
+    const sublayers: Sublayer = layer.dataRef
+    const { ip, port, docName } = parentLayer._parseUrl(parentLayer.url)
+    const { type } = parentLayer
+    const { geomType, sysLibraryGuid, url, id, key } = sublayers
     this.showUnifyModify = true
+
     this.unifyModifyParams = {
-      id: layer.id,
-      ip: layer.ip || baseConfigInstance.config.ip,
-      port: Number(layer.port || baseConfigInstance.config.port),
-      serverName: layer.serverName,
-      serverType: layer.serverType,
-      serverUrl: layer.serverUrl,
-      subtype: layer.subtype,
-      name: layer.name!,
-      layerIndex: layer.layerIndex,
-      geomType: layer.geomType,
-      gdbps: layer.gdbps,
-      sysLibraryGuid: layer.sysLibraryGuid
+      id: key,
+      ip: ip || baseConfigInstance.config.ip,
+      port: Number(port || baseConfigInstance.config.port),
+      serverName: docName,
+      serverType: type,
+      layerIndex: id,
+      geomType,
+      gdbps: url,
+      sysLibraryGuid
     }
     this.clickPopover(layer, false)
   }
@@ -452,6 +472,7 @@ export default class TreeLayer extends Mixins(
         tables: []
       }
     }
+    debugger
     const category = this.addCategory(categoryInfo)
     this.currentCategoryId = category.id
     this.openAttributeTable()
@@ -481,8 +502,12 @@ export default class TreeLayer extends Mixins(
     return type === LayerType.IGSTile
   }
 
-  isIgsDocLayer({ type }) {
-    return type === LayerType.IGSMapImage
+  isIgsDocLayer({ type, layer }) {
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+    }
+    return layerType === LayerType.IGSMapImage
   }
 
   isWMTSLayer({ type }) {

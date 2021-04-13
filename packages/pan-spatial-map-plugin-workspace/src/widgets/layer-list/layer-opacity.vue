@@ -29,7 +29,7 @@ export default class LayerOpacity extends Mixins(AppMixin) {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 ul {
   list-style: none;
   margin: 0;
