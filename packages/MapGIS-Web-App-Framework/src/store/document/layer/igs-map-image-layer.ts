@@ -105,6 +105,15 @@ export class Sublayer {
 
     if (jsonObject.LayerName) this.title = jsonObject.LayerName
 
+    // 可见性
+    if (jsonObject.State) {
+      if (jsonObject.State === 'Invisible') {
+        this.visible = false
+      } else {
+        this.visible = true
+      }
+    }
+
     if (jsonObject.URL) this.url = jsonObject.URL
 
     if (jsonObject.SysLibraryGuid)

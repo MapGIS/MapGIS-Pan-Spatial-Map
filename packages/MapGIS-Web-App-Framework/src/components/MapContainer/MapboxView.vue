@@ -23,6 +23,7 @@
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
         :url="layerProps.url"
+        :layers="layerProps.layers"
         :serverName="layerProps.serverName"
       />
       <mapbox-igs-vector-layer
@@ -172,9 +173,13 @@ export default {
       }
     },
     genMapboxLayerComponentPropsByLayer(layer) {
+      // mapbox图层组件所需要的属性
       let mapboxLayerComponentProps = {}
-      let allLayerNames = []
 
+      let allLayerNames = []
+      let showLayers = ''
+      let visibleSubLayers = []
+      // 图层显示样式
       const layerStyle = {
         layout: { visibility: layer.isVisible ? 'visible' : 'none' },
         paint: { 'raster-opacity': layer.opacity }
@@ -182,13 +187,37 @@ export default {
 
       switch (layer.type) {
         case LayerType.IGSTile:
-        case LayerType.IGSMapImage:
-          // 构造mapbox图层组件所需要的属性
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
             sourceId: layer.id,
+            serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
+          }
+
+          break
+        case LayerType.IGSMapImage:
+          showLayers = 'show:'
+
+          visibleSubLayers = layer.allSublayers.filter(sublayer => {
+            if (sublayer.visible) return true
+            return false
+          })
+
+          visibleSubLayers.forEach((sublayer, index) => {
+            showLayers += `${sublayer.id}`
+
+            if (index !== visibleSubLayers.length - 1) {
+              showLayers += ','
+            }
+          })
+
+          mapboxLayerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: layer.url,
+            sourceId: layer.id,
+            layers: showLayers,
             serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
           }
 
