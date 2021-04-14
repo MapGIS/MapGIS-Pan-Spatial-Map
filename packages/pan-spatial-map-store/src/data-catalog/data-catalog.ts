@@ -474,6 +474,9 @@ export class DataCatalogManager {
           if (this.isFilterInvalidLayerConfig) {
             isLayerInvalid = this.isServiceVaild(nodeConverted)
           }
+
+          // IGS服务（IGSTile、IGSMapImage、IGSVector）,如果ip和port为空，则采用默认值。
+          this.setDefaultConfig(nodeConverted)
         } else {
           nodeConverted = { ...commonInfo }
           // 组节点
@@ -600,6 +603,23 @@ export class DataCatalogManager {
     }
 
     return serviceList
+  }
+
+  // IGS服务（IGSTile、IGSMapImage、IGSVector）,如果ip和port为空，则采用默认值。
+  private setDefaultConfig(layerConfig: any) {
+    const defaultIp = baseConfigInstance.config.ip
+    const defaultPort = baseConfigInstance.config.port
+
+    switch (layerConfig.serverType) {
+      case LayerType.IGSTile:
+      case LayerType.IGSMapImage:
+      case LayerType.IGSVector:
+        if (layerConfig.ip === '') layerConfig.ip = defaultIp
+        if (layerConfig.port === '') layerConfig.port = defaultPort
+        break
+      default:
+        break
+    }
   }
 }
 
