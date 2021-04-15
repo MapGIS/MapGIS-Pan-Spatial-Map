@@ -248,7 +248,7 @@ export default {
         case LayerType.OGCWMS:
           allLayerNames = []
           layer.allSublayers.forEach(element => {
-            allLayerNames.push(element.name)
+            if (element.visible) allLayerNames.push(element.name)
           })
 
           mapboxLayerComponentProps = {
