@@ -148,13 +148,37 @@ export class DataCatalogManager {
 
   /**
    * 根据节点的id获取对应的服务图层配置信息
-   *
    * @author Yuanye Ma
-   * @date 05/03/2021
-   * @param {string} id 目录树配置中节点的guid,由后台生成,通过该id唯一标识一个服务图层配置项
+   * @date 15/04/2021
+   * @param {string} id  目录树配置项中的guid
+   * @return {*}  {(Record<string, any> | undefined)}
    * @memberof DataCatalogManager
    */
-  public getLayerConfigByID(id: string) {}
+  public getLayerConfigByID(id: string): Record<string, any> | undefined {
+    let ret: Record<string, any> | undefined
+    this._allLayerConfigItems.forEach(element => {
+      if (element.guid === id) ret = element
+    })
+
+    return ret
+  }
+
+  /**
+   * 根据节点的name获取对应的服务图层配置信息
+   * @author Yuanye Ma
+   * @date 15/04/2021
+   * @param {string} name 目录树配置项中的name
+   * @return {*}  {(Record<string, any> | undefined)}
+   * @memberof DataCatalogManager
+   */
+  public getLayerConfigByName(name: string): Record<string, any> | undefined {
+    let ret: Record<string, any> | undefined
+    this._allLayerConfigItems.forEach(element => {
+      if (element.name === name) ret = element
+    })
+
+    return ret
+  }
 
   /**
    * 获取处理过的目录树信息
@@ -393,6 +417,8 @@ export class DataCatalogManager {
     this.configConverted.iconConfig = this.config.iconConfig
 
     // 3.转换treeConfig
+    // 将缓存的图层节点置空
+    this._allLayerConfigItems = []
     const treeData: any = this.convertTreeData(
       this.config.treeConfig.treeData,
       0
@@ -412,7 +438,7 @@ export class DataCatalogManager {
     if (nodeArray && nodeArray.length > 0) {
       nodeArray.forEach(node => {
         let nodeConverted: any = {}
-        let isLayerInvalid = true
+        let isLayerValid = true
 
         // 通用信息
         const commonInfo: any = {
@@ -472,11 +498,15 @@ export class DataCatalogManager {
 
           // 图层过滤。
           if (this.isFilterInvalidLayerConfig) {
-            isLayerInvalid = this.isServiceVaild(nodeConverted)
+            isLayerValid = this.isServiceVaild(nodeConverted)
           }
 
           // IGS服务（IGSTile、IGSMapImage、IGSVector）,如果ip和port为空，则采用默认值。
           this.setDefaultConfig(nodeConverted)
+
+          if (isLayerValid) {
+            this._allLayerConfigItems.push(nodeConverted)
+          }
         } else {
           nodeConverted = { ...commonInfo }
           // 组节点
@@ -486,7 +516,7 @@ export class DataCatalogManager {
           )
         }
 
-        if (isLayerInvalid) {
+        if (isLayerValid) {
           nodeArrayConverted.push(nodeConverted)
         }
       })
@@ -621,6 +651,9 @@ export class DataCatalogManager {
         break
     }
   }
+
+  // 目树中所有的图层节点列表（转换后的）
+  private _allLayerConfigItems: Record<string, any> = []
 }
 
 export default DataCatalogManager.getInstance()
