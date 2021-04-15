@@ -262,6 +262,11 @@ export class OGCWMSLayer extends Layer {
       }
     })
 
+    // 给所有的sublayers设置layer属性的值
+    result.allSublayers.forEach(sublayer => {
+      sublayer.layer = result
+    })
+
     return result
   }
 

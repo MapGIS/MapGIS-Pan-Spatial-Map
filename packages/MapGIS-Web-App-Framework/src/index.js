@@ -24,11 +24,14 @@ export {
   MapImageLayer,
   IGSTileLayer,
   IGSMapImageLayer,
+  Sublayer,
   IGSVectorLayer,
   OGCWMTSLayer,
-  OGCWMSLayer,
   WMTSSublayer,
-  Sublayer
+  TileMatrixSet,
+  WMTSStyle,
+  OGCWMSLayer,
+  WMSSublayer
 } from './store/document/layer'
 
 export { Document, Map } from './store/document'

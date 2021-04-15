@@ -89,7 +89,7 @@ export class Sublayer {
    *
    * @date 30/03/2021
    * @param {Record<string, any>} jsonObject
-   * @memberof WMTSSublayer
+   * @memberof Sublayer
    */
   fromJSON(jsonObject: Record<string, any>) {
     if (jsonObject.GroupMapLayerInfo) {
@@ -127,7 +127,7 @@ export class Sublayer {
    *
    * @date 30/03/2021
    * @return {*}  {Record<string, any>}
-   * @memberof WMTSSublayer
+   * @memberof Sublayer
    */
   toJSON(): Record<string, any> {
     return {}
@@ -342,7 +342,6 @@ export class IGSMapImageLayer extends MapImageLayer {
           sublayerCopy = sublayer.clone()
 
           if (sublayerCopy) {
-            sublayerCopy.layer = result
             sublayersCopy.push(sublayerCopy)
           }
         })
@@ -351,6 +350,11 @@ export class IGSMapImageLayer extends MapImageLayer {
       } else {
         result[key] = this._deepClone(element[valueIndex])
       }
+    })
+
+    // 给所有的sublayers设置layer属性的值
+    result.allSublayers.forEach(sublayer => {
+      sublayer.layer = result
     })
 
     return result
