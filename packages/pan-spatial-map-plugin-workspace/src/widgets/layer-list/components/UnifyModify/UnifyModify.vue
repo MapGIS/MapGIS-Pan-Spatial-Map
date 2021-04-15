@@ -352,7 +352,6 @@ export default class MpUnifyModify extends Mixins(AppMixin, ResultSetMixin) {
       updateGeometry: false
     })
     // console.log(res)
-    debugger
     if (res.succeed) {
       this.$message.success('修改成功')
     }

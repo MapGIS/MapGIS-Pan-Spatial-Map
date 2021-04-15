@@ -35,20 +35,13 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
   .ant-tabs {
     width: 100%;
     height: 100%;
+    .ant-tabs-nav {
+      .ant-tabs-tab {
+        padding-top: 0px;
+      }
+    }
     .ant-tabs-content {
       height: calc(~'100% - 60px');
-    }
-    .tree-item-handle {
-      display: flex;
-      width: 100%;
-      overflow: hidden;
-      align-items: center;
-      span {
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
     }
   }
 }

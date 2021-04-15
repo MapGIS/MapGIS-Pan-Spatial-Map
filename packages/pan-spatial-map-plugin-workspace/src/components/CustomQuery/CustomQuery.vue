@@ -16,6 +16,11 @@
             :pagination="false"
             :columns="feildTableColumn"
             :data-source="fieldTableData"
+            :rowKey="
+              (record, index) => {
+                return index
+              }
+            "
             :customRow="
               record => {
                 return {
@@ -79,6 +84,11 @@
             :pagination="false"
             :columns="valueTableColumn"
             :data-source="valueTableData"
+            :rowKey="
+              (record, index) => {
+                return index
+              }
+            "
             :customRow="
               record => {
                 return {
@@ -376,7 +386,6 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
       ...params,
       tables
     }
-    debugger
     const category = this.addCategory(categoryInfo)
     this.currentCategoryId = category.id
     this.openAttributeTable()

@@ -4,7 +4,7 @@ import { MapImageLayer } from './map-image-layer'
 import { IGSTileLayer } from './igs-tile-layer'
 import { IGSMapImageLayer } from './igs-map-image-layer'
 import { IGSVectorLayer } from './igs-vector-layer'
-import { OGCWMTSLayer } from './ogc-wmts-layer'
+import { OGCWMTSLayer, WMTSSublayer } from './ogc-wmts-layer'
 import { OGCWMSLayer } from './ogc-wms-layer'
 
 export {
@@ -19,5 +19,6 @@ export {
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
-  OGCWMSLayer
+  OGCWMSLayer,
+  WMTSSublayer
 }

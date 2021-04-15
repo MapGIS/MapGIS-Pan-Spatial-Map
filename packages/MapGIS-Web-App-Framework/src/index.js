@@ -26,7 +26,9 @@ export {
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
-  OGCWMSLayer
+  OGCWMSLayer,
+  WMTSSublayer,
+  Sublayer
 } from './store/document/layer'
 
 export { Document, Map } from './store/document'

@@ -579,7 +579,7 @@ export default {
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0px 1px 2px 0px @shadow-color;
-  // white-space: nowrap;
+  white-space: nowrap;
   .window-head {
     display: flex;
     padding: 0 12px;
