@@ -268,7 +268,7 @@ export default class MpAttributeTable extends Mixins(
         margin: 0;
       }
       .ant-tabs-content {
-        height: calc(~'100%-40px');
+        height: calc(~'100% - 40px');
       }
     }
   }

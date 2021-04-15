@@ -19,6 +19,18 @@
       }"
     >
       <div slot="custom" slot-scope="item" class="tree-item-handle">
+        <a-icon
+          v-if="
+            item.layer && isWMTSLayer(item.layer) && isActiveWMTSLayer(item)
+          "
+          type="check-circle"
+          :style="{ color: '#52c41a', fontSize: '16px' }"
+        />
+        <i
+          v-else-if="
+            item.layer && isWMTSLayer(item.layer) && !isActiveWMTSLayer(item)
+          "
+        />
         <span v-if="item.title.indexOf(filter) > -1">
           {{ item.title.substr(0, item.title.indexOf(filter)) }}
           <span style="color:#1890ff">{{ filter }}</span>
@@ -34,38 +46,40 @@
           overlayClassName="layer-list-popover"
         >
           <a-list slot="content" :gutter="10">
-            <a-list-item
-              v-if="!isIgsArcgisLayer(item)"
-              @click="metaDataInfo(item)"
-            >
+            <a-list-item v-if="isMetaData(item)" @click="metaDataInfo(item)">
               图层元数据
             </a-list-item>
-            <a-list-item
-              v-if="isSubLayer(item) || isIgsVectorLayer(item)"
-              @click="attributes(item)"
-            >
+            <a-list-item v-if="isAttributes(item)" @click="attributes(item)">
               查看属性
             </a-list-item>
-            <a-list-item
-              v-if="isSubLayer(item) || isIgsVectorLayer(item)"
-              @click="customQuery(item)"
-            >
+            <a-list-item v-if="isAttributes(item)" @click="customQuery(item)">
               自定义查询
             </a-list-item>
             <a-list-item
-              v-if="isSubLayer(item) && isIgsDocLayer(item)"
+              v-if="
+                (isSubLayer(item) && isIgsDocLayer(item)) ||
+                  isIgsVectorLayer(item)
+              "
               @click="unifyMode(item)"
             >
               要素统改
             </a-list-item>
-            <a-list-item v-if="!isSubLayer(item)" @click="fitBounds(item)">
+            <a-list-item v-if="isParentLayer(item)" @click="fitBounds(item)">
               缩放至
             </a-list-item>
             <a-list-item
-              v-if="isWMTSLayer(item)"
+              v-if="
+                item.layer && isWMTSLayer(item.layer) && isActiveWMTSLayer(item)
+              "
               @click="resetTilematrixSet(item)"
             >
               切换矩阵集
+            </a-list-item>
+            <a-list-item
+              v-if="isParentLayer(item) && isWMTSLayer(item)"
+              @click="openChangeActiveLayer(item)"
+            >
+              切换图层
             </a-list-item>
           </a-list>
           <a-button @click.stop size="small" type="link">
@@ -88,7 +102,7 @@
         anchor="top-center"
       >
         <template>
-          <mp-metadata-info :currentLayerInfo="currentLayerInfo" />
+          <mp-metadata-info :currentLayer="currentLayerInfo" />
         </template>
       </mp-window>
     </mp-window-wrapper>
@@ -119,6 +133,7 @@
       >
         <template>
           <mp-select-tilematrix-set
+            v-if="currentWmts"
             :layer="currentWmts"
             @update:layer="refreshCurrentWmts"
           />
@@ -137,6 +152,25 @@
       >
         <template>
           <mp-unify-modify :unifyModifyParams="unifyModifyParams" />
+        </template>
+      </mp-window>
+    </mp-window-wrapper>
+
+    <mp-window-wrapper :visible="showChangeActiveLayer">
+      <mp-window
+        title="切换图层"
+        :width="300"
+        :height="60"
+        :icon="widgetInfo.icon"
+        :visible.sync="showChangeActiveLayer"
+        anchor="top-center"
+      >
+        <template>
+          <mp-change-active-layer
+            v-if="currentWmtsActiveLayer"
+            :layer="currentWmtsActiveLayer"
+            @update:layer="updateActiveLayer"
+          />
         </template>
       </mp-window>
     </mp-window-wrapper>
@@ -159,7 +193,8 @@ import {
   OGCWMTSLayer,
   Sublayer,
   MapMixin,
-  AppMixin
+  AppMixin,
+  WMTSSublayer
 } from '@mapgis/web-app-framework'
 import {
   ResultSetMixin,
@@ -174,13 +209,15 @@ import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
 import MpUnifyModify from './components/UnifyModify/UnifyModify.vue'
 import MpSelectTilematrixSet from './components/SelectTilematrixSet/SelectTilematrixSet.vue'
+import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLayer.vue'
 
 @Component({
   components: {
     MpMetadataInfo,
     MpCustomQuery,
     MpUnifyModify,
-    MpSelectTilematrixSet
+    MpSelectTilematrixSet,
+    MpChangeActiveLayer
   }
 })
 export default class TreeLayer extends Mixins(
@@ -206,21 +243,23 @@ export default class TreeLayer extends Mixins(
 
   private showSelectTilematrixSet = false
 
-  // 记录半勾选的key
-  private halfCheckedKeys: Array<string> = []
-
-  // 记录上次半勾选的key
-  private halfCheckedKeysOld: Array<string> = []
+  // 记录可见状态为true的父节点的key
+  private parentKeys: Array<string> = []
 
   // 当前选中的wmts图层的serverUrl
-  currentWmts: OGCWMTSLayer = null
+  currentWmts: WMTSSublayer = null
 
   showUnifyModify = false
 
   unifyModifyParams: Record<string, any> = {}
 
+  showChangeActiveLayer = false
+
+  currentWmtsActiveLayer: OGCWMTSLayer = null
+
   @Watch('document.defaultMap', { deep: true, immediate: true })
   documentChange(newValue, oldValue) {
+    this.parentKeys = []
     if (
       this.document &&
       this.document.defaultMap &&
@@ -228,10 +267,14 @@ export default class TreeLayer extends Mixins(
       newValue &&
       oldValue
     ) {
-      if (!this.isArrayEquals(newValue.layers(), oldValue.layers())) {
-        this.halfCheckedKeys = []
-        this.halfCheckedKeysOld = []
-      }
+      this.setDocument()
+      // if (
+      //   this.document.defaultMap.layers().length > 1 &&
+      //   this.document.defaultMap.layers()[1].sublayers &&
+      //   this.document.defaultMap.layers()[1].sublayers.length > 1
+      // ) {
+      //   this.document.defaultMap.layers()[1].sublayers[1].visible = false
+      // }
       const layers: Array<unknown> = this.document.clone().defaultMap.layers()
       const arr = []
       for (let index = 0; index < layers.length; index++) {
@@ -239,11 +282,26 @@ export default class TreeLayer extends Mixins(
         item.key = index.toString()
         item.scopedSlots = { title: 'custom' }
         item.visiblePopover = false
-        if (
-          !this.halfCheckedKeys.includes(item.key) &&
-          (item.isVisible || item.visible)
+        if (this.isWMTSLayer(item)) {
+          if (item.isVisible || item.visible) {
+            arr.push(item.key)
+          }
+        } else if (
+          (item.sublayers && item.sublayers.length === 0) ||
+          !item.sublayers
         ) {
-          arr.push(item.key)
+          if (item.isVisible || item.visible) {
+            arr.push(item.key)
+          }
+        } else if (item.sublayers && item.sublayers.length > 0) {
+          /**
+           * @修改说明
+           * 这里存储visible或者为isVisible为true的父节点，因为这些可见的父节点并没有存储到ticked，
+           * 后续点击check的点击事件返回的val会包含这些父节点无法做比较
+           */
+          if (item.isVisible || item.visible) {
+            this.parentKeys.push(item.key)
+          }
         }
         if (item.sublayers && item.sublayers.length > 0) {
           this.setSublayers(item.sublayers, item.key, arr)
@@ -251,7 +309,50 @@ export default class TreeLayer extends Mixins(
       }
       this.layers = layers
       this.ticked = arr
-      this.halfCheckedKeys = []
+    }
+  }
+
+  /**
+   * 该函数，是为了处理，当父节点为visible可见性false，子节点visible为true，
+   * 这边递归讲父节点visible为false的子节点visible全部修改为false
+   */
+  setDocument() {
+    const layers = this.document.defaultMap.layers()
+    for (let index = 0; index < layers.length; index++) {
+      const item = layers[index]
+      let parentVisible
+      if (item.isVisible !== undefined) {
+        parentVisible = item.isVisible
+      } else if (item.visible !== undefined) {
+        parentVisible = item.visible
+      }
+      if (item.sublayers && item.sublayers.length > 0) {
+        this.changeSublayersVisible(item.sublayers, parentVisible)
+      }
+    }
+  }
+
+  changeSublayersVisible(sublayers: Array, parentVisible: boolean) {
+    for (let index = 0; index < sublayers.length; index++) {
+      const item = sublayers[index]
+      if (item.layer && this.isWMTSLayer(item.layer)) {
+        return
+      }
+      let subParentVisible
+      if (item.isVisible !== undefined) {
+        if (parentVisible === false) {
+          item.isVisible = false
+        }
+        subParentVisible = item.isVisible
+      } else if (item.visible !== undefined) {
+        if (parentVisible === false) {
+          item.visible = false
+        }
+        subParentVisible = item.visible
+      }
+      if (item.sublayers && item.sublayers.length > 0) {
+        this.changeSublayersVisible(item.sublayers, subParentVisible)
+      }
     }
   }
 
@@ -268,7 +369,7 @@ export default class TreeLayer extends Mixins(
 
   tickedChange(val: Array<string>, e) {
     const includeHanlfCheckArrNew = val.concat(e.halfCheckedKeys)
-    const includeHanlfCheckArrOld = this.ticked.concat(this.halfCheckedKeysOld)
+    const includeHanlfCheckArrOld = this.ticked.concat(this.parentKeys)
     const doc = this.document.clone()
     const layers: Array<unknown> = doc.defaultMap.layers()
     // 查找出与前一次check不同的数据，相同数据则不用处理提升效率
@@ -297,22 +398,56 @@ export default class TreeLayer extends Mixins(
       }
     })
     this.document = doc
-    this.halfCheckedKeys = e.halfCheckedKeys
-    this.halfCheckedKeysOld = e.halfCheckedKeys
-    // this.ticked = val
   }
 
+  private isAttributes(item) {
+    const bool =
+      (this.isSubLayer(item) && this.isIgsDocLayer(item)) ||
+      (this.isSubLayer(item) && this.isIgsArcgisLayer(item)) ||
+      this.isIgsVectorLayer(item)
+    return bool
+  }
+
+  isMetaData(item) {
+    const bool =
+      (this.isSubLayer(item) && this.isIgsDocLayer(item)) ||
+      (this.isParentLayer(item) && this.isIgsDocLayer(item)) ||
+      this.isIgsVectorLayer(item) ||
+      this.isIgsTileLayer(item) ||
+      this.isWMTSLayer(item) ||
+      this.isWMTSLayer(item)
+    return bool
+  }
+
+  /**
+   * @sublayers 子节点的数组
+   * @id 父节点的key值
+   * @arr 存储ticked的数组
+   * @parentVisible 父节点的可见性
+   */
   setSublayers(sublayers: Array, id: string, arr: Array<string>) {
     for (let index = 0; index < sublayers.length; index++) {
       const item = sublayers[index]
       item.key = `${id}-${index}`
       item.scopedSlots = { title: 'custom' }
       item.visiblePopover = false
-      if (
-        !this.halfCheckedKeys.includes(item.key) &&
-        (item.isVisible || item.visible)
-      ) {
-        arr.push(item.key)
+      if (item.layer && this.isWMTSLayer(item.layer)) {
+        item.checkable = false
+        return
+      }
+      if ((item.sublayers && item.sublayers.length === 0) || !item.sublayers) {
+        if (item.isVisible || item.visible) {
+          arr.push(item.key)
+        }
+      } else if (item.sublayers && item.sublayers.length > 0) {
+        /**
+         * @修改说明
+         * 这里存储visible或者为isVisible为true的父节点，因为这些可见的父节点并没有存储到ticked，
+         * 后续点击check的点击事件返回的val会包含这些父节点无法做比较
+         */
+        if (item.isVisible || item.visible) {
+          this.parentKeys.push(item.key)
+        }
       }
       if (item.sublayers && item.sublayers.length > 0) {
         this.setSublayers(item.sublayers, item.key, arr)
@@ -336,55 +471,72 @@ export default class TreeLayer extends Mixins(
     this.clickPopover(item, false)
   }
 
-  refreshCurrentWmts(val) {
+  openChangeActiveLayer(item) {
+    this.showChangeActiveLayer = true
+    this.currentWmtsActiveLayer = item.dataRef
+    this.clickPopover(item, false)
+  }
+
+  updateActiveLayer(val: OGCWMTSLayer) {
     const {
-      activeLayer: { tileMatrixSetId, tileMatrixSets }
+      key,
+      activeLayer: { id }
     } = val
-    const { key } = val
-    const indexArr = key.split('-')
+    const indexArr: Array<string> = key.split('-')
     const doc = this.document.clone()
     const layers: Array<unknown> = doc.defaultMap.layers()
-    if (indexArr.length <= 1) {
-      layers[key].activeLayer.tileMatrixSetId = tileMatrixSetId
-      layers[key].activeLayer.tileMatrixSets = tileMatrixSets
-    } else {
-      let layerItem = layers[indexArr[0]]
-      indexArr.forEach((i, index) => {
-        if (index === 0) {
-          return
-        }
-        if (
-          index === indexArr.length - 1 &&
-          layerItem.sublayers[i].activeLayer
-        ) {
-          layerItem.sublayers[i].activeLayer.tileMatrixSetId = tileMatrixSetId
-          layerItem.sublayers[i].activeLayer.tileMatrixSets = tileMatrixSets
-        } else {
-          layerItem = layerItem.sublayers[i]
-        }
-      })
+    if (indexArr.length === 1) {
+      const layerItem: OGCWMTSLayer = layers[indexArr[0]]
+      // layerItem.activeLayer = val.activeLayer
+      layerItem.activeLayer = layerItem.findSublayerById(id)
     }
     this.document = doc
   }
 
-  unifyMode(layer) {
-    const parentLayer: IGSMapImageLayer = layer.dataRef.layer
-    const sublayers: Sublayer = layer.dataRef
-    const { ip, port, docName } = parentLayer._parseUrl(parentLayer.url)
-    const { type } = parentLayer
-    const { geomType, sysLibraryGuid, url, id, key } = sublayers
-    this.showUnifyModify = true
+  refreshCurrentWmts(val) {
+    const { tileMatrixSetId, tileMatrixSets } = val
+    const { key } = val
+    const indexArr = key.split('-')
+    const doc = this.document.clone()
+    const layers: Array<unknown> = doc.defaultMap.layers()
+    let layerItem = layers[indexArr[0]]
+    indexArr.forEach((i, index) => {
+      if (index === 0) {
+        return
+      }
+      if (index === indexArr.length - 1 && layerItem.sublayers[i]) {
+        layerItem.sublayers[i].tileMatrixSetId = tileMatrixSetId
+        layerItem.sublayers[i].tileMatrixSets = tileMatrixSets
+      } else {
+        layerItem = layerItem.sublayers[i]
+      }
+    })
+    this.document = doc
+  }
 
-    this.unifyModifyParams = {
-      id: key,
-      ip: ip || baseConfigInstance.config.ip,
-      port: Number(port || baseConfigInstance.config.port),
-      serverName: docName,
-      serverType: type,
-      layerIndex: id,
-      geomType,
-      gdbps: url,
-      sysLibraryGuid
+  unifyMode(layer) {
+    this.showUnifyModify = true
+    if (
+      layer.dataRef.layer &&
+      layer.dataRef.layer.type === LayerType.IGSMapImage
+    ) {
+      const parentLayer: IGSMapImageLayer = layer.dataRef.layer
+      const sublayers: Sublayer = layer.dataRef
+      const { ip, port, docName } = parentLayer._parseUrl(parentLayer.url)
+      const { type } = parentLayer
+      const { geomType, sysLibraryGuid, url, id, key } = sublayers
+
+      this.unifyModifyParams = {
+        id: key,
+        ip: ip || baseConfigInstance.config.ip,
+        port: Number(port || baseConfigInstance.config.port),
+        serverName: docName,
+        serverType: type,
+        layerIndex: id,
+        geomType,
+        gdbps: url,
+        sysLibraryGuid
+      }
     }
     this.clickPopover(layer, false)
   }
@@ -480,7 +632,6 @@ export default class TreeLayer extends Mixins(
         tables: []
       }
     }
-    debugger
     const category = this.addCategory(categoryInfo)
     this.currentCategoryId = category.id
     this.openAttributeTable()
@@ -498,8 +649,12 @@ export default class TreeLayer extends Mixins(
     this.layers = [...this.layers]
   }
 
-  isSubLayer({ key }) {
-    return key.split('-').length > 1
+  isSubLayer({ key, sublayers }) {
+    return !sublayers || sublayers.length === 0
+  }
+
+  isParentLayer({ key }) {
+    return key.split('-').length === 1
   }
 
   isIgsVectorLayer({ type }) {
@@ -518,8 +673,16 @@ export default class TreeLayer extends Mixins(
     return layerType === LayerType.IGSMapImage
   }
 
+  isActiveWMTSLayer({ layer: { activeLayer }, id }) {
+    return activeLayer && (activeLayer as WMTSSublayer).id === id
+  }
+
   isWMTSLayer({ type }) {
     return type === LayerType.OGCWMTS
+  }
+
+  isWMSLayer({ type }) {
+    return type === LayerType.OGCWMS
   }
 
   isIgsArcgisLayer({ type }) {
@@ -533,5 +696,25 @@ export default class TreeLayer extends Mixins(
   width: 100%;
   height: 100%;
   overflow: auto;
+  /deep/ .tree-item-handle {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    align-items: center;
+    i {
+      margin-right: 6px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    span {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
 }
 </style>

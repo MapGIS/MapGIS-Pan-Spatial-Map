@@ -1,7 +1,7 @@
 <template>
   <div class="metadata-info-container">
     <div>
-      <div v-if="isIGSMapImage(currentLayerInfo)">
+      <div v-if="isIGSMapImage(currentLayer || currentConfig)">
         <div
           v-for="(item, index) in getJsonTag(metaData)"
           :key="'地图文档' + item + index"
@@ -47,7 +47,7 @@
           </div>
         </div>
       </div>
-      <div v-if="isIGSTile(currentLayerInfo)">
+      <div v-if="isIGSTile(currentLayer || currentConfig)">
         <div
           v-for="(item, index) in getJsonTag(metaData)"
           :key="'瓦片' + item + index"
@@ -86,7 +86,7 @@
           </div>
         </div>
       </div>
-      <div v-if="isIGSVector(currentLayerInfo)">
+      <div v-if="isIGSVector(currentLayer || currentConfig)">
         <div
           v-for="(item, index) in getJsonTag(metaData)"
           :key="'图层' + item + index"
@@ -155,36 +155,41 @@ import {
   LayerType,
   IGSMapImageLayer,
   IGSVectorLayer,
-  IGSTileLayer
+  IGSTileLayer,
+  Layer
 } from '@mapgis/web-app-framework'
+// import { IGSMapImageLayer } from 'app/packages/MapGIS-Web-App-Framework/src/store/document/layer'
 
 @Component({ name: 'MpMetadataInfo', components: {} })
 export default class MpMetadataInfo extends Vue {
-  @Prop(Object) readonly currentLayerInfo!: Record<string, any>
+  @Prop(Object) readonly currentLayer?: Record<string, any>
+
+  @Prop(Object) readonly currentConfig?: Record<string, any>
 
   private metaData: Record<string, unknown> = {}
 
   private tableColumns: Record<string, unknown>[] = []
 
-  @Watch('currentLayerInfo', { deep: true, immediate: true })
+  @Watch('currentLayer', { deep: true, immediate: true })
   private async getMetadta() {
-    if (this.currentLayerInfo) {
-      const { type } = this.currentLayerInfo.layer || this.currentLayerInfo
+    if (this.currentLayer) {
+      const { type } = this.currentLayer.layer || this.currentLayer
       if (type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {
         return
       }
       let option: MetadataQueryParam = {}
       switch (type) {
         case LayerType.IGSMapImage: {
-          if (this.currentLayerInfo.layer) {
-            const { id } = this.currentLayerInfo
-            const { ip, port, docName } = this.currentLayerInfo.layer._parseUrl(
-              this.currentLayerInfo.layer.url
+          if (this.currentLayer.layer) {
+            // const currentLayer = this.currentLayer as IGSMapImageLayer
+            const { id } = this.currentLayer
+            const { ip, port, docName } = this.currentLayer.layer._parseUrl(
+              this.currentLayer.layer.url
             )
             option = { ip, port, docName, layerIdxs: id }
           } else {
-            const { ip, port, docName } = this.currentLayerInfo._parseUrl(
-              this.currentLayerInfo.url
+            const { ip, port, docName } = this.currentLayer._parseUrl(
+              this.currentLayer.url
             )
             option = { ip, port, docName }
           }
@@ -192,17 +197,49 @@ export default class MpMetadataInfo extends Vue {
           break
         }
         case LayerType.IGSTile: {
-          const { ip, port, tileName } = this.currentLayerInfo._parseUrl(
-            this.currentLayerInfo.url
+          const { ip, port, tileName } = this.currentLayer._parseUrl(
+            this.currentLayer.url
           )
           option = { ip, port, tileName }
           break
         }
         case LayerType.IGSVector: {
-          const { gdbps } = this.currentLayerInfo
-          const { ip, port } = this.currentLayerInfo._parseUrl(
-            this.currentLayerInfo.url
+          const { gdbps } = this.currentLayer
+          const { ip, port } = this.currentLayer._parseUrl(
+            this.currentLayer.url
           )
+          option = { ip, port, gdbp: gdbps }
+          break
+        }
+        default:
+          break
+      }
+      this.metaData = await queryIGSMetaDataInstance.getMetadta(option)
+      console.log(this.metaData)
+    }
+  }
+
+  @Watch('currentConfig', { deep: true, immediate: true })
+  private async getmetadata() {
+    console.log(this.currentConfig)
+
+    if (this.currentConfig) {
+      const { type } = this.currentConfig
+      if (type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {
+        return
+      }
+      let option: MetadataQueryParam = {}
+      const { ip, port, serverName, gdbps } = this.currentConfig
+      switch (type) {
+        case LayerType.IGSMapImage: {
+          option = { ip, port, docName: serverName }
+          break
+        }
+        case LayerType.IGSTile: {
+          option = { ip, port, tileName: serverName }
+          break
+        }
+        case LayerType.IGSVector: {
           option = { ip, port, gdbp: gdbps }
           break
         }

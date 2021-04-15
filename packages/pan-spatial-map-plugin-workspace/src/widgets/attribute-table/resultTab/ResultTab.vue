@@ -52,6 +52,7 @@
             fixed: true,
             columnWidth: '50px'
           }"
+          :rowKey="row => row.properties.fid"
           :scroll="{
             y: scrollYModel,
             x: '100%'
@@ -100,6 +101,7 @@
           fixed: true,
           columnWidth: '50px'
         }"
+        :rowKey="row => row.properties.fid"
         :scroll="{
           y: scrollY,
           x: '100%'
@@ -446,7 +448,6 @@ export default class MpResultTab extends Mixins(AppMixin) {
   // }
 
   private async query(where?: string) {
-    // debugger
     this.loading = true
     try {
       this.clear()

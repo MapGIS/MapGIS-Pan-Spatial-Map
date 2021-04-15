@@ -161,6 +161,11 @@
               bordered
               size="small"
               :scroll="{ y: 120 }"
+              :rowKey="
+                (record, index) => {
+                  return index
+                }
+              "
             >
               <span slot="color" slot-scope="text, record">
                 <a-popover trigger="click">
@@ -209,6 +214,11 @@
           bordered
           size="small"
           :scroll="{ y: 250, x: 10 }"
+          :rowKey="
+            (record, index) => {
+              return index
+            }
+          "
         >
         </a-table>
       </a-col>
@@ -937,6 +947,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin, ResultSetMixin) {
       queryChartOption.dataZoom = []
     }
     this.chartObj.setOption(queryChartOption, true)
+    this.chartObj.resize()
   }
 
   setTableView(dataset) {

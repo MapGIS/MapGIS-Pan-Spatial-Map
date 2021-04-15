@@ -7,7 +7,7 @@
         @change="val => setOpacity(val, item)"
         :min="0"
         :max="100"
-        :tipFormatter="val => `${100 - val}%`"
+        :tipFormatter="val => `${val}%`"
       />
     </li>
   </ul>
