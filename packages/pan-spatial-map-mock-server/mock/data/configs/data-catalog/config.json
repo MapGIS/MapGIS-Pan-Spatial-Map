@@ -887,9 +887,7 @@
             "guid": "37ee717c-5f7e-40a9-a45a-55273a7d2fca",
             "serverUrl": "gdbp://MapGisLocal/专题图数据/sfcls/中国地级市x",
             "wfsUrl": "",
-            "extent": "",
-            "status": "",
-            "vtStyle": ""
+            "extent": ""
           },
           {
             "label": "湖北省市级区划",
@@ -903,9 +901,7 @@
             "guid": "d9081e7b-8a56-441f-a511-68902560b54d",
             "serverUrl": "gdbp://MapGISLocal/Templates/sfcls/湖北省市级区划",
             "wfsUrl": "",
-            "extent": "",
-            "status": "",
-            "vtStyle": ""
+            "extent": ""
           }
         ]
       },
