@@ -1,1 +1,43 @@
-{}
+{
+  "paramConfig": {
+    "NAME": "label",
+    "TITLE": "describe",
+    "CHILDREN": "children",
+    "SERVERIP": "ip",
+    "SERVERPORT": "port",
+    "LAYERSERVICETYPE": "layerServiceType",
+    "SERVERNAME": "name",
+    "SEARCHNAME": "searchName",
+    "SERVERURL": "serverUrl",
+    "TOKEN": "token",
+    "WFSURL": "wfsUrl",
+    "SCENEMODEL": "model",
+    "EXTENT": "extent",
+    "GUID": "guid",
+    "DATA": "data"
+  },
+  "iconConfig": {
+    "1": "/upload/1.png",
+    "2": "/upload/2.png",
+    "3": "/upload/3.png",
+    "4": "/upload/4.png",
+    "5": "/upload/5.png",
+    "6": "/upload/6.png",
+    "7": "/upload/7.png",
+    "8": "/upload/8.png"
+  },
+  "urlConfig": {
+    "nonSpatialUrl": ""
+  },
+  "otherConfig": {
+    "nonSpatial": "非空间数据",
+    "searchTip": "",
+    "filtTree": false,
+    "expandType": "one",
+    "showIcon": true
+  },
+  "treeConfig": {
+    "useLocalData": true,
+    "useLocalParam": true
+  }
+}
