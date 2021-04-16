@@ -4,13 +4,13 @@
       checkable
       :tree-data="dataCatalogTreeData"
       :replace-fields="replaceFields"
-      @check="onCheck"
+      v-model="checkedNodeKeys"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, Document, Map } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
@@ -22,59 +22,65 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 数据目录树树据
   private dataCatalogTreeData: [] = []
 
-  // 上次选中的节点列表
-  private preCheckedNodes: [] = []
-
   // 替换treeNode中的title、key字段为treeData中对应的字段
   private replaceFields: object = {
     title: 'name',
     key: 'guid'
   }
 
-  async mounted() {
-    dataCatalogManagerInstance.init(this.widgetInfo.config)
+  // 目录树中选中的节点的id列表。
+  private checkedNodeKeys: string[] = []
 
-    this.dataCatalogTreeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
+  // 目录树中上次选中的节点的id列表
+  private preCheckedNodeKeys: [] = []
+
+  private dataCatalogManager = dataCatalogManagerInstance
+
+  async mounted() {
+    this.dataCatalogManager.init(this.widgetInfo.config)
+
+    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
   }
 
-  onCheck(checkedKeys: string[], info: { checked: boolean; chedkedNodes: [] }) {
+  @Watch('checkedNodeKeys', { deep: false })
+  onCheckedNodeKeysChenged() {
     let newChecked = []
     let newUnChecked = []
 
-    if (this.preCheckedNodes.length === 0) {
-      newChecked = info.checkedNodes
-    } else if (info.checkedNodes.length === 0) {
-      newUnChecked = this.preCheckedNodes
+    if (this.preCheckedNodeKeys.length === 0) {
+      newChecked = this.checkedNodeKeys
+    } else if (this.checkedNodeKeys.length === 0) {
+      newUnChecked = this.preCheckedNodeKeys
     } else {
       // 计算哪些是新选中的,哪些时新取消选中的。
 
       // 查找新选中的(在之前的选中中没有,在当前的选中中有)
-      for (let i = 0; i < info.checkedNodes.length; i++) {
+      for (let i = 0; i < this.checkedNodeKeys.length; i++) {
         let isFind = false
-        for (let j = 0; j < this.preCheckedNodes.length; j++) {
-          if (info.checkedNodes[i].key === this.preCheckedNodes[j].key) {
+        for (let j = 0; j < this.preCheckedNodeKeys.length; j++) {
+          if (this.checkedNodeKeys[i] === this.preCheckedNodeKeys[j]) {
             isFind = true
             break
           }
         }
 
         if (!isFind) {
-          newChecked.push(info.checkedNodes[i])
+          newChecked.push(this.checkedNodeKeys[i])
         }
       }
 
       // 查找新取消选中的(在之前的选中中有,在当前的选中中没有)
-      for (let i = 0; i < this.preCheckedNodes.length; i++) {
+      for (let i = 0; i < this.preCheckedNodeKeys.length; i++) {
         let isFind = false
-        for (let j = 0; j < info.checkedNodes.length; j++) {
-          if (this.preCheckedNodes[i].key === info.checkedNodes[j].key) {
+        for (let j = 0; j < this.checkedNodeKeys.length; j++) {
+          if (this.preCheckedNodeKeys[i] === this.checkedNodeKeys[j]) {
             isFind = true
             break
           }
         }
 
         if (!isFind) {
-          newUnChecked.push(this.preCheckedNodes[i])
+          newUnChecked.push(this.preCheckedNodeKeys[i])
         }
       }
     }
@@ -85,17 +91,51 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     // 将新选中的图层节点添加到document
     this.modifyDocument(newChecked, true)
 
-    this.preCheckedNodes = info.checkedNodes
+    // 给dataCatalogManager中的变量赋值
+    const checkedLayerConfigIDs = this.getCheckedLayerConfigIDs()
+
+    // 如果两者不相等则重新赋值
+    if (
+      this.dataCatalogManager.checkedLayerConfigIDs.toString() !==
+      checkedLayerConfigIDs.toString()
+    ) {
+      this.dataCatalogManager.checkedLayerConfigIDs = checkedLayerConfigIDs
+    }
+
+    //
+    this.preCheckedNodeKeys = this.checkedNodeKeys
   }
 
-  private modifyDocument(nodeList: [], isChecked: boolean) {
+  @Watch('dataCatalogManager.checkedLayerConfigIDs')
+  onCheckedLayerConfigIDsChanged() {
+    // 如果两者不相等则重新赋值
+    if (
+      this.dataCatalogManager.checkedLayerConfigIDs.toString() !==
+      this.getCheckedLayerConfigIDs().toString()
+    ) {
+      this.checkedNodeKeys = this.dataCatalogManager.checkedLayerConfigIDs
+    }
+  }
+
+  private getCheckedLayerConfigIDs(): string[] {
+    const checkedLayerConfigIDs = []
+    this.checkedNodeKeys.forEach(key => {
+      const layerConfig = this.dataCatalogManager.getLayerConfigByID(key)
+
+      if (layerConfig) checkedLayerConfigIDs.push(key)
+    })
+
+    return checkedLayerConfigIDs
+  }
+
+  private modifyDocument(nodekeys: [], isChecked: boolean) {
     // 获取选中节点中的图层节点。
     const layerConfigNodeList: [] = []
-    nodeList.forEach(vnode => {
-      const { dataRef } = vnode.data.props
+    nodekeys.forEach(key => {
+      const layerConfig = this.dataCatalogManager.getLayerConfigByID(key)
 
-      if (dataCatalogManagerInstance.isLayerNode(dataRef)) {
-        layerConfigNodeList.push(dataRef)
+      if (layerConfig) {
+        layerConfigNodeList.push(layerConfig)
       }
     })
 

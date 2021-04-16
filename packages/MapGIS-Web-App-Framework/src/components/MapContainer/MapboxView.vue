@@ -153,7 +153,7 @@ export default {
   },
   watch: {
     document: {
-      deep: true,
+      deep: false,
       handler() {
         this.parseDocument()
       }
