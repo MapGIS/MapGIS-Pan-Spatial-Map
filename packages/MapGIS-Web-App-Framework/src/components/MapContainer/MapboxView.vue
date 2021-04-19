@@ -8,6 +8,7 @@
     @load="handleLoad"
     style="height: 100%; width: 100%"
   >
+    <base-layers-mapbox :document="document" />
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapbox-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
@@ -107,6 +108,7 @@ import {
   MapboxArcgisLayer,
   MapboxScaleControl
 } from '@mapgis/webclient-vue-mapboxgl'
+import BaseLayersMapbox from '../BaseLayers/BaseLayersMapbox'
 
 export default {
   name: 'MpMapboxView',
@@ -119,7 +121,8 @@ export default {
     MapboxOgcWmsLayer,
     MapboxIgsTdtLayer,
     MapboxArcgisLayer,
-    MapboxScaleControl
+    MapboxScaleControl,
+    BaseLayersMapbox
   },
   props: {
     mapStyle: {

@@ -1,13 +1,123 @@
 <template>
-  <div class="mp-widget-basemap-manager">地图管理</div>
+  <a-checkbox-group style="width:100%" v-model="layerNames">
+    <ul class="mp-widget-basemap-manager">
+      <li
+        v-for="(item, index) in mapData"
+        class="image-container"
+        :key="index"
+        :style="setMargin(index)"
+      >
+        <div class="image-header">
+          <!-- <img :src="baseUrl + item.image" /> -->
+          <img :src="setUrl(item.image)" />
+          <a-popover>
+            <template slot="content">
+              <span>
+                {{ item.name }}
+              </span>
+            </template>
+            <p class="img-description">
+              <a-checkbox :value="item.name"> </a-checkbox>
+              <span class="img-title">{{ item.name }}</span>
+            </p>
+          </a-popover>
+        </div>
+      </li>
+    </ul>
+  </a-checkbox-group>
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
+import { envInstance, BaseLayersMixin } from '@mapgis/pan-spatial-map-store'
 
 @Component({ name: 'MpBasemapManager' })
-export default class MpBasemapManager extends Mixins(WidgetMixin) {}
+export default class MpBasemapManager extends Mixins(
+  WidgetMixin,
+  BaseLayersMixin
+) {
+  private get baseUrl() {
+    // return envInstance.config.baseApi === '/' ? '' : envInstance.config.baseApi
+    return process.env.VUE_APP_API_BASE_URL
+  }
+
+  private get mapData() {
+    return this.baseLayerConfig.filter(config => {
+      const { scene, visible } = config
+      if (this.is2DMapMode) {
+        return (scene === '2D' || scene === '23D') && visible === 'true'
+      }
+      return (scene === '3D' || scene === '23D') && visible === 'true'
+    })
+  }
+
+  setUrl(url: string) {
+    if (url.startsWith('http')) {
+      return url
+    }
+    return this.baseUrl + url
+  }
+
+  setMargin(index) {
+    const isMarginTop = index / 2 >= 1
+    if (index % 2 === 0) {
+      return {
+        width: 'calc(50% - 5px)',
+        marginRight: '10px',
+        marginTop: isMarginTop ? '10px' : 0
+      }
+    }
+    return {
+      width: 'calc(50% - 5px)',
+      marginRigh: '10px',
+      marginTop: isMarginTop ? '10px' : 0
+    }
+  }
+}
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.mp-widget-basemap-manager {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  &,
+  li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    .image-header {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-top: 100%; /*相对于这个盒子的宽度设置的，其值=width*/
+      img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .img-description {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 0 6px;
+        height: 35px;
+        line-height: 35px;
+        text-align: center;
+        margin-bottom: 0px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        .img-title {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+}
+</style>
