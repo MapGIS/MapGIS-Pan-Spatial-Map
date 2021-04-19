@@ -82,7 +82,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   private originData: object[] = []
 
   // 上次选中的节点列表
-  private preCheckedNodes: [] = []
+  private preCheckedNodeKeys: [] = []
 
   // 目录树中选中的节点的id列表。
   private checkedNodeKeys: string[] = []
@@ -139,10 +139,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
     console.log(this.checkedNodeKeys)
 
-    if (this.preCheckedNodes.length === 0) {
+    if (this.preCheckedNodeKeys.length === 0) {
       newChecked = this.checkedNodeKeys
     } else if (this.checkedNodeKeys.length === 0) {
-      newUnChecked = this.preCheckedNodes
+      newUnChecked = this.preCheckedNodeKeys
     } else {
       // 计算哪些是新选中的,哪些时新取消选中的。
 
@@ -183,10 +183,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     // 将新选中的图层节点添加到document
     this.modifyDocument(newChecked, true)
 
-    console.log('this is dataCatalogManager.checkedLayerConfigIDs')
-
-    console.log(this.dataCatalogManager.checkedLayerConfigIDs)
-
     // 给dataCatalogManager中的变量赋值
     const checkedLayerConfigIDs = this.getCheckedLayerConfigIDs()
 
@@ -197,9 +193,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     ) {
       this.dataCatalogManager.checkedLayerConfigIDs = checkedLayerConfigIDs
     }
-
     //
-    this.preCheckedNodeKeys = this.checkedNodeKeys
+    this.preCheckedNodeKeys = JSON.parse(JSON.stringify(this.checkedNodeKeys))
   }
 
   @Watch('dataCatalogManager.checkedLayerConfigIDs')
@@ -220,9 +215,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
       if (layerConfig) checkedLayerConfigIDs.push(key)
     })
-    console.log('this is checkedLayerConfigIDs')
-
-    console.log(checkedLayerConfigIDs)
 
     return checkedLayerConfigIDs
   }
@@ -397,7 +389,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 监听书签项点击事件('click-bookmark-item')
   bookMarkClick(node) {
-    // debugger
     if (this.dataCatalogManager.checkedLayerConfigIDs.includes(node.guid)) {
       const index = this.dataCatalogManager.checkedLayerConfigIDs.findIndex(
         item => item === node.guid
