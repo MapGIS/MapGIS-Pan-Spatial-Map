@@ -545,7 +545,6 @@ export default class TreeLayer extends Mixins(
    * 自定义查询
    */
   customQuery(layer) {
-    console.log(layer)
     this.showCustomQuery = true
     this.clickPopover(layer, false)
     const parent: IGSMapImageLayer = layer.layer

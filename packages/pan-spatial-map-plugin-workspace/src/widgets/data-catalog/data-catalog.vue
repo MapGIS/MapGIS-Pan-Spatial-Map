@@ -85,7 +85,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   private showMetaData = false
 
-  private currentConfig: Record<string, unknown> = {}
+  // 目录树中上次选中的节点的id列表
+  private preCheckedNodeKeys: [] = []
 
   async mounted() {
     this.dataCatalogManager.init(this.widgetInfo.config)

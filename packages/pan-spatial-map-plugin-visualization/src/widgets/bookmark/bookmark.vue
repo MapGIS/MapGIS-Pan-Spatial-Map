@@ -1,44 +1,10 @@
 <template>
-  <div class="mp-widget-bookmark">
-    <a-tree
-      v-if="treeData.length > 0"
-      :tree-data="treeData"
-      :defaultExpandAll="true"
-      :showLine="true"
-      :replaceFields="replaceFields"
-    >
-      <a-icon slot="switcherIcon" type="down" />
-      <template #custom="item">
-        <div v-if="item.children && item.children.length > 0">
-          {{ item.name }}
-        </div>
-        <a-dropdown v-else :trigger="['contextmenu']">
-          <div @click="onClickItem(item)">{{ item.name }}</div>
-          <a-menu slot="overlay">
-            <a-menu-item key="1" @click="onDeleteItem(item)"
-              >删除该项</a-menu-item
-            >
-          </a-menu>
-        </a-dropdown>
-      </template>
-    </a-tree>
-    <div v-else>
-      <span>暂无数据</span>
-    </div>
-  </div>
+  <div class="mp-widget-bookmark">书签</div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
-import {
-  eventBus,
-  api,
-  dataCatalogInstance
-} from '@mapgis/pan-spatial-map-store'
-import { TreeConfig } from '@mapgis/pan-spatial-map-plugin-visualization/src/widgets/bookmark/tree-config'
-import base from 'app/packages/pan-spatial-map-store/src/config/base'
 
 @Component({ name: 'MpBookmark' })
 export default class MpBookmark extends Mixins(WidgetMixin) {

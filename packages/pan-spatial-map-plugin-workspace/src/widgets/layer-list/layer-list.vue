@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-layer-list">
-    <a-tabs v-model="tab">
+    <a-tabs v-model="tab" :animated="false">
       <a-tab-pane key="tree" tab="图层树">
         <tree-layer :widgetInfo="widgetInfo" />
       </a-tab-pane>
@@ -27,14 +27,8 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
 </script>
 
 <style lang="less">
-@import '~ant-design-vue/lib/style/themes/default.less';
 .mp-widget-layer-list {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
   .ant-tabs {
-    width: 100%;
-    height: 100%;
     .ant-tabs-nav {
       .ant-tabs-tab {
         padding-top: 0px;
@@ -42,6 +36,12 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     }
     .ant-tabs-content {
       height: calc(~'100% - 60px');
+      .ant-tabs-tabpane-active {
+        display: unset;
+      }
+      .ant-tabs-tabpane-inactive {
+        display: none;
+      }
     }
   }
 }
