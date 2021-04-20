@@ -1,4 +1,5 @@
 import { UUID } from '@mapgis/webclient-store/src/utils'
+import { getConfig } from '../api/config'
 
 export class BaseLayersManager {
   private _layerCache: Map<string, Record<string, unknown>[]>
@@ -39,44 +40,14 @@ export class BaseLayersManager {
     return this._defaultBaseLayerName
   }
 
-  public init(config) {
+  public init(config: Record<string, unknown>[]) {
     this._config = config
-    if (this.config.length > 0) {
-      this._defaultBaseLayerName = this._config[0].name as string // 初始化加载索引底图
+    if (this._config.length > 0) {
+      this._defaultBaseLayerName = `${
+        this._config[this._config.length - 1].name
+      }` // 初始化加载索引底图
     }
-    // if (this._config.length === 0) {
-    //   await BaseLayersConfig.loadConfig()
-    //   // this._config = baseLayersConfigIntance.config
-    //   const baseLayersConfig = baseLayersConfigIntance.config
-    //   await MapDocument.init()
-    //   const { defaultBaseLayer } = this.mapDocument // 索引底图
-    //   let serverType = ''
-    //   if (defaultBaseLayer.subtype === 'IgsDocLayer') {
-    //     serverType = 'doc'
-    //   } else if (defaultBaseLayer.subtype === 'IgsTileLayer') {
-    //     serverType = 'tile'
-    //   }
-    //   const tempDefaultBaseLayer = {
-    //     image: 'statics/plugins/workspace/images/imagemap.png',
-    //     name: defaultBaseLayer.title,
-    //     scene: '23D',
-    //     visible: 'true',
-    //     children: [
-    //       {
-    //         layerName: defaultBaseLayer.serverName,
-    //         layerType: null,
-    //         projection: null,
-    //         serverType,
-    //         serverUrl: '',
-    //         serverip: defaultBaseLayer.ip,
-    //         serverport: defaultBaseLayer.port
-    //       }
-    //     ]
-    //   }
-    //   baseLayersConfig.push(tempDefaultBaseLayer)
-    //   this._config = baseLayersConfig
-    //   this._defaultBaseLayerName = defaultBaseLayer.title
-    // }
+    // })
   }
 
   public CreateTianDiTuLayer(

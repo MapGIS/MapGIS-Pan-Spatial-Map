@@ -2,6 +2,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
 import baseLayerManagerInstance, { BaseLayersManager } from '../map/base-layers'
+import { getConfig } from '../api/config'
 
 @Component({})
 export default class BaseLayersMixin extends Vue {
@@ -9,19 +10,51 @@ export default class BaseLayersMixin extends Vue {
 
   public defaultBaseLayerId: any = ''
 
+  arr = []
+
   widgetInfo: any
 
   protected mounted() {
-    this.baseLayerManager.init(this.config)
-    if (this.config.length > 0) {
-      this.layerNames = [this.baseLayerManager.defaultBaseLayerName] // 初始化加载索引底图
-    } else {
-      this.layerNames = [] // 初始化加载索引底图
-    }
+    getConfig('base').then(res => {
+      const defaultBaseLayer = this.createDefaultBaseLayer(res)
+      let serverType = ''
+      if (defaultBaseLayer.subtype === 'IgsDocLayer') {
+        serverType = 'doc'
+      } else if (defaultBaseLayer.subtype === 'IgsTileLayer') {
+        serverType = 'tile'
+      }
+      const tempDefaultBaseLayer = {
+        image: defaultBaseLayer.image,
+        name: defaultBaseLayer.title,
+        scene: '23D',
+        visible: 'true',
+        children: [
+          {
+            layerName: defaultBaseLayer.serverName,
+            layerType: null,
+            projection: null,
+            serverType,
+            serverUrl: '',
+            serverip: defaultBaseLayer.ip,
+            serverport: defaultBaseLayer.port
+          }
+        ]
+      }
+      if (this.widgetInfo) {
+        const { config } = this.widgetInfo
+        config.push(tempDefaultBaseLayer)
+        this.baseLayerManager.init(config)
+        if (config.length > 0) {
+          this.layerNames = [this.baseLayerManager.defaultBaseLayerName] // 初始化加载索引底图
+        } else {
+          this.layerNames = [] // 初始化加载索引底图
+        }
+      }
+    })
   }
 
-  protected get config() {
-    return (this.widgetInfo || {}).config || []
+  protected get baseLayerConfig() {
+    return this.baseLayerManager.config
   }
 
   protected get layerNames() {
@@ -32,7 +65,7 @@ export default class BaseLayersMixin extends Vue {
     names.forEach(name => {
       const layers = this.baseLayerManager.layerCache.get(name)
       if (!layers) {
-        const info: any = this.config.find(item => item.name === name)
+        const info: any = this.baseLayerConfig.find(item => item.name === name)
         if (info) {
           const { children } = info
           const newLayers = children.map(item => {
@@ -233,5 +266,48 @@ export default class BaseLayersMixin extends Vue {
 
   protected get docLayers() {
     return this.layers.filter(({ subtype }) => subtype === 'DocLayer')
+  }
+
+  public createDefaultBaseLayer(systemConfig: Record<string, unknown>) {
+    const {
+      name,
+      serverType,
+      ip,
+      port,
+      defaultMapType,
+      defaultMapName,
+      image
+    } = systemConfig
+
+    // 构建图层基本信息
+    const obj: Record<string, unknown> = {
+      ip,
+      port,
+      title: name,
+      type: 'RasterTile',
+      image
+    }
+    // 根据服务类型初始化图层信息
+    switch (serverType) {
+      case 'IGServer':
+        obj.serverName = defaultMapName
+        switch (defaultMapType) {
+          case 'doc':
+            obj.subtype = 'IgsDocLayer'
+            break
+          case 'tile':
+            obj.subtype = 'IgsTileLayer'
+            break
+          default:
+            break
+        }
+        break
+      case 'OGCServer':
+        break
+      default:
+        break
+    }
+
+    return obj
   }
 }
