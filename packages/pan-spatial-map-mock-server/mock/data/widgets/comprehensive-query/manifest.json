@@ -7,7 +7,7 @@
   "properties": {
     "2D": true,
     "3D": true,
-    "inPanel": true,
+    "inPanel": false,
     "hasConfig": true,
     "hasSettingPage": true,
     "settingUiComponent": ""

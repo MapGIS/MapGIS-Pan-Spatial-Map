@@ -6,7 +6,7 @@
         "position": {
           "anchor": "bottom-left",
           "horizontalOffset": 10,
-          "verticalOffset": 64
+          "verticalOffset": 36
         }
       },
       {
@@ -14,7 +14,7 @@
         "position": {
           "anchor": "bottom-left",
           "horizontalOffset": 10,
-          "verticalOffset": 106
+          "verticalOffset": 78
         }
       },
       {
@@ -26,10 +26,18 @@
         }
       },
       {
+        "uri": "widgets/comprehensive-query",
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 10,
           "verticalOffset": 10
+        }
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 52
         },
         "placeholder": true
       },
@@ -37,7 +45,7 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 52,
-          "verticalOffset": 10
+          "verticalOffset": 52
         },
         "placeholder": true
       },
@@ -45,7 +53,7 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 94,
-          "verticalOffset": 10
+          "verticalOffset": 52
         },
         "placeholder": true
       },
@@ -53,7 +61,7 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 136,
-          "verticalOffset": 10
+          "verticalOffset": 52
         },
         "placeholder": true
       },
@@ -61,7 +69,7 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 178,
-          "verticalOffset": 10
+          "verticalOffset": 52
         },
         "placeholder": true
       }

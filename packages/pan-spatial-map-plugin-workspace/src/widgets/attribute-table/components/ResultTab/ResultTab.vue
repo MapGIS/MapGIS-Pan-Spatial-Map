@@ -208,11 +208,11 @@ import {
   queryArcgisInfoInstance
 } from '@mapgis/pan-spatial-map-store'
 import * as Zondy from '@mapgis/webclient-es6-service'
-import markerBlue from '../../../assets/images/markerBlue.png'
+import markerBlue from '../../../../assets/images/markerBlue.png'
 import ResultTabMapbox from './ResultTabMapbox.vue'
 import ResultTabCesium from './ResultTabCesium.vue'
 import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
-import MpFilter from '../../../components/Filter/Filter.vue'
+import MpFilter from '../../../../components/Filter/Filter.vue'
 
 interface Pagination {
   // 排序字段

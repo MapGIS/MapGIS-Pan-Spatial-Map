@@ -20,7 +20,7 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 import { MapMixin } from '@mapgis/web-app-framework'
 
-import CesiumMarker from '../../../components/CesiumMarker/CesiumMarker.vue'
+import CesiumMarker from '../../../../components/CesiumMarker/CesiumMarker.vue'
 
 @Component({
   components: { CesiumMarker }

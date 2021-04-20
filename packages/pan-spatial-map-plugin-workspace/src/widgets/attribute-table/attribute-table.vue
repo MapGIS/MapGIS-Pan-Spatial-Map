@@ -77,7 +77,7 @@
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ResultSetMixin } from '@mapgis/pan-spatial-map-store'
-import MpResultTab from './resultTab/ResultTab'
+import MpResultTab from './components/ResultTab/ResultTab'
 
 @Component({
   name: 'MpAttributeTable',
@@ -98,9 +98,9 @@ export default class MpAttributeTable extends Mixins(
   @Prop({ type: Boolean, required: false, default: true })
   private readonly closeable!: boolean
 
-  private viewHeight = this.maxViewHeight * 0.4
+  private viewHeight = this.maxViewHeight * 0.5
 
-  private initViewHeight = this.maxViewHeight * 0.4
+  private initViewHeight = this.maxViewHeight * 0.5
 
   private open = this.initOpen
 
@@ -110,8 +110,8 @@ export default class MpAttributeTable extends Mixins(
 
   @Watch('maxViewHeight')
   maxViewHeightChanged() {
-    this.viewHeight = this.maxViewHeight * 0.4
-    this.initViewHeight = this.maxViewHeight * 0.4
+    this.viewHeight = this.maxViewHeight * 0.5
+    this.initViewHeight = this.maxViewHeight * 0.5
   }
 
   @Watch('categories')
@@ -249,7 +249,7 @@ export default class MpAttributeTable extends Mixins(
   }
   .result-set-container {
     height: 100%;
-    background-color: white;
+    background-color: @base-bg-color;
     padding-top: 5px;
     /deep/ .ant-tabs {
       display: flex;
@@ -258,6 +258,11 @@ export default class MpAttributeTable extends Mixins(
       height: 100%;
       .ant-tabs-nav-container {
         padding: 0 2px;
+        height: 32px;
+        .ant-tabs-tab {
+          height: 32px;
+          line-height: 32px;
+        }
       }
       .children-tabs-container {
         .ant-tabs-nav-container {
@@ -268,7 +273,7 @@ export default class MpAttributeTable extends Mixins(
         margin: 0;
       }
       .ant-tabs-content {
-        height: calc(~'100% - 40px');
+        height: calc(~'100% - 32px');
       }
     }
   }
