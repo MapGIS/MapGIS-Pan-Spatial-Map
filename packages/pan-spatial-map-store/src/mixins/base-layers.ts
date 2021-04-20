@@ -40,13 +40,15 @@ export default class BaseLayersMixin extends Vue {
           }
         ]
       }
-      const { config } = this.widgetInfo || { config: [] }
-      config.push(tempDefaultBaseLayer)
-      this.baseLayerManager.init(config)
-      if (config.length > 0) {
-        this.layerNames = [this.baseLayerManager.defaultBaseLayerName] // 初始化加载索引底图
-      } else {
-        this.layerNames = [] // 初始化加载索引底图
+      if (this.widgetInfo) {
+        const { config } = this.widgetInfo
+        config.push(tempDefaultBaseLayer)
+        this.baseLayerManager.init(config)
+        if (config.length > 0) {
+          this.layerNames = [this.baseLayerManager.defaultBaseLayerName] // 初始化加载索引底图
+        } else {
+          this.layerNames = [] // 初始化加载索引底图
+        }
       }
     })
   }
