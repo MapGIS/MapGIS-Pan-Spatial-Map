@@ -125,6 +125,16 @@ export class DataCatalogManager {
   }
 
   /**
+   * 数据目录树中选中的图层节点的guid
+   * guid为图层节点配置中的guid字段的值。该字段用于唯一标识一个节点配置。
+   *
+   * @date 16/04/2021
+   * @type {string[]}
+   * @memberof DataCatalogManager
+   */
+  public checkedLayerConfigIDs: string[] = []
+
+  /**
    * 通过目录树配置初始化目录树管理对象
    *
    * @author Yuanye Ma
@@ -652,8 +662,11 @@ export class DataCatalogManager {
     }
   }
 
-  // 目树中所有的图层节点列表（转换后的）
+  // 目录树中所有的图层节点列表（转换后的）
   private _allLayerConfigItems: Record<string, any> = []
+
+  // 目录树中所有的节点列表（转换后的）
+  private _allConfigItems: Record<string, any> = []
 }
 
 export default DataCatalogManager.getInstance()
