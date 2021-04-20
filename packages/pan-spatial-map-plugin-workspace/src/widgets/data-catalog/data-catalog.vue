@@ -109,9 +109,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     this.dataCatalogManager.init(this.widgetInfo.config)
     const data = await this.dataCatalogManager.getDataCatalogTreeData()
     this.dataCatalogTreeData = this.handleTreeData(data)
-    console.log(this.dataCatalogTreeData)
-    console.log(this.dataCatalogManager)
-
     this.originData = this.dataCatalogTreeData
 
     eventBus.$on('click-bookmark-item', this.bookMarkClick)

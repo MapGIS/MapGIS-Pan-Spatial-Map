@@ -159,9 +159,13 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
 
   // 添加书签成功后提示信息
   showMessage() {
+    this.$message.config({
+      top: '100px',
+      duration: 1,
+      maxCount: 3
+    })
     this.$message.success({
-      content: '收藏成功，通过书签功能查看',
-      duration: 1
+      content: '收藏成功，通过书签功能查看'
     })
   }
 
@@ -237,6 +241,11 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
         config: JSON.stringify(this.treeData)
       })
       .catch(() => {
+        this.$message.config({
+          top: '100px',
+          duration: 1,
+          maxCount: 3
+        })
         this.$message.error('配置文件更新失败')
       })
   }
