@@ -108,7 +108,7 @@ interface IDataCatalog extends ITimeLineList {
   description: string // 节点描述
   icon: string // 节点的图标(可选)
   level: string // 节点的层次
-  children: IData[] // 子节点数组
+  children: IDataCatalog[] // 子节点数组
 }
 
 @Component({
@@ -119,8 +119,6 @@ interface IDataCatalog extends ITimeLineList {
 })
 export default class MpRetrospect extends Mixins(WidgetMixin) {
   baseTreeData: Record<string, any>[] = []
-
-  form = this.$form.createForm(this, { name: 'retrospect_form' })
 
   subjectType = ''
 
@@ -186,8 +184,8 @@ export default class MpRetrospect extends Mixins(WidgetMixin) {
     this.subjectType = value
     this.subjects = this.baseTreeData.find(
       ({ children, name }) => value === name
-    ).children
-    console.log('获取专题----------', this.subjects)
+    )!.children
+    // console.log('获取专题----------', this.subjects)
     if (this.subjects.length) {
       this.onSubjectChange(this.subjects[0].guid)
     }
@@ -200,11 +198,11 @@ export default class MpRetrospect extends Mixins(WidgetMixin) {
   onSubjectChange(value: string) {
     this.clear()
     this.subject = value
-    const { children } = this.subjects.find(v => v.guid === value)
-    if (children && children.length) {
-      this.timeLineList = this.getTimeLineList(children)
+    const option = this.subjects.find(v => v.guid === value)
+    if (option && option.children && option.children.length) {
+      this.timeLineList = this.getTimeLineList(option.children)
       this.timeIndex = 0
-      console.log('当前专题/时间轴数据-------', value, this.timeLineList)
+      // console.log('当前专题/时间轴数据-------', value, this.timeLineList)
     }
   }
 
@@ -220,9 +218,6 @@ export default class MpRetrospect extends Mixins(WidgetMixin) {
       } else if (/\d+/g.test(name)) {
         // todo 业务逻辑
         const _name = name.match(/\d+/g)[0]
-        // if (/\((\d+)\)/g.test(name)) {
-        //   _name = name.match(/\((.+?)\)/g)[0]
-        // }
         // console.log('年份', name, _name)
         results.push({
           name: _name,
@@ -250,7 +245,7 @@ export default class MpRetrospect extends Mixins(WidgetMixin) {
     this.showTimeLine = true
     this.baseTreeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
     this.subjectTypes = this.baseTreeData.map(({ name }) => name)
-    console.log('类别列表-------', this.subjectTypes)
+    // console.log('类别列表-------', this.subjectTypes)
     this.onSubjectTypeChange(this.subjectTypes[0])
   }
 
@@ -267,7 +262,7 @@ export default class MpRetrospect extends Mixins(WidgetMixin) {
    */
   onResize() {
     if (this.timeLineRef) {
-      this.timeLineRef.resize()
+      (this.timeLineRef as any).resize()
     }
   }
 
