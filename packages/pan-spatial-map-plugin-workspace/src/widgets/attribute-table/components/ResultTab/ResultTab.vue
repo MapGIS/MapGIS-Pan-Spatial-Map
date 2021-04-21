@@ -738,7 +738,6 @@ export default class MpResultTab extends Mixins(AppMixin) {
 }
 </script>
 <style lang="less">
-@import '~ant-design-vue/lib/style/color/colors.less';
 .result-tab-model-container {
   top: 0;
   padding: 0;
