@@ -21,7 +21,7 @@
               >元数据信息</a-menu-item
             >
             <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
-            <a-menu-item key="3">上传图例</a-menu-item>
+            <a-menu-item v-if="hasLegend(item)" key="3">上传图例</a-menu-item>
           </a-menu>
         </a-dropdown>
       </template>
@@ -83,10 +83,11 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   private dataCatalogManager = dataCatalogManagerInstance
 
+  // 是否显示元数据信息窗口
   private showMetaData = false
 
-  // 目录树中上次选中的节点的id列表
-  private preCheckedNodeKeys: [] = []
+  // 元数据信息组件Props值
+  private currentConfig: Record<string, unknown> = {}
 
   async mounted() {
     this.dataCatalogManager.init(this.widgetInfo.config)
@@ -223,6 +224,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     console.log(item)
   }
 
+  // 对目录树数据进行处理
   handleTreeData(data: object[]) {
     const this_ = this
     return data.map((item: any) => {
@@ -232,6 +234,38 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       }
       return item
     })
+  }
+
+  // 是否显示上传图例
+  hasLegend(node) {
+    const nodeParentLevel = node.pos
+      .split('-')
+      .slice(1)
+      .map(item => +item)
+    const LabelArr = []
+    this.getNodeLabel(this.dataCatalogTreeData, 0, LabelArr, nodeParentLevel)
+    if (LabelArr.some(item => item.indexOf('专题') !== -1)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  // 串联该节点所在层级的description
+  getNodeLabel(node, index, labelArr, nodeParentLevel) {
+    labelArr.push(node[nodeParentLevel[index]].description)
+    if (
+      node[nodeParentLevel[index]].children &&
+      node[nodeParentLevel[index]].children.length > 0
+    ) {
+      index++
+      this.getNodeLabel(
+        node[nodeParentLevel[index - 1]].children,
+        index,
+        labelArr,
+        nodeParentLevel
+      )
+    }
   }
 
   // 判断是否是OGC图层
