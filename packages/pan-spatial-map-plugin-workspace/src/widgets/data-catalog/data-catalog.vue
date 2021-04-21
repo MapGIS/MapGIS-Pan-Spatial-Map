@@ -220,9 +220,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     }
   }
 
-  onClick(item) {
-    console.log(item)
-  }
+  onClick(item) {}
 
   // 对目录树数据进行处理
   handleTreeData(data: object[]) {
@@ -276,7 +274,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 元数据信息按钮响应事件
   showMetaDataInfo(item) {
     if (this.isOGCLayer(item.serverType)) {
-      console.log('这是OGC图层')
       this.showMetaData = false
       const url = item.serverURL
       let getCapabilitiesURL = ''
@@ -298,10 +295,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         serverName: item.serverName,
         type: item.serverType
       }
-
-      console.log('查看元数据信息')
-      console.log(layer)
-
       this.showMetaData = true
       this.currentConfig = layer
     }

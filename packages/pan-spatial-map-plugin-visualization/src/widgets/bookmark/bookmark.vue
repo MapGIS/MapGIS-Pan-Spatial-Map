@@ -54,10 +54,9 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
   private nodeParentLevel: number[] = []
 
   private mounted(): void {
-    console.log(TreeConfig.getInstance().config.GUID)
+    // console.log(TreeConfig.getInstance().config.GUID)
 
     this.treeData = this.widgetInfo.config
-    console.log(this.widgetInfo.config)
     eventBus.$on('add-to-mark', this.clickMark)
     eventBus.$on('check-to-mark', this.checkMark)
   }
@@ -111,13 +110,11 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
 
     if (this.nodeParentLevel.length > 0) {
       this.getNodeLabel(baseTreeData, 0, labelArr)
-      console.log(labelArr)
     }
     const treeNodeLabel = labelArr.join(' ')
     copyParams.name = treeNodeLabel
 
     if (this.treeData.some(item => item.name === type)) {
-      console.log(this.treeData)
       const childrenArr = this.treeData[0].children
       if (
         childrenArr.some(
@@ -223,8 +220,6 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
 
   // 右键删除该项响应事件
   onDeleteItem(node) {
-    console.log('删除该项')
-    console.log(node)
     const index = this.treeData[0].children.findIndex(
       item =>
         item[TreeConfig.getInstance().config.GUID] ===
