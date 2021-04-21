@@ -1,13 +1,337 @@
 <template>
-  <div class="mp-widget-measurement">测量</div>
+  <div class="mp-widget-measurement">
+    <div class="toolbar">
+      <template>
+        <div class="toolbar-left">
+          <a-tooltip
+            v-for="item in planeMeasureModes"
+            :key="item.title"
+            placement="bottom"
+            :title="item.title"
+          >
+            <a-button
+              class="button btn-left"
+              @click="startMeasure(item.mode)"
+              :icon="item.icon"
+            />
+          </a-tooltip>
+        </div>
+      </template>
+      <div class="toolbar-right">
+        <a-select v-show="showLengthSelect" v-model="activeDistanceSelect">
+          <a-select-option v-for="item in getSelectOptions" :key="item">{{
+            item
+          }}</a-select-option>
+        </a-select>
+        <a-select v-show="showAreaSelect" v-model="activeAreaSelect">
+          <a-select-option v-for="item in getSelectOptions" :key="item">{{
+            item
+          }}</a-select-option>
+        </a-select>
+        <a-tooltip placement="bottom" title="设置">
+          <a-button
+            class="button btn-right"
+            icon="setting"
+            @click="showSettingPanel = !showSettingPanel"
+          />
+        </a-tooltip>
+        <a-tooltip placement="bottom" title="清除">
+          <a-button class="button btn-right" icon="delete" />
+        </a-tooltip>
+      </div>
+    </div>
+    <div class="measure-result">
+      <div v-show="showLengthSelect" class="measure-result-title">测量结果</div>
+      <div v-show="showLengthSelect" class="resilt-panel">
+        <div class="result-item">
+          <span>投影平面长度:</span>
+          <span>{{ results.planeLength }}</span>
+        </div>
+        <div class="result-item">
+          <span>椭球实地长度:</span>
+          <span>{{ results.ellipsoidLength }}</span>
+        </div>
+      </div>
+      <div v-show="showAreaSelect" class="measure-result-title">测量结果</div>
+      <div v-show="showAreaSelect" class="resilt-panel">
+        <div class="result-item">
+          <span>投影平面周长:</span>
+          <span>{{ results.planePerimeter }}</span>
+        </div>
+        <div class="result-item">
+          <span>投影平面面积:</span>
+          <span>{{ results.planeAre }}</span>
+        </div>
+        <div class="result-item">
+          <span>椭球实地周长:</span>
+          <span>{{ results.ellipsoidPerimeter }}</span>
+        </div>
+        <div class="result-item">
+          <span>椭球实地面积:</span>
+          <span>{{ results.ellipsoidArea }}</span>
+        </div>
+      </div>
+    </div>
+    <div v-show="showSettingPanel" class="edit-style">
+      <div class="edit-style-title">文字样式</div>
+      <a-form-model
+        :model="formFont"
+        labelAlign="left"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
+      >
+        <a-form-model-item label="字体:">
+          <a-select v-model="formFont.textType">
+            <a-select-option v-for="item in textTypes" :key="item">{{
+              item
+            }}</a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item label="字体颜色:">
+          <a-input
+            class="color-input"
+            v-model="formFont.textColor"
+            :style="{ background: formFont.textColor }"
+          >
+            <div slot="addonAfter">
+              <a-popover trigger="click">
+                <template slot="content">
+                  <sketch-picker
+                    :value="formFont.textColor"
+                    @input="val => getFontColor(val)"
+                  />
+                </template>
+                <a-icon type="edit" />
+              </a-popover>
+            </div>
+          </a-input>
+        </a-form-model-item>
+        <a-form-model-item label="字号:">
+          <a-input v-model="formFont.textSize" type="number"> </a-input>
+        </a-form-model-item>
+      </a-form-model>
+      <div class="edit-style-title">轮廓线样式</div>
+      <a-form-model
+        :model="formLine"
+        labelAlign="left"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
+      >
+        <a-form-item label="颜色">
+          <a-input
+            class="color-input"
+            v-model="formLine.lineColor"
+            :style="{ background: formLine.lineColor }"
+          >
+            <div slot="addonAfter">
+              <a-popover trigger="click">
+                <template slot="content">
+                  <sketch-picker
+                    :value="formLine.lineColor"
+                    @input="val => getLineColor(val)"
+                  />
+                </template>
+                <a-icon type="edit" />
+              </a-popover>
+            </div>
+          </a-input>
+        </a-form-item>
+        <a-form-item label="样式">
+          <a-select v-model="formLine.lineType">
+            <a-select-option v-for="item in lineTypes" :key="item">{{
+              item
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="透明度">
+          <a-slider
+            v-model="formLine.lineOpacity"
+            :tip-formatter="formatter"
+          ></a-slider>
+        </a-form-item>
+        <a-form-item label="宽度">
+          <a-input v-model="formLine.lineWidth" type="number"> </a-input>
+        </a-form-item>
+      </a-form-model>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Sketch } from 'vue-color'
 
-@Component({ name: 'MpMeasurement' })
-export default class MpMeasurement extends Mixins(WidgetMixin) {}
+@Component({
+  name: 'MpMeasurement',
+  components: { 'sketch-picker': Sketch }
+})
+export default class MpMeasurement extends Mixins(WidgetMixin) {
+  private planeMeasureModes = [
+    {
+      mode: 'measure-length',
+      title: '长度',
+      icon: 'dot-chart'
+    },
+    {
+      mode: 'measure-area',
+      title: '面积',
+      icon: 'area-chart'
+    }
+  ]
+
+  // 当前激活项
+  private activeMode = { mode: '', var: 0 }
+
+  // 编辑面板的显隐
+  private showSettingPanel = false
+
+  // 不同激活项对应的下拉框配置
+  private selectOptions = {
+    'measure-length': ['m', 'km', '米', '千米'],
+    'measure-area': ['m2', 'km2', '平方米', '平方千米']
+  }
+
+  // 测量长度时下拉值
+  private activeDistanceSelect = '千米'
+
+  // 测量面积时下拉值
+  private activeAreaSelect = '平方千米'
+
+  // 测量结果集
+  private results: Record<string, any> = {
+    planeLength: '',
+    ellipsoidLength: '',
+    planePerimeter: '',
+    planeArea: '',
+    ellipsoidPerimeter: '',
+    ellipsoidArea: ''
+  }
+
+  // 文字样式表单数据对象
+  private formFont = {
+    textType: '宋体',
+    textColor: '#3300CC',
+    textSize: '16'
+  }
+
+  // 轮廓线样式表单数据对象
+  private formLine = {
+    lineColor: '#CC3333',
+    lineType: '实线',
+    lineOpacity: 100,
+    lineWidth: 3
+  }
+
+  // 字体下拉框配置
+  private textTypes = ['宋体', '楷体', '微软雅黑']
+
+  // 轮廓线下拉框配置
+  private lineTypes = ['实线', '虚线']
+
+  // 下拉框配置
+  get getSelectOptions() {
+    return this.selectOptions[this.activeMode.mode] || []
+  }
+
+  // 当前激活项是否为长度测量
+  get showLengthSelect() {
+    return this.activeMode.mode === 'measure-length'
+  }
+
+  // 当前激活项是否为面积测量
+  get showAreaSelect() {
+    return this.activeMode.mode === 'measure-area'
+  }
+
+  // 点击图标对应事件
+  startMeasure(mode) {
+    this.activeMode.mode = mode
+    this.activeMode.var += 1
+  }
+
+  // 选中文字颜色拾取器对应事件
+  getFontColor(val) {
+    this.formFont.textColor = val.hex
+  }
+
+  // 选中轮廓线颜色拾取器对应事件
+  getLineColor(val) {
+    this.formLine.lineColor = val.hex
+  }
+
+  // 格式化滑动条Tooltip内容
+  formatter(value) {
+    return `${value}%`
+  }
+}
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.toolbar {
+  padding: 0 0 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e2e2;
+
+  .button {
+    cursor: pointer;
+    margin: 0 8px;
+  }
+}
+
+.measure-result {
+  .measure-result-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 0 8px 0;
+    border-bottom: 1px solid #e2e2e2;
+  }
+
+  .resilt-panel {
+    padding: 0 0 24px 0;
+    border-bottom: 1px solid #e2e2e2;
+  }
+
+  .result-item {
+    margin-top: 8px;
+  }
+
+  .result-item :nth-child(2) {
+    margin-left: 8px;
+  }
+}
+
+.edit-style {
+  padding: 8px 0;
+  .edit-style-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 20px;
+    border-bottom: 1px solid #e2e2e2;
+  }
+
+  .ant-form {
+    padding-top: 4px;
+  }
+
+  .ant-form-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+  }
+}
+
+.color-input {
+  ::v-deep .ant-input-wrapper,
+  ::v-deep .ant-input,
+  ::v-deep .ant-input-group-addon {
+    background: inherit;
+  }
+}
+</style>
