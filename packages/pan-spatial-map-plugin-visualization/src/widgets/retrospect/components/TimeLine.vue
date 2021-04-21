@@ -6,10 +6,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import echarts from 'echarts'
 
-export interface ITimeLineList {
-  name: string // 节点名称
-  guid: string // 图层唯一标识
-}
+
 
 @Component
 export default class TimeLine extends Vue {
@@ -17,7 +14,7 @@ export default class TimeLine extends Vue {
 
   @Prop({ default: 0 }) value!: number
 
-  @Prop({ default: () => [] }) timeLineList!: Array<ITimeLineList>
+  @Prop({ default: () => [] }) timeLineList!: Array<string>
 
   @Prop({ default: 3 }) playInterval!: number
 
@@ -26,7 +23,6 @@ export default class TimeLine extends Vue {
   Chart: any | null = null
 
   get timelineOptions() {
-    console.log('timelineOptions', this.timeLineList)
 
     return {
       currentIndex: this.value,
@@ -43,7 +39,7 @@ export default class TimeLine extends Vue {
           ...this.timelineOptions,
           axisType: 'category',
           label: {
-            formatter(s) {
+            formatter(s: Date) {
               return new Date(s).getFullYear()
             }
           },
