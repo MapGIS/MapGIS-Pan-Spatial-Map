@@ -75,13 +75,13 @@
     <div v-show="showSettingPanel" class="edit-style">
       <div class="edit-style-title">文字样式</div>
       <a-form-model
-        :model="formFont"
+        :model="formData"
         labelAlign="left"
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }"
       >
         <a-form-model-item label="字体:">
-          <a-select v-model="formFont.textType">
+          <a-select v-model="formData.textType">
             <a-select-option v-for="item in textTypes" :key="item">{{
               item
             }}</a-select-option>
@@ -90,14 +90,14 @@
         <a-form-model-item label="字体颜色:">
           <a-input
             class="color-input"
-            v-model="formFont.textColor"
-            :style="{ background: formFont.textColor }"
+            v-model="formData.textColor"
+            :style="{ background: formData.textColor }"
           >
             <div slot="addonAfter">
               <a-popover trigger="click">
                 <template slot="content">
                   <sketch-picker
-                    :value="formFont.textColor"
+                    :value="formData.textColor"
                     @input="val => getFontColor(val)"
                   />
                 </template>
@@ -107,12 +107,12 @@
           </a-input>
         </a-form-model-item>
         <a-form-model-item label="字号:">
-          <a-input v-model="formFont.textSize" type="number"> </a-input>
+          <a-input v-model="formData.textSize" type="number"> </a-input>
         </a-form-model-item>
       </a-form-model>
       <div class="edit-style-title">轮廓线样式</div>
       <a-form-model
-        :model="formLine"
+        :model="formData"
         labelAlign="left"
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }"
@@ -120,14 +120,14 @@
         <a-form-item label="颜色">
           <a-input
             class="color-input"
-            v-model="formLine.lineColor"
-            :style="{ background: formLine.lineColor }"
+            v-model="formData.lineColor"
+            :style="{ background: formData.lineColor }"
           >
             <div slot="addonAfter">
               <a-popover trigger="click">
                 <template slot="content">
                   <sketch-picker
-                    :value="formLine.lineColor"
+                    :value="formData.lineColor"
                     @input="val => getLineColor(val)"
                   />
                 </template>
@@ -137,7 +137,7 @@
           </a-input>
         </a-form-item>
         <a-form-item label="样式">
-          <a-select v-model="formLine.lineType">
+          <a-select v-model="formData.lineType">
             <a-select-option v-for="item in lineTypes" :key="item">{{
               item
             }}</a-select-option>
@@ -145,15 +145,28 @@
         </a-form-item>
         <a-form-item label="透明度">
           <a-slider
-            v-model="formLine.lineOpacity"
+            v-model="formData.lineOpacity"
             :tip-formatter="formatter"
           ></a-slider>
         </a-form-item>
         <a-form-item label="宽度">
-          <a-input v-model="formLine.lineWidth" type="number"> </a-input>
+          <a-input v-model="formData.lineWidth" type="number"> </a-input>
         </a-form-item>
       </a-form-model>
     </div>
+    <mapbox-measure
+      v-if="mapboxShow"
+      :measureSetting="formData"
+      :measureMode="activeMode"
+      :distanceUnit="activeDistanceSelect"
+      :areaUnit="activeAreaSelect"
+      :clearVar="clearVar"
+      :stopVar="stopVar"
+      :deActiveVar="deActiveVar"
+      :activeVar="activeVar"
+      @finished="measureFinished"
+      @start="measureStart"
+    />
   </div>
 </template>
 
@@ -161,10 +174,11 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { Sketch } from 'vue-color'
+import MapboxMeasure from './components/MapboxMeasure.vue'
 
 @Component({
   name: 'MpMeasurement',
-  components: { 'sketch-picker': Sketch }
+  components: { 'sketch-picker': Sketch, MapboxMeasure }
 })
 export default class MpMeasurement extends Mixins(WidgetMixin) {
   private planeMeasureModes = [
@@ -185,6 +199,17 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
   // 编辑面板的显隐
   private showSettingPanel = false
+
+  // 控制mapbox绘制组件，防止id冲突
+  private mapboxShow = false
+
+  private clearVar = 0
+
+  private stopVar = 1
+
+  private deActiveVar = 0
+
+  private activeVar = 0
 
   // 不同激活项对应的下拉框配置
   private selectOptions = {
@@ -208,15 +233,11 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     ellipsoidArea: ''
   }
 
-  // 文字样式表单数据对象
-  private formFont = {
+  // 样式表单数据对象
+  private formData = {
     textType: '宋体',
     textColor: '#3300CC',
-    textSize: '16'
-  }
-
-  // 轮廓线样式表单数据对象
-  private formLine = {
+    textSize: '16',
     lineColor: '#CC3333',
     lineType: '实线',
     lineOpacity: 100,
@@ -252,12 +273,12 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
   // 选中文字颜色拾取器对应事件
   getFontColor(val) {
-    this.formFont.textColor = val.hex
+    this.formData.textColor = val.hex
   }
 
   // 选中轮廓线颜色拾取器对应事件
   getLineColor(val) {
-    this.formLine.lineColor = val.hex
+    this.formData.lineColor = val.hex
   }
 
   // 格式化滑动条Tooltip内容
