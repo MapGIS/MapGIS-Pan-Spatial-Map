@@ -1,5 +1,6 @@
 <template>
   <div class="mp-widget-swipe">
+    <!-- 上图层 -->
     <a-row class="swipe-row">
       <a-col>
         上级图层：
@@ -19,6 +20,7 @@
         </a-select>
       </a-col>
     </a-row>
+    <!-- 下图层 -->
     <a-row class="swipe-row">
       <a-col>
         下级图层：
@@ -38,6 +40,7 @@
         </a-select>
       </a-col>
     </a-row>
+    <!-- 方向 -->
     <a-radio-group
       class="swipe-radio-group"
       :value="direction"
@@ -50,6 +53,7 @@
         水平
       </a-radio>
     </a-radio-group>
+    <!-- todo 地图组件 -->
   </div>
 </template>
 
@@ -81,12 +85,9 @@ export default class MpSwipe extends Mixins<IMpSwipe>(WidgetMixin) {
    * 获取选中目录树下的叶子节点图层中的可见图层
    */
   get flatLayers() {
-    console.log('图层', this.document.defaultMap.getFlatLayers())
-    let layers = []
-    try {
-      layers = this.document.defaultMap.getFlatLayers()
-    } catch (error) {}
-    return layers.filter((v: Layer) => v.isVisible)
+      const _layers = this.document.defaultMap.getFlatLayers().filter((v: Layer) => v.isVisible)
+      // console.log('图层', layers);
+      return _layers 
   }
 
   @Watch('flatLayers')
@@ -106,9 +107,9 @@ export default class MpSwipe extends Mixins<IMpSwipe>(WidgetMixin) {
 
   /**
    * 卷帘方向变化
+   * @param e<object>
    */
   onDirectionChange(e) {
-    // todo 回传给地图sdk的卷帘方向数据
     this.direction = e.target.value
   }
 
@@ -140,9 +141,8 @@ export default class MpSwipe extends Mixins<IMpSwipe>(WidgetMixin) {
     valuekey: 'aboveLayer' | 'belowLayer',
     key: 'aboveLayers' | 'belowLayers'
   ) {
-    const layers = this.layers.filter(({ id }) => id !== value)
     this[valuekey] = value
-    this[key] = [...layers]
+    this[key] = [...this.layers.filter(({ id }) => id !== value)]
   }
 }
 </script>
