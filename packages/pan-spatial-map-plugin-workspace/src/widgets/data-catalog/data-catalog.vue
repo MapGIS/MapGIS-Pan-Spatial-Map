@@ -157,7 +157,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       this.dataCatalogManager.checkedLayerConfigIDs = checkedLayerConfigIDs
     }
 
-    //
+    // 修改说明：原有代码赋址属于浅拷贝，指向同一内存地址，checkedNodeKeys变化时preCheckedNodeKeys也会变化，这样preCheckedNodeKeys就无法记录上一次勾选的checkedNodeKeys。
+    // 修改人：何龙 2021年04月21日
     this.preCheckedNodeKeys = JSON.parse(JSON.stringify(this.checkedNodeKeys))
   }
 
