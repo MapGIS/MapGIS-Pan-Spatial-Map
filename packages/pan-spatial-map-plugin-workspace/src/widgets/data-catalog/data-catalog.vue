@@ -5,19 +5,66 @@
       :tree-data="dataCatalogTreeData"
       :replace-fields="replaceFields"
       v-model="checkedNodeKeys"
-    />
+    >
+      <template v-slot:custom="item" class="tree-item-handle">
+        <div
+          v-if="item.children && item.children.length > 0"
+          @click="onClick(item)"
+          class="tree-node"
+        >
+          {{ item.name }}
+        </div>
+        <a-dropdown v-else :trigger="['contextmenu']">
+          <div @click="onClick(item)">{{ item.name }}</div>
+          <a-menu slot="overlay">
+            <a-menu-item key="1" @click="showMetaDataInfo(item)"
+              >元数据信息</a-menu-item
+            >
+            <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
+            <a-menu-item v-if="hasLegend(item)" key="3">上传图例</a-menu-item>
+          </a-menu>
+        </a-dropdown>
+      </template>
+    </a-tree>
+    <mp-window-wrapper :visible="showMetaData">
+      <mp-window
+        title="元数据信息"
+        :width="550"
+        :height="400"
+        :icon="widgetInfo.icon"
+        :visible.sync="showMetaData"
+      >
+        <template>
+          <mp-metadata-info :currentConfig="currentConfig" />
+        </template>
+      </mp-window>
+    </mp-window-wrapper>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin, Document, Map } from '@mapgis/web-app-framework'
+import {
+  WidgetMixin,
+  Document,
+  Map,
+  LayerType
+} from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
-  DataCatalogManager
+  DataCatalogManager,
+  eventBus,
+  queryOGCInfoInstance
 } from '@mapgis/pan-spatial-map-store'
 
-@Component({ name: 'MpDataCatalog' })
+import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
+
+@Component({
+  name: 'MpDataCatalog',
+  components: {
+    MpMetadataInfo
+  }
+})
 export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 数据目录树树据
   private dataCatalogTreeData: [] = []
@@ -36,10 +83,18 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   private dataCatalogManager = dataCatalogManagerInstance
 
+  // 是否显示元数据信息窗口
+  private showMetaData = false
+
+  // 元数据信息组件Props值
+  private currentConfig: Record<string, unknown> = {}
+
   async mounted() {
     this.dataCatalogManager.init(this.widgetInfo.config)
 
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
+    this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
+    eventBus.$on('click-bookmark-item', this.bookMarkClick)
   }
 
   @Watch('checkedNodeKeys', { deep: false })
@@ -102,8 +157,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       this.dataCatalogManager.checkedLayerConfigIDs = checkedLayerConfigIDs
     }
 
-    //
-    this.preCheckedNodeKeys = this.checkedNodeKeys
+    // 修改说明：原有代码赋址属于浅拷贝，指向同一内存地址，checkedNodeKeys变化时preCheckedNodeKeys也会变化，这样preCheckedNodeKeys就无法记录上一次勾选的checkedNodeKeys。
+    // 修改人：何龙 2021年04月21日
+    this.preCheckedNodeKeys = JSON.parse(JSON.stringify(this.checkedNodeKeys))
   }
 
   @Watch('dataCatalogManager.checkedLayerConfigIDs')
@@ -162,6 +218,107 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       })
 
       this.document = doc
+    }
+  }
+
+  onClick(item) {}
+
+  // 对目录树数据进行处理
+  handleTreeData(data: object[]) {
+    const this_ = this
+    return data.map((item: any) => {
+      this_.$set(item, 'scopedSlots', { title: 'custom' })
+      if (item.children) {
+        this_.handleTreeData(item.children)
+      }
+      return item
+    })
+  }
+
+  // 是否显示上传图例
+  hasLegend(node) {
+    const nodeParentLevel = node.pos
+      .split('-')
+      .slice(1)
+      .map(item => +item)
+    const LabelArr = []
+    this.getNodeLabel(this.dataCatalogTreeData, 0, LabelArr, nodeParentLevel)
+    if (LabelArr.some(item => item.indexOf('专题') !== -1)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  // 串联该节点所在层级的description
+  getNodeLabel(node, index, labelArr, nodeParentLevel) {
+    labelArr.push(node[nodeParentLevel[index]].description)
+    if (
+      node[nodeParentLevel[index]].children &&
+      node[nodeParentLevel[index]].children.length > 0
+    ) {
+      index++
+      this.getNodeLabel(
+        node[nodeParentLevel[index - 1]].children,
+        index,
+        labelArr,
+        nodeParentLevel
+      )
+    }
+  }
+
+  // 判断是否是OGC图层
+  isOGCLayer(type) {
+    return type === LayerType.OGCWMS || type === LayerType.OGCWMTS
+  }
+
+  // 元数据信息按钮响应事件
+  showMetaDataInfo(item) {
+    if (this.isOGCLayer(item.serverType)) {
+      this.showMetaData = false
+      const url = item.serverURL
+      let getCapabilitiesURL = ''
+      if (item.serverType === LayerType.OGCWMS) {
+        getCapabilitiesURL = queryOGCInfoInstance.generateWMSGetCapabilitiesURL(
+          url
+        )
+      } else if (item.serverType === LayerType.OGCWMTS) {
+        getCapabilitiesURL = queryOGCInfoInstance.generateWMTSGetCapabilitiesURL(
+          url
+        )
+      }
+      window.open(getCapabilitiesURL)
+    } else {
+      const layer = {
+        ip: item.ip,
+        port: item.port,
+        gdbps: item.gdbps,
+        serverName: item.serverName,
+        type: item.serverType
+      }
+      this.showMetaData = true
+      this.currentConfig = layer
+    }
+  }
+
+  // 右键菜单收藏按钮响应事件
+  addToMark(item) {
+    eventBus.$emit(
+      'add-to-mark',
+      { params: item, type: '基础数据' },
+      this.dataCatalogTreeData
+    )
+  }
+
+  // 监听书签项点击事件('click-bookmark-item')
+  bookMarkClick(node) {
+    if (this.dataCatalogManager.checkedLayerConfigIDs.includes(node.guid)) {
+      const index = this.dataCatalogManager.checkedLayerConfigIDs.findIndex(
+        item => item === node.guid
+      )
+      this.dataCatalogManager.checkedLayerConfigIDs.splice(index, 1)
+    } else {
+      this.dataCatalogManager.checkedLayerConfigIDs.push(node.guid)
     }
   }
 }
