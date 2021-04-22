@@ -10,6 +10,8 @@
     <a-tree
       :checkedKeys="ticked"
       @check="tickedChange"
+      :expanded-keys="expandedKeys"
+      @expand="onExpand"
       checkable
       :tree-data="layers"
       block-node
@@ -31,10 +33,30 @@
             item.layer && isWMTSLayer(item.layer) && !isActiveWMTSLayer(item)
           "
         />
-        <span v-if="item.title.indexOf(filter) > -1">
-          {{ item.title.substr(0, item.title.indexOf(filter)) }}
-          <span style="color:#1890ff">{{ filter }}</span>
-          {{ item.title.substr(item.title.indexOf(filter) + filter.length) }}
+        <span
+          v-if="
+            filter !== '' &&
+              item.title.toUpperCase().indexOf(filter.toUpperCase()) > -1
+          "
+        >
+          <span>{{
+            item.title.substr(
+              0,
+              item.title.toUpperCase().indexOf(filter.toUpperCase())
+            )
+          }}</span>
+          <span class="filter-words">{{
+            item.title.substr(
+              item.title.toUpperCase().indexOf(filter.toUpperCase()),
+              filter.length
+            )
+          }}</span>
+          <span>{{
+            item.title.substr(
+              item.title.toUpperCase().indexOf(filter.toUpperCase()) +
+                filter.length
+            )
+          }}</span>
         </span>
         <span v-else>{{ item.title }}</span>
         <a-popover
@@ -243,6 +265,8 @@ export default class TreeLayer extends Mixins(
 
   private showSelectTilematrixSet = false
 
+  private expandedKeys = []
+
   // 记录可见状态为true的父节点的key
   private parentKeys: Array<string> = []
 
@@ -268,13 +292,6 @@ export default class TreeLayer extends Mixins(
       oldValue
     ) {
       this.setDocument()
-      // if (
-      //   this.document.defaultMap.layers().length > 1 &&
-      //   this.document.defaultMap.layers()[1].sublayers &&
-      //   this.document.defaultMap.layers()[1].sublayers.length > 1
-      // ) {
-      //   this.document.defaultMap.layers()[1].sublayers[1].visible = false
-      // }
       const layers: Array<unknown> = this.document.clone().defaultMap.layers()
       const arr = []
       for (let index = 0; index < layers.length; index++) {
@@ -310,6 +327,43 @@ export default class TreeLayer extends Mixins(
       this.layers = layers
       this.ticked = arr
     }
+  }
+
+  @Watch('filter')
+  filterChange() {
+    if (this.filter !== '') {
+      const arr = []
+      this.filterTreeNode(this.layers, arr)
+      const parentArr = []
+      arr.forEach(key => {
+        const keyArr = key.split('-')
+        keyArr.forEach((item, i) => {
+          const keys = []
+          for (let index = 0; index <= i; index++) {
+            keys.push(keyArr[index])
+          }
+          parentArr.push(keys.join('-'))
+        })
+      })
+      // 去除数组中重叠的key
+      this.expandedKeys = Array.from(new Set(parentArr))
+    }
+  }
+
+  filterTreeNode(layers, arr) {
+    layers.forEach(item => {
+      if (item.title.toUpperCase().indexOf(this.filter.toUpperCase()) > -1) {
+        arr.push(item.key)
+      }
+      if (item.sublayers && item.sublayers.length > 0) {
+        this.filterTreeNode(item.sublayers, arr)
+      }
+    })
+  }
+
+  //  没有这一步，手动控制展开的位置无法折叠
+  onExpand(expandedKeys) {
+    this.expandedKeys = expandedKeys
   }
 
   /**
@@ -690,16 +744,19 @@ export default class TreeLayer extends Mixins(
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .tree-layer-container {
   width: 100%;
   height: 100%;
   overflow: auto;
-  /deep/ .tree-item-handle {
+  .tree-item-handle {
     display: flex;
     width: 100%;
     overflow: hidden;
     align-items: center;
+    .filter-words {
+      color: @primary-color;
+    }
     i {
       margin-right: 6px;
       width: 24px;
