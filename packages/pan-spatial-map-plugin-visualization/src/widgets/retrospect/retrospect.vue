@@ -1,68 +1,74 @@
 <template>
   <div class="mp-widget-retrospect">
-    <a-row type="flex" align="middle" class="retrospect-row">
-      <a-col :span="5">
-        专题回溯：
-      </a-col>
-      <a-col :span="19">
-        <a-tree-select
-          class="retrospect-tree-select"
-          :value="subject"
-          @change="onSubjectChange"
-          :dropdown-style="dropdownStyle"
-          :replaceFields="replaceFields"
-          :tree-data="dataCatalog"
-        />
-      </a-col>
-    </a-row>
-    <div class="retrospect-time-line">
-      <time-line
-        id="retrospect-time-line"
-        ref="time-line"
-        v-model="timeIndex"
-        :timeLineList="timeLineList"
-        :playInterval="interval"
-        :autoPlay="isPlay"
-      />
-      <a-row
-        class="retrospect-row"
-        type="flex"
-        align="middle"
-        justify="space-between"
-      >
-        <a-col :span="24 / btns.length" v-for="btn in btns" :key="btn.name">
-          <a-tooltip placement="bottom" :title="btn.tooltip">
-            <a-icon class="retrospect-btn" :type="btn.name" @click="btn.func" />
-          </a-tooltip>
+    <a-spin tip="正在加载..." :spinning="loading">
+      <a-row type="flex" align="middle" class="retrospect-row">
+        <a-col :span="5">
+          专题选择：
+        </a-col>
+        <a-col :span="19">
+          <a-tree-select
+            class="retrospect-tree-select"
+            :value="subject"
+            @change="onSubjectChange"
+            :dropdown-style="dropdownStyle"
+            :replaceFields="replaceFields"
+            :tree-data="treeData"
+          />
         </a-col>
       </a-row>
-      <transition name="fade">
+      <div class="retrospect-time-line">
+        <time-line
+          id="retrospect-time-line"
+          ref="time-line"
+          v-model="timeIndex"
+          :timeLineList="timeLineYearList"
+          :playInterval="interval"
+          :autoPlay="isPlay"
+        />
         <a-row
           class="retrospect-row"
           type="flex"
           align="middle"
-          justify="end"
-          v-show="showInterval"
+          justify="space-between"
         >
-          <a-col :span="7">
-            时间间隔：
-          </a-col>
-          <a-col :span="15">
-            <a-input-number
-              class="retrospect-input-number"
-              v-model="interval"
-              :min="1"
-            />
-          </a-col>
-          <a-col :span="2" class="retrospect-input-number-unit">
-            秒
+          <a-col :span="24 / btns.length" v-for="btn in btns" :key="btn.name">
+            <a-tooltip placement="bottom" :title="btn.tooltip">
+              <a-icon
+                class="retrospect-btn"
+                :type="btn.name"
+                @click="btn.func"
+              />
+            </a-tooltip>
           </a-col>
         </a-row>
-      </transition>
-      <div class="retrospect-shade" v-show="!dataCatalogTimeList.length">
-        该数据没有年度，无法进行专题回溯
+        <transition name="fade">
+          <a-row
+            class="retrospect-row"
+            type="flex"
+            align="middle"
+            justify="end"
+            v-show="showInterval"
+          >
+            <a-col :span="7">
+              时间间隔：
+            </a-col>
+            <a-col :span="15">
+              <a-input-number
+                class="retrospect-input-number"
+                v-model="interval"
+                :min="1"
+              />
+            </a-col>
+            <a-col :span="2" class="retrospect-input-number-unit">
+              秒
+            </a-col>
+          </a-row>
+        </transition>
+        <div class="retrospect-shade" v-show="!timeLineList.length">
+          该数据没有年度，无法进行专题回溯
+        </div>
       </div>
-    </div>
+    </a-spin>
   </div>
 </template>
 
@@ -82,7 +88,7 @@ interface IDataCatalog {
   name: string // 节点名称
   description: string // 节点描述
   guid: string
-  serverUrl?: string
+  serverURL?: string
   children?: IDataCatalog[] // 子节点数组
   displayName?: string
 }
@@ -98,13 +104,17 @@ interface IMpRetrospect {
   }
 })
 export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
+  loading = false
+
+  dataCatalogCheckedIds: string[] = []
+
   dataCatalog: IDataCatalog[] = []
 
-  dataCatalogTimeList: IDataCatalog[] = []
+  treeData: IDataCatalog[] = []
+
+  timeLineList: IDataCatalog[] = []
 
   subject = ''
-
-  // selectedId = ''
 
   showTimeLine = false
 
@@ -116,6 +126,10 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
 
   isPlay = false
 
+
+  /**
+   * 树形选择控件下拉框样式
+   */
   get dropdownStyle() {
     return {
       maxWidth: '200px',
@@ -124,6 +138,9 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
     }
   }
 
+  /**
+   * 格式化树形选择控件数据源
+   */
   get replaceFields() {
     return {
       children: 'children',
@@ -140,10 +157,10 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   }
 
   /**
-   * 时间轴展示数据
+   * 时间轴展示的年度
    */
-  get timeLineList() {
-    return this.dataCatalogTimeList.map(v => v.displayName)
+  get timeLineYearList() {
+    return this.timeLineList.map(v => this.getYear(v.name))
   }
 
   /**
@@ -166,16 +183,19 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   }
 
   /**
-   * 回溯专题变化
-   * @param value<string>
+   * 获取年度
+   * @param str<string>
    */
-  onSubjectChange(value: string) {
-    this.clear()
-    this.subject = value
-    const checkedNode = this.getCheckedNode(this.dataCatalog, value, [])
-    this.dataCatalogTimeList = this.getDataCatalogTimeList(checkedNode)
-    this.timeIndex = 0
-    console.log('当前节点/时间轴数据', value, this.dataCatalogTimeList)
+  getYear(str: string) {
+    return Number(str.substring(0, 4))
+  }
+
+  /**
+   * 是否是年度节点
+   * @param str<string>
+   */
+  hasYearNode(str: string) {
+    return !isNaN(this.getYear(str))
   }
 
   /**
@@ -185,39 +205,32 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    * @param node<array>
    */
   getCheckedNode(data: IDataCatalog[], value: string, node: IDataCatalog[]) {
-    for (let n = 0, item: IDataCatalog; (item = data[n++]); ) {
+    for (let n = 0; n < data.length; n++) {
+      const item = data[n]
       if (item.guid === value) {
         node = [item]
-        break;
+        break
       } else if (item.children && item.children.length) {
         node = this.getCheckedNode(item.children, value, node)
       }
     }
-    console.log(11);
-    
     return node
   }
 
   /**
-   * 递归获取专题下的年度列表
-   * @param data<object> 目录树
+   * 获取选中节点下的年度列表
+   * @param data<array> 目录树
    */
   getDataCatalogTimeList(data: IDataCatalog[]) {
     return data.reduce<IDataCatalog[]>((results, item) => {
-      const { name, description, children } = item
-      const str = name.substring(0, 4)
-
-      if (!isNaN(Number(str))) {
-        results.push({
-          ...item,
-          displayName: str
-        })
-      } else {
-        const isType = /分类(:|：)/.test(description)
-        const isSubject = /专题(:|：)/.test(description)
-        if ((isType || isSubject) && children && children.length) {
-          return this.getDataCatalogTimeList(children)
-        }
+      if (this.hasYearNode(item.name)) {
+        results.push(item)
+      } else if (
+        /(分类|专题)(:|：)/.test(item.description) &&
+        item.children &&
+        item.children.length
+      ) {
+        return this.getDataCatalogTimeList(item.children)
       }
 
       return results
@@ -225,30 +238,114 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   }
 
   /**
+   * 回溯专题变化
+   * @param value<string>
+   */
+  onSubjectChange(value: string) {
+    this.subject = value
+    const checkedNode = this.getCheckedNode(this.dataCatalog, value, [])
+    this.timeLineList = this.getDataCatalogTimeList(checkedNode)
+    this.timeIndex = 0
+  }
+
+  /**
+   * 处理目录树， 筛选出有年度的专题展示
+   * @param tree<array>
+   */
+  handleDataCatalog(
+    tree: IDataCatalog[],
+    parentNode?: IDataCatalog,
+    guids: string[] = []
+  ) {
+    if (!tree.length) return []
+    for (let n = 0; n < tree.length; n++) {
+      const item = tree[n]
+      if (item.children && item.children.length) {
+        this.handleDataCatalog(item.children, item, guids)
+      }
+      if (item.children && !item.children.length) {
+        item.children = undefined
+      }
+      if (guids.includes(item.guid)) {
+        item.children = undefined
+      } else if (this.hasYearNode(item.name)) {
+        guids.push(parentNode!.guid)
+      } else if (!item.children) {
+        tree.splice(n, 1)
+        n--
+      }
+    }
+
+    return tree
+  }
+
+  /**
    * 时间轴变化
    */
   @Watch('timeIndex')
   changeTimeIndex(nV: number) {
-    if (this.dataCatalogTimeList.length) {
-      // this.selectedId = this.dataCatalogTimeList[nV].guid
+    if (this.timeLineList.length) {
+      const ids = this.getCheckedIds(this.timeLineList[nV])
+      this.updateCheckedIds(ids)
     }
+  }
+
+  /**
+   * 获取回溯年度的图层服务
+   * @param <object>
+   */
+  getCheckedIds({ guid, children, serverURL }: IDataCatalog) {
+    let ids: string[] = []
+    if (children && children.length && children.some(v => v.serverURL)) {
+      ids = children.map(v => v.guid)
+    } else if (serverURL) {
+      ids = [guid]
+    }
+    return ids
+  }
+
+  /**
+   * 重置目录树组件已选图层
+   */
+  resetCheckedIds() {
+    dataCatalogManagerInstance.checkedLayerConfigIDs = [
+      ...this.dataCatalogCheckedIds
+    ]
+  }
+
+  /**
+   * 更新目录树组件图层, 不保留目录树已勾选图层
+   * @param ids<array>
+   */
+  updateCheckedIds(ids: string[]) {
+    dataCatalogManagerInstance.checkedLayerConfigIDs = ids
   }
 
   /**
    * 打开专题回溯面板
    */
   async onOpen() {
+    this.loading = true
     this.showTimeLine = true
-    this.dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData()
-    console.log('目录树-----', this.dataCatalog)
-    this.onSubjectChange(this.dataCatalog[0].guid)
+    this.dataCatalogCheckedIds = [
+      ...dataCatalogManagerInstance.checkedLayerConfigIDs
+    ]
+    const dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData() 
+    console.log('图层数据', dataCatalog)   
+    if (dataCatalog.length) {
+      this.treeData = this.handleDataCatalog(JSON.parse(JSON.stringify(dataCatalog)))
+      this.dataCatalog = dataCatalog
+      this.onSubjectChange(dataCatalog[0].guid)
+    }
+    this.loading = false
   }
 
   /**
    * 关闭专题回溯面板
    */
   onClose() {
-    this.clear()
+    this.interval = 3
+    this.resetCheckedIds()
     window.setTimeout(() => (this.showTimeLine = false))
   }
 
@@ -262,16 +359,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   }
 
   /**
-   * 清空操作
-   */
-  clear() {
-    // if (this.selectedId) {
-    //   this.selectedId = ''
-    // }
-    this.reset()
-  }
-
-  /**
    * 播放或暂停
    */
   btnPlay() {
@@ -282,8 +369,8 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    * 下一时间
    */
   next() {
-    if (this.timeIndex < this.dataCatalogTimeList.length - 1) {
-      this.timeIndex += 1
+    if (this.timeIndex < this.timeLineList.length - 1) {
+      this.timeIndex++
     }
   }
 
@@ -292,7 +379,7 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    */
   prev() {
     if (this.timeIndex > 0) {
-      this.timeIndex -= 1
+      this.timeIndex--
     }
   }
 
