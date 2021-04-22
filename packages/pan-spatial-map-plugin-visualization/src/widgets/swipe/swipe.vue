@@ -53,22 +53,56 @@
         水平
       </a-radio>
     </a-radio-group>
-    <!-- todo 地图组件 -->
+    <!-- 卷帘组件 -->
+    <mapgis-compare ref="compare" :orientation="direction">
+      <mp-mapbox-view
+        :document="aboveLayerDocument"
+        :mapStyle="defaultStyle"
+        @onMapLoaded="handleMapLoad('above')"
+      />
+      <mp-mapbox-view
+        :document="belowLayerDocument"
+        :mapStyle="defaultStyle"
+        @onMapLoaded="handleMapLoad('below')"
+      />
+    </mapgis-compare>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
+import {
+  Document,
+  MpMapboxView,
+  WidgetMixin,
+  WidgetState,
+  Layer
+} from '@mapgis/web-app-framework'
+import defaultStyle from '../../../../MapGIS-Web-App-Framework/src/assets/style/default-style.json'
+
+// const { MapgisCompare } = require('@mapgis/webclient-vue-mapboxgl')
 
 type Direction = 'vertical' | 'horizontal'
 
-interface IMpSwipe {
+interface IVueExtend {
   [k: string]: any
 }
 
-@Component({ name: 'MpSwipe' })
-export default class MpSwipe extends Mixins<IMpSwipe>(WidgetMixin) {
+enum ISubMap {
+  above = 0,
+  below = 1
+}
+
+@Component({
+  name: 'MpSwipe',
+  components: {
+    // MapgisCompare,
+    MpMapboxView
+  }
+})
+export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
+  map: any[] = []
+
   aboveLayer = ''
 
   belowLayer = ''
@@ -77,17 +111,24 @@ export default class MpSwipe extends Mixins<IMpSwipe>(WidgetMixin) {
 
   belowLayers: Layer[] = []
 
+  aboveLayerDocument = new Document()
+
+  belowLayerDocument = new Document()
+
   layers: Layer[] = []
 
   direction: Direction = 'vertical'
+
+  defaultStyle = defaultStyle
 
   /**
    * 获取选中目录树下的叶子节点图层中的可见图层
    */
   get flatLayers() {
-      const _layers = this.document.defaultMap.getFlatLayers().filter((v: Layer) => v.isVisible)
-      // console.log('图层', layers);
-      return _layers 
+    const _layers = this.document.defaultMap
+      .getFlatLayers()
+      .filter((v: Layer) => v.isVisible)
+    return _layers
   }
 
   @Watch('flatLayers')
@@ -133,16 +174,32 @@ export default class MpSwipe extends Mixins<IMpSwipe>(WidgetMixin) {
   /**
    * 上下图层选择变化时获取对应的图层逻辑
    * @param value<string> 切换的值
-   * @param valuekey<string> aboveLayer|belowLayer
-   * @param key<string> aboveLayers|belowLayers
+   * @param valuekey<string>
+   * @param layersKey<string>
    */
   getLayers(
     value: string,
     valuekey: 'aboveLayer' | 'belowLayer',
-    key: 'aboveLayers' | 'belowLayers'
+    layersKey: 'aboveLayers' | 'belowLayers'
   ) {
     this[valuekey] = value
-    this[key] = [...this.layers.filter(({ id }) => id !== value)]
+    this[layersKey] = [...this.layers.filter(({ id }) => id !== value)]
+    this[`${valuekey}Document`].defaultMap.add(
+      this.layers.find(v => v.id === value)
+    )
+  }
+
+  /**
+   * 地图初始化
+   * @param subMap<string>
+   */
+  handleMapLoad(subMap: 'above' | 'below') {
+    const that = this
+    const compareRef: IVueExtend = that.$refs.compare
+    return ({ map }: any) => {
+      that.map[ISubMap[subMap]] = map
+      compareRef.handleMap(that.map, compareRef.$el)
+    }
   }
 }
 </script>
