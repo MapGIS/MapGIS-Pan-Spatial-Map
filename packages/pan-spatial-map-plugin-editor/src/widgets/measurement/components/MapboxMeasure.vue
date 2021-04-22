@@ -10,6 +10,25 @@
       @onDrawModeChanged="onDrawModeChanged"
       @onAddNewFeature="onAddNewFeature"
     >
+      <div slot="measureMarker">
+        <mapbox-marker
+          v-for="(item, index) in measureMarkers"
+          :key="'measuer-marker-' + index"
+          :coordinates="item.coordinates"
+        >
+          <div slot="marker">
+            <div
+              v-for="text in item.text"
+              :key="'measuerText-' + text"
+              :style="
+                `font-size: ${measureSetting.textSize}px;font-family: ${measureSetting.textType};color: ${measureSetting.textColor}`
+              "
+            >
+              {{ text }}
+            </div>
+          </div>
+        </mapbox-marker>
+      </div>
     </mapbox-measure>
   </div>
 </template>
@@ -98,18 +117,28 @@ export default class Measure extends Mixins(MapMixin) {
   // 当前激活的测量类型
   private activeMeasureMode = this.measureMode.mode
 
+  private measureMarkers: any[] = []
+
   mounted(): void {
     // this.enableMeasure()
   }
 
   @Watch('clearVar')
-  clearMeasure() {}
+  clearMeasure() {
+    this.measureMarkers = []
+    if (this.measure) {
+      this.measure.deleteAll()
+      this.measure.changeMode('simple_select')
+    }
+  }
 
   @Watch('stopVar')
   stopMeasure() {}
 
   @Watch('deActiveVar')
-  onDeactive() {}
+  onDeactive() {
+    this.measure.changeMode('simple_select')
+  }
 
   @Watch('activeVar')
   onActive() {}
@@ -130,6 +159,32 @@ export default class Measure extends Mixins(MapMixin) {
   }
 
   handleAdded() {}
+
+  // 将量算绘制的图层移到所有图层上方，避免被覆盖
+  moveMeasureLayersToTop() {
+    if (this.map === null) {
+      return false
+    }
+    // if (this.map.getSource())
+  }
+
+  // 根据当前激活类型来选择对应的绘制类型
+  changeMapBoxDrawMode() {
+    switch (this.activeMeasureMode) {
+      case 'measure-length':
+        if (this.measure) {
+          this.measure.changeMode('draw_line_string')
+        }
+        break
+      case 'measure-area':
+        if (this.measure) {
+          this.measure.changeMode('draw_polygon')
+        }
+        break
+      default:
+        break
+    }
+  }
 
   getMeasureResult() {}
 
