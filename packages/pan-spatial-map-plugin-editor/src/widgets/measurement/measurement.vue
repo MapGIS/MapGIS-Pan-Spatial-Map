@@ -265,6 +265,22 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     return this.activeMode.mode === 'measure-area'
   }
 
+  // 微件打开时
+  onOpen() {
+    this.mapboxShow = true
+  }
+
+  // 微件关闭时
+  onClose() {
+    this.mapboxShow = false
+  }
+
+  // 微件激活时
+  onActive() {}
+
+  // 微件失活时
+  onDeActive() {}
+
   // 点击图标对应事件
   startMeasure(mode) {
     this.activeMode.mode = mode
