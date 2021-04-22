@@ -181,7 +181,7 @@ export abstract class TileLayer extends Layer {
    * @memberof TileLayer
    */
   constructor(properties?: Record<string, any>) {
-    super()
+    super(properties)
 
     this.type = LayerType.tile
 

@@ -82,6 +82,16 @@ export enum LayerType {
   OGCWMS,
 
   /**
+   * arcGIS瓦片服务图层
+   */
+  arcGISTile,
+
+  /**
+   * arcGIS地图服务图层
+   */
+  arcGISMapImage,
+
+  /**
    * 矢量瓦片图层
    */
   vectorTile,
@@ -117,6 +127,38 @@ export enum LayerType {
  * @class Layer
  */
 export abstract class Layer {
+  /**
+   * Creates an instance of Layer.
+   * @date 22/04/2021
+   * @param {Record<string, any>} [properties]
+   * @memberof Layer
+   */
+  protected constructor(properties?: Record<string, any>) {
+    if (!properties) return
+
+    if (properties.description) this.description = properties.description
+
+    if (properties.id) this.id = properties.id
+
+    if (properties.loadStatus) this.loadStatus = properties.loadStatus
+
+    if (properties.opacity) this.opacity = properties.opacity
+
+    if (properties.title) this.title = properties.title
+
+    if (properties.type) this.type = properties.type
+
+    if (properties.isVisible) this.isVisible = properties.isVisible
+  }
+
+  /**
+   * 图层描述
+   *
+   * @date 22/04/2021
+   * @memberof Layer
+   */
+  description = ''
+
   /**
    * 全图范围
    *

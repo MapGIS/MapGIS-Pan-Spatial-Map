@@ -22,16 +22,20 @@ export {
   TileInfo,
   TileLayer,
   MapImageLayer,
+  Sublayer,
   IGSTileLayer,
   IGSMapImageLayer,
-  Sublayer,
+  IGSSublayer,
   IGSVectorLayer,
   OGCWMTSLayer,
   WMTSSublayer,
   TileMatrixSet,
   WMTSStyle,
   OGCWMSLayer,
-  WMSSublayer
+  WMSSublayer,
+  ArcGISTileLayer,
+  ArcGISMapImageLayer,
+  ArcGISSublayer
 } from './store/document/layer'
 
 export { Document, Map } from './store/document'

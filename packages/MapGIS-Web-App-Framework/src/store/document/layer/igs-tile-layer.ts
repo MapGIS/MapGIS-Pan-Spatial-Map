@@ -10,25 +10,6 @@ import { LoadStatus, LayerType, Layer } from './layer'
  */
 export class IGSTileLayer extends TileLayer {
   /**
-   * 创建一个深度克隆的IGSTileLayer
-   *
-   * @date 06/04/2021
-   * @return {*}  {IGSTileLayer}
-   * @memberof IGSTileLayer
-   */
-  clone(): IGSTileLayer {
-    const result = new IGSTileLayer()
-
-    Object.entries(this).forEach(element => {
-      const key = element[0]
-      const valueIndex = 1
-      result[key] = this._deepClone(element[valueIndex])
-    })
-
-    return result
-  }
-
-  /**
    * Creates an instance of IGSTileLayer.
    *
    * @date 22/03/2021
@@ -104,6 +85,25 @@ export class IGSTileLayer extends TileLayer {
     return promise.then(data => {
       return this
     })
+  }
+
+  /**
+   * 创建一个深度克隆的IGSTileLayer
+   *
+   * @date 06/04/2021
+   * @return {*}  {IGSTileLayer}
+   * @memberof IGSTileLayer
+   */
+  clone(): IGSTileLayer {
+    const result = new IGSTileLayer()
+
+    Object.entries(this).forEach(element => {
+      const key = element[0]
+      const valueIndex = 1
+      result[key] = this._deepClone(element[valueIndex])
+    })
+
+    return result
   }
 
   /**

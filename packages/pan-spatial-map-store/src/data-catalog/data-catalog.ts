@@ -10,7 +10,9 @@ import {
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
-  OGCWMSLayer
+  OGCWMSLayer,
+  ArcGISTileLayer,
+  ArcGISMapImageLayer
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
 import { queryIgsServicesInfoInstance } from '../service'
@@ -111,6 +113,14 @@ export class DataCatalogManager {
       case LayerType.OGCWMS:
         url = layerConfig.serverURL
         layer = new OGCWMSLayer({ url })
+        break
+      case LayerType.arcGISTile:
+        url = layerConfig.serverURL
+        layer = new ArcGISTileLayer({ url })
+        break
+      case LayerType.arcGISMapImage:
+        url = layerConfig.serverURL
+        layer = new ArcGISMapImageLayer({ url })
         break
       default:
         break
@@ -556,6 +566,10 @@ export class DataCatalogManager {
         serverType = LayerType.OGCWMTS
         break
       case this.layerServiceType.TILEARCGIS:
+        serverType = LayerType.arcGISTile
+        break
+      case this.layerServiceType.IMAGEARCGIS:
+        serverType = LayerType.arcGISMapImage
         break
       case this.layerServiceType.IGSDOC3D:
       case this.layerServiceType.IGSIMAGE3D:
