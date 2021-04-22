@@ -102,8 +102,6 @@ export class ArcGISMapImageLayer extends MapImageLayer {
       // 2.进行网络请求。
       axios.get(getCapabilitiesURL).then(
         res => {
-          debugger
-
           if (res.data) {
             const metaData = res.data
 

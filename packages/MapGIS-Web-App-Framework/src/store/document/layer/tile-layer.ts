@@ -216,6 +216,15 @@ export abstract class TileLayer extends Layer {
   minScale = 0
 
   /**
+   * 瓦片信息
+   *
+   * @date 22/04/2021
+   * @type {TileInfo}
+   * @memberof TileLayer
+   */
+  titleInfo: TileInfo = new TileInfo()
+
+  /**
    * token的参数名
    *
    * @date 22/03/2021

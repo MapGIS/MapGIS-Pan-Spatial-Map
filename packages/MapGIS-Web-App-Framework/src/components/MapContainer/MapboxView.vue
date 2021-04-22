@@ -58,21 +58,21 @@
         :token="layerProps.token"
         :reversebbox="layerProps.reversebbox"
       />
+      <mapbox-arcgis-layer
+        v-if="isIgsArcgisLayer(layerProps.type)"
+        :layer="layerProps.layer"
+        :layerId="layerProps.layerId"
+        :sourceId="layerProps.sourceId"
+        :url="layerProps.url"
+      />
       <mapbox-igs-tdt-layer
         v-if="isIgsTdtLayer(layerProps.type)"
         :layer="layerProps"
-        :layerId="layerProps.id"
-        :sourceId="layerProps.id"
+        :layerId="layerProps.layerId"
+        :sourceId="layerProps.sourceId"
         :baseURL="layerProps.baseURL"
         :token="layerProps.token"
         :crs="crs"
-      />
-      <mapbox-arcgis-layer
-        v-if="isIgsArcgisLayer(layerProps.type)"
-        :layer="layerProps"
-        :layerId="layerProps.id"
-        :sourceId="layerProps.id"
-        :url="layerProps.serverUrl"
       />
     </div>
     <mapbox-scale-control :position="'left-bottom'" />
@@ -188,6 +188,8 @@ export default {
         paint: { 'raster-opacity': layer.opacity }
       }
 
+      let tempStr = ''
+
       switch (layer.type) {
         case LayerType.IGSTile:
           mapboxLayerComponentProps = {
@@ -266,6 +268,32 @@ export default {
           }
 
           break
+        case LayerType.arcGISTile:
+          // 修改说明：mapbox-arcgis-layer通过url属性中是否含有"MapServer/tile/{z}/{y}/{x}"字符串，来判断该服务是瓦片服务还是地图服务。
+          // 故这里要根据瓦片服务的基地址，拼接出完整的取图路径。
+          // 修改人：马原野 2021年03月30日
+
+          // mapbox-arcgis-layer所需的url格式："http://services.arcgisonline.com/ArcGIS/rest/services/{layerType}/MapServer/tile/{z}/{y}/{x}.jpg"
+          // ArcGISTIleLayer中url的格式：http://[ip]/arcgis/rest/services/{tileName}/MapServer
+
+          tempStr = `${layer.url}/tile/{z}/{y}/{x}.${layer.tileInfo.format}`
+
+          mapboxLayerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: tempStr,
+            sourceId: layer.id
+          }
+
+          break
+        case LayerType.arcGISMapImage:
+          mapboxLayerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: layer.url,
+            sourceId: layer.id
+          }
+          break
         default:
           break
       }
@@ -313,7 +341,7 @@ export default {
       return false
     },
     isIgsArcgisLayer(type) {
-      return false
+      return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
     }
   }
 }
