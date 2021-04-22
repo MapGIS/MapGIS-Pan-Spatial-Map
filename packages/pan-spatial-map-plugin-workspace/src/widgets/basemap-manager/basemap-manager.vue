@@ -37,11 +37,6 @@ export default class MpBasemapManager extends Mixins(
   WidgetMixin,
   BaseLayersMixin
 ) {
-  private get baseUrl() {
-    // return envInstance.config.baseApi === '/' ? '' : envInstance.config.baseApi
-    return process.env.VUE_APP_API_BASE_URL
-  }
-
   private get mapData() {
     return this.baseLayerConfig.filter(config => {
       const { scene, visible } = config

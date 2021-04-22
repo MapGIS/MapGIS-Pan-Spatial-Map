@@ -93,7 +93,6 @@ export default class FilterGroup extends Vue {
 </script>
 
 <style lang="less">
-@import '~ant-design-vue/lib/style/themes/default.less';
 .filter-group {
   border-bottom: 1px solid @border-color-base;
 }

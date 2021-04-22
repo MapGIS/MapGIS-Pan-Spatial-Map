@@ -77,8 +77,6 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-const { IDocument, Layer } = require('@mapgis/webclient-store')
-
 const {
   MapboxIgsTdtLayer,
   MapboxIgsWmtsLayer,
