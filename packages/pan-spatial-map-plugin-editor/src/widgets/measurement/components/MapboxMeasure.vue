@@ -136,7 +136,7 @@ export default class Measure extends Mixins(MapMixin) {
   private changeMeasureSettingInterval = null
 
   mounted(): void {
-    // this.enableMeasure()
+    this.enableMeasure()
   }
 
   @Watch('clearVar')
@@ -201,7 +201,7 @@ export default class Measure extends Mixins(MapMixin) {
             this.map.setPaintProperty(
               layerId,
               'line-opacity',
-              this.measureSetting.lineOpacity
+              this.measureSetting.lineOpacity / 100
             )
             this.map.setPaintProperty(
               layerId,
@@ -222,7 +222,6 @@ export default class Measure extends Mixins(MapMixin) {
   }
 
   handleAdded(e: any) {
-    debugger
     const { measure } = e
     this.measure = measure
     this.changeMeasureSettingInterval = setInterval(_ => {
@@ -297,6 +296,7 @@ export default class Measure extends Mixins(MapMixin) {
     }
   }
 
+  // 根据所选单位值，对距离单位进行处理
   transDistanceUnit() {
     let perimeterR = 1
     let perimeterUnitLabel = ''
@@ -328,6 +328,7 @@ export default class Measure extends Mixins(MapMixin) {
     }
   }
 
+  // 根据所选单位值，对面积单位进行处理
   transAreaUnit() {
     let perimeterR = 1
     let areaR = 1
@@ -420,7 +421,6 @@ export default class Measure extends Mixins(MapMixin) {
       default:
         break
     }
-
     this.onMeasureFineshed(this.results)
   }
 }

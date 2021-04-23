@@ -13,6 +13,7 @@
               class="button btn-left"
               @click="startMeasure(item.mode)"
               :icon="item.icon"
+              shape="circle"
             />
           </a-tooltip>
         </div>
@@ -31,16 +32,20 @@
         <a-tooltip placement="bottom" title="设置">
           <a-button
             class="button btn-right"
-            icon="setting"
+            shape="circle"
             @click="showSettingPanel = !showSettingPanel"
-          />
+          >
+            <a-icon type="setting" theme="filled" />
+          </a-button>
         </a-tooltip>
         <a-tooltip placement="bottom" title="清除">
           <a-button
             class="button btn-right"
-            icon="delete"
+            shape="circle"
             @click="clearMeasure"
-          />
+          >
+            <a-icon type="delete" theme="filled" />
+          </a-button>
         </a-tooltip>
       </div>
     </div>
@@ -74,7 +79,7 @@
         </div>
         <div class="result-item">
           <span>投影平面面积:</span>
-          <span>{{ results.planeAre }}</span>
+          <span>{{ results.planeArea }}</span>
         </div>
         <div class="result-item">
           <span>椭球实地周长:</span>
@@ -121,7 +126,8 @@
           </a-input>
         </a-form-model-item>
         <a-form-model-item label="字号:">
-          <a-input v-model="formData.textSize" type="number"> </a-input>
+          <a-input v-model.number="formData.textSize" type="number" :min="12">
+          </a-input>
         </a-form-model-item>
       </a-form-model>
       <div class="edit-style-title">轮廓线样式</div>
@@ -137,17 +143,15 @@
             v-model="formData.lineColor"
             :style="{ background: formData.lineColor }"
           >
-            <div slot="addonAfter">
-              <a-popover trigger="click">
-                <template slot="content">
-                  <sketch-picker
-                    :value="formData.lineColor"
-                    @input="val => getLineColor(val)"
-                  />
-                </template>
-                <a-icon type="edit" />
-              </a-popover>
-            </div>
+            <a-popover slot="addonAfter" trigger="click">
+              <template slot="content">
+                <sketch-picker
+                  :value="formData.lineColor"
+                  @input="val => getLineColor(val)"
+                />
+              </template>
+              <a-icon type="edit" />
+            </a-popover>
           </a-input>
         </a-form-item>
         <a-form-item label="样式">
@@ -161,13 +165,14 @@
           <a-slider
             v-model="formData.lineOpacity"
             :min="0"
-            :max="1"
-            :step="0.01"
+            :max="100"
+            :step="1"
             :tip-formatter="formatter"
           ></a-slider>
         </a-form-item>
         <a-form-item label="宽度">
-          <a-input v-model="formData.lineWidth" type="number"> </a-input>
+          <a-input v-model.number="formData.lineWidth" type="number" :min="1">
+          </a-input>
         </a-form-item>
       </a-form-model>
     </div>
@@ -202,7 +207,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     {
       mode: 'measure-length',
       title: '长度',
-      icon: 'dot-chart'
+      icon: 'pull-request'
     },
     {
       mode: 'measure-area',
@@ -329,7 +334,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
   // 格式化滑动条Tooltip内容
   formatter(value) {
-    return `${value * 100}%`
+    return `${value}%`
   }
 
   // 'start'响应事件(开始量算)
@@ -340,7 +345,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   // 'finished'响应事件(结束量算)
   onMeasureFinished(results: Record<string, any>) {
     this.isMeasureFinished = true
-    this.results = { ...results, ...this.results }
+    this.results = { ...results }
   }
 }
 </script>
@@ -366,6 +371,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     align-items: center;
     padding: 16px 0 8px 0;
     border-bottom: 1px solid #e2e2e2;
+    font-weight: bold;
   }
 
   .result-panel {
@@ -407,9 +413,12 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
 .color-input {
   ::v-deep .ant-input-wrapper,
-  ::v-deep .ant-input,
+  ::v-deep .ant-input {
+    background: inherit;
+  }
   ::v-deep .ant-input-group-addon {
     background: inherit;
+    cursor: pointer;
   }
 }
 </style>
