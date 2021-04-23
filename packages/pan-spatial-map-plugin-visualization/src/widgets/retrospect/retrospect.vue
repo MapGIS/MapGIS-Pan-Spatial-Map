@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-retrospect">
     <a-spin tip="正在加载..." :spinning="loading">
-      <a-row type="flex" align="middle" class="retrospect-row">
+      <a-row type="flex" align="middle" justify="start" class="retrospect-row">
         <a-col :span="5">
           专题选择：
         </a-col>
@@ -331,7 +331,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
       ...dataCatalogManagerInstance.checkedLayerConfigIDs
     ]
     const dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData() 
-    console.log('图层数据', dataCatalog)   
     if (dataCatalog.length) {
       this.treeData = this.handleDataCatalog(JSON.parse(JSON.stringify(dataCatalog)))
       this.dataCatalog = dataCatalog
@@ -345,6 +344,8 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    */
   onClose() {
     this.interval = 3
+    this.showInterval = false
+    this.isPlay = false
     this.resetCheckedIds()
     window.setTimeout(() => (this.showTimeLine = false))
   }
