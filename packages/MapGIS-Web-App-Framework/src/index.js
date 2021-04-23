@@ -40,6 +40,8 @@ export {
 
 export { Document, Map } from './store/document'
 
+export { UUID } from './store/utils'
+
 import {
   MpAppLoader,
   MpMapContainer,

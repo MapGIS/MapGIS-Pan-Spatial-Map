@@ -207,7 +207,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             layerConfigNode
           )
           // 2.将图层添加到全局的document中。
-          doc.defaultMap.add(layer)
+          if (layer) doc.defaultMap.add(layer)
         } else {
           // 如果是取消选中了节点
           // 1.通过节点的key,将图层从document中移除。
