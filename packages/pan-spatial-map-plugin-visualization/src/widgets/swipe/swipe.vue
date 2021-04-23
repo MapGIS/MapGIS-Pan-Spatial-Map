@@ -1,71 +1,83 @@
 <template>
   <div class="mp-widget-swipe">
-    <!-- 上图层 -->
-    <a-row class="swipe-row">
-      <a-col>
-        上级图层：
-      </a-col>
-      <a-col>
-        <a-select
-          class="swipe-select"
-          :value="aboveLayer"
-          @change="getLayers($event, 'aboveLayer', 'belowLayers')"
+    <a-row type="flex">
+      <a-col span="18" class="swipe-col1">
+        <!-- 卷帘组件 -->
+        <mapgis-compare-control
+          ref="compare"
+          :orientation="direction"
+          v-if="isOpen"
         >
-          <a-select-option
-            v-for="item in aboveLayers"
-            :value="item.id"
-            :key="item.id"
-            >{{ item.title }}
-          </a-select-option>
-        </a-select>
+          <mp-mapbox-view
+            class="mapbox-view-cls"
+            :document="aboveLayerDocument"
+            :mapStyle="defaultStyle"
+            @onMapLoaded="handleMapLoad($event, 'above')"
+          />
+          <mp-mapbox-view
+            class="mapbox-view-cls"
+            :document="belowLayerDocument"
+            :mapStyle="defaultStyle"
+            @onMapLoaded="handleMapLoad($event, 'below')"
+          />
+        </mapgis-compare-control>
+      </a-col>
+      <a-col span="6" class="swipe-col2">
+        <!-- 上图层 -->
+        <a-row class="swipe-row">
+          <a-col>
+            上级图层：
+          </a-col>
+          <a-col>
+            <a-select
+              class="swipe-select"
+              :value="aboveLayer"
+              @change="getLayers($event, 'aboveLayer', 'belowLayers')"
+            >
+              <a-select-option
+                v-for="item in aboveLayers"
+                :value="item.id"
+                :key="item.id"
+                >{{ item.title }}
+              </a-select-option>
+            </a-select>
+          </a-col>
+        </a-row>
+        <!-- 下图层 -->
+        <a-row class="swipe-row">
+          <a-col>
+            下级图层：
+          </a-col>
+          <a-col>
+            <a-select
+              class="swipe-select"
+              :value="belowLayer"
+              @change="getLayers($event, 'belowLayer', 'aboveLayers')"
+            >
+              <a-select-option
+                v-for="item in belowLayers"
+                :value="item.id"
+                :key="item.id"
+                >{{ item.title }}
+              </a-select-option>
+            </a-select>
+          </a-col>
+        </a-row>
+        <!-- 方向 -->
+        <a-radio-group
+          class="swipe-radio-group"
+          :value="direction"
+          @change="onDirectionChange"
+        >
+          <a-radio value="vertical">
+            垂直
+          </a-radio>
+          <a-radio value="horizontal" v-show="is2DMapMode">
+            水平
+          </a-radio>
+        </a-radio-group>
       </a-col>
     </a-row>
-    <!-- 下图层 -->
-    <a-row class="swipe-row">
-      <a-col>
-        下级图层：
-      </a-col>
-      <a-col>
-        <a-select
-          class="swipe-select"
-          :value="belowLayer"
-          @change="getLayers($event, 'belowLayer', 'aboveLayers')"
-        >
-          <a-select-option
-            v-for="item in belowLayers"
-            :value="item.id"
-            :key="item.id"
-            >{{ item.title }}
-          </a-select-option>
-        </a-select>
-      </a-col>
-    </a-row>
-    <!-- 方向 -->
-    <a-radio-group
-      class="swipe-radio-group"
-      :value="direction"
-      @change="onDirectionChange"
-    >
-      <a-radio value="vertical">
-        垂直
-      </a-radio>
-      <a-radio value="horizontal" v-show="is2DMapMode">
-        水平
-      </a-radio>
-    </a-radio-group>
-    <!-- 卷帘组件 -->
-    <mapbox-compare-control ref="compare" :orientation="direction">
-      <mp-mapbox-view
-        :document="aboveLayerDocument"
-        :mapStyle="defaultStyle"
-        @onMapLoaded="handleMapLoad('above')"
-      />
-      <mp-mapbox-view
-        :document="belowLayerDocument"
-        :mapStyle="defaultStyle"
-        @onMapLoaded="handleMapLoad('below')"
-      />
-    </mapbox-compare-control>
   </div>
 </template>
 
@@ -78,7 +90,7 @@ import {
   WidgetState,
   Layer
 } from '@mapgis/web-app-framework'
-import { MapboxCompareControl } from '@mapgis/webclient-vue-mapboxgl'
+// import { MapgisCompareControl } from '@mapgis/webclient-vue-mapboxgl'
 
 type Direction = 'vertical' | 'horizontal'
 
@@ -94,12 +106,12 @@ enum ISubMap {
 @Component({
   name: 'MpSwipe',
   components: {
-    MapboxCompareControl,
+    // MapgisCompareControl,
     MpMapboxView
   }
 })
 export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
-  map: any[] = []
+  isOpen = false
 
   aboveLayer = ''
 
@@ -144,7 +156,14 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
    * 卷帘弹框打开操作
    */
   onOpen() {
+    this.isOpen = true
     this.initLayers()
+  }
+
+  /**
+   * 卷帘弹框关闭操作
+   */
+  onClose() {
     this.direction = 'vertical'
   }
 
@@ -172,7 +191,7 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
       } else {
         this.aboveLayer = fId
         this.aboveLayers = layers
-      }      
+      }
     }
   }
 
@@ -196,28 +215,53 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
 
   /**
    * 地图初始化
+   * @param payload<object>
    * @param subMap<string>
    */
-  handleMapLoad(subMap: 'above' | 'below') {
-    const that = this
-    const compareRef: IVueExtend = that.$refs.compare
-    console.log('卷帘组件', compareRef)
-    return ({ map }: any) => {
-      that.set(that.map, ISubMap[subMap], map)
-      compareRef.handleMap(that.map, compareRef.$el)
+  handleMapLoad({ map }: any, subMap: 'above' | 'below') {
+    const compareRef: IVueExtend = this.$refs.compare
+    const results: any[] = [];
+    results[ISubMap[subMap]] = map
+    if (compareRef && typeof compareRef.handleMap === 'function') {
+      compareRef.handleMap(results, compareRef)
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.mp-widget-swipe {
+  width: 1000px;
+  height: 600px;
+  overflow: auto;
+  > div {
+    width: 100%;
+    height: 100%;
+  }
+}
+.swipe-col1 {
+  overflow: auto;
+  position: relative;
+}
+.swipe-col2 {
+  overflow: hidden;
+  border-left: 1px solid #f0f0f0;
+  padding-left: 12px;
+  /deep/ .ant-col:first-of-type {
+    line-height: 28px;
+    + .ant-col {
+      margin-bottom: 12px;
+    }
+  }
+}
 .swipe-select {
   width: 100%;
 }
-/deep/ .ant-col:first-of-type {
-  line-height: 28px;
-  + .ant-col {
-    margin-bottom: 12px;
-  }
+.mapbox-view-cls {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>
