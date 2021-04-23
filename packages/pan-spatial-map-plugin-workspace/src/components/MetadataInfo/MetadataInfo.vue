@@ -39,6 +39,11 @@
                     :data-source="mapInfo[mapInfoItem]"
                     :columns="getTableColumns(mapInfo[mapInfoItem][0])"
                     class="table"
+                    :rowKey="
+                      (record, index) => {
+                        return index
+                      }
+                    "
                   >
                   </a-table>
                 </div>
@@ -79,6 +84,11 @@
                   :data-source="metaData[item][itemChild]"
                   :columns="getTableColumns(metaData[item][itemChild][0])"
                   class="table"
+                  :rowKey="
+                    (record, index) => {
+                      return index
+                    }
+                  "
                 >
                 </a-table>
               </div>
@@ -112,6 +122,11 @@
                   :data-source="metaData[item][itemChild]"
                   :columns="getTableColumns(metaData[item][itemChild][0])"
                   class="table"
+                  :rowKey="
+                    (record, index) => {
+                      return index
+                    }
+                  "
                 >
                 </a-table>
               </div>
@@ -221,8 +236,6 @@ export default class MpMetadataInfo extends Vue {
 
   @Watch('currentConfig', { deep: true, immediate: true })
   private async getmetadata() {
-    console.log(this.currentConfig)
-
     if (this.currentConfig) {
       const { type } = this.currentConfig
       if (type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {

@@ -278,7 +278,7 @@ export class OGCWMSLayer extends Layer {
    * @memberof OGCWMSLayer
    */
   constructor(properties?: Record<string, any>) {
-    super()
+    super(properties)
 
     this.type = LayerType.OGCWMS
 

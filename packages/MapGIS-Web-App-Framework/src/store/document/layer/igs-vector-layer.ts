@@ -1,8 +1,7 @@
 import * as Zondy from '@mapgis/webclient-es6-service'
-import { MapImageLayer } from './map-image-layer'
 import { LoadStatus, LayerType, Layer } from './layer'
 
-export class IGSVectorLayer extends MapImageLayer {
+export class IGSVectorLayer extends Layer {
   /**
    *
    *

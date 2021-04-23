@@ -181,7 +181,7 @@ export abstract class TileLayer extends Layer {
    * @memberof TileLayer
    */
   constructor(properties?: Record<string, any>) {
-    super()
+    super(properties)
 
     this.type = LayerType.tile
 
@@ -214,6 +214,15 @@ export abstract class TileLayer extends Layer {
    * @memberof TileLayer
    */
   minScale = 0
+
+  /**
+   * 瓦片信息
+   *
+   * @date 22/04/2021
+   * @type {TileInfo}
+   * @memberof TileLayer
+   */
+  titleInfo: TileInfo = new TileInfo()
 
   /**
    * token的参数名

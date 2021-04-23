@@ -23,7 +23,7 @@
         "position": {
           "anchor": "bottom-left",
           "horizontalOffset": 10,
-          "verticalOffset": 64
+          "verticalOffset": 36
         }
       },
       {
@@ -32,7 +32,7 @@
         "position": {
           "anchor": "bottom-left",
           "horizontalOffset": 10,
-          "verticalOffset": 106
+          "verticalOffset": 78
         }
       },
       {
@@ -45,10 +45,19 @@
         }
       },
       {
+        "id": "widget_f13b2780-8303-45f4-a6c6-6feda62eccf0",
+        "uri": "widgets/comprehensive-query",
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 10,
           "verticalOffset": 10
+        }
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 52
         },
         "placeholder": true
       },
@@ -56,7 +65,7 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 52,
-          "verticalOffset": 10
+          "verticalOffset": 52
         },
         "placeholder": true
       },
@@ -64,7 +73,7 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 94,
-          "verticalOffset": 10
+          "verticalOffset": 52
         },
         "placeholder": true
       },
@@ -72,7 +81,7 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 136,
-          "verticalOffset": 10
+          "verticalOffset": 52
         },
         "placeholder": true
       },
@@ -80,7 +89,7 @@
         "position": {
           "anchor": "top-left",
           "horizontalOffset": 178,
-          "verticalOffset": 10
+          "verticalOffset": 52
         },
         "placeholder": true
       }
@@ -108,10 +117,6 @@
             "id": "widget_48a29d0c-ece4-474e-9259-65b5095757e7",
             "uri": "widgets/data-catalog",
             "config": "configs/data-catalog/config.json"
-          },
-          {
-            "id": "widget_f13b2780-8303-45f4-a6c6-6feda62eccf0",
-            "uri": "widgets/comprehensive-query"
           },
           {
             "id": "widget_93d895de-f6c5-48c1-bbdc-6b34ab760e37",

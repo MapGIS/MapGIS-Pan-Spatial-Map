@@ -1,5 +1,5 @@
 <template>
-  <div class="mp-widget-thematic-map">专题地图</div>
+  <div class="mp-widget-thematic-map">专题服务</div>
 </template>
 
 <script lang="ts">

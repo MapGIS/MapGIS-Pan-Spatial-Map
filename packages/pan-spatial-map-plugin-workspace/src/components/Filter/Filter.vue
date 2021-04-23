@@ -212,7 +212,6 @@ export default class MpFilter extends Vue {
 </script>
 
 <style lang="less" scoped>
-@import '~ant-design-vue/lib/style/themes/default.less';
 .filter-items {
   border-bottom: 1px solid @border-color-base;
 }

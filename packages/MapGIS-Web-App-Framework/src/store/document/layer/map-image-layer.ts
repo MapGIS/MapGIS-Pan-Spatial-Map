@@ -17,7 +17,7 @@ export abstract class MapImageLayer extends Layer {
    * @memberof TileLayer
    */
   constructor(properties?: Record<string, any>) {
-    super()
+    super(properties)
 
     this.type = LayerType.mapImage
 
@@ -53,6 +53,15 @@ export abstract class MapImageLayer extends Layer {
   minScale = 0
 
   /**
+   * 子图层
+   *
+   * @date 01/04/2021
+   * @type {Sublayer[]}
+   * @memberof IGSMapImageLayer
+   */
+  sublayers: Sublayer[] = []
+
+  /**
    * token的参数名
    *
    * @date 22/03/2021
@@ -77,6 +86,55 @@ export abstract class MapImageLayer extends Layer {
   imageFormat = 'png'
 
   /**
+   * 所有的子图层
+   * 包括子图层的子图层
+   *
+   * @date 01/04/2021
+   * @type {Sublayer []}
+   * @memberof IGSMapImageLayer
+   */
+  get allSublayers(): Sublayer[] {
+    if (this._allSublayers.length === 0) {
+      this.sublayers.forEach(element => {
+        this.getSubLayers(element, this._allSublayers)
+      })
+    }
+
+    return this._allSublayers
+  }
+
+  /**
+   * 通过子图层ID获取子图层
+   *
+   * @date 01/04/2021
+   * @param {string} sublayerID
+   * @return {*}  {Sublayer}
+   * @memberof IGSMapImageLayer
+   */
+  findSublayerById(sublayerID: string): Sublayer | undefined {
+    let sublayer: Sublayer | undefined
+    this.allSublayers.forEach(element => {
+      if (element.id === sublayerID) {
+        sublayer = element
+      }
+    })
+
+    return sublayer
+  }
+
+  // 所有的子图层,包括子图层的子图层
+  protected _allSublayers: Sublayer[] = []
+
+  protected getSubLayers(subLayer: Sublayer, sublayers: Sublayer[]) {
+    sublayers.push(subLayer)
+    if (subLayer.sublayers.length > 0) {
+      subLayer.sublayers.forEach(element => {
+        this.getSubLayers(element, sublayers)
+      })
+    }
+  }
+
+  /**
    * 根据出图的范围、图片的宽高获取图片的url
    *
    * @date 23/03/2021
@@ -88,4 +146,97 @@ export abstract class MapImageLayer extends Layer {
    * @memberof MapImageLayer
    */
   abstract getImageUrl(extent: Rectangle, width: number, height: number): string
+}
+
+/**
+ * MapImageLayer的子图层
+ *
+ * @date 01/04/2021
+ * @export
+ * @class Sublayer
+ */
+export abstract class Sublayer {
+  /**
+   * 图层的唯一标识
+   * 在服务器的请求参数中,用图层的id代表该图层
+   *
+   * @date 01/04/2021
+   * @memberof Sublayer
+   */
+  id = ''
+
+  /**
+   * 该子图层所属的图层
+   *
+   * 该子图属于哪个图层
+   *
+   * @date 01/04/2021
+   * @type {(MapImageLayer | undefined)}
+   * @memberof Sublayer
+   */
+  layer: MapImageLayer | undefined
+
+  /**
+   * 子图层列表
+   * 子图层支持多层嵌套
+   *
+   * @date 01/04/2021
+   * @type {Sublayer[]}
+   * @memberof Sublayer
+   */
+  sublayers: Sublayer[] = []
+
+  /**
+   * 标题
+   * 用于在图层列表或图例中标识该图层
+   *
+   * @date 01/04/2021
+   * @memberof Sublayer
+   */
+  title = ''
+
+  /**
+   * 子图层的url
+   *
+   * @date 01/04/2021
+   * @memberof Sublayer
+   */
+  url = ''
+
+  /**
+   * 是否可见
+   *
+   * @date 01/04/2021
+   * @memberof Sublayer
+   */
+  visible = true
+
+  /**
+   * 通过json对象初始化该对象
+   *
+   * @date 30/03/2021
+   * @param {Record<string, any>} jsonObject
+   * @memberof Sublayer
+   */
+  abstract fromJSON(jsonObject: Record<string, any>)
+
+  /**
+   * 将该对象转换为json对象
+   *
+   * @date 30/03/2021
+   * @return {*}  {Record<string, any>}
+   * @memberof Sublayer
+   */
+  toJSON(): Record<string, any> {
+    return {}
+  }
+
+  /**
+   * 创建一个深度克隆的sublayer
+   *
+   * @date 02/04/2021
+   * @return {*}  {Sublayer}
+   * @memberof Sublayer
+   */
+  abstract clone(): Sublayer
 }

@@ -10,7 +10,10 @@ import {
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
-  OGCWMSLayer
+  OGCWMSLayer,
+  ArcGISTileLayer,
+  ArcGISMapImageLayer,
+  UUID
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
 import { queryIgsServicesInfoInstance } from '../service'
@@ -111,6 +114,14 @@ export class DataCatalogManager {
       case LayerType.OGCWMS:
         url = layerConfig.serverURL
         layer = new OGCWMSLayer({ url })
+        break
+      case LayerType.arcGISTile:
+        url = layerConfig.serverURL
+        layer = new ArcGISTileLayer({ url })
+        break
+      case LayerType.arcGISMapImage:
+        url = layerConfig.serverURL
+        layer = new ArcGISMapImageLayer({ url })
         break
       default:
         break
@@ -556,6 +567,10 @@ export class DataCatalogManager {
         serverType = LayerType.OGCWMTS
         break
       case this.layerServiceType.TILEARCGIS:
+        serverType = LayerType.arcGISTile
+        break
+      case this.layerServiceType.IMAGEARCGIS:
+        serverType = LayerType.arcGISMapImage
         break
       case this.layerServiceType.IGSDOC3D:
       case this.layerServiceType.IGSIMAGE3D:
@@ -611,13 +626,7 @@ export class DataCatalogManager {
 
   // 生成guid
   private genGUID() {
-    let guid = ''
-    for (let i = 1; i <= 32; i += 1) {
-      const n = Math.floor(Math.random() * 16.0).toString(16)
-      guid += n
-      if (i === 8 || i === 12 || i === 16 || i === 20) guid += '-'
-    }
-    return guid
+    return UUID.uuid()
   }
 
   // 处理服务列表的返回结果:将直接发布的服务和通地目录发布的服务合并为一个列表

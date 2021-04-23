@@ -1,8 +1,8 @@
 import { Layer, LayerType, LoadStatus } from './layer'
 import { LOD, TileInfo, TileLayer } from './tile-layer'
-import { MapImageLayer } from './map-image-layer'
+import { MapImageLayer, Sublayer } from './map-image-layer'
 import { IGSTileLayer } from './igs-tile-layer'
-import { IGSMapImageLayer, Sublayer } from './igs-map-image-layer'
+import { IGSMapImageLayer, IGSSublayer } from './igs-map-image-layer'
 import { IGSVectorLayer } from './igs-vector-layer'
 import {
   OGCWMTSLayer,
@@ -11,6 +11,8 @@ import {
   WMTSStyle
 } from './ogc-wmts-layer'
 import { OGCWMSLayer, WMSSublayer } from './ogc-wms-layer'
+import { ArcGISTileLayer } from './arcgis-tile-layer'
+import { ArcGISMapImageLayer, ArcGISSublayer } from './arcgis-map-image-layer'
 
 export {
   Layer,
@@ -20,14 +22,18 @@ export {
   TileInfo,
   TileLayer,
   MapImageLayer,
+  Sublayer,
   IGSTileLayer,
   IGSMapImageLayer,
-  Sublayer,
+  IGSSublayer,
   IGSVectorLayer,
   OGCWMTSLayer,
   WMTSSublayer,
   TileMatrixSet,
   WMTSStyle,
   OGCWMSLayer,
-  WMSSublayer
+  WMSSublayer,
+  ArcGISTileLayer,
+  ArcGISMapImageLayer,
+  ArcGISSublayer
 }

@@ -37,11 +37,6 @@ export default class MpBasemapManager extends Mixins(
   WidgetMixin,
   BaseLayersMixin
 ) {
-  private get baseUrl() {
-    // return envInstance.config.baseApi === '/' ? '' : envInstance.config.baseApi
-    return process.env.VUE_APP_API_BASE_URL
-  }
-
   private get mapData() {
     return this.baseLayerConfig.filter(config => {
       const { scene, visible } = config
@@ -91,7 +86,7 @@ export default class MpBasemapManager extends Mixins(
       position: relative;
       width: 100%;
       height: 0;
-      padding-top: 100%; /*相对于这个盒子的宽度设置的，其值=width*/
+      padding-top: 80%; /*相对于这个盒子的宽度设置的，为保证图片比例，其值=width * 80%*/
       img {
         position: absolute;
         top: 0;
