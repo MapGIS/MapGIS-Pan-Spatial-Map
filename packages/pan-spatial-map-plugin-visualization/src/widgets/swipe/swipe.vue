@@ -80,7 +80,7 @@ import {
 } from '@mapgis/web-app-framework'
 import defaultStyle from '../../../../MapGIS-Web-App-Framework/src/assets/style/default-style.json'
 
-// const { MapgisCompare } = require('@mapgis/webclient-vue-mapboxgl')
+const { MapgisCompare } = require('@mapgis/webclient-vue-mapboxgl')
 
 type Direction = 'vertical' | 'horizontal'
 
@@ -96,7 +96,7 @@ enum ISubMap {
 @Component({
   name: 'MpSwipe',
   components: {
-    // MapgisCompare,
+    MapgisCompare,
     MpMapboxView
   }
 })
@@ -196,6 +196,7 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
   handleMapLoad(subMap: 'above' | 'below') {
     const that = this
     const compareRef: IVueExtend = that.$refs.compare
+    console.log('卷帘组件', compareRef)
     return ({ map }: any) => {
       that.map[ISubMap[subMap]] = map
       compareRef.handleMap(that.map, compareRef.$el)
