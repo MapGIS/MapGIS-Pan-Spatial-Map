@@ -411,7 +411,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   text-align: right;
 }
 .retrospect-time-line {
-  min-width: 300px;
   min-height: 300px;
   position: relative;
   overflow: hidden;
