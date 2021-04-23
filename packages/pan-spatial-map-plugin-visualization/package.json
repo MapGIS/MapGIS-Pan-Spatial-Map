@@ -21,8 +21,7 @@
   },
   "dependencies": {
     "@mapgis/web-app-framework": "^0.1.0",
-    "vue-property-decorator": "^8.3.0",
-    "@mapgis/webclient-vue-mapboxgl": "^1.0.0"
+    "vue-property-decorator": "^8.3.0"
   },
   "devDependencies": {
     "typescript": "~3.7.0"

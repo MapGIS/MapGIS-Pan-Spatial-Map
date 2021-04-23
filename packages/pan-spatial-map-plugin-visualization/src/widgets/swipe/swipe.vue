@@ -164,12 +164,15 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
     layers = layers || this.flatLayers
 
     if (layers && layers.length) {
-      const id = layers[0].id
-      this.aboveLayer = id
-      this.belowLayer = id
-      this.aboveLayers = layers
-      this.belowLayers = layers
+      const [{ id: fId }, { id: sId }, ...others] = layers
       this.layers = layers
+      if (layers.length > 1) {
+        this.getLayers(fId, 'aboveLayer', 'belowLayers')
+        this.getLayers(sId, 'belowLayer', 'aboveLayers')
+      } else {
+        this.aboveLayer = fId
+        this.aboveLayers = layers
+      }      
     }
   }
 
