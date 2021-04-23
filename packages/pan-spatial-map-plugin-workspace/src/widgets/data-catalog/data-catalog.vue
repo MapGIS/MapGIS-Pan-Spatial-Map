@@ -25,15 +25,80 @@
       @expand="onExpand"
     >
       <template v-slot:custom="item" class="tree-item-handle">
-        <div
+        <span
           v-if="item.children && item.children.length > 0"
           @click="onClick(item)"
           class="tree-node"
         >
-          {{ item.name }}
-        </div>
-        <a-dropdown v-else :trigger="['contextmenu']">
-          <div @click="onClick(item)">{{ item.name }}</div>
+          <span
+            v-if="
+              searchValue !== '' &&
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
+                  -1
+            "
+          >
+            <span class="unfilter-words"
+              >{{
+                item.name.substr(
+                  0,
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase())
+                )
+              }}
+            </span>
+            <span class="filter-words">{{
+              item.name.substr(
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
+                searchValue.length
+              )
+            }}</span>
+            <span class="unfilter-words">{{
+              item.name.substr(
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+                  searchValue.length
+              )
+            }}</span>
+          </span>
+          <span v-else>{{ item.name }}</span>
+        </span>
+        <a-dropdown
+          v-else
+          :trigger="['contextmenu']"
+          :class="
+            searchValue !== '' &&
+            item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !== -1
+              ? 'filter-dropdown'
+              : ''
+          "
+        >
+          <span
+            v-if="
+              searchValue !== '' &&
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
+                  -1
+            "
+          >
+            <span class="unfilter-words"
+              >{{
+                item.name.substr(
+                  0,
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase())
+                )
+              }}
+            </span>
+            <span class="filter-words">{{
+              item.name.substr(
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
+                searchValue.length
+              )
+            }}</span>
+            <span class="unfilter-words">{{
+              item.name.substr(
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+                  searchValue.length
+              )
+            }}</span>
+          </span>
+          <span v-else @click="onClick(item)">{{ item.name }}</span>
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="showMetaDataInfo(item)"
               >元数据信息</a-menu-item
@@ -248,7 +313,11 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 按需筛选树节点高亮显示（搜索内容不为空时筛选条件）
   filterTree(node) {
-    return node.dataRef.name.indexOf(this.searchValue) !== -1
+    return (
+      node.dataRef.name
+        .toUpperCase()
+        .indexOf(this.searchValue.toUpperCase()) !== -1
+    )
   }
 
   // 按需筛选树节点（搜索内容为空时筛选条件）
@@ -263,12 +332,11 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   hasKeyWord(tree: object[], keyword: string) {
     const data = []
     tree.forEach((item: any, index: number) => {
-      if (item.name.indexOf(keyword) !== -1) {
+      if (item.name.toUpperCase().indexOf(keyword.toUpperCase()) !== -1) {
         this.expandedKeys.push(item.guid)
-      } else {
-        if (item.children && item.children.length > 0) {
-          this.hasKeyWord(item.children, keyword)
-        }
+      }
+      if (item.children && item.children.length > 0) {
+        this.hasKeyWord(item.children, keyword)
       }
     })
   }
@@ -284,9 +352,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
           )
         ) {
           this.expandedKeys.push(node.guid)
-        } else {
-          this.getAllKeys(node.children)
         }
+        this.getAllKeys(node.children)
       }
     }
   }
@@ -297,6 +364,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const keyword: string = e.target.value
     if (keyword !== '') {
       this.hasKeyWord(this.dataCatalogTreeData, keyword)
+      this.getAllKeys(this.dataCatalogTreeData)
       this.getAllKeys(this.dataCatalogTreeData)
     }
   }
@@ -457,5 +525,20 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       margin-right: 12px;
     }
   }
+}
+
+::v-deep.ant-tree-title {
+  display: flex;
+}
+
+.filter-dropdown {
+  flex-direction: row;
+}
+
+.unfilter-words {
+  color: #000000a6 !important;
+}
+.filter-words {
+  color: @primary-color !important;
 }
 </style>
