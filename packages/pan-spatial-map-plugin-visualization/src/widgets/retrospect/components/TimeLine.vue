@@ -6,8 +6,6 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import echarts from 'echarts'
 
-
-
 @Component
 export default class TimeLine extends Vue {
   @Prop() id!: string
@@ -23,7 +21,6 @@ export default class TimeLine extends Vue {
   Chart: any | null = null
 
   get timelineOptions() {
-
     return {
       currentIndex: this.value,
       autoPlay: this.autoPlay,
@@ -38,15 +35,17 @@ export default class TimeLine extends Vue {
         timeline: {
           ...this.timelineOptions,
           axisType: 'category',
-          label: {
-            formatter(s: Date) {
-              return new Date(s).getFullYear()
-            }
-          },
+          // label: {
+          //   formatter(s: Date) {
+          //     return new Date(s).getFullYear()
+          //   }
+          // },
+          symbol: 'diamond',
+          padding: 0,
+          top: 0,
+          bottom: 0,
           left: 0,
           right: 0,
-          padding: 0,
-          symbol: 'diamond',
           controlStyle: {
             itemSize: 15,
             itemGap: 5,
@@ -61,10 +60,16 @@ export default class TimeLine extends Vue {
             borderColor: 'auto',
             borderWidth: 'auto',
             label: { show: false, textStyle: { color: 'auto' } }
+          },
+          trigger: 'axis',
+          axisPointer: {
+            // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
           }
         },
-        tooltip: {},
-        series: []
+        tooltip: {
+          position: 'bottom'
+        }
       }
     }
   }

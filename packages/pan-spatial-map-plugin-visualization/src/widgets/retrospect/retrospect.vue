@@ -126,7 +126,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
 
   isPlay = false
 
-
   /**
    * 树形选择控件下拉框样式
    */
@@ -243,6 +242,7 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    */
   onSubjectChange(value: string) {
     this.subject = value
+    this.isPlay = false
     const checkedNode = this.getCheckedNode(this.dataCatalog, value, [])
     this.timeLineList = this.getDataCatalogTimeList(checkedNode)
     this.timeIndex = 0
@@ -266,11 +266,11 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
       if (item.children && !item.children.length) {
         item.children = undefined
       }
-      if (guids.includes(item.guid)) {
-        item.children = undefined
-      } else if (this.hasYearNode(item.name)) {
+      const _hasYearNode = this.hasYearNode(item.name)
+      if (_hasYearNode) {
         guids.push(parentNode!.guid)
-      } else if (!item.children) {
+      }
+      if (_hasYearNode || (!item.children && !guids.includes(item.guid))) {
         tree.splice(n, 1)
         n--
       }
@@ -330,9 +330,11 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
     this.dataCatalogCheckedIds = [
       ...dataCatalogManagerInstance.checkedLayerConfigIDs
     ]
-    const dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData() 
+    const dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData()
     if (dataCatalog.length) {
-      this.treeData = this.handleDataCatalog(JSON.parse(JSON.stringify(dataCatalog)))
+      this.treeData = this.handleDataCatalog(
+        JSON.parse(JSON.stringify(dataCatalog))
+      )
       this.dataCatalog = dataCatalog
       this.onSubjectChange(dataCatalog[0].guid)
     }
@@ -363,7 +365,7 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    * 播放或暂停
    */
   btnPlay() {
-    this.isPlay = !this.isPlay
+    this.isPlay = this.timeLineList.length > 1 ? !this.isPlay : false
   }
 
   /**
