@@ -343,19 +343,23 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 获取所有包含关键字节点的父节点
   getAllKeys(tree: object[]) {
+    const data: string[] = []
     for (let i = 0; i < tree.length; i++) {
       const node = tree[i]
       if (node.children) {
+        const arr = this.getAllKeys(node.children)
         if (
           node.children.some(
             item => this.expandedKeys.includes(item.guid) === true
-          )
+          ) ||
+          arr.length > 0
         ) {
           this.expandedKeys.push(node.guid)
+          data.push(node.guid)
         }
-        this.getAllKeys(node.children)
       }
     }
+    return data
   }
 
   // 搜索框内容变化时的回调
@@ -364,7 +368,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const keyword: string = e.target.value
     if (keyword !== '') {
       this.hasKeyWord(this.dataCatalogTreeData, keyword)
-      this.getAllKeys(this.dataCatalogTreeData)
       this.getAllKeys(this.dataCatalogTreeData)
     }
   }
