@@ -35,15 +35,8 @@ export default class TimeLine extends Vue {
         timeline: {
           ...this.timelineOptions,
           axisType: 'category',
-          // label: {
-          //   formatter(s: Date) {
-          //     return new Date(s).getFullYear()
-          //   }
-          // },
           symbol: 'diamond',
           padding: 0,
-          top: 0,
-          bottom: 0,
           left: 0,
           right: 0,
           controlStyle: {
@@ -76,27 +69,25 @@ export default class TimeLine extends Vue {
 
   @Watch('timelineOptions', { deep: true })
   timelineOptionsChange() {
-    this.init()
-  }
-
-  resize() {
-    if (this.Chart) {
-      this.Chart.resize(0)
-    }
-  }
-
-  init() {
-    if (!this.Chart) {
-      this.Chart = echarts.init(document.getElementById(this.id) as HTMLElement)
-      this.Chart.on('timelinechanged', ({ currentIndex }) => {
-        this.$emit('input', currentIndex)
-      })
-    }
     this.Chart.setOption(this.option, true)
   }
 
+  resize(width = 'auto') {
+    if (this.Chart) {
+      this.Chart.resize({
+        width
+      }) 
+    }
+  }
+
   mounted() {
-    this.init()
+    this.Chart = echarts.init(document.getElementById(this.id) as HTMLDivElement)
+    this.Chart.on('timelinechanged', ({ currentIndex }) =>
+      this.$emit('input', currentIndex)
+    )
+    this.Chart.setOption(this.option, true)
+    window.onresize = () => this.resize()
+    
   }
 
   beforeDestroyed() {
@@ -109,7 +100,7 @@ export default class TimeLine extends Vue {
 
 <style lang="less" scoped>
 .time-line-chart {
-  width: 300px;
+  width: 100%;
   height: 48px;
   margin: 10px 0 20px;
 }

@@ -149,13 +149,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   }
 
   /**
-   * 时间轴实例
-   */
-  get timeLineRef() {
-    return this.$refs['time-line']
-  }
-
-  /**
    * 时间轴展示的年度
    */
   get timeLineYearList() {
@@ -356,8 +349,9 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    * 视图窗口变化
    */
   onResize() {
-    if (this.timeLineRef) {
-      ;(this.timeLineRef as any).resize()
+    const ref: any = this.$refs['time-line']
+    if (ref) {
+      ref.resize()
     }
   }
 
@@ -404,17 +398,20 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
 </script>
 
 <style lang="less" scoped>
-.retrospect-row {
-  margin: 12px 0;
-}
 .retrospect-tree-select,
 .retrospect-input-number {
   width: 100%;
 }
+
+.retrospect-row {
+  margin: 12px 0;
+}
+
 .retrospect-input-number-unit {
   text-align: right;
 }
 .retrospect-time-line {
+  min-width: 300px;
   min-height: 300px;
   position: relative;
   overflow: hidden;
