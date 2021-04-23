@@ -49,6 +49,11 @@ import { utilInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component({ components: { MapboxMeasure, MapboxMarker } })
 export default class Measure extends Mixins(MapMixin) {
+  DrawSources = ['mapbox-gl-draw-hot', 'mapbox-gl-draw-cold']
+
+  @Provide()
+  actions = undefined
+
   @Prop({
     type: Object,
     default: () => {
@@ -112,12 +117,23 @@ export default class Measure extends Mixins(MapMixin) {
   })
   activeVar!: number
 
+  @Emit('start')
+  onMeasureStart() {}
+
+  @Emit('finished')
+  onMeasureFineshed(results: Record<string, any>) {}
+
   private measure: any = null
 
   // 当前激活的测量类型
   private activeMeasureMode = this.measureMode.mode
 
   private measureMarkers: any[] = []
+
+  // 测量结果
+  private results: Record<string, any> = {}
+
+  private changeMeasureSettingInterval = null
 
   mounted(): void {
     // this.enableMeasure()
@@ -141,15 +157,62 @@ export default class Measure extends Mixins(MapMixin) {
   }
 
   @Watch('activeVar')
-  onActive() {}
+  onActive() {
+    this.moveMeasureLayersToTop()
+    this.changeMapBoxDrawMode()
+  }
 
   @Watch('measureMode', { deep: true })
   changeMeasureMode() {
+    this.clearMeasure()
+    this.moveMeasureLayersToTop()
     this.activeMeasureMode = this.measureMode.mode
+    this.onMeasureStart()
+    this.changeMapBoxDrawMode()
   }
 
   @Watch('measureSetting', { deep: true, immediate: true })
-  changeMeasureSetting() {}
+  changeMeasureSetting() {
+    if (this.map === null) {
+      return false
+    }
+    if (this.isMapboxDrawSourceAdded()) {
+      if (this.changeMeasureSettingInterval) {
+        clearInterval(this.changeMeasureSettingInterval)
+      }
+      const { layers } = this.map.getStyle()
+      for (let i = 0; i < layers.length; i += 1) {
+        const layer = layers[i]
+        if (layer.source && this.DrawSources.includes(layer.source)) {
+          const { type } = layer
+          if (type === 'line') {
+            const layerId = layer.id
+            this.map.setPaintProperty(
+              layerId,
+              'line-color',
+              this.measureSetting.lineColor
+            )
+
+            if (this.measureSetting.lineType === '虚线') {
+              this.map.setPaintProperty(layerId, 'line-dasharray', [0.2, 2])
+            } else if (this.measureSetting.lineType === '实线') {
+              this.map.setPaintProperty(layerId, 'line-dasharray', null)
+            }
+            this.map.setPaintProperty(
+              layerId,
+              'line-opacity',
+              this.measureSetting.lineOpacity
+            )
+            this.map.setPaintProperty(
+              layerId,
+              'line-width',
+              this.measureSetting.lineWidth
+            )
+          }
+        }
+      }
+    }
+  }
 
   enableMeasure() {
     const component: any = this.$refs.measureRef
@@ -158,14 +221,34 @@ export default class Measure extends Mixins(MapMixin) {
     }
   }
 
-  handleAdded() {}
+  handleAdded(e: any) {
+    debugger
+    const { measure } = e
+    this.measure = measure
+    this.changeMeasureSettingInterval = setInterval(_ => {
+      if (this.isMapboxDrawSourceAdded()) {
+        this.changeMeasureSetting()
+      }
+    }, 20)
+  }
 
   // 将量算绘制的图层移到所有图层上方，避免被覆盖
   moveMeasureLayersToTop() {
     if (this.map === null) {
       return false
     }
-    // if (this.map.getSource())
+    if (
+      this.map.getSource(this.DrawSources[0]) ||
+      this.map.getSource(this.DrawSources[1])
+    ) {
+      const { layers } = this.map.getStyle()
+      for (let i = 0; i < layers.length; i++) {
+        const layer = layers[i]
+        if (layer.source && this.DrawSources.includes(layer.source)) {
+          this.map.moveLayer(layer.id)
+        }
+      }
+    }
   }
 
   // 根据当前激活类型来选择对应的绘制类型
@@ -186,11 +269,160 @@ export default class Measure extends Mixins(MapMixin) {
     }
   }
 
-  getMeasureResult() {}
+  isMapboxDrawSourceAdded() {
+    if (
+      this.map.getSource(this.DrawSources[0]) &&
+      this.map.getSource(this.DrawSources[1])
+    ) {
+      return true
+    }
+    return false
+  }
 
-  onDrawModeChanged() {}
+  onDrawModeChanged(drawMode: any) {
+    if (drawMode.mode === 'simple_select') {
+      this.changeMapBoxDrawMode()
+    }
+  }
 
-  onAddNewFeature() {}
+  onAddNewFeature() {
+    const data = this.measure.getAll()
+    if (data.features.length > 1) {
+      const featureIds = []
+      for (let i = 0; i < data.features.length - 1; i++) {
+        featureIds.push(data.features[i].id)
+      }
+      this.measure.delete(featureIds)
+      this.measureMarkers = []
+    }
+  }
+
+  transDistanceUnit() {
+    let perimeterR = 1
+    let perimeterUnitLabel = ''
+
+    switch (this.distanceUnit) {
+      case 'm':
+        perimeterR = 1
+        perimeterUnitLabel = this.distanceUnit
+        break
+      case 'km':
+        perimeterR = 1000
+        perimeterUnitLabel = this.distanceUnit
+        break
+      case '米':
+        perimeterR = 1
+        perimeterUnitLabel = this.distanceUnit
+        break
+      case '千米':
+        perimeterR = 1000
+        perimeterUnitLabel = this.distanceUnit
+        break
+      default:
+        break
+    }
+
+    return {
+      perimeterR,
+      perimeterUnitLabel
+    }
+  }
+
+  transAreaUnit() {
+    let perimeterR = 1
+    let areaR = 1
+    let perimeterUnitLabel = ''
+    let areaUnitLabel = ''
+
+    switch (this.areaUnit) {
+      case 'm2':
+        perimeterR = 1
+        areaR = 1
+        perimeterUnitLabel = 'm'
+        areaUnitLabel = this.areaUnit
+        break
+      case 'km2':
+        perimeterR = 1000
+        areaR = 1000 * 1000
+        perimeterUnitLabel = 'km'
+        areaUnitLabel = this.areaUnit
+        break
+      case '平方米':
+        perimeterR = 1
+        areaR = 1
+        perimeterUnitLabel = '米'
+        areaUnitLabel = this.areaUnit
+        break
+      case '平方千米':
+        perimeterR = 1000
+        areaR = 1000 * 1000
+        perimeterUnitLabel = '千米'
+        areaUnitLabel = this.areaUnit
+        break
+      default:
+        break
+    }
+
+    return {
+      perimeterR,
+      areaR,
+      perimeterUnitLabel,
+      areaUnitLabel
+    }
+  }
+
+  getMeasureResult(result: any) {
+    let perimeter = ''
+    let area = ''
+    let marker: any = null
+    let distanceUnitExp
+    let areaUnitExp
+
+    this.results = {}
+
+    switch (this.activeMeasureMode) {
+      case 'measure-length':
+        distanceUnitExp = this.transDistanceUnit()
+        perimeter = (result.perimeter / distanceUnitExp.perimeterR).toFixed(2)
+        marker = {
+          coordinates: result.coordinates[result.coordinates.length - 1],
+          text: [perimeter + distanceUnitExp.perimeterUnitLabel],
+          style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
+        }
+        this.measureMarkers.push(marker)
+        this.results = {
+          planeLength: perimeter + distanceUnitExp.perimeterUnitLabel,
+          ellipsoidLength: perimeter + distanceUnitExp.perimeterUnitLabel
+        }
+        break
+      case 'measure-area':
+        areaUnitExp = this.transAreaUnit()
+        perimeter = (result.perimeter / areaUnitExp.perimeterR).toFixed(2)
+        area = (result.area / areaUnitExp.areaR).toFixed(2)
+        marker = {
+          coordinates: utilInstance.getCenterOfGravityPoint(
+            result.coordinates[0]
+          ),
+          text: [
+            `周长: ${perimeter}${areaUnitExp.perimeterUnitLabel}`,
+            `面积：${area}${areaUnitExp.areaUnitLabel}`
+          ],
+          style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
+        }
+        this.measureMarkers.push(marker)
+        this.results = {
+          planePerimeter: perimeter + areaUnitExp.perimeterUnitLabel,
+          planeArea: area + areaUnitExp.areaUnitLabel,
+          ellipsoidPerimeter: perimeter + areaUnitExp.perimeterUnitLabel,
+          ellipsoidArea: area + areaUnitExp.areaUnitLabel
+        }
+        break
+      default:
+        break
+    }
+
+    this.onMeasureFineshed(this.results)
+  }
 }
 </script>
 

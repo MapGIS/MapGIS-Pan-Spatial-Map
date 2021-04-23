@@ -36,13 +36,22 @@
           />
         </a-tooltip>
         <a-tooltip placement="bottom" title="清除">
-          <a-button class="button btn-right" icon="delete" />
+          <a-button
+            class="button btn-right"
+            icon="delete"
+            @click="clearMeasure"
+          />
         </a-tooltip>
       </div>
     </div>
     <div class="measure-result">
-      <div v-show="showLengthSelect" class="measure-result-title">测量结果</div>
-      <div v-show="showLengthSelect" class="resilt-panel">
+      <div
+        v-show="showLengthSelect && isMeasureFinished"
+        class="measure-result-title"
+      >
+        测量结果
+      </div>
+      <div v-show="showLengthSelect && isMeasureFinished" class="result-panel">
         <div class="result-item">
           <span>投影平面长度:</span>
           <span>{{ results.planeLength }}</span>
@@ -52,8 +61,13 @@
           <span>{{ results.ellipsoidLength }}</span>
         </div>
       </div>
-      <div v-show="showAreaSelect" class="measure-result-title">测量结果</div>
-      <div v-show="showAreaSelect" class="resilt-panel">
+      <div
+        v-show="showAreaSelect && isMeasureFinished"
+        class="measure-result-title"
+      >
+        测量结果
+      </div>
+      <div v-show="showAreaSelect && isMeasureFinished" class="result-panel">
         <div class="result-item">
           <span>投影平面周长:</span>
           <span>{{ results.planePerimeter }}</span>
@@ -146,6 +160,9 @@
         <a-form-item label="透明度">
           <a-slider
             v-model="formData.lineOpacity"
+            :min="0"
+            :max="1"
+            :step="0.01"
             :tip-formatter="formatter"
           ></a-slider>
         </a-form-item>
@@ -164,8 +181,8 @@
       :stopVar="stopVar"
       :deActiveVar="deActiveVar"
       :activeVar="activeVar"
-      @finished="measureFinished"
-      @start="measureStart"
+      @finished="onMeasureFinished"
+      @start="onMeasureStart"
     />
   </div>
 </template>
@@ -202,6 +219,9 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
   // 控制mapbox绘制组件，防止id冲突
   private mapboxShow = false
+
+  // 是否测量完毕
+  private isMeasureFinished = false
 
   private clearVar = 0
 
@@ -273,15 +293,25 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   // 微件关闭时
   onClose() {
     this.mapboxShow = false
+    this.clearMeasure()
   }
 
   // 微件激活时
-  onActive() {}
+  onActive() {
+    this.activeVar += 1
+  }
 
   // 微件失活时
-  onDeActive() {}
+  onDeActive() {
+    this.deActiveVar += 1
+  }
 
-  // 点击图标对应事件
+  clearMeasure() {
+    this.clearVar += 1
+    this.isMeasureFinished = false
+  }
+
+  // 点击图标激活对应类型的量算功能
   startMeasure(mode) {
     this.activeMode.mode = mode
     this.activeMode.var += 1
@@ -299,7 +329,18 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
   // 格式化滑动条Tooltip内容
   formatter(value) {
-    return `${value}%`
+    return `${value * 100}%`
+  }
+
+  // 'start'响应事件(开始量算)
+  onMeasureStart() {
+    this.isMeasureFinished = false
+  }
+
+  // 'finished'响应事件(结束量算)
+  onMeasureFinished(results: Record<string, any>) {
+    this.isMeasureFinished = true
+    this.results = { ...results, ...this.results }
   }
 }
 </script>
@@ -327,7 +368,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     border-bottom: 1px solid #e2e2e2;
   }
 
-  .resilt-panel {
+  .result-panel {
     padding: 0 0 24px 0;
     border-bottom: 1px solid #e2e2e2;
   }
