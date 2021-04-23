@@ -54,7 +54,7 @@
       </a-radio>
     </a-radio-group>
     <!-- 卷帘组件 -->
-    <mapgis-compare ref="compare" :orientation="direction">
+    <mapbox-compare-control ref="compare" :orientation="direction">
       <mp-mapbox-view
         :document="aboveLayerDocument"
         :mapStyle="defaultStyle"
@@ -65,7 +65,7 @@
         :mapStyle="defaultStyle"
         @onMapLoaded="handleMapLoad('below')"
       />
-    </mapgis-compare>
+    </mapbox-compare-control>
   </div>
 </template>
 
@@ -78,9 +78,7 @@ import {
   WidgetState,
   Layer
 } from '@mapgis/web-app-framework'
-import defaultStyle from '../../../../MapGIS-Web-App-Framework/src/assets/style/default-style.json'
-
-const { MapgisCompare } = require('@mapgis/webclient-vue-mapboxgl')
+import { MapboxCompareControl } from '@mapgis/webclient-vue-mapboxgl'
 
 type Direction = 'vertical' | 'horizontal'
 
@@ -96,7 +94,7 @@ enum ISubMap {
 @Component({
   name: 'MpSwipe',
   components: {
-    MapgisCompare,
+    MapboxCompareControl,
     MpMapboxView
   }
 })
@@ -119,7 +117,11 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
 
   direction: Direction = 'vertical'
 
-  defaultStyle = defaultStyle
+  defaultStyle = {
+    version: 8,
+    sources: {},
+    layers: []
+  }
 
   /**
    * 获取选中目录树下的叶子节点图层中的可见图层
@@ -198,7 +200,7 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
     const compareRef: IVueExtend = that.$refs.compare
     console.log('卷帘组件', compareRef)
     return ({ map }: any) => {
-      that.map[ISubMap[subMap]] = map
+      that.set(that.map, ISubMap[subMap], map)
       compareRef.handleMap(that.map, compareRef.$el)
     }
   }
