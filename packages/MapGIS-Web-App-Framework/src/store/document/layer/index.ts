@@ -13,6 +13,7 @@ import {
 import { OGCWMSLayer, WMSSublayer } from './ogc-wms-layer'
 import { ArcGISTileLayer } from './arcgis-tile-layer'
 import { ArcGISMapImageLayer, ArcGISSublayer } from './arcgis-map-image-layer'
+import { AMapMercatorEMapLayer } from './amap-mercator-emap-layer'
 
 export {
   Layer,
@@ -35,5 +36,6 @@ export {
   WMSSublayer,
   ArcGISTileLayer,
   ArcGISMapImageLayer,
-  ArcGISSublayer
+  ArcGISSublayer,
+  AMapMercatorEMapLayer
 }
