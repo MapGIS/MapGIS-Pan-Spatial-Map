@@ -3,24 +3,22 @@
     <a-row type="flex">
       <a-col span="18" class="swipe-col1">
         <!-- 卷帘组件 -->
-        <mapgis-compare-control
-          ref="compare"
-          :orientation="direction"
-          v-if="isOpen"
-        >
+        <mapgis-compare ref="compare" :orientation="direction" v-if="isOpen">
           <mp-mapbox-view
+            slot="beforeMap"
             class="mapbox-view-cls"
             :document="aboveLayerDocument"
             :mapStyle="defaultStyle"
             @onMapLoaded="handleMapLoad($event, 'above')"
           />
           <mp-mapbox-view
+            slot="afterMap"
             class="mapbox-view-cls"
             :document="belowLayerDocument"
             :mapStyle="defaultStyle"
             @onMapLoaded="handleMapLoad($event, 'below')"
           />
-        </mapgis-compare-control>
+        </mapgis-compare>
       </a-col>
       <a-col span="6" class="swipe-col2">
         <!-- 上图层 -->
@@ -82,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
+import { Vue, Mixins, Component, Watch } from 'vue-property-decorator'
 import {
   Document,
   MpMapboxView,
@@ -90,7 +88,6 @@ import {
   WidgetState,
   Layer
 } from '@mapgis/web-app-framework'
-// import { MapgisCompareControl } from '@mapgis/webclient-vue-mapboxgl'
 
 type Direction = 'vertical' | 'horizontal'
 
@@ -106,7 +103,6 @@ enum ISubMap {
 @Component({
   name: 'MpSwipe',
   components: {
-    // MapgisCompareControl,
     MpMapboxView
   }
 })
@@ -220,7 +216,7 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
    */
   handleMapLoad({ map }: any, subMap: 'above' | 'below') {
     const compareRef: IVueExtend = this.$refs.compare
-    const results: any[] = [];
+    const results: any[] = []
     results[ISubMap[subMap]] = map
     if (compareRef && typeof compareRef.handleMap === 'function') {
       compareRef.handleMap(results, compareRef)

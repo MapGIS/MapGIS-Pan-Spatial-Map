@@ -75,7 +75,7 @@
         :crs="crs"
       />
     </div>
-    <mapgis-scale-control :position="'left-bottom'" />
+    <mapbox-scale-control :position="'left-bottom'" />
   </mapgis-web-map>
 </template>
 
@@ -97,8 +97,7 @@ import {
 } from '@mapgis/web-app-framework'
 
 // import {
-//   // MapboxMap,
-//   MapgisWebMap,
+//   // MapgisWebMap,
 //   MapboxRasterLayer,
 //   MapboxIgsTileLayer,
 //   MapboxIgsDocLayer,
@@ -108,7 +107,7 @@ import {
 //   MapboxIgsTdtLayer,
 //   MapboxArcgisLayer,
 //   // MapboxScaleControl,
-//   MapgisScaleControl
+//   MapgisScaleControl,
 // } from '@mapgis/webclient-vue-mapboxgl'
 
 import BaseLayersMapbox from '../BaseLayers/BaseLayersMapbox'
@@ -124,7 +123,7 @@ export default {
     // MapboxOgcWmsLayer,
     // MapboxIgsTdtLayer,
     // MapboxArcgisLayer,
-    // MapboxScaleControl: MapgisScaleControl,
+    // MapgisScaleControl,
     BaseLayersMapbox
   },
   props: {
