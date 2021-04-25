@@ -1,5 +1,6 @@
 <template>
   <mapgis-web-map
+    ref="mapgisWebMap"
     :center="center"
     :zoom="zoom"
     :access-token="accessToken"
@@ -85,15 +86,15 @@ import {
   Layer,
   LayerType,
   LoadStatus,
-  LOD,
-  TileInfo,
-  TileLayer,
-  MapImageLayer,
-  IGSTileLayer,
-  IGSMapImageLayer,
-  IGSVectorLayer,
-  OGCWMTSLayer,
-  OGCWMSLayer
+  // LOD,
+  // TileInfo,
+  // TileLayer,
+  // MapImageLayer,
+  // IGSTileLayer,
+  // IGSMapImageLayer,
+  // IGSVectorLayer,
+  // OGCWMTSLayer,
+  // OGCWMSLayer
 } from '@mapgis/web-app-framework'
 
 // import {
@@ -158,9 +159,11 @@ export default {
   },
   watch: {
     document: {
-      deep: false,
+      deep: true,
       handler() {
-        this.parseDocument()
+        try {
+          this.parseDocument()
+        } catch (e) {}
       }
     }
   },
@@ -169,13 +172,16 @@ export default {
   },
   methods: {
     handleLoad(payload) {
-      const { map, mapbox } = payload
+      // const { map, mapbox } = payload
       const listeners = this.$listeners
-      if (listeners && 'onMapLoaded' in listeners) {
-        this.$emit('onMapLoaded', payload)
+      const webMapgisListeners = this.$refs.mapgisWebMap.$listeners
+      // 将mapgis-web-map的事件抛出
+      Object.entries(webMapgisListeners).forEach(([k, v]) => k && this.$emit(k, payload))
+      if (listeners && 'map-load' in listeners) {
+        this.$emit('map-load', payload)
       } else {
         this.$root.$emit('mapbox-load', payload)
-      }
+      } 
     },
     genMapboxLayerComponentPropsByLayer(layer) {
       // mapbox图层组件所需要的属性
@@ -317,7 +323,6 @@ export default {
           const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
             layer
           )
-
           layers.push(mapboxLayerComponentProps)
         }
       })

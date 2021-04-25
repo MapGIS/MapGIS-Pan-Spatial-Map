@@ -1,31 +1,25 @@
 <template>
   <div class="mp-widget-swipe">
-    <a-row type="flex">
+    <a-row type="flex" class="swipe-row">
       <a-col span="18" class="swipe-col1">
         <!-- 卷帘组件 -->
-        <mapgis-compare ref="compare" :orientation="direction" v-if="isOpen">
+        <mapgis-compare :orientation="direction" v-if="isOpen">
           <mp-mapbox-view
             slot="beforeMap"
-            class="mapbox-view-cls"
             :document="aboveLayerDocument"
-            :mapStyle="defaultStyle"
-            @onMapLoaded="handleMapLoad($event, 'above')"
+            :mapStyle="mapStyle"
           />
           <mp-mapbox-view
             slot="afterMap"
-            class="mapbox-view-cls"
             :document="belowLayerDocument"
-            :mapStyle="defaultStyle"
-            @onMapLoaded="handleMapLoad($event, 'below')"
+            :mapStyle="mapStyle"
           />
         </mapgis-compare>
       </a-col>
       <a-col span="6" class="swipe-col2">
         <!-- 上图层 -->
-        <a-row class="swipe-row">
-          <a-col>
-            上级图层：
-          </a-col>
+        <a-row>
+          <a-col> {{ directionLayerTitle.aboveTitle }}图层： </a-col>
           <a-col>
             <a-select
               class="swipe-select"
@@ -42,10 +36,8 @@
           </a-col>
         </a-row>
         <!-- 下图层 -->
-        <a-row class="swipe-row">
-          <a-col>
-            下级图层：
-          </a-col>
+        <a-row>
+          <a-col> {{ directionLayerTitle.belowTitle }}图层： </a-col>
           <a-col>
             <a-select
               class="swipe-select"
@@ -80,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Mixins, Component, Watch } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import {
   Document,
   MpMapboxView,
@@ -95,11 +87,6 @@ interface IVueExtend {
   [k: string]: any
 }
 
-enum ISubMap {
-  above = 0,
-  below = 1
-}
-
 @Component({
   name: 'MpSwipe',
   components: {
@@ -107,28 +94,83 @@ enum ISubMap {
   }
 })
 export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
+  // 卷帘功能弹框开关
   isOpen = false
 
+  // 选中的上级图层
   aboveLayer = ''
 
+  // 选中的下级图层
   belowLayer = ''
 
+  // 上级图层列表
   aboveLayers: Layer[] = []
 
+  // 下级图层列表
   belowLayers: Layer[] = []
 
+  // 上级地图Document
   aboveLayerDocument = new Document()
 
+  // 下级地图Document
   belowLayerDocument = new Document()
 
+  // 目录树勾选的图层
   layers: Layer[] = []
 
+  // 卷帘方向
   direction: Direction = 'vertical'
 
-  defaultStyle = {
+  // 图层样式
+  mapStyle: any = {
     version: 8,
-    sources: {},
-    layers: []
+    name: '空样式',
+    sources: {
+      Default: {
+        type: 'vector',
+        tiles: [
+          'http://localhost:6163/igs/rest/mrms/tile/IGServer/{z}/{y}/{x}?type=cpbf'
+        ],
+        minZoom: 0,
+        maxZoom: 15
+      }
+    },
+    sprite: 'http://localhost:6163/igs/rest/mrms/vtiles/sprite',
+    glyphs:
+      'http://localhost:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf',
+    layers: [
+      {
+        id: '背景',
+        type: 'background',
+        paint: {
+          'background-color': {
+            stops: [
+              [6, '#4a5768'],
+              [8, '#424d5c']
+            ]
+          }
+        }
+      }
+    ]
+  }
+
+  /**
+   * 卷帘方向变化，同步更改图层选择框的标题
+   */
+  get directionLayerTitle(): {
+    aboveTitle: string
+    belowTitle: string
+  } {
+    let aboveTitle = '左侧'
+    let belowTitle = '右侧'
+    if (this.direction !== 'vertical') {
+      aboveTitle = '上级'
+      belowTitle = '下级'
+    }
+    return {
+      aboveTitle,
+      belowTitle
+    }
   }
 
   /**
@@ -204,45 +246,33 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
   ) {
     this[valuekey] = value
     this[layersKey] = [...this.layers.filter(({ id }) => id !== value)]
-    this[`${valuekey}Document`].defaultMap.add(
-      this.layers.find(v => v.id === value)
-    )
-  }
-
-  /**
-   * 地图初始化
-   * @param payload<object>
-   * @param subMap<string>
-   */
-  handleMapLoad({ map }: any, subMap: 'above' | 'below') {
-    const compareRef: IVueExtend = this.$refs.compare
-    const results: any[] = []
-    results[ISubMap[subMap]] = map
-    if (compareRef && typeof compareRef.handleMap === 'function') {
-      compareRef.handleMap(results, compareRef)
-    }
+    const currenLayer = this.layers.find(v => v.id === value)
+    const _document = this[`${valuekey}Document`]
+    _document.defaultMap.remove(currenLayer)
+    _document.defaultMap.add(currenLayer)
   }
 }
 </script>
 
 <style lang="less" scoped>
-.mp-widget-swipe {
-  width: 1000px;
-  height: 600px;
-  overflow: auto;
-  > div {
-    width: 100%;
-    height: 100%;
-  }
+.mp-widget-swipe,
+.swipe-row {
+  width: 100%;
+  height: 100%;
 }
+
 .swipe-col1 {
+  height: 100%;
   overflow: auto;
   position: relative;
+  padding-right: 12px;
 }
 .swipe-col2 {
+  height: 100%;
   overflow: hidden;
   border-left: 1px solid #f0f0f0;
   padding-left: 12px;
+
   /deep/ .ant-col:first-of-type {
     line-height: 28px;
     + .ant-col {
