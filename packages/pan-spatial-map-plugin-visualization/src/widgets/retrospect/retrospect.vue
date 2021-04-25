@@ -104,26 +104,37 @@ interface IMpRetrospect {
   }
 })
 export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
+  // 加载开关
   loading = false
 
-  dataCatalogCheckedIds: string[] = []
+  // 目录树中选中的图层id
+  dataCatalogTreeCheckedIds: string[] = []
 
-  dataCatalog: IDataCatalog[] = []
+  // 目录树数据源
+  dataCatalogTreeData: IDataCatalog[] = []
 
+  // 专题选择数据
   treeData: IDataCatalog[] = []
 
+  // 年度列表
   timeLineList: IDataCatalog[] = []
 
+  // 选中的专题
   subject = ''
 
+  // 是否展示时间轴
   showTimeLine = false
 
+  // 是否展示播放时长
   showInterval = false
 
+  // 播放时长
   interval = 3
 
+  // 当前播放的年度索引
   timeIndex = 0
 
+  // 是否播放
   isPlay = false
 
   /**
@@ -236,7 +247,7 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   onSubjectChange(value: string) {
     this.subject = value
     this.isPlay = false
-    const checkedNode = this.getCheckedNode(this.dataCatalog, value, [])
+    const checkedNode = this.getCheckedNode(this.dataCatalogTreeData, value, [])
     this.timeLineList = this.getDataCatalogTimeList(checkedNode)
     this.timeIndex = 0
   }
@@ -302,7 +313,7 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    */
   resetCheckedIds() {
     dataCatalogManagerInstance.checkedLayerConfigIDs = [
-      ...this.dataCatalogCheckedIds
+      ...this.dataCatalogTreeCheckedIds
     ]
   }
 
@@ -320,16 +331,16 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   async onOpen() {
     this.loading = true
     this.showTimeLine = true
-    this.dataCatalogCheckedIds = [
+    this.dataCatalogTreeCheckedIds = [
       ...dataCatalogManagerInstance.checkedLayerConfigIDs
     ]
-    const dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData()
-    if (dataCatalog.length) {
+    const dataCatalogTreeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
+    if (dataCatalogTreeData.length) {
       this.treeData = this.handleDataCatalog(
-        JSON.parse(JSON.stringify(dataCatalog))
+        JSON.parse(JSON.stringify(dataCatalogTreeData))
       )
-      this.dataCatalog = dataCatalog
-      this.onSubjectChange(dataCatalog[0].guid)
+      this.dataCatalogTreeData = dataCatalogTreeData
+      this.onSubjectChange(dataCatalogTreeData[0].guid)
     }
     this.loading = false
   }
