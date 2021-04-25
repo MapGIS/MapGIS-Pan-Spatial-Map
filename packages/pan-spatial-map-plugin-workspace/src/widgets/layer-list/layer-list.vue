@@ -48,13 +48,14 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
 
 <style lang="less">
 .mp-widget-layer-list {
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 76px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   .top-tab-nav {
     border-bottom: 1px @border-color solid;
+    flex-shrink: 0;
     list-style: none;
     display: flex;
     height: 32px;
