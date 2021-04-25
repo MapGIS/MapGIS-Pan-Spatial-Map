@@ -1,13 +1,28 @@
 <template>
   <div class="mp-widget-layer-list">
-    <a-tabs v-model="tab" :animated="false">
+    <!-- <a-tabs v-model="tab" :animated="false">
       <a-tab-pane key="tree" tab="图层树">
         <tree-layer :widgetInfo="widgetInfo" />
       </a-tab-pane>
       <a-tab-pane key="opacity" tab="透明度">
         <layer-opacity :layers="document.defaultMap.layers()" />
       </a-tab-pane>
-    </a-tabs>
+    </a-tabs> -->
+    <ul class="top-tab-nav">
+      <li
+        v-for="{ key, label } in tabs"
+        :key="key"
+        :class="[key === tab ? 'active-color' : '']"
+        @click="tab = key"
+      >
+        {{ label }}
+      </li>
+    </ul>
+    <tree-layer v-show="tab === 'tree'" :widgetInfo="widgetInfo" />
+    <layer-opacity
+      v-show="tab === 'opacity'"
+      :layers="document.defaultMap.layers()"
+    />
   </div>
 </template>
 
@@ -23,25 +38,41 @@ import layerOpacity from './layer-opacity'
 })
 export default class MpLayerList extends Mixins(WidgetMixin) {
   private tab = 'tree'
+
+  private tabs = [
+    { key: 'tree', label: '图层树' },
+    { key: 'opacity', label: '透明度' }
+  ]
 }
 </script>
 
 <style lang="less">
 .mp-widget-layer-list {
-  .ant-tabs {
-    .ant-tabs-nav {
-      .ant-tabs-tab {
-        padding-top: 0px;
+  flex: 1;
+  min-height: 76px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  .top-tab-nav {
+    border-bottom: 1px @border-color solid;
+    list-style: none;
+    display: flex;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 12px;
+    li {
+      height: 100%;
+      padding: 0 5px;
+      margin-right: 21px;
+      border-bottom: 2px transparent solid;
+      &:hover {
+        color: @primary-color;
+        cursor: pointer;
       }
     }
-    .ant-tabs-content {
-      height: calc(~'100% - 60px');
-      .ant-tabs-tabpane-active {
-        display: unset;
-      }
-      .ant-tabs-tabpane-inactive {
-        display: none;
-      }
+    .active-color {
+      border-bottom-color: @primary-color;
     }
   }
 }

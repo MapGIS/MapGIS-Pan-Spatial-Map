@@ -6,18 +6,13 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import echarts from 'echarts'
 
-export interface ITimeLineList {
-  name: string // 节点名称
-  guid: string // 图层唯一标识
-}
-
 @Component
 export default class TimeLine extends Vue {
   @Prop() id!: string
 
   @Prop({ default: 0 }) value!: number
 
-  @Prop({ default: () => [] }) timeLineList!: Array<ITimeLineList>
+  @Prop({ default: () => [] }) timeLineList!: Array<string>
 
   @Prop({ default: 3 }) playInterval!: number
 
@@ -26,8 +21,6 @@ export default class TimeLine extends Vue {
   Chart: any | null = null
 
   get timelineOptions() {
-    console.log('timelineOptions', this.timeLineList)
-
     return {
       currentIndex: this.value,
       autoPlay: this.autoPlay,
@@ -42,15 +35,10 @@ export default class TimeLine extends Vue {
         timeline: {
           ...this.timelineOptions,
           axisType: 'category',
-          label: {
-            formatter(s) {
-              return new Date(s).getFullYear()
-            }
-          },
+          symbol: 'diamond',
+          padding: 0,
           left: 0,
           right: 0,
-          padding: 0,
-          symbol: 'diamond',
           controlStyle: {
             itemSize: 15,
             itemGap: 5,
@@ -65,37 +53,41 @@ export default class TimeLine extends Vue {
             borderColor: 'auto',
             borderWidth: 'auto',
             label: { show: false, textStyle: { color: 'auto' } }
+          },
+          trigger: 'axis',
+          axisPointer: {
+            // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
           }
         },
-        tooltip: {},
-        series: []
+        tooltip: {
+          position: 'bottom'
+        }
       }
     }
   }
 
   @Watch('timelineOptions', { deep: true })
   timelineOptionsChange() {
-    this.init()
-  }
-
-  resize() {
-    if (this.Chart) {
-      this.Chart.resize(0)
-    }
-  }
-
-  init() {
-    if (!this.Chart) {
-      this.Chart = echarts.init(document.getElementById(this.id) as HTMLElement)
-      this.Chart.on('timelinechanged', ({ currentIndex }) => {
-        this.$emit('input', currentIndex)
-      })
-    }
     this.Chart.setOption(this.option, true)
   }
 
+  resize(width = 'auto') {
+    if (this.Chart) {
+      this.Chart.resize({
+        width
+      }) 
+    }
+  }
+
   mounted() {
-    this.init()
+    this.Chart = echarts.init(document.getElementById(this.id) as HTMLDivElement)
+    this.Chart.on('timelinechanged', ({ currentIndex }) =>
+      this.$emit('input', currentIndex)
+    )
+    this.Chart.setOption(this.option, true)
+    window.onresize = () => this.resize()
+    
   }
 
   beforeDestroyed() {

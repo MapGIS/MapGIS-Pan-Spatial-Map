@@ -302,6 +302,14 @@ export default {
             sourceId: layer.id
           }
           break
+        case LayerType.aMapMercatorEMap:
+          mapboxLayerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: layer.url,
+            sourceId: layer.id
+          }
+          break
         default:
           break
       }
@@ -349,6 +357,9 @@ export default {
     },
     isIgsArcgisLayer(type) {
       return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
+    },
+    isRasterLayer(type) {
+      return type === LayerType.aMapMercatorEMap
     }
   }
 }

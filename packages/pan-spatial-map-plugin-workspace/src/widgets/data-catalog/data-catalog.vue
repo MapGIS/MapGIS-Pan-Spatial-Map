@@ -1,21 +1,104 @@
 <template>
   <div class="mp-widget-data-catalog">
+    <div class="toolbal">
+      <a-input
+        v-model="searchValue"
+        placeholder="搜索数据"
+        allow-clear
+        @change="onChange"
+      ></a-input>
+      <a-dropdown :trigger="['click']">
+        <a-icon type="more" :style="{ fontSize: '24px' }"></a-icon>
+        <a-menu slot="overlay">
+          <a-menu-item key="0" @click="refreshTree">刷新</a-menu-item>
+          <a-menu-item key="1" @click="bookMarksCheck">收藏</a-menu-item>
+        </a-menu>
+      </a-dropdown>
+    </div>
     <a-tree
       checkable
       :tree-data="dataCatalogTreeData"
       :replace-fields="replaceFields"
       v-model="checkedNodeKeys"
+      :expanded-keys="expandedKeys"
+      :filterTreeNode="searchValue !== '' ? filterTree : filterEmpty"
+      @expand="onExpand"
     >
       <template v-slot:custom="item" class="tree-item-handle">
-        <div
+        <span
           v-if="item.children && item.children.length > 0"
           @click="onClick(item)"
           class="tree-node"
         >
-          {{ item.name }}
-        </div>
-        <a-dropdown v-else :trigger="['contextmenu']">
-          <div @click="onClick(item)">{{ item.name }}</div>
+          <span
+            v-if="
+              searchValue !== '' &&
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
+                  -1
+            "
+          >
+            <span class="unfilter-words"
+              >{{
+                item.name.substr(
+                  0,
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase())
+                )
+              }}
+            </span>
+            <span class="filter-words">{{
+              item.name.substr(
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
+                searchValue.length
+              )
+            }}</span>
+            <span class="unfilter-words">{{
+              item.name.substr(
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+                  searchValue.length
+              )
+            }}</span>
+          </span>
+          <span v-else>{{ item.name }}</span>
+        </span>
+        <a-dropdown
+          v-else
+          :trigger="['contextmenu']"
+          :class="
+            searchValue !== '' &&
+            item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !== -1
+              ? 'filter-dropdown'
+              : ''
+          "
+        >
+          <span
+            v-if="
+              searchValue !== '' &&
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
+                  -1
+            "
+          >
+            <span class="unfilter-words"
+              >{{
+                item.name.substr(
+                  0,
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase())
+                )
+              }}
+            </span>
+            <span class="filter-words">{{
+              item.name.substr(
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
+                searchValue.length
+              )
+            }}</span>
+            <span class="unfilter-words">{{
+              item.name.substr(
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+                  searchValue.length
+              )
+            }}</span>
+          </span>
+          <span v-else @click="onClick(item)">{{ item.name }}</span>
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="showMetaDataInfo(item)"
               >元数据信息</a-menu-item
@@ -54,7 +137,8 @@ import {
   dataCatalogManagerInstance,
   DataCatalogManager,
   eventBus,
-  queryOGCInfoInstance
+  queryOGCInfoInstance,
+  getWidgetConfig
 } from '@mapgis/pan-spatial-map-store'
 
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
@@ -66,6 +150,12 @@ import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
   }
 })
 export default class MpDataCatalog extends Mixins(WidgetMixin) {
+  // 搜索框输入值
+  private searchValue: any = ''
+
+  // 展开的树节点
+  private expandedKeys: string[] = []
+
   // 数据目录树树据
   private dataCatalogTreeData: [] = []
 
@@ -221,6 +311,83 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     }
   }
 
+  // 按需筛选树节点高亮显示（搜索内容不为空时筛选条件）
+  filterTree(node) {
+    return (
+      node.dataRef.name
+        .toUpperCase()
+        .indexOf(this.searchValue.toUpperCase()) !== -1
+    )
+  }
+
+  // 按需筛选树节点（搜索内容为空时筛选条件）
+  filterEmpty() {}
+
+  // 目录树展开/收起节点时触发
+  onExpand(expandedKeys) {
+    this.expandedKeys = expandedKeys
+  }
+
+  // 筛选所有包含搜索关键字的节点
+  hasKeyWord(tree: object[], keyword: string) {
+    const data = []
+    tree.forEach((item: any, index: number) => {
+      if (item.name.toUpperCase().indexOf(keyword.toUpperCase()) !== -1) {
+        this.expandedKeys.push(item.guid)
+      }
+      if (item.children && item.children.length > 0) {
+        this.hasKeyWord(item.children, keyword)
+      }
+    })
+  }
+
+  // 获取所有包含关键字节点的父节点
+  getAllKeys(tree: object[]) {
+    const data: string[] = []
+    for (let i = 0; i < tree.length; i++) {
+      const node = tree[i]
+      if (node.children) {
+        const arr = this.getAllKeys(node.children)
+        if (
+          node.children.some(
+            item => this.expandedKeys.includes(item.guid) === true
+          ) ||
+          arr.length > 0
+        ) {
+          this.expandedKeys.push(node.guid)
+          data.push(node.guid)
+        }
+      }
+    }
+    return data
+  }
+
+  // 搜索框内容变化时的回调
+  onChange(e: any) {
+    this.expandedKeys = []
+    const keyword: string = e.target.value
+    if (keyword !== '') {
+      this.hasKeyWord(this.dataCatalogTreeData, keyword)
+      this.getAllKeys(this.dataCatalogTreeData)
+    }
+  }
+
+  // 刷新按钮
+  async refreshTree() {
+    getWidgetConfig('data-catalog')
+    this.dataCatalogManager.init(this.widgetInfo.config)
+    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
+  }
+
+  // 收藏按钮
+  bookMarksCheck() {
+    eventBus.$emit(
+      'check-to-mark',
+      this.checkedNodeKeys,
+      this.dataCatalogTreeData
+    )
+  }
+
   onClick(item) {}
 
   // 对目录树数据进行处理
@@ -324,4 +491,57 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.toolbal {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+.ant-dropdown-trigger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  cursor: pointer;
+}
+.ant-input-affix-wrapper {
+  width: 320px;
+  height: 36px;
+  padding: 0 12px;
+
+  ::v-deep .ant-input {
+    height: 100%;
+    border-radius: 0;
+    padding: 6px 12px;
+  }
+
+  ::v-deep .ant-input-suffix {
+    svg {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      outline: 0 !important;
+      border: 0;
+      color: inherit;
+      background: transparent;
+      padding: 0;
+      margin-right: 12px;
+    }
+  }
+}
+
+::v-deep.ant-tree-title {
+  display: flex;
+}
+
+.filter-dropdown {
+  flex-direction: row;
+}
+
+.unfilter-words {
+  color: #000000a6 !important;
+}
+.filter-words {
+  color: @primary-color !important;
+}
+</style>

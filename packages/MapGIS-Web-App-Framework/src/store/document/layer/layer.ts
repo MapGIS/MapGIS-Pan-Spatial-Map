@@ -112,6 +112,21 @@ export enum LayerType {
   customMapImageLayer,
 
   /**
+   * 高德电子地图
+   */
+  aMapMercatorEMap,
+
+  /**
+   * 高德卫星影像图层
+   */
+  aMapMercatorSatelliteMap,
+
+  /**
+   * 高德卫星影像图注记图层
+   */
+  aMapMercatorSatelliteAnnMap,
+
+  /**
    * 覆盖物(临时绘制)图层
    *
    */
@@ -149,6 +164,9 @@ export abstract class Layer {
     if (properties.type) this.type = properties.type
 
     if (properties.isVisible) this.isVisible = properties.isVisible
+
+    if (properties.fullExtent)
+      this.fullExtent = ObjectTool.deepClone(properties.fullExtent)
   }
 
   /**

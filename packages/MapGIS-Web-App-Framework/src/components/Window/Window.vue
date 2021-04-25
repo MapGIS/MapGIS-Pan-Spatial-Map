@@ -43,7 +43,10 @@
     </div>
     <div
       v-show="!shrink"
-      class="beauty-scroll window-content"
+      class="beauty-scroll window-content window-panel-scroll-height"
+      :style="
+        currentHeightPixel ? null : { 'max-height': maxHeightPixelContent }
+      "
       ref="contentContainer"
     >
       <slot />
@@ -288,6 +291,11 @@ export default {
       return this.maxHeight
         ? `${this.maxHeight}px`
         : `calc(100% - ${this.currentVerticalOffset}px)`
+    },
+    maxHeightPixelContent() {
+      return this.maxHeight
+        ? `${this.maxHeight - 36}px`
+        : `calc(100% - ${this.currentVerticalOffset + 36}px)`
     },
     style() {
       const styleObj = {}
@@ -609,6 +617,10 @@ export default {
     padding: 12px;
     flex: auto;
     overflow-y: auto;
+  }
+  .window-panel-scroll-height {
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>
