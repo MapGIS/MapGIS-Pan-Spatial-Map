@@ -35,7 +35,8 @@ export {
   WMSSublayer,
   ArcGISTileLayer,
   ArcGISMapImageLayer,
-  ArcGISSublayer
+  ArcGISSublayer,
+  AMapMercatorEMapLayer
 } from './store/document/layer'
 
 export { Document, Map } from './store/document'
