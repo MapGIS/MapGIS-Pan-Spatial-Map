@@ -2,19 +2,27 @@
   <div class="mp-widget-swipe">
     <a-row type="flex" class="swipe-row">
       <a-col span="18" class="swipe-col1">
-        <!-- 卷帘组件 -->
-        <mapgis-compare :orientation="direction" v-if="isOpen">
-          <mp-mapbox-view
-            slot="beforeMap"
-            :document="aboveLayerDocument"
-            :mapStyle="mapStyle"
-          />
-          <mp-mapbox-view
-            slot="afterMap"
-            :document="belowLayerDocument"
-            :mapStyle="mapStyle"
-          />
-        </mapgis-compare>
+        <template v-if="isOpen">
+          <!-- 卷帘组件 -->
+          <mapgis-compare
+            :orientation="direction"
+            v-if="aboveLayer && belowLayer"
+          >
+            <mp-mapbox-view
+              slot="beforeMap"
+              :document="aboveLayerDocument"
+              :mapStyle="mapStyle"
+            />
+            <mp-mapbox-view
+              slot="afterMap"
+              :document="belowLayerDocument"
+              :mapStyle="mapStyle"
+            />
+          </mapgis-compare>
+          <div class="swipe-compare-tip" v-else>
+            卷帘分析功能至少需要选择2个图层
+          </div>
+        </template>
       </a-col>
       <a-col span="6" class="swipe-col2">
         <!-- 上图层 -->
@@ -94,9 +102,6 @@ interface IVueExtend {
   }
 })
 export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
-  // 卷帘功能弹框开关
-  isOpen = false
-
   // 选中的上级图层
   aboveLayer = ''
 
@@ -154,6 +159,11 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
     ]
   }
 
+  // 卷帘功能弹框开关
+  get isOpen() {
+    return [WidgetState.OPENED, WidgetState.ACTIVE].includes(this.widget.state)
+  }
+
   /**
    * 卷帘方向变化，同步更改图层选择框的标题
    */
@@ -184,9 +194,9 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
   }
 
   @Watch('flatLayers')
-  watchFlatLayers(nV: Layer[]) {
-    if ([WidgetState.OPENED, WidgetState.ACTIVE].includes(this.widget.state)) {
-      this.initLayers(nV)
+  watchFlatLayers() {
+    if (this.isOpen) {
+      this.initLayers()
     }
   }
 
@@ -194,7 +204,6 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
    * 卷帘弹框打开操作
    */
   onOpen() {
-    this.isOpen = true
     this.initLayers()
   }
 
@@ -215,22 +224,18 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
 
   /**
    * 初始化图层列表
-   * @param layers<array>
    */
-  initLayers(layers?: Layer[]) {
-    layers = layers || this.flatLayers
-
-    if (layers && layers.length) {
-      const [{ id: fId }, { id: sId }, ...others] = layers
-      this.layers = layers
-      if (layers.length > 1) {
-        this.getLayers(fId, 'aboveLayer', 'belowLayers')
-        this.getLayers(sId, 'belowLayer', 'aboveLayers')
-      } else {
-        this.aboveLayer = fId
-        this.aboveLayers = layers
-      }
+  initLayers() {
+    let _fId = ''
+    let _sId = ''
+    const _layers: Layer[] = this.flatLayers
+    if (_layers && _layers.length > 1) {
+      _fId = _layers[0].id
+      _sId = _layers[1].id
     }
+    this.layers = _layers
+    this.getLayers(_fId, 'aboveLayer', 'belowLayers')
+    this.getLayers(_sId, 'belowLayer', 'aboveLayers')
   }
 
   /**
@@ -245,11 +250,15 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
     layersKey: 'aboveLayers' | 'belowLayers'
   ) {
     this[valuekey] = value
-    this[layersKey] = [...this.layers.filter(({ id }) => id !== value)]
-    const currenLayer = this.layers.find(v => v.id === value)
-    const _document = this[`${valuekey}Document`]
-    _document.defaultMap.remove(currenLayer)
-    _document.defaultMap.add(currenLayer)
+    this[layersKey] = [...this.layers.filter(({ id }) => value && id !== value)]
+    const currenLayer = this.layers.find(v => value && v.id === value)
+    const _defaultMap = this[`${valuekey}Document`].defaultMap
+    if (currenLayer) {
+      _defaultMap.remove(currenLayer)
+      _defaultMap.add(currenLayer)
+    } else {
+      _defaultMap.removeAll()
+    }
   }
 }
 </script>
@@ -260,7 +269,6 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
   width: 100%;
   height: 100%;
 }
-
 .swipe-col1 {
   height: 100%;
   overflow: auto;
@@ -279,6 +287,20 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
       margin-bottom: 12px;
     }
   }
+}
+.swipe-compare-tip {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background-color: black;
+  opacity: 0.7;
+  z-index: 1;
 }
 .swipe-select {
   width: 100%;
