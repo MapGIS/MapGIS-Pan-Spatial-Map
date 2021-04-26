@@ -137,7 +137,8 @@ import {
   WidgetMixin,
   Document,
   Map,
-  LayerType
+  LayerType,
+  LoadStatus
 } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
@@ -310,27 +311,33 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
     if (layerConfigNodeList.length > 0) {
       // 选中节点中保含有图层节点
-      const doc: Document = this.document.clone()
+      const doc: Document = this.document
 
-      layerConfigNodeList.forEach(layerConfigNode => {
-        if (isChecked) {
-          // 如果是选中了节点
-          // 1.根据图层节点的配置,生成webclient-store中定义的图层.
-          const layer = DataCatalogManager.generateLayerByConfig(
-            layerConfigNode
-          )
-          // 2.将图层添加到全局的document中。
-          if (layer) doc.defaultMap.add(layer)
-        } else {
-          // 如果是取消选中了节点
-          // 1.通过节点的key,将图层从document中移除。
-          doc.defaultMap.remove(
-            doc.defaultMap.findLayerById(layerConfigNode.guid)
-          )
+      layerConfigNodeList.forEach(
+        async (layerConfigNode): Layer => {
+          if (isChecked) {
+            // 如果是选中了节点
+            // 1.根据图层节点的配置,生成webclient-store中定义的图层.
+            const layer = DataCatalogManager.generateLayerByConfig(
+              layerConfigNode
+            )
+            // 2.将图层添加到全局的document中。
+            if (layer) {
+              if (layer.loadStatus === LoadStatus.notLoaded) {
+                await layer.load()
+              }
+
+              doc.defaultMap.add(layer)
+            }
+          } else {
+            // 如果是取消选中了节点
+            // 1.通过节点的key,将图层从document中移除。
+            doc.defaultMap.remove(
+              doc.defaultMap.findLayerById(layerConfigNode.guid)
+            )
+          }
         }
-      })
-
-      this.document = doc
+      )
     }
   }
 
