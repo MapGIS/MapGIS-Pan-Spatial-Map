@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mapbox-marker
+    <mapgis-marker
       v-for="item in markers"
       :key="item.id"
       :coordinates="item.coordinates"
@@ -10,7 +10,7 @@
         }
       "
     >
-      <mapbox-popup :coordinates="item.coordinates" :showed="true">
+      <mapgis-popup :coordinates="item.coordinates" :showed="true">
         <div class="popup">
           <div style="max-height:10em;overflow:auto">
             <div
@@ -21,9 +21,9 @@
             </div>
           </div>
         </div>
-      </mapbox-popup>
+      </mapgis-popup>
       <img slot="marker" :src="item.img" />
-    </mapbox-marker>
+    </mapgis-marker>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-element-query">
-    <mapbox-base-draw
+    <mapgis-draw
       ref="drawer"
       :controls="controls"
       @added="handleAdded"

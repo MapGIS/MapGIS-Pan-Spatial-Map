@@ -66,6 +66,13 @@
         :sourceId="layerProps.sourceId"
         :url="layerProps.url"
       />
+      <mapgis-rastertile-layer
+        v-if="isIgsArcgisLayer(layerProps.type)"
+        :layer="layerProps.layer"
+        :layerId="layerProps.layerId"
+        :sourceId="layerProps.sourceId"
+        :url="layerProps.url"
+      />
       <mapgis-igs-tdt-layer
         v-if="isIgsTdtLayer(layerProps.type)"
         :layer="layerProps"
@@ -76,55 +83,18 @@
         :crs="crs"
       />
     </div>
-    <mapbox-scale-control :position="'left-bottom'" />
+    <mapgis-scale :position="'left-bottom'" />
   </mapgis-web-map>
 </template>
 
 <script>
 import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
-import {
-  Layer,
-  LayerType,
-  LoadStatus,
-  // LOD,
-  // TileInfo,
-  // TileLayer,
-  // MapImageLayer,
-  // IGSTileLayer,
-  // IGSMapImageLayer,
-  // IGSVectorLayer,
-  // OGCWMTSLayer,
-  // OGCWMSLayer
-} from '@mapgis/web-app-framework'
-
-// import {
-//   // MapgisWebMap,
-//   MapboxRasterLayer,
-//   MapboxIgsTileLayer,
-//   MapboxIgsDocLayer,
-//   MapboxIgsVectorLayer,
-//   MapboxOgcWmtsLayer,
-//   MapboxOgcWmsLayer,
-//   MapboxIgsTdtLayer,
-//   MapboxArcgisLayer,
-//   // MapboxScaleControl,
-//   MapgisScaleControl,
-// } from '@mapgis/webclient-vue-mapboxgl'
-
+import { Layer, LayerType, LoadStatus } from '@mapgis/web-app-framework'
 import BaseLayersMapbox from '../BaseLayers/BaseLayersMapbox'
 
 export default {
   name: 'MpMapboxView',
   components: {
-    // MapgisWebMap,
-    // MapboxIgsTileLayer,
-    // MapboxIgsDocLayer,
-    // MapboxIgsVectorLayer,
-    // MapboxOgcWmtsLayer,
-    // MapboxOgcWmsLayer,
-    // MapboxIgsTdtLayer,
-    // MapboxArcgisLayer,
-    // MapgisScaleControl,
     BaseLayersMapbox
   },
   props: {
@@ -159,7 +129,7 @@ export default {
   },
   watch: {
     document: {
-      deep: true,
+      deep: false,
       handler() {
         try {
           this.parseDocument()
@@ -176,12 +146,14 @@ export default {
       const listeners = this.$listeners
       const webMapgisListeners = this.$refs.mapgisWebMap.$listeners
       // 将mapgis-web-map的事件抛出
-      Object.entries(webMapgisListeners).forEach(([k, v]) => k && this.$emit(k, payload))
+      Object.entries(webMapgisListeners).forEach(
+        ([k, v]) => k && this.$emit(k, payload)
+      )
       if (listeners && 'map-load' in listeners) {
         this.$emit('map-load', payload)
       } else {
         this.$root.$emit('mapbox-load', payload)
-      } 
+      }
     },
     genMapboxLayerComponentPropsByLayer(layer) {
       // mapbox图层组件所需要的属性
