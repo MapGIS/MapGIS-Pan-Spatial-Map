@@ -129,7 +129,7 @@ export default {
   },
   watch: {
     document: {
-      deep: false,
+      deep: true,
       handler() {
         try {
           this.parseDocument()
@@ -296,16 +296,17 @@ export default {
       // 先将图层置空，避免图层重复添加
       const layers = []
 
-      this.document.defaultMap.getFlatLayers().forEach(async layer => {
-        if (layer.loadStatus === LoadStatus.notLoaded) await layer.load()
-
-        if (layer.loadStatus === LoadStatus.loaded) {
-          const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
-            layer
-          )
-          layers.push(mapboxLayerComponentProps)
-        }
-      })
+      this.document.defaultMap
+        .clone()
+        .getFlatLayers()
+        .forEach(layer => {
+          if (layer.loadStatus === LoadStatus.loaded) {
+            const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
+              layer
+            )
+            layers.push(mapboxLayerComponentProps)
+          }
+        })
 
       this.layers = layers
     },
