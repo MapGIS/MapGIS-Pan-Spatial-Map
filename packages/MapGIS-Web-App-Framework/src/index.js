@@ -1,3 +1,9 @@
+import Vue from 'vue'
+
+import gisComs from '@mapgis/webclient-vue-mapboxgl'
+
+Vue.use(gisComs)
+
 export { AppManager, WidgetManager } from './managers'
 
 export {

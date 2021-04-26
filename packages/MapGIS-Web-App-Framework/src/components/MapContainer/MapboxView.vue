@@ -1,5 +1,6 @@
 <template>
-  <mapbox-map
+  <mapgis-web-map
+    ref="mapgisWebMap"
     :center="center"
     :zoom="zoom"
     :access-token="accessToken"
@@ -10,7 +11,7 @@
   >
     <base-layers-mapbox :document="document" />
     <div v-for="layerProps in layers" :key="layerProps.layerId">
-      <mapbox-igs-tile-layer
+      <mapgis-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -18,7 +19,7 @@
         :url="layerProps.url"
         :serverName="layerProps.serverName"
       />
-      <mapbox-igs-doc-layer
+      <mapgis-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -27,7 +28,7 @@
         :layers="layerProps.layers"
         :serverName="layerProps.serverName"
       />
-      <mapbox-igs-vector-layer
+      <mapgis-igs-vector-layer
         v-if="isIgsVectorLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -35,7 +36,7 @@
         :url="layerProps.url"
         :gdbps="layerProps.gdbps"
       />
-      <mapbox-ogc-wmts-layer
+      <mapgis-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -47,7 +48,7 @@
         :wmtsStyle="layerProps.wmtsStyle"
         :format="layerProps.format"
       />
-      <mapbox-ogc-wms-layer
+      <mapgis-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -58,21 +59,14 @@
         :token="layerProps.token"
         :reversebbox="layerProps.reversebbox"
       />
-      <mapbox-arcgis-layer
+      <mapgis-arcgis-layer
         v-if="isIgsArcgisLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
         :url="layerProps.url"
       />
-      <mapbox-raster-layer
-        v-if="isIgsArcgisLayer(layerProps.type)"
-        :layer="layerProps.layer"
-        :layerId="layerProps.layerId"
-        :sourceId="layerProps.sourceId"
-        :url="layerProps.url"
-      />
-      <mapbox-igs-tdt-layer
+      <mapgis-igs-tdt-layer
         v-if="isIgsTdtLayer(layerProps.type)"
         :layer="layerProps"
         :layerId="layerProps.layerId"
@@ -83,7 +77,7 @@
       />
     </div>
     <mapbox-scale-control :position="'left-bottom'" />
-  </mapbox-map>
+  </mapgis-web-map>
 </template>
 
 <script>
@@ -92,43 +86,45 @@ import {
   Layer,
   LayerType,
   LoadStatus,
-  LOD,
-  TileInfo,
-  TileLayer,
-  MapImageLayer,
-  IGSTileLayer,
-  IGSMapImageLayer,
-  IGSVectorLayer,
-  OGCWMTSLayer,
-  OGCWMSLayer
+  // LOD,
+  // TileInfo,
+  // TileLayer,
+  // MapImageLayer,
+  // IGSTileLayer,
+  // IGSMapImageLayer,
+  // IGSVectorLayer,
+  // OGCWMTSLayer,
+  // OGCWMSLayer
 } from '@mapgis/web-app-framework'
 
-import {
-  MapboxMap,
-  MapboxRasterLayer,
-  MapboxIgsTileLayer,
-  MapboxIgsDocLayer,
-  MapboxIgsVectorLayer,
-  MapboxOgcWmtsLayer,
-  MapboxOgcWmsLayer,
-  MapboxIgsTdtLayer,
-  MapboxArcgisLayer,
-  MapboxScaleControl
-} from '@mapgis/webclient-vue-mapboxgl'
+// import {
+//   // MapgisWebMap,
+//   MapboxRasterLayer,
+//   MapboxIgsTileLayer,
+//   MapboxIgsDocLayer,
+//   MapboxIgsVectorLayer,
+//   MapboxOgcWmtsLayer,
+//   MapboxOgcWmsLayer,
+//   MapboxIgsTdtLayer,
+//   MapboxArcgisLayer,
+//   // MapboxScaleControl,
+//   MapgisScaleControl,
+// } from '@mapgis/webclient-vue-mapboxgl'
+
 import BaseLayersMapbox from '../BaseLayers/BaseLayersMapbox'
 
 export default {
   name: 'MpMapboxView',
   components: {
-    MapboxMap,
-    MapboxIgsTileLayer,
-    MapboxIgsDocLayer,
-    MapboxIgsVectorLayer,
-    MapboxOgcWmtsLayer,
-    MapboxOgcWmsLayer,
-    MapboxIgsTdtLayer,
-    MapboxArcgisLayer,
-    MapboxScaleControl,
+    // MapgisWebMap,
+    // MapboxIgsTileLayer,
+    // MapboxIgsDocLayer,
+    // MapboxIgsVectorLayer,
+    // MapboxOgcWmtsLayer,
+    // MapboxOgcWmsLayer,
+    // MapboxIgsTdtLayer,
+    // MapboxArcgisLayer,
+    // MapgisScaleControl,
     BaseLayersMapbox
   },
   props: {
@@ -163,9 +159,11 @@ export default {
   },
   watch: {
     document: {
-      deep: false,
+      deep: true,
       handler() {
-        this.parseDocument()
+        try {
+          this.parseDocument()
+        } catch (e) {}
       }
     }
   },
@@ -174,13 +172,16 @@ export default {
   },
   methods: {
     handleLoad(payload) {
-      const { map, mapbox } = payload
+      // const { map, mapbox } = payload
       const listeners = this.$listeners
-      if (listeners && 'onMapLoaded' in listeners) {
-        this.$emit('onMapLoaded', payload)
+      const webMapgisListeners = this.$refs.mapgisWebMap.$listeners
+      // 将mapgis-web-map的事件抛出
+      Object.entries(webMapgisListeners).forEach(([k, v]) => k && this.$emit(k, payload))
+      if (listeners && 'map-load' in listeners) {
+        this.$emit('map-load', payload)
       } else {
         this.$root.$emit('mapbox-load', payload)
-      }
+      } 
     },
     genMapboxLayerComponentPropsByLayer(layer) {
       // mapbox图层组件所需要的属性
@@ -330,7 +331,6 @@ export default {
           const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
             layer
           )
-
           layers.push(mapboxLayerComponentProps)
         }
       })
