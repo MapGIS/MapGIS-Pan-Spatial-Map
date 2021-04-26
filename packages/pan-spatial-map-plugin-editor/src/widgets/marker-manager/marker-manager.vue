@@ -38,7 +38,11 @@
           v-for="item in markManagerModes"
           :key="item.title"
         >
-          <a-button type="circle" :icon="item.icon"></a-button>
+          <a-button
+            type="circle"
+            :icon="item.icon"
+            @click="item.click"
+          ></a-button>
           <span>{{ item.title }}</span>
         </div>
       </div>
@@ -56,6 +60,12 @@
     <a-modal v-model="modalInput" title="输入坐标" :width="360">
       <marker-input />
     </a-modal>
+    <a-modal v-model="modalImport" title="导入文件" :width="360">
+      <marker-import />
+    </a-modal>
+    <a-modal v-model="modalExport" title="导入标注" :width="360">
+      <marker-export />
+    </a-modal>
   </div>
 </template>
 
@@ -63,8 +73,13 @@
 import { Mixins, Component, Inject, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import MarkerInput from './components/MarkerInput/MarkerInput.vue'
+import MarkerImport from './components/MarkerImport/MarkerImport.vue'
+import MarkerExport from './components/MarkerExport/MarkerExport.vue'
 
-@Component({ name: 'MpMarkerManager', components: { MarkerInput } })
+@Component({
+  name: 'MpMarkerManager',
+  components: { MarkerInput, MarkerImport, MarkerExport }
+})
 export default class MpMarkerManager extends Mixins(WidgetMixin) {
   private markMouseModes = [
     { mode: 'point', title: '点', icon: 'environment' },
@@ -96,15 +111,18 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   private markManagerModes = [
     {
       title: '保存',
-      icon: 'save'
+      icon: 'save',
+      click: this.saveMarkers
     },
     {
       title: '导出',
-      icon: 'export'
+      icon: 'export',
+      click: this.exportMarkers
     },
     {
       title: '删除',
-      icon: 'delete'
+      icon: 'delete',
+      click: this.deleteMarkers
     }
   ]
 
@@ -167,7 +185,20 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   }
 
   // 导入按钮回调事件
-  addMarkerByImportFile() {}
+  addMarkerByImportFile() {
+    this.modalImport = true
+  }
+
+  // 导出按钮回调事件
+  exportMarkers() {
+    this.modalExport = true
+  }
+
+  // 保存按钮回调事件
+  saveMarkers() {}
+
+  // 删除按钮回调事件
+  deleteMarkers() {}
 }
 </script>
 

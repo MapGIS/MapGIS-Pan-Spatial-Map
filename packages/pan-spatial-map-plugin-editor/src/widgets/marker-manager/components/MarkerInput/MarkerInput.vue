@@ -44,7 +44,11 @@
           <span>秒</span>
         </div>
       </a-form-model-item>
-      <a-checkbox class="crs-checkbox" @change="onChange">
+      <a-checkbox
+        class="crs-checkbox"
+        :default-checked="true"
+        @change="onChange"
+      >
         设置输入坐标空间参考系
       </a-checkbox>
       <a-form-model-item v-show="showCrsSelect" label="参考系:">
@@ -111,7 +115,7 @@ export default class MpMarkerInput extends Mixins() {
 }
 
 .crs-checkbox {
-  margin: 8px 0 8px 20px;
+  margin: 8px 0 18px 32px;
 }
 .coord-input {
   display: flex;
