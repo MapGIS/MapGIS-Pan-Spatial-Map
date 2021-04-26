@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mapbox-vector-layer
+    <mapgis-vector-layer
       v-for="l in layers"
       :key="l.id"
       :layerId="l.id"

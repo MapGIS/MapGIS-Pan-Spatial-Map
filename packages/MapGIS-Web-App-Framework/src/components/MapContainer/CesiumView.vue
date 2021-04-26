@@ -1,5 +1,5 @@
 <template>
-  <cesium-web-globe
+  <mapgis-web-scene
     :libPath="libPath"
     :plugin-path="pluginPath"
     @load="handleLoad"
@@ -106,12 +106,12 @@
         :serverName="l.serverName"
       />
     </div>
-  </cesium-web-globe>
+  </mapgis-web-scene>
 </template>
 
 <script>
 import { IDocument, Layer, VectorTile } from '@mapgis/webclient-store'
-import { CesiumWebGlobe, CesiumRasterLayer } from '@mapgis/webclient-vue-cesium'
+import { CesiumRasterLayer } from '@mapgis/webclient-vue-cesium'
 import CesiumIgsWmsLayer from '../CesiumLayers/CesiumIgsWmsLayer.vue'
 import CesiumIgsWmtsLayer from '../CesiumLayers/CesiumIgsWmtsLayer.vue'
 import CesiumIgsTileLayer from '../CesiumLayers/CesiumIgsTileLayer.vue'
@@ -131,7 +131,6 @@ const { Convert } = VectorTile
 export default {
   name: 'MpCesiumView',
   components: {
-    CesiumWebGlobe,
     CesiumRasterLayer,
     CesiumIgsDocLayer,
     CesiumIgsWmsLayer,
