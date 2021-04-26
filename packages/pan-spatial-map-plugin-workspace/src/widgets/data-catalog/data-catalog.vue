@@ -1,12 +1,13 @@
 <template>
   <div class="mp-widget-data-catalog">
     <div class="toolbal">
-      <a-input
+      <a-input-search
         v-model="searchValue"
         placeholder="搜索数据"
         allow-clear
-        @change="onChange"
-      ></a-input>
+        enterButton
+        @search="onSearch"
+      ></a-input-search>
       <a-dropdown :trigger="['click']">
         <a-icon type="more" :style="{ fontSize: '24px' }"></a-icon>
         <a-menu slot="overlay">
@@ -15,100 +16,105 @@
         </a-menu>
       </a-dropdown>
     </div>
-    <a-tree
-      checkable
-      :tree-data="dataCatalogTreeData"
-      :replace-fields="replaceFields"
-      v-model="checkedNodeKeys"
-      :expanded-keys="expandedKeys"
-      :filterTreeNode="searchValue !== '' ? filterTree : filterEmpty"
-      @expand="onExpand"
-    >
-      <template v-slot:custom="item" class="tree-item-handle">
-        <span
-          v-if="item.children && item.children.length > 0"
-          @click="onClick(item)"
-          class="tree-node"
-        >
+    <div class="tree-container beauty-scroll">
+      <a-tree
+        checkable
+        :tree-data="dataCatalogTreeData"
+        :replace-fields="replaceFields"
+        v-model="checkedNodeKeys"
+        :expanded-keys="expandedKeys"
+        :filterTreeNode="searchValue !== '' ? filterTree : filterEmpty"
+        :selectedKeys="selectedKeys"
+        @expand="onExpand"
+      >
+        <template v-slot:custom="item" class="tree-item-handle">
           <span
-            v-if="
-              searchValue !== '' &&
-                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
-                  -1
-            "
+            v-if="item.children && item.children.length > 0"
+            @click="onClick(item)"
+            class="tree-node"
+            :id="`tree_${item.guid}`"
           >
-            <span class="unfilter-words"
-              >{{
-                item.name.substr(
-                  0,
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase())
-                )
-              }}
-            </span>
-            <span class="filter-words">{{
-              item.name.substr(
-                item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
-                searchValue.length
-              )
-            }}</span>
-            <span class="unfilter-words">{{
-              item.name.substr(
-                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
-                  searchValue.length
-              )
-            }}</span>
-          </span>
-          <span v-else>{{ item.name }}</span>
-        </span>
-        <a-dropdown
-          v-else
-          :trigger="['contextmenu']"
-          :class="
-            searchValue !== '' &&
-            item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !== -1
-              ? 'filter-dropdown'
-              : ''
-          "
-        >
-          <span
-            v-if="
-              searchValue !== '' &&
-                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
-                  -1
-            "
-          >
-            <span class="unfilter-words"
-              >{{
-                item.name.substr(
-                  0,
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase())
-                )
-              }}
-            </span>
-            <span class="filter-words">{{
-              item.name.substr(
-                item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
-                searchValue.length
-              )
-            }}</span>
-            <span class="unfilter-words">{{
-              item.name.substr(
-                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
-                  searchValue.length
-              )
-            }}</span>
-          </span>
-          <span v-else @click="onClick(item)">{{ item.name }}</span>
-          <a-menu slot="overlay">
-            <a-menu-item key="1" @click="showMetaDataInfo(item)"
-              >元数据信息</a-menu-item
+            <span
+              v-if="
+                searchValue !== '' &&
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
+                    -1
+              "
             >
-            <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
-            <a-menu-item v-if="hasLegend(item)" key="3">上传图例</a-menu-item>
-          </a-menu>
-        </a-dropdown>
-      </template>
-    </a-tree>
+              <span class="unfilter-words"
+                >{{
+                  item.name.substr(
+                    0,
+                    item.name.toUpperCase().indexOf(searchValue.toUpperCase())
+                  )
+                }}
+              </span>
+              <span class="filter-words">{{
+                item.name.substr(
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
+                  searchValue.length
+                )
+              }}</span>
+              <span class="unfilter-words">{{
+                item.name.substr(
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+                    searchValue.length
+                )
+              }}</span>
+            </span>
+            <span v-else>{{ item.name }}</span>
+          </span>
+          <a-dropdown
+            v-else
+            :trigger="['contextmenu']"
+            :class="
+              searchValue !== '' &&
+              item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !== -1
+                ? 'filter-dropdown'
+                : ''
+            "
+            :id="`tree_${item.guid}`"
+          >
+            <span
+              v-if="
+                searchValue !== '' &&
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
+                    -1
+              "
+            >
+              <span class="unfilter-words"
+                >{{
+                  item.name.substr(
+                    0,
+                    item.name.toUpperCase().indexOf(searchValue.toUpperCase())
+                  )
+                }}
+              </span>
+              <span class="filter-words">{{
+                item.name.substr(
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
+                  searchValue.length
+                )
+              }}</span>
+              <span class="unfilter-words">{{
+                item.name.substr(
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+                    searchValue.length
+                )
+              }}</span>
+            </span>
+            <span v-else @click="onClick(item)">{{ item.name }}</span>
+            <a-menu slot="overlay">
+              <a-menu-item key="1" @click="showMetaDataInfo(item)"
+                >元数据信息</a-menu-item
+              >
+              <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
+              <a-menu-item v-if="hasLegend(item)" key="3">上传图例</a-menu-item>
+            </a-menu>
+          </a-dropdown>
+        </template>
+      </a-tree>
+    </div>
     <mp-window-wrapper :visible="showMetaData">
       <mp-window
         title="元数据信息"
@@ -153,6 +159,15 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 搜索框输入值
   private searchValue: any = ''
 
+  // 记录上一次搜索值
+  private lastSearchVal = ''
+
+  // 包含搜索关键字的树节点key组成的数组
+  private hasKeywordArr = []
+
+  // 高亮搜索节点的下标
+  private searchIndex = -1
+
   // 展开的树节点
   private expandedKeys: string[] = []
 
@@ -178,6 +193,14 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 元数据信息组件Props值
   private currentConfig: Record<string, unknown> = {}
+
+  // 设置选中的树节点
+  get selectedKeys() {
+    if (this.hasKeywordArr.length > 0 && this.searchIndex !== -1) {
+      return [this.hasKeywordArr[this.searchIndex]]
+    }
+    return []
+  }
 
   async mounted() {
     this.dataCatalogManager.init(this.widgetInfo.config)
@@ -330,7 +353,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 筛选所有包含搜索关键字的节点
   hasKeyWord(tree: object[], keyword: string) {
-    const data = []
     tree.forEach((item: any, index: number) => {
       if (item.name.toUpperCase().indexOf(keyword.toUpperCase()) !== -1) {
         this.expandedKeys.push(item.guid)
@@ -362,13 +384,43 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     return data
   }
 
-  // 搜索框内容变化时的回调
-  onChange(e: any) {
+  // 点击搜索或按下回车键时的回调
+  onSearch(value) {
     this.expandedKeys = []
-    const keyword: string = e.target.value
+    const keyword: string = value
     if (keyword !== '') {
       this.hasKeyWord(this.dataCatalogTreeData, keyword)
+      this.hasKeywordArr = JSON.parse(JSON.stringify(this.expandedKeys))
       this.getAllKeys(this.dataCatalogTreeData)
+    }
+    if (this.lastSearchVal === value) {
+      if (!this.timer) {
+        this.setSearchIndex()
+      }
+    } else {
+      this.searchIndex = -1
+      this.timer = setTimeout(_ => {
+        this.setSearchIndex()
+      }, 700)
+    }
+    this.lastSearchVal = value
+  }
+
+  // 跳转到包含搜索关键字的节点处
+  setSearchIndex() {
+    if (this.hasKeywordArr.length > 0) {
+      if (this.searchIndex >= this.hasKeywordArr.length - 1) {
+        this.searchIndex = 0
+      } else {
+        this.searchIndex++
+      }
+      const element = this.$el.querySelector(
+        `#tree_${this.hasKeywordArr[this.searchIndex]}`
+      )
+      if (element) {
+        element.scrollIntoView()
+      }
+      this.timer = null
     }
   }
 
@@ -492,10 +544,20 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 </script>
 
 <style lang="less" scoped>
+.mp-widget-data-catalog {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .toolbal {
   display: flex;
   justify-content: center;
   align-content: center;
+}
+.tree-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .ant-dropdown-trigger {
   display: flex;
