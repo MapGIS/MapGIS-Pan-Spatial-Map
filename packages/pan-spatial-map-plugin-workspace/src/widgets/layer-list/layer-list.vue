@@ -1,13 +1,5 @@
 <template>
   <div class="mp-widget-layer-list">
-    <!-- <a-tabs v-model="tab" :animated="false">
-      <a-tab-pane key="tree" tab="图层树">
-        <tree-layer :widgetInfo="widgetInfo" />
-      </a-tab-pane>
-      <a-tab-pane key="opacity" tab="透明度">
-        <layer-opacity :layers="document.defaultMap.layers()" />
-      </a-tab-pane>
-    </a-tabs> -->
     <ul class="top-tab-nav">
       <li
         v-for="{ key, label } in tabs"

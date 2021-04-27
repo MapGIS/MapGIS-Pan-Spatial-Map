@@ -54,7 +54,7 @@
         searchPanelExpand ? '' : 'unvisible'
       ]"
     >
-      搜索面板
+      <place-name ref="placeName" :widgetInfo="widgetInfo"></place-name>
     </div>
   </div>
 </template>
@@ -62,8 +62,9 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
+import PlaceName from './place-name/place-name'
 
-@Component({ name: 'MpComprehensiveQuery' })
+@Component({ name: 'MpComprehensiveQuery', components: { PlaceName } })
 export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private keyword = ''
 
@@ -92,14 +93,18 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   onClose() {
     this.locationPanelExpand = false
     this.searchPanelExpand = false
+    this.$refs.placeName.reset()
   }
 
   onSearchFocus() {
     this.searchPanelExpand = true
     this.locationPanelExpand = false
+    this.$refs.placeName.reset()
   }
 
-  onSearch() {}
+  onSearch() {
+    this.$refs.placeName.search(this.keyword)
+  }
 }
 </script>
 
