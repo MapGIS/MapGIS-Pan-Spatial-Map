@@ -13,7 +13,15 @@ export { ResultSetMixin, AddServicesMixin, BaseLayersMixin } from './mixins'
 export { baseConfigInstance, loadConfigs } from './config'
 
 export { dataCatalogManagerInstance, DataCatalogManager } from './data-catalog'
+
 export { vectorTileListInstance } from './vector-tile-list'
+
+// 专题服务
+export {
+  ThematicMapInstance,
+  ThematicMap,
+  IThematicMapSubjectConfig
+} from './thematic-map'
 
 export {
   resultSetOperInstance,
