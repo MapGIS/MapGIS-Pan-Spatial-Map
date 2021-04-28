@@ -1,91 +1,115 @@
-// import vueInstance from '../event-bus'
+import Vue from 'vue'
 import {
-  IThematicMapClass,
+  IState,
+  TModuleType,
   IThematicMap,
-  IThematicMapKeys,
+  IThematicMapBaseConfig,
   IThematicMapSubjectConfig
 } from './types'
 
 // 专题服务
-export class ThematicMap implements IThematicMapClass {
-  // 专题服务数据
-  thematicMapConfig?: IThematicMap
+export const ThematicMapInstance = new Vue({
+  data: () => {
+    return {
+      // 属性表|统计表|时间轴|专题添加|管理工具的开关
+      visible: [],
+      // 专题服务时间轴当前年度
+      selectedYear: '',
+      // 当前选中的专题配置数据
+      selectedSujectConfig: null,
+      // 专题服务数据
+      thematicMapConfig: {
+        baseConfig: null,
+        subjectConfig: null
+      }
+    } as IState
+  },
+  computed: {
+    /**
+     * 获取某个开关状态
+     */
+    isVisible() {
+      return (type: TModuleType) => this.visible.includes(type)
+    },
+    /**
+     * 获取基本配置数据
+     */
+    getBaseConfig() {
+      return this.thematicMapConfig.baseConfig
+    },
+    /**
+     * 获取专题配置数据
+     */
+    getSubjectConfig() {
+      return this.thematicMapConfig.subjectConfig
+    },
+    /**
+     *  获取选中的专题配置数据
+     */
+    getSelectedSujectConfig() {
+      return this.selectedSujectConfig
+    },
 
-  // 当前选中的专题配置数据
-  currentSujectConfig?: IThematicMapSubjectConfig
-
-  // 专题服务时间轴当前年度
-  currentYear: string | number = ''
-
-  /**
-   * 获取专题服务总配置和内部配置数据
-   * @param name<string>
-   * @returns any
-   */
-  getConfig(name: IThematicMapKeys) {
-    if (this.thematicMapConfig && name in this.thematicMapConfig) {
-      return this.thematicMapConfig[name]
+    /**
+     * 获取选中的年度
+     */
+    getSelectedYear() {
+      return this.selectedYear
     }
-    return this.thematicMapConfig
-  }
+  },
+  methods: {
+    /**
+     * 设置专题服务开关
+     */
+    setVisible(type: TModuleType) {
+      const index = this.visible.indexOf(type)
+      if (index !== -1) {
+        this.visible.splice(index, 1)
+      } else {
+        this.visible.push(type)
+      }
+    },
 
-  /**
-   * 获取基本配置数据
-   */
-  getBaseConfig() {
-    return this.getConfig('baseConfig')
-  }
+    /**
+     * 设置专题服务开关
+     */
+    resetVisible() {
+      this.visible = []
+    },
 
-  /**
-   * 获取专题配置数据
-   */
-  getSubjectConfig() {
-    return this.getConfig('subjectConfig')
-  }
+    /**
+     * 设置专题服务数据
+     * @param config<object>
+     */
+    setThematicMapConfig(config: IThematicMap) {
+      this.thematicMapConfig = config
+    },
 
-  /**
-   * 获取选中的年度
-   */
-  getCurrentYear() {
-    return this.currentYear
-  }
+    /**
+     * 设置选中的专题配置数据
+     * @param config<object>
+     */
+    setSelectedSujectConfig(config: any) {
+      this.selectedSujectConfig = config
+    },
 
-  /**
-   * 设置专题服务数据
-   * @param config<object>
-   */
-  setThematicMapConfig(config: IThematicMap) {
-    this.thematicMapConfig = config
-  }
+    /**
+     * 设置选中的年度
+     * @param year<string|number>
+     */
+    setSelectedYear(year: string | number) {
+      if (this.selectedYear !== year) {
+        this.selectedYear = year
+      }
+    },
 
-  /**
-   * 设置当前选中的专题配置数据
-   * @param config<object>
-   */
-  setCurrentSujectConfig(config: IThematicMapSubjectConfig) {
-    this.currentSujectConfig = config
-  }
-
-  /**
-   * 设置当前选中的年度
-   * @param year<string|number>
-   */
-  setCurrentYear(year?: string | number) {
-    if (year && this.currentYear !== year) {
-      this.currentYear = year
+    /**
+     * 重置
+     */
+    reset() {
+      // todo
     }
   }
-
-  /**
-   * 重置专题服务数据
-   */
-  resetThematicMapConfig() {
-    if (this.thematicMapConfig) {
-      this.thematicMapConfig = undefined
-    }
-  }
-}
-
-const ThematicMapInstance = new ThematicMap()
+})
 
 export default ThematicMapInstance

@@ -28,12 +28,7 @@
 /**
  * @description 时间轴
  */
-import {
-  Mixins,
-  Component,
-  InjectReactive,
-  Watch
-} from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
 import echarts from 'echarts'
@@ -43,8 +38,7 @@ import { chartOption } from './config/timeLineChartOption'
 export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   WidgetMixin
 ) {
-  @InjectReactive({ from: 'visible', default: false })
-  tlVisible!: boolean
+  tlVisible = false
 
   // 图表
   chart: any = null
@@ -54,6 +48,10 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
 
   // 当前播放的数据索引
   currentIndex = 0
+
+  get visible() {
+    return ThematicMapInstance.isVisible('tl')
+  }
 
   // 年度列表数据
   get timeLineList() {
@@ -132,15 +130,16 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
    */
   @Watch('currentIndex')
   watchCurrentIndex(nV) {
-    ThematicMapInstance.setCurrentYear(nV)
+    ThematicMapInstance.setSelectedYear(this.timeLineList[nV])
     this.onUpdateChart()
   }
 
   /**
-   * 监听上级弹框开关
+   * 监听弹框开关
    */
-  @Watch('tlVisible')
+  @Watch('visible')
   watchVisible(nV) {
+    this.tlVisible = nV
     this.$nextTick(() => nV && this.onUpdateChart())
   }
 

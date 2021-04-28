@@ -15,22 +15,26 @@
     <thematic-map-statistic-table />
     <!-- 时间轴 -->
     <thematic-map-time-line />
+    <!-- 新建专题图 -->
+    <thematic-map-subject-add />
     <!-- 工具栏 -->
     <thematic-map-manage-tools />
   </div>
 </template>
 
 <script lang="ts">
-import { Mixins, Component, ProvideReactive } from 'vue-property-decorator'
+import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import {
   ThematicMapInstance,
+  TModuleType,
   IThematicMapSubjectConfig
 } from '@mapgis/pan-spatial-map-store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
 import ThematicMapStatisticTable from './components/ThematicMapStatisticTable'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
 import ThematicMapManageTools from './components/ThematicMapManageTools'
+import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
 
 @Component({
   name: 'MpThematicMap',
@@ -38,16 +42,13 @@ import ThematicMapManageTools from './components/ThematicMapManageTools'
     ThematicMapAttributeTable,
     ThematicMapStatisticTable,
     ThematicMapTimeLine,
-    ThematicMapManageTools
+    ThematicMapManageTools,
+    ThematicMapSubjectAdd
   }
 })
 export default class MpThematicMap extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  @ProvideReactive() visible = 'visible'
-
-  visible = false
-
   loading = false
 
   subjectConfig: IThematicMapSubjectConfig[] = []
@@ -75,7 +76,8 @@ export default class MpThematicMap extends Mixins<{
     ThematicMapInstance.setThematicMapConfig(config)
     this.subjectConfig = subjectConfig
     this.loading = false
-    this.visible = true
+    const openModules: TModuleType[] = ['at', 'st', 'tl', 'mt']
+    openModules.forEach(item => ThematicMapInstance.setVisible(item))
     console.log('总配置数据/专题配置数据', config, subjectConfig)
   }
 
@@ -83,10 +85,8 @@ export default class MpThematicMap extends Mixins<{
    * 专题服务面板关闭
    */
   onClose() {
-    this.visible = false
+    ThematicMapInstance.resetVisible()
     ThematicMapInstance.resetThematicMapConfig()
   }
 }
 </script>
-
-<style lang="less" scoped></style>

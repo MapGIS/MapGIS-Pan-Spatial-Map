@@ -48,13 +48,9 @@
 /**
  * @description 统计表
  */
-import {
-  Mixins,
-  Component,
-  InjectReactive,
-  Watch
-} from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
+import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
 import echarts from 'echarts'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
@@ -72,8 +68,7 @@ interface IChartConfig {
 export default class ThematicMapStatisticTable extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  @InjectReactive({ from: 'visible', default: false })
-  stVisible!: boolean
+  stVisible = false
 
   // 当前活动的图标
   activeChart: TChartType = 'bar'
@@ -110,6 +105,10 @@ export default class ThematicMapStatisticTable extends Mixins<{
       type: 'pie'
     }
   ]
+
+  get visible() {
+    return ThematicMapInstance.isVisible('st')
+  }
 
   /**
    * 图表类型变化
@@ -156,10 +155,11 @@ export default class ThematicMapStatisticTable extends Mixins<{
   }
 
   /**
-   * 监听上级弹框开关
+   * 监听弹框开关
    */
-  @Watch('stVisible')
+  @Watch('visible')
   watchVisible(nV) {
+    this.stVisible = nV
     this.$nextTick(() => nV && this.onChartTypeChange('bar'))
   }
 

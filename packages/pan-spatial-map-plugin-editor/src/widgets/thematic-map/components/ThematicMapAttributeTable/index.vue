@@ -44,7 +44,7 @@
         <!-- 分页列表 -->
         <a-table
           row-key="id"
-          :loading="loading"
+          :loading="tableLoading"
           :columns="tableColumns"
           :data-source="tableData"
           :pagination="tablePagination"
@@ -58,24 +58,19 @@
 /**
  * @description 属性表
  */
-import {
-  Mixins,
-  Component,
-  InjectReactive,
-  Watch
-} from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import {ThematicMapInstance} from '@mapgis/pan-spatial-map-store'
+import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component
 export default class ThematicMapAttributeTable extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  @InjectReactive({ from: 'visible', default: false })
-  atVisible!: boolean
+  // 显示开关
+  atVisible = false
 
-  // 加载开关
-  loading = false
+  // 列表加载开关
+  tableLoading = false
 
   // 专题
   subject = ''
@@ -125,6 +120,10 @@ export default class ThematicMapAttributeTable extends Mixins<{
     }
   ]
 
+  get visible() {
+    return ThematicMapInstance.isVisible('at')
+  }
+
   get tableScroll() {
     return {
       x: 500,
@@ -140,12 +139,17 @@ export default class ThematicMapAttributeTable extends Mixins<{
     }
   }
 
-  get currentYear() {
-    return ThematicMapInstance.getCurrentYear
+  get selectedYear() {
+    return ThematicMapInstance.getSelectedYear
   }
 
-  @Watch('currentYear')
-  watchCurrentYear(nV) {
+  @Watch('visible')
+  watchVisible(nV) {
+    this.atVisible = nV
+  }
+
+  @Watch('selectedYear')
+  watchSelectedYear(nV) {
     this.time = nV
     console.log('属性表获取到的当前年度', nV)
   }

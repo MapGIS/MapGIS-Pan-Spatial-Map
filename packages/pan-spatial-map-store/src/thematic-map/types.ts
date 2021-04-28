@@ -1,5 +1,3 @@
-export type IThematicMapKeys = 'baseConfig' | 'subjectConfig' | string
-
 export interface IThematicMapBaseConfig {
   baseIp: string // 主题服务默认 ip
   basePort: string // 主题服务默认 port
@@ -22,34 +20,19 @@ export interface IThematicMapSubjectConfig {
 }
 
 export interface IThematicMap {
-  baseConfig: IThematicMapBaseConfig
-  subjectConfig: IThematicMapSubjectConfig
+  baseConfig: IThematicMapBaseConfig | null
+  subjectConfig: IThematicMapSubjectConfig | null
 }
 
-export interface IThematicMapClass {
-  thematicMapConfig?: IThematicMap
-
-  currentSujectConfig?: IThematicMapSubjectConfig
-
-  currentYear: string | number
-
-  getConfig<
-    U = IThematicMapBaseConfig | IThematicMapSubjectConfig | IThematicMap
-  >(
-    name: IThematicMapKeys
-  ): U
-
-  getBaseConfig(): IThematicMapBaseConfig
-
-  getSubjectConfig(): IThematicMapSubjectConfig
-
-  getCurrentYear(): string | number
-
-  setThematicMapConfig(config: IThematicMap): void
-
-  setCurrentSujectConfig(config: IThematicMapSubjectConfig): void
-
-  setCurrentYear(year?: string | number): void
-
-  resetThematicMapConfig(): void
+export type TModuleType =
+  | 'at' // 属性表
+  | 'st' // 统计表
+  | 'tl' // 时间轴
+  | 'sa' // 新建专题图
+  | 'mt' // 管理工具栏
+export interface IState {
+  visible: TModuleType[]
+  selectedYear: string | number
+  selectedSujectConfig: any
+  thematicMapConfig: IThematicMap
 }

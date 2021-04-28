@@ -9,7 +9,10 @@
         <a-row v-for="icon in iconList" :key="icon.type">
           <a-col>
             <a-tooltip placement="left" :content="icon.tooltip">
-              <a-icon :type="icon.type" @lcick="onToolIconChange(icon)" />
+              <a-icon
+                :type="icon.type"
+                @click.stop="onToolIconChange(icon.visibleType)"
+              />
             </a-tooltip>
           </a-col>
         </a-row>
@@ -21,50 +24,59 @@
 /**
  * @description 工具栏
  */
-import { Mixins, Component, InjectReactive } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-// import {  } from '@vue/pan-spatial-map-store'
+import { ThematicMapInstance, TModuleType } from '@mapgis/pan-spatial-map-store'
 
 interface IIcon {
   type: string
   tooltip: string
+  visibleType: TModuleType
 }
 @Component
 export default class ThematicMapManageTools extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  @InjectReactive({ from: 'visible', default: false })
-  readonly mtVisible!: boolean
+  mtVisible = false
 
   iconList: IIcon[] = [
     {
       type: 'table',
       tooltip: '属性表',
-      configType: 'attribute'
+      visibleType: 'at'
     },
     {
       type: 'bar-chart',
       tooltip: '统计表',
-      configType: 'statistic'
+      visibleType: 'st'
     },
     {
       type: 'clock-circle',
       tooltip: '时间轴',
-      configType: 'timeLine'
+      visibleType: 'tl'
     },
     {
       type: 'file-add',
       tooltip: '新建专题图',
-      configType: 'subjectAdd'
+      visibleType: 'sa'
     }
   ]
 
+  get visible() {
+    return ThematicMapInstance.isVisible('mt')
+  }
+
   /**
    * 按钮变化
-   * @param item<object>
+   * @param visibleType<string>
    */
-  onToolIconChange(item: IIcon) {
-    // TODO
+  onToolIconChange(visibleType: TModuleType) {
+    ThematicMapInstance.setVisible(visibleType)
+  }
+
+  @Watch('visible')
+  watchVisible(nV) {
+    this.mtVisible = nV
   }
 }
 </script>
