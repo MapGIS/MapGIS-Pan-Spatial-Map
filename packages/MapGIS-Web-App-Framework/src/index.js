@@ -51,7 +51,7 @@ export {
 
 export { Document, Map } from './store/document'
 
-export { UUID } from './store/utils'
+export { UUID, ObjectTool, CoordinateTransformation } from './store/utils'
 
 import {
   MpAppLoader,

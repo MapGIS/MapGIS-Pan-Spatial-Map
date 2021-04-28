@@ -21,14 +21,14 @@ export class WebTileLayer extends TileLayer {
     super(properties)
 
     this.type = LayerType.webTile
-    // this.fullExtent = new Zondy.Common.Rectangle(
-    //   -20037508.3427892,
-    //   -20037508.3427892,
-    //   20037508.3427892,
-    //   20037508.3427892
-    // )
+    this.fullExtent = new Zondy.Common.Rectangle(
+      -20037508.3427892,
+      -20037508.3427892,
+      20037508.3427892,
+      20037508.3427892
+    )
 
-    this.fullExtent = new Zondy.Common.Rectangle(-180, -85.06, 180, 85.06)
+    this.spatialReference.wkid = 3857
 
     if (!properties) return
 
