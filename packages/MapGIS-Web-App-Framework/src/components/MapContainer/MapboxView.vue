@@ -67,7 +67,7 @@
         :url="layerProps.url"
       />
       <mapgis-rastertile-layer
-        v-if="isIgsArcgisLayer(layerProps.type)"
+        v-if="isRasterLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
@@ -122,7 +122,7 @@ export default {
       // 使用mapbox样式需要的秘钥
       accessToken:
         'pk.eyJ1IjoicGFybmRlZWRsaXQiLCJhIjoiY2o1MjBtYTRuMDhpaTMzbXhpdjd3YzhjdCJ9.sCoubaHF9-nhGTA-sgz0sA',
-      crs: 'EPSG:4326',
+      crs: 'EPSG:3857',
       sources: {},
       layers: []
     }
@@ -275,10 +275,13 @@ export default {
           }
           break
         case LayerType.aMapMercatorEMap:
+        case LayerType.aMapMercatorSatelliteMap:
+        case LayerType.aMapMercatorSatelliteAnnMap:
+          tempStr = this.generateWebTileLayerUrl(layer)
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            url: layer.url,
+            url: tempStr,
             sourceId: layer.id
           }
           break
@@ -332,7 +335,35 @@ export default {
       return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
     },
     isRasterLayer(type) {
-      return type === LayerType.aMapMercatorEMap
+      return (
+        type === LayerType.aMapMercatorEMap ||
+        LayerType.aMapMercatorSatelliteMap ||
+        LayerType.aMapMercatorSatelliteAnnMap
+      )
+    },
+    generateWebTileLayerUrl(layer) {
+      let url = ''
+      let beforeSubDomain = ''
+      let afterSubDomain = ''
+
+      const subDomainTemplate = '{subDomain}'
+      const indexSubDomain = layer.urlTemplate.search(subDomainTemplate)
+      beforeSubDomain = layer.urlTemplate.substring(0, indexSubDomain)
+      afterSubDomain = layer.urlTemplate.substring(
+        indexSubDomain + subDomainTemplate.length
+      )
+
+      // 修改说明：该种方式无法真正实现子域名的随机轮询。该需求需要webClient层支持,在获取url时动态生成url。
+      // 修改人：马原野 2021年04月28日
+      url =
+        beforeSubDomain +
+        this.generateRandomSubDomain(layer.subDomains) +
+        afterSubDomain
+
+      return url
+    },
+    generateRandomSubDomain(subDomains) {
+      return subDomains[Math.floor(Math.random() * subDomains.length)]
     }
   }
 }
