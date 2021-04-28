@@ -187,11 +187,11 @@ export default {
       this.rasters = defaultMap.allLayers
     },
     handleLoad(payload) {
-      const { Cesium } = payload
+      const { Cesium, CesiumZondy } = payload
       // 底层传递到window上,通过window取当分屏时是否存在问题???
       const { webGlobe } = window
 
-      this.$root.$emit('cesium-load', { webGlobe, Cesium })
+      this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
 
       this.changePageHeight()
     },

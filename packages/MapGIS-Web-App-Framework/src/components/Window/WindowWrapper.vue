@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { UUID } from '@mapgis/webclient-store/src/utils'
+import { UUID } from '@mapgis/web-app-framework'
 import MpWindowCard from './WindowCard.vue'
 import PanelManager from '../../managers/panel-manager'
 import WidgetManager from '../../managers/widget-manager'

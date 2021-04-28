@@ -12,7 +12,7 @@
       <a-col :span="12" class="fit-height">
         <div class="scroll-table">
           <a-table
-            size="middle"
+            size="small"
             :pagination="false"
             :columns="feildTableColumn"
             :data-source="fieldTableData"
@@ -59,7 +59,7 @@
         </a-row>
       </a-col>
       <a-col :span="12">
-        <a-row :gutter="8">
+        <a-row :gutter="8" type="flex" align="middle">
           <a-col :span="10">
             <b>输入查询条件</b>
           </a-col>
@@ -80,7 +80,7 @@
       <a-col :span="12" class="fit-height">
         <div class="scroll-table">
           <a-table
-            size="middle"
+            size="small"
             :pagination="false"
             :columns="valueTableColumn"
             :data-source="valueTableData"
@@ -116,9 +116,11 @@
 
 <script lang="ts">
 import { Component, Mixins, Watch, Prop } from 'vue-property-decorator'
-import { WidgetMixin, LayerType } from '@mapgis/web-app-framework'
+import { LayerType } from '@mapgis/web-app-framework'
 import {
-  ResultSetMixin,
+  IAttributeTableExhibition,
+  AttributeTableExhibition,
+  ExhibitionControllerMixin,
   queryFeaturesInstance,
   queryArcgisInfoInstance
 } from '@mapgis/pan-spatial-map-store'
@@ -127,7 +129,7 @@ import {
   name: 'MpCustomQuery',
   components: {}
 })
-export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
+export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
   @Prop(Object) readonly queryParams!: Record<string, any>
 
   symbols = [
@@ -199,7 +201,6 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
 
   @Watch('queryParams', { deep: true })
   changeQueryParams() {
-    console.log(this.queryParams)
     this.init()
   }
 
@@ -212,9 +213,8 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
     if (!this.queryParams || Object.keys(this.queryParams).length < 1) {
       return
     }
-    const { tables } = this.queryParams
-    const layer = tables.length > 0 ? tables[0] : this.queryParams
-    const { layerIndex, id, ip, port, serverName, serverType, gdbp } = layer
+    const { option } = this.queryParams
+    const { layerIndex, id, ip, port, serverName, serverType, gdbp } = option
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
@@ -231,7 +231,6 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
         layerIdxs: layerIndex,
         gdbp
       })
-      console.log(result)
       const {
         AttStruct: { FldName, FldType }
       } = result
@@ -245,7 +244,6 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
           ? this.fieldTypeCN[type.toUpperCase()]
           : type.toUpperCase()
       }))
-      console.log(this.fieldTableData)
     }
     //  TODO:此段代码请勿删除，该版本暂未适配ArcgisLayer，后续已此段代码作为参考
     /* else if (subtype === SubLayerType.RasterArcgisLayer) {
@@ -255,7 +253,6 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
         serverUrl,
         layerIndex
       })
-      console.log(result)
       this.fieldTableData = result.fields
         .map((item, index) => ({
           name: item.name,
@@ -267,13 +264,11 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
             ? this.fieldTypeCN[type.toUpperCase()]
             : type.toUpperCase()
         }))
-      console.log(this.fieldTableData)
     } */
   }
 
   // 点击字段表格行
   async clickFieldTabel(row) {
-    console.log(row)
     this.addSqlStr(row.name)
     this.fieldCurrentRow = row
     await this.getValue()
@@ -281,7 +276,6 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
 
   // 点击属性值表格行
   clickValueTable(row) {
-    console.log(row)
     const { value } = row
     this.addSqlStr(value)
   }
@@ -292,9 +286,8 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
     if (!name) {
       return
     }
-    const { tables } = this.queryParams
-    const layer = tables.length > 0 ? tables[0] : this.queryParams
-    const { layerIndex, id, ip, port, serverName, serverType, gdbp } = layer
+    const { option } = this.queryParams
+    const { layerIndex, id, ip, port, serverName, serverType, gdbp } = option
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
@@ -310,7 +303,6 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
         layerIdxs: layerIndex,
         gdbp
       })
-      console.log(result)
       const { SFEleArray: features } = result
       const index = this.fieldTableData.findIndex(
         x => x === this.fieldCurrentRow
@@ -330,7 +322,6 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
         page: 0,
         pageCount: Number(this.valueSize)
       })
-      console.log(result.value)
       const values = Array.from(new Set(result.value.map(value => ({ value }))))
       this.valueTableData = values
     } */
@@ -375,20 +366,16 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
 
   // 确定
   handleSureClick() {
-    const params = JSON.parse(JSON.stringify(this.queryParams))
-    const { tables } = params
-    if (tables.length > 0) {
-      tables[0].where = `(${this.searchText})`
-    } else {
-      params.where = `(${this.searchText})`
-    }
-    const categoryInfo: IResultSetCategory = {
-      ...params,
-      tables
-    }
-    const category = this.addCategory(categoryInfo)
-    this.currentCategoryId = category.id
-    this.openAttributeTable()
+    const exhibition: IAttributeTableExhibition = { ...this.queryParams }
+
+    exhibition.option.where =
+      this.searchText.length > 0 ? `(${this.searchText})` : ''
+
+    this.addExhibition(new AttributeTableExhibition(exhibition))
+    this.openExhibitionPanel()
+
+    // 关闭窗口
+    this.$emit('close')
   }
 }
 </script>
@@ -397,9 +384,8 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
 .custom-query {
   display: flex;
   flex-direction: column;
-  height: calc(~'100% - 20px');
-  width: calc(~'100% - 20px');
-  margin: 10px;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
   .flex_1 {
     flex: 1 1 0%;
@@ -426,8 +412,8 @@ export default class MpCustomQuery extends Mixins(WidgetMixin, ResultSetMixin) {
     align-content: flex-start;
     .button-customer-container {
       width: calc(~'25% - 3px');
-      margin-right: 4px;
-      margin-bottom: 4px;
+      margin-right: 3px;
+      margin-bottom: 3px;
       &:nth-child(4n) {
         margin-right: 0;
       }

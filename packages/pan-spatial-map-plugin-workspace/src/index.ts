@@ -1,3 +1,5 @@
+import { MpAttributeTable, MpAttributeTableList } from './components'
+
 import {
   MpZoom,
   MpMapModePicker,
@@ -5,7 +7,6 @@ import {
   MpScalebar,
   MpDataCatalog,
   MpLayerList,
-  MpAttributeTable,
   MpBasemapManager,
   MpLegend
 } from './widgets'
@@ -18,6 +19,7 @@ const components = [
   MpDataCatalog,
   MpLayerList,
   MpAttributeTable,
+  MpAttributeTableList,
   MpBasemapManager,
   MpLegend
 ]
