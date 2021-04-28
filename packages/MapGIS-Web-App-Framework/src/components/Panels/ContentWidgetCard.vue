@@ -7,9 +7,12 @@
     :z-index="zIndex"
     :visible="visible"
     @update:visible="onUpdateVisible"
+    @resize="onResize"
+    @window-size="onWindowSize"
   >
     <template>
       <component
+        :ref="widgetInfo.id"
         :is="widget.manifest.component"
         :widget="widget"
         @update-widget-state="$emit('update-widget-state', $event)"
@@ -47,6 +50,16 @@ export default {
   methods: {
     onUpdateVisible(value) {
       this.$emit('update:visible', value)
+    },
+    onResize(payload) {
+      if (this.$refs[this.widgetInfo.id]) {
+        this.$refs[this.widgetInfo.id].onResize(payload)
+      }
+    },
+    onWindowSize(mode) {
+      if (this.$refs[this.widgetInfo.id]) {
+        this.$refs[this.widgetInfo.id].onWindowSize(mode)
+      }
     }
   }
 }

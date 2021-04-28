@@ -31,7 +31,7 @@
           v-if="fullScreenAction"
           class="action"
           :type="fullScreen ? 'fullscreen-exit' : 'fullscreen'"
-          @click="fullScreen = !fullScreen"
+          @click="onFullScreen"
         />
         <a-icon
           v-if="closeAction"
@@ -550,7 +550,10 @@ export default {
       }
 
       // 只处理高度有值的面板
-      if (!this.height) return
+      if (!this.height) {
+        this.$emit('resize', { width: this.resizeWidth })
+        return
+      }
 
       let ry = y
       const maxHeight =
@@ -573,6 +576,15 @@ export default {
       if (this.anchor.includes('bottom')) {
         this.dragVerticalOffset -= ry
       }
+
+      this.$emit('resize', {
+        width: this.resizeWidth,
+        height: this.resizeHeight
+      })
+    },
+    onFullScreen() {
+      this.fullScreen = !this.fullScreen
+      this.$emit('window-size', this.fullScreen ? 'max' : 'normal')
     },
     // 关闭事件
     onClose() {
