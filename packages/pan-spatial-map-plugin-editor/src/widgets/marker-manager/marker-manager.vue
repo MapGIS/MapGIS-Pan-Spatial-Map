@@ -72,8 +72,8 @@
       @addMarker="addMarker"
     ></marker-add>
     <marker-show :markers="tableData"></marker-show>
-    <a-modal v-model="modalInput" title="输入坐标" :width="360">
-      <marker-input />
+    <a-modal v-model="modalInput" title="输入坐标" :width="360" :footer="null">
+      <marker-input @addMarker="addMarker" @closeModal="modalInput = false" />
     </a-modal>
     <a-modal v-model="modalImport" title="导入文件" :width="360">
       <marker-import />

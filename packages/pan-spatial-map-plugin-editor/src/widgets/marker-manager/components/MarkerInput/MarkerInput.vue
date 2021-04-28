@@ -58,20 +58,25 @@
           }}</a-select-option>
         </a-select>
       </a-form-model-item>
+      <a-divider />
+      <div class="btn-group">
+        <a-button type="primary" @click="onClickConfirm">确认</a-button>
+        <a-button @click="onClickCancel">取消</a-button>
+      </div>
     </a-form-model>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Emit } from 'vue-property-decorator'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import { utilInstance, eventBus } from '@mapgis/pan-spatial-map-store'
 import { ThemeStyleMixin } from '@mapgis/web-app-framework'
 import { UUID } from '@mapgis/webclient-store/src/utils'
-import markerBlue from '../../../../assets/images/markerBlue.png'
+import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
 import MarkerAddMixin from '../../mixins/marker-add'
 
 @Component({ name: 'MpMarkerInput' })
-export default class MpMarkerInput extends Mixins() {
+export default class MpMarkerInput extends Mixins(MarkerAddMixin) {
   // 表单数据
   private formInput = {
     unit: '十进制',
@@ -86,16 +91,82 @@ export default class MpMarkerInput extends Mixins() {
     crsName: 'WGS1984_度'
   }
 
+  // 坐标单位下拉配置
   private unitTypes = ['十进制', '度分秒']
 
+  // 坐标系下拉配置
   private crsNames = ['WGS1984_度', 'Web墨卡托_WGS1984']
 
   // 参考系选择器的显隐
   private showCrsSelect = true
 
+  @Emit('addMarker')
+  addInputMarker(marker) {}
+
+  @Emit('closeModal')
+  closeModal() {}
+
   // 多选框变化时回调函数
   onChange(e) {
     this.showCrsSelect = e.target.checked
+  }
+
+  // 取消按钮回调函数
+  onClickCancel() {
+    this.closeModal()
+  }
+
+  // 确认按钮回调函数
+  async onClickConfirm() {
+    if (this.formInput.unit === '度分秒') {
+      this.formInput.coordX = utilInstance.degreeToDecimal(
+        Number(this.formInput.degreeX),
+        Number(this.formInput.minuteX),
+        Number(this.formInput.secondX)
+      )
+      this.formInput.coordY = utilInstance.degreeToDecimal(
+        Number(this.formInput.degreeY),
+        Number(this.formInput.minuteY),
+        Number(this.formInput.secondY)
+      )
+    }
+    let pointCoords: number[][] = [
+      [Number(this.formInput.coordX), Number(this.formInput.coordY)]
+    ]
+    if (this.showCrsSelect) {
+      pointCoords = await this.transPoints(
+        [[Number(this.formInput.coordX), Number(this.formInput.coordY)]],
+        this.formInput.crsName
+      )
+    }
+    this.structMarker(pointCoords[0])
+    this.closeModal()
+  }
+
+  // 构造marker
+  structMarker(coord) {
+    const feature = {
+      geometry: {
+        coordinates: [...coord],
+        type: 'Point'
+      },
+      id: UUID.uuid(),
+      properties: {},
+      type: 'Feature'
+    }
+
+    const marker = {
+      id: UUID.uuid(),
+      title: '',
+      description: '',
+      iconImg: markerRed,
+      img: '',
+      edit: true,
+      features: [feature],
+      coordinates: [...coord],
+      center: [...coord]
+    }
+    this.addInputMarker(marker)
   }
 }
 </script>
@@ -121,5 +192,17 @@ export default class MpMarkerInput extends Mixins() {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+}
+.ant-divider {
+  margin: 12px 0;
+}
+.btn-group {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  .ant-btn {
+    margin-left: 8px;
+  }
 }
 </style>
