@@ -10,18 +10,13 @@
         <!-- 指标和图表切换 -->
         <a-row type="flex" align="middle" class="statistic-table-head">
           <a-col span="16">
-            <a-row type="flex" align="middle">
-              <a-col span="4">指标：</a-col>
-              <a-col span="20">
-                <a-select v-model="target">
-                  <a-select-option
-                    v-for="item in targetList"
-                    :key="item.value"
-                    >{{ item.label }}</a-select-option
-                  >
-                </a-select>
-              </a-col>
-            </a-row>
+            <row-flex :span="[4, 20]" label="指标">
+              <a-select v-model="target">
+                <a-select-option v-for="item in targetList" :key="item.value">{{
+                  item.label
+                }}</a-select-option>
+              </a-select>
+            </row-flex>
           </a-col>
           <a-col span="8">
             <a-tooltip
@@ -52,6 +47,7 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
 import echarts from 'echarts'
+import RowFlex from '../RowFlex'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
@@ -64,7 +60,11 @@ interface IChartConfig {
   type: TChartType
 }
 
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class ThematicMapStatisticTable extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {

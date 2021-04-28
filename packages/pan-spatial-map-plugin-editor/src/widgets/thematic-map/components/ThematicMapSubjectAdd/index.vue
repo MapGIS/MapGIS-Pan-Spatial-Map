@@ -3,23 +3,25 @@
     <mp-window
       title="新建专题图"
       :visible.sync="saVisible"
-      anchor="center-center"
+      anchor="top-center"
       :verticalOffset="60"
     >
       <div class="thematic-map-subject-add">
-        <!-- 基础选项 -->
-        <base-items />
-        <!-- 时间轴模块 -->
-        <time-line-items />
-        <!-- 属性表模块 -->
-        <attribute-table-items />
-        <!-- 统计表模块 -->
-        <statistic-table-items />
-        <!-- 弹框模块 -->
-        <popup-items />
+        <div class="subject-add-content">
+          <!-- 基础选项 -->
+          <base-items />
+          <!-- 时间轴模块 -->
+          <time-line-items />
+          <!-- 属性表模块 -->
+          <attribute-table-items />
+          <!-- 统计表模块 -->
+          <statistic-table-items />
+          <!-- 弹框模块 -->
+          <popup-items />
+        </div>
         <!-- 保存按钮 -->
-        <div class="save-btn">
-          <a-button type="primary" @click="onSave">保存</a-button>
+        <div class="subject-add-save-btn">
+          <a-button type="primary" @click="onSave">保存配置</a-button>
         </div>
       </div>
     </mp-window>
@@ -29,14 +31,19 @@
 /**
  * @description 新建专题图
  */
-import { Mixins, Component, Watch } from 'vue-property-decorator'
+import {
+  Mixins,
+  Component,
+  Watch,
+  ProvideReactive
+} from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
-import BaseItems from './components/BaseItems'
-import TimeLineItems from './components/TimeLineItems'
-import AttributeTableItems from './components/AttributeTableItems'
-import StatisticTableItems from './components/StatisticTableItems'
-import PopupItems from './components/PopupItems'
+import BaseItems from './components/BaseItems.vue'
+import TimeLineItems from './components/TimeLineItems.vue'
+import AttributeTableItems from './components/AttributeTableItems.vue'
+import StatisticTableItems from './components/StatisticTableItems.vue'
+import PopupItems from './components/PopupItems.vue'
 
 @Component({
   components: {
@@ -50,6 +57,8 @@ import PopupItems from './components/PopupItems'
 export default class ThematicMapSubjectAdd extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
+  @ProvideReactive() formData!: any
+
   saVisible = true
 
   get visible() {

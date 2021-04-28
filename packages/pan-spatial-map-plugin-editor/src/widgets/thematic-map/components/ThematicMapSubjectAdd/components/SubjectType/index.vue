@@ -1,5 +1,5 @@
 <template>
-  <component :is="SubjectType" />
+  <component :is="type" />
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop } from 'vue-property-decorator'
@@ -24,7 +24,7 @@ import HexBin from './HexBin.vue' // 蜂窝图
 export default class extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  @Prop({ default: '' }) SubjectType!: string
+  @Prop({ default: '' }) type!: string
 }
 </script>
 <style lang="less" scoped></style>

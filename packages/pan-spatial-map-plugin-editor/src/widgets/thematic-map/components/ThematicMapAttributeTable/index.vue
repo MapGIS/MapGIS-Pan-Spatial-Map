@@ -15,30 +15,14 @@
           class="attribute-table-head"
         >
           <a-col span="13">
-            <a-row type="flex" align="middle">
-              <a-col span="4">专题：</a-col>
-              <a-col span="20">
-                <a-select v-model="subject">
-                  <a-select-option
-                    v-for="item in subjectList"
-                    :key="item.value"
-                    >{{ item.label }}</a-select-option
-                  >
-                </a-select>
-              </a-col>
-            </a-row>
+            <row-flex label="专题" :span="[4, 20]">
+              <a-select v-model="subject" :options="subjectList" />
+            </row-flex>
           </a-col>
           <a-col span="10">
-            <a-row type="flex" align="middle">
-              <a-col span="5">时间：{{ time }}</a-col>
-              <a-col span="19">
-                <a-select v-model="time">
-                  <a-select-option v-for="item in timeList" :key="item.value">{{
-                    item.label
-                  }}</a-select-option>
-                </a-select>
-              </a-col>
-            </a-row>
+            <row-flex label="时间" :span="[5, 19]">
+              <a-select v-model="time" :options="timeList" />
+            </row-flex>
           </a-col>
         </a-row>
         <!-- 分页列表 -->
@@ -61,8 +45,13 @@
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
+import RowFlex from '../RowFlex'
 
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class ThematicMapAttributeTable extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {

@@ -1,7 +1,15 @@
 .thematic-map-subject-add {
-  width: 500px;
+  width: 400px;
   max-height: 600px;
-  .save-btn {
+  display: flex;
+  flex-flow: column nowrap;
+  .subject-add-content {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .subject-add-save-btn {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 12px;
     text-align: center;
   }
   /deep/ .ant-row-flex {
@@ -9,5 +17,15 @@
   }
   /deep/ .ant-select {
     width: 100%;
+  }
+  /deep/ .ant-table {
+    line-height: 1.1;
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 8px;
+    }
+    .ant-table-body {
+      overflow: auto !important;
+    }
   }
 }
