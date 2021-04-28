@@ -1,6 +1,6 @@
 <template>
   <div class="mapbox-measure-wrapper">
-    <mapbox-measure
+    <mapgis-measure
       class="measure-draw-wrapper"
       position="bottom-left"
       ref="measureRef"
@@ -11,7 +11,7 @@
       @onAddNewFeature="onAddNewFeature"
     >
       <div slot="measureMarker">
-        <mapbox-marker
+        <mapgis-marker
           v-for="(item, index) in measureMarkers"
           :key="'measuer-marker-' + index"
           :coordinates="item.coordinates"
@@ -27,9 +27,9 @@
               {{ text }}
             </div>
           </div>
-        </mapbox-marker>
+        </mapgis-marker>
       </div>
-    </mapbox-measure>
+    </mapgis-measure>
   </div>
 </template>
 
@@ -44,10 +44,9 @@ import {
 } from 'vue-property-decorator'
 
 import { MapMixin } from '@mapgis/web-app-framework'
-import { MapboxMeasure, MapboxMarker } from '@mapgis/webclient-vue-mapboxgl'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 
-@Component({ components: { MapboxMeasure, MapboxMarker } })
+@Component({ components: {} })
 export default class Measure extends Mixins(MapMixin) {
   DrawSources = ['mapbox-gl-draw-hot', 'mapbox-gl-draw-cold']
 
