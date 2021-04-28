@@ -1,9 +1,6 @@
 <template>
   <div>
-    <mapbox-marker-show
-      v-if="is2DMapMode"
-      :markers="markers"
-    ></mapbox-marker-show>
+    <MapboxMarkerShow v-if="is2DMapMode" :markers="markers"></MapboxMarkerShow>
   </div>
 </template>
 
