@@ -1,30 +1,27 @@
 <template>
+  <!-- 属性表 -->
   <mp-window-wrapper :visible="atVisible">
     <mp-window
       title="属性表"
       :visible.sync="atVisible"
       anchor="top-right"
-      :verticalOffset="60"
+      :verticalOffset="50"
     >
       <div class="thematic-map-attribute-table">
-        <!-- 专题和时间选项 -->
-        <a-row
-          type="flex"
-          align="middle"
+        <row-flex
+          :span="[13, 10]"
           justify="space-between"
           class="attribute-table-head"
         >
-          <a-col span="13">
+          <template #label>
             <row-flex label="专题" :span="[4, 20]">
               <a-select v-model="subject" :options="subjectList" />
             </row-flex>
-          </a-col>
-          <a-col span="10">
-            <row-flex label="时间" :span="[5, 19]">
-              <a-select v-model="time" :options="timeList" />
-            </row-flex>
-          </a-col>
-        </a-row>
+          </template>
+          <row-flex label="时间" :span="[5, 19]">
+            <a-select v-model="time" :options="timeList" />
+          </row-flex>
+        </row-flex>
         <!-- 分页列表 -->
         <a-table
           row-key="id"
@@ -32,16 +29,13 @@
           :columns="tableColumns"
           :data-source="tableData"
           :pagination="tablePagination"
-          :scroll="tableScroll"
+          :scroll="{ x: 500, y: 360 }"
         />
       </div>
     </mp-window>
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-/**
- * @description 属性表
- */
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
@@ -58,9 +52,6 @@ export default class ThematicMapAttributeTable extends Mixins<{
   // 显示开关
   atVisible = false
 
-  // 列表加载开关
-  tableLoading = false
-
   // 专题
   subject = ''
 
@@ -73,53 +64,20 @@ export default class ThematicMapAttributeTable extends Mixins<{
   // 时间列表
   timeList: (string | number)[] = []
 
-  tableColumns: any[] = [
-    {
-      title: '年份',
-      dataIndex: 'date'
-    },
-    {
-      title: '数量',
-      dataIndex: 'amount'
-    },
-    {
-      title: '类型',
-      dataIndex: 'type'
-    }
-  ]
+  // 列表加载开关
+  tableLoading = false
 
-  tableData: Record<string, any>[] = [
-    {
-      id: '111',
-      date: '2013',
-      amount: 120,
-      type: '雨伞'
-    },
-    {
-      id: '222',
-      date: '2014',
-      amount: 23,
-      type: '鞋子'
-    },
-    {
-      id: '333',
-      date: '2015',
-      amount: 55,
-      type: '雨衣'
-    }
-  ]
+  //  列表配置 title: '年份', dataIndex: 'date'
+  tableColumns = []
+
+  // 列表数据
+  tableData: Record<string, any>[] = []
 
   get visible() {
     return ThematicMapInstance.isVisible('at')
   }
 
-  get tableScroll() {
-    return {
-      x: 500,
-      y: 360
-    }
-  }
-
+  // 分页配置
   get tablePagination() {
     return {
       showSizeChanger: true,
@@ -128,8 +86,18 @@ export default class ThematicMapAttributeTable extends Mixins<{
     }
   }
 
+  // 获取时间轴已选中的年度
   get selectedYear() {
     return ThematicMapInstance.getSelectedYear
+  }
+
+  /**
+   * 监听时间轴年度变化
+   */
+  @Watch('selectedYear')
+  watchSelectedYear(nV) {
+    this.time = nV
+    console.log('属性表获取到的当前年度', nV)
   }
 
   @Watch('visible')
@@ -137,10 +105,8 @@ export default class ThematicMapAttributeTable extends Mixins<{
     this.atVisible = nV
   }
 
-  @Watch('selectedYear')
-  watchSelectedYear(nV) {
-    this.time = nV
-    console.log('属性表获取到的当前年度', nV)
+  created() {
+    this.atVisible = this.visible
   }
 }
 </script>

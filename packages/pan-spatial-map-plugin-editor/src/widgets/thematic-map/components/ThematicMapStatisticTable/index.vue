@@ -1,10 +1,11 @@
 <template>
+  <!-- 统计表 -->
   <mp-window-wrapper class="thematic-map-statistic-table" :visible="stVisible">
     <mp-window
       title="统计表"
       :visible.sync="stVisible"
       anchor="top-left"
-      :verticalOffset="60"
+      :verticalOffset="50"
     >
       <div class="thematic-map-statistic-table">
         <!-- 指标和图表切换 -->
@@ -40,9 +41,6 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-/**
- * @description 统计表
- */
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
@@ -164,6 +162,7 @@ export default class ThematicMapStatisticTable extends Mixins<{
   }
 
   mounted() {
+    this.stVisible = this.visible
     this.chart = echarts.init(
       document.getElementById('thematic-map-statistic-table-chart')
     )

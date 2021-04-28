@@ -1,4 +1,5 @@
 <template>
+  <!-- 统计专题图 -->
   <div></div>
 </template>
 <script lang="ts">

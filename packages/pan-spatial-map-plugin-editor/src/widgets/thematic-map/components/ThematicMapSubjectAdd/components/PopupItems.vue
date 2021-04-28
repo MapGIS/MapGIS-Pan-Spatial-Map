@@ -6,10 +6,10 @@
       </a-checkbox>
     </a-row>
     <template v-if="showPopup">
-      <row-flex label="显示字段">
+      <row-flex label="显示字段" label-align="right">
         <a-select
           v-model="displayField"
-          mode="multiple"
+          mode="tags"
           :options="displayFieldList"
         />
       </row-flex>

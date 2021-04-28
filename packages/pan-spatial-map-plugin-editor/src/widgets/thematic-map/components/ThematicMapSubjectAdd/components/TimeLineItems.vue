@@ -5,12 +5,18 @@
         开启时间轴
       </a-checkbox>
     </a-row>
-    <row-flex justify="space-between" :span="[5, 18]" v-if="showTimeLine">
-      <template #label>
-        <a-select v-model="timeType" :options="timeTypeList" />
-      </template>
-      <a-input v-model="time" placeholder="请输入" />
-    </row-flex>
+    <a-row>
+      <a-col>
+        <a-input-group compact v-if="showTimeLine">
+          <a-select
+            v-model="timeType"
+            style="width: 20%"
+            :options="timeTypeList"
+          />
+          <a-input v-model="time" style="width: 80%" placeholder="请输入" />
+        </a-input-group>
+      </a-col>
+    </a-row>
   </div>
 </template>
 <script lang="ts">

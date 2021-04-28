@@ -1,4 +1,5 @@
 <template>
+  <!-- 工具栏 -->
   <mp-window-wrapper :visible="mtVisible">
     <transition name="slide-fade">
       <mp-placement
@@ -21,9 +22,6 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-/**
- * @description 工具栏
- */
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance, TModuleType } from '@mapgis/pan-spatial-map-store'
@@ -77,6 +75,10 @@ export default class ThematicMapManageTools extends Mixins<{
   @Watch('visible')
   watchVisible(nV) {
     this.mtVisible = nV
+  }
+
+  created() {
+    this.mtVisible = this.visible
   }
 }
 </script>

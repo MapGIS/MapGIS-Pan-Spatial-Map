@@ -13,12 +13,12 @@
       />
     </row-flex>
     <!-- 专题类型 -->
-    <row-flex label="专题类型">
+    <row-flex label="专题类型" label-align="right">
       <a-select v-model="sujectType" :options="sujectTypeList" />
     </row-flex>
     <subject-type :type="sujectType" />
     <!-- 数据来源 -->
-    <row-flex label="数据来源">
+    <row-flex label="数据来源" label-align="right">
       <a-select v-model="sourceTarget" :options="sourceTargetList" />
     </row-flex>
     <source-target :type="sourceTarget" />

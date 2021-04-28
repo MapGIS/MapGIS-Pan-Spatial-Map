@@ -3,10 +3,10 @@
     <!-- 专题服务树 -->
     <a-spin tip="正在加载..." :spinning="loading">
       <a-tree
-        :tree-data="subjectConfig"
-        :replace-fields="replaceFields"
-        @select="onSelect"
-        @check="onCheck"
+        :show-line="true"
+        :tree-data="thematicMapSubjectConfig"
+        :replace-fields="{ key: 'id' }"
+        @select="onThematicMapSubjectSelect"
       />
     </a-spin>
     <!-- 属性表 -->
@@ -51,18 +51,47 @@ export default class MpThematicMap extends Mixins<{
 }>(WidgetMixin) {
   loading = false
 
-  subjectConfig: IThematicMapSubjectConfig[] = []
+  thematicMapSubjectConfig: IThematicMapSubjectConfig[] = []
 
-  // ant-tree 数据格式化
-  get replaceFields() {
-    return {
-      key: 'id'
+  /**
+   * 递归获取选中专题配置
+   * @param treeData<array>
+   * @param id<string>
+   * @param node<object>
+   */
+  getSujectNodeById(
+    treeData: IThematicMapSubjectConfig[],
+    id: string,
+    node: IThematicMapSubjectConfig | null
+  ) {
+    if (!treeData) {
+      return null
     }
+    for (let i = 0; i < treeData.length; i++) {
+      const item = treeData[i]
+      if (item.nodeType === 'subject' && item.id === id) {
+        node = item
+        break
+      } else if (item.children && item.children.length) {
+        node = this.getSujectNodeById(item.children, id, node)
+      }
+    }
+    return node
   }
 
-  onSelect() {}
-
-  onCheck() {}
+  /**
+   * 专题服务树选中
+   * @param selectedKeys<array>
+   */
+  onThematicMapSubjectSelect(selectedKeys) {
+    const config = this.getSujectNodeById(
+      this.thematicMapSubjectConfig,
+      selectedKeys[0],
+      null
+    )
+    console.log('选中的专题', config)
+    ThematicMapInstance.setSelectedSujectConfig(config)
+  }
 
   /**
    * 专题服务面板打开
@@ -74,11 +103,12 @@ export default class MpThematicMap extends Mixins<{
       config: { subjectConfig }
     } = this.widgetInfo
     ThematicMapInstance.setThematicMapConfig(config)
-    this.subjectConfig = subjectConfig
+    this.thematicMapSubjectConfig = subjectConfig
     this.loading = false
-    const openModules: TModuleType[] = ['at', 'st', 'tl', 'mt']
-    openModules.forEach(item => ThematicMapInstance.setVisible(item))
-    console.log('总配置数据/专题配置数据', config, subjectConfig)
+    // const openModules: TModuleType[] = ['at', 'st', 'tl', 'mt']
+    // openModules.forEach(item => ThematicMapInstance.setVisible(item))
+    // console.log('基础配置数据', config.baseConfig)
+    console.log('专题配置数据', subjectConfig)
   }
 
   /**
@@ -86,7 +116,7 @@ export default class MpThematicMap extends Mixins<{
    */
   onClose() {
     ThematicMapInstance.resetVisible()
-    ThematicMapInstance.resetThematicMapConfig()
+    ThematicMapInstance.reset()
   }
 }
 </script>

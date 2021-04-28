@@ -1,4 +1,5 @@
 <template>
+  <!-- 时间轴 -->
   <mp-window-wrapper :visible="tlVisible">
     <mp-window title="时间轴" :visible.sync="tlVisible" anchor="center-center">
       <div class="thematic-map-time-line">
@@ -25,9 +26,6 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-/**
- * @description 时间轴
- */
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
@@ -144,6 +142,7 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   }
 
   mounted() {
+    this.tlVisible = this.visible
     this.chart = echarts.init(
       document.getElementById('thematic-map-time-line-chart')
     )

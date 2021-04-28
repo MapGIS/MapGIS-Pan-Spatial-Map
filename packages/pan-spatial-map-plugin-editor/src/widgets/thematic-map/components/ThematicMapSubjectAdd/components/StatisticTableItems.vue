@@ -6,13 +6,13 @@
       </a-checkbox>
     </a-row>
     <template v-if="showStatisticTable">
-      <row-flex label="横轴字段">
+      <row-flex label="横轴字段" label-align="right">
         <a-select v-model="xAxisKey" :options="xAxisFields" />
       </row-flex>
-      <row-flex label="统计指标">
+      <row-flex label="统计指标" label-align="right">
         <a-select
           v-model="targetField"
-          mode="multiple"
+          mode="tags"
           :options="targetFieldList"
         />
       </row-flex>

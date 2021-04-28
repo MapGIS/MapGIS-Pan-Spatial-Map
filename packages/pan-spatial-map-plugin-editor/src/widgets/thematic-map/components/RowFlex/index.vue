@@ -1,6 +1,6 @@
 <template>
   <a-row type="flex" :align="align" :justify="justify">
-    <a-col :span="labelSpan">
+    <a-col :span="labelSpan" :style="labelStyle">
       <slot name="label" v-show="label || $slots.label"> {{ label }}： </slot>
     </a-col>
     <a-col :span="contentSpan">
@@ -18,6 +18,8 @@ export default class extends Mixins<{
 }>(WidgetMixin) {
   @Prop() label!: string
 
+  @Prop({ default: 'left' }) labelAlign!: 'left' | 'center' | 'right'
+
   @Prop({ default: 'middle' }) align!: 'top' | 'middle' | 'bottom'
 
   @Prop({ default: 'start' }) justify!:
@@ -27,7 +29,7 @@ export default class extends Mixins<{
     | 'center'
     | 'end'
 
-  @Prop({ default: () => [6, 8] }) span!: (string | number)[]
+  @Prop({ default: () => [6, 18] }) span!: (string | number)[]
 
   get labelSpan() {
     return this.span[0]
@@ -35,6 +37,12 @@ export default class extends Mixins<{
 
   get contentSpan() {
     return this.span[1]
+  }
+
+  get labelStyle() {
+    return {
+      textAlign: this.labelAlign
+    }
   }
 }
 </script>

@@ -1,4 +1,5 @@
 <template>
+  <!-- 等级符号专题图 -->
   <div></div>
 </template>
 <script lang="ts">

@@ -1,10 +1,11 @@
 <template>
+  <!-- 新建专题图 -->
   <mp-window-wrapper :visible="saVisible">
     <mp-window
       title="新建专题图"
       :visible.sync="saVisible"
       anchor="top-center"
-      :verticalOffset="60"
+      :verticalOffset="20"
     >
       <div class="thematic-map-subject-add">
         <div class="subject-add-content">
@@ -28,9 +29,6 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-/**
- * @description 新建专题图
- */
 import {
   Mixins,
   Component,
@@ -59,7 +57,9 @@ export default class ThematicMapSubjectAdd extends Mixins<{
 }>(WidgetMixin) {
   @ProvideReactive() formData!: any
 
-  saVisible = true
+  saVisible = false
+
+  formData = false
 
   get visible() {
     return ThematicMapInstance.isVisible('sa')
@@ -70,6 +70,10 @@ export default class ThematicMapSubjectAdd extends Mixins<{
   @Watch('visible')
   watchVisible(nV) {
     this.saVisible = nV
+  }
+
+  created() {
+    this.saVisible = this.visible
   }
 }
 </script>

@@ -6,12 +6,8 @@
       </a-checkbox>
     </a-row>
     <template v-if="showAttributeTable">
-      <row-flex label="表格字段">
-        <a-select
-          v-model="tableField"
-          mode="multiple"
-          :options="tableFieldList"
-        />
+      <row-flex label="表格字段" label-align="right">
+        <a-select v-model="tableField" mode="tags" :options="tableFieldList" />
       </row-flex>
       <a-table
         row-key="id"

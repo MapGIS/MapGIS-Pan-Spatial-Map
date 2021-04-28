@@ -12,7 +12,7 @@ export const ThematicMapInstance = new Vue({
   data: () => {
     return {
       // 属性表|统计表|时间轴|专题添加|管理工具的开关
-      visible: [],
+      visible: ['at', 'st', 'tl', 'mt', 'sa'],
       // 专题服务时间轴当前年度
       selectedYear: '',
       // 当前选中的专题配置数据
@@ -89,8 +89,10 @@ export const ThematicMapInstance = new Vue({
      * 设置选中的专题配置数据
      * @param config<object>
      */
-    setSelectedSujectConfig(config: any) {
-      this.selectedSujectConfig = config
+    setSelectedSujectConfig(config: IThematicMapSubjectConfig) {
+      if (config) {
+        this.selectedSujectConfig = config
+      }
     },
 
     /**

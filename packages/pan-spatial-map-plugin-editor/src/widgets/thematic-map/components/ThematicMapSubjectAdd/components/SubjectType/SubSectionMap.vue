@@ -1,4 +1,5 @@
 <template>
+  <!-- 分段专题图配置 -->
   <div></div>
 </template>
 <script lang="ts">

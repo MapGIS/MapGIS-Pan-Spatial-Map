@@ -1,4 +1,5 @@
 <template>
+  <!-- 聚合标注专题图 -->
   <div></div>
 </template>
 <script lang="ts">
