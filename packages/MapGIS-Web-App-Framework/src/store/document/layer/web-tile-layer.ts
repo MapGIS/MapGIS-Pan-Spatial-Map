@@ -21,12 +21,14 @@ export class WebTileLayer extends TileLayer {
     super(properties)
 
     this.type = LayerType.webTile
-    this.fullExtent = new Zondy.Common.Rectangle(
-      -20037508.3427892,
-      -20037508.3427892,
-      20037508.3427892,
-      20037508.3427892
-    )
+    // this.fullExtent = new Zondy.Common.Rectangle(
+    //   -20037508.3427892,
+    //   -20037508.3427892,
+    //   20037508.3427892,
+    //   20037508.3427892
+    // )
+
+    this.fullExtent = new Zondy.Common.Rectangle(-180, -85.06, 180, 85.06)
 
     if (!properties) return
 
@@ -60,10 +62,23 @@ export class WebTileLayer extends TileLayer {
   }
 
   load(): Promise<Layer> {
-    throw new Error('Method not implemented.')
+    return new Promise(resolve => {
+      this.loadStatus = LoadStatus.loaded
+      resolve(this)
+    }).then(data => {
+      return this
+    })
   }
 
   clone(): Layer {
-    throw new Error('Method not implemented.')
+    const result = new WebTileLayer()
+
+    Object.entries(this).forEach(element => {
+      const key = element[0]
+      const valueIndex = 1
+      result[key] = this._deepClone(element[valueIndex])
+    })
+
+    return result
   }
 }
