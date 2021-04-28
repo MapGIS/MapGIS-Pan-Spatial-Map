@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mapbox-marker-add
+    <MapboxMarkerAdd
       v-if="is2DMapMode"
       :drawMode="drawMode"
       @addMarker="addMarker"

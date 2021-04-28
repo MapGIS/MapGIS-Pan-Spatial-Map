@@ -1,6 +1,6 @@
 <template>
   <div class="mapbox-marker-add-wrapper">
-    <mapbox-base-draw
+    <mapgis-draw
       ref="markerDrawer"
       :controls="controls"
       @added="handleAdded"
@@ -18,7 +18,6 @@ import {
   Watch,
   Mixins
 } from 'vue-property-decorator'
-import { MapboxBaseDraw } from '@mapgis/webclient-vue-mapboxgl'
 import { UUID } from '@mapgis/webclient-store/src/utils'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import { MapMixin } from '@mapgis/web-app-framework'
@@ -26,9 +25,7 @@ import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/as
 import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
 
 @Component({
-  components: {
-    MapboxBaseDraw
-  }
+  components: {}
 })
 export default class MapboxMarkerAdd extends Mixins(MapMixin) {
   @Provide()

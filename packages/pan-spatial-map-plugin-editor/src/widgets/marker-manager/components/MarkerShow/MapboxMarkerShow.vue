@@ -1,6 +1,6 @@
 <template>
-  <div class="mapbox-marker-show-wrapper">
-    <mapbox-marker
+  <div>
+    <mapgis-marker
       v-for="item in markers"
       :key="item.id"
       :coordinates="item.center"
@@ -18,23 +18,20 @@
       <div slot="marker">
         <img :src="item.iconImg" />
       </div>
-      <mapbox-popup :coordinates="item.center" :showed="true">
+      <mapgis-popup :coordinates="item.center" :showed="true">
         <marker-info :markerInfo="item" @delete="interactCancel(item)" />
-      </mapbox-popup>
-    </mapbox-marker>
+      </mapgis-popup>
+    </mapgis-marker>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Mixins, Provide, Prop } from 'vue-property-decorator'
-import { MapboxMarker, MapboxPopup } from '@mapgis/webclient-vue-mapboxgl'
 import { MapMixin } from '@mapgis/web-app-framework'
 import MarkerInfo from '../MarkerInfo/MarkerInfo.vue'
 
 @Component({
   components: {
-    MapboxMarker,
-    MapboxPopup,
     MarkerInfo
   }
 })
