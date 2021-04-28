@@ -11,8 +11,8 @@
     "allShows": "NAME:名称,ADDRESS:地址,TELEPHONE:联系方式,PAC:邮政编码",
     "queryTable": [
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015LYJD.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015LYJD.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015LYJD",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015LYJD",
         "placeName": "旅游景点",
         "color": "#FF8C69",
         "LayerName": "D430000DM2015LYJD",
@@ -87,11 +87,11 @@
         "allUse": true
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GGSS.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GGSS.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GGSS",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GGSS",
         "placeName": "公共设施",
         "color": "#FFE5B4",
-        "LayerName": "D430000DM2015GGSS.wt",
+        "LayerName": "D430000DM2015GGSS",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -163,8 +163,8 @@
         "allUse": false
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015CYMS.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015CYMS.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015CYMS",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015CYMS",
         "placeName": "餐饮美食",
         "color": "#DA70D6",
         "LayerName": "D430000DM2015CYMS",
@@ -315,11 +315,11 @@
         "allUse": false
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GW.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GW.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GW",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GW",
         "placeName": "购物",
         "color": "#50C878",
-        "LayerName": "D430000DM2015GW.wt",
+        "LayerName": "D430000DM2015GW",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -391,8 +391,8 @@
         "allUse": false
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015BGJD.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015BGJD.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015BGJD",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015BGJD",
         "placeName": "宾馆酒店",
         "color": "#556B2F",
         "LayerName": "D430000DM2015BGJD",
@@ -486,8 +486,8 @@
         "allUse": false
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JRHY.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JRHY.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JRHY",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JRHY",
         "placeName": "金融行业",
         "color": "#8A2BE2",
         "LayerName": "D430000DM2015JRHY",
@@ -562,8 +562,8 @@
         "allUse": false
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GSQY.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GSQY.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GSQY",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GSQY",
         "placeName": "公司企业",
         "color": "#FF1493",
         "LayerName": "D430000DM2015GSQY",
@@ -638,8 +638,8 @@
         "allUse": false
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015DCXQ.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015DCXQ.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015DCXQ",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015DCXQ",
         "placeName": "地产小区",
         "color": "#E32636",
         "LayerName": "D430000DM2015DCXQ",
@@ -714,8 +714,8 @@
         "allUse": false
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTSS.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTSS.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTSS",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTSS",
         "placeName": "交通设施",
         "color": "#DA70D6",
         "LayerName": "D430000DM2015JTSS",
@@ -790,8 +790,8 @@
         "allUse": false
       },
       {
-        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTDM.wt",
-        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTDM.wt",
+        "gdbp": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTDM",
+        "gdbpText": "gdbp://MYY:zondy123@MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTDM",
         "placeName": "交通地名",
         "color": "#FFCC00",
         "LayerName": "D430000DM2015JTDM",

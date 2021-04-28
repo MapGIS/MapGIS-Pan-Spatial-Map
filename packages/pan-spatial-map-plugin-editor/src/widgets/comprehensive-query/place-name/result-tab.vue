@@ -1,9 +1,39 @@
 <template>
-  <div></div>
+  <div class="comprehensive-result-tab-container">
+    <a-spin :spinning="spinning">
+      <ul class="comprehensive-result-tab">
+        <li
+          v-for="(item, i) in markersInfos"
+          :key="item.id"
+          @mouseover="mouseOver(i)"
+          @mouseleave="mouseLeave(i)"
+          @click="setActivePoint(i)"
+        >
+          <div class="img-result-tab">
+            <img :src="item.img" />
+          </div>
+          <div class="content-result-tab">
+            <p v-for="(row, index) in fieldNames" :key="row">
+              <label>{{ row }}:</label>
+              <span>{{ item.properties[fields[index]] }}</span>
+            </p>
+          </div>
+        </li>
+      </ul>
+      <div class="pagination-container">
+        <a-pagination
+          simple
+          :current="currentPageIndex"
+          :total="maxCount"
+          @change="pageChange"
+        />
+      </div>
+    </a-spin>
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
 import {
   dataCatalogInstance,
@@ -23,19 +53,29 @@ export default class ResultTab extends Vue {
 
   @Prop() name!: string
 
+  @Prop() activeTab!: string
+
   @Prop() keyword: string
 
   private fieldNames: string[] = []
+
+  private fields: string[] = []
 
   private isDataStoreQuery = false
 
   private currentPageIndex = 1
 
-  private maxPage = 100
+  private maxCount = 0
 
   private markerBlue = MarkerBlue
 
   private markerRed = MarkerRed
+
+  private markersInfos = []
+
+  private spinning = false
+
+  private activePoint = -1
 
   private get allItems(): Array {
     return this.widgetInfo.config.placeName.queryTable
@@ -45,20 +85,15 @@ export default class ResultTab extends Vue {
     return this.widgetInfo.config.placeName || this.widgetInfo.config.dataStore
   }
 
-  mounted() {
-    this.queryFeature()
-  }
-
-  getSelectedItem() {
-    return this.allItems.find(item => this.name === item.placeName)
-  }
-
-  async queryFeature() {
-    const selectedItem = this.getSelectedItem(this.placeNameTab)
-    if (!selectedItem) {
-      return
+  @Watch('activeTab', { immediate: true })
+  activeTabChange() {
+    if (this.activeTab === this.name) {
+      this.$emit('show-coords', this.markersInfos, this.fieldNames)
     }
-    const { showAttrsAndTitle } = selectedItem
+  }
+
+  mounted() {
+    const { showAttrsAndTitle } = this.selectedItem
     const fields: any[] = []
     const names: string[] = []
     for (let j = 0; j < showAttrsAndTitle.length; j += 1) {
@@ -68,9 +103,18 @@ export default class ResultTab extends Vue {
       names.push(name)
     }
     this.fieldNames = names
+    this.fields = fields
+    this.queryFeature()
+  }
+
+  private get selectedItem() {
+    return this.allItems.find(item => this.name === item.placeName)
+  }
+
+  async queryFeature() {
     const where = this.keyword && this.keyword !== '' ? this.keyword : undefined
     if (!this.isDataStoreQuery) {
-      await this.igsQuery(selectedItem, where, fields)
+      await this.igsQuery(where)
     } else {
       //   await this.dsQuery(selectedItem, where, fields)
     }
@@ -79,16 +123,16 @@ export default class ResultTab extends Vue {
   /**
    * igs地名地址查询
    */
-  async igsQuery(selectedItem: any, where: any, fields: string[]) {
+  async igsQuery(where: any) {
     const igsParams: FeatureQueryParam = {
       ip: this.config.ip,
       port: this.config.port,
       pageCount: 10,
       page: this.currentPageIndex - 1,
-      fields: fields.toString(),
+      fields: this.fields.toString(),
       rtnLabel: true,
       f: 'json',
-      where,
+      where: '',
       //   geometry: this.geometry,
       cursorType: 'backword'
     }
@@ -96,14 +140,14 @@ export default class ResultTab extends Vue {
     if (queryWay === 'doc') {
       // 地图文档
       igsParams.docName = this.config.docName
-      igsParams.layerName = selectedItem.LayerName
+      igsParams.layerName = this.selectedItem.LayerName
     } else if (queryWay === 'gdbp') {
-      igsParams.gdbp = selectedItem.gdbp
-      igsParams.srsIds = '地理坐标系(西安)_度'
+      igsParams.gdbp = this.selectedItem.gdbp
+      igsParams.srsIds = 'WGS1984_度'
     }
     const combine = this.config.combine === 'true'
+    this.spinning = true
     try {
-      debugger
       const igsRes: any = await queryFeaturesInstance.query(igsParams, combine)
       let data: any = igsRes
       if (combine) {
@@ -116,15 +160,13 @@ export default class ResultTab extends Vue {
       const geoJSONData: FeatureGeoJSON = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
         data
       )
-      console.log(geoJSONData)
-
       const { features } = geoJSONData
       const markerCoords: Record<string, any>[] = []
       for (let j = 0; j < features.length; j += 1) {
         const feature = features[j]
         const properties: Record<string, any> = {}
-        for (let f = 0; f < fields.length; f += 1) {
-          properties[fields[f]] = feature.properties[fields[f]]
+        for (let f = 0; f < this.fields.length; f += 1) {
+          properties[this.fields[f]] = feature.properties[this.fields[f]]
         }
         const coords = {
           coordinates: utilInstance.getGeoJsonFeatureCenter(feature),
@@ -135,15 +177,90 @@ export default class ResultTab extends Vue {
         markerCoords.push(coords)
       }
       this.markersInfos = markerCoords
-      const dataCount = geoJSONData.dataCount
+      this.maxCount = geoJSONData.dataCount
         ? geoJSONData.dataCount
         : features.length
-      this.maxPage = Math.ceil(dataCount / 10)
+      this.activeTabChange()
     } catch (error) {
       console.log(error)
+    } finally {
+      this.spinning = false
     }
+  }
+
+  mouseOver(index) {
+    this.$set(this.markersInfos[index], 'img', this.markerRed)
+    this.activeTabChange()
+  }
+
+  mouseLeave(index) {
+    this.$set(this.markersInfos[index], 'img', this.markerBlue)
+    this.activeTabChange()
+  }
+
+  pageChange(page) {
+    this.currentPageIndex = page
+    this.queryFeature()
+  }
+
+  setActivePoint(index) {
+    this.activePoint = index
+    this.$emit('click-item', this.markersInfos[index].coordinates)
   }
 }
 </script>
 
-<style scoped></style>
+<style lang="less">
+.comprehensive-result-tab-container {
+  &,
+  .ant-spin-nested-loading,
+  .ant-spin-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    .comprehensive-result-tab {
+      flex: 1;
+      overflow: auto;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        border-bottom: 1px solid @border-color;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        &:last-child {
+          border-bottom-width: 0;
+        }
+        .content-result-tab {
+          flex: 1;
+          p {
+            margin-bottom: 3px !important;
+            label {
+              color: @title-color;
+              margin-right: 8px;
+              font-weight: bold;
+            }
+            span {
+              color: @text-color;
+            }
+          }
+        }
+        .img-result-tab {
+          margin-right: 18px;
+        }
+      }
+    }
+    .pagination-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+  }
+}
+</style>
