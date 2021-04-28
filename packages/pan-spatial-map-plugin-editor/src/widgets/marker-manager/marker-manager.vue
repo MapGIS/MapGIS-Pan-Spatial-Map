@@ -75,11 +75,11 @@
     <a-modal v-model="modalInput" title="输入坐标" :width="360" :footer="null">
       <marker-input @addMarker="addMarker" @closeModal="modalInput = false" />
     </a-modal>
-    <a-modal v-model="modalImport" title="导入文件" :width="360">
-      <marker-import />
+    <a-modal v-model="modalImport" title="导入文件" :width="360" :footer="null">
+      <marker-import @closeModal="modalImport = false" />
     </a-modal>
-    <a-modal v-model="modalExport" title="导入标注" :width="360">
-      <marker-export />
+    <a-modal v-model="modalExport" title="导入标注" :width="360" :footer="null">
+      <marker-export :markers="tableData" @closeModal="modalExport = false" />
     </a-modal>
   </div>
 </template>

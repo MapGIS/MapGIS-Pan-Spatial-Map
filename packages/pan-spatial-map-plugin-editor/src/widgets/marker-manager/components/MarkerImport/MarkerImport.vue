@@ -31,6 +31,11 @@
           }}</a-select-option>
         </a-select>
       </a-form-model-item>
+      <a-divider />
+      <div class="btn-group">
+        <a-button type="primary" @click="onClickConfirm">确认</a-button>
+        <a-button @click="onClickCancel">取消</a-button>
+      </div>
     </a-form-model>
     <a-modal
       v-model="openImportFileDesc"
@@ -67,9 +72,22 @@ export default class MpMarkerImport extends Mixins() {
   // 参考系选择器的显隐
   private showCrsSelect = true
 
+  @Emit('closeModal')
+  closeModal() {}
+
   // 多选框变化时回调函数
   onChange(e) {
     this.showCrsSelect = e.target.checked
+  }
+
+  // 取消按钮回调函数
+  onClickCancel() {
+    this.closeModal()
+  }
+
+  // 确认按钮回调函数
+  onClickConfirm() {
+    this.closeModal()
   }
 }
 </script>
@@ -102,5 +120,17 @@ export default class MpMarkerImport extends Mixins() {
 }
 .crs-checkbox {
   margin: 8px 0 18px 32px;
+}
+.ant-divider {
+  margin: 12px 0;
+}
+.btn-group {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  .ant-btn {
+    margin-left: 8px;
+  }
 }
 </style>
