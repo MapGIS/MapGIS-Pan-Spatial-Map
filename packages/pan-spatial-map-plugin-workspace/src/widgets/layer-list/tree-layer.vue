@@ -223,7 +223,8 @@ import {
   MapMixin,
   AppMixin,
   WMTSSublayer,
-  CoordinateTransformation
+  CoordinateTransformation,
+  CoordinateSystemType
 } from '@mapgis/web-app-framework'
 import {
   ResultSetMixin,
@@ -583,7 +584,7 @@ export default class TreeLayer extends Mixins(
       fullExtent: { xmin, xmax, ymin, ymax }
     } = item
 
-    if (item.spatialReference.wkid === 3857) {
+    if (item.spatialReference.wkid === CoordinateSystemType.webMercator) {
       const xminYminConverted = CoordinateTransformation.mercatorToWGS84([
         xmin,
         ymin
