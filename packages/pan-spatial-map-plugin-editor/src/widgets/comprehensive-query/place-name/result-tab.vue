@@ -1,6 +1,6 @@
 <template>
   <div class="comprehensive-result-tab-container">
-    <a-spin :spinning="spinning">
+    <a-spin :spinning="spinning" v-if="!cluster">
       <ul class="comprehensive-result-tab">
         <li
           v-for="(item, i) in markersInfos"
@@ -10,7 +10,7 @@
           @click="setActivePoint(i)"
         >
           <div class="img-result-tab">
-            <img :src="item.img" />
+            <img :src="activePoint === i ? markerRed : item.img" />
           </div>
           <div class="content-result-tab">
             <p v-for="(row, index) in fieldNames" :key="row">
@@ -27,6 +27,17 @@
           :total="maxCount"
           @change="pageChange"
         />
+      </div>
+    </a-spin>
+    <a-spin :spinning="spinning" v-else>
+      <div>
+        <span>
+          {{ `共${setCounts()}条结果` }}
+          &nbsp;&nbsp;&nbsp;
+        </span>
+        <a-tag :color="selectedItem.color">
+          {{ selectedItem.color }}
+        </a-tag>
       </div>
     </a-spin>
   </div>
@@ -57,6 +68,8 @@ export default class ResultTab extends Vue {
 
   @Prop() keyword: string
 
+  @Prop() cluster!: boolean
+
   private fieldNames: string[] = []
 
   private fields: string[] = []
@@ -77,6 +90,8 @@ export default class ResultTab extends Vue {
 
   private activePoint = -1
 
+  private geojson = {}
+
   private get allItems(): Array {
     return this.widgetInfo.config.placeName.queryTable
   }
@@ -85,8 +100,24 @@ export default class ResultTab extends Vue {
     return this.widgetInfo.config.placeName || this.widgetInfo.config.dataStore
   }
 
+  @Watch('cluster')
+  clusterChange() {
+    this.queryFeature()
+  }
+
+  setCounts() {
+    return this.config.clusterMaxCount < this.maxCount
+      ? `大于${this.config.clusterMaxCount}`
+      : `为${this.maxCount}`
+  }
+
   @Watch('activeTab', { immediate: true })
   activeTabChange() {
+    this.activePoint = -1
+    this.updataMarkers()
+  }
+
+  updataMarkers() {
     if (this.activeTab === this.name) {
       this.$emit('show-coords', this.markersInfos, this.fieldNames)
     }
@@ -112,7 +143,11 @@ export default class ResultTab extends Vue {
   }
 
   async queryFeature() {
-    const where = this.keyword && this.keyword !== '' ? this.keyword : undefined
+    const where =
+      this.keyword && this.keyword !== ''
+        ? `${this.selectedItem.searchField ||
+            this.config.allSearchName} LIKE '%${this.keyword}%'`
+        : ''
     if (!this.isDataStoreQuery) {
       await this.igsQuery(where)
     } else {
@@ -127,12 +162,12 @@ export default class ResultTab extends Vue {
     const igsParams: FeatureQueryParam = {
       ip: this.config.ip,
       port: this.config.port,
-      pageCount: 10,
+      pageCount: this.cluster ? this.config.clusterMaxCount : 10,
       page: this.currentPageIndex - 1,
       fields: this.fields.toString(),
       rtnLabel: true,
       f: 'json',
-      where: '',
+      where,
       //   geometry: this.geometry,
       cursorType: 'backword'
     }
@@ -162,25 +197,34 @@ export default class ResultTab extends Vue {
       )
       const { features } = geoJSONData
       const markerCoords: Record<string, any>[] = []
-      for (let j = 0; j < features.length; j += 1) {
-        const feature = features[j]
-        const properties: Record<string, any> = {}
-        for (let f = 0; f < this.fields.length; f += 1) {
-          properties[this.fields[f]] = feature.properties[this.fields[f]]
+      if (!this.cluster) {
+        for (let j = 0; j < features.length; j += 1) {
+          const feature = features[j]
+          const properties: Record<string, any> = {}
+          for (let f = 0; f < this.fields.length; f += 1) {
+            properties[this.fields[f]] = feature.properties[this.fields[f]]
+          }
+          const coords = {
+            coordinates: utilInstance.getGeoJsonFeatureCenter(feature),
+            properties,
+            id: UUID.uuid(),
+            img: this.markerBlue
+          }
+          markerCoords.push(coords)
         }
-        const coords = {
-          coordinates: utilInstance.getGeoJsonFeatureCenter(feature),
-          properties,
-          id: UUID.uuid(),
-          img: this.markerBlue
-        }
-        markerCoords.push(coords)
       }
-      this.markersInfos = markerCoords
+      if (this.cluster) {
+        this.geojson = { type: 'FeatureCollection', features }
+        this.markersInfos = []
+      } else {
+        this.markersInfos = markerCoords
+        this.geojson = {}
+      }
       this.maxCount = geoJSONData.dataCount
         ? geoJSONData.dataCount
         : features.length
-      this.activeTabChange()
+      this.updataMarkers()
+      this.$emit('update-geojson', this.geojson)
     } catch (error) {
       console.log(error)
     } finally {
@@ -190,15 +234,16 @@ export default class ResultTab extends Vue {
 
   mouseOver(index) {
     this.$set(this.markersInfos[index], 'img', this.markerRed)
-    this.activeTabChange()
+    this.updataMarkers()
   }
 
   mouseLeave(index) {
     this.$set(this.markersInfos[index], 'img', this.markerBlue)
-    this.activeTabChange()
+    this.updataMarkers()
   }
 
   pageChange(page) {
+    this.activePoint = -1
     this.currentPageIndex = page
     this.queryFeature()
   }

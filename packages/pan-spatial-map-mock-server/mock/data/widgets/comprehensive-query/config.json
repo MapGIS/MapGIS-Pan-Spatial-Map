@@ -6,7 +6,7 @@
     "queryWay": "gdbp",
     "docName": "",
     "showType": "normal",
-    "clusterMaxCount": "10000",
+    "clusterMaxCount": "1000",
     "allSearchName": "NAME",
     "allShows": "NAME:名称,ADDRESS:地址,TELEPHONE:联系方式,PAC:邮政编码",
     "queryTable": [
