@@ -281,11 +281,18 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     // api.getWidgetConfig('MarkerManager').then(res => {
     //   this.oldConfigToNew(res)
     // })
+    eventBus.$on('edit-marker-info', markerInfo => {
+      const index = this.tableData.findIndex(item => item.id === markerInfo.id)
+      if (index !== -1) {
+        this.$set(this.tableData, index, markerInfo)
+      }
+    })
   }
 
   onClose() {
     this.mapboxShow = false
     this.tableData = []
+    eventBus.$off('edit-marker-info')
   }
 
   // 点击不同类型标注图标回调事件
