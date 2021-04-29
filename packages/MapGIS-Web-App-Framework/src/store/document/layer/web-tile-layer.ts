@@ -2,6 +2,7 @@ import * as Zondy from '@mapgis/webclient-es6-service'
 import { TileLayer } from './tile-layer'
 import { LoadStatus, LayerType, Layer } from './layer'
 import { ObjectTool } from '../../utils/object-tool'
+import { CoordinateSystemType } from '../spatial-reference'
 
 /**
  * 互联网瓦片服务图层
@@ -28,7 +29,7 @@ export class WebTileLayer extends TileLayer {
       20037508.3427892
     )
 
-    this.spatialReference.wkid = 3857
+    this.spatialReference.wkid = CoordinateSystemType.webMercator
 
     if (!properties) return
 
