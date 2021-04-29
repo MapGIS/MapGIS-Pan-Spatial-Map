@@ -1067,11 +1067,14 @@
     "@mapgis/mapbox-gl" "^1.9.6"
 
 "@mapgis/mapbox-gl@^1.9.3", "@mapgis/mapbox-gl@^1.9.6":
+<<<<<<< HEAD
   version "1.9.8"
   resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
   integrity sha1-Cab3kgWtGJSqqZEisITs6R1p4tw=
 
 "@mapgis/mapbox-gl@^1.9.7":
+=======
+>>>>>>> 45e7d59 (修复冲突)
   version "1.9.8"
   resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
   integrity sha1-Cab3kgWtGJSqqZEisITs6R1p4tw=
