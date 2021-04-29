@@ -132,15 +132,35 @@ export default class Measure extends Mixins(MapMixin) {
   // 测量结果
   private results: Record<string, any> = {}
 
+  // 上一次测量结果
+  private lastResult: any = {}
+
   private changeMeasureSettingInterval = null
 
   mounted(): void {
     this.enableMeasure()
   }
 
+  @Watch('distanceUnit')
+  changeDistanceUnit() {
+    if (Object.keys(this.lastResult).length > 0) {
+      this.measureMarkers = []
+      this.getMeasureResult(this.lastResult)
+    }
+  }
+
+  @Watch('areaUnit')
+  changeAreaUnit() {
+    if (Object.keys(this.lastResult).length > 0) {
+      this.measureMarkers = []
+      this.getMeasureResult(this.lastResult)
+    }
+  }
+
   @Watch('clearVar')
   clearMeasure() {
     this.measureMarkers = []
+    this.lastResult = {}
     if (this.measure) {
       this.measure.deleteAll()
       this.measure.changeMode('simple_select')
@@ -379,7 +399,7 @@ export default class Measure extends Mixins(MapMixin) {
     let areaUnitExp
 
     this.results = {}
-
+    this.lastResult = JSON.parse(JSON.stringify(result))
     switch (this.activeMeasureMode) {
       case 'measure-length':
         distanceUnitExp = this.transDistanceUnit()
