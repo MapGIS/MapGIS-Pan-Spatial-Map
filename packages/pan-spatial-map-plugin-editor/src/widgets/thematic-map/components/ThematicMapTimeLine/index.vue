@@ -1,7 +1,7 @@
 <template>
   <!-- 时间轴 -->
   <mp-window-wrapper :visible="tlVisible">
-    <mp-window title="时间轴" :visible.sync="tlVisible" anchor="center-center">
+    <mp-window title="时间轴" :visible.sync="tlVisible" anchor="bottom-center">
       <div class="thematic-map-time-line">
         <div id="thematic-map-time-line-chart" />
         <a-row type="flex" align="middle" justify="space-between">
@@ -17,7 +17,7 @@
         </a-row>
         <div
           class="thematic-map-time-line-chart-mask"
-          v-show="!timeLineList.length"
+          v-show="!timeList.length"
         >
           暂无年度数据
         </div>
@@ -52,8 +52,8 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   }
 
   // 年度列表数据
-  get timeLineList() {
-    return [2013, 2014, 2015, 2017, 2020, 2021]
+  get timeList() {
+    return ThematicMapInstance.getSelectedSujectConfigTimeList
   }
 
   /**
@@ -78,30 +78,33 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
    * 图表初始化
    */
   onUpdateChart() {
-    if (this.chart) {
-      this.chart.setOption(
-        chartOption({
-          currentIndex: this.currentIndex,
-          autoPlay: this.isPlay,
-          data: this.timeLineList
-        })
-      )
-      this.chart.resize()
-    }
+    this.$nextTick(() => {
+      if (this.chart) {
+        this.chart.setOption(
+          chartOption({
+            currentIndex: this.currentIndex,
+            autoPlay: this.isPlay,
+            data: this.timeList
+          })
+        )
+        this.chart.resize()
+      }
+    })
   }
 
   /**
    * 播放或暂停
    */
   btnPlay() {
-    this.isPlay = this.timeLineList.length > 1 ? !this.isPlay : false
+    this.isPlay = this.timeList.length > 1 ? !this.isPlay : false
+    this.onUpdateChart()
   }
 
   /**
    * 下一个
    */
   next() {
-    if (this.currentIndex < this.timeLineList.length - 1) {
+    if (this.currentIndex < this.timeList.length - 1) {
       this.currentIndex++
     }
   }
@@ -124,21 +127,29 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   }
 
   /**
-   * 监听时间轴变化
-   */
-  @Watch('currentIndex')
-  watchCurrentIndex(nV) {
-    ThematicMapInstance.setSelectedYear(this.timeLineList[nV])
-    this.onUpdateChart()
-  }
-
-  /**
    * 监听弹框开关
    */
   @Watch('visible')
   watchVisible(nV) {
     this.tlVisible = nV
-    this.$nextTick(() => nV && this.onUpdateChart())
+    nV && this.onUpdateChart()
+  }
+
+  /**
+   * 监听时间轴变化
+   */
+  @Watch('currentIndex')
+  watchCurrentIndex(nV) {
+    ThematicMapInstance.setSelectedSubjectConfigTime(this.timeList[nV])
+    this.onUpdateChart()
+  }
+
+  /**
+   * 时间轴数据变化
+   */
+  @Watch('timeList')
+  watchTimeList() {
+    this.onUpdateChart()
   }
 
   mounted() {

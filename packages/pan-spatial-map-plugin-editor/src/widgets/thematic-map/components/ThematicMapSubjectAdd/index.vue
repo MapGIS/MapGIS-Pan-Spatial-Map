@@ -55,11 +55,11 @@ import PopupItems from './components/PopupItems.vue'
 export default class ThematicMapSubjectAdd extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  @ProvideReactive() formData!: any
+  // @ProvideReactive() formData!: any
 
   saVisible = false
 
-  formData = false
+  // formData = {}
 
   get visible() {
     return ThematicMapInstance.isVisible('sa')
