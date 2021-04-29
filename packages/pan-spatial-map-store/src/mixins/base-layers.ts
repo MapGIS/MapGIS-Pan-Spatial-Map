@@ -3,6 +3,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
 import baseLayerManagerInstance, { BaseLayersManager } from '../map/base-layers'
 import { getConfig } from '../api/config'
+import { baseConfigInstance } from '../config'
 
 @Component({})
 export default class BaseLayersMixin extends Vue {
@@ -15,42 +16,42 @@ export default class BaseLayersMixin extends Vue {
   widgetInfo: any
 
   protected mounted() {
-    getConfig('base').then(res => {
-      const defaultBaseLayer = this.createDefaultBaseLayer(res)
-      let serverType = ''
-      if (defaultBaseLayer.subtype === 'IgsDocLayer') {
-        serverType = 'doc'
-      } else if (defaultBaseLayer.subtype === 'IgsTileLayer') {
-        serverType = 'tile'
-      }
-      const tempDefaultBaseLayer = {
-        image: defaultBaseLayer.image,
-        name: defaultBaseLayer.title,
-        scene: '23D',
-        visible: 'true',
-        children: [
-          {
-            layerName: defaultBaseLayer.serverName,
-            layerType: null,
-            projection: null,
-            serverType,
-            serverUrl: '',
-            serverip: defaultBaseLayer.ip,
-            serverport: defaultBaseLayer.port
-          }
-        ]
-      }
-      if (this.widgetInfo) {
-        const { config } = this.widgetInfo
-        config.push(tempDefaultBaseLayer)
-        this.baseLayerManager.init(config)
-        if (config.length > 0) {
-          this.layerNames = [this.baseLayerManager.defaultBaseLayerName] // 初始化加载索引底图
-        } else {
-          this.layerNames = [] // 初始化加载索引底图
+    const defaultBaseLayer = this.createDefaultBaseLayer(
+      baseConfigInstance.config
+    )
+    let serverType = ''
+    if (defaultBaseLayer.subtype === 'IgsDocLayer') {
+      serverType = 'doc'
+    } else if (defaultBaseLayer.subtype === 'IgsTileLayer') {
+      serverType = 'tile'
+    }
+    const tempDefaultBaseLayer = {
+      image: defaultBaseLayer.image,
+      name: defaultBaseLayer.title,
+      scene: '23D',
+      visible: 'true',
+      children: [
+        {
+          layerName: defaultBaseLayer.serverName,
+          layerType: null,
+          projection: null,
+          serverType,
+          serverUrl: '',
+          serverip: defaultBaseLayer.ip,
+          serverport: defaultBaseLayer.port
         }
+      ]
+    }
+    if (this.widgetInfo) {
+      const { config } = this.widgetInfo
+      config.push(tempDefaultBaseLayer)
+      this.baseLayerManager.init(config)
+      if (config.length > 0) {
+        this.layerNames = [this.baseLayerManager.defaultBaseLayerName] // 初始化加载索引底图
+      } else {
+        this.layerNames = [] // 初始化加载索引底图
       }
-    })
+    }
   }
 
   protected get baseLayerConfig() {
@@ -103,7 +104,7 @@ export default class BaseLayersMixin extends Vue {
                     Math.random() * 7
                   )}.tianditu.gov.cn/${tempLayerType}_c/wmts`
                 }
-                layer = this.baseLayerManager.CreateTianDiTuLayer({
+                layer = this.baseLayerManager.createTianDiTuLayer({
                   baseURL: templateUrl,
                   token: '2ddaabf906d4b5418aed0078e1657029',
                   ip: serverip,
@@ -112,7 +113,7 @@ export default class BaseLayersMixin extends Vue {
                 })
                 break
               case 'WMTS':
-                layer = this.baseLayerManager.CreateIgsWmtsLayer({
+                layer = this.baseLayerManager.createIgsWmtsLayer({
                   ip: serverip,
                   port: serverport,
                   id,
@@ -142,7 +143,7 @@ export default class BaseLayersMixin extends Vue {
                 }
                 templateUrl =
                   'http://services.arcgisonline.com/ArcGIS/rest/services/{layerType}/MapServer/tile/{z}/{y}/{x}.jpg'
-                layer = this.baseLayerManager.CreateArcgisLayer({
+                layer = this.baseLayerManager.createArcgisLayer({
                   ip: serverip,
                   port: serverport,
                   layerType: tempLayerType,
@@ -155,7 +156,7 @@ export default class BaseLayersMixin extends Vue {
               case 'googleExt':
                 // eslint-disable-next-line no-case-declarations
                 const { pType } = item
-                layer = this.baseLayerManager.CreateGoogleLayer({
+                layer = this.baseLayerManager.createGoogleLayer({
                   ip: serverip,
                   port: serverport,
                   layerType,
@@ -165,7 +166,7 @@ export default class BaseLayersMixin extends Vue {
                 })
                 break
               case 'baidu':
-                layer = this.baseLayerManager.CreateBaiduLayer({
+                layer = this.baseLayerManager.createBaiduLayer({
                   ip: serverip,
                   port: serverport,
                   layerType,
@@ -173,7 +174,7 @@ export default class BaseLayersMixin extends Vue {
                 })
                 break
               case 'gaode':
-                layer = this.baseLayerManager.CreateGaodeLayer({
+                layer = this.baseLayerManager.createGaodeLayer({
                   ip: serverip,
                   port: serverport,
                   layerType,
@@ -183,7 +184,7 @@ export default class BaseLayersMixin extends Vue {
               case 'OpenWeather':
                 // eslint-disable-next-line no-case-declarations
                 const { appid } = item
-                layer = this.baseLayerManager.CreateOpenWeatherLayer({
+                layer = this.baseLayerManager.createOpenWeatherLayer({
                   ip: serverip,
                   port: serverport,
                   layerType,
@@ -192,7 +193,7 @@ export default class BaseLayersMixin extends Vue {
                 })
                 break
               case 'tile':
-                layer = this.baseLayerManager.CreateIgsTileLayer({
+                layer = this.baseLayerManager.createIgsTileLayer({
                   ip: serverip,
                   port: serverport,
                   serverName: layerName,
@@ -201,7 +202,7 @@ export default class BaseLayersMixin extends Vue {
                 })
                 break
               case 'doc':
-                layer = this.baseLayerManager.CreateIgsDocLayer({
+                layer = this.baseLayerManager.createIgsDocLayer({
                   ip: serverip,
                   port: serverport,
                   serverName: layerName,
@@ -268,7 +269,7 @@ export default class BaseLayersMixin extends Vue {
     return this.layers.filter(({ subtype }) => subtype === 'DocLayer')
   }
 
-  public createDefaultBaseLayer(systemConfig: Record<string, unknown>) {
+  public createDefaultBaseLayer(baseConfig: Record<string, unknown>) {
     const {
       name,
       serverType,
@@ -277,7 +278,7 @@ export default class BaseLayersMixin extends Vue {
       defaultMapType,
       defaultMapName,
       image
-    } = systemConfig
+    } = baseConfig
 
     // 构建图层基本信息
     const obj: Record<string, unknown> = {

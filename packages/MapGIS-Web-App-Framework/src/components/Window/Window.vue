@@ -116,7 +116,7 @@ export default {
   name: 'MpWindow',
   props: {
     // 窗体方位
-    // top-left | top | top-right | right | bottom-right | bottom | bottom-left | left |
+    // top-left | top-right | bottom-right | bottom-left |
     // top-center | bottom-center | center-right |  center-left | center-center
     anchor: {
       type: String,
@@ -346,12 +346,14 @@ export default {
     } else {
       // 如果height为undefined
       if (
-        ['top-left', 'top-right', 'top'].includes(this.anchor) &&
+        ['top-left', 'top-right', 'top-center'].includes(this.anchor) &&
         typeof this.bottom != 'undefined'
       ) {
         this.heightPixel = `calc(100% - 36px - ${this.verticalOffset}px - ${this.bottom}px)`
       } else if (
-        ['bottom-left', 'bottom-right', 'bottom'].includes(this.anchor) &&
+        ['bottom-left', 'bottom-right', 'bottom-center'].includes(
+          this.anchor
+        ) &&
         typeof this.top != 'undefined'
       ) {
         this.heightPixel = `calc(100% - 36px - ${this.verticalOffset}px - ${this.top}px)`

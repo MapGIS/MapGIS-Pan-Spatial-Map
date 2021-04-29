@@ -1,10 +1,10 @@
 <template>
   <div class="filter">
     <a-row class="filter-toolbar" type="flex" align="middle">
-      <a-button type="link" icon="plus" @click="handleAddFilter">
+      <a-button type="link" icon="plus" @click="handleAddFilter" size="small">
         添加表达式
       </a-button>
-      <a-button type="link" icon="plus" @click="handleAddGroup">
+      <a-button type="link" icon="plus" @click="handleAddGroup" size="small">
         添加集合
       </a-button>
       <a-col flex="auto">
@@ -14,6 +14,7 @@
               (filterItems.length > 0 && filterGroups.length > 0)
           "
           v-model="oper"
+          size="small"
         >
           <a-radio value="AND">
             匹配所有表达式
@@ -62,15 +63,18 @@
     </div>
     <a-space direction="vertical" class="filter-sql">
       <div>SQL表达式</div>
-      <a-textarea
-        v-model="where"
-        :auto-size="{ minRows: 5, maxRows: 5 }"
-        disabled
-      />
+      <a-textarea v-model="where" :auto-size="{ minRows: 3, maxRows: 3 }" />
     </a-space>
     <a-space class="filter-btn">
       <a-button type="primary" @click="handleOK">
         应用
+      </a-button>
+      <a-button
+        :disabled="where.length == 0"
+        type="primary"
+        @click="where = ''"
+      >
+        重置
       </a-button>
       <a-button type="primary" @click="closeFilter">
         取消
@@ -196,6 +200,7 @@ export default class MpFilter extends Vue {
 
   private handleOK() {
     this.$emit('filterVal', this.where)
+    this.$emit('close')
   }
 
   private updateFilterItems(val, index) {
@@ -205,16 +210,12 @@ export default class MpFilter extends Vue {
   }
 
   private closeFilter() {
-    this.where = ''
     this.$emit('close')
   }
 }
 </script>
 
 <style lang="less" scoped>
-.filter-items {
-  border-bottom: 1px solid @border-color-base;
-}
 .filter {
   // 容器
   height: 100%;
@@ -222,48 +223,30 @@ export default class MpFilter extends Vue {
   width: 100%;
   display: flex;
   flex-direction: column;
-
   .filter-toolbar {
     // 顶部工具条
     border-bottom: 1px solid @border-color-base;
+    padding-bottom: 5px;
   }
-
   .filter-content {
     flex: 1;
-    overflow-y: scroll;
+    overflow-y: auto;
+    .filter-items {
+      border-bottom: 1px solid @border-color-base;
+    }
   }
-
-  .filter-filter-group {
-    // 可视化过滤条件组
-    max-height: 300px;
-    padding: 5px 0;
-  }
-
   .filter-sql {
     // sql语句
     border-top: 1px solid @border-color-base;
-    padding: 8px 5px;
-
+    padding: 5px 0;
     textarea {
       resize: none;
-      height: 100px;
+      height: 60px;
     }
   }
-
   .filter-btn {
-    // 底部操作
-    border-top: 1px solid @border-color-base;
-    padding: 6px;
     display: flex;
     justify-content: center;
   }
 }
-
-// .filter-group {
-//   // 条件组
-
-//   &-item {
-//     // 条件项
-//   }
-// }
 </style>

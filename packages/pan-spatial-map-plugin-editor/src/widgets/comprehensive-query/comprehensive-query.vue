@@ -158,7 +158,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   .locate-panel-contaner {
     .ant-tabs.ant-tabs-card {
       .ant-tabs-card-bar {
-        margin-bottom: 8px;
+        margin-bottom: 0;
         .ant-tabs-nav-container {
           height: 32px;
           .ant-tabs-tab {

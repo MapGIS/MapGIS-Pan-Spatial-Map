@@ -1,4 +1,4 @@
-import { UUID } from '@mapgis/webclient-store/src/utils'
+import { UUID } from '@mapgis/web-app-framework'
 import { getConfig } from '../api/config'
 
 export class BaseLayersManager {
@@ -50,7 +50,7 @@ export class BaseLayersManager {
     // })
   }
 
-  public CreateTianDiTuLayer(
+  public createTianDiTuLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'TianDiTuLayer'
@@ -59,7 +59,7 @@ export class BaseLayersManager {
     return layer
   }
 
-  public CreateIgsWmtsLayer(
+  public createIgsWmtsLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'WmtsLayer'
@@ -68,7 +68,7 @@ export class BaseLayersManager {
     return layer
   }
 
-  public CreateArcgisLayer(
+  public createArcgisLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'ArcgisLayer'
@@ -77,7 +77,7 @@ export class BaseLayersManager {
     return layer
   }
 
-  public CreateGoogleLayer(
+  public createGoogleLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'GoogleLayer'
@@ -86,7 +86,7 @@ export class BaseLayersManager {
     return layer
   }
 
-  public CreateBaiduLayer(
+  public createBaiduLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'BaiduLayer'
@@ -95,7 +95,7 @@ export class BaseLayersManager {
     return layer
   }
 
-  public CreateGaodeLayer(
+  public createGaodeLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'GaodeLayer'
@@ -104,7 +104,7 @@ export class BaseLayersManager {
     return layer
   }
 
-  public CreateOpenWeatherLayer(
+  public createOpenWeatherLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'OpenWeatherLayer'
@@ -113,7 +113,7 @@ export class BaseLayersManager {
     return layer
   }
 
-  public CreateIgsTileLayer(
+  public createIgsTileLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'TileLayer'
@@ -122,7 +122,7 @@ export class BaseLayersManager {
     return layer
   }
 
-  public CreateIgsDocLayer(
+  public createIgsDocLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
     layer.subtype = 'DocLayer'

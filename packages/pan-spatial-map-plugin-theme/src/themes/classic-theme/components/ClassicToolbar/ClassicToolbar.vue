@@ -53,9 +53,9 @@
 import {
   ThemeContentMixin,
   WidgetManager,
-  WidgetState
+  WidgetState,
+  UUID
 } from '@mapgis/web-app-framework'
-import { UUID } from '@mapgis/webclient-store/src/utils'
 import ToolbarButton from '../../../../components/ToolbarButton/ToolbarButton.vue'
 import ToolbarCard from '../../../../components/ToolbarCard/ToolbarCard.vue'
 

@@ -80,15 +80,6 @@ export default {
         ? default3DMapRender
         : default2DMapRender
     },
-    onMapModeChanged() {},
-    openAttributeTable() {
-      this.$root.$emit('open-attribute-table')
-    },
-    closeAttributeTable() {
-      this.$root.$emit('close-attribute-table')
-    },
-    switchAttributeTable() {
-      this.$root.$emit('switch-attribute-table')
-    }
+    onMapModeChanged() {}
   }
 }

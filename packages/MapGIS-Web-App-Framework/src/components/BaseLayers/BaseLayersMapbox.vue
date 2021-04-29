@@ -77,24 +77,8 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-// const {
-//   MapboxIgsTdtLayer,
-//   MapboxIgsWmtsLayer,
-//   MapboxIgsTileLayer,
-//   MapboxIgsDocLayer,
-//   MapboxArcgisLayer,
-//   MapboxGoogleLayer
-// } = require('@mapgis/webclient-vue-mapboxgl')
-
 @Component({
-  components: {
-    // MapboxIgsTdtLayer,
-    // MapboxIgsWmtsLayer,
-    // MapboxIgsTileLayer,
-    // MapboxIgsDocLayer,
-    // MapboxArcgisLayer,
-    // MapboxGoogleLayer
-  }
+  components: {}
 })
 export default class BaseLayersMapbox extends Mixins(BaseLayersMixin) {
   @Inject('map') map: any

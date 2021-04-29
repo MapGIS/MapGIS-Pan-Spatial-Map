@@ -18,6 +18,9 @@ export default {
       },
       get Cesium() {
         return self.Cesium
+      },
+      get CesiumZondy() {
+        return self.CesiumZondy
       }
     }
   },
@@ -28,6 +31,7 @@ export default {
       mapbox: {},
       webGlobe: {},
       Cesium: {},
+      CesiumZondy: {},
       actions: {},
       mapboxInitialized: false,
       cesiumInitialized: false,
@@ -49,9 +53,10 @@ export default {
         this.mapInitialized = true
       }
     },
-    onCesiumLoadInTheme({ webGlobe, Cesium }) {
+    onCesiumLoadInTheme({ webGlobe, Cesium, CesiumZondy }) {
       this.webGlobe = webGlobe
       this.Cesium = Cesium
+      this.CesiumZondy = CesiumZondy
       this.cesiumInitialized = true
       if (this.mapboxInitialized) {
         this.mapInitialized = true

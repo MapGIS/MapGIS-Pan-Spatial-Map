@@ -8,7 +8,12 @@ export { getRequest, utilInstance, cesiumUtilInstance, Parser } from './utils'
 
 export { default as eventBus } from './event-bus'
 
-export { ResultSetMixin, AddServicesMixin, BaseLayersMixin } from './mixins'
+export {
+  ExhibitionMixin,
+  ExhibitionControllerMixin,
+  AddServicesMixin,
+  BaseLayersMixin
+} from './mixins'
 
 export { baseConfigInstance, loadConfigs } from './config'
 
@@ -16,16 +21,16 @@ export { dataCatalogManagerInstance, DataCatalogManager } from './data-catalog'
 export { vectorTileListInstance } from './vector-tile-list'
 
 export {
-  resultSetOperInstance,
-  IResultSetColumn,
-  ResultSetColumnOper,
-  IResultSetTable,
-  ResultSetTableOper,
-  IResultSetCategory,
-  ResultSetCategoryOper,
-  IResultSet,
-  ResultSetOper
-} from './result-set'
+  exhibitionListInstance,
+  IFields,
+  IAttributeTableOption,
+  IExhibition,
+  IAttributeTableExhibition,
+  IAttributeTableListExhibition,
+  AttributeTableExhibition,
+  AttributeTableListExhibition,
+  ExhibitionList
+} from './exhibition'
 
 export {
   queryOGCInfoInstance,
