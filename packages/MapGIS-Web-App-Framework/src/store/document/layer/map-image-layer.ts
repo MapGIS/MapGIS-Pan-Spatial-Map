@@ -1,5 +1,6 @@
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 import { LoadStatus, LayerType, Layer } from './layer'
+import { SpatialReference } from '../spatial-reference'
 
 /**
  * 地图服务图层
@@ -210,6 +211,14 @@ export abstract class Sublayer {
    * @memberof Sublayer
    */
   visible = true
+
+  /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof TileLayer
+   */
+  spatialReference = new SpatialReference()
 
   /**
    * 通过json对象初始化该对象

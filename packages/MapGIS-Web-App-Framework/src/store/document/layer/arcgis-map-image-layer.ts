@@ -90,6 +90,14 @@ export class ArcGISMapImageLayer extends MapImageLayer {
   }
 
   load(): Promise<Layer> {
+    // 只有加载状态是没有加载过时，才会真正进行请求。
+    if (this.loadStatus !== LoadStatus.notLoaded) {
+      return new Promise(resolve => {
+        resolve(this)
+      }).then(data => {
+        return this
+      })
+    }
     // 1.从URL中解析出ip、port、serverName参数
     let tempUrl: string = this.url
     if (this.url.includes('?')) {

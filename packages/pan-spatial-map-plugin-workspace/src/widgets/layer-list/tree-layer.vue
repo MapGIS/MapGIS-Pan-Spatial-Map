@@ -239,7 +239,9 @@ import {
   Sublayer,
   MapMixin,
   AppMixin,
-  WMTSSublayer
+  WMTSSublayer,
+  CoordinateTransformation,
+  CoordinateSystemType
 } from '@mapgis/web-app-framework'
 import {
   ExhibitionControllerMixin,
@@ -596,9 +598,27 @@ export default class TreeLayer extends Mixins(
   }
 
   fitBounds(item) {
-    const {
+    let {
       fullExtent: { xmin, xmax, ymin, ymax }
     } = item
+
+    if (item.spatialReference.wkid === CoordinateSystemType.webMercator) {
+      const xminYminConverted = CoordinateTransformation.mercatorToWGS84([
+        xmin,
+        ymin
+      ])
+      const xmaxYmaxConverted = CoordinateTransformation.mercatorToWGS84([
+        xmax,
+        ymax
+      ])
+
+      xmin = xminYminConverted[0]
+      ymin = xminYminConverted[1]
+
+      xmax = xmaxYmaxConverted[0]
+      ymax = xmaxYmaxConverted[1]
+    }
+
     if (this.is2DMapMode) {
       this.map.fitBounds([xmin, ymin, xmax, ymax])
     }

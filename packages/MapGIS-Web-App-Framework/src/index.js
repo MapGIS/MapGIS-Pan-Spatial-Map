@@ -44,12 +44,19 @@ export {
   ArcGISTileLayer,
   ArcGISMapImageLayer,
   ArcGISSublayer,
-  AMapMercatorEMapLayer
+  AMapMercatorEMapLayer,
+  AMapMercatorSatelliteMapLayer,
+  AMapMercatorSatelliteAnnMapLayer
 } from './store/document/layer'
 
 export { Document, Map } from './store/document'
 
-export { UUID } from './store/utils'
+export {
+  CoordinateSystemType,
+  SpatialReference
+} from './store/document/spatial-reference'
+
+export { UUID, ObjectTool, CoordinateTransformation } from './store/utils'
 
 import {
   MpAppLoader,
