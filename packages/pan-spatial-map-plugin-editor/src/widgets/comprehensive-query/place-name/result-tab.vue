@@ -167,7 +167,7 @@ export default class ResultTab extends Vue {
       fields: this.fields.toString(),
       rtnLabel: true,
       f: 'json',
-      where: '',
+      where,
       //   geometry: this.geometry,
       cursorType: 'backword'
     }
