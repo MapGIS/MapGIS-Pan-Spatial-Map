@@ -62,24 +62,26 @@
         </a-button>
       </div>
     </div>
-    <!-- <mp-uploader
-      :url="uploadUrl + '/api/local-storage/pictures'"
-      :show.sync="showUploader"
-      with-credentials
-      label="图片上传"
-      @success="succesHandleUploader"
-    ></mp-uploader> -->
+    <a-modal v-model="showUploader" :width="300" :footer="null">
+      <uploader
+        :url="uploadUrl + '/api/local-storage/pictures'"
+        label="图片上传"
+        @success="succesHandleUploader"
+      ></uploader>
+    </a-modal>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
+import { Component, Vue, Prop, Emit, Mixins } from 'vue-property-decorator'
 import { envInstance, eventBus } from '@mapgis/pan-spatial-map-store'
+import { AppMixin } from '@mapgis/web-app-framework'
+import uploader from '../Uploader/uploader'
 
 @Component({
-  components: {}
+  components: { uploader }
 })
-export default class MarkerInfo extends Vue {
+export default class MarkerInfo extends Mixins(AppMixin) {
   @Prop({ type: Object, required: true }) markerInfo!: Record<string, any>
 
   private title = ''
@@ -88,9 +90,10 @@ export default class MarkerInfo extends Vue {
 
   private img = ''
 
-  private showUploader = false
-
   private uploadUrl = ''
+
+  // 图片上传器的显隐
+  private showUploader = false
 
   @Emit('ok')
   emitOk(markerInfo: any) {}
@@ -99,12 +102,12 @@ export default class MarkerInfo extends Vue {
   emitCancel(markerInfo: any) {}
 
   created() {
-    console.log(envInstance)
+    console.log(this.baseUrl)
 
     this.title = this.markerInfo.title
     this.description = this.markerInfo.description
     this.img = this.markerInfo.img
-    // this.uploadUrl = `${envInstance.config.baseApi}`
+    this.uploadUrl = this.baseUrl
   }
 
   mounted() {
@@ -135,12 +138,14 @@ export default class MarkerInfo extends Vue {
   }
 
   // 图片上传成功时，更新图例微件的config文件
-  succesHandleUploader({ xhr }) {
-    const { url } = JSON.parse(xhr.response)
-    if (url) {
-      this.showUploader = false
-      this.img = url
-    }
+  succesHandleUploader(info) {
+    console.log(info)
+
+    // const { url } = JSON.parse(xhr.response)
+    // if (url) {
+    //   this.showUploader = false
+    //   this.img = url
+    // }
   }
 }
 </script>

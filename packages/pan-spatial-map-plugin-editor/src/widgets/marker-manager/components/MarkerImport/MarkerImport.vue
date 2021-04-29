@@ -6,7 +6,13 @@
       :wrapper-col="{ span: 16 }"
     >
       <a-form-model-item label="文件路径:">
-        <a-upload name="file" accept=".txt">
+        <a-upload
+          name="file"
+          accept=".txt"
+          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+          :before-upload="beforeUpload"
+          @change="onChangeFile"
+        >
           <div class="upload-content">
             <a-icon type="upload" :style="{ fontSize: '18px' }"></a-icon>
           </div>
@@ -59,7 +65,7 @@ import MarkerImportFileDesc from './MarkerImportFileDesc.vue'
   name: 'MpMarkerImport',
   components: { MarkerImportFileDesc }
 })
-export default class MpMarkerImport extends Mixins() {
+export default class MpMarkerImport extends Mixins(MarkerAddMixin) {
   private formImport = {
     crsName: 'WGS1984_度'
   }
@@ -88,6 +94,35 @@ export default class MpMarkerImport extends Mixins() {
   // 确认按钮回调函数
   onClickConfirm() {
     this.closeModal()
+  }
+
+  // 上传文件之前的钩子
+  beforeUpload(file) {
+    const isTxt = file.type === 'text/plain'
+    if (!isTxt) {
+      this.$message.error('You can only upload JPG file!')
+    }
+    return isTxt
+  }
+
+  // 文件状态改变的回调
+  onChangeFile(info) {
+    if (info.file.status === 'uploading' || info.file.status === 'error') {
+      return
+    }
+    if (info.file.status === 'done') {
+      const reader = new FileReader()
+      // 文件内容载入完毕之后的回调。
+      reader.onload = this.fileLoad.bind(this)
+
+      // const reader = new FileReader()
+      // reader.addEventListener('load', () => callback(reader.result))
+      // reader.readAsDataURL(img)
+    }
+  }
+
+  fileLoad(e: any) {
+    console.log(e)
   }
 }
 </script>
