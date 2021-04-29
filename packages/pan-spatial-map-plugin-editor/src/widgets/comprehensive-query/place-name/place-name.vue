@@ -120,6 +120,9 @@ export default class PlaceName extends Vue {
     this.showResult = false
     this.tab = ''
     this.showTypeChange()
+    this.markers = []
+    this.fieldNames = []
+    this.geojson = {}
   }
 
   showCoords(markers, fieldNames) {
@@ -129,15 +132,6 @@ export default class PlaceName extends Vue {
 
   updateGeojson(geojson) {
     this.geojson = geojson
-  }
-
-  setCenter(positionCoord) {
-    this.$refs['place-name-mapbox'].setMapCenter(positionCoord)
-  }
-
-  showCoords(markers, fieldNames) {
-    this.markers = markers
-    this.fieldNames = fieldNames
   }
 
   setCenter(positionCoord) {
