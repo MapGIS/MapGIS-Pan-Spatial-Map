@@ -1090,6 +1090,11 @@
   resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
   integrity sha1-Cab3kgWtGJSqqZEisITs6R1p4tw=
 
+"@mapgis/mapbox-gl@^1.9.7":
+  version "1.9.8"
+  resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
+  integrity sha1-Cab3kgWtGJSqqZEisITs6R1p4tw=
+
 "@mapgis/webclient-es6-service@^1.0.3":
   version "1.0.3"
   resolved "https://registry.nlark.com/@mapgis/webclient-es6-service/download/@mapgis/webclient-es6-service-1.0.3.tgz#7f4d27436dbee3e395dc23b70b9922a00eb3b901"
