@@ -288,6 +288,7 @@ export default class BaseLayersMixin extends Vue {
       type: 'RasterTile',
       image
     }
+
     // 根据服务类型初始化图层信息
     switch (serverType) {
       case 'IGServer':

@@ -35,6 +35,10 @@ export class BaseLayersManager {
 
   /**
    * 索引底图名
+   *
+   * @date 29/04/2021
+   * @readonly
+   * @memberof BaseLayersManager
    */
   public get defaultBaseLayerName() {
     return this._defaultBaseLayerName
