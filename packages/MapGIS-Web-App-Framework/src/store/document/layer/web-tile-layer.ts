@@ -29,7 +29,7 @@ export class WebTileLayer extends TileLayer {
       20037508.3427892
     )
 
-    this.spatialReference.wkid = 3857
+    this.spatialReference.wkid = CoordinateSystemType.webMercator
 
     if (!properties) return
 
