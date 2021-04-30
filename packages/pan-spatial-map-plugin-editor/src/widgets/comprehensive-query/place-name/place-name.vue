@@ -10,7 +10,7 @@
         {{ item.placeName }}
       </span>
     </div>
-    <div class="search-tab-container" v-if="showResult">
+    <div class="search-tab-container" v-if="showResult && !showResultSet">
       <div class="search-switch-container">
         <span :class="{ active: !cluster }">面板展示</span>
         <a-switch v-model="cluster" @change="onChange" />
@@ -42,13 +42,19 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { WidgetInfoMixin } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ResultTab from './result-tab'
 import PlaceNameMapbox from './place-name-mapbox.vue'
+import {
+  ExhibitionControllerMixin,
+  IAttributeTableExhibition,
+  AttributeTableExhibition,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-store'
+import { LayerType, WidgetInfoMixin } from '@mapgis/web-app-framework'
 
 @Component({ components: { ResultTab, PlaceNameMapbox } })
-export default class PlaceName extends Vue {
+export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
   @Prop() widgetInfo!: Record<string, unknown>
 
   private selected: string[] = []
@@ -65,6 +71,9 @@ export default class PlaceName extends Vue {
 
   private cluster = false
 
+  // 结果集展示标志
+  private showResultSet = false
+
   private geojson = {}
 
   private get allItems() {
@@ -75,12 +84,19 @@ export default class PlaceName extends Vue {
     return this.widgetInfo.config.placeName.showType
   }
 
+  private get config() {
+    return this.widgetInfo.config.placeName || this.widgetInfo.config.dataStore
+  }
+
   @Watch('showType', { immediate: true })
   showTypeChange() {
-    if (this.showType === undefined) {
+    if (this.showType === 'result') {
+      this.showResultSet = true
     } else if (this.showType === 'normal') {
+      this.showResultSet = false
       this.cluster = false
-    } else {
+    } else if (this.showType === 'cluster') {
+      this.showResultSet = false
       this.cluster = true
     }
   }
@@ -112,8 +128,67 @@ export default class PlaceName extends Vue {
 
   search(keyword: string) {
     this.keyword = keyword
-    this.showResult = true
-    this.tab = this.selected[0]
+    if (this.showResultSet) {
+      this.selected.forEach(item => {
+        this.openReseultSet(item)
+      })
+    } else {
+      this.showResult = true
+      this.tab = this.selected[0]
+    }
+  }
+
+  openReseultSet(item) {
+    const { queryWay, ip, port, docName, allSearchName } = this.config
+    const {
+      gdbp,
+      placeName,
+      LayerIndex,
+      LayerName,
+      searchField
+    } = this.selectedItem(item)
+    const where =
+      this.keyword && this.keyword !== ''
+        ? `${searchField || allSearchName} LIKE '%${this.keyword}%'`
+        : ''
+    let exhibition
+    if (queryWay === 'doc') {
+      // 地图文档
+      exhibition = {
+        id: `${docName} ${LayerName} ${LayerIndex}`,
+        name: `${LayerName} 属性表`,
+        description: `${docName} ${LayerName}`,
+        option: {
+          id: LayerIndex,
+          name: LayerName,
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: LayerType.IGSMapImage,
+          layerIndex: LayerIndex,
+          serverName: docName,
+          serverUrl: `http://${ip}:${port}/igs/rest/mrms/docs/${docName}`,
+          where
+        }
+      }
+    } else if (queryWay === 'gdbp') {
+      exhibition = {
+        id: `${placeName}`,
+        name: `${placeName} 属性表`,
+        option: {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: LayerType.IGSVector,
+          gdbp: gdbp,
+          where
+        }
+      }
+    }
+    this.addExhibition(new AttributeTableExhibition(exhibition))
+    this.openExhibitionPanel()
+  }
+
+  private selectedItem(name) {
+    return this.allItems.find(item => name === item.placeName)
   }
 
   reset() {

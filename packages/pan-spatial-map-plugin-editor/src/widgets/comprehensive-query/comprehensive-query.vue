@@ -90,7 +90,6 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
     window.addEventListener(
       'resize',
       () => {
-        debugger
         this.setMaxHeight()
       },
       false
