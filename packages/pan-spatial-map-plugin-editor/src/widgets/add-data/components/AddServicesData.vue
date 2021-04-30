@@ -1,13 +1,15 @@
 <template>
   <div class="add-services-data">
-    <div class="row">
-      <a-select v-model="serviceCategory">
-        <a-select-option v-for="item in serviceCategories" :key="item">{{
-          item.name
-        }}</a-select-option>
+    <div class="row first">
+      <a-select class="select-first" v-model="serviceCategory">
+        <a-select-option
+          v-for="(item, index) in serviceCategories"
+          :key="index"
+          >{{ item.name }}</a-select-option
+        >
       </a-select>
       <a-select v-model="serviceType">
-        <a-select-option v-for="item in serviceTypes" :key="item">{{
+        <a-select-option v-for="(item, index) in serviceTypes" :key="index">{{
           item
         }}</a-select-option>
       </a-select>
@@ -32,8 +34,16 @@
         }
       "
     >
+      <template slot="url" slot-scope="text">
+        <span :style="{ cursor: 'pointer' }">{{ text }}</span>
+      </template>
       <template v-slot:operate>
-        <a-icon type="delete"></a-icon>
+        <a-tooltip placement="bottom">
+          <template slot="title">
+            <span>删除</span>
+          </template>
+          <a-icon type="delete"></a-icon>
+        </a-tooltip>
       </template>
     </a-table>
   </div>
@@ -50,16 +60,19 @@ import {
 import axios from 'axios'
 
 @Component({})
-export default class AddServicesData extends Mixins(AppMixin) {
+export default class AddServicesData extends Mixins(
+  AppMixin,
+  AddServicesMixin
+) {
   @Prop(Array) readonly serviceTypes!: ServiceType[]
 
   // 类别选中项
-  private serviceCategory: any = { name: '', desc: '' }
+  private serviceCategory = ''
 
   // 子类别选中项
   private serviceType = null
 
-  private serviceCategories = []
+  // private serviceCategories = []
 
   // 搜索框输入值
   private keyword = ''
@@ -86,9 +99,11 @@ export default class AddServicesData extends Mixins(AppMixin) {
       align: 'center'
     },
     {
+      key: 'url',
       title: '服务地址',
       dataIndex: 'url',
-      align: 'center'
+      align: 'center',
+      scopedSlots: { customRender: 'url' }
     },
     {
       key: 'operate',
@@ -101,18 +116,18 @@ export default class AddServicesData extends Mixins(AppMixin) {
   // 分页器配置
   private pagination = {
     showSizeChanger: true,
-    size: 'small'
-    // showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
+    size: 'small',
+    total: this.tableData.length,
+    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
   }
 
   // Table选中项的 key 数组
   private selectedRowKeys = []
 
   created() {
-    console.log(this.keyword)
-
     // console.log(this.serviceCategories)
-    // this.serviceCategory = this.serviceCategories[0]
+    this.serviceCategory = this.serviceCategories[0].name
+    console.log(this.serviceCategory)
     // this.serviceType = this.serviceTypes[0]
   }
 
@@ -133,6 +148,19 @@ export default class AddServicesData extends Mixins(AppMixin) {
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 0 8px;
+  padding: 0 13px;
+  .ant-btn {
+    margin-left: 8px;
+  }
+}
+.first {
+  margin-bottom: 10px;
+
+  .ant-select {
+    width: 50%;
+  }
+  .select-first {
+    margin-right: 8px;
+  }
 }
 </style>
