@@ -10,7 +10,7 @@
           @click="setActivePoint(i)"
         >
           <div class="img-result-tab">
-            <img :src="activePoint === i ? markerRed : item.img" />
+            <img :src="item.img" />
           </div>
           <div class="content-result-tab">
             <p v-for="(row, index) in fieldNames" :key="row">
@@ -30,10 +30,17 @@
       </div>
     </a-spin>
     <a-spin :spinning="spinning" v-else>
-      <div>
+      <div class="cluster-title">
+        <span>
+          聚合标注图层：
+        </span>
+      </div>
+      <div class="cluster-content">
+        <span>
+          {{ name }}
+        </span>
         <span>
           {{ `共${setCounts()}条结果` }}
-          &nbsp;&nbsp;&nbsp;
         </span>
         <a-tag :color="selectedItem.color">
           {{ selectedItem.color }}
@@ -143,11 +150,13 @@ export default class ResultTab extends Vue {
   }
 
   async queryFeature() {
-    const where =
-      this.keyword && this.keyword !== ''
-        ? `${this.selectedItem.searchField ||
-            this.config.allSearchName} LIKE '%${this.keyword}%'`
-        : ''
+    // const where =
+    //   this.keyword && this.keyword !== ''
+    //     ? `${this.selectedItem.searchField ||
+    //         this.config.allSearchName} LIKE '%${this.keyword}%'`
+    //     : ''
+    const where = `${this.selectedItem.searchField ||
+      this.config.allSearchName} LIKE '%${this.keyword}%'`
     if (!this.isDataStoreQuery) {
       await this.igsQuery(where)
     } else {
@@ -165,7 +174,7 @@ export default class ResultTab extends Vue {
       pageCount: this.cluster ? this.config.clusterMaxCount : 10,
       page: this.currentPageIndex - 1,
       fields: this.fields.toString(),
-      rtnLabel: true,
+      rtnLabel: false,
       f: 'json',
       where,
       //   geometry: this.geometry,
@@ -176,6 +185,7 @@ export default class ResultTab extends Vue {
       // 地图文档
       igsParams.docName = this.config.docName
       igsParams.layerName = this.selectedItem.LayerName
+      igsParams.layerIdxs = ''
     } else if (queryWay === 'gdbp') {
       igsParams.gdbp = this.selectedItem.gdbp
       igsParams.srsIds = 'WGS1984_度'
@@ -213,6 +223,7 @@ export default class ResultTab extends Vue {
           markerCoords.push(coords)
         }
       }
+      debugger
       if (this.cluster) {
         this.geojson = { type: 'FeatureCollection', features }
         this.markersInfos = []
@@ -238,7 +249,9 @@ export default class ResultTab extends Vue {
   }
 
   mouseLeave(index) {
-    this.$set(this.markersInfos[index], 'img', this.markerBlue)
+    if (index !== this.activePoint) {
+      this.$set(this.markersInfos[index], 'img', this.markerBlue)
+    }
     this.updataMarkers()
   }
 
@@ -249,7 +262,12 @@ export default class ResultTab extends Vue {
   }
 
   setActivePoint(index) {
+    if (index !== this.activePoint && this.activePoint > -1) {
+      this.$set(this.markersInfos[this.activePoint], 'img', this.markerBlue)
+    }
     this.activePoint = index
+    this.$set(this.markersInfos[index], 'img', this.markerRed)
+    this.updataMarkers()
     this.$emit('click-item', this.markersInfos[index].coordinates)
   }
 }
@@ -268,6 +286,26 @@ export default class ResultTab extends Vue {
     flex-direction: column;
     flex: 1;
     overflow: hidden;
+    .cluster-title {
+      margin-bottom: 8px;
+      span:first-child {
+        padding-left: 5px;
+        border-left: 4px solid @success-color;
+        font-weight: bold;
+        color: @title-color;
+        margin-right: 5px;
+      }
+    }
+    .cluster-content {
+      display: flex;
+      span:nth-child(2) {
+        flex: 1;
+        text-align: right;
+      }
+      .ant-tag {
+        margin-left: 10px;
+      }
+    }
     .comprehensive-result-tab {
       flex: 1;
       overflow: auto;

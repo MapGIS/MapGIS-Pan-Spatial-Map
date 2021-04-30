@@ -5,7 +5,7 @@
     "combine": "true",
     "queryWay": "gdbp",
     "docName": "",
-    "showType": "normal",
+    "showType": "result",
     "clusterMaxCount": "1000",
     "allSearchName": "NAME",
     "allShows": "NAME:名称,ADDRESS:地址,TELEPHONE:联系方式,PAC:邮政编码",
@@ -16,6 +16,7 @@
         "placeName": "旅游景点",
         "color": "#FF8C69",
         "LayerName": "D430000DM2015LYJD",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -92,6 +93,7 @@
         "placeName": "公共设施",
         "color": "#FFE5B4",
         "LayerName": "D430000DM2015GGSS",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -168,6 +170,7 @@
         "placeName": "餐饮美食",
         "color": "#DA70D6",
         "LayerName": "D430000DM2015CYMS",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -244,6 +247,7 @@
         "placeName": "运动休闲",
         "color": "#CC5500",
         "LayerName": "D430000DM2015YDXX",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -320,6 +324,7 @@
         "placeName": "购物",
         "color": "#50C878",
         "LayerName": "D430000DM2015GW",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -396,6 +401,7 @@
         "placeName": "宾馆酒店",
         "color": "#556B2F",
         "LayerName": "D430000DM2015BGJD",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -491,6 +497,7 @@
         "placeName": "金融行业",
         "color": "#8A2BE2",
         "LayerName": "D430000DM2015JRHY",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -567,6 +574,7 @@
         "placeName": "公司企业",
         "color": "#FF1493",
         "LayerName": "D430000DM2015GSQY",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -643,6 +651,7 @@
         "placeName": "地产小区",
         "color": "#E32636",
         "LayerName": "D430000DM2015DCXQ",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -719,6 +728,7 @@
         "placeName": "交通设施",
         "color": "#DA70D6",
         "LayerName": "D430000DM2015JTSS",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
@@ -795,6 +805,7 @@
         "placeName": "交通地名",
         "color": "#FFCC00",
         "LayerName": "D430000DM2015JTDM",
+        "LayerIndex": "",
         "searchField": "NAME",
         "attrs": [
           "ID",
