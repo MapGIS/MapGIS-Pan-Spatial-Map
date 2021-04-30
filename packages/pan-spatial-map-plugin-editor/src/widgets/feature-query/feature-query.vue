@@ -1,6 +1,6 @@
 <template>
-  <div class="mp-widget-element-query">
-    <mapbox-base-draw
+  <div class="mp-widget-feature-query">
+    <mapgis-draw
       ref="drawer"
       :controls="controls"
       @added="handleAdded"
@@ -37,8 +37,9 @@ import {
   queryFeaturesInstance,
   utilInstance,
   baseConfigInstance,
-  ResultSetMixin,
-  IResultSetCategory
+  ExhibitionControllerMixin,
+  IAttributeTableListExhibition,
+  AttributeTableListExhibition
 } from '@mapgis/pan-spatial-map-store'
 import {
   WidgetMixin,
@@ -68,7 +69,7 @@ export default class MpFeatureQuery extends Mixins(
   CesiumDraw,
   WidgetMixin,
   AppMixin,
-  ResultSetMixin
+  ExhibitionControllerMixin
 ) {
   controls = {
     point: false,
@@ -228,32 +229,34 @@ export default class MpFeatureQuery extends Mixins(
       return
     }
     const { ip, port, docName } = mapData._parseUrl(mapData.url)
+
+    const exhibition: IAttributeTableListExhibition = {
+      id: `${mapData.id}`,
+      name: `${mapData.title} 查询结果`,
+      description: '',
+      options: []
+    }
+
     const subLayers = mapData.allSublayers
     subLayers.forEach(layer => {
       if (!layer.visible) {
         return
       }
-      const categoryInfo: IResultSetCategory = {
-        id: mapData.id,
-        label: mapData.title,
-        tables: [
-          {
-            label: layer.title,
-            layerIndex: layer.id,
-            id: layer.id,
-            ip: ip || baseConfigInstance.config.ip,
-            port: Number(port || baseConfigInstance.config.port),
-            serverName: docName,
-            serverType: mapData.type,
-            serverUrl: mapData.url,
-            geometry: geo
-          }
-        ]
-      }
-      const category = this.addCategory(categoryInfo)
-      this.currentCategoryId = category.id
-      this.openAttributeTable()
+      exhibition.options.push({
+        id: layer.id,
+        name: layer.title,
+        ip: ip || baseConfigInstance.config.ip,
+        port: Number(port || baseConfigInstance.config.port),
+        serverType: mapData.type,
+        layerIndex: layer.id,
+        serverName: docName,
+        serverUrl: mapData.url,
+        geometry: geo
+      })
     })
+
+    this.addExhibition(new AttributeTableListExhibition(exhibition))
+    this.openExhibitionPanel()
   }
 
   quertFeatruesByVector(mapData: IGSVectorLayer, geo) {
@@ -261,25 +264,29 @@ export default class MpFeatureQuery extends Mixins(
       return
     }
     const { ip, port, docName } = mapData._parseUrl(mapData.url)
-    const categoryInfo: IResultSetCategory = {
-      id: mapData.id,
-      label: mapData.title,
-      ip: ip || baseConfigInstance.config.ip,
-      port: Number(port || baseConfigInstance.config.port),
-      serverType: mapData.type,
-      gdbp: mapData.gdbps,
-      geometry: geo,
-      tables: []
+
+    const exhibition: IAttributeTableListExhibition = {
+      id: `${mapData.id}`,
+      name: `${mapData.title} 查询结果`,
+      options: [
+        {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: mapData.type,
+          gdbp: mapData.gdbps,
+          geometry: geo
+        }
+      ]
     }
-    const category = this.addCategory(categoryInfo)
-    this.currentCategoryId = category.id
-    this.openAttributeTable()
+
+    this.addExhibition(new AttributeTableListExhibition(exhibition))
+    this.openExhibitionPanel()
   }
 }
 </script>
 
 <style lang="less" scoped>
-.mp-widget-element-query {
+.mp-widget-feature-query {
   display: flex;
   flex-direction: column;
   color: @text-color;

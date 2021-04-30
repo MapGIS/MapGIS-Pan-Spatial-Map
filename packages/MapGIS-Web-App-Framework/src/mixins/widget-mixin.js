@@ -41,6 +41,8 @@ export default {
     onOpen() {},
     onClose() {},
     onActive() {},
-    onDeActive() {}
+    onDeActive() {},
+    onResize({ width, height }) {},
+    onWindowSize(mode) {}
   }
 }

@@ -42,6 +42,15 @@ export class ArcGISTileLayer extends TileLayer {
   }
 
   load(): Promise<Layer> {
+    // 只有加载状态是没有加载过时，才会真正进行请求。
+    if (this.loadStatus !== LoadStatus.notLoaded) {
+      return new Promise(resolve => {
+        resolve(this)
+      }).then(data => {
+        return this
+      })
+    }
+
     // 1.从URL中解析出ip、port、serverName参数
     let tempUrl: string = this.url
     if (this.url.includes('?')) {
@@ -70,6 +79,14 @@ export class ArcGISTileLayer extends TileLayer {
   }
 
   clone(): Layer {
-    throw new Error('Method not implemented.')
+    const result = new ArcGISTileLayer()
+
+    Object.entries(this).forEach(element => {
+      const key = element[0]
+      const valueIndex = 1
+      result[key] = this._deepClone(element[valueIndex])
+    })
+
+    return result
   }
 }

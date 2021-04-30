@@ -19,7 +19,7 @@ import baseConfigInstance from '../config/base'
 import { queryIgsServicesInfoInstance } from '../service'
 
 /**
- * 数据目录树管理类
+ * 数据目录管理类
  *
  * @author Yuanye Ma
  * @date 02/03/2021
@@ -44,7 +44,7 @@ export class DataCatalogManager {
   }
 
   /**
-   * 根据目录树中图层节点的配置信息生成webclient-store对应的图层
+   * 根据数据目录中图层节点的配置信息生成webclient-store对应的图层
    * 注意：当前webClient-store中图层类型和图层对象的定义不够规范和成熟，如:LayerType和SubLayerType的划分标准不统一。图层类型对象不全面、
    * 图层的属性不全，如：缺少ogcWMTS图层、igsDocLayer缺少，等。故暂时只用其ILayer图层，将图层的配置参数作为ILayer的外挂属性layerConfig处理。
    * @author Yuanye Ma
@@ -136,7 +136,7 @@ export class DataCatalogManager {
   }
 
   /**
-   * 数据目录树中选中的图层节点的guid
+   * 数据目录中选中的图层节点的guid
    * guid为图层节点配置中的guid字段的值。该字段用于唯一标识一个节点配置。
    *
    * @date 16/04/2021
@@ -146,11 +146,11 @@ export class DataCatalogManager {
   public checkedLayerConfigIDs: string[] = []
 
   /**
-   * 通过目录树配置初始化目录树管理对象
+   * 通过数据目录配置初始化数据目录管理对象
    *
    * @author Yuanye Ma
    * @date 05/03/2021
-   * @param {*} dataCatalogConfig 目录树配置信息
+   * @param {*} dataCatalogConfig 数据目录配置信息
    * @memberof DataCatalogManager
    */
   public init(dataCatalogConfig: any) {
@@ -158,8 +158,8 @@ export class DataCatalogManager {
   }
 
   /**
-   * 更新目录树
-   * 目录树有过滤功能,会过滤掉不可用配置项。当服务更新后,可通过该接口更新目录树.
+   * 更新数据目录
+   * 数据目录有过滤功能,会过滤掉不可用配置项。当服务更新后,可通过该接口更新数据目录.
    *
    * @author Yuanye Ma
    * @date 05/03/2021
@@ -171,7 +171,7 @@ export class DataCatalogManager {
    * 根据节点的id获取对应的服务图层配置信息
    * @author Yuanye Ma
    * @date 15/04/2021
-   * @param {string} id  目录树配置项中的guid
+   * @param {string} id  数据目录配置项中的guid
    * @return {*}  {(Record<string, any> | undefined)}
    * @memberof DataCatalogManager
    */
@@ -188,7 +188,7 @@ export class DataCatalogManager {
    * 根据节点的name获取对应的服务图层配置信息
    * @author Yuanye Ma
    * @date 15/04/2021
-   * @param {string} name 目录树配置项中的name
+   * @param {string} name 数据目录配置项中的name
    * @return {*}  {(Record<string, any> | undefined)}
    * @memberof DataCatalogManager
    */
@@ -202,11 +202,11 @@ export class DataCatalogManager {
   }
 
   /**
-   * 获取处理过的目录树信息
+   * 获取处理过的数据目录信息
    * 处理包括：
    * 1.格式转换：从一张图vue ant design版本之前的配置转换为新的配置。
    * 2.根据参数决定是否过滤不可用的配置项。过滤功能目前只考虑在基本配置中指定的服务器上发布的IGS服务(即ip和port为空的节点)。
-   * 3.对目录树节点添加级别信息
+   * 3.对数据目录节点添加级别信息
    *
    * @author Yuanye Ma
    * @date 05/03/2021
@@ -255,7 +255,7 @@ export class DataCatalogManager {
   }
 
   /**
-   * 判断节点是否为图层节点
+   * 判断节点是否为服务图层节点
    *
    * @author Yuanye Ma
    * @date 10/03/2021
@@ -269,7 +269,7 @@ export class DataCatalogManager {
     return false
   }
 
-  // 目录树管理采用单例模式，不允许外部构造
+  // 数据目录管理采用单例模式，不允许外部构造
   private constructor() {}
 
   // 数据目录管理对象实例
@@ -445,15 +445,15 @@ export class DataCatalogManager {
       0
     )
     const treeConfig: any = {
-      isShowIcon: false, // 是否显示基础目录树节点图标
-      // isShowIcon: this.config.paramConfig.SHOWICON, // 是否显示基础目录树节点图标
-      treeData // 目录树配置
+      isShowIcon: false, // 是否显示基础数据目录节点图标
+      // isShowIcon: this.config.paramConfig.SHOWICON, // 是否显示基础数据目录节点图标
+      treeData // 数据目录配置
     }
 
     this.configConverted.treeConfig = treeConfig
   }
 
-  // 转换目录树配置信息
+  // 转换数据目录配置信息
   private convertTreeData(nodeArray: any[], nodeLevel: number) {
     const nodeArrayConverted: Array<any> = []
     if (nodeArray && nodeArray.length > 0) {
@@ -671,10 +671,10 @@ export class DataCatalogManager {
     }
   }
 
-  // 目录树中所有的图层节点列表（转换后的）
+  // 数据目录中所有的图层节点列表（转换后的）
   private _allLayerConfigItems: Record<string, any> = []
 
-  // 目录树中所有的节点列表（转换后的）
+  // 数据目录中所有的节点列表（转换后的）
   private _allConfigItems: Record<string, any> = []
 }
 

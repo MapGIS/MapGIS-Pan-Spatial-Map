@@ -1,5 +1,5 @@
 <template>
-  <a-row type="flex" align="middle">
+  <a-row type="flex" align="middle" class="filter-item">
     <a-col flex="1 1 0%">
       <a-row type="flex" :gutter="8" align="middle">
         <a-col :span="6">
@@ -7,6 +7,7 @@
             style="width:100%"
             placeholder="未知"
             @change="val => (firstFieldIndex = val)"
+            size="small"
           >
             <a-select-option
               v-for="(item, index) in fields"
@@ -22,8 +23,8 @@
             </a-select-option>
           </a-select>
         </a-col>
-        <a-col :span="6">
-          <a-select style="width:100%" v-model="operIndex">
+        <a-col :span="5">
+          <a-select style="width:100%" v-model="operIndex" size="small">
             <a-select-option
               v-for="(item, index) in operOptions"
               :key="index"
@@ -33,7 +34,7 @@
             </a-select-option>
           </a-select>
         </a-col>
-        <a-col :span="6">
+        <a-col :span="8">
           <template
             v-if="
               !notInput &&
@@ -42,16 +43,16 @@
                 valueType.value !== 'field'
             "
           >
-            <a-input style="width:100%" v-model="secondField" />
+            <a-input style="width:100%" v-model="secondField" size="small" />
           </template>
           <template v-else-if="betweenInput">
             <a-row type="flex" align="middle">
               <a-col flex="1 1 0%">
-                <a-input v-model="secondFieldBetweent[0]" />
+                <a-input v-model="secondFieldBetweent[0]" size="small" />
               </a-col>
               <span style="margin:0 5px">和</span>
               <a-col flex="1 1 0%">
-                <a-input v-model="secondFieldBetweent[1]" />
+                <a-input v-model="secondFieldBetweent[1]" size="small" />
               </a-col>
             </a-row>
           </template>
@@ -60,7 +61,7 @@
               valueType.value === 'singleValue' || valueType.value === 'field'
             "
           >
-            <a-select style="width:100%" v-model="secondField">
+            <a-select style="width:100%" v-model="secondField" size="small">
               <a-select-option
                 v-for="(item, index) in values"
                 :key="index"
@@ -71,8 +72,8 @@
             </a-select>
           </template>
         </a-col>
-        <a-col :span="6">
-          <a-select style="width:100%" v-model="valueTypeIndex">
+        <a-col :span="5">
+          <a-select style="width:100%" v-model="valueTypeIndex" size="small">
             <a-select-option
               v-for="(item, index) in valueTypeOptions"
               :key="index"
@@ -92,8 +93,8 @@
         </a-col>
       </a-row>
     </a-col>
-    <a-button type="link" @click="$emit('close')">
-      <a-icon type="close" :style="{ fontSize: '20px', color: '#ff4d4f' }" />
+    <a-button type="link" @click="$emit('close')" size="small">
+      <a-icon type="close" class="item-delete" />
     </a-button>
   </a-row>
 </template>
@@ -378,7 +379,6 @@ export default class FilterItem extends Vue {
           type: type.toLowerCase()
         }))
     } */
-    console.log(options)
     return options
   }
 
@@ -484,7 +484,7 @@ export default class FilterItem extends Vue {
         layerIdxs: layerIndex,
         gdbp
       })
-      console.log(result)
+
       const { SFEleArray: features, AttStruct } = result
       const index = AttStruct.FldName.indexOf(name)
       this.values = Array.from(
@@ -492,7 +492,6 @@ export default class FilterItem extends Vue {
       ).map(value => {
         return value
       })
-      console.log(this.values)
     }
     /* else if (serverType === SubLayerType.RasterArcgisLayer) {
       const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
@@ -517,19 +516,10 @@ export default class FilterItem extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="less" scoped>
 .filter-item {
-  .select {
-    width: 150px;
-    margin: 0 5px;
-  }
-
-  .input {
-    margin: 0 5px;
-  }
-
-  .btn {
-    font-size: 30px;
+  .item-delete {
+    color: @error-color;
   }
 }
 </style>

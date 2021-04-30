@@ -1,5 +1,6 @@
 import { Point2D } from '@mapgis/webclient-es6-service/common/Point2D'
 import { LoadStatus, LayerType, Layer } from './layer'
+import { SpatialReference } from '../spatial-reference'
 
 /**
  * 瓦片级别信息
@@ -239,6 +240,14 @@ export abstract class TileLayer extends Layer {
    * @memberof TileLayer
    */
   tokenValue = ''
+
+  /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof TileLayer
+   */
+  spatialReference = new SpatialReference()
 
   /**
    * 根据级别、行号、列号生成对应的取图URL

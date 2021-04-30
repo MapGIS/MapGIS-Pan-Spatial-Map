@@ -1,5 +1,5 @@
 <template>
-  <cesium-web-globe
+  <mapgis-web-scene
     :libPath="libPath"
     :plugin-path="pluginPath"
     @load="handleLoad"
@@ -106,12 +106,12 @@
         :serverName="l.serverName"
       />
     </div>
-  </cesium-web-globe>
+  </mapgis-web-scene>
 </template>
 
 <script>
 import { IDocument, Layer, VectorTile } from '@mapgis/webclient-store'
-import { CesiumWebGlobe, CesiumRasterLayer } from '@mapgis/webclient-vue-cesium'
+import { CesiumRasterLayer } from '@mapgis/webclient-vue-cesium'
 import CesiumIgsWmsLayer from '../CesiumLayers/CesiumIgsWmsLayer.vue'
 import CesiumIgsWmtsLayer from '../CesiumLayers/CesiumIgsWmtsLayer.vue'
 import CesiumIgsTileLayer from '../CesiumLayers/CesiumIgsTileLayer.vue'
@@ -131,7 +131,6 @@ const { Convert } = VectorTile
 export default {
   name: 'MpCesiumView',
   components: {
-    CesiumWebGlobe,
     CesiumRasterLayer,
     CesiumIgsDocLayer,
     CesiumIgsWmsLayer,
@@ -188,11 +187,11 @@ export default {
       this.rasters = defaultMap.allLayers
     },
     handleLoad(payload) {
-      const { Cesium } = payload
+      const { Cesium, CesiumZondy } = payload
       // 底层传递到window上,通过window取当分屏时是否存在问题???
       const { webGlobe } = window
 
-      this.$root.$emit('cesium-load', { webGlobe, Cesium })
+      this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
 
       this.changePageHeight()
     },

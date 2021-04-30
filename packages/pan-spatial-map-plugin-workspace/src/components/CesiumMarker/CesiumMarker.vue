@@ -1,28 +1,28 @@
 <template>
   <div class="cesium-marker">
-    <div v-if="fieldNames.length > 0">
-      <cesium-popup
-        :position="{
-          longitude: popupPosition.longitude,
-          latitude: popupPosition.latitude
-        }"
-        :container="''"
-        :showed.sync="showPopup"
-      >
-        <div slot="default">
-          <div style="max-height:10em;overflow:auto">
-            <div
-              v-for="(child, n) in getJsonTag(marker.properties)"
-              v-show="child !== ''"
-              :key="'placename-marker-properties-' + n"
-              class="placename-popup-text"
-            >
-              {{ fieldNames[n] }} : {{ marker.properties[child] }}
+    <mapgis-3d-popup
+      :position="{
+        longitude: popupPosition.longitude,
+        latitude: popupPosition.latitude
+      }"
+      :showed="showPopup"
+    >
+      <div slot="default">
+        <a-list
+          item-layout="horizontal"
+          :data-source="Object.keys(marker.properties)"
+          size="small"
+          class="markers"
+        >
+          <a-list-item slot="renderItem" slot-scope="item" class="marker-item">
+            <div style="width: 130px" :title="item">{{ item }}</div>
+            <div style="width: 170px" :title="marker.properties[item]">
+              {{ marker.properties[item] }}
             </div>
-          </div>
-        </div></cesium-popup
-      >
-    </div>
+          </a-list-item>
+        </a-list>
+      </div>
+    </mapgis-3d-popup>
   </div>
 </template>
 
@@ -54,22 +54,15 @@ export default class MpCesiumMarker extends Vue {
 
   @Prop({ type: Object, required: true }) marker!: Record<string, any>
 
-  @Prop({ type: Array, default: [] }) readonly fieldNames!: []
-
   // 当前显示弹出框的标注id
   @Prop({ type: String, required: false }) currentMarkerId?: string
 
-  @Emit('markerId')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  emitId(id: string) {}
+  private showPopup = false
+
+  private entityNames: string[] = []
 
   get img() {
     return this.marker.img
-  }
-
-  @Watch('img', { deep: true }) // 更换图片，更换地图上的标注
-  changeImg() {
-    this.upDateMarker()
   }
 
   get popupPosition() {
@@ -84,41 +77,40 @@ export default class MpCesiumMarker extends Vue {
     return position
   }
 
-  private prePopup: any = undefined
-
-  private markerFeatures: any[] = []
-
-  private showPopup = false
+  // 更换图片，更换地图上的标注
+  @Watch('img', { deep: true })
+  changeImg() {
+    this.updateMarker()
+  }
 
   @Watch('currentMarkerId', { deep: true })
-  hindDialog() {
-    // 当当前显示弹出框的标注与组件内的id不一致时，隐藏弹出框
+  hidePopup() {
+    // 当前显示弹出框的标注与组件内的id不一致时，隐藏弹出框
     if (this.currentMarkerId !== this.marker.id) {
       this.showPopup = false
     }
   }
 
+  @Emit('marker-id')
+  emitId(id: string) {}
+
   mounted() {
-    this.upDateMarker()
+    this.updateMarker()
   }
 
   beforeDestroy() {
     cesiumUtilInstance.removeEntityByName(this.marker.id)
   }
 
-  deactived() {
-    cesiumUtilInstance.removeEntityByName(this.marker.id)
-  }
-
-  upDateMarker() {
+  updateMarker() {
     cesiumUtilInstance.setCesiumGlobe(this.Cesium, this.webGlobe)
     cesiumUtilInstance.removeEntityByName(this.marker.id)
     const marker: any = { ...this.marker }
     marker.mouseOver = event => {
       this.mouseOver(event, marker)
     }
-    marker.mouseOut = () => {
-      this.mouseOut()
+    marker.mouseOut = event => {
+      this.mouseOut(event)
     }
     marker.name = marker.id
     marker.center = marker.coordinates
@@ -128,21 +120,58 @@ export default class MpCesiumMarker extends Vue {
   mouseOver(event: any, marker: any) {
     this.showPopup = true
     this.emitId(this.marker.id)
+    this.$emit('mouseenter', event)
   }
 
-  mouseOut() {}
-
-  getJsonTag(json: Record<string, any>) {
-    const tags = utilInstance.getJsonTag(json)
-    if (!this.fieldNames.includes('FID')) {
-      const index = tags.indexOf('FID')
-      if (index > -1) {
-        tags.splice(index, 1)
-      }
-    }
-    return tags
+  mouseOut(event) {
+    this.$emit('mouseleave', event)
   }
 }
 </script>
 
-<style></style>
+<style lang="less">
+.mp-map-container {
+  .cesium-popup {
+    .cesium-popup-content-wrapper {
+      border: none;
+      background: @base-bg-color;
+      box-shadow: 0px 1px 2px 0px @shadow-color;
+    }
+    .cesium-popup-tip-container {
+      .cesium-popup-tip {
+        background: @base-bg-color;
+        box-shadow: 0px 1px 2px 0px @shadow-color;
+      }
+    }
+    .cesium-popup-close-button {
+      color: @text-color;
+      cursor: pointer;
+      font-weight: normal;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+  }
+}
+</style>
+<style lang="less" scoped>
+.cesium-popup {
+  .cesium-popup-content-wrapper {
+    .markers {
+      max-width: 240px;
+      max-height: 200px;
+      overflow: auto;
+      .marker-item {
+        padding: 0;
+        font-size: 10px;
+        div {
+          padding: 2px 2px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}
+</style>
