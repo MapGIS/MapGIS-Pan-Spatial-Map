@@ -5,6 +5,7 @@
     :action="url"
     :multiple="false"
     method="post"
+    :withCredentials="true"
     :before-upload="beforeUpload"
     @change="onChangeFile"
   >
@@ -29,6 +30,8 @@ export default class MpUploader extends Vue {
   private headers: Array<any> = []
 
   beforeUpload(file) {
+    console.log(file)
+
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
     if (!isJpgOrPng) {
       this.$message.error('You can only upload JPG file!')
@@ -38,9 +41,13 @@ export default class MpUploader extends Vue {
 
   onChangeFile(info) {
     if (info.file.status === 'uploading' || info.file.status === 'error') {
+      console.log('failed')
+
       return
     }
     if (info.file.status === 'done') {
+      console.log('success')
+
       this.$emit('success', info)
     }
   }
