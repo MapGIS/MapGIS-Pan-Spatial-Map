@@ -51,11 +51,6 @@ export {
 
 export { Document, Map } from './store/document'
 
-export {
-  CoordinateSystemType,
-  SpatialReference
-} from './store/document/spatial-reference'
-
 export { UUID, ObjectTool, CoordinateTransformation } from './store/utils'
 
 import {
