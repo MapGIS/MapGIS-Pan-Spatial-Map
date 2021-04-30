@@ -206,7 +206,7 @@ class QueryIgsServicesInfo {
   }
 
   /**
-   * 获取三维文档列表
+   * 获取矢量地图或瓦片数据信息
    * @param {Object} param
    * @param {string} param.ip 服务器IP
    * @param {Number} param.port 服务端口

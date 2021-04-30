@@ -70,6 +70,5 @@ export {
   queryIgsServicesInfoInstance,
   queryArcgisInfoInstance,
   igsFeatureModifyInstance,
-  queryLayerInfoInstance,
-  ExportMarkersToFileInstance
+  queryLayerInfoInstance
 } from './service'

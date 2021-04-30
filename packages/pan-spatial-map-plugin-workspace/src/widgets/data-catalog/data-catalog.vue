@@ -8,8 +8,11 @@
         enterButton
         @search="onSearch"
       ></a-input-search>
-      <a-dropdown :trigger="['click']">
-        <a-icon type="more" :style="{ fontSize: '24px' }"></a-icon>
+      <a-dropdown :trigger="['click']" class="action-more">
+        <a-icon
+          type="more"
+          :style="{ fontSize: '22px', paddingLeft: '5px' }"
+        ></a-icon>
         <a-menu slot="overlay">
           <a-menu-item key="0" @click="refreshTree">刷新</a-menu-item>
           <a-menu-item key="1" @click="bookMarksCheck">收藏</a-menu-item>
@@ -19,6 +22,7 @@
     <div class="tree-container beauty-scroll">
       <a-tree
         checkable
+        block-node
         :tree-data="dataCatalogTreeData"
         :replace-fields="replaceFields"
         v-model="checkedNodeKeys"
@@ -27,7 +31,12 @@
         :selectedKeys="selectedKeys"
         @expand="onExpand"
       >
-        <template v-slot:custom="item" class="tree-item-handle">
+        <span slot="custom" slot-scope="item" class="tree-item-handle">
+          <img
+            v-if="widgetInfo.config.iconConfig[nodeLevel(item)]"
+            :src="baseUrl + widgetInfo.config.iconConfig[nodeLevel(item)]"
+            class="tree-item-icon"
+          />
           <span
             v-if="item.children && item.children.length > 0"
             @click="onClick(item)"
@@ -41,28 +50,32 @@
                     -1
               "
             >
-              <span class="unfilter-words"
-                >{{
+              <span class="unfilter-words" :title="item.name">
+                {{
                   item.name.substr(
                     0,
                     item.name.toUpperCase().indexOf(searchValue.toUpperCase())
                   )
                 }}
               </span>
-              <span class="filter-words">{{
-                item.name.substr(
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
-                  searchValue.length
-                )
-              }}</span>
-              <span class="unfilter-words">{{
-                item.name.substr(
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+              <span class="filter-words" :title="item.name">
+                {{
+                  item.name.substr(
+                    item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
                     searchValue.length
-                )
-              }}</span>
+                  )
+                }}
+              </span>
+              <span class="unfilter-words" :title="item.name">
+                {{
+                  item.name.substr(
+                    item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+                      searchValue.length
+                  )
+                }}
+              </span>
             </span>
-            <span v-else>{{ item.name }}</span>
+            <span v-else :title="item.name">{{ item.name }}</span>
           </span>
           <a-dropdown
             v-else
@@ -82,28 +95,34 @@
                     -1
               "
             >
-              <span class="unfilter-words"
-                >{{
+              <span class="unfilter-words" :title="item.name">
+                {{
                   item.name.substr(
                     0,
                     item.name.toUpperCase().indexOf(searchValue.toUpperCase())
                   )
                 }}
               </span>
-              <span class="filter-words">{{
-                item.name.substr(
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
-                  searchValue.length
-                )
-              }}</span>
-              <span class="unfilter-words">{{
-                item.name.substr(
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+              <span class="filter-words" :title="item.name">
+                {{
+                  item.name.substr(
+                    item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
                     searchValue.length
-                )
-              }}</span>
+                  )
+                }}
+              </span>
+              <span class="unfilter-words" :title="item.name">
+                {{
+                  item.name.substr(
+                    item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+                      searchValue.length
+                  )
+                }}
+              </span>
             </span>
-            <span v-else @click="onClick(item)">{{ item.name }}</span>
+            <span v-else @click="onClick(item)" :title="item.name">{{
+              item.name
+            }}</span>
             <a-menu slot="overlay">
               <a-menu-item key="1" @click="showMetaDataInfo(item)"
                 >元数据信息</a-menu-item
@@ -112,7 +131,7 @@
               <a-menu-item v-if="hasLegend(item)" key="3">上传图例</a-menu-item>
             </a-menu>
           </a-dropdown>
-        </template>
+        </span>
       </a-tree>
     </div>
     <mp-window-wrapper :visible="showMetaData">
@@ -201,6 +220,12 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       return [this.hasKeywordArr[this.searchIndex]]
     }
     return []
+  }
+
+  get nodeLevel() {
+    return function(node) {
+      return node.pos.split('-').length - 1
+    }
   }
 
   async mounted() {
@@ -555,18 +580,37 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   height: 100%;
   display: flex;
   flex-direction: column;
+  .toolbal {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+  }
+  .tree-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    .tree-item-handle {
+      display: flex;
+      width: 100%;
+      overflow: hidden;
+      align-items: center;
+      .tree-item-icon {
+        width: 1em;
+        height: 1em;
+        vertical-align: -0.125em;
+        margin-right: 5px;
+      }
+      > span {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
 }
-.toolbal {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-}
-.tree-container {
-  flex-grow: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.ant-dropdown-trigger {
+
+.ant-dropdown-trigger.anticon-more {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -597,10 +641,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       margin-right: 12px;
     }
   }
-}
-
-::v-deep.ant-tree-title {
-  display: flex;
 }
 
 .filter-dropdown {

@@ -356,7 +356,6 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e2e2e2;
 
   .button {
     cursor: pointer;
@@ -369,14 +368,8 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 16px 0 8px 0;
-    border-bottom: 1px solid #e2e2e2;
+    padding: 5px 0 5px 0;
     font-weight: bold;
-  }
-
-  .result-panel {
-    padding: 0 0 24px 0;
-    border-bottom: 1px solid #e2e2e2;
   }
 
   .result-item {
@@ -394,9 +387,8 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px 0;
-    font-size: 20px;
-    border-bottom: 1px solid #e2e2e2;
+    padding: 5px 0;
+    font-weight: bold;
   }
 
   .ant-form {

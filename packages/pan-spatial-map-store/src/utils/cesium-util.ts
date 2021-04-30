@@ -465,7 +465,7 @@ class CesiumUtil {
    * @example
    * Zondy.OneMap.Globe.BaseGlobe.ClippingPlane(opt)
    */
-  ClippingPlane(opt) {
+  clippingPlane(opt) {
     const globe = this.webGlobe
     this.targetY = 0.0 // 剖面位置
     let clippingPlane
@@ -1214,7 +1214,7 @@ class CesiumUtil {
    * @param  {object} transform 对应数据的transform信息
    * @return {Cartographic}  Cartographic 数据坐标
    */
-  dgreeToDataPostion(position, transform) {
+  degreeToDataPosition(position, transform) {
     // 度转迪卡尔
     const c3 = this.Cesium.Cartesian3.fromDegrees(
       position.x,
@@ -1245,7 +1245,7 @@ class CesiumUtil {
    * @param  {object} transform 对应数据的transform信息
    * @return {object}  Position 经纬度坐标
    */
-  dataPostionToDgree(position, transform) {
+  dataPositionToDegree(position, transform) {
     let car3 = new this.Cesium.Cartesian3()
     car3 = this.Cesium.Matrix4.multiplyByPoint(transform, position, car3)
     const cartographic = this.Cesium.Cartographic.fromCartesian(car3)
@@ -1262,18 +1262,18 @@ class CesiumUtil {
    * @param  {object} transform 对应数据的transform信息
    * @return {object}  Position 经纬度坐标
    */
-  dataPostionExtenToDgreeExtend(extend3D, transform) {
+  dataPositionExtenToDegreeExtend(extend3D, transform) {
     const centerMinPoint = new this.Cesium.Cartesian3()
     centerMinPoint.x = extend3D.xmin
     centerMinPoint.y = extend3D.ymin
     centerMinPoint.z = extend3D.zmin
-    const positions1 = this.dataPostionToDgree(centerMinPoint, transform) // 数据坐标转经纬度坐标
+    const positions1 = this.dataPositionToDegree(centerMinPoint, transform) // 数据坐标转经纬度坐标
 
     const centerMaxPoint = new this.Cesium.Cartesian3()
     centerMaxPoint.x = extend3D.xmax
     centerMaxPoint.y = extend3D.ymax
     centerMaxPoint.z = extend3D.zmax
-    const positions2 = this.dataPostionToDgree(centerMaxPoint, transform) // 数据坐标转经纬度坐标
+    const positions2 = this.dataPositionToDegree(centerMaxPoint, transform) // 数据坐标转经纬度坐标
     const bound = {
       xmin: positions1.x,
       ymin: positions1.y,
