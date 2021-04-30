@@ -1,6 +1,28 @@
+export const txtColor = 'rgba(0, 0, 0, 0.5)'
+/**
+ * 调整y轴宽度
+ * @param y<array> y轴数据
+ * @returns
+ */
+export const getGridX = (y: number[]) => {
+  let gridX = 80
+  const strMax = `${Math.max(...y)}`
+  const index = strMax.indexOf('.')
+  const numLength =
+    index !== -1 ? strMax.substring(0, index).length : strMax.length
+  const arrs = [[1, 2, 3], [4, 5], [6, 7], [8]]
+  arrs.forEach((arr: number[]) => {
+    if (arr.includes(numLength)) {
+      gridX = Math.max(...arr) * 8
+    }
+  })
+  return gridX
+}
+
 // 柱状图配置
-const txtColor = 'rgba(0, 0, 0, 0.5)'
 export const barChartOptions = ({ title, x, y }) => {
+  const gridX = getGridX(y)
+
   return {
     tooltip: {
       trigger: 'axis',
@@ -9,13 +31,6 @@ export const barChartOptions = ({ title, x, y }) => {
       },
       textStyle: {
         fontSize: 10
-      },
-      formatter(params: any) {
-        let res = params[0].name
-        for (let i = 0; i < params.length; i += 1) {
-          res += `<br/>${params[i].seriesName} : ${params[i].value}`
-        }
-        return res
       }
     },
     dataZoom: {
@@ -30,8 +45,9 @@ export const barChartOptions = ({ title, x, y }) => {
       zoomLock: true
     },
     grid: {
-      y: 20,
+      x: gridX,
       x2: 10,
+      y: 20,
       y2: 50
     },
     title: {

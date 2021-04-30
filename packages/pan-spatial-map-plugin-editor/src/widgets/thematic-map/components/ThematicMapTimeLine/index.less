@@ -1,33 +1,19 @@
 .thematic-map-time-line {
-  width: 500px;
   position: relative;
+  min-width: 400px;
+
+  /deep/ .ant-empty-normal {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .thematic-map-time-line-btn {
+    font-size: 20px;
+    cursor: pointer;
+  }
+
   #thematic-map-time-line-chart {
-    width: 100%;
+    width: 360px;
     height: 60px;
   }
-  /deep/ .ant-row-flex {
-    margin-top: 20px;
-    .ant-col {
-      text-align: center;
-    }
-  }
-}
-.thematic-map-time-line-btn {
-  font-size: 20px;
-  cursor: pointer;
-}
-.thematic-map-time-line-chart-mask {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background-color: black;
-  opacity: 0.5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  padding: 5px;
-  z-index: 1;
 }

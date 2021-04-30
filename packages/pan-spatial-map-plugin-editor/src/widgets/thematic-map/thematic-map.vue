@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-thematic-map">
     <!-- 专题服务树 -->
-    <a-spin tip="正在加载..." :spinning="loading">
+    <a-spin :spinning="loading">
       <a-tree
         checkable
         :show-line="true"
@@ -83,21 +83,20 @@ export default class MpThematicMap extends Mixins<{
   /**
    * 格式化专题服务树
    * @param treeData<array>
-   * @param results<array>
    */
-  normalizeTreeData(treeData, results = []) {
+  normalizeTreeData(treeData) {
     for (let i = 0; i < treeData.length; i++) {
       const item = treeData[i]
       if (item.nodeType) {
-        results.push({
-          ...item,
-          checkable: item.nodeType === 'subject'
-        })
-      } else if (item.children && item.children.length) {
-        this.getSujectNodeById(item.children, results)
+        const isSubject = item.nodeType === 'subject'
+        item.checkable = isSubject
+        item.selectable = isSubject
+        if (item.children && item.children.length) {
+          this.normalizeTreeData(item.children)
+        }
       }
     }
-    return results
+    return treeData
   }
 
   /**
@@ -112,8 +111,8 @@ export default class MpThematicMap extends Mixins<{
       }
       return results
     }, [])
-    console.log('选中的专题的列表', configList)
-    ThematicMapInstance.setSelectedSujectConfigList(configList)
+    // console.log('选中的专题的列表', configList)
+    ThematicMapInstance.setSelectedList(configList)
   }
 
   /**
@@ -129,7 +128,7 @@ export default class MpThematicMap extends Mixins<{
     openModules.forEach(item => ThematicMapInstance.setVisible(item))
     ThematicMapInstance.setThematicMapConfig(config)
     this.treeData = this.normalizeTreeData(subjectConfig)
-    // console.log('专题服务所有配置', config)
+    // console.log('专题服务树', this.treeData)
     this.loading = false
   }
 

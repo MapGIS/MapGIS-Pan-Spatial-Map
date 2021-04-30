@@ -5,25 +5,26 @@
       title="统计表"
       :visible.sync="stVisible"
       anchor="top-left"
+      :horizontalOffset="12"
       :verticalOffset="50"
     >
       <div class="thematic-map-statistic-table">
-        <!-- 指标和图表切换 -->
-        <a-row type="flex" align="middle" class="statistic-table-head">
-          <a-col span="16">
-            <row-flex :span="[4, 20]" label="指标">
-              <a-select v-model="target">
-                <a-select-option v-for="item in targetList" :key="item.value">{{
-                  item.label
-                }}</a-select-option>
-              </a-select>
-            </row-flex>
-          </a-col>
-          <a-col span="8">
+        <a-spin :spinning="loading">
+          <!-- 指标和图表切换 -->
+          <row-flex class="statistic-table-head" :span="[16, 8]">
+            <template #label>
+              <row-flex :span="[4, 20]" label="指标">
+                <a-select
+                  :value="target"
+                  :options="targetList"
+                  @change="onTargetChange"
+                />
+              </row-flex>
+            </template>
             <a-tooltip
               v-for="item in chartConfig"
               :key="item.type"
-              :content="item.tooltip"
+              :title="item.tooltip"
               placement="bottom"
             >
               <a-icon
@@ -32,10 +33,12 @@
                 @click="onChartTypeChange(item.type)"
               />
             </a-tooltip>
-          </a-col>
-        </a-row>
-        <!-- 图表 -->
-        <div id="thematic-map-statistic-table-chart" />
+          </row-flex>
+          <!-- 图表 -->
+          <div id="thematic-map-statistic-table-chart" v-show="showChart" />
+          <!-- 空数据友好提示 -->
+          <a-empty :image="simpleImage" v-show="!showChart" />
+        </a-spin>
       </div>
     </mp-window>
   </mp-window-wrapper>
@@ -43,7 +46,12 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
+import {
+  queryFeaturesInstance,
+  FeatureQueryParam,
+  ThematicMapInstance
+} from '@mapgis/pan-spatial-map-store'
+import { Empty } from 'ant-design-vue'
 import echarts from 'echarts'
 import RowFlex from '../RowFlex'
 import { barChartOptions } from './config/barChartOptions'
@@ -58,6 +66,12 @@ interface IChartConfig {
   type: TChartType
 }
 
+interface IChartOption {
+  title: string
+  x?: any[]
+  y?: any[]
+}
+
 @Component({
   components: {
     RowFlex
@@ -68,6 +82,8 @@ export default class ThematicMapStatisticTable extends Mixins<{
 }>(WidgetMixin) {
   stVisible = false
 
+  loading = false
+
   // 当前活动的图标
   activeChart: TChartType = 'bar'
 
@@ -75,15 +91,17 @@ export default class ThematicMapStatisticTable extends Mixins<{
   target = ''
 
   // 指标列表
-  targetList: any[] = [
-    {
-      label: '测试数据',
-      value: '111'
-    }
-  ]
+  targetList = []
 
   // 图表
   chart: HTMLCanvasElement | null = null
+
+  // 图表配置
+  chartOption: IChartOption = {
+    title: '',
+    x: [],
+    y: []
+  }
 
   // 3种图表配置
   chartConfig: IChartConfig[] = [
@@ -108,57 +126,133 @@ export default class ThematicMapStatisticTable extends Mixins<{
     return ThematicMapInstance.isVisible('st')
   }
 
+  // 获取选中专题对应年度的配置数据以及配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
+  get selectedConfig() {
+    return ThematicMapInstance.getSelectedConfig
+  }
+
+  /**
+   * 图表是否有数据,是否展示友好提示
+   */
+  get showChart() {
+    const { x, y } = this.chartOption
+    return x.length && y.length
+  }
+
   /**
    * 图表类型变化
    * @param type<string>
    */
   onChartTypeChange(type: TChartType) {
-    let options
-    switch (type) {
-      case 'bar':
-        options = barChartOptions({
-          title: '柱状图',
-          x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          y: [120, 200, 150, 80, 70, 110, 130]
-        })
-        break
-      case 'line':
-        options = lineChartOptions({
-          title: '折线图',
-          x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          y: [120, 200, 150, 80, 70, 110, 130]
-        })
-        break
-      case 'pie':
-        options = pieChartOptions({
-          title: '饼图',
-          data: [
-            { value: 1048, name: '搜索引擎' },
-            { value: 735, name: '直接访问' },
-            { value: 580, name: '邮件营销' },
-            { value: 484, name: '联盟广告' },
-            { value: 300, name: '视频广告' }
-          ]
-        })
-        break
-      default:
-        break
-    }
-    this.activeChart = type
-    if (this.chart) {
-      this.chart.clear()
-      this.chart.setOption(options)
-      this.chart.resize()
+    this.$nextTick(() => {
+      let options: (a: IChartOption) => any
+      switch (type) {
+        case 'bar':
+          options = barChartOptions
+          break
+        case 'line':
+          options = lineChartOptions
+          break
+        case 'pie':
+          options = pieChartOptions
+          break
+        default:
+          break
+      }
+      this.activeChart = type
+      if (this.chart) {
+        this.chart.clear()
+        this.chart.setOption(options(this.chartOption))
+        this.chart.resize()
+        this.loading = false
+      }
+    })
+  }
+
+  /**
+   * 指标选项变化
+   * @param value<string>
+   */
+  onTargetChange(value) {
+    this.loading = true
+    this.target = value
+    this.chartOption.title = value
+    const params = ThematicMapInstance.getRequestParams()
+    const fn = queryFeaturesInstance.query(params)
+    if (fn && fn.then) {
+      fn.then(dataSet => this.onSetChartData(dataSet)).catch(e => {
+        this.loading = false
+      })
     }
   }
 
   /**
-   * 监听弹框开关
+   * 设置图表数据
+   * @param dataSet<object>
+   */
+  onSetChartData(dataSet) {
+    if (dataSet && dataSet.AttStruct.FldName) {
+      const {
+        SFEleArray,
+        AttStruct: { FldName }
+      } = dataSet
+      const {
+        graph: { field }
+      } = this.selectedConfig.configSubData
+      const xIndex = FldName.indexOf(field)
+      const yIndex = FldName.indexOf(this.target)
+      SFEleArray.forEach(({ AttValue }) => {
+        if (AttValue) {
+          this.chartOption.x.push(AttValue[xIndex])
+          this.chartOption.y.push(AttValue[yIndex])
+        }
+      })
+      this.onChartTypeChange('bar')
+    }
+  }
+
+  /**
+   * 设置指标数据
+   * @param <object>
+   */
+  onSetTargetList({ configSubData }) {
+    if (configSubData) {
+      const { showFields, showFieldsTitle } = configSubData.graph
+      const isFieldsTitle =
+        showFieldsTitle && Object.keys(showFieldsTitle).length
+      const targetList = showFields.reduce((results, item) => {
+        if (item) {
+          const obj = {}
+          obj.label = item
+          obj.value =
+            isFieldsTitle && isFieldsTitle[item] ? isFieldsTitle[item] : item
+          results.push(obj)
+        }
+        return results
+      }, [])
+      this.targetList = targetList
+      this.onTargetChange(targetList[0].value)
+    }
+  }
+
+  /**
+   * 监听:弹框开关
    */
   @Watch('visible')
   watchVisible(nV) {
     this.stVisible = nV
-    this.$nextTick(() => nV && this.onChartTypeChange('bar'))
+  }
+
+  /**
+   * 监听: 选中的专题的配置项的变化和新格式化后的选中专题的变化
+   */
+  @Watch('selectedConfig', { deep: true })
+  watchSelectedConfig(nV) {
+    this.onSetTargetList(nV)
+  }
+
+  beforeCreate() {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 
   mounted() {

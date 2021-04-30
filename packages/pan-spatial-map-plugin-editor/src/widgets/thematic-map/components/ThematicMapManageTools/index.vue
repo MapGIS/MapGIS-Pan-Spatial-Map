@@ -4,12 +4,13 @@
     <transition name="slide-fade">
       <mp-placement
         class="thematic-map-manage-tools"
-        position="center-right"
+        position="bottom-right"
+        :offset="[0, 70]"
         v-show="mtVisible"
       >
         <a-row v-for="icon in iconList" :key="icon.type">
           <a-col>
-            <a-tooltip placement="left" :content="icon.tooltip">
+            <a-tooltip placement="left" :title="icon.tooltip">
               <a-icon
                 :type="icon.type"
                 @click.stop="onToolIconChange(icon.visibleType)"

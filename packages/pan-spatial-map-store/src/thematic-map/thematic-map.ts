@@ -7,7 +7,7 @@ import {
   IThematicMapConfig,
   IThematicMapBaseConfig,
   IThematicMapSubjectConfig,
-  ISingleSubjectConfigData
+  IThematicMapSubjectNewConfig
 } from './types'
 
 // 专题服务
@@ -17,11 +17,13 @@ export const ThematicMapInstance = new Vue({
       // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
       moduleTypes: [],
       // 专题服务时间轴选中的年度
-      selectedSujectConfigTime: '',
-      // 所有选中的'单个专题服务配置'列表
-      selectedSujectConfigList: [],
+      selectedTime: '',
       // 选中的'单个专题服务配置'的年度列表
-      selectedSujectConfigTimeList: [],
+      selectedTimeList: [],
+      // 所有选中的'单个专题服务配置'
+      selected: '',
+      // 所有选中的'单个专题服务配置'列表
+      selectedList: [],
       // 专题服务总配置数据
       thematicMapConfig: {
         baseConfig: {},
@@ -49,73 +51,108 @@ export const ThematicMapInstance = new Vue({
       return this.thematicMapConfig.subjectConfig
     },
     /**
-     *  获取选中的'单个专题服务配置'集合(属性表专题选择框需要)
+     * 获取选中的'单个专题服务配置'的配置
+     * 1.如果传入了configId,则取对应的单个专题, 如果没有传,则取勾选的最后一个专题
+     * 2.融合了原有配置,将config里的字段提取出来存放
+     * @return undefind | {id, title..., config} | {id, title, ...., config: {
+     * configType, configTimeList, configSubData
+     * }}
+     * confitType=> config.type
+     * configTimeList => config.data.map(v => v.time)
+     * configSubData => config.data.subData[0]
      */
-    getSelectedSujectConfigList() {
-      return this.selectedSujectConfigList
-    },
-    /**
-     *  获取选中的'单个专题服务配置'的新配置, 融合了原有配置,将config里的字段提取出来存放
-     * @return undefind | {id, title...,config} | {id, title, ...., configType, configData} 其中confitType=> config.type, configData => config.data
-     */
-    getSelectedSujectConfig() {
-      return (
-        configId: string,
-        time?: string
-      ): IThematicMapSubjectConfig | void => {
-        const subject = this.selectedSujectConfigList.find(
-          ({ id }) => id === configId
-        )
-
-        if (subject) {
-          const { config, ...others } = subject
-          if (config) {
-            const { type, data } = config
-            const result = {
-              ...others,
-              configType: type,
-              configData: data
-            }
-
-            if (time) {
-              const _data = data.find(v => v.time === time)
+    getSelectedConfig(): IThematicMapSubjectNewConfig | undefined {
+      const subject = this.selectedList.find(({ id }) => id === this.selected)
+      if (subject) {
+        const { config, ...others } = subject
+        if (config) {
+          const { type, data } = config
+          const result: IThematicMapSubjectNewConfig = {
+            ...others,
+            configType: type
+          }
+          if (data && data.length) {
+            result.configTimeList = data.map(v => v.time)
+            if (this.selectedTime) {
+              const _data = data.find(v => v.time === this.selectedTime)
               if (_data && _data.subData.length) {
                 result.configSubData = _data.subData[0]
               }
             }
-            return result
           }
+          return result
         }
-        return subject
       }
+      return subject
     },
-
     /**
-     * 获取最后勾选的单个专题服务的年度列表(时间轴数据)
+     *  获取选中的'单个专题服务配置'集合(属性表专题选择框需要)
      */
-    getSelectedSujectConfigTimeList() {
-      return this.selectedSujectConfigTimeList
+    getSelectedList() {
+      return this.selectedList
     },
     /**
      * 获取单个专题服务中选中的年度
      */
-    getSelectedSubjectConfigTime() {
-      return this.selectedSujectConfigTime
+    getSelectedTime() {
+      return this.selectedTime
     },
-
+    /**
+     * 获取最后勾选的单个专题服务的年度列表(时间轴数据)
+     */
+    getSelectedTimeList() {
+      return this.selectedTimeList
+    },
     /**
      * 获取列表数据请求报文
      * @returns <object>
      */
-    getRequestParams({ getBaseConfig }) {
-      const { baseIp: ip, basePort: port } = getBaseConfig
-
-      return (params: any) => {
-        return {
-          ip,
-          port,
-          ...params
+    getRequestParams({ getBaseConfig, getSelectedConfig }) {
+      const { baseIp, basePort } = getBaseConfig
+      const { configType = 'gdbp', configSubData } = getSelectedConfig
+      const {
+        ip,
+        port,
+        gdbp,
+        docName,
+        layerIndex,
+        layerName,
+        table: { showFields }
+      } = configSubData
+      // 整合参数
+      const _ip = ip || baseIp
+      const _port = port || basePort
+      const fields = showFields.join(',')
+      return (page = 0, pageCount = 9999) => {
+        let params: any = {
+          ip: _ip,
+          port: _port,
+          fields,
+          page,
+          pageCount,
+          IncludeGeometry: true,
+          cursorType: 'backward',
+          f: 'json'
         }
+        switch (configType.toLowerCase()) {
+          case 'gdbp':
+            params = {
+              ...params,
+              gdbp
+            }
+            break
+          case 'doc':
+            params = {
+              ...params,
+              docName,
+              layerIndex,
+              layerName
+            }
+            break
+          default:
+            break
+        }
+        return params
       }
     }
   },
@@ -146,31 +183,39 @@ export const ThematicMapInstance = new Vue({
     setThematicMapConfig(config: IThematicMapConfig) {
       this.thematicMapConfig = config
     },
-
+    /**
+     * 设置选中的'单个专题服务配置'
+     * @param configId<string>
+     */
+    setSelected(configId: string) {
+      if (this.selected !== configId) {
+        this.selected = configId
+      }
+    },
     /**
      * 设置选中的'单个专题服务配置'列表
      * @param configList<array>
      */
-    setSelectedSujectConfigList(configList: IThematicMapSubjectConfig[]) {
-      this.selectedSujectConfigList = configList
-    },
-
-    /**
-     * 设置选中的'单个专题服务配置'年度列表
-     * @param timeList<array>
-     */
-    setSelectedSubjectConfigTimeList(timeList: string[]) {
-      this.selectedSujectConfigTimeList = timeList
+    setSelectedList(configList: IThematicMapSubjectConfig[]) {
+      this.selectedList = configList
     },
 
     /**
      * 设置单个专题服务中选中的年度
      * @param year<string>
      */
-    setSelectedSubjectConfigTime(year: string) {
-      if (this.selectedSujectConfigTime !== year) {
-        this.selectedSujectConfigTime = year
+    setSelectedTime(year: string) {
+      if (this.selectedTime !== year) {
+        this.selectedTime = year
       }
+    },
+
+    /**
+     * 设置选中的'单个专题服务配置'年度列表
+     * @param timeList<array>
+     */
+    setSelectedTimeList(timeList: string[]) {
+      this.selectedTimeList = timeList
     },
 
     /**

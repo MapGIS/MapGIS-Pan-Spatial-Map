@@ -1,26 +1,28 @@
 <template>
   <!-- 时间轴 -->
   <mp-window-wrapper :visible="tlVisible">
-    <mp-window title="时间轴" :visible.sync="tlVisible" anchor="bottom-center">
+    <mp-window
+      title="时间轴"
+      :visible.sync="tlVisible"
+      anchor="bottom-center"
+      :verticalOffset="20"
+    >
       <div class="thematic-map-time-line">
-        <div id="thematic-map-time-line-chart" />
-        <a-row type="flex" align="middle" justify="space-between">
-          <a-col :span="btn.span" v-for="btn in btns" :key="btn.name">
-            <a-tooltip placement="bottom" :title="btn.tooltip">
+        <!-- 时间轴 -->
+        <row-flex :span="[2, 22]" v-show="timeList.length">
+          <template #label>
+            <a-tooltip placement="bottom" :title="autoPlay.tooltip">
               <a-icon
                 class="thematic-map-time-line-btn"
-                :type="btn.name"
-                @click="btn.func"
+                :type="autoPlay.type"
+                @click="btnPlay"
               />
             </a-tooltip>
-          </a-col>
-        </a-row>
-        <div
-          class="thematic-map-time-line-chart-mask"
-          v-show="!timeList.length"
-        >
-          暂无年度数据
-        </div>
+          </template>
+          <div id="thematic-map-time-line-chart" />
+        </row-flex>
+        <!-- 空数据友好提示 -->
+        <a-empty :image="simpleImage" v-show="!timeList.length" />
       </div>
     </mp-window>
   </mp-window-wrapper>
@@ -29,10 +31,16 @@
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
+import { Empty } from 'ant-design-vue'
 import echarts from 'echarts'
+import RowFlex from '../RowFlex'
 import { chartOption } from './config/timeLineChartOption'
 
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   WidgetMixin
 ) {
@@ -47,35 +55,34 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   // 当前播放的数据索引
   currentIndex = 0
 
+  // 显示开关
   get visible() {
     return ThematicMapInstance.isVisible('tl')
   }
 
-  // 年度列表数据
+  // 属性表或者时间轴选中的时间数据
+  get selectedTime() {
+    return ThematicMapInstance.getSelectedTime
+  }
+
+  // 时间轴的列表数据
   get timeList() {
-    return ThematicMapInstance.getSelectedSujectConfigTimeList
+    return ThematicMapInstance.getSelectedTimeList
   }
 
-  /**
-   * 时间轴操作按钮
-   */
-  get btns() {
-    let playName = 'play-circle'
-    let playTooltip = '播放'
+  // 播放文案和提示设置
+  get autoPlay() {
+    let type = 'play-circle'
+    let tooltip = '播放'
     if (this.isPlay) {
-      playName = 'pause-circle'
-      playTooltip = '暂停'
+      type = 'pause-circle'
+      tooltip = '暂停'
     }
-    return [
-      { name: 'redo', tooltip: '重置', span: 5, func: this.reset },
-      { name: 'backward', tooltip: '上一年', span: 6, func: this.prev },
-      { name: playName, tooltip: playTooltip, span: 6, func: this.btnPlay },
-      { name: 'forward', tooltip: '下一年', span: 6, func: this.next }
-    ]
+    return { type, tooltip }
   }
 
   /**
-   * 图表初始化
+   * 更新图表
    */
   onUpdateChart() {
     this.$nextTick(() => {
@@ -101,24 +108,6 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   }
 
   /**
-   * 下一个
-   */
-  next() {
-    if (this.currentIndex < this.timeList.length - 1) {
-      this.currentIndex++
-    }
-  }
-
-  /**
-   * 上一个
-   */
-  prev() {
-    if (this.currentIndex > 0) {
-      this.currentIndex--
-    }
-  }
-
-  /**
    * 重置
    */
   reset() {
@@ -136,20 +125,28 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   }
 
   /**
-   * 监听时间轴变化
+   * 监听:时间轴切换, 存储当前时间数据
    */
   @Watch('currentIndex')
   watchCurrentIndex(nV) {
-    ThematicMapInstance.setSelectedSubjectConfigTime(this.timeList[nV])
+    ThematicMapInstance.setSelectedTime(this.timeList[nV])
     this.onUpdateChart()
   }
 
   /**
-   * 时间轴数据变化
+   * 监听:属性表时间选项的变化,同步更新时间轴当前选中的项
    */
-  @Watch('timeList')
-  watchTimeList() {
-    this.onUpdateChart()
+  @Watch('selectedTime')
+  watchTimeList(nV) {
+    const _index = this.timeList.indexOf(nV)
+    if (!_index || this.currentIndex !== _index) {
+      this.currentIndex = _index
+      this.onUpdateChart()
+    }
+  }
+
+  beforeCreate() {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 
   mounted() {

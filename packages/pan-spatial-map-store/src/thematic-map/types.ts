@@ -13,8 +13,7 @@ export interface IThematicMapBaseConfig {
   startZindex: number // 初始 index 级别
 }
 
-// 专题服务专题配置
-export interface IThematicMapSubjectConfig {
+interface IThematicMapSubjectBaseConfig {
   id: string // 节点 id
   title: string // 节点名
   visible: boolean // 是否可见
@@ -31,24 +30,26 @@ export interface IThematicMapSubjectConfig {
    * 蜂窝图 : HexBin
    */
   type?: string // 专题类型
-  config?: ISingleSubjectConfig // 专题配置
-  // 将config里的数据整合到外层(属性表里的专题选择)
+}
+
+// 单个专题服务专题配置
+export interface IThematicMapSubjectConfig
+  extends IThematicMapSubjectBaseConfig {
+  config?: {
+    type?: 'gdbp' | 'doc' | 'geojson' | 'excel' // 数据请求方式
+    data?: {
+      time: string // 年度
+      subData: any[] // 年度对应的配置数据
+    }[] // 数据集合
+  }
+}
+
+// 整合单个专题的config中的type和data为以下的结构,放置在和id同层
+export interface IThematicMapSubjectNewConfig
+  extends IThematicMapSubjectBaseConfig {
   configType?: string // 请求方式
-  configData?: ISingleSubjectConfigData[] // 配置的年度专题数据集合
-  configSubData?: any // 对应年度的配置数据
-  [k: string]: any
-}
-
-// 专题服务单个配置
-export interface ISingleSubjectConfig {
-  type: 'gdbp' | 'doc' | 'geojson' | 'excel' // 数据请求方式
-  data: ISingleSubjectConfigData[] // 数据集合
-}
-
-// 专题服务单个配置的数据
-export interface ISingleSubjectConfigData {
-  time: string // 年度
-  subData: any[] // 年度对应的配置数据
+  configTimeList?: string[] // 配置的年度专题数据集合
+  configSubData?: any // 对应年度下的第一个配置数据
 }
 
 // 点击单个专题的数据展示弹框类型
@@ -63,7 +64,8 @@ export type TModuleType =
 export interface IState {
   moduleTypes: TModuleType[]
   thematicMapConfig: IThematicMapConfig
-  selectedSujectConfigTime: string
-  selectedSujectConfigTimeList: string[]
-  selectedSujectConfigList: IThematicMapSubjectConfig[]
+  selectedTime: string
+  selectedTimeList: string[]
+  selected: string
+  selectedList: IThematicMapSubjectConfig[]
 }
