@@ -78,8 +78,8 @@
     },
     {
       "name": "footer",
-      "description": "页脚",
-      "component": "MpAttributeTable"
+      "description": "底部展示区域",
+      "component": "MpPanSpatialMapFooter"
     }
   ]
 }

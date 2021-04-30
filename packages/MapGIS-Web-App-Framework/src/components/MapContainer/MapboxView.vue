@@ -1,5 +1,6 @@
 <template>
-  <mapbox-map
+  <mapgis-web-map
+    ref="mapgisWebMap"
     :center="center"
     :zoom="zoom"
     :access-token="accessToken"
@@ -10,7 +11,7 @@
   >
     <base-layers-mapbox :document="document" />
     <div v-for="layerProps in layers" :key="layerProps.layerId">
-      <mapbox-igs-tile-layer
+      <mapgis-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -18,7 +19,7 @@
         :url="layerProps.url"
         :serverName="layerProps.serverName"
       />
-      <mapbox-igs-doc-layer
+      <mapgis-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -27,7 +28,7 @@
         :layers="layerProps.layers"
         :serverName="layerProps.serverName"
       />
-      <mapbox-igs-vector-layer
+      <mapgis-igs-vector-layer
         v-if="isIgsVectorLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -35,7 +36,7 @@
         :url="layerProps.url"
         :gdbps="layerProps.gdbps"
       />
-      <mapbox-ogc-wmts-layer
+      <mapgis-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -47,7 +48,7 @@
         :wmtsStyle="layerProps.wmtsStyle"
         :format="layerProps.format"
       />
-      <mapbox-ogc-wms-layer
+      <mapgis-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
@@ -58,14 +59,21 @@
         :token="layerProps.token"
         :reversebbox="layerProps.reversebbox"
       />
-      <mapbox-arcgis-layer
+      <mapgis-arcgis-layer
         v-if="isIgsArcgisLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
         :url="layerProps.url"
       />
-      <mapbox-igs-tdt-layer
+      <mapgis-rastertile-layer
+        v-if="isRasterLayer(layerProps.type)"
+        :layer="layerProps.layer"
+        :layerId="layerProps.layerId"
+        :sourceId="layerProps.sourceId"
+        :url="layerProps.url"
+      />
+      <mapgis-igs-tdt-layer
         v-if="isIgsTdtLayer(layerProps.type)"
         :layer="layerProps"
         :layerId="layerProps.layerId"
@@ -75,53 +83,18 @@
         :crs="crs"
       />
     </div>
-    <mapbox-scale-control :position="'left-bottom'" />
-  </mapbox-map>
+    <mapgis-scale :position="'left-bottom'" />
+  </mapgis-web-map>
 </template>
 
 <script>
 import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
-import {
-  Layer,
-  LayerType,
-  LoadStatus,
-  LOD,
-  TileInfo,
-  TileLayer,
-  MapImageLayer,
-  IGSTileLayer,
-  IGSMapImageLayer,
-  IGSVectorLayer,
-  OGCWMTSLayer,
-  OGCWMSLayer
-} from '@mapgis/web-app-framework'
-
-import {
-  MapboxMap,
-  MapboxRasterLayer,
-  MapboxIgsTileLayer,
-  MapboxIgsDocLayer,
-  MapboxIgsVectorLayer,
-  MapboxOgcWmtsLayer,
-  MapboxOgcWmsLayer,
-  MapboxIgsTdtLayer,
-  MapboxArcgisLayer,
-  MapboxScaleControl
-} from '@mapgis/webclient-vue-mapboxgl'
+import { Layer, LayerType, LoadStatus } from '@mapgis/web-app-framework'
 import BaseLayersMapbox from '../BaseLayers/BaseLayersMapbox'
 
 export default {
   name: 'MpMapboxView',
   components: {
-    MapboxMap,
-    MapboxIgsTileLayer,
-    MapboxIgsDocLayer,
-    MapboxIgsVectorLayer,
-    MapboxOgcWmtsLayer,
-    MapboxOgcWmsLayer,
-    MapboxIgsTdtLayer,
-    MapboxArcgisLayer,
-    MapboxScaleControl,
     BaseLayersMapbox
   },
   props: {
@@ -156,9 +129,11 @@ export default {
   },
   watch: {
     document: {
-      deep: false,
+      deep: true,
       handler() {
-        this.parseDocument()
+        try {
+          this.parseDocument()
+        } catch (e) {}
       }
     }
   },
@@ -167,10 +142,15 @@ export default {
   },
   methods: {
     handleLoad(payload) {
-      const { map, mapbox } = payload
+      // const { map, mapbox } = payload
       const listeners = this.$listeners
-      if (listeners && 'onMapLoaded' in listeners) {
-        this.$emit('onMapLoaded', payload)
+      const webMapgisListeners = this.$refs.mapgisWebMap.$listeners
+      // 将mapgis-web-map的事件抛出
+      Object.entries(webMapgisListeners).forEach(
+        ([k, v]) => k && this.$emit(k, payload)
+      )
+      if (listeners && 'map-load' in listeners) {
+        this.$emit('map-load', payload)
       } else {
         this.$root.$emit('mapbox-load', payload)
       }
@@ -294,6 +274,17 @@ export default {
             sourceId: layer.id
           }
           break
+        case LayerType.aMapMercatorEMap:
+        case LayerType.aMapMercatorSatelliteMap:
+        case LayerType.aMapMercatorSatelliteAnnMap:
+          tempStr = this.generateWebTileLayerUrl(layer)
+          mapboxLayerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: tempStr,
+            sourceId: layer.id
+          }
+          break
         default:
           break
       }
@@ -308,17 +299,17 @@ export default {
       // 先将图层置空，避免图层重复添加
       const layers = []
 
-      this.document.defaultMap.getFlatLayers().forEach(async layer => {
-        if (layer.loadStatus === LoadStatus.notLoaded) await layer.load()
-
-        if (layer.loadStatus === LoadStatus.loaded) {
-          const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
-            layer
-          )
-
-          layers.push(mapboxLayerComponentProps)
-        }
-      })
+      this.document.defaultMap
+        .clone()
+        .getFlatLayers()
+        .forEach(layer => {
+          if (layer.loadStatus === LoadStatus.loaded) {
+            const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
+              layer
+            )
+            layers.push(mapboxLayerComponentProps)
+          }
+        })
 
       this.layers = layers
     },
@@ -342,6 +333,37 @@ export default {
     },
     isIgsArcgisLayer(type) {
       return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
+    },
+    isRasterLayer(type) {
+      return (
+        type === LayerType.aMapMercatorEMap ||
+        LayerType.aMapMercatorSatelliteMap ||
+        LayerType.aMapMercatorSatelliteAnnMap
+      )
+    },
+    generateWebTileLayerUrl(layer) {
+      let url = ''
+      let beforeSubDomain = ''
+      let afterSubDomain = ''
+
+      const subDomainTemplate = '{subDomain}'
+      const indexSubDomain = layer.urlTemplate.search(subDomainTemplate)
+      beforeSubDomain = layer.urlTemplate.substring(0, indexSubDomain)
+      afterSubDomain = layer.urlTemplate.substring(
+        indexSubDomain + subDomainTemplate.length
+      )
+
+      // 修改说明：该种方式无法真正实现子域名的随机轮询。该需求需要webClient层支持,在获取url时动态生成url。
+      // 修改人：马原野 2021年04月28日
+      url =
+        beforeSubDomain +
+        this.generateRandomSubDomain(layer.subDomains) +
+        afterSubDomain
+
+      return url
+    },
+    generateRandomSubDomain(subDomains) {
+      return subDomains[Math.floor(Math.random() * subDomains.length)]
     }
   }
 }

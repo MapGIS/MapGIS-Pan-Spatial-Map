@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mapbox-vector-layer
+    <mapgis-vector-layer
       v-for="l in layers"
       :key="l.id"
       :layerId="l.id"
@@ -13,11 +13,10 @@
 
 <script lang="ts">
 import { Component, Vue, Inject, Prop, Watch } from 'vue-property-decorator'
-import { MapboxVectorLayer } from '@mapgis/webclient-vue-mapboxgl'
 import { eventBus } from '@mapgis/pan-spatial-map-store'
 import axios from 'axios'
 
-@Component({ name: 'MapboxVectortileLayer', components: { MapboxVectorLayer } })
+@Component({ name: 'MapboxVectortileLayer', components: {} })
 export default class MapboxVectortileLayer extends Vue {
   // @Inject('mapbox') mapbox: any
 

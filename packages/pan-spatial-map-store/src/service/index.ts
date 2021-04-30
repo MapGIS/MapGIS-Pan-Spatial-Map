@@ -46,4 +46,3 @@ export { default as exportMarkersToFileInstance } from './export-markers-to-file
 export { default as queryIgsServicesInfoInstance } from './query-igs-services-info'
 export { default as queryArcgisInfoInstance } from './query-arcgis-info'
 export { default as queryLayerInfoInstance } from './query-layer-info'
-export { default as ExportMarkersToFileInstance } from './export-markers-to-file'

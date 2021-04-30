@@ -3,176 +3,221 @@
   <div class="tree-layer-container">
     <a-input-search
       ref="layerListFilter"
-      v-model="filter"
+      enter-button
       placeholder="搜索图层"
+      @search="onSearch"
       allowClear
     />
-    <a-tree
-      :checkedKeys="ticked"
-      @check="tickedChange"
-      checkable
-      :tree-data="layers"
-      block-node
-      :selectable="false"
-      :replaceFields="{
-        children: 'sublayers'
-      }"
-    >
-      <div slot="custom" slot-scope="item" class="tree-item-handle">
-        <a-icon
-          v-if="
-            item.layer && isWMTSLayer(item.layer) && isActiveWMTSLayer(item)
-          "
-          type="check-circle"
-          :style="{ color: '#52c41a', fontSize: '16px' }"
-        />
-        <i
-          v-else-if="
-            item.layer && isWMTSLayer(item.layer) && !isActiveWMTSLayer(item)
-          "
-        />
-        <span v-if="item.title.indexOf(filter) > -1">
-          {{ item.title.substr(0, item.title.indexOf(filter)) }}
-          <span style="color:#1890ff">{{ filter }}</span>
-          {{ item.title.substr(item.title.indexOf(filter) + filter.length) }}
-        </span>
-        <span v-else>{{ item.title }}</span>
-        <a-popover
-          placement="bottomLeft"
-          arrow-point-at-center
-          :visible="item.visiblePopover"
-          trigger="click"
-          @visibleChange="visible => clickPopover(item, visible)"
-          overlayClassName="layer-list-popover"
-        >
-          <a-list slot="content" :gutter="10">
-            <a-list-item v-if="isMetaData(item)" @click="metaDataInfo(item)">
-              图层元数据
-            </a-list-item>
-            <a-list-item v-if="isAttributes(item)" @click="attributes(item)">
-              查看属性
-            </a-list-item>
-            <a-list-item v-if="isAttributes(item)" @click="customQuery(item)">
-              自定义查询
-            </a-list-item>
-            <a-list-item
-              v-if="
-                (isSubLayer(item) && isIgsDocLayer(item)) ||
-                  isIgsVectorLayer(item)
-              "
-              @click="unifyMode(item)"
-            >
-              要素统改
-            </a-list-item>
-            <a-list-item v-if="isParentLayer(item)" @click="fitBounds(item)">
-              缩放至
-            </a-list-item>
-            <a-list-item
-              v-if="
-                item.layer && isWMTSLayer(item.layer) && isActiveWMTSLayer(item)
-              "
-              @click="resetTilematrixSet(item)"
-            >
-              切换矩阵集
-            </a-list-item>
-            <a-list-item
-              v-if="isParentLayer(item) && isWMTSLayer(item)"
-              @click="openChangeActiveLayer(item)"
-            >
-              切换图层
-            </a-list-item>
-          </a-list>
-          <a-button @click.stop size="small" type="link">
-            <a-icon
-              type="ellipsis"
-              :style="{ fontSize: '22px', color: 'gray' }"
-            >
-            </a-icon>
-          </a-button>
-        </a-popover>
-      </div>
-    </a-tree>
-    <mp-window-wrapper :visible="showMetadataInfo">
-      <mp-window
-        title="元数据信息"
-        :width="550"
-        :height="400"
-        :icon="widgetInfo.icon"
-        :visible.sync="showMetadataInfo"
-        anchor="top-center"
+    <div class="tree-container beauty-scroll">
+      <a-tree
+        :checkedKeys="ticked"
+        @check="tickedChange"
+        :expanded-keys="expandedKeys"
+        @expand="onExpand"
+        checkable
+        :tree-data="layers"
+        block-node
+        :selectedKeys="selectedKeys"
+        :replaceFields="{
+          children: 'sublayers'
+        }"
       >
-        <template>
-          <mp-metadata-info :currentLayer="currentLayerInfo" />
-        </template>
-      </mp-window>
+        <div slot="custom" slot-scope="item" class="tree-item-handle">
+          <a-icon
+            v-if="
+              item.layer && isWMTSLayer(item.layer) && isActiveWMTSLayer(item)
+            "
+            type="check-circle"
+            :style="{ color: '#52c41a', fontSize: '16px' }"
+          />
+          <i
+            v-else-if="
+              item.layer && isWMTSLayer(item.layer) && !isActiveWMTSLayer(item)
+            "
+          />
+          <span
+            v-if="
+              filter !== '' &&
+                item.title.toUpperCase().indexOf(filter.toUpperCase()) > -1
+            "
+            :id="`tree_${item.key}`"
+          >
+            <span>{{
+              item.title.substr(
+                0,
+                item.title.toUpperCase().indexOf(filter.toUpperCase())
+              )
+            }}</span>
+            <span class="filter-words">{{
+              item.title.substr(
+                item.title.toUpperCase().indexOf(filter.toUpperCase()),
+                filter.length
+              )
+            }}</span>
+            <span>{{
+              item.title.substr(
+                item.title.toUpperCase().indexOf(filter.toUpperCase()) +
+                  filter.length
+              )
+            }}</span>
+          </span>
+          <span v-else :id="`tree_${item.key}`">{{ item.title }}</span>
+          <a-popover
+            placement="bottomLeft"
+            arrow-point-at-center
+            :visible="item.visiblePopover"
+            trigger="click"
+            @visibleChange="visible => clickPopover(item, visible)"
+            overlayClassName="layer-list-popover"
+          >
+            <a-list slot="content" :gutter="10">
+              <a-list-item v-if="isMetaData(item)" @click="metaDataInfo(item)">
+                图层元数据
+              </a-list-item>
+              <a-list-item v-if="isAttributes(item)" @click="attributes(item)">
+                查看属性
+              </a-list-item>
+              <a-list-item v-if="isAttributes(item)" @click="customQuery(item)">
+                自定义查询
+              </a-list-item>
+              <a-list-item
+                v-if="
+                  (isSubLayer(item) && isIgsDocLayer(item)) ||
+                    isIgsVectorLayer(item)
+                "
+                @click="unifyMode(item)"
+              >
+                要素统改
+              </a-list-item>
+              <a-list-item v-if="isParentLayer(item)" @click="fitBounds(item)">
+                缩放至
+              </a-list-item>
+              <a-list-item
+                v-if="
+                  item.layer &&
+                    isWMTSLayer(item.layer) &&
+                    isActiveWMTSLayer(item)
+                "
+                @click="resetTilematrixSet(item)"
+              >
+                切换矩阵集
+              </a-list-item>
+              <a-list-item
+                v-if="isParentLayer(item) && isWMTSLayer(item)"
+                @click="openChangeActiveLayer(item)"
+              >
+                切换图层
+              </a-list-item>
+            </a-list>
+            <a-button @click.stop size="small" type="link">
+              <a-icon
+                type="ellipsis"
+                :style="{ fontSize: '22px', color: 'gray' }"
+              >
+              </a-icon>
+            </a-button>
+          </a-popover>
+        </div>
+      </a-tree>
+    </div>
+    <mp-window-wrapper :visible="showMetadataInfo">
+      <template v-slot:default="slotProps">
+        <mp-window
+          title="元数据信息"
+          :width="550"
+          :height="400"
+          :icon="widgetInfo.icon"
+          :visible.sync="showMetadataInfo"
+          anchor="top-center"
+          v-bind="slotProps"
+        >
+          <template>
+            <mp-metadata-info :currentLayer="currentLayerInfo" />
+          </template>
+        </mp-window>
+      </template>
     </mp-window-wrapper>
 
     <mp-window-wrapper :visible="showCustomQuery">
-      <mp-window
-        title="自定义查询"
-        :width="550"
-        :height="400"
-        :icon="widgetInfo.icon"
-        :visible.sync="showCustomQuery"
-        anchor="top-center"
-      >
-        <template>
-          <mp-custom-query :queryParams="queryParams" />
-        </template>
-      </mp-window>
+      <template v-slot:default="slotProps">
+        <mp-window
+          title="自定义查询"
+          :width="550"
+          :height="400"
+          :icon="widgetInfo.icon"
+          :visible.sync="showCustomQuery"
+          anchor="top-center"
+          v-bind="slotProps"
+        >
+          <template>
+            <mp-custom-query
+              :queryParams="queryParams"
+              @close="onCloseCustomQuery"
+            />
+          </template>
+        </mp-window>
+      </template>
     </mp-window-wrapper>
 
     <mp-window-wrapper :visible="showSelectTilematrixSet">
-      <mp-window
-        title="切换矩阵集"
-        :width="300"
-        :height="60"
-        :icon="widgetInfo.icon"
-        :visible.sync="showSelectTilematrixSet"
-        anchor="top-center"
-      >
-        <template>
-          <mp-select-tilematrix-set
-            v-if="currentWmts"
-            :layer="currentWmts"
-            @update:layer="refreshCurrentWmts"
-          />
-        </template>
-      </mp-window>
+      <template v-slot:default="slotProps">
+        <mp-window
+          title="切换矩阵集"
+          :width="300"
+          :icon="widgetInfo.icon"
+          :visible.sync="showSelectTilematrixSet"
+          anchor="center-center"
+          v-bind="slotProps"
+        >
+          <template>
+            <mp-select-tilematrix-set
+              v-if="currentWmts"
+              :layer="currentWmts"
+              @update:layer="refreshCurrentWmts"
+            />
+          </template>
+        </mp-window>
+      </template>
     </mp-window-wrapper>
 
     <mp-window-wrapper :visible="showUnifyModify">
-      <mp-window
-        title="要素统改"
-        :width="300"
-        :height="400"
-        :icon="widgetInfo.icon"
-        :visible.sync="showUnifyModify"
-        anchor="top-center"
-      >
-        <template>
-          <mp-unify-modify :unifyModifyParams="unifyModifyParams" />
-        </template>
-      </mp-window>
+      <template v-slot:default="slotProps">
+        <mp-window
+          title="要素统改"
+          :width="300"
+          :bottom="10"
+          :verticalOffset="10"
+          :icon="widgetInfo.icon"
+          :visible.sync="showUnifyModify"
+          anchor="top-center"
+          v-bind="slotProps"
+        >
+          <template>
+            <mp-unify-modify :unifyModifyParams="unifyModifyParams" />
+          </template>
+        </mp-window>
+      </template>
     </mp-window-wrapper>
 
     <mp-window-wrapper :visible="showChangeActiveLayer">
-      <mp-window
-        title="切换图层"
-        :width="300"
-        :height="60"
-        :icon="widgetInfo.icon"
-        :visible.sync="showChangeActiveLayer"
-        anchor="top-center"
-      >
-        <template>
-          <mp-change-active-layer
-            v-if="currentWmtsActiveLayer"
-            :layer="currentWmtsActiveLayer"
-            @update:layer="updateActiveLayer"
-          />
-        </template>
-      </mp-window>
+      <template v-slot:default="slotProps">
+        <mp-window
+          title="切换图层"
+          :width="300"
+          :icon="widgetInfo.icon"
+          :visible.sync="showChangeActiveLayer"
+          anchor="center-center"
+          v-bind="slotProps"
+        >
+          <template>
+            <mp-change-active-layer
+              v-if="currentWmtsActiveLayer"
+              :layer="currentWmtsActiveLayer"
+              @update:layer="updateActiveLayer"
+            />
+          </template>
+        </mp-window>
+      </template>
     </mp-window-wrapper>
   </div>
 </template>
@@ -194,11 +239,14 @@ import {
   Sublayer,
   MapMixin,
   AppMixin,
-  WMTSSublayer
+  WMTSSublayer,
+  CoordinateTransformation,
+  CoordinateSystemType
 } from '@mapgis/web-app-framework'
 import {
-  ResultSetMixin,
-  IResultSetCategory,
+  ExhibitionControllerMixin,
+  IAttributeTableExhibition,
+  AttributeTableExhibition,
   baseConfigInstance,
   queryFeaturesInstance,
   dataCatalogInstance,
@@ -223,7 +271,7 @@ import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLaye
 export default class TreeLayer extends Mixins(
   MapMixin,
   AppMixin,
-  ResultSetMixin
+  ExhibitionControllerMixin
 ) {
   @Prop() widgetInfo: Record<string, any>
 
@@ -243,6 +291,8 @@ export default class TreeLayer extends Mixins(
 
   private showSelectTilematrixSet = false
 
+  private expandedKeys = []
+
   // 记录可见状态为true的父节点的key
   private parentKeys: Array<string> = []
 
@@ -257,6 +307,20 @@ export default class TreeLayer extends Mixins(
 
   currentWmtsActiveLayer: OGCWMTSLayer = null
 
+  //  搜索功能，收到结果的  key的数组
+  private searchkeyArr = []
+
+  // 高亮搜索结果的下标
+  private searchIndex = -1
+
+  private get selectedKeys(): Array<string> {
+    if (this.searchkeyArr.length > 0 && this.searchIndex > -1) {
+      return [this.searchkeyArr[this.searchIndex]]
+    }
+
+    return []
+  }
+
   @Watch('document.defaultMap', { deep: true, immediate: true })
   documentChange(newValue, oldValue) {
     this.parentKeys = []
@@ -268,13 +332,6 @@ export default class TreeLayer extends Mixins(
       oldValue
     ) {
       this.setDocument()
-      // if (
-      //   this.document.defaultMap.layers().length > 1 &&
-      //   this.document.defaultMap.layers()[1].sublayers &&
-      //   this.document.defaultMap.layers()[1].sublayers.length > 1
-      // ) {
-      //   this.document.defaultMap.layers()[1].sublayers[1].visible = false
-      // }
       const layers: Array<unknown> = this.document.clone().defaultMap.layers()
       const arr = []
       for (let index = 0; index < layers.length; index++) {
@@ -310,6 +367,91 @@ export default class TreeLayer extends Mixins(
       this.layers = layers
       this.ticked = arr
     }
+  }
+
+  @Watch('filter')
+  filterChange() {
+    if (this.filter !== '') {
+      const arr = []
+      this.filterTreeNode(this.layers, arr)
+      this.searchkeyArr = arr
+      const parentArr = []
+      arr.forEach(key => {
+        const keyArr = key.split('-')
+        keyArr.forEach((item, i) => {
+          const keys = []
+          for (let index = 0; index <= i; index++) {
+            keys.push(keyArr[index])
+          }
+          parentArr.push(keys.join('-'))
+        })
+      })
+      // 去除数组中重叠的key
+      this.expandedKeys = Array.from(new Set(parentArr))
+    }
+  }
+
+  onSearch(val) {
+    const time = this.filter === val
+    this.filter = val
+
+    if (time) {
+      // 当延时操作还在进行时，取消滚动条滚动操作，防止searchIndex因为延时操作而产生bug
+      if (!this.timer) {
+        this.setSearchIndex()
+      }
+    } else {
+      this.searchkeyArr = []
+      this.searchIndex = -1
+      this.timer = setTimeout(() => {
+        this.setSearchIndex()
+      }, 700)
+    }
+  }
+
+  setSearchIndex() {
+    if (this.searchkeyArr.length > 0) {
+      if (this.searchIndex >= this.searchkeyArr.length - 1) {
+        this.searchIndex = 0
+      } else {
+        this.searchIndex++
+      }
+      const element = this.$el.querySelector(
+        `#tree_${this.searchkeyArr[this.searchIndex]}`
+      )
+      if (element) {
+        element.scrollIntoView()
+      }
+      this.timer = null
+    }
+  }
+
+  filterTreeNode(layers, arr) {
+    layers.forEach(item => {
+      if (item.title.toUpperCase().indexOf(this.filter.toUpperCase()) > -1) {
+        arr.push(item.key)
+      }
+      if (item.sublayers && item.sublayers.length > 0) {
+        this.filterTreeNode(item.sublayers, arr)
+      }
+    })
+  }
+
+  setBackgroundColor(item) {
+    if (
+      this.searchkeyArr.length > 0 &&
+      item.key === this.searchkeyArr[this.searchIndex]
+    ) {
+      return {
+        backgroundColor: 'yellow'
+      }
+    }
+    return null
+  }
+
+  //  没有这一步，手动控制展开的位置无法折叠
+  onExpand(expandedKeys) {
+    this.expandedKeys = expandedKeys
   }
 
   /**
@@ -456,9 +598,27 @@ export default class TreeLayer extends Mixins(
   }
 
   fitBounds(item) {
-    const {
+    let {
       fullExtent: { xmin, xmax, ymin, ymax }
     } = item
+
+    if (item.spatialReference.wkid === CoordinateSystemType.webMercator) {
+      const xminYminConverted = CoordinateTransformation.mercatorToWGS84([
+        xmin,
+        ymin
+      ])
+      const xmaxYmaxConverted = CoordinateTransformation.mercatorToWGS84([
+        xmax,
+        ymax
+      ])
+
+      xmin = xminYminConverted[0]
+      ymin = xminYminConverted[1]
+
+      xmax = xmaxYmaxConverted[0]
+      ymax = xmaxYmaxConverted[1]
+    }
+
     if (this.is2DMapMode) {
       this.map.fitBounds([xmin, ymin, xmax, ymax])
     }
@@ -557,32 +717,32 @@ export default class TreeLayer extends Mixins(
     ) {
       const { ip, port, docName } = parent._parseUrl(parent.url)
       this.queryParams = {
-        id: parent.id,
-        label: parent.title,
-        tables: [
-          {
-            label: layer.title,
-            layerIndex: layer.id,
-            id: layer.id,
-            ip: ip || baseConfigInstance.config.ip,
-            port: Number(port || baseConfigInstance.config.port),
-            serverName: docName,
-            serverType: parent.type,
-            serverUrl: parent.url
-          }
-        ]
+        id: `${parent.title} ${layer.title} ${layer.id} 自定义查询`,
+        name: `${layer.title} 自定义查询`,
+        description: `${parent.title} ${layer.title}`,
+        option: {
+          id: layer.id,
+          name: layer.title,
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: parent.type,
+          layerIndex: layer.id,
+          serverName: docName,
+          serverUrl: parent.url
+        }
       }
     } else if (this.isIgsVectorLayer(layer)) {
-      const iGSVectorLayer: IGSVectorLayer = layer.dataRef
-      const { ip, port, docName } = iGSVectorLayer._parseUrl(layer.url)
+      const igsVectorLayer: IGSVectorLayer = layer.dataRef
+      const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
       this.queryParams = {
-        id: iGSVectorLayer.id,
-        label: iGSVectorLayer.title,
-        ip: ip || baseConfigInstance.config.ip,
-        port: Number(port || baseConfigInstance.config.port),
-        serverType: iGSVectorLayer.type,
-        gdbp: iGSVectorLayer.gdbps,
-        tables: []
+        id: `${igsVectorLayer.title} ${igsVectorLayer.id} 自定义查询`,
+        name: `${igsVectorLayer.title} 自定义查询`,
+        option: {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: igsVectorLayer.type,
+          gdbp: igsVectorLayer.gdbps
+        }
       }
     }
   }
@@ -593,7 +753,7 @@ export default class TreeLayer extends Mixins(
   attributes(layer) {
     this.clickPopover(layer, false)
     const parent: IGSMapImageLayer = layer.layer
-    let categoryInfo: IResultSetCategory = null
+    let exhibition: IAttributeTableExhibition = null
     if (
       parent &&
       this.isIgsDocLayer(parent)
@@ -602,38 +762,37 @@ export default class TreeLayer extends Mixins(
       // parent.subtype === SubLayerType.RasterArcgisLayer
     ) {
       const { ip, port, docName } = parent._parseUrl(parent.url)
-      categoryInfo = {
-        id: parent.id,
-        label: parent.title,
-        tables: [
-          {
-            label: layer.title,
-            layerIndex: layer.id,
-            id: layer.id,
-            ip: ip || baseConfigInstance.config.ip,
-            port: Number(port || baseConfigInstance.config.port),
-            serverName: docName,
-            serverType: parent.type,
-            serverUrl: parent.url
-          }
-        ]
+      exhibition = {
+        id: `${parent.title} ${layer.title} ${layer.id}`,
+        name: `${layer.title} 属性表`,
+        description: `${parent.title} ${layer.title}`,
+        option: {
+          id: layer.id,
+          name: layer.title,
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: parent.type,
+          layerIndex: layer.id,
+          serverName: docName,
+          serverUrl: parent.url
+        }
       }
     } else if (this.isIgsVectorLayer(layer)) {
-      const iGSVectorLayer: IGSVectorLayer = layer.dataRef
-      const { ip, port, docName } = iGSVectorLayer._parseUrl(layer.url)
-      categoryInfo = {
-        id: iGSVectorLayer.id,
-        label: iGSVectorLayer.title,
-        ip: ip || baseConfigInstance.config.ip,
-        port: Number(port || baseConfigInstance.config.port),
-        serverType: iGSVectorLayer.type,
-        gdbp: iGSVectorLayer.gdbps,
-        tables: []
+      const igsVectorLayer: IGSVectorLayer = layer.dataRef
+      const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
+      exhibition = {
+        id: `${igsVectorLayer.title} ${igsVectorLayer.id}`,
+        name: `${igsVectorLayer.title} 属性表`,
+        option: {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: igsVectorLayer.type,
+          gdbp: igsVectorLayer.gdbps
+        }
       }
     }
-    const category = this.addCategory(categoryInfo)
-    this.currentCategoryId = category.id
-    this.openAttributeTable()
+    this.addExhibition(new AttributeTableExhibition(exhibition))
+    this.openExhibitionPanel()
   }
 
   metaDataInfo(node) {
@@ -646,6 +805,10 @@ export default class TreeLayer extends Mixins(
   clickPopover(item, visible) {
     item.dataRef.visiblePopover = visible
     this.layers = [...this.layers]
+  }
+
+  onCloseCustomQuery() {
+    this.showCustomQuery = false
   }
 
   isSubLayer({ key, sublayers }) {
@@ -690,29 +853,38 @@ export default class TreeLayer extends Mixins(
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .tree-layer-container {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  /deep/ .tree-item-handle {
-    display: flex;
-    width: 100%;
-    overflow: hidden;
-    align-items: center;
-    i {
-      margin-right: 6px;
-      width: 24px;
-      height: 24px;
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  .tree-container {
+    margin-top: 10px;
+    flex: 1 1 0%;
+    overflow: auto;
+    .tree-item-handle {
       display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    span {
-      flex: 1;
+      width: 100%;
       overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      align-items: center;
+      .filter-words {
+        color: @primary-color;
+      }
+      i {
+        margin-right: 6px;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      span {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
 }

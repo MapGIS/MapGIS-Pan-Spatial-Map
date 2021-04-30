@@ -139,7 +139,7 @@
               placeholder="请选择"
             >
               <a-select-option
-                v-for="({ label, value }, index) in statisticsTypeOptions"
+                v-for="({ label }, index) in statisticsTypeOptions"
                 :key="index"
                 :value="index"
               >
@@ -160,7 +160,7 @@
               :pagination="false"
               bordered
               size="small"
-              :scroll="{ y: 120 }"
+              :scroll="{ y: 100 }"
               :rowKey="
                 (record, index) => {
                   return index
@@ -202,7 +202,7 @@
         </a-row>
         <div
           ref="chart"
-          style="height:300px;width:100%"
+          style="height:280px;width:100%"
           v-show="!showEchartTable"
         ></div>
         <a-table
@@ -213,7 +213,7 @@
           :pagination="false"
           bordered
           size="small"
-          :scroll="{ y: 250, x: 10 }"
+          :scroll="{ y: 240, x: 10 }"
           :rowKey="
             (record, index) => {
               return index
@@ -230,7 +230,6 @@
 import { Component, Mixins, Watch, Prop, Ref } from 'vue-property-decorator'
 import { AppMixin, LayerType } from '@mapgis/web-app-framework'
 import {
-  ResultSetMixin,
   queryFeaturesInstance,
   queryArcgisInfoInstance,
   utilInstance
@@ -244,7 +243,7 @@ import { Sketch } from 'vue-color'
   name: 'MpAttrStatistics',
   components: { 'sketch-picker': Sketch }
 })
-export default class MpAttrStatistics extends Mixins(AppMixin, ResultSetMixin) {
+export default class MpAttrStatistics extends Mixins(AppMixin) {
   @Ref() readonly chart!: Element
 
   @Prop(Object) readonly queryParams!: Record<string, any>
@@ -402,7 +401,6 @@ export default class MpAttrStatistics extends Mixins(AppMixin, ResultSetMixin) {
   ]
 
   private async mounted() {
-    console.log(this.queryParams)
     // await this.getLayerOptions()
     await this.changeQueryParamas(this.queryParams)
     this.chartObj = echarts.init(this.chart)
@@ -527,7 +525,6 @@ export default class MpAttrStatistics extends Mixins(AppMixin, ResultSetMixin) {
         },
         false
       )
-      console.log(info)
       const {
         AttStruct: { FldName, FldType, FldNumber }
       } = info
@@ -981,9 +978,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin, ResultSetMixin) {
 
 <style lang="less" scoped>
 .attr-statistics {
-  padding: 10px;
   .a-row-space {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
   .color-block-container {
     padding: 5px 10px;

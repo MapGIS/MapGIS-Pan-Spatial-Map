@@ -415,21 +415,22 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
 }
 
 .retrospect-row {
-  margin: 12px 0;
+  margin: 5px 0;
 }
 
 .retrospect-input-number-unit {
   text-align: right;
 }
 .retrospect-time-line {
-  min-height: 300px;
   position: relative;
   overflow: hidden;
-  padding: 0 10px;
 }
 .retrospect-btn {
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
+  &:hover {
+    color: @primary-color;
+  }
 }
 .retrospect-shade {
   position: absolute;

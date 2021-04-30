@@ -11,11 +11,11 @@
           </a-radio>
         </a-radio-group>
       </a-col>
-      <a-button type="link" @click="close">
-        <a-icon type="close" :style="{ fontSize: '20px', color: '#ff4d4f' }" />
+      <a-button type="link" @click="close" size="small">
+        <a-icon type="close" class="group-delete" />
       </a-button>
-      <a-button type="link" @click="handleAdd">
-        <a-icon type="plus" :style="{ fontSize: '20px' }" />
+      <a-button type="link" @click="handleAdd" size="small">
+        <a-icon type="plus" class="group-add" />
       </a-button>
     </a-row>
     <filter-item
@@ -95,9 +95,11 @@ export default class FilterGroup extends Vue {
 <style lang="less">
 .filter-group {
   border-bottom: 1px solid @border-color-base;
-}
-
-.btn {
-  font-size: 30px;
+  .group-delete {
+    color: @error-color;
+  }
+  .group-add {
+    color: @primary-color;
+  }
 }
 </style>

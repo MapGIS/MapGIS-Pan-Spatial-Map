@@ -70,16 +70,23 @@
       </a-form-item>
     </a-form>
     <mp-window-wrapper :visible="showSymbolWin">
-      <mp-window
-        title="选择符号"
-        :width="300"
-        :height="400"
-        :visible.sync="showSymbolWin"
-      >
-        <template>
-          <mp-symbol :queryParams="unifyModifyParams" @symbolNo="getSymbolNo" />
-        </template>
-      </mp-window>
+      <template v-slot:default="slotProps">
+        <mp-window
+          title="选择符号"
+          :width="300"
+          :height="400"
+          anchor="center-right"
+          :visible.sync="showSymbolWin"
+          v-bind="slotProps"
+        >
+          <template>
+            <mp-symbol
+              :queryParams="unifyModifyParams"
+              @symbolNo="getSymbolNo"
+            />
+          </template>
+        </mp-window>
+      </template>
     </mp-window-wrapper>
   </div>
 </template>
@@ -88,7 +95,6 @@
 import { Component, Mixins, Watch, Prop } from 'vue-property-decorator'
 import { AppMixin, LayerType } from '@mapgis/web-app-framework'
 import {
-  ResultSetMixin,
   queryFeaturesInstance,
   queryArcgisInfoInstance,
   igsFeatureModifyInstance,
@@ -106,7 +112,7 @@ import MpSymbol from './Symbol.vue'
     'chrome-picker': Chrome
   }
 })
-export default class MpUnifyModify extends Mixins(AppMixin, ResultSetMixin) {
+export default class MpUnifyModify extends Mixins(AppMixin) {
   @Prop(Object) readonly unifyModifyParams!: Record<string, any>
 
   private form = this.$form.createForm(this, { name: 'coordinated' })

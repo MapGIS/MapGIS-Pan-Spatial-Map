@@ -8,7 +8,12 @@ export { getRequest, utilInstance, cesiumUtilInstance, Parser } from './utils'
 
 export { default as eventBus } from './event-bus'
 
-export { ResultSetMixin, AddServicesMixin, BaseLayersMixin } from './mixins'
+export {
+  ExhibitionMixin,
+  ExhibitionControllerMixin,
+  AddServicesMixin,
+  BaseLayersMixin
+} from './mixins'
 
 export { baseConfigInstance, loadConfigs } from './config'
 
@@ -24,16 +29,16 @@ export {
 } from './thematic-map'
 
 export {
-  resultSetOperInstance,
-  IResultSetColumn,
-  ResultSetColumnOper,
-  IResultSetTable,
-  ResultSetTableOper,
-  IResultSetCategory,
-  ResultSetCategoryOper,
-  IResultSet,
-  ResultSetOper
-} from './result-set'
+  exhibitionListInstance,
+  IFields,
+  IAttributeTableOption,
+  IExhibition,
+  IAttributeTableExhibition,
+  IAttributeTableListExhibition,
+  AttributeTableExhibition,
+  AttributeTableListExhibition,
+  ExhibitionList
+} from './exhibition'
 
 export {
   queryOGCInfoInstance,
@@ -73,6 +78,5 @@ export {
   queryIgsServicesInfoInstance,
   queryArcgisInfoInstance,
   igsFeatureModifyInstance,
-  queryLayerInfoInstance,
-  ExportMarkersToFileInstance
+  queryLayerInfoInstance
 } from './service'

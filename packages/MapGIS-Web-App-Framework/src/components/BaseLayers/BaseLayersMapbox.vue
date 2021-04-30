@@ -1,6 +1,6 @@
 <template>
   <div class="BaseLayersMapbox">
-    <mapbox-igs-tdt-layer
+    <mapgis-igs-tdt-layer
       v-for="layer in tdtLayers"
       :key="layer.id"
       :layer="layer"
@@ -10,7 +10,7 @@
       :token="layer.token"
       :before="getBeforeLayerId()"
     />
-    <mapbox-igs-wmts-layer
+    <mapgis-igs-wmts-layer
       v-for="layer in wmtsLayers"
       :key="layer.id"
       :layer="layer"
@@ -22,7 +22,7 @@
       :tileMatrixSet="getWmtsInfo(layer)"
       :before="getBeforeLayerId()"
     />
-    <mapbox-igs-tile-layer
+    <mapgis-igs-tile-layer
       v-for="layer in tileLayers"
       :key="layer.id"
       :layer="layer"
@@ -34,7 +34,7 @@
       :serverName="layer.serverName"
       :before="getBeforeLayerId()"
     />
-    <mapbox-igs-doc-layer
+    <mapgis-igs-doc-layer
       v-for="layer in docLayers"
       :key="layer.id"
       :layer="layer"
@@ -46,7 +46,7 @@
       :serverName="layer.serverName"
       :before="getBeforeLayerId()"
     />
-    <mapbox-arcgis-layer
+    <mapgis-arcgis-layer
       v-for="layer in arcgisLayers"
       :key="layer.id"
       :layer="layer"
@@ -56,7 +56,7 @@
       :url="layer.url"
       :before="getBeforeLayerId()"
     />
-    <mapbox-google-layer
+    <mapgis-google-layer
       v-for="layer in googleLayers"
       :key="layer.id"
       :layer="layer"
@@ -77,24 +77,8 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-const {
-  MapboxIgsTdtLayer,
-  MapboxIgsWmtsLayer,
-  MapboxIgsTileLayer,
-  MapboxIgsDocLayer,
-  MapboxArcgisLayer,
-  MapboxGoogleLayer
-} = require('@mapgis/webclient-vue-mapboxgl')
-
 @Component({
-  components: {
-    MapboxIgsTdtLayer,
-    MapboxIgsWmtsLayer,
-    MapboxIgsTileLayer,
-    MapboxIgsDocLayer,
-    MapboxArcgisLayer,
-    MapboxGoogleLayer
-  }
+  components: {}
 })
 export default class BaseLayersMapbox extends Mixins(BaseLayersMixin) {
   @Inject('map') map: any

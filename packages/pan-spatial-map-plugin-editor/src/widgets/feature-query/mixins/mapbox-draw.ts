@@ -1,10 +1,9 @@
 import { Component, Vue } from 'vue-property-decorator'
-import { MapboxBaseDraw } from '@mapgis/webclient-vue-mapboxgl'
 import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import * as Zondy from '@mapgis/webclient-es6-service'
 
 @Component({
-  components: { MapboxBaseDraw }
+  components: {}
 })
 export default class MapboxDraw extends Vue {
   private type = -1 // -1 空状态、0  点、1  线、2   面、3  矩形

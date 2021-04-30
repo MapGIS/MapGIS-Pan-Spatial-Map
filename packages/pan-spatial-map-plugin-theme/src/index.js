@@ -1,7 +1,8 @@
 import {
   setExternalLayoutElementComponents,
   MpPanSpatialMapHeader,
-  MpPanSpatialMapSideMenu
+  MpPanSpatialMapSideMenu,
+  MpPanSpatialMapFooter
 } from './components'
 
 import {
@@ -14,6 +15,7 @@ import {
 const components = [
   MpPanSpatialMapHeader,
   MpPanSpatialMapSideMenu,
+  MpPanSpatialMapFooter,
   MpPanSpatialMapClassicTheme,
   MpPanSpatialMapClassicHeader,
   MpPanSpatialMapClassicLeft,

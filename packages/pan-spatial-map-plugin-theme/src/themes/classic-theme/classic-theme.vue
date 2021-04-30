@@ -25,7 +25,7 @@
             class="map-wrapper"
             :cesium-lib-path="publicPath + 'cesium/Cesium.js'"
             :cesium-plugin-path="
-              publicPath + 'cesium/webclient-cesium-plugins.js'
+              publicPath + 'cesium/webclient-cesium-plugin.js'
             "
             :map-options="mapOptions"
           />
@@ -36,16 +36,11 @@
           />
           <slot v-if="mapInitialized" name="map" />
         </a-layout-content>
-        <a-layout-footer
-          class="footer-wrapper"
-          style="padding: 0;background: none"
-        >
-          <component
-            :is="footerContentComponent"
-            v-bind="parseContentProps('footer')"
-            :max-view-height="maxFooterHeight"
-          />
-        </a-layout-footer>
+        <component
+          :is="footerContentComponent"
+          v-bind="parseContentProps('footer')"
+          :max-view-height="maxFooterHeight"
+        />
       </a-layout>
     </a-layout>
   </a-layout>
@@ -90,12 +85,6 @@ export default {
     },
     footerContentComponent() {
       return this.parseContentComponent('footer')
-    },
-    cesiumLibPath() {
-      return `${process.env.BASE_URL}cesium/Cesium.js`
-    },
-    cesiumPluginPath() {
-      return `${process.env.BASE_URL}cesium/webclient-cesium-plugins.js`
     },
     mapOptions() {
       const lnglat = baseConfigInstance.config.center.split(',')
@@ -151,9 +140,6 @@ export default {
         width: calc(100vw - 48px);
         height: calc(100vh - 48px);
       }
-    }
-    .footer-wrapper {
-      z-index: 500;
     }
   }
 }

@@ -34,7 +34,11 @@ export default {
         this.isWidgetVisible(widget, 'content')
       )
 
-      if (visibleWidget) {
+      if (
+        visibleWidget &&
+        this.$refs[visibleWidget.id] &&
+        this.$refs[visibleWidget.id][0]
+      ) {
         return this.$refs[visibleWidget.id][0].$refs.sideWindow.currentWidth
       }
 
