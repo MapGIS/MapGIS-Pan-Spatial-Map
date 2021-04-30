@@ -176,7 +176,7 @@ export default class ResultTab extends Vue {
       fields: this.fields.toString(),
       rtnLabel: false,
       f: 'json',
-      where: '',
+      where,
       //   geometry: this.geometry,
       cursorType: 'backword'
     }
@@ -223,7 +223,6 @@ export default class ResultTab extends Vue {
           markerCoords.push(coords)
         }
       }
-      debugger
       if (this.cluster) {
         this.geojson = { type: 'FeatureCollection', features }
         this.markersInfos = []
