@@ -126,6 +126,8 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   }
 
   onSearch() {
+    this.searchPanelExpand = true
+    this.locationPanelExpand = false
     this.$refs.placeName.search(this.keyword)
   }
 }
