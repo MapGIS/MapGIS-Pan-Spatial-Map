@@ -1,7 +1,7 @@
 <template>
   <div class="add-services-data">
     <div class="row">
-      <!-- <a-select v-model="serviceCategory">
+      <a-select v-model="serviceCategory">
         <a-select-option v-for="item in serviceCategories" :key="item.name">{{
           item.name
         }}</a-select-option>
@@ -10,9 +10,29 @@
         <a-select-option v-for="item in serviceTypes" :key="item">{{
           item
         }}</a-select-option>
-      </a-select> -->
+      </a-select>
     </div>
-    <div class="row"></div>
+    <div class="row">
+      <a-input v-model="keyword">
+        <a-icon slot="suffix" type="search"></a-icon>
+      </a-input>
+      <a-button type="primary">保存服务</a-button>
+    </div>
+    <a-table
+      :columns="columns"
+      :data-source="tableData"
+      :pagination="pagination"
+      :row-selection="{
+        selectedRowKeys: selectedRowKeys,
+        onChange: onSelectChange
+      }"
+      :rowKey="
+        (record, index) => {
+          return index
+        }
+      "
+    >
+    </a-table>
   </div>
 </template>
 
@@ -39,13 +59,70 @@ export default class AddServicesData extends Mixins(
   // 子类别选中项
   private serviceType = null
 
+  private serviceCategories = []
+
+  // 搜索框输入值
+  private keyword = ''
+
+  // 表格数据
+  private tableData: Service[] = []
+
+  // 表格列配置
+  private columns = [
+    {
+      title: '服务名称',
+      dataIndex: 'name',
+      align: 'center'
+    },
+    {
+      title: '服务类型',
+      dataIndex: 'type',
+      align: 'center'
+    },
+    {
+      title: '服务地址',
+      dataIndex: 'url',
+      align: 'center'
+    },
+    {
+      title: '操作',
+      dataIndex: 'operate',
+      align: 'center'
+    }
+  ]
+
+  // 分页器配置
+  private pagination = {
+    showSizeChanger: true,
+    size: 'small'
+    // showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
+  }
+
+  // Table选中项的 key 数组
+  private selectedRowKeys = []
+
   created() {
     console.log(this.serviceCategories)
 
     this.serviceCategory = this.serviceCategories[0]
     this.serviceType = this.serviceTypes[0]
   }
+
+  // Table选中项发生变化时的回调
+  onSelectChange(selectedRowKeys) {
+    this.selectedRowKeys = selectedRowKeys
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.add-services-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.row {
+  display: flex;
+  align-items: center;
+}
+</style>
