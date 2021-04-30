@@ -76,7 +76,10 @@
       <marker-input @addMarker="addMarker" @closeModal="modalInput = false" />
     </a-modal>
     <a-modal v-model="modalImport" title="导入文件" :width="360" :footer="null">
-      <marker-import @closeModal="modalImport = false" />
+      <marker-import
+        @addMarkers="addMarkers"
+        @closeModal="modalImport = false"
+      />
     </a-modal>
     <a-modal v-model="modalExport" title="导入标注" :width="360" :footer="null">
       <marker-export :markers="tableData" @closeModal="modalExport = false" />
@@ -304,6 +307,13 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 添加标注
   addMarker(marker: any) {
     this.tableData.push(marker)
+  }
+
+  // 通过文件导入添加标注
+  addMarkers(markers: any[]) {
+    console.log('hahah')
+
+    this.tableData.push(markers[0])
   }
 
   // Table选中项发生变化时的回调
