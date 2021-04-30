@@ -2,7 +2,7 @@
   <div class="add-services-data">
     <div class="row">
       <a-select v-model="serviceCategory">
-        <a-select-option v-for="item in serviceCategories" :key="item.name">{{
+        <a-select-option v-for="item in serviceCategories" :key="item">{{
           item.name
         }}</a-select-option>
       </a-select>
@@ -32,6 +32,9 @@
         }
       "
     >
+      <template v-slot:operate>
+        <a-icon type="delete"></a-icon>
+      </template>
     </a-table>
   </div>
 </template>
@@ -47,10 +50,7 @@ import {
 import axios from 'axios'
 
 @Component({})
-export default class AddServicesData extends Mixins(
-  AddServicesMixin,
-  AppMixin
-) {
+export default class AddServicesData extends Mixins(AppMixin) {
   @Prop(Array) readonly serviceTypes!: ServiceType[]
 
   // 类别选中项
@@ -65,7 +65,13 @@ export default class AddServicesData extends Mixins(
   private keyword = ''
 
   // 表格数据
-  private tableData: Service[] = []
+  private tableData = [
+    {
+      name: 'xxx',
+      type: 'xxx',
+      url: 'xxx'
+    }
+  ]
 
   // 表格列配置
   private columns = [
@@ -85,9 +91,10 @@ export default class AddServicesData extends Mixins(
       align: 'center'
     },
     {
+      key: 'operate',
       title: '操作',
-      dataIndex: 'operate',
-      align: 'center'
+      align: 'center',
+      scopedSlots: { customRender: 'operate' }
     }
   ]
 
@@ -102,10 +109,11 @@ export default class AddServicesData extends Mixins(
   private selectedRowKeys = []
 
   created() {
-    console.log(this.serviceCategories)
+    console.log(this.keyword)
 
-    this.serviceCategory = this.serviceCategories[0]
-    this.serviceType = this.serviceTypes[0]
+    // console.log(this.serviceCategories)
+    // this.serviceCategory = this.serviceCategories[0]
+    // this.serviceType = this.serviceTypes[0]
   }
 
   // Table选中项发生变化时的回调
@@ -122,7 +130,9 @@ export default class AddServicesData extends Mixins(
   align-items: center;
 }
 .row {
+  width: 100%;
   display: flex;
   align-items: center;
+  padding: 0 8px;
 }
 </style>
