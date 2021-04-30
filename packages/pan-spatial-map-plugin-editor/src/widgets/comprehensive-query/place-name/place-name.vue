@@ -212,15 +212,6 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
   setCenter(positionCoord) {
     this.$refs['place-name-mapbox'].setMapCenter(positionCoord)
   }
-
-  showCoords(markers, fieldNames) {
-    this.markers = markers
-    this.fieldNames = fieldNames
-  }
-
-  setCenter(positionCoord) {
-    this.$refs['place-name-mapbox'].setMapCenter(positionCoord)
-  }
 }
 </script>
 
