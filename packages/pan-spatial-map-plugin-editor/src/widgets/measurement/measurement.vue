@@ -11,7 +11,7 @@
           >
             <a-button
               class="button btn-left"
-              @click="onOpenMeasure(item.mode)"
+              @click="startMeasure(item.mode)"
               :icon="item.icon"
               shape="circle"
             />
@@ -42,7 +42,7 @@
           <a-button
             class="button btn-right"
             shape="circle"
-            @click="onClearMeasure"
+            @click="clearMeasure"
           >
             <a-icon type="delete" theme="filled" />
           </a-button>
@@ -177,11 +177,15 @@
       </a-form-model>
     </div>
     <mapbox-measure
-      ref="mapboxMeasure"
-      v-show="is2DMapMode"
+      v-if="mapboxShow"
       :measureSetting="formData"
+      :measureMode="activeMode"
       :distanceUnit="activeDistanceSelect"
       :areaUnit="activeAreaSelect"
+      :clearVar="clearVar"
+      :stopVar="stopVar"
+      :deActiveVar="deActiveVar"
+      :activeVar="activeVar"
       @finished="onMeasureFinished"
       @start="onMeasureStart"
     />
@@ -203,7 +207,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     {
       mode: 'measure-length',
       title: '长度',
-      icon: 'line-chart'
+      icon: 'pull-request'
     },
     {
       mode: 'measure-area',
@@ -213,13 +217,24 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   ]
 
   // 当前激活项
-  private activeMode = ''
+  private activeMode = { mode: '', var: 0 }
 
   // 编辑面板的显隐
   private showSettingPanel = false
 
+  // 控制mapbox绘制组件，防止id冲突
+  private mapboxShow = false
+
   // 是否测量完毕
   private isMeasureFinished = false
+
+  private clearVar = 0
+
+  private stopVar = 1
+
+  private deActiveVar = 0
+
+  private activeVar = 0
 
   // 不同激活项对应的下拉框配置
   private selectOptions = {
@@ -262,82 +277,75 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
   // 下拉框配置
   get getSelectOptions() {
-    return this.selectOptions[this.activeMode] || []
+    return this.selectOptions[this.activeMode.mode] || []
   }
 
   // 当前激活项是否为长度测量
   get showLengthSelect() {
-    return this.activeMode === 'measure-length'
+    return this.activeMode.mode === 'measure-length'
   }
 
   // 当前激活项是否为面积测量
   get showAreaSelect() {
-    return this.activeMode === 'measure-area'
+    return this.activeMode.mode === 'measure-area'
   }
 
-  get measureComponent() {
-    return this.is2DMapMode ? this.$refs.mapboxMeasure : null
-  }
-
-  // 二三维地图模式切换时
-  @Watch('mapRender')
-  mapRenderChange() {
-    if (this.is2DMapMode) {
-      // 三维测量清除
-    } else {
-      this.$refs.mapboxMeasure.clearMeasure()
-    }
-
-    this.isMeasureFinished = false
+  // 微件打开时
+  onOpen() {
+    this.mapboxShow = true
   }
 
   // 微件关闭时
   onClose() {
-    this.onClearMeasure()
+    this.mapboxShow = false
+    this.clearMeasure()
+  }
+
+  // 微件激活时
+  onActive() {
+    this.activeVar += 1
   }
 
   // 微件失活时
   onDeActive() {
-    this.onClearMeasure()
+    this.deActiveVar += 1
   }
 
-  // 打开测量，点击图标激活对应类型的测量功能
-  private onOpenMeasure(mode) {
-    this.activeMode = mode
-    this.measureComponent && this.measureComponent.openMeasure(mode)
-  }
-
-  // 移除测量
-  private onClearMeasure() {
-    this.measureComponent && this.measureComponent.clearMeasure()
-
+  clearMeasure() {
+    this.clearVar += 1
     this.isMeasureFinished = false
   }
 
-  // 'start'响应事件(开始测量)
-  private onMeasureStart() {
-    this.isMeasureFinished = false
-  }
-
-  // 'finished'响应事件(结束测量)
-  private onMeasureFinished(results: Record<string, any>) {
-    this.isMeasureFinished = true
-    this.results = { ...results }
+  // 点击图标激活对应类型的量算功能
+  startMeasure(mode) {
+    this.activeMode.mode = mode
+    this.activeMode.var += 1
   }
 
   // 选中文字颜色拾取器对应事件
-  private getFontColor(val) {
+  getFontColor(val) {
     this.formData.textColor = val.hex
   }
 
   // 选中轮廓线颜色拾取器对应事件
-  private getLineColor(val) {
+  getLineColor(val) {
     this.formData.lineColor = val.hex
   }
 
   // 格式化滑动条Tooltip内容
-  private formatter(value) {
+  formatter(value) {
     return `${value}%`
+  }
+
+  // 'start'响应事件(开始量算)
+  onMeasureStart() {
+    this.isMeasureFinished = false
+  }
+
+  // 'finished'响应事件(结束量算)
+  onMeasureFinished(results: Record<string, any>) {
+    this.isMeasureFinished = true
+    this.results = { ...results }
   }
 }
 </script>

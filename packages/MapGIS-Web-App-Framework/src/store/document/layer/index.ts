@@ -19,8 +19,6 @@ import {
   AMapMercatorSatelliteAnnMapLayer
 } from './amap-layer'
 
-import { VectorTileLayer } from './vector-tile-layer'
-
 export {
   Layer,
   LayerType,
@@ -45,6 +43,5 @@ export {
   ArcGISSublayer,
   AMapMercatorEMapLayer,
   AMapMercatorSatelliteMapLayer,
-  AMapMercatorSatelliteAnnMapLayer,
-  VectorTileLayer
+  AMapMercatorSatelliteAnnMapLayer
 }

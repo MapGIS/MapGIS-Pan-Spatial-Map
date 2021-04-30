@@ -440,7 +440,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
 .retrospect-time-line {
   position: relative;
   overflow: hidden;
-  text-align: center;
 }
 .retrospect-btn {
   font-size: 16px;
@@ -448,5 +447,20 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   &:hover {
     color: @primary-color;
   }
+}
+.retrospect-shade {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  opacity: 0.7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 5px;
+  word-wrap: break-word;
 }
 </style>

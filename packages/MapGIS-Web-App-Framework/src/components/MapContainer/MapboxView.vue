@@ -349,12 +349,9 @@ export default {
     isRasterLayer(type) {
       return (
         type === LayerType.aMapMercatorEMap ||
-        type === LayerType.aMapMercatorSatelliteMap ||
-        type === LayerType.aMapMercatorSatelliteAnnMap
+        LayerType.aMapMercatorSatelliteMap ||
+        LayerType.aMapMercatorSatelliteAnnMap
       )
-    },
-    isVectorTileLayer(type) {
-      return type === LayerType.vectorTile
     },
     generateWebTileLayerUrl(layer) {
       let url = ''

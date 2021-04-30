@@ -46,8 +46,7 @@ export {
   ArcGISSublayer,
   AMapMercatorEMapLayer,
   AMapMercatorSatelliteMapLayer,
-  AMapMercatorSatelliteAnnMapLayer,
-  VectorTileLayer
+  AMapMercatorSatelliteAnnMapLayer
 } from './store/document/layer'
 
 export { Document, Map } from './store/document'
