@@ -1,13 +1,5 @@
 <template>
   <div class="mp-widget-layer-list">
-    <!-- <a-tabs v-model="tab" :animated="false">
-      <a-tab-pane key="tree" tab="图层树">
-        <tree-layer :widgetInfo="widgetInfo" />
-      </a-tab-pane>
-      <a-tab-pane key="opacity" tab="透明度">
-        <layer-opacity :layers="document.defaultMap.layers()" />
-      </a-tab-pane>
-    </a-tabs> -->
     <ul class="top-tab-nav">
       <li
         v-for="{ key, label } in tabs"
@@ -48,13 +40,14 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
 
 <style lang="less">
 .mp-widget-layer-list {
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 76px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   .top-tab-nav {
     border-bottom: 1px @border-color solid;
+    flex-shrink: 0;
     list-style: none;
     display: flex;
     height: 32px;

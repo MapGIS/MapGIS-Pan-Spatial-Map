@@ -1,11 +1,11 @@
 <template>
   <div class="mp-widget-zoom">
-    <a-tooltip title="放大" placement="right" :overlay-style="{ zIndex: 2000 }">
+    <a-tooltip title="放大" placement="right" :overlay-style="{ zIndex: 1000 }">
       <div class="zoom-in button" @click="onZoomIn">
         <a-icon type="plus" />
       </div>
     </a-tooltip>
-    <a-tooltip title="缩小" placement="right" :overlay-style="{ zIndex: 2000 }">
+    <a-tooltip title="缩小" placement="right" :overlay-style="{ zIndex: 1000 }">
       <div class="zoom-out button" @click="onZoomOut">
         <a-icon type="minus" />
       </div>
