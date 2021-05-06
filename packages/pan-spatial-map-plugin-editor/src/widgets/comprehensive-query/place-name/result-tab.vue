@@ -1,51 +1,61 @@
 <template>
   <div class="comprehensive-result-tab-container">
     <a-spin :spinning="spinning" v-if="!cluster">
-      <ul class="comprehensive-result-tab">
-        <li
-          v-for="(item, i) in markersInfos"
-          :key="item.id"
-          @mouseover="mouseOver(i)"
-          @mouseleave="mouseLeave(i)"
-          @click="setActivePoint(i)"
-        >
-          <div class="img-result-tab">
-            <img :src="item.img" />
-          </div>
-          <div class="content-result-tab">
-            <p v-for="(row, index) in fieldNames" :key="row">
-              <label>{{ row }}:</label>
-              <span>{{ item.properties[fields[index]] }}</span>
-            </p>
-          </div>
-        </li>
-      </ul>
-      <div class="pagination-container">
-        <a-pagination
-          simple
-          :current="currentPageIndex"
-          :total="maxCount"
-          @change="pageChange"
-        />
-      </div>
+      <template v-if="markersInfos.length > 0">
+        <ul class="comprehensive-result-tab">
+          <li
+            v-for="(item, i) in markersInfos"
+            :key="item.id"
+            @mouseover="mouseOver(i)"
+            @mouseleave="mouseLeave(i)"
+            @click="setActivePoint(i)"
+          >
+            <div class="img-result-tab">
+              <img :src="item.img" />
+            </div>
+            <div class="content-result-tab">
+              <p v-for="(row, index) in fieldNames" :key="row">
+                <label>{{ row }}:</label>
+                <span>{{ item.properties[fields[index]] }}</span>
+              </p>
+            </div>
+          </li>
+        </ul>
+        <div class="pagination-container">
+          <a-pagination
+            simple
+            :current="currentPageIndex"
+            :total="maxCount"
+            @change="pageChange"
+          />
+        </div>
+      </template>
+      <template v-else>
+        <a-empty />
+      </template>
     </a-spin>
     <a-spin :spinning="spinning" v-else>
-      <div class="cluster-title">
-        <span>
-          聚合标注图层：
-        </span>
-      </div>
-      <div class="cluster-content">
-        <span>
-          {{ name }}
-        </span>
-        <span>
-          {{ `共${setCounts()}条结果` }}
-        </span>
-        <a-tag :color="selectedItem.color">
-          {{ selectedItem.color }}
-        </a-tag>
-      </div>
+      <template v-if="markersInfos.length > 0">
+        <div class="cluster-title">
+          <span>
+            聚合标注图层：
+          </span>
+        </div>
+        <div class="cluster-content">
+          <span>
+            {{ name }}
+          </span>
+          <span>
+            {{ `共${setCounts()}条结果` }}
+          </span>
+          <a-tag :color="selectedItem.color">
+            {{ selectedItem.color }}
+          </a-tag>
+        </div>
+      </template>
+      <template v-else>
+        <a-empty />
+      </template>
     </a-spin>
   </div>
 </template>
@@ -150,13 +160,14 @@ export default class ResultTab extends Vue {
   }
 
   async queryFeature() {
-    // const where =
-    //   this.keyword && this.keyword !== ''
-    //     ? `${this.selectedItem.searchField ||
-    //         this.config.allSearchName} LIKE '%${this.keyword}%'`
-    //     : ''
-    const where = `${this.selectedItem.searchField ||
-      this.config.allSearchName} LIKE '%${this.keyword}%'`
+    const where =
+      this.keyword && this.keyword !== ''
+        ? `${this.selectedItem.searchField ||
+            this.config.allSearchName} LIKE '%${this.keyword}%'`
+        : `${this.selectedItem.searchField ||
+            this.config.allSearchName} LIKE '%'`
+    // const where = `${this.selectedItem.searchField ||
+    //   this.config.allSearchName} LIKE '%${this.keyword}%'`
     if (!this.isDataStoreQuery) {
       await this.igsQuery(where)
     } else {
