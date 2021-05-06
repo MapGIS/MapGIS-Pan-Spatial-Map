@@ -130,9 +130,19 @@ export default class ThematicMapStatisticTable extends Mixins<{
     return ThematicMapInstance.isVisible('st')
   }
 
+  // 获取选中专题
+  get selected() {
+    return ThematicMapInstance.getSelected
+  }
+
+  // 获取时间轴已选中的年度(回显至时间选项)
+  get selectedTime() {
+    return ThematicMapInstance.getSelectedTime
+  }
+
   // 获取选中专题对应年度的配置数据以及配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
-  get selectedConfig() {
-    return ThematicMapInstance.getSelectedConfig
+  get selectedConfigSubData() {
+    return ThematicMapInstance.getSelectedConfig?.configSubData
   }
 
   /**
@@ -168,8 +178,8 @@ export default class ThematicMapStatisticTable extends Mixins<{
         this.chart.clear()
         this.chart.setOption(options(this.chartOption))
         this.chart.resize()
-        this.loading = false
       }
+      this.loading = false
     })
   }
 
@@ -178,15 +188,17 @@ export default class ThematicMapStatisticTable extends Mixins<{
    * @param value<string>
    */
   onTargetChange(value) {
-    this.loading = true
     this.target = value
     this.chartOption.title = value
-    const params = ThematicMapInstance.getRequestParams()
-    const fn = queryFeaturesInstance.query(params)
-    if (fn && fn.then) {
-      fn.then(dataSet => this.onSetChartData(dataSet)).catch(e => {
-        this.loading = false
-      })
+    if (typeof ThematicMapInstance.getRequestParams === 'function') {
+      const params = ThematicMapInstance.getRequestParams()
+      const fn = queryFeaturesInstance.query(params)
+      if (fn && fn.then) {
+        this.loading = true
+        fn.then(dataSet => this.onSetChartData(dataSet)).catch(e => {
+          this.loading = false
+        })
+      }
     }
   }
 
@@ -195,14 +207,15 @@ export default class ThematicMapStatisticTable extends Mixins<{
    * @param dataSet<object>
    */
   onSetChartData(dataSet) {
-    if (dataSet && dataSet.AttStruct.FldName) {
+    if (dataSet && dataSet.AttStruct.FldName && this.selectedConfigSubData) {
       const {
         SFEleArray,
         AttStruct: { FldName }
       } = dataSet
       const {
         graph: { field }
-      } = this.selectedConfig.configSubData
+      } = this.selectedConfigSubData
+
       const xIndex = FldName.indexOf(field)
       const yIndex = FldName.indexOf(this.target)
       SFEleArray.forEach(({ AttValue }) => {
@@ -217,20 +230,29 @@ export default class ThematicMapStatisticTable extends Mixins<{
           }
         }
       })
-      this.onChartTypeChange('bar')
+    } else {
+      this.chartOption.x = []
+      this.chartOption.y = []
     }
+    this.onChartTypeChange('bar')
   }
 
   /**
    * 设置指标数据
    * @param <object>
    */
-  onSetTargetList({ configSubData }) {
-    if (configSubData) {
-      const { showFields, showFieldsTitle } = configSubData.graph
+  onSetTargetList() {
+    let targetList = []
+    let chartTitle = ''
+    if (this.selectedConfigSubData) {
+      const {
+        field,
+        graph: { showFields, showFieldsTitle }
+      } = this.selectedConfigSubData
+      chartTitle = field
       const isFieldsTitle =
         showFieldsTitle && Object.keys(showFieldsTitle).length
-      const targetList = showFields.reduce((results, item) => {
+      targetList = showFields.reduce((results, item) => {
         if (item) {
           const obj = {}
           obj.label = item
@@ -240,9 +262,9 @@ export default class ThematicMapStatisticTable extends Mixins<{
         }
         return results
       }, [])
-      this.targetList = targetList
-      this.onTargetChange(targetList[0].value)
     }
+    this.targetList = targetList
+    this.onTargetChange(chartTitle || targetList[0]?.value)
   }
 
   /**
@@ -254,13 +276,19 @@ export default class ThematicMapStatisticTable extends Mixins<{
   }
 
   /**
-   * 监听: 选中的专题的配置项的变化和新格式化后的选中专题的变化
+   * 监听: 选中的专题的变化
    */
-  @Watch('selectedConfig', { deep: true })
-  watchSelectedConfig(nV) {
-    if (nV) {
-      this.onSetTargetList(nV)
-    }
+  @Watch('selected')
+  watchSelected() {
+    this.onSetTargetList()
+  }
+
+  /**
+   * 监听: 年度时间轴数据变化
+   */
+  @Watch('selectedTime')
+  watchSelectedTime() {
+    this.onSetTargetList()
   }
 
   beforeCreate() {

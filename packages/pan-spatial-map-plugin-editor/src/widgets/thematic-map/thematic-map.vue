@@ -112,6 +112,8 @@ export default class MpThematicMap extends Mixins<{
       return results
     }, [])
     // console.log('选中的专题的列表', configList)
+    const lastId = configList.length ? configList[configList.length - 1].id : ''
+    ThematicMapInstance.setSelected(lastId)
     ThematicMapInstance.setSelectedList(configList)
   }
 
@@ -124,8 +126,7 @@ export default class MpThematicMap extends Mixins<{
       config,
       config: { subjectConfig }
     } = this.widgetInfo
-    const openModules: TModuleType[] = ['at', 'st', 'tl', 'mt']
-    openModules.forEach(item => ThematicMapInstance.setVisible(item))
+    this.onVisible()
     ThematicMapInstance.setThematicMapConfig(config)
     this.treeData = this.normalizeTreeData(subjectConfig)
     // console.log('专题服务树', this.treeData)
@@ -138,6 +139,14 @@ export default class MpThematicMap extends Mixins<{
   onClose() {
     ThematicMapInstance.resetVisible()
     ThematicMapInstance.reset()
+  }
+
+  /**
+   * 功能面板开关
+   */
+  onVisible() {
+    const openModules: TModuleType[] = ['at', 'st', 'tl', 'mt']
+    openModules.forEach(item => ThematicMapInstance.setVisible(item))
   }
 }
 </script>

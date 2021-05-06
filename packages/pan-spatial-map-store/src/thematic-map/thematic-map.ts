@@ -20,7 +20,7 @@ export const ThematicMapInstance = new Vue({
       selectedTime: '',
       // 选中的'单个专题服务配置'的年度列表
       selectedTimeList: [],
-      // 所有选中的'单个专题服务配置'
+      // 选中的'单个专题服务配置'
       selected: '',
       // 所有选中的'单个专题服务配置'列表
       selectedList: [],
@@ -49,6 +49,30 @@ export const ThematicMapInstance = new Vue({
      */
     getSubjectConfig() {
       return this.thematicMapConfig.subjectConfig
+    },
+    /**
+     *  获取选中的'单个专题服务配置'
+     */
+    getSelected() {
+      return this.selected
+    },
+    /**
+     *  获取选中的'单个专题服务配置'集合(属性表专题选择框需要)
+     */
+    getSelectedList() {
+      return this.selectedList
+    },
+    /**
+     * 获取单个专题服务中选中的年度
+     */
+    getSelectedTime() {
+      return this.selectedTime
+    },
+    /**
+     * 获取最后勾选的单个专题服务的年度列表(时间轴数据)
+     */
+    getSelectedTimeList() {
+      return this.selectedTimeList
     },
     /**
      * 获取选中的'单个专题服务配置'的配置
@@ -86,28 +110,11 @@ export const ThematicMapInstance = new Vue({
       return subject
     },
     /**
-     *  获取选中的'单个专题服务配置'集合(属性表专题选择框需要)
-     */
-    getSelectedList() {
-      return this.selectedList
-    },
-    /**
-     * 获取单个专题服务中选中的年度
-     */
-    getSelectedTime() {
-      return this.selectedTime
-    },
-    /**
-     * 获取最后勾选的单个专题服务的年度列表(时间轴数据)
-     */
-    getSelectedTimeList() {
-      return this.selectedTimeList
-    },
-    /**
      * 获取列表数据请求报文
      * @returns <object>
      */
     getRequestParams({ getBaseConfig, getSelectedConfig }) {
+      if (!getSelectedConfig) return
       const { baseIp, basePort } = getBaseConfig
       const { configType = 'gdbp', configSubData } = getSelectedConfig
       const {
