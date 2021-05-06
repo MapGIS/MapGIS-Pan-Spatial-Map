@@ -35,27 +35,22 @@
       </template>
     </a-spin>
     <a-spin :spinning="spinning" v-else>
-      <template v-if="markersInfos.length > 0">
-        <div class="cluster-title">
-          <span>
-            聚合标注图层：
-          </span>
-        </div>
-        <div class="cluster-content">
-          <span>
-            {{ name }}
-          </span>
-          <span>
-            {{ `共${setCounts()}条结果` }}
-          </span>
-          <a-tag :color="selectedItem.color">
-            {{ selectedItem.color }}
-          </a-tag>
-        </div>
-      </template>
-      <template v-else>
-        <a-empty />
-      </template>
+      <div class="cluster-title">
+        <span>
+          聚合标注图层：
+        </span>
+      </div>
+      <div class="cluster-content">
+        <span>
+          {{ name }}
+        </span>
+        <span>
+          {{ `共${setCounts()}条结果` }}
+        </span>
+        <a-tag :color="selectedItem.color">
+          {{ selectedItem.color }}
+        </a-tag>
+      </div>
     </a-spin>
   </div>
 </template>
