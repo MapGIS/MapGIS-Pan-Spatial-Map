@@ -65,9 +65,6 @@ import RowFlex from '../RowFlex'
 export default class ThematicMapAttributeTable extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  // 显示开关
-  atVisible = false
-
   // 加载开关
   loading = false
 
@@ -96,8 +93,14 @@ export default class ThematicMapAttributeTable extends Mixins<{
   tableData: Record<string, any>[] = []
 
   // 显示开关
-  get visible() {
+  get atVisible() {
     return ThematicMapInstance.isVisible('at')
+  }
+
+  set atVisible(nV) {
+    if (!nV) {
+      ThematicMapInstance.resetVisible('at')
+    }
   }
 
   // 分页配置
@@ -234,14 +237,6 @@ export default class ThematicMapAttributeTable extends Mixins<{
   }
 
   /**
-   * 监听:弹框开关
-   */
-  @Watch('visible')
-  watchVisible(nV) {
-    this.atVisible = nV
-  }
-
-  /**
    * 监听:侧边栏的单个专题的选择发生变化,需要同步更新专题选项
    */
   @Watch('selected')
@@ -259,10 +254,6 @@ export default class ThematicMapAttributeTable extends Mixins<{
     if (this.time !== nV) {
       this.onTimeChange(nV)
     }
-  }
-
-  created() {
-    this.atVisible = this.visible
   }
 }
 </script>

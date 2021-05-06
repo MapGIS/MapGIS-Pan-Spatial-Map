@@ -179,8 +179,12 @@ export const ThematicMapInstance = new Vue({
     /**
      * 重置专题服务展示弹框的开关
      */
-    resetVisible() {
-      this.moduleTypes = []
+    resetVisible(type?: TModuleType) {
+      if (type) {
+        this.moduleTypes.splice(this.moduleTypes.indexOf(type), 1)
+      } else {
+        this.moduleTypes = []
+      }
     },
 
     /**
@@ -223,13 +227,6 @@ export const ThematicMapInstance = new Vue({
      */
     setSelectedTimeList(timeList: string[]) {
       this.selectedTimeList = timeList
-    },
-
-    /**
-     * 重置所有设置
-     */
-    reset() {
-      // todo
     }
   }
 })

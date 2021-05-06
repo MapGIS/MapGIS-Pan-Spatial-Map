@@ -84,8 +84,6 @@ interface IChartOption {
 export default class ThematicMapStatisticTable extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  stVisible = false
-
   loading = false
 
   // 当前活动的图标
@@ -126,8 +124,14 @@ export default class ThematicMapStatisticTable extends Mixins<{
     }
   ]
 
-  get visible() {
+  get stVisible() {
     return ThematicMapInstance.isVisible('st')
+  }
+
+  set stVisible(nV) {
+    if (!nV) {
+      ThematicMapInstance.resetVisible('st')
+    }
   }
 
   // 获取选中专题
@@ -268,14 +272,6 @@ export default class ThematicMapStatisticTable extends Mixins<{
   }
 
   /**
-   * 监听:弹框开关
-   */
-  @Watch('visible')
-  watchVisible(nV) {
-    this.stVisible = nV
-  }
-
-  /**
    * 监听: 选中的专题的变化
    */
   @Watch('selected')
@@ -296,7 +292,6 @@ export default class ThematicMapStatisticTable extends Mixins<{
   }
 
   mounted() {
-    this.stVisible = this.visible
     this.chart = echarts.init(
       document.getElementById('thematic-map-statistic-table-chart')
     )

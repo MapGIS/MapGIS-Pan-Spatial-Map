@@ -138,7 +138,6 @@ export default class MpThematicMap extends Mixins<{
    */
   onClose() {
     ThematicMapInstance.resetVisible()
-    ThematicMapInstance.reset()
   }
 
   /**

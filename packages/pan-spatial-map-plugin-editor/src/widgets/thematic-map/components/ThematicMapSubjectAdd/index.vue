@@ -57,24 +57,19 @@ export default class ThematicMapSubjectAdd extends Mixins<{
 }>(WidgetMixin) {
   // @ProvideReactive() formData!: any
 
-  saVisible = false
-
   // formData = {}
 
-  get visible() {
+  get saVisible() {
     return ThematicMapInstance.isVisible('sa')
   }
 
+  set saVisible(nV) {
+    if (!nV) {
+      ThematicMapInstance.resetVisible('sa')
+    }
+  }
+
   onSave() {}
-
-  @Watch('visible')
-  watchVisible(nV) {
-    this.saVisible = nV
-  }
-
-  created() {
-    this.saVisible = this.visible
-  }
 }
 </script>
 <style lang="less" scoped>

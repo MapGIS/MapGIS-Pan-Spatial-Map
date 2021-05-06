@@ -44,8 +44,6 @@ import { chartOption } from './config/timeLineChartOption'
 export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   WidgetMixin
 ) {
-  tlVisible = false
-
   // 图表
   chart: any = null
 
@@ -56,8 +54,18 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   currentIndex = 0
 
   // 显示开关
-  get visible() {
-    return ThematicMapInstance.isVisible('tl')
+  get tlVisible() {
+    const visible = ThematicMapInstance.isVisible('tl')
+    if (visible) {
+      this.onUpdateChart()
+    }
+    return visible
+  }
+
+  set tlVisible(nV) {
+    if (!nV) {
+      ThematicMapInstance.resetVisible('tl')
+    }
   }
 
   // 属性表或者时间轴选中的时间数据
@@ -116,15 +124,6 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   }
 
   /**
-   * 监听弹框开关
-   */
-  @Watch('visible')
-  watchVisible(nV) {
-    this.tlVisible = nV
-    nV && this.onUpdateChart()
-  }
-
-  /**
    * 监听:时间轴切换, 存储当前时间数据
    */
   @Watch('currentIndex')
@@ -150,7 +149,6 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   }
 
   mounted() {
-    this.tlVisible = this.visible
     this.chart = echarts.init(
       document.getElementById('thematic-map-time-line-chart')
     )
