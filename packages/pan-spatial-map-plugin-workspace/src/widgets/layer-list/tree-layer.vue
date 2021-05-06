@@ -370,7 +370,7 @@ export default class TreeLayer extends Mixins(
   }
 
   @Watch('filter')
-  filterChange() {
+  filterChange(newVal, oldVal) {
     if (this.filter !== '') {
       const arr = []
       this.filterTreeNode(this.layers, arr)
@@ -388,14 +388,18 @@ export default class TreeLayer extends Mixins(
       })
       // 去除数组中重叠的key
       this.expandedKeys = Array.from(new Set(parentArr))
+      if (newVal !== oldVal) {
+        this.timer = setTimeout(() => {
+          this.setSearchIndex()
+        }, 700)
+      }
     }
   }
 
   onSearch(val) {
     const time = this.filter === val
-    this.filter = val
-
     if (time) {
+      this.filter = val
       // 当延时操作还在进行时，取消滚动条滚动操作，防止searchIndex因为延时操作而产生bug
       if (!this.timer) {
         this.setSearchIndex()
@@ -403,9 +407,7 @@ export default class TreeLayer extends Mixins(
     } else {
       this.searchkeyArr = []
       this.searchIndex = -1
-      this.timer = setTimeout(() => {
-        this.setSearchIndex()
-      }, 700)
+      this.filter = val
     }
   }
 

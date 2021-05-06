@@ -46,6 +46,7 @@
         </a-tab-pane>
       </a-tabs>
     </div>
+    <div id="measure-max-height" />
     <div
       :class="[
         'search-panel-contaner',
@@ -53,8 +54,9 @@
         'query-section',
         searchPanelExpand ? '' : 'unvisible'
       ]"
+      :style="{ 'max-height': `${maxHeight}px` }"
     >
-      搜索面板
+      <place-name ref="placeName" :widgetInfo="widgetInfo"></place-name>
     </div>
   </div>
 </template>
@@ -62,14 +64,17 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
+import PlaceName from './place-name/place-name'
 
-@Component({ name: 'MpComprehensiveQuery' })
+@Component({ name: 'MpComprehensiveQuery', components: { PlaceName } })
 export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private keyword = ''
 
   private searchPanelExpand = false
 
   private districtName = ''
+
+  private maxHeight = 0
 
   // 可选district：行政区划定位；coordinate：坐标定位；map-sheet：图幅号定位
   private locationType = 'district'
@@ -78,6 +83,25 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 
   get logo() {
     return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${this.locationType}.png`
+  }
+
+  mounted() {
+    this.setMaxHeight()
+    window.addEventListener(
+      'resize',
+      () => {
+        this.setMaxHeight()
+      },
+      false
+    )
+  }
+
+  setMaxHeight() {
+    const top = document
+      .getElementById('measure-max-height')
+      .getBoundingClientRect().top
+    const bottom = document.documentElement.clientHeight - top
+    this.maxHeight = bottom - 10
   }
 
   onLocate() {
@@ -92,14 +116,20 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   onClose() {
     this.locationPanelExpand = false
     this.searchPanelExpand = false
+    this.$refs.placeName.reset()
   }
 
   onSearchFocus() {
     this.searchPanelExpand = true
     this.locationPanelExpand = false
+    this.$refs.placeName.reset()
   }
 
-  onSearch() {}
+  onSearch() {
+    this.searchPanelExpand = true
+    this.locationPanelExpand = false
+    this.$refs.placeName.search(this.keyword)
+  }
 }
 </script>
 
@@ -151,6 +181,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   color: @text-color;
   background: @base-bg-color;
   border-radius: 2px;
+  max-height: calc(~'100% - 20px');
   .query-section {
     border-radius: 2px;
     box-shadow: 0px 1px 2px 0px @shadow-color;
@@ -173,6 +204,9 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   .locate-panel-contaner {
   }
   .search-panel-contaner {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>
