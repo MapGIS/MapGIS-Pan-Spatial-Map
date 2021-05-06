@@ -19,14 +19,19 @@
           class="col"
           @click="selectImg()"
         /> -->
-        <a-button
-          type="primary"
-          shape="circle"
-          icon="picture"
-          size="small"
-          @click="selectImg"
-        >
-        </a-button>
+        <div class="edit-img">
+          <a-avatar
+            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          />
+          <a-button
+            type="primary"
+            shape="circle"
+            icon="picture"
+            size="small"
+            @click="selectImg"
+          >
+          </a-button>
+        </div>
       </div>
 
       <a-divider />
@@ -166,6 +171,12 @@ export default class MarkerInfo extends Mixins(AppMixin) {
 }
 .edit {
   margin-top: 4px;
+}
+.edit-img {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
 }
 
 .ant-divider {

@@ -61,6 +61,8 @@ import { UUID } from '@mapgis/webclient-store/src/utils'
 import MarkerAddMixin from '../../mixins/marker-add'
 import MarkerImportFileDesc from './MarkerImportFileDesc.vue'
 import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
+import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
+
 
 @Component({
   name: 'MpMarkerImport',
@@ -147,7 +149,7 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin) {
           description,
           features: [],
           coordinates: [],
-          iconImg: markerRed,
+          iconImg: markerBlue,
           img: '',
           type: ''
         }

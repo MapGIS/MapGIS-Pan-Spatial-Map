@@ -73,6 +73,7 @@ import { utilInstance, eventBus } from '@mapgis/pan-spatial-map-store'
 import { ThemeStyleMixin } from '@mapgis/web-app-framework'
 import { UUID } from '@mapgis/webclient-store/src/utils'
 import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
+import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
 import MarkerAddMixin from '../../mixins/marker-add'
 
 @Component({ name: 'MpMarkerInput' })
@@ -159,7 +160,7 @@ export default class MpMarkerInput extends Mixins(MarkerAddMixin) {
       id: UUID.uuid(),
       title: '',
       description: '',
-      iconImg: markerRed,
+      iconImg: markerBlue,
       img: '',
       edit: true,
       features: [feature],

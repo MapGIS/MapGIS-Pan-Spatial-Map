@@ -89,7 +89,7 @@ export default class MapboxMarkerAdd extends Mixins(MapMixin) {
       title: '',
       description: '',
       img: '',
-      iconImg: markerRed,
+      iconImg: markerBlue,
       edit: true,
       features: [e.features[0]],
       center,

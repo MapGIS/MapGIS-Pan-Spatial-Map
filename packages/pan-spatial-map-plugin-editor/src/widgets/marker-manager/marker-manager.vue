@@ -22,17 +22,18 @@
         </div>
         <a-divider type="vertical" />
         <div class="marker-keyboard">
-          <div class="keyboard-btns">
+          <div
+            class="keyboard-btns"
+            v-for="item in markKeyboardModes"
+            :key="item.title"
+          >
             <a-button
-              class="keyboard-item"
-              v-for="item in markKeyboardModes"
-              :key="item.title"
               type="circle"
               :icon="item.icon"
               @click="item.click"
             ></a-button>
+            <span>{{ item.title }}</span>
           </div>
-          <span>键盘导入</span>
         </div>
         <a-divider type="vertical" />
       </div>
@@ -81,7 +82,7 @@
         @closeModal="modalImport = false"
       />
     </a-modal>
-    <a-modal v-model="modalExport" title="导入标注" :width="360" :footer="null">
+    <a-modal v-model="modalExport" title="导出标注" :width="360" :footer="null">
       <marker-export :markers="tableData" @closeModal="modalExport = false" />
     </a-modal>
   </div>
@@ -124,7 +125,7 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   private markKeyboardModes = [
     {
       title: '键盘',
-      icon: 'laptop',
+      icon: 'table',
       click: this.addMarkerByInputCoord
     },
     {
@@ -232,11 +233,11 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     // 视点跳转到最后一个新选中的位置
     let markerFlyTo = null
 
-    // 修改新选中的图标为蓝色
+    // 修改新选中的图标为红色
     if (newSelected && newSelected.length > 0) {
       this.tableData = this.tableData.reduce((result, item) => {
         if (newSelected.includes(item.id)) {
-          item.iconImg = markerBlue
+          item.iconImg = markerRed
         }
         result.push(item)
         return result
@@ -246,11 +247,11 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
       )
     }
 
-    // 修改新取消选中的图标为红色
+    // 修改新取消选中的图标为蓝色
     if (newUnSelected && newUnSelected.length > 0) {
       this.tableData = this.tableData.reduce((result, item) => {
         if (newUnSelected.includes(item.id)) {
-          item.iconImg = markerRed
+          item.iconImg = markerBlue
         }
         result.push(item)
         return result
@@ -379,25 +380,25 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
 .marker-input,
 .marker-manager,
-.keyboard-btns {
+.marker-keyboard {
   display: flex;
   align-items: center;
 }
 
-.marker-mouse,
-.marker-keyboard {
+.marker-mouse {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.manager-item {
+.manager-item,
+.keyboard-btns {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 .mouse-item,
-.keyboard-item,
+.keyboard-btns,
 .manager-item {
   margin-right: 4px;
 }
