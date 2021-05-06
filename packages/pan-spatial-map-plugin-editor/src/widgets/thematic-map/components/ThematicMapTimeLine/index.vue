@@ -5,7 +5,7 @@
       title="时间轴"
       :visible.sync="tlVisible"
       anchor="bottom-center"
-      :verticalOffset="20"
+      :verticalOffset="30"
     >
       <div class="thematic-map-time-line">
         <!-- 时间轴 -->

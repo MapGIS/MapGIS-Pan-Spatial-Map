@@ -11,7 +11,11 @@
       <div class="thematic-map-statistic-table">
         <a-spin :spinning="loading">
           <!-- 指标和图表切换 -->
-          <row-flex class="statistic-table-head" :span="[16, 8]">
+          <row-flex
+            class="statistic-table-head"
+            :span="[16, 8]"
+            content-align="right"
+          >
             <template #label>
               <row-flex :span="[4, 20]" label="指标">
                 <a-select
@@ -203,8 +207,14 @@ export default class ThematicMapStatisticTable extends Mixins<{
       const yIndex = FldName.indexOf(this.target)
       SFEleArray.forEach(({ AttValue }) => {
         if (AttValue) {
-          this.chartOption.x.push(AttValue[xIndex])
-          this.chartOption.y.push(AttValue[yIndex])
+          const xValue = AttValue[xIndex]
+          const yValue = AttValue[yIndex]
+          if (xValue) {
+            this.chartOption.x.push(xValue)
+          }
+          if (yValue) {
+            this.chartOption.y.push(yValue)
+          }
         }
       })
       this.onChartTypeChange('bar')
@@ -248,7 +258,9 @@ export default class ThematicMapStatisticTable extends Mixins<{
    */
   @Watch('selectedConfig', { deep: true })
   watchSelectedConfig(nV) {
-    this.onSetTargetList(nV)
+    if (nV) {
+      this.onSetTargetList(nV)
+    }
   }
 
   beforeCreate() {

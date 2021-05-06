@@ -3,7 +3,7 @@
     <a-col :span="labelSpan" :style="labelStyle">
       <slot name="label" v-show="label || $slots.label"> {{ label }}： </slot>
     </a-col>
-    <a-col :span="contentSpan">
+    <a-col :span="contentSpan" :style="contentStyle">
       <slot></slot>
     </a-col>
   </a-row>
@@ -19,6 +19,8 @@ export default class extends Mixins<{
   @Prop() label!: string
 
   @Prop({ default: 'left' }) labelAlign!: 'left' | 'center' | 'right'
+
+  @Prop({ default: 'left' }) contentAlign!: 'left' | 'center' | 'right'
 
   @Prop({ default: 'middle' }) align!: 'top' | 'middle' | 'bottom'
 
@@ -42,6 +44,12 @@ export default class extends Mixins<{
   get labelStyle() {
     return {
       textAlign: this.labelAlign
+    }
+  }
+
+  get contentStyle() {
+    return {
+      textAlign: this.contentAlign
     }
   }
 }
