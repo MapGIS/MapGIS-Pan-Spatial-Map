@@ -1,5 +1,8 @@
 <template>
-  <div class="add-service-url"></div>
+  <div class="add-service-url">
+    <service-category-select />
+    <service-type-select :service-types="serviceTypes" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -17,7 +20,9 @@ import ServiceTypeSelect from './ServiceTypeSelect.vue'
 @Component({
   components: { ServiceCategorySelect, ServiceTypeSelect }
 })
-export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {}
+export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
+  @Prop(Array) readonly serviceTypes!: ServiceType[]
+}
 </script>
 
 <style lang="scss" scoped></style>

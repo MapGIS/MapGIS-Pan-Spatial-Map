@@ -163,4 +163,7 @@ export default class AddServicesData extends Mixins(
     margin-right: 8px;
   }
 }
+.ant-table-wrapper {
+  width: 100%;
+}
 </style>
