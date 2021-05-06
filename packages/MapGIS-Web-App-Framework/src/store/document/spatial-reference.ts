@@ -1,21 +1,4 @@
 /**
- * 常用的空间参照系的枚举
- *
- * @date 29/04/2021
- * @enum {number}
- */
-export enum CoordinateSystemType {
-  /**
-   * wgs84 web墨卡托投影坐标系
-   */
-  webMercator = 3857,
-  /**
-   * wgs84 经纬度坐标系
-   */
-  wgs84 = 4326
-}
-
-/**
  * 空间参照系
  *
  * @date 28/04/2021
@@ -42,7 +25,7 @@ export class SpatialReference {
    * @date 28/04/2021
    * @memberof SpatialReference
    */
-  wkid = CoordinateSystemType.wgs84
+  wkid = 4326
 
   /**
    * 是否为Web墨卡托投影空间参照系
