@@ -1070,6 +1070,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.9.8"
   resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
   integrity sha1-Cab3kgWtGJSqqZEisITs6R1p4tw=
@@ -1094,6 +1095,8 @@
 "@mapgis/mapbox-gl@^1.9.7":
 =======
 >>>>>>> 162522a (huge change,optimize exhibition panel,update cesium lib)
+=======
+>>>>>>> bbb96e3 (完成综合查询面板绘制)
   version "1.9.8"
   resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
   integrity sha1-Cab3kgWtGJSqqZEisITs6R1p4tw=
@@ -9215,6 +9218,7 @@ mime@^2.0.3, mime@^2.4.4:
   resolved "https://registry.nlark.com/mime/download/mime-2.5.2.tgz#6e3dc6cc2b9510643830e5f19d5cb753da5eeabe"
   integrity sha1-bj3GzCuVEGQ4MOXxnVy3U9pe6r4=
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 mime@^2.3.1:
   version "2.5.2"
@@ -9227,6 +9231,8 @@ mime@^2.3.1:
   version "2.5.2"
   resolved "https://registry.nlark.com/mime/download/mime-2.5.2.tgz#6e3dc6cc2b9510643830e5f19d5cb753da5eeabe"
   integrity sha1-bj3GzCuVEGQ4MOXxnVy3U9pe6r4=
+=======
+>>>>>>> bbb96e3 (完成综合查询面板绘制)
 
 mime@^2.3.1:
   version "2.5.2"
