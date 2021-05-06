@@ -14,6 +14,10 @@ import {
 export const ThematicMapInstance = new Vue({
   data: () => {
     return {
+      // 页码
+      page: 1,
+      // 页容量
+      pageCount: 10,
       // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
       moduleTypes: [],
       // 专题服务时间轴选中的年度
@@ -32,6 +36,15 @@ export const ThematicMapInstance = new Vue({
     } as IState
   },
   computed: {
+    /**
+     * 属性表分页设置
+     */
+    pageParam({ page, pageCount }) {
+      return {
+        page,
+        pageCount
+      }
+    },
     /**
      * 获取某个专题服务展示弹框的开关状态
      */
@@ -113,7 +126,7 @@ export const ThematicMapInstance = new Vue({
      * 获取列表数据请求报文
      * @returns <object>
      */
-    getRequestParams({ getBaseConfig, getSelectedConfig }) {
+    getRequestParams({ getBaseConfig, getSelectedConfig, pageParam }) {
       if (!getSelectedConfig) return
       const { baseIp, basePort } = getBaseConfig
       const { configType = 'gdbp', configSubData } = getSelectedConfig
@@ -130,40 +143,51 @@ export const ThematicMapInstance = new Vue({
       const _ip = ip || baseIp
       const _port = port || basePort
       const fields = showFields.join(',')
-      return (page = 0, pageCount = 9999) => {
-        let params: any = {
-          ip: _ip,
-          port: _port,
-          fields,
-          page,
-          pageCount,
-          IncludeGeometry: true,
-          cursorType: 'backward',
-          f: 'json'
-        }
-        switch (configType.toLowerCase()) {
-          case 'gdbp':
-            params = {
-              ...params,
-              gdbp
-            }
-            break
-          case 'doc':
-            params = {
-              ...params,
-              docName,
-              layerIndex,
-              layerName
-            }
-            break
-          default:
-            break
-        }
-        return params
+      let params: any = {
+        ip: _ip,
+        port: _port,
+        fields,
+        IncludeGeometry: true,
+        cursorType: 'backward',
+        f: 'json',
+        ...pageParam
       }
+      switch (configType.toLowerCase()) {
+        case 'gdbp':
+          params = {
+            ...params,
+            gdbp
+          }
+          break
+        case 'doc':
+          params = {
+            ...params,
+            docName,
+            layerIndex,
+            layerName
+          }
+          break
+        default:
+          break
+      }
+      return params
     }
   },
   methods: {
+    /**
+     * 设置分页
+     * @param page<number>
+     * @param pageCount <number>
+     */
+    setPage(page: number, pageCount: number) {
+      if (this.page !== page) {
+        this.page = page
+      }
+      if (this.pageCount !== pageCount) {
+        this.pageCount = pageCount
+      }
+    },
+
     /**
      * 保存专题服务展示弹框的开关
      */

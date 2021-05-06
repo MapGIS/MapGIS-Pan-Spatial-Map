@@ -39,7 +39,7 @@
             :columns="tableColumns"
             :data-source="tableData"
             :pagination="tablePagination"
-            :scroll="{ x: 1000, y: 360 }"
+            :scroll="tableScroll"
             @change="onTableChange"
           />
         </a-spin>
@@ -78,7 +78,7 @@ export default class ThematicMapAttributeTable extends Mixins<{
   timeList: string[] = []
 
   // 列表页码
-  page = 0
+  page = 1
 
   // 列表页容量
   pageCount = 10
@@ -103,14 +103,24 @@ export default class ThematicMapAttributeTable extends Mixins<{
     }
   }
 
+  // 列表滚动
+  get tableScroll() {
+    const x = this.tableColumns.length > 3 ? 1000 : 500
+    return {
+      x,
+      y: 360
+    }
+  }
+
   // 分页配置
   get tablePagination() {
     return {
+      size: 'small',
       current: this.page,
       pageSize: this.pageCount,
       total: this.total,
       showSizeChanger: true,
-      pageSizeOptions: ['10', '15', '20', '30', '50'],
+      // pageSizeOptions: ['10', '15', '20', '30', '50'],
       showTotal: total => `共${total}条`
     }
   }
@@ -146,7 +156,7 @@ export default class ThematicMapAttributeTable extends Mixins<{
    * @param value<string>
    */
   onSubjectChange(value = '') {
-    this.page = 0
+    this.onTablePageUpdate(1, this.pageCount)
     this.subject = value
     ThematicMapInstance.setSelected(value)
     const timeList = this.selectedConfig
@@ -165,7 +175,7 @@ export default class ThematicMapAttributeTable extends Mixins<{
    * @param value<string>
    */
   onTimeChange(value = '') {
-    this.page = 0
+    this.onTablePageUpdate(1, this.pageCount)
     this.time = value
     ThematicMapInstance.setSelectedTime(value)
     if (this.selectedConfig) {
@@ -187,9 +197,18 @@ export default class ThematicMapAttributeTable extends Mixins<{
    * @param 分页参数 current: 当前页; pageSize: 页容量
    */
   onTableChange({ current, pageSize }) {
-    this.page = current
-    this.pageCount = pageSize
+    this.onTablePageUpdate(current, pageSize)
     this.getTableData()
+  }
+
+  /**
+   * 重置分页页码
+   
+   */
+  onTablePageUpdate(page, pageCount) {
+    this.page = page
+    this.pageCount = pageCount
+    ThematicMapInstance.setPage(page, pageCount)
   }
 
   /**
@@ -212,18 +231,17 @@ export default class ThematicMapAttributeTable extends Mixins<{
    * 获取列表数据
    */
   getTableData() {
-    if (typeof ThematicMapInstance.getRequestParams === 'function') {
-      const params = ThematicMapInstance.getRequestParams(
-        this.page,
-        this.pageCount
+    if (ThematicMapInstance.getRequestParams) {
+      const fn = queryFeaturesInstance.query(
+        ThematicMapInstance.getRequestParams
       )
-      const fn = queryFeaturesInstance.query(params)
       if (fn && fn.then) {
         this.loading = true
         fn.then(dataSet => {
           const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
             dataSet
           )
+          console.log(ThematicMapInstance.getRequestParams, geojsonData)
           this.total = geojsonData.dataCount
           this.tableData = geojsonData.features.map(
             ({ properties }) => properties

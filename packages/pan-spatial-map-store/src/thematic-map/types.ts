@@ -62,6 +62,8 @@ export type TModuleType =
 
 // 专题服务Store对应的状态数据
 export interface IState {
+  page: number
+  pageCount: number
   moduleTypes: TModuleType[]
   thematicMapConfig: IThematicMapConfig
   selectedTime: string

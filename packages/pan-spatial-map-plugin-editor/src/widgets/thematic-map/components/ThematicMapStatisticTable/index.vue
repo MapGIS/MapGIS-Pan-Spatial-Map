@@ -144,6 +144,11 @@ export default class ThematicMapStatisticTable extends Mixins<{
     return ThematicMapInstance.getSelectedTime
   }
 
+  // 获取分页变化
+  get pageParam() {
+    return ThematicMapInstance.pageParam
+  }
+
   // 获取选中专题对应年度的配置数据以及配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
   get selectedConfigSubData() {
     return ThematicMapInstance.getSelectedConfig?.configSubData
@@ -194,51 +199,7 @@ export default class ThematicMapStatisticTable extends Mixins<{
   onTargetChange(value) {
     this.target = value
     this.chartOption.title = value
-    if (typeof ThematicMapInstance.getRequestParams === 'function') {
-      const params = ThematicMapInstance.getRequestParams()
-      const fn = queryFeaturesInstance.query(params)
-      if (fn && fn.then) {
-        this.loading = true
-        fn.then(dataSet => this.onSetChartData(dataSet)).catch(e => {
-          this.loading = false
-        })
-      }
-    }
-  }
-
-  /**
-   * 设置图表数据
-   * @param dataSet<object>
-   */
-  onSetChartData(dataSet) {
-    if (dataSet && dataSet.AttStruct.FldName && this.selectedConfigSubData) {
-      const {
-        SFEleArray,
-        AttStruct: { FldName }
-      } = dataSet
-      const {
-        graph: { field }
-      } = this.selectedConfigSubData
-
-      const xIndex = FldName.indexOf(field)
-      const yIndex = FldName.indexOf(this.target)
-      SFEleArray.forEach(({ AttValue }) => {
-        if (AttValue) {
-          const xValue = AttValue[xIndex]
-          const yValue = AttValue[yIndex]
-          if (xValue) {
-            this.chartOption.x.push(xValue)
-          }
-          if (yValue) {
-            this.chartOption.y.push(yValue)
-          }
-        }
-      })
-    } else {
-      this.chartOption.x = []
-      this.chartOption.y = []
-    }
-    this.onChartTypeChange('bar')
+    this.onUpdateStatistic()
   }
 
   /**
@@ -272,6 +233,44 @@ export default class ThematicMapStatisticTable extends Mixins<{
   }
 
   /**
+   * 更新图表数据
+   */
+  async onUpdateStatistic() {
+    const xArr = []
+    const yArr = []
+    if (ThematicMapInstance.getRequestParams) {
+      const fn = queryFeaturesInstance.query(
+        ThematicMapInstance.getRequestParams
+      )
+      if (fn && fn.then) {
+        this.loading = true
+        const dataSet = await fn
+        if (dataSet && dataSet.AttStruct.FldName) {
+          const {
+            SFEleArray,
+            AttStruct: { FldName }
+          } = dataSet
+          const {
+            graph: { field }
+          } = this.selectedConfigSubData
+
+          const xIndex = FldName.indexOf(field)
+          const yIndex = FldName.indexOf(this.target)
+          SFEleArray.forEach(({ AttValue }) => {
+            if (AttValue) {
+              xArr.push(AttValue[xIndex])
+              yArr.push(AttValue[yIndex])
+            }
+          })
+        }
+      }
+    }
+    this.chartOption.x = xArr
+    this.chartOption.y = yArr
+    this.onChartTypeChange('bar')
+  }
+
+  /**
    * 监听: 选中的专题的变化
    */
   @Watch('selected')
@@ -285,6 +284,14 @@ export default class ThematicMapStatisticTable extends Mixins<{
   @Watch('selectedTime')
   watchSelectedTime() {
     this.onSetTargetList()
+  }
+
+  /**
+   * 监听: 选中的专题的变化
+   */
+  @Watch('pageParam', { deep: true })
+  watchPageParam() {
+    this.onUpdateStatistic()
   }
 
   beforeCreate() {

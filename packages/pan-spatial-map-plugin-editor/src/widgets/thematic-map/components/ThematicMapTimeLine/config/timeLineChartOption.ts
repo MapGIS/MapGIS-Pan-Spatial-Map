@@ -10,7 +10,7 @@ export const chartOption = (params: IParams) => {
     baseOption: {
       timeline: {
         ...params,
-        playInterval: 2000,
+        playInterval: 3000,
         axisType: 'category',
         symbol: 'diamond',
         padding: 0,
