@@ -148,15 +148,15 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
       searchField
     } = this.selectedItem(item)
     const where =
-      this.keyword && this.keyword !== ''
+      this.keyword !== '' && this.keyword
         ? `${searchField || allSearchName} LIKE '%${this.keyword}%'`
-        : ''
+        : `${searchField || allSearchName} LIKE '%'`
     let exhibition
     if (queryWay === 'doc') {
       // 地图文档
       exhibition = {
         id: `${docName} ${LayerName} ${LayerIndex}`,
-        name: `${LayerName} 属性表`,
+        name: `${LayerName} 查询结果`,
         description: `${docName} ${LayerName}`,
         option: {
           id: LayerIndex,
@@ -173,7 +173,7 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
     } else if (queryWay === 'gdbp') {
       exhibition = {
         id: `${placeName}`,
-        name: `${placeName} 属性表`,
+        name: `${placeName} 查询结果`,
         option: {
           ip: ip || baseConfigInstance.config.ip,
           port: Number(port || baseConfigInstance.config.port),
