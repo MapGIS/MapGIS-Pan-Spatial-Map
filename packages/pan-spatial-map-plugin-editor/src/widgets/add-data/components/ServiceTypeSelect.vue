@@ -3,7 +3,7 @@
     <div class="container-head">
       <span>服务类型:</span>
       <a-select class="select-first" v-model="option" @change="onChange">
-        <a-select-option v-for="(item, index) in serviceTypes" :key="index">{{
+        <a-select-option v-for="item in serviceTypes" :key="item.value">{{
           item.label
         }}</a-select-option>
       </a-select>
@@ -32,7 +32,7 @@
         </a-select>
       </div>
       <div class="input-item">
-        <span>token：</span>
+        <span class="special-title">token：</span>
         <a-input v-model="tdtInfo.token"></a-input>
       </div>
       <div class="input-item">
@@ -94,7 +94,12 @@ export default class ServiceTypeSelect extends Vue {
   @Prop(Array) readonly serviceTypes!: ServiceType[]
 
   // 服务类型选中项
-  private option
+  private option: any = ''
+
+  private ogcInfo = {
+    name: '',
+    url: ''
+  }
 
   private tdtLayerTypes = ['img', 'cia', 'vec']
 
@@ -116,43 +121,40 @@ export default class ServiceTypeSelect extends Vue {
   }
 
   get isOGC() {
-    return (
-      this.option &&
-      (this.option.value === 'WMS' || this.option.value === 'WMTS')
-    )
+    return this.option && (this.option === 'WMS' || this.option === 'WMTS')
   }
 
   get isTianDiTu() {
-    return this.option && this.option.value === 'tianDiTu'
+    return this.option && this.option === 'tianDiTu'
   }
 
   get isArcGIS() {
-    return this.option && this.option.value === 'arcgis'
+    return this.option && this.option === 'arcgis'
   }
 
   get isMapGIS() {
     return (
       this.option &&
-      (this.option.value === 'doc' ||
-        this.option.value === 'tile' ||
-        this.option.value === 'layer')
+      (this.option === 'doc' ||
+        this.option === 'tile' ||
+        this.option === 'layer')
     )
   }
 
   get isBaidu() {
-    return this.option && this.option.value === 'baidu'
+    return this.option && this.option === 'baidu'
   }
 
   get isGaode() {
-    return this.option && this.option.value === 'gaode'
+    return this.option && this.option === 'gaode'
   }
 
   get isGoogle() {
-    return this.option && this.option.value === 'google'
+    return this.option && this.option === 'google'
   }
 
   get isGoogleExt() {
-    return this.option && this.option.value === 'googleExt'
+    return this.option && this.option === 'googleExt'
   }
 
   onChange(value, option) {
@@ -172,6 +174,7 @@ export default class ServiceTypeSelect extends Vue {
   width: 100%;
   display: flex;
   align-items: center;
+  margin: 8px 0;
 }
 .select-first {
   margin-left: 16px;
@@ -181,10 +184,15 @@ export default class ServiceTypeSelect extends Vue {
   width: 100%;
   display: flex;
   align-items: center;
+  margin-bottom: 8px;
+
+  .special-title {
+    width: 79px;
+  }
 
   .ant-input,
   .ant-select {
-    margin-left: 16px;
+    margin-left: 4px;
     flex-grow: 1;
   }
 }
