@@ -5,7 +5,7 @@
         <add-services-data :service-types="allTypes" />
       </a-tab-pane>
       <a-tab-pane key="2" tab="URL">
-        <div>URL</div>
+        <add-service-url :service-types="tempServiceTypes" />
       </a-tab-pane>
       <a-tab-pane key="3" tab="文件">
         <div>文件</div>
@@ -24,15 +24,23 @@ import {
   queryIgsServicesInfoInstance
 } from '@mapgis/pan-spatial-map-store'
 import AddServicesData from './components/AddServicesData.vue'
+import AddServiceUrl from './components/AddServiceUrl.vue'
 
 @Component({
   name: 'MpAddData',
   components: {
-    AddServicesData
+    AddServicesData,
+    AddServiceUrl
   }
 })
-export default class MpAddData extends Mixins(WidgetMixin) {
+export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
   private allTypes: ServiceType[] = []
+
+  private tempServiceTypes: ServiceType[] = []
+
+  created() {
+    this.tempServiceTypes = this.serviceTypes2D
+  }
 }
 </script>
 
