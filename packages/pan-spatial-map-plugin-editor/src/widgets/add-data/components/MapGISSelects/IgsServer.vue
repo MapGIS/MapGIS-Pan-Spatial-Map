@@ -8,7 +8,7 @@
       <label class="">端口：</label>
       <a-input v-model="port"></a-input>
     </div>
-    <div class="input-item">
+    <div v-if="showLayer" class="input-item">
       <label>GDBP地址：</label>
       <mapgis-layer :ip="ip" :port="port" />
     </div>
