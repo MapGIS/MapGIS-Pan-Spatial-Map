@@ -36,7 +36,7 @@
         type="card"
       >
         <a-tab-pane key="district" tab="行政区划定位">
-          <!-- <zone /> -->
+          <zone v-model="geoJson" />
         </a-tab-pane>
         <a-tab-pane key="coordinate" tab="坐标定位" force-render>
           坐标定位
@@ -64,10 +64,11 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Parser, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
 import PlaceName from './components/PlaceName'
-// import Zone from './components/Zone'
+import Zone from './components/Zone'
 
-@Component({ name: 'MpComprehensiveQuery', components: { PlaceName } })
+@Component({ name: 'MpComprehensiveQuery', components: { PlaceName, Zone } })
 export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private keyword = ''
 
@@ -82,8 +83,19 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 
   private locationPanelExpand = false
 
+  private geoJson: FeatureGeoJSON | null = null
+
   get logo() {
     return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${this.locationType}.png`
+  }
+
+  private get geometry() {
+    if (this.geoJson) {
+      const result = Parser.changeToTangram(this.geoJson)
+      if (Array.isArray(result)) return result[0]
+      return result
+    }
+    return null
   }
 
   mounted() {

@@ -6,9 +6,8 @@
         :key="`地名地址${item.placeName}`"
         @click="select(item)"
         :class="{ active: selected.indexOf(item.placeName) > -1 }"
+        >{{ item.placeName }}</span
       >
-        {{ item.placeName }}
-      </span>
     </div>
     <div class="search-tab-container" v-if="showResult && !showResultSet">
       <div class="search-switch-container">
@@ -228,6 +227,7 @@ export default class PlaceName extends Mixins(
   .float-pop-container {
     span {
       padding: 3px 6px;
+      white-space: nowrap;
       &:hover {
         cursor: pointer;
       }
