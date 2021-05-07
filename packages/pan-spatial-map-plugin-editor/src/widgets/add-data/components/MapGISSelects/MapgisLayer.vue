@@ -8,6 +8,13 @@
       :replace-fields="replaceFields"
       search-placeholder="Please select"
       :load-data="handleLazyLoad"
+      :dropdownStyle="{
+        'max-height': '200px',
+        overflow: 'auto',
+        left: '196px',
+        top: '404px',
+        'min-width': '566px'
+      }"
     >
     </a-tree-select>
   </div>
@@ -65,16 +72,17 @@ export default class MapgisLayer extends Vue {
       .getDataSource({ ip, port })
       .then(res => {
         console.log(res)
-
-        for (const item of res) {
-          this.treeData.push({
+        this.treeData = res.reduce((result, item) => {
+          result.push({
             id: uuid(),
+            value: uuid(),
             name: item,
             lazy: true,
             level: 1,
             children: []
           })
-        }
+          return result
+        }, [])
         console.log(this.treeData)
       })
       .catch(err => {
@@ -85,7 +93,7 @@ export default class MapgisLayer extends Vue {
   handleLazyLoad(node) {
     console.log(node)
     return new Promise(resolve => {
-      const { level, name } = node
+      const { level, name } = node.dataRef
       switch (level) {
         case 1:
           // 展开数据源
@@ -97,20 +105,26 @@ export default class MapgisLayer extends Vue {
                 arr.map(a => {
                   a.id = uuid()
                   a.level = 2
+                  a.value = uuid()
                   if (a.children && a.children.length > 0) {
                     a.children.map(c => {
                       c.id = uuid()
                       c.level = 3
                       c.lazy = true
+                      c.value = uuid()
+                      return c
                     })
                   }
+                  return a
                 })
-                node.children = arr
+                debugger
+                node.dataRef.children = arr
+                this.treeData = [...this.treeData]
                 resolve()
               }
             })
           } else {
-            if (node.children && node.children.length > 0) {
+            if (node.dataRef.children && node.dataRef.children.length > 0) {
               resolve()
               break
             }
@@ -151,8 +165,10 @@ export default class MapgisLayer extends Vue {
                             c.id = uuid()
                             c.level = 3
                             c.lazy = true
+                            return c
                           })
                         }
+                        return a
                       })
                       resolve()
                       this.defaultExpandAll = true
@@ -166,7 +182,7 @@ export default class MapgisLayer extends Vue {
           }
           break
         case 3:
-          const { gdbp, key, user, password } = node
+          const { gdbp, key, user, password } = node.dataRef
           // 展开简单要素类等节点
           queryIgsServicesInfoInstance
             .getGDBData({
@@ -185,17 +201,20 @@ export default class MapgisLayer extends Vue {
                     const children: any[] = []
                     const obj = {
                       id: uuid(),
+                      value: uuid(),
                       name: dsName,
                       icon: 'tree-icon tree-icon-ds',
                       children: [
                         {
                           id: uuid(),
+                          value: uuid(),
                           name: '简单要素类',
                           icon: 'tree-icon tree-icon-ds',
                           children
                         },
                         {
                           id: uuid(),
+                          value: uuid(),
                           name: '注记类',
                           icon: 'tree-icon tree-icon-ds',
                           children
@@ -209,6 +228,7 @@ export default class MapgisLayer extends Vue {
                     } of SFClsInfos) {
                       const info = {
                         id: uuid(),
+                        value: uuid(),
                         name: clsName,
                         icon: `tree-icon tree-icon-${GeomType}`,
                         leaf: true,
@@ -231,6 +251,7 @@ export default class MapgisLayer extends Vue {
                   for (const clsName of res) {
                     arr.push({
                       id: uuid(),
+                      value: uuid(),
                       name: clsName,
                       icon: 'tree-icon tree-icon-acls',
                       leaf: true,
@@ -242,6 +263,7 @@ export default class MapgisLayer extends Vue {
                   for (const { Name: clsName, GeomType } of res) {
                     arr.push({
                       id: uuid(),
+                      value: uuid(),
                       name: clsName,
                       icon: `tree-icon tree-icon-${GeomType}`,
                       leaf: true,
@@ -250,12 +272,15 @@ export default class MapgisLayer extends Vue {
                   }
                   break
               }
+              node.dataRef.children = arr
+              this.treeData = [...this.treeData]
               resolve()
             })
           break
         default:
           break
       }
+      resolve()
     })
   }
 
