@@ -49,7 +49,7 @@ export default class MarkerExport extends Mixins() {
   private exportFileTypes = ['shp格式', '6x格式', 'excel格式']
 
   private markerServerConfig = {
-    ip: 'localhost',
+    ip: '192.168.21.191',
     port: '6163',
     isHorizontalSet: 'true',
     userName: 'admin',
@@ -93,6 +93,8 @@ export default class MarkerExport extends Mixins() {
     const { projectionName } = this.defaultConfig // 获取目标参考系
     const { userName, passWord } = this.markerServerConfig
     const getFeatureUrl = `http://${this.markerServerConfig.ip}:${this.markerServerConfig.port}/onemap/featureSet/export?path=${flieName}&srsName=${projectionName}&type=${featureType}&f=json&user=${userName}&password=${passWord}`
+    console.log(getFeatureUrl)
+
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
     const { shpOr6xOption } = this
