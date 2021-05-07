@@ -91,7 +91,11 @@
 <script lang="ts">
 import { Mixins, Component, Inject, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { eventBus, api } from '@mapgis/pan-spatial-map-store'
+import {
+  eventBus,
+  api,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-store'
 
 import MarkerAdd from './components/MarkerAdd/MarkerAdd.vue'
 import MarkerShow from './components/MarkerShow/MarkerShow.vue'
@@ -237,7 +241,7 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     if (newSelected && newSelected.length > 0) {
       this.tableData = this.tableData.reduce((result, item) => {
         if (newSelected.includes(item.id)) {
-          item.iconImg = markerRed
+          item.iconImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.selectedImg}`
         }
         result.push(item)
         return result
@@ -251,7 +255,7 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     if (newUnSelected && newUnSelected.length > 0) {
       this.tableData = this.tableData.reduce((result, item) => {
         if (newUnSelected.includes(item.id)) {
-          item.iconImg = markerBlue
+          item.iconImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
         }
         result.push(item)
         return result

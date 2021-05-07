@@ -69,15 +69,19 @@
 
 <script lang="ts">
 import { Mixins, Component, Emit } from 'vue-property-decorator'
-import { utilInstance, eventBus } from '@mapgis/pan-spatial-map-store'
-import { ThemeStyleMixin } from '@mapgis/web-app-framework'
+import {
+  utilInstance,
+  eventBus,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-store'
+import { ThemeStyleMixin, AppMixin } from '@mapgis/web-app-framework'
 import { UUID } from '@mapgis/webclient-store/src/utils'
 import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
 import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
 import MarkerAddMixin from '../../mixins/marker-add'
 
 @Component({ name: 'MpMarkerInput' })
-export default class MpMarkerInput extends Mixins(MarkerAddMixin) {
+export default class MpMarkerInput extends Mixins(MarkerAddMixin, AppMixin) {
   // 表单数据
   private formInput = {
     unit: '十进制',
@@ -160,7 +164,7 @@ export default class MpMarkerInput extends Mixins(MarkerAddMixin) {
       id: UUID.uuid(),
       title: '',
       description: '',
-      iconImg: markerBlue,
+      iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
       img: '',
       edit: true,
       features: [feature],

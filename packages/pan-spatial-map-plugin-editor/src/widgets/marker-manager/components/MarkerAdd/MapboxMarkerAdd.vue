@@ -19,15 +19,15 @@ import {
   Mixins
 } from 'vue-property-decorator'
 import { UUID } from '@mapgis/webclient-store/src/utils'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
-import { MapMixin } from '@mapgis/web-app-framework'
+import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { MapMixin, AppMixin } from '@mapgis/web-app-framework'
 import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
 import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
 
 @Component({
   components: {}
 })
-export default class MapboxMarkerAdd extends Mixins(MapMixin) {
+export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
   @Provide()
   actions = undefined
 
@@ -89,7 +89,7 @@ export default class MapboxMarkerAdd extends Mixins(MapMixin) {
       title: '',
       description: '',
       img: '',
-      iconImg: markerBlue,
+      iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
       edit: true,
       features: [e.features[0]],
       center,

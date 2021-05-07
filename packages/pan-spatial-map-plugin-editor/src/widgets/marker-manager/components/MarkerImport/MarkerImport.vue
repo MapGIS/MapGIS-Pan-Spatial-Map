@@ -55,20 +55,19 @@
 
 <script lang="ts">
 import { Mixins, Component, Emit } from 'vue-property-decorator'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
-import { ThemeStyleMixin } from '@mapgis/web-app-framework'
+import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { ThemeStyleMixin, AppMixin } from '@mapgis/web-app-framework'
 import { UUID } from '@mapgis/webclient-store/src/utils'
 import MarkerAddMixin from '../../mixins/marker-add'
 import MarkerImportFileDesc from './MarkerImportFileDesc.vue'
 import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
 import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
 
-
 @Component({
   name: 'MpMarkerImport',
   components: { MarkerImportFileDesc }
 })
-export default class MpMarkerImport extends Mixins(MarkerAddMixin) {
+export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
   private formImport = {
     crsName: 'WGS1984_度'
   }
@@ -149,7 +148,7 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin) {
           description,
           features: [],
           coordinates: [],
-          iconImg: markerBlue,
+          iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
           img: '',
           type: ''
         }
