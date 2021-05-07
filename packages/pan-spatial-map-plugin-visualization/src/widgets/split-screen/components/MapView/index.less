@@ -1,0 +1,24 @@
+.map-view-wrap {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  border: 1px solid #f0f0f0;
+  border-radius: @border-radius-base;
+  .map-view {
+    text-align: right;
+    background-color: @primary-color;
+    line-height: 32px;
+    padding: 0 8px;
+
+    /deep/ .anticon {
+      font-size: 18px;
+      margin-left: 10px;
+      vertical-align: middle;
+      margin-top: -0.125em;
+      color: @white;
+    }
+    + div {
+      flex: 1;
+    }
+  }
+}
