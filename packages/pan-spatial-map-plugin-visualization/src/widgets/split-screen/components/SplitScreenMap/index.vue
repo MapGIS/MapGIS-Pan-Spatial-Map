@@ -1,14 +1,37 @@
 <template>
-  <a-empty description="请在目录树中勾选需要分屏的专题" v-if="!layers.length" />
-  <div class="split-screen-map" v-else>
-    <a-tooltip v-for="item in tools" :key="item.label" :title="item.label">
-      <a-icon :type="item.icon" @click.stop="onSettingIconClick(item)" />
-    </a-tooltip>
-    <mp-mapbox-view :document="document" :mapStyle="mapStyle" />
+  <div class="split-screen-map">
+    <a-empty
+      description="请在目录树中勾选需要分屏的专题"
+      v-if="!layers.length"
+    />
+    <a-row v-else :gutter="[5, 8]">
+      <a-col
+        v-for="l in layers"
+        :key="l.id"
+        :span="mapSpan.span"
+        :style="{ height: mapSpan.height }"
+      >
+        <div class="map-wrap">
+          <div class="map-tools">
+            <a-tooltip
+              v-for="item in tools"
+              :key="item.label"
+              :title="item.label"
+            >
+              <a-icon
+                :type="item.icon"
+                @click.stop="onSettingIconClick(item, l)"
+              />
+            </a-tooltip>
+          </div>
+          <mp-mapbox-view :document="getDocument(l)" :mapStyle="mapStyle" />
+        </div>
+      </a-col>
+    </a-row>
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import {
   Document,
   WidgetMixin,
@@ -29,10 +52,15 @@ interface ITool {
 export default class SplitScreenMap extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  @Prop({ default: () => [] }) layers!: Layer[]
+  @Prop({
+    default: () => ({
+      span: 12,
+      height: '100%'
+    })
+  })
+  mapSpan!: object
 
-  // 地图Document
-  document: any = new Document()
+  @Prop({ default: () => [] }) layers!: Layer[]
 
   // 图层样式
   mapStyle: any = {
@@ -95,9 +123,26 @@ export default class SplitScreenMap extends Mixins<{
     }
   ]
 
-  onSettingIconClick(item: ITool) {}
+  /**
+   * 设置图层
+   * @param layer<object>
+   */
+  getDocument(layer) {
+    const document: any = new Document()
+    const defaultMap = document.defaultMap
+    defaultMap.remove(layer)
+    defaultMap.add(layer)
+    return document
+  }
+
+  /**
+   * 设置图标点击操作
+   * @param item<object>
+   * @param layer<object>
+   */
+  onSettingIconClick(item: ITool, layer: Layer) {}
 }
 </script>
 <style lang="less" scoped>
-  @import './index.less';
+@import './index.less';
 </style>
