@@ -36,7 +36,7 @@
         type="card"
       >
         <a-tab-pane key="district" tab="行政区划定位">
-          行政区划定位
+          <zone />
         </a-tab-pane>
         <a-tab-pane key="coordinate" tab="坐标定位" force-render>
           坐标定位
@@ -64,9 +64,10 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import PlaceName from './place-name/place-name'
+import PlaceName from './components/PlaceName'
+import Zone from './components/Zone'
 
-@Component({ name: 'MpComprehensiveQuery', components: { PlaceName } })
+@Component({ name: 'MpComprehensiveQuery', components: { PlaceName, Zone } })
 export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private keyword = ''
 

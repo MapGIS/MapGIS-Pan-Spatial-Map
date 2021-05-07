@@ -18,16 +18,17 @@
       </div>
       <a-tabs v-model="tab" type="card">
         <a-tab-pane v-for="item in selected" :key="item" :tab="item">
-          <result-tab
+          <place-name-panel
             :widgetInfo="widgetInfo"
             :cluster="cluster"
             :name="item"
             :keyword="keyword"
             :activeTab="tab"
+            :baseUrl="baseUrl"
             @show-coords="showCoords"
             @click-item="setCenter"
             @update-geojson="updateGeojson"
-          ></result-tab>
+          ></place-name-panel>
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -43,18 +44,21 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
-import ResultTab from './result-tab'
-import PlaceNameMapbox from './place-name-mapbox.vue'
+import PlaceNamePanel from './PlaceNamePanel'
+import PlaceNameMapbox from './PlaceNameMapbox'
 import {
   ExhibitionControllerMixin,
   IAttributeTableExhibition,
   AttributeTableExhibition,
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
-import { LayerType, WidgetInfoMixin } from '@mapgis/web-app-framework'
+import { LayerType, AppMixin } from '@mapgis/web-app-framework'
 
-@Component({ components: { ResultTab, PlaceNameMapbox } })
-export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
+@Component({ components: { PlaceNamePanel, PlaceNameMapbox } })
+export default class PlaceName extends Mixins(
+  ExhibitionControllerMixin,
+  AppMixin
+) {
   @Prop() widgetInfo!: Record<string, unknown>
 
   private selected: string[] = []
