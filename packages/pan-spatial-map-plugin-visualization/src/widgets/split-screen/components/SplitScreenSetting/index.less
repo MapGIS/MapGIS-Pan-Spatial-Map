@@ -1,3 +1,28 @@
-/deep/ .ant-select {
-  width: 100%;
+.split-screen-setting {
+  height: 100%;
+  border-left: 1px solid #f0f0f0;
+  padding-left: 12px;
+  margin-left: 12px;
+  /deep/ .ant-select {
+    width: 100%;
+  }
+  .split-screen-grid {
+    width: 150px;
+    &-col {
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      margin: 2px 5px 2px 0;
+      color: #999;
+      border: 1px solid #d9d9d9;
+      text-align: center;
+    }
+  }
+  .split-screen-btns {
+    text-align: right;
+    margin: 12px 0;
+    button {
+      margin-left: 8px;
+    }
+  }
 }

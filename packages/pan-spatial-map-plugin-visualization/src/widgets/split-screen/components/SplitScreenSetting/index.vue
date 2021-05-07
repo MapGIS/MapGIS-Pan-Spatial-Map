@@ -1,93 +1,146 @@
 <template>
   <div class="split-screen-setting">
-    <a-row align="middle" :gutter="[12, 0]">
-      <a-col span="4">屏数：</a-col>
-      <a-col span="20">
-        <a-select :value="screenCount" @change="onScreenCountChange">
-          <a-select-option v-for="s in screenNums" :key="s">{{
-            s
-          }}</a-select-option>
-        </a-select>
-      </a-col>
-    </a-row>
-    <a-row align="middle" :gutter="[12, 0]" v-show="screenNums.length">
-      <a-col span="4">图示：</a-col>
-      <a-col span="20">
-        <span class="screen-example" v-for="s in screenNums" :key="s" />
-      </a-col>
-    </a-row>
-    <a-row v-for="s in screenNums" :key="s" align="middle" :gutter="[12, 0]">
-      <a-col span="6">第{{ s }}屏：</a-col>
-      <a-col span="18">
-        <a-select>
-          <a-select-option v-for="l in layers" :key="l.id">{{
-            l.title
-          }}</a-select-option>
-        </a-select>
-      </a-col>
-    </a-row>
+    <row-flex label="屏数">
+      <a-select :value="screenCount" @change="onScreenCountChange">
+        <a-select-option
+          v-for="(l, i) in layersOrigin"
+          :key="i"
+          :value="i + 1"
+          >{{ i + 1 }}</a-select-option
+        >
+      </a-select>
+    </row-flex>
+    <row-flex label="图示" align="top" :gutter="[0, 10]" v-show="layers.length">
+      <a-row class="split-screen-grid">
+        <a-col
+          v-for="(l, i) in layers"
+          :key="i"
+          :span="mapSpan.span"
+          class="split-screen-grid-col"
+          >{{ i + 1 }}</a-col
+        >
+      </a-row>
+    </row-flex>
+    <row-flex
+      v-for="(l, i) in layers"
+      :label="`第${screenLabel[i + 1]}屏`"
+      :key="i"
+    >
+      <a-select :value="l.id" @change="onLayerChange($event, i)">
+        <a-select-option v-for="l in layersOrigin" :key="l.id" :value="l.id">{{
+          l.title
+        }}</a-select-option>
+      </a-select>
+    </row-flex>
+    <div class="split-screen-btns">
+      <a-button type="primary" @click="onFullScreen">全屏展示</a-button>
+      <a-button @click="onCancel">取消</a-button>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { Mixins, Component, Watch, Prop } from 'vue-property-decorator'
 import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
+import RowFlex from '../RowFlex'
 
-interface IMapInfo {
-  screenNO: number
-  layer: Layer
+enum ScreenLabel {
+  '一' = 1,
+  '二',
+  '三',
+  '四',
+  '五',
+  '六'
 }
-
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class SplitScreenSetting extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
+  @Prop({
+    default: () => ({
+      span: 12,
+      height: '100%'
+    })
+  })
+  mapSpan!: object
+
   @Prop({ default: () => [] }) layers!: Layer[]
 
-  screenCount: string | number = ''
+  @Prop({ default: () => [] }) layersOrigin!: Layer[]
 
-  screenNums: number[] = []
+  // openFullScreen | closeFullScreen|null
+  opera = 'null'
 
-  mapInfos: IMapInfo[] = []
+  screenLabel = ScreenLabel
 
-  // 功能弹框开关
-  get isOpen() {
-    return [WidgetState.OPENED, WidgetState.ACTIVE].includes(this.widget.state)
-  }
-
-  /**
-   * 获取选中目录树下的叶子节点图层中的可见图层
-   */
-  initLayers() {
-    this.screenNums = []
-    this.mapInfos = []
-    this.screenCount = this.layers.length < 7 ? this.layers.length : 6
-    for (let i = 1; i <= this.screenCount; i += 1) {
-      this.screenNums.push(i)
-      this.mapInfos.push({
-        screenNO: i,
-        layer: this.layers[i - 1]
-      })
-    }
-  }
+  screenCount: number | null = null
 
   /**
    * 屏数变化
-   * @param value<number>
+   * @param screenCount<number>
    */
-  onScreenCountChange(value: number) {
-    this.screenCount = value
+  onScreenCountChange(screenCount: number) {
+    this.screenCount = screenCount
+    this.$emit('on-screen-count-change', screenCount)
   }
 
-  @Watch('layers')
-  watchLayers() {
-    if (this.isOpen) {
-      this.initLayers()
+  /**
+   * 图层选择变化
+   * @param newLayerId<string>
+   * @param oldLayerIndex<number>
+   */
+  onLayerChange(newLayerId, oldLayerIndex) {
+    this.$emit(
+      'on-layer-change',
+      oldLayerIndex,
+      this.layersOrigin.find(({ id }) => id === newLayerId)
+    )
+  }
+
+  /**
+   * 全屏
+   */
+  onFullScreen() {
+    const element = document.getElementsByClassName('split-screen-map')[0]
+    if (element.requestFullscreen) {
+      element.requestFullscreen()
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen()
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen()
+    } else if (element.msRequestFullscreen) {
+      element.msRequestFullscreen()
     }
+    this.opera = 'openFullScreen'
   }
 
-  created() {
-    if (this.isOpen) {
-      this.initLayers()
+  /**
+   * 取消
+   */
+  onCancel() {
+    // todo 手动调用弹框关闭事件
+  }
+
+  /**
+   * 监听: 图层列表变化
+   */
+  @Watch('layers')
+  watchLayers(nV: ILayer[]) {
+    this.screenCount = nV.length || null
+  }
+
+  mounted() {
+    window.onresize = () => {
+      if (this.refresh) {
+        this.refresh(this.opera)
+      }
+
+      if (this.opera === 'openFullScreen') {
+        this.opera = 'closeFullScreen'
+      }
     }
   }
 }
