@@ -57,7 +57,7 @@
     </template>
 
     <template v-if="isMapGIS">
-      <!-- <igs-server :dataType="option.value" @update-data="changeIgsDate" /> -->
+      <igs-server :dataType="option" />
     </template>
 
     <template v-if="isBaidu || isGaode || isGoogle || isGoogleExt">

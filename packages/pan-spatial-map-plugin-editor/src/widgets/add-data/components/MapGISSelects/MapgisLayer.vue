@@ -1,5 +1,16 @@
 <template>
-  <div></div>
+  <div class="mapgis-layer">
+    <a-tree-select
+      v-model="value"
+      style="width: 100%"
+      :tree-data="treeData"
+      :treeDefaultExpandAll="defaultExpandAll"
+      :replace-fields="replaceFields"
+      search-placeholder="Please select"
+      :load-data="handleLazyLoad"
+    >
+    </a-tree-select>
+  </div>
 </template>
 
 <script lang="ts">
@@ -21,7 +32,284 @@ const MapGISLocalPlus = 'MapGISLocalPlus'
   name: 'MapgisLayer',
   components: {}
 })
-export default class MapgisLayer extends Vue {}
+export default class MapgisLayer extends Vue {
+  @Prop(String) readonly ip!: string
+
+  @Prop(String) readonly port!: string
+
+  private value: any = ''
+
+  private treeData: Record<string, any>[] = []
+
+  private defaultExpandAll = false
+
+  // 替换treeNode中的title、key字段为treeData中对应的字段
+  private replaceFields: object = {
+    title: 'name',
+    key: 'id'
+  }
+
+  created() {
+    this.init()
+  }
+
+  @Watch('ip', { deep: true })
+  @Watch('port', { deep: true })
+  init() {
+    const { ip, port } = this
+    if (!ip || !port) {
+      return
+    }
+    this.treeData = []
+    queryIgsServicesInfoInstance
+      .getDataSource({ ip, port })
+      .then(res => {
+        console.log(res)
+
+        for (const item of res) {
+          this.treeData.push({
+            id: uuid(),
+            name: item,
+            lazy: true,
+            level: 1,
+            children: []
+          })
+        }
+        console.log(this.treeData)
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  }
+
+  handleLazyLoad(node) {
+    console.log(node)
+    return new Promise(resolve => {
+      const { level, name } = node
+      switch (level) {
+        case 1:
+          // 展开数据源
+          if (name === MapGISLocal || name === MapGISLocalPlus) {
+            // 本地数据源
+            this.resolveDataBase(this.ip, this.port, name).then(res => {
+              if (res && res.length > 0) {
+                const arr = [...res]
+                arr.map(a => {
+                  a.id = uuid()
+                  a.level = 2
+                  if (a.children && a.children.length > 0) {
+                    a.children.map(c => {
+                      c.id = uuid()
+                      c.level = 3
+                      c.lazy = true
+                    })
+                  }
+                })
+                node.children = arr
+                resolve()
+              }
+            })
+          } else {
+            if (node.children && node.children.length > 0) {
+              resolve()
+              break
+            }
+            const userName = uuid()
+            const password = uuid()
+            this.$q
+              .dialog({
+                title: '身份验证',
+                style: 'width:fit-content',
+                message: `<div><span style="display: inline-block; width: 60px;">用户名</span>
+                            <input id="${userName}" style="display: inline-block; width: 120px;"/></div><div style="margin-top:10px">
+                            <span style="display: inline-block; width: 60px;">密码</span>
+                            <input id="${password}" style="display: inline-block; width: 120px;" type="password"/></div>`,
+                html: true,
+                ok: {
+                  push: true,
+                  label: '确定',
+                  color: 'title'
+                },
+                cancel: {
+                  push: true,
+                  label: '取消',
+                  color: 'title'
+                }
+              })
+              .onOk(data => {
+                const user = document.getElementById(userName).value
+                const pwd = document.getElementById(password).value
+                this.resolveDataBase(this.ip, this.port, name, user, pwd)
+                  .then(res => {
+                    if (res && res.length > 0) {
+                      const arr = [...res]
+                      arr.map(a => {
+                        a.id = uuid()
+                        a.level = 2
+                        if (a.children && a.children.length > 0) {
+                          a.children.map(c => {
+                            c.id = uuid()
+                            c.level = 3
+                            c.lazy = true
+                          })
+                        }
+                      })
+                      resolve()
+                      this.defaultExpandAll = true
+                      this.showTree = true
+                    }
+                  })
+                  .catch(err => {
+                    console.error(err)
+                  })
+              })
+          }
+          break
+        case 3:
+          const { gdbp, key, user, password } = node
+          // 展开简单要素类等节点
+          queryIgsServicesInfoInstance
+            .getGDBData({
+              ip: this.ip,
+              port: this.port,
+              gdbp: gdbp,
+              type: key,
+              user: user,
+              password: password
+            })
+            .then(res => {
+              const arr: any[] = []
+              switch (key) {
+                case 'ds':
+                  for (const { Name: dsName, SFClsInfos } of res) {
+                    const children: any[] = []
+                    const obj = {
+                      id: uuid(),
+                      name: dsName,
+                      icon: 'tree-icon tree-icon-ds',
+                      children: [
+                        {
+                          id: uuid(),
+                          name: '简单要素类',
+                          icon: 'tree-icon tree-icon-ds',
+                          children
+                        },
+                        {
+                          id: uuid(),
+                          name: '注记类',
+                          icon: 'tree-icon tree-icon-ds',
+                          children
+                        }
+                      ]
+                    }
+                    for (const {
+                      Name: clsName,
+                      GeomType,
+                      Type
+                    } of SFClsInfos) {
+                      const info = {
+                        id: uuid(),
+                        name: clsName,
+                        icon: `tree-icon tree-icon-${GeomType}`,
+                        leaf: true,
+                        gdbp: `gdbp://${gdbp}/${key}/${dsName}/sfcls/${clsName}`
+                      }
+                      switch (Type) {
+                        case 30:
+                          obj.children[0].children.push(info)
+                          break
+
+                        default:
+                          obj.children[0].children.push(info)
+                          break
+                      }
+                    }
+                    arr.push(obj)
+                  }
+                  break
+                case 'acls':
+                  for (const clsName of res) {
+                    arr.push({
+                      id: uuid(),
+                      name: clsName,
+                      icon: 'tree-icon tree-icon-acls',
+                      leaf: true,
+                      gdbp: `gdbp://${gdbp}/${key}/${clsName}`
+                    })
+                  }
+                  break
+                default:
+                  for (const { Name: clsName, GeomType } of res) {
+                    arr.push({
+                      id: uuid(),
+                      name: clsName,
+                      icon: `tree-icon tree-icon-${GeomType}`,
+                      leaf: true,
+                      gdbp: `gdbp://${gdbp}/sfcls/${clsName}`
+                    })
+                  }
+                  break
+              }
+              resolve()
+            })
+          break
+        default:
+          break
+      }
+    })
+  }
+
+  // 获取数据库节点
+  resolveDataBase(ip, port, dataSource, user = '', password = '') {
+    return new Promise((resolve, reject) => {
+      queryIgsServicesInfoInstance
+        .getDataBase({ ip, port, dataSource, user, password })
+        .then(res => {
+          const arr: any[] = []
+          for (const item of res) {
+            const gdbp = `${dataSource}/${item}`
+            const types = [
+              ['要素数据集', 'ds'],
+              ['简单要素类', 'sfcls_new'],
+              ['注记类', 'acls'],
+              ['对象类', 'ocls'],
+              ['栅格目录', 'rcat'],
+              ['栅格数据集', 'ras']
+            ]
+            arr.push({
+              name: item,
+              children: types.map(
+                ([
+                  name,
+                  key,
+                  icon = 'tree-icon tree-icon-ds',
+                  children = []
+                ]) => ({
+                  name,
+                  key,
+                  icon,
+                  children,
+                  gdbp,
+                  user,
+                  password
+                })
+              ),
+              icon: 'tree-icon tree-icon-gdb'
+            })
+          }
+          resolve(arr)
+        })
+        .catch(err => {
+          reject(err)
+        })
+    })
+  }
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.mapgis-layer {
+  margin-left: 4px;
+  flex-grow: 1;
+}
+</style>
