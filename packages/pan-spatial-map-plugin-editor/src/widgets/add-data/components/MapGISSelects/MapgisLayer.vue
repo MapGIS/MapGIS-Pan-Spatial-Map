@@ -117,7 +117,6 @@ export default class MapgisLayer extends Vue {
                   }
                   return a
                 })
-                debugger
                 node.dataRef.children = arr
                 this.treeData = [...this.treeData]
                 resolve()
@@ -334,7 +333,7 @@ export default class MapgisLayer extends Vue {
 
 <style lang="scss" scoped>
 .mapgis-layer {
-  margin-left: 4px;
+  margin-left: 15px;
   flex-grow: 1;
 }
 </style>

@@ -63,6 +63,7 @@ export default class ServiceCategorySelect extends Mixins(
 
 <style lang="less" scoped>
 .service-category-select {
+  width: 100%;
   display: flex;
 }
 .container-head {
