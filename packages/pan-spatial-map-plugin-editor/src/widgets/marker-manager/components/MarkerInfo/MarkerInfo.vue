@@ -11,16 +11,8 @@
       </div>
       <div class="marker-content edit">
         <div class="content-title">图片：</div>
-        <!-- <q-img
-          contain
-          position="0 0"
-          :src="`${uploadUrl}${img}`"
-          style="height: 2em;"
-          class="col"
-          @click="selectImg()"
-        /> -->
         <div class="edit-img">
-          <a-avatar :src="img" />
+          <a-avatar :src="`${baseUrl}${img}`" />
           <a-button
             type="primary"
             shape="circle"
@@ -54,14 +46,7 @@
       </div>
       <div class="marker-content">
         <div class="content-title">图片：</div>
-        <!-- <q-img
-          contain
-          position="0 0"
-          :src="`${uploadUrl}${markerInfo.img}`"
-          style="height: 2em;"
-          class="col"
-        /> -->
-        <a-avatar :src="img" />
+        <a-avatar :src="`${baseUrl}${img}`" />
         <a-button shape="circle" icon="edit" size="small" @click="handleEdit">
         </a-button>
       </div>
@@ -122,7 +107,7 @@ export default class MarkerInfo extends Mixins(AppMixin) {
     this.markerInfo.edit = false
 
     // 标注点默认图标
-    this.img = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
+    this.img = baseConfigInstance.config.colorConfig.label.image.defaultImg
   }
 
   handleEdit() {
@@ -151,12 +136,8 @@ export default class MarkerInfo extends Mixins(AppMixin) {
   // 图片上传成功时，更新图例微件的config文件
   succesHandleUploader(info) {
     console.log(info)
-
-    // const { url } = JSON.parse(xhr.response)
-    // if (url) {
-    //   this.showUploader = false
-    //   this.img = url
-    // }
+    this.img = info.file.response.url
+    this.showUploader = false
   }
 }
 </script>

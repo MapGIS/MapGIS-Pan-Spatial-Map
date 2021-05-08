@@ -41,13 +41,9 @@ export default class MpUploader extends Vue {
 
   onChangeFile(info) {
     if (info.file.status === 'uploading' || info.file.status === 'error') {
-      console.log('failed')
-
       return
     }
     if (info.file.status === 'done') {
-      console.log('success')
-
       this.$emit('success', info)
     }
   }
