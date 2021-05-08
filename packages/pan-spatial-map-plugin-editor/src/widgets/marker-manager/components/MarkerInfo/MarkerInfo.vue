@@ -20,9 +20,7 @@
           @click="selectImg()"
         /> -->
         <div class="edit-img">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-          />
+          <a-avatar :src="img" />
           <a-button
             type="primary"
             shape="circle"
@@ -63,6 +61,7 @@
           style="height: 2em;"
           class="col"
         /> -->
+        <a-avatar :src="img" />
         <a-button shape="circle" icon="edit" size="small" @click="handleEdit">
         </a-button>
       </div>
@@ -79,7 +78,11 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit, Mixins } from 'vue-property-decorator'
-import { envInstance, eventBus } from '@mapgis/pan-spatial-map-store'
+import {
+  envInstance,
+  eventBus,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-store'
 import { AppMixin } from '@mapgis/web-app-framework'
 import uploader from '../Uploader/uploader'
 
@@ -117,6 +120,9 @@ export default class MarkerInfo extends Mixins(AppMixin) {
 
   mounted() {
     this.markerInfo.edit = false
+
+    // 标注点默认图标
+    this.img = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
   }
 
   handleEdit() {
@@ -181,6 +187,11 @@ export default class MarkerInfo extends Mixins(AppMixin) {
 
 .ant-divider {
   margin: 12px 0;
+}
+
+.ant-avatar {
+  width: 24px;
+  height: 24px;
 }
 
 .btn-group {

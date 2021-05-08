@@ -28,6 +28,7 @@
 <script lang="ts">
 import { Component, Mixins, Provide, Prop } from 'vue-property-decorator'
 import { MapMixin } from '@mapgis/web-app-framework'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import MarkerInfo from '../MarkerInfo/MarkerInfo.vue'
 
 @Component({
@@ -60,6 +61,10 @@ export default class MapboxMarkerShow extends Mixins(MapMixin) {
   private geojsonFeatures = {
     type: 'FeatureCollection',
     features: this.markerFeatures
+  }
+
+  get highlightStyle() {
+    return baseConfigInstance.config.colorConfig.feature
   }
 
   mounted() {
@@ -101,15 +106,15 @@ export default class MapboxMarkerShow extends Mixins(MapMixin) {
       source: this.markerSourceIDs.POINT,
       paint: {
         // make circles larger as the user zooms from z12 to z22
-        'circle-radius': {
-          base: 1,
-          stops: [
-            [0, 1],
-            [22, 10]
-          ]
-        },
-        // 'circle-radius':13,
-        'circle-color': 'red'
+        // 'circle-radius': {
+        //   base: 1,
+        //   stops: [
+        //     [0, 1],
+        //     [22, 10]
+        //   ]
+        // },
+        'circle-radius': 4,
+        'circle-color': this.highlightStyle.pnt.color
       }
     })
   }
@@ -129,8 +134,8 @@ export default class MapboxMarkerShow extends Mixins(MapMixin) {
         'line-cap': 'round'
       },
       paint: {
-        'line-color': 'red',
-        'line-width': 2
+        'line-color': this.highlightStyle.line.color,
+        'line-width': parseInt(this.highlightStyle.line.size)
       }
     })
   }
@@ -146,7 +151,7 @@ export default class MapboxMarkerShow extends Mixins(MapMixin) {
       type: 'fill',
       source: this.markerSourceIDs.POLYGON,
       paint: {
-        'fill-color': 'red',
+        'fill-color': this.highlightStyle.reg.color,
         'fill-opacity': 0.4
       }
     })
