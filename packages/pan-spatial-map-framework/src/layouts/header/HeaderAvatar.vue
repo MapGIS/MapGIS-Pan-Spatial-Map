@@ -2,7 +2,7 @@
   <a-dropdown>
     <div class="header-avatar" style="cursor: pointer">
       <a-icon type="user" class="avatar" />
-      <span class="name">{{ user.nickName || user.username }}</span>
+      <span class="name">{{ user && (user.nickName || user.username) }}</span>
     </div>
     <a-menu :class="['avatar-menu']" slot="overlay">
       <a-menu-item @click="logout">

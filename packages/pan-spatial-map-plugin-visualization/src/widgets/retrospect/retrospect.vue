@@ -16,7 +16,7 @@
           />
         </a-col>
       </a-row>
-      <div class="retrospect-time-line">
+      <div class="retrospect-time-line" v-show="timeLineList.length">
         <time-line
           id="retrospect-time-line"
           ref="time-line"
@@ -64,18 +64,18 @@
             </a-col>
           </a-row>
         </transition>
-        <div class="retrospect-shade" v-show="!timeLineList.length">
-          该数据没有年度，无法进行专题回溯
-        </div>
       </div>
+      <!-- 空数据友好提示 -->
+      <a-empty :image="simpleImage" v-show="!timeLineList.length" />
     </a-spin>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, WidgetState } from '@mapgis/web-app-framework'
 import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
+import { Empty } from 'ant-design-vue'
 import TimeLine from './components/TimeLine.vue'
 
 interface IControl {
@@ -136,6 +136,13 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
 
   // 是否播放
   isPlay = false
+
+  /**
+   * 微件弹框活动状态
+   */
+  get widgetActiveState() {
+    return [WidgetState.OPENED, WidgetState.ACTIVE].includes(this.widget.state)
+  }
 
   /**
    * 树形选择控件下拉框样式
@@ -284,17 +291,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   }
 
   /**
-   * 时间轴变化
-   */
-  @Watch('timeIndex')
-  changeTimeIndex(nV: number) {
-    if (this.timeLineList.length) {
-      const ids = this.getCheckedIds(this.timeLineList[nV])
-      this.updateCheckedIds(ids)
-    }
-  }
-
-  /**
    * 获取回溯年度的图层服务
    * @param <object>
    */
@@ -359,10 +355,11 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   /**
    * 视图窗口变化
    */
-  onResize() {
+  onWindowSize(mode: string) {
     const ref: any = this.$refs['time-line']
+    const width = mode === 'max' ? 1600 : 400
     if (ref) {
-      ref.resize()
+      ref.resize(width)
     }
   }
 
@@ -405,10 +402,29 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   setInterval() {
     this.showInterval = !this.showInterval
   }
+
+  /**
+   * 监听: 时间轴变化
+   */
+  @Watch('timeIndex')
+  watchTimeIndex(nV: number) {
+    if (this.timeLineList.length) {
+      const ids = this.getCheckedIds(this.timeLineList[nV])
+      this.updateCheckedIds(ids)
+    }
+  }
+
+  beforeCreate() {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
+  }
 }
 </script>
 
 <style lang="less" scoped>
+.mp-widget-retrospect {
+  min-width: 400px;
+  max-width: 1600px;
+}
 .retrospect-tree-select,
 .retrospect-input-number {
   width: 100%;
@@ -424,6 +440,7 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
 .retrospect-time-line {
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 .retrospect-btn {
   font-size: 16px;
@@ -431,20 +448,5 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   &:hover {
     color: @primary-color;
   }
-}
-.retrospect-shade {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background-color: black;
-  opacity: 0.7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  padding: 5px;
-  word-wrap: break-word;
 }
 </style>

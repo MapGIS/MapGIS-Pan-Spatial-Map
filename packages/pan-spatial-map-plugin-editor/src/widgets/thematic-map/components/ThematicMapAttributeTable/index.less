@@ -1,0 +1,29 @@
+.thematic-map-attribute-table {
+  width: 500px;
+  max-height: 500px;
+  display: flex;
+  flex-flow: column nowrap;
+  .attribute-table-head {
+    margin-bottom: 10px;
+    .ant-select {
+      width: 100%;
+    }
+    + div {
+      flex: 1;
+      /deep/ .ant-table {
+        line-height: 1.2;
+        .ant-table-thead > tr > th,
+        .ant-table-tbody > tr > td {
+          padding: 10px;
+        }
+        .ant-table-body {
+          overflow: auto !important;
+        }
+      }
+      /deep/.ant-table-pagination.ant-pagination {
+        float: unset;
+        text-align: center;
+      }
+    }
+  }
+}
