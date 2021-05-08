@@ -2,6 +2,9 @@
   <div class="add-service-url">
     <service-category-select />
     <service-type-select :service-types="serviceTypes" />
+    <div class="btn">
+      <a-button type="primary">添加</a-button>
+    </div>
   </div>
 </template>
 
@@ -25,4 +28,13 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.add-service-url {
+  width: 100%;
+}
+.btn {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

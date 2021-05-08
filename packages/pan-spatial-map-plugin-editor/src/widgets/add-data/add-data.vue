@@ -8,7 +8,7 @@
         <add-service-url :service-types="tempServiceTypes" />
       </a-tab-pane>
       <a-tab-pane key="3" tab="文件">
-        <div>文件</div>
+        <add-service-file :service-types="tempfileTypes" />
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -25,12 +25,14 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 import AddServicesData from './components/AddServicesData.vue'
 import AddServiceUrl from './components/AddServiceUrl.vue'
+import AddServiceFile from './components/AddServiceFile.vue'
 
 @Component({
   name: 'MpAddData',
   components: {
     AddServicesData,
-    AddServiceUrl
+    AddServiceUrl,
+    AddServiceFile
   }
 })
 export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
@@ -38,8 +40,11 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
 
   private tempServiceTypes: ServiceType[] = []
 
+  private tempfileTypes: ServiceType[] = []
+
   created() {
     this.tempServiceTypes = this.serviceTypes2D
+    this.tempfileTypes = this.fileTypes2D
   }
 }
 </script>

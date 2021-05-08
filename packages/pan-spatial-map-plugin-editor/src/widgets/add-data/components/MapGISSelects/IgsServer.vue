@@ -9,8 +9,12 @@
       <a-input v-model="port"></a-input>
     </div>
     <div v-if="showLayer" class="input-item">
-      <label>GDBP地址：</label>
+      <div class="long-title">GDBP地址：</div>
       <mapgis-layer :ip="ip" :port="port" />
+    </div>
+    <div v-if="showMap" class="input-item">
+      <div class="long-title">地图服务名称：</div>
+      <mapgis-server :ip="ip" :port="port" :type="dataType"></mapgis-server>
     </div>
   </div>
 </template>
@@ -64,6 +68,11 @@ export default class IgsServer extends Vue {
   .ant-input {
     margin-left: 4px;
     flex-grow: 1;
+  }
+
+  .long-title {
+    width: 59px;
+    white-space: pre-wrap;
   }
 }
 </style>
