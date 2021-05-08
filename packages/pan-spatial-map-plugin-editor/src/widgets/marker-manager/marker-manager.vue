@@ -53,6 +53,7 @@
       </div>
     </div>
     <a-table
+      :class="isFullScreen === true ? '' : 'fixed-table'"
       :row-selection="{
         selectedRowKeys: selectedRowKeys,
         onChange: onSelectChange
@@ -164,13 +165,15 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
       title: '名称',
       dataIndex: 'title',
       align: 'center',
-      sorter: true
+      sorter: true,
+      ellipsis: true
     },
     {
       title: '描述',
       dataIndex: 'description',
       align: 'center',
-      sorter: true
+      sorter: true,
+      ellipsis: true
     }
   ]
 
@@ -208,6 +211,8 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
   // 表格数据(标注点构成的数组)
   private markers: any[] = []
+
+  private isFullScreen = false
 
   @Watch('selectedRowKeys')
   onSelectedRowKeysChange() {
@@ -301,6 +306,10 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     this.mapboxShow = false
     this.tableData = []
     eventBus.$off('edit-marker-info')
+  }
+
+  onWindowSize(mode) {
+    this.isFullScreen = mode === 'max'
   }
 
   // 点击不同类型标注图标回调事件
@@ -405,5 +414,9 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 .keyboard-btns,
 .manager-item {
   margin-right: 4px;
+}
+
+.fixed-table {
+  width: 322px;
 }
 </style>
