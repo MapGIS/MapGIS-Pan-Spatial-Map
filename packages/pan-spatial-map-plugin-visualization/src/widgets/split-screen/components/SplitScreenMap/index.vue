@@ -6,12 +6,12 @@
     />
     <a-row v-else :gutter="[5, 8]">
       <a-col
-        v-for="l in layers"
+        v-for="(l, i) in layers"
         :key="l.id"
         :span="mapSpan.span"
         :style="{ height: mapSpan.height }"
       >
-        <map-view :layer="l" />
+        <map-view :layer="l" :mapViewID="`split-screen-map-${i}`" />
       </a-col>
     </a-row>
   </div>
