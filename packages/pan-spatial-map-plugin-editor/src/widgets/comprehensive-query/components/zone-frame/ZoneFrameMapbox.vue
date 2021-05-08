@@ -51,7 +51,7 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
       const center = utilInstance.getFeaturesCenter(val.features)
       this.map.flyTo({
         center,
-        speed: 0.2,
+        speed: 1.2,
         curve: 1,
         easing(t: any) {
           return t

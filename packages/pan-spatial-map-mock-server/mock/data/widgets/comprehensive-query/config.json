@@ -5,7 +5,7 @@
     "combine": "true",
     "queryWay": "gdbp",
     "docName": "",
-    "showType": "normal",
+    "showType": "result",
     "clusterMaxCount": "1000",
     "allSearchName": "NAME",
     "allShows": "NAME:名称,ADDRESS:地址,TELEPHONE:联系方式,PAC:邮政编码",

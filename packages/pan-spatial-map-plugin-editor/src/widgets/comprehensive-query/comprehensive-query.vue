@@ -65,8 +65,8 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { Parser, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
-import PlaceName from './components/PlaceName'
-import Zone from './components/Zone'
+import PlaceName from './components/place-name/PlaceName'
+import Zone from './components/zone-frame/Zone'
 
 @Component({ name: 'MpComprehensiveQuery', components: { PlaceName, Zone } })
 export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {

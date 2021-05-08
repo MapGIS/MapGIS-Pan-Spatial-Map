@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import { Response, Request, json } from 'express'
 
-const configs: string[] = ['base']
+const configs: string[] = ['base', 'district']
 
 export const getConfig = (req: Request, res: Response) => {
   const { name } = req.params
