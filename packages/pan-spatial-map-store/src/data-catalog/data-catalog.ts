@@ -13,6 +13,7 @@ import {
   OGCWMSLayer,
   ArcGISTileLayer,
   ArcGISMapImageLayer,
+  VectorTileLayer,
   UUID
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
@@ -122,6 +123,10 @@ export class DataCatalogManager {
       case LayerType.arcGISMapImage:
         url = layerConfig.serverURL
         layer = new ArcGISMapImageLayer({ url })
+        break
+      case LayerType.vectorTile:
+        url = layerConfig.serverURL
+        layer = new VectorTileLayer({ url })
         break
       default:
         break
