@@ -1,73 +1,50 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
-import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
+export class Rect {
+  /**
+   * Creates an instance of Rect.
+   * @param {number} xmin X坐标最小值
+   * @param {number} ymin Y坐标最小值
+   * @param {number} xmax X坐标最大值
+   * @param {number} ymax Y坐标最大值
+   */
+  constructor(
+    public xmin: number = 0.0,
+    public ymin: number = 0.0,
+    public xmax: number = 0.0,
+    public ymax: number = 0.0
+  ) {
+    this.xmin = xmin
+    this.xmax = xmax
+    this.ymin = ymin
+    this.ymax = ymax
+  }
+}
 
 /**
  * 二维地图操作混入,提供操作地图的常用接口
- * @export
- * @class MpMapViewOperationMixin
- * @extends {Vue}
  */
-@Component
+@Component({
+  name: 'MapViewOperationMixin'
+})
 export default class MapViewOperationMixin extends Vue {
+  @Prop({ default: '' }) mapViewId!: string
+
   map: any = {}
 
   mapbox: any = {}
 
-  activeMapViewState: MapViewState = mapViewStateInstance
+  activeMapViewId = ''
 
-  showQueryResult = false
-
-  queryRect: Rect | object = {}
-
-  // 获取当前激活的地图视图的范围
-  get activeMapViewDisplayRect(): Rect {
-    return this.activeMapViewState.displayRect
-  }
-
-  // 设置当前激活的地图视图的范围
-  set activeMapViewDisplayRect(displayRect: Rect) {
-    this.activeMapViewState.displayRect = displayRect
-  }
-
-  // 获取地图视图的复位范围
-  get initDisplayRect(): Rect {
-    return this.activeMapViewState.initDisplayRect
-  }
-
-  // 设置地图视图的复位范围
-  set initDisplayRect(initDisplayRect: Rect) {
-    this.activeMapViewState.initDisplayRect = initDisplayRect
-  }
-
-  // 设置当前激活的地图视图的ID
-  set activeMapViewID(ID: string) {
-    this.activeMapViewState.mapViewID = ID
-  }
-
-  // 获取当前激活的地图视图的ID
-  get activeMapViewID(): string {
-    return this.activeMapViewState.mapViewID
-  }
-
-  /**
-   * 判断矩形范围是否可用
-   * @private
-   * @param {Rect} rect
-   * @return {*} false:不可用,true:可用
-   * @memberof MpMapViewOperationMixin
-   */
-  isValidRect(rect: Rect) {
-    return rect && rect.xMin < rect.xMax && rect.yMin < rect.yMax
-  }
+  activeDisplayRect: Rect | object = {}
 
   /**
    * 查询地图
    * @param {Rect} rect 指定区域
+   * @param {string} mapViewId 图层id
    */
-  query(rect: Rect) {
-    this.showQueryResult = true
-    this.queryRect = rect
+  query(rect: Rect, mapViewId: string) {
+    this.$emit('on-query', rect, mapViewId, true)
   }
 
   /**
@@ -77,8 +54,8 @@ export default class MapViewOperationMixin extends Vue {
   zoomIn(rect: Rect) {
     if (this.isValidRect(rect)) {
       this.map.fitBounds([
-        [rect.xMax, rect.yMin],
-        [rect.xMin, rect.yMax]
+        [rect.xmax, rect.ymin],
+        [rect.xmin, rect.ymax]
       ])
     } else {
       this.map.zoomIn()
@@ -93,8 +70,16 @@ export default class MapViewOperationMixin extends Vue {
     if (this.isValidRect(rect)) {
       this.map.flyTo({
         zoom: this.map.getZoom() - 1,
-        center: [(rect.xMin + rect.xMin) / 2, (rect.yMin + rect.yMax) / 2]
+        center: [(rect.xmin + rect.xmin) / 2, (rect.ymin + rect.ymax) / 2]
       })
     }
+  }
+
+  /**
+   * 判断矩形范围是否可用
+   * @param {Rect} rect
+   */
+  isValidRect(rect: Rect) {
+    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
   }
 }

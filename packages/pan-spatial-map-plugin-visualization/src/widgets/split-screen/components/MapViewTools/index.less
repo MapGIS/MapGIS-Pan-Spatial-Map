@@ -1,0 +1,18 @@
+.map-view-tools {
+  color: @white;
+  background-color: @primary-color;
+  line-height: 32px;
+  padding: 0 8px;
+  /deep/ .ant-col:last-of-type {
+    text-align: right;
+    .anticon {
+      font-size: 18px;
+      margin-left: 10px;
+      vertical-align: middle;
+      margin-top: -0.125em;
+    }
+  }
+  + div {
+    flex: 1;
+  }
+}

@@ -1,7 +1,9 @@
 <template>
   <a-row type="flex" :align="align" :justify="justify" :gutter="gutter">
     <a-col :span="labelSpan">
-      <slot name="label" v-if="$slots.label || label"> {{ label }}： </slot>
+      <slot name="label" v-if="$slots.label || label">
+        {{ label }}{{ colon ? '：' : '' }}</slot
+      >
     </a-col>
     <a-col :span="contentSpan">
       <slot />
@@ -27,9 +29,11 @@ export default class RowFlex extends Mixins<IVueExtends>(WidgetMixin) {
     | 'space-between'
     | 'space-around'
 
-  @Prop({ default: () => [0, 12] }) gutter!: number[]
+  @Prop({ default: () => [0, 12] }) gutter!: number | Array<number>
 
   @Prop({ default: () => [5, 19] }) span!: number[]
+
+  @Prop({ default: true }) colon!: boolean
 
   @Prop() label!: string
 
