@@ -64,7 +64,8 @@ export class VectorTileLayer extends Layer {
       styleUrlList.forEach((styleUrl, index) => {
         axios.get(styleUrl).then(
           res => {
-            this.styleList.push(res)
+            const { data } = res
+            this.styleList.push(data)
 
             if (index === styleUrlList.length - 1) {
               this.loadStatus = LoadStatus.loaded
