@@ -2,23 +2,19 @@
   <div class="add-services-data">
     <div class="row first">
       <a-select class="select-first" v-model="serviceCategory">
-        <a-select-option
-          v-for="(item, index) in serviceCategories"
-          :key="index"
-          >{{ item.name }}</a-select-option
-        >
+        <a-select-option v-for="item in serviceCategories" :key="item.name">{{
+          item.name
+        }}</a-select-option>
       </a-select>
       <a-select v-model="serviceType">
-        <a-select-option v-for="(item, index) in serviceTypes" :key="index">{{
-          item
+        <a-select-option v-for="item in serviceTypes" :key="item.value">{{
+          item.label
         }}</a-select-option>
       </a-select>
     </div>
     <div class="row">
-      <a-input v-model="keyword">
-        <a-icon slot="suffix" type="search"></a-icon>
-      </a-input>
-      <a-button type="primary">保存服务</a-button>
+      <a-input-search v-model="keyword" @search="getData"></a-input-search>
+      <a-button type="primary" @click="onSave">保存服务</a-button>
     </div>
     <a-table
       :columns="columns"
@@ -30,19 +26,21 @@
       }"
       :rowKey="
         (record, index) => {
-          return index
+          return record.id
         }
       "
     >
       <template slot="url" slot-scope="text">
-        <span :style="{ cursor: 'pointer' }">{{ text }}</span>
+        <span :style="{ cursor: 'pointer' }" @click="onOpenUrl(text)">{{
+          text
+        }}</span>
       </template>
-      <template v-slot:operate>
+      <template slot="operate" slot-scope="text">
         <a-tooltip placement="bottom">
           <template slot="title">
             <span>删除</span>
           </template>
-          <a-icon type="delete"></a-icon>
+          <a-icon type="delete" @click="onDelete(text)"></a-icon>
         </a-tooltip>
       </template>
     </a-table>
@@ -72,19 +70,11 @@ export default class AddServicesData extends Mixins(
   // 子类别选中项
   private serviceType = null
 
-  // private serviceCategories = []
-
   // 搜索框输入值
   private keyword = ''
 
   // 表格数据
-  private tableData = [
-    {
-      name: 'xxx',
-      type: 'xxx',
-      url: 'xxx'
-    }
-  ]
+  private tableData = []
 
   // 表格列配置
   private columns = [
@@ -124,16 +114,130 @@ export default class AddServicesData extends Mixins(
   // Table选中项的 key 数组
   private selectedRowKeys = []
 
+  // Table选中项数组
+  private checkedRows = []
+
+  // Table上一次选中项数组
+  private preCheckedRows = []
+
+  @Watch('serviceCategory', { immediate: true })
+  @Watch('serviceType', { immediate: true })
+  getData() {
+    this.tableData = this.services.filter(item => {
+      if (this.serviceCategory && item.category !== this.serviceCategory)
+        return false
+      if (this.serviceType && item.type !== this.serviceType) return false
+      if (!item.name.includes(this.keyword)) return false
+      return true
+    })
+    // this.selected = this.data.filter(item => item.visible)
+  }
+
   created() {
-    // console.log(this.serviceCategories)
     this.serviceCategory = this.serviceCategories[0].name
-    console.log(this.serviceCategory)
-    // this.serviceType = this.serviceTypes[0]
+    this.serviceType = this.serviceTypes[0].value
+    this.$message.config({
+      top: '100px',
+      duration: 2,
+      maxCount: 1
+    })
   }
 
   // Table选中项发生变化时的回调
   onSelectChange(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys
+    console.log(this.services)
+    console.log(this.selectedRowKeys)
+    let newChecked = []
+    let newUnChecked = []
+    // 区分哪些是新选中的，哪些是新取消选中的
+    this.checkedRows = this.tableData.reduce((result, item) => {
+      if (this.selectedRowKeys.includes(item.id)) {
+        result.push(item)
+      }
+      return result
+    }, [])
+    if (this.preCheckedRows.length === 0) {
+      newChecked = this.checkedRows
+    } else if (this.checkedRows.length === 0) {
+      newUnChecked = this.preCheckedRows
+    } else {
+      newChecked = this.checkedRows.reduce((result, item) => {
+        if (this.preCheckedRows.includes(item) === false) {
+          result.push(item)
+        }
+        return result
+      }, [])
+
+      newUnChecked = this.preCheckedRows.reduce((result, item) => {
+        if (this.checkedRows.includes(item) === false) {
+          result.push(item)
+        }
+        return result
+      }, [])
+    }
+    console.log(newChecked)
+    console.log(newUnChecked)
+
+    for (let i = 0; i < this.services.length; i++) {
+      const service = this.services[i]
+      if (
+        newChecked.some(item => item.id === service.id) &&
+        service.visible === false
+      ) {
+        service.visible === true
+        // 添加服务到文档中
+        this.addLayerToDocumentByService(service)
+      }
+      if (
+        newUnChecked.some(item => item.id === service.id) &&
+        service.visible === true
+      ) {
+        service.visible === false
+        // 将服务从文档中删除
+        this.removeLayerFromDocumentByService(service)
+      }
+    }
+
+    this.preCheckedRows = JSON.parse(JSON.stringify(this.checkedRows))
+  }
+
+  // 点击服务地址列的回调
+  onOpenUrl(url) {
+    window.open(url)
+  }
+
+  // 点击删除图标的回调
+  onDelete(text) {
+    console.log(text)
+    this.deleteService(text)
+    this.getData()
+  }
+
+  // 点击保存服务按钮的回调
+  onSave() {
+    const url = '/onemap/WebService/SaveConfig'
+    let fileName = 'addService'
+    if (!this.is2DMapMode) {
+      fileName = 'addService3d'
+    }
+    const data = JSON.stringify(this.services)
+    const fd = new FormData()
+    fd.append('id', fileName)
+    fd.append('config', data)
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+    axios.post(url, fd, config).then(
+      res => {
+        this.$message.success('保存成功')
+      },
+      error => {
+        this.$message.error('保存失败')
+      }
+    )
   }
 }
 </script>

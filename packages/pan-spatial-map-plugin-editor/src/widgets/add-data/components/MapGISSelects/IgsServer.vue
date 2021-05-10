@@ -10,17 +10,22 @@
     </div>
     <div v-if="showLayer" class="input-item">
       <div class="long-title">GDBP地址：</div>
-      <mapgis-layer :ip="ip" :port="port" />
+      <mapgis-layer :ip="ip" :port="port" @igsLayerInfo="updateIgsLayerInfo" />
     </div>
     <div v-if="showMap" class="input-item">
       <div class="long-title">地图服务名称：</div>
-      <mapgis-server :ip="ip" :port="port" :type="dataType"></mapgis-server>
+      <mapgis-server
+        :ip="ip"
+        :port="port"
+        :type="dataType"
+        @serverName="updateServerName"
+      ></mapgis-server>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import MapgisLayer from './MapgisLayer.vue'
 import MapgisServer from './MapgisServer.vue'
 
@@ -43,6 +48,32 @@ export default class IgsServer extends Vue {
 
   get showMap() {
     return this.dataType === 'doc' || this.dataType === 'tile'
+  }
+
+  @Emit()
+  updateData(obj: object) {}
+
+  updateIgsLayerInfo(obj: Record<string, any>) {
+    const data = {
+      gdbp: obj.gdbp,
+      name: obj.name,
+      ip: this.ip,
+      port: this.port
+    }
+    console.log(data)
+
+    this.$emit('updateData', data)
+  }
+
+  updateServerName(val: string) {
+    const data = {
+      serverName: val,
+      ip: this.ip,
+      port: this.port
+    }
+    console.log(data)
+
+    this.$emit('updateData', data)
   }
 }
 </script>

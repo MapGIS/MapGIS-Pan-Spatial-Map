@@ -57,7 +57,7 @@
     </template>
 
     <template v-if="isMapGIS">
-      <igs-server :dataType="option" />
+      <igs-server :dataType="option" @updateData="changeIgsData" />
     </template>
 
     <template v-if="isBaidu || isGaode || isGoogle || isGoogleExt">
@@ -91,6 +91,8 @@ import IgsServer from './MapGISSelects/IgsServer.vue'
   }
 })
 export default class ServiceTypeSelect extends Vue {
+  @Model('change') readonly value!: Record<string, unknown> | null
+
   @Prop(Array) readonly serviceTypes!: ServiceType[]
 
   // 服务类型选中项
@@ -155,6 +157,63 @@ export default class ServiceTypeSelect extends Vue {
 
   get isGoogleExt() {
     return this.option && this.option === 'googleExt'
+  }
+
+  // 配合@Model触发change事件更新value值
+  @Emit()
+  change(val: Record<string, unknown>) {
+    console.log(this.value)
+  }
+
+  @Watch('serviceTypes', { deep: true })
+  updateServiceTypes() {
+    const { type } = this.value || {}
+    const selectItem = this.serviceTypes.find(item => item.value === type)
+    if (selectItem) {
+      this.option = selectItem.value
+    }
+  }
+
+  @Watch('ogcInfo', { deep: true })
+  changeOgcInfo() {
+    const type = this.option || {}
+    const { url, name } = this.ogcInfo
+    this.change({ type, url, name })
+  }
+
+  @Watch('tdtInfo', { deep: true })
+  changeTdtInfo() {
+    const type = this.option || {}
+    const { layerType, token, name } = this.tdtInfo
+    this.change({ type, layerType, token, name })
+  }
+
+  @Watch('arcgisInfo', { deep: true })
+  changeArcgisInfo() {
+    const type = this.option || {}
+    const { extend, url, name } = this.arcgisInfo
+    this.change({ type, extend, url, name })
+  }
+
+  @Watch('baiduGaodeGoogleInfo', { deep: true })
+  changeBaiduGaodeGoogleInfo() {
+    const type = this.option || {}
+    const { layerType, name } = this.baiduGaodeGoogleInfo
+    this.change({ type, layerType, name })
+  }
+
+  changeIgsData(obj) {
+    console.log('sfafas')
+
+    const type = this.option
+    const { ip, port } = obj
+    if (type === 'layer') {
+      const { gdbp, name } = obj
+      this.change({ type, gdbp, name, ip, port })
+    } else {
+      const { serverName } = obj
+      this.change({ type, serverName, ip, port })
+    }
   }
 
   onChange(value, option) {
