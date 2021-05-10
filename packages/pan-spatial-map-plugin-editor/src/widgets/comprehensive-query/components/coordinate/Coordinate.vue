@@ -1,146 +1,136 @@
 <template>
-  <div class="coordinate column">
-    <div class="col-auto column">
-      <q-checkbox v-model="options" val="showCrs" label="设置输入坐标系" />
-      <div v-show="showCrs" class="col-auto">
-        <q-select
-          dense
-          outlined
-          :options="crsOptions"
-          v-model="crs"
-          class="q-my-xs"
-        />
+  <div class="coordinate-container">
+    <a-checkbox-group v-model="options">
+      <div>
+        <a-checkbox value="showCrs">设置输入坐标系</a-checkbox>
+        <div v-show="showCrs" class="input-container">
+          <a-select v-model="crs">
+            <a-select-option
+              v-for="item in crsOptions"
+              :key="item"
+              :value="item"
+            >
+              {{ item }}
+            </a-select-option>
+          </a-select>
+        </div>
       </div>
-    </div>
-    <div class="col-auto column">
-      <q-checkbox v-model="options" val="showType" label="设置坐标单位" />
-      <div v-show="showType" class="col-auto">
-        <q-select
-          dense
-          outlined
-          :options="typeOptions"
-          v-model="type"
-          class="q-my-xs"
-        />
+      <div>
+        <a-checkbox value="showType">设置坐标单位</a-checkbox>
+        <div v-show="showType" class="input-container">
+          <a-select :options="typeOptions" v-model="type" />
+        </div>
       </div>
-    </div>
-    <div class="col-auto column">
-      <div class="col-auto">
-        <q-radio v-model="way" val="input" label="输入坐标" />
-        <q-radio v-model="way" val="click" label="鼠标拾取" />
-      </div>
-      <div v-if="type.value === 'd'" class="col-auto row items-center">
-        <label class="col-3 text-left">X坐标：</label>
-        <q-input
-          class="col-9 q-my-xs"
-          type="number"
-          dense
-          outlined
-          v-model="coordDecimal[0]"
-          :disable="clickWay"
-          @change="onDecimalCoordChanged"
-        />
-        <label class="col-3 text-left">Y坐标：</label>
-        <q-input
-          class="col-9 q-my-xs"
-          type="number"
-          dense
-          outlined
-          v-model="coordDecimal[1]"
-          :disable="clickWay"
-          @change="onDecimalCoordChanged"
-        />
-      </div>
-      <div v-else class="col-auto row items-center">
-        <label class="col-3 text-left">X坐标：</label>
-        <input
-          class="col-2 q-my-xs"
-          type="number"
-          dense
-          outlined
-          v-model="coordDMS[0][0]"
-          :readonly="clickWay"
-          @change="onDMSCoordChanged"
-        />
-        <label class="col-1 text-center">度</label>
-        <input
-          class="col-2 q-my-xs"
-          type="number"
-          dense
-          outlined
-          v-model="coordDMS[0][1]"
-          :readonly="clickWay"
-          @change="onDMSCoordChanged"
-        />
-        <label class="col-1 text-center">分</label>
-        <input
-          class="col-2 q-my-xs"
-          type="number"
-          dense
-          outlined
-          v-model="coordDMS[0][2]"
-          :readonly="clickWay"
-          @change="onDMSCoordChanged"
-        />
-        <label class="col-1 text-center">秒</label>
+      <div style="margin-bottom:20px">
+        <a-radio-group v-model="way">
+          <a-radio value="input">
+            输入坐标
+          </a-radio>
+          <a-radio value="click">
+            鼠标拾取
+          </a-radio>
+        </a-radio-group>
+        <a-row v-if="type === 'd'" type="flex" align="middle" :gutter="[0, 10]">
+          <a-col :span="6">X坐标：</a-col>
+          <a-col :span="18">
+            <a-input
+              type="number"
+              v-model="coordDecimal[0]"
+              :disabled="clickWay"
+              @change="onDecimalCoordChanged"
+            />
+          </a-col>
+          <a-col :span="6">Y坐标：</a-col>
+          <a-col :span="18">
+            <a-input
+              type="number"
+              v-model="coordDecimal[1]"
+              :disabled="clickWay"
+              @change="onDecimalCoordChanged"
+            />
+          </a-col>
+        </a-row>
+        <a-row type="flex" align="middle" :gutter="[0, 10]" v-else>
+          <a-col :span="6">X坐标：</a-col>
+          <a-col :span="4">
+            <a-input
+              type="number"
+              v-model="coordDMS[0][0]"
+              :disabled="clickWay"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">度</a-col>
+          <a-col :span="4">
+            <a-input
+              type="number"
+              v-model="coordDMS[0][1]"
+              :disabled="clickWay"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">分</a-col>
+          <a-col :span="4">
+            <a-input
+              type="number"
+              v-model="coordDMS[0][2]"
+              :disabled="clickWay"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">秒</a-col>
 
-        <label class="col-3 text-left">Y坐标：</label>
-        <input
-          class="col-2 q-my-xs"
-          type="number"
-          dense
-          outlined
-          v-model="coordDMS[1][0]"
-          :readonly="clickWay"
-          @change="onDMSCoordChanged"
-        />
-        <label class="col-1 text-center">度</label>
-        <input
-          class="col-2 q-my-xs"
-          type="number"
-          dense
-          outlined
-          v-model="coordDMS[1][1]"
-          :readonly="clickWay"
-          @change="onDMSCoordChanged"
-        />
-        <label class="col-1 text-center">分</label>
-        <input
-          class="col-2 q-my-xs"
-          type="number"
-          dense
-          outlined
-          v-model="coordDMS[1][2]"
-          :readonly="clickWay"
-          @change="onDMSCoordChanged"
-        />
-        <label class="col-1 text-center">秒</label>
+          <a-col :span="6">Y坐标：</a-col>
+          <a-col :span="4">
+            <a-input
+              type="number"
+              v-model="coordDMS[1][0]"
+              :disabled="clickWay"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">度</a-col>
+          <a-col :span="4">
+            <a-input
+              type="number"
+              v-model="coordDMS[1][1]"
+              :disabled="clickWay"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">分</a-col>
+          <a-col :span="4">
+            <a-input
+              type="number"
+              v-model="coordDMS[1][2]"
+              :disabled="clickWay"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">秒</a-col>
+        </a-row>
       </div>
-    </div>
-    <div class="col-auto column">
-      <div class="col-auto groupTitle">
-        <q-checkbox v-model="options" val="checkSheet" label="计算图幅" />
+      <div>
+        <a-checkbox value="checkSheet">计算图幅</a-checkbox>
+        <a-row
+          v-show="checkSheet"
+          type="flex"
+          class="input-container"
+          align="middle"
+        >
+          <a-col>设置比例尺：</a-col>
+
+          <a-col flex="auto">
+            <a-select :options="scaleArray" v-model="scale" />
+          </a-col>
+        </a-row>
       </div>
-      <div v-show="checkSheet" class="col-auto row items-center">
-        <label class="col-auto text-left">设置比例尺：</label>
-        <q-select
-          dense
-          outlined
-          :options="scaleArray"
-          v-model="scale"
-          class="col q-my-xs"
-        />
-      </div>
-    </div>
-    <div class="col-auto" v-show="frameNo">图幅号：{{ frameNo }}</div>
-    <div class="col-auto row justify-around q-pa-sm">
-      <q-btn
-        :color="themeStyle.color"
-        label="坐标定位"
-        @click="getClipByPoint"
-      />
-      <q-btn :color="themeStyle.color" label="清除" @click="clear" />
-    </div>
+    </a-checkbox-group>
+    <div v-show="frameNo">图幅号：{{ frameNo }}</div>
+    <a-row type="flex" justify="space-around">
+      <a-button type="primary" @click="getClipByPoint">坐标定位</a-button>
+      <a-button type="primary" @click="clear">清除</a-button>
+    </a-row>
     <coordinate-mapbox
       v-if="is2DMapMode"
       :geojson="geojson"
@@ -202,7 +192,7 @@ export default class Coordinate extends Mixins(AppMixin) {
   ]
 
   // 坐标单位
-  private type = { label: '十进制', value: 'd' }
+  private type = 'd'
 
   // 坐标输入方式
   private way = 'input'
@@ -303,7 +293,7 @@ export default class Coordinate extends Mixins(AppMixin) {
   ]
 
   // 比例尺
-  private scale = { label: '1:20万', value: 'Scale_20w' }
+  private scale = 'Scale_20w'
 
   private frameNo = ''
 
@@ -413,7 +403,7 @@ export default class Coordinate extends Mixins(AppMixin) {
     } = await utilInstance.getClipByPoint(
       this.coordInDefaultCRS[0],
       this.coordInDefaultCRS[1],
-      this.scale.value,
+      this.scale,
       this.crs
     )
     this.frameNo = frameNo
@@ -432,10 +422,20 @@ export default class Coordinate extends Mixins(AppMixin) {
 }
 </script>
 
-<style lang="scss">
-.Coordinate {
-  .groupTitle {
-    border-bottom: 1px solid black;
+<style lang="less">
+.coordinate-container {
+  padding-top: 10px;
+  .ant-checkbox-group {
+    .input-container {
+      margin: 10px 0 20px 0;
+    }
+    .ant-select,
+    .ant-input {
+      width: 100%;
+    }
+    .ant-radio-group {
+      margin-bottom: 10px;
+    }
   }
 }
 </style>

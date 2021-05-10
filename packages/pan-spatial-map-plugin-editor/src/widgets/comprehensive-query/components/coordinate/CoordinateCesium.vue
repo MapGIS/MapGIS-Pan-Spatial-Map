@@ -18,9 +18,9 @@ import { MapMixin } from '@mapgis/web-app-framework'
 import {
   FeatureGeoJSON,
   cesiumUtilInstance,
-  utilInstance
+  utilInstance,
+  baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
-import MarkerBlue from '../../../assets/images/markerBlue.png'
 
 @Component({
   components: {}
@@ -72,7 +72,7 @@ export default class CoordinateCesium extends Mixins(MapMixin) {
 
   private fillColor = '#6e599f'
 
-  private markerBlue = MarkerBlue
+  private markerBlue = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
 
   private mounted() {
     console.log('mounted')

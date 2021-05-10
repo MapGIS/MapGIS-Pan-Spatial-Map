@@ -39,7 +39,7 @@
           <zone v-model="geoJson" />
         </a-tab-pane>
         <a-tab-pane key="coordinate" tab="坐标定位" force-render>
-          坐标定位
+          <Coordinate v-model="geoJson" />
         </a-tab-pane>
         <a-tab-pane key="map-sheet" tab="图幅定位">
           图幅定位
@@ -67,8 +67,12 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import { Parser, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
 import PlaceName from './components/place-name/PlaceName'
 import Zone from './components/zone-frame/Zone'
+import Coordinate from './components/coordinate/Coordinate'
 
-@Component({ name: 'MpComprehensiveQuery', components: { PlaceName, Zone } })
+@Component({
+  name: 'MpComprehensiveQuery',
+  components: { PlaceName, Zone, Coordinate }
+})
 export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private keyword = ''
 

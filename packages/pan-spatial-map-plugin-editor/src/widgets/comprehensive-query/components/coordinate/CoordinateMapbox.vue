@@ -21,8 +21,10 @@ import {
 } from 'vue-property-decorator'
 import { MapMixin, WidgetState } from '@mapgis/web-app-framework'
 import { MapboxMarker } from '@mapgis/webclient-vue-mapboxgl'
-import { FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
-import MarkerBlue from '../../../assets/images/markerBlue.png'
+import {
+  FeatureGeoJSON,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-store'
 
 @Component({
   components: { MapboxMarker }
@@ -92,7 +94,7 @@ export default class CoordinateMapbox extends Mixins(MapMixin) {
 
   private fillColor = '#6e599f'
 
-  private markerBlue = MarkerBlue
+  private markerBlue = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
 
   private get isShowMarker() {
     return !(this.widgetState === WidgetState.CLOSED)
