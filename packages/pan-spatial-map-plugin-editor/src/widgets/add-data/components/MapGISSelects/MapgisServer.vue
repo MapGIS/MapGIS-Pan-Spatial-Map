@@ -12,13 +12,14 @@
         top: '404px',
         'min-width': '566px'
       }"
+      @change="onSelectTreeChange"
     >
     </a-tree-select>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
+import { Component, Vue, Prop, Watch, Emit } from 'vue-property-decorator'
 import { queryIgsServicesInfoInstance } from '@mapgis/pan-spatial-map-store'
 
 /**
@@ -191,6 +192,41 @@ export default class MapgisServer extends Vue {
     console.log(data)
 
     return data
+  }
+
+  // 获取选中的叶子节点
+  getLeafNode(id, treeData) {
+    let leaf: any = null
+    for (let i = 0; i < treeData.length; i++) {
+      const data = treeData[i]
+      if (data.id === id) {
+        if (!data.children) {
+          leaf = data
+          return leaf
+        }
+      } else {
+        if (data.children) {
+          leaf = this.getLeafNode(id, data.children)
+          if (leaf) {
+            return leaf
+          }
+        }
+      }
+    }
+  }
+
+  // 选中树节点时调用此函数
+  onSelectTreeChange(value, label, extra) {
+    console.log(extra)
+    const node = extra.triggerNode.dataRef
+    const leafNode = this.getLeafNode(node.id, this.treeData)
+
+    if (!leafNode) {
+      return false
+    } else {
+      debugger
+      this.$emit('serverName', node.name)
+    }
   }
 }
 </script>

@@ -68,7 +68,7 @@ export default class AddServiceFile extends Mixins(AddServicesMixin, AppMixin) {
   private url = ''
 
   // 上传提示信息
-  private label = ''
+  private label = '单击或将文件拖到该区域以上传'
 
   // 上传文件类型
   private accept = ''
@@ -111,21 +111,21 @@ export default class AddServiceFile extends Mixins(AddServicesMixin, AppMixin) {
 
   created() {}
 
-  async getUrl() {
-    if (this.isJSON) {
-      this.url = 'http://localhost:8015//upload/uploadFile' // TODO:后台地址
-    } else {
-      if (!this.serviceConfig) {
-        await ServicesConfig.loadConfig()
-        this.serviceConfig = servicesConfigInstance.config
-      }
-      const { uploadIp, uploadPort } = this.serviceConfig
-      this.url = `http://${uploadIp}:${uploadPort}/open/uploadFile`
-    }
-    console.log(this.url)
+  // get getUrl() {
+  //   if (this.isJSON) {
+  //     this.url = 'http://localhost:8015//upload/uploadFile' // TODO:后台地址
+  //   } else {
+  //     if (!this.serviceConfig) {
+  //       await ServicesConfig.loadConfig()
+  //       this.serviceConfig = servicesConfigInstance.config
+  //     }
+  //     const { uploadIp, uploadPort } = this.serviceConfig
+  //     this.url = `http://${uploadIp}:${uploadPort}/open/uploadFile`
+  //   }
+  //   console.log(this.url)
 
-    return this.url
-  }
+  //   return this.url
+  // }
 
   beforeUpload(file) {}
 
