@@ -1,16 +1,15 @@
 <template>
   <div class="map-view-wrap">
-    <div class="map-view">
-      <a-tooltip v-for="item in tools" :key="item.label" :title="item.label">
-        <a-icon :type="item.icon" @click.stop="onSettingIconClick(item)" />
-      </a-tooltip>
-    </div>
+    <!-- 标题/工具栏 -->
+    <map-view-tools :title="mapViewLayer.title" @on-icon-click="onIconClick" />
+    <!-- 地图 -->
     <mp-mapbox-view
       :document="document"
       :mapStyle="mapStyle"
       @map-load="onMapLoad"
       v-if="document"
     />
+    <!-- 区域绘制 -->
     <mapgis-draw
       v-if="isMapLoaded"
       ref="mapboxBaseDrawer"
@@ -18,20 +17,33 @@
       @added="onAdded"
       @drawCreate="onGraphicCreated"
     />
+    <!-- 联合查询结果集 -->
+    <mp-window
+      title="查询结果"
+      :width="200"
+      :height="200"
+      :visible.sync="queryVisible"
+      :offset="[0, 30]"
+      class="map-view-query-window"
+    >
+      <mp-query-result-tree :layer="mapViewLayer" :queryRect="queryRect" />
+    </mp-window>
   </div>
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import {
-  Document,
   WidgetMixin,
   MpMapboxView,
+  Document,
   Layer
 } from '@mapgis/web-app-framework'
-import mapViewOperationMixin from '../../mixins/map-view-operation-mixin'
-import { Rect } from '../../mixins/map-view-state'
-
-type Noop = (l: Layer) => void
+import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
+import MpQueryResultTree from '../../../../components/QueryResultsTree'
+import MapViewOperationMixin, {
+  Rect
+} from '../../mixins/map-view-operation-mixin'
+import MapViewTools from '../MapViewTools'
 
 type OperationType =
   | 'UNKNOW'
@@ -42,15 +54,11 @@ type OperationType =
   | 'PAN'
   | 'CLEAR'
 
-interface ITool {
-  label: string
-  icon: string
-  operationType: OperationType
-}
-
 @Component({
   components: {
-    MpMapboxView
+    MapViewTools,
+    MpMapboxView,
+    MpQueryResultTree
   },
   provide() {
     const self = this
@@ -66,19 +74,27 @@ interface ITool {
 })
 export default class MapView extends Mixins<{
   [k: string]: any
-}>(mapViewOperationMixin) {
-  @Prop() mapViewID!: string
+}>(MapViewOperationMixin) {
+  @Prop({ default: () => ({}) }) mapViewLayer!: Layer
 
-  @Prop({ default: () => ({}) }) layer!: Layer
+  @Prop({ default: () => new Rectangle(0.0, 0.0, 0.0, 0.0) })
+  mapFullExtent!: Rectangle
+
+  @Prop({ default: false }) queryVisible!: boolean
+
+  @Prop({ default: () => ({}) }) queryRect!: boolean
+
+  isMapLoaded = false
 
   map: any = {}
 
   mapbox: any = {}
 
-  isMapLoaded = false
+  mapboxBaseDrawer: any = null
 
   operationType: OperationType = 'UNKNOW'
 
+  // 矩形区域绘制配置
   controls = {
     point: false,
     line_string: false,
@@ -87,10 +103,6 @@ export default class MapView extends Mixins<{
     combine_features: false,
     uncombine_features: false
   }
-
-  mapboxBaseDrawer: any = null
-
-  mapboxBaseDrawComponent: any = null
 
   // 图层样式
   mapStyle: any = {
@@ -125,62 +137,13 @@ export default class MapView extends Mixins<{
     ]
   }
 
-  // 工具按钮
-  tools: ITool[] = [
-    {
-      label: '查询',
-      icon: 'search',
-      operationType: 'query'
-    },
-    {
-      label: '放大',
-      icon: 'zoom-in',
-      operationType: 'zoomIn'
-    },
-    {
-      label: '缩小',
-      icon: 'zoom-out',
-      operationType: 'zoomOut'
-    },
-
-    {
-      label: '复位',
-      icon: 'redo',
-      operationType: 'resort'
-    },
-    {
-      label: '移动',
-      icon: 'drag',
-      operationType: 'pan'
-    },
-    {
-      label: '清除',
-      icon: 'delete',
-      operationType: 'clear'
-    }
-  ]
-
-  /**
-   * 获取地图
-   */
+  // 获取地图document
   get document() {
-    const document: any = new Document()
-    const defaultMap = document.defaultMap
-    defaultMap.remove(this.layer)
-    defaultMap.add(this.layer)
-    return document
-  }
-
-  /**
-   * 设置图标点击操作
-   * @param item<object>
-   */
-  onSettingIconClick(item: ITool) {
-    const fn: Noop = this[`${item.operationType}Click`]
-    if (typeof fn === 'function') {
-      this.operationType = item.operationType.toUpperCase()
-      fn()
-    }
+    const _document: any = new Document(null, null, null, [])
+    const defaultMap = _document.defaultMap
+    defaultMap.remove(this.mapViewLayer)
+    defaultMap.add(this.mapViewLayer)
+    return _document
   }
 
   /**
@@ -190,20 +153,20 @@ export default class MapView extends Mixins<{
   onMapLoad({ map, mapbox }) {
     this.map = map
     this.mapbox = mapbox
-    this.map.on('mousemove', () => (this.activeMapViewID = this.mapViewID))
+    this.map.on('mousemove', () => (this.activeMapViewId = this.mapViewId))
     this.map.on('move', () => {
-      if (this.mapViewID && this.activeMapViewID === this.mapViewID) {
+      if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
         const { _sw, _ne } = this.map.getBounds()
-        this.activeMapViewDisplayRect = {
-          xMin: _sw.lng,
-          yMin: _sw.lat,
-          xMax: _ne.lng,
-          yMax: _ne.lat
+        this.activeDisplayRect = {
+          xmin: _sw.lng,
+          ymin: _sw.lat,
+          xmax: _ne.lng,
+          ymax: _ne.lat
         }
       }
     })
     this.isMapLoaded = true
-    this.onRestoreBtnClicked()
+    this.resortClick()
   }
 
   /**
@@ -218,7 +181,7 @@ export default class MapView extends Mixins<{
    */
   onGraphicCreated(e) {
     const { id, geometry } = e.features[0]
-    this.$delete(this.mapboxBaseDrawer, id)
+    this.mapboxBaseDrawer.delete(id)
     let xmin: number
     let xmax: number
     let ymin: number
@@ -240,7 +203,7 @@ export default class MapView extends Mixins<{
     const rect: Rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'QUERY':
-        this.query(rect)
+        this.query(rect, this.mapViewId)
         break
       case 'ZOOMIN':
         this.zoomIn(rect)
@@ -248,24 +211,31 @@ export default class MapView extends Mixins<{
       case 'ZOOMOUT':
         this.zoomOut(rect)
         break
-      case 'RESORT':
-        break
-      case 'PAN':
-        break
-      case 'CLEAR':
-        break
       default:
         break
     }
   }
 
   /**
+   * 操作按钮点击
+   * @param operationType<string> 按钮类型
+   * @param fnName<string> 按钮事件名
+   */
+  onIconClick(operationType, fnName) {
+    this.operationType = operationType
+    if (this.isMapLoaded) {
+      this[fnName] && this[fnName]()
+    }
+  }
+
+  /**
    * 启用绘制
+   * @param drawer<object>
    */
   enableDrawer() {
-    this.mapboxBaseDrawComponent = this.$refs.mapboxBaseDrawer
-    if (this.mapboxBaseDrawComponent) {
-      this.mapboxBaseDrawComponent.enableDrawer()
+    const drawerEl: any = this.$refs.mapboxBaseDrawer
+    if (drawerEl) {
+      drawerEl.enableDrawer()
     }
 
     if (this.mapboxBaseDrawer) {
@@ -274,29 +244,15 @@ export default class MapView extends Mixins<{
   }
 
   /**
-   * 启用拖拽,该函数在MapboxBaseDraw开启时不起作用。
+   * 启用拖拽,该函数在MapboxBaseDrawer开启时不起作用。
    * @param isEnable<boolean>
    */
   enableDragPanMap(isEnable: boolean) {
-    if (this.isMapLoaded) {
-      if (isEnable) {
-        this.map.dragPan.enable()
-      } else {
-        this.map.dragPan.disable()
-      }
-    }
-  }
-
-  /**
-   * 跳转值矩形区域
-   * @param displayRect<object>
-   */
-  jumpToRect(displayRect: Rect) {
-    if (this.isMapLoaded) {
-      this.map.fitBounds([
-        [displayRect.xMax, displayRect.yMin],
-        [displayRect.xMin, displayRect.yMax]
-      ])
+    const dragPan = this.map.dragPan
+    if (isEnable) {
+      dragPan.enable()
+    } else {
+      dragPan.disable()
     }
   }
 
@@ -325,8 +281,12 @@ export default class MapView extends Mixins<{
   /**
    * 复位
    */
-  resortClick() {
-    this.jumpToRect(this.initDisplayRect)
+  resortClick(displayRect: Rect) {
+    const rect = displayRect || this.mapFullExtent
+    this.map.fitBounds([
+      [rect.xmax, rect.ymin],
+      [rect.xmin, rect.ymax]
+    ])
   }
 
   /**
@@ -341,10 +301,10 @@ export default class MapView extends Mixins<{
    */
   clearClick() {}
 
-  @Watch('activeMapViewDisplayRect', { deep: true })
-  onActiveMapViewDisplayRectChanged(nV) {
-    if (this.mapViewID !== this.activeMapViewID) {
-      this.jumpToRect(nV)
+  @Watch('activeDisplayRect', { deep: true })
+  watchActiveDisplayRect(nV) {
+    if (this.mapViewId !== this.activeMapViewId) {
+      this.resortClick(nV)
     }
   }
 }
