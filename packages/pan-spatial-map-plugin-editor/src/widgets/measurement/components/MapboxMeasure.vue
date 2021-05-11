@@ -95,7 +95,7 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
         ['draw_line_string', 'draw_polygon'].includes(
           this.measure.getMode()
         )) ||
-      Object.getOwnPropertyNames(this.lastResult).length !== 0
+      this.measureMarkers.length !== 0
     ) {
       this.measureMarkers = []
       this.lastResult = {}
