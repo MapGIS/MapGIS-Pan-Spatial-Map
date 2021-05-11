@@ -36,15 +36,11 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import {
-  WidgetMixin,
-  MpMapboxView,
-  Document,
-  Layer
-} from '@mapgis/web-app-framework'
+import { MpMapboxView, Document, Layer } from '@mapgis/web-app-framework'
+import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
-import MpQueryResultTree from '../../../../components/QueryResultsTree'
 import defaultStyle from '../../../../assets/style/default-style.json'
+import MpQueryResultTree from '../../../../components/QueryResultsTree'
 import { Rect } from '../../mixins/map-view-state'
 import MapViewMixin from '../../mixins/map-view'
 import MapViewTools from '../MapViewTools'
@@ -117,12 +113,13 @@ export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
     uncombine_features: false
   }
 
-  // 获取地图document
+  // 获取document
   get document() {
     const _document: any = new Document(null, null, null, [])
     const defaultMap = _document.defaultMap
-    defaultMap.remove(this.mapViewLayer)
+    defaultMap.removeAll()
     defaultMap.add(this.mapViewLayer)
+    console.log('document', _document)
     return _document
   }
 
@@ -288,14 +285,14 @@ export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
   }
 
   /**
-   * 拖拽点击
+   * 拖拽点击, 通过滚轮控制放大缩小
    */
   panClick() {
     this.enableDragPanMap(true)
   }
 
   /**
-   * 清除点击
+   * 清除点击, 清除图层上的结果树中点中的节点图层
    */
   clearClick() {}
 

@@ -29,7 +29,7 @@ export default class RowFlex extends Mixins<IVueExtends>(WidgetMixin) {
     | 'space-between'
     | 'space-around'
 
-  @Prop({ default: () => [0, 12] }) gutter!: number | Array<number>
+  @Prop({ default: () => 0 }) gutter!: number | Array<number>
 
   @Prop({ default: () => [5, 19] }) span!: number[]
 

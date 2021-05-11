@@ -25,8 +25,16 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { WidgetMixin, Layer } from '@mapgis/web-app-framework'
-import { queryLayerInfoInstance } from '@mapgis/pan-spatial-map-store'
+import {
+  WidgetMixin,
+  WidgetState,
+  Document,
+  Layer
+} from '@mapgis/web-app-framework'
+import {
+  queryLayerInfoInstance,
+  dataCatalogManagerInstance
+} from '@mapgis/pan-spatial-map-store'
 import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
@@ -67,14 +75,12 @@ export default class SplitScreenMap extends Mixins<IExtends>(WidgetMixin) {
   }
 
   @Watch('layers', { deep: true })
-  watchLayersLength(nV, oV) {
+  watchLayers(nV) {
+    // 重置查询弹框开关
+    this.queryVisible = false
     if (nV.length) {
       // 保存初始复位范围, 默认取第一个图层的全图范围
       mapViewStateInstance.initDisplayRect = nV[0].fullExtent
-    }
-    if (nV.length !== oV.length) {
-      // 重置查询弹框开关
-      this.queryVisible = false
     }
   }
 }

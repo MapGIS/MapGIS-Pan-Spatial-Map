@@ -4,6 +4,7 @@
     align="top"
     justify="space-between"
     :span="[19, 5]"
+    :gutter="[0, 12]"
   >
     <!-- 分屏地图 -->
     <template #label>
@@ -123,16 +124,16 @@ export default class MpSplitScreen extends Mixins<{
    */
   onLayerChange(oldLayerIndex, newLayer) {
     this.layers.splice(oldLayerIndex, 1, this.getDeepCloneData(newLayer))
-    // this.layers = [...this.layers]
-    this.$$forceUpdate()
+    // this.$forceUpdate()
   }
 
   /**
    * 监听: 图层列表变化
    */
   @Watch('flatLayers', { deep: true })
-  watchFlatLayers(nV) {
-    if (this.isOpen) {
+  watchFlatLayers(nV, oV) {
+    console.log('目录树选中图层', nV)
+    if (this.isOpen && nV.length !== oV.length) {
       this.setLayers()
     }
   }
