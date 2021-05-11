@@ -3,7 +3,7 @@ import { LoadStatus, LayerType, Layer } from './layer'
 
 export class IGSVectorLayer extends Layer {
   /**
-   *
+   * 深度克隆一个IGS在线矢量图层
    *
    * @date 06/04/2021
    * @return {*}  {Layer}
