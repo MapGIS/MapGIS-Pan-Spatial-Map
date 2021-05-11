@@ -24,7 +24,7 @@
             :keyword="keyword"
             :activeTab="tab"
             :baseUrl="baseUrl"
-            :geometry="geometry"
+            :geometry="geometryData"
             @show-coords="showCoords"
             @click-item="setCenter"
             @update-geojson="updateGeojson"
@@ -50,18 +50,23 @@ import {
   ExhibitionControllerMixin,
   IAttributeTableExhibition,
   AttributeTableExhibition,
-  baseConfigInstance
+  baseConfigInstance,
+  Parser
 } from '@mapgis/pan-spatial-map-store'
-import { LayerType, AppMixin } from '@mapgis/web-app-framework'
+import { LayerType, AppMixin, MapMixin } from '@mapgis/web-app-framework'
+import * as turf from '@turf/turf'
 
 @Component({ components: { PlaceNamePanel, PlaceNameMapbox } })
 export default class PlaceName extends Mixins(
   ExhibitionControllerMixin,
-  AppMixin
+  AppMixin,
+  MapMixin
 ) {
   @Prop() widgetInfo!: Record<string, unknown>
 
   @Prop() geometry?: Record<string, unknown>
+
+  private geometryData = null
 
   private selected: string[] = []
 
@@ -94,6 +99,11 @@ export default class PlaceName extends Mixins(
     return this.widgetInfo.config.placeName || this.widgetInfo.config.dataStore
   }
 
+  @Watch('geometry', { immediate: true })
+  geometryChange(val) {
+    this.geometryData = val
+  }
+
   @Watch('showType', { immediate: true })
   showTypeChange() {
     if (this.showType === 'result') {
@@ -111,6 +121,27 @@ export default class PlaceName extends Mixins(
     if (this.selected.length === 0 && this.allItems.length > 0) {
       this.selected = [this.allItems[0].placeName]
     }
+  }
+
+  getBounds() {
+    const { _ne, _sw } = this.map.getBounds()
+    const { lng: xmax, lat: ymax } = _ne
+    const { lng: xmin, lat: ymin } = _sw
+    const polygon = turf.polygon(
+      [
+        [
+          [xmin, ymax],
+          [xmax, ymax],
+          [xmax, ymin],
+          [xmin, ymin],
+          [xmin, ymax]
+        ]
+      ],
+      { name: 'bounds' }
+    )
+    const result = Parser.changeToTangram(polygon)
+    if (Array.isArray(result)) return result[0]
+    return result
   }
 
   select(item: any) {
@@ -134,6 +165,9 @@ export default class PlaceName extends Mixins(
 
   search(keyword: string) {
     this.keyword = keyword
+    if (!this.geometry) {
+      this.geometryData = this.getBounds()
+    }
     if (this.showResultSet) {
       this.selected.forEach(item => {
         this.openReseultSet(item)
@@ -172,7 +206,7 @@ export default class PlaceName extends Mixins(
           serverType: LayerType.IGSMapImage,
           layerIndex: LayerIndex,
           serverName: docName,
-          geometry: this.geometry,
+          geometry: this.geometryData,
           serverUrl: `http://${ip}:${port}/igs/rest/mrms/docs/${docName}`,
           where
         }
@@ -187,7 +221,7 @@ export default class PlaceName extends Mixins(
           serverType: LayerType.IGSVector,
           gdbp: gdbp,
           where,
-          geometry: this.geometry
+          geometry: this.geometryData
         }
       }
     }

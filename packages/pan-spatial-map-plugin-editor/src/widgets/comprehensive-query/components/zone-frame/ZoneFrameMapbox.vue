@@ -6,6 +6,7 @@
 import { Component, Watch, Mixins, Prop, Provide } from 'vue-property-decorator'
 import { MapMixin } from '@mapgis/web-app-framework'
 import { utilInstance, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
+import { bboxPolygon, lineString, bbox } from '@turf/turf'
 
 @Component({})
 export default class ZoneFrameMapbox extends Mixins(MapMixin) {
@@ -48,15 +49,17 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
           // 'line-width': Number(this.lineWidth)
         }
       })
-      const center = utilInstance.getFeaturesCenter(val.features)
-      this.map.flyTo({
-        center,
-        speed: 1.2,
-        curve: 1,
-        easing(t: any) {
-          return t
-        }
-      })
+      if (val && JSON.stringify(val) !== '{}') {
+        const box = bbox(val)
+        const polygon = bboxPolygon(box)
+        const bounds = [
+          polygon.geometry?.coordinates[0][0],
+          polygon.geometry?.coordinates[0][2]
+        ]
+        this.map.fitBounds(bounds, {
+          padding: 45
+        })
+      }
     }
   }
 

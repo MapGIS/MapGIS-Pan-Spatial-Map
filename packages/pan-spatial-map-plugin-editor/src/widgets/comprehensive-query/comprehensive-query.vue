@@ -45,7 +45,11 @@
           />
         </a-tab-pane>
         <a-tab-pane key="map-sheet" tab="图幅定位">
-          图幅定位
+          <frame
+            ref="map-sheet"
+            v-model="geoJson"
+            :active="locationType === 'coordinate'"
+          />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -75,10 +79,11 @@ import { Parser, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
 import PlaceName from './components/place-name/PlaceName'
 import Zone from './components/zone-frame/Zone'
 import Coordinate from './components/coordinate/Coordinate'
+import Frame from './components/zone-frame/Frame'
 
 @Component({
   name: 'MpComprehensiveQuery',
-  components: { PlaceName, Zone, Coordinate }
+  components: { PlaceName, Zone, Coordinate, Frame }
 })
 export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private keyword = ''
@@ -104,7 +109,6 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private get geometry() {
     if (this.geoJson) {
       const result = Parser.changeToTangram(this.geoJson)
-      console.log(11111, result)
       if (Array.isArray(result)) return result[0]
       return result
     }
@@ -142,8 +146,9 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
     this.locationPanelExpand = false
     this.searchPanelExpand = false
     this.$refs.placeName.reset()
-    this.$refs.zone.clear()
-    this.$refs.coordinate.clear()
+    this.$refs.zone && this.$refs.zone.clear()
+    this.$refs.coordinate && this.$refs.coordinate.clear()
+    this.$refs['map-sheet'] && this.$refs['map-sheet'].clear()
     if (this.locationType === 'district') {
       this.locationType = ''
     }

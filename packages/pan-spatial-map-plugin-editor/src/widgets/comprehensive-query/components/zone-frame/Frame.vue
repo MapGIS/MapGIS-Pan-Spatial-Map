@@ -1,59 +1,42 @@
 <template>
-  <div class="frame cloumn">
-    <div class="col-auto row items-center q-py-sm">
-      <label class="col-auto">比例尺：</label>
-      <q-select
-        dense
-        outlined
-        :options="scaleArray"
-        v-model="scale"
-        class="col"
-      />
-    </div>
-    <div class="col-auto row items-center q-py-sm">
-      <label class="col-auto">图幅号：</label>
-      <q-space />
-      <q-input dense outlined class="col" v-model="keyword">
-        <template v-slot:append>
-          <q-icon name="clear" class="cursor-pointer" @click="keyword = ''" />
-        </template>
-      </q-input>
-      <q-space />
-      <q-btn
-        round
-        flat
-        dense
-        icon="search"
-        :color="themeStyle.color"
-        @click="search()"
-      />
-    </div>
-    <label class="col-auto q-py-sm">选择图幅：</label>
-    <q-list
-      class="col-auto q-py-sm"
-      dense
-      bordered
-      separator
-      style="height: 200px; overflow: auto"
-    >
-      <q-item
-        dense
-        v-for="item in list"
-        :key="item"
-        clickable
-        v-ripple
-        @click="select(item)"
-      >
-        {{ item }}
-      </q-item>
-    </q-list>
-    <q-pagination
+  <div class="frame-container">
+    <a-space direction="vertical" style="width:100%">
+      <a-row type="flex" align="middle">
+        <a-col>
+          <label class="col-auto">比例尺：</label>
+        </a-col>
+        <a-col :flex="1">
+          <a-select :options="scaleArray" v-model="scale" style="width:100%" />
+        </a-col>
+      </a-row>
+      <a-row type="flex" align="middle">
+        <a-col>
+          <label class="col-auto">图幅号：</label>
+        </a-col>
+        <a-col :flex="1">
+          <a-input-search
+            placeholder="请输入关键字"
+            v-model="keyword"
+            @search="search"
+          />
+        </a-col>
+      </a-row>
+      <a-list bordered :data-source="list" size="small">
+        <div slot="header">
+          选择图幅：
+        </div>
+        <a-list-item slot="renderItem" slot-scope="item" @click="select(item)">
+          {{ item }}
+        </a-list-item>
+      </a-list>
+    </a-space>
+    <!-- <q-pagination
       class="col-auto"
       v-model="currentPage"
       :max="maxPage"
       :input="true"
     >
-    </q-pagination>
+    </q-pagination> -->
     <zone-frame-mapbox
       v-if="is2DMapMode"
       :geojson="geojson"
@@ -68,7 +51,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Mixins, Model } from 'vue-property-decorator'
+import { Component, Watch, Mixins, Model, Prop } from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
 import {
   MapTypeChanageMixin,
@@ -88,7 +71,10 @@ export default class Frame extends Mixins(AppMixin) {
   @Model('change', { type: Object, required: false, default: null })
   private value!: FeatureGeoJSON | null
 
-  private scale = { label: '1:20万', value: 'Scale_20w' }
+  @Prop()
+  readonly active!: boolean
+
+  private scale = 'Scale_20w'
 
   private scaleArray = [
     { label: '1:5千', value: 'Scale_5000' },
@@ -106,7 +92,7 @@ export default class Frame extends Mixins(AppMixin) {
 
   private pageCount = 20
 
-  private maxPage = 5
+  private maxPage = 0
 
   private list: string[] = []
 
@@ -116,10 +102,21 @@ export default class Frame extends Mixins(AppMixin) {
 
   private bounds: Record<string, any> = {}
 
+  private get pagination() {
+    return {
+      pageSize: this.pageCount,
+      total: this.maxPage,
+      current: this.currentPage,
+      onChange: page => {
+        this.currentPage = page
+      }
+    }
+  }
+
   @Watch('currentPage', { immediate: true, deep: true })
-  @Watch('scale', { immediate: true, deep: true })
+  @Watch('scale', { immediate: true })
   private async search() {
-    const scale = this.scale.value
+    const { scale } = this
     const {
       data: { msg, total }
     } = await utilInstance.getFrameNoList(
@@ -129,7 +126,16 @@ export default class Frame extends Mixins(AppMixin) {
       this.keyword
     )
     this.list = msg
-    this.maxPage = Math.ceil(total / 20)
+    this.maxPage = total
+  }
+
+  @Watch('active')
+  activeChange(val) {
+    if (!val) {
+      this.clear()
+    } else {
+      this.getGeoJson()
+    }
   }
 
   private async select(item: string) {
@@ -168,13 +174,26 @@ export default class Frame extends Mixins(AppMixin) {
   }
 
   private clear() {
-    this.$emit('change', null)
-  }
-
-  private deactivated() {
-    this.clear()
+    this.geojson = {}
+    this.$emit('change', this.geojson)
   }
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="less">
+.frame-container {
+  padding-top: 10px;
+  .ant-space {
+    .ant-space-item {
+      .ant-list {
+        .ant-spin-nested-loading {
+          .ant-spin-container {
+            max-height: 200px;
+            overflow-y: auto;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

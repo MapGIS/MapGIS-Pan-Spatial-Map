@@ -185,9 +185,13 @@ export default class Zone extends Mixins(AppMixin) {
 
   @Watch('geojson')
   private changeGeojson(val: FeatureGeoJSON | null) {
-    const box = bbox(val)
-    const polygon = bboxPolygon(box)
-    this.$emit('change', polygon)
+    if (val && JSON.stringify(val) !== '{}') {
+      const box = bbox(val)
+      const polygon = bboxPolygon(box)
+      this.$emit('change', polygon)
+    } else {
+      this.$emit('change', val)
+    }
   }
 
   private clear() {
@@ -251,7 +255,7 @@ export default class Zone extends Mixins(AppMixin) {
         if (gdbpInfo) {
           const { gdbp, layerName, nameField, codeField } = gdbpInfo
           const filterCode = this.filterCode(level, code)
-          const where = `${codeField} LIKE '${filterCode}%'`
+          const where = code ? `${codeField} LIKE '${filterCode}%'` : ''
           params.where = where
           if (queryWay === 'doc') {
             params.docName = docName
