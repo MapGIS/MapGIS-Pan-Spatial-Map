@@ -10,7 +10,7 @@
         >
       </a-select>
     </row-flex>
-    <row-flex label="图示" align="top" :gutter="[0, 10]" v-show="layers.length">
+    <row-flex label="图示" align="top" v-show="layers.length">
       <a-row class="split-screen-grid">
         <a-col
           v-for="(l, i) in layers"
