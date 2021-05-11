@@ -4,7 +4,7 @@
       description="请在目录树中勾选需要分屏的专题"
       v-if="!layers.length"
     />
-    <a-row v-else :gutter="[5, 8]">
+    <a-row :gutter="[5, 8]" v-else>
       <a-col
         v-for="(l, i) in layers"
         :key="i"
@@ -12,23 +12,23 @@
         :style="{ height: mapSpan.height }"
       >
         <map-view
-          :mapViewId="getMapViewId(i)"
+          v-model="queryVisible"
+          :mapViewId="`split-screen-map-${i + 1}`"
           :mapViewLayer="l"
-          :mapFullExtent="mapFullExtent"
-          :queryVisible="queryVisible"
-          :queryRect="queryRects[getMapViewId(i)]"
+          :queryRect="queryRect"
           @on-query="onQuery"
+          v-if="l"
         />
       </a-col>
     </a-row>
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { WidgetMixin, Layer } from '@mapgis/web-app-framework'
 import { queryLayerInfoInstance } from '@mapgis/pan-spatial-map-store'
+import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
 import MapView from '../MapView'
-import { Rect } from './mixins/map-view-operation-mixin'
 
 interface IExtends {
   [k: string]: any
@@ -52,31 +52,30 @@ export default class SplitScreenMap extends Mixins<IExtends>(WidgetMixin) {
 
   queryVisible = false
 
-  queryRects: IExtends = {}
-
-  // 默认取第一个图层的全图范围
-  get mapFullExtent() {
-    return this.layers.length ? this.layers[0].fullExtent : null
-  }
-
-  /**
-   * 获取某屏id
-   * @param i<number>
-   */
-  getMapViewId(i: number) {
-    return `split-screen-map-${i + 1}`
-  }
+  queryRect: Rect = {}
 
   /**
    * 某个地图的查询抛出的事件
    * @param result<object>
    * @param mapViewId<string>
-   * @param visible<string>
    */
-  onQuery(result: Rect, mapViewId: string, visible: boolean) {
-    this.queryVisible = visible
-    this.$set(this.queryRects, mapViewId, result)
-    console.log('this.queryResults---------', this.queryRects)
+  onQuery(result: Rect, mapViewId: string) {
+    if (!this.queryVisible) {
+      this.queryVisible = true
+    }
+    this.queryRect = result
+  }
+
+  @Watch('layers', { deep: true })
+  watchLayersLength(nV, oV) {
+    if (nV.length) {
+      // 保存初始复位范围, 默认取第一个图层的全图范围
+      mapViewStateInstance.initDisplayRect = nV[0].fullExtent
+    }
+    if (nV.length !== oV.length) {
+      // 重置查询弹框开关
+      this.queryVisible = false
+    }
   }
 }
 </script>

@@ -1,42 +1,14 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
-
-export class Rect {
-  /**
-   * Creates an instance of Rect.
-   * @param {number} xmin X坐标最小值
-   * @param {number} ymin Y坐标最小值
-   * @param {number} xmax X坐标最大值
-   * @param {number} ymax Y坐标最大值
-   */
-  constructor(
-    public xmin: number = 0.0,
-    public ymin: number = 0.0,
-    public xmax: number = 0.0,
-    public ymax: number = 0.0
-  ) {
-    this.xmin = xmin
-    this.xmax = xmax
-    this.ymin = ymin
-    this.ymax = ymax
-  }
-}
+import { Rect } from './map-view-state'
 
 /**
  * 二维地图操作混入,提供操作地图的常用接口
  */
-@Component({
-  name: 'MapViewOperationMixin'
-})
-export default class MapViewOperationMixin extends Vue {
-  @Prop({ default: '' }) mapViewId!: string
+@Component
+export default class MapViewOperation extends Vue {
+  private map: any = {}
 
-  map: any = {}
-
-  mapbox: any = {}
-
-  activeMapViewId = ''
-
-  activeDisplayRect: Rect | object = {}
+  private mapbox: any = {}
 
   /**
    * 查询地图
@@ -44,7 +16,7 @@ export default class MapViewOperationMixin extends Vue {
    * @param {string} mapViewId 图层id
    */
   query(rect: Rect, mapViewId: string) {
-    this.$emit('on-query', rect, mapViewId, true)
+    this.$emit('on-query', rect, mapViewId)
   }
 
   /**

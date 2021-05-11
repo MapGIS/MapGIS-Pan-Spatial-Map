@@ -123,6 +123,8 @@ export default class MpSplitScreen extends Mixins<{
    */
   onLayerChange(oldLayerIndex, newLayer) {
     this.layers.splice(oldLayerIndex, 1, this.getDeepCloneData(newLayer))
+    // this.layers = [...this.layers]
+    this.$$forceUpdate()
   }
 
   /**
