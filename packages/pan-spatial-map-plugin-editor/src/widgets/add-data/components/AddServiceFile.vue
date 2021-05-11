@@ -19,10 +19,11 @@
     </div>
     <a-upload-dragger
       name="file"
-      :action="url"
+      :action="getUrl"
       :accept="accept"
-      :multiple="true"
       :before-upload="beforeUpload"
+      :data="{ name: 'file' }"
+      withCredentials
       @change="handleChange"
     >
       <div class="upload-content">
@@ -91,6 +92,8 @@ export default class AddServiceFile extends Mixins(AddServicesMixin, AppMixin) {
     if (!this.option) {
       return
     }
+    console.log(this.option)
+
     if (this.option == 'tif') {
       this.accept = '.tif,.tfw,.tif.ovr,.tif.vat.dbf,.tif.aux.xml'
       this.label =
@@ -109,27 +112,47 @@ export default class AddServiceFile extends Mixins(AddServicesMixin, AppMixin) {
     }
   }
 
-  created() {}
+  async created() {
+    // await ServicesConfig.loadConfig()
+    // this.serviceConfig = servicesConfigInstance.config
+  }
 
-  // get getUrl() {
-  //   if (this.isJSON) {
-  //     this.url = 'http://localhost:8015//upload/uploadFile' // TODO:后台地址
-  //   } else {
-  //     if (!this.serviceConfig) {
-  //       await ServicesConfig.loadConfig()
-  //       this.serviceConfig = servicesConfigInstance.config
-  //     }
-  //     const { uploadIp, uploadPort } = this.serviceConfig
-  //     this.url = `http://${uploadIp}:${uploadPort}/open/uploadFile`
-  //   }
-  //   console.log(this.url)
+  get getUrl() {
+    let url
+    if (this.isJSON) {
+      url = `${this.baseUrl}/api/local-storage`
+      // url = 'http://localhost:8015/upload/uploadFile' // TODO:后台地址
+    } else {
+      // const { uploadIp, uploadPort } = this.serviceConfig
+      // url = `http://${uploadIp}:${uploadPort}/open/uploadFile`
+    }
+    console.log(url)
 
-  //   return this.url
-  // }
+    return url
+  }
 
-  beforeUpload(file) {}
+  beforeUpload(file) {
+    console.log(file)
+    const isLt2M = file.size / 1024 / 1024 < 200
+    if (!isLt2M) {
+      this.$message.error('File must smaller than 200MB!')
+    }
+    return isLt2M
+  }
 
-  handleChange(info) {}
+  handleChange(info) {
+    if (info.file.status === 'done') {
+      console.log(info)
+
+      const tempUploadFile = ''
+      if (!this.option) {
+        return false
+      }
+      if (this.isUploadToIGS) {
+        console.log(info)
+      }
+    }
+  }
 }
 </script>
 
