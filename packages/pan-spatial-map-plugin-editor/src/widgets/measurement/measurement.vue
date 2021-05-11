@@ -11,7 +11,7 @@
           >
             <a-button
               class="button btn-left"
-              @click="startMeasure(item.mode)"
+              @click="onOpenMeasure(item.mode)"
               :icon="item.icon"
               shape="circle"
             />
@@ -42,7 +42,7 @@
           <a-button
             class="button btn-right"
             shape="circle"
-            @click="clearMeasure"
+            @click="onClearMeasure"
           >
             <a-icon type="delete" theme="filled" />
           </a-button>
@@ -177,15 +177,11 @@
       </a-form-model>
     </div>
     <mapbox-measure
-      v-if="mapboxShow"
+      ref="mapboxMeasure"
+      v-show="is2DMapMode"
       :measureSetting="formData"
-      :measureMode="activeMode"
       :distanceUnit="activeDistanceSelect"
       :areaUnit="activeAreaSelect"
-      :clearVar="clearVar"
-      :stopVar="stopVar"
-      :deActiveVar="deActiveVar"
-      :activeVar="activeVar"
       @finished="onMeasureFinished"
       @start="onMeasureStart"
     />
@@ -193,7 +189,7 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { Sketch } from 'vue-color'
 import MapboxMeasure from './components/MapboxMeasure.vue'
@@ -207,7 +203,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     {
       mode: 'measure-length',
       title: '长度',
-      icon: 'pull-request'
+      icon: 'line-chart'
     },
     {
       mode: 'measure-area',
@@ -217,24 +213,13 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   ]
 
   // 当前激活项
-  private activeMode = { mode: '', var: 0 }
+  private activeMode = ''
 
   // 编辑面板的显隐
   private showSettingPanel = false
 
-  // 控制mapbox绘制组件，防止id冲突
-  private mapboxShow = false
-
   // 是否测量完毕
   private isMeasureFinished = false
-
-  private clearVar = 0
-
-  private stopVar = 1
-
-  private deActiveVar = 0
-
-  private activeVar = 0
 
   // 不同激活项对应的下拉框配置
   private selectOptions = {
@@ -277,75 +262,82 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
   // 下拉框配置
   get getSelectOptions() {
-    return this.selectOptions[this.activeMode.mode] || []
+    return this.selectOptions[this.activeMode] || []
   }
 
   // 当前激活项是否为长度测量
   get showLengthSelect() {
-    return this.activeMode.mode === 'measure-length'
+    return this.activeMode === 'measure-length'
   }
 
   // 当前激活项是否为面积测量
   get showAreaSelect() {
-    return this.activeMode.mode === 'measure-area'
+    return this.activeMode === 'measure-area'
   }
 
-  // 微件打开时
-  onOpen() {
-    this.mapboxShow = true
+  get measureComponent() {
+    return this.is2DMapMode ? this.$refs.mapboxMeasure : null
+  }
+
+  // 二三维地图模式切换时
+  @Watch('mapRender')
+  mapRenderChange() {
+    if (this.is2DMapMode) {
+      // 三维测量清除
+    } else {
+      this.$refs.mapboxMeasure.clearMeasure()
+    }
+
+    this.isMeasureFinished = false
   }
 
   // 微件关闭时
   onClose() {
-    this.mapboxShow = false
-    this.clearMeasure()
-  }
-
-  // 微件激活时
-  onActive() {
-    this.activeVar += 1
+    this.onClearMeasure()
   }
 
   // 微件失活时
   onDeActive() {
-    this.deActiveVar += 1
+    this.onClearMeasure()
   }
 
-  clearMeasure() {
-    this.clearVar += 1
+  // 打开测量，点击图标激活对应类型的测量功能
+  private onOpenMeasure(mode) {
+    this.activeMode = mode
+    this.measureComponent && this.measureComponent.openMeasure(mode)
+  }
+
+  // 移除测量
+  private onClearMeasure() {
+    this.measureComponent && this.measureComponent.clearMeasure()
+
     this.isMeasureFinished = false
   }
 
-  // 点击图标激活对应类型的量算功能
-  startMeasure(mode) {
-    this.activeMode.mode = mode
-    this.activeMode.var += 1
+  // 'start'响应事件(开始测量)
+  private onMeasureStart() {
+    this.isMeasureFinished = false
+  }
+
+  // 'finished'响应事件(结束测量)
+  private onMeasureFinished(results: Record<string, any>) {
+    this.isMeasureFinished = true
+    this.results = { ...results }
   }
 
   // 选中文字颜色拾取器对应事件
-  getFontColor(val) {
+  private getFontColor(val) {
     this.formData.textColor = val.hex
   }
 
   // 选中轮廓线颜色拾取器对应事件
-  getLineColor(val) {
+  private getLineColor(val) {
     this.formData.lineColor = val.hex
   }
 
   // 格式化滑动条Tooltip内容
-  formatter(value) {
+  private formatter(value) {
     return `${value}%`
-  }
-
-  // 'start'响应事件(开始量算)
-  onMeasureStart() {
-    this.isMeasureFinished = false
-  }
-
-  // 'finished'响应事件(结束量算)
-  onMeasureFinished(results: Record<string, any>) {
-    this.isMeasureFinished = true
-    this.results = { ...results }
   }
 }
 </script>
