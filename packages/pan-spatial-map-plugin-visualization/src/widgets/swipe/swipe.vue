@@ -123,6 +123,9 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
   // 目录树勾选的图层
   layers: Layer[] = []
 
+  // 目录树勾选可见图层
+  flatLayers: Layer[] = []
+
   // 卷帘方向
   direction: Direction = 'vertical'
 
@@ -184,17 +187,14 @@ export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
   }
 
   /**
-   * 获取选中目录树下的叶子节点图层中的可见图层
+   * 监听: defaultMap变化
    */
-  get flatLayers() {
-    const _layers = this.document.defaultMap
+  @Watch('document.defaultMap', { deep: true })
+  watchDefaultMap(nV) {
+    this.flatLayers = nV
+      .clone()
       .getFlatLayers()
-      .filter((v: Layer) => v.isVisible)
-    return _layers
-  }
-
-  @Watch('flatLayers')
-  watchFlatLayers() {
+      .filter(v => v.isVisible)
     if (this.isOpen) {
       this.initLayers()
     }

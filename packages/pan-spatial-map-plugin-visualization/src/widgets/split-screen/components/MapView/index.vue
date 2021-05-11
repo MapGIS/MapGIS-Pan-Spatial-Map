@@ -119,7 +119,6 @@ export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
     const defaultMap = _document.defaultMap
     defaultMap.removeAll()
     defaultMap.add(this.mapViewLayer)
-    console.log('document', _document)
     return _document
   }
 

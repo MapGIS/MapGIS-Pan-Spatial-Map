@@ -133,7 +133,9 @@ export default {
       handler() {
         try {
           this.parseDocument()
-        } catch (e) {}
+        } catch (e) {
+          console.error(e)
+        }
       }
     }
   },
@@ -298,7 +300,6 @@ export default {
 
       // 先将图层置空，避免图层重复添加
       const layers = []
-
       this.document.defaultMap
         .clone()
         .getFlatLayers()
@@ -310,7 +311,6 @@ export default {
             layers.push(mapboxLayerComponentProps)
           }
         })
-
       this.layers = layers
     },
     isIgsDocLayer(type) {
