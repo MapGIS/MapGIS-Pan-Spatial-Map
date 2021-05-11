@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Mixins } from 'vue-property-decorator'
+import { Component, Vue, Mixins, Watch } from 'vue-property-decorator'
 import {
   dataCatalogInstance,
   queryFeaturesInstance,
@@ -98,12 +98,24 @@ export default class MpFeatureQuery extends Mixins(
     return this.limitsArray[this.sliderIndex]
   }
 
-  onOpen() {
-    this.show = true
+  // 二三维地图模式切换时
+  @Watch('mapRender')
+  mapRenderChange() {
+    if (this.is2DMapMode) {
+      this.clearCesiumDraw()
+    } else {
+      this.clearMapboxDraw()
+    }
   }
 
+  // 微件关闭时
   onClose() {
-    this.show = false
+    this.clearDraw()
+  }
+
+  // 微件失活时
+  onDeActive() {
+    this.clearDraw()
   }
 
   clickDraw(e) {
@@ -112,6 +124,14 @@ export default class MpFeatureQuery extends Mixins(
       this.handleMapbox()
     } else {
       this.handleCesium()
+    }
+  }
+
+  clearDraw() {
+    if (this.is2DMapMode) {
+      this.clearMapboxDraw()
+    } else {
+      this.clearCesiumDraw()
     }
   }
 
