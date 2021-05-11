@@ -956,6 +956,20 @@
             "serverUrl": "http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/街道-墨卡托.json,http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/蓝色-墨卡托.json",
             "wfsUrl": "",
             "extent": ""
+          },
+          {
+            "label": "OSM全中国_经纬度",
+            "describe": "OSM全中国_经纬度",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "VTTILES",
+            "name": "OSM全中国_经纬度",
+            "searchName": "",
+            "token": "",
+            "guid": "8c74f367-191a-458c-946f-de1cd3778537",
+            "serverUrl": "http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/OSM全中国经纬度.json",
+            "wfsUrl": "",
+            "extent": ""
           }
         ]
       }
