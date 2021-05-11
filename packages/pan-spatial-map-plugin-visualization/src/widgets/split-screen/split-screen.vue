@@ -47,10 +47,8 @@ export default class MpSplitScreen extends Mixins<{
   // 整合的图层信息原始列表数据
   layersOrigin: Layer[] = []
 
-  // 可见图层
-  get flatLayers() {
-    return this.document.defaultMap.getFlatLayers().filter(v => v.isVisible)
-  }
+  // 目录树可见图层
+  flatLayers = []
 
   // 地图排列
   get mapSpan() {
@@ -77,20 +75,12 @@ export default class MpSplitScreen extends Mixins<{
   }
 
   /**
-   * 获取深拷贝数据
-   * @param data<array>
-   */
-  getDeepCloneData(data) {
-    return JSON.parse(JSON.stringify(data))
-  }
-
-  /**
    * 初始化地图信息
    */
   setLayers() {
     const max = this.flatLayers.length < 7 ? this.flatLayers.length : 6
     this.layers = new Array(max).fill().map((v, i) => this.flatLayers[i])
-    this.layersOrigin = this.getDeepCloneData(this.layers)
+    this.layersOrigin = this.layers.map(l => l.clone())
   }
 
   /**
@@ -113,7 +103,7 @@ export default class MpSplitScreen extends Mixins<{
    * @param screenCount<number>
    */
   onScreenCountChange(screenCount: number) {
-    const cloneData = this.getDeepCloneData(this.layersOrigin)
+    const cloneData = this.layersOrigin.map(v => v.clone())
     this.layers = cloneData.slice(0, screenCount)
   }
 
@@ -123,17 +113,19 @@ export default class MpSplitScreen extends Mixins<{
    * @param newLayer<object>
    */
   onLayerChange(oldLayerIndex, newLayer) {
-    this.layers.splice(oldLayerIndex, 1, this.getDeepCloneData(newLayer))
-    // this.$forceUpdate()
+    this.layers.splice(oldLayerIndex, 1, newLayer.clone())
   }
 
   /**
-   * 监听: 图层列表变化
+   * 监听: defaultMap变化
    */
-  @Watch('flatLayers', { deep: true })
-  watchFlatLayers(nV, oV) {
-    console.log('目录树选中图层', nV)
-    if (this.isOpen && nV.length !== oV.length) {
+  @Watch('document.defaultMap', { deep: true })
+  watchDefaultMap(nV, oV) {
+    this.flatLayers = nV
+      .clone()
+      .getFlatLayers()
+      .filter(v => v.isVisible)
+    if (this.isOpen) {
       this.setLayers()
     }
   }
