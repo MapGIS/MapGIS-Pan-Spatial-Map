@@ -22,11 +22,15 @@
       title="查询结果"
       :width="200"
       :height="200"
-      :visible.sync="queryVisible"
-      :offset="[0, 30]"
-      class="map-view-query-window"
+      :visible.sync="windowVisible"
+      :verticalOffset="30"
+      :fullScreenAction="false"
     >
-      <mp-query-result-tree :layer="mapViewLayer" :queryRect="queryRect" />
+      <mp-query-result-tree
+        :layer="mapViewLayer"
+        :queryRect="queryRect"
+        v-if="windowVisible"
+      />
     </mp-window>
   </div>
 </template>
@@ -40,10 +44,14 @@ import {
 } from '@mapgis/web-app-framework'
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 import MpQueryResultTree from '../../../../components/QueryResultsTree'
-import MapViewOperationMixin, {
-  Rect
-} from '../../mixins/map-view-operation-mixin'
+import defaultStyle from '../../../../assets/style/default-style.json'
+import { Rect } from '../../mixins/map-view-state'
+import MapViewMixin from '../../mixins/map-view'
 import MapViewTools from '../MapViewTools'
+
+interface IVueExtend {
+  [k: string]: any
+}
 
 type OperationType =
   | 'UNKNOW'
@@ -72,19 +80,15 @@ type OperationType =
     }
   }
 })
-export default class MapView extends Mixins<{
-  [k: string]: any
-}>(MapViewOperationMixin) {
+export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
+  // 双向绑定弹框开关
+  @Prop({ default: false }) value!: boolean
+
+  // 图层
   @Prop({ default: () => ({}) }) mapViewLayer!: Layer
 
-  @Prop({ default: () => new Rectangle(0.0, 0.0, 0.0, 0.0) })
-  mapFullExtent!: Rectangle
-
-  @Prop({ default: false }) queryVisible!: boolean
-
+  // 查询范围
   @Prop({ default: () => ({}) }) queryRect!: boolean
-
-  isMapLoaded = false
 
   map: any = {}
 
@@ -92,7 +96,16 @@ export default class MapView extends Mixins<{
 
   mapboxBaseDrawer: any = null
 
+  mapboxBaseDrawerEl: any = null
+
+  // 地图是否加载完成
+  isMapLoaded = false
+
+  // 操作按钮类型
   operationType: OperationType = 'UNKNOW'
+
+  // 图层样式
+  mapStyle: any = defaultStyle
 
   // 矩形区域绘制配置
   controls = {
@@ -104,39 +117,6 @@ export default class MapView extends Mixins<{
     uncombine_features: false
   }
 
-  // 图层样式
-  mapStyle: any = {
-    version: 8,
-    name: '空样式',
-    sources: {
-      Default: {
-        type: 'vector',
-        tiles: [
-          'http://localhost:6163/igs/rest/mrms/tile/IGServer/{z}/{y}/{x}?type=cpbf'
-        ],
-        minZoom: 0,
-        maxZoom: 15
-      }
-    },
-    sprite: 'http://localhost:6163/igs/rest/mrms/vtiles/sprite',
-    glyphs:
-      'http://localhost:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf',
-    layers: [
-      {
-        id: '背景',
-        type: 'background',
-        paint: {
-          'background-color': {
-            stops: [
-              [6, '#4a5768'],
-              [8, '#424d5c']
-            ]
-          }
-        }
-      }
-    ]
-  }
-
   // 获取地图document
   get document() {
     const _document: any = new Document(null, null, null, [])
@@ -144,6 +124,15 @@ export default class MapView extends Mixins<{
     defaultMap.remove(this.mapViewLayer)
     defaultMap.add(this.mapViewLayer)
     return _document
+  }
+
+  // 结果树弹框开关
+  get windowVisible() {
+    return this.value
+  }
+
+  set windowVisible(nV) {
+    this.$emit('input', nV)
   }
 
   /**
@@ -157,7 +146,7 @@ export default class MapView extends Mixins<{
     this.map.on('move', () => {
       if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
         const { _sw, _ne } = this.map.getBounds()
-        this.activeDisplayRect = {
+        this.activeMapViewDisplayRect = {
           xmin: _sw.lng,
           ymin: _sw.lat,
           xmax: _ne.lng,
@@ -181,7 +170,9 @@ export default class MapView extends Mixins<{
    */
   onGraphicCreated(e) {
     const { id, geometry } = e.features[0]
-    this.mapboxBaseDrawer.delete(id)
+    if (this.mapboxBaseDrawer) {
+      this.mapboxBaseDrawer.delete(id)
+    }
     let xmin: number
     let xmax: number
     let ymin: number
@@ -223,19 +214,19 @@ export default class MapView extends Mixins<{
    */
   onIconClick(operationType, fnName) {
     this.operationType = operationType
-    if (this.isMapLoaded) {
-      this[fnName] && this[fnName]()
+    if (this.isMapLoaded && this[fnName]) {
+      this[fnName]()
     }
   }
 
   /**
    * 启用绘制
-   * @param drawer<object>
    */
   enableDrawer() {
     const drawerEl: any = this.$refs.mapboxBaseDrawer
     if (drawerEl) {
-      drawerEl.enableDrawer()
+      this.mapboxBaseDrawerEl = drawerEl
+      this.mapboxBaseDrawerEl.enableDrawer()
     }
 
     if (this.mapboxBaseDrawer) {
@@ -257,14 +248,25 @@ export default class MapView extends Mixins<{
   }
 
   /**
-   * 查询
+   * 跳转至某个范围
+   * @param displayRect
+   */
+  jumpToRect(displayRect: Rect) {
+    this.map.fitBounds([
+      [displayRect.xmax, displayRect.ymin],
+      [displayRect.xmin, displayRect.ymax]
+    ])
+  }
+
+  /**
+   * 查询点击
    */
   queryClick() {
     this.enableDrawer()
   }
 
   /**
-   * 放大
+   * 放大点击
    */
   zoomInClick() {
     this.enableDragPanMap(false)
@@ -272,39 +274,38 @@ export default class MapView extends Mixins<{
   }
 
   /**
-   * 缩小
+   * 缩小点击
    */
   zoomOutClick() {
     this.zoomInClick()
   }
 
   /**
-   * 复位
+   * 复位点击
    */
-  resortClick(displayRect: Rect) {
-    const rect = displayRect || this.mapFullExtent
-    this.map.fitBounds([
-      [rect.xmax, rect.ymin],
-      [rect.xmin, rect.ymax]
-    ])
+  resortClick() {
+    this.jumpToRect(this.initDisplayRect)
   }
 
   /**
-   * 拖拽
+   * 拖拽点击
    */
   panClick() {
     this.enableDragPanMap(true)
   }
 
   /**
-   * 清除
+   * 清除点击
    */
   clearClick() {}
 
-  @Watch('activeDisplayRect', { deep: true })
-  watchActiveDisplayRect(nV) {
-    if (this.mapViewId !== this.activeMapViewId) {
-      this.resortClick(nV)
+  /**
+   * 监听: 更新复位范围
+   */
+  @Watch('activeMapViewDisplayRect', { deep: true })
+  watchActiveMapViewDisplayRect(nV) {
+    if (this.isMapLoaded && this.mapViewId !== this.activeMapViewId) {
+      this.jumpToRect(nV)
     }
   }
 }
