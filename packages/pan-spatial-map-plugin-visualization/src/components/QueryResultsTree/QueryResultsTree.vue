@@ -1,11 +1,11 @@
 <template>
   <div class="mp-query-result-tree">
-    <a-empty v-if="!queryResult.length" />
+    <a-empty v-if="!treeData.length" />
     <a-tree
       showLine
-      :replaceFields="{ children: 'children' }"
       :load-data="loadTreeData"
-      :tree-data="queryResult"
+      :tree-data="treeData"
+      @select="onTreeSelect"
       v-else
     />
   </div>
@@ -36,6 +36,15 @@ interface IQueryParams extends DocInfoQueryParam {
 interface IQueryLayerInfo {
   layerName: string
   layerIndex: string | null
+}
+
+interface ITreeNode {
+  key: string
+  title: string
+  children?: ITreeNode[]
+  isLeaf?: boolean
+  index?: number
+  feature?: any
 }
 
 // 支持查询的类型图层如下：
@@ -72,9 +81,9 @@ export default class MpQueryResultTree extends Vue {
   @Prop({ type: Number, default: 1 })
   readonly curPageNumber!: number
 
-  queryResult: Record<string, any>[] = []
-
   layerInfos: IQueryLayerInfo[] = []
+
+  treeData: ITreeNode[] = []
 
   @Watch('layer', { deep: true })
   watchLayer(nV) {
@@ -83,7 +92,8 @@ export default class MpQueryResultTree extends Vue {
 
   @Watch('queryRect', { deep: true })
   watchQueryRect() {
-    this.getLayerInfos()
+    const dataRef = this.treeData.length ? this.treeData[0] : null
+    this.loadTreeData({ dataRef })
   }
 
   /**
@@ -116,10 +126,8 @@ export default class MpQueryResultTree extends Vue {
       port,
       serverName: docName
     })
-    if (!docInfo) return []
-    const { MapInfos } = docInfo
-    if (MapInfos.length > this.mapIndex) {
-      const mapInfo: DocInfoMapInfo = MapInfos[this.mapIndex]
+    if (docInfo && docInfo.MapInfos.length > this.mapIndex) {
+      const mapInfo: DocInfoMapInfo = docInfo.MapInfos[this.mapIndex]
       if (mapInfo) {
         const { CatalogLayer } = mapInfo
         const layerIndexs: string[] = queryFeaturesInstance.getVectorIndex(
@@ -133,13 +141,14 @@ export default class MpQueryResultTree extends Vue {
           .getVectorByIndex(layerIndexs.join(','), CatalogLayer)
           .map(({ LayerName }) => LayerName)
         if (names.length && names.length === layerIndexs.length) {
-          return names.map((name, i) => ({
+          return names.map<IQueryLayerInfo>((name, i) => ({
             layerName: name,
             layerIndex: layerIndexs[i]
           }))
         }
       }
     }
+    return []
   }
 
   /**
@@ -147,16 +156,17 @@ export default class MpQueryResultTree extends Vue {
    * @param queryParam
    */
   async getIGSTileLayerInfo({ ip, port, serverName, id }: IQueryParams) {
-    const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(id)
-    const docName = layerConfig.bindData
-      ? layerConfig.bindData.serverName
-      : serverName
+    const layerConfig: any = dataCatalogManagerInstance.getLayerConfigByID(id)
+    const docName =
+      layerConfig && layerConfig.bindData
+        ? layerConfig.bindData.serverName
+        : serverName
     const res = await this.getIGSDocLayerInfo({
       ip,
       port,
       docName
     })
-    return res || []
+    return res
   }
 
   /**
@@ -203,7 +213,7 @@ export default class MpQueryResultTree extends Vue {
           break
       }
       this.layerInfos = layerInfos
-      this.queryResult = layerInfos.map(({ layerName }, index) => ({
+      this.treeData = layerInfos.map<ITreeNode>(({ layerName }, index) => ({
         index,
         title: layerName,
         key: this.getUuid()
@@ -223,15 +233,18 @@ export default class MpQueryResultTree extends Vue {
     queryParams: IQueryParams
   ) {
     const { ip, port, docName } = queryParams
-    const layerIdxs = queryLayerInfos.reduce((str, { layerIndex }, i) => {
-      if (i > 0) {
-        str += ','
-      }
-      if (layerIndex) {
-        str += layerIndex
-      }
-      return str
-    }, '')
+    const layerIdxs = queryLayerInfos.reduce<string>(
+      (str, { layerIndex }, i) => {
+        if (i > 0) {
+          str += ','
+        }
+        if (layerIndex) {
+          str += layerIndex
+        }
+        return str
+      },
+      ''
+    )
     const geometry = queryFeaturesInstance.creatRectByMinMax(
       queryRect.xmin,
       queryRect.ymin,
@@ -253,18 +266,36 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
-   * 整合某个图层下的所有查询结果数据并返回
-   * @param result
-   * @param layerInfoIndexs
+   * 图层类型
+   * 1.在线地图服务图层
+   * 2.在线矢量图层
+   * 3.关联了在线地图服务的在线瓦片图层
+   * 4.要求同一次查询的图层类型是一样的。
    */
-  getLayerAllNewResult(
-    result: any[] | object | null,
-    layerInfoIndexs: number[]
-  ) {
+  async queryFeature(queryRect: IRect, treeNodeIndexs: number[]) {
+    const queryLayerInfos = treeNodeIndexs.map<IQueryLayerInfo>(
+      i => this.layerInfos[i]
+    )
+    if (!queryLayerInfos.length) return []
+    const queryParams = this.getQueryParams()
+    let result = null
+    switch (queryLayerInfos[0].layerIndex) {
+      case null:
+        // todo IGSVector
+        break
+      default:
+        // 默认是IGSMapImage
+        result = await this.getIGSMapImageResult(
+          queryRect,
+          queryLayerInfos,
+          queryParams
+        )
+        break
+    }
     if (!result) return []
     const resultArray = Array.isArray(result) ? result : [result]
-    return resultArray.map((featureSet, index) => {
-      const { layerName } = this.layerInfos[layerInfoIndexs[index]]
+    return resultArray.map<ITreeNode>((featureSet, index) => {
+      const { layerName } = this.layerInfos[treeNodeIndexs[index]]
       const { features } = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
         featureSet
       )
@@ -286,42 +317,12 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
-   * 图层类型
-   * 1.在线地图服务图层
-   * 2.在线矢量图层
-   * 3.关联了在线地图服务的在线瓦片图层
-   * 4.要求同一次查询的图层类型是一样的。
-   */
-  async queryFeature(queryRect: IRect, layerInfoIndexs: number[]) {
-    const queryLayerInfos = layerInfoIndexs.map<IQueryLayerInfo>(
-      i => this.layerInfos[i]
-    )
-    if (!queryLayerInfos.length) return []
-    const queryParams = this.getQueryParams()
-    let result = null
-    switch (queryLayerInfos[0].layerIndex) {
-      case null:
-        // todo IGSVector
-        break
-      default:
-        // 默认是IGSMapImage
-        result = await this.getIGSMapImageResult(
-          queryRect,
-          queryLayerInfos,
-          queryParams
-        )
-        break
-    }
-    return this.getLayerAllNewResult(result, layerInfoIndexs)
-  }
-
-  /**
    * 异步加载数据
    * @param treeNode
    */
-  loadTreeData(treeNode) {
+  loadTreeData(treeNode: { dataRef: ITreeNode }) {
     return new Promise(resolve => {
-      if (treeNode.dataRef.children) {
+      if (!treeNode.dataRef || treeNode.dataRef.children) {
         resolve()
         return
       }
@@ -329,11 +330,26 @@ export default class MpQueryResultTree extends Vue {
         features => {
           treeNode.dataRef.children =
             features && features.length ? features[0].children : []
-          this.queryResult = [...this.queryResult]
+          this.treeData = [...this.treeData]
           resolve()
         }
       )
     })
+  }
+
+  /**
+   *  结果树选中
+   * @param selectedKeys
+   * @param treeNode
+   */
+  onTreeSelect(selectedKeys, { selectedNodes, node }) {
+    const {
+      dataRef,
+      dataRef: { isLeaf }
+    } = node
+    if (isLeaf) {
+      this.$emit('on-select', [dataRef as ITreeNode])
+    }
   }
 
   created() {
@@ -341,6 +357,3 @@ export default class MpQueryResultTree extends Vue {
   }
 }
 </script>
-<style lang="less" scoped>
-@import './index.less';
-</style>

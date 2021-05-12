@@ -1,4 +1,8 @@
-import { MpAttributeTable, MpAttributeTableList } from './components'
+import {
+  MpAttributeTable,
+  MpAttributeTableList,
+  MpMarkPopupMapbox
+} from './components'
 
 import {
   MpZoom,
@@ -20,6 +24,7 @@ const components = [
   MpLayerList,
   MpAttributeTable,
   MpAttributeTableList,
+  MpMarkPopupMapbox,
   MpBasemapManager,
   MpLegend
 ]

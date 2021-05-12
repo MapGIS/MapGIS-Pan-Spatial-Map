@@ -14,12 +14,8 @@
 import { Mixins, Component, Prop } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
-interface IVueExtends {
-  [k: string]: any
-}
-
 @Component
-export default class RowFlex extends Mixins<IVueExtends>(WidgetMixin) {
+export default class RowFlex extends Mixins<Record<string, any>>(WidgetMixin) {
   @Prop({ default: 'middle' }) align!: 'top' | 'middle' | 'bottom'
 
   @Prop({ default: 'start' }) justify!:

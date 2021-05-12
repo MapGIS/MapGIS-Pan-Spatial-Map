@@ -1,10 +1,15 @@
-import { Mixins, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
-import MapViewOperation from './map-view-operation'
+
+export { Rect }
 
 @Component
-export default class MapViewMixin extends Mixins(MapViewOperation) {
+export default class MapViewMixin extends Vue {
   @Prop({ default: '' }) mapViewId!: string
+
+  private map: any = {}
+
+  private mapbox: any = {}
 
   // 公共状态
   private activeMapViewState: MapViewState = mapViewStateInstance
@@ -37,5 +42,50 @@ export default class MapViewMixin extends Mixins(MapViewOperation) {
   // 设置地图视图的复位范围
   set initDisplayRect(initDisplayRect: Rect) {
     this.activeMapViewState.initDisplayRect = initDisplayRect
+  }
+
+  /**
+   * 查询地图
+   * @param {Rect} rect 指定区域
+   * @param {string} mapViewId 图层id
+   */
+  query(rect: Rect, mapViewId: string) {
+    this.$emit('on-query', rect, mapViewId)
+  }
+
+  /**
+   * 放大地图到指定区域的中心
+   * @param {Rect} rect 指定区域
+   */
+  zoomIn(rect: Rect) {
+    if (this.isValidRect(rect)) {
+      this.map.fitBounds([
+        [rect.xmax, rect.ymin],
+        [rect.xmin, rect.ymax]
+      ])
+    } else {
+      this.map.zoomIn()
+    }
+  }
+
+  /**
+   * 缩小地图到指定区域的中心
+   * @param {Rect} rect 指定区域
+   */
+  zoomOut(rect: Rect) {
+    if (this.isValidRect(rect)) {
+      this.map.flyTo({
+        zoom: this.map.getZoom() - 1,
+        center: [(rect.xmin + rect.xmin) / 2, (rect.ymin + rect.ymax) / 2]
+      })
+    }
+  }
+
+  /**
+   * 判断矩形范围是否可用
+   * @param {Rect} rect
+   */
+  isValidRect(rect: Rect) {
+    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
   }
 }
