@@ -82,6 +82,10 @@
         :token="layerProps.token"
         :crs="crs"
       />
+      <mapgis-mvt-style-layer
+        v-if="isVectorTileLayer(layerProps.type)"
+        :mvtStyle="layerProps.mvtStyle"
+      />
     </div>
     <mapgis-scale :position="'left-bottom'" />
   </mapgis-web-map>
@@ -285,11 +289,19 @@ export default {
             sourceId: layer.id
           }
           break
+        case LayerType.vectorTile:
+          mapboxLayerComponentProps = {
+            type: layer.type,
+            mvtStyle: layer.currentStyle
+          }
+
+          break
         default:
           break
       }
 
-      mapboxLayerComponentProps.layer = layerStyle
+      if (layer.type !== LayerType.vectorTile)
+        mapboxLayerComponentProps.layer = layerStyle
 
       return mapboxLayerComponentProps
     },
@@ -337,9 +349,12 @@ export default {
     isRasterLayer(type) {
       return (
         type === LayerType.aMapMercatorEMap ||
-        LayerType.aMapMercatorSatelliteMap ||
-        LayerType.aMapMercatorSatelliteAnnMap
+        type === LayerType.aMapMercatorSatelliteMap ||
+        type === LayerType.aMapMercatorSatelliteAnnMap
       )
+    },
+    isVectorTileLayer(type) {
+      return type === LayerType.vectorTile
     },
     generateWebTileLayerUrl(layer) {
       let url = ''

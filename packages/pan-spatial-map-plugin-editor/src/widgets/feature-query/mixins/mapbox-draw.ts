@@ -6,7 +6,8 @@ import * as Zondy from '@mapgis/webclient-es6-service'
   components: {}
 })
 export default class MapboxDraw extends Vue {
-  private type = -1 // -1 空状态、0  点、1  线、2   面、3  矩形
+  // -1 空状态、0  点、1  线、2   面、3  矩形
+  private type = -1
 
   private clickType = ''
 
@@ -41,34 +42,34 @@ export default class MapboxDraw extends Vue {
   togglePoint() {
     this.enableDrawer()
     this.type = 0
-    // eslint-disable-next-line no-unused-expressions
+
     this.drawer && this.drawer.changeMode('draw_point')
   }
 
   togglePolyline() {
     this.enableDrawer()
     this.type = 1
-    // eslint-disable-next-line no-unused-expressions
+
     this.drawer && this.drawer.changeMode('draw_line_string')
   }
 
   togglePolygon() {
     this.enableDrawer()
     this.type = 2
-    // eslint-disable-next-line no-unused-expressions
+
     this.drawer && this.drawer.changeMode('draw_polygon')
   }
 
   toggleRect() {
     this.enableDrawer()
     this.type = 3
-    // eslint-disable-next-line no-unused-expressions
+
     this.drawer && this.drawer.changeMode('draw_rectangle')
   }
 
   toggleDeleteAll() {
     this.type = -1
-    // eslint-disable-next-line no-unused-expressions
+
     this.drawer && this.drawer.deleteAll()
   }
 
@@ -118,4 +119,21 @@ export default class MapboxDraw extends Vue {
   }
 
   queryLayer(bound: Record<string, number>) {}
+
+  clearMapboxDraw() {
+    if (
+      this.drawer &&
+      [
+        'draw_point',
+        'draw_line_string',
+        'draw_polygon',
+        'draw_rectangle'
+      ].includes(this.drawer.getMode())
+    ) {
+      this.type = -1
+      this.clickType = ''
+      this.drawer.deleteAll()
+      this.drawer.changeMode('simple_select')
+    }
+  }
 }

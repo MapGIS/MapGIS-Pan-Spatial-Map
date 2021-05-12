@@ -23,7 +23,7 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     }
   }
 
-  onClose() {
+  clearCesiumDraw() {
     if (window.ElementQueryManage) {
       window.ElementQueryManage = null
     }

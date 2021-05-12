@@ -67,27 +67,28 @@ export default class TimeLine extends Vue {
     }
   }
 
+  get chartEl() {
+    return document.getElementById(this.id)
+  }
+
   @Watch('timelineOptions', { deep: true })
   timelineOptionsChange() {
     this.Chart.setOption(this.option, true)
   }
 
-  resize(width = 'auto') {
+  resize(width) {
     if (this.Chart) {
-      this.Chart.resize({
-        width
-      }) 
+      this.chartEl.style.width = width
+      this.Chart.resize({ width })
     }
   }
 
   mounted() {
-    this.Chart = echarts.init(document.getElementById(this.id) as HTMLDivElement)
+    this.Chart = echarts.init(this.chartEl as HTMLDivElement)
     this.Chart.on('timelinechanged', ({ currentIndex }) =>
       this.$emit('input', currentIndex)
     )
     this.Chart.setOption(this.option, true)
-    window.onresize = () => this.resize()
-    
   }
 
   beforeDestroyed() {
@@ -100,7 +101,7 @@ export default class TimeLine extends Vue {
 
 <style lang="less" scoped>
 .time-line-chart {
-  width: 300px;
+  width: 400px;
   height: 48px;
   margin: 10px 0 20px;
 }

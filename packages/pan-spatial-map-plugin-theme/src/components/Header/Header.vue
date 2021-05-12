@@ -41,7 +41,7 @@ export default {
   height: 48px;
   line-height: 48px;
   padding: 0;
-  z-index: 2000;
+  z-index: 1000;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   position: relative;
   background: @base-bg-color;

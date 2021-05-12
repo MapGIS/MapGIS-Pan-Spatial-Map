@@ -1,0 +1,27 @@
+<template>
+  <div class="source-target">
+    <!-- 线上数据 -->
+    <online-data v-if="type === 'onLineData'" />
+    <!-- 本地数据 -->
+    <local-data v-if="type === 'localData'" />
+  </div>
+</template>
+<script lang="ts">
+import { Mixins, Component, Prop } from 'vue-property-decorator'
+import { WidgetMixin } from '@mapgis/web-app-framework'
+import OnlineData from './OnlineData.vue'
+import LocalData from './LocalData.vue'
+
+@Component({
+  components: {
+    OnlineData,
+    LocalData
+  }
+})
+export default class SourceTarget extends Mixins<{
+  [k: string]: any
+}>(WidgetMixin) {
+  @Prop() type!: 'onLineData' | 'localData'
+}
+</script>
+<style lang="less" scoped></style>

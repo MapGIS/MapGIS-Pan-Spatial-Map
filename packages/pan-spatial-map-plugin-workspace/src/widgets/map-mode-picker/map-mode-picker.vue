@@ -3,7 +3,7 @@
     <a-tooltip
       title="二三维切换"
       placement="right"
-      :overlay-style="{ zIndex: 2000 }"
+      :overlay-style="{ zIndex: 1000 }"
     >
       <div class="button" @click="switchMapMode">
         <mp-icon :icon="icon" />
