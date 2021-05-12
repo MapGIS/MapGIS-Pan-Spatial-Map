@@ -23,7 +23,6 @@
     "axios": "^0.19.2"
   },
   "dependencies": {
-    "@mapgis/webclient-es6-service": "^1.0.3",
     "@mapgis/webclient-store": "link:../../../Webclient-Store",
     "@mapgis/webclient-es6-service": "^1.0.3",
     "vue-property-decorator": "^8.3.0",
