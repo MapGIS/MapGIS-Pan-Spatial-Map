@@ -13,16 +13,22 @@
           v-for="(item, index) in measureMarkers"
           :key="'measuer-marker-' + index"
           :coordinates="item.coordinates"
+          anchor="bottom"
         >
           <div slot="marker">
-            <div
-              v-for="text in item.text"
-              :key="'measuerText-' + text"
-              :style="
-                `font-size: ${measureSetting.textSize}px;font-family: ${measureSetting.textType};color: ${measureSetting.textColor}`
-              "
-            >
-              {{ text }}
+            <div class="measure-popup">
+              <div class="measure-tip"></div>
+              <div class="measure-content">
+                <div
+                  v-for="text in item.text"
+                  :key="'measuerText-' + text"
+                  :style="
+                    `font-size: ${measureSetting.textSize}px;font-family: ${measureSetting.textType};color: ${measureSetting.textColor}`
+                  "
+                >
+                  {{ text }}
+                </div>
+              </div>
             </div>
           </div>
         </mapgis-marker>
@@ -212,7 +218,7 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
           ),
           text: [
             `周长: ${perimeter}${areaUnitExp.perimeterUnitLabel}`,
-            `面积：${area}${areaUnitExp.areaUnitLabel}`
+            `面积: ${area}${areaUnitExp.areaUnitLabel}`
           ],
           style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
         }
@@ -372,4 +378,24 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
 }
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+.measure-popup {
+  display: flex;
+  flex-direction: column-reverse;
+  .measure-content {
+    background-color: @base-bg-color;
+    padding: 5px 16px;
+    border-radius: 4px;
+    box-shadow: 0px 1px 2px 0px @shadow-color;
+  }
+  .measure-tip {
+    align-self: center;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-bottom: none;
+    border-top-color: @base-bg-color;
+    z-index: 1;
+  }
+}
+</style>

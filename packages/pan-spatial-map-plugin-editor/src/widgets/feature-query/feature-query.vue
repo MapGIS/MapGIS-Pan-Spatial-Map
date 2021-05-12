@@ -3,18 +3,23 @@
     <mapgis-draw
       ref="drawer"
       :controls="controls"
-      @added="handleAdded"
-      @drawCreate="drawFinish"
+      @added="onAdded"
+      @drawCreate="onDrawFinish"
     />
-    <a-radio-group :value="clickType" @change="clickDraw">
-      <a-radio-button
-        v-for="item in widgetInfo.config.queryType"
-        :key="item.name"
-        :value="item.name"
-      >
-        {{ item.name }}
-      </a-radio-button>
-    </a-radio-group>
+    <div class="toolbar">
+      <template v-for="type in queryTypes">
+        <a-tooltip placement="bottom" :title="type.label" :key="type.id">
+          <div
+            :class="{ command: true, active: queryType === type.id }"
+            @click="onQueryDraw(type.id)"
+            :key="type.id"
+          >
+            <span v-if="type.icon.startsWith('icon-')">{{ type.label }}</span>
+            <mp-icon v-else :icon="type.icon" />
+          </div>
+        </a-tooltip>
+      </template>
+    </div>
     <div class="buffer-container">
       缓冲半径(km):
     </div>
@@ -61,7 +66,6 @@ import {
   booleanPointInPolygon,
   booleanDisjoint
 } from '@turf/turf'
-// TODO 完成判断两个面是否相交
 
 @Component
 export default class MpFeatureQuery extends Mixins(
@@ -92,10 +96,42 @@ export default class MpFeatureQuery extends Mixins(
 
   private sliderIndex = 0
 
-  private clickType = ''
+  private queryType = ''
+
+  private defaultQueryTypes2d = [
+    'Point',
+    'Circle',
+    'Rectangle',
+    'Polygon',
+    'LineString'
+  ]
+
+  private defaultQueryTypes3d = [
+    'Point',
+    'Rectangle',
+    'Polygon',
+    'LineString',
+    'PickModel'
+  ]
 
   private get limits() {
     return this.limitsArray[this.sliderIndex]
+  }
+
+  private get queryTypes2d() {
+    return this.widgetInfo.config.queryType.filter(type => {
+      return this.defaultQueryTypes2d.includes(type.id)
+    })
+  }
+
+  private get queryTypes3d() {
+    return this.widgetInfo.config.queryType.filter(type => {
+      return this.defaultQueryTypes3d.includes(type.id)
+    })
+  }
+
+  private get queryTypes() {
+    return this.is2DMapMode ? this.queryTypes2d : this.queryTypes3d
   }
 
   // 二三维地图模式切换时
@@ -108,6 +144,14 @@ export default class MpFeatureQuery extends Mixins(
     }
   }
 
+  created() {
+    this.widgetInfo.config.queryType.forEach(type => {
+      if (type.id === '') {
+        type.id = 'Rectangle'
+      }
+    })
+  }
+
   // 微件关闭时
   onClose() {
     this.clearDraw()
@@ -118,8 +162,8 @@ export default class MpFeatureQuery extends Mixins(
     this.clearDraw()
   }
 
-  clickDraw(e) {
-    this.clickType = e.target.value
+  onQueryDraw(type) {
+    this.queryType = type
     if (this.is2DMapMode) {
       this.handleMapbox()
     } else {
@@ -137,21 +181,21 @@ export default class MpFeatureQuery extends Mixins(
 
   handleCesium() {
     this.createCesium()
-    switch (this.clickType) {
-      case '点':
+    switch (this.queryType) {
+      case 'Point':
         this.interactionDrawPnt()
         break
-      case '线':
+      case 'LineString':
         this.interactionDrawLine()
         break
-      case '面':
+      case 'Polygon':
         this.interactionDrawPolygon()
         break
-      case '矩形':
-        // this.toggleRect()
+      case 'Rectangle':
+        // this.interactionDrawRectangle()
         break
-      case '圆':
-        // this.toggleRect()
+      case 'PickModel':
+        // this.interactionPickModel()
         break
       default:
         break
@@ -159,21 +203,21 @@ export default class MpFeatureQuery extends Mixins(
   }
 
   handleMapbox() {
-    switch (this.clickType) {
-      case '点':
+    switch (this.queryType) {
+      case 'Point':
         this.togglePoint()
         break
-      case '线':
+      case 'LineString':
         this.togglePolyline()
         break
-      case '面':
+      case 'Polygon':
         this.togglePolygon()
         break
-      case '矩形':
+      case 'Rectangle':
         this.toggleRect()
         break
-      case '圆':
-        // this.toggleRect()
+      case 'Circle':
+        // this.toggleCircle()
         break
       default:
         break
@@ -310,8 +354,30 @@ export default class MpFeatureQuery extends Mixins(
   display: flex;
   flex-direction: column;
   color: @text-color;
+  .toolbar {
+    display: flex;
+    align-items: center;
+    text-align: right;
+    height: 32px;
+    font-size: 17px;
+    color: @text-color;
+    .command {
+      margin: 0 8px;
+      cursor: pointer;
+      &:hover,
+      &.active {
+        color: @primary-color;
+      }
+      &:first-child {
+        margin-left: 0;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
   .buffer-container {
-    margin-top: 20px;
+    margin-top: 12px;
     color: @title-color;
   }
 }
