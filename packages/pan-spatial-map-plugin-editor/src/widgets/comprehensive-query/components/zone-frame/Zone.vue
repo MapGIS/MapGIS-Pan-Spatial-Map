@@ -96,6 +96,7 @@ import {
   FeatureQueryParam,
   queryFeaturesInstance
 } from '@mapgis/pan-spatial-map-store'
+import { bboxPolygon, lineString, bbox } from '@turf/turf'
 import { Sketch } from 'vue-color'
 import ZoneFrameMapbox from './ZoneFrameMapbox.vue'
 import ZoneFrameCesium from './ZoneFrameCesium.vue'
@@ -111,8 +112,8 @@ export default class Zone extends Mixins(AppMixin) {
   @Model('change', { type: Object, required: false, default: null })
   private value!: FeatureGeoJSON | null
 
-  @Prop(Boolean)
-  readonly visible!: boolean
+  @Prop()
+  readonly active!: boolean
 
   private keyword = ''
 
@@ -173,9 +174,20 @@ export default class Zone extends Mixins(AppMixin) {
     this.getGeoJson()
   }
 
+  @Watch('active')
+  activeChange(val) {
+    if (!val) {
+      this.clear()
+    } else {
+      this.getGeoJson()
+    }
+  }
+
   @Watch('geojson')
   private changeGeojson(val: FeatureGeoJSON | null) {
-    this.$emit('change', val)
+    const box = bbox(val)
+    const polygon = bboxPolygon(box)
+    this.$emit('change', polygon)
   }
 
   private clear() {

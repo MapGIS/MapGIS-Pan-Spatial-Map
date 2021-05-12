@@ -13,7 +13,7 @@ import {
   Emit
 } from 'vue-property-decorator'
 
-import { MapMixin } from '@mapgis/web-app-framework'
+import { MapMixin, AppMixin } from '@mapgis/web-app-framework'
 
 import {
   FeatureGeoJSON,
@@ -25,7 +25,7 @@ import {
 @Component({
   components: {}
 })
-export default class CoordinateCesium extends Mixins(MapMixin) {
+export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   @Prop({
     type: Object,
     required: true,

@@ -74,6 +74,7 @@ export default class MapboxDraw extends Vue {
       )
       bound = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
     }
+    debugger
     this.toggleDeleteAll()
 
     this.queryType = ''

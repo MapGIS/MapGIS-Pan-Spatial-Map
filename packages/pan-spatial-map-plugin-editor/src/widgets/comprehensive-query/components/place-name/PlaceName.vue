@@ -24,6 +24,7 @@
             :keyword="keyword"
             :activeTab="tab"
             :baseUrl="baseUrl"
+            :geometry="geometry"
             @show-coords="showCoords"
             @click-item="setCenter"
             @update-geojson="updateGeojson"
@@ -59,6 +60,8 @@ export default class PlaceName extends Mixins(
   AppMixin
 ) {
   @Prop() widgetInfo!: Record<string, unknown>
+
+  @Prop() geometry?: Record<string, unknown>
 
   private selected: string[] = []
 
@@ -154,7 +157,7 @@ export default class PlaceName extends Mixins(
       this.keyword !== '' && this.keyword
         ? `${searchField || allSearchName} LIKE '%${this.keyword}%'`
         : `${searchField || allSearchName} LIKE '%'`
-    let exhibition
+    let exhibition: IAttributeTableExhibition = null
     if (queryWay === 'doc') {
       // 地图文档
       exhibition = {
@@ -169,6 +172,7 @@ export default class PlaceName extends Mixins(
           serverType: LayerType.IGSMapImage,
           layerIndex: LayerIndex,
           serverName: docName,
+          geometry: this.geometry,
           serverUrl: `http://${ip}:${port}/igs/rest/mrms/docs/${docName}`,
           where
         }
@@ -182,7 +186,8 @@ export default class PlaceName extends Mixins(
           port: Number(port || baseConfigInstance.config.port),
           serverType: LayerType.IGSVector,
           gdbp: gdbp,
-          where
+          where,
+          geometry: this.geometry
         }
       }
     }

@@ -1,11 +1,8 @@
 <template>
   <div class="coordinate column q-pa-md">
-    <mapbox-marker
-      v-if="isShowMarker"
-      :coordinates="[coordinate[0], coordinate[1]]"
-    >
-      <img slot="marker" :src="markerBlue" />
-    </mapbox-marker>
+    <mapgis-marker :coordinates="[coordinate[0], coordinate[1]]">
+      <img slot="marker" :src="`${baseUrl + markerBlue}`" />
+    </mapgis-marker>
   </div>
 </template>
 
@@ -19,17 +16,14 @@ import {
   Prop,
   Emit
 } from 'vue-property-decorator'
-import { MapMixin, WidgetState } from '@mapgis/web-app-framework'
-import { MapboxMarker } from '@mapgis/webclient-vue-mapboxgl'
+import { MapMixin, AppMixin } from '@mapgis/web-app-framework'
 import {
   FeatureGeoJSON,
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
 
-@Component({
-  components: { MapboxMarker }
-})
-export default class CoordinateMapbox extends Mixins(MapMixin) {
+@Component
+export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
   @Prop({
     type: Object,
     required: true,
@@ -52,12 +46,6 @@ export default class CoordinateMapbox extends Mixins(MapMixin) {
     default: false
   })
   readonly isClick!: boolean
-
-  @Prop({
-    type: String,
-    default: WidgetState.CLOSED
-  })
-  readonly widgetState!: string
 
   @Prop({
     type: Array,
@@ -94,11 +82,7 @@ export default class CoordinateMapbox extends Mixins(MapMixin) {
 
   private fillColor = '#6e599f'
 
-  private markerBlue = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
-
-  private get isShowMarker() {
-    return !(this.widgetState === WidgetState.CLOSED)
-  }
+  private markerBlue = `${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
 
   @Watch('isClick')
   private onInteractModeChanged() {
@@ -108,14 +92,6 @@ export default class CoordinateMapbox extends Mixins(MapMixin) {
       this.map.on('click', this.getMouseCoordinate)
     } else {
       this.map.off('click', this.getMouseCoordinate)
-    }
-  }
-
-  @Watch('widgetState')
-  private onwidgetStateChange() {
-    if (this.widgetState === WidgetState.DEACTIVE) {
-    } else if (this.widgetState === WidgetState.CLOSED) {
-      this.clearCoordinate()
     }
   }
 
@@ -157,9 +133,7 @@ export default class CoordinateMapbox extends Mixins(MapMixin) {
   }: {
     lngLat: { lng: number; lat: number }
   }) {
-    if (this.widgetState === WidgetState.ACTIVE) {
-      this.emitMapCoordinate([lng, lat])
-    }
+    this.emitMapCoordinate([lng, lat])
   }
 
   // 清除

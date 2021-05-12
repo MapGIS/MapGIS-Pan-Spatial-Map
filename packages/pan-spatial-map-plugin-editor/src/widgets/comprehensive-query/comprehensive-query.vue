@@ -29,17 +29,20 @@
         locationPanelExpand ? '' : 'unvisible'
       ]"
     >
-      <a-tabs
-        default-active-key="district"
-        @change="onLocateChange"
-        size="small"
-        type="card"
-      >
+      <a-tabs v-model="locationType" size="small" type="card">
         <a-tab-pane key="district" tab="行政区划定位">
-          <zone v-model="geoJson" />
+          <zone
+            ref="zone"
+            :active="locationType === 'district'"
+            v-model="geoJson"
+          />
         </a-tab-pane>
         <a-tab-pane key="coordinate" tab="坐标定位" force-render>
-          <Coordinate v-model="geoJson" />
+          <coordinate
+            ref="coordinate"
+            :active="locationType === 'coordinate'"
+            v-model="geoJson"
+          />
         </a-tab-pane>
         <a-tab-pane key="map-sheet" tab="图幅定位">
           图幅定位
@@ -56,7 +59,11 @@
       ]"
       :style="{ 'max-height': `${maxHeight}px` }"
     >
-      <place-name ref="placeName" :widgetInfo="widgetInfo"></place-name>
+      <place-name
+        ref="placeName"
+        :widgetInfo="widgetInfo"
+        :geometry="geometry"
+      ></place-name>
     </div>
   </div>
 </template>
@@ -83,19 +90,21 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private maxHeight = 0
 
   // 可选district：行政区划定位；coordinate：坐标定位；map-sheet：图幅号定位
-  private locationType = 'district'
+  private locationType = ''
 
   private locationPanelExpand = false
 
   private geoJson: FeatureGeoJSON | null = null
 
   get logo() {
-    return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${this.locationType}.png`
+    return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${this
+      .locationType || 'district'}.png`
   }
 
   private get geometry() {
     if (this.geoJson) {
       const result = Parser.changeToTangram(this.geoJson)
+      console.log(11111, result)
       if (Array.isArray(result)) return result[0]
       return result
     }
@@ -124,16 +133,20 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   onLocate() {
     this.locationPanelExpand = true
     this.searchPanelExpand = false
-  }
-
-  onLocateChange(activeKey) {
-    this.locationType = activeKey
+    if (!this.locationType) {
+      this.locationType = 'district'
+    }
   }
 
   onClose() {
     this.locationPanelExpand = false
     this.searchPanelExpand = false
     this.$refs.placeName.reset()
+    this.$refs.zone.clear()
+    this.$refs.coordinate.clear()
+    if (this.locationType === 'district') {
+      this.locationType = ''
+    }
   }
 
   onSearchFocus() {

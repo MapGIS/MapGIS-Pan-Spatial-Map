@@ -81,6 +81,8 @@ export default class PlaceNamePanel extends Vue {
 
   @Prop() baseUrl!: string
 
+  @Prop() geometry?: Record<string, unknown>
+
   private fieldNames: string[] = []
 
   private fields: string[] = []
@@ -179,7 +181,7 @@ export default class PlaceNamePanel extends Vue {
       rtnLabel: false,
       f: 'json',
       where,
-      //   geometry: this.geometry,
+      geometry: this.geometry,
       cursorType: 'backword'
     }
     const { queryWay } = this.config
