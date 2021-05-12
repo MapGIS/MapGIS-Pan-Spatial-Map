@@ -16,7 +16,7 @@ import {
   ServiceCategory,
   Service
 } from '@mapgis/pan-spatial-map-store'
-import { AppMixin } from '@mapgis/web-app-framework'
+import { AppMixin, LayerType } from '@mapgis/web-app-framework'
 import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
 import ServiceCategorySelect from './ServiceCategorySelect.vue'
 import ServiceTypeSelect from './ServiceTypeSelect.vue'
@@ -70,17 +70,18 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
     } = this.serviceInfo
     const category = this.serviceCategory
     console.log(category)
-
     let service: Service
 
     switch (type) {
       case 'doc':
         service = {
-          id: uuid(),
+          guid: uuid(),
+          serverName,
           name: serverName as string,
           category,
-          type,
-          url: `http://${ip}:${port}/igs/rest/mrcs/docs/${serverName}/0?include={includeDetails:true,includeSubs:true}&f=json`,
+          serverType: LayerType.IGSMapImage,
+          url: `http://${ip}:${port}/igs/rest/mrms/docs/${serverName}`,
+          // url: `http://${ip}:${port}/igs/rest/mrcs/docs/${serverName}/0?include={includeDetails:true,includeSubs:true}&f=json`,
           visible: true,
           ip,
           port
@@ -89,11 +90,14 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         break
       case 'tile':
         service = {
-          id: uuid(),
+          guid: uuid(),
+          serverName,
           name: serverName as string,
           category,
-          url: `http://${ip}:${port}/igs/rest/mrcs/tiles/${serverName}?f=json&v=2.0`,
           type,
+          url: `http://${ip}:${port}/igs/rest/mrms/tile/${serverName}`,
+          // url: `http://${ip}:${port}/igs/rest/mrcs/tiles/${serverName}?f=json&v=2.0`,
+          serverType: LayerType.IGSTile,
           visible: true,
           ip,
           port
@@ -102,10 +106,11 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         break
       case 'layer':
         service = {
-          id: uuid(),
-          gdbp: gdbp as string,
+          guid: uuid(),
+          gdbps: gdbp as string,
           url: gdbp as string,
           category,
+          serverType: LayerType.IGSVector,
           type,
           visible: true,
           name: name as string,
@@ -115,12 +120,26 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         this.addService(service)
         break
       case 'WMS':
-      case 'WMTS':
         service = {
-          id: uuid(),
+          guid: uuid(),
+          serverURL: url,
           name: name as string,
           category,
           type,
+          serverType: LayerType.OGCWMS,
+          url: url as string,
+          visible: true
+        }
+        this.addService(service)
+        break
+      case 'WMTS':
+        service = {
+          guid: uuid(),
+          serverURL: url,
+          name: name as string,
+          category,
+          type,
+          serverType: LayerType.OGCWMTS,
           url: url as string,
           visible: true
         }
@@ -128,17 +147,22 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         break
       case 'tianDiTu':
         const tempayerType: string = this.serviceInfo.layerType as string
+        const urlHref = `http://t${Math.round(
+          Math.random() * 7
+        )}.tianditu.gov.cn/${tempayerType}_c/wmts`
         service = {
-          id: uuid(),
+          guid: uuid(),
           name: name as string,
           category,
           type,
-          url: `http://t${Math.round(
-            Math.random() * 7
-          )}.tianditu.gov.cn/${tempayerType}_c/wmts`,
+          serverType: LayerType.OGCWMTS,
+          serverURL: urlHref,
+          url: urlHref,
           token,
           visible: true
         }
+        console.log(service)
+
         this.addService(service)
         break
       case 'arcgis':
@@ -149,10 +173,12 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
             .split('services/')[1]
         }
         service = {
-          id: uuid(),
+          guid: uuid(),
           name: name as string,
           category,
           type,
+          serverURL: url,
+          serverType: LayerType.arcGISMapImage,
           extend,
           layerType,
           url: url as string,
@@ -161,17 +187,47 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         this.addService(service)
         break
       case 'baidu':
-      case 'gaode':
-      case 'google':
-      case 'googleExt':
         const tempLayerType = this.serviceInfo.layerType
         service = {
-          id: uuid(),
+          guid: uuid(),
+          serverName,
           name: name as string,
           category,
           type,
+          serverType: '',
           layerType: tempLayerType,
           url: tempLayerType as string,
+          visible: true
+        }
+        this.addService(service)
+        break
+      case 'gaode':
+        const tempLayerType2 = this.serviceInfo.layerType
+        service = {
+          guid: uuid(),
+          serverName,
+          name: name as string,
+          category,
+          type,
+          serverType: LayerType.aMapMercatorSatelliteMap,
+          layerType: tempLayerType2,
+          url: tempLayerType2 as string,
+          visible: true
+        }
+        this.addService(service)
+        break
+      case 'google':
+      case 'googleExt':
+        const tempLayerType3 = this.serviceInfo.layerType
+        service = {
+          guid: uuid(),
+          serverName,
+          name: name as string,
+          category,
+          type,
+          serverType: '',
+          layerType: tempLayerType3,
+          url: tempLayerType3 as string,
           visible: true
         }
         this.addService(service)

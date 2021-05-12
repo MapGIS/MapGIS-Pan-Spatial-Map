@@ -224,7 +224,6 @@ export default class MapgisServer extends Vue {
     if (!leafNode) {
       return false
     } else {
-      debugger
       this.$emit('serverName', node.name)
     }
   }

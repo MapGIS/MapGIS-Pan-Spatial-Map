@@ -360,7 +360,6 @@ export default class MapgisLayer extends Vue {
     if (!leafNode) {
       return false
     } else {
-      debugger
       this.$emit('igsLayerInfo', { gdbp: leafNode.gdbp, name: leafNode.name })
     }
   }
