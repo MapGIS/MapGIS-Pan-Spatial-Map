@@ -101,12 +101,13 @@ export default class MpQueryResultTree extends Vue {
    */
   getQueryParams(): IQueryParams {
     const { id, url, type, gdbps } = this.layer
-    return {
-      ...this.layer._parseUrl(url),
-      id,
-      type,
-      gdbps
-    }
+    const base = { id, type, gdbps }
+    return typeof this.layer._parseUrl === 'function'
+      ? {
+          ...this.layer._parseUrl(url),
+          ...base
+        }
+      : base
   }
 
   /**

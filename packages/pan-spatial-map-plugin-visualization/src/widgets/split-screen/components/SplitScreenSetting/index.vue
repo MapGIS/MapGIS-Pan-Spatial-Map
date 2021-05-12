@@ -2,32 +2,25 @@
   <div class="split-screen-setting">
     <row-flex label="屏数">
       <a-select :value="screenCount" @change="onScreenCountChange">
-        <a-select-option
-          v-for="(l, i) in layersOrigin"
-          :key="i"
-          :value="i + 1"
-          >{{ i + 1 }}</a-select-option
-        >
+        <a-select-option v-for="(s, i) in layers" :key="i" :value="i + 1">{{
+          i + 1
+        }}</a-select-option>
       </a-select>
     </row-flex>
-    <row-flex label="图示" align="top" v-show="layers.length">
+    <row-flex label="图示" align="top" v-show="screenNums.length">
       <a-row class="split-screen-grid">
         <a-col
-          v-for="(l, i) in layers"
-          :key="i"
-          :span="mapSpan.span"
+          v-for="s in screenNums"
+          :key="s"
+          :span="mapSpan"
           class="split-screen-grid-col"
-          >{{ i + 1 }}</a-col
+          >{{ s + 1 }}</a-col
         >
       </a-row>
     </row-flex>
-    <row-flex
-      v-for="(l, i) in layers"
-      :label="`第${screenLabel[i + 1]}屏`"
-      :key="i"
-    >
-      <a-select :value="l.id" @change="onLayerChange($event, i)">
-        <a-select-option v-for="l in layersOrigin" :key="l.id" :value="l.id">{{
+    <row-flex v-for="s in screenNums" :label="`第${screenLabel[s]}屏`" :key="s">
+      <a-select :value="layerIds[s]" @change="onLayerChange($event, s)">
+        <a-select-option v-for="l in layers" :key="l.id" :value="l.id">{{
           l.title
         }}</a-select-option>
       </a-select>
@@ -43,14 +36,17 @@ import { Mixins, Component, Watch, Prop } from 'vue-property-decorator'
 import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
 import RowFlex from '../RowFlex'
 
+type Opera = 'openFullScreen' | 'closeFullScreen' | 'null'
+
 enum ScreenLabel {
-  '一' = 1,
+  '一' = 0,
   '二',
   '三',
   '四',
   '五',
   '六'
 }
+
 @Component({
   components: {
     RowFlex
@@ -59,24 +55,19 @@ enum ScreenLabel {
 export default class SplitScreenSetting extends Mixins<{
   [k: string]: any
 }>(WidgetMixin) {
-  @Prop({
-    default: () => ({
-      span: 12,
-      height: '100%'
-    })
-  })
-  mapSpan!: object
+  @Prop({ default: 12 }) mapSpan!: number
+
+  @Prop({ default: () => [] }) screenNums!: number[]
+
+  @Prop({ default: () => [] }) layerIds!: string[]
 
   @Prop({ default: () => [] }) layers!: Layer[]
 
-  @Prop({ default: () => [] }) layersOrigin!: Layer[]
-
-  // openFullScreen | closeFullScreen|null
-  opera = 'null'
+  opera: Opera = 'null'
 
   screenLabel = ScreenLabel
 
-  screenCount: number | null = null
+  screenCount = null
 
   /**
    * 屏数变化
@@ -89,15 +80,11 @@ export default class SplitScreenSetting extends Mixins<{
 
   /**
    * 图层选择变化
-   * @param newLayerId<string>
-   * @param oldLayerIndex<number>
+   * @param layerId
+   * @param index
    */
-  onLayerChange(newLayerId, oldLayerIndex) {
-    this.$emit(
-      'on-layer-change',
-      oldLayerIndex,
-      this.layersOrigin.find(({ id }) => id === newLayerId)
-    )
+  onLayerChange(layerId: string, index: number) {
+    this.$emit('on-layer-change', layerId, index)
   }
 
   /**
@@ -125,11 +112,11 @@ export default class SplitScreenSetting extends Mixins<{
   }
 
   /**
-   * 监听: 图层列表变化
+   * 监听: 分屏数量变化
    */
-  @Watch('layers')
-  watchLayers(nV: ILayer[]) {
-    this.screenCount = nV.length || null
+  @Watch('screenNums')
+  watchScreenNums(nV: number[]) {
+    this.screenCount = nV.length
   }
 
   mounted() {

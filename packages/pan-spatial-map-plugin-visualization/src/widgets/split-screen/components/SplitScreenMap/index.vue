@@ -2,22 +2,21 @@
   <div class="split-screen-map">
     <a-empty
       description="请在目录树中勾选需要分屏的专题"
-      v-if="!layers.length"
+      v-if="!screenNums.length"
     />
     <a-row :gutter="[5, 8]" v-else>
       <a-col
-        v-for="(l, i) in layers"
-        :key="i"
-        :span="mapSpan.span"
-        :style="{ height: mapSpan.height }"
+        v-for="s in screenNums"
+        :key="s"
+        :span="mapSpan"
+        :style="mapSpanStyle"
       >
         <map-view
           v-model="queryVisible"
-          :mapViewId="`split-screen-map-${i + 1}`"
-          :mapViewLayer="l"
+          :mapViewId="`split-screen-map-${s}`"
+          :mapViewLayer="layers.find(({ id }) => layerIds[s] === id)"
           :queryRect="queryRect"
           @on-query="onQuery"
-          v-if="l"
         />
       </a-col>
     </a-row>
@@ -38,29 +37,30 @@ import {
 import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
-interface IExtends {
-  [k: string]: any
-}
-
 @Component({
   components: {
     MapView
   }
 })
-export default class SplitScreenMap extends Mixins<IExtends>(WidgetMixin) {
-  @Prop({
-    default: () => ({
-      span: 12,
-      height: '100%'
-    })
-  })
-  mapSpan!: object
+export default class SplitScreenMap extends Mixins<Record<string, any>>(
+  WidgetMixin
+) {
+  @Prop({ default: 12 }) mapSpan!: number
+
+  @Prop({ default: () => [] }) screenNums!: number[]
+
+  @Prop({ default: () => [] }) layerIds!: string[]
 
   @Prop({ default: () => [] }) layers!: Layer[]
 
   queryVisible = false
 
   queryRect: Rect = {}
+
+  get mapSpanStyle() {
+    const height = this.screenNums.length > 2 ? '50%' : '100%'
+    return { height }
+  }
 
   /**
    * 某个地图的查询抛出的事件
@@ -74,13 +74,15 @@ export default class SplitScreenMap extends Mixins<IExtends>(WidgetMixin) {
     this.queryRect = result
   }
 
-  @Watch('layers', { deep: true })
-  watchLayers(nV) {
-    // 重置查询弹框开关
+  /**
+   * 监听: 分屏数量变化
+   */
+  @Watch('screenNums')
+  watchScreenNums(nV) {
     this.queryVisible = false
     if (nV.length) {
-      // 保存初始复位范围, 默认取第一个图层的全图范围
-      mapViewStateInstance.initDisplayRect = nV[0].fullExtent
+      // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
+      mapViewStateInstance.initDisplayRect = this.layers[nV[0]].fullExtent
     }
   }
 }

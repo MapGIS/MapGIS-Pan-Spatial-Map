@@ -8,13 +8,11 @@
   >
     <!-- 分屏地图 -->
     <template #label>
-      <split-screen-map :mapSpan="mapSpan" :layers="layers" />
+      <split-screen-map v-bind="bindProps" />
     </template>
     <!-- 分屏设置 -->
     <split-screen-setting
-      :mapSpan="mapSpan"
-      :layers="layers"
-      :layersOrigin="layersOrigin"
+      v-bind="bindProps"
       @on-screen-count-change="onScreenCountChange"
       @on-layer-change="onLayerChange"
     />
@@ -25,7 +23,7 @@
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
 import RowFlex from './components/RowFlex'
-import SplitScreenMap from './components/SplitScreenMap'
+import SplitScreenMap, { IActiveScreen } from './components/SplitScreenMap'
 import SplitScreenSetting from './components/SplitScreenSetting'
 
 @Component({
@@ -41,21 +39,19 @@ export default class MpSplitScreen extends Mixins<{
 }>(WidgetMixin) {
   isOpen = false
 
-  // 整合的图层信息列表数据
-  layers: Layer[] = []
+  // 分屏数量
+  screenNums: number[] = []
 
-  // 整合的图层信息原始列表数据
-  layersOrigin: Layer[] = []
+  // 屏索引和图层id的数据集合
+  layerIds: string[] = []
 
   // 目录树可见图层
-  flatLayers = []
+  flatLayers: Layer[] = []
 
   // 地图排列
   get mapSpan() {
-    const { length } = this.layers
-    const height = length > 2 ? '50%' : '100%'
     let span = 24
-    switch (length) {
+    switch (this.screenNums.length) {
       case 2:
       case 3:
       case 4:
@@ -68,19 +64,28 @@ export default class MpSplitScreen extends Mixins<{
       default:
         break
     }
+    return span
+  }
+
+  get bindProps() {
     return {
-      span,
-      height
+      mapSpan: this.mapSpan,
+      screenNums: this.screenNums,
+      layerIds: this.layerIds,
+      layers: this.flatLayers
     }
   }
 
   /**
    * 初始化地图信息
    */
-  setLayers() {
-    const max = this.flatLayers.length < 7 ? this.flatLayers.length : 6
-    this.layers = new Array(max).fill().map((v, i) => this.flatLayers[i])
-    this.layersOrigin = this.layers.map(l => l.clone())
+  setLayers(screenNums: number) {
+    this.screenNums = []
+    this.layerIds = []
+    for (let i = 0; i < screenNums; i++) {
+      this.screenNums.push(i)
+      this.layerIds.push(this.flatLayers[i].id)
+    }
   }
 
   /**
@@ -88,7 +93,14 @@ export default class MpSplitScreen extends Mixins<{
    */
   onOpen() {
     this.isOpen = true
-    this.setLayers()
+    this.flatLayers = this.document.defaultMap
+      .clone()
+      .getFlatLayers()
+      .filter(v => v.isVisible)
+    if (this.flatLayers.length) {
+      const max = this.flatLayers.length < 7 ? this.flatLayers.length : 6
+      this.setLayers(max)
+    }
   }
 
   /**
@@ -103,31 +115,16 @@ export default class MpSplitScreen extends Mixins<{
    * @param screenCount<number>
    */
   onScreenCountChange(screenCount: number) {
-    const cloneData = this.layersOrigin.map(v => v.clone())
-    this.layers = cloneData.slice(0, screenCount)
+    this.setLayers(screenCount)
   }
 
   /**
    * 图层选择变化
-   * @param oldLayerIndex<number>
-   * @param newLayer<object>
+   * @param layerId
+   * @param index
    */
-  onLayerChange(oldLayerIndex, newLayer) {
-    this.layers.splice(oldLayerIndex, 1, newLayer.clone())
-  }
-
-  /**
-   * 监听: defaultMap变化
-   */
-  @Watch('document.defaultMap', { deep: true })
-  watchDefaultMap(nV, oV) {
-    this.flatLayers = nV
-      .clone()
-      .getFlatLayers()
-      .filter(v => v.isVisible)
-    if (this.isOpen) {
-      this.setLayers()
-    }
+  onLayerChange(layerId: string, index: number) {
+    this.layerIds.splice(index, 1, layerId)
   }
 }
 </script>
