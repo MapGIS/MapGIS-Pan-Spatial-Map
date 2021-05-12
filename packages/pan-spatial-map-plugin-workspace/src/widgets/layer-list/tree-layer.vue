@@ -851,8 +851,16 @@ export default class TreeLayer extends Mixins(
     return type === LayerType.OGCWMS
   }
 
-  isIgsArcgisLayer({ type }) {
-    return false
+  isIgsArcgisLayer({ layer, type }) {
+    debugger
+    if (type) {
+      return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
+    }
+
+    return (
+      layer.type === LayerType.arcGISMapImage ||
+      layer.type === LayerType.arcGISTile
+    )
   }
 }
 </script>
