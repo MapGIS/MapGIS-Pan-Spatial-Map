@@ -2,27 +2,26 @@
   <div class="mp-widget-swipe">
     <a-row type="flex" class="swipe-row">
       <a-col span="18" class="swipe-col1">
-        <template v-if="isOpen">
-          <!-- 卷帘组件 -->
-          <mapgis-compare
-            :orientation="direction"
-            v-if="aboveLayer && belowLayer"
-          >
-            <mp-mapbox-view
-              slot="beforeMap"
-              :document="aboveLayerDocument"
-              :mapStyle="mapStyle"
-            />
-            <mp-mapbox-view
-              slot="afterMap"
-              :document="belowLayerDocument"
-              :mapStyle="mapStyle"
-            />
-          </mapgis-compare>
-          <div class="swipe-compare-tip" v-else>
-            卷帘分析功能至少需要选择2个图层
-          </div>
-        </template>
+        <!-- 卷帘组件 -->
+        <mapgis-compare
+          :orientation="direction"
+          v-if="aboveLayer && belowLayer"
+        >
+          <mp-mapbox-view
+            slot="beforeMap"
+            :document="aboveLayerDocument"
+            :mapStyle="mapStyle"
+          />
+          <mp-mapbox-view
+            slot="afterMap"
+            :document="belowLayerDocument"
+            :mapStyle="mapStyle"
+          />
+        </mapgis-compare>
+        <!-- 空数据提示 -->
+        <div class="swipe-no-data-tip" v-else>
+          <a-empty description="卷帘分析功能至少需要选择2个图层" />
+        </div>
       </a-col>
       <a-col span="6" class="swipe-col2">
         <!-- 上图层 -->
@@ -119,9 +118,6 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
   // 目录树勾选的图层
   layers: Layer[] = []
 
-  // 目录树勾选可见图层
-  flatLayers: Layer[] = []
-
   // 卷帘方向
   direction: Direction = 'vertical'
 
@@ -187,10 +183,6 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
    */
   @Watch('document.defaultMap', { deep: true })
   watchDefaultMap(nV) {
-    this.flatLayers = nV
-      .clone()
-      .getFlatLayers()
-      .filter(v => v.isVisible)
     if (this.isOpen) {
       this.initLayers()
     }
@@ -224,7 +216,10 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
   initLayers() {
     let _fId = ''
     let _sId = ''
-    const _layers: Layer[] = this.flatLayers
+    const _layers: Layer[] = this.document.defaultMap
+      .clone()
+      .getFlatLayers()
+      .filter(v => v.isVisible)
     if (_layers && _layers.length > 1) {
       _fId = _layers[0].id
       _sId = _layers[1].id
@@ -250,7 +245,7 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
     const currenLayer = this.layers.find(v => value && v.id === value)
     const _defaultMap = this[`${valuekey}Document`].defaultMap
     if (currenLayer) {
-      _defaultMap.remove(currenLayer)
+      _defaultMap.removeAll()
       _defaultMap.add(currenLayer)
     } else {
       _defaultMap.removeAll()
@@ -260,52 +255,5 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
 </script>
 
 <style lang="less" scoped>
-.mp-widget-swipe,
-.swipe-row {
-  width: 100%;
-  height: 100%;
-}
-.swipe-col1 {
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  padding-right: 12px;
-}
-.swipe-col2 {
-  height: 100%;
-  overflow: hidden;
-  border-left: 1px solid #f0f0f0;
-  padding-left: 12px;
-
-  /deep/ .ant-col:first-of-type {
-    line-height: 28px;
-    + .ant-col {
-      margin-bottom: 12px;
-    }
-  }
-}
-.swipe-compare-tip {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  background-color: black;
-  opacity: 0.7;
-  z-index: 1;
-}
-.swipe-select {
-  width: 100%;
-}
-.mapbox-view-cls {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-}
+@import './swipe.less';
 </style>

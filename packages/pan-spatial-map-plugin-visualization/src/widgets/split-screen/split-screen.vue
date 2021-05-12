@@ -46,7 +46,7 @@ export default class MpSplitScreen extends Mixins<{
   layerIds: string[] = []
 
   // 目录树可见图层
-  flatLayers: Layer[] = []
+  layers: Layer[] = []
 
   // 地图排列
   get mapSpan() {
@@ -72,19 +72,33 @@ export default class MpSplitScreen extends Mixins<{
       mapSpan: this.mapSpan,
       screenNums: this.screenNums,
       layerIds: this.layerIds,
-      layers: this.flatLayers
+      layers: this.layers
+    }
+  }
+
+  /**
+   * 初始化图层
+   */
+  initLayers() {
+    this.layers = this.document.defaultMap
+      .clone()
+      .getFlatLayers()
+      .filter(v => v.isVisible)
+    const { length } = this.layers
+    if (length) {
+      this.setLayers(length < 7 ? length : 6)
     }
   }
 
   /**
    * 初始化地图信息
    */
-  setLayers(screenNums: number) {
+  setLayers(screenNums?: number) {
     this.screenNums = []
     this.layerIds = []
     for (let i = 0; i < screenNums; i++) {
       this.screenNums.push(i)
-      this.layerIds.push(this.flatLayers[i].id)
+      this.layerIds.push(this.layers[i].id)
     }
   }
 
@@ -93,14 +107,7 @@ export default class MpSplitScreen extends Mixins<{
    */
   onOpen() {
     this.isOpen = true
-    this.flatLayers = this.document.defaultMap
-      .clone()
-      .getFlatLayers()
-      .filter(v => v.isVisible)
-    if (this.flatLayers.length) {
-      const max = this.flatLayers.length < 7 ? this.flatLayers.length : 6
-      this.setLayers(max)
-    }
+    this.initLayers()
   }
 
   /**
@@ -108,6 +115,8 @@ export default class MpSplitScreen extends Mixins<{
    */
   onClose() {
     this.isOpen = false
+    this.screenNums = []
+    this.layerIds = []
   }
 
   /**
@@ -125,6 +134,13 @@ export default class MpSplitScreen extends Mixins<{
    */
   onLayerChange(layerId: string, index: number) {
     this.layerIds.splice(index, 1, layerId)
+  }
+
+  @Watch('document.defaultMap', { deep: true })
+  watchDefaultMap() {
+    if (this.isOpen) {
+      this.initLayers()
+    }
   }
 }
 </script>

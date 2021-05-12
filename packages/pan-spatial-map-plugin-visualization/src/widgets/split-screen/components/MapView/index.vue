@@ -294,7 +294,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 清除点击, 清除图层上的结果树中点中的节点图层
    */
   clearClick() {
-    this.querySelection = {}
+    this.querySelection = []
   }
 
   /**

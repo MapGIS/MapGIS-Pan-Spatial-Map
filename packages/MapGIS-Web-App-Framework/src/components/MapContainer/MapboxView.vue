@@ -353,6 +353,9 @@ export default {
         LayerType.aMapMercatorSatelliteAnnMap
       )
     },
+    isVectorTileLayer(type) {
+      return type === LayerType.vectorTile
+    },
     generateWebTileLayerUrl(layer) {
       let url = ''
       let beforeSubDomain = ''
