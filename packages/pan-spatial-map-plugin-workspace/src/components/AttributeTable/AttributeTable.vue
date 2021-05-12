@@ -71,7 +71,7 @@
         fixed: true,
         columnWidth: '50px'
       }"
-      :rowKey="row => row.properties.fid"
+      :rowKey="row => row.properties[rowKey]"
       :scroll="{
         x: useScrollX ? '100%' : false,
         y: scrollY
@@ -182,6 +182,7 @@ import {
   utilInstance,
   queryFeaturesInstance,
   FeatureIGS,
+  queryArcgisInfoInstance,
   FeatureGeoJSON,
   GFeature
 } from '@mapgis/pan-spatial-map-store'
@@ -279,7 +280,22 @@ export default class MpAttributeTable extends Mixins(
   private isActive = true
 
   private get selectedRowKeys() {
-    return this.selection.map(item => (item as GFeature).properties.fid)
+    return this.selection.map(
+      item => (item as GFeature).properties[this.rowKey]
+    )
+  }
+
+  private get rowKey() {
+    const { serverType } = this.optionVal
+    if (
+      serverType === LayerType.IGSMapImage ||
+      serverType === LayerType.IGSVector
+    ) {
+      return 'fid'
+    } else if (serverType === LayerType.arcGISMapImage) {
+      return 'ID'
+    }
+    return 'fid'
   }
 
   private get selectedDescription() {
@@ -548,6 +564,71 @@ export default class MpAttributeTable extends Mixins(
       if (this.isExhibitionActive) {
         this.addMarkers()
       }
+    } else if (serverType === LayerType.arcGISMapImage) {
+      const { layerIndex, gdbp } = this.optionVal
+      const queryWhere = where || this.optionVal.where
+      const queryGeometry = geometry || this.optionVal.geometry
+      const { current, pageSize } = this.pagination
+      const {
+        count: totalCount
+      } = await queryArcgisInfoInstance.getArcGISQueryTotal({
+        f: 'json',
+        where: queryWhere,
+        geometry: queryGeometry,
+        serverUrl,
+        layerIndex
+      })
+      console.log(totalCount)
+      const geojson = await queryArcgisInfoInstance.query({
+        f: 'json',
+        where: queryWhere,
+        geometry: queryGeometry,
+        page: current - 1,
+        pageCount: pageSize,
+        serverUrl,
+        layerIndex,
+        totalCount
+      })
+      const columns: Array = []
+      const { properties } = geojson.features[0]
+      const tags = utilInstance.getJsonTag(properties)
+      if (tags.length <= 10) {
+        // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
+        this.useScrollX = false
+      } else {
+        // 10个以上，每个设固定宽度180，且启用水平滚动条
+        this.useScrollX = true
+      }
+      for (let index = 0; index < tags.length; index++) {
+        const name = tags[index]
+        const alias = tags[index] ? `${tags[index]}` : ''
+        const type = 'string'
+        const obj = {
+          title: alias.length ? alias : name,
+          key: name,
+          dataIndex: `properties.${name}`,
+          align: 'left',
+          ellipsis: true
+        }
+        if (this.useScrollX) {
+          obj.width = 180
+        }
+        // var str = '37'
+        const num = Number(properties[name])
+        if (!isNaN(num)) {
+          obj.sorter = (a, b) =>
+            Number(a.properties[name]) - Number(b.properties[name])
+        }
+        columns.push(obj)
+      }
+      this.tableColumns = columns
+      this.pagination.total = totalCount
+      this.tableData = geojson.features
+      this.removeMarkers()
+      // 如果当前是激活状态，则添加markers
+      if (this.isExhibitionActive) {
+        this.addMarkers()
+      }
     }
   }
 
@@ -646,7 +727,7 @@ export default class MpAttributeTable extends Mixins(
       if (!(Number.isNaN(center[0]) || Number.isNaN(center[1]))) {
         const marker: Record<string, any> = {
           coordinates: center,
-          fid: feature.properties.fid,
+          fid: feature.properties[this.rowKey],
           img: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
           id: UUID.uuid(),
           properties: feature.properties,
@@ -673,7 +754,7 @@ export default class MpAttributeTable extends Mixins(
   }
 
   private updateStatisticAndFilterParamas() {
-    const { serverType, gdbp } = this.optionVal
+    const { serverType, gdbp, serverUrl } = this.optionVal
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
@@ -685,6 +766,13 @@ export default class MpAttributeTable extends Mixins(
         layerIndex: this.currentTableParams.layerIndex,
         serverType,
         gdbp
+      }
+    } else if (serverType === LayerType.arcGISMapImage) {
+      this.statisticAndFilterParamas = {
+        serverName: this.optionVal.serverName,
+        layerIndex: this.currentTableParams.layerIndex,
+        serverType,
+        serverUrl
       }
     }
   }

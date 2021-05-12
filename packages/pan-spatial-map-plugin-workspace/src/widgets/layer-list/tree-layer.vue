@@ -794,6 +794,19 @@ export default class TreeLayer extends Mixins(
           gdbp: igsVectorLayer.gdbps
         }
       }
+    } else if (this.isIgsArcgisLayer(layer)) {
+      exhibition = {
+        id: `${parent.title} ${layer.title} ${layer.id}`,
+        name: `${layer.title} 属性表`,
+        description: `${parent.title} ${layer.title}`,
+        option: {
+          id: layer.id,
+          name: layer.title,
+          serverType: parent.type,
+          layerIndex: layer.id,
+          serverUrl: parent.url
+        }
+      }
     }
     this.addExhibition(new AttributeTableExhibition(exhibition))
     this.openExhibitionPanel()
@@ -856,10 +869,7 @@ export default class TreeLayer extends Mixins(
       return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
     }
 
-    return (
-      layer.type === LayerType.arcGISMapImage ||
-      layer.type === LayerType.arcGISTile
-    )
+    return layer.type === LayerType.arcGISMapImage
   }
 }
 </script>
