@@ -852,7 +852,6 @@ export default class TreeLayer extends Mixins(
   }
 
   isIgsArcgisLayer({ layer, type }) {
-    debugger
     if (type) {
       return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
     }
