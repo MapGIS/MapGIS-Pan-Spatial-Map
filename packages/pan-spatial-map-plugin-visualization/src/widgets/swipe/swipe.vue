@@ -91,17 +91,13 @@ import {
 
 type Direction = 'vertical' | 'horizontal'
 
-interface IVueExtend {
-  [k: string]: any
-}
-
 @Component({
   name: 'MpSwipe',
   components: {
     MpMapboxView
   }
 })
-export default class MpSwipe extends Mixins<IVueExtend>(WidgetMixin) {
+export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
   // 选中的上级图层
   aboveLayer = ''
 

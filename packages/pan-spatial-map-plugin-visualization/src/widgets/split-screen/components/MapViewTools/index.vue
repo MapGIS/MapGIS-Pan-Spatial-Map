@@ -17,6 +17,15 @@ import { Mixins, Component, Prop } from 'vue-property-decorator'
 import { WidgetMixin, Layer } from '@mapgis/web-app-framework'
 import RowFlex from '../RowFlex'
 
+export type OperationType =
+  | 'UNKNOW'
+  | 'QUERY'
+  | 'ZOOMIN'
+  | 'ZOOMOUT'
+  | 'RESORT'
+  | 'PAN'
+  | 'CLEAR'
+
 interface ITool {
   label: string
   icon: string

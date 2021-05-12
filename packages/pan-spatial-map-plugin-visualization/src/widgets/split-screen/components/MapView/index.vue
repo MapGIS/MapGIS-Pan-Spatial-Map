@@ -17,7 +17,12 @@
       @added="onAdded"
       @drawCreate="onGraphicCreated"
     />
-    <!-- 联合查询结果集 -->
+    <!-- 地图标注 -->
+    <mp-marks-highlight-popup
+      :features="querySelection"
+      :normalize="({ key }) => ({ layerId: key })"
+    />
+    <!-- 联合查询结果树 -->
     <mp-window
       title="查询结果"
       :width="200"
@@ -29,6 +34,7 @@
       <mp-query-result-tree
         :layer="mapViewLayer"
         :queryRect="queryRect"
+        @on-select="querySelection = $event"
         v-if="windowVisible"
       />
     </mp-window>
@@ -39,30 +45,21 @@ import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { MpMapboxView, Document, Layer } from '@mapgis/web-app-framework'
 import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
+import MpTableMapbox from './TableMapbox.vue'
 import defaultStyle from '../../../../assets/style/default-style.json'
-import MpQueryResultTree from '../../../../components/QueryResultsTree'
-import { Rect } from '../../mixins/map-view-state'
-import MapViewMixin from '../../mixins/map-view'
-import MapViewTools from '../MapViewTools'
-
-interface IVueExtend {
-  [k: string]: any
-}
-
-type OperationType =
-  | 'UNKNOW'
-  | 'QUERY'
-  | 'ZOOMIN'
-  | 'ZOOMOUT'
-  | 'RESORT'
-  | 'PAN'
-  | 'CLEAR'
+import {
+  MpQueryResultTree,
+  MpMarksHighlightPopup
+} from '../../../../components'
+import MapViewTools, { OperationType } from '../MapViewTools'
+import MapViewMixin, { Rect } from '../../mixins/map-view'
 
 @Component({
   components: {
     MapViewTools,
     MpMapboxView,
-    MpQueryResultTree
+    MpQueryResultTree,
+    MpMarksHighlightPopup
   },
   provide() {
     const self = this
@@ -76,7 +73,7 @@ type OperationType =
     }
   }
 })
-export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
+export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 双向绑定弹框开关
   @Prop({ default: false }) value!: boolean
 
@@ -90,6 +87,9 @@ export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
 
   mapbox: any = {}
 
+  // 图层样式
+  mapStyle: any = defaultStyle
+
   mapboxBaseDrawer: any = null
 
   mapboxBaseDrawerEl: any = null
@@ -100,8 +100,8 @@ export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
   // 操作按钮类型
   operationType: OperationType = 'UNKNOW'
 
-  // 图层样式
-  mapStyle: any = defaultStyle
+  // 结果树选中的数据
+  querySelection: Record<string, any>[] = []
 
   // 矩形区域绘制配置
   controls = {
@@ -245,12 +245,12 @@ export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
 
   /**
    * 跳转至某个范围
-   * @param displayRect
+   * @param rect
    */
-  jumpToRect(displayRect: Rect) {
+  jumpToRect({ xmin, xmax, ymin, ymax }: Rect) {
     this.map.fitBounds([
-      [displayRect.xmax, displayRect.ymin],
-      [displayRect.xmin, displayRect.ymax]
+      [xmax, ymin],
+      [xmin, ymax]
     ])
   }
 
@@ -293,7 +293,9 @@ export default class MapView extends Mixins<IVueExtend>(MapViewMixin) {
   /**
    * 清除点击, 清除图层上的结果树中点中的节点图层
    */
-  clearClick() {}
+  clearClick() {
+    this.querySelection = {}
+  }
 
   /**
    * 监听: 更新复位范围
