@@ -1,15 +1,20 @@
 /* eslint-disable max-classes-per-file */
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { IDocument, Layer } from '@mapgis/webclient-store'
 import servicesManagerInstance, {
   ServicesManager,
   ServiceCategory,
   Service
 } from '../add-services/services-manager'
+import {
+  dataCatalogManagerInstance,
+  DataCatalogManager
+} from '@mapgis/pan-spatial-map-store'
+import { WidgetMixin, Document, LoadStatus } from '@mapgis/web-app-framework'
 
 const { LayerType, SubLayerType } = Layer
 @Component({})
-export default class AddServicesMixin extends Vue {
+export default class AddServicesMixin extends Mixins(WidgetMixin) {
   private servicesManager: ServicesManager = servicesManagerInstance
 
   public get serviceCategories() {
@@ -191,25 +196,23 @@ export default class AddServicesMixin extends Vue {
     return layer
   }
 
-  public addLayerToDocumentByService(service: Service) {
-    const layer = this.createLayerByService(service)
+  public async addLayerToDocumentByService(service: Service) {
+    const doc: Document = this.document
 
-    const doc = IDocument.clone(this.document)
+    const layer = DataCatalogManager.generateLayerByConfig(service)
 
-    doc.addLayerInGroup(layer)
-
-    this.document = doc
+    if (layer) {
+      if (layer.loadStatus === LoadStatus.notLoaded) {
+        await layer.load()
+      }
+      doc.defaultMap.add(layer)
+    }
   }
 
   public removeLayerFromDocumentByService(service: Service) {
-    const doc = IDocument.clone(this.document)
-
-    // service ID与Layer ID相同,因些可以直接通过service ID查找对应的图层
-    const existLayers = doc.getLayersById(service.id)
-    if (existLayers && existLayers.length > 0) {
-      doc.deleteLayer(service.id)
-    }
-
-    this.document = doc
+    const doc: Document = this.document
+    const id = service.id || service.guid
+    const layer = doc.defaultMap.findLayerById(id)
+    doc.defaultMap.remove(layer)
   }
 }

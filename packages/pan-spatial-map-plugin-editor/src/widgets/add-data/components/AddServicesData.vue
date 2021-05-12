@@ -26,7 +26,7 @@
       }"
       :rowKey="
         (record, index) => {
-          return record.id
+          return record.id || record.guid
         }
       "
     >
@@ -114,15 +114,14 @@ export default class AddServicesData extends Mixins(
   // Table选中项的 key 数组
   private selectedRowKeys = []
 
-  // Table选中项数组
-  private checkedRows = []
-
-  // Table上一次选中项数组
-  private preCheckedRows = []
+  // Table上一次选中项 key 数组
+  private preSelectedRowKeys = []
 
   @Watch('serviceCategory', { immediate: true })
   @Watch('serviceType', { immediate: true })
   getData() {
+    console.log(this.services)
+
     this.tableData = this.services.filter(item => {
       if (this.serviceCategory && item.category !== this.serviceCategory)
         return false
@@ -130,7 +129,11 @@ export default class AddServicesData extends Mixins(
       if (!item.name.includes(this.keyword)) return false
       return true
     })
-    // this.selected = this.data.filter(item => item.visible)
+    // 默认勾选显示的图层
+    this.selectedRowKeys = this.tableData
+      .filter(item => item.visible === true)
+      .map(item => item.id || item.guid)
+    this.onSelectChange(this.selectedRowKeys)
   }
 
   created() {
@@ -146,60 +149,55 @@ export default class AddServicesData extends Mixins(
   // Table选中项发生变化时的回调
   onSelectChange(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys
-    console.log(this.services)
     console.log(this.selectedRowKeys)
     let newChecked = []
     let newUnChecked = []
     // 区分哪些是新选中的，哪些是新取消选中的
-    this.checkedRows = this.tableData.reduce((result, item) => {
-      if (this.selectedRowKeys.includes(item.id)) {
-        result.push(item)
-      }
-      return result
-    }, [])
-    if (this.preCheckedRows.length === 0) {
-      newChecked = this.checkedRows
-    } else if (this.checkedRows.length === 0) {
-      newUnChecked = this.preCheckedRows
+    if (this.preSelectedRowKeys.length === 0) {
+      newChecked = this.selectedRowKeys
+    } else if (this.selectedRowKeys.length === 0) {
+      newUnChecked = this.preSelectedRowKeys
     } else {
-      newChecked = this.checkedRows.reduce((result, item) => {
-        if (this.preCheckedRows.includes(item) === false) {
+      newChecked = this.selectedRowKeys.reduce((result, item) => {
+        if (this.preSelectedRowKeys.includes(item) === false) {
           result.push(item)
         }
         return result
       }, [])
 
-      newUnChecked = this.preCheckedRows.reduce((result, item) => {
-        if (this.checkedRows.includes(item) === false) {
+      newUnChecked = this.preSelectedRowKeys.reduce((result, item) => {
+        if (this.selectedRowKeys.includes(item) === false) {
           result.push(item)
         }
         return result
       }, [])
     }
-    console.log(newChecked)
-    console.log(newUnChecked)
+    console.log('newchecked:', newChecked)
+    console.log('newUnChecked:', newUnChecked)
 
     for (let i = 0; i < this.services.length; i++) {
       const service = this.services[i]
       if (
-        newChecked.some(item => item.id === service.id) &&
+        newChecked.some(item => item === service.id || item === service.guid) &&
         service.visible === false
       ) {
-        service.visible === true
+        service.visible = true
         // 添加服务到文档中
         this.addLayerToDocumentByService(service)
       }
       if (
-        newUnChecked.some(item => item.id === service.id) &&
+        newUnChecked.some(
+          item => item === service.id || item === service.guid
+        ) &&
         service.visible === true
       ) {
-        service.visible === false
+        service.visible = false
         // 将服务从文档中删除
         this.removeLayerFromDocumentByService(service)
       }
     }
 
-    this.preCheckedRows = JSON.parse(JSON.stringify(this.checkedRows))
+    this.preSelectedRowKeys = JSON.parse(JSON.stringify(this.selectedRowKeys))
   }
 
   // 点击服务地址列的回调

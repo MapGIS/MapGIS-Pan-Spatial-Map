@@ -24,11 +24,9 @@
       <div class="input-item">
         <span>图层类型：</span>
         <a-select class="select-first" v-model="tdtInfo.layerType">
-          <a-select-option
-            v-for="(item, index) in tdtLayerTypes"
-            :key="index"
-            >{{ item }}</a-select-option
-          >
+          <a-select-option v-for="item in tdtLayerTypes" :key="item">{{
+            item
+          }}</a-select-option>
         </a-select>
       </div>
       <div class="input-item">
