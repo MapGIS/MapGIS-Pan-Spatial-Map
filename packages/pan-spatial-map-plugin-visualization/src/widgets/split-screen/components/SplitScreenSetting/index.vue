@@ -46,7 +46,6 @@ enum ScreenLabel {
   '五',
   '六'
 }
-
 @Component({
   components: {
     RowFlex
