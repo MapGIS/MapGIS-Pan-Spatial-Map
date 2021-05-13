@@ -26,7 +26,7 @@
       }"
       :rowKey="
         (record, index) => {
-          return record.id || record.guid
+          return record.id
         }
       "
     >
@@ -132,7 +132,7 @@ export default class AddServicesData extends Mixins(
     // 默认勾选显示的图层
     this.selectedRowKeys = this.tableData
       .filter(item => item.visible === true)
-      .map(item => item.id || item.guid)
+      .map(item => item.id)
     this.onSelectChange(this.selectedRowKeys)
   }
 
@@ -175,7 +175,7 @@ export default class AddServicesData extends Mixins(
     for (let i = 0; i < this.services.length; i++) {
       const service = this.services[i]
       if (
-        newChecked.some(item => item === service.id || item === service.guid) &&
+        newChecked.some(item => item === service.id) &&
         service.visible === false
       ) {
         service.visible = true
@@ -183,9 +183,7 @@ export default class AddServicesData extends Mixins(
         this.addLayerToDocumentByService(service)
       }
       if (
-        newUnChecked.some(
-          item => item === service.id || item === service.guid
-        ) &&
+        newUnChecked.some(item => item === service.id) &&
         service.visible === true
       ) {
         service.visible = false

@@ -10,9 +10,14 @@ import {
   dataCatalogManagerInstance,
   DataCatalogManager
 } from '@mapgis/pan-spatial-map-store'
-import { WidgetMixin, Document, LoadStatus } from '@mapgis/web-app-framework'
+import {
+  WidgetMixin,
+  Document,
+  LoadStatus,
+  LayerType
+} from '@mapgis/web-app-framework'
 
-const { LayerType, SubLayerType } = Layer
+const { serviceLayerType, SubLayerType } = Layer
 @Component({})
 export default class AddServicesMixin extends Mixins(WidgetMixin) {
   private servicesManager: ServicesManager = servicesManagerInstance
@@ -88,7 +93,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
         // 修改人：马原野 2020年11月11日
         layerExtInfo = {
           serverUrl: url,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.OgcWmsLayer
         }
         break
@@ -97,7 +102,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
         // 修改人：马原野 2020年11月11日
         layerExtInfo = {
           serverUrl: url,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.OgcWmtsLayer
         }
         break
@@ -105,7 +110,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
         layerExtInfo = {
           ip,
           port,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.IgsTileLayer
         }
         break
@@ -113,7 +118,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
         layerExtInfo = {
           ip,
           port,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.IgsDocLayer,
           title: name
         }
@@ -124,7 +129,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
           port,
           gdbps: gdbp || url,
           id,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.IgsVectorLayer
         }
         break
@@ -138,7 +143,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
           baseURL: url,
           id,
           token,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.RasterTiandituLayer
         }
         break
@@ -146,7 +151,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
         layerExtInfo = {
           serverUrl: url,
           id,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.RasterArcgisLayer
         }
         break
@@ -198,9 +203,75 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
 
   public async addLayerToDocumentByService(service: Service) {
     const doc: Document = this.document
-
-    const layer = DataCatalogManager.generateLayerByConfig(service)
-
+    let dealService = JSON.parse(JSON.stringify(service))
+    const { ip, port, type, gdbp, name, url } = dealService
+    switch (type) {
+      case 'doc':
+        dealService = {
+          ip,
+          port,
+          guid: dealService.id,
+          serverName: name,
+          name,
+          serverType: LayerType.IGSMapImage
+        }
+        break
+      case 'layer':
+        dealService = {
+          ip,
+          port,
+          guid: dealService.id,
+          gdbps: gdbp,
+          name,
+          serverType: LayerType.IGSVector
+        }
+        break
+      case 'tile':
+        dealService = {
+          ip,
+          port,
+          guid: dealService.id,
+          serverName: name,
+          name,
+          serverType: LayerType.IGSTile
+        }
+        break
+      case 'WMS':
+        dealService = {
+          guid: dealService.id,
+          name,
+          serverURL: url,
+          serverType: LayerType.OGCWMS
+        }
+        break
+      case 'WMTS':
+        dealService = {
+          guid: dealService.id,
+          name,
+          serverURL: url,
+          serverType: LayerType.OGCWMTS
+        }
+        break
+      case 'tianDiTu':
+        dealService = {
+          guid: dealService.id,
+          serverURL: url,
+          name,
+          serverType: LayerType.OGCWMTS
+        }
+        break
+      case 'arcgis':
+        dealService = {
+          guid: dealService.id,
+          serverURL: url,
+          name,
+          serverType: LayerType.arcGISMapImage
+        }
+        break
+      default:
+        break
+    }
+    const layer = DataCatalogManager.generateLayerByConfig(dealService)
     if (layer) {
       if (layer.loadStatus === LoadStatus.notLoaded) {
         await layer.load()
@@ -211,8 +282,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
 
   public removeLayerFromDocumentByService(service: Service) {
     const doc: Document = this.document
-    const id = service.id || service.guid
-    const layer = doc.defaultMap.findLayerById(id)
+    const layer = doc.defaultMap.findLayerById(service.id)
     doc.defaultMap.remove(layer)
   }
 }

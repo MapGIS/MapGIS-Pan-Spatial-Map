@@ -75,11 +75,10 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
     switch (type) {
       case 'doc':
         service = {
-          guid: uuid(),
-          serverName,
+          id: uuid(),
           name: serverName as string,
           category,
-          serverType: LayerType.IGSMapImage,
+          type,
           url: `http://${ip}:${port}/igs/rest/mrms/docs/${serverName}`,
           // url: `http://${ip}:${port}/igs/rest/mrcs/docs/${serverName}/0?include={includeDetails:true,includeSubs:true}&f=json`,
           visible: true,
@@ -90,14 +89,12 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         break
       case 'tile':
         service = {
-          guid: uuid(),
-          serverName,
+          id: uuid(),
           name: serverName as string,
           category,
           type,
           url: `http://${ip}:${port}/igs/rest/mrms/tile/${serverName}`,
           // url: `http://${ip}:${port}/igs/rest/mrcs/tiles/${serverName}?f=json&v=2.0`,
-          serverType: LayerType.IGSTile,
           visible: true,
           ip,
           port
@@ -106,11 +103,10 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         break
       case 'layer':
         service = {
-          guid: uuid(),
-          gdbps: gdbp as string,
+          id: uuid(),
+          gdbp: gdbp as string,
           url: gdbp as string,
           category,
-          serverType: LayerType.IGSVector,
           type,
           visible: true,
           name: name as string,
@@ -120,26 +116,12 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         this.addService(service)
         break
       case 'WMS':
-        service = {
-          guid: uuid(),
-          serverURL: url,
-          name: name as string,
-          category,
-          type,
-          serverType: LayerType.OGCWMS,
-          url: url as string,
-          visible: true
-        }
-        this.addService(service)
-        break
       case 'WMTS':
         service = {
-          guid: uuid(),
-          serverURL: url,
+          id: uuid(),
           name: name as string,
           category,
           type,
-          serverType: LayerType.OGCWMTS,
           url: url as string,
           visible: true
         }
@@ -151,12 +133,10 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           Math.random() * 7
         )}.tianditu.gov.cn/${tempayerType}_c/wmts`
         service = {
-          guid: uuid(),
+          id: uuid(),
           name: name as string,
           category,
           type,
-          serverType: LayerType.OGCWMTS,
-          serverURL: urlHref,
           url: urlHref,
           token,
           visible: true
@@ -173,12 +153,10 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
             .split('services/')[1]
         }
         service = {
-          guid: uuid(),
+          id: uuid(),
           name: name as string,
           category,
           type,
-          serverURL: url,
-          serverType: LayerType.arcGISMapImage,
           extend,
           layerType,
           url: url as string,
@@ -187,47 +165,17 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         this.addService(service)
         break
       case 'baidu':
-        const tempLayerType = this.serviceInfo.layerType
-        service = {
-          guid: uuid(),
-          serverName,
-          name: name as string,
-          category,
-          type,
-          serverType: '',
-          layerType: tempLayerType,
-          url: tempLayerType as string,
-          visible: true
-        }
-        this.addService(service)
-        break
       case 'gaode':
-        const tempLayerType2 = this.serviceInfo.layerType
-        service = {
-          guid: uuid(),
-          serverName,
-          name: name as string,
-          category,
-          type,
-          serverType: LayerType.aMapMercatorSatelliteMap,
-          layerType: tempLayerType2,
-          url: tempLayerType2 as string,
-          visible: true
-        }
-        this.addService(service)
-        break
       case 'google':
       case 'googleExt':
-        const tempLayerType3 = this.serviceInfo.layerType
+        const tempLayerType = this.serviceInfo.layerType
         service = {
-          guid: uuid(),
-          serverName,
+          id: uuid(),
           name: name as string,
           category,
           type,
-          serverType: '',
-          layerType: tempLayerType3,
-          url: tempLayerType3 as string,
+          layerType: tempLayerType,
+          url: tempLayerType as string,
           visible: true
         }
         this.addService(service)
