@@ -244,7 +244,7 @@ export class ArcGISSublayer extends Sublayer {
    * @memberof ArcGISSublayer
    */
   fromJSON(jsonObject: Record<string, any>) {
-    if (jsonObject.id) this.id = jsonObject.id
+    if ('id' in jsonObject) this.id = jsonObject.id
     if (jsonObject.name) this.title = jsonObject.name
     if (jsonObject.defaultVisibility)
       this.visible = jsonObject.defaultVisibility

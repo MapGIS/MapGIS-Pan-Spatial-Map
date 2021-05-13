@@ -639,6 +639,20 @@
             "extent": ""
           },
           {
+            "label": "ArcGIS TILE REST",
+            "describe": "ArcGIS TILE REST",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILEARCGIS",
+            "name": "20wanZL",
+            "searchName": "",
+            "token": "",
+            "guid": "6f35dab5-8f5f-43d7-82ad-12864751973d",
+            "serverUrl": "http://219.142.81.85/arcgis/rest/services/20wanZL/MapServer",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
             "label": "ArcGIS WMS",
             "describe": "ArcGIS WMS",
             "ip": "",

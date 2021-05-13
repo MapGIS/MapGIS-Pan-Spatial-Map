@@ -9,6 +9,16 @@ import { Layer, LoadStatus, LayerType } from './layer'
  */
 export class GroupLayer extends Layer {
   /**
+   * Creates an instance of GroupLayer.
+   * @date 12/05/2021
+   * @param {Record<string, any>} [properties]
+   * @memberof GroupLayer
+   */
+  constructor(properties?: Record<string, any>) {
+    super(properties)
+  }
+
+  /**
    * 子图层列表
    *
    * @date 06/04/2021
