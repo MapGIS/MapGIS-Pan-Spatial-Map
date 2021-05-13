@@ -34,9 +34,9 @@ import SplitScreenSetting from './components/SplitScreenSetting'
     SplitScreenSetting
   }
 })
-export default class MpSplitScreen extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class MpSplitScreen extends Mixins<Record<string, any>>(
+  WidgetMixin
+) {
   isOpen = false
 
   // 分屏数量

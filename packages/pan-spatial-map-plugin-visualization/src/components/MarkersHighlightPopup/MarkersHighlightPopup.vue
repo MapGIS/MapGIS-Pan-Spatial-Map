@@ -11,12 +11,12 @@
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { AppMixin, UUID } from '@mapgis/web-app-framework'
-import * as Zondy from '@mapgis/webclient-es6-service'
 import {
   baseConfigInstance,
   utilInstance,
   GFeature
 } from '@mapgis/pan-spatial-map-store'
+// 本地测试使用的临时地址
 import MpMarkPopupMapbox from '../../../../pan-spatial-map-plugin-workspace/src/components/AttributeTable/TableMapbox.vue'
 
 interface IFeature {
@@ -33,7 +33,7 @@ interface INormalizedFeature {
   feature: string
 }
 
-interface IMark {
+interface IMarker {
   img: stirng
   coordinates: any
   feature: GFeature
@@ -43,18 +43,21 @@ interface IMark {
 }
 
 /**
- * 目前只支持二维,三维后期会加
+ * 目前只支持二维,三维后期会加, AppMixin => is2DMapMode
  */
 @Component({
   components: {
     MpMarkPopupMapbox
   }
 })
-export default class MpMarksHighlightPopup extends Mixins<Record<string, any>>(
-  AppMixin
-) {
-  // 标注数据
-  @Prop({ required: true, default: () => [] }) features!: IFeature
+export default class MpMarkersHighlightPopup extends Mixins<
+  Record<string, any>
+>(AppMixin) {
+  // 所有的标注点
+  @Prop({ required: true, default: () => [] }) features!: IFeature[]
+
+  // 需要高亮的标注点
+  @Prop({ required: true, default: () => [] }) highlightIds!: string[]
 
   // 标注数据格式化函数, 组件内部使用的数据是INormalizeMarkData格式
   @Prop() normalize!: (a: IFeature) => INormalizedFeature
@@ -82,11 +85,19 @@ export default class MpMarksHighlightPopup extends Mixins<Record<string, any>>(
 
   // 格式化后的标注数据
   get normalizedFeatures() {
-    return this.features.map(v =>
+    return this.getNormalizedFeatures(this.features)
+  }
+
+  /**
+   * 格式化数据
+   * @param data 数据源
+   */
+  getNormalizedFeatures(data: IFeature[]) {
+    return data.map(v =>
       typeof this.normalize === 'function'
         ? {
             ...v,
-            ...this.normalize(this.features)
+            ...this.normalize(v)
           }
         : v
     )
@@ -94,6 +105,7 @@ export default class MpMarksHighlightPopup extends Mixins<Record<string, any>>(
 
   /**
    * 获取图片地址
+   * @param imgType
    */
   getColorConfigImg(imgType: 'defaultImg' | 'selectedImg') {
     return `${this.baseUrl}${this.colorConfigImg[imgType]}`
@@ -103,7 +115,7 @@ export default class MpMarksHighlightPopup extends Mixins<Record<string, any>>(
    * 添加标注
    */
   addMarkers() {
-    this.markers = this.normalizedFeatures.reduce<IMark[]>(
+    this.markers = this.normalizedFeatures.reduce<IMarker[]>(
       (result, { feature }) => {
         const coordinates = utilInstance.getGeoJsonFeatureCenter(feature)
         const centerItems = [coordinates[0], coordinates[1]]
@@ -122,6 +134,7 @@ export default class MpMarksHighlightPopup extends Mixins<Record<string, any>>(
       },
       []
     )
+    console.log('this.markers', this.markers)
   }
 
   /**
@@ -135,14 +148,10 @@ export default class MpMarksHighlightPopup extends Mixins<Record<string, any>>(
    * 高亮选择集对应的标注图标
    */
   hightlightMarkers() {
-    const { selectedImg, defaultImg } = this.colorConfig.label.image
     this.markers.forEach(marker => {
-      const imgType =
-        this.normalizedFeatures.findIndex(
-          ({ layerId }) => layerId === marker.fid
-        ) !== -1
-          ? 'selectedImg'
-          : 'defaultImg'
+      const imgType = this.highlightIds.includes(marker.fid)
+        ? 'selectedImg'
+        : 'defaultImg'
       marker.img = this.getColorConfigImg(imgType)
     })
     const { MIN_VALUE, MAX_VALUE } = Number
@@ -164,16 +173,19 @@ export default class MpMarksHighlightPopup extends Mixins<Record<string, any>>(
         ymax: MIN_VALUE
       }
     )
-    console.log('this.selectionBound', this.selectionBound)
   }
 
   onGetGeometry(val: Record<string, any>) {
     // todo
   }
 
-  @Watch('features')
-  watchMarkDatas() {
+  @Watch('features', { deep: true })
+  watchFeatures() {
     this.addMarkers()
+  }
+
+  @Watch('highlightIds', { deep: true })
+  watchHighlightIds() {
     this.hightlightMarkers()
   }
 }

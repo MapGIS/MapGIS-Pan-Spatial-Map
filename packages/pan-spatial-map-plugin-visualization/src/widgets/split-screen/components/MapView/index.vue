@@ -18,8 +18,9 @@
       @drawCreate="onGraphicCreated"
     />
     <!-- 地图标注 -->
-    <mp-marks-highlight-popup
-      :features="querySelection"
+    <mp-markers-highlight-popup
+      :features="queryFeatures"
+      :highlightIds="querySelection"
       :normalize="({ key }) => ({ layerId: key })"
     />
     <!-- 联合查询结果树 -->
@@ -34,7 +35,8 @@
       <mp-query-result-tree
         :layer="mapViewLayer"
         :queryRect="queryRect"
-        @on-select="querySelection = $event"
+        @on-load-done="onQueryLoadDone"
+        @on-select="onQuerySelect"
         v-if="windowVisible"
       />
     </mp-window>
@@ -43,13 +45,11 @@
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { MpMapboxView, Document, Layer } from '@mapgis/web-app-framework'
-import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
-import MpTableMapbox from './TableMapbox.vue'
 import defaultStyle from '../../../../assets/style/default-style.json'
 import {
   MpQueryResultTree,
-  MpMarksHighlightPopup
+  MpMarkersHighlightPopup
 } from '../../../../components'
 import MapViewTools, { OperationType } from '../MapViewTools'
 import MapViewMixin, { Rect } from '../../mixins/map-view'
@@ -59,19 +59,23 @@ import MapViewMixin, { Rect } from '../../mixins/map-view'
     MapViewTools,
     MpMapboxView,
     MpQueryResultTree,
-    MpMarksHighlightPopup
+    MpMarkersHighlightPopup
   },
-  provide() {
-    const self = this
-    return {
-      get mapbox() {
-        return self.mapbox
-      },
-      get map() {
-        return self.map
-      }
-    }
-  }
+  provide: vm => ({
+    map: vm.map,
+    mapbox: vm.mapbox
+  })
+  // provide() {
+  //   const self = this
+  //   return {
+  //     get mapbox() {
+  //       return self.mapbox
+  //     },
+  //     get map() {
+  //       return self.map
+  //     }
+  //   }
+  // }
 })
 export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 双向绑定弹框开关
@@ -100,8 +104,11 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 操作按钮类型
   operationType: OperationType = 'UNKNOW'
 
-  // 结果树选中的数据
-  querySelection: Record<string, any>[] = []
+  // 结果树中展开的节点的所有子节点
+  queryFeatures: Record<string, any>[] = []
+
+  // 结果树选中的节点
+  querySelection: string[] = []
 
   // 矩形区域绘制配置
   controls = {
@@ -138,6 +145,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   onMapLoad({ map, mapbox }) {
     this.map = map
     this.mapbox = mapbox
+    console.log('onMapLoad', map)
     this.map.on('mousemove', () => (this.activeMapViewId = this.mapViewId))
     this.map.on('move', () => {
       if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
@@ -213,6 +221,23 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     if (this.isMapLoaded && this[fnName]) {
       this[fnName]()
     }
+  }
+
+  /**
+   * 结果树某一个节点加载完成
+   * @param loadKeys
+   * @param loadNode
+   */
+  onQueryLoadDone(loadKeys, loadNode) {
+    this.queryFeatures = loadNode.children || []
+  }
+
+  /**
+   * 结果树选中
+   * @param selectedKeys
+   */
+  onQuerySelect(selectedKeys: string[]) {
+    this.querySelection = selectedKeys
   }
 
   /**

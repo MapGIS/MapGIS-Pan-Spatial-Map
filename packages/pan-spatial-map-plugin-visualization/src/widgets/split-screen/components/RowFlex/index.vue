@@ -11,11 +11,10 @@
   </a-row>
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
-export default class RowFlex extends Mixins<Record<string, any>>(WidgetMixin) {
+export default class RowFlex extends Vue {
   @Prop({ default: 'middle' }) align!: 'top' | 'middle' | 'bottom'
 
   @Prop({ default: 'start' }) justify!:

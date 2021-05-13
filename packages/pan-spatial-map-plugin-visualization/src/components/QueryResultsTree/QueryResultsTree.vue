@@ -1,13 +1,16 @@
 <template>
   <div class="mp-query-result-tree">
-    <a-empty v-if="!treeData.length" />
-    <a-tree
-      showLine
-      :load-data="loadTreeData"
-      :tree-data="treeData"
-      @select="onTreeSelect"
-      v-else
-    />
+    <a-spin :spinning="loading">
+      <a-empty v-if="!treeData.length" />
+      <a-tree
+        showLine
+        :load-data="loadTreeData"
+        :tree-data="treeData"
+        @load="onTreeLoad"
+        @select="onTreeSelect"
+        v-else
+      />
+    </a-spin>
   </div>
 </template>
 
@@ -51,6 +54,7 @@ interface ITreeNode {
 // 1.在线地图服务图层
 // 2.在线矢量图层
 // 3.关联了在线地图服务的在线瓦片图层
+// 暂时只支持单选
 @Component
 export default class MpQueryResultTree extends Vue {
   // 待查询的图层：支持查询的类型图层如下：1.在线地图服务图层。2.在线矢量图层。3.关联了在线地图服务的在线瓦片图层
@@ -80,6 +84,8 @@ export default class MpQueryResultTree extends Vue {
   // 分页显示时的当前页码，从1开始。
   @Prop({ type: Number, default: 1 })
   readonly curPageNumber!: number
+
+  loading = false
 
   layerInfos: IQueryLayerInfo[] = []
 
@@ -197,28 +203,34 @@ export default class MpQueryResultTree extends Vue {
    * IGSVector矢量(6)
    */
   async getLayerInfos() {
-    const queryParams = this.getQueryParams()
-    if (queryParams.id) {
-      let layerInfos = []
-      switch (queryParams.type) {
-        case LayerType.IGSMapImage:
-          layerInfos = await this.getIGSDocLayerInfo(queryParams)
-          break
-        case LayerType.IGSTile:
-          layerInfos = await this.getIGSTileLayerInfo(queryParams)
-          break
-        case LayerType.IGSVector:
-          layerInfos = this.getIGSVectorLayerInfo(queryParams)
-          break
-        default:
-          break
+    try {
+      this.loading = true
+      const queryParams = this.getQueryParams()
+      if (queryParams.id) {
+        let layerInfos = []
+        switch (queryParams.type) {
+          case LayerType.IGSMapImage:
+            layerInfos = await this.getIGSDocLayerInfo(queryParams)
+            break
+          case LayerType.IGSTile:
+            layerInfos = await this.getIGSTileLayerInfo(queryParams)
+            break
+          case LayerType.IGSVector:
+            layerInfos = this.getIGSVectorLayerInfo(queryParams)
+            break
+          default:
+            break
+        }
+        this.layerInfos = layerInfos
+        this.treeData = layerInfos.map<ITreeNode>(({ layerName }, index) => ({
+          index,
+          title: layerName,
+          key: this.getUuid()
+        }))
+        this.loading = false
       }
-      this.layerInfos = layerInfos
-      this.treeData = layerInfos.map<ITreeNode>(({ layerName }, index) => ({
-        index,
-        title: layerName,
-        key: this.getUuid()
-      }))
+    } catch (e) {
+      this.loading = false
     }
   }
 
@@ -339,7 +351,16 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
-   *  结果树选中
+   *  结果树展开
+   *  @param loadedKeys
+   * @param treeNode
+   */
+  onTreeLoad(loadedKeys, { node }) {
+    this.$emit('on-load-done', loadedKeys, node.dataRef)
+  }
+
+  /**
+   * 结果树选中
    * @param selectedKeys
    * @param treeNode
    */
@@ -347,9 +368,11 @@ export default class MpQueryResultTree extends Vue {
     const {
       dataRef,
       dataRef: { isLeaf }
+    }: {
+      dataRef: ITreeNode
     } = node
     if (isLeaf) {
-      this.$emit('on-select', [dataRef as ITreeNode])
+      this.$emit('on-select', [dataRef.key], [dataRef])
     }
   }
 

@@ -24,16 +24,7 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import {
-  WidgetMixin,
-  WidgetState,
-  Document,
-  Layer
-} from '@mapgis/web-app-framework'
-import {
-  queryLayerInfoInstance,
-  dataCatalogManagerInstance
-} from '@mapgis/pan-spatial-map-store'
+import { AppMixin, WidgetMixin, Layer } from '@mapgis/web-app-framework'
 import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
@@ -43,6 +34,7 @@ import MapView from '../MapView'
   }
 })
 export default class SplitScreenMap extends Mixins<Record<string, any>>(
+  AppMixin,
   WidgetMixin
 ) {
   @Prop({ default: 12 }) mapSpan!: number

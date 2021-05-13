@@ -32,8 +32,8 @@
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component, Watch, Prop } from 'vue-property-decorator'
-import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
+import { Vue, Component, Watch, Prop } from 'vue-property-decorator'
+import { Layer } from '@mapgis/web-app-framework'
 import RowFlex from '../RowFlex'
 
 type Opera = 'openFullScreen' | 'closeFullScreen' | 'null'
@@ -51,9 +51,7 @@ enum ScreenLabel {
     RowFlex
   }
 })
-export default class SplitScreenSetting extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class SplitScreenSetting extends Vue {
   @Prop({ default: 12 }) mapSpan!: number
 
   @Prop({ default: () => [] }) screenNums!: number[]

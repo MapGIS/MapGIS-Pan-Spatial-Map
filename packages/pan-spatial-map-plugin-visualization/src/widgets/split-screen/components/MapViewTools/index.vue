@@ -1,7 +1,7 @@
 <template>
   <row-flex
     :label="title"
-    :span="[16, 8]"
+    :span="[14, 10]"
     :colon="false"
     :gutter="0"
     justify="space-between"
@@ -13,8 +13,7 @@
   </row-flex>
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
-import { WidgetMixin, Layer } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import RowFlex from '../RowFlex'
 
 export type OperationType =
@@ -37,10 +36,8 @@ interface ITool {
     RowFlex
   }
 })
-export default class MapViewTools extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
-  @Prop({ default: '' }) title!: string
+export default class MapViewTools extends Vue {
+  @Prop() title!: string
 
   // 工具按钮
   tools: ITool[] = [

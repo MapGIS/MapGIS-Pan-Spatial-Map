@@ -84,7 +84,7 @@ import {
   Document,
   MpMapboxView,
   WidgetMixin,
-  WidgetState,
+  AppMixin,
   Layer
 } from '@mapgis/web-app-framework'
 
@@ -96,7 +96,13 @@ type Direction = 'vertical' | 'horizontal'
     MpMapboxView
   }
 })
-export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
+export default class MpSwipe extends Mixins<Record<string, any>>(
+  WidgetMixin,
+  AppMixin
+) {
+  // 卷帘功能弹框开关
+  isOpen = false
+
   // 选中的上级图层
   aboveLayer = ''
 
@@ -154,11 +160,6 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
     ]
   }
 
-  // 卷帘功能弹框开关
-  get isOpen() {
-    return [WidgetState.OPENED, WidgetState.ACTIVE].includes(this.widget.state)
-  }
-
   /**
    * 卷帘方向变化，同步更改图层选择框的标题
    */
@@ -182,7 +183,7 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
    * 监听: defaultMap变化
    */
   @Watch('document.defaultMap', { deep: true })
-  watchDefaultMap(nV) {
+  watchDefaultMap() {
     if (this.isOpen) {
       this.initLayers()
     }
@@ -192,6 +193,7 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
    * 卷帘弹框打开操作
    */
   onOpen() {
+    this.isOpen = true
     this.initLayers()
   }
 
@@ -199,6 +201,7 @@ export default class MpSwipe extends Mixins<Record<string, any>>(WidgetMixin) {
    * 卷帘弹框关闭操作
    */
   onClose() {
+    this.isOpen = false
     this.direction = 'vertical'
   }
 
