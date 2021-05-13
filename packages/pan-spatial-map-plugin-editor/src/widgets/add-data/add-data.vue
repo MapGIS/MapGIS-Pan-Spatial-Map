@@ -8,7 +8,10 @@
         <add-service-url :service-types="tempServiceTypes" />
       </a-tab-pane>
       <a-tab-pane key="3" tab="文件">
-        <add-service-file :service-types="tempfileTypes" />
+        <add-service-file
+          :service-types="tempfileTypes"
+          :widget-config="widgetConfig"
+        />
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -37,6 +40,9 @@ import AddServiceFile from './components/AddServiceFile.vue'
   }
 })
 export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
+  // 微件配置信息
+  private widgetConfig
+
   private allTypes: ServiceType[] = []
 
   private tempServiceTypes: ServiceType[] = []
@@ -44,6 +50,7 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
   private tempfileTypes: ServiceType[] = []
 
   created() {
+    this.widgetConfig = this.widgetInfo.config
     this.tempServiceTypes = this.serviceTypes2D
     this.tempfileTypes = this.fileTypes2D
     if (!this.is2DMapMode) {
