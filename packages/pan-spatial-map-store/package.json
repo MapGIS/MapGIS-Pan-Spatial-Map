@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@mapgis/webclient-es6-service": "^1.0.3",
-    "@mapgis/webclient-store": "link:../../../Webclient-Store",
     "js-cookie": "^2.2.1",
     "vue-property-decorator": "^8.3.0"
   },
