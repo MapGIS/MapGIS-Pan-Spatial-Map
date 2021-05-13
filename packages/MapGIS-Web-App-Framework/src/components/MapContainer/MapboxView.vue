@@ -59,7 +59,7 @@
         :token="layerProps.token"
         :reversebbox="layerProps.reversebbox"
       />
-      <mapgis-arcgis-maplayer
+      <mapgis-arcgis-map-layer
         v-if="isArcgisMapLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
