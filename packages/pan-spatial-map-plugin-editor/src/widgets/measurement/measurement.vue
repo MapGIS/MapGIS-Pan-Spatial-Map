@@ -1,24 +1,21 @@
 <template>
   <div class="mp-widget-measurement">
-    <div class="toolbar">
-      <template>
-        <div class="toolbar-left">
-          <a-tooltip
-            v-for="item in planeMeasureModes"
-            :key="item.title"
-            placement="bottom"
-            :title="item.title"
-          >
-            <a-button
-              class="button btn-left"
-              @click="startMeasure(item.mode)"
-              :icon="item.icon"
-              shape="circle"
-            />
-          </a-tooltip>
-        </div>
-      </template>
-      <div class="toolbar-right">
+    <div class="measure-toolbar">
+      <div class="actions">
+        <a-tooltip
+          v-for="item in planeMeasureModes"
+          :key="item.title"
+          placement="bottom"
+          :title="item.title"
+        >
+          <a-icon
+            class="action"
+            @click="onOpenMeasure(item.mode)"
+            :type="item.icon"
+          />
+        </a-tooltip>
+      </div>
+      <div class="unit">
         <a-select v-show="showLengthSelect" v-model="activeDistanceSelect">
           <a-select-option v-for="item in getSelectOptions" :key="item">{{
             item
@@ -29,23 +26,19 @@
             item
           }}</a-select-option>
         </a-select>
-        <a-tooltip placement="bottom" title="设置">
-          <a-button
-            class="button btn-right"
-            shape="circle"
-            @click="showSettingPanel = !showSettingPanel"
-          >
-            <a-icon type="setting" theme="filled" />
-          </a-button>
-        </a-tooltip>
+      </div>
+      <div class="actions">
         <a-tooltip placement="bottom" title="清除">
-          <a-button
-            class="button btn-right"
-            shape="circle"
-            @click="clearMeasure"
+          <a-icon class="action" @click="onClearMeasure" type="delete">
+          </a-icon>
+        </a-tooltip>
+        <a-tooltip placement="bottom" title="设置">
+          <a-icon
+            :class="{ action: true, active: showSettingPanel }"
+            @click="showSettingPanel = !showSettingPanel"
+            type="setting"
           >
-            <a-icon type="delete" theme="filled" />
-          </a-button>
+          </a-icon>
         </a-tooltip>
       </div>
     </div>
@@ -91,8 +84,8 @@
         </div>
       </div>
     </div>
-    <div v-show="showSettingPanel" class="edit-style">
-      <div class="edit-style-title">文字样式</div>
+    <div v-show="showSettingPanel" class="measure-style">
+      <div class="measure-style-title">文字样式</div>
       <a-form-model
         :model="formData"
         labelAlign="left"
@@ -130,7 +123,7 @@
           </a-input>
         </a-form-model-item>
       </a-form-model>
-      <div class="edit-style-title">轮廓线样式</div>
+      <div class="measure-style-title">轮廓线样式</div>
       <a-form-model
         :model="formData"
         labelAlign="left"
@@ -261,9 +254,9 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   // 样式表单数据对象
   private formData = {
     textType: '宋体',
-    textColor: '#3300CC',
-    textSize: '16',
-    lineColor: '#CC3333',
+    textColor: '#1890ff',
+    textSize: '14',
+    lineColor: '#1890ff',
     lineType: '实线',
     lineOpacity: 100,
     lineWidth: 3
@@ -306,9 +299,12 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     this.activeVar += 1
   }
 
-  // 微件失活时
-  onDeActive() {
-    this.deActiveVar += 1
+  // 移除测量
+  private onClearMeasure() {
+    this.measureComponent && this.measureComponent.clearMeasure()
+
+    this.isMeasureFinished = false
+    this.activeMode = ''
   }
 
   clearMeasure() {
@@ -351,66 +347,76 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 </script>
 
 <style lang="less" scoped>
-.toolbar {
-  padding: 0 0 8px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .button {
-    cursor: pointer;
-    margin: 0 8px;
-  }
-}
-
-.measure-result {
-  .measure-result-title {
+.mp-widget-measurement {
+  .measure-toolbar {
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 5px 0 5px 0;
-    font-weight: bold;
+    height: 32px;
+    .actions {
+      display: flex;
+      align-items: center;
+      text-align: right;
+      font-size: 17px;
+      color: @text-color;
+      .action {
+        margin: 0 8px;
+        cursor: pointer;
+        &:hover,
+        &.active {
+          color: @primary-color;
+        }
+        &:first-child {
+          margin-left: 0;
+        }
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+    .unit {
+      flex: 1;
+      margin: 0 16px;
+    }
   }
-
-  .result-item {
-    margin-top: 8px;
+  .measure-result {
+    .measure-result-title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 8px;
+      font-weight: bold;
+    }
+    .result-item {
+      margin-top: 8px;
+    }
+    .result-item :nth-child(2) {
+      margin-left: 8px;
+    }
   }
-
-  .result-item :nth-child(2) {
-    margin-left: 8px;
-  }
-}
-
-.edit-style {
-  padding: 8px 0;
-  .edit-style-title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 5px 0;
-    font-weight: bold;
-  }
-
-  .ant-form {
-    padding-top: 4px;
-  }
-
-  .ant-form-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0;
-  }
-}
-
-.color-input {
-  ::v-deep .ant-input-wrapper,
-  ::v-deep .ant-input {
-    background: inherit;
-  }
-  ::v-deep .ant-input-group-addon {
-    background: inherit;
-    cursor: pointer;
+  .measure-style {
+    .measure-style-title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 0;
+      font-weight: bold;
+    }
+    .ant-form-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0;
+    }
+    .color-input {
+      ::v-deep .ant-input-wrapper,
+      ::v-deep .ant-input {
+        background: inherit;
+      }
+      ::v-deep .ant-input-group-addon {
+        background: inherit;
+        cursor: pointer;
+      }
+    }
   }
 }
 </style>

@@ -12,7 +12,7 @@ export default class MapboxDraw extends Vue {
   private clickType = ''
 
   // 绘制组件
-  drawer = {}
+  drawer = null
 
   geojsonData = null
 
@@ -25,55 +25,18 @@ export default class MapboxDraw extends Vue {
     uncombine_features: false
   }
 
-  handleAdded(e, data) {
+  beforeDestroy() {
+    this.drawer = undefined
+  }
+
+  onAdded(e, data) {
     const { drawer, map } = e
     // 赋值绘制组件
     this.drawer = drawer || {}
     this.type = -1
   }
 
-  enableDrawer() {
-    const component = this.$refs.drawer
-    if (component) {
-      component.enableDrawer()
-    }
-  }
-
-  togglePoint() {
-    this.enableDrawer()
-    this.type = 0
-
-    this.drawer && this.drawer.changeMode('draw_point')
-  }
-
-  togglePolyline() {
-    this.enableDrawer()
-    this.type = 1
-
-    this.drawer && this.drawer.changeMode('draw_line_string')
-  }
-
-  togglePolygon() {
-    this.enableDrawer()
-    this.type = 2
-
-    this.drawer && this.drawer.changeMode('draw_polygon')
-  }
-
-  toggleRect() {
-    this.enableDrawer()
-    this.type = 3
-
-    this.drawer && this.drawer.changeMode('draw_rectangle')
-  }
-
-  toggleDeleteAll() {
-    this.type = -1
-
-    this.drawer && this.drawer.deleteAll()
-  }
-
-  drawFinish(e) {
+  onDrawFinish(e) {
     const { coordinates } = e.features[0].geometry
     let nearDis = this.limits * 1000
     const { projectionName } = baseConfigInstance.config
@@ -113,12 +76,44 @@ export default class MapboxDraw extends Vue {
     }
     this.toggleDeleteAll()
 
-    this.clickType = ''
+    this.queryType = ''
 
     this.queryLayer(bound)
   }
 
-  queryLayer(bound: Record<string, number>) {}
+  togglePoint() {
+    this.enableDrawer()
+    this.type = 0
+
+    this.drawer && this.drawer.changeMode('draw_point')
+  }
+
+  togglePolyline() {
+    this.enableDrawer()
+    this.type = 1
+
+    this.drawer && this.drawer.changeMode('draw_line_string')
+  }
+
+  togglePolygon() {
+    this.enableDrawer()
+    this.type = 2
+
+    this.drawer && this.drawer.changeMode('draw_polygon')
+  }
+
+  toggleRect() {
+    this.enableDrawer()
+    this.type = 3
+
+    this.drawer && this.drawer.changeMode('draw_rectangle')
+  }
+
+  toggleDeleteAll() {
+    this.type = -1
+
+    this.drawer && this.drawer.deleteAll()
+  }
 
   clearMapboxDraw() {
     if (
@@ -131,9 +126,18 @@ export default class MapboxDraw extends Vue {
       ].includes(this.drawer.getMode())
     ) {
       this.type = -1
-      this.clickType = ''
+      this.queryType = ''
       this.drawer.deleteAll()
       this.drawer.changeMode('simple_select')
+    }
+  }
+
+  queryLayer(bound: Record<string, number>) {}
+
+  private enableDrawer() {
+    const component = this.$refs.drawer
+    if (component) {
+      component.enableDrawer()
     }
   }
 }

@@ -27,6 +27,8 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     if (window.ElementQueryManage) {
       window.ElementQueryManage = null
     }
+
+    this.queryType = ''
   }
 
   // 设置鼠标样式

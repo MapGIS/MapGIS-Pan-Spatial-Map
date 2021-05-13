@@ -4,6 +4,7 @@
       v-for="marker in markers"
       :key="marker.id"
       :coordinates="marker.coordinates"
+      anchor="bottom"
       @mouseenter="
         e => {
           mouseEnterEvent(e, marker.id)
@@ -15,7 +16,12 @@
         }
       "
     >
-      <mapgis-popup :coordinates="marker.coordinates" :showed="true">
+      <mapgis-popup
+        :coordinates="marker.coordinates"
+        :showed="true"
+        :offset="popupOffset(marker.id)"
+        v-if="markerImagesLoadStatus.indexOf(marker.id) >= 0"
+      >
         <a-list
           item-layout="horizontal"
           :data-source="Object.keys(marker.properties)"
@@ -34,7 +40,12 @@
           </a-list-item>
         </a-list>
       </mapgis-popup>
-      <img slot="marker" :src="marker.img" />
+      <img
+        slot="marker"
+        :src="marker.img"
+        :ref="marker.id"
+        @load="onMarkerImageLoad($event, marker.id)"
+      />
     </mapgis-marker>
   </div>
 </template>
@@ -84,7 +95,9 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
   })
   readonly highlightStyle!: Record<string, any>
 
-  public prePopup: any = undefined
+  private prePopup: any = undefined
+
+  private markerImagesLoadStatus = []
 
   private get move() {
     let timeout: NodeJS.Timeout
@@ -104,6 +117,16 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
         }
         this.emitMapBoundChange(bound)
       }, 1000)
+    }
+  }
+
+  private get popupOffset() {
+    const self = this
+    return function(ref) {
+      if (self.$refs[ref] && self.$refs[ref][0]) {
+        return [0, -self.$refs[ref][0].clientHeight]
+      }
+      return [0, 0]
     }
   }
 
@@ -134,6 +157,10 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
 
   @Emit('map-bound-change')
   emitMapBoundChange(bound: Record<string, any>) {}
+
+  private onMarkerImageLoad(e, ref) {
+    this.markerImagesLoadStatus.push(ref)
+  }
 
   private zoomTo(bound) {
     this.map.fitBounds([
