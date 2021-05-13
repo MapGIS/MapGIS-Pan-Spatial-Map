@@ -173,8 +173,11 @@ export default class PlaceName extends Mixins(
         this.openReseultSet(item)
       })
     } else {
-      this.showResult = true
-      this.tab = this.selected[0]
+      this.showResult = false
+      this.$nextTick(() => {
+        this.showResult = true
+        this.tab = this.selected[0]
+      })
     }
   }
 

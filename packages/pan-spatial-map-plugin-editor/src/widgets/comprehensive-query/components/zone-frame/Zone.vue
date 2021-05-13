@@ -87,7 +87,7 @@
 
 <script lang="ts">
 import { Component, Watch, Mixins, Prop, Model } from 'vue-property-decorator'
-import { AppMixin } from '@mapgis/web-app-framework'
+import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
 import Axios from 'axios'
 import {
   FeatureGeoJSON,
@@ -108,7 +108,7 @@ import ZoneFrameCesium from './ZoneFrameCesium.vue'
     'sketch-picker': Sketch
   }
 })
-export default class Zone extends Mixins(AppMixin) {
+export default class Zone extends Mixins(AppMixin, MapMixin) {
   @Model('change', { type: Object, required: false, default: null })
   private value!: FeatureGeoJSON | null
 
@@ -188,6 +188,28 @@ export default class Zone extends Mixins(AppMixin) {
     if (val && JSON.stringify(val) !== '{}') {
       const box = bbox(val)
       const polygon = bboxPolygon(box)
+      // if (this.map.getLayer('zone-frame-container')) {
+      //   this.map.removeLayer('zone-frame-container')
+      // }
+      // if (this.map.getSource('zone-frame-container')) {
+      //   this.map.removeSource('zone-frame-container')
+      // }
+      // this.map.addSource('zone-frame-container', {
+      //   type: 'geojson',
+      //   data: polygon
+      // })
+      // this.map.addLayer({
+      //   id: 'zone-frame-container',
+      //   type: 'fill',
+      //   source: 'zone-frame-container',
+      //   paint: {
+      //     'fill-outline-color': 'yellow',
+      //     'fill-color': 'yellow',
+      //     'fill-opacity': 0.75
+      //     // 'line-width': Number(this.lineWidth)
+      //   }
+      // })
+
       this.$emit('change', polygon)
     } else {
       this.$emit('change', val)
