@@ -1,7 +1,7 @@
 {
   "igsPort": "6163",
-  "uploadIp": "192.168.176.40",
-  "uploadPort": "9999",
+  "uploadIp": "192.168.21.191",
+  "uploadPort": "6163",
   "services2D": [
     {
       "name": "WMS专题",

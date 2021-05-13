@@ -45,16 +45,29 @@ import {
   ServiceCategory,
   Service,
   servicesConfigInstance,
-  ServicesConfig
+  ServicesConfig,
+  getWidgetConfig,
+  api
 } from '@mapgis/pan-spatial-map-store'
-import { AppMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin } from '@mapgis/web-app-framework'
 import ServiceCategorySelect from './ServiceCategorySelect.vue'
 
 @Component({
   components: { ServiceCategorySelect }
 })
-export default class AddServiceFile extends Mixins(AddServicesMixin, AppMixin) {
+export default class AddServiceFile extends Mixins(
+  AddServicesMixin,
+  WidgetMixin
+) {
   @Prop(Array) readonly serviceTypes!: ServiceType[]
+
+  @Prop(Object) widgetConfig!: object
+
+  // 配置上传ip
+  private uploadIp
+
+  // 配置上传端口号
+  private uploadPort
 
   // 下拉框值
   private option: ServiceType | null = null
@@ -112,21 +125,20 @@ export default class AddServiceFile extends Mixins(AddServicesMixin, AppMixin) {
     }
   }
 
-  async created() {
-    // await ServicesConfig.loadConfig()
-    // this.serviceConfig = servicesConfigInstance.config
+  created() {
+    console.log(this.widgetConfig)
+    this.uploadIp = this.widgetConfig.uploadIp
+    this.uploadPort = this.widgetConfig.uploadPort
   }
 
   get getUrl() {
     let url
     if (this.isJSON) {
       url = `${this.baseUrl}/api/local-storage`
-      // url = 'http://localhost:8015/upload/uploadFile' // TODO:后台地址
     } else {
-      // const { uploadIp, uploadPort } = this.serviceConfig
-      // url = `http://${uploadIp}:${uploadPort}/open/uploadFile`
+      url = `http://${this.uploadIp}:${this.uploadPort}/open/uploadFile`
     }
-    console.log(url)
+    console.log('url:', url)
 
     return url
   }
