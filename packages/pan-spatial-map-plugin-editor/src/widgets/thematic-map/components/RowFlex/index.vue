@@ -9,13 +9,11 @@
   </a-row>
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component
-export default class extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class extends Vue {
   @Prop() label!: string
 
   @Prop({ default: 'left' }) labelAlign!: 'left' | 'center' | 'right'

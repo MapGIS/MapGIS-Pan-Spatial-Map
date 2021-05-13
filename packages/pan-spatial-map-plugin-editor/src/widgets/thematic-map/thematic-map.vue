@@ -47,9 +47,9 @@ import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
     ThematicMapSubjectAdd
   }
 })
-export default class MpThematicMap extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class MpThematicMap extends Mixins<Record<string, any>>(
+  WidgetMixin
+) {
   loading = false
 
   treeData: IThematicMapSubjectConfig[] = []

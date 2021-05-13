@@ -25,8 +25,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component } from 'vue-property-decorator'
 import RowFlex from '../../RowFlex'
 import SourceTarget from './SourceTarget'
 import SubjectType from './SubjectType'
@@ -43,9 +42,7 @@ interface IItem {
     SubjectType
   }
 })
-export default class BaseItems extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class BaseItems extends Vue {
   // 专题服务名称
   subjectName = ''
 

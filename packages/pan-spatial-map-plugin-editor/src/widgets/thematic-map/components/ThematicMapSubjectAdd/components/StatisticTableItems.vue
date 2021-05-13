@@ -27,8 +27,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component } from 'vue-property-decorator'
 import RowFlex from '../../RowFlex'
 
 @Component({
@@ -36,9 +35,7 @@ import RowFlex from '../../RowFlex'
     RowFlex
   }
 })
-export default class StatisticTableItems extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class StatisticTableItems extends Vue {
   showStatisticTable = false
 
   xAxisKey = ''

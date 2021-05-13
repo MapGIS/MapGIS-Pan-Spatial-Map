@@ -1,9 +1,8 @@
 <template>
-  <component :is="type" />
+  <component :is="type" v-show="type" />
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import SubSectionMap from './SubSectionMap.vue' // 分段专题图
 import BaseMapWithGraph from './BaseMapWithGraph.vue' // 统计专题图
 import StatisticLabel from './StatisticLabel.vue' // 等级符号专题图
@@ -21,10 +20,8 @@ import HexBin from './HexBin.vue' // 蜂窝图
     SubSectionMap
   }
 })
-export default class extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
-  @Prop({ default: '' }) type!: string
+export default class extends Vue {
+  @Prop() type!: string
 }
 </script>
 <style lang="less" scoped></style>

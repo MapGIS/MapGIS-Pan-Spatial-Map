@@ -23,8 +23,7 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import { ThematicMapInstance, TModuleType } from '@mapgis/pan-spatial-map-store'
 
 interface IIcon {
@@ -33,9 +32,7 @@ interface IIcon {
   visibleType: TModuleType
 }
 @Component
-export default class ThematicMapManageTools extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class ThematicMapManageTools extends Vue {
   mtVisible = false
 
   iconList: IIcon[] = [

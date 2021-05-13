@@ -48,8 +48,7 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import {
   queryFeaturesInstance,
   FeatureQueryParam,
@@ -81,9 +80,7 @@ interface IChartOption {
     RowFlex
   }
 })
-export default class ThematicMapStatisticTable extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class ThematicMapStatisticTable extends Vue {
   loading = false
 
   // 当前活动的图标

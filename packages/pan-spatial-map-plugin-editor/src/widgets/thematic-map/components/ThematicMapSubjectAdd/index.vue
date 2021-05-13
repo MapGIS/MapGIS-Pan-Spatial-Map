@@ -52,9 +52,9 @@ import PopupItems from './components/PopupItems.vue'
     PopupItems
   }
 })
-export default class ThematicMapSubjectAdd extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class ThematicMapSubjectAdd extends Mixins<Record<string, any>>(
+  WidgetMixin
+) {
   // @ProvideReactive() formData!: any
 
   // formData = {}

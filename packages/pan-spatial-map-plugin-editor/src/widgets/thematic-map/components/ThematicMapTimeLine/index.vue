@@ -28,8 +28,7 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
 import { Empty } from 'ant-design-vue'
 import * as echarts from 'echarts'
@@ -41,9 +40,7 @@ import { chartOption } from './config/timeLineChartOption'
     RowFlex
   }
 })
-export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
-  WidgetMixin
-) {
+export default class ThematicMapTimeLine extends Vue {
   // 图表
   chart: any = null
 
