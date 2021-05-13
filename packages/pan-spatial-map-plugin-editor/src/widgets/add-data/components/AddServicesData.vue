@@ -149,7 +149,6 @@ export default class AddServicesData extends Mixins(
   // Table选中项发生变化时的回调
   onSelectChange(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys
-    console.log(this.selectedRowKeys)
     let newChecked = []
     let newUnChecked = []
     // 区分哪些是新选中的，哪些是新取消选中的
@@ -172,8 +171,6 @@ export default class AddServicesData extends Mixins(
         return result
       }, [])
     }
-    console.log('newchecked:', newChecked)
-    console.log('newUnChecked:', newUnChecked)
 
     for (let i = 0; i < this.services.length; i++) {
       const service = this.services[i]
