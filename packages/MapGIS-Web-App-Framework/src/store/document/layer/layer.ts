@@ -185,7 +185,13 @@ export abstract class Layer {
    * @type {Rectangle}
    * @memberof Layer
    */
-  fullExtent: Rectangle = new Rectangle(0.0, 0.0, 0.0, 0.0)
+  get fullExtent(): Rectangle {
+    return this._fullExtent
+  }
+
+  set fullExtent(rect: Rectangle) {
+    this._fullExtent = rect
+  }
 
   /**
    * 图层唯一id
@@ -292,4 +298,6 @@ export abstract class Layer {
   //       return val
   //     })
   //   }
+
+  private _fullExtent = new Rectangle(0.0, 0.0, 0.0, 0.0)
 }

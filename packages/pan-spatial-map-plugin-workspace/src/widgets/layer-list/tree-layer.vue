@@ -602,9 +602,11 @@ export default class TreeLayer extends Mixins(
   fitBounds(item) {
     let {
       fullExtent: { xmin, xmax, ymin, ymax }
-    } = item
+    } = item.dataRef
 
-    if (item.spatialReference.wkid === CoordinateSystemType.webMercator) {
+    if (
+      item.dataRef.spatialReference.wkid === CoordinateSystemType.webMercator
+    ) {
       const xminYminConverted = CoordinateTransformation.mercatorToWGS84([
         xmin,
         ymin

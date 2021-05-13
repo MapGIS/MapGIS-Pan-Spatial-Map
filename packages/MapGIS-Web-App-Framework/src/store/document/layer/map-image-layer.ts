@@ -87,6 +87,14 @@ export abstract class MapImageLayer extends Layer {
   imageFormat = 'png'
 
   /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof MapImageLayer
+   */
+  spatialReference: SpatialReference = new SpatialReference()
+
+  /**
    * 所有的子图层
    * 包括子图层的子图层
    *
@@ -211,14 +219,6 @@ export abstract class Sublayer {
    * @memberof Sublayer
    */
   visible = true
-
-  /**
-   * 空间参数信息
-   *
-   * @date 28/04/2021
-   * @memberof TileLayer
-   */
-  spatialReference = new SpatialReference()
 
   /**
    * 通过json对象初始化该对象

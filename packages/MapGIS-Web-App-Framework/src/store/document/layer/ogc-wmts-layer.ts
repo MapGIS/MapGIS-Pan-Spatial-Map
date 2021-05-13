@@ -4,6 +4,7 @@ import axios from 'axios'
 import { LoadStatus, LayerType, Layer } from './layer'
 import { TileInfo } from './tile-layer'
 import { ObjectTool } from '../../utils/object-tool'
+import { SpatialReference, CoordinateSystemType } from '../spatial-reference'
 
 /**
  * OGCWMTS服务瓦片矩阵集
@@ -13,6 +14,47 @@ import { ObjectTool } from '../../utils/object-tool'
  * @class TileMatrixSet
  */
 export class TileMatrixSet {
+  /**
+   * 从ogc的ows:SupportedCRS标签上解析出epsg号
+   *
+   * @date 13/05/2021
+   * @static
+   * @param {string} supportedCRS
+   * @return {*}  {Number}
+   * @memberof TileMatrixSet
+   */
+  static getEPSGCodeFromOGCSupportedCRSString(supportedCRS: string): number {
+    let epsgCode = 4326
+    let pos = -1
+    // 1.查找字符串中是否含有EPSG::,如果有则EPSG::后面的即为epsg号。
+    pos = supportedCRS.search('EPSG::')
+    if (pos > -1) {
+      epsgCode = parseInt(supportedCRS.substring(pos + 'EPSG::'.length))
+    } else {
+      // 2.查找字符串中是否同时含有EPSG:和3857,如果有则表明,对应的epsg号为3857
+      pos = supportedCRS.search('EPSG:')
+      if (pos > -1 && supportedCRS.search('3857') > 0) {
+        epsgCode = 3857
+      } else {
+        // 3.查找字符串中是否含有"OGC:2:84"或"OGC:1.3:CRS84"，如果有则epsg号为3857
+        pos = supportedCRS.search('OGC:2:84')
+        if (pos < 0) {
+          pos = supportedCRS.search('OGC:1.3:CRS84')
+        }
+
+        if (pos > -1) {
+          epsgCode = 4326
+        }
+      }
+    }
+
+    // 4.将web墨卡托的epsg号统一为3857.
+    if (epsgCode === 3867 || epsgCode === 900913 || epsgCode === 102100)
+      epsgCode = 3857
+
+    return epsgCode
+  }
+
   /**
    * 全图范围
    *
@@ -37,7 +79,7 @@ export class TileMatrixSet {
    * @type {TileInfo}
    * @memberof TileMatrixSet
    */
-  tileInfo: TileInfo | undefined
+  tileInfo: TileInfo = new TileInfo()
 
   /**
    * 通过json对象初始化该对象
@@ -48,8 +90,13 @@ export class TileMatrixSet {
    */
   fromJSON(jsonObject: Record<string, any>) {
     if (jsonObject.Identifier) this.id = jsonObject.Identifier
-    // 修改说明：TileMatrix暂时用不到,先不处理
-    // 修改人：马原野 2021年03月30日
+    if (jsonObject.SupportedCRS) {
+      this.tileInfo.spatialReference.wkid = TileMatrixSet.getEPSGCodeFromOGCSupportedCRSString(
+        jsonObject.SupportedCRS
+      )
+    }
+
+    // todo:还剩下TileMatrix未解析。
   }
 
   /**
@@ -229,7 +276,15 @@ export class WMTSSublayer {
    * @type {TileMatrixSet}
    * @memberof WMTSSublayer
    */
-  tileMatrixSet: TileMatrixSet | undefined
+  get tileMatrixSet(): TileMatrixSet {
+    let [tileMatrixSetRet] = this.tileMatrixSets
+    this.tileMatrixSets.forEach(tileMatrixSet => {
+      if (tileMatrixSet.id === this.tileMatrixSetId)
+        tileMatrixSetRet = tileMatrixSet
+    })
+
+    return tileMatrixSetRet
+  }
 
   /**
    * 当前采用的矩阵集的ID
@@ -257,6 +312,16 @@ export class WMTSSublayer {
    * @memberof WMTSSublayer
    */
   title = ''
+
+  /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof WMTSSublayer
+   */
+  get spatialReference(): SpatialReference {
+    return this.tileMatrixSet.tileInfo.spatialReference
+  }
 
   /**
    * 通过json对象初始化该对象
@@ -311,7 +376,6 @@ export class WMTSSublayer {
       }
 
       if (this.tileMatrixSets.length > 0) {
-        ;[this.tileMatrixSet] = this.tileMatrixSets
         this.tileMatrixSetId = this.tileMatrixSets[0].id
       }
     }
@@ -545,6 +609,14 @@ export class OGCWMTSLayer extends Layer {
     return sublayer
   }
 
+  get fullExtent(): Rectangle {
+    return this.activeLayer?.fullExtent
+  }
+
+  get spatialReference(): SpatialReference | undefined {
+    return this.activeLayer?.spatialReference
+  }
+
   load(): Promise<Layer> {
     // 只有加载状态是没有加载过时，才会真正进行请求。
     if (this.loadStatus !== LoadStatus.notLoaded) {
@@ -602,9 +674,6 @@ export class OGCWMTSLayer extends Layer {
 
             // 4.设置默认参数
             if (this.sublayers.length > 0) [this.activeLayer] = this.sublayers
-
-            if (this.activeLayer) this.fullExtent = this.activeLayer.fullExtent
-
             this.loadStatus = LoadStatus.loaded
             resolve(result)
           }
