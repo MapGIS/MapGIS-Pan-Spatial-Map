@@ -211,14 +211,14 @@ export default class MapgisLayer extends Vue {
                           value: uuid(),
                           name: '简单要素类',
                           icon: 'tree-icon tree-icon-ds',
-                          children
+                          children: []
                         },
                         {
                           id: uuid(),
                           value: uuid(),
                           name: '注记类',
                           icon: 'tree-icon tree-icon-ds',
-                          children
+                          children: []
                         }
                       ]
                     }
@@ -241,7 +241,7 @@ export default class MapgisLayer extends Vue {
                           break
 
                         default:
-                          obj.children[0].children.push(info)
+                          obj.children[1].children.push(info)
                           break
                       }
                     }
