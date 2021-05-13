@@ -12,7 +12,7 @@
         :style="mapSpanStyle"
       >
         <map-view
-          v-model="queryVisible"
+          :queryVisible.sync="queryVisible"
           :mapViewId="`split-screen-map-${s}`"
           :mapViewLayer="layers.find(({ id }) => layerIds[s] === id)"
           :queryRect="queryRect"
@@ -24,7 +24,7 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { AppMixin, WidgetMixin, Layer } from '@mapgis/web-app-framework'
+import { AppMixin, Layer } from '@mapgis/web-app-framework'
 import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
@@ -34,8 +34,7 @@ import MapView from '../MapView'
   }
 })
 export default class SplitScreenMap extends Mixins<Record<string, any>>(
-  AppMixin,
-  WidgetMixin
+  AppMixin
 ) {
   @Prop({ default: 12 }) mapSpan!: number
 
@@ -57,12 +56,9 @@ export default class SplitScreenMap extends Mixins<Record<string, any>>(
   /**
    * 某个地图的查询抛出的事件
    * @param result<object>
-   * @param mapViewId<string>
    */
-  onQuery(result: Rect, mapViewId: string) {
-    if (!this.queryVisible) {
-      this.queryVisible = true
-    }
+  onQuery(result: Rect) {
+    this.queryVisible = true
     this.queryRect = result
   }
 
@@ -71,7 +67,6 @@ export default class SplitScreenMap extends Mixins<Record<string, any>>(
    */
   @Watch('screenNums')
   watchScreenNums(nV) {
-    this.queryVisible = false
     if (nV.length) {
       // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
       mapViewStateInstance.initDisplayRect = this.layers[nV[0]].fullExtent

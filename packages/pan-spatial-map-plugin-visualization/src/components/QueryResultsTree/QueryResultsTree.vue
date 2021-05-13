@@ -4,6 +4,7 @@
       <a-empty v-if="!treeData.length" />
       <a-tree
         showLine
+        :expandedKeys.sync="expandedKeys"
         :load-data="loadTreeData"
         :tree-data="treeData"
         @load="onTreeLoad"
@@ -38,7 +39,7 @@ interface IQueryParams extends DocInfoQueryParam {
 
 interface IQueryLayerInfo {
   layerName: string
-  layerIndex: string | null
+  layerIndex: string
 }
 
 interface ITreeNode {
@@ -87,19 +88,32 @@ export default class MpQueryResultTree extends Vue {
 
   loading = false
 
+  // 默认展开的节点, 第一个节点
+  defaultExpandedKeys: string[] = []
+
+  // 图层信息
   layerInfos: IQueryLayerInfo[] = []
 
+  // 结果树数据
   treeData: ITreeNode[] = []
 
+  // 展开的节点
+  expandedKeys: string[] = []
+
+  // 获取范围
+  get goemetry() {
+    const { xmin, ymin, xmax, ymax } = this.queryRect
+    return queryFeaturesInstance.creatRectByMinMax(xmin, ymin, xmax, ymax)
+  }
+
   @Watch('layer', { deep: true })
-  watchLayer(nV) {
+  watchLayer() {
     this.getLayerInfos()
   }
 
   @Watch('queryRect', { deep: true })
   watchQueryRect() {
-    const dataRef = this.treeData.length ? this.treeData[0] : null
-    this.loadTreeData({ dataRef })
+    this.getLayerInfos()
   }
 
   /**
@@ -107,7 +121,11 @@ export default class MpQueryResultTree extends Vue {
    */
   getQueryParams(): IQueryParams {
     const { id, url, type, gdbps } = this.layer
-    const base = { id, type, gdbps }
+    const base = {
+      id,
+      type,
+      gdbps
+    }
     return typeof this.layer._parseUrl === 'function'
       ? {
           ...this.layer._parseUrl(url),
@@ -124,10 +142,10 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
-   * 获取IGSDoc图层信息
+   * 获取IGSMapImage图层信息
    * @param queryParam
    */
-  async getIGSDocLayerInfo({ ip, port, docName }: IQueryParams) {
+  async getIGSMapImageLayerInfo({ ip, port, docName }: IQueryParams) {
     const docInfo = await queryFeaturesInstance.getDocInfo({
       ip,
       port,
@@ -168,7 +186,7 @@ export default class MpQueryResultTree extends Vue {
       layerConfig && layerConfig.bindData
         ? layerConfig.bindData.serverName
         : serverName
-    const res = await this.getIGSDocLayerInfo({
+    const res = await this.getIGSMapImageLayerInfo({
       ip,
       port,
       docName
@@ -187,7 +205,7 @@ export default class MpQueryResultTree extends Vue {
       const name = strs[strs.length - 1]
       res.push({
         layerName: name,
-        layerIndex: null
+        layerIndex: ''
       })
     }
     return res
@@ -205,12 +223,14 @@ export default class MpQueryResultTree extends Vue {
   async getLayerInfos() {
     try {
       this.loading = true
+      this.layerInfos = []
+      this.treeData = []
       const queryParams = this.getQueryParams()
       if (queryParams.id) {
         let layerInfos = []
         switch (queryParams.type) {
           case LayerType.IGSMapImage:
-            layerInfos = await this.getIGSDocLayerInfo(queryParams)
+            layerInfos = await this.getIGSMapImageLayerInfo(queryParams)
             break
           case LayerType.IGSTile:
             layerInfos = await this.getIGSTileLayerInfo(queryParams)
@@ -227,6 +247,10 @@ export default class MpQueryResultTree extends Vue {
           title: layerName,
           key: this.getUuid()
         }))
+        if (this.treeData.length) {
+          this.expandedKeys.push(this.treeData[0].key)
+        }
+
         this.loading = false
       }
     } catch (e) {
@@ -235,19 +259,12 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
-   * 获取IGSMapImage查询结果
-   * @param queryRect
+   * 获取图层层级
    * @param queryLayerInfos
-   * @param queryParams
    */
-  async getIGSMapImageResult(
-    queryRect: IRect,
-    queryLayerInfos: IQueryLayerInfo[],
-    queryParams: IQueryParams
-  ) {
-    const { ip, port, docName } = queryParams
-    const layerIdxs = queryLayerInfos.reduce<string>(
-      (str, { layerIndex }, i) => {
+  getLayerIdxs(queryLayerInfos) {
+    return queryLayerInfos.reduce<string>(
+      (str, { layerIndex }: IQueryLayerInfo, i) => {
         if (i > 0) {
           str += ','
         }
@@ -258,24 +275,6 @@ export default class MpQueryResultTree extends Vue {
       },
       ''
     )
-    const geometry = queryFeaturesInstance.creatRectByMinMax(
-      queryRect.xmin,
-      queryRect.ymin,
-      queryRect.xmax,
-      queryRect.ymax
-    )
-    const res = await queryFeaturesInstance.query({
-      ip,
-      port,
-      layerIdxs,
-      docName,
-      geometry,
-      mapIndex: this.mapIndex,
-      page: this.curPageNumber - 1,
-      pageCount: this.countPerPage,
-      f: 'json'
-    })
-    return res
   }
 
   /**
@@ -285,48 +284,66 @@ export default class MpQueryResultTree extends Vue {
    * 3.关联了在线地图服务的在线瓦片图层
    * 4.要求同一次查询的图层类型是一样的。
    */
-  async queryFeature(queryRect: IRect, treeNodeIndexs: number[]) {
-    const queryLayerInfos = treeNodeIndexs.map<IQueryLayerInfo>(
-      i => this.layerInfos[i]
-    )
-    if (!queryLayerInfos.length) return []
-    const queryParams = this.getQueryParams()
-    let result = null
-    switch (queryLayerInfos[0].layerIndex) {
-      case null:
-        // todo IGSVector
-        break
-      default:
-        // 默认是IGSMapImage
-        result = await this.getIGSMapImageResult(
-          queryRect,
-          queryLayerInfos,
-          queryParams
-        )
-        break
-    }
-    if (!result) return []
-    const resultArray = Array.isArray(result) ? result : [result]
-    return resultArray.map<ITreeNode>((featureSet, index) => {
-      const { layerName } = this.layerInfos[treeNodeIndexs[index]]
-      const { features } = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
-        featureSet
-      )
-      const resultForPerLayer =
-        features && features.length
-          ? features.map(item => ({
-              key: this.getUuid(),
-              title: item.properties.fid,
-              feature: item,
-              isLeaf: true
-            }))
-          : []
-      return {
-        key: this.getUuid(),
-        title: layerName,
-        children: resultForPerLayer
+  async queryFeature(treeNodeIndexs: number[]) {
+    const queryLayerInfos = treeNodeIndexs.map(i => this.layerInfos[i])
+    if (queryLayerInfos.length) {
+      const _type = !queryLayerInfos[0].layerIndex ? 'IGSVector' : 'IGSMapImage'
+      const { ip, port, docName, gdbps } = this.getQueryParams()
+      let queryParams = {
+        ip,
+        port,
+        geometry: this.goemetry,
+        page: this.curPageNumber - 1,
+        pageCount: this.countPerPage,
+        f: 'json'
       }
-    })
+      switch (LayerType[_type]) {
+        case LayerType.IGSMapImage: {
+          const layerIdxs = this.getLayerIdxs(queryLayerInfos)
+          queryParams = {
+            ...queryParams,
+            layerIdxs,
+            docName,
+            mapIndex: this.mapIndex
+          }
+          break
+        }
+        case LayerType.IGSVector:
+          queryParams = {
+            ...queryParams,
+            gdbp: gdbps
+          }
+          break
+        default:
+          break
+      }
+      const result = await queryFeaturesInstance.query(queryParams)
+      if (result) {
+        const resultArray = Array.isArray(result) ? result : [result]
+        return resultArray.map<ITreeNode>((featureSet, index) => {
+          const { layerName } = this.layerInfos[treeNodeIndexs[index]]
+          const {
+            features
+          } = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(featureSet)
+          const resultForPerLayer =
+            features && features.length
+              ? features.map(item => ({
+                  key: this.getUuid(),
+                  title: item.properties.fid,
+                  feature: item,
+                  isLeaf: true
+                }))
+              : []
+          return {
+            key: this.getUuid(),
+            title: layerName,
+            children: resultForPerLayer
+          }
+        })
+      }
+    }
+
+    return []
   }
 
   /**
@@ -339,14 +356,12 @@ export default class MpQueryResultTree extends Vue {
         resolve()
         return
       }
-      this.queryFeature(this.queryRect, [treeNode.dataRef.index]).then(
-        features => {
-          treeNode.dataRef.children =
-            features && features.length ? features[0].children : []
-          this.treeData = [...this.treeData]
-          resolve()
-        }
-      )
+      this.queryFeature([treeNode.dataRef.index]).then(features => {
+        treeNode.dataRef.children =
+          features && features.length ? features[0].children : []
+        this.treeData = [...this.treeData]
+        resolve()
+      })
     })
   }
 

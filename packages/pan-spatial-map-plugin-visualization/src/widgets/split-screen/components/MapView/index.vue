@@ -9,20 +9,21 @@
       @map-load="onMapLoad"
       v-if="document"
     />
-    <!-- 区域绘制 -->
-    <mapgis-draw
-      v-if="isMapLoaded"
-      ref="mapboxBaseDrawer"
-      :controls="controls"
-      @added="onAdded"
-      @drawCreate="onGraphicCreated"
-    />
-    <!-- 地图标注 -->
-    <mp-markers-highlight-popup
-      :features="queryFeatures"
-      :highlightIds="querySelection"
-      :normalize="({ key }) => ({ layerId: key })"
-    />
+    <template v-if="isMapLoaded">
+      <!-- 区域绘制 -->
+      <mapgis-draw
+        ref="mapboxBaseDrawer"
+        :controls="controls"
+        @added="onAdded"
+        @drawCreate="onGraphicCreated"
+      />
+      <!-- 地图标注 -->
+      <mp-markers-highlight-popup
+        :features="queryFeatures"
+        :highlightIds="querySelection"
+        :normalize="({ key }) => ({ uid: key })"
+      />
+    </template>
     <!-- 联合查询结果树 -->
     <mp-window
       title="查询结果"
@@ -61,31 +62,29 @@ import MapViewMixin, { Rect } from '../../mixins/map-view'
     MpQueryResultTree,
     MpMarkersHighlightPopup
   },
-  provide: vm => ({
-    map: vm.map,
-    mapbox: vm.mapbox
-  })
-  // provide() {
-  //   const self = this
-  //   return {
-  //     get mapbox() {
-  //       return self.mapbox
-  //     },
-  //     get map() {
-  //       return self.map
-  //     }
-  //   }
-  // }
+  provide() {
+    const self = this
+    return {
+      get mapbox() {
+        return self.mapbox
+      },
+      get map() {
+        return self.map
+      }
+    }
+  }
 })
 export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
-  // 双向绑定弹框开关
-  @Prop({ default: false }) value!: boolean
-
   // 图层
   @Prop({ default: () => ({}) }) mapViewLayer!: Layer
 
+  // 双向绑定弹框开关
+  @Prop({ default: false }) queryVisible!: boolean
+
   // 查询范围
   @Prop({ default: () => ({}) }) queryRect!: boolean
+
+  document = null
 
   map: any = {}
 
@@ -94,15 +93,17 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 图层样式
   mapStyle: any = defaultStyle
 
+  // basedraw对象
   mapboxBaseDrawer: any = null
-
-  mapboxBaseDrawerEl: any = null
 
   // 地图是否加载完成
   isMapLoaded = false
 
   // 操作按钮类型
   operationType: OperationType = 'UNKNOW'
+
+  // 结果树弹框开关
+  windowVisible = false
 
   // 结果树中展开的节点的所有子节点
   queryFeatures: Record<string, any>[] = []
@@ -120,22 +121,16 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     uncombine_features: false
   }
 
-  // 获取document
-  get document() {
-    const _document: any = new Document(null, null, null, [])
+  /**
+   * 初始化图层
+   */
+  onInitDocument() {
+    const _document: Document = new Document(null, null, null, [])
     const defaultMap = _document.defaultMap
     defaultMap.removeAll()
     defaultMap.add(this.mapViewLayer)
-    return _document
-  }
-
-  // 结果树弹框开关
-  get windowVisible() {
-    return this.value
-  }
-
-  set windowVisible(nV) {
-    this.$emit('input', nV)
+    this.document = _document
+    this.clearClick()
   }
 
   /**
@@ -145,7 +140,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   onMapLoad({ map, mapbox }) {
     this.map = map
     this.mapbox = mapbox
-    console.log('onMapLoad', map)
     this.map.on('mousemove', () => (this.activeMapViewId = this.mapViewId))
     this.map.on('move', () => {
       if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
@@ -166,6 +160,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 添加绘制
    */
   onAdded(e) {
+    if (!this.isMapLoaded) return
     this.mapboxBaseDrawer = e.drawer
   }
 
@@ -173,6 +168,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 创建绘制
    */
   onGraphicCreated(e) {
+    if (!this.isMapLoaded) return
     const { id, geometry } = e.features[0]
     if (this.mapboxBaseDrawer) {
       this.mapboxBaseDrawer.delete(id)
@@ -198,7 +194,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     const rect: Rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'QUERY':
-        this.query(rect, this.mapViewId)
+        this.query(rect)
         break
       case 'ZOOMIN':
         this.zoomIn(rect)
@@ -246,8 +242,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   enableDrawer() {
     const drawerEl: any = this.$refs.mapboxBaseDrawer
     if (drawerEl) {
-      this.mapboxBaseDrawerEl = drawerEl
-      this.mapboxBaseDrawerEl.enableDrawer()
+      drawerEl.enableDrawer()
     }
 
     if (this.mapboxBaseDrawer) {
@@ -266,17 +261,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     } else {
       dragPan.disable()
     }
-  }
-
-  /**
-   * 跳转至某个范围
-   * @param rect
-   */
-  jumpToRect({ xmin, xmax, ymin, ymax }: Rect) {
-    this.map.fitBounds([
-      [xmax, ymin],
-      [xmin, ymax]
-    ])
   }
 
   /**
@@ -316,20 +300,57 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   /**
-   * 清除点击, 清除图层上的结果树中点中的节点图层
+   * 清除点击, 清除图层上的标注
    */
-  clearClick() {
+  clearClick(windowVisible = false) {
+    this.windowVisible = windowVisible
+    this.queryFeatures = []
     this.querySelection = []
   }
 
   /**
-   * 监听: 更新复位范围
+   * 监听: 结果树开关
+   */
+  @Watch('queryVisible')
+  watchQueryVisible(nV) {
+    if (nV) {
+      this.windowVisible = nV
+    }
+  }
+
+  /**
+   * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
+   */
+  @Watch('windowVisible')
+  watchWindowVisible(nV) {
+    if (!nV) {
+      this.clearClick()
+      this.$emit('update:queryVisible', false)
+    }
+  }
+
+  /**
+   * 监听: 图层变化
+   */
+  @Watch('mapViewLayer.id')
+  watchMapViewLayer(nV: string, oV: string) {
+    if (nV && nV !== oV) {
+      this.onInitDocument()
+    }
+  }
+
+  /**
+   * 监听: 更新地图视图范围
    */
   @Watch('activeMapViewDisplayRect', { deep: true })
   watchActiveMapViewDisplayRect(nV) {
-    if (this.isMapLoaded && this.mapViewId !== this.activeMapViewId) {
+    if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
       this.jumpToRect(nV)
     }
+  }
+
+  created() {
+    this.onInitDocument()
   }
 }
 </script>

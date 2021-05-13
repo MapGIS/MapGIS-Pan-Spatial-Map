@@ -1,10 +1,10 @@
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Mixins, Component, Prop } from 'vue-property-decorator'
 import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
 
 export { Rect }
 
 @Component
-export default class MapViewMixin extends Vue {
+export default class MapViewMixin extends Mixins<Record<string, any>>(Vue) {
   @Prop({ default: '' }) mapViewId!: string
 
   private map: any = {}
@@ -45,12 +45,31 @@ export default class MapViewMixin extends Vue {
   }
 
   /**
+   *  跳转至指定范围
+   * @param rect
+   */
+  jumpToRect({ xmin, xmax, ymin, ymax }: Rect) {
+    this.map.fitBounds([
+      [xmax, ymin],
+      [xmin, ymax]
+    ])
+  }
+
+  /**
+   * 判断矩形范围是否可用
+   * @param {Rect} rect
+   */
+  isValidRect(rect: Rect) {
+    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
+  }
+
+  /**
    * 查询地图
    * @param {Rect} rect 指定区域
-   * @param {string} mapViewId 图层id
    */
-  query(rect: Rect, mapViewId: string) {
-    this.$emit('on-query', rect, mapViewId)
+  query(rect: Rect) {
+    this.clearClick(true)
+    this.$emit('on-query', rect)
   }
 
   /**
@@ -59,10 +78,7 @@ export default class MapViewMixin extends Vue {
    */
   zoomIn(rect: Rect) {
     if (this.isValidRect(rect)) {
-      this.map.fitBounds([
-        [rect.xmax, rect.ymin],
-        [rect.xmin, rect.ymax]
-      ])
+      this.jumpToRect(rect)
     } else {
       this.map.zoomIn()
     }
@@ -79,13 +95,5 @@ export default class MapViewMixin extends Vue {
         center: [(rect.xmin + rect.xmin) / 2, (rect.ymin + rect.ymax) / 2]
       })
     }
-  }
-
-  /**
-   * 判断矩形范围是否可用
-   * @param {Rect} rect
-   */
-  isValidRect(rect: Rect) {
-    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
   }
 }

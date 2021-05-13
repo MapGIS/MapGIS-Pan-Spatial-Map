@@ -20,15 +20,13 @@ import {
 import MpMarkPopupMapbox from '../../../../pan-spatial-map-plugin-workspace/src/components/AttributeTable/TableMapbox.vue'
 
 interface IFeature {
-  key?: string // 图层ID
-  id?: string // 图层ID
-  layerId?: string // 图层ID
+  key?: string // 图层UUID
   title?: string // 图层名称
   feature?: GFeature
 }
 
 interface INormalizedFeature {
-  layerId: string // 图层ID
+  uid: string // 图层UUID
   title: string // 图层名称
   feature: string
 }
@@ -115,8 +113,11 @@ export default class MpMarkersHighlightPopup extends Mixins<
    * 添加标注
    */
   addMarkers() {
+    if (this.markers.length) {
+      this.removeMarkers()
+    }
     this.markers = this.normalizedFeatures.reduce<IMarker[]>(
-      (result, { feature }) => {
+      (result, { uid, feature }) => {
         const coordinates = utilInstance.getGeoJsonFeatureCenter(feature)
         const centerItems = [coordinates[0], coordinates[1]]
         if (centerItems.every(v => !Number.isNaN(v))) {
@@ -127,14 +128,13 @@ export default class MpMarkersHighlightPopup extends Mixins<
             feature,
             properties: feature.properties,
             fid: feature.properties.fid,
-            id: UUID.uuid()
+            id: uid
           })
         }
         return result
       },
       []
     )
-    console.log('this.markers', this.markers)
   }
 
   /**
@@ -149,10 +149,10 @@ export default class MpMarkersHighlightPopup extends Mixins<
    */
   hightlightMarkers() {
     this.markers.forEach(marker => {
-      const imgType = this.highlightIds.includes(marker.fid)
+      const imgType = this.highlightIds.includes(marker.id)
         ? 'selectedImg'
         : 'defaultImg'
-      marker.img = this.getColorConfigImg(imgType)
+      this.$set(marker, 'img', this.getColorConfigImg(imgType))
     })
     const { MIN_VALUE, MAX_VALUE } = Number
     this.selectionBound = this.normalizedFeatures.reduce(
