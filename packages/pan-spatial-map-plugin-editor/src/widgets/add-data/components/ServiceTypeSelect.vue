@@ -2,7 +2,7 @@
   <div class="service-type-select">
     <div class="container-head">
       <span>服务类型:</span>
-      <a-select class="select-first" v-model="option" @change="onChange">
+      <a-select class="select-first" v-model="option">
         <a-select-option v-for="item in serviceTypes" :key="item.value">{{
           item.label
         }}</a-select-option>
@@ -159,9 +159,7 @@ export default class ServiceTypeSelect extends Vue {
 
   // 配合@Model触发change事件更新value值
   @Emit()
-  change(val: Record<string, unknown>) {
-    console.log(this.value)
-  }
+  change(val: Record<string, unknown>) {}
 
   @Watch('serviceTypes', { deep: true })
   updateServiceTypes() {
@@ -201,8 +199,6 @@ export default class ServiceTypeSelect extends Vue {
   }
 
   changeIgsData(obj) {
-    console.log('sfafas')
-
     const type = this.option
     const { ip, port } = obj
     if (type === 'layer') {
@@ -212,11 +208,6 @@ export default class ServiceTypeSelect extends Vue {
       const { serverName } = obj
       this.change({ type, serverName, ip, port })
     }
-  }
-
-  onChange(value, option) {
-    console.log(value)
-    console.log(option)
   }
 }
 </script>

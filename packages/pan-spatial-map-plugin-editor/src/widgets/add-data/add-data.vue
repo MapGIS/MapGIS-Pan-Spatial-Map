@@ -2,7 +2,10 @@
   <div class="mp-widget-add-data">
     <a-tabs default-active-key="1">
       <a-tab-pane key="1" tab="数据列表">
-        <add-services-data :service-types="allTypes" />
+        <add-services-data
+          :service-types="allTypes"
+          :widget-config="widgetConfig"
+        />
       </a-tab-pane>
       <a-tab-pane key="2" tab="URL">
         <add-service-url :service-types="tempServiceTypes" />
@@ -19,7 +22,7 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, Document } from '@mapgis/web-app-framework'
 import {
   AddServicesMixin,
   ServiceType,
@@ -62,107 +65,41 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
     this.oldServicesToNew()
   }
 
-  async oldServicesToNew() {
+  // 通过配置获取数据，并初始化服务分类下拉项
+  oldServicesToNew() {
+    const doc: Document = this.document
+    const selectCategory = []
     let tempServices: Record<string, any>[] = []
+    this.serviceCategories = []
     if (this.is2DMapMode) {
-      tempServices = this.widgetInfo.config.services2D
+      tempServices = this.widgetInfo.config.services2D.reduce(
+        (result, item) => {
+          if (item.id !== '') {
+            result.push(item)
+          } else {
+            result.push({ ...item, ...{ id: uuid() } })
+          }
+          return result
+        },
+        []
+      )
     } else {
       tempServices = this.widgetInfo.config.services3D
     }
     if (!tempServices) {
       return
     }
-    this.services = []
-    this.serviceCategories = []
-    const themes: string[] = []
-    for (let i = 0; i < tempServices.length; i += 1) {
-      const childs = tempServices[i].children
-      if (childs) {
-        for (let c = 0; c < childs.length; c += 1) {
-          const child = childs[c]
-          const {
-            ip,
-            port,
-            name,
-            serverUrl,
-            theme,
-            type,
-            layerType,
-            extend,
-            token
-          } = child
-          const serviceCategorie = { name: theme, desc: theme }
-          if (!themes.includes(theme)) {
-            themes.push(theme)
-            this.addServiceCategory(serviceCategorie)
-          }
-          let tempLayerType = type
-          if (type === 'Layer') {
-            tempLayerType = 'layer'
-          }
-          if (type === 'MapGIS') {
-            // 如果访问不到服务，进程到这里会断掉，后面的数据会获取不到，新版已取消MapGIS类型，分为doc和tile，不需要再去通过服务来判别类型
-            const res: any = await queryIgsServicesInfoInstance.getMapInfoService(
-              {
-                ip,
-                port,
-                name
-              }
-            )
-            if (!res) {
-              // eslint-disable-next-line no-continue
-              continue
-            }
-            tempLayerType = res.type
-          }
-          const service: Service = {
-            id: uuid(),
-            ip,
-            port,
-            name,
-            url: serverUrl || tempLayerType,
-            category: theme,
-            type: tempLayerType,
-            visible: false,
-            layerType,
-            extend,
-            token
-          }
-          this.addService(service)
-        }
-      } else {
-        const {
-          id,
-          ip,
-          port,
-          name,
-          url,
-          category,
-          type,
-          layerType,
-          extend,
-          token
-        } = tempServices[i]
-        const serviceCategorie = { name: category, desc: category }
-        if (!themes.includes(category)) {
-          themes.push(category)
-          this.addServiceCategory(serviceCategorie)
-        }
-        const service: Service = {
-          id,
-          ip,
-          port,
-          name,
-          url,
-          category,
-          type,
-          visible: false,
-          layerType,
-          extend,
-          token
-        }
-        this.addService(service)
+    // 初始化服务分类下拉项
+    tempServices.forEach(item => {
+      if (!selectCategory.includes(item.category)) {
+        const selectOption = { name: item.category, desc: item.category }
+        selectCategory.push(item.category)
+        this.addServiceCategory(selectOption)
       }
+    })
+    for (let i = 0; i < tempServices.length; i++) {
+      const service = tempServices[i]
+      this.addService(service)
     }
   }
 }
