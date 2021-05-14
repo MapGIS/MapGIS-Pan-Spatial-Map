@@ -113,5 +113,5 @@ export interface IComputed {
   getSelectedTime: string
   getSelectedTimeList: string[]
   getSelectedConfig?: IThematicMapSubjectNewConfig
-  getQueryFeatureParams?: FeatureQueryParam
+  getFeatureQueryParams?: FeatureQueryParam
 }

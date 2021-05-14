@@ -1,7 +1,13 @@
 <template>
   <div class="mapbox-thematic-map-layers">
     <template v-for="t in subjectLayers">
-      <component :is="t" :key="t" :config="config" v-if="subjectType === t" />
+      <component
+        :is="t"
+        :key="t"
+        :config="config"
+        :featureQueryParams="featureQueryParams"
+        v-if="subjectType === t"
+      />
     </template>
   </div>
 </template>
@@ -33,6 +39,11 @@ export default class MapBoxThematicMapLayers extends Vue {
   // 专题配置
   get config() {
     return thematicMapInstance.getSelectedConfig
+  }
+
+  // 获取query参数
+  get featureQueryParams() {
+    return thematicMapInstance.getFeatureQueryParams
   }
 
   // 获取专题类别

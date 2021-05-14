@@ -10,9 +10,7 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop } from 'vue-property-decorator'
-import { UUID } from '@mapgis/web-app-framework'
 import {
-  thematicMapInstance,
   queryFeaturesInstance,
   utilInstance
 } from '@mapgis/pan-spatial-map-store'
@@ -31,23 +29,9 @@ interface IStyle {
 export default class SubSectionMapLayer extends Mixins(
   MapboxThematicMapLayersMinxin
 ) {
-  id = UUID.uuid()
-
-  dataSet: any = null
-
   properties: Record<string, any> = {}
 
   coordinates = [0, 0]
-
-  // 获取某个专题某个年度的subData
-  get subDataConfig() {
-    return this.config.configSubData
-  }
-
-  // 获取参数
-  get featureParams() {
-    return thematicMapInstance.getQueryFeatureParams
-  }
 
   // 获取属性keys
   get propertiesKeys() {
@@ -92,8 +76,8 @@ export default class SubSectionMapLayer extends Mixins(
    * 展示图层
    */
   async showLayer() {
-    if (this.featureParams) {
-      this.dataSet = await queryFeaturesInstance.query(this.featureParams)
+    if (this.featureQueryParams) {
+      this.dataSet = await queryFeaturesInstance.query(this.featureQueryParams)
       this.updateLayer()
     }
   }
@@ -112,7 +96,7 @@ export default class SubSectionMapLayer extends Mixins(
           alwaysMapCRS: true
         }
       }
-    )
+    ).onAdd(this.map)
     if (!_thematicMapLayer) return
     const color = this.getColor()
     _thematicMapLayer.style = new window.Zondy.Map.ThemeStyle({

@@ -235,9 +235,9 @@ export default class ThematicMapStatisticTable extends Vue {
   async onUpdateStatistic() {
     const xArr = []
     const yArr = []
-    if (thematicMapInstance.getQueryFeatureParams) {
+    if (thematicMapInstance.getFeatureQueryParams) {
       const fn = queryFeaturesInstance.query(
-        thematicMapInstance.getQueryFeatureParams
+        thematicMapInstance.getFeatureQueryParams
       )
       if (fn && fn.then) {
         this.loading = true

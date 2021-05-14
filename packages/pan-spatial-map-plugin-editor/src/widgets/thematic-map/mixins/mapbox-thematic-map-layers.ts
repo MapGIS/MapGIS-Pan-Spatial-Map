@@ -1,4 +1,5 @@
 import { Vue, Component, Inject, Prop } from 'vue-property-decorator'
+import { UUID } from '@mapgis/web-app-framework'
 
 @Component
 export default class MapboxThematicMapLayersMinxin extends Vue {
@@ -6,9 +7,20 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
 
   @Inject('mapbox') mapbox: any
 
-  @Prop({ default: () => ({}) }) config!: any // 某个专题的配置
+  // 某个专题的配置
+  @Prop({ default: () => ({}) }) config!: any
+
+  // 某个专题配置featureQuery参数
+  @Prop({ default: () => ({}) }) featureQueryParams!: any
+
+  id = UUID.uuid()
 
   thematicMapLayer: any = null
+
+  // 获取某个专题某个年度的subData
+  get subDataConfig() {
+    return this.config.configSubData
+  }
 
   /**
    * 初始化图层

@@ -26,7 +26,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
   data: () => {
     return {
       // 页码
-      page: 1,
+      page: 0,
       // 页容量
       pageCount: 10,
       // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
@@ -52,7 +52,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
      */
     pageParam() {
       return {
-        page: this.page,
+        page: this.page - 1,
         pageCount: this.pageCount
       }
     },
@@ -136,8 +136,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
     /**
      * 获取QueryFeature数据请求报文
      */
-    getQueryFeatureParams() {
-      const { getBaseConfig, getSelectedConfig, pageParam } = this
+    getFeatureQueryParams() {
       if (!this.getSelectedConfig) return
       const { baseIp, basePort } = this.getBaseConfig as IThematicMapBaseConfig
       const { configType = 'gdbp', configSubData } = this.getSelectedConfig

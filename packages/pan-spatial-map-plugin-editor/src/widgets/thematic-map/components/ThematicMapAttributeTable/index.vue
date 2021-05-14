@@ -75,7 +75,7 @@ export default class ThematicMapAttributeTable extends Vue {
   timeList: string[] = []
 
   // 列表页码
-  page = 1
+  page = 0
 
   // 列表页容量
   pageCount = 10
@@ -228,9 +228,9 @@ export default class ThematicMapAttributeTable extends Vue {
    * 获取列表数据
    */
   getTableData() {
-    if (thematicMapInstance.getQueryFeatureParams) {
+    if (thematicMapInstance.getFeatureQueryParams) {
       const fn = queryFeaturesInstance.query(
-        thematicMapInstance.getQueryFeatureParams
+        thematicMapInstance.getFeatureQueryParams
       )
       if (fn && fn.then) {
         this.loading = true
