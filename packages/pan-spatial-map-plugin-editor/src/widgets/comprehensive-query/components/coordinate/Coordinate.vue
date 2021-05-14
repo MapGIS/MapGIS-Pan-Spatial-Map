@@ -332,7 +332,7 @@ export default class Coordinate extends Mixins(AppMixin) {
         features: [
           {
             type: 'Feature',
-            properties: {},
+            properties: { name: this.frameNo },
             geometry: {
               type: 'Polygon',
               coordinates: [

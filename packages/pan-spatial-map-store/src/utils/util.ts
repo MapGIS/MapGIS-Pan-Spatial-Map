@@ -3,6 +3,7 @@ import { Crs } from '@mapgis/webclient-store'
 import baseConfigInstance from '../config/base'
 import { GFeature } from '../service/query-features'
 import { getRequest } from './request'
+import { getConfig } from '../api/config'
 
 class Util {
   /**
@@ -358,32 +359,33 @@ class Util {
    * @return {*}
    * @memberof Util
    */
-  getFrameNoList(
-    scale: string,
-    page = 1,
-    count = 20,
-    keyword = '',
-    frameGdbp = ''
-  ) {
-    const { ip, port } = baseConfigInstance.config
-    const srsId = baseConfigInstance.config.projectionName
-    const objSrsId = baseConfigInstance.config.projectionName
-    const igsUrl = `http://${ip}:${port}/onemap/cliprect/clipList`
-    const url = '/onemap/WebService/GetFrameNoList'
-    return getRequest().get(url, {
-      params: {
-        f: 'json',
-        scale,
-        rect: `${baseConfigInstance.config.xmin},${baseConfigInstance.config.ymin},${baseConfigInstance.config.xmax},${baseConfigInstance.config.ymax}`,
-        srsId,
-        objSrsId,
-        url: igsUrl,
-        frameGdbp,
-        page,
-        count,
-        keyword
-      }
-    })
+  async getFrameNoList({ scale }) {
+    try {
+      const { id, port, name, gdbp } = await getConfig('sheet')
+      const url = `http://${id}:${port}/onemap/cliprect/clipList`
+      // 通过sheetConfig内的ip、port、name去获取地图范围，构造成[xMin, yMin, xMax, yMax]，用于查询图幅号
+      const {
+        data: { xMin, yMin, xMax, yMax }
+      } = await axios.get(`http://${id}:${port}/igs/rest/mrms/info/${name}`)
+
+      const rect = `${xMin},${yMin},${xMax},${yMax}`
+      const data = await getRequest()({
+        url: '/api/map-sheet/no',
+        method: 'get',
+        params: {
+          scale,
+          rect,
+          originSrs: baseConfigInstance.config.projectionName,
+          destSrs: baseConfigInstance.config.projectionName,
+          gdbp,
+          url
+        }
+      })
+
+      return data
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   /**

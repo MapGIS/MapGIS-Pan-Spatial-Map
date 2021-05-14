@@ -14,29 +14,49 @@
           <label class="col-auto">图幅号：</label>
         </a-col>
         <a-col :flex="1">
-          <a-input-search
-            placeholder="请输入关键字"
-            v-model="keyword"
-            @search="search"
-          />
+          <a-input placeholder="请输入关键字" allowClear v-model="keyword" />
         </a-col>
       </a-row>
-      <a-list bordered :data-source="list" size="small">
+      <a-list
+        :loading="loading"
+        :data-source="searchList"
+        :pagination="pagination"
+        size="small"
+      >
         <div slot="header">
           选择图幅：
         </div>
-        <a-list-item slot="renderItem" slot-scope="item" @click="select(item)">
-          {{ item }}
+        <a-list-item
+          slot="renderItem"
+          slot-scope="item"
+          @click="select(item)"
+          :class="{ 'select-item': selectItem === item }"
+        >
+          <template
+            v-if="item.toUpperCase().indexOf(keyword.toUpperCase()) > -1"
+          >
+            <span>{{
+              item.substr(0, item.toUpperCase().indexOf(keyword.toUpperCase()))
+            }}</span>
+            <span class="filter-words">{{
+              item.substr(
+                item.toUpperCase().indexOf(keyword.toUpperCase()),
+                keyword.length
+              )
+            }}</span>
+            <span>{{
+              item.substr(
+                item.toUpperCase().indexOf(keyword.toUpperCase()) +
+                  keyword.length
+              )
+            }}</span>
+          </template>
+          <span v-else>
+            {{ item }}
+          </span>
         </a-list-item>
       </a-list>
     </a-space>
-    <!-- <q-pagination
-      class="col-auto"
-      v-model="currentPage"
-      :max="maxPage"
-      :input="true"
-    >
-    </q-pagination> -->
     <zone-frame-mapbox
       v-if="is2DMapMode"
       :geojson="geojson"
@@ -88,15 +108,17 @@ export default class Frame extends Mixins(AppMixin) {
     { label: '1:100万', value: 'Scale_100w' }
   ]
 
-  private currentPage = 1
-
-  private pageCount = 20
-
   private maxPage = 0
 
   private list: string[] = []
 
+  private searchList: string[] = []
+
+  private loading = false
+
   private keyword = ''
+
+  private selectItem = ''
 
   private geojson: Record<string, any> = {}
 
@@ -104,41 +126,37 @@ export default class Frame extends Mixins(AppMixin) {
 
   private get pagination() {
     return {
-      pageSize: this.pageCount,
-      total: this.maxPage,
-      current: this.currentPage,
-      onChange: page => {
-        this.currentPage = page
-      }
+      size: 'small',
+      total: this.searchList.length
     }
   }
 
-  @Watch('currentPage', { immediate: true, deep: true })
   @Watch('scale', { immediate: true })
-  private async search() {
-    const { scale } = this
-    const {
-      data: { msg, total }
-    } = await utilInstance.getFrameNoList(
-      scale,
-      this.currentPage,
-      this.pageCount,
-      this.keyword
-    )
-    this.list = msg
-    this.maxPage = total
+  private async scaleChange() {
+    this.loading = true
+    try {
+      const { scale } = this
+      const list = await utilInstance.getFrameNoList({ scale })
+      this.list = list || []
+      this.searchList = list || []
+    } catch (error) {
+      this.list = []
+      this.searchList = []
+    } finally {
+      this.loading = false
+    }
   }
 
   @Watch('active')
   activeChange(val) {
     if (!val) {
+      this.selectItem = ''
       this.clear()
-    } else {
-      this.getGeoJson()
     }
   }
 
   private async select(item: string) {
+    this.selectItem = item
     const {
       data: { XMin, YMin, XMax, YMax }
     } = await utilInstance.getRectByFrameNo(item)
@@ -148,7 +166,7 @@ export default class Frame extends Mixins(AppMixin) {
       features: [
         {
           type: 'Feature',
-          properties: {},
+          properties: { name: item },
           geometry: {
             type: 'Polygon',
             coordinates: [
@@ -186,10 +204,21 @@ export default class Frame extends Mixins(AppMixin) {
   .ant-space {
     .ant-space-item {
       .ant-list {
-        .ant-spin-nested-loading {
-          .ant-spin-container {
-            max-height: 200px;
-            overflow-y: auto;
+        .ant-spin-container {
+          max-height: 200px;
+          overflow-y: auto;
+          .select-item {
+            background-color: @blue-1;
+          }
+          .ant-list-item {
+            justify-content: flex-start;
+            padding-left: 10px;
+            &:hover {
+              background-color: @hover-bg-color;
+            }
+            .filter-words {
+              color: @primary-color;
+            }
           }
         }
       }

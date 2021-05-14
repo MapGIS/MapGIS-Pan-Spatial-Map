@@ -113,6 +113,16 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
           'fill-opacity': 0.75
         }
       })
+      this.map.addLayer({
+        id: 'coordinate-text',
+        type: 'symbol',
+        source: 'coordinate',
+        paint: { 'text-color': '#ffffff' },
+        layout: {
+          'text-field': '{name}',
+          'text-size': 14
+        }
+      })
     }
   }
 
@@ -138,6 +148,9 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
 
   // 清除
   private clearCoordinate() {
+    if (this.map.getLayer('coordinate-text')) {
+      this.map.removeLayer('coordinate-text')
+    }
     if (this.map.getLayer('coordinate')) {
       this.map.removeLayer('coordinate')
     }

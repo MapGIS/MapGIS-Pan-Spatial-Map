@@ -48,7 +48,7 @@
           <frame
             ref="map-sheet"
             v-model="geoJson"
-            :active="locationType === 'coordinate'"
+            :active="locationType === 'map-sheet'"
           />
         </a-tab-pane>
       </a-tabs>

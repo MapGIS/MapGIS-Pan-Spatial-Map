@@ -49,6 +49,16 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
           // 'line-width': Number(this.lineWidth)
         }
       })
+      this.map.addLayer({
+        id: 'zone-frame-text',
+        type: 'symbol',
+        source: 'zone-frame',
+        paint: { 'text-color': '#ffffff' },
+        layout: {
+          'text-field': '{name}',
+          'text-size': 14
+        }
+      })
       if (val && JSON.stringify(val) !== '{}') {
         const box = bbox(val)
         const polygon = bboxPolygon(box)
@@ -75,6 +85,9 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
   }
 
   clear() {
+    if (this.map.getLayer('zone-frame-text')) {
+      this.map.removeLayer('zone-frame-text')
+    }
     if (this.map.getLayer('zone-frame')) {
       this.map.removeLayer('zone-frame')
     }
