@@ -146,6 +146,12 @@ export class ArcGISMapImageLayer extends MapImageLayer {
                 this.sublayers.push(sublayer)
               })
             }
+
+            // 2.6 空间参照系
+            if (metaData.spatialReference) {
+              if (metaData.spatialReference.wkid)
+                this.spatialReference.wkid = metaData.spatialReference.wkid
+            }
           }
 
           // 3 设置参数默认值
@@ -255,7 +261,7 @@ export class ArcGISSublayer extends Sublayer {
 
     // parentLayerId、subLayerIds、type
 
-    // todo:ArcGISSublayer暂不支持嵌套。需了解arcGIS瓦片服务的返回结果，并进行解析。
+    // todo:ArcGISSublayer暂不支持嵌套。需了解arcGIS服务的返回结果，并进行解析。
   }
 
   /**
