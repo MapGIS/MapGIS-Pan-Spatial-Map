@@ -10,35 +10,29 @@
     style="height: 100%; width: 100%"
   >
     <div v-for="layerProps in layers" :key="layerProps.layerId">
-      <cesium-igs-tile-layer
+      <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :id="layerProps.layerId"
         :show="layerProps.show"
-        :ip="layerProps.ip"
-        :port="layerProps.port"
-        :serverName="layerProps.serverName"
+        :url="layerProps.url"
       />
-      <cesium-igs-doc-layer
+      <mapgis-3d-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
         :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
-        :ip="layerProps.ip"
-        :port="layerProps.port"
-        :serverName="layerProps.serverName"
       />
-      <cesium-igs-wms-layer
+      <mapgis-3d-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
         :id="layerProps.layerId"
         :show="layerProps.show"
-        :url="layerProps.url"
+        :url="layerProps.baseUrl"
       />
-      <cesium-igs-wmts-layer
+      <mapgis-3d-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
         :id="layerProps.layerId"
         :show="layerProps.show"
-        :url="layerProps.url"
-        :serverName="layerProps.serverName"
+        :url="layerProps.baseUrl"
       />
       <cesium-arcgis-layer
         v-if="isArcgisMapLayer(layerProps.type)"
@@ -104,34 +98,10 @@
 
 <script>
 import { Layer, LayerType, LoadStatus } from '@mapgis/web-app-framework'
-import { CesiumRasterLayer } from '@mapgis/webclient-vue-cesium'
-import CesiumIgsWmsLayer from '../CesiumLayers/CesiumIgsWmsLayer.vue'
-import CesiumIgsWmtsLayer from '../CesiumLayers/CesiumIgsWmtsLayer.vue'
-import CesiumIgsTileLayer from '../CesiumLayers/CesiumIgsTileLayer.vue'
-import CesiumIgsDocLayer from '../CesiumLayers/CesiumIgsDocLayer.vue'
-import CesiumArcgisLayer from '../CesiumLayers/CesiumArcgisLayer.vue'
-import CesiumDoc3dLayer from '../CesiumLayers/CesiumDoc3dLayer.vue'
-import CesiumTile3dLayer from '../CesiumLayers/CesiumTile3dLayer.vue'
-import CesiumPointcloudLayer from '../CesiumLayers/CesiumPointcloudLayer.vue'
-import CesiumVectortileLayer from '../CesiumLayers/CesiumVectortileLayer.vue'
-import CesiumTdtLayer from '../CesiumLayers/CesiumTdtLayer.vue'
-import CesiumTerrainLayer from '../CesiumLayers/CesiumTerrainLayer.vue'
 
 export default {
   name: 'MpCesiumView',
-  components: {
-    CesiumRasterLayer,
-    CesiumIgsDocLayer,
-    CesiumIgsWmsLayer,
-    CesiumIgsWmtsLayer,
-    CesiumIgsTileLayer,
-    CesiumArcgisLayer,
-    CesiumVectortileLayer,
-    CesiumDoc3dLayer,
-    CesiumTile3dLayer,
-    CesiumPointcloudLayer,
-    CesiumTerrainLayer
-  },
+  components: {},
   props: {
     document: {
       type: Object,
