@@ -53,7 +53,8 @@ import { AppMixin } from '@mapgis/web-app-framework'
 import {
   AddServicesMixin,
   ServiceType,
-  Service
+  Service,
+  api
 } from '@mapgis/pan-spatial-map-store'
 import axios from 'axios'
 
@@ -63,6 +64,8 @@ export default class AddServicesData extends Mixins(
   AddServicesMixin
 ) {
   @Prop(Array) readonly serviceTypes!: ServiceType[]
+
+  @Prop(Object) widgetConfig!: object
 
   // 类别选中项
   private serviceCategory = ''
@@ -120,8 +123,6 @@ export default class AddServicesData extends Mixins(
   @Watch('serviceCategory', { immediate: true })
   @Watch('serviceType', { immediate: true })
   getData() {
-    console.log(this.services)
-
     this.tableData = this.services.filter(item => {
       if (this.serviceCategory && item.category !== this.serviceCategory)
         return false
@@ -133,7 +134,9 @@ export default class AddServicesData extends Mixins(
     this.selectedRowKeys = this.tableData
       .filter(item => item.visible === true)
       .map(item => item.id)
-    this.onSelectChange(this.selectedRowKeys)
+    if (this.selectedRowKeys.length > 0) {
+      this.onSelectChange(this.selectedRowKeys)
+    }
   }
 
   created() {
@@ -202,35 +205,24 @@ export default class AddServicesData extends Mixins(
 
   // 点击删除图标的回调
   onDelete(text) {
-    console.log(text)
     this.deleteService(text)
     this.getData()
   }
 
   // 点击保存服务按钮的回调
   onSave() {
-    const url = '/onemap/WebService/SaveConfig'
-    let fileName = 'addService'
-    if (!this.is2DMapMode) {
-      fileName = 'addService3d'
-    }
-    const data = JSON.stringify(this.services)
-    const fd = new FormData()
-    fd.append('id', fileName)
-    fd.append('config', data)
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }
-    axios.post(url, fd, config).then(
-      res => {
+    const config = { ...this.widgetConfig, ...{ services2D: this.services } }
+    api
+      .saveWidgetConfig({
+        name: 'add-data',
+        config: JSON.stringify(config)
+      })
+      .then(_ => {
         this.$message.success('保存成功')
-      },
-      error => {
+      })
+      .catch(_ => {
         this.$message.error('保存失败')
-      }
-    )
+      })
   }
 }
 </script>

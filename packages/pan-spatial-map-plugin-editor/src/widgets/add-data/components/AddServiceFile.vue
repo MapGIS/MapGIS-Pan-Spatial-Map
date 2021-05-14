@@ -105,8 +105,6 @@ export default class AddServiceFile extends Mixins(
     if (!this.option) {
       return
     }
-    console.log(this.option)
-
     if (this.option == 'tif') {
       this.accept = '.tif,.tfw,.tif.ovr,.tif.vat.dbf,.tif.aux.xml'
       this.label =
@@ -126,7 +124,6 @@ export default class AddServiceFile extends Mixins(
   }
 
   created() {
-    console.log(this.widgetConfig)
     this.uploadIp = this.widgetConfig.uploadIp
     this.uploadPort = this.widgetConfig.uploadPort
   }
@@ -144,7 +141,6 @@ export default class AddServiceFile extends Mixins(
   }
 
   beforeUpload(file) {
-    console.log(file)
     const isLt2M = file.size / 1024 / 1024 < 200
     if (!isLt2M) {
       this.$message.error('File must smaller than 200MB!')
@@ -161,7 +157,6 @@ export default class AddServiceFile extends Mixins(
         return false
       }
       if (this.isUploadToIGS) {
-        console.log(info)
       }
     }
   }

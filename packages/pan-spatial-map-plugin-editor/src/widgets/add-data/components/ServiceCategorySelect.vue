@@ -60,7 +60,6 @@ export default class ServiceCategorySelect extends Mixins(
 
   @Watch('visible')
   changeVisible(newVal) {
-    console.log(this.value)
     if (newVal) {
       this.newName = ''
       this.newDesc = ''

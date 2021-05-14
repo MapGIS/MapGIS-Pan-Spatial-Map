@@ -368,7 +368,7 @@ export default class MapgisLayer extends Vue {
 
 <style lang="scss" scoped>
 .mapgis-layer {
-  margin-left: 15px;
+  margin-left: 16px;
   flex-grow: 1;
 }
 </style>

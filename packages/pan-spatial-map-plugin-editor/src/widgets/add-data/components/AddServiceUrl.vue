@@ -69,7 +69,6 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
       extend
     } = this.serviceInfo
     const category = this.serviceCategory
-    console.log(category)
     let service: Service
 
     switch (type) {
@@ -141,8 +140,6 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           token,
           visible: true
         }
-        console.log(service)
-
         this.addService(service)
         break
       case 'arcgis':
