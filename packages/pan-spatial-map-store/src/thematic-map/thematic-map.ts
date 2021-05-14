@@ -135,7 +135,6 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
     },
     /**
      * 获取QueryFeature数据请求报文
-     * @returns <object>
      */
     getQueryFeatureParams() {
       const { getBaseConfig, getSelectedConfig, pageParam } = this
@@ -188,8 +187,8 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
   methods: {
     /**
      * 设置分页
-     * @param page<number>
-     * @param pageCount <number>
+     * @param page 页码
+     * @param pageCount 页容量
      */
     setPage(page: number, pageCount: number) {
       if (this.page !== page) {
@@ -202,6 +201,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
 
     /**
      * 保存专题服务展示弹框的开关
+     * @param 弹框类型
      */
     setVisible(type: ModuleType) {
       const index = this.moduleTypes.indexOf(type)
@@ -214,6 +214,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
 
     /**
      * 重置专题服务展示弹框的开关
+     * @param 弹框类型
      */
     resetVisible(type?: ModuleType) {
       if (type) {
@@ -225,7 +226,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
 
     /**
      * 设置专题服务的基础和专题配置数据
-     * @param config<object>
+     * @param config 整个专题配置树
      */
     setThematicMapConfig(config: IThematicMapConfig) {
       this.thematicMapConfig = config

@@ -9,13 +9,14 @@
   </mapgis-popup>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Mixins, Component, Prop } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
-import * as Zondy from '@mapgis/webclient-es6-service'
 import {
+  thematicMapInstance,
   queryFeaturesInstance,
   utilInstance
 } from '@mapgis/pan-spatial-map-store'
+import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-layers'
 
 interface IStyle {
   start: number
@@ -27,14 +28,26 @@ interface IStyle {
 }
 
 @Component
-export default class SubSectionMapLayer extends Vue {
+export default class SubSectionMapLayer extends Mixins(
+  MapboxThematicMapLayersMinxin
+) {
   id = UUID.uuid()
 
   dataSet: any = null
 
   properties: Record<string, any> = {}
 
-  coordinates: number[] = [0, 0]
+  coordinates = [0, 0]
+
+  // 获取某个专题某个年度的subData
+  get subDataConfig() {
+    return this.config.configSubData
+  }
+
+  // 获取参数
+  get featureParams() {
+    return thematicMapInstance.getQueryFeatureParams
+  }
 
   // 获取属性keys
   get propertiesKeys() {
@@ -91,23 +104,25 @@ export default class SubSectionMapLayer extends Vue {
   updateLayer() {
     if (!this.dataSet || !this.style) return
     this.remove()
-    this.thematicMapLayer = Zondy.Map.rangeThemeLayer('ThematicMapLayer', {
-      layerOption: {
-        isHoverAble: true,
-        alwaysMapCRS: true
+    const _thematicMapLayer = window.Zondy.Map.rangeThemeLayer(
+      'ThematicMapLayer',
+      {
+        layerOption: {
+          isHoverAble: true,
+          alwaysMapCRS: true
+        }
       }
-    })
-    if (!this.thematicMapLayer) return
-    const _thematicMapLayer = {}
+    )
+    if (!_thematicMapLayer) return
     const color = this.getColor()
-    _thematicMapLayer.style = new Zondy.Map.ThemeStyle({
+    _thematicMapLayer.style = new window.Zondy.Map.ThemeStyle({
       shadowBlur: 2,
       shadowColor: color,
       fillColor: color,
       strokeColor: color
     })
     const highlightColor = 'rgba(255, 0, 0, 1)'
-    _thematicMapLayer.highlightStyle = new Zondy.Map.ThemeStyle({
+    _thematicMapLayer.highlightStyle = new window.Zondy.Map.ThemeStyle({
       stroke: true,
       strokeColor: highlightColor,
       fillColor: highlightColor
@@ -134,15 +149,15 @@ export default class SubSectionMapLayer extends Vue {
     const { attributes, LabelDot } = this.thematicMapLayer.getFeatureById(
       target.refDataID
     )
-    const coord = [LabelDot.X, LabelDot.Y]
-    const attrs = showFields.reduce((obj, v: string) => {
+    const coordinates = [LabelDot.X, LabelDot.Y]
+    const properties = showFields.reduce((obj, v: string) => {
       const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
       obj[tag] = attributes[v]
       return obj
     }, {})
 
-    this.coordinates = coord
-    this.properties = attrs
+    this.coordinates = coordinates
+    this.properties = properties
   }
 
   /**

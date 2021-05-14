@@ -38,7 +38,7 @@ import ThematicMapStatisticTable from './components/ThematicMapStatisticTable'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
 import ThematicMapManageTools from './components/ThematicMapManageTools'
 import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
-import MapBoxThematicMapLayers from './components/MapBoxThematicMapLayers'
+import MapboxThematicMapLayers from './components/MapboxThematicMapLayers'
 
 @Component({
   name: 'MpThematicMap',
@@ -48,7 +48,7 @@ import MapBoxThematicMapLayers from './components/MapBoxThematicMapLayers'
     ThematicMapTimeLine,
     ThematicMapManageTools,
     ThematicMapSubjectAdd,
-    MapBoxThematicMapLayers
+    MapboxThematicMapLayers
   }
 })
 export default class MpThematicMap extends Mixins<Record<string, any>>(
