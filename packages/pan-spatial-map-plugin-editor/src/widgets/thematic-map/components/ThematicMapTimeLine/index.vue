@@ -29,7 +29,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
+import { thematicMapInstance } from '@mapgis/pan-spatial-map-store'
 import { Empty } from 'ant-design-vue'
 import * as echarts from 'echarts'
 import RowFlex from '../RowFlex'
@@ -52,7 +52,7 @@ export default class ThematicMapTimeLine extends Vue {
 
   // 显示开关
   get tlVisible() {
-    const visible = ThematicMapInstance.isVisible('tl')
+    const visible = thematicMapInstance.isVisible('tl')
     if (visible) {
       this.onUpdateChart()
     }
@@ -61,18 +61,18 @@ export default class ThematicMapTimeLine extends Vue {
 
   set tlVisible(nV) {
     if (!nV) {
-      ThematicMapInstance.resetVisible('tl')
+      thematicMapInstance.resetVisible('tl')
     }
   }
 
   // 属性表或者时间轴选中的时间数据
   get selectedTime() {
-    return ThematicMapInstance.getSelectedTime
+    return thematicMapInstance.getSelectedTime
   }
 
   // 时间轴的列表数据
   get timeList() {
-    return ThematicMapInstance.getSelectedTimeList
+    return thematicMapInstance.getSelectedTimeList
   }
 
   // 播放文案和提示设置
@@ -125,7 +125,7 @@ export default class ThematicMapTimeLine extends Vue {
    */
   @Watch('currentIndex')
   watchCurrentIndex(nV) {
-    ThematicMapInstance.setSelectedTime(this.timeList[nV])
+    thematicMapInstance.setSelectedTime(this.timeList[nV])
     this.onUpdateChart()
   }
 

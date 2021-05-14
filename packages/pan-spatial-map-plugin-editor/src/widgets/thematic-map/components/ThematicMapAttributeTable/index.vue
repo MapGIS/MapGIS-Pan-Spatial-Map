@@ -52,7 +52,7 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 import {
   queryFeaturesInstance,
   FeatureQueryParam,
-  ThematicMapInstance
+  thematicMapInstance
 } from '@mapgis/pan-spatial-map-store'
 import RowFlex from '../RowFlex'
 
@@ -91,12 +91,12 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 显示开关
   get atVisible() {
-    return ThematicMapInstance.isVisible('at')
+    return thematicMapInstance.isVisible('at')
   }
 
   set atVisible(nV) {
     if (!nV) {
-      ThematicMapInstance.resetVisible('at')
+      thematicMapInstance.resetVisible('at')
     }
   }
 
@@ -124,7 +124,7 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 专题列表
   get subjectList() {
-    return ThematicMapInstance.getSelectedList.map(({ id, title }) => ({
+    return thematicMapInstance.getSelectedList.map(({ id, title }) => ({
       id,
       title
     }))
@@ -132,17 +132,17 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 获取选中专题
   get selected() {
-    return ThematicMapInstance.getSelected
+    return thematicMapInstance.getSelected
   }
 
   // 获取时间轴已选中的年度(回显至时间选项)
   get selectedTime() {
-    return ThematicMapInstance.getSelectedTime
+    return thematicMapInstance.getSelectedTime
   }
 
-  // 获取选中专题对应年度的配置数据以及配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
+  // 获取选中专题对应年度的配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
   get selectedConfig() {
-    return ThematicMapInstance.getSelectedConfig
+    return thematicMapInstance.getSelectedConfig
   }
 
   /**
@@ -155,12 +155,12 @@ export default class ThematicMapAttributeTable extends Vue {
   onSubjectChange(value = '') {
     this.onTablePageUpdate(1, this.pageCount)
     this.subject = value
-    ThematicMapInstance.setSelected(value)
+    thematicMapInstance.setSelected(value)
     const timeList = this.selectedConfig
       ? this.selectedConfig.configTimeList
       : []
     this.timeList = timeList
-    ThematicMapInstance.setSelectedTimeList(this.timeList)
+    thematicMapInstance.setSelectedTimeList(this.timeList)
     this.onTimeChange(this.timeList[0])
   }
 
@@ -174,7 +174,7 @@ export default class ThematicMapAttributeTable extends Vue {
   onTimeChange(value = '') {
     this.onTablePageUpdate(1, this.pageCount)
     this.time = value
-    ThematicMapInstance.setSelectedTime(value)
+    thematicMapInstance.setSelectedTime(value)
     if (this.selectedConfig) {
       const { configSubData } = this.selectedConfig
       if (configSubData && configSubData.table) {
@@ -205,7 +205,7 @@ export default class ThematicMapAttributeTable extends Vue {
   onTablePageUpdate(page, pageCount) {
     this.page = page
     this.pageCount = pageCount
-    ThematicMapInstance.setPage(page, pageCount)
+    thematicMapInstance.setPage(page, pageCount)
   }
 
   /**
@@ -228,9 +228,9 @@ export default class ThematicMapAttributeTable extends Vue {
    * 获取列表数据
    */
   getTableData() {
-    if (ThematicMapInstance.getRequestParams) {
+    if (thematicMapInstance.getQueryFeatureParams) {
       const fn = queryFeaturesInstance.query(
-        ThematicMapInstance.getRequestParams
+        thematicMapInstance.getQueryFeatureParams
       )
       if (fn && fn.then) {
         this.loading = true
@@ -238,7 +238,6 @@ export default class ThematicMapAttributeTable extends Vue {
           const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
             dataSet
           )
-          console.log(ThematicMapInstance.getRequestParams, geojsonData)
           this.total = geojsonData.dataCount
           this.tableData = geojsonData.features.map(
             ({ properties }) => properties

@@ -24,12 +24,12 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { ThematicMapInstance, TModuleType } from '@mapgis/pan-spatial-map-store'
+import { thematicMapInstance, ModuleType } from '@mapgis/pan-spatial-map-store'
 
 interface IIcon {
   type: string
   tooltip: string
-  visibleType: TModuleType
+  visibleType: ModuleType
 }
 @Component
 export default class ThematicMapManageTools extends Vue {
@@ -59,15 +59,15 @@ export default class ThematicMapManageTools extends Vue {
   ]
 
   get visible() {
-    return ThematicMapInstance.isVisible('mt')
+    return thematicMapInstance.isVisible('mt')
   }
 
   /**
    * 按钮变化
    * @param visibleType<string>
    */
-  onToolIconChange(visibleType: TModuleType) {
-    ThematicMapInstance.setVisible(visibleType)
+  onToolIconChange(visibleType: ModuleType) {
+    thematicMapInstance.setVisible(visibleType)
   }
 
   @Watch('visible')

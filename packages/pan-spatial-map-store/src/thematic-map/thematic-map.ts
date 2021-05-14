@@ -1,17 +1,28 @@
-import { BaseConfig } from 'src/config/base'
-import resultSet from 'src/result-set/result-set'
 import Vue from 'vue'
 import {
   IState,
-  TModuleType,
+  IMethods,
+  IComputed,
+  ModuleType,
+  ISubjectType,
   IThematicMapConfig,
   IThematicMapBaseConfig,
   IThematicMapSubjectConfig,
   IThematicMapSubjectNewConfig
 } from './types'
 
+// 专题图类型集合
+export const subjectTypes = Object.freeze<ISubjectType>([
+  { value: 'SubSectionMap', label: '分段专题图' },
+  { value: 'BaseMapWithGraph', label: '统计专题图' },
+  { value: 'StatisticLabel', label: '等级符号专题图' },
+  { value: 'Label', label: '聚合标注专题图' },
+  { value: 'HeatMap', label: '热力图' },
+  { value: 'HexBin', label: '蜂窝图' }
+])
+
 // 专题服务
-export const ThematicMapInstance = new Vue({
+export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
   data: () => {
     return {
       // 页码
@@ -33,23 +44,23 @@ export const ThematicMapInstance = new Vue({
         baseConfig: {},
         subjectConfig: {}
       }
-    } as IState
+    }
   },
   computed: {
     /**
      * 属性表分页设置
      */
-    pageParam({ page, pageCount }) {
+    pageParam() {
       return {
-        page,
-        pageCount
+        page: this.page,
+        pageCount: this.pageCount
       }
     },
     /**
      * 获取某个专题服务展示弹框的开关状态
      */
-    isVisible({ moduleTypes }) {
-      return (type: TModuleType) => moduleTypes.includes(type)
+    isVisible() {
+      return (type: ModuleType) => this.moduleTypes.includes(type)
     },
     /**
      * 获取专题服务基本配置数据
@@ -98,7 +109,7 @@ export const ThematicMapInstance = new Vue({
      * configTimeList => config.data.map(v => v.time)
      * configSubData => config.data.subData[0]
      */
-    getSelectedConfig(): IThematicMapSubjectNewConfig | undefined {
+    getSelectedConfig() {
       const subject = this.selectedList.find(({ id }) => id === this.selected)
       if (subject) {
         const { config, ...others } = subject
@@ -123,13 +134,14 @@ export const ThematicMapInstance = new Vue({
       return subject
     },
     /**
-     * 获取列表数据请求报文
+     * 获取QueryFeature数据请求报文
      * @returns <object>
      */
-    getRequestParams({ getBaseConfig, getSelectedConfig, pageParam }) {
-      if (!getSelectedConfig) return
-      const { baseIp, basePort } = getBaseConfig
-      const { configType = 'gdbp', configSubData } = getSelectedConfig
+    getQueryFeatureParams() {
+      const { getBaseConfig, getSelectedConfig, pageParam } = this
+      if (!this.getSelectedConfig) return
+      const { baseIp, basePort } = this.getBaseConfig as IThematicMapBaseConfig
+      const { configType = 'gdbp', configSubData } = this.getSelectedConfig
       const {
         ip,
         port,
@@ -150,7 +162,7 @@ export const ThematicMapInstance = new Vue({
         IncludeGeometry: true,
         cursorType: 'backward',
         f: 'json',
-        ...pageParam
+        ...this.pageParam
       }
       switch (configType.toLowerCase()) {
         case 'gdbp':
@@ -191,7 +203,7 @@ export const ThematicMapInstance = new Vue({
     /**
      * 保存专题服务展示弹框的开关
      */
-    setVisible(type: TModuleType) {
+    setVisible(type: ModuleType) {
       const index = this.moduleTypes.indexOf(type)
       if (index !== -1) {
         this.moduleTypes.splice(index, 1)
@@ -203,7 +215,7 @@ export const ThematicMapInstance = new Vue({
     /**
      * 重置专题服务展示弹框的开关
      */
-    resetVisible(type?: TModuleType) {
+    resetVisible(type?: ModuleType) {
       if (type) {
         this.moduleTypes.splice(this.moduleTypes.indexOf(type), 1)
       } else {
@@ -255,4 +267,4 @@ export const ThematicMapInstance = new Vue({
   }
 })
 
-export default ThematicMapInstance
+export default thematicMapInstance

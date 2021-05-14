@@ -20,7 +20,7 @@ import HexBin from './HexBin.vue' // 蜂窝图
     SubSectionMap
   }
 })
-export default class extends Vue {
+export default class SubjectTypes extends Vue {
   @Prop() type!: string
 }
 </script>

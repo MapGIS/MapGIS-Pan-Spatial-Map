@@ -1,5 +1,5 @@
-import ThematicMapInstance from './thematic-map'
+import thematicMapInstance, { subjectTypes } from './thematic-map'
 
-export { TModuleType, IThematicMapSubjectConfig } from './types'
+export { ModuleType, IThematicMapSubjectConfig } from './types'
 
-export { ThematicMapInstance }
+export { thematicMapInstance, subjectTypes }

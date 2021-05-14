@@ -52,7 +52,7 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 import {
   queryFeaturesInstance,
   FeatureQueryParam,
-  ThematicMapInstance
+  thematicMapInstance
 } from '@mapgis/pan-spatial-map-store'
 import { Empty } from 'ant-design-vue'
 import * as echarts from 'echarts'
@@ -122,33 +122,33 @@ export default class ThematicMapStatisticTable extends Vue {
   ]
 
   get stVisible() {
-    return ThematicMapInstance.isVisible('st')
+    return thematicMapInstance.isVisible('st')
   }
 
   set stVisible(nV) {
     if (!nV) {
-      ThematicMapInstance.resetVisible('st')
+      thematicMapInstance.resetVisible('st')
     }
   }
 
   // 获取选中专题
   get selected() {
-    return ThematicMapInstance.getSelected
+    return thematicMapInstance.getSelected
   }
 
   // 获取时间轴已选中的年度(回显至时间选项)
   get selectedTime() {
-    return ThematicMapInstance.getSelectedTime
+    return thematicMapInstance.getSelectedTime
   }
 
   // 获取分页变化
   get pageParam() {
-    return ThematicMapInstance.pageParam
+    return thematicMapInstance.pageParam
   }
 
   // 获取选中专题对应年度的配置数据以及配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
   get selectedConfigSubData() {
-    return ThematicMapInstance.getSelectedConfig?.configSubData
+    return thematicMapInstance.getSelectedConfig?.configSubData
   }
 
   /**
@@ -235,9 +235,9 @@ export default class ThematicMapStatisticTable extends Vue {
   async onUpdateStatistic() {
     const xArr = []
     const yArr = []
-    if (ThematicMapInstance.getRequestParams) {
+    if (thematicMapInstance.getQueryFeatureParams) {
       const fn = queryFeaturesInstance.query(
-        ThematicMapInstance.getRequestParams
+        thematicMapInstance.getQueryFeatureParams
       )
       if (fn && fn.then) {
         this.loading = true

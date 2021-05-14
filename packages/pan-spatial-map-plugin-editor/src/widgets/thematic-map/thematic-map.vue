@@ -20,6 +20,8 @@
     <thematic-map-subject-add />
     <!-- 工具栏 -->
     <thematic-map-manage-tools />
+    <!-- 2D: 5类专题图层 -->
+    <mapbox-thematic-map-layers />
   </div>
 </template>
 
@@ -27,8 +29,8 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import {
-  ThematicMapInstance,
-  TModuleType,
+  thematicMapInstance,
+  ModuleType,
   IThematicMapSubjectConfig
 } from '@mapgis/pan-spatial-map-store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
@@ -36,6 +38,7 @@ import ThematicMapStatisticTable from './components/ThematicMapStatisticTable'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
 import ThematicMapManageTools from './components/ThematicMapManageTools'
 import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
+import MapBoxThematicMapLayers from './components/MapBoxThematicMapLayers'
 
 @Component({
   name: 'MpThematicMap',
@@ -44,7 +47,8 @@ import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
     ThematicMapStatisticTable,
     ThematicMapTimeLine,
     ThematicMapManageTools,
-    ThematicMapSubjectAdd
+    ThematicMapSubjectAdd,
+    MapBoxThematicMapLayers
   }
 })
 export default class MpThematicMap extends Mixins<Record<string, any>>(
@@ -113,8 +117,8 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     }, [])
     // console.log('选中的专题的列表', configList)
     const lastId = configList.length ? configList[configList.length - 1].id : ''
-    ThematicMapInstance.setSelected(lastId)
-    ThematicMapInstance.setSelectedList(configList)
+    thematicMapInstance.setSelected(lastId)
+    thematicMapInstance.setSelectedList(configList)
   }
 
   /**
@@ -127,7 +131,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       config: { subjectConfig }
     } = this.widgetInfo
     this.onVisible()
-    ThematicMapInstance.setThematicMapConfig(config)
+    thematicMapInstance.setThematicMapConfig(config)
     this.treeData = this.normalizeTreeData(subjectConfig)
     // console.log('专题服务树', this.treeData)
     this.loading = false
@@ -137,15 +141,15 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 专题服务面板关闭
    */
   onClose() {
-    ThematicMapInstance.resetVisible()
+    thematicMapInstance.resetVisible()
   }
 
   /**
    * 功能面板开关
    */
   onVisible() {
-    const openModules: TModuleType[] = ['at', 'st', 'tl', 'mt']
-    openModules.forEach(item => ThematicMapInstance.setVisible(item))
+    const openModules: ModuleType[] = ['at', 'st', 'tl', 'mt']
+    openModules.forEach(item => thematicMapInstance.setVisible(item))
   }
 }
 </script>

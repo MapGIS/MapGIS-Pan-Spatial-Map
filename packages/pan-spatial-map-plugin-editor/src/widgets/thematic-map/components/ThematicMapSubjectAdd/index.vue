@@ -36,7 +36,7 @@ import {
   ProvideReactive
 } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
+import { thematicMapInstance } from '@mapgis/pan-spatial-map-store'
 import BaseItems from './components/BaseItems.vue'
 import TimeLineItems from './components/TimeLineItems.vue'
 import AttributeTableItems from './components/AttributeTableItems.vue'
@@ -55,17 +55,13 @@ import PopupItems from './components/PopupItems.vue'
 export default class ThematicMapSubjectAdd extends Mixins<Record<string, any>>(
   WidgetMixin
 ) {
-  // @ProvideReactive() formData!: any
-
-  // formData = {}
-
   get saVisible() {
-    return ThematicMapInstance.isVisible('sa')
+    return thematicMapInstance.isVisible('sa')
   }
 
   set saVisible(nV) {
     if (!nV) {
-      ThematicMapInstance.resetVisible('sa')
+      thematicMapInstance.resetVisible('sa')
     }
   }
 

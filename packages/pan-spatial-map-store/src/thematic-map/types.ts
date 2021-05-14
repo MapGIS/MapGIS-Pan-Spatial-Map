@@ -1,4 +1,6 @@
 // 专题服务总配置数据
+import { FeatureQueryParam } from '../service'
+
 export interface IThematicMapConfig {
   baseConfig: IThematicMapBaseConfig | object
   subjectConfig: IThematicMapSubjectConfig | object
@@ -13,23 +15,33 @@ export interface IThematicMapBaseConfig {
   startZindex: number // 初始 index 级别
 }
 
+/**
+ * 专题类型:
+ * 分段专题图 : SubSectionMap
+ * 普通专题图 : DataShowSubject
+ * 热力图 : HeatMap
+ * 统计专题图 : BaseMapWithGraph
+ * 普通静态标注 : StatisticLabel
+ * 标注专题图 : Label
+ * 蜂窝图 : HexBin
+ */
+type SubjectType =
+  | 'SubSectionMap'
+  | 'DataShowSubject'
+  | 'HeatMap'
+  | 'BaseMapWithGraph'
+  | 'StatisticLabel'
+  | 'Label'
+  | 'HexBin'
+  | string
+
 interface IThematicMapSubjectBaseConfig {
   id: string // 节点 id
   title: string // 节点名
   visible: boolean // 是否可见
   nodeType: string // 节点类型panel->list->subject
   children?: IThematicMapSubjectConfig[] // 子节点数据,panel和list有,subject没有
-  /**
-   * 专题类型:
-   * 分段专题图 : SubSectionMap
-   * 普通专题图 : DataShowSubject
-   * 热力图 : HeatMap
-   * 统计专题图 : BaseMapWithGraph
-   * 普通静态标注 : StatisticLabel
-   * 标注专题图 : Label
-   * 蜂窝图 : HexBin
-   */
-  type?: string // 专题类型
+  type?: SubjectType // 专题类型
 }
 
 // 单个专题服务专题配置
@@ -53,21 +65,53 @@ export interface IThematicMapSubjectNewConfig
 }
 
 // 点击单个专题的数据展示弹框类型
-export type TModuleType =
+export type ModuleType =
   | 'at' // 属性表
   | 'st' // 统计表
   | 'tl' // 时间轴
   | 'sa' // 新建专题图
   | 'mt' // 管理工具栏
 
+export interface ISubjectType {
+  label: string
+  value: SubjectType
+}
+
 // 专题服务Store对应的状态数据
 export interface IState {
   page: number
   pageCount: number
-  moduleTypes: TModuleType[]
+  moduleTypes: ModuleType[]
   thematicMapConfig: IThematicMapConfig
   selectedTime: string
   selectedTimeList: string[]
   selected: string
   selectedList: IThematicMapSubjectConfig[]
+}
+
+export interface IMethods {
+  setPage(p: number, pc: number): void
+  setVisible(v: ModuleType): void
+  resetVisible(v?: ModuleType): void
+  setThematicMapConfig(v: IThematicMapConfig): void
+  setSelected(id: string): void
+  setSelectedList(c: IThematicMapSubjectConfig[]): void
+  setSelectedTime(y: string): void
+  setSelectedTimeList(y: string[]): void
+}
+
+export interface IComputed {
+  pageParam: {
+    page: number
+    pageCount: number
+  }
+  isVisible: (s: ModuleType) => boolean
+  getBaseConfig: IThematicMapBaseConfig | object
+  getSubjectConfig: IThematicMapSubjectConfig | object
+  getSelected: string
+  getSelectedList: IThematicMapSubjectConfig[]
+  getSelectedTime: string
+  getSelectedTimeList: string[]
+  getSelectedConfig?: IThematicMapSubjectNewConfig
+  getQueryFeatureParams?: FeatureQueryParam
 }
