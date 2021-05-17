@@ -274,6 +274,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   onCheckedNodeKeysChenged() {
     let newChecked = []
     let newUnChecked = []
+    eventBus.$emit('emitCheckedNodeKeys', this.checkedNodeKeys)
 
     if (this.preCheckedNodeKeys.length === 0) {
       newChecked = this.checkedNodeKeys
@@ -611,9 +612,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   private onUploadLegend(item) {
     this.showUploader = true
     this.legendNode = item
-    console.log(this.uploadUrl)
-
-    console.log(item)
   }
 
   // 上传文件之前的钩子
@@ -625,18 +623,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       return
     }
     if (info.file.status === 'done') {
-      console.log('success-upload')
-      const { url } = info.file.response.url
-      let legendConfig = await api.getWidgetConfig('Legend')
-      if (legendConfig === '') {
-        legendConfig = {}
-      }
+      const url = info.file.response.url
+      const legendConfig = await api.getWidgetConfig('legend')
       const key = this.legendNode.name
-      debugger
       if (url) {
         legendConfig[key] = url
         const res = await api.saveWidgetConfig({
-          name: 'Legend',
+          name: 'legend',
           config: JSON.stringify(legendConfig)
         })
         eventBus.$emit('uploader-success')
