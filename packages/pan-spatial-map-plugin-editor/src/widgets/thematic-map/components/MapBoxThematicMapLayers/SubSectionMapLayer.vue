@@ -10,7 +10,7 @@
   </mapgis-popup> -->
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
+import { Mixins, Component } from 'vue-property-decorator'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-layers'
 
@@ -27,15 +27,6 @@ interface IStyle {
 export default class SubSectionMapLayer extends Mixins(
   MapboxThematicMapLayersMinxin
 ) {
-  properties: Record<string, any> = {}
-
-  coordinates = [0, 0]
-
-  // 获取属性keys
-  get propertiesKeys() {
-    return utilInstance.getJsonTag(this.properties)
-  }
-
   // 样式
   get style() {
     return this.subDataConfig?.color
@@ -90,7 +81,7 @@ export default class SubSectionMapLayer extends Mixins(
    */
   updateLayer() {
     if (!this.dataSet || !this.style) return
-    this.remove()
+    this.removeLayer()
     const _thematicMapLayer = window.Zondy.Map.rangeThemeLayer(
       'ThematicMapLayer',
       {
@@ -102,25 +93,27 @@ export default class SubSectionMapLayer extends Mixins(
     )
     if (!_thematicMapLayer) return
     const color = this.getColor()
-    _thematicMapLayer.style = this.getThemeStyle({
+    const highlightColor = 'rgba(255, 0, 0, 1)'
+    const styleGroups = this.getSegmentstyle()
+    const style = this.getThemeStyle({
       shadowBlur: 2,
       shadowColor: color,
       fillColor: color,
       strokeColor: color
     })
-    const highlightColor = 'rgba(255, 0, 0, 1)'
-    _thematicMapLayer.highlightStyle = this.getThemeStyle({
+    const highlightStyle = this.getThemeStyle({
       stroke: true,
       strokeColor: highlightColor,
       fillColor: highlightColor
     })
-    _thematicMapLayer.themeField = this.subDataConfig.field
-    _thematicMapLayer.styleGroups = this.getSegmentstyle()
-    console.log('style', this.getSegmentstyle())
-    _thematicMapLayer.id = this.id
-
-    // this.map.addLayer(_thematicMapLayer)
-    this.thematicMapLayer = _thematicMapLayer
+    this.thematicMapLayer = {
+      ..._thematicMapLayer,
+      id: this.id,
+      themeField: this.field,
+      style,
+      styleGroups,
+      highlightStyle
+    }
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     _thematicMapLayer.addFeatures(this.dataSet)
@@ -131,22 +124,20 @@ export default class SubSectionMapLayer extends Mixins(
    */
   showInfoWin({ target }: any) {
     this.closeInfoWin()
-    const { showFields, showFieldsTitle } = this.subDataConfig.popup
+    const { showFields, showFieldsTitle } = this.popupConfig
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return
     }
-    const { attributes, LabelDot } = this.thematicMapLayer.getFeatureById(
-      target.refDataID
-    )
-    const coordinates = [LabelDot.X, LabelDot.Y]
-    const properties = showFields.reduce((obj, v: string) => {
+    const {
+      attributes,
+      LabelDot: { X, Y }
+    } = this.thematicMapLayer.getFeatureById(target.refDataID)
+    this.coordinates = [X, Y]
+    this.properties = showFields.reduce((obj, v: string) => {
       const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
       obj[tag] = attributes[v]
       return obj
     }, {})
-
-    this.coordinates = coordinates
-    this.properties = properties
   }
 
   /**

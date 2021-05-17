@@ -1,6 +1,6 @@
 import { Vue, Component, Inject, Prop } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
-import { FeatureIGS } from '@mapgis/pan-spatial-map-store'
+import { FeatureIGS, utilInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component
 export default class MapboxThematicMapLayersMinxin extends Vue {
@@ -16,11 +16,30 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
 
   id = UUID.uuid()
 
-  thematicMapLayer: any = null
+  thematicMapLayer: any = {}
+
+  properties: Record<string, any> = {}
+
+  coordinates = [0, 0]
 
   // 获取某个专题某个年度的subData
   get subDataConfig() {
     return this.config.configSubData
+  }
+
+  // 图表title
+  get field() {
+    return this.subDataConfig.field
+  }
+
+  // 信息弹框字段配置
+  get popupConfig() {
+    return this.subDataConfig.popup
+  }
+
+  // 信息弹框展示字段
+  get propertiesKeys() {
+    return utilInstance.getJsonTag(this.properties)
   }
 
   /**
@@ -38,7 +57,7 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
   /**
    * 移除图层
    */
-  remove() {
+  removeLayer() {
     if (this.thematicMapLayer) {
       const { id } = this.thematicMapLayer
       if (this.map.getLayer(id)) {
@@ -54,7 +73,7 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
   /**
    * 重置图层
    */
-  reset() {
+  resetLayer() {
     this.initLayer()
   }
 
@@ -63,6 +82,6 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
   }
 
   beforeDestroy() {
-    this.remove()
+    this.removeLayer()
   }
 }

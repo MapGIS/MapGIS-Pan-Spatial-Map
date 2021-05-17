@@ -21,7 +21,7 @@
           "children": [
             {
               "id": "7e1e283f-3dc8-d53d-cdd9-9633e4c612ca",
-              "title": "人口",
+              "title": "人口(统计)",
               "visible": true,
               "nodeType": "subject",
               "config": {
@@ -118,7 +118,7 @@
           "children": [
             {
               "id": "098d7343-f2e6-26c1-e07b-ccbf604fa308",
-              "title": "GDP",
+              "title": "GDP(分段)",
               "visible": true,
               "nodeType": "subject",
               "config": {
@@ -376,7 +376,7 @@
           "children": [
             {
               "id": "a55a2eca-e16e-5aeb-20b7-fbf906f685c0",
-              "title": "产业生产总值",
+              "title": "产业生产总值(等级符号)",
               "visible": true,
               "nodeType": "subject",
               "config": {
@@ -575,7 +575,7 @@
                   }
                 ]
               },
-              "type": "BaseMapWithGraph"
+              "type": "StatisticLabel"
             }
           ]
         }
@@ -708,7 +708,7 @@
             },
             {
               "id": "48887937-5f03-af07-f03f-a18df148fd67",
-              "title": "房产值",
+              "title": "房产值(蜂窝图)",
               "visible": true,
               "nodeType": "subject",
               "config": {

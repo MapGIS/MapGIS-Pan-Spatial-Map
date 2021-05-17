@@ -10,7 +10,7 @@
   </mapgis-popup> -->
 </template>
 <script lang="ts">
-import { Component, Prop, Mixins } from 'vue-property-decorator'
+import { Component, Mixins } from 'vue-property-decorator'
 import {
   thematicMapInstance,
   queryFeaturesInstance,
@@ -22,13 +22,6 @@ import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-laye
 export default class BaseMapWithGraphLayer extends Mixins(
   MapboxThematicMapLayersMinxin
 ) {
-  properties: Record<string, any> = {}
-
-  coordinates = [
-    { lng: 0, lat: 0 },
-    { lng: 0, lat: 0 }
-  ]
-
   colors: string[] = ['#FFB980', '#5AB1EF', '#B6A2DE', '#2EC7C9', '#D87A80']
 
   // Bar add Bar3D chartsSetting
@@ -108,11 +101,6 @@ export default class BaseMapWithGraphLayer extends Mixins(
     return this.colors.map(v => ({ fillColor: v }))
   }
 
-  // 获取属性keys
-  get propertiesKeys() {
-    return utilInstance.getJsonTag(this.properties)
-  }
-
   /**
    * 展示图层
    */
@@ -125,7 +113,7 @@ export default class BaseMapWithGraphLayer extends Mixins(
    */
   updateLayer() {
     if (!this.dataSet || !this.graph) return
-    this.remove()
+    this.removeLayer()
     this.initGraphicStyles()
     let chartsSetting = null
     let type = ''
@@ -157,13 +145,18 @@ export default class BaseMapWithGraphLayer extends Mixins(
       default:
         break
     }
-    this.thematicMapLayerOptions.chartsSetting = chartsSetting
-    this.thematicMapLayer = window.Zondy.Map.graphThemeLayer(
-      `${type}Layer`,
-      type,
-      this.thematicMapLayerOptions
-    )
-    this.thematicMapLayer.id = this.id
+    this.thematicMapLayerOptions = {
+      ...this.thematicMapLayerOptions,
+      chartsSetting
+    }
+    this.thematicMapLayer = {
+      id: this.id,
+      ...window.Zondy.Map.graphThemeLayer(
+        `${type}Layer`,
+        type,
+        this.thematicMapLayerOptions
+      )
+    }
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
@@ -271,7 +264,7 @@ export default class BaseMapWithGraphLayer extends Mixins(
    */
   showInfoWin({ event, target }: any) {
     this.closeInfoWin()
-    const { showFields, showFieldsTitle } = this.subDataConfig.popup
+    const { showFields, showFieldsTitle } = this.popupConfig
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return
     }
