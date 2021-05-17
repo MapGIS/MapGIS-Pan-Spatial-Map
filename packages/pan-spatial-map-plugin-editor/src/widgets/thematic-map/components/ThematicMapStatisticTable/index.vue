@@ -143,7 +143,8 @@ export default class ThematicMapStatisticTable extends Mixins(
   setChartOptions(dataSet) {
     const xArr = []
     const yArr = []
-    if (this.configSubData && dataSet && dataSet.AttStruct.FldName) {
+    console.log('this.configSubData', this.configSubData)
+    if (dataSet && dataSet.AttStruct.FldName) {
       const {
         SFEleArray,
         AttStruct: { FldName }
@@ -171,30 +172,32 @@ export default class ThematicMapStatisticTable extends Mixins(
    * @param type<string>
    */
   onChartTypeChange(type: TChartType) {
-    let options: (a: IChartOption) => any
-    switch (type) {
-      case 'bar':
-        options = barChartOptions
-        break
-      case 'line':
-        options = lineChartOptions
-        break
-      case 'pie':
-        options = pieChartOptions
-        break
-      default:
-        break
-    }
-    this.activeChart = type
-    if (this.chart) {
-      this.chart.clear()
-      this.chart.setOption(options(this.chartOption))
-      this.chart.resize()
-    }
+    this.$nextTick(() => {
+      let options: (a: IChartOption) => any
+      switch (type) {
+        case 'bar':
+          options = barChartOptions
+          break
+        case 'line':
+          options = lineChartOptions
+          break
+        case 'pie':
+          options = pieChartOptions
+          break
+        default:
+          break
+      }
+      this.activeChart = type
+      if (this.chart) {
+        this.chart.clear()
+        this.chart.setOption(options(this.chartOption))
+        this.chart.resize()
+      }
+    })
   }
 
   /**
-   * 指标选项变化
+   * 指标选项变化, 获取某指标对应的统计数据
    * @param value<string>
    */
   onTargetChange(value) {
@@ -204,18 +207,16 @@ export default class ThematicMapStatisticTable extends Mixins(
   }
 
   /**
-   * 设置指标数据
+   * 设置指标列表数据
    * @param <object>
    */
   onSetTargetList() {
     let targetList = []
-    let chartTitle = ''
     if (this.configSubData) {
       const {
         field,
         graph: { showFields, showFieldsTitle }
       } = this.configSubData
-      chartTitle = field
       const isFieldsTitle =
         showFieldsTitle && Object.keys(showFieldsTitle).length
       targetList = showFields.reduce((results, item) => {
@@ -230,11 +231,20 @@ export default class ThematicMapStatisticTable extends Mixins(
       }, [])
     }
     this.targetList = targetList
-    this.onTargetChange(chartTitle || targetList[0]?.value)
+    this.target = targetList[0]?.value
+    this.chartOption.title = this.target
   }
 
   /**
-   * 监听: 分页数据变化
+   * 监听: 年度变化更新指标列表
+   */
+  @Watch('selectedTime')
+  watchSelectedTime() {
+    this.onSetTargetList()
+  }
+
+  /**
+   * 监听: 分页数据变化, 设置统计数据
    */
   @Watch('pageDataSet', { deep: true })
   watchPageDataSet(nV) {
