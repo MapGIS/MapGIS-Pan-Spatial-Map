@@ -90,7 +90,7 @@
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": ["人口数"],
+                          "showFields": ["人口数", "面积"],
                           "showFieldsTitle": {},
                           "field": "省名",
                           "target": ["总人口万人"]

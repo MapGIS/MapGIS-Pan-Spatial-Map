@@ -186,9 +186,9 @@ export default class ThematicMapAttributeTable extends Mixins(
    * @param <object> showFields: 列表字段; showFieldsTitle: 列表字段别名
    */
   setTableColumns({ showFields, showFieldsTitle }) {
-    const isFieldsTitle = showFieldsTitle && Object.keys(showFieldsTitle).length
     this.tableColumns = showFields.map((item: string) => {
-      const title = isFieldsTitle ? showFieldsTitle[item] : item
+      const title =
+        showFieldsTitle && showFieldsTitle[item] ? showFieldsTitle[item] : item
       return {
         title,
         dataIndex: title,

@@ -143,7 +143,6 @@ export default class ThematicMapStatisticTable extends Mixins(
   setChartOptions(dataSet) {
     const xArr = []
     const yArr = []
-    console.log('this.configSubData', this.configSubData)
     if (dataSet && dataSet.AttStruct.FldName) {
       const {
         SFEleArray,
@@ -217,14 +216,14 @@ export default class ThematicMapStatisticTable extends Mixins(
         field,
         graph: { showFields, showFieldsTitle }
       } = this.configSubData
-      const isFieldsTitle =
-        showFieldsTitle && Object.keys(showFieldsTitle).length
       targetList = showFields.reduce((results, item) => {
         if (item) {
           const obj = {}
           obj.label = item
           obj.value =
-            isFieldsTitle && isFieldsTitle[item] ? isFieldsTitle[item] : item
+            showFieldsTitle && showFieldsTitle[item]
+              ? showFieldsTitle[item]
+              : item
           results.push(obj)
         }
         return results
