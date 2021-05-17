@@ -14,48 +14,41 @@
           <label class="col-auto">图幅号：</label>
         </a-col>
         <a-col :flex="1">
-          <a-input placeholder="请输入关键字" allowClear v-model="keyword" />
+          <a-input-search
+            placeholder="请输入关键字"
+            allowClear
+            v-model="keyword"
+            enter-button
+            @search="onSearch"
+          />
         </a-col>
       </a-row>
-      <a-list
-        :loading="loading"
-        :data-source="searchList"
-        :pagination="pagination"
-        size="small"
-      >
-        <div slot="header">
-          选择图幅：
-        </div>
-        <a-list-item
-          slot="renderItem"
-          slot-scope="item"
-          @click="select(item)"
-          :class="{ 'select-item': selectItem === item }"
-        >
-          <template
-            v-if="item.toUpperCase().indexOf(keyword.toUpperCase()) > -1"
+      <a-spin :spinning="loading">
+        <a-list :data-source="list" size="small" :pagination="pagination">
+          <div slot="header">
+            选择图幅：
+          </div>
+          <a-list-item
+            slot="renderItem"
+            slot-scope="item"
+            @click="select(item)"
+            :class="{ 'select-item': selectItem === item }"
           >
-            <span>{{
-              item.substr(0, item.toUpperCase().indexOf(keyword.toUpperCase()))
-            }}</span>
-            <span class="filter-words">{{
-              item.substr(
-                item.toUpperCase().indexOf(keyword.toUpperCase()),
-                keyword.length
-              )
-            }}</span>
-            <span>{{
-              item.substr(
-                item.toUpperCase().indexOf(keyword.toUpperCase()) +
-                  keyword.length
-              )
-            }}</span>
-          </template>
-          <span v-else>
-            {{ item }}
-          </span>
-        </a-list-item>
-      </a-list>
+            <template v-if="item.indexOf(keyword) > -1">
+              <span>{{ item.substr(0, item.indexOf(keyword)) }}</span>
+              <span class="filter-words">{{
+                item.substr(item.indexOf(keyword), keyword.length)
+              }}</span>
+              <span>{{
+                item.substr(item.indexOf(keyword) + keyword.length)
+              }}</span>
+            </template>
+            <span v-else>
+              {{ item }}
+            </span>
+          </a-list-item>
+        </a-list>
+      </a-spin>
     </a-space>
     <zone-frame-mapbox
       v-if="is2DMapMode"
@@ -108,11 +101,13 @@ export default class Frame extends Mixins(AppMixin) {
     { label: '1:100万', value: 'Scale_100w' }
   ]
 
-  private maxPage = 0
+  private total = 0
 
   private list: string[] = []
 
-  private searchList: string[] = []
+  private pageNumber = 1
+
+  private pageSize = 20
 
   private loading = false
 
@@ -125,26 +120,54 @@ export default class Frame extends Mixins(AppMixin) {
   private bounds: Record<string, any> = {}
 
   private get pagination() {
-    return {
-      size: 'small',
-      total: this.searchList.length
+    if (this.total) {
+      return {
+        size: 'small',
+        total: this.total,
+        pageSize: this.pageSize,
+        showSizeChanger: true,
+        current: this.pageNumber,
+        onChange: page => {
+          this.pageNumber = page
+          this.onSearch()
+        },
+        onShowSizeChange: (current, size) => {
+          this.pageSize = size
+          this.onSearch()
+        }
+      }
+    }
+
+    return false
+  }
+
+  async onSearch() {
+    this.loading = true
+    try {
+      const { scale, pageNumber, pageSize, keyword } = this
+      const { content, totalElements } = await utilInstance.getFrameNoList({
+        scale,
+        pageNumber: pageNumber - 1,
+        pageSize,
+        keyword
+      })
+      this.list = content || []
+      this.total = totalElements || 0
+    } catch (error) {
+      this.list = []
+      this.total = 0
+    } finally {
+      this.loading = false
     }
   }
 
   @Watch('scale', { immediate: true })
-  private async scaleChange() {
-    this.loading = true
-    try {
-      const { scale } = this
-      const list = await utilInstance.getFrameNoList({ scale })
-      this.list = list || []
-      this.searchList = list || []
-    } catch (error) {
-      this.list = []
-      this.searchList = []
-    } finally {
-      this.loading = false
-    }
+  private paramsChange() {
+    this.list = []
+    this.total = 0
+    this.pageNumber = 1
+    this.pageSize = 20
+    this.onSearch()
   }
 
   @Watch('active')

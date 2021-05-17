@@ -359,7 +359,7 @@ class Util {
    * @return {*}
    * @memberof Util
    */
-  async getFrameNoList({ scale }) {
+  async getFrameNoList({ scale, pageNumber, pageSize, keyword }) {
     try {
       const { id, port, name, gdbp } = await getConfig('sheet')
       const url = `http://${id}:${port}/onemap/cliprect/clipList`
@@ -373,12 +373,15 @@ class Util {
         url: '/api/map-sheet/no',
         method: 'get',
         params: {
+          keyword,
           scale,
           rect,
           originSrs: baseConfigInstance.config.projectionName,
           destSrs: baseConfigInstance.config.projectionName,
           gdbp,
-          url
+          url,
+          pageNumber,
+          pageSize
         }
       })
 
