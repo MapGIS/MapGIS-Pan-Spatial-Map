@@ -39,7 +39,7 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
    */
   remove() {
     if (this.thematicMapLayer) {
-      const id = this.thematicMapLayer.id
+      const { id } = this.thematicMapLayer
       if (this.map.getLayer(id)) {
         this.map.removeLayer(id)
       } else {

@@ -1,8 +1,8 @@
 <template>
   <!-- 分段专题图图层 -->
   <mapgis-popup :coordinates="coordinates" :showed="true">
-    <template v-for="(child, n) in propertiesKeys">
-      <div v-show="child" :key="'sub-section-map-layer-popup-properties-' + n">
+    <template v-for="(child, i) in propertiesKeys">
+      <div v-show="child" :key="`sub-section-map-layer-popup-properties-${i}`">
         {{ child }} : {{ properties[child] }}
       </div>
     </template>
@@ -31,7 +31,7 @@ export default class SubSectionMapLayer extends Mixins(
 ) {
   properties: Record<string, any> = {}
 
-  coordinates = [0, 0]
+  coordinates = [{ lng: 0, lat: 0 }]
 
   // 获取属性keys
   get propertiesKeys() {
@@ -73,6 +73,14 @@ export default class SubSectionMapLayer extends Mixins(
   }
 
   /**
+   * 获取图表样式
+   * @param styleProps
+   */
+  getThemeStyle(styleProps: any) {
+    return new window.Zondy.Map.ThemeStyle(styleProps)
+  }
+
+  /**
    * 展示图层
    */
   async showLayer() {
@@ -91,34 +99,36 @@ export default class SubSectionMapLayer extends Mixins(
     const _thematicMapLayer = window.Zondy.Map.rangeThemeLayer(
       'ThematicMapLayer',
       {
-        layerOption: {
-          isHoverAble: true,
-          alwaysMapCRS: true
-        }
+        map: this.map,
+        isHoverAble: true, // 开启 hover 高亮效果
+        opacity: 0.8,
+        alwaysMapCRS: true
       }
-    ).onAdd(this.map)
+    )
     if (!_thematicMapLayer) return
     const color = this.getColor()
-    _thematicMapLayer.style = new window.Zondy.Map.ThemeStyle({
+    _thematicMapLayer.style = this.getThemeStyle({
       shadowBlur: 2,
       shadowColor: color,
       fillColor: color,
       strokeColor: color
     })
     const highlightColor = 'rgba(255, 0, 0, 1)'
-    _thematicMapLayer.highlightStyle = new window.Zondy.Map.ThemeStyle({
+    _thematicMapLayer.highlightStyle = this.getThemeStyle({
       stroke: true,
       strokeColor: highlightColor,
       fillColor: highlightColor
     })
     _thematicMapLayer.themeField = this.subDataConfig.field
     _thematicMapLayer.styleGroups = this.getSegmentstyle()
+    console.log('style', this.getSegmentstyle())
     _thematicMapLayer.id = this.id
-    _thematicMapLayer.addFeatures(this.dataSet)
-    this.map.addLayer(_thematicMapLayer)
+
+    // this.map.addLayer(_thematicMapLayer)
     this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
+    _thematicMapLayer.addFeatures(this.dataSet)
   }
 
   /**

@@ -176,10 +176,8 @@ export default class BaseMapWithGraphLayer extends Mixins(
     const codomain = [0, 30922]
     const axisYTick = 3
     const axisXLabels = showFields.map(v => showFieldsTitle[v] || v)
-    const interval = Math.ceil(
-      (codomain[1] - codomain[0]) / this.axisObj.axisYTick
-    )
-    const axisYLabels = this.axisObj.axisYTick
+    const interval = Math.ceil((codomain[1] - codomain[0]) / axisYTick)
+    const axisYLabels = axisYTick
       .map((v, i) => Math.ceil(codomain[0] + i * interval))
       .sort((a, b) => b - a)
 
