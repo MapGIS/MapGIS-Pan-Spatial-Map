@@ -1,5 +1,6 @@
 import { Vue, Component, Inject, Prop } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
+import { FeatureIGS } from '@mapgis/pan-spatial-map-store'
 
 @Component
 export default class MapboxThematicMapLayersMinxin extends Vue {
@@ -10,8 +11,8 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
   // 某个专题的配置
   @Prop({ default: () => ({}) }) config!: any
 
-  // 某个专题配置featureQuery参数
-  @Prop({ default: () => ({}) }) featureQueryParams!: any
+  // 某个专题配置features
+  @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
 
   id = UUID.uuid()
 

@@ -9,7 +9,7 @@
       :verticalOffset="50"
     >
       <div class="thematic-map-statistic-table">
-        <a-spin :spinning="loading">
+        <a-spin :spinning="isLoading">
           <!-- 指标和图表切换 -->
           <row-flex
             class="statistic-table-head"
@@ -48,15 +48,12 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
-import {
-  queryFeaturesInstance,
-  FeatureQueryParam,
-  thematicMapInstance
-} from '@mapgis/pan-spatial-map-store'
+import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
+import { thematicMapInstance } from '@mapgis/pan-spatial-map-store'
 import { Empty } from 'ant-design-vue'
 import * as echarts from 'echarts'
 import RowFlex from '../RowFlex'
+import ThematicMapMixin from '../../mixins/thematic-map'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
@@ -80,9 +77,9 @@ interface IChartOption {
     RowFlex
   }
 })
-export default class ThematicMapStatisticTable extends Vue {
-  loading = false
-
+export default class ThematicMapStatisticTable extends Mixins(
+  ThematicMapMixin
+) {
   // 当前活动的图标
   activeChart: TChartType = 'bar'
 
@@ -131,26 +128,6 @@ export default class ThematicMapStatisticTable extends Vue {
     }
   }
 
-  // 获取选中专题
-  get selected() {
-    return thematicMapInstance.getSelected
-  }
-
-  // 获取时间轴已选中的年度(回显至时间选项)
-  get selectedTime() {
-    return thematicMapInstance.getSelectedTime
-  }
-
-  // 获取分页变化
-  get pageParam() {
-    return thematicMapInstance.pageParam
-  }
-
-  // 获取选中专题对应年度的配置数据以及配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
-  get selectedConfigSubData() {
-    return thematicMapInstance.getSelectedConfig?.configSubData
-  }
-
   /**
    * 图表是否有数据,是否展示友好提示
    */
@@ -160,33 +137,60 @@ export default class ThematicMapStatisticTable extends Vue {
   }
 
   /**
+   * 将query的结果设置图表配置里
+   * @param dataSet
+   */
+  setChartOptions(dataSet) {
+    const xArr = []
+    const yArr = []
+    if (this.configSubData && dataSet && dataSet.AttStruct.FldName) {
+      const {
+        SFEleArray,
+        AttStruct: { FldName }
+      } = dataSet
+      const {
+        graph: { field }
+      } = this.configSubData
+
+      const xIndex = FldName.indexOf(field)
+      const yIndex = FldName.indexOf(this.target)
+      SFEleArray.forEach(({ AttValue }) => {
+        if (AttValue) {
+          xArr.push(AttValue[xIndex])
+          yArr.push(AttValue[yIndex])
+        }
+      })
+    }
+    this.chartOption.x = xArr
+    this.chartOption.y = yArr
+    this.onChartTypeChange('bar')
+  }
+
+  /**
    * 图表类型变化
    * @param type<string>
    */
   onChartTypeChange(type: TChartType) {
-    this.$nextTick(() => {
-      let options: (a: IChartOption) => any
-      switch (type) {
-        case 'bar':
-          options = barChartOptions
-          break
-        case 'line':
-          options = lineChartOptions
-          break
-        case 'pie':
-          options = pieChartOptions
-          break
-        default:
-          break
-      }
-      this.activeChart = type
-      if (this.chart) {
-        this.chart.clear()
-        this.chart.setOption(options(this.chartOption))
-        this.chart.resize()
-      }
-      this.loading = false
-    })
+    let options: (a: IChartOption) => any
+    switch (type) {
+      case 'bar':
+        options = barChartOptions
+        break
+      case 'line':
+        options = lineChartOptions
+        break
+      case 'pie':
+        options = pieChartOptions
+        break
+      default:
+        break
+    }
+    this.activeChart = type
+    if (this.chart) {
+      this.chart.clear()
+      this.chart.setOption(options(this.chartOption))
+      this.chart.resize()
+    }
   }
 
   /**
@@ -196,7 +200,7 @@ export default class ThematicMapStatisticTable extends Vue {
   onTargetChange(value) {
     this.target = value
     this.chartOption.title = value
-    this.onUpdateStatistic()
+    thematicMapInstance.setFeaturesQuery(this.setChartOptions)
   }
 
   /**
@@ -206,11 +210,11 @@ export default class ThematicMapStatisticTable extends Vue {
   onSetTargetList() {
     let targetList = []
     let chartTitle = ''
-    if (this.selectedConfigSubData) {
+    if (this.configSubData) {
       const {
         field,
         graph: { showFields, showFieldsTitle }
-      } = this.selectedConfigSubData
+      } = this.configSubData
       chartTitle = field
       const isFieldsTitle =
         showFieldsTitle && Object.keys(showFieldsTitle).length
@@ -230,65 +234,11 @@ export default class ThematicMapStatisticTable extends Vue {
   }
 
   /**
-   * 更新图表数据
+   * 监听: 分页数据变化
    */
-  async onUpdateStatistic() {
-    const xArr = []
-    const yArr = []
-    if (thematicMapInstance.getFeatureQueryParams) {
-      const fn = queryFeaturesInstance.query(
-        thematicMapInstance.getFeatureQueryParams
-      )
-      if (fn && fn.then) {
-        this.loading = true
-        const dataSet = await fn
-        if (dataSet && dataSet.AttStruct.FldName) {
-          const {
-            SFEleArray,
-            AttStruct: { FldName }
-          } = dataSet
-          const {
-            graph: { field }
-          } = this.selectedConfigSubData
-
-          const xIndex = FldName.indexOf(field)
-          const yIndex = FldName.indexOf(this.target)
-          SFEleArray.forEach(({ AttValue }) => {
-            if (AttValue) {
-              xArr.push(AttValue[xIndex])
-              yArr.push(AttValue[yIndex])
-            }
-          })
-        }
-      }
-    }
-    this.chartOption.x = xArr
-    this.chartOption.y = yArr
-    this.onChartTypeChange('bar')
-  }
-
-  /**
-   * 监听: 选中的专题的变化
-   */
-  @Watch('selected')
-  watchSelected() {
-    this.onSetTargetList()
-  }
-
-  /**
-   * 监听: 年度时间轴数据变化
-   */
-  @Watch('selectedTime')
-  watchSelectedTime() {
-    this.onSetTargetList()
-  }
-
-  /**
-   * 监听: 选中的专题的变化
-   */
-  @Watch('pageParam', { deep: true })
-  watchPageParam() {
-    this.onUpdateStatistic()
+  @Watch('pageDataSet', { deep: true })
+  watchPageDataSet(nV) {
+    this.setChartOptions(nV)
   }
 
   beforeCreate() {

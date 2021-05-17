@@ -1,12 +1,13 @@
 <template>
   <!-- 统计专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="true">
+  <div></div>
+  <!-- <mapgis-popup :coordinates="coordinates" :showed="true">
     <template v-for="(child, n) in propertiesKeys">
       <div v-show="child" :key="'base-map-with-graph-popup-properties-' + n">
         {{ child }} : {{ properties[child] }}
       </div>
     </template>
-  </mapgis-popup>
+  </mapgis-popup> -->
 </template>
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
@@ -21,8 +22,6 @@ import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-laye
 export default class BaseMapWithGraphLayer extends Mixins(
   MapboxThematicMapLayersMinxin
 ) {
-  dataSet: any = null
-
   properties: Record<string, any> = {}
 
   coordinates = [
@@ -109,14 +108,16 @@ export default class BaseMapWithGraphLayer extends Mixins(
     return this.colors.map(v => ({ fillColor: v }))
   }
 
+  // 获取属性keys
+  get propertiesKeys() {
+    return utilInstance.getJsonTag(this.properties)
+  }
+
   /**
    * 展示图层
    */
-  async showLayer() {
-    if (this.featureQueryParams) {
-      this.dataSet = await queryFeaturesInstance.query(this.featureQueryParams)
-      this.updateLayer()
-    }
+  showLayer() {
+    this.updateLayer()
   }
 
   /**
@@ -157,15 +158,15 @@ export default class BaseMapWithGraphLayer extends Mixins(
         break
     }
     this.thematicMapLayerOptions.chartsSetting = chartsSetting
-    this.thematicMapLayer = this.Zondy.Map.graphThemeLayer(
+    this.thematicMapLayer = window.Zondy.Map.graphThemeLayer(
       `${type}Layer`,
       type,
       this.thematicMapLayerOptions
     )
     this.thematicMapLayer.id = this.id
-    this.thematicMapLayer.addFeatures(this.dataSet)
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
+    this.thematicMapLayer.addFeatures(this.dataSet)
   }
 
   /**
@@ -177,7 +178,8 @@ export default class BaseMapWithGraphLayer extends Mixins(
     const axisYTick = 3
     const axisXLabels = showFields.map(v => showFieldsTitle[v] || v)
     const interval = Math.ceil((codomain[1] - codomain[0]) / axisYTick)
-    const axisYLabels = axisYTick
+    const axisYLabels = new Array(axisYTick)
+      .fill()
       .map((v, i) => Math.ceil(codomain[0] + i * interval))
       .sort((a, b) => b - a)
 

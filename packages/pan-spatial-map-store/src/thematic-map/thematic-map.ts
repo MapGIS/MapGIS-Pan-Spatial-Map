@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { queryFeaturesInstance, FeatureIGS } from '../service'
 import {
   IState,
   IMethods,
@@ -25,10 +26,13 @@ export const subjectTypes = Object.freeze<ISubjectType>([
 export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
   data: () => {
     return {
+      loading: false,
       // 页码
       page: 0,
       // 页容量
       pageCount: 10,
+      // 当前页的查询的要素数据
+      pageDataSet: {},
       // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
       moduleTypes: [],
       // 专题服务时间轴选中的年度
@@ -48,6 +52,19 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
   },
   computed: {
     /**
+     * 获取某个专题服务展示弹框的开关状态
+     */
+    isVisible() {
+      return (type: ModuleType) => this.moduleTypes.includes(type)
+    },
+    /**
+     * 加载
+     * @returns
+     */
+    isLoading() {
+      return this.loading
+    },
+    /**
      * 属性表分页设置
      */
     pageParam() {
@@ -57,10 +74,10 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
       }
     },
     /**
-     * 获取某个专题服务展示弹框的开关状态
+     * 当前页的查询的要素数据
      */
-    isVisible() {
-      return (type: ModuleType) => this.moduleTypes.includes(type)
+    getPageDataSet() {
+      return this.pageDataSet
     },
     /**
      * 获取专题服务基本配置数据
@@ -73,30 +90,6 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
      */
     getSubjectConfig() {
       return this.thematicMapConfig.subjectConfig
-    },
-    /**
-     *  获取选中的'单个专题服务配置'
-     */
-    getSelected() {
-      return this.selected
-    },
-    /**
-     *  获取选中的'单个专题服务配置'集合(属性表专题选择框需要)
-     */
-    getSelectedList() {
-      return this.selectedList
-    },
-    /**
-     * 获取单个专题服务中选中的年度
-     */
-    getSelectedTime() {
-      return this.selectedTime
-    },
-    /**
-     * 获取最后勾选的单个专题服务的年度列表(时间轴数据)
-     */
-    getSelectedTimeList() {
-      return this.selectedTimeList
     },
     /**
      * 获取选中的'单个专题服务配置'的配置
@@ -121,11 +114,9 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
           }
           if (data && data.length) {
             result.configTimeList = data.map(v => v.time)
-            if (this.selectedTime) {
-              const _data = data.find(v => v.time === this.selectedTime)
-              if (_data && _data.subData.length) {
-                result.configSubData = _data.subData[0]
-              }
+            const _data = data.find(v => v.time === this.selectedTime)
+            if (_data && _data.subData.length) {
+              result.configSubData = _data.subData[0]
             }
           }
           return result
@@ -134,29 +125,51 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
       return subject
     },
     /**
+     * 获取选中的'单个专题服务配置'
+     */
+    getSelected() {
+      return this.selected
+    },
+    /**
+     * 获取选中的'单个专题服务配置'集合(属性表专题选择框需要)
+     */
+    getSelectedList() {
+      return this.selectedList
+    },
+    /**
+     * 获取单个专题服务中选中的年度
+     */
+    getSelectedTime() {
+      return this.selectedTime
+    },
+    /**
+     * 获取最后勾选的单个专题服务的年度列表(时间轴数据)
+     */
+    getSelectedTimeList() {
+      return this.getSelectedConfig ? this.getSelectedConfig.configTimeList : []
+    }
+  },
+  methods: {
+    /**
      * 获取QueryFeature数据请求报文
      */
-    getFeatureQueryParams() {
+    parseFeatureQueryParams() {
       if (!this.getSelectedConfig) return
       const { baseIp, basePort } = this.getBaseConfig as IThematicMapBaseConfig
       const { configType = 'gdbp', configSubData } = this.getSelectedConfig
       const {
-        ip,
-        port,
+        ip = baseIp,
+        port = basePort,
         gdbp,
         docName,
         layerIndex,
         layerName,
         table: { showFields }
       } = configSubData
-      // 整合参数
-      const _ip = ip || baseIp
-      const _port = port || basePort
-      const fields = showFields.join(',')
       let params: any = {
-        ip: _ip,
-        port: _port,
-        fields,
+        ip,
+        port,
+        fields: showFields.join(','),
         IncludeGeometry: true,
         cursorType: 'backward',
         f: 'json',
@@ -181,9 +194,28 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
           break
       }
       return params
-    }
-  },
-  methods: {
+    },
+    /**
+     * 加载
+     * @param loading
+     */
+    setLoading(loading: boolean) {
+      if (this.loading !== loading) {
+        this.loading = loading
+      }
+    },
+    /**
+     * 保存专题服务展示弹框的开关
+     * @param 弹框类型
+     */
+    setVisible(type: ModuleType) {
+      const index = this.moduleTypes.indexOf(type)
+      if (index !== -1) {
+        this.moduleTypes.splice(index, 1)
+      } else {
+        this.moduleTypes.push(type)
+      }
+    },
     /**
      * 设置分页
      * @param page 页码
@@ -197,32 +229,36 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
         this.pageCount = pageCount
       }
     },
-
     /**
-     * 保存专题服务展示弹框的开关
-     * @param 弹框类型
+     * 保存当前页的查询的要素数据
+     * @param dataSet
      */
-    setVisible(type: ModuleType) {
-      const index = this.moduleTypes.indexOf(type)
-      if (index !== -1) {
-        this.moduleTypes.splice(index, 1)
-      } else {
-        this.moduleTypes.push(type)
-      }
+    setPageDataSet(dataSet: FeatureIGS) {
+      this.pageDataSet = { ...dataSet }
     },
 
     /**
-     * 重置专题服务展示弹框的开关
-     * @param 弹框类型
+     * 查询要素
+     * @param onSuccess
+     * @param onError
      */
-    resetVisible(type?: ModuleType) {
-      if (type) {
-        this.moduleTypes.splice(this.moduleTypes.indexOf(type), 1)
-      } else {
-        this.moduleTypes = []
+    setFeaturesQuery(
+      onSuccess?: (a: FeatureIGS) => void,
+      onError?: (e: Event) => void
+    ) {
+      this.setLoading(true)
+      const fn = queryFeaturesInstance.query(this.parseFeatureQueryParams())
+      if (fn && fn.then) {
+        fn.then(dataSet => {
+          this.setPageDataSet(dataSet)
+          onSuccess && onSuccess(dataSet)
+          this.setLoading(false)
+        }).catch(e => {
+          onError && onError(e)
+          this.setLoading(false)
+        })
       }
     },
-
     /**
      * 设置专题服务的基础和专题配置数据
      * @param config 整个专题配置树
@@ -246,7 +282,6 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
     setSelectedList(configList: IThematicMapSubjectConfig[]) {
       this.selectedList = configList
     },
-
     /**
      * 设置单个专题服务中选中的年度
      * @param year<string>
@@ -256,13 +291,16 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
         this.selectedTime = year
       }
     },
-
     /**
-     * 设置选中的'单个专题服务配置'年度列表
-     * @param timeList<array>
+     * 重置专题服务展示弹框的开关
+     * @param 弹框类型
      */
-    setSelectedTimeList(timeList: string[]) {
-      this.selectedTimeList = timeList
+    resetVisible(type?: ModuleType) {
+      if (type) {
+        this.moduleTypes.splice(this.moduleTypes.indexOf(type), 1)
+      } else {
+        this.moduleTypes = []
+      }
     }
   }
 })

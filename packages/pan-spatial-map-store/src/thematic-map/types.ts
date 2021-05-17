@@ -1,5 +1,5 @@
 // 专题服务总配置数据
-import { FeatureQueryParam } from '../service'
+import { FeatureQueryParam, FeatureIGS } from '../service'
 
 export interface IThematicMapConfig {
   baseConfig: IThematicMapBaseConfig | object
@@ -79,8 +79,10 @@ export interface ISubjectType {
 
 // 专题服务Store对应的状态数据
 export interface IState {
+  loading: boolean
   page: number
   pageCount: number
+  pageDataSet: FeatureIGS | object
   moduleTypes: ModuleType[]
   thematicMapConfig: IThematicMapConfig
   selectedTime: string
@@ -90,28 +92,32 @@ export interface IState {
 }
 
 export interface IMethods {
-  setPage(p: number, pc: number): void
+  parseFeatureQueryParams(): FeatureQueryParam
   setVisible(v: ModuleType): void
-  resetVisible(v?: ModuleType): void
+  setLoading(b: boolean): void
+  setPage(p: number, pc: number): void
+  setPageDataSet(a: FeatureIGS): void
+  setFeaturesQuery(s?: (a?: any) => void, e?: (e: Event) => void): void
   setThematicMapConfig(v: IThematicMapConfig): void
   setSelected(id: string): void
   setSelectedList(c: IThematicMapSubjectConfig[]): void
   setSelectedTime(y: string): void
-  setSelectedTimeList(y: string[]): void
+  resetVisible(v?: ModuleType): void
 }
 
 export interface IComputed {
+  isLoading: boolean
+  isVisible: (s: ModuleType) => boolean
   pageParam: {
     page: number
     pageCount: number
   }
-  isVisible: (s: ModuleType) => boolean
+  getPageDataSet: FeatureIGS | object
   getBaseConfig: IThematicMapBaseConfig | object
   getSubjectConfig: IThematicMapSubjectConfig | object
   getSelected: string
   getSelectedList: IThematicMapSubjectConfig[]
   getSelectedTime: string
-  getSelectedTimeList: string[]
+  getSelectedTimeList?: string[]
   getSelectedConfig?: IThematicMapSubjectNewConfig
-  getFeatureQueryParams?: FeatureQueryParam
 }

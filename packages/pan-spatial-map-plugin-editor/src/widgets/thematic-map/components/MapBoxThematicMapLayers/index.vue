@@ -5,14 +5,14 @@
         :is="t"
         :key="t"
         :config="config"
-        :featureQueryParams="featureQueryParams"
+        :dataSet="dataSet"
         v-if="subjectType === t"
       />
     </template>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import {
   thematicMapInstance,
   subjectTypes
@@ -41,9 +41,9 @@ export default class MapBoxThematicMapLayers extends Vue {
     return thematicMapInstance.getSelectedConfig
   }
 
-  // 获取query参数
-  get featureQueryParams() {
-    return thematicMapInstance.getFeatureQueryParams
+  // 专题配置年度
+  get dataSet() {
+    return thematicMapInstance.getPageDataSet
   }
 
   // 获取专题类别

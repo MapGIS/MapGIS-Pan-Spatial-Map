@@ -1,19 +1,17 @@
 <template>
   <!-- 分段专题图图层 -->
-  <mapgis-popup :coordinates="coordinates" :showed="true">
+  <div></div>
+  <!-- <mapgis-popup :coordinates="coordinates" :showed="true">
     <template v-for="(child, i) in propertiesKeys">
       <div v-show="child" :key="`sub-section-map-layer-popup-properties-${i}`">
         {{ child }} : {{ properties[child] }}
       </div>
     </template>
-  </mapgis-popup>
+  </mapgis-popup> -->
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop } from 'vue-property-decorator'
-import {
-  queryFeaturesInstance,
-  utilInstance
-} from '@mapgis/pan-spatial-map-store'
+import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-layers'
 
 interface IStyle {
@@ -31,7 +29,7 @@ export default class SubSectionMapLayer extends Mixins(
 ) {
   properties: Record<string, any> = {}
 
-  coordinates = [{ lng: 0, lat: 0 }]
+  coordinates = [0, 0]
 
   // 获取属性keys
   get propertiesKeys() {
@@ -83,11 +81,8 @@ export default class SubSectionMapLayer extends Mixins(
   /**
    * 展示图层
    */
-  async showLayer() {
-    if (this.featureQueryParams) {
-      this.dataSet = await queryFeaturesInstance.query(this.featureQueryParams)
-      this.updateLayer()
-    }
+  showLayer() {
+    this.updateLayer()
   }
 
   /**

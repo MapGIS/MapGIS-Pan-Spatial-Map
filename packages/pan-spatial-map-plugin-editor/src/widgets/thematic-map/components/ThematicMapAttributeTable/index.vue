@@ -9,7 +9,7 @@
       :verticalOffset="50"
     >
       <div class="thematic-map-attribute-table">
-        <a-spin :spinning="loading">
+        <a-spin :spinning="isLoading">
           <row-flex
             :span="[13, 10]"
             justify="space-between"
@@ -26,7 +26,7 @@
             </template>
             <row-flex label="时间" :span="[5, 19]">
               <a-select :value="time" @change="onTimeChange">
-                <a-select-option v-for="y in timeList" :key="y">{{
+                <a-select-option v-for="y in configTimeList" :key="y">{{
                   y
                 }}</a-select-option>
               </a-select>
@@ -48,12 +48,12 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import {
   queryFeaturesInstance,
-  FeatureQueryParam,
   thematicMapInstance
 } from '@mapgis/pan-spatial-map-store'
+import ThematicMapMixin from '../../mixins/thematic-map'
 import RowFlex from '../RowFlex'
 
 @Component({
@@ -61,18 +61,14 @@ import RowFlex from '../RowFlex'
     RowFlex
   }
 })
-export default class ThematicMapAttributeTable extends Vue {
-  // 加载开关
-  loading = false
-
+export default class ThematicMapAttributeTable extends Mixins(
+  ThematicMapMixin
+) {
   // 专题
   subject = ''
 
   // 时间
   time = ''
-
-  // 时间列表
-  timeList: string[] = []
 
   // 列表页码
   page = 0
@@ -130,21 +126,6 @@ export default class ThematicMapAttributeTable extends Vue {
     }))
   }
 
-  // 获取选中专题
-  get selected() {
-    return thematicMapInstance.getSelected
-  }
-
-  // 获取时间轴已选中的年度(回显至时间选项)
-  get selectedTime() {
-    return thematicMapInstance.getSelectedTime
-  }
-
-  // 获取选中专题对应年度的配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
-  get selectedConfig() {
-    return thematicMapInstance.getSelectedConfig
-  }
-
   /**
    * 专题切换
    * 1.重置列表页码
@@ -156,12 +137,7 @@ export default class ThematicMapAttributeTable extends Vue {
     this.onTablePageUpdate(1, this.pageCount)
     this.subject = value
     thematicMapInstance.setSelected(value)
-    const timeList = this.selectedConfig
-      ? this.selectedConfig.configTimeList
-      : []
-    this.timeList = timeList
-    thematicMapInstance.setSelectedTimeList(this.timeList)
-    this.onTimeChange(this.timeList[0])
+    this.onTimeChange(this.configTimeList[0])
   }
 
   /**
@@ -175,12 +151,9 @@ export default class ThematicMapAttributeTable extends Vue {
     this.onTablePageUpdate(1, this.pageCount)
     this.time = value
     thematicMapInstance.setSelectedTime(value)
-    if (this.selectedConfig) {
-      const { configSubData } = this.selectedConfig
-      if (configSubData && configSubData.table) {
-        this.setTableColumns(configSubData.table)
-        this.getTableData()
-      }
+    if (this.configSubData) {
+      this.setTableColumns(this.configSubData.table)
+      this.getTableData()
     } else {
       this.total = 0
       this.tableData = []
@@ -228,26 +201,13 @@ export default class ThematicMapAttributeTable extends Vue {
    * 获取列表数据
    */
   getTableData() {
-    if (thematicMapInstance.getFeatureQueryParams) {
-      const fn = queryFeaturesInstance.query(
-        thematicMapInstance.getFeatureQueryParams
+    thematicMapInstance.setFeaturesQuery(dataSet => {
+      const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
+        dataSet
       )
-      if (fn && fn.then) {
-        this.loading = true
-        fn.then(dataSet => {
-          const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
-            dataSet
-          )
-          this.total = geojsonData.dataCount
-          this.tableData = geojsonData.features.map(
-            ({ properties }) => properties
-          )
-          this.loading = false
-        }).catch(e => {
-          this.loading = false
-        })
-      }
-    }
+      this.total = geojsonData.dataCount
+      this.tableData = geojsonData.features.map(({ properties }) => properties)
+    })
   }
 
   /**
@@ -264,7 +224,7 @@ export default class ThematicMapAttributeTable extends Vue {
    * 监听: 年度时间轴数据切换,需要同步更新时间选项
    */
   @Watch('selectedTime')
-  watchSelectedTime(nV) {
+  watchSelectedTime(nV: string) {
     if (this.time !== nV) {
       this.onTimeChange(nV)
     }
