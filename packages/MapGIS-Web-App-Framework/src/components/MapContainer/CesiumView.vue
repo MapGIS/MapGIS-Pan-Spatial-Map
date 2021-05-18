@@ -24,15 +24,17 @@
       />
       <mapgis-3d-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
-        :id="layerProps.layerId"
         :show="layerProps.show"
-        :url="layerProps.baseUrl"
+        :id="layerProps.layerId"
+        :url="layerProps.url"
+        :options="layerProps.options"
       />
       <mapgis-3d-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
-        :id="layerProps.layerId"
         :show="layerProps.show"
-        :url="layerProps.baseUrl"
+        :id="layerProps.layerId"
+        :url="layerProps.url"
+        :options="layerProps.options"
       />
       <cesium-arcgis-layer
         v-if="isArcgisMapLayer(layerProps.type)"
@@ -221,13 +223,14 @@ export default {
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            sourceId: layer.id,
-            baseUrl: layer.url,
-            wmtsLayer: layer.activeLayer.id,
-            tileMatrixSet: layer.activeLayer.tileMatrixSetId,
-            version: layer.version,
-            wmtsStyle: layer.activeLayer.styleId,
-            format: layer.activeLayer.imageFormat
+            url: layer.url,
+            options: {
+              layer: layer.activeLayer.id,
+              style: layer.activeLayer.styleId,
+              version: layer.version,
+              format: layer.activeLayer.imageFormat,
+              tileMatrixSetID: layer.activeLayer.tileMatrixSetId
+            }
           }
 
           break
@@ -240,12 +243,11 @@ export default {
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            sourceId: layer.id,
-            baseUrl: layer.url,
-            layers: allLayerNames,
-            version: layer.version,
-            token: layer.tokenValue,
-            reversebbox: false
+            url: layer.url,
+            options: {
+              layers: allLayerNames.join(','),
+              version: layer.version
+            }
           }
 
           break
