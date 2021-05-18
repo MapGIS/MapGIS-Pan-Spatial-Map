@@ -214,7 +214,16 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       return
     }
     const { option } = this.queryParams
-    const { layerIndex, id, ip, port, serverName, serverType, gdbp } = option
+    const {
+      layerIndex,
+      id,
+      ip,
+      port,
+      serverName,
+      serverType,
+      gdbp,
+      serverUrl
+    } = option
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
@@ -244,9 +253,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
           ? this.fieldTypeCN[type.toUpperCase()]
           : type.toUpperCase()
       }))
-    }
-    //  TODO:此段代码请勿删除，该版本暂未适配ArcgisLayer，后续已此段代码作为参考
-    /* else if (subtype === SubLayerType.RasterArcgisLayer) {
+    } else if (serverType === LayerType.arcGISMapImage) {
       // arcgis图层
       const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
         f: 'json',
@@ -264,7 +271,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
             ? this.fieldTypeCN[type.toUpperCase()]
             : type.toUpperCase()
         }))
-    } */
+    }
   }
 
   // 点击字段表格行

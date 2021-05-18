@@ -327,7 +327,7 @@ export default class FilterItem extends Vue {
       layerIndex,
       gdbp
     } = this.queryParams
-    const options: OptionItem[] = []
+    let options: OptionItem[] = []
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
@@ -359,8 +359,7 @@ export default class FilterItem extends Vue {
           type: FldType[index]
         })
       }
-    }
-    /* else if (serverType === SubLayerType.RasterArcgisLayer) {
+    } else if (serverType === LayerType.arcGISMapImage) {
       const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
         f: 'json',
         serverUrl,
@@ -378,7 +377,7 @@ export default class FilterItem extends Vue {
           value: value,
           type: type.toLowerCase()
         }))
-    } */
+    }
     return options
   }
 
@@ -492,8 +491,7 @@ export default class FilterItem extends Vue {
       ).map(value => {
         return value
       })
-    }
-    /* else if (serverType === SubLayerType.RasterArcgisLayer) {
+    } else if (serverType === LayerType.arcGISMapImage) {
       const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
         f: 'json',
         serverUrl,
@@ -502,10 +500,9 @@ export default class FilterItem extends Vue {
         page: 0,
         pageCount: Number(this.valueSize)
       })
-      console.log(result.value)
       const values = Array.from(new Set(result.value.map(value => ({ value }))))
       this.valueTableData = values
-    } */
+    }
   }
 
   // SQL变更提交change事件

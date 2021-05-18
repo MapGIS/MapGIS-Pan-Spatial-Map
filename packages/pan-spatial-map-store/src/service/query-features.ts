@@ -864,15 +864,23 @@ class QueryFeatures {
         }
       )
     }
-    const promise = new Promise<FeatureGeoJSON | FeatureIGS>(resolve => {
-      queryService.query(res => {
-        if (!res) {
-          resolve(undefined)
-        } else {
-          resolve(res)
-        }
-      })
-    })
+    const promise = new Promise<FeatureGeoJSON | FeatureIGS>(
+      (resolve, reject) => {
+        queryService.query(
+          res => {
+            if (!res) {
+              resolve(undefined)
+            } else {
+              resolve(res)
+            }
+          },
+          error => {
+            console.log(error)
+            reject(error)
+          }
+        )
+      }
+    )
     return promise.then(res => {
       return res
     })

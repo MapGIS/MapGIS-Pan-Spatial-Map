@@ -217,7 +217,7 @@ export default class MpFeatureQuery extends Mixins(
         this.toggleRect()
         break
       case 'Circle':
-        // this.toggleCircle()
+        this.toggleCircle()
         break
       default:
         break

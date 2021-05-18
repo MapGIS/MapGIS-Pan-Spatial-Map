@@ -29,20 +29,27 @@
         locationPanelExpand ? '' : 'unvisible'
       ]"
     >
-      <a-tabs
-        default-active-key="district"
-        @change="onLocateChange"
-        size="small"
-        type="card"
-      >
+      <a-tabs v-model="locationType" size="small" type="card">
         <a-tab-pane key="district" tab="行政区划定位">
-          行政区划定位
+          <zone
+            ref="zone"
+            :active="locationType === 'district'"
+            v-model="geoJson"
+          />
         </a-tab-pane>
         <a-tab-pane key="coordinate" tab="坐标定位" force-render>
-          坐标定位
+          <coordinate
+            ref="coordinate"
+            :active="locationType === 'coordinate'"
+            v-model="geoJson"
+          />
         </a-tab-pane>
         <a-tab-pane key="map-sheet" tab="图幅定位">
-          图幅定位
+          <frame
+            ref="map-sheet"
+            v-model="geoJson"
+            :active="locationType === 'map-sheet'"
+          />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -56,7 +63,11 @@
       ]"
       :style="{ 'max-height': `${maxHeight}px` }"
     >
-      <place-name ref="placeName" :widgetInfo="widgetInfo"></place-name>
+      <place-name
+        ref="placeName"
+        :widgetInfo="widgetInfo"
+        :geometry="geometry"
+      ></place-name>
     </div>
   </div>
 </template>
@@ -64,9 +75,16 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import PlaceName from './place-name/place-name'
+import { Parser, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
+import PlaceName from './components/place-name/PlaceName'
+import Zone from './components/zone-frame/Zone'
+import Coordinate from './components/coordinate/Coordinate'
+import Frame from './components/zone-frame/Frame'
 
-@Component({ name: 'MpComprehensiveQuery', components: { PlaceName } })
+@Component({
+  name: 'MpComprehensiveQuery',
+  components: { PlaceName, Zone, Coordinate, Frame }
+})
 export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private keyword = ''
 
@@ -77,12 +95,24 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   private maxHeight = 0
 
   // 可选district：行政区划定位；coordinate：坐标定位；map-sheet：图幅号定位
-  private locationType = 'district'
+  private locationType = ''
 
   private locationPanelExpand = false
 
+  private geoJson: FeatureGeoJSON | null = null
+
   get logo() {
-    return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${this.locationType}.png`
+    return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${this
+      .locationType || 'district'}.png`
+  }
+
+  private get geometry() {
+    if (this.geoJson) {
+      const result = Parser.changeToTangram(this.geoJson)
+      if (Array.isArray(result)) return result[0]
+      return result
+    }
+    return null
   }
 
   mounted() {
@@ -107,16 +137,21 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   onLocate() {
     this.locationPanelExpand = true
     this.searchPanelExpand = false
-  }
-
-  onLocateChange(activeKey) {
-    this.locationType = activeKey
+    if (!this.locationType) {
+      this.locationType = 'district'
+    }
   }
 
   onClose() {
     this.locationPanelExpand = false
     this.searchPanelExpand = false
     this.$refs.placeName.reset()
+    this.$refs.zone && this.$refs.zone.clear()
+    this.$refs.coordinate && this.$refs.coordinate.clear()
+    this.$refs['map-sheet'] && this.$refs['map-sheet'].clear()
+    if (this.locationType === 'district') {
+      this.locationType = ''
+    }
   }
 
   onSearchFocus() {
