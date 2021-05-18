@@ -32,7 +32,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
       // 页容量
       pageCount: 10,
       // 当前页的查询的要素数据
-      pageDataSet: {},
+      pageDataSet: null,
       // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
       moduleTypes: [],
       // 专题服务时间轴选中的年度
@@ -234,7 +234,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
      * @param dataSet
      */
     setPageDataSet(dataSet: FeatureIGS) {
-      this.pageDataSet = { ...dataSet }
+      this.pageDataSet = dataSet
     },
 
     /**

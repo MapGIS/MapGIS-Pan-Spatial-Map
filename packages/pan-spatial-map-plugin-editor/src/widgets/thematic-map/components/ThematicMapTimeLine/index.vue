@@ -8,21 +8,23 @@
       :verticalOffset="30"
     >
       <div class="thematic-map-time-line">
-        <!-- 时间轴 -->
-        <row-flex :span="[2, 22]" v-show="timeList.length">
-          <template #label>
-            <a-tooltip placement="bottom" :title="autoPlay.tooltip">
-              <a-icon
-                class="thematic-map-time-line-btn"
-                :type="autoPlay.type"
-                @click="btnPlay"
-              />
-            </a-tooltip>
-          </template>
-          <div id="thematic-map-time-line-chart" />
-        </row-flex>
-        <!-- 空数据友好提示 -->
-        <a-empty :image="simpleImage" v-show="!timeList.length" />
+        <a-spin :spinning="loading">
+          <!-- 时间轴 -->
+          <row-flex :span="[2, 22]" v-show="timeList.length">
+            <template #label>
+              <a-tooltip placement="bottom" :title="autoPlay.tooltip">
+                <a-icon
+                  class="thematic-map-time-line-btn"
+                  :type="autoPlay.type"
+                  @click="btnPlay"
+                />
+              </a-tooltip>
+            </template>
+            <div id="thematic-map-time-line-chart" />
+          </row-flex>
+          <!-- 空数据友好提示 -->
+          <a-empty :image="simpleImage" v-show="!timeList.length" />
+        </a-spin>
       </div>
     </mp-window>
   </mp-window-wrapper>
@@ -50,19 +52,9 @@ export default class ThematicMapTimeLine extends Vue {
   // 当前播放的数据索引
   currentIndex = 0
 
-  // 显示开关
-  get tlVisible() {
-    const visible = thematicMapInstance.isVisible('tl')
-    if (visible) {
-      this.onUpdateChart()
-    }
-    return visible
-  }
-
-  set tlVisible(nV) {
-    if (!nV) {
-      thematicMapInstance.resetVisible('tl')
-    }
+  // 加载
+  get loading() {
+    return thematicMapInstance.isLoading
   }
 
   // 属性表或者时间轴选中的时间数据
@@ -73,6 +65,22 @@ export default class ThematicMapTimeLine extends Vue {
   // 时间轴的列表数据
   get timeList() {
     return thematicMapInstance.getSelectedTimeList
+  }
+
+  // 显示开关
+  get tlVisible() {
+    const visible = thematicMapInstance.isVisible('tl')
+    const _visible = visible && this.timeList.length > 1
+    if (_visible) {
+      this.onUpdateChart()
+    }
+    return _visible
+  }
+
+  set tlVisible(nV) {
+    if (!nV) {
+      thematicMapInstance.resetVisible('tl')
+    }
   }
 
   // 播放文案和提示设置
@@ -135,7 +143,7 @@ export default class ThematicMapTimeLine extends Vue {
   @Watch('selectedTime')
   watchTimeList(nV) {
     const _index = this.timeList.indexOf(nV)
-    if (!_index || this.currentIndex !== _index) {
+    if (this.tlVisible && (!_index || this.currentIndex !== _index)) {
       this.currentIndex = _index
       this.onUpdateChart()
     }

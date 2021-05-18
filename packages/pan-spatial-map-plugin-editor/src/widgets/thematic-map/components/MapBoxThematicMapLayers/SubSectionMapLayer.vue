@@ -86,37 +86,55 @@ export default class SubSectionMapLayer extends Mixins(
       'ThematicMapLayer',
       {
         map: this.map,
-        isHoverAble: true, // 开启 hover 高亮效果
         opacity: 0.8,
+        isHoverAble: true, // 开启 hover 高亮效果
         alwaysMapCRS: true
       }
     )
     if (!_thematicMapLayer) return
     const color = this.getColor()
     const highlightColor = 'rgba(255, 0, 0, 1)'
-    const styleGroups = this.getSegmentstyle()
-    const style = this.getThemeStyle({
+    _thematicMapLayer.id = this.id
+    _thematicMapLayer.themeField = this.field
+    _thematicMapLayer.styleGroups = this.getSegmentstyle()
+    _thematicMapLayer.style = this.getThemeStyle({
       shadowBlur: 2,
       shadowColor: color,
       fillColor: color,
       strokeColor: color
     })
-    const highlightStyle = this.getThemeStyle({
+    _thematicMapLayer.highlightStyle = this.getThemeStyle({
       stroke: true,
       strokeColor: highlightColor,
       fillColor: highlightColor
     })
-    this.thematicMapLayer = {
-      ..._thematicMapLayer,
-      id: this.id,
-      themeField: this.field,
-      style,
-      styleGroups,
-      highlightStyle
-    }
+    this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
-    _thematicMapLayer.addFeatures(this.dataSet)
+    this.thematicMapLayer.addFeatures(this.dataSet)
+    // // test
+    // const queryStruct = new window.Zondy.Service.QueryFeatureStruct()
+    // queryStruct.IncludeGeometry = true
+    // queryStruct.IncludeAttribute = true
+    // queryStruct.IncludeWebGraphic = false
+    // const queryParam = new window.Zondy.Service.QueryParameter({
+    //   resultFormat: 'json',
+    //   struct: queryStruct,
+    //   where: '1>0'
+    // })
+    // queryParam.pageIndex = 0
+    // queryParam.recordNumber = 10000
+    // const queryInstance = new window.Zondy.Service.QueryDocFeature(
+    //   queryParam,
+    //   'Hubei3857',
+    //   1,
+    //   {
+    //     ip: 'develop.smaryun.com',
+    //     port: 6163,
+    //     requestType: 'POST'
+    //   }
+    // )
+    // queryInstance.query(data => this.thematicMapLayer.addFeatures(data))
   }
 
   /**

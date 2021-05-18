@@ -157,6 +157,7 @@ export default class ThematicMapAttributeTable extends Mixins(
     } else {
       this.total = 0
       this.tableData = []
+      thematicMapInstance.setPageDataSet(null)
     }
   }
 

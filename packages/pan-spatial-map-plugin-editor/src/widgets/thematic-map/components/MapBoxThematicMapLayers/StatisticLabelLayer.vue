@@ -11,6 +11,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
+import cloneDeep from 'lodash/cloneDeep'
 import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-layers'
 
 @Component
@@ -50,19 +51,19 @@ export default class StatisticLabelLayer extends Mixins(
   updateLayer() {
     if (!this.dataSet || !this.style) return
     this.removeLayer()
-    const _thematicMapLayer = window.Zondy.Map.rankSymbolThemeLayer(
+    this.thematicMapLayer = window.Zondy.Map.rankSymbolThemeLayer(
       'ThematicMapLayer',
       'Circle',
       { calGravity: true }
     )
-    if (!_thematicMapLayer) return
+    if (!this.thematicMapLayer) return
     const {
       textStyle: { fillColor },
       radius
     } = this.style
     const { min, max } = radius[0]
     this.thematicMapLayer = {
-      ..._thematicMapLayer,
+      ...cloneDeep(this.thematicMapLayer),
       id: this.id,
       themeField: this.field,
       symbolSetting: {

@@ -17,13 +17,18 @@ import {
   thematicMapInstance,
   subjectTypes
 } from '@mapgis/pan-spatial-map-store'
-import '../../../../../libs/zondyclient/webclient-mapboxgl-plugin.js'
 import SubSectionMapLayer from './SubSectionMapLayer.vue' // 分段专题图
 import BaseMapWithGraphLayer from './BaseMapWithGraphLayer.vue' // 统计专题图
 import StatisticLabelLayer from './StatisticLabelLayer.vue' // 等级符号专题图
 import LabelLayer from './LabelLayer.vue' // 聚合标注专题图
 import HeatMapLayer from './HeatMapLayer.vue' // 热力图
 import HexBinLayer from './HexBinLayer.vue' // 蜂窝图
+
+require('../../../../../libs/zondyclient/mapbox-gl.css')
+
+window.mapboxgl = require('../../../../../libs/zondyclient/mapbox-gl.js')
+
+require('../../../../../libs/zondyclient/webclient-mapboxgl-plugin.js')
 
 @Component({
   components: {

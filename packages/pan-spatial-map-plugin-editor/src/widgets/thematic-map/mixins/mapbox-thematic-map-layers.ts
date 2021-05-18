@@ -1,13 +1,10 @@
-import { Vue, Component, Inject, Prop } from 'vue-property-decorator'
-import { UUID } from '@mapgis/web-app-framework'
+import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { UUID, MapMixin } from '@mapgis/web-app-framework'
 import { FeatureIGS, utilInstance } from '@mapgis/pan-spatial-map-store'
+import isFunction from 'lodash/isFunction'
 
 @Component
-export default class MapboxThematicMapLayersMinxin extends Vue {
-  @Inject('map') map: any
-
-  @Inject('mapbox') mapbox: any
-
+export default class MapboxThematicMapLayersMinxin extends Mixins(MapMixin) {
   // 某个专题的配置
   @Prop({ default: () => ({}) }) config!: any
 
@@ -63,8 +60,12 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
       if (this.map.getLayer(id)) {
         this.map.removeLayer(id)
       } else {
-        this.thematicMapLayer.clear()
-        this.thematicMapLayer.removeFromMap()
+        if (isFunction(this.thematicMapLayer.clear)) {
+          this.thematicMapLayer.clear()
+        }
+        if (isFunction(this.thematicMapLayer.removeFromMap)) {
+          this.thematicMapLayer.removeFromMap()
+        }
       }
       this.thematicMapLayer = null
     }
@@ -74,6 +75,11 @@ export default class MapboxThematicMapLayersMinxin extends Vue {
    * 重置图层
    */
   resetLayer() {
+    this.initLayer()
+  }
+
+  @Watch('dataSet', { deep: true })
+  watchDataSet() {
     this.initLayer()
   }
 

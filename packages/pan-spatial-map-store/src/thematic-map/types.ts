@@ -82,7 +82,7 @@ export interface IState {
   loading: boolean
   page: number
   pageCount: number
-  pageDataSet: FeatureIGS | object
+  pageDataSet: FeatureIGS | null
   moduleTypes: ModuleType[]
   thematicMapConfig: IThematicMapConfig
   selectedTime: string
@@ -112,7 +112,7 @@ export interface IComputed {
     page: number
     pageCount: number
   }
-  getPageDataSet: FeatureIGS | object
+  getPageDataSet: FeatureIGS | null
   getBaseConfig: IThematicMapBaseConfig | object
   getSubjectConfig: IThematicMapSubjectConfig | object
   getSelected: string

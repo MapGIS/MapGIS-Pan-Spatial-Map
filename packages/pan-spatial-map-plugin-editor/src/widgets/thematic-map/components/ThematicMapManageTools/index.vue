@@ -35,31 +35,43 @@ interface IIcon {
 export default class ThematicMapManageTools extends Vue {
   mtVisible = false
 
-  iconList: IIcon[] = [
-    {
-      type: 'table',
-      tooltip: '属性表',
-      visibleType: 'at'
-    },
-    {
-      type: 'bar-chart',
-      tooltip: '统计表',
-      visibleType: 'st'
-    },
-    {
-      type: 'clock-circle',
-      tooltip: '时间轴',
-      visibleType: 'tl'
-    },
-    {
-      type: 'file-add',
-      tooltip: '新建专题图',
-      visibleType: 'sa'
-    }
-  ]
+  // 时间轴的列表数据
+  get timeList() {
+    return thematicMapInstance.getSelectedTimeList
+  }
 
   get visible() {
     return thematicMapInstance.isVisible('mt')
+  }
+
+  get iconList() {
+    const list = [
+      {
+        type: 'table',
+        tooltip: '属性表',
+        visibleType: 'at'
+      },
+      {
+        type: 'bar-chart',
+        tooltip: '统计表',
+        visibleType: 'st'
+      },
+
+      {
+        type: 'file-add',
+        tooltip: '新建专题图',
+        visibleType: 'sa'
+      }
+    ]
+
+    if (this.timeList?.length > 1) {
+      list.splice(2, 0, {
+        type: 'clock-circle',
+        tooltip: '时间轴',
+        visibleType: 'tl'
+      })
+    }
+    return list
   }
 
   /**

@@ -127,7 +127,7 @@ export default {
     center: {
       type: [Object, Array],
       default() {
-        return { lng: 114, lat: 30 }
+        return { lng: 112.247175, lat: 30.152892 }
       }
     },
     zoom: {
@@ -140,7 +140,7 @@ export default {
       // 使用mapbox样式需要的秘钥
       accessToken:
         'pk.eyJ1IjoicGFybmRlZWRsaXQiLCJhIjoiY2o1MjBtYTRuMDhpaTMzbXhpdjd3YzhjdCJ9.sCoubaHF9-nhGTA-sgz0sA',
-      crs: 'EPSG:4326',
+      crs: 'EPSG:3857',
       sources: {},
       layers: []
     }

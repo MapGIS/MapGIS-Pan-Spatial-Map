@@ -145,18 +145,16 @@ export default class BaseMapWithGraphLayer extends Mixins(
       default:
         break
     }
-    this.thematicMapLayerOptions = {
-      ...this.thematicMapLayerOptions,
-      chartsSetting
-    }
-    this.thematicMapLayer = {
-      id: this.id,
-      ...window.Zondy.Map.graphThemeLayer(
-        `${type}Layer`,
-        type,
-        this.thematicMapLayerOptions
-      )
-    }
+    const _thematicMapLayer = window.Zondy.Map.graphThemeLayer(
+      `${type}Layer`,
+      type,
+      {
+        ...this.thematicMapLayerOptions,
+        chartsSetting
+      }
+    )
+    _thematicMapLayer.id = this.id
+    this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
