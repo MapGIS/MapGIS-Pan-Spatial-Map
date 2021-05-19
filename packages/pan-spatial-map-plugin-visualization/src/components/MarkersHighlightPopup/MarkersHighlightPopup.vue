@@ -33,7 +33,7 @@ interface INormalizedFeature {
 
 interface IMarker {
   img: stirng
-  coordinates: any
+  coordinates: number[]
   feature: GFeature
   properties: any
   fid: string
@@ -64,7 +64,7 @@ export default class MpMarkersHighlightPopup extends Mixins<
   @Prop({ default: false }) filterWithMap!: boolean
 
   // 标注点
-  markers: Record<string, any>[] = []
+  markers: IMarker[] = []
 
   // 选中的数据范围
   selectionBound: Record<string, any> = {}
