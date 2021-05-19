@@ -1,8 +1,8 @@
 <template>
-  <div class="comprehensive-result-tab-container">
+  <div class="comprehensive-place-name-panel-container">
     <a-spin :spinning="spinning" v-if="!cluster">
       <template v-if="markersInfos.length > 0">
-        <ul class="comprehensive-result-tab">
+        <ul class="comprehensive-place-name-panel">
           <li
             v-for="(item, i) in markersInfos"
             :key="item.id"
@@ -10,10 +10,10 @@
             @mouseleave="mouseLeave(i)"
             @click="setActivePoint(i)"
           >
-            <div class="img-result-tab">
+            <div class="img-place-name-panel">
               <img :src="item.img" />
             </div>
-            <div class="content-result-tab">
+            <div class="content-place-name-panel">
               <p v-for="(row, index) in fieldNames" :key="row">
                 <label>{{ row }}:</label>
                 <span>{{ item.properties[fields[index]] }}</span>
@@ -56,8 +56,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
-import { UUID } from '@mapgis/web-app-framework'
+import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { UUID, AppMixin } from '@mapgis/web-app-framework'
 import {
   dataCatalogInstance,
   queryFeaturesInstance,
@@ -67,11 +67,8 @@ import {
   IResultSetCategory
 } from '@mapgis/pan-spatial-map-store'
 
-import MarkerBlue from '../../../../assets/images/markerBlue.png'
-import MarkerRed from '../../../../assets/images/markerRed0.png'
-
 @Component
-export default class ResultTab extends Vue {
+export default class PlaceNamePanel extends Vue {
   @Prop() widgetInfo!: Record<string, unknown>
 
   @Prop() name!: string
@@ -81,6 +78,10 @@ export default class ResultTab extends Vue {
   @Prop() keyword: string
 
   @Prop() cluster!: boolean
+
+  @Prop() baseUrl!: string
+
+  @Prop() geometry?: Record<string, unknown>
 
   private fieldNames: string[] = []
 
@@ -92,15 +93,13 @@ export default class ResultTab extends Vue {
 
   private maxCount = 0
 
-  private markerBlue = MarkerBlue
+  private defaultImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
 
-  private markerRed = MarkerRed
+  private selectedImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.selectedImg}`
 
   private markersInfos = []
 
   private spinning = false
-
-  private activePoint = -1
 
   private geojson = {}
 
@@ -125,7 +124,6 @@ export default class ResultTab extends Vue {
 
   @Watch('activeTab', { immediate: true })
   activeTabChange() {
-    this.activePoint = -1
     this.updataMarkers()
   }
 
@@ -183,7 +181,7 @@ export default class ResultTab extends Vue {
       rtnLabel: false,
       f: 'json',
       where,
-      //   geometry: this.geometry,
+      geometry: this.geometry,
       cursorType: 'backword'
     }
     const { queryWay } = this.config
@@ -224,7 +222,7 @@ export default class ResultTab extends Vue {
             coordinates: utilInstance.getGeoJsonFeatureCenter(feature),
             properties,
             id: UUID.uuid(),
-            img: this.markerBlue
+            img: this.defaultImg
           }
           markerCoords.push(coords)
         }
@@ -249,37 +247,28 @@ export default class ResultTab extends Vue {
   }
 
   mouseOver(index) {
-    this.$set(this.markersInfos[index], 'img', this.markerRed)
+    this.$set(this.markersInfos[index], 'img', this.selectedImg)
     this.updataMarkers()
   }
 
   mouseLeave(index) {
-    if (index !== this.activePoint) {
-      this.$set(this.markersInfos[index], 'img', this.markerBlue)
-    }
+    this.$set(this.markersInfos[index], 'img', this.defaultImg)
     this.updataMarkers()
   }
 
   pageChange(page) {
-    this.activePoint = -1
     this.currentPageIndex = page
     this.queryFeature()
   }
 
   setActivePoint(index) {
-    if (index !== this.activePoint && this.activePoint > -1) {
-      this.$set(this.markersInfos[this.activePoint], 'img', this.markerBlue)
-    }
-    this.activePoint = index
-    this.$set(this.markersInfos[index], 'img', this.markerRed)
-    this.updataMarkers()
     this.$emit('click-item', this.markersInfos[index].coordinates)
   }
 }
 </script>
 
 <style lang="less">
-.comprehensive-result-tab-container {
+.comprehensive-place-name-panel-container {
   &,
   .ant-spin-nested-loading,
   .ant-spin-container {
@@ -311,7 +300,7 @@ export default class ResultTab extends Vue {
         margin-left: 10px;
       }
     }
-    .comprehensive-result-tab {
+    .comprehensive-place-name-panel {
       flex: 1;
       overflow: auto;
       list-style: none;
@@ -325,7 +314,7 @@ export default class ResultTab extends Vue {
         &:last-child {
           border-bottom-width: 0;
         }
-        .content-result-tab {
+        .content-place-name-panel {
           flex: 1;
           p {
             margin-bottom: 3px !important;
@@ -339,7 +328,7 @@ export default class ResultTab extends Vue {
             }
           }
         }
-        .img-result-tab {
+        .img-place-name-panel {
           margin-right: 18px;
         }
       }

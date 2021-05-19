@@ -1,5 +1,6 @@
 import * as Zondy from '@mapgis/webclient-es6-service'
 import { LoadStatus, LayerType, Layer } from './layer'
+import { SpatialReference } from '../spatial-reference'
 
 export class IGSVectorLayer extends Layer {
   /**
@@ -60,6 +61,14 @@ export class IGSVectorLayer extends Layer {
   getImageUrl(extent: any, width: number, height: number): string {
     throw new Error('Method not implemented.')
   }
+
+  /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof IGSVectorLayer
+   */
+  spatialReference: SpatialReference = new SpatialReference()
 
   load(): Promise<Layer> {
     // 只有加载状态是没有加载过时，才会真正进行请求。

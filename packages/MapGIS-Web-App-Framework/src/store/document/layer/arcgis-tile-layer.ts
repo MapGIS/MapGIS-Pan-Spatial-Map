@@ -37,6 +37,14 @@ export class ArcGISTileLayer extends TileLayer {
    */
   url = ''
 
+  /**
+   * 服务的版本
+   *
+   * @date 22/04/2021
+   * @memberof ArcGISTileLayer
+   */
+  version = ''
+
   getTileUrl(level: number, row: number, col: number): string {
     throw new Error('Method not implemented.')
   }
@@ -63,7 +71,37 @@ export class ArcGISTileLayer extends TileLayer {
       // 2.进行网络请求。
       axios.get(getCapabilitiesURL).then(
         res => {
-          // todo:暂不支持，需了解arcGIS瓦片服务的返回结果，并进行解析。
+          if (res.data) {
+            const metaData = res.data
+
+            // 2.1获取图层全图范围
+            if (metaData.fullExtent) {
+              this.fullExtent = new Zondy.Common.Rectangle(
+                metaData.fullExtent.xmin,
+                metaData.fullExtent.ymin,
+                metaData.fullExtent.xmax,
+                metaData.fullExtent.ymax
+              )
+            }
+
+            // 2.3 服务版本
+            if (metaData.currentVersion) this.version = metaData.currentVersion
+
+            // 2.4 描述
+            if (metaData.description) this.description = metaData.description
+
+            if (this.description === '') {
+              if (metaData.serviceDescription)
+                this.description = metaData.serviceDescription
+            }
+
+            // 2.5 空间参照系
+            if (metaData.spatialReference) {
+              if (metaData.spatialReference.wkid)
+                this.spatialReference.wkid = metaData.spatialReference.wkid
+            }
+          }
+
           this.loadStatus = LoadStatus.loaded
           resolve(this)
         },

@@ -120,6 +120,14 @@ export class TileInfo {
   size: number[] = [256, 256]
 
   /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof TileInfo
+   */
+  spatialReference: SpatialReference = new SpatialReference()
+
+  /**
    * 将该对象的实例转换为JSON对象。
    *
    * @date 22/03/2021
@@ -247,7 +255,7 @@ export abstract class TileLayer extends Layer {
    * @date 28/04/2021
    * @memberof TileLayer
    */
-  spatialReference = new SpatialReference()
+  spatialReference: SpatialReference = new SpatialReference()
 
   /**
    * 根据级别、行号、列号生成对应的取图URL

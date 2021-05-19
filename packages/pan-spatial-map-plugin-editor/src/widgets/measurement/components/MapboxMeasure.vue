@@ -184,8 +184,14 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
 
   // 格式化测量结果
   private formatMeasureResult(result, distanceUnit, areaUnit) {
-    let perimeter = ''
-    let area = ''
+    // 投影平面长度
+    let projectionPerimeter = ''
+    // 椭球实地长度
+    let geographyPerimeter = ''
+    // 投影平面面积
+    let projectionArea = ''
+    // 椭球实地面积
+    let geographyArea = ''
     let marker: any = null
     let distanceUnitExp
     let areaUnitExp
@@ -196,38 +202,54 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
     switch (this.measureMode) {
       case 'measure-length':
         distanceUnitExp = this.transDistanceUnit(distanceUnit)
-        perimeter = (result.perimeter / distanceUnitExp.perimeterR).toFixed(2)
+        projectionPerimeter = (
+          result.projectionPerimeter / distanceUnitExp.perimeterR
+        ).toFixed(2)
+        geographyPerimeter = (
+          result.geographyPerimeter / distanceUnitExp.perimeterR
+        ).toFixed(2)
+
         marker = {
           coordinates: result.coordinates[result.coordinates.length - 1],
-          text: [perimeter + distanceUnitExp.perimeterUnitLabel],
+          text: [projectionPerimeter + distanceUnitExp.perimeterUnitLabel],
           style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
         }
         this.measureMarkers.push(marker)
         this.results = {
-          planeLength: perimeter + distanceUnitExp.perimeterUnitLabel,
-          ellipsoidLength: perimeter + distanceUnitExp.perimeterUnitLabel
+          planeLength: projectionPerimeter + distanceUnitExp.perimeterUnitLabel,
+          ellipsoidLength:
+            geographyPerimeter + distanceUnitExp.perimeterUnitLabel
         }
         break
       case 'measure-area':
+        distanceUnitExp = this.transDistanceUnit(distanceUnit)
         areaUnitExp = this.transAreaUnit(areaUnit)
-        perimeter = (result.perimeter / areaUnitExp.perimeterR).toFixed(2)
-        area = (result.area / areaUnitExp.areaR).toFixed(2)
+        projectionPerimeter = (
+          result.projectionPerimeter / distanceUnitExp.perimeterR
+        ).toFixed(2)
+        geographyPerimeter = (
+          result.geographyPerimeter / distanceUnitExp.perimeterR
+        ).toFixed(2)
+        projectionArea = (result.projectionArea / areaUnitExp.areaR).toFixed(2)
+        geographyArea = (result.geographyArea / areaUnitExp.areaR).toFixed(2)
+
         marker = {
           coordinates: utilInstance.getCenterOfGravityPoint(
             result.coordinates[0]
           ),
           text: [
-            `周长: ${perimeter}${areaUnitExp.perimeterUnitLabel}`,
-            `面积: ${area}${areaUnitExp.areaUnitLabel}`
+            `周长: ${projectionPerimeter}${areaUnitExp.perimeterUnitLabel}`,
+            `面积: ${projectionArea}${areaUnitExp.areaUnitLabel}`
           ],
           style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
         }
         this.measureMarkers.push(marker)
         this.results = {
-          planePerimeter: perimeter + areaUnitExp.perimeterUnitLabel,
-          planeArea: area + areaUnitExp.areaUnitLabel,
-          ellipsoidPerimeter: perimeter + areaUnitExp.perimeterUnitLabel,
-          ellipsoidArea: area + areaUnitExp.areaUnitLabel
+          planePerimeter: projectionPerimeter + areaUnitExp.perimeterUnitLabel,
+          planeArea: projectionArea + areaUnitExp.areaUnitLabel,
+          ellipsoidPerimeter:
+            geographyPerimeter + areaUnitExp.perimeterUnitLabel,
+          ellipsoidArea: geographyArea + areaUnitExp.areaUnitLabel
         }
         break
       default:

@@ -3,6 +3,7 @@ import * as Zondy from '@mapgis/webclient-es6-service'
 import axios from 'axios'
 import { LoadStatus, LayerType, Layer } from './layer'
 import { ObjectTool } from '../../utils/object-tool'
+import { SpatialReference } from '../spatial-reference'
 /**
  * OGCWMSLayer的子图层
  *
@@ -406,6 +407,14 @@ export class OGCWMSLayer extends Layer {
    * @memberof OGCWMSLayer
    */
   version = ''
+
+  /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof OGCWMSLayer
+   */
+  spatialReference: SpatialReference = new SpatialReference()
 
   /**
    * 根据id获取对应的子图层

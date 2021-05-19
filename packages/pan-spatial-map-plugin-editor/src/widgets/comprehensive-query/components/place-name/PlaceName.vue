@@ -6,9 +6,8 @@
         :key="`地名地址${item.placeName}`"
         @click="select(item)"
         :class="{ active: selected.indexOf(item.placeName) > -1 }"
+        >{{ item.placeName }}</span
       >
-        {{ item.placeName }}
-      </span>
     </div>
     <div class="search-tab-container" v-if="showResult && !showResultSet">
       <div class="search-switch-container">
@@ -18,16 +17,18 @@
       </div>
       <a-tabs v-model="tab" type="card">
         <a-tab-pane v-for="item in selected" :key="item" :tab="item">
-          <result-tab
+          <place-name-panel
             :widgetInfo="widgetInfo"
             :cluster="cluster"
             :name="item"
             :keyword="keyword"
             :activeTab="tab"
+            :baseUrl="baseUrl"
+            :geometry="geometryData"
             @show-coords="showCoords"
             @click-item="setCenter"
             @update-geojson="updateGeojson"
-          ></result-tab>
+          ></place-name-panel>
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -43,19 +44,29 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
-import ResultTab from './result-tab'
-import PlaceNameMapbox from './place-name-mapbox.vue'
+import PlaceNamePanel from './PlaceNamePanel'
+import PlaceNameMapbox from './PlaceNameMapbox'
 import {
   ExhibitionControllerMixin,
   IAttributeTableExhibition,
   AttributeTableExhibition,
-  baseConfigInstance
+  baseConfigInstance,
+  Parser
 } from '@mapgis/pan-spatial-map-store'
-import { LayerType, WidgetInfoMixin } from '@mapgis/web-app-framework'
+import { LayerType, AppMixin, MapMixin } from '@mapgis/web-app-framework'
+import * as turf from '@turf/turf'
 
-@Component({ components: { ResultTab, PlaceNameMapbox } })
-export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
+@Component({ components: { PlaceNamePanel, PlaceNameMapbox } })
+export default class PlaceName extends Mixins(
+  ExhibitionControllerMixin,
+  AppMixin,
+  MapMixin
+) {
   @Prop() widgetInfo!: Record<string, unknown>
+
+  @Prop() geometry?: Record<string, unknown>
+
+  private geometryData = null
 
   private selected: string[] = []
 
@@ -88,6 +99,11 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
     return this.widgetInfo.config.placeName || this.widgetInfo.config.dataStore
   }
 
+  @Watch('geometry', { immediate: true })
+  geometryChange(val) {
+    this.geometryData = val
+  }
+
   @Watch('showType', { immediate: true })
   showTypeChange() {
     if (this.showType === 'result') {
@@ -105,6 +121,27 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
     if (this.selected.length === 0 && this.allItems.length > 0) {
       this.selected = [this.allItems[0].placeName]
     }
+  }
+
+  getBounds() {
+    const { _ne, _sw } = this.map.getBounds()
+    const { lng: xmax, lat: ymax } = _ne
+    const { lng: xmin, lat: ymin } = _sw
+    const polygon = turf.polygon(
+      [
+        [
+          [xmin, ymax],
+          [xmax, ymax],
+          [xmax, ymin],
+          [xmin, ymin],
+          [xmin, ymax]
+        ]
+      ],
+      { name: 'bounds' }
+    )
+    const result = Parser.changeToTangram(polygon)
+    if (Array.isArray(result)) return result[0]
+    return result
   }
 
   select(item: any) {
@@ -128,13 +165,19 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
 
   search(keyword: string) {
     this.keyword = keyword
+    if (!this.geometry) {
+      this.geometryData = this.getBounds()
+    }
     if (this.showResultSet) {
       this.selected.forEach(item => {
         this.openReseultSet(item)
       })
     } else {
-      this.showResult = true
-      this.tab = this.selected[0]
+      this.showResult = false
+      this.$nextTick(() => {
+        this.showResult = true
+        this.tab = this.selected[0]
+      })
     }
   }
 
@@ -151,7 +194,7 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
       this.keyword !== '' && this.keyword
         ? `${searchField || allSearchName} LIKE '%${this.keyword}%'`
         : `${searchField || allSearchName} LIKE '%'`
-    let exhibition
+    let exhibition: IAttributeTableExhibition = null
     if (queryWay === 'doc') {
       // 地图文档
       exhibition = {
@@ -166,6 +209,7 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
           serverType: LayerType.IGSMapImage,
           layerIndex: LayerIndex,
           serverName: docName,
+          geometry: this.geometryData,
           serverUrl: `http://${ip}:${port}/igs/rest/mrms/docs/${docName}`,
           where
         }
@@ -179,7 +223,8 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
           port: Number(port || baseConfigInstance.config.port),
           serverType: LayerType.IGSVector,
           gdbp: gdbp,
-          where
+          where,
+          geometry: this.geometryData
         }
       }
     }
@@ -224,6 +269,7 @@ export default class PlaceName extends Mixins(ExhibitionControllerMixin) {
   .float-pop-container {
     span {
       padding: 3px 6px;
+      white-space: nowrap;
       &:hover {
         cursor: pointer;
       }

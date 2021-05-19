@@ -9,141 +9,99 @@
     :fullscreen-button="false"
     style="height: 100%; width: 100%"
   >
-    <div v-for="l in rasters" :key="l.id">
-      <cesium-igs-tile-layer
-        v-if="isIgsTileLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
-        :ip="l.ip"
-        :port="l.port"
-        :serverName="l.serverName"
+    <div v-for="layerProps in layers" :key="layerProps.layerId">
+      <mapgis-3d-igs-tile-layer
+        v-if="isIgsTileLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
       />
-      <cesium-igs-doc-layer
-        v-if="isIgsDocLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
-        :ip="l.ip"
-        :port="l.port"
-        :serverName="l.serverName"
+      <mapgis-3d-igs-doc-layer
+        v-if="isIgsDocLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
       />
-      <cesium-igs-wms-layer
-        v-if="isIgsWmsLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
+      <mapgis-3d-ogc-wms-layer
+        v-if="isWMSLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.baseUrl"
       />
-      <cesium-igs-wmts-layer
-        v-if="isIgsWmtsLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
-        :serverName="l.serverName"
+      <mapgis-3d-ogc-wmts-layer
+        v-if="isWMTSLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.baseUrl"
       />
       <cesium-arcgis-layer
-        v-if="isIgsArcgisLayer(l.subtype)"
-        :id="l.id"
-        :url="l.serverUrl"
-        :show="l.show"
-      />
-      <cesium-doc3d-layer
-        v-if="isDoc3dLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
-        :ip="l.ip"
-        :port="l.port"
-        :serverName="l.serverName"
-      />
-      <cesium-tile3d-layer
-        v-if="isTile3dLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
-        :ip="l.ip"
-        :port="l.port"
-        :serverName="l.serverName"
-      />
-      <cesium-pointcloud-layer
-        v-if="isPointcloudLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
-        :ip="l.ip"
-        :port="l.port"
-        :serverName="l.serverName"
-      />
-      <cesium-vectortile-layer
-        v-if="isVectortileLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
-        :ip="l.ip"
-        :port="l.port"
-        :serverName="l.serverName"
+        v-if="isArcgisMapLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :url="layerProps.url"
+        :show="layerProps.show"
       />
       <cesium-raster-layer
-        v-if="isRasterLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.url"
-        :alpha="l.opacity"
+        v-if="isRasterLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
+        :alpha="layerProps.opacity"
       />
-      <cesium-tdt-layer
-        v-if="isIgsTdtLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.baseURL"
+      <cesium-vectortile-layer
+        v-if="isVectorTileLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
+        :ip="layerProps.ip"
+        :port="layerProps.port"
+        :serverName="layerProps.serverName"
+      />
+      <cesium-doc3d-layer
+        v-if="isDoc3dLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
+        :ip="layerProps.ip"
+        :port="layerProps.port"
+        :serverName="layerProps.serverName"
+      />
+      <cesium-tile3d-layer
+        v-if="isTile3dLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
+        :ip="layerProps.ip"
+        :port="layerProps.port"
+        :serverName="layerProps.serverName"
+      />
+      <cesium-pointcloud-layer
+        v-if="isPointcloudLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
+        :ip="layerProps.ip"
+        :port="layerProps.port"
+        :serverName="layerProps.serverName"
       />
       <cesium-terrain-layer
-        v-if="isTerrainLayer(l.subtype)"
-        :id="l.id"
-        :show="l.show"
-        :url="l.serverUrl"
-        :ip="l.ip"
-        :port="l.port"
-        :serverName="l.serverName"
+        v-if="isTerrainLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
+        :ip="layerProps.ip"
+        :port="layerProps.port"
+        :serverName="layerProps.serverName"
       />
     </div>
   </mapgis-web-scene>
 </template>
 
 <script>
-import { IDocument, Layer, VectorTile } from '@mapgis/webclient-store'
-import { CesiumRasterLayer } from '@mapgis/webclient-vue-cesium'
-import CesiumIgsWmsLayer from '../CesiumLayers/CesiumIgsWmsLayer.vue'
-import CesiumIgsWmtsLayer from '../CesiumLayers/CesiumIgsWmtsLayer.vue'
-import CesiumIgsTileLayer from '../CesiumLayers/CesiumIgsTileLayer.vue'
-import CesiumIgsDocLayer from '../CesiumLayers/CesiumIgsDocLayer.vue'
-import CesiumArcgisLayer from '../CesiumLayers/CesiumArcgisLayer.vue'
-import CesiumDoc3dLayer from '../CesiumLayers/CesiumDoc3dLayer.vue'
-import CesiumTile3dLayer from '../CesiumLayers/CesiumTile3dLayer.vue'
-import CesiumPointcloudLayer from '../CesiumLayers/CesiumPointcloudLayer.vue'
-import CesiumVectortileLayer from '../CesiumLayers/CesiumVectortileLayer.vue'
-import CesiumTdtLayer from '../CesiumLayers/CesiumTdtLayer.vue'
-import CesiumTerrainLayer from '../CesiumLayers/CesiumTerrainLayer.vue'
-import { Map } from '../../store/document'
-
-const { SubLayerType, LayerType } = Layer
-const { Convert } = VectorTile
+import { Layer, LayerType, LoadStatus } from '@mapgis/web-app-framework'
 
 export default {
   name: 'MpCesiumView',
-  components: {
-    CesiumRasterLayer,
-    CesiumIgsDocLayer,
-    CesiumIgsWmsLayer,
-    CesiumIgsWmtsLayer,
-    CesiumIgsTileLayer,
-    CesiumArcgisLayer,
-    CesiumDoc3dLayer,
-    CesiumTile3dLayer,
-    CesiumPointcloudLayer,
-    CesiumVectortileLayer,
-    CesiumTdtLayer,
-    CesiumTerrainLayer
-  },
+  components: {},
   props: {
     document: {
       type: Object,
@@ -158,7 +116,7 @@ export default {
   },
   data() {
     return {
-      rasters: []
+      layers: []
     }
   },
   watch: {
@@ -166,7 +124,7 @@ export default {
       this.changePageHeight()
     },
     document: {
-      deep: false,
+      deep: true,
       handler() {
         this.parseDocument()
       }
@@ -177,14 +135,179 @@ export default {
   },
   methods: {
     parseDocument() {
-      this.parseRasterTile()
-    },
-    parseRasterTile() {
       if (!this.document) return
 
-      const { defaultMap } = this.document
+      // 先将图层置空，避免图层重复添加
+      const layers = []
 
-      this.rasters = defaultMap.allLayers
+      this.document.defaultMap
+        .clone()
+        .getFlatLayers()
+        .forEach(layer => {
+          if (layer.loadStatus === LoadStatus.loaded) {
+            const layerComponentProps = this.genLayerComponentPropsByLayer(
+              layer
+            )
+            layers.push(layerComponentProps)
+          }
+        })
+
+      this.layers = layers
+    },
+    genLayerComponentPropsByLayer(layer) {
+      // mapbox图层组件所需要的属性
+      let layerComponentProps = {}
+
+      let allLayerNames = []
+      let showLayers = ''
+      let visibleSubLayers = []
+      // 图层显示样式
+      const layerStyle = {
+        show: layer.isVisible
+      }
+
+      let tempStr = ''
+      let parms = {}
+
+      switch (layer.type) {
+        case LayerType.IGSTile:
+          parms = layer._parseUrl(layer.url)
+          layerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: layer.url,
+            sourceId: layer.id,
+            ip: parms.ip,
+            port: parms.port,
+            serverName: parms.tileName
+          }
+          break
+        case LayerType.IGSMapImage:
+          showLayers = 'show:'
+
+          visibleSubLayers = layer.allSublayers.filter(sublayer => {
+            if (sublayer.visible) return true
+            return false
+          })
+
+          visibleSubLayers.forEach((sublayer, index) => {
+            showLayers += `${sublayer.id}`
+
+            if (index !== visibleSubLayers.length - 1) {
+              showLayers += ','
+            }
+          })
+
+          layerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: layer.url,
+            sourceId: layer.id,
+            layers: showLayers,
+            serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
+          }
+
+          break
+        case LayerType.IGSVector:
+          layerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: layer.url,
+            sourceId: layer.id,
+            gdbps: layer.gdbps
+          }
+          break
+        case LayerType.OGCWMTS:
+          layerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            sourceId: layer.id,
+            baseUrl: layer.url,
+            wmtsLayer: layer.activeLayer.id,
+            tileMatrixSet: layer.activeLayer.tileMatrixSetId,
+            version: layer.version,
+            wmtsStyle: layer.activeLayer.styleId,
+            format: layer.activeLayer.imageFormat
+          }
+
+          break
+        case LayerType.OGCWMS:
+          allLayerNames = []
+          layer.allSublayers.forEach(element => {
+            if (element.visible) allLayerNames.push(element.name)
+          })
+
+          layerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            sourceId: layer.id,
+            baseUrl: layer.url,
+            layers: allLayerNames,
+            version: layer.version,
+            token: layer.tokenValue,
+            reversebbox: false
+          }
+
+          break
+        case LayerType.arcGISTile:
+          layerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            baseUrl: layer.url,
+            sourceId: layer.id
+          }
+
+          break
+        case LayerType.arcGISMapImage:
+          showLayers = 'show:'
+
+          visibleSubLayers = layer.allSublayers.filter(sublayer => {
+            if (sublayer.visible) return true
+            return false
+          })
+
+          visibleSubLayers.forEach((sublayer, index) => {
+            showLayers += `${sublayer.id}`
+
+            if (index !== visibleSubLayers.length - 1) {
+              showLayers += ','
+            }
+          })
+
+          layerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            baseUrl: layer.url,
+            layers: showLayers,
+            sourceId: layer.id
+          }
+          break
+        case LayerType.aMapMercatorEMap:
+        case LayerType.aMapMercatorSatelliteMap:
+        case LayerType.aMapMercatorSatelliteAnnMap:
+          tempStr = this.generateWebTileLayerUrl(layer)
+          layerComponentProps = {
+            type: layer.type,
+            layerId: layer.id,
+            url: tempStr,
+            sourceId: layer.id
+          }
+          break
+        case LayerType.vectorTile:
+          layerComponentProps = {
+            type: layer.type,
+            mvtStyle: layer.currentStyle
+          }
+
+          break
+        default:
+          break
+      }
+
+      if (layer.type !== LayerType.vectorTile)
+        layerComponentProps = { ...layerComponentProps, ...layerStyle }
+
+      return layerComponentProps
     },
     handleLoad(payload) {
       const { Cesium, CesiumZondy } = payload
@@ -195,45 +318,51 @@ export default {
 
       this.changePageHeight()
     },
-    isRasterLayer(subtype) {
-      return subtype === 'Raster'
+    isIgsDocLayer(type) {
+      return type === LayerType.IGSMapImage
     },
-    isIgsDocLayer(subtype) {
-      return subtype === SubLayerType.IgsDocLayer
+    isIgsTileLayer(type) {
+      return type === LayerType.IGSTile
     },
-    isIgsTileLayer(subtype) {
-      return subtype === SubLayerType.IgsTileLayer
+    isIgsVectorLayer(type) {
+      return type === LayerType.IGSVector
     },
-    isIgsVectorLayer(subtype) {
-      return subtype === SubLayerType.IgsVectorLayer
+    isWMSLayer(type) {
+      return type === LayerType.OGCWMS
     },
-    isIgsWmsLayer(subtype) {
-      return subtype === SubLayerType.OgcWmsLayer
+    isWMTSLayer(type) {
+      return type === LayerType.OGCWMTS
     },
-    isIgsWmtsLayer(subtype) {
-      return subtype === SubLayerType.OgcWmtsLayer
+    isIgsTdtLayer(type) {
+      return false
     },
-    isIgsTdtLayer(subtype) {
-      return subtype === SubLayerType.RasterTiandituLayer
+    isArcgisMapLayer(type) {
+      return type === LayerType.arcGISMapImage
     },
-    isIgsArcgisLayer(subtype) {
-      return subtype === SubLayerType.RasterArcgisLayer
+    isArcgisTileLayer(type) {
+      return type === LayerType.arcGISTile
     },
-    isDoc3dLayer(subtype) {
-      return subtype === SubLayerType.IgsDoc3dLayer
+    isRasterLayer(type) {
+      return (
+        type === LayerType.aMapMercatorEMap ||
+        type === LayerType.aMapMercatorSatelliteMap ||
+        type === LayerType.aMapMercatorSatelliteAnnMap
+      )
     },
-    isTile3dLayer(subtype) {
-      return subtype === SubLayerType.IgsTile3dLayer
+    isVectorTileLayer(type) {
+      return type === LayerType.vectorTile
     },
-    isPointcloudLayer(subtype) {
-      return subtype === LayerType.PointCloudLayer
+    isDoc3dLayer(type) {
+      return false
     },
-    isVectortileLayer(subtype) {
-      // return subtype === LayerType.VectorTileLayer
-      return subtype === 'VectorTileLayer'
+    isTile3dLayer(type) {
+      return false
     },
-    isTerrainLayer(subtype) {
-      return subtype === SubLayerType.Terrain
+    isPointcloudLayer(type) {
+      return false
+    },
+    isTerrainLayer(type) {
+      return false
     },
     changePageHeight() {
       const div = document.getElementsByClassName('cesium-viewer')

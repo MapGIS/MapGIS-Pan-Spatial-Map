@@ -1,6 +1,7 @@
 import * as Zondy from '@mapgis/webclient-es6-service'
 import { LoadStatus, LayerType, Layer } from './layer'
 import axios from 'axios'
+import { SpatialReference } from '../spatial-reference'
 
 export class VectorTileLayer extends Layer {
   /**
@@ -46,6 +47,14 @@ export class VectorTileLayer extends Layer {
    */
   styleList: Record<string, any>[] = []
 
+  /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof VectorTileLayer
+   */
+  spatialReference: SpatialReference = new SpatialReference()
+
   load(): Promise<Layer> {
     // 只有加载状态是没有加载过时，才会真正进行请求。
     if (this.loadStatus !== LoadStatus.notLoaded) {
@@ -80,6 +89,10 @@ export class VectorTileLayer extends Layer {
           }
         )
       })
+    })
+
+    return promise.then(data => {
+      return this
     })
   }
 

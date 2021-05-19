@@ -6,7 +6,7 @@ import * as Zondy from '@mapgis/webclient-es6-service'
   components: {}
 })
 export default class MapboxDraw extends Vue {
-  // -1 空状态、0  点、1  线、2   面、3  矩形
+  // -1 空状态、0  点、1  线、2   面、3  矩形、 4圆形
   private type = -1
 
   private clickType = ''
@@ -68,7 +68,7 @@ export default class MapboxDraw extends Vue {
         })
       })
       bound = new Zondy.Common.Polygon(arr)
-    } else if (this.type === 3) {
+    } else if (this.type === 3 || this.type === 4) {
       const { xmin, ymin, xmax, ymax } = utilInstance.getGeoJsonFeatureBound(
         e.features[0]
       )
@@ -107,6 +107,13 @@ export default class MapboxDraw extends Vue {
     this.type = 3
 
     this.drawer && this.drawer.changeMode('draw_rectangle')
+  }
+
+  toggleCircle() {
+    this.enableDrawer()
+    this.type = 4
+
+    this.drawer && this.drawer.changeMode('draw_circle')
   }
 
   toggleDeleteAll() {

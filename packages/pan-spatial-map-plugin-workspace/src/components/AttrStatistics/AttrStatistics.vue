@@ -484,15 +484,14 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         label: layer.LayerName,
         value: layer.layerIndex
       }))
-    }
-    /* else if (serverType === SubLayerType.RasterArcgisLayer) {
+    } else if (serverType === LayerType.arcGISMapImage) {
       const result = await queryArcgisInfoInstance.getArcgisInfo(serverUrl)
       const { layers } = result
       this.layerOptions = layers.map((child, index) => ({
         label: child.name,
         value: index.toString()
       }))
-    } */
+    }
   }
 
   // 获取图层字段信息
@@ -505,7 +504,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       port,
       gdbp
     } = this.queryParams
-    const options: OptionItem[] = []
+    let options: OptionItem[] = []
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
@@ -536,8 +535,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
           type: FldType[index]
         })
       }
-    }
-    /* else if (serverType === SubLayerType.RasterArcgisLayer) {
+    } else if (serverType === LayerType.arcGISMapImage) {
       const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
         f: 'json',
         serverUrl,
@@ -555,7 +553,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
           value,
           type: type.toUpperCase()
         }))
-    } */
+    }
     return options
   }
 
@@ -585,7 +583,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       port,
       gdbp
     } = this.queryParams
-    const dataset: unknown[][] = []
+    let dataset: unknown[][] = []
     let data: any
     if (
       serverType === LayerType.IGSMapImage ||
@@ -622,8 +620,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         ]
       })
       dataset.push(...items)
-    }
-    /* else if (serverType === SubLayerType.RasterArcgisLayer) {
+    } else if (serverType === LayerType.arcGISMapImage) {
       const {
         count: totalCount
       } = await queryArcgisInfoInstance.getArcGISQueryTotal({
@@ -686,7 +683,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       }
       data = obj.data
       dataset = obj.dataSet
-    } */
+    }
     this.setEchart(data)
 
     this.setTableView(dataset)
