@@ -1,0 +1,127 @@
+<template>
+  <div class="layer-item-container">
+    <div
+      class="layer-style-item"
+      v-for="item in layerStyleItems"
+      :key="setKey(item)"
+    >
+      <a-icon type="delete" @click="onClickDelBtn(item)"></a-icon>
+      <a-input
+        class="middle-input"
+        v-model.number="item[0]"
+        type="number"
+        @change="onInputChange"
+      ></a-input>
+      <a-input
+        v-if="type === 'color-picker'"
+        class="color-input"
+        v-model="item[1]"
+        :style="{ background: item[1] }"
+      >
+        <a-popover slot="addonAfter" trigger="click">
+          <template slot="content">
+            <sketch-picker
+              :value="item[1]"
+              @input="val => getLineColor(val, item)"
+            />
+          </template>
+          <a-icon type="edit" />
+        </a-popover>
+      </a-input>
+      <a-select v-if="type === 'option-select'" v-model="optionValue">
+        <a-select-option v-for="item in options" :key="item">
+          {{ item }}
+        </a-select-option>
+      </a-select>
+      <a-input
+        v-if="type === 'opacity-input'"
+        v-model.number="opacityValue"
+        type="number"
+        step="0.1"
+        min="0"
+        max="1"
+      ></a-input>
+      <a-switch v-if="type === 'switch'" v-model="checked" />
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Vue, PropSync, Prop, Emit } from 'vue-property-decorator'
+import { Sketch } from 'vue-color'
+import { UUID } from '@mapgis/web-app-framework'
+
+@Component({
+  name: 'LayerItem',
+  components: { 'sketch-picker': Sketch }
+})
+export default class LayerItem extends Vue {
+  // 该矢量瓦片的某一具体样式(例：填充色)
+  @Prop({ type: Array, default: () => [] }) layerStyleItems!: array
+
+  // 该矢量瓦片的广义样式种类(例：颜色拾取、下拉选项、透明度输入框、开关)
+  @Prop({ type: String, default: 'color-picker' }) readonly type!: string
+
+  private options = []
+
+  private optionValue = ''
+
+  private opacityValue = 1
+
+  private checked = false
+
+  @Emit('delete')
+  emitDeleteBtn(delIndex, delType) {}
+
+  // 选中颜色拾取器对应事件
+  private getLineColor(val, item) {
+    const index = this.layerStyleItems.findIndex(item2 => item2 === item)
+    this.layerStyleItems.splice(index, 1, [item[0], val.hex])
+  }
+
+  // v-for循环为每一项设置唯一key
+  private setKey(item) {
+    const key = item[0] + UUID.uuid()
+    return key
+    // return key,
+  }
+
+  // 点击删除图标对应事件
+  private onClickDelBtn(item) {
+    const index = this.layerStyleItems.findIndex(item2 => item2 === item)
+    this.emitDeleteBtn(index, this.type)
+  }
+
+  private onInputChange(val) {
+    console.log(this.layerStyleItems)
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.layer-item-container {
+  display: flex;
+  flex-direction: column;
+}
+.layer-style-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.anticon-delete {
+  cursor: pointer;
+}
+.middle-input {
+  margin: 0 8px;
+}
+.color-input {
+  ::v-deep .ant-input-wrapper,
+  ::v-deep .ant-input {
+    background: inherit;
+  }
+  ::v-deep .ant-input-group-addon {
+    background: inherit;
+    cursor: pointer;
+  }
+}
+</style>
