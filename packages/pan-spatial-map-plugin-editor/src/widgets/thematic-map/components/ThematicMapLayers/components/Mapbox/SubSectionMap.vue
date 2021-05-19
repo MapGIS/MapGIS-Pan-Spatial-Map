@@ -1,13 +1,12 @@
 <template>
   <!-- 分段专题图图层 -->
-  <div></div>
-  <!-- <mapgis-popup :coordinates="coordinates" :showed="true">
+  <mapgis-popup :coordinates="coordinates" :showed="true">
     <template v-for="(child, i) in propertiesKeys">
       <div v-show="child" :key="`sub-section-map-layer-popup-properties-${i}`">
         {{ child }} : {{ properties[child] }}
       </div>
     </template>
-  </mapgis-popup> -->
+  </mapgis-popup>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'

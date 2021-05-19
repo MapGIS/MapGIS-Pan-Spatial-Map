@@ -1,11 +1,6 @@
 // 专题服务总配置数据
 import { FeatureQueryParam, FeatureIGS } from '../service'
 
-export interface IThematicMapConfig {
-  baseConfig: IThematicMapBaseConfig | object
-  subjectConfig: IThematicMapSubjectConfig | object
-}
-
 // 专题服务基础配置
 export interface IThematicMapBaseConfig {
   baseIp: string // 主题服务默认 ip
@@ -64,6 +59,13 @@ export interface IThematicMapSubjectNewConfig
   configSubData?: any // 对应年度下的第一个配置数据
 }
 
+
+export interface IThematicMapConfig {
+  baseConfig: IThematicMapBaseConfig | object
+  subjectConfig: IThematicMapSubjectConfig | object
+}
+
+
 // 点击单个专题的数据展示弹框类型
 export type ModuleType =
   | 'at' // 属性表
@@ -77,11 +79,14 @@ export interface ISubjectType {
   value: SubjectType
 }
 
-// 专题服务Store对应的状态数据
-export interface IState {
-  loading: boolean
+interface IPageParam {
   page: number
   pageCount: number
+}
+
+// 专题服务Store对应的状态数据
+export interface IState extends IPageParam{
+  loading: boolean
   pageDataSet: FeatureIGS | null
   moduleTypes: ModuleType[]
   thematicMapConfig: IThematicMapConfig
@@ -106,18 +111,15 @@ export interface IMethods {
 }
 
 export interface IComputed {
-  isLoading: boolean
   isVisible: (s: ModuleType) => boolean
-  pageParam: {
-    page: number
-    pageCount: number
-  }
+  isLoading: boolean
+  pageParam: IPageParam
   getPageDataSet: FeatureIGS | null
   getBaseConfig: IThematicMapBaseConfig | object
   getSubjectConfig: IThematicMapSubjectConfig | object
+  getSelectedConfig?: IThematicMapSubjectNewConfig
   getSelected: string
   getSelectedList: IThematicMapSubjectConfig[]
   getSelectedTime: string
   getSelectedTimeList?: string[]
-  getSelectedConfig?: IThematicMapSubjectNewConfig
 }

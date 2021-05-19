@@ -1,6 +1,6 @@
 <template>
   <!-- 蜂窝图 -->
-  <div></div>
+ <mapgis-mapv-layer :geojson="geojsonPoint" :options="options" />
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'

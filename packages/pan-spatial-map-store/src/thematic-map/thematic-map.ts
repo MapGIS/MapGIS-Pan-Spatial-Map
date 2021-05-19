@@ -11,6 +11,7 @@ import {
   IThematicMapSubjectConfig,
   IThematicMapSubjectNewConfig
 } from './types'
+import isArray from 'lodash/isArray'
 
 // 专题图类型集合
 export const subjectTypes = Object.freeze<ISubjectType>([
@@ -26,6 +27,9 @@ export const subjectTypes = Object.freeze<ISubjectType>([
 export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
   data: () => {
     return {
+       // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
+      moduleTypes: [],
+      // 加载状态
       loading: false,
       // 页码
       page: 0,
@@ -33,8 +37,6 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
       pageCount: 10,
       // 当前页的查询的要素数据
       pageDataSet: null,
-      // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
-      moduleTypes: [],
       // 专题服务时间轴选中的年度
       selectedTime: '',
       // 选中的'单个专题服务配置'的年度列表
@@ -103,26 +105,23 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
      * configSubData => config.data.subData[0]
      */
     getSelectedConfig() {
-      const subject = this.selectedList.find(({ id }) => id === this.selected)
-      if (subject) {
-        const { config, ...others } = subject
-        if (config) {
-          const { type, data } = config
-          const result: IThematicMapSubjectNewConfig = {
-            ...others,
-            configType: type
+      const subject = this.selectedList.find( ( { id } ) => id === this.selected )
+      if(!subject) return
+      const { config, ...others } = subject
+      const result: IThematicMapSubjectNewConfig = others
+      if (config) {
+        const { type, data } = config
+        result.configType = type
+        if (data && data.length) {
+          result.configTimeList = data.map( v => v.time )
+          const item = data.find(v => v.time === this.selectedTime)
+          if (item) {
+            result.configSubData =
+              item.subData && item.subData.length ? item.subData[0] : item
           }
-          if (data && data.length) {
-            result.configTimeList = data.map(v => v.time)
-            const _data = data.find(v => v.time === this.selectedTime)
-            if (_data && _data.subData.length) {
-              result.configSubData = _data.subData[0]
-            }
-          }
-          return result
         }
       }
-      return subject
+      return result
     },
     /**
      * 获取选中的'单个专题服务配置'

@@ -78,8 +78,6 @@
                         ],
                         "table": {
                           "showFields": [
-                            "权属名称",
-                            "权属代码",
                             "总人口万人",
                             "省名",
                             "分类索引",
@@ -134,7 +132,7 @@
                         "ip": "develop.smaryun.com",
                         "port": "6163",
                         "src": "",
-                        "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
+                        "gdbp": "gdbp://MapGISLocal/Templates/sfcls/湖北省市级区划",
                         "docName": "",
                         "layerIndex": "",
                         "layerName": "undefined",
@@ -175,11 +173,7 @@
                         ],
                         "table": {
                           "showFields": [
-                            "面积",
-                            "周长",
-                            "省名",
-                            "GDP_2006",
-                            "人口数"
+                            "NAME"
                           ],
                           "showFieldsTitle": {}
                         },
@@ -190,11 +184,8 @@
                           "target": ["人均地区生产总值元"]
                         },
                         "popup": {
-                          "showFields": [
-                            "面积",
-                            "周长",
-                            "省名",
-                            "GDP_2006",
+                          "showFields": [             
+                            "NAME",
                             "人口数"
                           ],
                           "showFieldsTitle": {},
@@ -257,7 +248,6 @@
                             "面积",
                             "周长",
                             "省名",
-                            "GDP_2007",
                             "人口数"
                           ],
                           "showFieldsTitle": {}
@@ -266,102 +256,19 @@
                           "showFields": ["GDP_2007"],
                           "showFieldsTitle": {},
                           "field": "省名",
-                          "target": ["人均地区生产总值元"]
+                          "target": ["人均地区生产总值/元"]
                         },
                         "popup": {
-                          "showFields": [
-                            "面积",
-                            "周长",
+                          "showFields": [                       
                             "省名",
-                            "GDP_2007",
-                            "人口数"
+                            "GDP_2007",    
                           ],
                           "showFieldsTitle": {},
                           "title": "省名"
                         }
                       }
                     ]
-                  },
-                  {
-                    "time": "2008",
-                    "subData": [
-                      {
-                        "minZoom": "0",
-                        "maxZoom": "10",
-                        "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
-                        "src": "",
-                        "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
-                        "docName": "",
-                        "layerIndex": null,
-                        "layerName": "",
-                        "showLegend": "true",
-                        "field": "GDP_2008",
-                        "webglTextField": "省名",
-                        "dataBase": {
-                          "code": "",
-                          "codeYear": "",
-                          "dataYear": ""
-                        },
-                        "color": [
-                          {
-                            "min": "0",
-                            "max": "7359",
-                            "sectionColor": "#FFFF66"
-                          },
-                          {
-                            "min": "7359",
-                            "max": "14719",
-                            "sectionColor": "#FFCC33"
-                          },
-                          {
-                            "min": "14719",
-                            "max": "22078",
-                            "sectionColor": "#FF9966"
-                          },
-                          {
-                            "min": "22078",
-                            "max": "29437",
-                            "sectionColor": "#FF66CC"
-                          },
-                          {
-                            "min": "29437",
-                            "max": "36797",
-                            "sectionColor": "#FF6633"
-                          }
-                        ],
-                        "table": {
-                          "showFields": [
-                            "面积",
-                            "周长",
-                            "省名",
-                            "GDP_2008",
-                            "人口数"
-                          ],
-                          "showFieldsTitle": {}
-                        },
-                        "graph": {
-                          "showFields": ["GDP_2008"],
-                          "showFieldsTitle": {},
-                          "field": "省名",
-                          "target": []
-                        },
-                        "popup": {
-                          "showFields": [
-                            "面积",
-                            "周长",
-                            "省名",
-
-                            "GDP_2008",
-                            "人口数"
-                          ],
-                          "showFieldsTitle": {},
-                          "title": "省名"
-                        }
-                      }
-                    ]
-                  }
+                  } 
                 ]
               },
               "type": "SubSectionMap"
@@ -411,7 +318,6 @@
                         "graph": {
                           "showFields": [
                             "第一产业增加值_2007",
-
                             "第三产业增加值_2007"
                           ],
                           "showFieldsTitle": {},
@@ -460,119 +366,7 @@
                         }
                       }
                     ]
-                  },
-                  {
-                    "time": "2009",
-                    "subData": [
-                      {
-                        "minZoom": 1,
-                        "maxZoom": 10,
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
-                        "src": "",
-                        "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
-                        "showTextLabel": "true",
-                        "docName": "",
-                        "layerIndex": null,
-                        "graphType": "bar",
-                        "table": {
-                          "showFields": [
-                            "省名",
-                            "第一产业增加值_2009",
-                            "第二产业增加值_2009",
-                            "第三产业增加值_2009"
-                          ],
-                          "showFieldsTitle": {},
-                          "type": "sum",
-                          "sumFiled": [],
-                          "sumColumn": []
-                        },
-                        "graph": {
-                          "showFields": [
-                            "第一产业增加值_2009",
-                            "第二产业增加值_2009",
-                            "第三产业增加值_2009"
-                          ],
-                          "showFieldsTitle": {},
-                          "field": "省名",
-                          "target": []
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "time": "2010",
-                    "subData": [
-                      {
-                        "minZoom": 1,
-                        "maxZoom": 10,
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
-                        "src": "",
-                        "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
-                        "showTextLabel": "true",
-                        "docName": "",
-                        "layerIndex": null,
-                        "graphType": "bar3d",
-                        "table": {
-                          "showFields": [
-                            "省名",
-                            "第一产业增加值_2010",
-                            "第二产业增加值_2010",
-                            "第三产业增加值_2010"
-                          ],
-                          "showFieldsTitle": {},
-                          "type": "sum",
-                          "sumFiled": [],
-                          "sumColumn": []
-                        },
-                        "graph": {
-                          "showFields": [
-                            "第一产业增加值_2010",
-                            "第二产业增加值_2010"
-                          ],
-                          "showFieldsTitle": {},
-                          "field": "省名",
-                          "target": []
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "time": "2011",
-                    "subData": [
-                      {
-                        "minZoom": 1,
-                        "maxZoom": 10,
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
-                        "src": "",
-                        "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
-                        "showTextLabel": "true",
-                        "docName": "",
-                        "layerIndex": null,
-                        "graphType": "line",
-                        "table": {
-                          "showFields": [
-                            "省名",
-                            "第一产业增加值_2011",
-                            "第二产业增加值_2011",
-                            "第三产业增加值_2011"
-                          ],
-                          "showFieldsTitle": {},
-                          "type": "sum",
-                          "sumFiled": [],
-                          "sumColumn": []
-                        },
-                        "graph": {
-                          "showFields": ["第一产业增加值_2011"],
-                          "showFieldsTitle": {},
-                          "field": "省名",
-                          "target": []
-                        }
-                      }
-                    ]
-                  }
+                  }                
                 ]
               },
               "type": "StatisticLabel"
@@ -603,34 +397,30 @@
                 "data": [
                   {
                     "time": "2008",
-                    "subData": [
-                      {
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
-                        "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
-                        "docName": "",
-                        "layerIndex": null,
-                        "hexBinStyle": {
-                          "style": "gradient",
-                          "size": "5",
-                          "showLayerImage": "true",
-                          "showSourceFeature": "true",
-                          "polygonSideNum": "6",
-                          "opacity": "0.6"
-                        },
-                        "table": {
-                          "showFields": ["name"],
-                          "showFieldsTitle": {}
-                        },
-                        "graph": {
-                          "showFields": ["name"],
-                          "showFieldsTitle": {},
-                          "field": "name",
-                          "target": ["AREA"]
-                        },
-                        "weight": "8"
-                      }
-                    ]
+                    "ip": "develop.smaryun.com",
+                    "port": "6163",
+                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
+                    "docName": "",
+                    "layerIndex": null,
+                    "hexBinStyle": {
+                      "style": "gradient",
+                      "size": "5",
+                      "showLayerImage": "true",
+                      "showSourceFeature": "true",
+                      "polygonSideNum": "6",
+                      "opacity": "0.6"
+                    },
+                    "table": {
+                      "showFields": ["name"],
+                      "showFieldsTitle": {}
+                    },
+                    "graph": {
+                      "showFields": ["name"],
+                      "showFieldsTitle": {},
+                      "field": "name",
+                      "target": ["AREA"]
+                    },
+                    "weight": "8"
                   }
                 ]
               },
@@ -716,33 +506,29 @@
                 "data": [
                   {
                     "time": "2008",
-                    "subData": [
-                      {
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
-                        "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
-                        "docName": "",
-                        "layerIndex": null,
-                        "hexBinStyle": {
-                          "style": "gradient",
-                          "size": "5",
-                          "showLayerImage": "true",
-                          "showSourceFeature": "true",
-                          "polygonSideNum": "6",
-                          "opacity": "0.6"
-                        },
-                        "table": {
-                          "showFields": ["name"],
-                          "showFieldsTitle": {}
-                        },
-                        "graph": {
-                          "showFields": ["name"],
-                          "showFieldsTitle": {},
-                          "field": "name",
-                          "target": ["AREA"]
-                        }
-                      }
-                    ]
+                    "ip": "develop.smaryun.com",
+                    "port": "6163",
+                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
+                    "docName": "",
+                    "layerIndex": null,
+                    "hexBinStyle": {
+                      "style": "gradient",
+                      "size": "5",
+                      "showLayerImage": "true",
+                      "showSourceFeature": "true",
+                      "polygonSideNum": "6",
+                      "opacity": "0.6"
+                    },
+                    "table": {
+                      "showFields": ["name"],
+                      "showFieldsTitle": {}
+                    },
+                    "graph": {
+                      "showFields": ["name"],
+                      "showFieldsTitle": {},
+                      "field": "name",
+                      "target": ["AREA"]
+                    }
                   }
                 ]
               },
