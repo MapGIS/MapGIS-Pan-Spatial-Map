@@ -1,5 +1,5 @@
 <template>
-  <!-- 工具栏 -->
+  <!-- 侧边工具栏 -->
   <mp-window-wrapper :visible="mtVisible">
     <transition name="slide-fade">
       <mp-placement

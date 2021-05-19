@@ -4,7 +4,7 @@ import { FeatureIGS, utilInstance } from '@mapgis/pan-spatial-map-store'
 import isFunction from 'lodash/isFunction'
 
 @Component
-export default class MapboxThematicMapLayersMinxin extends Mixins(MapMixin) {
+export default class CesiumMinxin extends Mixins<Record<string, any>>(MapMixin) {
   // 某个专题的配置
   @Prop({ default: () => ({}) }) config!: any
 
@@ -17,16 +17,9 @@ export default class MapboxThematicMapLayersMinxin extends Mixins(MapMixin) {
 
   properties: Record<string, any> = {}
 
-  coordinates = [0, 0]
-
   // 获取某个专题某个年度的subData
   get subDataConfig() {
     return this.config.configSubData
-  }
-
-  // 图表title
-  get field() {
-    return this.subDataConfig.field
   }
 
   // 信息弹框字段配置
@@ -56,19 +49,10 @@ export default class MapboxThematicMapLayersMinxin extends Mixins(MapMixin) {
    */
   removeLayer() {
     if (this.thematicMapLayer) {
-      const { id } = this.thematicMapLayer
-      if (this.map.getLayer(id)) {
-        this.map.removeLayer(id)
-      } else {
-        if (isFunction(this.thematicMapLayer.clear)) {
-          this.thematicMapLayer.clear()
-        }
-        if (isFunction(this.thematicMapLayer.removeFromMap)) {
-          this.thematicMapLayer.removeFromMap()
-        }
+        this.webGlobe.viewer.dataSources.remove(this.thematicMapLayer)
+        this.thematicMapLayer.entities.removeAll()
+        this.thematicMapLayer = undefined
       }
-      this.thematicMapLayer = null
-    }
   }
 
   /**

@@ -1,22 +1,21 @@
 <template>
   <!-- 等级符号专题图 -->
-  <div></div>
-  <!-- <mapgis-popup :coordinates="coordinates" :showed="true">
+  <mapgis-popup :coordinates="coordinates" :showed="true">
     <template v-for="(child, i) in propertiesKeys">
-      <div v-show="child" :key="`sub-section-map-layer-popup-properties-${i}`">
+      <div v-show="child" :key="`statistic-label-layer-popup-properties-${i}`">
         {{ child }} : {{ properties[child] }}
       </div>
     </template>
-  </mapgis-popup> -->
+  </mapgis-popup>
 </template>
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
 import cloneDeep from 'lodash/cloneDeep'
-import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-layers'
+import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
-export default class StatisticLabelLayer extends Mixins(
-  MapboxThematicMapLayersMinxin
+export default class MapboxStatisticLabel extends Mixins(
+  MapboxMinxin
 ) {
   get style() {
     return this.subDataConfig.labelStyle

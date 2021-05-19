@@ -20,8 +20,8 @@
     <thematic-map-subject-add />
     <!-- 工具栏 -->
     <thematic-map-manage-tools />
-    <!-- 2D: 5类专题图层 -->
-    <mapbox-thematic-map-layers />
+    <!-- 5类专题服务图层 -->
+    <thematic-map-layers />
   </div>
 </template>
 
@@ -38,7 +38,7 @@ import ThematicMapStatisticTable from './components/ThematicMapStatisticTable'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
 import ThematicMapManageTools from './components/ThematicMapManageTools'
 import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
-import MapboxThematicMapLayers from './components/MapboxThematicMapLayers'
+import ThematicMapLayers from './components/ThematicMapLayers'
 
 @Component({
   name: 'MpThematicMap',
@@ -48,7 +48,7 @@ import MapboxThematicMapLayers from './components/MapboxThematicMapLayers'
     ThematicMapTimeLine,
     ThematicMapManageTools,
     ThematicMapSubjectAdd,
-    MapboxThematicMapLayers
+    ThematicMapLayers
   }
 })
 export default class MpThematicMap extends Mixins<Record<string, any>>(

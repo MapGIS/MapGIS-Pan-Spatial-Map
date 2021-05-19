@@ -10,7 +10,7 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 
 @Component
-export default class HexBinLayer extends Vue {
+export default class MapboxHexBin extends Vue {
   @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
 
   options = {

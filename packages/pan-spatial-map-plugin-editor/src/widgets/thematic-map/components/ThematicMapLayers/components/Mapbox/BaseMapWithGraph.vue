@@ -1,13 +1,12 @@
 <template>
   <!-- 统计专题图 -->
-  <div></div>
-  <!-- <mapgis-popup :coordinates="coordinates" :showed="true">
+  <mapgis-popup :coordinates="coordinates" :showed="true">
     <template v-for="(child, n) in propertiesKeys">
       <div v-show="child" :key="'base-map-with-graph-popup-properties-' + n">
         {{ child }} : {{ properties[child] }}
       </div>
     </template>
-  </mapgis-popup> -->
+  </mapgis-popup>
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
@@ -16,11 +15,11 @@ import {
   queryFeaturesInstance,
   utilInstance
 } from '@mapgis/pan-spatial-map-store'
-import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-layers'
+import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
-export default class BaseMapWithGraphLayer extends Mixins(
-  MapboxThematicMapLayersMinxin
+export default class MapboxBaseMapWithGraph extends Mixins(
+  MapboxMinxin
 ) {
   colors: string[] = ['#FFB980', '#5AB1EF', '#B6A2DE', '#2EC7C9', '#D87A80']
 

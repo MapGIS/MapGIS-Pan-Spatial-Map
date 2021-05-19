@@ -12,10 +12,10 @@
 <script lang="ts">
 import { Mixins, Component, Prop } from 'vue-property-decorator'
 import { queryFeaturesInstance } from '@mapgis/pan-spatial-map-store'
-import MapboxThematicMapLayersMinxin from '../../mixins/mapbox-thematic-map-layers'
+import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
-export default class LabelLayer extends Mixins(MapboxThematicMapLayersMinxin) {
+export default class MapboxLabel extends Mixins(MapboxMinxin) {
   geojson = {}
 
   // 聚合层基础配置

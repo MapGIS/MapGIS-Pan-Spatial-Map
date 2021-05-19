@@ -10,7 +10,7 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 
 @Component
-export default class HeatMapLayer extends Vue {
+export default class MapboxHeatMap extends Vue {
   @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
 
   geojsonPoint: Record<string, any> = {}
