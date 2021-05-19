@@ -84,7 +84,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 查询范围
   @Prop({ default: () => ({}) }) queryRect!: boolean
 
-  document = null
+  document: Document | undefined = null
 
   map: any = {}
 
@@ -125,11 +125,12 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 初始化图层
    */
   onInitDocument() {
-    const _document: Document = new Document(null, null, null, [])
-    const defaultMap = _document.defaultMap
+    if (this.document === null) this.document = new Document()
+
+    const defaultMap = this.document.defaultMap
     defaultMap.removeAll()
     defaultMap.add(this.mapViewLayer)
-    this.document = _document
+
     this.clearClick()
   }
 
