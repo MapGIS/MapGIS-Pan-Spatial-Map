@@ -13,7 +13,23 @@
         @change="onInputChange"
       ></a-input>
       <a-input
-        v-if="type === 'color-picker'"
+        v-if="type === 'fill-color-picker'"
+        class="color-input"
+        v-model="item[1]"
+        :style="{ background: item[1] }"
+      >
+        <a-popover slot="addonAfter" trigger="click">
+          <template slot="content">
+            <sketch-picker
+              :value="item[1]"
+              @input="val => getLineColor(val, item)"
+            />
+          </template>
+          <a-icon type="edit" />
+        </a-popover>
+      </a-input>
+      <a-input
+        v-if="type === 'outline-color-picker'"
         class="color-input"
         v-model="item[1]"
         :style="{ background: item[1] }"
@@ -35,13 +51,13 @@
       </a-select>
       <a-input
         v-if="type === 'opacity-input'"
-        v-model.number="opacityValue"
+        v-model.number="item[1]"
         type="number"
         step="0.1"
         min="0"
         max="1"
       ></a-input>
-      <a-switch v-if="type === 'switch'" v-model="checked" />
+      <a-switch v-if="type === 'switch'" v-model="item[1]" />
     </div>
   </div>
 </template>
@@ -60,15 +76,11 @@ export default class LayerItem extends Vue {
   @Prop({ type: Array, default: () => [] }) layerStyleItems!: array
 
   // 该矢量瓦片的广义样式种类(例：颜色拾取、下拉选项、透明度输入框、开关)
-  @Prop({ type: String, default: 'color-picker' }) readonly type!: string
+  @Prop({ type: String, default: 'fill-color-picker' }) readonly type!: string
 
   private options = []
 
   private optionValue = ''
-
-  private opacityValue = 1
-
-  private checked = false
 
   @Emit('delete')
   emitDeleteBtn(delIndex, delType) {}
@@ -83,7 +95,6 @@ export default class LayerItem extends Vue {
   private setKey(item) {
     const key = item[0] + UUID.uuid()
     return key
-    // return key,
   }
 
   // 点击删除图标对应事件

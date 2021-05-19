@@ -52,7 +52,8 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   private multiSetting = {
     'fill-color': '#bedcaf',
     'fill-outline-color': '#dd5c5c',
-    'fill-opacity': 1
+    'fill-opacity': 1,
+    'fill-antialias': false
   }
 
   // 监听矢量瓦片下拉项变化，实时构造该矢量瓦片对应的样式文件下拉项
