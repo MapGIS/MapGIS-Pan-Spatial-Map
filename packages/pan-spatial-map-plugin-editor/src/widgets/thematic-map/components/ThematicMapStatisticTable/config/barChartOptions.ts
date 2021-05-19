@@ -13,7 +13,7 @@ export const getGridX = (y: number[]) => {
   const arrs = [[1, 2, 3], [4, 5], [6, 7], [8]]
   arrs.forEach((arr: number[]) => {
     if (arr.includes(numLength)) {
-      gridX = Math.max(...arr) * 8
+      gridX = Math.max(...arr) * 10
     }
   })
   return gridX

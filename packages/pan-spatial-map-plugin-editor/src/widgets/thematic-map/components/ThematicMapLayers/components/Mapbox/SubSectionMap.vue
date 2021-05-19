@@ -111,6 +111,28 @@ export default class MapboxSubSectionMap extends Mixins(
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
+    // const queryStruct = new window.Zondy.Service.QueryFeatureStruct()
+    // queryStruct.IncludeGeometry = true
+    // queryStruct.IncludeAttribute = true
+    // queryStruct.IncludeWebGraphic = false
+    // const queryParam = new window.Zondy.Service.QueryParameter({
+    //   resultFormat: 'json',
+    //   struct: queryStruct,
+    //   where: '1>0'
+    // })
+    // queryParam.pageIndex = 0
+    // queryParam.recordNumber = 10000
+    // const queryInstance = new window.Zondy.Service.QueryDocFeature(
+    //   queryParam,
+    //   'Hubei3857',
+    //   1,
+    //   {
+    //     ip: 'develop.smaryun.com',
+    //     port: 6163,
+    //     requestType: 'POST'
+    //   }
+    // )
+    // queryInstance.query(data => this.thematicMapLayer.addFeatures(data))
   }
 
   /**

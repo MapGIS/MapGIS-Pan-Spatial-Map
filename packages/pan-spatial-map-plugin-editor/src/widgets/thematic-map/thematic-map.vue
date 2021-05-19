@@ -2,7 +2,9 @@
   <div class="mp-widget-thematic-map">
     <!-- 专题服务树 -->
     <a-spin :spinning="loading">
+      <a-empty v-if="!treeData.length" />
       <a-tree
+        v-else
         checkable
         :show-line="true"
         :tree-data="treeData"
@@ -89,6 +91,9 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * @param treeData<array>
    */
   normalizeTreeData(treeData) {
+    if(!treeData ||!treeData.length) {
+      return []
+    }
     for (let i = 0; i < treeData.length; i++) {
       const item = treeData[i]
       if (item.nodeType) {
@@ -115,7 +120,6 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       }
       return results
     }, [])
-    // console.log('选中的专题的列表', configList)
     const lastId = configList.length ? configList[configList.length - 1].id : ''
     thematicMapInstance.setSelected(lastId)
     thematicMapInstance.setSelectedList(configList)
@@ -133,7 +137,6 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     this.onVisible()
     thematicMapInstance.setThematicMapConfig(config)
     this.treeData = this.normalizeTreeData(subjectConfig)
-    // console.log('专题服务树', this.treeData)
     this.loading = false
   }
 

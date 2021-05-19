@@ -121,9 +121,9 @@
               "nodeType": "subject",
               "config": {
                 "type": "gdbp",
-                "data": [
+                "data": [          
                   {
-                    "time": "2006",
+                    "time": "2011",
                     "subData": [
                       {
                         "minZoom": "0",
@@ -137,7 +137,7 @@
                         "layerIndex": "",
                         "layerName": "undefined",
                         "showLegend": "true",
-                        "field": "GDP_2006",
+                        "field": "GDP2011",
                         "webglTextField": "省名",
                         "dataBase": {
                           "code": "",
@@ -173,15 +173,31 @@
                         ],
                         "table": {
                           "showFields": [
-                            "NAME"
+                              "mpArea",
+                              "mpPerimeter",
+                              "mpLayer",
+                              "CODE",
+                              "NAME",
+                              "GDP2011",
+                              "GDP2012",
+                              "GDP2013",
+                              "GDP2014",
+                              "GDP2015",
+                              "GDP2016",
+                              "分类索引",
+                              "第一产业增加值2013",
+                              "第一产业增加值2014",
+                              "第一产业增加值2015",
+                              "第一产业增加值2016",
+                              "COLOR_INDEX " 
                           ],
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": ["GDP_2006"],
+                          "showFields": ["GDP2011"],
                           "showFieldsTitle": {},
-                          "field": "省名",
-                          "target": ["人均地区生产总值元"]
+                          "field": "NAME",
+                          "target": []
                         },
                         "popup": {
                           "showFields": [             
@@ -261,14 +277,14 @@
                         "popup": {
                           "showFields": [                       
                             "省名",
-                            "GDP_2007",    
+                            "GDP_2007"  
                           ],
                           "showFieldsTitle": {},
                           "title": "省名"
                         }
                       }
                     ]
-                  } 
+                  }
                 ]
               },
               "type": "SubSectionMap"

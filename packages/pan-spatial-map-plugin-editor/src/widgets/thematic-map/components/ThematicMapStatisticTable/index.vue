@@ -41,7 +41,7 @@
           <!-- 图表 -->
           <div id="thematic-map-statistic-table-chart" v-show="showChart" />
           <!-- 空数据友好提示 -->
-          <a-empty :image="simpleImage" v-show="!showChart" />
+          <a-empty v-show="!showChart" />
         </a-spin>
       </div>
     </mp-window>
@@ -248,10 +248,6 @@ export default class ThematicMapStatisticTable extends Mixins(
   @Watch('pageDataSet', { deep: true })
   watchPageDataSet(nV) {
     this.setChartOptions(nV)
-  }
-
-  beforeCreate() {
-    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 
   mounted() {

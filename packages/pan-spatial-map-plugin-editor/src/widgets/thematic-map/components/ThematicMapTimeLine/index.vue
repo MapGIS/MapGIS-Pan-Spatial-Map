@@ -23,7 +23,7 @@
             <div id="thematic-map-time-line-chart" />
           </row-flex>
           <!-- 空数据友好提示 -->
-          <a-empty :image="simpleImage" v-show="!timeList.length" />
+          <a-empty v-show="!timeList.length" />
         </a-spin>
       </div>
     </mp-window>
@@ -147,10 +147,6 @@ export default class ThematicMapTimeLine extends Vue {
       this.currentIndex = _index
       this.onUpdateChart()
     }
-  }
-
-  beforeCreate() {
-    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 
   mounted() {

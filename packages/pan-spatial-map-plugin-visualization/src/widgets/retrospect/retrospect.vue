@@ -69,6 +69,8 @@
         <!-- 空数据友好提示 -->
         <a-empty :image="simpleImage" v-show="!timeLineList.length" />
       </div>
+      <!-- 空数据友好提示 -->
+      <a-empty v-show="!timeLineList.length" />
     </a-spin>
   </div>
 </template>
@@ -414,10 +416,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
       const ids = this.getCheckedIds(this.timeLineList[nV])
       this.updateCheckedIds(ids)
     }
-  }
-
-  beforeCreate() {
-    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 }
 </script>

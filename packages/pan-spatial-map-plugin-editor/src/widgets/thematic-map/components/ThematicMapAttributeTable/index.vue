@@ -98,7 +98,8 @@ export default class ThematicMapAttributeTable extends Mixins(
 
   // 列表滚动
   get tableScroll() {
-    const x = this.tableColumns.length > 3 ? 1000 : 500
+    const { length } = this.tableColumns
+    const x = length > 3 ? length * 120 : 500
     return {
       x,
       y: 360
@@ -113,7 +114,6 @@ export default class ThematicMapAttributeTable extends Mixins(
       pageSize: this.pageCount,
       total: this.total,
       showSizeChanger: true,
-      // pageSizeOptions: ['10', '15', '20', '30', '50'],
       showTotal: total => `共${total}条`
     }
   }
@@ -187,7 +187,7 @@ export default class ThematicMapAttributeTable extends Mixins(
    * @param <object> showFields: 列表字段; showFieldsTitle: 列表字段别名
    */
   setTableColumns({ showFields, showFieldsTitle }) {
-    this.tableColumns = showFields.map((item: string) => {
+    this.tableColumns = showFields.map((item: string, i: number) => {
       const title =
         showFieldsTitle && showFieldsTitle[item] ? showFieldsTitle[item] : item
       return {
