@@ -59,20 +59,12 @@
         :token="layerProps.token"
         :reversebbox="layerProps.reversebbox"
       />
-      <mapgis-arcgis-map-layer
-        v-if="isArcgisMapLayer(layerProps.type)"
+      <mapgis-arcgis-layer
+        v-if="isIgsArcgisLayer(layerProps.type)"
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
-        :baseUrl="layerProps.baseUrl"
-        :layers="layerProps.layers"
-      />
-      <mapgis-arcgis-tile-layer
-        v-if="isArcgisTileLayer(layerProps.type)"
-        :layer="layerProps.layer"
-        :layerId="layerProps.layerId"
-        :sourceId="layerProps.sourceId"
-        :baseUrl="layerProps.baseUrl"
+        :url="layerProps.url"
       />
       <mapgis-rastertile-layer
         v-if="isRasterLayer(layerProps.type)"
@@ -145,9 +137,7 @@ export default {
       handler() {
         try {
           this.parseDocument()
-        } catch (e) {
-          console.error(e)
-        }
+        } catch (e) {}
       }
     }
   },
@@ -263,35 +253,28 @@ export default {
 
           break
         case LayerType.arcGISTile:
+          // 修改说明：mapbox-arcgis-layer通过url属性中是否含有"MapServer/tile/{z}/{y}/{x}"字符串，来判断该服务是瓦片服务还是地图服务。
+          // 故这里要根据瓦片服务的基地址，拼接出完整的取图路径。
+          // 修改人：马原野 2021年03月30日
+
+          // mapbox-arcgis-layer所需的url格式："http://services.arcgisonline.com/ArcGIS/rest/services/{layerType}/MapServer/tile/{z}/{y}/{x}.jpg"
+          // ArcGISTIleLayer中url的格式：http://[ip]/arcgis/rest/services/{tileName}/MapServer
+
+          tempStr = `${layer.url}/tile/{z}/{y}/{x}.${layer.tileInfo.format}`
+
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            baseUrl: layer.url,
+            url: tempStr,
             sourceId: layer.id
           }
 
           break
         case LayerType.arcGISMapImage:
-          showLayers = 'show:'
-
-          visibleSubLayers = layer.allSublayers.filter(sublayer => {
-            if (sublayer.visible) return true
-            return false
-          })
-
-          visibleSubLayers.forEach((sublayer, index) => {
-            showLayers += `${sublayer.id}`
-
-            if (index !== visibleSubLayers.length - 1) {
-              showLayers += ','
-            }
-          })
-
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            baseUrl: layer.url,
-            layers: showLayers,
+            url: layer.url,
             sourceId: layer.id
           }
           break
@@ -327,6 +310,7 @@ export default {
 
       // 先将图层置空，避免图层重复添加
       const layers = []
+
       this.document.defaultMap
         .clone()
         .getFlatLayers()
@@ -338,6 +322,7 @@ export default {
             layers.push(mapboxLayerComponentProps)
           }
         })
+
       this.layers = layers
     },
     isIgsDocLayer(type) {
@@ -358,17 +343,14 @@ export default {
     isIgsTdtLayer(type) {
       return false
     },
-    isArcgisMapLayer(type) {
-      return type === LayerType.arcGISMapImage
-    },
-    isArcgisTileLayer(type) {
-      return type === LayerType.arcGISTile
+    isIgsArcgisLayer(type) {
+      return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
     },
     isRasterLayer(type) {
       return (
         type === LayerType.aMapMercatorEMap ||
-        LayerType.aMapMercatorSatelliteMap ||
-        LayerType.aMapMercatorSatelliteAnnMap
+        type === LayerType.aMapMercatorSatelliteMap ||
+        type === LayerType.aMapMercatorSatelliteAnnMap
       )
     },
     isVectorTileLayer(type) {

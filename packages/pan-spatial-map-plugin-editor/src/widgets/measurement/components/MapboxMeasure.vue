@@ -13,22 +13,16 @@
           v-for="(item, index) in measureMarkers"
           :key="'measuer-marker-' + index"
           :coordinates="item.coordinates"
-          anchor="bottom"
         >
           <div slot="marker">
-            <div class="measure-popup">
-              <div class="measure-tip"></div>
-              <div class="measure-content">
-                <div
-                  v-for="text in item.text"
-                  :key="'measuerText-' + text"
-                  :style="
-                    `font-size: ${measureSetting.textSize}px;font-family: ${measureSetting.textType};color: ${measureSetting.textColor}`
-                  "
-                >
-                  {{ text }}
-                </div>
-              </div>
+            <div
+              v-for="text in item.text"
+              :key="'measuerText-' + text"
+              :style="
+                `font-size: ${measureSetting.textSize}px;font-family: ${measureSetting.textType};color: ${measureSetting.textColor}`
+              "
+            >
+              {{ text }}
             </div>
           </div>
         </mapgis-marker>
@@ -184,14 +178,8 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
 
   // 格式化测量结果
   private formatMeasureResult(result, distanceUnit, areaUnit) {
-    // 投影平面长度
-    let projectionPerimeter = ''
-    // 椭球实地长度
-    let geographyPerimeter = ''
-    // 投影平面面积
-    let projectionArea = ''
-    // 椭球实地面积
-    let geographyArea = ''
+    let perimeter = ''
+    let area = ''
     let marker: any = null
     let distanceUnitExp
     let areaUnitExp
@@ -202,54 +190,38 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
     switch (this.measureMode) {
       case 'measure-length':
         distanceUnitExp = this.transDistanceUnit(distanceUnit)
-        projectionPerimeter = (
-          result.projectionPerimeter / distanceUnitExp.perimeterR
-        ).toFixed(2)
-        geographyPerimeter = (
-          result.geographyPerimeter / distanceUnitExp.perimeterR
-        ).toFixed(2)
-
+        perimeter = (result.perimeter / distanceUnitExp.perimeterR).toFixed(2)
         marker = {
           coordinates: result.coordinates[result.coordinates.length - 1],
-          text: [projectionPerimeter + distanceUnitExp.perimeterUnitLabel],
+          text: [perimeter + distanceUnitExp.perimeterUnitLabel],
           style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
         }
         this.measureMarkers.push(marker)
         this.results = {
-          planeLength: projectionPerimeter + distanceUnitExp.perimeterUnitLabel,
-          ellipsoidLength:
-            geographyPerimeter + distanceUnitExp.perimeterUnitLabel
+          planeLength: perimeter + distanceUnitExp.perimeterUnitLabel,
+          ellipsoidLength: perimeter + distanceUnitExp.perimeterUnitLabel
         }
         break
       case 'measure-area':
-        distanceUnitExp = this.transDistanceUnit(distanceUnit)
         areaUnitExp = this.transAreaUnit(areaUnit)
-        projectionPerimeter = (
-          result.projectionPerimeter / distanceUnitExp.perimeterR
-        ).toFixed(2)
-        geographyPerimeter = (
-          result.geographyPerimeter / distanceUnitExp.perimeterR
-        ).toFixed(2)
-        projectionArea = (result.projectionArea / areaUnitExp.areaR).toFixed(2)
-        geographyArea = (result.geographyArea / areaUnitExp.areaR).toFixed(2)
-
+        perimeter = (result.perimeter / areaUnitExp.perimeterR).toFixed(2)
+        area = (result.area / areaUnitExp.areaR).toFixed(2)
         marker = {
           coordinates: utilInstance.getCenterOfGravityPoint(
             result.coordinates[0]
           ),
           text: [
-            `周长: ${projectionPerimeter}${areaUnitExp.perimeterUnitLabel}`,
-            `面积: ${projectionArea}${areaUnitExp.areaUnitLabel}`
+            `周长: ${perimeter}${areaUnitExp.perimeterUnitLabel}`,
+            `面积：${area}${areaUnitExp.areaUnitLabel}`
           ],
           style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
         }
         this.measureMarkers.push(marker)
         this.results = {
-          planePerimeter: projectionPerimeter + areaUnitExp.perimeterUnitLabel,
-          planeArea: projectionArea + areaUnitExp.areaUnitLabel,
-          ellipsoidPerimeter:
-            geographyPerimeter + areaUnitExp.perimeterUnitLabel,
-          ellipsoidArea: geographyArea + areaUnitExp.areaUnitLabel
+          planePerimeter: perimeter + areaUnitExp.perimeterUnitLabel,
+          planeArea: area + areaUnitExp.areaUnitLabel,
+          ellipsoidPerimeter: perimeter + areaUnitExp.perimeterUnitLabel,
+          ellipsoidArea: area + areaUnitExp.areaUnitLabel
         }
         break
       default:
@@ -400,24 +372,4 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
 }
 </script>
 
-<style lang="less" scoped>
-.measure-popup {
-  display: flex;
-  flex-direction: column-reverse;
-  .measure-content {
-    background-color: @base-bg-color;
-    padding: 5px 16px;
-    border-radius: 4px;
-    box-shadow: 0px 1px 2px 0px @shadow-color;
-  }
-  .measure-tip {
-    align-self: center;
-    width: 0;
-    height: 0;
-    border: 10px solid transparent;
-    border-bottom: none;
-    border-top-color: @base-bg-color;
-    z-index: 1;
-  }
-}
-</style>
+<style scoped></style>
