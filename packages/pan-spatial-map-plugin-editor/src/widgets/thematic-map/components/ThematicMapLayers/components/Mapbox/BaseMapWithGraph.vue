@@ -160,7 +160,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(
   }
 
   /**
-   * 初始化样式
+   * 初始化统计表样式
    */
   initGraphicStyles() {
     const { showFields, showFieldsTitle } = this.graph
@@ -202,6 +202,9 @@ export default class MapboxBaseMapWithGraph extends Mixins(
     }
   }
 
+/**
+ * 柱状图图层
+ */
   createBarThematicMapLayer() {
     const chartsSettingForBar = this.chartsSettingForBarAddBar3DCommon
     chartsSettingForBar.barStyle = { fillOpacity: 0.7 } // 柱状图中柱条的（表示字段值的图形）样式
@@ -217,6 +220,9 @@ export default class MapboxBaseMapWithGraph extends Mixins(
     return chartsSettingForBar
   }
 
+/**
+ * 3D柱状统计图层
+ */
   createBar3DThematicMapLayer() {
     const chartsSettingForBar3D = this.chartsSettingForBarAddBar3DCommon
     chartsSettingForBar3D.useXReferenceLine = true
@@ -237,20 +243,32 @@ export default class MapboxBaseMapWithGraph extends Mixins(
     return chartsSettingForBar3D
   }
 
+/**
+ * 折线统计图层
+ */
   createLineThematicMapLayer(fillColor = '#9966CC') {
     const PointOrLine = this.chartsSettingForPointOrLine
     PointOrLine.pointStyle.fillColor = fillColor
     return PointOrLine
   }
 
+/**
+ * 散点统计图层
+ */
   createPointThematicMapLayer() {
     this.createLineThematicMapLayer('#D8361B')
   }
 
+/**
+ * 饼图图层
+ */
   createPieThematicMapLayer() {
     return this.chartsSettingForPieOrRing
   }
 
+/**
+ * 环形图层
+ */
   createRingThematicMapLayer() {
     this.chartsSettingForPieOrRing.innerRingRadius = 20
     this.createPieThematicMapLayer()
@@ -283,4 +301,3 @@ export default class MapboxBaseMapWithGraph extends Mixins(
   }
 }
 </script>
-<style lang="less" scoped></style>

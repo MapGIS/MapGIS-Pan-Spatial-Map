@@ -10,13 +10,14 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop } from 'vue-property-decorator'
-import { queryFeaturesInstance } from '@mapgis/pan-spatial-map-store'
+import {
+  queryFeaturesInstance,
+  FeatureGeoJSON
+} from '@mapgis/pan-spatial-map-store'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
 export default class MapboxLabel extends Mixins(MapboxMinxin) {
-  geojson = {}
-
   // 聚合层基础配置
   get cluster() {
     return {
@@ -96,10 +97,10 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
           })
         })
     })
-    this.map.on('mouseenter', `clusters-${this.id}`, function() {
+    this.map.on('mouseenter', `clusters-${this.id}`, () => {
       canvas.style.cursor = 'pointer'
     })
-    this.map.on('mouseleave', `clusters${this.id}`, function() {
+    this.map.on('mouseleave', `clusters${this.id}`, () => {
       canvas.style.cursor = ''
     })
     this.map.on('mousemove', unclusterEl, this.showInfoWin)
@@ -110,23 +111,26 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
    * 展示图层
    */
   showLayer() {
-    this.geojson = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
-      this.dataSet
-    )
-    this.updateLayer()
+    if (this.dataSet) {
+      const geojson = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
+        this.dataSet
+      )
+      this.updateLayer(geojson)
+    }
   }
 
   /**
    * 更新图层
+   * @param geojson 要素数据
    */
-  updateLayer() {
-    if (!this.geojson) return
+  updateLayer(geojson: FeatureGeoJSON) {
+    if (!geojson) return
     this.map.addSource('clusterdata', {
       type: 'geojson',
       cluster: true,
       clusterMaxZoom: 14,
       clusterRadius: 50,
-      data: this.geojson
+      data: geojson
     })
     const adds = [this.cluster, this.clusterCount, this.uncluster]
     adds.forEach(v => this.map.addLayer(v))
@@ -161,4 +165,3 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
   }
 }
 </script>
-<style lang="less" scoped></style>

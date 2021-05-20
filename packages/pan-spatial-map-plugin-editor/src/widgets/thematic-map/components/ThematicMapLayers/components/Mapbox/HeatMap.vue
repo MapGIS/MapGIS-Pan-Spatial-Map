@@ -1,6 +1,10 @@
 <template>
   <!-- 热力图 -->
-  <mapgis-mapv-layer :geojson="geojsonPoint" :options="options" />
+  <mapgis-mapv-layer
+    :geojson="geojsonPoint"
+    :options="options"
+    v-show="geojsonPoint"
+  />
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
@@ -13,7 +17,7 @@ import {
 export default class MapboxHeatMap extends Vue {
   @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
 
-  geojsonPoint: Record<string, any> = {}
+  geojsonPoint = null
 
   options = {
     context: '2d',
@@ -45,9 +49,10 @@ export default class MapboxHeatMap extends Vue {
   /**
    * 移除图层
    */
-  remove() {
-    this.geojsonPoint.features = []
+  removeLayer() {
+     if(this.geojsonPoint) {
+      this.geojsonPoint.features = []
+    }
   }
 }
 </script>
-<style lang="less" scoped></style>

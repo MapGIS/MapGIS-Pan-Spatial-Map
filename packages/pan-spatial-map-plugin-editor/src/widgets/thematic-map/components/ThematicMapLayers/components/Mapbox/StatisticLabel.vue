@@ -14,27 +14,23 @@ import cloneDeep from 'lodash/cloneDeep'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
-export default class MapboxStatisticLabel extends Mixins(
-  MapboxMinxin
-) {
-  get style() {
-    return this.subDataConfig.labelStyle
+export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
+  symbolSetting = {
+    maxR: 25,
+    minR: 5,
+    circleStyle: {
+      fillOpacity: 0.8
+    },
+    circleHoverStyle: {
+      fillOpacity: 1,
+      stroke: true,
+      strokeWidth: 4,
+      strokeColor: 'blue'
+    }
   }
 
-  get symbolSetting() {
-    return {
-      maxR: 25,
-      minR: 5,
-      circleStyle: {
-        fillOpacity: 0.8
-      },
-      circleHoverStyle: {
-        fillOpacity: 1,
-        stroke: true,
-        strokeWidth: 4,
-        strokeColor: 'blue'
-      }
-    }
+  get labelStyle() {
+    return this.subDataConfig.labelStyle
   }
 
   /**
@@ -48,7 +44,7 @@ export default class MapboxStatisticLabel extends Mixins(
    * 更新图层
    */
   updateLayer() {
-    if (!this.dataSet || !this.style) return
+    if (!this.dataSet || !this.labelStyle) return
     this.removeLayer()
     this.thematicMapLayer = window.Zondy.Map.rankSymbolThemeLayer(
       'ThematicMapLayer',
@@ -59,18 +55,15 @@ export default class MapboxStatisticLabel extends Mixins(
     const {
       textStyle: { fillColor },
       radius
-    } = this.style
+    } = this.labelStyle
     const { min, max } = radius[0]
-    this.thematicMapLayer = {
-      ...cloneDeep(this.thematicMapLayer),
-      id: this.id,
-      themeField: this.field,
-      symbolSetting: {
-        fillColor,
-        codomain: [min, max],
-        ...this.symbolSetting
-      }
+    this.thematicMapLayer.symbolSetting = {
+      fillColor,
+      codomain: [min, max],
+      ...this.symbolSetting
     }
+    this.thematicMapLayer.id = this.id
+    this.thematicMapLayer.themeField = this.field
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
@@ -106,4 +99,3 @@ export default class MapboxStatisticLabel extends Mixins(
   }
 }
 </script>
-<style lang="less" scoped></style>

@@ -174,4 +174,3 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   }
 }
 </script>
-<style lang="less" scoped></style>

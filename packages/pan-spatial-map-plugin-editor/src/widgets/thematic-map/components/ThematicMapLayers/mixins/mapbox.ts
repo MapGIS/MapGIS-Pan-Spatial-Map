@@ -7,19 +7,19 @@ import isFunction from 'lodash/isFunction'
 export default class MapboxMinxin extends Mixins<Record<string, any>>(
   MapMixin
 ) {
-  // 某个专题的配置
+  // 专题的配置
   @Prop({ default: () => ({}) }) config!: any
 
-  // 某个专题配置features
+  // 专题某年度的要素数据
   @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
 
   id = UUID.uuid()
 
-  thematicMapLayer: any = {}
+  thematicMapLayer: Record<string, any> | null = null
 
   properties: Record<string, any> = {}
 
-  coordinates = [[0, 0]]
+  coordinates = [0, 0]
 
   // 获取某个专题某个年度的subData
   get subDataConfig() {
@@ -63,7 +63,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
         this.map.removeLayer(id)
       } else {
         const { clear, removeFromMap } = this.thematicMapLayer
-        if ( isFunction( clear ) ) {
+        if (isFunction(clear)) {
           clear.bind(this.thematicMapLayer)()
         }
         if (isFunction(removeFromMap)) {
@@ -72,13 +72,6 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
       }
       this.thematicMapLayer = null
     }
-  }
-
-  /**
-   * 重置图层
-   */
-  resetLayer() {
-    this.initLayer()
   }
 
   /**
