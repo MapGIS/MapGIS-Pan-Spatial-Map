@@ -3,150 +3,14 @@
     <a-collapse v-model="activeKey">
       <a-collapse-panel key="1">
         <template v-slot:header>
-          <a-checkbox :checked="checked">
+          <a-checkbox :checked="checked" @click="handleClick">
             批量设置已勾选项
           </a-checkbox>
         </template>
-        <div class="collapse-panel">
-          <div class="panel-item">
-            <div class="item-title">填充色:</div>
-            <div class="item-panel">
-              <a-input
-                class="color-input"
-                v-show="!paint['fill-color'] || !paint['fill-color'].stops"
-                v-model="paint['fill-color']"
-                :style="{ background: paint['fill-color'] }"
-              >
-                <a-popover slot="addonAfter" trigger="click">
-                  <template slot="content">
-                    <sketch-picker
-                      :value="paint['fill-color']"
-                      @input="val => getLineColor(val, 'fill-color')"
-                    />
-                  </template>
-                  <a-icon type="edit" />
-                </a-popover>
-              </a-input>
-              <a-icon
-                type="plus"
-                style="margin-left:0.5em"
-                @click="onClickAddBtn('fill-color')"
-              />
-            </div>
-          </div>
-          <div class="layer-content" v-show="showLayerItem">
-            <LayerItem
-              :layer-style-items="paint['fill-color'].stops"
-              type="fill-color-picker"
-              @delete="onClickDeleteBtn"
-            ></LayerItem>
-          </div>
-          <div class="panel-item">
-            <div class="item-title">轮廓颜色:</div>
-            <div class="item-panel">
-              <a-input
-                class="color-input"
-                v-show="
-                  !paint['fill-outline-color'] ||
-                    !paint['fill-outline-color'].stops
-                "
-                v-model="paint['fill-outline-color']"
-                :style="{ background: paint['fill-outline-color'] }"
-              >
-                <a-popover slot="addonAfter" trigger="click">
-                  <template slot="content">
-                    <sketch-picker
-                      :value="paint['fill-outline-color']"
-                      @input="val => getLineColor(val, 'fill-outline-color')"
-                    />
-                  </template>
-                  <a-icon type="edit" />
-                </a-popover>
-              </a-input>
-              <a-icon
-                type="plus"
-                style="margin-left:0.5em"
-                @click="onClickAddBtn('fill-outline-color')"
-              />
-            </div>
-          </div>
-          <div class="layer-content" v-show="showLayerItem">
-            <LayerItem
-              :layer-style-items="paint['fill-outline-color'].stops"
-              type="outline-color-picker"
-              @delete="onClickDeleteBtn"
-            ></LayerItem>
-          </div>
-
-          <div class="panel-item">
-            <div class="item-title">区填充图案:</div>
-            <div class="item-panel">
-              <a-select
-                v-show="!paint['fill-pattern'] || !paint['fill-pattern'].stops"
-                v-model="paint['fill-pattern']"
-              >
-                <a-select-option v-for="item in options" :key="item">
-                  {{ item }}
-                </a-select-option>
-              </a-select>
-              <a-icon
-                type="plus"
-                style="margin-left:0.5em"
-                @click="onClickAddBtn('fill-pattern')"
-              />
-            </div>
-          </div>
-
-          <div class="panel-item">
-            <div class="item-title">透明度:</div>
-            <div class="item-panel">
-              <a-input
-                v-show="!paint['fill-opacity'] || !paint['fill-opacity'].stops"
-                v-model.number="paint['fill-opacity']"
-                type="number"
-                step="0.1"
-                min="0"
-                max="1"
-              ></a-input>
-              <a-icon
-                type="plus"
-                style="margin-left:0.5em"
-                @click="onClickAddBtn('fill-opacity')"
-              />
-            </div>
-          </div>
-          <div class="layer-content" v-show="showLayerItem">
-            <LayerItem
-              :layer-style-items="paint['fill-opacity'].stops"
-              type="opacity-input"
-              @delete="onClickDeleteBtn"
-            ></LayerItem>
-          </div>
-
-          <div class="panel-item">
-            <div class="item-title">抗锯齿:</div>
-            <div class="item-panel">
-              <a-switch
-                v-show="
-                  !paint['fill-antialias'] || !paint['fill-antialias'].stops
-                "
-                v-model="paint['fill-antialias']"
-              />
-              <a-icon
-                type="plus"
-                style="margin-left:0.5em"
-                @click="onClickAddBtn('fill-antialias')"
-              />
-            </div>
-          </div>
-          <div class="layer-content" v-show="showLayerItem">
-            <LayerItem
-              :layer-style-items="paint['fill-antialias'].stops"
-              type="switch"
-              @delete="onClickDeleteBtn"
-            ></LayerItem>
-          </div>
-        </div>
+        <LayerSetting
+          :setting.sync="paint"
+          :sprite-data="srpiteData"
+        ></LayerSetting>
       </a-collapse-panel>
     </a-collapse>
   </div>
@@ -157,14 +21,21 @@ import { Component, Vue, PropSync, Prop } from 'vue-property-decorator'
 import { Sketch } from 'vue-color'
 import { UUID } from '@mapgis/web-app-framework'
 import LayerItem from './LayerItem.vue'
+import LayerSetting from './LayerSetting.vue'
 
 @Component({
   name: 'MultiSetting',
-  components: { 'sketch-picker': Sketch, LayerItem }
+  components: { 'sketch-picker': Sketch, LayerItem, LayerSetting }
 })
 export default class MultiSetting extends Vue {
   @PropSync('setting', { type: Object, default: _ => {} })
   paint: object
+
+  @Prop({
+    type: Array,
+    default: () => []
+  })
+  readonly spriteData!: string[]
 
   // 当前激活 tab 面板的 key
   private activeKey = []
@@ -234,6 +105,14 @@ export default class MultiSetting extends Vue {
       // 否则只需删除该样式属性中stops属性中的该项即可
       this.paint[type].stops.splice(delIndex, 1)
     }
+  }
+
+  // 多选框点击事件(取消冒泡)
+  private handleClick(event) {
+    console.log(this.spriteData)
+
+    this.checked = !this.checked
+    event.stopPropagation()
   }
 }
 </script>

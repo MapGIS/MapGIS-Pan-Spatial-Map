@@ -13,23 +13,11 @@
         @change="onInputChange"
       ></a-input>
       <a-input
-        v-if="type === 'fill-color-picker'"
-        class="color-input"
-        v-model="item[1]"
-        :style="{ background: item[1] }"
-      >
-        <a-popover slot="addonAfter" trigger="click">
-          <template slot="content">
-            <sketch-picker
-              :value="item[1]"
-              @input="val => getLineColor(val, item)"
-            />
-          </template>
-          <a-icon type="edit" />
-        </a-popover>
-      </a-input>
-      <a-input
-        v-if="type === 'outline-color-picker'"
+        v-if="
+          type === 'fill-color-picker' ||
+            type === 'outline-color-picker' ||
+            type === 'background-color-picker'
+        "
         class="color-input"
         v-model="item[1]"
         :style="{ background: item[1] }"
@@ -50,7 +38,7 @@
         </a-select-option>
       </a-select>
       <a-input
-        v-if="type === 'opacity-input'"
+        v-if="type === 'opacity-input' || type === 'opacity-background'"
         v-model.number="item[1]"
         type="number"
         step="0.1"
