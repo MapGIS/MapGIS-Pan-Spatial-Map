@@ -1,0 +1,40 @@
+.split-screen-setting {
+  height: 100%;
+  border-left: 1px solid #f0f0f0;
+  padding-left: 12px;
+  margin-left: 12px;
+  /deep/ .ant-select {
+    width: 100%;
+  }
+  /deep/ .ant-row-flex {
+    margin: 12px 0;
+  }
+  .split-screen-grid {
+    width: 88px;
+    &-col {
+      width: 30px;
+      height: 20px;
+      line-height: 20px;
+      color: #999;
+      border: 1px solid #d9d9d9;
+      background-color: #efefef;
+      text-align: center;
+      &:nth-of-type(3),
+      &:nth-of-type(4),
+      &:nth-of-type(5),
+      &:nth-of-type(6) {
+        border-top: none;
+      }
+      &:nth-of-type(2n) {
+        border-left: none;
+      }
+    }
+  }
+  .split-screen-btns {
+    text-align: right;
+    margin: 12px 0;
+    button {
+      margin-left: 8px;
+    }
+  }
+}
