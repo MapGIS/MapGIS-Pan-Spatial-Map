@@ -208,7 +208,7 @@ export default class ThematicMapAttributeTable extends Mixins(
       )
       this.total = geojsonData.dataCount
       this.tableData = geojsonData.features.map(({ properties }) => properties)
-    })
+    })()
   }
 
   /**

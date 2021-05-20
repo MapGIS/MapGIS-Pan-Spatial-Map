@@ -4,7 +4,9 @@ import { FeatureIGS, utilInstance } from '@mapgis/pan-spatial-map-store'
 import isFunction from 'lodash/isFunction'
 
 @Component
-export default class MapboxMinxin extends Mixins<Record<string, any>>(MapMixin) {
+export default class MapboxMinxin extends Mixins<Record<string, any>>(
+  MapMixin
+) {
   // 某个专题的配置
   @Prop({ default: () => ({}) }) config!: any
 
@@ -60,11 +62,12 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(MapMixin) 
       if (this.map.getLayer(id)) {
         this.map.removeLayer(id)
       } else {
-        if (isFunction(this.thematicMapLayer.clear)) {
-          this.thematicMapLayer.clear()
+        const { clear, removeFromMap } = this.thematicMapLayer
+        if ( isFunction( clear ) ) {
+          clear.bind(this.thematicMapLayer)()
         }
-        if (isFunction(this.thematicMapLayer.removeFromMap)) {
-          this.thematicMapLayer.removeFromMap()
+        if (isFunction(removeFromMap)) {
+          removeFromMap.bind(this.thematicMapLayer)()
         }
       }
       this.thematicMapLayer = null
@@ -78,12 +81,19 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(MapMixin) 
     this.initLayer()
   }
 
+  /**
+   * 监听: 要素数据变化
+   */
   @Watch('dataSet', { deep: true })
-  watchDataSet() {
-    this.initLayer()
+  watchDataSet(nV: FeatureIGS | null) {
+    if (nV) {
+      this.initLayer()
+    } else {
+      this.removeLayer()
+    }
   }
 
-  mounted() {
+  created() {
     this.initLayer()
   }
 

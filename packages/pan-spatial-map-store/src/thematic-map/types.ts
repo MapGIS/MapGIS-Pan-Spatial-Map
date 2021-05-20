@@ -98,16 +98,16 @@ export interface IState extends IPageParam{
 
 export interface IMethods {
   parseFeatureQueryParams(): FeatureQueryParam
-  setVisible(v: ModuleType): void
-  setLoading(b: boolean): void
-  setPage(p: number, pc: number): void
-  setPageDataSet(a: FeatureIGS): void
-  setFeaturesQuery(s?: (a?: any) => void, e?: (e: Event) => void): void
-  setThematicMapConfig(v: IThematicMapConfig): void
+  setVisible(type: ModuleType): void
+  setLoading(loading: boolean): void
+  setPage(page: number, pageCount: number): void
+  setPageDataSet(data: FeatureIGS): void
+  setFeaturesQuery(success?: (a: FeatureIGS) => void, error?: (e: Event) => void): (params?: FeatureQueryParam) => void
+  setThematicMapConfig(config: IThematicMapConfig): void
   setSelected(id: string): void
-  setSelectedList(c: IThematicMapSubjectConfig[]): void
-  setSelectedTime(y: string): void
-  resetVisible(v?: ModuleType): void
+  setSelectedList(selectedConfig: IThematicMapSubjectConfig[]): void
+  setSelectedTime(time: string): void
+  resetVisible(type?: ModuleType): void
 }
 
 export interface IComputed {

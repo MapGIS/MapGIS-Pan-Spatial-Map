@@ -123,7 +123,7 @@
                 "type": "gdbp",
                 "data": [          
                   {
-                    "time": "2011",
+                    "time": "2016",
                     "subData": [
                       {
                         "minZoom": "0",
@@ -132,12 +132,12 @@
                         "ip": "develop.smaryun.com",
                         "port": "6163",
                         "src": "",
-                        "gdbp": "gdbp://MapGISLocal/Templates/sfcls/湖北省市级区划",
+                        "gdbp": "gdbp://MapGisLocalPlus/ClientTheme/ds/epsg3857/sfcls/湖北省市级区划1",
                         "docName": "",
                         "layerIndex": "",
                         "layerName": "undefined",
                         "showLegend": "true",
-                        "field": "GDP2011",
+                        "field": "GDP2016",
                         "webglTextField": "省名",
                         "dataBase": {
                           "code": "",
@@ -147,27 +147,27 @@
                         "color": [
                           {
                             "min": "0",
-                            "max": "5318",
+                            "max": "100",
                             "sectionColor": "#FFFF00"
                           },
                           {
-                            "min": "5318",
-                            "max": "10635",
+                            "min": "100",
+                            "max": "150",
                             "sectionColor": "#FFCC66"
                           },
                           {
-                            "min": "10635",
-                            "max": "15953",
+                            "min": "150",
+                            "max": "200",
                             "sectionColor": "#FF9999"
                           },
                           {
-                            "min": "15953",
-                            "max": "21270",
+                            "min": "200",
+                            "max": "400",
                             "sectionColor": "#FF6699"
                           },
                           {
-                            "min": "21270",
-                            "max": "26588",
+                            "min": "400",
+                            "max": "1320",
                             "sectionColor": "#FF3333"
                           }
                         ],
@@ -189,12 +189,16 @@
                               "第一产业增加值2014",
                               "第一产业增加值2015",
                               "第一产业增加值2016",
-                              "COLOR_INDEX " 
+                              "COLOR_INDEX" 
                           ],
-                          "showFieldsTitle": {}
+                          "showFieldsTitle": {
+                            "mpArea": "面积",
+                            "mpPerimeter": "周长",
+                            "mpLayer": "图层"
+                          }
                         },
                         "graph": {
-                          "showFields": ["GDP2011"],
+                          "showFields": ["GDP2016"],
                           "showFieldsTitle": {},
                           "field": "NAME",
                           "target": []
@@ -202,16 +206,18 @@
                         "popup": {
                           "showFields": [             
                             "NAME",
-                            "人口数"
+                            "GDP2016"
                           ],
-                          "showFieldsTitle": {},
-                          "title": "省名"
+                          "showFieldsTitle": {
+                            "NAME": "名称"
+                          },
+                          "title": "GDP2016"
                         }
                       }
                     ]
                   },
                   {
-                    "time": "2007",
+                    "time": "2017",
                     "subData": [
                       {
                         "minZoom": "0",
@@ -225,7 +231,7 @@
                         "layerIndex": "",
                         "layerName": "undefined",
                         "showLegend": "true",
-                        "field": "GDP_2007",
+                        "field": "GDP_2017",
                         "webglTextField": "省名",
                         "dataBase": {
                           "code": "",
@@ -269,7 +275,7 @@
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": ["GDP_2007"],
+                          "showFields": ["GDP_2017"],
                           "showFieldsTitle": {},
                           "field": "省名",
                           "target": ["人均地区生产总值/元"]
@@ -277,7 +283,7 @@
                         "popup": {
                           "showFields": [                       
                             "省名",
-                            "GDP_2007"  
+                            "GDP_2017"  
                           ],
                           "showFieldsTitle": {},
                           "title": "省名"

@@ -55,7 +55,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
     return thematicMapInstance.getSelectedConfig
   }
 
-  // 专题配置年度
+  // 专题某年度的要素数据
   get dataSet() {
     return thematicMapInstance.getPageDataSet
   }

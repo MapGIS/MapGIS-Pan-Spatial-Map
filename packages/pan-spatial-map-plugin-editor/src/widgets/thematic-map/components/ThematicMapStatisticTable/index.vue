@@ -202,7 +202,7 @@ export default class ThematicMapStatisticTable extends Mixins(
   onTargetChange(value) {
     this.target = value
     this.chartOption.title = value
-    thematicMapInstance.setFeaturesQuery(this.setChartOptions)
+    thematicMapInstance.setFeaturesQuery(this.setChartOptions)()
   }
 
   /**
