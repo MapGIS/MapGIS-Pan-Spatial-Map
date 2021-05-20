@@ -603,7 +603,6 @@ export default class TreeLayer extends Mixins(
     let {
       fullExtent: { xmin, xmax, ymin, ymax }
     } = item.dataRef
-
     if (
       item.dataRef.spatialReference.wkid === CoordinateSystemType.webMercator
     ) {
