@@ -77,10 +77,12 @@ export class VectorTileLayer extends Layer {
             this.styleList.push(data)
 
             if (index === styleUrlList.length - 1) {
-              this.loadStatus = LoadStatus.loaded
-
               if (this.styleList.length > 0)
                 this.currentStyle = this.styleList[0]
+
+              this.loadStatus = LoadStatus.loaded
+
+              resolve(this)
             }
           },
           error => {
