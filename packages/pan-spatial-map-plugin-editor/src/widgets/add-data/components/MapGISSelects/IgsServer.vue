@@ -1,12 +1,12 @@
 <template>
   <div class="igs-server">
     <div class="input-item">
-      <label class="">IP地址：</label>
-      <a-input v-model="ip"></a-input>
+      <label>IP地址：</label>
+      <a-input class="short-input" v-model="ip"></a-input>
     </div>
     <div class="input-item">
-      <label class="">端口：</label>
-      <a-input v-model="port"></a-input>
+      <label>端口：</label>
+      <a-input class="short-input" v-model="port"></a-input>
     </div>
     <div v-if="showLayer" class="input-item">
       <div class="long-title">GDBP地址：</div>
@@ -99,6 +99,9 @@ export default class IgsServer extends Vue {
   .ant-input {
     margin-left: 4px;
     flex-grow: 1;
+  }
+  .short-input {
+    margin-left: 1px;
   }
 
   .long-title {
