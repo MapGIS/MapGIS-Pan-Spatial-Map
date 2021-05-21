@@ -1,6 +1,6 @@
 <template>
   <div class="BaseLayersMapbox">
-    <mapgis-3d-igs-tile-layer
+    <mapgis-3d-igs-doc-layer
       v-for="layer in docLayers"
       :key="layer.id"
       :url="layer.url"
@@ -8,13 +8,20 @@
       :port="layer.port"
       :serverName="layer.serverName"
     />
-    <mapgis-3d-igs-doc-layer
+    <mapgis-3d-igs-tile-layer
       v-for="layer in tileLayers"
       :key="layer.id"
       :url="layer.url"
       :ip="layer.ip"
       :port="layer.port"
       :serverName="layer.serverName"
+    />
+    <mapgis-3d-tdt-layer
+      v-for="layer in tdtLayers"
+      :key="layer.id"
+      :layerStyle="{ zIndex: parseInt(Math.random() * 100) }"
+      :baseURL="layer.baseURL"
+      :token="layer.token"
     />
   </div>
 </template>
@@ -25,10 +32,11 @@ import {
   BaseLayersMixin,
   queryOGCInfoInstance
 } from '@mapgis/pan-spatial-map-store'
+import mapgis3dTdtLayer from '../CesiumLayers/CesiumTdtLayer'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
-  components: {}
+  components: { mapgis3dTdtLayer }
 })
 export default class BaseLayersCesium extends Mixins(BaseLayersMixin) {
   @Inject('map') map: any

@@ -25,20 +25,21 @@
       />
       <mapgis-3d-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
-        :show="layerProps.show"
+        :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :url="layerProps.url"
         :layers="layerProps.layers"
       />
       <mapgis-3d-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
-        :show="layerProps.show"
+        :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :options="layerProps.options"
         :url="layerProps.url"
         :layer="layerProps.layer"
         :wmtsStyle="layerProps.wmtsStyle"
-        :tileMatrixSet="layerProps.tileMatrixSet"
+        :srs="layerProps.srs"
+        :tileMatrixSetID="layerProps.tileMatrixSetID"
       />
       <cesium-arcgis-layer
         v-if="isArcgisMapLayer(layerProps.type)"
@@ -170,7 +171,9 @@ export default {
       let visibleSubLayers = []
       // 图层显示样式
       const layerStyle = {
-        show: layer.isVisible
+        visible: layer.isVisible,
+        opacity: layer.opacity,
+        zIndex: 100
       }
 
       let tempStr = ''
@@ -229,14 +232,10 @@ export default {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            tileMatrixSet: `EPSG:${layer.spatialReference.wkid}`,
+            srs: `EPSG:${layer.spatialReference.wkid}`,
+            tileMatrixSetID: layer.activeLayer.tileMatrixSetId,
             layer: layer.activeLayer.id,
-            wmtsStyle: layer.activeLayer.styleId,
-            options: {
-              version: layer.version,
-              format: layer.activeLayer.imageFormat,
-              tileMatrixSetID: layer.activeLayer.tileMatrixSetId
-            }
+            wmtsStyle: layer.activeLayer.styleId
           }
 
           break
@@ -311,7 +310,7 @@ export default {
       }
 
       if (layer.type !== LayerType.vectorTile)
-        layerComponentProps = { ...layerComponentProps, ...layerStyle }
+        layerComponentProps = { ...layerComponentProps, layerStyle }
 
       return layerComponentProps
     },
