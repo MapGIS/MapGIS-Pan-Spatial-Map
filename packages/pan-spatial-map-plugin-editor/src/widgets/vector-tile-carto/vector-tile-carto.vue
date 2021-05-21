@@ -21,7 +21,7 @@
         </a-select>
       </a-form-model-item>
     </a-form-model>
-    <a-collapse v-model="multiActiveKey">
+    <a-collapse class="multiple-style" v-model="multiActiveKey">
       <a-collapse-panel key="1">
         <template v-slot:header>
           <a-checkbox :checked="multiChecked" @click="handleMultiClick">
@@ -45,7 +45,6 @@
             <a-checkbox
               :checked="item.checked"
               @click="event => handleClick(event, item)"
-              @change="onChangeCheckedBox"
             >
               {{ item.id }}
             </a-checkbox>
@@ -67,13 +66,11 @@
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, Document, LayerType } from '@mapgis/web-app-framework'
 import { eventBus } from '@mapgis/pan-spatial-map-store'
-import MultiSetting from './MultiSetting.vue'
 import LayerSetting from './LayerSetting.vue'
 
 @Component({
   name: 'MpVectorTileCarto',
   components: {
-    MultiSetting,
     LayerSetting
   }
 })
@@ -105,55 +102,84 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   // 当前激活 tab 面板的 key
   private activeKey = []
 
-  // 多选框是否勾选
-  private checked = false
-
   // 区填充数据
   private spriteData = []
 
+  // 批量设置样式属性集
   private multiSetting = {
     'fill-color': '#bedcaf',
     'fill-outline-color': '#dd5c5c',
-    'fill-pattern': 'xxx',
+    'fill-pattern': '',
     'fill-opacity': 1,
     'fill-antialias': false
   }
 
   // 监听矢量瓦片下拉项变化，实时构造该矢量瓦片对应的样式文件下拉项,以及区填充图案下拉项数据
   @Watch('formData.vectorTileName', { deep: true })
-  onTileNameChange() {
-    const doc: Document = this.document
-    this.currentLayer = doc.defaultMap.allLayers.find(
-      item => item.title === this.formData.vectorTileName
-    )
-    const requestUrl = `${this.currentLayer.currentStyle.sprite}.json`
-    this.styleOptions = this.currentLayer.styleList.map(item => item.name)
-    this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
-    this.getSpriteData(requestUrl).then(res => {
-      this.spriteData = res
-    })
+  onTileNameChange(newVal) {
+    if (newVal === '') {
+      return false
+    } else {
+      const doc: Document = this.document
+      this.currentLayer = doc.defaultMap.allLayers.find(
+        item => item.title === newVal
+      )
+      const requestUrl = `${this.currentLayer.currentStyle.sprite}.json`
+      this.styleOptions = this.currentLayer.styleList.map(item => item.name)
+      this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
+      // 获取到区填充图案数据后，将批量设置类型中的区填充属性值设为数据的第0项
+      this.getSpriteData(requestUrl).then(res => {
+        this.spriteData = res
+        this.multiSetting['fill-pattern'] = this.spriteData[0]
+      })
+    }
   }
 
   // 监听样式文件下拉项变化，将当前图层的样式类型更改为所选样式文件,实时构造该矢量瓦片包含的所有子图层
   @Watch('formData.vectorTileStyle', { deep: true })
   onTileStyleChange(newVal) {
-    const doc: Document = this.document
-    this.currentLayer.currentStyle = this.currentLayer.styleList.find(
-      item => item.name === newVal
-    )
-    this.layers = this.currentLayer.currentStyle.layers
-    // 为每个子图层新增一个checked属性，用来表示是否勾选了该子图层样式所对应的多选框
-    this.layers.forEach(item => {
-      this.$set(item, 'checked', false)
-    })
-    console.log(doc.defaultMap)
+    if (newVal === '') {
+      return false
+    } else {
+      const doc: Document = this.document
+      this.currentLayer.currentStyle = this.currentLayer.styleList.find(
+        item => item.name === newVal
+      )
+      this.layers = this.currentLayer.currentStyle.layers
+      // 为每个子图层新增一个checked属性，用来表示是否勾选了该子图层样式所对应的多选框
+      this.layers.forEach(item => {
+        this.$set(item, 'checked', false)
+      })
+    }
   }
 
-  // 监听目录树勾选图层节点后触发的事件
+  // 监听批量设置样式属性集的变化,来改变所勾选子图层对应样式
+  @Watch('multiSetting', { deep: true })
+  onMultiSetChange(newVal) {
+    const multiSettingKeys = Object.keys(newVal)
+    if (this.multiChecked) {
+      this.layers = this.layers.reduce((result, item) => {
+        if (item.checked) {
+          // 只修改该子图层样式属性集paint中含有的样式
+          const layerPaintKeys = Object.keys(item.paint)
+          layerPaintKeys.forEach(key => {
+            if (multiSettingKeys.includes(key)) {
+              item.paint[key] = newVal[key]
+            }
+          })
+        }
+        result.push(item)
+        return result
+      }, [])
+    }
+  }
+
+  // 监听目录树勾选图层节点变化后触发的事件
   created() {
     eventBus.$on('emitSelectLayer', this.init)
   }
 
+  // 销毁目录树勾选图层节点变化后触发的事件
   beforeDestroy() {
     eventBus.$off('emitSelectLayer')
   }
@@ -172,7 +198,12 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
         []
       )
     } else {
+      // 如果没有勾选任何矢量图层，则置空所有下拉项数据以及子图层
       this.vectorTileOptions = []
+      this.styleOptions = []
+      this.formData.vectorTileName = ''
+      this.formData.vectorTileStyle = ''
+      this.layers = []
     }
   }
 
@@ -189,9 +220,6 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       request.send()
     })
   }
-
-  // 多选框变化时回调函数
-  private onChangeCheckedBox(event) {}
 
   // 批量多选框点击事件(取消冒泡)
   private handleMultiClick(event) {
@@ -218,6 +246,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   .ant-form-item-label {
     margin-right: 4px;
   }
+}
+
+.multiple-style {
+  margin-top: 8px;
 }
 .collapse-layer-item {
   margin: 8px 0;
