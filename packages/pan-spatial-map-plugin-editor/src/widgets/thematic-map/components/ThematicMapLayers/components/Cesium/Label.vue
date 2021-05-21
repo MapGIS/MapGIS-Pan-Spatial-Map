@@ -12,7 +12,6 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 import CesiumMinxin from '../../mixins/cesium'
 
-
 @Component
 export default class CesiumLabel extends Mixins(CesiumMinxin) {
   style = {
@@ -32,11 +31,11 @@ export default class CesiumLabel extends Mixins(CesiumMinxin) {
    */
   getGeoJSONFeaturesLayer(
     layer: Layer,
-    features: GFeature[],
+    { features }: FeatureGeoJSON,
     { color, radius }: any
   ) {
     if (!features) return
-    features.forEach(feature => {
+    features.forEach((feature: GFeature) => {
       const center = utilInstance.getGeoJsonFeatureCenter(feature)
       const popupContent = this.getPopupContent(feature)
       const position = this.getPosition(center)
@@ -112,15 +111,14 @@ export default class CesiumLabel extends Mixins(CesiumMinxin) {
   }
 
   /**
-   * 更新图层
-   * @param 要素数据
+   * 展示图层
    */
-  updateLayer({ features }: FeatureGeoJSON) {
-    this.removeLayer()
-    if (!this.thematicMapLayer) {
-      this.thematicMapLayer = new this.Cesium.CustomDataSource(this.id)
-    }
-    this.getGeoJSONFeaturesLayer(this.thematicMapLayer, features, this.style)
+  showCesiumLayer() {
+    this.getGeoJSONFeaturesLayer(
+      this.thematicMapLayer,
+      this.geojson,
+      this.style
+    )
     this.webGlobe.viewer.scene.postProcessStages.fxaa.enabled = false
     this.webGlobe.viewer.dataSources
       .add(this.thematicMapLayer)

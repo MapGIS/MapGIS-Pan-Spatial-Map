@@ -10,10 +10,6 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop } from 'vue-property-decorator'
-import {
-  queryFeaturesInstance,
-  FeatureGeoJSON
-} from '@mapgis/pan-spatial-map-store'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
@@ -107,30 +103,17 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
     this.map.on('mouseout', unclusterEl, this.closeInfoWin)
   }
 
+
   /**
    * 展示图层
    */
-  showLayer() {
-    if (this.dataSet) {
-      const geojson = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
-        this.dataSet
-      )
-      this.updateLayer(geojson)
-    }
-  }
-
-  /**
-   * 更新图层
-   * @param geojson 要素数据
-   */
-  updateLayer(geojson: FeatureGeoJSON) {
-    if (!geojson) return
+  showMapboxLayer() {
     this.map.addSource('clusterdata', {
       type: 'geojson',
       cluster: true,
       clusterMaxZoom: 14,
       clusterRadius: 50,
-      data: geojson
+      data: this.geojson
     })
     const adds = [this.cluster, this.clusterCount, this.uncluster]
     adds.forEach(v => this.map.addLayer(v))

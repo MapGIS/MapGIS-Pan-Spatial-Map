@@ -65,11 +65,11 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
   getGeoJSONFeaturesLayer(
     webGlobe: any,
     layer: Layer,
-    features: GFeature[],
+    { features }: FeatureGeoJSON,
     labelStyle: any
   ) {
     if (!features) return
-    features.forEach(feature => {
+    features.forEach((feature: GFeature) => {
       const value = feature.properties[this.field]
       const center = utilInstance.getGeoJsonFeatureCenter(feature)
       const popupContent = this.getPopupContent(feature)
@@ -85,18 +85,13 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
   }
 
   /**
-   * 更新图层
-   * @param 要素数据
+   * 展示图层
    */
-  updateLayer({ features }: FeatureGeoJSON) {
-    this.removeLayer()
-    if (!this.thematicMapLayer) {
-      this.thematicMapLayer = new this.Cesium.CustomDataSource(this.id)
-    }
+  showCesiumLayer() {
     this.getGeoJSONFeaturesLayer(
       this.webGlobe,
       this.thematicMapLayer,
-      features,
+      this.geojson,
       this.labelStyle
     )
     this.webGlobe.viewer.dataSources.add(this.thematicMapLayer)

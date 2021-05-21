@@ -1,12 +1,8 @@
 /* eslint-disable no-new */
-import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { Component, Mixins } from 'vue-property-decorator'
 import { UUID, MapMixin, Layer } from '@mapgis/web-app-framework'
-import {
-  queryFeaturesInstance,
-  FeatureIGS,
-  GFeature,
-  utilInstance
-} from '@mapgis/pan-spatial-map-store'
+import { GFeature, utilInstance } from '@mapgis/pan-spatial-map-store'
+import BaseMinxin from './base'
 
 interface IPopupConfig {
   showFields: string[]
@@ -31,26 +27,9 @@ interface IPopupPosition extends ILngLat {
 }
 @Component
 export default class CesiumMinxin extends Mixins<Record<string, any>>(
+  BaseMinxin,
   MapMixin
 ) {
-  // 专题的配置
-  @Prop({ default: () => ({}) }) config!: any
-
-  // 专题某年度的要素数据
-  @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
-
-  /**
-   * 监听: 要素数据变化
-   */
-  @Watch('dataSet', { deep: true })
-  watchDataSet(nV: FeatureIGS | null) {
-    if (nV) {
-      this.initLayer()
-    } else {
-      this.removeLayer()
-    }
-  }
-
   id = UUID.uuid()
 
   thematicMapLayer: Record<string, any> | null = null
@@ -132,7 +111,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
     return ''
   }
 
- /**
+  /**
    * 获取笛卡尔坐标
    * @param position
    */
@@ -154,7 +133,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
       height
     }
   }
- 
+
   /**
    * 设置材质
    * @param id
@@ -181,7 +160,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
     }
   }
 
- /**
+  /**
    * 显示弹出框
    */
   showPopup({ scene }: any, position: any) {
@@ -210,7 +189,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
       this.setMaterial(id)
     }
   }
-  
+
   /**
    * 右击显示弹出框
    * @param globe
@@ -223,7 +202,6 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
       this.showPopup(globe, position)
     }, this.Cesium.ScreenSpaceEventType.LEFT_CLICK)
   }
- 
 
   /**
    * WGS84坐标系转笛卡尔坐标系(经纬度转换为世界坐标)
@@ -257,22 +235,14 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 初始化图层
+   * 显示图层
    */
-  initLayer() {
-    this.showLayer()
-  }
-
-  /**
-   * 显示图层，子组件在这里实现生成图层的函数
-   */
-  showLayer () {
-    if (this.dataSet) {
-      const geojson = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
-        this.dataSet
-      )
-      this.updateLayer(geojson)
+  showLayer() {
+    this.removeLayer()
+    if (!this.thematicMapLayer) {
+      this.thematicMapLayer = new this.Cesium.CustomDataSource(this.id)
     }
+    this.showCesiumLayer()
   }
 
   /**
@@ -284,13 +254,5 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
       this.thematicMapLayer.entities.removeAll()
       this.thematicMapLayer = null
     }
-  }
-
-  created() {
-    this.initLayer()
-  }
-
-  beforeDestroy() {
-    this.removeLayer()
   }
 }

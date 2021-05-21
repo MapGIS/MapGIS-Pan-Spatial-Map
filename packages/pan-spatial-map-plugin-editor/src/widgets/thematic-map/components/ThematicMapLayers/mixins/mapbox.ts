@@ -1,18 +1,14 @@
-import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { Component, Mixins } from 'vue-property-decorator'
 import { UUID, MapMixin } from '@mapgis/web-app-framework'
-import { FeatureIGS, utilInstance } from '@mapgis/pan-spatial-map-store'
+import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import isFunction from 'lodash/isFunction'
+import BaseMinxin from './base'
 
 @Component
 export default class MapboxMinxin extends Mixins<Record<string, any>>(
+  BaseMinxin,
   MapMixin
 ) {
-  // 专题的配置
-  @Prop({ default: () => ({}) }) config!: any
-
-  // 专题某年度的要素数据
-  @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
-
   id = UUID.uuid()
 
   thematicMapLayer: Record<string, any> | null = null
@@ -42,16 +38,12 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 初始化图层
+   * 显示图层
    */
-  initLayer() {
-    this.showLayer()
-  }
-
-  /**
-   * 显示图层，子组件在这里实现生成图层的函数
-   */
-  showLayer() {}
+  showLayer () {
+    if (!this.dataSet) return
+    this.showMapboxLayer()
+   }
 
   /**
    * 移除图层
@@ -72,25 +64,5 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
       }
       this.thematicMapLayer = null
     }
-  }
-
-  /**
-   * 监听: 要素数据变化
-   */
-  @Watch('dataSet', { deep: true })
-  watchDataSet(nV: FeatureIGS | null) {
-    if (nV) {
-      this.initLayer()
-    } else {
-      this.removeLayer()
-    }
-  }
-
-  created() {
-    this.initLayer()
-  }
-
-  beforeDestroy() {
-    this.removeLayer()
   }
 }

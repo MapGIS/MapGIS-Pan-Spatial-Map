@@ -181,10 +181,10 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
    */
   getGeoJSONFeaturesLayer(
     layer: Layer,
-    features: GFeature[],
+    { features }: FeatureGeoJSON,
     colors: ISectionColor[]
   ) {
-    if(!features) return
+    if (!features) return
     const { useHeightScale, heightScale } = this.setting3D
     features.forEach((feature: GFeature) => {
       const {
@@ -231,15 +231,14 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
   }
 
   /**
-   * 更新图层
-   * @param 要素数据
+   * 展示图层
    */
-  updateLayer({ features }: FeatureGeoJSON) {
-    this.removeLayer()
-    if (!this.thematicMapLayer) {
-      this.thematicMapLayer = new this.Cesium.CustomDataSource(this.id)
-    }
-    this.getGeoJSONFeaturesLayer(this.thematicMapLayer, features, this.colors)
+  showCesiumLayer() {
+    this.getGeoJSONFeaturesLayer(
+      this.thematicMapLayer,
+      this.geojson,
+      this.colors
+    )
     this.webGlobe.viewer.dataSources.add(this.thematicMapLayer)
     this.clickShowPopup(this.webGlobe)
   }

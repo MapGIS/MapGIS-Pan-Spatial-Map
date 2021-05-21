@@ -11,6 +11,7 @@
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
+// import { FeatureSet } from '@mapgis/webclient-es6-service'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import MapboxMinxin from '../../mixins/mapbox'
 
@@ -63,48 +64,11 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
     return new window.Zondy.Map.ThemeStyle(styleProps)
   }
 
-// fixme 测试
-  queryFeatures() {
-    const queryStruct = new window.Zondy.Service.QueryFeatureStruct()
-    queryStruct.IncludeGeometry = true
-    queryStruct.IncludeAttribute = true
-    queryStruct.IncludeWebGraphic = false
-    const queryParam = new window.Zondy.Service.QueryParameter({
-      resultFormat: 'json',
-      struct: queryStruct,
-      where: '1>0'
-    })
-    queryParam.pageIndex = 0
-    queryParam.recordNumber = 10000
-    const queryInstance = new window.Zondy.Service.QueryDocFeature(
-      queryParam,
-      'Hubei3857',
-      1,
-      {
-        ip: 'develop.smaryun.com',
-        port: 6163,
-        requestType: 'POST'
-      }
-    )
-    queryInstance.query(data => {
-      console.log('data', data)
-      this.thematicMapLayer.addFeatures(data)
-    })
-  }
-
   /**
    * 展示图层
    */
-  showLayer() {
-    this.updateLayer()
-  }
-
-  /**
-   * 更新图层
-   */
-  updateLayer() {
-    if (!this.dataSet || !this.colors) return
-    this.removeLayer()
+  showMapboxLayer() {
+    if (!this.colors) return
     const _thematicMapLayer = window.Zondy.Map.rangeThemeLayer(
       'ThematicMapLayer',
       {
@@ -139,9 +103,31 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
     this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
-    console.log('this.dataSet', this.dataSet)
     this.thematicMapLayer.addFeatures(this.dataSet)
-    // this.queryFeatures()
+    // const queryStruct = new window.Zondy.Service.QueryFeatureStruct()
+    // queryStruct.IncludeGeometry = true
+    // queryStruct.IncludeAttribute = true
+    // queryStruct.IncludeWebGraphic = false
+    // const queryParam = new window.Zondy.Service.QueryParameter({
+    //   resultFormat: 'json',
+    //   struct: queryStruct,
+    //   where: '1>0'
+    // })
+    // queryParam.pageIndex = 0
+    // queryParam.recordNumber = 10000
+    // const queryInstance = new window.Zondy.Service.QueryDocFeature(
+    //   queryParam,
+    //   'Hubei3857',
+    //   1,
+    //   {
+    //     ip: 'develop.smaryun.com',
+    //     port: 6163,
+    //     requestType: 'POST'
+    //   }
+    // )
+    // queryInstance.query(data => {
+    //   this.thematicMapLayer.addFeatures(data)
+    // })
   }
 
   /**

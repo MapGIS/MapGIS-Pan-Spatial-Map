@@ -10,7 +10,6 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
-import cloneDeep from 'lodash/cloneDeep'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
@@ -36,16 +35,8 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
   /**
    * 展示图层
    */
-  showLayer() {
-    this.updateLayer()
-  }
-
-  /**
-   * 更新图层
-   */
-  updateLayer() {
-    if (!this.dataSet || !this.labelStyle) return
-    this.removeLayer()
+  showMapboxLayer() {
+    if (!this.labelStyle) return
     this.thematicMapLayer = window.Zondy.Map.rankSymbolThemeLayer(
       'ThematicMapLayer',
       'Circle',

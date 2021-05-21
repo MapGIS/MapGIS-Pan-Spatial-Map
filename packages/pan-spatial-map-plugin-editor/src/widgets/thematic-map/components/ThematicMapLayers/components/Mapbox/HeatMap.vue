@@ -7,16 +7,15 @@
   />
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Mixins, Component } from 'vue-property-decorator'
 import {
   queryFeaturesInstance,
   FeatureIGS
 } from '@mapgis/pan-spatial-map-store'
+import BaseMinxin from '../../mixins/base'
 
 @Component
-export default class MapboxHeatMap extends Vue {
-  @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
-
+export default class MapboxHeatMap extends Mixins(BaseMinxin) {
   geojsonPoint = null
 
   options = {
@@ -38,19 +37,19 @@ export default class MapboxHeatMap extends Vue {
   }
 
   /**
-   * 展开图层
+   * 展示图层
    */
   showLayer() {
-    this.geojsonPoint = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
-      this.dataSet
-    )
+    if (this.geojson) {
+      this.geojsonPoint = this.geojson
+    }
   }
 
   /**
    * 移除图层
    */
   removeLayer() {
-     if(this.geojsonPoint) {
+    if (this.geojsonPoint) {
       this.geojsonPoint.features = []
     }
   }

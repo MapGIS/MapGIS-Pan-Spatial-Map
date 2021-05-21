@@ -9,10 +9,10 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { CesiumMapvLayer } from '@mapgis/webclient-vue-cesium'
-import CesiumMinxin from '../../mixins/cesium'
+import BaseMinxin from '../../mixins/base'
 
 @Component
-export default class CesiumHexBin extends Mixins(CesiumMinxin) {
+export default class CesiumHexBin extends Mixins(BaseMinxin) {
   geojsonPoint = null
 
   options = {
@@ -42,17 +42,19 @@ export default class CesiumHexBin extends Mixins(CesiumMinxin) {
   }
 
   /**
-   * 更新图层
+   * 展示图层
    */
-  updateLayer(geojson) {
-    this.geojsonPoint = geojson
+  showLayer() {
+    if (this.geojson) {
+      this.geojsonPoint = this.geojson
+    }
   }
 
   /**
    * 移除图层
    */
   removeLayer() {
-    if(this.geojsonPoint) {
+    if (this.geojsonPoint) {
       this.geojsonPoint.features = []
     }
   }

@@ -16,6 +16,7 @@ import {
   IThematicMapSubjectNewConfig
 } from './types'
 import isArray from 'lodash/isArray'
+import cloneDeep from 'lodash/cloneDeep'
 
 // 专题图类型集合
 export const subjectTypes = Object.freeze<ISubjectType>([
@@ -175,7 +176,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
         ...this.pageParam,
         IncludeGeometry: true,
         cursorType: 'backward',
-        f: 'json',
+        f: 'json'
       }
       switch (configType.toLowerCase()) {
         case 'gdbp':
@@ -186,10 +187,10 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
           break
         case 'doc':
           params = {
-            ...params,
             docName,
-            layerIndex,
-            layerName
+            layerName,
+            ...params,
+            layerIdxs: layerIndex
           }
           break
         default:
@@ -236,7 +237,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
      * @param dataSet
      */
     setPageDataSet(dataSet: FeatureIGS) {
-      this.pageDataSet = dataSet
+      this.pageDataSet = cloneDeep(dataSet)
     },
 
     /**
@@ -255,7 +256,7 @@ export const thematicMapInstance = new Vue<IState, IMethods, IComputed>({
           ...(params || {})
         })
         if (fn && fn.then) {
-          fn.then(dataSet => {
+          fn.then((dataSet: FeatureIGS | any) => {
             this.setPageDataSet(dataSet)
             onSuccess && onSuccess(dataSet)
             this.setLoading(false)
