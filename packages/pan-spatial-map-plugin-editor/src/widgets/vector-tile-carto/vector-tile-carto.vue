@@ -30,7 +30,7 @@
         </template>
         <LayerSetting
           :setting.sync="multiSetting"
-          :sprite-data="srpiteData"
+          :sprite-data="spriteData"
         ></LayerSetting>
       </a-collapse-panel>
     </a-collapse>
@@ -43,8 +43,8 @@
         <a-collapse-panel :key="item.id">
           <template v-slot:header>
             <a-checkbox
-              :checked="checked"
-              @click="handleClick"
+              :checked="item.checked"
+              @click="event => handleClick(event, item)"
               @change="onChangeCheckedBox"
             >
               {{ item.id }}
@@ -54,7 +54,7 @@
             <LayerSetting
               :layer-type="item.type"
               :setting.sync="item.paint"
-              :sprite-data="srpiteData"
+              :sprite-data="spriteData"
             ></LayerSetting>
           </div>
         </a-collapse-panel>
@@ -66,7 +66,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, Document, LayerType } from '@mapgis/web-app-framework'
-import axios from 'axios'
+import { eventBus } from '@mapgis/pan-spatial-map-store'
 import MultiSetting from './MultiSetting.vue'
 import LayerSetting from './LayerSetting.vue'
 
@@ -84,6 +84,9 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     vectorTileStyle: ''
   }
 
+  // 当前选择的图层
+  private currentLayer = {}
+
   // 矢量瓦片下拉项配置
   private vectorTileOptions = []
 
@@ -93,8 +96,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   // 该矢量图层下的所有子图层
   private layers = []
 
+  // 当前激活批量 tab 面板的 key
   private multiActiveKey = []
 
+  // 批量多选框是否勾选
   private multiChecked = false
 
   // 当前激活 tab 面板的 key
@@ -104,39 +109,53 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   private checked = false
 
   // 区填充数据
-  private srpiteData = []
+  private spriteData = []
 
   private multiSetting = {
     'fill-color': '#bedcaf',
     'fill-outline-color': '#dd5c5c',
+    'fill-pattern': 'xxx',
     'fill-opacity': 1,
     'fill-antialias': false
   }
 
-  // 监听矢量瓦片下拉项变化，实时构造该矢量瓦片对应的样式文件下拉项以及该矢量瓦片包含的所有子图层,
-  // 以及区填充图案下拉项数据
+  // 监听矢量瓦片下拉项变化，实时构造该矢量瓦片对应的样式文件下拉项,以及区填充图案下拉项数据
   @Watch('formData.vectorTileName', { deep: true })
-  onTitleNameChange() {
+  onTileNameChange() {
     const doc: Document = this.document
-    const currentLayer = doc.defaultMap.allLayers.filter(
+    this.currentLayer = doc.defaultMap.allLayers.find(
       item => item.title === this.formData.vectorTileName
     )
-    this.styleOptions = currentLayer[0].styleList.map(item => item.name)
-    this.layers = currentLayer[0].currentStyle.layers
-    const requestUrl = `${currentLayer[0].currentStyle.sprite}.json`
-    const request = new XMLHttpRequest()
-    request.open('GET', requestUrl)
-    request.responseType = 'json'
-    request.send()
-    request.onload = function() {
-      const data = JSON.parse(JSON.stringify(request.response))
-      this.srpiteData = Object.keys(data)
-      console.log(this.srpiteData)
-    }
+    const requestUrl = `${this.currentLayer.currentStyle.sprite}.json`
+    this.styleOptions = this.currentLayer.styleList.map(item => item.name)
+    this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
+    this.getSpriteData(requestUrl).then(res => {
+      this.spriteData = res
+    })
   }
 
-  onOpen() {
-    this.init()
+  // 监听样式文件下拉项变化，将当前图层的样式类型更改为所选样式文件,实时构造该矢量瓦片包含的所有子图层
+  @Watch('formData.vectorTileStyle', { deep: true })
+  onTileStyleChange(newVal) {
+    const doc: Document = this.document
+    this.currentLayer.currentStyle = this.currentLayer.styleList.find(
+      item => item.name === newVal
+    )
+    this.layers = this.currentLayer.currentStyle.layers
+    // 为每个子图层新增一个checked属性，用来表示是否勾选了该子图层样式所对应的多选框
+    this.layers.forEach(item => {
+      this.$set(item, 'checked', false)
+    })
+    console.log(doc.defaultMap)
+  }
+
+  // 监听目录树勾选图层节点后触发的事件
+  created() {
+    eventBus.$on('emitSelectLayer', this.init)
+  }
+
+  beforeDestroy() {
+    eventBus.$off('emitSelectLayer')
   }
 
   // 初始化数据
@@ -152,7 +171,23 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
         },
         []
       )
+    } else {
+      this.vectorTileOptions = []
     }
+  }
+
+  // 初始化区填充图案数据
+  private getSpriteData(url) {
+    return new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest()
+      request.responseType = 'json'
+      request.open('GET', url)
+      request.onload = function() {
+        const data = JSON.parse(JSON.stringify(request.response))
+        resolve(Object.keys(data))
+      }
+      request.send()
+    })
   }
 
   // 多选框变化时回调函数
@@ -165,9 +200,9 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   }
 
   // 多选框点击事件(取消冒泡)
-  private handleClick(event) {
+  private handleClick(event, item) {
     // If you don't want click extra trigger collapse, you can prevent this:
-    this.checked = !this.checked
+    item.checked = !item.checked
     event.stopPropagation()
   }
 }

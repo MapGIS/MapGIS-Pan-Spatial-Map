@@ -328,7 +328,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const layerConfigNodeList: [] = []
     nodekeys.forEach(key => {
       const layerConfig = this.dataCatalogManager.getLayerConfigByID(key)
-
       if (layerConfig) {
         layerConfigNodeList.push(layerConfig)
       }
@@ -337,7 +336,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     if (layerConfigNodeList.length > 0) {
       // 选中节点中保含有图层节点
       const doc: Document = this.document
-
       layerConfigNodeList.forEach(
         async (layerConfigNode): Layer => {
           if (isChecked) {
@@ -361,6 +359,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
               doc.defaultMap.findLayerById(layerConfigNode.guid)
             )
           }
+          eventBus.$emit('emitSelectLayer')
         }
       )
     }

@@ -10,7 +10,6 @@
         class="middle-input"
         v-model.number="item[0]"
         type="number"
-        @change="onInputChange"
       ></a-input>
       <a-input
         v-if="
@@ -32,9 +31,9 @@
           <a-icon type="edit" />
         </a-popover>
       </a-input>
-      <a-select v-if="type === 'option-select'" v-model="optionValue">
-        <a-select-option v-for="item in options" :key="item">
-          {{ item }}
+      <a-select v-if="type === 'option-select'" v-model="item[1]">
+        <a-select-option v-for="item2 in spriteData" :key="item2">
+          {{ item2 }}
         </a-select-option>
       </a-select>
       <a-input
@@ -66,9 +65,8 @@ export default class LayerItem extends Vue {
   // 该矢量瓦片的广义样式种类(例：颜色拾取、下拉选项、透明度输入框、开关)
   @Prop({ type: String, default: 'fill-color-picker' }) readonly type!: string
 
-  private options = []
-
-  private optionValue = ''
+  // 该矢量瓦片所对应的区填充图案数据
+  @Prop({ type: Array }) readonly spriteData: array
 
   @Emit('delete')
   emitDeleteBtn(delIndex, delType) {}
@@ -90,10 +88,6 @@ export default class LayerItem extends Vue {
     const index = this.layerStyleItems.findIndex(item2 => item2 === item)
     this.emitDeleteBtn(index, this.type)
   }
-
-  private onInputChange(val) {
-    console.log(this.layerStyleItems)
-  }
 }
 </script>
 
@@ -106,6 +100,13 @@ export default class LayerItem extends Vue {
   display: flex;
   align-items: center;
   margin-bottom: 4px;
+
+  .middle-input {
+    width: 48%;
+  }
+  .ant-select {
+    flex-grow: 1;
+  }
 }
 .anticon-delete {
   cursor: pointer;

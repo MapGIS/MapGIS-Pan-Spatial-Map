@@ -159,6 +159,17 @@
           />
         </div>
       </div>
+      <div
+        class="layer-content"
+        v-if="paint['fill-pattern'] && paint['fill-pattern'].stops"
+      >
+        <LayerItem
+          :layer-style-items="paint['fill-pattern'].stops"
+          :sprite-data="spriteData"
+          type="option-select"
+          @delete="onClickDeleteBtn"
+        ></LayerItem>
+      </div>
 
       <div class="panel-item" v-if="paint['fill-opacity']">
         <div class="item-title">透明度:</div>
@@ -239,8 +250,6 @@ export default class LayerSetting extends Vue {
 
   @Prop({ type: String, default: 'fill' }) readonly layerType!: string
 
-  private options = []
-
   // 选中颜色拾取器对应事件
   private getLineColor(val, type) {
     this.paint[type] = val.hex
@@ -289,6 +298,9 @@ export default class LayerSetting extends Vue {
       case 'opacity-background':
         type = 'background-opacity'
         break
+      case 'option-select':
+        type = 'fill-pattern'
+        break
       case 'switch':
         type = 'fill-antialias'
         break
@@ -304,14 +316,6 @@ export default class LayerSetting extends Vue {
       // 否则只需删除该样式属性中stops属性中的该项即可
       this.paint[type].stops.splice(delIndex, 1)
     }
-  }
-
-  // 多选框点击事件(取消冒泡)
-  private handleClick(event) {
-    console.log(this.spriteData)
-
-    this.checked = !this.checked
-    event.stopPropagation()
   }
 }
 </script>
@@ -330,9 +334,11 @@ export default class LayerSetting extends Vue {
     display: flex;
     align-items: center;
     flex-grow: 1;
-  }
-  & :first-child {
-    margin-right: 0.5em;
+    margin-left: 0.5em;
+
+    .ant-select {
+      flex-grow: 1;
+    }
   }
 }
 .color-input {
