@@ -18,11 +18,8 @@ import {
   Watch,
   Mixins
 } from 'vue-property-decorator'
-import { UUID } from '@mapgis/webclient-store/src/utils'
 import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
-import { MapMixin, AppMixin } from '@mapgis/web-app-framework'
-import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
-import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
+import { MapMixin, AppMixin, UUID } from '@mapgis/web-app-framework'
 
 @Component({
   components: {}

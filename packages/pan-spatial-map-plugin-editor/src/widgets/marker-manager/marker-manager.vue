@@ -103,8 +103,6 @@ import MarkerShow from './components/MarkerShow/MarkerShow.vue'
 import MarkerInput from './components/MarkerInput/MarkerInput.vue'
 import MarkerImport from './components/MarkerImport/MarkerImport.vue'
 import MarkerExport from './components/MarkerExport/MarkerExport.vue'
-import markerRed from '../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
-import markerBlue from '../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
 
 @Component({
   name: 'MpMarkerManager',
