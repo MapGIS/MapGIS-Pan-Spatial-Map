@@ -6,6 +6,12 @@
       @added="onAdded"
       @drawCreate="onDrawFinish"
     />
+    <mapgis-3d-draw
+      ref="drawref"
+      @load="handleDrawLoad"
+      @drawcreate="handleCreate"
+    >
+    </mapgis-3d-draw>
     <div class="toolbar">
       <template v-for="type in queryTypes">
         <a-tooltip placement="bottom" :title="type.label" :key="type.id">
@@ -106,13 +112,7 @@ export default class MpFeatureQuery extends Mixins(
     'LineString'
   ]
 
-  private defaultQueryTypes3d = [
-    'Point',
-    'Rectangle',
-    'Polygon',
-    'LineString',
-    'PickModel'
-  ]
+  private defaultQueryTypes3d = ['Point', 'Polygon', 'LineString']
 
   private get limits() {
     return this.limitsArray[this.sliderIndex]
@@ -180,16 +180,15 @@ export default class MpFeatureQuery extends Mixins(
   }
 
   handleCesium() {
-    this.createCesium()
     switch (this.queryType) {
       case 'Point':
-        this.interactionDrawPnt()
+        this.togglePoint()
         break
       case 'LineString':
-        this.interactionDrawLine()
+        this.togglePolyline()
         break
       case 'Polygon':
-        this.interactionDrawPolygon()
+        this.togglePolygon()
         break
       case 'Rectangle':
         // this.interactionDrawRectangle()
@@ -266,6 +265,7 @@ export default class MpFeatureQuery extends Mixins(
 
       case 'polygon':
         feature = polygon([bound.pointArr.map(point => [point.x, point.y])])
+        debugger
         break
 
       case 'rect':
@@ -361,6 +361,7 @@ export default class MpFeatureQuery extends Mixins(
     height: 32px;
     font-size: 17px;
     color: @text-color;
+    justify-content: space-between;
     .command {
       margin: 0 8px;
       cursor: pointer;
