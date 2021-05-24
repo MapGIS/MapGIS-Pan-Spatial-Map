@@ -19,7 +19,7 @@
           />
         </mapgis-compare>
         <!-- 空数据提示 -->
-        <div class="swipe-no-data-tip" v-else>
+        <div class="swipe-no-data-tip" v-if="!showCompare">
           <a-empty description="卷帘分析功能至少需要选择2个图层" />
         </div>
       </div>
@@ -105,49 +105,42 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import {
-  Document,
-  MpMapboxView,
-  WidgetMixin,
-  AppMixin,
-  Layer
-} from '@mapgis/web-app-framework'
+import { WidgetMixin, AppMixin, Layer } from '@mapgis/web-app-framework'
+import Row from './components/Row'
+import MapboxCompare, { Direction } from './components/MapboxCompare'
+import CesiumCompare from './components/CesiumCompare'
 
-type Direction = 'vertical' | 'horizontal'
+interface IOption {
+  label: string
+  value: string
+}
 
 @Component({
   name: 'MpSwipe',
   components: {
-    MpMapboxView
+    Row,
+    MapboxCompare,
+    CesiumCompare
   }
 })
-export default class MpSwipe extends Mixins<Record<string, any>>(
-  WidgetMixin,
-  AppMixin
-) {
+export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   // 卷帘功能弹框开关
   isOpen = false
 
-  // 选中的上级图层
-  aboveLayer = ''
-
-  // 选中的下级图层
-  belowLayer = ''
-
-  // 上级图层列表
-  aboveLayers: Layer[] = []
-
-  // 下级图层列表
-  belowLayers: Layer[] = []
-
-  // 上级地图Document
-  aboveLayerDocument = new Document()
-
-  // 下级地图Document
-  belowLayerDocument = new Document()
-
   // 目录树勾选的图层
   layers: Layer[] = []
+
+  // 上级(左侧)图层
+  aboveLayer: Layer | object = {}
+
+  // 下级(右侧)图层
+  belowLayer: Layer | object = {}
+
+  // 上级(左侧)图层列表
+  aboveLayers: IOption[] = []
+
+  // 下级(右侧)图层列表
+  belowLayers: IOption[] = []
 
   // 卷帘方向
   direction: Direction = 'vertical'
@@ -183,37 +176,58 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 监听: defaultMap变化
+   * 格式化
    */
-  @Watch('document.defaultMap', { deep: true })
-  watchDefaultMap() {
-    if (this.isOpen) {
-      this.initLayers()
+  normalize(layers: Layer[]) {
+    if (!layers || !layers.length) return []
+    return layers.map(({ id, title }: Layer) => ({
+      label: title,
+      value: id
+    }))
+  }
+
+  /**
+   * 上下图层选择变化时获取对应的图层逻辑
+   * @param value 切换的值
+   * @param layerkey 'aboveLayer' | 'belowLayer'
+   * @param layersKey 'aboveLayers' | 'belowLayers'
+   */
+  getLayers(
+    value: string,
+    layerkey: 'aboveLayer' | 'belowLayer',
+    layersKey: 'aboveLayers' | 'belowLayers'
+  ) {
+    let layer: Layer | object = {}
+    let layers: IOption[] = []
+    if (value) {
+      layer = this.layers.find<Layer>(({ id }) => id === value)
+      layers = this.normalize(
+        this.layers.filter<Layer>(({ id }) => id !== value)
+      )
     }
-  }
-
-  /**
-   * 卷帘弹框打开操作
-   */
-  onOpen() {
-    this.isOpen = true
-    this.initLayers()
-  }
-
-  /**
-   * 卷帘弹框关闭操作
-   */
-  onClose() {
-    this.isOpen = false
-    this.direction = 'vertical'
+    this[layerkey] = layer
+    this[layersKey] = layers
   }
 
   /**
    * 卷帘方向变化
-   * @param e<object>
    */
   onDirectionChange(e) {
     this.direction = e.target.value
+  }
+
+  /**
+   * 上层(左侧)图层变化
+   */
+  onAboveChange(value: string) {
+    this.getLayers(value, 'aboveLayer', 'belowLayers')
+  }
+
+  /**
+   * 下层(右侧)图层变化
+   */
+  onBelowChange(value: string) {
+    this.getLayers(value, 'belowLayer', 'aboveLayers')
   }
 
   onCloseSettingPanel() {
@@ -227,7 +241,7 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
   /**
    * 初始化图层列表
    */
-  initLayers() {
+  initMap() {
     let _fId = ''
     let _sId = ''
     const _layers: Layer[] = this.document.defaultMap
@@ -239,30 +253,32 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
       _sId = _layers[1].id
     }
     this.layers = _layers
-    this.getLayers(_fId, 'aboveLayer', 'belowLayers')
-    this.getLayers(_sId, 'belowLayer', 'aboveLayers')
+    this.onAboveChange(_fId)
+    this.onBelowChange(_sId)
   }
 
   /**
-   * 上下图层选择变化时获取对应的图层逻辑
-   * @param value<string> 切换的值
-   * @param valuekey<string>
-   * @param layersKey<string>
+   * 卷帘弹框打开操作
    */
-  getLayers(
-    value: string,
-    valuekey: 'aboveLayer' | 'belowLayer',
-    layersKey: 'aboveLayers' | 'belowLayers'
-  ) {
-    this[valuekey] = value
-    this[layersKey] = [...this.layers.filter(({ id }) => value && id !== value)]
-    const currenLayer = this.layers.find(v => value && v.id === value)
-    const _defaultMap = this[`${valuekey}Document`].defaultMap
-    if (currenLayer) {
-      _defaultMap.removeAll()
-      _defaultMap.add(currenLayer)
-    } else {
-      _defaultMap.removeAll()
+  onOpen() {
+    this.isOpen = true
+    this.initMap()
+  }
+
+  /**
+   * 卷帘弹框关闭操作
+   */
+  onClose() {
+    this.isOpen = false
+  }
+
+  /**
+   * 监听: defaultMap变化
+   */
+  @Watch('document.defaultMap', { deep: true })
+  watchDefaultMap() {
+    if (this.isOpen) {
+      this.initMap()
     }
   }
 }
