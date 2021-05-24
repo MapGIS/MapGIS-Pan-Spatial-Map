@@ -20,14 +20,22 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 @Component({ name: 'MpZoom' })
 export default class MpZoom extends Mixins(WidgetMixin) {
   onZoomIn() {
-    if (this.map) {
-      this.map.zoomIn()
+    if (this.is2DMapMode) {
+      if (this.map) {
+        this.map.zoomIn()
+      }
+    } else {
+      this.webGlobe.viewer.camera.zoomIn(1000000.0)
     }
   }
 
   onZoomOut() {
-    if (this.map) {
-      this.map.zoomOut()
+    if (this.is2DMapMode) {
+      if (this.map) {
+        this.map.zoomOut()
+      }
+    } else {
+      this.webGlobe.viewer.camera.zoomOut(1000000.0)
     }
   }
 }
