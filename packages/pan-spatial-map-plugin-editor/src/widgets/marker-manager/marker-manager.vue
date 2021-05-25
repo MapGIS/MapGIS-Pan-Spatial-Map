@@ -69,9 +69,15 @@
     >
     </a-table>
     <MapboxMarkerAdd
+      v-show="is2DMapMode"
       ref="mapboxMarkerAdd"
       @addMarker="addMarker"
     ></MapboxMarkerAdd>
+    <CesiumMarkerAdd
+      v-show="!is2DMapMode"
+      ref="cesiumMarkerAdd"
+      @addMarker="addMarker"
+    ></CesiumMarkerAdd>
     <marker-show :markers="tableData"></marker-show>
     <a-modal v-model="modalInput" title="输入坐标" :width="360" :footer="null">
       <marker-input @addMarker="addMarker" @closeModal="modalInput = false" />
@@ -98,6 +104,7 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 
 import MapboxMarkerAdd from './components/MarkerAdd/MapboxMarkerAdd'
+import CesiumMarkerAdd from './components/MarkerAdd/CesiumMarkerAdd'
 import MarkerShow from './components/MarkerShow/MarkerShow.vue'
 import MarkerInput from './components/MarkerInput/MarkerInput.vue'
 import MarkerImport from './components/MarkerImport/MarkerImport.vue'
@@ -110,6 +117,7 @@ import MarkerExport from './components/MarkerExport/MarkerExport.vue'
     MarkerImport,
     MarkerExport,
     MapboxMarkerAdd,
+    CesiumMarkerAdd,
     MarkerShow
   }
 })
@@ -220,7 +228,9 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
   // 获取当前渲染引擎下的标注添加组件
   get markerAddComponent() {
-    return this.is2DMapMode ? this.$refs.mapboxMarkerAdd : null
+    return this.is2DMapMode
+      ? this.$refs.mapboxMarkerAdd
+      : this.$refs.cesiumMarkerAdd
   }
 
   @Watch('selectedRowKeys')
