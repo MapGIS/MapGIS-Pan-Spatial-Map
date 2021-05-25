@@ -1,11 +1,18 @@
 <template>
   <div class="cesium-compare">
+    <mp-cesium-view :document="document" />
     <slider ref="cesium-compare-slider" v-show="showSlider" />
   </div>
 </template>
 <script lang="ts">
-import { Component, Mixins, Provide, Prop, Watch } from 'vue-property-decorator'
-import { MapMixin, Layer } from '@mapgis/web-app-framework'
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
+import {
+  MapMixin,
+  MpCesiumView,
+  Document,
+  Layer
+} from '@mapgis/web-app-framework'
+import takeRight from 'lodash/takeRight'
 import Slider from './Slider'
 
 @Component({
@@ -14,33 +21,28 @@ import Slider from './Slider'
   }
 })
 export default class CesiumCompare extends Mixins(MapMixin) {
+  @Prop({ default: () => ({}) }) readonly document!: Document
+
   @Prop({ default: () => ({}) }) readonly aboveLayer!: Layer
 
   @Prop({ default: () => ({}) }) readonly belowLayer!: Layer
 
   @Watch('aboveLayer', { deep: true })
   watchAbove() {
-    this.update()
+    this.topLayer = null
+    this.startCompare()
   }
 
   @Watch('belowLayer', { deep: true })
   watchBelow() {
-    this.update()
+    this.startCompare()
   }
 
   showSlider = false
 
   sliderEl = null
 
-  beforeLayer = null
-
-  afterLayer = null
-
-  hiddenLayers: any[] = []
-
-  get hiddenAlpha() {
-    return this.hiddenLayers.map(({ alpha }) => alpha)
-  }
+  topLayer = null
 
   get cesiumMapEl() {
     return document.getElementsByClassName('cesium-compare')[0]
@@ -49,12 +51,17 @@ export default class CesiumCompare extends Mixins(MapMixin) {
   /**
    * 移动卷帘操作
    */
-  move({ endPosition }, moveActive) {
-    if (!moveActive) return
-    const { $el, $parent } = this.sliderEl
-    const splitPosition =
-      ($el.offsetLeft + endPosition.x) / $parent.$el.offsetWidth
-    $el.style.left = `${100 * splitPosition}%`
+  move({ endPosition }) {
+    const { $el } = this.sliderEl
+    const { offsetWidth } = this.cesiumMapEl
+    const splitPosition = ($el.offsetLeft + endPosition.x) / offsetWidth
+    let left = `${100 * splitPosition}%`
+    if (splitPosition >= 1) {
+      left = '100%'
+    } else if (splitPosition <= 0) {
+      left = 0
+    }
+    $el.style.left = left
     this.webGlobe.viewer.scene.imagerySplitPosition = splitPosition
   }
 
@@ -74,41 +81,53 @@ export default class CesiumCompare extends Mixins(MapMixin) {
       MOUSE_MOVE
     } = this.Cesium.ScreenSpaceEventType
     let moveActive = false
-    handler.setInputAction(() => (moveActive = true), LEFT_DOWN)
-    handler.setInputAction(() => (moveActive = true), PINCH_START)
-    handler.setInputAction(e => this.move(e, moveActive), MOUSE_MOVE)
-    handler.setInputAction(e => this.move(e, moveActive), PINCH_MOVE)
-    handler.setInputAction(() => (moveActive = false), LEFT_UP)
-    handler.setInputAction(() => (moveActive = false), PINCH_END)
+    const setMoveTrue = () => (moveActive = true)
+    const setMoveFalse = () => (moveActive = false)
+    const setMove = e => (moveActive ? this.move(e) : false)
+    const actions = [
+      {
+        type: LEFT_DOWN,
+        fn: setMoveTrue
+      },
+      {
+        type: PINCH_START,
+        fn: setMoveTrue
+      },
+      {
+        type: MOUSE_MOVE,
+        fn: setMove
+      },
+      {
+        type: PINCH_MOVE,
+        fn: setMove
+      },
+      {
+        type: LEFT_UP,
+        fn: setMoveFalse
+      },
+      {
+        type: PINCH_END,
+        fn: setMoveFalse
+      }
+    ]
+    actions.forEach(({ type, fn }) => handler.setInputAction(fn, type))
   }
 
   /**
    * 开始卷帘分析
    */
   startCompare() {
-    if (!this.aboveLayer || !this.belowLayer) return
-    const {
-      webGlobe,
-      cesiumMapEl: { clientWidth, clientHeight },
-      aboveLayer: { id: aboveId },
-      belowLayer: { id: belowId }
-    } = this
-    if (!aboveId || !belowId) return
-    // if (this.beforeLayer) {
-    // this.removeCompare()
-    // }
-    console.log('webGlobe.layers', webGlobe.layers)
-    webGlobe.layers._layers.forEach(l => {
-      if (aboveId === l.id) {
-        this.beforeLayer = l
-        webGlobe.viewer.imageryLayers.raiseToTop(l)
-      } else if (belowId === l.id) {
-        this.afterLayer = l
-      } else {
-        this.hiddenLayers.push(l)
-        l.alpha = 0
+    console.log('startCompare', this.webGlobe.layers._layers)
+    console.log('this.aboveLayer', this.aboveLayer)
+    this.webGlobe.layers._layers.forEach(layer => {
+      if (this.aboveLayer.id === layer.id) {
+        this.topLayer = layer
+        this.webGlobe.viewer.imageryLayers.raiseToTop(layer)
       }
     })
+    this.webGlobe.viewer.imageryLayers.raiseToTop(
+      this.webGlobe.layers._layers[1]
+    )
     this.compareAction()
   }
 
@@ -117,17 +136,11 @@ export default class CesiumCompare extends Mixins(MapMixin) {
    */
   removeCompare() {
     this.showSlider = false
-    this.beforeLayer = null
+    this.topLayer = null
     this.webGlobe.viewer.scene.imagerySplitPosition = 0
-    if (this.hiddenLayers.length) {
-      this.hiddenLayers.forEach((item, i) =>
-        this.$set(item, 'alpha', this.hiddenAlpha[i])
-      )
-    }
   }
 
-  update() {
-    // this.removeCompare()
+  mounted() {
     this.startCompare()
   }
 
@@ -137,7 +150,7 @@ export default class CesiumCompare extends Mixins(MapMixin) {
 }
 </script>
 <style lang="less" scoped>
-.cesium-map-wrapper {
+.cesium-compare {
   position: relative;
 }
 </style>

@@ -81,11 +81,10 @@ export default class MapboxCompare extends Vue {
   }
 
   update(nV: Layer, type: 'above' | 'below') {
-    const _defaultMap = this[`${type}Document`].defaultMap
-    _defaultMap.remove(nV)
-    console.log('nV', nV)
+    const defaultMap = this[`${type}Document`].defaultMap
+    defaultMap.removeAll()
     if (nV) {
-      _defaultMap.add(nV)
+      defaultMap.add(nV)
     }
   }
 

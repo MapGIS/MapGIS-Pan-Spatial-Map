@@ -110,11 +110,6 @@ import Row from './components/Row'
 import MapboxCompare, { Direction } from './components/MapboxCompare'
 import CesiumCompare from './components/CesiumCompare'
 
-interface IOption {
-  label: string
-  value: string
-}
-
 @Component({
   name: 'MpSwipe',
   components: {
@@ -137,10 +132,10 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   belowLayer: Layer | object = {}
 
   // 上级(左侧)图层列表
-  aboveLayers: IOption[] = []
+  aboveLayers: Layer[] = []
 
   // 下级(右侧)图层列表
-  belowLayers: IOption[] = []
+  belowLayers: Layer[] = []
 
   // 卷帘方向
   direction: Direction = 'vertical'
@@ -176,17 +171,6 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   }
 
   /**
-   * 格式化
-   */
-  normalize(layers: Layer[]) {
-    if (!layers || !layers.length) return []
-    return layers.map(({ id, title }: Layer) => ({
-      label: title,
-      value: id
-    }))
-  }
-
-  /**
    * 上下图层选择变化时获取对应的图层逻辑
    * @param value 切换的值
    * @param layerkey 'aboveLayer' | 'belowLayer'
@@ -198,12 +182,10 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
     layersKey: 'aboveLayers' | 'belowLayers'
   ) {
     let layer: Layer | object = {}
-    let layers: IOption[] = []
+    let layers: Layer[] = []
     if (value) {
-      layer = this.layers.find<Layer>(({ id }) => id === value)
-      layers = this.normalize(
-        this.layers.filter<Layer>(({ id }) => id !== value)
-      )
+      layer = this.layers.find(({ id }: Layer) => id === value)
+      layers = this.layers.filter(({ id }: Layer) => id !== value)
     }
     this[layerkey] = layer
     this[layersKey] = layers
