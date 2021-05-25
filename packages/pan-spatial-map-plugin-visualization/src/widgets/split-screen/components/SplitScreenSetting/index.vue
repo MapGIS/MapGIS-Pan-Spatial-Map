@@ -20,9 +20,13 @@
     </row-flex>
     <row-flex v-for="s in screenNums" :label="`第${screenLabel[s]}屏`" :key="s">
       <a-select :value="layerIds[s]" @change="onLayerChange($event, s)">
-        <a-select-option v-for="l in layers" :key="l.id" :value="l.id">{{
-          l.title
-        }}</a-select-option>
+        <a-select-option
+          v-for="{ id, title } in layers"
+          :key="id"
+          :value="id"
+          :title="title"
+          >{{ title }}</a-select-option
+        >
       </a-select>
     </row-flex>
     <div class="split-screen-btns">

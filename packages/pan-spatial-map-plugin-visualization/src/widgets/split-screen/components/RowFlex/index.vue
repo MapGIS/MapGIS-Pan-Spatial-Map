@@ -1,6 +1,6 @@
 <template>
   <a-row type="flex" :align="align" :justify="justify" :gutter="gutter">
-    <a-col :span="labelSpan">
+    <a-col :span="labelSpan" class="row-flex-col-left" :title="label">
       <slot name="label" v-if="$slots.label || label">
         {{ label }}{{ colon ? '：' : '' }}</slot
       >
@@ -41,4 +41,10 @@ export default class RowFlex extends Vue {
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.row-flex-col-left {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+</style>

@@ -1,29 +1,29 @@
 <template>
   <div class="map-view-wrap">
     <!-- 标题/工具栏 -->
-    <map-view-tools :title="mapViewLayer.title" @on-icon-click="onIconClick" />
-    <!-- 地图 -->
-    <mp-web-map-pro
-      :document="document"
-      :mapStyle="mapStyle"
-      @map-load="onMapLoad"
-      v-if="document"
+    <tools :title="mapViewLayer.title" @on-icon-click="onIconClick" />
+    <!-- 二维地图 -->
+    <mapbox-view
+      v-if="is2DMapMode"
+      ref="maboxView"
+      :mapViewDocument="mapViewDocument"
+      @on-load="onMapboxLoad"
+      @on-created="onMapboxDrawCreated"
     />
-    <template v-if="isMapLoaded">
-      <!-- 区域绘制 -->
-      <mapgis-draw
-        ref="mapboxBaseDrawer"
-        :controls="controls"
-        @added="onAdded"
-        @drawCreate="onGraphicCreated"
-      />
-      <!-- 地图标注 -->
-      <mp-markers-highlight-popup
-        :features="queryFeatures"
-        :highlightIds="querySelection"
-        :normalize="({ key }) => ({ uid: key })"
-      />
-    </template>
+    <!-- 三维地图 -->
+    <cesium-view
+      v-else
+      ref="cesiumView"
+      :mapViewDocument="mapViewDocument"
+      @on-load="onCesiumLoad"
+      @on-create="onCesiumDrawCreated"
+    />
+    <!-- 标注 -->
+    <mp-markers-highlight-popup
+      :features="queryFeatures"
+      :highlightIds="querySelection"
+      :normalize="({ key }) => ({ uid: key })"
+    />
     <!-- 联合查询结果树 -->
     <mp-window
       title="查询结果"
@@ -45,20 +45,21 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { MpMapboxView, Document, Layer } from '@mapgis/web-app-framework'
-import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
-import defaultStyle from '../../../../assets/style/default-style.json'
+import { AppMixin, Document, Layer } from '@mapgis/web-app-framework'
 import {
   MpQueryResultTree,
   MpMarkersHighlightPopup
 } from '../../../../components'
-import MapViewTools, { OperationType } from '../MapViewTools'
-import MapViewMixin, { Rect } from '../../mixins/map-view'
+import MapViewMixin from '../../mixins/map-view'
+import MapboxView from './components/MapboxView'
+import CesiumView from './components/CesiumView'
+import Tools, { OperationType, OperationFn } from './components/Tools'
 
 @Component({
   components: {
-    MapViewTools,
-    MpMapboxView,
+    Tools,
+    MapboxView,
+    CesiumView,
     MpQueryResultTree,
     MpMarkersHighlightPopup
   },
@@ -74,7 +75,10 @@ import MapViewMixin, { Rect } from '../../mixins/map-view'
     }
   }
 })
-export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
+export default class MapView extends Mixins<Record<string, any>>(
+  MapViewMixin,
+  AppMixin
+) {
   // 图层
   @Prop({ default: () => ({}) }) mapViewLayer!: Layer
 
@@ -84,17 +88,11 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 查询范围
   @Prop({ default: () => ({}) }) queryRect!: boolean
 
-  document: Document | undefined = null
+  mapViewDocument: Document | null = null
 
   map: any = {}
 
   mapbox: any = {}
-
-  // 图层样式
-  mapStyle: any = defaultStyle
-
-  // basedraw对象
-  mapboxBaseDrawer: any = null
 
   // 地图是否加载完成
   isMapLoaded = false
@@ -111,34 +109,23 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 结果树选中的节点
   querySelection: string[] = []
 
-  // 矩形区域绘制配置
-  controls = {
-    point: false,
-    line_string: false,
-    polygon: false,
-    trash: false,
-    combine_features: false,
-    uncombine_features: false
-  }
-
   /**
    * 初始化图层
    */
   onInitDocument() {
-    if (this.document === null) this.document = new Document()
-
-    const defaultMap = this.document.defaultMap
+    if (!this.mapViewDocument) {
+      this.mapViewDocument = new Document()
+    }
+    const { defaultMap } = this.mapViewDocument
     defaultMap.removeAll()
     defaultMap.add(this.mapViewLayer)
-
-    this.clearClick()
+    this.onClear()
   }
 
   /**
-   * 地图初始化
-   * @param payload<object>
+   * 二维地图初始化
    */
-  onMapLoad({ map, mapbox }) {
+  onMapboxLoad({ map, mapbox }) {
     this.map = map
     this.mapbox = mapbox
     this.map.on('mousemove', () => (this.activeMapViewId = this.mapViewId))
@@ -154,47 +141,16 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
       }
     })
     this.isMapLoaded = true
-    this.resortClick()
+    this.onResort()
   }
 
   /**
-   * 添加绘制
+   * 创建二维绘制
    */
-  onAdded(e) {
-    if (!this.isMapLoaded) return
-    this.mapboxBaseDrawer = e.drawer
-  }
-
-  /**
-   * 创建绘制
-   */
-  onGraphicCreated(e) {
-    if (!this.isMapLoaded) return
-    const { id, geometry } = e.features[0]
-    if (this.mapboxBaseDrawer) {
-      this.mapboxBaseDrawer.delete(id)
-    }
-    let xmin: number
-    let xmax: number
-    let ymin: number
-    let ymax: number
-    geometry.coordinates[0].forEach(([lng, lat]) => {
-      if (!xmin || lng < xmin) {
-        xmin = lng
-      }
-      if (!xmax || lng > xmax) {
-        xmax = lng
-      }
-      if (!ymin || lat < ymin) {
-        ymin = lat
-      }
-      if (!ymax || lat > ymax) {
-        ymax = lat
-      }
-    })
-    const rect: Rect = new Rect(xmin, ymin, xmax, ymax)
+  onMapboxDrawCreated(rect) {
     switch (this.operationType) {
       case 'QUERY':
+        // this.onClear(true)
         this.query(rect)
         break
       case 'ZOOMIN':
@@ -209,11 +165,86 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   /**
-   * 操作按钮点击
-   * @param operationType<string> 按钮类型
-   * @param fnName<string> 按钮事件名
+   * 三维地图初始化
    */
-  onIconClick(operationType, fnName) {
+  onCesiumLoad(e) {}
+
+  /**
+   * 创建三维绘制
+   */
+  onCesiumDrawCreated(cartesian3, lnglat) {
+    switch (this.operationType) {
+      case 'QUERY':
+        break
+      default:
+        break
+    }
+  }
+
+  /**
+   * 启用绘制
+   */
+  enableDrawer() {
+    const ref = this.is2DMapMode ? 'maboxView' : 'cesiumView'
+    this.$refs[ref].enableDrawer()
+  }
+
+  /**
+   * 查询点击
+   */
+  onQuery() {
+    this.enableDrawer()
+  }
+
+  /**
+   * 放大点击
+   */
+  onZoomIn() {
+    this.onPan(false)
+    this.enableDrawer()
+  }
+
+  /**
+   * 缩小点击
+   */
+  onZoomOut() {
+    this.onZoomIn()
+  }
+
+  /**
+   * 复位点击
+   */
+  onResort() {
+    this.jumpToRect(this.initDisplayRect)
+  }
+
+  /**
+   * 拖拽点击, 通过滚轮控制放大缩小
+   */
+  onPan(enable = true) {
+    const dragPan = this.map.dragPan
+    if (enable) {
+      dragPan.enable()
+    } else {
+      dragPan.disable()
+    }
+  }
+
+  /**
+   * 清除点击, 清除图层上的标注
+   */
+  onClear(windowVisible = false) {
+    this.windowVisible = windowVisible
+    this.queryFeatures = []
+    this.querySelection = []
+  }
+
+  /**
+   * 操作按钮点击
+   * @param operationType 按钮类型
+   * @param fnName 按钮事件名
+   */
+  onIconClick(operationType: OperationType, fnName: OperationFn) {
     this.operationType = operationType
     if (this.isMapLoaded && this[fnName]) {
       this[fnName]()
@@ -225,8 +256,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * @param loadKeys
    * @param loadNode
    */
-  onQueryLoadDone(loadKeys, loadNode) {
-    this.queryFeatures = loadNode.children || []
+  onQueryLoadDone(loadKeys, { children }) {
+    this.queryFeatures = children || []
   }
 
   /**
@@ -235,78 +266,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    */
   onQuerySelect(selectedKeys: string[]) {
     this.querySelection = selectedKeys
-  }
-
-  /**
-   * 启用绘制
-   */
-  enableDrawer() {
-    const drawerEl: any = this.$refs.mapboxBaseDrawer
-    if (drawerEl) {
-      drawerEl.enableDrawer()
-    }
-
-    if (this.mapboxBaseDrawer) {
-      this.mapboxBaseDrawer.changeMode('draw_rectangle')
-    }
-  }
-
-  /**
-   * 启用拖拽,该函数在MapboxBaseDrawer开启时不起作用。
-   * @param isEnable<boolean>
-   */
-  enableDragPanMap(isEnable: boolean) {
-    const dragPan = this.map.dragPan
-    if (isEnable) {
-      dragPan.enable()
-    } else {
-      dragPan.disable()
-    }
-  }
-
-  /**
-   * 查询点击
-   */
-  queryClick() {
-    this.enableDrawer()
-  }
-
-  /**
-   * 放大点击
-   */
-  zoomInClick() {
-    this.enableDragPanMap(false)
-    this.enableDrawer()
-  }
-
-  /**
-   * 缩小点击
-   */
-  zoomOutClick() {
-    this.zoomInClick()
-  }
-
-  /**
-   * 复位点击
-   */
-  resortClick() {
-    this.jumpToRect(this.initDisplayRect)
-  }
-
-  /**
-   * 拖拽点击, 通过滚轮控制放大缩小
-   */
-  panClick() {
-    this.enableDragPanMap(true)
-  }
-
-  /**
-   * 清除点击, 清除图层上的标注
-   */
-  clearClick(windowVisible = false) {
-    this.windowVisible = windowVisible
-    this.queryFeatures = []
-    this.querySelection = []
   }
 
   /**
@@ -325,7 +284,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   @Watch('windowVisible')
   watchWindowVisible(nV) {
     if (!nV) {
-      this.clearClick()
+      this.onClear()
       this.$emit('update:queryVisible', false)
     }
   }

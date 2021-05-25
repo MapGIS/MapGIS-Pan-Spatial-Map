@@ -1,16 +1,17 @@
 <template>
   <mp-marker-plotting
     :markers="markers"
+    :fit-bound="fitBound"
     :filter-with-map="filterWithMap"
     :selection-bound="selectionBound"
     :highlight-style="highlightStyle"
-    @map-bound-change="onGetGeometry"
   />
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { AppMixin, UUID, Feature } from '@mapgis/web-app-framework'
 import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import _last from 'lodash/last'
 
 interface IFeature {
   key?: string // 图层UUID
@@ -33,9 +34,6 @@ interface IMarker {
   id: string
 }
 
-/**
- * 目前只支持二维,三维后期会加, AppMixin => is2DMapMode
- */
 @Component({
   components: {}
 })
@@ -48,17 +46,20 @@ export default class MpMarkersHighlightPopup extends Mixins<
   // 需要高亮的标注点
   @Prop({ required: true, default: () => [] }) highlightIds!: string[]
 
-  // 标注数据格式化函数, 组件内部使用的数据是INormalizeMarkData格式
-  @Prop() normalize!: (a: IFeature) => INormalizedFeature
-
   // 是否随地图范围过滤
   @Prop({ default: false }) filterWithMap!: boolean
+
+  // 标注数据格式化函数, 组件内部使用的数据是INormalizeMarkData格式
+  @Prop() normalize!: (a: IFeature) => INormalizedFeature
 
   // 标注点
   markers: IMarker[] = []
 
   // 选中的数据范围
   selectionBound: Record<string, any> = {}
+
+  // 当前数据范围
+  fitBound: Record<string, any> = {}
 
   get colorConfig() {
     return baseConfigInstance.config.colorConfig
@@ -78,8 +79,7 @@ export default class MpMarkersHighlightPopup extends Mixins<
   }
 
   /**
-   * 格式化数据
-   * @param data 数据源
+   * 格式化标注数据
    */
   getNormalizedFeatures(data: IFeature[]) {
     return data.map(v =>
@@ -101,12 +101,33 @@ export default class MpMarkersHighlightPopup extends Mixins<
   }
 
   /**
+   * 获取当前数据范围
+   */
+  getFitBound() {
+    if (!this.highlightIds.length) return
+    const lastId = _last(this.highlightIds)
+    const {
+      feature,
+      feature: { bound }
+    } = this.normalizedFeatures.find(({ uid }) => uid === lastId)
+    const { xmin, xmax, ymin, ymax } =
+      bound || Feature.getGeoJsonFeatureBound(feature)
+    const _xmin = (3 * xmin + xmax) / 2
+    const _ymin = (3 * ymin + ymax) / 2
+    const _xmax = (3 * xmax - xmin) / 2
+    const _ymax = (3 * ymax - ymin) / 2
+    this.fitBound = {
+      xmin: _xmin,
+      ymin: _ymin,
+      xmax: _xmax,
+      ymax: _ymax
+    }
+  }
+
+  /**
    * 添加标注
    */
   addMarkers() {
-    if (this.markers.length) {
-      this.removeMarkers()
-    }
     this.markers = this.normalizedFeatures.reduce<IMarker[]>(
       (result, { uid, feature }) => {
         const coordinates = Feature.getGeoJSONFeatureCenter(feature)
@@ -165,17 +186,18 @@ export default class MpMarkersHighlightPopup extends Mixins<
     )
   }
 
-  onGetGeometry(val: Record<string, any>) {
-    // todo
-  }
-
   @Watch('features', { deep: true })
-  watchFeatures() {
-    this.addMarkers()
+  watchFeatures(nV: IFeature[]) {
+    if (nV.length) {
+      this.addMarkers()
+    } else {
+      this.removeMarkers()
+    }
   }
 
   @Watch('highlightIds', { deep: true })
   watchHighlightIds() {
+    this.getFitBound()
     this.hightlightMarkers()
   }
 }

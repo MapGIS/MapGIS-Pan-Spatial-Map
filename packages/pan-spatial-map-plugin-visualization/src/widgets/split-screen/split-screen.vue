@@ -3,8 +3,8 @@
     class="mp-widget-split-screen"
     align="top"
     justify="space-between"
-    :span="[19, 5]"
-    :gutter="[0, 12]"
+    :span="[18, 6]"
+    :gutter="[0, 10]"
   >
     <!-- 分屏地图 -->
     <template #label>

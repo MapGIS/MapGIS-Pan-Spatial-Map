@@ -1,10 +1,10 @@
-import { Vue, Mixins, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
 
 export { Rect }
 
 @Component
-export default class MapViewMixin extends Mixins<Record<string, any>>(Vue) {
+export default class MapViewMixin extends Vue {
   @Prop({ default: '' }) mapViewId!: string
 
   private map: any = {}
@@ -68,7 +68,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(Vue) {
    * @param {Rect} rect 指定区域
    */
   query(rect: Rect) {
-    this.clearClick(true)
     this.$emit('on-query', rect)
   }
 

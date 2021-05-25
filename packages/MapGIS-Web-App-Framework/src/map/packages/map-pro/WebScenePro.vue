@@ -89,6 +89,7 @@
         <mapgis-3d-statebar class="statebar" />
       </div>
     </div>
+    <slot></slot>
   </mapgis-web-scene>
 </template>
 
@@ -397,6 +398,10 @@ export default {
       this.Cesium = Cesium
 
       this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
+
+      this.$emit('map-load', payload)
+
+      this.changePageHeight()
     },
     isIgsDocLayer(type) {
       return type === LayerType.IGSMapImage
