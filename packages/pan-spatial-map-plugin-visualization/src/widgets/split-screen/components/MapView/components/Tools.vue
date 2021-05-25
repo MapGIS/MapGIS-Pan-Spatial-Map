@@ -15,7 +15,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import _upperFirst from 'lodash/upperFirst'
-import RowFlex from '../RowFlex'
+import RowFlex from '../../RowFlex'
 
 export type OperationType =
   | 'UNKNOW'

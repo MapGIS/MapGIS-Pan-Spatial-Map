@@ -325,18 +325,21 @@ export default class MpQueryResultTree extends Vue {
         const resultArray = Array.isArray(result) ? result : [result]
         return resultArray.map<ITreeNode>((featureSet, index) => {
           const { layerName } = this.layerInfos[treeNodeIndexs[index]]
-          const {
-            features
-          } = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(featureSet)
-          const resultForPerLayer =
-            features && features.length
-              ? features.map(item => ({
-                  key: this.getUuid(),
-                  title: item.properties.fid,
-                  feature: item,
-                  isLeaf: true
-                }))
-              : []
+          let resultForPerLayer = []
+          if (featureSet.SFEleArray) {
+            const geoJson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
+              featureSet
+            )
+            const { features } = geoJson
+            if (features && features.length) {
+              resultForPerLayer = features.map(item => ({
+                key: this.getUuid(),
+                title: item.properties.fid,
+                feature: item,
+                isLeaf: true
+              }))
+            }
+          }
           return {
             key: this.getUuid(),
             title: layerName,
