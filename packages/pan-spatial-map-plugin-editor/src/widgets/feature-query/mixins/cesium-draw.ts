@@ -14,6 +14,7 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
 
   handleDrawLoad(drawer) {
     this.drawer3d = drawer
+    console.log('drawer', drawer)
   }
 
   handleCreate(cartesian3, lnglat) {

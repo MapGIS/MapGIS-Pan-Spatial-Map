@@ -265,7 +265,6 @@ export default class MpFeatureQuery extends Mixins(
 
       case 'polygon':
         feature = polygon([bound.pointArr.map(point => [point.x, point.y])])
-        debugger
         break
 
       case 'rect':
