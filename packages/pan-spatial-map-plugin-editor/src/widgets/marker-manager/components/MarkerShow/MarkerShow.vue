@@ -21,7 +21,7 @@ export default class MarkerShow extends Mixins(AppMixin) {
 }
 </script>
 
-<style>
+<style lang="less" scoped>
 .mapboxgl-popup-content {
   position: relative;
   background: rgba(255, 255, 255, 0.8);

@@ -20,15 +20,18 @@ import {
 } from 'vue-property-decorator'
 import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import { MapMixin, AppMixin, UUID } from '@mapgis/web-app-framework'
+import MarkerCommonMixin from '../../mixins/marker-common'
 
 @Component({
   components: {}
 })
-export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
+export default class MapboxMarkerAdd extends Mixins(
+  MapMixin,
+  AppMixin,
+  MarkerCommonMixin
+) {
   @Provide()
   actions = undefined
-
-  @Prop({ type: Object, default: '' }) drawMode!: Record<string, any>
 
   @Emit('addMarker')
   emitAddMarker(marker: any) {}
@@ -42,29 +45,29 @@ export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
     uncombine_features: false
   }
 
+  // 标注工具
   private drawer: any = null
 
-  private drawModes = {
-    point: 'point',
-    line: 'line',
-    polygon: 'polygon'
+  // 打开标注
+  openMarker(mode) {
+    this.enableDrawer()
+    this.setMarkerMode(mode)
   }
 
-  @Watch('drawMode', { deep: true })
-  changeDrawMode() {
-    this.enableDrawer()
-    switch (this.drawMode.mode) {
-      case this.drawModes.point:
+  // 设置标注模式到标注工具中
+  setMarkerMode(mode) {
+    switch (mode) {
+      case 'point':
         if (this.drawer) {
           this.drawer.changeMode('draw_point')
         }
         break
-      case this.drawModes.line:
+      case 'line':
         if (this.drawer) {
           this.drawer.changeMode('draw_line_string')
         }
         break
-      case this.drawModes.polygon:
+      case 'polygon':
         if (this.drawer) {
           this.drawer.changeMode('draw_polygon')
         }
@@ -74,6 +77,16 @@ export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
     }
   }
 
+  // 使能标注
+  enableDrawer() {
+    const markerComponent = this.$refs.markerDrawer
+
+    if (markerComponent) {
+      markerComponent.enableDrawer()
+    }
+  }
+
+  // 标注工具准备好
   handleAdded(e: any) {
     const { drawer } = e
     this.drawer = drawer
@@ -95,14 +108,6 @@ export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
     this.drawer.delete(e.features[0].id)
 
     this.emitAddMarker(marker)
-  }
-
-  enableDrawer() {
-    const component = this.$refs.markerDrawer
-
-    if (component) {
-      ;(component as any).enableDrawer()
-    }
   }
 }
 </script>

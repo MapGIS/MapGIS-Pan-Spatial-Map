@@ -105,14 +105,6 @@ export default class MapboxMarkerShow extends Mixins(MapMixin) {
       type: 'circle',
       source: this.markerSourceIDs.POINT,
       paint: {
-        // make circles larger as the user zooms from z12 to z22
-        // 'circle-radius': {
-        //   base: 1,
-        //   stops: [
-        //     [0, 1],
-        //     [22, 10]
-        //   ]
-        // },
         'circle-radius': 4,
         'circle-color': this.highlightStyle.pnt.color
       }

@@ -68,11 +68,10 @@
       "
     >
     </a-table>
-    <marker-add
-      v-if="mapboxShow"
-      :drawMode="activeMode"
+    <MapboxMarkerAdd
+      ref="mapboxMarkerAdd"
       @addMarker="addMarker"
-    ></marker-add>
+    ></MapboxMarkerAdd>
     <marker-show :markers="tableData"></marker-show>
     <a-modal v-model="modalInput" title="输入坐标" :width="360" :footer="null">
       <marker-input @addMarker="addMarker" @closeModal="modalInput = false" />
@@ -98,7 +97,7 @@ import {
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
 
-import MarkerAdd from './components/MarkerAdd/MarkerAdd.vue'
+import MapboxMarkerAdd from './components/MarkerAdd/MapboxMarkerAdd'
 import MarkerShow from './components/MarkerShow/MarkerShow.vue'
 import MarkerInput from './components/MarkerInput/MarkerInput.vue'
 import MarkerImport from './components/MarkerImport/MarkerImport.vue'
@@ -106,7 +105,13 @@ import MarkerExport from './components/MarkerExport/MarkerExport.vue'
 
 @Component({
   name: 'MpMarkerManager',
-  components: { MarkerInput, MarkerImport, MarkerExport, MarkerAdd, MarkerShow }
+  components: {
+    MarkerInput,
+    MarkerImport,
+    MarkerExport,
+    MapboxMarkerAdd,
+    MarkerShow
+  }
 })
 export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 鼠标交互模块
@@ -205,12 +210,18 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   private mapboxShow = false
 
   // 当前激活项
-  private activeMode = { mode: '', var: 0 }
+  private activeMode = ''
 
   // 表格数据(标注点构成的数组)
   private markers: any[] = []
 
+  // 当前微件窗口是否全屏
   private isFullScreen = false
+
+  // 获取当前渲染引擎下的标注添加组件
+  get markerAddComponent() {
+    return this.is2DMapMode ? this.$refs.mapboxMarkerAdd : null
+  }
 
   @Watch('selectedRowKeys')
   onSelectedRowKeysChange() {
@@ -306,14 +317,15 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     eventBus.$off('edit-marker-info')
   }
 
+  // 微件窗口模式切换时回调
   onWindowSize(mode) {
     this.isFullScreen = mode === 'max'
   }
 
   // 点击不同类型标注图标回调事件
   startMark(mode) {
-    this.activeMode.mode = mode
-    this.activeMode.var += 1
+    this.activeMode = mode
+    this.markerAddComponent && this.markerAddComponent.openMarker(mode)
   }
 
   // 添加标注
