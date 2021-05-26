@@ -127,6 +127,36 @@ export enum LayerType {
   aMapMercatorSatelliteAnnMap,
 
   /**
+   * 三维模型缓存图层,用于显示三维模型缓存。如：m3d(中地定义的模型缓存格式)，osgb(osgb格式的倾斜摄影模型)、3dTileset(cesium标准的模型缓存)
+   */
+  modelCache,
+
+  /**
+   * IGS三维模型缓存图层,用于显示IGS发布的m3d格式的三维模型缓存。
+   */
+  IGSModelCache,
+
+  /**
+   * 高程图层，用于接入地形服务
+   */
+  elevation,
+
+  /**
+   * IGS高程图层，用于接入IGS三维服务中的地形服务
+   */
+  IGSElevation,
+
+  /**
+   *IGS场景图层,用于对接IGS的三维场景服务
+   */
+  scene,
+
+  /**
+   *IGS场景图层,用于对接IGS的三维场景服务
+   */
+  IGSScene,
+
+  /**
    * 覆盖物(临时绘制)图层
    *
    */
@@ -299,5 +329,5 @@ export abstract class Layer {
   //     })
   //   }
 
-  private _fullExtent = new Rectangle(0.0, 0.0, 0.0, 0.0)
+  protected _fullExtent = new Rectangle(0.0, 0.0, 0.0, 0.0)
 }

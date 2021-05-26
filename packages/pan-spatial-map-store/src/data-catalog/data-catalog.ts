@@ -14,6 +14,7 @@ import {
   ArcGISTileLayer,
   ArcGISMapImageLayer,
   VectorTileLayer,
+  IGSSceneLayer,
   UUID
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
@@ -127,6 +128,18 @@ export class DataCatalogManager {
       case LayerType.vectorTile:
         url = layerConfig.serverURL
         layer = new VectorTileLayer({ url })
+        break
+      case LayerType.IGSScene:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        } else {
+          ip = layerConfig.ip || defaultIp
+          port = layerConfig.port || defaultPort
+          serverName = layerConfig.serverName
+
+          url = `http://${ip}:${port}/igs/rest/g3d/${serverName}`
+        }
+        layer = new IGSSceneLayer({ url })
         break
       default:
         break
@@ -579,6 +592,7 @@ export class DataCatalogManager {
         break
       case this.layerServiceType.IGSDOC3D:
       case this.layerServiceType.IGSIMAGE3D:
+        serverType = LayerType.IGSScene
         break
       case this.layerServiceType.TILE3D:
         break

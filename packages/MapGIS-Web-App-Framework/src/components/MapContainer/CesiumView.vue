@@ -34,70 +34,23 @@
         :show="layerProps.show"
         :url="layerProps.baseUrl"
       />
-      <cesium-arcgis-layer
-        v-if="isArcgisMapLayer(layerProps.type)"
-        :id="layerProps.layerId"
-        :url="layerProps.url"
-        :show="layerProps.show"
-      />
-      <cesium-raster-layer
-        v-if="isRasterLayer(layerProps.type)"
+      <mapgis-3d-igs-m3d
+        v-if="isIgsM3dLayer(layerProps.type)"
         :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
-        :alpha="layerProps.opacity"
-      />
-      <cesium-vectortile-layer
-        v-if="isVectorTileLayer(layerProps.type)"
-        :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.url"
-        :ip="layerProps.ip"
-        :port="layerProps.port"
-        :serverName="layerProps.serverName"
-      />
-      <cesium-doc3d-layer
-        v-if="isDoc3dLayer(layerProps.type)"
-        :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.url"
-        :ip="layerProps.ip"
-        :port="layerProps.port"
-        :serverName="layerProps.serverName"
-      />
-      <cesium-tile3d-layer
-        v-if="isTile3dLayer(layerProps.type)"
-        :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.url"
-        :ip="layerProps.ip"
-        :port="layerProps.port"
-        :serverName="layerProps.serverName"
-      />
-      <cesium-pointcloud-layer
-        v-if="isPointcloudLayer(layerProps.type)"
-        :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.url"
-        :ip="layerProps.ip"
-        :port="layerProps.port"
-        :serverName="layerProps.serverName"
-      />
-      <cesium-terrain-layer
-        v-if="isTerrainLayer(layerProps.type)"
-        :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.url"
-        :ip="layerProps.ip"
-        :port="layerProps.port"
-        :serverName="layerProps.serverName"
       />
     </div>
   </mapgis-web-scene>
 </template>
 
 <script>
-import { Layer, LayerType, LoadStatus } from '@mapgis/web-app-framework'
+import {
+  Layer,
+  LayerType,
+  LoadStatus,
+  IGSSceneSublayerRenderType
+} from '@mapgis/web-app-framework'
 
 export default {
   name: 'MpCesiumView',
@@ -145,17 +98,51 @@ export default {
         .getFlatLayers()
         .forEach(layer => {
           if (layer.loadStatus === LoadStatus.loaded) {
-            const layerComponentProps = this.genLayerComponentPropsByLayer(
-              layer
-            )
-            layers.push(layerComponentProps)
+            if (layer.type === LayerType.IGSScene) {
+              layer.activeScene.layers.forEach(igsSceneSublayer => {
+                const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
+                  igsSceneSublayer
+                )
+                layers.push(layerComponentProps)
+              })
+            } else {
+              const layerComponentProps = this.genLayerComponentPropsByLayer(
+                layer
+              )
+              layers.push(layerComponentProps)
+            }
           }
         })
 
       this.layers = layers
     },
+    genLayerComponentPropsByIGSSceneSublayer(igsSceneSublayer) {
+      // 图层组件所需要的属性
+      let layerComponentProps = {}
+
+      // 图层显示样式
+      const layerStyle = {
+        show: igsSceneSublayer.isVisible
+      }
+
+      switch (igsSceneSublayer.renderType) {
+        case IGSSceneSublayerRenderType.modelCache:
+          layerComponentProps = {
+            type: igsSceneSublayer.renderType,
+            id: `${igsSceneSublayer.serverLayer.id}:${igsSceneSublayer.renderIndex}`,
+            url: igsSceneSublayer.serverLayer.url
+          }
+          break
+        default:
+          break
+      }
+
+      layerComponentProps = { ...layerComponentProps, ...layerStyle }
+
+      return layerComponentProps
+    },
     genLayerComponentPropsByLayer(layer) {
-      // mapbox图层组件所需要的属性
+      // 图层组件所需要的属性
       let layerComponentProps = {}
 
       let allLayerNames = []
@@ -298,7 +285,6 @@ export default {
             type: layer.type,
             mvtStyle: layer.currentStyle
           }
-
           break
         default:
           break
@@ -355,11 +341,8 @@ export default {
     isDoc3dLayer(type) {
       return false
     },
-    isTile3dLayer(type) {
-      return false
-    },
-    isPointcloudLayer(type) {
-      return false
+    isIgsM3dLayer(type) {
+      return type === IGSSceneSublayerRenderType.modelCache
     },
     isTerrainLayer(type) {
       return false

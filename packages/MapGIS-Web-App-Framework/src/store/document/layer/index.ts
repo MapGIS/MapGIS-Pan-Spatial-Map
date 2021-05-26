@@ -20,6 +20,7 @@ import {
 } from './amap-layer'
 
 import { VectorTileLayer } from './vector-tile-layer'
+import { IGSSceneLayer, IGSSceneSublayerRenderType } from './igs-scene-layer'
 
 export {
   Layer,
@@ -46,5 +47,7 @@ export {
   AMapMercatorEMapLayer,
   AMapMercatorSatelliteMapLayer,
   AMapMercatorSatelliteAnnMapLayer,
-  VectorTileLayer
+  VectorTileLayer,
+  IGSSceneLayer,
+  IGSSceneSublayerRenderType
 }

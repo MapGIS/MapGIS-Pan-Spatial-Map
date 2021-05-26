@@ -28,7 +28,7 @@ export class IGSTileLayer extends TileLayer {
 
   /**
    * 服务基地址
-   * 约定URL格式如下：http://[host]:[port]/igs/rest/mrms/tile/{hdfName}
+   * 约定URL格式如下：[protocol]://[ip]:[port]/igs/rest/mrms/tile/{hdfName}
    * @date 22/03/2021
    * @memberof IGSTileLayer
    */
@@ -108,7 +108,7 @@ export class IGSTileLayer extends TileLayer {
 
   /**
    * url解析,提取对应的ip、port、serverName
-   * 约定URL格式如下：http://[host]:[port]/igs/rest/mrms/tile/{hdfName}
+   * 约定URL格式如下：[protocol]://[ip]:[port]/igs/rest/mrms/tile/{hdfName}
    *
    * @date 23/03/2021
    * @private

@@ -137,7 +137,7 @@ export class IGSMapImageLayer extends MapImageLayer {
 
   /**
    * 服务基地址
-   * 约定URL格式如下：http://[host]:[port]/igs/rest/mrms/docs/{docName}
+   * 约定URL格式如下：[protocol]://[ip]:[port]/igs/rest/mrms/docs/{docName}
    * @date 22/03/2021
    * @memberof IGSMapImageLayer
    */
@@ -259,7 +259,7 @@ export class IGSMapImageLayer extends MapImageLayer {
 
   /**
    * url解析,提取对应的ip、port、docName
-   * 约定URL格式如下：http://[host]:[port]/igs/rest/mrms/docs/{docName}
+   * 约定URL格式如下：[protocol]://[ip]:[port]/igs/rest/mrms/docs/{docName}
    *
    * @date 23/03/2021
    * @private
