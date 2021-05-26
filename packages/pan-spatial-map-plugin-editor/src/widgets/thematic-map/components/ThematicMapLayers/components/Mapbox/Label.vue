@@ -103,7 +103,6 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
     this.map.on('mouseout', unclusterEl, this.closeInfoWin)
   }
 
-
   /**
    * 展示图层
    */
@@ -127,7 +126,6 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
     this.closeInfoWin()
     const { showFields, showFieldsTitle } = this.popupConfig
     if (!showFields || !showFields.length) return
-
     if (features[0] && features[0].properties) {
       const { properties, geometry } = features[0]
       this.coordinates = geometry.coordinates.slice()
@@ -143,7 +141,7 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
    * 关闭信息窗口
    */
   closeInfoWin() {
-    this.coordinates = []
+    this.coordinates = [0, 0]
     this.properties = {}
   }
 }

@@ -1,17 +1,22 @@
 <template>
   <!-- 分段专题图图层 -->
-  <div></div>
-  <!-- <mapgis-popup :coordinates="coordinates" :showed="true">
+  <mapgis-popup :coordinates="coordinates" :showed="true">
     <template v-for="(child, i) in propertiesKeys">
       <div v-show="child" :key="`sub-section-map-layer-popup-properties-${i}`">
         {{ child }} : {{ properties[child] }}
       </div>
     </template>
-  </mapgis-popup> -->
+  </mapgis-popup>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-// import { FeatureSet } from '@mapgis/webclient-es6-service'
+import {
+  QueryFeatureStruct,
+  QueryParameter,
+  QueryDocFeature,
+  RangeThemeLayer,
+  ThemeStyle
+} from '@mapgis/webclient-es6-mapboxgl'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import MapboxMinxin from '../../mixins/mapbox'
 
@@ -40,7 +45,7 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   /**
    * 获取样式
    */
-  getSegmentstyle() {
+  getStyleGroups() {
     return this.colors.map<IColor>(
       ({ sectionColor, min, max }: ISectionColor) => {
         const color = utilInstance.colorRGBtoHex(sectionColor)
@@ -61,7 +66,7 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
    * @param styleProps
    */
   getThemeStyle(styleProps: any) {
-    return new window.Zondy.Map.ThemeStyle(styleProps)
+    return new ThemeStyle(styleProps)
   }
 
   /**
@@ -69,19 +74,16 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
    */
   showMapboxLayer() {
     if (!this.colors) return
-    const _thematicMapLayer = window.Zondy.Map.rangeThemeLayer(
-      'ThematicMapLayer',
-      {
-        map: this.map,
-        opacity: 0.8,
-        isHoverAble: true,
-        alwaysMapCRS: true
-      }
-    )
+    const _thematicMapLayer = new RangeThemeLayer('ThematicMapLayer', {
+      map: this.map,
+      opacity: 0.8,
+      isHoverAble: true,
+      alwaysMapCRS: true
+    })
     if (!_thematicMapLayer) return
     _thematicMapLayer.id = this.id
     _thematicMapLayer.themeField = this.field
-    _thematicMapLayer.styleGroups = this.getSegmentstyle()
+    _thematicMapLayer.styleGroups = this.getStyleGroups()
     const color =
       this.colors && this.colors.length
         ? this.colors[0].sectionColor
@@ -92,42 +94,17 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
       fillColor: color,
       strokeColor: color
     })
-    const highlightColor = '#ff0000'
     _thematicMapLayer.highlightStyle = this.getThemeStyle({
       stroke: true,
       strokeWidth: 4,
       fillOpacity: 0.8,
-      strokeColor: highlightColor,
-      fillColor: highlightColor
+      strokeColor: 'blue',
+      fillColor: '#00EEEE'
     })
     this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
-    // const queryStruct = new window.Zondy.Service.QueryFeatureStruct()
-    // queryStruct.IncludeGeometry = true
-    // queryStruct.IncludeAttribute = true
-    // queryStruct.IncludeWebGraphic = false
-    // const queryParam = new window.Zondy.Service.QueryParameter({
-    //   resultFormat: 'json',
-    //   struct: queryStruct,
-    //   where: '1>0'
-    // })
-    // queryParam.pageIndex = 0
-    // queryParam.recordNumber = 10000
-    // const queryInstance = new window.Zondy.Service.QueryDocFeature(
-    //   queryParam,
-    //   'Hubei3857',
-    //   1,
-    //   {
-    //     ip: 'develop.smaryun.com',
-    //     port: 6163,
-    //     requestType: 'POST'
-    //   }
-    // )
-    // queryInstance.query(data => {
-    //   this.thematicMapLayer.addFeatures(data)
-    // })
   }
 
   /**
@@ -139,16 +116,19 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return
     }
-    const {
-      attributes,
-      LabelDot: { X, Y }
-    } = this.thematicMapLayer.getFeatureById(target.refDataID)
-    this.coordinates = [X, Y]
-    this.properties = showFields.reduce((obj, v: string) => {
-      const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
-      obj[tag] = attributes[v]
-      return obj
-    }, {})
+    const feature = this.thematicMapLayer.getFeatureById(target.refDataID)
+    if (feature) {
+      const {
+        attributes,
+        LabelDot: { X, Y }
+      } = feature
+      this.coordinates = [X, Y]
+      this.properties = showFields.reduce((obj, v: string) => {
+        const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
+        obj[tag] = attributes[v]
+        return obj
+      }, {})
+    }
   }
 
   /**
@@ -156,7 +136,7 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
    */
   closeInfoWin() {
     this.properties = {}
-    this.coordinates = []
+    this.coordinates = [0, 0]
   }
 }
 </script>

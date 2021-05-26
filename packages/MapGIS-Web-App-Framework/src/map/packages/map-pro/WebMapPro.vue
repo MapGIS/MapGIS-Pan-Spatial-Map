@@ -140,7 +140,7 @@ export default {
       // 使用mapbox样式需要的秘钥
       accessToken:
         'pk.eyJ1IjoicGFybmRlZWRsaXQiLCJhIjoiY2o1MjBtYTRuMDhpaTMzbXhpdjd3YzhjdCJ9.sCoubaHF9-nhGTA-sgz0sA',
-      crs: 'EPSG:3857',
+      crs: 'EPSG:4326',
       sources: {},
       layers: []
     }

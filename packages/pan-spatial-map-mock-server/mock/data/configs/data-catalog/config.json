@@ -706,7 +706,7 @@
             "ip": "",
             "port": "",
             "layerServiceType": "IGSIMAGE",
-            "name": "Hubei3857",
+            "name": "Hubei4326",
             "searchName": "",
             "token": "",
             "guid": "d3ac0679-e009-4e87-93ab-7181378efbb7",

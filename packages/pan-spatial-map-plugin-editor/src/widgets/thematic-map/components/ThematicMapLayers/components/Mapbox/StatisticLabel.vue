@@ -10,6 +10,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
+import { RankSymbolThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
@@ -37,7 +38,7 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
    */
   showMapboxLayer() {
     if (!this.labelStyle) return
-    this.thematicMapLayer = window.Zondy.Map.rankSymbolThemeLayer(
+    this.thematicMapLayer = new RankSymbolThemeLayer(
       'ThematicMapLayer',
       'Circle',
       { calGravity: true }
@@ -69,23 +70,26 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return
     }
-    const {
-      attributes,
-      LabelDot: { X, Y }
-    } = this.thematicMapLayer.getFeatureById(target.refDataID)
-    this.coordinates = [X, Y]
-    this.properties = showFields.reduce((obj, v: string) => {
-      const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
-      obj[tag] = attributes[v]
-      return obj
-    }, {})
+    const feature = this.thematicMapLayer.getFeatureById(target.refDataID)
+    if (feature) {
+      const {
+        attributes,
+        LabelDot: { X, Y }
+      } = feature
+      this.coordinates = [X, Y]
+      this.properties = showFields.reduce((obj, v: string) => {
+        const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
+        obj[tag] = attributes[v]
+        return obj
+      }, {})
+    }
   }
 
   /**
    * 关闭信息窗口
    */
   closeInfoWin() {
-    this.coordinates = []
+    this.coordinates = [0, 0]
     this.properties = {}
   }
 }

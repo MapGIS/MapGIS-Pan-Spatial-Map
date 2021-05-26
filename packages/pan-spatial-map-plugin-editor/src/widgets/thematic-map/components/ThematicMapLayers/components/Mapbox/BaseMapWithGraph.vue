@@ -10,6 +10,7 @@
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
+import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
@@ -244,14 +245,10 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
       default:
         break
     }
-    const _thematicMapLayer = window.Zondy.Map.graphThemeLayer(
-      `${type}Layer`,
-      type,
-      {
-        ...this.thematicMapLayerOptions,
-        chartsSetting
-      }
-    )
+    const _thematicMapLayer = new GraphThemeLayer(`${type}Layer`, type, {
+      ...this.thematicMapLayerOptions,
+      chartsSetting
+    })
     _thematicMapLayer.id = this.id
     this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on('mousemove', this.showInfoWin)
@@ -281,7 +278,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
    * 关闭信息弹框
    */
   closeInfoWin() {
-    this.coordinates = []
+    this.coordinates = [0, 0]
     this.properties = {}
   }
 }

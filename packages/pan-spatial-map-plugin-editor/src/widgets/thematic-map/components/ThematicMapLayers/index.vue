@@ -21,23 +21,6 @@ import {
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
 
-// 均使用的v10.5.3.10的版本
-// 方式一: 同步加载mapboxgl.js
-window.mapboxgl = require('../../../../../libs/zondyclient/mapbox-gl.js')
-// import mapboxgl from '../../../../../libs/zondyclient/mapbox-gl.js'
-// window.mapboxgl = mapboxgl
-
-// 同步或异步加载mapboxgl-plugin.js
-require('../../../../../libs/zondyclient/webclient-mapboxgl-plugin.js')
-// import('../../../../../libs/zondyclient/webclient-mapboxgl-plugin.js')
-
-// 方式二: 异步加载mapboxgl.js, 如果其他文件读取mapboxgl变量可能为undefined
-// import('../../../../../libs/zondyclient/mapbox-gl.js').then(({ default: mapboxgl }) => {
-//   window.mapboxgl = mapboxgl
-//   import('../../../../../libs/zondyclient/webclient-mapboxgl-plugin.js')
-//   require('../../../../../libs/zondyclient/webclient-mapboxgl-plugin.js')
-// })
-
 @Component({
   components: {
     ...mapboxLayers,
@@ -45,9 +28,8 @@ require('../../../../../libs/zondyclient/webclient-mapboxgl-plugin.js')
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
-  
   get prefix() {
-    return this.is2DMapMode? 'Mapbox': 'Cesium'
+    return this.is2DMapMode ? 'Mapbox' : 'Cesium'
   }
 
   // 专题配置
@@ -67,9 +49,8 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   // 获取渲染的子专题图层组件name集合
   get subjectLayers() {
-    return subjectTypes.map(({value}) => `${this.prefix}${value}`)
+    return subjectTypes.map(({ value }) => `${this.prefix}${value}`)
   }
-
 }
 </script>
 <style lang="less" scoped></style>
