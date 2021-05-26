@@ -228,9 +228,6 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 导出对话框的显隐
   private modalExport = false
 
-  // 当前激活项
-  private activeMode = ''
-
   // 表格数据(标注点构成的数组)
   private markers: any[] = []
 
@@ -351,7 +348,6 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
   // 点击不同类型标注图标回调事件
   private startMark(mode) {
-    this.activeMode = mode
     this.markerAddComponent && this.markerAddComponent.openMarker(mode)
   }
 
