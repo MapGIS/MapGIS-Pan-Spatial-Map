@@ -338,6 +338,7 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
   onClose() {
     this.tableData = []
+    this.selectedRowKeys = []
     eventBus.$off('edit-marker-info')
   }
 
