@@ -20,6 +20,7 @@
     />
     <!-- 标注 -->
     <mp-markers-highlight-popup
+      v-if="isMapLoaded"
       :features="queryFeatures"
       :highlightIds="querySelection"
       :normalize="({ key }) => ({ uid: key })"
@@ -150,7 +151,7 @@ export default class MapView extends Mixins<Record<string, any>>(
   onMapboxDrawCreated(rect) {
     switch (this.operationType) {
       case 'QUERY':
-        // this.onClear(true)
+        this.onClear(true)
         this.query(rect)
         break
       case 'ZOOMIN':
@@ -167,7 +168,9 @@ export default class MapView extends Mixins<Record<string, any>>(
   /**
    * 三维地图初始化
    */
-  onCesiumLoad(e) {}
+  onCesiumLoad(e) {
+    this.isMapLoaded = true
+  }
 
   /**
    * 创建三维绘制
@@ -186,6 +189,7 @@ export default class MapView extends Mixins<Record<string, any>>(
    */
   enableDrawer() {
     const ref = this.is2DMapMode ? 'maboxView' : 'cesiumView'
+    console.log('enableDrawer', this.$refs[ref])
     this.$refs[ref].enableDrawer()
   }
 

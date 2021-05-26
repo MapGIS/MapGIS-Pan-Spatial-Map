@@ -59,40 +59,46 @@ export default class MapboxView extends Vue {
   }
 
   onAdded({ drawer }) {
-    if (!this.isMapLoaded) return
-    this.drawer = drawer
-    this.$emit('on-add', drawer)
+    if (this.isMapLoaded) {
+      this.drawer = drawer
+      this.$emit('on-add', drawer)
+    }
   }
 
   onDrawCreated({ features }) {
-    if (!this.isMapLoaded) return
-    const {
-      id,
-      geometry: { coordinates }
-    } = features[0]
-    if (this.drawer) {
-      this.drawer.delete(id)
+    if (this.isMapLoaded) {
+      const {
+        id,
+        geometry: { coordinates }
+      } = features[0]
+      if (this.drawer) {
+        this.drawer.delete(id)
+      }
+      let xmin: number
+      let xmax: number
+      let ymin: number
+      let ymax: number
+      coordinates[0].forEach(([lng, lat]) => {
+        if (!xmin || lng < xmin) {
+          xmin = lng
+        }
+        if (!xmax || lng > xmax) {
+          xmax = lng
+        }
+        if (!ymin || lat < ymin) {
+          ymin = lat
+        }
+        if (!ymax || lat > ymax) {
+          ymax = lat
+        }
+      })
+      const rect = new Rect(xmin, ymin, xmax, ymax)
+      this.$emit('on-created', rect)
     }
-    let xmin: number
-    let xmax: number
-    let ymin: number
-    let ymax: number
-    coordinates[0].forEach(([lng, lat]) => {
-      if (!xmin || lng < xmin) {
-        xmin = lng
-      }
-      if (!xmax || lng > xmax) {
-        xmax = lng
-      }
-      if (!ymin || lat < ymin) {
-        ymin = lat
-      }
-      if (!ymax || lat > ymax) {
-        ymax = lat
-      }
-    })
-    const rect: Rect = new Rect(xmin, ymin, xmax, ymax)
-    this.$emit('on-created', rect)
+  }
+
+  beforeDestroyed() {
+    this.isMapLoaded = false
   }
 }
 </script>

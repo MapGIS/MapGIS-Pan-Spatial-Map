@@ -22,25 +22,36 @@ export default class CesiumView extends Vue {
 
   drawer = null
 
+  isMapLoaded = false
+
   enableDrawer() {
+    console.log('CesiumView.drawer', this.drawer)
     if (this.drawer) {
-      this.drawer.enableDrawPolygon()
+      // todo 三维拉框待开发
+      // this.drawer.enableDrawPolygon()
     }
   }
 
   onMapLoad(e) {
     this.$emit('on-load', e)
+    this.isMapLoaded = true
   }
 
   onLoad(drawer) {
-    if (!this.drawer) {
+    if (this.isMapLoaded && !this.drawer) {
       this.drawer = drawer
     }
   }
 
   onCreate(cartesian3, lnglat) {
-    console.log('lnglat', lnglat)
-    this.$emit('on-create', cartesian3, lnglat)
+    if (this.isMapLoaded) {
+      console.log('lnglat', cartesian3, lnglat)
+      this.$emit('on-create', cartesian3, lnglat)
+    }
+  }
+
+  beforeDestroyed() {
+    this.isMapLoaded = false
   }
 }
 </script>
