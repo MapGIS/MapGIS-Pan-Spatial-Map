@@ -97,8 +97,6 @@ export default class MarkerInfo extends Mixins(AppMixin) {
   emitCancel(markerInfo: any) {}
 
   created() {
-    console.log(this.baseUrl)
-
     this.title = this.markerInfo.title
     this.description = this.markerInfo.description
     this.img = this.markerInfo.img

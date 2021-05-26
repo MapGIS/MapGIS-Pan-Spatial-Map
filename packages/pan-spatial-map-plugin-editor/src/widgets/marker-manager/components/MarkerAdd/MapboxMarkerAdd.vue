@@ -55,7 +55,7 @@ export default class MapboxMarkerAdd extends Mixins(
   }
 
   // 设置标注模式到标注工具中
-  setMarkerMode(mode) {
+  private setMarkerMode(mode) {
     switch (mode) {
       case 'point':
         if (this.drawer) {
@@ -78,7 +78,7 @@ export default class MapboxMarkerAdd extends Mixins(
   }
 
   // 使能标注
-  enableDrawer() {
+  private enableDrawer() {
     const markerComponent = this.$refs.markerDrawer
 
     if (markerComponent) {
@@ -87,12 +87,12 @@ export default class MapboxMarkerAdd extends Mixins(
   }
 
   // 标注工具准备好
-  handleAdded(e: any) {
+  private handleAdded(e: any) {
     const { drawer } = e
     this.drawer = drawer
   }
 
-  handleCreate(e: any) {
+  private handleCreate(e: any) {
     const center = utilInstance.getGeoJsonFeatureCenter(e.features[0])
     const marker = {
       id: UUID.uuid(),
@@ -103,7 +103,7 @@ export default class MapboxMarkerAdd extends Mixins(
       edit: true,
       features: [e.features[0]],
       center,
-      coordinates: e.features[0]
+      coordinates: e.features[0].geometry.coordinates
     }
     this.drawer.delete(e.features[0].id)
 

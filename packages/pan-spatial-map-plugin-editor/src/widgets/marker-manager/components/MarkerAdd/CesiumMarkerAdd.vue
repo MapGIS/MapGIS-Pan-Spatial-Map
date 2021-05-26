@@ -182,7 +182,7 @@ export default class MapboxMarkerAdd extends Mixins(
   }
 
   // 标注点坐标转换
-  coordinateConvert(mousePoint: any) {
+  private coordinateConvert(mousePoint: any) {
     // 通过指定的椭球或者地图对应的坐标系，将鼠标的二维坐标转换为对应椭球体三维坐标
     const { ellipsoid } = this.webGlobe.scene.globe
     let cartesian: any
