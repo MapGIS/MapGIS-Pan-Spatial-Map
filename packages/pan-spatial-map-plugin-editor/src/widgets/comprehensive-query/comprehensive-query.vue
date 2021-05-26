@@ -76,10 +76,10 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { Parser, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
-import PlaceName from './components/place-name/PlaceName'
-import Zone from './components/zone-frame/Zone'
-import Coordinate from './components/coordinate/Coordinate'
-import Frame from './components/zone-frame/Frame'
+import PlaceName from './components/PlaceName/PlaceName'
+import Zone from './components/ZoneFrame/Zone'
+import Coordinate from './components/Coordinate/Coordinate'
+import Frame from './components/ZoneFrame/Frame'
 
 @Component({
   name: 'MpComprehensiveQuery',
@@ -191,15 +191,25 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
       }
     }
   }
-  .locate-panel-contaner {
+  .locate-panel-contaner,
+  .search-panel-contaner {
     .ant-tabs.ant-tabs-card {
       .ant-tabs-card-bar {
         margin-bottom: 0;
+        .ant-tabs-nav-container-scrolling {
+          padding-right: 20px;
+          padding-left: 20px;
+          .ant-tabs-tab-prev.ant-tabs-tab-arrow-show,
+          .ant-tabs-tab-next.ant-tabs-tab-arrow-show {
+            width: 20px;
+          }
+        }
         .ant-tabs-nav-container {
           height: 32px;
           .ant-tabs-tab {
             height: 32px;
             line-height: 32px;
+            padding: 0 6px;
           }
         }
       }
@@ -212,7 +222,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 .mp-widget-comprehensive-query {
   display: flex;
   flex-direction: column;
-  width: 360px;
+  width: 300px;
   color: @text-color;
   background: @base-bg-color;
   border-radius: 2px;
@@ -231,7 +241,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
     }
   }
   .panel-container {
-    padding: 8px;
+    padding: 10px;
     &.unvisible {
       display: none;
     }

@@ -1,7 +1,11 @@
 import {
+  MpMarkerPro,
+  MpMarkerSetPro,
+  Mp3dMarkerPro,
+  Mp3dMarkerSetPro,
+  MpMarkerPlotting,
   MpAttributeTable,
-  MpAttributeTableList,
-  MpMarkPopupMapbox
+  MpAttributeTableList
 } from './components'
 
 import {
@@ -22,9 +26,13 @@ const components = [
   MpScalebar,
   MpDataCatalog,
   MpLayerList,
+  MpMarkerPro,
+  MpMarkerSetPro,
+  Mp3dMarkerPro,
+  Mp3dMarkerSetPro,
+  MpMarkerPlotting,
   MpAttributeTable,
   MpAttributeTableList,
-  MpMarkPopupMapbox,
   MpBasemapManager,
   MpLegend
 ]

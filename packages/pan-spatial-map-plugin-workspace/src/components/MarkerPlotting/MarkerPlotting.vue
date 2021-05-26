@@ -1,52 +1,11 @@
 <template>
   <div>
-    <mapgis-marker
-      v-for="marker in markers"
-      :key="marker.id"
-      :coordinates="marker.coordinates"
-      anchor="bottom"
-      @mouseenter="
-        e => {
-          mouseEnterEvent(e, marker.id)
-        }
-      "
-      @mouseleave="
-        e => {
-          mouseLeaveEvent(e, marker.id)
-        }
-      "
+    <mp-marker-set-pro
+      :markers="markers"
+      @mouseenter="mouseEnterEvent"
+      @mouseleave="mouseLeaveEvent"
     >
-      <mapgis-popup
-        :coordinates="marker.coordinates"
-        :showed="true"
-        :offset="popupOffset(marker.id)"
-        v-if="markerImagesLoadStatus.indexOf(marker.id) >= 0"
-      >
-        <a-list
-          item-layout="horizontal"
-          :data-source="Object.keys(marker.properties)"
-          size="small"
-          class="table-markers"
-        >
-          <a-list-item
-            slot="renderItem"
-            slot-scope="item"
-            class="table-marker-item"
-          >
-            <div style="width: 130px" :title="item">{{ item }}</div>
-            <div style="width: 170px" :title="marker.properties[item]">
-              {{ marker.properties[item] }}
-            </div>
-          </a-list-item>
-        </a-list>
-      </mapgis-popup>
-      <img
-        slot="marker"
-        :src="marker.img"
-        :ref="marker.id"
-        @load="onMarkerImageLoad($event, marker.id)"
-      />
-    </mapgis-marker>
+    </mp-marker-set-pro>
   </div>
 </template>
 
@@ -54,11 +13,13 @@
 import { Component, Prop, Watch, Mixins, Emit } from 'vue-property-decorator'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import { MapMixin } from '@mapgis/web-app-framework'
+import MpMarkerSetPro from '../MarkerPro/MarkerSetPro.vue'
 
 @Component({
-  name: 'MpTableMapbox'
+  name: 'MpAttributeTablePlotting',
+  components: { MpMarkerSetPro }
 })
-export default class MpTableMapbox extends Mixins(MapMixin) {
+export default class MpAttributeTablePlotting extends Mixins(MapMixin) {
   @Prop({
     type: Boolean,
     default: false
@@ -95,10 +56,6 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
   })
   readonly highlightStyle!: Record<string, any>
 
-  private prePopup: any = undefined
-
-  private markerImagesLoadStatus = []
-
   private get move() {
     let timeout: NodeJS.Timeout
     return (event: any) => {
@@ -117,16 +74,6 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
         }
         this.emitMapBoundChange(bound)
       }, 1000)
-    }
-  }
-
-  private get popupOffset() {
-    const self = this
-    return function(ref) {
-      if (self.$refs[ref] && self.$refs[ref][0]) {
-        return [0, -self.$refs[ref][0].clientHeight]
-      }
-      return [0, 0]
     }
   }
 
@@ -157,10 +104,6 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
 
   @Emit('map-bound-change')
   emitMapBoundChange(bound: Record<string, any>) {}
-
-  private onMarkerImageLoad(e, ref) {
-    this.markerImagesLoadStatus.push(ref)
-  }
 
   private zoomTo(bound) {
     this.map.fitBounds([
@@ -204,12 +147,6 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
   }
 
   private mouseEnterEvent(e: any, id) {
-    if (this.prePopup && this.prePopup.isOpen()) {
-      this.prePopup.remove()
-    }
-    e.marker.togglePopup()
-    this.prePopup = e.marker.getPopup()
-
     // 高亮要素
     const marker = this.markers.find(marker => marker.id == id)
 
@@ -239,8 +176,8 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
         type: 'line',
         source: 'highlight',
         paint: {
-          'line-color': this.highlightStyle.line.color,
-          'line-width': parseInt(this.highlightStyle.line.size)
+          'line-color': this.highlightStyle.feature.line.color,
+          'line-width': parseInt(this.highlightStyle.feature.line.size)
         }
       })
     } else if (featureGeoJson.features[0].geometry.type === 'Polygon') {
@@ -249,8 +186,8 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
         type: 'fill',
         source: 'highlight',
         paint: {
-          'fill-color': this.highlightStyle.reg.color,
-          'fill-outline-color': this.highlightStyle.line.color
+          'fill-color': this.highlightStyle.feature.reg.color,
+          'fill-outline-color': this.highlightStyle.feature.line.color
         }
       })
     }
@@ -266,19 +203,4 @@ export default class MpTableMapbox extends Mixins(MapMixin) {
   }
 }
 </script>
-<style lang="less" scoped>
-.table-markers {
-  max-height: 200px;
-  overflow: auto;
-  .table-marker-item {
-    padding: 0;
-    font-size: 10px;
-    div {
-      padding: 2px 2px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-}
-</style>
+<style lang="less" scoped></style>

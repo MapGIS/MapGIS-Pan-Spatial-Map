@@ -1,3 +1,7 @@
+export { default as MpMarkerPro } from './MarkerPro/MarkerPro.vue'
+export { default as MpMarkerSetPro } from './MarkerPro/MarkerSetPro.vue'
+export { default as Mp3dMarkerPro } from './3dMarkerPro/3dMarkerPro.vue'
+export { default as Mp3dMarkerSetPro } from './3dMarkerPro/3dMarkerSetPro.vue'
+export { default as MpMarkerPlotting } from './MarkerPlotting/MarkerPlotting.vue'
 export { default as MpAttributeTable } from './AttributeTable/AttributeTable.vue'
-export { default as MpMarkPopupMapbox } from './AttributeTable/TableMapbox.vue'
 export { default as MpAttributeTableList } from './AttributeTableList/AttributeTableList.vue'

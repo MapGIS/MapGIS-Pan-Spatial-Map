@@ -1,5 +1,5 @@
 <template>
-  <div class="cesium-marker">
+  <div class="mapgis-marker-3d">
     <mapgis-3d-popup
       :position="{
         longitude: popupPosition.longitude,
@@ -10,12 +10,14 @@
       <div slot="default">
         <a-list
           item-layout="horizontal"
-          :data-source="Object.keys(marker.properties)"
+          :data-source="propertyKeys"
           size="small"
           class="markers"
         >
           <a-list-item slot="renderItem" slot-scope="item" class="marker-item">
-            <div style="width: 130px" :title="item">{{ item }}</div>
+            <div style="width: 130px" :title="propertyName(item)">
+              {{ propertyName(item) }}
+            </div>
             <div style="width: 170px" :title="marker.properties[item]">
               {{ marker.properties[item] }}
             </div>
@@ -36,23 +38,30 @@ import {
   Emit
 } from 'vue-property-decorator'
 import { CesiumPopup } from '@mapgis/webclient-vue-cesium'
-import { utilInstance, cesiumUtilInstance } from '@mapgis/pan-spatial-map-store'
+import { cesiumUtilInstance, IFields } from '@mapgis/pan-spatial-map-store'
 
 /**
  * cesium标注，弹出框使用@mapgis/webclient-vue-cesium里的popup
  */
 @Component({
-  name: 'MpCesiumMarker',
+  name: 'Mp3dMarkerPro',
   components: {
     CesiumPopup
   }
 })
-export default class MpCesiumMarker extends Vue {
+export default class Mp3dMarkerPro extends Vue {
   @Inject('webGlobe') webGlobe: any
 
   @Inject('Cesium') Cesium: any
 
   @Prop({ type: Object, required: true }) marker!: Record<string, any>
+
+  @Prop({
+    type: Array,
+    required: false,
+    default: () => []
+  })
+  readonly fieldConfigs!: IFields[]
 
   // 当前显示弹出框的标注id
   @Prop({ type: String, required: false }) currentMarkerId?: string
@@ -75,6 +84,36 @@ export default class MpCesiumMarker extends Vue {
       latitude: Number(coordinates[1])
     }
     return position
+  }
+
+  // 根据filedConfigs做一个过滤，去除不可见的
+  private get propertyKeys() {
+    const keys = Object.keys(this.marker.properties)
+    return keys.filter(key => {
+      const config = this.fieldConfigs.find(config => config.name === key)
+
+      if (
+        config &&
+        Object.hasOwnProperty.call(config, 'visible') &&
+        !config.visible
+      ) {
+        return false
+      }
+
+      return true
+    })
+  }
+
+  private get propertyName() {
+    return function(key) {
+      const config = this.fieldConfigs.find(config => config.name === key)
+
+      if (config && Object.hasOwnProperty.call(config, 'title')) {
+        return config.title
+      }
+
+      return key
+    }
   }
 
   // 更换图片，更换地图上的标注
@@ -110,21 +149,21 @@ export default class MpCesiumMarker extends Vue {
       this.mouseOver(event, marker)
     }
     marker.mouseOut = event => {
-      this.mouseOut(event)
+      this.mouseOut(event, marker)
     }
     marker.name = marker.id
     marker.center = marker.coordinates
     cesiumUtilInstance.addMarkerByFeature(marker)
   }
 
-  mouseOver(event: any, marker: any) {
+  mouseOver(event, marker) {
     this.showPopup = true
-    this.emitId(this.marker.id)
-    this.$emit('mouseenter', event)
+    this.emitId(marker.id)
+    this.$emit('mouseenter', event, marker.id)
   }
 
-  mouseOut(event) {
-    this.$emit('mouseleave', event)
+  mouseOut(event, marker) {
+    this.$emit('mouseleave', event, marker.id)
   }
 }
 </script>

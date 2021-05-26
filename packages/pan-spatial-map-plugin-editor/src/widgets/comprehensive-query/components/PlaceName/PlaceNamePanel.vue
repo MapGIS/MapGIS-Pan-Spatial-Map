@@ -14,9 +14,9 @@
               <img :src="item.img" />
             </div>
             <div class="content-place-name-panel">
-              <p v-for="(row, index) in fieldNames" :key="row">
-                <label>{{ row }}:</label>
-                <span>{{ item.properties[fields[index]] }}</span>
+              <p v-for="(config, index) in fieldConfigs" :key="index">
+                <label>{{ config.title }}:</label>
+                <span>{{ item.properties[config.name] }}</span>
               </p>
             </div>
           </li>
@@ -27,6 +27,7 @@
             :current="currentPageIndex"
             :total="maxCount"
             @change="pageChange"
+            size="small"
           />
         </div>
       </template>
@@ -37,7 +38,7 @@
     <a-spin :spinning="spinning" v-else>
       <div class="cluster-title">
         <span>
-          聚合标注图层：
+          聚合标注图层
         </span>
       </div>
       <div class="cluster-content">
@@ -83,7 +84,7 @@ export default class PlaceNamePanel extends Vue {
 
   @Prop() geometry?: Record<string, unknown>
 
-  private fieldNames: string[] = []
+  private fieldConfigs: Record<string, unknown>[] = []
 
   private fields: string[] = []
 
@@ -129,21 +130,23 @@ export default class PlaceNamePanel extends Vue {
 
   updataMarkers() {
     if (this.activeTab === this.name) {
-      this.$emit('show-coords', this.markersInfos, this.fieldNames)
+      this.$emit('show-coords', this.markersInfos, this.fieldConfigs)
     }
   }
 
   mounted() {
     const { showAttrsAndTitle } = this.selectedItem
     const fields: any[] = []
-    const names: string[] = []
+    const configs: Record<string, unknown>[] = []
     for (let j = 0; j < showAttrsAndTitle.length; j += 1) {
       const filed = showAttrsAndTitle[j].attr
       fields.push(filed)
-      const name = showAttrsAndTitle[j].showName
-      names.push(name)
+      configs.push({
+        name: filed,
+        title: showAttrsAndTitle[j].showName
+      })
     }
-    this.fieldNames = names
+    this.fieldConfigs = configs
     this.fields = fields
     this.queryFeature()
   }
@@ -160,11 +163,11 @@ export default class PlaceNamePanel extends Vue {
         : `${this.selectedItem.searchField ||
             this.config.allSearchName} LIKE '%'`
     // const where = `${this.selectedItem.searchField ||
-    //   this.config.allSearchName} LIKE '%${this.keyword}%'`
+    // this.config.allSearchName} LIKE '%${this.keyword}%'`
     if (!this.isDataStoreQuery) {
       await this.igsQuery(where)
     } else {
-      //   await this.dsQuery(selectedItem, where, fields)
+      // await this.dsQuery(selectedItem, where, fields)
     }
   }
 
@@ -281,10 +284,10 @@ export default class PlaceNamePanel extends Vue {
     flex: 1;
     overflow: hidden;
     .cluster-title {
-      margin-bottom: 8px;
+      margin: 8px 0;
       span:first-child {
         padding-left: 5px;
-        border-left: 4px solid @success-color;
+        border-left: 4px solid @primary-color;
         font-weight: bold;
         color: @title-color;
         margin-right: 5px;

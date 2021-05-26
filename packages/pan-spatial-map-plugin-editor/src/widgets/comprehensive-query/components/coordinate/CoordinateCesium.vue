@@ -1,9 +1,8 @@
 <template>
-  <div class="coordinate column q-pa-md"></div>
+  <div></div>
 </template>
 
 <script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   Component,
   Watch,
@@ -27,27 +26,10 @@ import {
 })
 export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   @Prop({
-    type: Object,
-    required: true,
-    default: () => {
-      return {}
-    }
-  })
-  readonly geojson!: FeatureGeoJSON | null
-
-  @Prop({
-    type: Object,
-    default: () => {
-      return {}
-    }
-  })
-  readonly bounds!: Record<string, any>
-
-  @Prop({
     type: Boolean,
     default: false
   })
-  readonly isClick!: boolean
+  readonly pickable!: boolean
 
   @Prop({
     type: Array,
@@ -57,48 +39,47 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   })
   readonly coordinate!: number[]
 
-  @Emit('mapCoordinate')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  emitMapCoordinate(mapCoordinate: number[]) {}
+  @Prop({
+    type: Array,
+    default: () => {
+      return []
+    }
+  })
+  readonly center!: number[]
+
+  @Prop({
+    type: Object,
+    required: true,
+    default: () => {
+      return {}
+    }
+  })
+  readonly frameFeature!: FeatureGeoJSON | null
+
+  @Prop({
+    type: Object,
+    default: () => {
+      return {}
+    }
+  })
+  readonly highlightStyle!: Record<string, any>
 
   private cesiumUtil = cesiumUtilInstance
 
   private entityNames: string[] = []
 
-  // 底图坐标
-  private mapCoordinate = [0, 0]
+  @Emit('picked-coordinate')
+  emitPickedCoordinate(pickedCoordinate: number[]) {}
 
-  private fillOutlineColor = '#484896'
-
-  private fillColor = '#6e599f'
-
-  private markerBlue = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
-
-  private mounted() {
-    console.log('mounted')
-    this.onGeojsonChanged()
-    this.onCoordChanged()
-    this.onInteractModeChanged()
-  }
-
-  private destroyed() {
-    this.clearCoordinate()
-  }
-
-  @Watch('coordinate')
-  private onCoordChanged() {
-    this.mapCoordinate = this.coordinate
-  }
-
-  @Watch('isClick')
-  private onInteractModeChanged() {
+  @Watch('pickable')
+  private pickableChange() {
     // 定义当前场景的画布元素的事件处理
     const handler = new this.Cesium.ScreenSpaceEventHandler(
       this.webGlobe.scene._canvas
     )
     // 设置鼠标移动事件的处理函数，这里负责监听x,y坐标值变化
     handler.setInputAction(movement => {
-      if (!this.isClick) return
+      if (!this.pickable) return
       // 通过指定的椭球或者地图对应的坐标系，将鼠标的二维坐标转换为对应椭球体三维坐标
       const { ellipsoid } = this.webGlobe.scene.globe
       const cartesian = this.webGlobe.viewer.camera.pickEllipsoid(
@@ -111,32 +92,37 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
         // 将弧度转为度的十进制度表示
         const lng = this.Cesium.Math.toDegrees(cartographic.longitude) // 转换后的经度
         const lat = this.Cesium.Math.toDegrees(cartographic.latitude) // 转换后的纬度
-        this.mapCoordinate = [lng, lat]
-        this.emitMapCoordinate(this.mapCoordinate)
+        this.emitPickedCoordinate([lng, lat])
       }
     }, this.Cesium.ScreenSpaceEventType.LEFT_CLICK)
   }
 
-  @Watch('geojson')
-  private onGeojsonChanged() {
-    this.clearCoordinate()
-    if (this.geojson && Object.keys(this.geojson).length > 0) {
+  @Watch('center', { deep: true })
+  centerChange() {
+    if (this.center && this.center.length > 0) {
+      this.webGlobe.viewer.camera.flyTo({
+        destination: this.Cesium.Cartesian3.fromDegrees(
+          this.center[0],
+          this.center[1],
+          this.webGlobe.viewer.camera.positionCartographic.height
+        )
+      })
+    }
+  }
+
+  @Watch('frameFeature', { deep: true })
+  private frameFeatureChange(val: FeatureGeoJSON | null) {
+    this.clearFrame()
+    if (val && Object.keys(val).length > 0) {
       // 行政区划几何类型一般是Polygon
-      const { features } = this.geojson
+      const { features } = val
       this.entityNames = []
-      const rgba = utilInstance.getRGBA(this.fillColor, 0.75)
-      const fillColor = new this.Cesium.Color(
-        rgba.r / 255,
-        rgba.g / 255,
-        rgba.b / 255,
-        rgba.a
+      const fillColor = new this.Cesium.Color.fromCssColorString(
+        this.highlightStyle.feature.reg.color
       )
-      const outlineRgba = utilInstance.getRGBA(this.fillOutlineColor, 0.75)
-      const fillOutlineColor = new this.Cesium.Color(
-        outlineRgba.r / 255,
-        outlineRgba.g / 255,
-        outlineRgba.b / 255,
-        outlineRgba.a
+
+      const fillOutlineColor = new this.Cesium.Color.fromCssColorString(
+        this.highlightStyle.feature.line.color
       )
       for (let i = 0; i < features.length; i += 1) {
         const coords = features[i].geometry.coordinates[0]
@@ -153,65 +139,34 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
         )
       }
     }
-    this.upDateMarker()
   }
 
-  @Watch('bounds', { deep: true })
-  fitBounds() {
-    if (this.bounds && Object.keys(this.bounds).length > 0) {
-      const { xmin, ymin, xmax, ymax } = this.bounds
-      // eslint-disable-next-line new-cap
-      const rectangle = new this.Cesium.Rectangle.fromDegrees(
-        xmin,
-        ymin,
-        xmax,
-        ymax
-      )
-      this.webGlobe.viewer.camera.flyTo({
-        destination: rectangle
-      })
-    }
-  }
-
-  @Watch('mapCoordinate')
-  upDateMarker() {
-    this.cesiumUtil.removeEntityByName('coordinate-marker')
-    const marker: any = {
+  @Watch('coordinate')
+  coordinateChange() {
+    this.clearMarker()
+    const marker = {
       name: 'coordinate-marker',
-      center: this.mapCoordinate,
-      img: this.markerBlue,
-      mouseOver: () => {
-        this.mouseOver()
-      },
-      mouseOut: () => {
-        this.mouseOut()
-      }
+      center: this.coordinate,
+      img: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
     }
     this.cesiumUtil.addMarkerByFeature(marker)
   }
 
-  mouseOver() {}
-
-  mouseOut() {
-    // console.log(event)
-    // this.showMarkerDialog = false
+  private beforeDestroy() {
+    this.clearMarker()
+    this.clearFrame()
   }
 
   // 清除
-  private clearCoordinate() {
-    this.cesiumUtil.removeEntityByName('coordinate-marker')
+  private clearFrame() {
     for (let i = this.entityNames.length - 1; i >= 0; i -= 1) {
       this.cesiumUtil.removeEntityByName(this.entityNames[i])
       this.entityNames.pop()
     }
   }
 
-  private deactivated() {
-    this.clearCoordinate()
-  }
-
-  onMapClear() {
-    this.clearCoordinate()
+  private clearMarker() {
+    this.cesiumUtil.removeEntityByName('coordinate-marker')
   }
 }
 </script>

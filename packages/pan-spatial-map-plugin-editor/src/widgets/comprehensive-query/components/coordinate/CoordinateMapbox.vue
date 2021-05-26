@@ -1,13 +1,14 @@
 <template>
-  <div class="coordinate column q-pa-md">
-    <mapgis-marker :coordinates="[coordinate[0], coordinate[1]]">
-      <img slot="marker" :src="`${baseUrl + markerBlue}`" />
-    </mapgis-marker>
-  </div>
+  <mapgis-marker
+    v-if="coordinate.length > 0"
+    :coordinates="[coordinate[0], coordinate[1]]"
+    anchor="bottom"
+  >
+    <img slot="marker" :src="`${baseUrl + markerImg}`" />
+  </mapgis-marker>
 </template>
 
 <script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   Component,
   Watch,
@@ -25,27 +26,10 @@ import {
 @Component
 export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
   @Prop({
-    type: Object,
-    required: true,
-    default: () => {
-      return {}
-    }
-  })
-  readonly geojson!: FeatureGeoJSON | null
-
-  @Prop({
-    type: Object,
-    default: () => {
-      return {}
-    }
-  })
-  readonly bounds!: Record<string, any>
-
-  @Prop({
     type: Boolean,
     default: false
   })
-  readonly isClick!: boolean
+  readonly pickable!: boolean
 
   @Prop({
     type: Array,
@@ -55,101 +39,110 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
   })
   readonly coordinate!: number[]
 
-  @Emit('mapCoordinate')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  emitMapCoordinate(mapCoordinate: number[]) {}
-
-  private mounted() {
-    console.log('mounted')
-    this.onGeojsonChanged()
-    this.onInteractModeChanged()
-  }
-
-  private beforeDestory() {
-    // this.clearCoordinate()
-  }
-
-  private destroyed() {
-    console.log('destroyed')
-    this.clearCoordinate()
-
-    if (this.isClick) {
-      this.map.off('click', this.getMouseCoordinate)
+  @Prop({
+    type: Array,
+    default: () => {
+      return []
     }
-  }
+  })
+  readonly center!: number[]
 
-  private fillOutlineColor = '#484896'
+  @Prop({
+    type: Object,
+    required: true,
+    default: () => {
+      return {}
+    }
+  })
+  readonly frameFeature!: FeatureGeoJSON | null
 
-  private fillColor = '#6e599f'
+  @Prop({
+    type: Object,
+    default: () => {
+      return {}
+    }
+  })
+  readonly highlightStyle!: Record<string, any>
 
-  private markerBlue = `${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
+  private markerImg = `${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
 
-  @Watch('isClick')
-  private onInteractModeChanged() {
-    // 修改说明：通过this.map.on('click', this.getMouseCoordinate.bind(this))添加事件监听的写法,会造成事件监听无法移除。
-    // 修改人：马原野 2020年11月27日
-    if (this.isClick) {
-      this.map.on('click', this.getMouseCoordinate)
+  @Watch('pickable')
+  private pickableChange() {
+    const canvas = this.map.getCanvasContainer()
+
+    if (this.pickable) {
+      this.map.on('click', this.onClick)
+      canvas.style.cursor = 'default'
     } else {
-      this.map.off('click', this.getMouseCoordinate)
+      this.map.off('click', this.onClick)
+      canvas.style.cursor = ''
     }
   }
 
-  @Watch('geojson')
-  private onGeojsonChanged() {
-    this.clearCoordinate()
-    if (this.geojson && Object.keys(this.geojson).length > 0) {
-      this.map.addSource('coordinate', {
-        type: 'geojson',
-        data: this.geojson
-      })
+  @Watch('center', { deep: true })
+  centerChange() {
+    if (this.center && this.center.length > 0) {
+      this.map.panTo([this.center[0], this.center[1]])
+    }
+  }
+
+  @Watch('frameFeature', { deep: true })
+  private frameFeatureChange(val: FeatureGeoJSON | null) {
+    this.clear()
+    if (val && Object.keys(val).length > 0) {
+      this.map.addSource('coordinate', { type: 'geojson', data: val })
       this.map.addLayer({
         id: 'coordinate',
         type: 'fill',
         source: 'coordinate',
         paint: {
-          'fill-outline-color': this.fillOutlineColor,
-          'fill-color': this.fillColor,
-          'fill-opacity': 0.75
+          'fill-color': this.highlightStyle.feature.reg.color
+        }
+      })
+      this.map.addLayer({
+        id: 'coordinate-outline',
+        type: 'line',
+        source: 'coordinate',
+        paint: {
+          'line-color': this.highlightStyle.feature.line.color,
+          'line-width': parseInt(this.highlightStyle.feature.line.size)
         }
       })
       this.map.addLayer({
         id: 'coordinate-text',
         type: 'symbol',
         source: 'coordinate',
-        paint: { 'text-color': '#ffffff' },
+        paint: { 'text-color': this.highlightStyle.label.text.color },
         layout: {
           'text-field': '{name}',
-          'text-size': 14
+          'text-size': parseInt(this.highlightStyle.label.text.fontSize)
         }
       })
     }
   }
 
-  @Watch('bounds', { deep: true })
-  fitBounds() {
-    if (this.bounds && Object.keys(this.bounds).length > 0) {
-      const { xmin, ymin, xmax, ymax } = this.bounds
-      this.map.fitBounds([
-        [xmin, ymin],
-        [xmax, ymax]
-      ])
-    }
+  @Emit('picked-coordinate')
+  emitPickedCoordinate(pickedCoordinate: number[]) {}
+
+  beforeDestroy() {
+    this.clear()
+    this.removeClickEvent()
   }
 
-  // 地图点击回调方法
-  private getMouseCoordinate({
+  private onClick({
     lngLat: { lng, lat }
   }: {
     lngLat: { lng: number; lat: number }
   }) {
-    this.emitMapCoordinate([lng, lat])
+    this.emitPickedCoordinate([lng, lat])
   }
 
-  // 清除
-  private clearCoordinate() {
+  private clear() {
     if (this.map.getLayer('coordinate-text')) {
       this.map.removeLayer('coordinate-text')
+    }
+    if (this.map.getLayer('coordinate-outline')) {
+      this.map.removeLayer('coordinate-outline')
     }
     if (this.map.getLayer('coordinate')) {
       this.map.removeLayer('coordinate')
@@ -159,12 +152,11 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
     }
   }
 
-  private deactivated() {
-    this.clearCoordinate()
-  }
-
-  onMapClear() {
-    this.clearCoordinate()
+  private removeClickEvent() {
+    if (this.pickable) {
+      this.map.off('click', this.onClick)
+      this.map.getCanvasContainer().style.cursor = ''
+    }
   }
 }
 </script>

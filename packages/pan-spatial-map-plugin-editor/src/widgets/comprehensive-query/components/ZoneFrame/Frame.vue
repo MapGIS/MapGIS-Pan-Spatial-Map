@@ -1,32 +1,28 @@
 <template>
   <div class="frame-container">
-    <a-space direction="vertical" style="width:100%">
-      <a-row type="flex" align="middle">
-        <a-col>
-          <label class="col-auto">比例尺：</label>
-        </a-col>
-        <a-col :flex="1">
-          <a-select :options="scaleArray" v-model="scale" style="width:100%" />
-        </a-col>
+    <a-space direction="vertical" style="flex: 1">
+      <a-row>
+        <label>比例尺</label>
       </a-row>
-      <a-row type="flex" align="middle">
-        <a-col>
-          <label class="col-auto">图幅号：</label>
-        </a-col>
-        <a-col :flex="1">
-          <a-input-search
-            placeholder="请输入关键字"
-            allowClear
-            v-model="keyword"
-            enter-button
-            @search="onSearch"
-          />
-        </a-col>
+      <a-row>
+        <a-select :options="scaleArray" v-model="scale" style="width:100%" />
+      </a-row>
+      <a-row>
+        <label>图幅号</label>
+      </a-row>
+      <a-row>
+        <a-input-search
+          placeholder="请输入关键字"
+          allowClear
+          v-model="keyword"
+          enter-button
+          @search="onSearch"
+        />
       </a-row>
       <a-spin :spinning="loading">
         <a-list :data-source="list" size="small" :pagination="pagination">
           <div slot="header">
-            选择图幅：
+            选择图幅
           </div>
           <a-list-item
             slot="renderItem"
@@ -52,13 +48,15 @@
     </a-space>
     <zone-frame-mapbox
       v-if="is2DMapMode"
-      :geojson="geojson"
-      :bounds="bounds"
+      :feature="frameFeature"
+      :center="center"
+      :highlight-style="highlightStyle"
     ></zone-frame-mapbox>
     <zone-frame-cesium
       v-else
-      :geojson="geojson"
-      :bounds="bounds"
+      :feature="frameFeature"
+      :center="center"
+      :highlight-style="highlightStyle"
     ></zone-frame-cesium>
   </div>
 </template>
@@ -67,6 +65,7 @@
 import { Component, Watch, Mixins, Model, Prop } from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
 import {
+  baseConfigInstance,
   MapTypeChanageMixin,
   FeatureGeoJSON,
   utilInstance
@@ -81,9 +80,6 @@ import ZoneFrameCesium from './ZoneFrameCesium.vue'
   }
 })
 export default class Frame extends Mixins(AppMixin) {
-  @Model('change', { type: Object, required: false, default: null })
-  private value!: FeatureGeoJSON | null
-
   @Prop()
   readonly active!: boolean
 
@@ -115,9 +111,9 @@ export default class Frame extends Mixins(AppMixin) {
 
   private selectItem = ''
 
-  private geojson: Record<string, any> = {}
+  private frameFeature: Record<string, any> = {}
 
-  private bounds: Record<string, any> = {}
+  private center = []
 
   private get pagination() {
     if (this.total) {
@@ -141,24 +137,8 @@ export default class Frame extends Mixins(AppMixin) {
     return false
   }
 
-  async onSearch() {
-    this.loading = true
-    try {
-      const { scale, pageNumber, pageSize, keyword } = this
-      const { content, totalElements } = await utilInstance.getFrameNoList({
-        scale,
-        pageNumber: pageNumber - 1,
-        pageSize,
-        keyword
-      })
-      this.list = content || []
-      this.total = totalElements || 0
-    } catch (error) {
-      this.list = []
-      this.total = 0
-    } finally {
-      this.loading = false
-    }
+  private get highlightStyle() {
+    return baseConfigInstance.config.colorConfig
   }
 
   @Watch('scale', { immediate: true })
@@ -178,13 +158,33 @@ export default class Frame extends Mixins(AppMixin) {
     }
   }
 
+  private async onSearch() {
+    this.loading = true
+    try {
+      const { scale, pageNumber, pageSize, keyword } = this
+      const { content, totalElements } = await utilInstance.getFrameNoList({
+        scale,
+        pageNumber: pageNumber - 1,
+        pageSize,
+        keyword
+      })
+      this.list = content || []
+      this.total = totalElements || 0
+    } catch (error) {
+      this.list = []
+      this.total = 0
+    } finally {
+      this.loading = false
+    }
+  }
+
   private async select(item: string) {
     this.selectItem = item
     const {
       data: { XMin, YMin, XMax, YMax }
     } = await utilInstance.getRectByFrameNo(item)
     this.clear()
-    this.geojson = {
+    this.frameFeature = {
       type: 'FeatureCollection',
       features: [
         {
@@ -205,37 +205,34 @@ export default class Frame extends Mixins(AppMixin) {
         }
       ]
     }
-    this.bounds = {
-      xmin: 2 * XMin - XMax,
-      ymin: 2 * YMin - YMax,
-      xmax: 2 * XMax - XMin,
-      ymax: 2 * YMax - YMin
-    }
-    this.$emit('change', this.geojson)
+    this.center = [(XMin + XMax) / 2, (YMin + YMax) / 2]
   }
 
   private clear() {
-    this.geojson = {}
-    this.$emit('change', this.geojson)
+    this.frameFeature = {}
   }
 }
 </script>
 
 <style lang="less">
 .frame-container {
-  padding-top: 10px;
+  display: flex;
+  padding: 10px 3px 0 3px;
   .ant-space {
     .ant-space-item {
       .ant-list {
+        .ant-list-header {
+          padding: 0 0 8px 0;
+        }
         .ant-spin-container {
           max-height: 200px;
           overflow-y: auto;
           .select-item {
-            background-color: @blue-1;
+            background-color: fade(@primary-color, 20%);
           }
           .ant-list-item {
             justify-content: flex-start;
-            padding-left: 10px;
+            padding: 5px 0 5px 10px;
             &:hover {
               background-color: @hover-bg-color;
             }
@@ -243,6 +240,9 @@ export default class Frame extends Mixins(AppMixin) {
               color: @primary-color;
             }
           }
+        }
+        .ant-list-pagination {
+          margin-top: 8px;
         }
       }
     }

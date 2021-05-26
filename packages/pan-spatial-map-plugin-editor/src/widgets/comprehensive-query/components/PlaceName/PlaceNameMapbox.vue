@@ -1,51 +1,21 @@
 <template>
   <div>
     <template v-if="!cluster">
-      <mapgis-marker
-        v-for="(item, i) in markers"
-        :key="item.id"
-        :coordinates="item.coordinates"
-        @mouseenter="
-          e => {
-            mouseenterEvent(e)
-          }
-        "
-      >
-        <img slot="marker" :src="item.img" />
-        <mapgis-popup :coordinates="item.coordinates" :showed="true">
-          <div>
-            <div
-              v-for="(child, n) in getJsonTag(item.properties || {})"
-              v-show="child !== ''"
-              :key="'placename-marker-' + i + 'properties-' + n"
-              class="placename-popup-text"
-            >
-              {{ fieldNames[n] }} : {{ item.properties[child] }}
-            </div>
-          </div>
-        </mapgis-popup>
-      </mapgis-marker>
+      <mp-marker-set-pro :markers="markers" :field-configs="fieldConfigs">
+      </mp-marker-set-pro>
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  Mixins,
-  Provide,
-  Component,
-  Prop,
-  Watch,
-  Emit,
-  Vue
-} from 'vue-property-decorator'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
+import { IFields } from '@mapgis/pan-spatial-map-store'
 import { MapMixin } from '@mapgis/web-app-framework'
 
 @Component()
 export default class PlaceNameMapbox extends Mixins(MapMixin) {
   @Prop({ type: Array, required: true, default: [] })
-  readonly fieldNames!: []
+  readonly fieldConfigs!: IFields[]
 
   @Prop({ type: [Array, Object], required: true, default: [] })
   readonly markers!: Record<string, any>[]
@@ -53,8 +23,6 @@ export default class PlaceNameMapbox extends Mixins(MapMixin) {
   @Prop() cluster!: boolean
 
   @Prop() geojson!: Record<string, unknown>
-
-  public prePopup: any = undefined
 
   // @Watch('geojson', { deep: true })
   // markersChange() {
@@ -129,25 +97,6 @@ export default class PlaceNameMapbox extends Mixins(MapMixin) {
         return t
       }
     })
-  }
-
-  getJsonTag(json: Record<string, any>) {
-    const tags = utilInstance.getJsonTag(json)
-    if (!this.fieldNames.includes('FID')) {
-      const index = tags.indexOf('FID')
-      if (index > -1) {
-        tags.splice(index, 1)
-      }
-    }
-    return tags
-  }
-
-  mouseenterEvent(e: any) {
-    if (this.prePopup && this.prePopup.isOpen()) {
-      this.prePopup.remove()
-    }
-    e.marker.togglePopup()
-    this.prePopup = e.marker.getPopup()
   }
 }
 </script>

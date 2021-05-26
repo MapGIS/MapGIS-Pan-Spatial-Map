@@ -1,163 +1,144 @@
 <template>
   <div class="coordinate-container">
-    <a-checkbox-group v-model="options">
-      <div class="coordinate-setting-item">
-        <a-checkbox value="showCrs">设置输入坐标系</a-checkbox>
-        <div v-show="showCrs" class="input-container">
-          <a-select v-model="crs">
-            <a-select-option
-              v-for="item in crsOptions"
-              :key="item"
-              :value="item"
-            >
-              {{ item }}
-            </a-select-option>
-          </a-select>
-        </div>
-      </div>
-      <div class="coordinate-setting-item">
-        <a-checkbox value="showType">设置坐标单位</a-checkbox>
-        <div v-show="showType" class="input-container">
-          <a-select :options="typeOptions" v-model="type" />
-        </div>
-      </div>
-      <div class="coordinate-setting-item">
-        <a-radio-group v-model="way">
-          <a-radio value="input">
-            输入坐标
-          </a-radio>
-          <a-radio value="click">
-            鼠标拾取
-          </a-radio>
-        </a-radio-group>
-        <a-row v-if="type === 'd'" type="flex" align="middle" :gutter="[0, 10]">
-          <a-col :span="8">X坐标：</a-col>
-          <a-col :span="16">
-            <a-input
-              type="number"
-              v-model="coordDecimal[0]"
-              :disabled="clickWay"
-              @change="onDecimalCoordChanged"
-            />
-          </a-col>
-          <a-col :span="8">Y坐标：</a-col>
-          <a-col :span="16">
-            <a-input
-              type="number"
-              v-model="coordDecimal[1]"
-              :disabled="clickWay"
-              @change="onDecimalCoordChanged"
-            />
-          </a-col>
-        </a-row>
-        <a-row type="flex" align="middle" :gutter="[0, 10]" v-else>
-          <a-col :span="6">X坐标：</a-col>
-          <a-col :span="4">
-            <a-input
-              type="number"
-              v-model="coordDMS[0][0]"
-              :disabled="clickWay"
-              @change="onDMSCoordChanged"
-            />
-          </a-col>
-          <a-col :span="2" class="text-center">度</a-col>
-          <a-col :span="4">
-            <a-input
-              type="number"
-              v-model="coordDMS[0][1]"
-              :disabled="clickWay"
-              @change="onDMSCoordChanged"
-            />
-          </a-col>
-          <a-col :span="2" class="text-center">分</a-col>
-          <a-col :span="4">
-            <a-input
-              type="number"
-              v-model="coordDMS[0][2]"
-              :disabled="clickWay"
-              @change="onDMSCoordChanged"
-            />
-          </a-col>
-          <a-col :span="2" class="text-center">秒</a-col>
-
-          <a-col :span="6">Y坐标：</a-col>
-          <a-col :span="4">
-            <a-input
-              type="number"
-              v-model="coordDMS[1][0]"
-              :disabled="clickWay"
-              @change="onDMSCoordChanged"
-            />
-          </a-col>
-          <a-col :span="2" class="text-center">度</a-col>
-          <a-col :span="4">
-            <a-input
-              type="number"
-              v-model="coordDMS[1][1]"
-              :disabled="clickWay"
-              @change="onDMSCoordChanged"
-            />
-          </a-col>
-          <a-col :span="2" class="text-center">分</a-col>
-          <a-col :span="4">
-            <a-input
-              type="number"
-              v-model="coordDMS[1][2]"
-              :disabled="clickWay"
-              @change="onDMSCoordChanged"
-            />
-          </a-col>
-          <a-col :span="2" class="text-center">秒</a-col>
-        </a-row>
-      </div>
-      <div class="coordinate-setting-item">
-        <a-checkbox value="checkSheet">计算图幅</a-checkbox>
-        <a-row
-          v-show="checkSheet"
-          type="flex"
-          class="input-container"
-          align="middle"
+    <a-space direction="vertical" style="flex: 1">
+      <a-row>
+        <label>坐标系</label>
+      </a-row>
+      <a-row>
+        <a-select v-model="crs" style="width: 100%;">
+          <a-select-option v-for="item in crsOptions" :key="item" :value="item">
+            {{ item }}
+          </a-select-option>
+        </a-select>
+      </a-row>
+      <a-row>
+        <label>单位</label>
+      </a-row>
+      <a-row>
+        <a-select :options="typeOptions" v-model="type" style="width: 100%;" />
+      </a-row>
+      <a-row type="flex" :gutter="[10, 0]" align="middle">
+        <a-col flex="auto"><label>X坐标</label></a-col>
+        <a-col style="display: flex; align-items: center;">
+          <a-switch size="small" v-model="pickable" />
+          <span style="padding-left: 8px;">鼠标拾取</span>
+        </a-col>
+      </a-row>
+      <a-row v-if="type === 'd'">
+        <a-input
+          type="number"
+          v-model="coordDecimal[0]"
+          @change="onDecimalCoordChanged"
+        />
+      </a-row>
+      <a-row v-else type="flex" :gutter="[10, 0]" align="middle">
+        <a-col :span="6">
+          <a-input
+            type="number"
+            v-model="coordDMS[0][0]"
+            @change="onDMSCoordChanged"
+          />
+        </a-col>
+        <a-col :span="2">度</a-col>
+        <a-col :span="6">
+          <a-input
+            type="number"
+            v-model="coordDMS[0][1]"
+            @change="onDMSCoordChanged"
+          />
+        </a-col>
+        <a-col :span="2">分</a-col>
+        <a-col :span="6">
+          <a-input
+            type="number"
+            v-model="coordDMS[0][2]"
+            @change="onDMSCoordChanged"
+          />
+        </a-col>
+        <a-col :span="2">秒</a-col>
+      </a-row>
+      <a-row>
+        <a-col><label>Y坐标</label></a-col>
+      </a-row>
+      <a-row v-if="type === 'd'">
+        <a-input
+          type="number"
+          v-model="coordDecimal[1]"
+          @change="onDecimalCoordChanged"
+        />
+      </a-row>
+      <a-row v-else type="flex" :gutter="[10, 0]" align="middle">
+        <a-col :span="6">
+          <a-input
+            type="number"
+            v-model="coordDMS[1][0]"
+            @change="onDMSCoordChanged"
+          />
+        </a-col>
+        <a-col :span="2">度</a-col>
+        <a-col :span="6">
+          <a-input
+            type="number"
+            v-model="coordDMS[1][1]"
+            @change="onDMSCoordChanged"
+          />
+        </a-col>
+        <a-col :span="2">分</a-col>
+        <a-col :span="6">
+          <a-input
+            type="number"
+            v-model="coordDMS[1][2]"
+            @change="onDMSCoordChanged"
+          />
+        </a-col>
+        <a-col :span="2">秒</a-col>
+      </a-row>
+      <a-row type="flex" :gutter="[10, 0]" align="middle">
+        <a-col flex="auto"><label>比例尺</label></a-col>
+        <a-col style="display: flex; align-items: center;">
+          <a-switch size="small" v-model="frameable" />
+          <span style="padding-left: 8px;">计算图幅</span>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-select :options="scaleArray" v-model="scale" style="width: 100%;" />
+      </a-row>
+      <a-row>
+        <label v-show="frameNo" class="frame-text">图幅号：{{ frameNo }}</label>
+      </a-row>
+      <a-row>
+        <a-button
+          type="primary"
+          @click="onLocate"
+          style="width: 100%; margin-top: 10px;"
+          :disabled="coordDecimal[0].length == 0 || coordDecimal[1].length == 0"
         >
-          <a-col :span="8">设置比例尺：</a-col>
-
-          <a-col :span="16">
-            <a-select :options="scaleArray" v-model="scale" />
-          </a-col>
-        </a-row>
-      </div>
-    </a-checkbox-group>
-    <a-divider />
-    <div v-show="frameNo" class="coordinate-setting-item">
-      图幅号：
-      <a-tag color="#87d068">
-        {{ frameNo }}
-      </a-tag>
-    </div>
-    <a-row type="flex" justify="space-around" style="margin-top:20px">
-      <a-button type="primary" @click="getClipByPoint">坐标定位</a-button>
-      <a-button type="primary" @click="clear">清除</a-button>
-    </a-row>
+          坐标定位
+        </a-button>
+      </a-row>
+    </a-space>
     <coordinate-mapbox
       v-if="is2DMapMode"
-      :geojson="geojson"
-      :bounds="bounds"
-      :isClick="clickWay"
+      :frame-feature="frameFeature"
+      :pickable="pickable"
       :coordinate="coordInDefaultCRS"
-      @mapCoordinate="getMapCoordinate"
+      :center="center"
+      :highlight-style="highlightStyle"
+      @picked-coordinate="onPickedCoordinate"
     ></coordinate-mapbox>
     <coordinate-cesium
       v-else
-      :geojson="geojson"
-      :bounds="bounds"
-      :isClick="clickWay"
+      :frame-feature="frameFeature"
+      :pickable="pickable"
       :coordinate="coordInDefaultCRS"
-      @mapCoordinate="getMapCoordinate"
+      :center="center"
+      :highlight-style="highlightStyle"
+      @picked-coordinate="onPickedCoordinate"
     ></coordinate-cesium>
   </div>
 </template>
 
 <script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component, Watch, Mixins, Model, Prop } from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
 import {
@@ -173,16 +154,8 @@ import CoordinateCesium from './CoordinateCesium.vue'
   components: { CoordinateMapbox, CoordinateCesium }
 })
 export default class Coordinate extends Mixins(AppMixin) {
-  @Model('change', { type: Object, required: false, default: null })
-  private value!: FeatureGeoJSON | null
-
   @Prop()
   readonly active!: boolean
-
-  private geojson: Record<string, any> = {}
-
-  // 选择的功能项
-  public options = ['showCrs', 'showType', 'checkSheet']
 
   private defaultConfig = baseConfigInstance.config
 
@@ -204,11 +177,14 @@ export default class Coordinate extends Mixins(AppMixin) {
   // 坐标单位
   private type = 'd'
 
-  // 坐标输入方式
-  private way = 'input'
+  // 是否可拾取
+  private pickable = false
 
   // 底图坐标
-  private coordInDefaultCRS = [0, 0]
+  private coordInDefaultCRS = []
+
+  // 平移中心点
+  private center = []
 
   // 用户坐标
   private coordDecimal = ['', '']
@@ -218,62 +194,6 @@ export default class Coordinate extends Mixins(AppMixin) {
     ['', '', ''],
     ['', '', '']
   ]
-
-  private onDecimalCoordChanged() {
-    const x = this.coordDecimal[0]
-    const y = this.coordDecimal[1]
-    const xx = utilInstance.coordinateStyleTransformation(x)
-    this.coordDMS[0][0] = xx.degree.toString()
-    this.coordDMS[0][1] = xx.minute!.toString()
-    this.coordDMS[0][2] = xx.second!.toString()
-    const yy = utilInstance.coordinateStyleTransformation(y)
-    this.coordDMS[1][0] = yy.degree.toString()
-    this.coordDMS[1][1] = yy.minute!.toString()
-    this.coordDMS[1][2] = yy.second!.toString()
-
-    this.onCoordinateChanged(x, y)
-  }
-
-  private onDMSCoordChanged() {
-    const xDFM = this.coordDMS[0]
-    const x = utilInstance.degreeToDecimal(
-      Number(xDFM[0]),
-      Number(xDFM[1]),
-      Number(xDFM[2])
-    )
-    const yDFM = this.coordDMS[1]
-    const y = utilInstance.degreeToDecimal(
-      Number(yDFM[0]),
-      Number(yDFM[1]),
-      Number(yDFM[2])
-    )
-
-    this.coordDecimal = [x.toString(), y.toString()]
-
-    this.onCoordinateChanged(x, y)
-  }
-
-  // 坐标变化监听。
-  private async onCoordinateChanged(x: number, y: number) {
-    let xTemp = x
-    let yTemp = y
-
-    if (this.crs !== this.defaultCrs) {
-      // 底图和用户选择的坐标系不一样
-      const { data } = await utilInstance.transPoint(
-        [[Number(xTemp), Number(yTemp)]],
-        this.crs,
-        this.defaultCrs
-      )
-      if (data.Code === 1) {
-        xTemp = data.Data[0].x
-        yTemp = data.Data[0].y
-      }
-    }
-
-    this.coordInDefaultCRS = [Number(xTemp), Number(yTemp)]
-    this.locatate()
-  }
 
   // 比例尺列表
   private scaleArray = [
@@ -291,26 +211,15 @@ export default class Coordinate extends Mixins(AppMixin) {
   // 比例尺
   private scale = 'Scale_20w'
 
+  // 是否计算图幅
+  private frameable = false
+
   private frameNo = ''
 
-  private geojson: Record<string, any> = {}
+  private frameFeature: Record<string, any> = {}
 
-  private bounds: Record<string, any> = {}
-
-  private get showCrs() {
-    return this.options.includes('showCrs')
-  }
-
-  private get showType() {
-    return this.options.includes('showType')
-  }
-
-  private get checkSheet() {
-    return this.options.includes('checkSheet')
-  }
-
-  private get clickWay() {
-    return this.way === 'click'
+  private get highlightStyle() {
+    return baseConfigInstance.config.colorConfig
   }
 
   @Watch('active', { immediate: true })
@@ -320,14 +229,21 @@ export default class Coordinate extends Mixins(AppMixin) {
     }
   }
 
+  @Watch('frameable')
+  frameableChange() {
+    if (!this.frameable) {
+      this.frameNo = ''
+      this.frameFeature = {}
+    }
+  }
+
   @Watch('frameNo')
-  private async changeFrameNo(val: string) {
-    const geoJson: FeatureGeoJSON | null = null
+  private async frameNochange(val: string) {
     if (val) {
       const {
         data: { XMin, YMin, XMax, YMax }
       } = await utilInstance.getRectByFrameNo(val)
-      this.geojson = {
+      this.frameFeature = {
         type: 'FeatureCollection',
         features: [
           {
@@ -348,19 +264,70 @@ export default class Coordinate extends Mixins(AppMixin) {
           }
         ]
       }
-      this.bounds = {
-        xmin: 2 * XMin - XMax,
-        ymin: 2 * YMin - YMax,
-        xmax: 2 * XMax - XMin,
-        ymax: 2 * YMax - YMin
+    }
+  }
+
+  private async onLocate() {
+    let xTemp = this.coordDecimal[0]
+    let yTemp = this.coordDecimal[1]
+
+    if (this.crs !== this.defaultCrs) {
+      // 底图和用户选择的坐标系不一样
+      const { data } = await utilInstance.transPoint(
+        [[Number(xTemp), Number(yTemp)]],
+        this.crs,
+        this.defaultCrs
+      )
+      if (data.Code === 1) {
+        xTemp = data.Data[0].x
+        yTemp = data.Data[0].y
       }
     }
-    this.$emit('change', this.geojson)
+
+    this.coordInDefaultCRS = [Number(xTemp), Number(yTemp)]
+    this.center = [Number(xTemp), Number(yTemp)]
+
+    if (this.frameable) {
+      this.getFrameNo()
+    }
+  }
+
+  private onDecimalCoordChanged() {
+    const x = this.coordDecimal[0]
+    const y = this.coordDecimal[1]
+    const xx = utilInstance.coordinateStyleTransformation(x)
+    this.coordDMS[0][0] = xx.degree.toString()
+    this.coordDMS[0][1] = xx.minute!.toString()
+    this.coordDMS[0][2] = xx.second!.toString()
+    const yy = utilInstance.coordinateStyleTransformation(y)
+    this.coordDMS[1][0] = yy.degree.toString()
+    this.coordDMS[1][1] = yy.minute!.toString()
+    this.coordDMS[1][2] = yy.second!.toString()
+  }
+
+  private onDMSCoordChanged() {
+    const xDFM = this.coordDMS[0]
+    const x = utilInstance.degreeToDecimal(
+      Number(xDFM[0]),
+      Number(xDFM[1]),
+      Number(xDFM[2])
+    )
+    const yDFM = this.coordDMS[1]
+    const y = utilInstance.degreeToDecimal(
+      Number(yDFM[0]),
+      Number(yDFM[1]),
+      Number(yDFM[2])
+    )
+
+    this.coordDecimal = [x.toString(), y.toString()]
   }
 
   // 地图点击回调方法
-  private async getMapCoordinate(val: number[]) {
+  private async onPickedCoordinate(val: number[]) {
     const [lng, lat] = val
+
+    // 临时修改图上坐标，让标注可以跟随拾取位置移动，后面点击定位按钮后，会再次计算该值
+    this.coordInDefaultCRS = [lng, lat]
 
     let x = lng.toString()
     let y = lat.toString()
@@ -376,10 +343,7 @@ export default class Coordinate extends Mixins(AppMixin) {
         y = (data.Data[0].y as number).toString()
       }
     }
-
-    this.coordInDefaultCRS = [Number(x), Number(y)]
-
-    this.coordDecimal = this.coordInDefaultCRS
+    this.coordDecimal = [Number(x), Number(y)]
 
     const xx = utilInstance.coordinateStyleTransformation(x)
     this.coordDMS[0][0] = xx.degree.toString()
@@ -389,18 +353,10 @@ export default class Coordinate extends Mixins(AppMixin) {
     this.coordDMS[1][0] = yy.degree.toString()
     this.coordDMS[1][1] = yy.minute!.toString()
     this.coordDMS[1][2] = yy.second!.toString()
-
-    this.locatate()
-
-    this.$forceUpdate()
-  }
-
-  private locatate() {
-    this.getClipByPoint()
   }
 
   // 计算图幅号
-  private async getClipByPoint() {
+  private async getFrameNo() {
     const {
       data: { frameNo }
     } = await utilInstance.getClipByPoint(
@@ -414,45 +370,23 @@ export default class Coordinate extends Mixins(AppMixin) {
 
   // 清除
   private clear() {
-    this.way = 'input'
+    this.pickable = false
     this.frameNo = ''
-    this.coordInDefaultCRS = [0, 0]
-    this.coordDecimal = ['', '']
-    this.geojson = {}
+    this.frameFeature = {}
+    this.coordInDefaultCRS = []
   }
 }
 </script>
 
 <style lang="less">
 .coordinate-container {
-  padding-top: 10px;
-  .ant-checkbox-group {
-    .coordinate-setting-item {
-      margin-bottom: 20px;
-      &:last-child {
-        margin: 0;
-      }
-      .input-container {
-        margin-top: 10px;
-      }
-      .ant-row-flex {
-        .text-center {
-          text-align: center;
-        }
-        .ant-col-4 {
-          .ant-input {
-            padding: 4px;
-          }
-        }
-      }
-    }
-    .ant-select,
-    .ant-input {
-      width: 100%;
-    }
-    .ant-radio-group {
-      margin-bottom: 10px;
-    }
+  display: flex;
+  padding: 10px 3px 0 3px;
+  .frame-text {
+    color: @primary-color;
+  }
+  .ant-input {
+    padding: 4px 2px;
   }
 }
 </style>

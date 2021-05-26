@@ -11,11 +11,21 @@
     </div>
     <div class="search-tab-container" v-if="showResult && !showResultSet">
       <div class="search-switch-container">
-        <span :class="{ active: !cluster }">面板展示</span>
-        <a-switch v-model="cluster" @change="onChange" />
+        <a-switch v-model="cluster" @change="onChange" size="small" />
         <span :class="{ active: cluster }">聚合展示</span>
+        <a-icon
+          class="action"
+          style="flex: 1; text-align: right;"
+          :type="shrink ? 'up' : 'down'"
+          @click="shrink = !shrink"
+        />
       </div>
-      <a-tabs v-model="tab" type="card">
+      <a-tabs
+        v-model="tab"
+        type="card"
+        v-show="!shrink"
+        style="margin-top: 8px;"
+      >
         <a-tab-pane v-for="item in selected" :key="item" :tab="item">
           <place-name-panel
             :widgetInfo="widgetInfo"
@@ -33,9 +43,18 @@
       </a-tabs>
     </div>
     <place-name-mapbox
-      ref="place-name-mapbox"
+      v-if="mapRender === mapboxRender"
+      ref="refPlaceNameMapbox"
       :markers="markers"
-      :fieldNames="fieldNames"
+      :field-configs="fieldConfigs"
+      :cluster="cluster"
+      :geojson="geojson"
+    />
+    <place-name-cesium
+      v-else
+      ref="refPlaceNameCesium"
+      :markers="markers"
+      :field-configs="fieldConfigs"
       :cluster="cluster"
       :geojson="geojson"
     />
@@ -46,6 +65,7 @@
 import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import PlaceNamePanel from './PlaceNamePanel'
 import PlaceNameMapbox from './PlaceNameMapbox'
+import PlaceNameCesium from './PlaceNameCesium'
 import {
   ExhibitionControllerMixin,
   IAttributeTableExhibition,
@@ -56,7 +76,7 @@ import {
 import { LayerType, AppMixin, MapMixin } from '@mapgis/web-app-framework'
 import * as turf from '@turf/turf'
 
-@Component({ components: { PlaceNamePanel, PlaceNameMapbox } })
+@Component({ components: { PlaceNamePanel, PlaceNameMapbox, PlaceNameCesium } })
 export default class PlaceName extends Mixins(
   ExhibitionControllerMixin,
   AppMixin,
@@ -78,7 +98,7 @@ export default class PlaceName extends Mixins(
 
   private markers = []
 
-  private fieldNames: string[] = []
+  private fieldConfigs: string[] = []
 
   private cluster = false
 
@@ -86,6 +106,8 @@ export default class PlaceName extends Mixins(
   private showResultSet = false
 
   private geojson = {}
+
+  private shrink = false
 
   private get allItems() {
     return this.widgetInfo.config.placeName.queryTable
@@ -241,13 +263,13 @@ export default class PlaceName extends Mixins(
     this.tab = ''
     this.showTypeChange()
     this.markers = []
-    this.fieldNames = []
+    this.fieldConfigs = []
     this.geojson = {}
   }
 
-  showCoords(markers, fieldNames) {
+  showCoords(markers, fieldConfigs) {
     this.markers = markers
-    this.fieldNames = fieldNames
+    this.fieldConfigs = fieldConfigs
   }
 
   updateGeojson(geojson) {
@@ -255,7 +277,15 @@ export default class PlaceName extends Mixins(
   }
 
   setCenter(positionCoord) {
-    this.$refs['place-name-mapbox'].setMapCenter(positionCoord)
+    if (this.mapRender === this.mapboxRender) {
+      if (this.$refs.refPlaceNameMapbox) {
+        this.$refs.refPlaceNameMapbox.setMapCenter(positionCoord)
+      }
+    } else {
+      if (this.$refs.refPlaceNameCesium) {
+        this.$refs.refPlaceNameCesium.setMapCenter(positionCoord)
+      }
+    }
   }
 }
 </script>
@@ -285,14 +315,20 @@ export default class PlaceName extends Mixins(
     overflow: hidden;
     .search-switch-container {
       display: flex;
-      justify-content: flex-end;
-      margin-bottom: 10px;
+      justify-content: flex-start;
       align-items: center;
       .active {
         color: @primary-color;
       }
       .ant-switch {
         margin: 0 10px;
+      }
+      .action {
+        cursor: pointer;
+        padding-left: 8px;
+        &:hover {
+          color: @primary-color;
+        }
       }
     }
     /deep/ .ant-tabs {

@@ -1,6 +1,5 @@
 <template>
-  <mp-mark-popup-mapbox
-    ref="mpMarkPopupMapbox"
+  <mp-marker-plotting
     :markers="markers"
     :filter-with-map="filterWithMap"
     :selection-bound="selectionBound"
@@ -17,7 +16,7 @@ import {
   GFeature
 } from '@mapgis/pan-spatial-map-store'
 // 本地测试使用的临时地址
-import MpMarkPopupMapbox from '../../../../pan-spatial-map-plugin-workspace/src/components/AttributeTable/TableMapbox.vue'
+import MpMarkerPlotting from '../../../../pan-spatial-map-plugin-workspace/src/components/MarkerPlotting/MarkerPlotting.vue'
 
 interface IFeature {
   key?: string // 图层UUID
@@ -45,7 +44,7 @@ interface IMarker {
  */
 @Component({
   components: {
-    MpMarkPopupMapbox
+    MpMarkerPlotting
   }
 })
 export default class MpMarkersHighlightPopup extends Mixins<

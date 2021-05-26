@@ -105,9 +105,9 @@
       >
       </a-pagination>
     </div>
-    <mp-table-mapbox
+    <mp-marker-plotting
       v-if="mapRender === mapboxRender"
-      ref="tableMapbox"
+      ref="refMarkerPlotting"
       :markers="markers"
       :filter-with-map="filterWithMap"
       :fit-bound="fitBound"
@@ -115,9 +115,9 @@
       :highlight-style="highlightStyle"
       @map-bound-change="onGetGeometry"
     />
-    <mp-table-cesium
+    <mp-3d-marker-plotting
       v-else
-      ref="tableCesium"
+      ref="ref3dMarkerPlotting"
       :markers="markers"
       :filter-with-map="filterWithMap"
       :fit-bound="fitBound"
@@ -190,8 +190,8 @@ import { AppMixin, LayerType, UUID } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
 import MpActionColumns from './ActionColumns.vue'
-import MpTableMapbox from './TableMapbox.vue'
-import MpTableCesium from './TableCesium.vue'
+import MpMarkerPlotting from '../MarkerPlotting/MarkerPlotting.vue'
+import Mp3dMarkerPlotting from '../3dMarkerPlotting/3dMarkerPlotting.vue'
 import MpFilter from '../Filter/Filter.vue'
 import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
 
@@ -199,8 +199,8 @@ import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
   name: 'MpAttributeTable',
   components: {
     MpActionColumns,
-    MpTableMapbox,
-    MpTableCesium,
+    MpMarkerPlotting,
+    Mp3dMarkerPlotting,
     MpAttrStatistics,
     MpFilter
   }
@@ -313,7 +313,7 @@ export default class MpAttributeTable extends Mixins(
   }
 
   private get highlightStyle() {
-    return baseConfigInstance.config.colorConfig.feature
+    return baseConfigInstance.config.colorConfig
   }
 
   @Watch('optionVal', { deep: true, immediate: true })
@@ -417,12 +417,12 @@ export default class MpAttributeTable extends Mixins(
     if (this.selection.length == 0) return
 
     if (this.mapRender === this.mapboxRender) {
-      if (this.$refs.tableMapbox) {
-        this.$refs.tableMapbox.zoomTo(this.selectionBound)
+      if (this.$refs.refMarkerPlotting) {
+        this.$refs.refMarkerPlotting.zoomTo(this.selectionBound)
       }
     } else {
-      if (this.$refs.tableCesium) {
-        this.$refs.tableCesium.zoomTo(this.selectionBound)
+      if (this.$refs.ref3dMarkerPlotting) {
+        this.$refs.ref3dMarkerPlotting.zoomTo(this.selectionBound)
       }
     }
   }

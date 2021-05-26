@@ -1,22 +1,11 @@
 <template>
   <div>
-    <div v-for="(marker, i) in markers" :key="'result-marker-' + i">
-      <cesium-marker
-        :marker="marker"
-        :currentMarkerId="currentMarkerId"
-        @marker-id="updateCurrentMarkerId"
-        @mouseenter="
-          e => {
-            mouseEnterEvent(e, marker.id)
-          }
-        "
-        @mouseleave="
-          e => {
-            mouseLeaveEvent(e, marker.id)
-          }
-        "
-      />
-    </div>
+    <mp-3d-marker-set-pro
+      :markers="markers"
+      @mouseenter="mouseEnterEvent"
+      @mouseleave="mouseLeaveEvent"
+    >
+    </mp-3d-marker-set-pro>
   </div>
 </template>
 
@@ -28,14 +17,13 @@ import {
   cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
 import { MapMixin } from '@mapgis/web-app-framework'
-
-import CesiumMarker from '../CesiumMarker/CesiumMarker.vue'
+import Mp3dMarkerSetPro from '../3dMarkerPro/3dMarkerSetPro.vue'
 
 @Component({
-  name: 'MpTableCesium',
-  components: { CesiumMarker }
+  name: 'Mp3dMarkerPlotting',
+  components: { Mp3dMarkerSetPro }
 })
-export default class MpTableCesium extends Mixins(MapMixin) {
+export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   @Prop({
     type: Boolean,
     default: false
@@ -73,8 +61,6 @@ export default class MpTableCesium extends Mixins(MapMixin) {
   readonly highlightStyle!: Record<string, any>
 
   private entityNames: string[] = []
-
-  private currentMarkerId = ''
 
   @Watch('fitBound')
   changeMapBound() {
@@ -169,10 +155,6 @@ export default class MpTableCesium extends Mixins(MapMixin) {
     }
   }
 
-  private updateCurrentMarkerId(id: string) {
-    this.currentMarkerId = id
-  }
-
   private mouseEnterEvent(e: any, id) {
     // 高亮要素
     const marker = this.markers.find(marker => marker.id == id)
@@ -195,7 +177,7 @@ export default class MpTableCesium extends Mixins(MapMixin) {
       // 点要素的高亮符号怎么处理?
     } else if (featureGeoJson.features[0].geometry.type === 'LineString') {
       const lineColor = new this.Cesium.Color.fromCssColorString(
-        this.highlightStyle.line.color
+        this.highlightStyle.feature.line.color
       )
       for (let i = 0; i < featureGeoJson.features.length; i += 1) {
         const coords = featureGeoJson.features[i].geometry.coordinates
@@ -207,16 +189,16 @@ export default class MpTableCesium extends Mixins(MapMixin) {
             .join(',')
             .split(',')
             .map(Number),
-          width: this.highlightStyle.line.size,
+          width: this.highlightStyle.feature.line.size,
           color: lineColor
         })
       }
     } else if (featureGeoJson.features[0].geometry.type === 'Polygon') {
       const fillColor = new this.Cesium.Color.fromCssColorString(
-        this.highlightStyle.reg.color
+        this.highlightStyle.feature.reg.color
       )
       const fillOutlineColor = new this.Cesium.Color.fromCssColorString(
-        this.highlightStyle.line.color
+        this.highlightStyle.feature.line.color
       )
       for (let i = 0; i < featureGeoJson.features.length; i += 1) {
         const coords = featureGeoJson.features[i].geometry.coordinates[0]
@@ -305,8 +287,4 @@ export default class MpTableCesium extends Mixins(MapMixin) {
   }
 }
 </script>
-<style lang="scss" scoped>
-.width100 {
-  width: 100%;
-}
-</style>
+<style lang="scss" scoped></style>
