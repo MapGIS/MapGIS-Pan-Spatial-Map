@@ -1,23 +1,40 @@
 <template>
   <div>
-    <MapboxMarkerShow v-if="is2DMapMode" :markers="markers"></MapboxMarkerShow>
+    <MapboxMarkerShow
+      v-show="is2DMapMode"
+      :markers="markers"
+    ></MapboxMarkerShow>
+    <CesiumMarkerShow
+      v-show="!is2DMapMode"
+      :markers="markers"
+    ></CesiumMarkerShow>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-
+import { eventBus } from '@mapgis/pan-spatial-map-store'
 import { AppMixin } from '@mapgis/web-app-framework'
 
 import MapboxMarkerShow from './MapboxMarkerShow.vue'
+import CesiumMarkerShow from './CesiumMarkerShow.vue'
 
 @Component({
   components: {
-    MapboxMarkerShow
+    MapboxMarkerShow,
+    CesiumMarkerShow
   }
 })
 export default class MarkerShow extends Mixins(AppMixin) {
   @Prop({ type: Array, required: true }) markers!: Record<string, any>[]
+
+  // 监听渲染器切换事件，切换回二维时，通知三维标注点隐藏信息窗口
+  @Watch('mapRender')
+  mapRenderChange() {
+    if (this.is2DMapMode) {
+      eventBus.$emit('emitMapRenderChange')
+    }
+  }
 }
 </script>
 

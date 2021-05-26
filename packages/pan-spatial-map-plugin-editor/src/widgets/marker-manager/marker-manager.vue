@@ -345,8 +345,6 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
   // 通过文件导入添加标注
   addMarkers(markers: any[]) {
-    console.log('hahah')
-
     this.tableData.push(markers[0])
   }
 
