@@ -63,7 +63,8 @@ export default class AddServicesData extends Mixins(
   AppMixin,
   AddServicesMixin
 ) {
-  @Prop(Array) readonly serviceTypes!: ServiceType[]
+  // 服务类型与文件类型下拉项数据的集合(子类别)
+  @Prop(Array) readonly serviceTypes!: object[]
 
   @Prop(Object) widgetConfig!: object
 
@@ -71,7 +72,7 @@ export default class AddServicesData extends Mixins(
   private serviceCategory = ''
 
   // 子类别选中项
-  private serviceType = null
+  private serviceType = ''
 
   // 搜索框输入值
   private keyword = ''
@@ -124,11 +125,11 @@ export default class AddServicesData extends Mixins(
   @Watch('serviceType', { immediate: true })
   getData() {
     this.tableData = this.services.filter(item => {
-      if (this.serviceCategory && item.category !== this.serviceCategory)
-        return false
-      if (this.serviceType && item.type !== this.serviceType) return false
-      if (!item.name.includes(this.keyword)) return false
-      return true
+      return (
+        item.category === this.serviceCategory &&
+        item.type === this.serviceType &&
+        item.name.includes(this.keyword)
+      )
     })
     // 默认勾选显示的图层
     this.selectedRowKeys = this.tableData
@@ -140,6 +141,11 @@ export default class AddServicesData extends Mixins(
   }
 
   created() {
+    this.initData()
+  }
+
+  // 初始化各项数据
+  private initData() {
     this.serviceCategory = this.serviceCategories[0].name
     this.serviceType = this.serviceTypes[0].value
     this.$message.config({
@@ -150,7 +156,7 @@ export default class AddServicesData extends Mixins(
   }
 
   // Table选中项发生变化时的回调
-  onSelectChange(selectedRowKeys) {
+  private onSelectChange(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys
     let newChecked = []
     let newUnChecked = []
@@ -199,18 +205,18 @@ export default class AddServicesData extends Mixins(
   }
 
   // 点击服务地址列的回调
-  onOpenUrl(url) {
+  private onOpenUrl(url) {
     window.open(url)
   }
 
   // 点击删除图标的回调
-  onDelete(text) {
+  private onDelete(text) {
     this.deleteService(text)
     this.getData()
   }
 
   // 点击保存服务按钮的回调
-  onSave() {
+  private onSave() {
     const config = { ...this.widgetConfig, ...{ services2D: this.services } }
     api
       .saveWidgetConfig({

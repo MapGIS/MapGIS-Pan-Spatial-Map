@@ -46,13 +46,21 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
   // 微件配置信息
   private widgetConfig
 
-  private allTypes: ServiceType[] = []
+  // 服务类型与文件类型下拉项数据的集合
+  private allTypes: object[] = []
 
-  private tempServiceTypes: ServiceType[] = []
+  // 服务类型下拉项数据
+  private tempServiceTypes: object[] = []
 
-  private tempfileTypes: ServiceType[] = []
+  // 文件类型下拉项数据
+  private tempfileTypes: object[] = []
 
   created() {
+    this.initData()
+  }
+
+  // 初始化各项数据
+  private initData() {
     this.widgetConfig = this.widgetInfo.config
     this.tempServiceTypes = this.serviceTypes2D
     this.tempfileTypes = this.fileTypes2D
@@ -62,11 +70,11 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
     }
     this.allTypes = [...this.tempServiceTypes, ...this.tempfileTypes]
 
-    this.oldServicesToNew()
+    this.getConfigData()
   }
 
   // 通过配置获取数据，并初始化服务分类下拉项
-  oldServicesToNew() {
+  private getConfigData() {
     const doc: Document = this.document
     const selectCategory = []
     let tempServices: Record<string, any>[] = []
