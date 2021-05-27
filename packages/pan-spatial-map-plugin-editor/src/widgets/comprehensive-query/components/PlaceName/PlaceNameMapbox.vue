@@ -101,4 +101,19 @@ export default class PlaceNameMapbox extends Mixins(MapMixin) {
 }
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+.table-markers {
+  max-height: 200px;
+  overflow: auto;
+  .table-marker-item {
+    padding: 0;
+    font-size: 10px;
+    div {
+      padding: 2px 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+</style>

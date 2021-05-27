@@ -165,6 +165,8 @@ export default class Coordinate extends Mixins(AppMixin) {
   // 坐标系列表
   private crsOptions = this.defaultConfig.commonProjection.split(',')
 
+  loading = false
+
   // 坐标系
   private crs = this.defaultCrs
 
@@ -259,7 +261,7 @@ export default class Coordinate extends Mixins(AppMixin) {
                   [XMin, YMax],
                   [XMin, YMin]
                 ]
-              ]
+              }
             }
           }
         ]
@@ -282,6 +284,11 @@ export default class Coordinate extends Mixins(AppMixin) {
         xTemp = data.Data[0].x
         yTemp = data.Data[0].y
       }
+      this.$emit('change', this.geojson)
+    } catch (error) {
+      this.$message.error('获取图幅失败')
+    } finally {
+      this.loading = false
     }
 
     this.coordInDefaultCRS = [Number(xTemp), Number(yTemp)]

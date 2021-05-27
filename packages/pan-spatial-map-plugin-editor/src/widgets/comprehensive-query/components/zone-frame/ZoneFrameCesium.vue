@@ -84,6 +84,13 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
         )
         if (this.bounds && JSON.stringify(this.bounds) !== '{}') {
           const center = utilInstance.getGeoJsonFeatureCenter(features[i])
+          const rgba = utilInstance.getRGBA('#FD6A6F', 1)
+          const textColor = new this.Cesium.Color(
+            rgba.r / 255,
+            rgba.g / 255,
+            rgba.b / 255,
+            rgba.a
+          )
           const text = this.webGlobe.appendLabel(
             // 经度、纬度、高程
             center[0],
@@ -93,11 +100,15 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
             features[i].properties.name,
             {
               // 文字大小、字体样式
-              font: '15pt 楷体',
+              font: '12pt 楷体',
               // 文本颜色
-              fillColor: this.Cesium.Color.WHITE,
+              fillColor: textColor,
               // 文本样式，FILL：只填充；OUTLINE：只显示轮廓；FILL_AND_OUTLINE：填充颜色并显示轮廓
-              style: this.Cesium.LabelStyle.OUTLINE,
+              style: this.Cesium.LabelStyle.FILL_AND_OUTLINE,
+              // 边线颜色
+              outlineColor: this.Cesium.Color.RED,
+              // 边线宽度
+              outlineWidth: 3,
               // 文本垂直方向与坐标点的相对位置：LEFT、CENTER、RIGHT
               verticalOrigin: this.Cesium.VerticalOrigin.CENTER,
               // 文本水平方向与坐标点的相对位置：LEFT、CENTER、RIGHT
@@ -143,6 +154,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
   }
 
   clear() {
+    debugger
     for (let i = this.entityNames.length - 1; i >= 0; i -= 1) {
       this.cesiumUtil.removeEntityByName(this.entityNames[i])
       this.entityNames.pop()

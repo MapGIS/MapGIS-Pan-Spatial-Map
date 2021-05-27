@@ -56,7 +56,7 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
         paint: { 'text-color': '#FD6A6F' },
         layout: {
           'text-field': '{name}',
-          'text-size': 14
+          'text-size': 16
         }
       })
       if (val && JSON.stringify(val) !== '{}') {

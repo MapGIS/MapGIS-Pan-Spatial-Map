@@ -186,27 +186,6 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
     if (val && JSON.stringify(val) !== '{}') {
       const box = bbox(val)
       const polygon = bboxPolygon(box)
-      // if (this.map.getLayer('zone-frame-container')) {
-      //   this.map.removeLayer('zone-frame-container')
-      // }
-      // if (this.map.getSource('zone-frame-container')) {
-      //   this.map.removeSource('zone-frame-container')
-      // }
-      // this.map.addSource('zone-frame-container', {
-      //   type: 'geojson',
-      //   data: polygon
-      // })
-      // this.map.addLayer({
-      //   id: 'zone-frame-container',
-      //   type: 'fill',
-      //   source: 'zone-frame-container',
-      //   paint: {
-      //     'fill-outline-color': 'yellow',
-      //     'fill-color': 'yellow',
-      //     'fill-opacity': 0.75
-      //     // 'line-width': Number(this.lineWidth)
-      //   }
-      // })
 
       this.$emit('change', polygon)
     } else {
@@ -285,7 +264,12 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
             params.gdbp = gdbp
           }
           const info = await queryFeaturesInstance.query(params, false)
-          this.geojson = { type: 'FeatureCollection', features: info.features }
+          if (this.active) {
+            this.geojson = {
+              type: 'FeatureCollection',
+              features: info.features
+            }
+          }
         } else if (
           // 当选中最后一级别的时候
           this.gdbpInfos.length > 0 &&
@@ -304,7 +288,12 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
             params.gdbp = gdbp
           }
           const info = await queryFeaturesInstance.query(params, false)
-          this.geojson = { type: 'FeatureCollection', features: info.features }
+          if (this.active) {
+            this.geojson = {
+              type: 'FeatureCollection',
+              features: info.features
+            }
+          }
         } else {
           throw Error('gdbpInfos配置不正确')
         }
