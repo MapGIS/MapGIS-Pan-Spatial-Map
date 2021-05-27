@@ -141,17 +141,18 @@ export default {
                 layers.push(layerComponentProps)
               })
             } else {
-            const layerComponentProps = this.genLayerComponentPropsByLayer(
-              layer,
-              index
-            )
-            layers.push(layerComponentProps)
-
+              const layerComponentProps = this.genLayerComponentPropsByLayer(
+                layer,
+                index
+              )
+              layers.push(layerComponentProps)
+            }
           }
         })
 
       this.layers = layers
     },
+
     genLayerComponentPropsByIGSSceneSublayer(igsSceneSublayer) {
       // 图层组件所需要的属性
       let layerComponentProps = {}
@@ -185,7 +186,7 @@ export default {
       return layerComponentProps
     },
     // genLayerComponentPropsByLayer(layer) {
-      // 图层组件所需要的属性
+    // 图层组件所需要的属性
     genLayerComponentPropsByLayer(layer, index) {
       // mapbox图层组件所需要的属性
       let layerComponentProps = {}
