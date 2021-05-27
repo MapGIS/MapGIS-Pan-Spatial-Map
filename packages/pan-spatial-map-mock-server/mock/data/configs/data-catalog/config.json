@@ -653,6 +653,20 @@
             "extent": ""
           },
           {
+            "label": "ArcGIS TILE REST 3857",
+            "describe": "ArcGIS TILE REST 3857",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILEARCGIS",
+            "name": "ChinaOnlineStreetPurplishBlue",
+            "searchName": "",
+            "token": "",
+            "guid": "6f35dab5-8f5f-43d7-82ad-12864751974d",
+            "serverUrl": "http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
             "label": "ArcGIS WMS",
             "describe": "ArcGIS WMS",
             "ip": "",
