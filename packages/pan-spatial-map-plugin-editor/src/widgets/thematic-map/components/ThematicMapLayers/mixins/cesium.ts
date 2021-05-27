@@ -32,7 +32,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
 ) {
   id = UUID.uuid()
 
-  thematicMapLayer: Record<string, any> | null = null
+  thematicMapLayer: any = null
 
   material: any = null
 

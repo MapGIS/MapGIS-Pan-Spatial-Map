@@ -9,7 +9,7 @@
       :verticalOffset="50"
     >
       <div class="thematic-map-statistic-table">
-        <a-spin :spinning="isLoading">
+        <a-spin :spinning="loading">
           <!-- 指标和图表切换 -->
           <row-flex
             class="statistic-table-head"
@@ -49,8 +49,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
-import { thematicMapInstance } from '@mapgis/pan-spatial-map-store'
-import { Empty } from 'ant-design-vue'
+import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
 import * as echarts from 'echarts'
 import RowFlex from '../RowFlex'
 import ThematicMapMixin from '../../mixins/thematic-map'
@@ -75,11 +74,23 @@ interface IChartOption {
 @Component({
   components: {
     RowFlex
+  },
+  computed: {
+    ...mapGetters([
+      'loading',
+      'isVisible',
+      'selected',
+      'selectedTime',
+      'pageDataSet',
+      'configSubData',
+      'configTimeList'
+    ])
+  },
+  methods: {
+    ...mapMutations(['resetVisible', 'setFeaturesQuery'])
   }
 })
-export default class ThematicMapStatisticTable extends Mixins(
-  ThematicMapMixin
-) {
+export default class ThematicMapStatisticTable extends Vue {
   // 当前活动的图标
   activeChart: TChartType = 'bar'
 
@@ -119,12 +130,12 @@ export default class ThematicMapStatisticTable extends Mixins(
   ]
 
   get stVisible() {
-    return thematicMapInstance.isVisible('st')
+    return this.isVisible('st')
   }
 
   set stVisible(nV) {
     if (!nV) {
-      thematicMapInstance.resetVisible('st')
+      this.resetVisible('st')
     }
   }
 
@@ -134,36 +145,6 @@ export default class ThematicMapStatisticTable extends Mixins(
   get showChart() {
     const { x, y } = this.chartOption
     return x.length && y.length
-  }
-
-  /**
-   * 将query的结果设置图表配置里
-   * @param dataSet
-   */
-  setChartOptions(dataSet) {
-    const xArr = []
-    const yArr = []
-    if (dataSet && dataSet.AttStruct.FldName) {
-      const {
-        SFEleArray,
-        AttStruct: { FldName }
-      } = dataSet
-      const {
-        graph: { field }
-      } = this.configSubData
-
-      const xIndex = FldName.indexOf(field)
-      const yIndex = FldName.indexOf(this.target)
-      SFEleArray.forEach(({ AttValue }) => {
-        if (AttValue) {
-          xArr.push(AttValue[xIndex])
-          yArr.push(AttValue[yIndex])
-        }
-      })
-    }
-    this.chartOption.x = xArr
-    this.chartOption.y = yArr
-    this.onChartTypeChange('bar')
   }
 
   /**
@@ -197,49 +178,70 @@ export default class ThematicMapStatisticTable extends Mixins(
 
   /**
    * 指标选项变化, 获取某指标对应的统计数据
-   * @param value<string>
+   * @param value
    */
-  onTargetChange(value) {
+  onTargetChange(value: string) {
     this.target = value
     this.chartOption.title = value
-    thematicMapInstance.setFeaturesQuery(this.setChartOptions)()
+    this.setFeaturesQuery({
+      onSuccess: this.getChartOptions
+    })
+  }
+
+  /**
+   * 将query的结果设置图表配置里
+   * @param dataSet
+   */
+  getChartOptions(dataSet) {
+    const xArr = []
+    const yArr = []
+    if (dataSet && dataSet.AttStruct.FldName) {
+      const {
+        SFEleArray,
+        AttStruct: { FldName }
+      } = dataSet
+      const {
+        graph: { field }
+      } = this.configSubData
+
+      const xIndex = FldName.indexOf(field)
+      const yIndex = FldName.indexOf(this.target)
+      SFEleArray.forEach(({ AttValue }) => {
+        if (AttValue) {
+          xArr.push(AttValue[xIndex])
+          yArr.push(AttValue[yIndex])
+        }
+      })
+    }
+    this.chartOption.x = xArr
+    this.chartOption.y = yArr
+    this.onChartTypeChange('bar')
   }
 
   /**
    * 设置指标列表数据
    * @param <object>
    */
-  onSetTargetList() {
-    let targetList = []
-    if (this.configSubData) {
-      const {
-        field,
-        graph: { showFields, showFieldsTitle }
-      } = this.configSubData
-      targetList = showFields.reduce((results, item) => {
-        if (item) {
-          const obj = {}
-          obj.label = item
-          obj.value =
-            showFieldsTitle && showFieldsTitle[item]
-              ? showFieldsTitle[item]
-              : item
-          results.push(obj)
-        }
-        return results
-      }, [])
-    }
+  getTargetList() {
+    const {
+      field,
+      graph: { showFields, showFieldsTitle }
+    } = this.configSubData
+    const targetList = showFields.reduce((results, item) => {
+      if (item) {
+        const obj = {}
+        obj.label = item
+        obj.value =
+          showFieldsTitle && showFieldsTitle[item]
+            ? showFieldsTitle[item]
+            : item
+        results.push(obj)
+      }
+      return results
+    }, [])
     this.targetList = targetList
     this.target = targetList[0]?.value
     this.chartOption.title = this.target
-  }
-
-  /**
-   * 监听: 年度变化更新指标列表
-   */
-  @Watch('selectedTime')
-  watchSelectedTime() {
-    this.onSetTargetList()
   }
 
   /**
@@ -247,7 +249,8 @@ export default class ThematicMapStatisticTable extends Mixins(
    */
   @Watch('pageDataSet', { deep: true })
   watchPageDataSet(nV) {
-    this.setChartOptions(nV)
+    this.getTargetList()
+    this.getChartOptions(nV)
   }
 
   mounted() {

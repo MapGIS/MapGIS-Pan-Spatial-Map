@@ -18,7 +18,7 @@ export default class BaseMinxin extends Vue {
    */
   @Watch('dataSet', { deep: true })
   watchDataSet(nV: FeatureIGS | null) {
-    if (nV) {
+    if (nV && nV.SFEleArray) {
       this.showLayer()
     } else {
       this.removeLayer()
@@ -49,6 +49,6 @@ export default class BaseMinxin extends Vue {
   }
 
   beforeDestroy() {
-    this.removeLayer()
+    // this.removeLayer()
   }
 }

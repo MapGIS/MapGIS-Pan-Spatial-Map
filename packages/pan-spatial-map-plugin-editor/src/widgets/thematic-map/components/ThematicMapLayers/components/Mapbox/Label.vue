@@ -1,11 +1,9 @@
 <template>
   <!-- 聚合标注专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="true">
-    <template v-for="(child, i) in propertiesKeys">
-      <div v-show="child" :key="`sub-section-map-layer-popup-properties-${i}`">
-        {{ child }} : {{ properties[child] }}
-      </div>
-    </template>
+  <mapgis-popup :coordinates="coordinates" :showed="showedPopup">
+    <div v-for="(v, k) in properties" :key="`label-properties-${k}`">
+      {{ k }} : {{ v }}
+    </div>
   </mapgis-popup>
 </template>
 <script lang="ts">
@@ -122,8 +120,7 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
   /**
    * 展示信息窗口
    */
-  showInfoWin({ features }: any) {
-    this.closeInfoWin()
+  showMapboxInfoWin({ features }: any) {
     const { showFields, showFieldsTitle } = this.popupConfig
     if (!showFields || !showFields.length) return
     if (features[0] && features[0].properties) {
@@ -135,14 +132,6 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
         return obj
       }, {})
     }
-  }
-
-  /**
-   * 关闭信息窗口
-   */
-  closeInfoWin() {
-    this.coordinates = [0, 0]
-    this.properties = {}
   }
 }
 </script>

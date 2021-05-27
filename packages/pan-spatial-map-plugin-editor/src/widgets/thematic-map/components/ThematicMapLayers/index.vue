@@ -14,10 +14,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
-import {
-  thematicMapInstance,
-  subjectTypes
-} from '@mapgis/pan-spatial-map-store'
+import { mapGetters, subjectTypes } from '@mapgis/pan-spatial-map-store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
 
@@ -25,6 +22,9 @@ import CesiumLayers from './components/Cesium'
   components: {
     ...mapboxLayers,
     ...CesiumLayers
+  },
+  computed: {
+    ...mapGetters(['subjectConfig', 'pageDataSet'])
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
@@ -34,12 +34,12 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   // 专题配置
   get config() {
-    return thematicMapInstance.getSelectedConfig
+    return this.subjectConfig
   }
 
   // 专题某年度的要素数据
   get dataSet() {
-    return thematicMapInstance.getPageDataSet
+    return this.pageDataSet
   }
 
   // 获取专题类别

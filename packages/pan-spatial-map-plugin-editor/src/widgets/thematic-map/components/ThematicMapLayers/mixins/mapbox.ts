@@ -1,7 +1,5 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import { UUID, MapMixin } from '@mapgis/web-app-framework'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
-import isFunction from 'lodash/isFunction'
 import BaseMinxin from './base'
 
 @Component
@@ -11,20 +9,17 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
 ) {
   id = UUID.uuid()
 
-  thematicMapLayer: Record<string, any> | null = null
+  thematicMapLayer: any = null
 
-  properties: Record<string, any> = {}
+  showedPopup = false
 
-  coordinates = [0, 0]
+  properties: any = {}
+
+  coordinates: number[] = [118.01427796777404, 36.29607217078218]
 
   // 获取某个专题某个年度的subData
   get subDataConfig() {
     return this.config.configSubData
-  }
-
-  // 图表title
-  get field() {
-    return this.subDataConfig.field
   }
 
   // 信息弹框字段配置
@@ -32,18 +27,13 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
     return this.subDataConfig.popup
   }
 
-  // 信息弹框展示字段
-  get propertiesKeys() {
-    return utilInstance.getJsonTag(this.properties)
-  }
-
   /**
    * 显示图层
    */
-  showLayer () {
+  showLayer() {
     if (!this.dataSet) return
     this.showMapboxLayer()
-   }
+  }
 
   /**
    * 移除图层
@@ -54,15 +44,32 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
       if (this.map.getLayer(id)) {
         this.map.removeLayer(id)
       } else {
-        const { clear, removeFromMap } = this.thematicMapLayer
-        if (isFunction(clear)) {
-          clear.bind(this.thematicMapLayer)()
+        if (this.thematicMapLayer.clear) {
+          this.thematicMapLayer.clear()
         }
-        if (isFunction(removeFromMap)) {
-          removeFromMap.bind(this.thematicMapLayer)()
+        if (this.thematicMapLayer.removeFromMap) {
+          this.thematicMapLayer.removeFromMap()
         }
       }
       this.thematicMapLayer = null
     }
+  }
+
+  /**
+   * 展示信息窗口
+   */
+  showInfoWin(e: any) {
+    this.closeInfoWin()
+    this.showedPopup = true
+    this.showMapboxInfoWin(e)
+  }
+
+  /**
+   * 关闭信息窗口
+   */
+  closeInfoWin() {
+    this.showedPopup = false
+    this.properties = {}
+    this.coordinates = [0, 0]
   }
 }

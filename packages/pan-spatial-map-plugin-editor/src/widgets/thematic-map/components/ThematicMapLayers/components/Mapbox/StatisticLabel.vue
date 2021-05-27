@@ -1,11 +1,9 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="true">
-    <template v-for="(child, i) in propertiesKeys">
-      <div v-show="child" :key="`statistic-label-layer-popup-properties-${i}`">
-        {{ child }} : {{ properties[child] }}
-      </div>
-    </template>
+  <mapgis-popup :coordinates="coordinates" :showed="showedPopup">
+    <div v-for="(v, k) in properties" :key="`statistic-label-properties-${k}`">
+      {{ k }} : {{ v }}
+    </div>
   </mapgis-popup>
 </template>
 <script lang="ts">
@@ -29,8 +27,14 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
     }
   }
 
+  // 图表字段样式
   get labelStyle() {
     return this.subDataConfig.labelStyle
+  }
+
+  // 图表title
+  get field() {
+    return this.subDataConfig.field
   }
 
   /**
@@ -64,8 +68,7 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
   /**
    * 展示信息窗口
    */
-  showInfoWin({ target }: any) {
-    this.closeInfoWin()
+  showMapboxInfoWin({ target }: any) {
     const { showFields, showFieldsTitle } = this.popupConfig
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return
@@ -83,14 +86,6 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
         return obj
       }, {})
     }
-  }
-
-  /**
-   * 关闭信息窗口
-   */
-  closeInfoWin() {
-    this.coordinates = [0, 0]
-    this.properties = {}
   }
 }
 </script>

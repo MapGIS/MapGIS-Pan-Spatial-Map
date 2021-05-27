@@ -1,11 +1,12 @@
 <template>
   <!-- 统计专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="true">
-    <template v-for="(child, n) in propertiesKeys">
-      <div v-show="child" :key="'base-map-with-graph-popup-properties-' + n">
-        {{ child }} : {{ properties[child] }}
-      </div>
-    </template>
+  <mapgis-popup :coordinates="coordinates" :showed="showedPopup">
+    <div
+      v-for="(v, k) in properties"
+      :key="`base-map-with-graph-properties-${k}`"
+    >
+      {{ k }} : {{ v }}
+    </div>
   </mapgis-popup>
 </template>
 <script lang="ts">
@@ -259,8 +260,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
   /**
    * 展示信息弹框
    */
-  showInfoWin({ event, target }: any) {
-    this.closeInfoWin()
+  showMapboxInfoWin({ event, target }: any) {
     const { showFields, showFieldsTitle } = this.popupConfig
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return
@@ -272,14 +272,6 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
     )
     this.coordinates = [lng, lat]
     this.properties[field] = value
-  }
-
-  /**
-   * 关闭信息弹框
-   */
-  closeInfoWin() {
-    this.coordinates = [0, 0]
-    this.properties = {}
   }
 }
 </script>

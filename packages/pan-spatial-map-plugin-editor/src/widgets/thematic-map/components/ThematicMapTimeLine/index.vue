@@ -31,7 +31,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { thematicMapInstance } from '@mapgis/pan-spatial-map-store'
+import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
 import { Empty } from 'ant-design-vue'
 import * as echarts from 'echarts'
 import RowFlex from '../RowFlex'
@@ -40,6 +40,12 @@ import { chartOption } from './config/timeLineChartOption'
 @Component({
   components: {
     RowFlex
+  },
+  computed: {
+    ...mapGetters(['loading', 'isVisible', 'selectedTime', 'configTimeList'])
+  },
+  methods: {
+    ...mapMutations(['resetVisible', 'setSelectedTime'])
   }
 })
 export default class ThematicMapTimeLine extends Vue {
@@ -52,24 +58,14 @@ export default class ThematicMapTimeLine extends Vue {
   // 当前播放的数据索引
   currentIndex = 0
 
-  // 加载
-  get loading() {
-    return thematicMapInstance.isLoading
-  }
-
-  // 属性表或者时间轴选中的时间数据
-  get selectedTime() {
-    return thematicMapInstance.getSelectedTime
-  }
-
   // 时间轴的列表数据
   get timeList() {
-    return thematicMapInstance.getSelectedTimeList
+    return this.configTimeList || []
   }
 
   // 显示开关
   get tlVisible() {
-    const visible = thematicMapInstance.isVisible('tl')
+    const visible = this.isVisible('tl')
     const _visible = visible && this.timeList.length > 1
     if (_visible) {
       this.onUpdateChart()
@@ -79,7 +75,7 @@ export default class ThematicMapTimeLine extends Vue {
 
   set tlVisible(nV) {
     if (!nV) {
-      thematicMapInstance.resetVisible('tl')
+      this.resetVisible('tl')
     }
   }
 
@@ -113,6 +109,22 @@ export default class ThematicMapTimeLine extends Vue {
   }
 
   /**
+   * currentIndex变化
+   */
+  onCurrentIndexChange(value) {
+    this.setSelectedTime(this.timeList[value])
+    this.onUpdateChart()
+  }
+
+  /**
+   * selecteTime变化
+   */
+  onSelecteTimeChange(value) {
+    this.currentIndex = value ? this.timeList.indexOf(value) : 0
+    this.onUpdateChart()
+  }
+
+  /**
    * 播放或暂停
    */
   btnPlay() {
@@ -133,8 +145,7 @@ export default class ThematicMapTimeLine extends Vue {
    */
   @Watch('currentIndex')
   watchCurrentIndex(nV) {
-    thematicMapInstance.setSelectedTime(this.timeList[nV])
-    this.onUpdateChart()
+    this.onCurrentIndexChange(nV)
   }
 
   /**
@@ -142,11 +153,7 @@ export default class ThematicMapTimeLine extends Vue {
    */
   @Watch('selectedTime')
   watchTimeList(nV) {
-    const _index = this.timeList.indexOf(nV)
-    if (this.tlVisible && (!_index || this.currentIndex !== _index)) {
-      this.currentIndex = _index
-      this.onUpdateChart()
-    }
+    this.onSelecteTimeChange(nV)
   }
 
   mounted() {
@@ -157,6 +164,7 @@ export default class ThematicMapTimeLine extends Vue {
       'timelinechanged',
       ({ currentIndex }) => (this.currentIndex = currentIndex)
     )
+    this.onSelecteTimeChange(this.selectedTime)
   }
 
   beforeDestroyed() {

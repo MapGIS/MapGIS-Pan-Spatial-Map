@@ -1,15 +1,4 @@
-// 专题服务总配置数据
-import { FeatureQueryParam, FeatureIGS } from '../service'
-
-// 专题服务基础配置
-export interface IThematicMapBaseConfig {
-  baseIp: string // 主题服务默认 ip
-  basePort: string // 主题服务默认 port
-  isLocation: boolean // 是否覆盖
-  isOverlay: boolean // 是否定位
-  startZindex: number // 初始 index 级别
-}
-
+import { FeatureIGS } from '../service'
 /**
  * 专题类型:
  * 分段专题图 : SubSectionMap
@@ -29,6 +18,15 @@ type SubjectType =
   | 'Label'
   | 'HexBin'
   | string
+
+// 专题服务基础配置
+export interface IThematicMapBaseConfig {
+  baseIp: string // 主题服务默认 ip
+  basePort: string // 主题服务默认 port
+  isLocation: boolean // 是否覆盖
+  isOverlay: boolean // 是否定位
+  startZindex: number // 初始 index 级别
+}
 
 interface IThematicMapSubjectBaseConfig {
   id: string // 节点 id
@@ -59,12 +57,10 @@ export interface IThematicMapSubjectNewConfig
   configSubData?: any // 对应年度下的第一个配置数据
 }
 
-
 export interface IThematicMapConfig {
   baseConfig: IThematicMapBaseConfig | object
   subjectConfig: IThematicMapSubjectConfig | object
 }
-
 
 // 点击单个专题的数据展示弹框类型
 export type ModuleType =
@@ -84,42 +80,44 @@ interface IPageParam {
   pageCount: number
 }
 
-// 专题服务Store对应的状态数据
-export interface IState extends IPageParam{
-  loading: boolean
-  pageDataSet: FeatureIGS | null
+export interface IState {
   moduleTypes: ModuleType[]
-  thematicMapConfig: IThematicMapConfig
+  loading: boolean
+  pageParam: IPageParam
+  pageDataSet: FeatureIGS | null
   selectedTime: string
   selectedTimeList: string[]
   selected: string
   selectedList: IThematicMapSubjectConfig[]
+  thematicMapConfig: IThematicMapConfig
 }
 
-export interface IMethods {
-  parseFeatureQueryParams(): FeatureQueryParam
-  setVisible(type: ModuleType): void
-  setLoading(loading: boolean): void
-  setPage(page: number, pageCount: number): void
-  setPageDataSet(data: FeatureIGS): void
-  setFeaturesQuery(success?: (a: FeatureIGS) => void, error?: (e: Event) => void): (params?: FeatureQueryParam) => void
-  setThematicMapConfig(config: IThematicMapConfig): void
-  setSelected(id: string): void
-  setSelectedList(selectedConfig: IThematicMapSubjectConfig[]): void
-  setSelectedTime(time: string): void
-  resetVisible(type?: ModuleType): void
+export interface IGetters {
+  isVisible: (s: IState) => (t: ModuleType) => boolean
+  loading: (s: IState) => boolean
+  selected: (s: IState) => string
+  selectedList: (s: IState) => IThematicMapSubjectConfig[]
+  selectedTime: (s: IState) => string
+  pageDataSet: (s: IState) => FeatureIGS | null
+  baseConfig: (s: IState) => IThematicMapSubjectBaseConfig | object
+  subjectConfig: (s: IState) => IThematicMapSubjectNewConfig | undefined
+  configSubData: (s: IState, g: IGetters) => any
+  configTimeList: (s: IState, g: IGetters) => string[]
 }
 
-export interface IComputed {
-  isVisible: (s: ModuleType) => boolean
-  isLoading: boolean
-  pageParam: IPageParam
-  getPageDataSet: FeatureIGS | null
-  getBaseConfig: IThematicMapBaseConfig | object
-  getSubjectConfig: IThematicMapSubjectConfig | object
-  getSelectedConfig?: IThematicMapSubjectNewConfig
-  getSelected: string
-  getSelectedList: IThematicMapSubjectConfig[]
-  getSelectedTime: string
-  getSelectedTimeList?: string[]
+export interface IGettersResult {
+  isVisible: (t: ModuleType) => boolean
+  loading: boolean
+  selected: string
+  selectedList: IThematicMapSubjectConfig[]
+  selectedTime: string
+  pageDataSet: FeatureIGS | null
+  baseConfig: IThematicMapSubjectBaseConfig | object
+  subjectConfig: IThematicMapSubjectNewConfig | undefined
+  configSubData: any
+  configTimeList: string[]
+}
+export interface IContext {
+  state: IState
+  getters: IGettersResult
 }

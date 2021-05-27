@@ -1,11 +1,14 @@
 <template>
   <!-- 分段专题图图层 -->
-  <mapgis-popup :coordinates="coordinates" :showed="true">
-    <template v-for="(child, i) in propertiesKeys">
-      <div v-show="child" :key="`sub-section-map-layer-popup-properties-${i}`">
-        {{ child }} : {{ properties[child] }}
-      </div>
-    </template>
+  <mapgis-popup
+    anchor="top"
+    :coordinates="coordinates"
+    :offset="[0, 0]"
+    :showed="showedPopup"
+  >
+    <div v-for="(v, k) in properties" :key="`sub-section-map-properties-${k}`">
+      {{ k }} : {{ v }}
+    </div>
   </mapgis-popup>
 </template>
 <script lang="ts">
@@ -40,6 +43,11 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   // 样式
   get colors() {
     return this.subDataConfig?.color
+  }
+
+  // 图表title
+  get field() {
+    return this.subDataConfig.field
   }
 
   /**
@@ -110,8 +118,7 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   /**
    * 展示信息窗口
    */
-  showInfoWin({ target }: any) {
-    this.closeInfoWin()
+  showMapboxInfoWin({ target }: any) {
     const { showFields, showFieldsTitle } = this.popupConfig
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return
@@ -129,14 +136,6 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
         return obj
       }, {})
     }
-  }
-
-  /**
-   * 关闭信息窗口
-   */
-  closeInfoWin() {
-    this.properties = {}
-    this.coordinates = [0, 0]
   }
 }
 </script>

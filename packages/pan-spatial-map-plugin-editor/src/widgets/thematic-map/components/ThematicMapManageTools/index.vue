@@ -24,24 +24,26 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { thematicMapInstance, ModuleType } from '@mapgis/pan-spatial-map-store'
+import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
 
 interface IIcon {
   type: string
   tooltip: string
-  visibleType: ModuleType
+  visibleType: string
 }
-@Component
+@Component({
+  computed: {
+    ...mapGetters(['isVisible', 'configTimeList'])
+  },
+  methods: {
+    ...mapMutations(['setVisible'])
+  }
+})
 export default class ThematicMapManageTools extends Vue {
   mtVisible = false
 
-  // 时间轴的列表数据
-  get timeList() {
-    return thematicMapInstance.getSelectedTimeList
-  }
-
   get visible() {
-    return thematicMapInstance.isVisible('mt')
+    return this.isVisible('mt')
   }
 
   get iconList() {
@@ -63,8 +65,7 @@ export default class ThematicMapManageTools extends Vue {
         visibleType: 'sa'
       }
     ]
-
-    if (this.timeList?.length > 1) {
+    if (this.configTimeList && this.configTimeList.length > 1) {
       list.splice(2, 0, {
         type: 'clock-circle',
         tooltip: '时间轴',
@@ -76,10 +77,9 @@ export default class ThematicMapManageTools extends Vue {
 
   /**
    * 按钮变化
-   * @param visibleType<string>
    */
-  onToolIconChange(visibleType: ModuleType) {
-    thematicMapInstance.setVisible(visibleType)
+  onToolIconChange(visibleType: string) {
+    this.setVisible(visibleType)
   }
 
   @Watch('visible')

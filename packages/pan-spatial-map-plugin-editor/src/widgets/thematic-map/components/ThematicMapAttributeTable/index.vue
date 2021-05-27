@@ -9,7 +9,8 @@
       :verticalOffset="50"
     >
       <div class="thematic-map-attribute-table">
-        <a-spin :spinning="isLoading">
+        <div>{{ atVisible }}</div>
+        <a-spin :spinning="loading">
           <row-flex
             :span="[13, 10]"
             justify="space-between"
@@ -51,19 +52,39 @@
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import {
   queryFeaturesInstance,
-  thematicMapInstance
+  mapGetters,
+  mapMutations
 } from '@mapgis/pan-spatial-map-store'
 import ThematicMapMixin from '../../mixins/thematic-map'
 import RowFlex from '../RowFlex'
 
 @Component({
+  computed: {
+    ...mapGetters([
+      'loading',
+      'isVisible',
+      'selected',
+      'selectedList',
+      'selectedTime',
+      'pageDataSet',
+      'configSubData',
+      'configTimeList'
+    ])
+  },
+  methods: {
+    ...mapMutations([
+      'resetVisible',
+      'setFeaturesQuery',
+      'setPage',
+      'setSelected',
+      'setSelectedTime'
+    ])
+  },
   components: {
     RowFlex
   }
 })
-export default class ThematicMapAttributeTable extends Mixins(
-  ThematicMapMixin
-) {
+export default class ThematicMapAttributeTable extends Vue {
   // 专题
   subject = ''
 
@@ -87,12 +108,12 @@ export default class ThematicMapAttributeTable extends Mixins(
 
   // 显示开关
   get atVisible() {
-    return thematicMapInstance.isVisible('at')
+    return this.isVisible('at')
   }
 
   set atVisible(nV) {
     if (!nV) {
-      thematicMapInstance.resetVisible('at')
+      this.resetVisible('at')
     }
   }
 
@@ -120,73 +141,17 @@ export default class ThematicMapAttributeTable extends Mixins(
 
   // 专题列表
   get subjectList() {
-    return thematicMapInstance.getSelectedList.map(({ id, title }) => ({
+    return this.selectedList.map(({ id, title }) => ({
       id,
       title
     }))
   }
 
   /**
-   * 专题切换
-   * 1.重置列表页码
-   * 2.获取并保存选择的专题的年度列表
-   * 3.设置默认展示的年度
-   * @param value<string>
-   */
-  onSubjectChange(value = '') {
-    this.onTablePageUpdate(1, this.pageCount)
-    this.subject = value
-    thematicMapInstance.setSelected(value)
-    this.onTimeChange(this.configTimeList[0])
-  }
-
-  /**
-   * 年度时间切换
-   * 1.重置列表页码
-   * 2.保存当前选择的年度(同步更新时间轴)
-   * 3.获取对应年度的列表配置和数据
-   * @param value<string>
-   */
-  onTimeChange(value = '') {
-    this.onTablePageUpdate(1, this.pageCount)
-    this.time = value
-    thematicMapInstance.setSelectedTime(value)
-    if (this.configSubData) {
-      this.setTableColumns(this.configSubData.table)
-      this.getTableData()
-    } else {
-      this.total = 0
-      this.tableData = []
-      thematicMapInstance.setPageDataSet(null)
-    }
-  }
-
-  /**
-   * 列表分页变化
-   * 1.设置分页页码和页容量
-   * 2.获取分页数据
-   * @param 分页参数 current: 当前页; pageSize: 页容量
-   */
-  onTableChange({ current, pageSize }) {
-    this.onTablePageUpdate(current, pageSize)
-    this.getTableData()
-  }
-
-  /**
-   * 重置分页页码
-   
-   */
-  onTablePageUpdate(page, pageCount) {
-    this.page = page
-    this.pageCount = pageCount
-    thematicMapInstance.setPage(page, pageCount)
-  }
-
-  /**
    * 设置列表配置
-   * @param <object> showFields: 列表字段; showFieldsTitle: 列表字段别名
    */
-  setTableColumns({ showFields, showFieldsTitle }) {
+  getTableColumns() {
+    const { showFields, showFieldsTitle } = this.configSubData.table
     this.tableColumns = showFields.map((item: string, i: number) => {
       const title =
         showFieldsTitle && showFieldsTitle[item] ? showFieldsTitle[item] : item
@@ -202,20 +167,75 @@ export default class ThematicMapAttributeTable extends Mixins(
    * 获取列表数据
    */
   getTableData() {
-    thematicMapInstance.setFeaturesQuery(dataSet => {
-      const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
-        dataSet
-      )
-      this.total = geojsonData.dataCount
-      this.tableData = geojsonData.features.map(({ properties }) => properties)
-    })()
+    this.setFeaturesQuery({
+      onSuccess: dataSet => {
+        const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
+          dataSet
+        )
+        this.total = geojsonData.dataCount
+        this.tableData = geojsonData.features.map(
+          ({ properties }) => properties
+        )
+      }
+    })
+  }
+
+  /**
+   * 更新、重置分页页码
+   */
+  updatePage(pageCount = 10, page = 1) {
+    this.page = page
+    this.pageCount = pageCount
+    this.setPage({ page, pageCount })
+  }
+
+  /**
+   * 专题切换
+   * 1.重置列表页码
+   * 2.获取并保存选择的专题的年度列表
+   * 3.设置默认展示的年度
+   * @param value<string>
+   */
+  onSubjectChange(value) {
+    this.updatePage(this.pageCount)
+    this.subject = value
+    this.setSelected(value)
+    this.onTimeChange(this.configTimeList[0])
+  }
+
+  /**
+   * 年度时间切换
+   * 1.重置列表页码
+   * 2.保存当前选择的年度(同步更新时间轴)
+   * 3.获取对应年度的列表配置和数据
+   * @param value<string>
+   */
+  onTimeChange(value) {
+    this.updatePage(this.pageCount)
+    this.time = value
+    this.setSelectedTime(value)
+    this.getTableColumns()
+    if (this.time) {
+      this.getTableData()
+    }
+  }
+
+  /**
+   * 列表分页变化
+   * 1.设置分页页码和页容量
+   * 2.获取分页数据
+   * @param 分页参数 current: 当前页; pageSize: 页容量
+   */
+  onTableChange({ current, pageSize }) {
+    this.updatePage(pageSize, current)
+    this.getTableData()
   }
 
   /**
    * 监听:侧边栏的单个专题的选择发生变化,需要同步更新专题选项
    */
   @Watch('selected')
-  watchSelected(nV) {
+  watchSelected(nV: string) {
     if (this.subject !== nV) {
       this.onSubjectChange(nV)
     }
@@ -229,6 +249,10 @@ export default class ThematicMapAttributeTable extends Mixins(
     if (this.time !== nV) {
       this.onTimeChange(nV)
     }
+  }
+
+  created() {
+    this.onSubjectChange(this.subjectList[0].id)
   }
 }
 </script>
