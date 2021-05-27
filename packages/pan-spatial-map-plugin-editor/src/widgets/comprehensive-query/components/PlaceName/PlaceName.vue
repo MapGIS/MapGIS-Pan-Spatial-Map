@@ -58,7 +58,6 @@
       :cluster="cluster"
       :geojson="geojson"
     />
-    <PlaceNameCesium ref="place-name-cesium" :markers="markers" />
   </div>
 </template>
 

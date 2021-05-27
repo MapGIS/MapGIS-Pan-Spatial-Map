@@ -69,6 +69,8 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
 
   private entityNames: string[] = []
 
+  private entityTextNames: string[] = []
+
   @Emit('picked-coordinate')
   emitPickedCoordinate(pickedCoordinate: number[]) {}
 
@@ -93,7 +95,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
         // 将弧度转为度的十进制度表示
         const lng = this.Cesium.Math.toDegrees(cartographic.longitude) // 转换后的经度
         const lat = this.Cesium.Math.toDegrees(cartographic.latitude) // 转换后的纬度
-        this.emitPickedCoordinate([lng, lat])
+        this.emitPickedCoordinate([lng, lat], false)
       }
     }, this.Cesium.ScreenSpaceEventType.LEFT_CLICK)
   }
@@ -176,12 +178,13 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   }
 
   @Watch('coordinate')
-  coordinateChange() {
+  async coordinateChange() {
     this.clearMarker()
+    const defaultImg = await markerIconInstance.unSelectIcon()
     const marker = {
       name: 'coordinate-marker',
       center: this.coordinate,
-      img: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
+      img: defaultImg
     }
     this.cesiumUtil.addMarkerByFeature(marker)
   }

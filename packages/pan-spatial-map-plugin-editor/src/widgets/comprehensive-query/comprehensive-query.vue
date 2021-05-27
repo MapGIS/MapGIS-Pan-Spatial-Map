@@ -34,20 +34,20 @@
           <zone
             ref="zone"
             :active="locationType === 'district'"
-            v-model="geoJson"
+            @change="val => (geoJson = val)"
           />
         </a-tab-pane>
         <a-tab-pane key="coordinate" tab="坐标定位" force-render>
           <coordinate
             ref="coordinate"
             :active="locationType === 'coordinate'"
-            v-model="geoJson"
+            @change="val => (geoJson = val)"
           />
         </a-tab-pane>
         <a-tab-pane key="map-sheet" tab="图幅定位">
           <frame
             ref="map-sheet"
-            v-model="geoJson"
+            @change="val => (geoJson = val)"
             :active="locationType === 'map-sheet'"
           />
         </a-tab-pane>
@@ -107,7 +107,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   }
 
   private get geometry() {
-    if (this.geoJson) {
+    if (this.geoJson && JSON.stringify(this.geoJson) !== '{}') {
       const result = Parser.changeToTangram(this.geoJson)
       if (Array.isArray(result)) return result[0]
       return result

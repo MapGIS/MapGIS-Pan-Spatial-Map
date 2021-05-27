@@ -134,7 +134,7 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
   }: {
     lngLat: { lng: number; lat: number }
   }) {
-    this.emitPickedCoordinate([lng, lat])
+    this.emitPickedCoordinate([lng, lat], true)
   }
 
   private clear() {
