@@ -7,10 +7,7 @@
       :replace-fields="replaceFields"
       :dropdownStyle="{
         'max-height': '200px',
-        overflow: 'auto',
-        left: '196px',
-        top: '404px',
-        'min-width': '566px'
+        overflow: 'auto'
       }"
       @change="onSelectTreeChange"
     >
@@ -19,8 +16,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch, Emit } from 'vue-property-decorator'
-import { queryIgsServicesInfoInstance } from '@mapgis/pan-spatial-map-store'
+import {
+  Component,
+  Vue,
+  Prop,
+  Watch,
+  Emit,
+  Mixins
+} from 'vue-property-decorator'
+import {
+  queryIgsServicesInfoInstance,
+  eventBus
+} from '@mapgis/pan-spatial-map-store'
+import SelectTreeMixin from '../../mixins/select-tree.ts'
 
 /**
  * MapGIS地图服务选择组件
@@ -33,25 +41,10 @@ import { queryIgsServicesInfoInstance } from '@mapgis/pan-spatial-map-store'
   name: 'MapgisServer',
   components: {}
 })
-export default class MapgisServer extends Vue {
-  @Prop(String) readonly ip!: string
-
-  @Prop(String) readonly port!: string
-
+export default class MapgisServer extends Mixins(SelectTreeMixin) {
   @Prop(String) readonly type!: string
 
-  // 当前选中的条目
-  private value: any = ''
-
-  // 选择树数据
-  private treeData: Record<string, any>[] = []
-
-  // 替换treeNode中的title、key字段为treeData中对应的字段
-  private replaceFields: object = {
-    title: 'name',
-    key: 'id'
-  }
-
+  // 构造选择树的根节点数据
   @Watch('ip', { deep: true })
   @Watch('port', { deep: true })
   @Watch('type', { deep: true })
@@ -64,8 +57,6 @@ export default class MapgisServer extends Vue {
       queryIgsServicesInfoInstance
         .getDocs({ ip, port })
         .then(res => {
-          console.log(res)
-
           this.treeData = this.parseDocs(res)
         })
         .catch(() => {})
@@ -73,8 +64,6 @@ export default class MapgisServer extends Vue {
       queryIgsServicesInfoInstance
         .getTiles({ ip, port })
         .then(res => {
-          console.log(res)
-
           this.treeData = this.parseTiles(res)
         })
         .catch(() => {})
@@ -86,7 +75,7 @@ export default class MapgisServer extends Vue {
   }
 
   // 解析文档列表
-  parseDocs(params) {
+  private parseDocs(params) {
     let data: any[] = []
     if (Array.isArray(params)) {
       data = params.reduce((result, item) => {
@@ -140,7 +129,7 @@ export default class MapgisServer extends Vue {
   }
 
   // 解析瓦片列表
-  parseTiles(params) {
+  private parseTiles(params) {
     let data: any[] = []
     if (Array.isArray(params)) {
       data = params.reduce((result, item) => {
@@ -189,42 +178,19 @@ export default class MapgisServer extends Vue {
         data = data.concat(arr)
       }
     }
-    console.log(data)
-
     return data
   }
 
-  // 获取选中的叶子节点
-  getLeafNode(id, treeData) {
-    let leaf: any = null
-    for (let i = 0; i < treeData.length; i++) {
-      const data = treeData[i]
-      if (data.id === id) {
-        if (!data.children) {
-          leaf = data
-          return leaf
-        }
-      } else {
-        if (data.children) {
-          leaf = this.getLeafNode(id, data.children)
-          if (leaf) {
-            return leaf
-          }
-        }
-      }
-    }
-  }
-
   // 选中树节点时调用此函数
-  onSelectTreeChange(value, label, extra) {
-    console.log(extra)
+  private onSelectTreeChange(value, label, extra) {
     const node = extra.triggerNode.dataRef
-    const leafNode = this.getLeafNode(node.id, this.treeData)
 
-    if (!leafNode) {
-      return false
-    } else {
+    // 若节点没有children，说明选择的是末级叶子节点，可以添加该节点对应的服务
+    if (!node.children) {
       this.$emit('serverName', node.name)
+      eventBus.$emit('emitSelectNode', true)
+    } else {
+      eventBus.$emit('emitSelectNode', false)
     }
   }
 }
@@ -232,7 +198,7 @@ export default class MapgisServer extends Vue {
 
 <style lang="scss" scoped>
 .mapgis-server {
-  margin-left: 15px;
+  margin-left: 16px;
   flex-grow: 1;
 }
 </style>

@@ -7,7 +7,7 @@
           item.name
         }}</a-select-option>
       </a-select>
-      <a-button shape="circle" icon="plus" @click="visible = true"></a-button>
+      <a-button shape="circle" icon="plus" @click="onClickAddBtn"></a-button>
     </div>
     <a-modal
       title="添加服务分类"
@@ -58,22 +58,12 @@ export default class ServiceCategorySelect extends Mixins(
   @Emit()
   private change(val) {}
 
-  @Watch('visible')
-  changeVisible(newVal) {
-    if (newVal) {
-      this.newName = ''
-      this.newDesc = ''
-    }
+  created() {
+    this.initData()
   }
 
-  // 初始化下拉选项
-  created() {
-    const name = this.value
-    const selectItem = this.serviceCategories.find(item => item.name === name)
-    if (selectItem) {
-      this.serviceCategory = selectItem.name
-    }
-
+  // 初始化各项数据
+  private initData() {
     this.$message.config({
       top: '100px',
       duration: 2,
@@ -82,14 +72,13 @@ export default class ServiceCategorySelect extends Mixins(
   }
 
   // 确定按钮回调
-  onClickOk() {
-    this.visible = false
+  private onClickOk() {
     if (this.newName === '') {
       this.$message.warning('请输入分类名称')
       return
     }
     const { newName, newDesc } = this
-    if (this.serviceCategories.includes(item => item.name === newName)) {
+    if (this.serviceCategories.some(item => item.name === newName)) {
       this.$message.warning(`${newName}已存在`)
       return
     }
@@ -100,6 +89,13 @@ export default class ServiceCategorySelect extends Mixins(
     }
     this.addServiceCategory(obj)
     this.visible = false
+  }
+
+  // 点击+按钮回调
+  private onClickAddBtn() {
+    this.visible = true
+    this.newName = ''
+    this.newDesc = ''
   }
 }
 </script>

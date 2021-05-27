@@ -14,7 +14,8 @@ import {
   AddServicesMixin,
   ServiceType,
   ServiceCategory,
-  Service
+  Service,
+  eventBus
 } from '@mapgis/pan-spatial-map-store'
 import { AppMixin, LayerType } from '@mapgis/web-app-framework'
 import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
@@ -33,6 +34,8 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
     type: 'doc'
   }
 
+  private isSelectLeafNode = true
+
   @Watch('serviceCategory')
   onChangeServiceCategory(newVal) {
     console.log(newVal)
@@ -44,6 +47,10 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
   }
 
   created() {
+    // 监听选择树选择节点事件，若选择的不是末级叶子节点，则无法添加该节点对应的服务
+    eventBus.$on('emitSelectNode', val => {
+      this.isSelectLeafNode = val
+    })
     this.$message.config({
       top: '100px',
       duration: 2,
@@ -51,10 +58,14 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
     })
   }
 
-  onAdd() {
+  private onAdd() {
     const { serviceCategory } = this
     if (!serviceCategory) {
       this.$message.warning('请选择服务分类')
+      return
+    }
+    if (!this.isSelectLeafNode) {
+      this.$message.warning('请选择末级叶子节点作为要添加的服务')
       return
     }
     const {

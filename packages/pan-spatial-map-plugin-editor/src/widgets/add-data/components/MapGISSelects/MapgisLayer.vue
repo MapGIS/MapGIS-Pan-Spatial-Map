@@ -6,14 +6,10 @@
       :tree-data="treeData"
       :treeDefaultExpandAll="defaultExpandAll"
       :replace-fields="replaceFields"
-      search-placeholder="Please select"
       :load-data="handleLazyLoad"
       :dropdownStyle="{
         'max-height': '200px',
-        overflow: 'auto',
-        left: '196px',
-        top: '404px',
-        'min-width': '566px'
+        overflow: 'auto'
       }"
       @change="onSelectTreeChange"
     >
@@ -22,9 +18,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch, Emit } from 'vue-property-decorator'
-import { queryIgsServicesInfoInstance } from '@mapgis/pan-spatial-map-store'
+import {
+  Component,
+  Vue,
+  Prop,
+  Watch,
+  Emit,
+  Mixins
+} from 'vue-property-decorator'
+import {
+  queryIgsServicesInfoInstance,
+  eventBus
+} from '@mapgis/pan-spatial-map-store'
 import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
+import SelectTreeMixin from '../../mixins/select-tree.ts'
 
 const MapGISLocal = 'MapGISLocal'
 const MapGISLocalPlus = 'MapGISLocalPlus'
@@ -40,27 +47,10 @@ const MapGISLocalPlus = 'MapGISLocalPlus'
   name: 'MapgisLayer',
   components: {}
 })
-export default class MapgisLayer extends Vue {
-  @Prop(String) readonly ip!: string
-
-  @Prop(String) readonly port!: string
-
-  private value: any = ''
-
-  private treeData: Record<string, any>[] = []
-
+export default class MapgisLayer extends Mixins(SelectTreeMixin) {
   private defaultExpandAll = false
 
-  // 替换treeNode中的title、key字段为treeData中对应的字段
-  private replaceFields: object = {
-    title: 'name',
-    key: 'id'
-  }
-
-  created() {
-    this.init()
-  }
-
+  // 构造选择树的根节点数据
   @Watch('ip', { deep: true })
   @Watch('port', { deep: true })
   init() {
@@ -72,7 +62,6 @@ export default class MapgisLayer extends Vue {
     queryIgsServicesInfoInstance
       .getDataSource({ ip, port })
       .then(res => {
-        console.log(res)
         this.treeData = res.reduce((result, item) => {
           result.push({
             id: uuid(),
@@ -84,16 +73,18 @@ export default class MapgisLayer extends Vue {
           })
           return result
         }, [])
-        console.log(this.treeData)
       })
       .catch(err => {
         console.error(err)
       })
   }
 
+  created() {
+    this.init()
+  }
+
   // 懒加载树节点数据
-  handleLazyLoad(node) {
-    console.log(node)
+  private handleLazyLoad(node) {
     return new Promise(resolve => {
       const { level, name } = node.dataRef
       switch (level) {
@@ -125,61 +116,6 @@ export default class MapgisLayer extends Vue {
               }
             })
           } else {
-            if (node.dataRef.children && node.dataRef.children.length > 0) {
-              resolve()
-              break
-            }
-            const userName = uuid()
-            const password = uuid()
-            this.$q
-              .dialog({
-                title: '身份验证',
-                style: 'width:fit-content',
-                message: `<div><span style="display: inline-block; width: 60px;">用户名</span>
-                            <input id="${userName}" style="display: inline-block; width: 120px;"/></div><div style="margin-top:10px">
-                            <span style="display: inline-block; width: 60px;">密码</span>
-                            <input id="${password}" style="display: inline-block; width: 120px;" type="password"/></div>`,
-                html: true,
-                ok: {
-                  push: true,
-                  label: '确定',
-                  color: 'title'
-                },
-                cancel: {
-                  push: true,
-                  label: '取消',
-                  color: 'title'
-                }
-              })
-              .onOk(data => {
-                const user = document.getElementById(userName).value
-                const pwd = document.getElementById(password).value
-                this.resolveDataBase(this.ip, this.port, name, user, pwd)
-                  .then(res => {
-                    if (res && res.length > 0) {
-                      const arr = [...res]
-                      arr.map(a => {
-                        a.id = uuid()
-                        a.level = 2
-                        if (a.children && a.children.length > 0) {
-                          a.children.map(c => {
-                            c.id = uuid()
-                            c.level = 3
-                            c.lazy = true
-                            return c
-                          })
-                        }
-                        return a
-                      })
-                      resolve()
-                      this.defaultExpandAll = true
-                      this.showTree = true
-                    }
-                  })
-                  .catch(err => {
-                    console.error(err)
-                  })
-              })
           }
           break
         case 3:
@@ -286,7 +222,7 @@ export default class MapgisLayer extends Vue {
   }
 
   // 获取数据库节点
-  resolveDataBase(ip, port, dataSource, user = '', password = '') {
+  private resolveDataBase(ip, port, dataSource, user = '', password = '') {
     return new Promise((resolve, reject) => {
       queryIgsServicesInfoInstance
         .getDataBase({ ip, port, dataSource, user, password })
@@ -331,36 +267,16 @@ export default class MapgisLayer extends Vue {
     })
   }
 
-  // 获取选中的叶子节点
-  getLeafNode(id, treeData) {
-    let leaf: any = null
-    for (let i = 0; i < treeData.length; i++) {
-      const data = treeData[i]
-      if (data.id === id) {
-        if (!data.children) {
-          leaf = data
-          return leaf
-        }
-      } else {
-        if (data.children) {
-          leaf = this.getLeafNode(id, data.children)
-          if (leaf) {
-            return leaf
-          }
-        }
-      }
-    }
-  }
-
   // 选中树节点时调用此函数
-  onSelectTreeChange(value, label, extra) {
-    console.log(extra)
+  private onSelectTreeChange(value, label, extra) {
     const node = extra.triggerNode.dataRef
-    const leafNode = this.getLeafNode(node.id, this.treeData)
-    if (!leafNode) {
-      return false
+
+    // 若节点没有children，说明选择的是末级叶子节点，可以添加该节点对应的服务
+    if (!node.children) {
+      this.$emit('igsLayerInfo', { gdbp: node.gdbp, name: node.name })
+      eventBus.$emit('emitSelectNode', true)
     } else {
-      this.$emit('igsLayerInfo', { gdbp: leafNode.gdbp, name: leafNode.name })
+      eventBus.$emit('emitSelectNode', false)
     }
   }
 }
