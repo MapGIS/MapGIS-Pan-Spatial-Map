@@ -3,6 +3,7 @@
     <mapgis-draw
       ref="drawer"
       :controls="controls"
+      :styles="drawStyle"
       @added="onAdded"
       @drawCreate="onDrawFinish"
     />
@@ -56,8 +57,6 @@ import {
   Sublayer
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
-import MapBoxDraw from './mixins/mapbox-draw'
-import CesiumDraw from './mixins/cesium-draw'
 import {
   lineString,
   polygon,
@@ -66,6 +65,9 @@ import {
   booleanPointInPolygon,
   booleanDisjoint
 } from '@turf/turf'
+import MapBoxDraw from './mixins/mapbox-draw'
+import CesiumDraw from './mixins/cesium-draw'
+import DrawStyle from '../../styles/draw-style'
 
 @Component
 export default class MpFeatureQuery extends Mixins(
@@ -114,6 +116,8 @@ export default class MpFeatureQuery extends Mixins(
     'PickModel'
   ]
 
+  private drawStyle = []
+
   private get limits() {
     return this.limitsArray[this.sliderIndex]
   }
@@ -150,6 +154,10 @@ export default class MpFeatureQuery extends Mixins(
         type.id = 'Rectangle'
       }
     })
+  }
+
+  mounted() {
+    this.drawStyle = DrawStyle
   }
 
   // 微件关闭时

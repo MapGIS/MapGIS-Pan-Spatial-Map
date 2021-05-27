@@ -4,19 +4,9 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 export default class MeasureMixin extends Vue {
   @Prop({
     type: Object,
-    default: () => {
-      return {
-        textType: '宋体',
-        textColor: '#3300CC',
-        textSize: 16,
-        lineColor: '#CC3333',
-        lineType: '实线',
-        lineOpacity: 100,
-        lineWidth: 3
-      }
-    }
+    required: true
   })
-  measureSetting!: Record<string, any>
+  measureStyle!: Record<string, any>
 
   @Prop({
     type: String,
@@ -45,9 +35,9 @@ export default class MeasureMixin extends Vue {
   }
 
   // 测量覆盖物样式设置改变
-  @Watch('measureSetting', { deep: true, immediate: true })
-  measureSettingChange() {
-    this.onMeasureSettingChange()
+  @Watch('measureStyle', { deep: true })
+  measureStyleChange() {
+    this.onMeasureStyleChange()
   }
 
   // 打开测量
@@ -63,5 +53,5 @@ export default class MeasureMixin extends Vue {
   onAreaUnitChange() {}
 
   // 测量覆盖物样式变化
-  onMeasureSettingChange() {}
+  onMeasureStyleChange() {}
 }

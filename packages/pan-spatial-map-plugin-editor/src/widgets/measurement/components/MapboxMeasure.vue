@@ -5,6 +5,7 @@
       position="bottom-left"
       ref="measure"
       :measureMode="measureMode"
+      :styles="drawStyle"
       @added="onAdded"
       @measureResult="onMeasureResult"
     >
@@ -23,7 +24,7 @@
                   v-for="text in item.text"
                   :key="'measuerText-' + text"
                   :style="
-                    `font-size: ${measureSetting.textSize}px;font-family: ${measureSetting.textType};color: ${measureSetting.textColor}`
+                    `font-size: ${measureStyle.textSize}px;font-family: ${measureStyle.textType};color: ${measureStyle.textColor}`
                   "
                 >
                   {{ text }}
@@ -50,11 +51,10 @@ import {
 import { MapMixin } from '@mapgis/web-app-framework'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import MeasureMixin from '../mixins/measure'
+import DrawStyle from '../../../styles/draw-style'
 
 @Component({ components: {} })
 export default class Measure extends Mixins(MapMixin, MeasureMixin) {
-  drawSources = ['mapbox-gl-draw-hot', 'mapbox-gl-draw-cold']
-
   @Emit('start')
   emitMeasureStart() {}
 
@@ -71,8 +71,12 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
   // 上一次测量结果
   private lastResult: any = {}
 
-  // 因一次绘制完毕后，drawSources不会立即加入，通过定时器来检测
-  private setMeasureStyleInterval = null
+  // 绘制样式
+  private drawStyle = []
+
+  mounted() {
+    this.drawStyle = DrawStyle
+  }
 
   beforeDestroy() {
     this.measure = undefined
@@ -82,8 +86,6 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
   openMeasure(mode) {
     // 每次打开绘制前先清除
     this.clearMeasure()
-    // 移动测量覆盖物到顶端
-    this.moveMeasureLayersToTop()
     // 使能渲染（如果没有开启会开启测量工具）
     this.enableMeasure()
     // 保存当前测量模式
@@ -137,18 +139,14 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
   }
 
   // 测量覆盖物样式变化
-  onMeasureSettingChange() {
-    this.setMeasureStyle(this.measureSetting)
+  onMeasureStyleChange() {
+    this.setMeasureStyle(this.measureStyle)
   }
 
   // 测量工具已经准备好
   private onAdded(e: any) {
     const { measure } = e
     this.measure = measure
-    this.setMeasureStyleInterval = setInterval(() => {
-      // 设置测量覆盖物样式
-      this.setMeasureStyle(this.measureSetting)
-    }, 20)
   }
 
   // 测量结果拿到后
@@ -160,6 +158,7 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
   private enableMeasure() {
     const measureComponent = this.$refs.measure
     if (measureComponent) {
+      this.setMeasureStyle(this.measureStyle)
       measureComponent.enableMeasure()
     }
   }
@@ -212,13 +211,12 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
         marker = {
           coordinates: result.coordinates[result.coordinates.length - 1],
           text: [projectionPerimeter + distanceUnitExp.perimeterUnitLabel],
-          style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
+          style: `color:${this.measureStyle.textColor};font-family:${this.measureStyle.textType};font-size:${this.measureStyle.textSize}`
         }
         this.measureMarkers.push(marker)
         this.results = {
-          planeLength: projectionPerimeter + distanceUnitExp.perimeterUnitLabel,
-          ellipsoidLength:
-            geographyPerimeter + distanceUnitExp.perimeterUnitLabel
+          planeLength: `${projectionPerimeter} ${distanceUnitExp.perimeterUnitLabel}`,
+          ellipsoidLength: `${geographyPerimeter} ${distanceUnitExp.perimeterUnitLabel}`
         }
         break
       case 'measure-area':
@@ -241,15 +239,14 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
             `周长: ${projectionPerimeter}${areaUnitExp.perimeterUnitLabel}`,
             `面积: ${projectionArea}${areaUnitExp.areaUnitLabel}`
           ],
-          style: `color:${this.measureSetting.textColor};font-family:${this.measureSetting.textType};font-size:${this.measureSetting.textSize}`
+          style: `color:${this.measureStyle.textColor};font-family:${this.measureStyle.textType};font-size:${this.measureStyle.textSize}`
         }
         this.measureMarkers.push(marker)
         this.results = {
-          planePerimeter: projectionPerimeter + areaUnitExp.perimeterUnitLabel,
-          planeArea: projectionArea + areaUnitExp.areaUnitLabel,
-          ellipsoidPerimeter:
-            geographyPerimeter + areaUnitExp.perimeterUnitLabel,
-          ellipsoidArea: geographyArea + areaUnitExp.areaUnitLabel
+          planePerimeter: `${projectionPerimeter} ${areaUnitExp.perimeterUnitLabel}`,
+          planeArea: `${projectionArea} ${areaUnitExp.areaUnitLabel}`,
+          ellipsoidPerimeter: `${geographyPerimeter} ${areaUnitExp.perimeterUnitLabel}`,
+          ellipsoidArea: `${geographyArea} ${areaUnitExp.areaUnitLabel}`
         }
         break
       default:
@@ -326,76 +323,32 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
     }
   }
 
-  // 将量算绘制的图层移到所有图层上方，避免被覆盖
-  private moveMeasureLayersToTop() {
-    if (this.map === null) {
-      return false
-    }
-    if (
-      this.map.getSource(this.drawSources[0]) ||
-      this.map.getSource(this.drawSources[1])
-    ) {
-      const { layers } = this.map.getStyle()
-      for (let i = 0; i < layers.length; i++) {
-        const layer = layers[i]
-        if (layer.source && this.drawSources.includes(layer.source)) {
-          this.map.moveLayer(layer.id)
+  private setMeasureStyle(measureStyle) {
+    // 修改drawStyle中的内容
+    this.drawStyle = this.drawStyle.map(style => {
+      if (style.type === 'line') {
+        style.paint = {
+          'line-color': measureStyle.lineColor,
+          'line-width': measureStyle.lineWidth,
+          'line-opacity': measureStyle.lineOpacity
+        }
+        if (measureStyle.lineType === '虚线') {
+          style.paint['line-dasharray'] = [0.2, 2]
+        }
+      } else if (style.type === 'circle') {
+        style.paint = {
+          'circle-color': measureStyle.lineColor,
+          'circle-opacity': measureStyle.lineOpacity
+        }
+      } else if (style.type === 'fill') {
+        style.paint = {
+          'fill-color': measureStyle.fillColor,
+          'fill-opacity': measureStyle.fillOpacity
         }
       }
-    }
-  }
 
-  private setMeasureStyle(measureSetting) {
-    if (this.map === null) {
-      return false
-    }
-    if (this.isMapboxDrawSourceAdded()) {
-      if (this.setMeasureStyleInterval) {
-        clearInterval(this.setMeasureStyleInterval)
-      }
-
-      const { layers } = this.map.getStyle()
-      for (let i = 0; i < layers.length; i += 1) {
-        const layer = layers[i]
-        if (layer.source && this.drawSources.includes(layer.source)) {
-          const { type } = layer
-          if (type === 'line') {
-            const layerId = layer.id
-            this.map.setPaintProperty(
-              layerId,
-              'line-color',
-              measureSetting.lineColor
-            )
-
-            if (measureSetting.lineType === '虚线') {
-              this.map.setPaintProperty(layerId, 'line-dasharray', [0.2, 2])
-            } else if (measureSetting.lineType === '实线') {
-              this.map.setPaintProperty(layerId, 'line-dasharray', null)
-            }
-            this.map.setPaintProperty(
-              layerId,
-              'line-opacity',
-              measureSetting.lineOpacity / 100
-            )
-            this.map.setPaintProperty(
-              layerId,
-              'line-width',
-              measureSetting.lineWidth
-            )
-          }
-        }
-      }
-    }
-  }
-
-  private isMapboxDrawSourceAdded() {
-    if (
-      this.map.getSource(this.drawSources[0]) &&
-      this.map.getSource(this.drawSources[1])
-    ) {
-      return true
-    }
-    return false
+      return style
+    })
   }
 }
 </script>

@@ -43,136 +43,137 @@
       </div>
     </div>
     <div class="measure-result">
-      <div
-        v-show="showLengthSelect && isMeasureFinished"
-        class="measure-result-title"
-      >
-        测量结果
-      </div>
-      <div v-show="showLengthSelect && isMeasureFinished" class="result-panel">
+      <div v-show="showLengthSelect && isMeasureFinished">
         <div class="result-item">
-          <span>投影平面长度:</span>
-          <span>{{ results.planeLength }}</span>
+          <span class="name">投影平面长度: </span>
+          <span class="value">{{ results.planeLength }}</span>
         </div>
         <div class="result-item">
-          <span>椭球实地长度:</span>
-          <span>{{ results.ellipsoidLength }}</span>
+          <span class="name">椭球实地长度: </span>
+          <span class="value">{{ results.ellipsoidLength }}</span>
         </div>
       </div>
-      <div
-        v-show="showAreaSelect && isMeasureFinished"
-        class="measure-result-title"
-      >
-        测量结果
-      </div>
-      <div v-show="showAreaSelect && isMeasureFinished" class="result-panel">
+      <div v-show="showAreaSelect && isMeasureFinished">
         <div class="result-item">
-          <span>投影平面周长:</span>
-          <span>{{ results.planePerimeter }}</span>
+          <span class="name">投影平面周长: </span>
+          <span class="value">{{ results.planePerimeter }}</span>
         </div>
         <div class="result-item">
-          <span>投影平面面积:</span>
-          <span>{{ results.planeArea }}</span>
+          <span class="name">投影平面面积: </span>
+          <span class="value">{{ results.planeArea }}</span>
         </div>
         <div class="result-item">
-          <span>椭球实地周长:</span>
-          <span>{{ results.ellipsoidPerimeter }}</span>
+          <span class="name">椭球实地周长: </span>
+          <span class="value">{{ results.ellipsoidPerimeter }}</span>
         </div>
         <div class="result-item">
-          <span>椭球实地面积:</span>
-          <span>{{ results.ellipsoidArea }}</span>
+          <span class="name">椭球实地面积: </span>
+          <span class="value">{{ results.ellipsoidArea }}</span>
         </div>
       </div>
     </div>
-    <div v-show="showSettingPanel" class="measure-style">
-      <div class="measure-style-title">文字样式</div>
-      <a-form-model
-        :model="formData"
-        labelAlign="left"
-        :label-col="{ span: 8 }"
-        :wrapper-col="{ span: 16 }"
-      >
-        <a-form-model-item label="字体:">
-          <a-select v-model="formData.textType">
-            <a-select-option v-for="item in textTypes" :key="item">{{
-              item
-            }}</a-select-option>
+    <div v-show="showSettingPanel" class="setting-panel">
+      <a-divider></a-divider>
+      <a-space direction="vertical" style="width: 100%;">
+        <a-row>
+          <label>字体名称</label>
+        </a-row>
+        <a-row>
+          <a-select v-model="measureStyle.textType" style="width: 100%;">
+            <a-select-option v-for="item in textTypes" :key="item">
+              {{ item }}
+            </a-select-option>
           </a-select>
-        </a-form-model-item>
-        <a-form-model-item label="字体颜色:">
+        </a-row>
+        <a-row>
+          <label>字体颜色</label>
+        </a-row>
+        <a-row>
+          <a-popover trigger="click">
+            <template slot="content">
+              <sketch-picker
+                :value="measureStyle.textColor"
+                @input="onTextColorChange"
+              />
+            </template>
+            <div
+              :style="{ background: measureStyle.textColor }"
+              class="color"
+            ></div>
+          </a-popover>
+        </a-row>
+        <a-row>
+          <label>字体大小</label>
+        </a-row>
+        <a-row>
           <a-input
-            class="color-input"
-            v-model="formData.textColor"
-            :style="{ background: formData.textColor }"
+            v-model.number="measureStyle.textSize"
+            type="number"
+            :min="12"
           >
-            <div slot="addonAfter">
-              <a-popover trigger="click">
-                <template slot="content">
-                  <sketch-picker
-                    :value="formData.textColor"
-                    @input="val => getFontColor(val)"
-                  />
-                </template>
-                <a-icon type="edit" />
-              </a-popover>
-            </div>
           </a-input>
-        </a-form-model-item>
-        <a-form-model-item label="字号:">
-          <a-input v-model.number="formData.textSize" type="number" :min="12">
-          </a-input>
-        </a-form-model-item>
-      </a-form-model>
-      <div class="measure-style-title">轮廓线样式</div>
-      <a-form-model
-        :model="formData"
-        labelAlign="left"
-        :label-col="{ span: 8 }"
-        :wrapper-col="{ span: 16 }"
-      >
-        <a-form-item label="颜色">
-          <a-input
-            class="color-input"
-            v-model="formData.lineColor"
-            :style="{ background: formData.lineColor }"
-          >
-            <a-popover slot="addonAfter" trigger="click">
-              <template slot="content">
-                <sketch-picker
-                  :value="formData.lineColor"
-                  @input="val => getLineColor(val)"
-                />
-              </template>
-              <a-icon type="edit" />
-            </a-popover>
-          </a-input>
-        </a-form-item>
-        <a-form-item label="样式">
-          <a-select v-model="formData.lineType">
-            <a-select-option v-for="item in lineTypes" :key="item">{{
-              item
-            }}</a-select-option>
+        </a-row>
+        <a-row>
+          <label>线样式</label>
+        </a-row>
+        <a-row>
+          <a-select v-model="measureStyle.lineType" style="width: 100%;">
+            <a-select-option v-for="item in lineTypes" :key="item">
+              {{ item }}
+            </a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item label="透明度">
-          <a-slider
-            v-model="formData.lineOpacity"
-            :min="0"
-            :max="100"
-            :step="1"
-            :tip-formatter="formatter"
-          ></a-slider>
-        </a-form-item>
-        <a-form-item label="宽度">
-          <a-input v-model.number="formData.lineWidth" type="number" :min="1">
+        </a-row>
+        <a-row>
+          <label>线颜色</label>
+        </a-row>
+        <a-row>
+          <a-popover trigger="click">
+            <template slot="content">
+              <sketch-picker :value="lineColor" @input="onLineColorChange" />
+            </template>
+            <div
+              :style="{
+                background: measureStyle.lineColor,
+                opacity: measureStyle.lineOpacity
+              }"
+              class="color"
+            ></div>
+          </a-popover>
+        </a-row>
+        <a-row>
+          <label>线宽度</label>
+        </a-row>
+        <a-row>
+          <a-input
+            v-model.number="measureStyle.lineWidth"
+            type="number"
+            :min="1"
+          >
           </a-input>
-        </a-form-item>
-      </a-form-model>
+        </a-row>
+        <a-row>
+          <label>填充颜色</label>
+        </a-row>
+        <a-row>
+          <a-popover trigger="click">
+            <template slot="content">
+              <sketch-picker :value="fillColor" @input="onFillColorChange" />
+            </template>
+            <div
+              :style="{
+                background: measureStyle.fillColor,
+                opacity: measureStyle.fillOpacity
+              }"
+              class="color"
+            ></div>
+          </a-popover>
+        </a-row>
+      </a-space>
     </div>
     <mapbox-measure
       ref="mapboxMeasure"
       v-show="is2DMapMode"
-      :measureSetting="formData"
+      :measureStyle="measureStyle"
       :distanceUnit="activeDistanceSelect"
       :areaUnit="activeAreaSelect"
       @finished="onMeasureFinished"
@@ -237,14 +238,16 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   }
 
   // 样式表单数据对象
-  private formData = {
+  private measureStyle = {
     textType: '宋体',
     textColor: '#1890ff',
     textSize: '14',
-    lineColor: '#1890ff',
     lineType: '实线',
-    lineOpacity: 100,
-    lineWidth: 3
+    lineColor: '#1890ff',
+    lineOpacity: 1,
+    lineWidth: 3,
+    fillColor: '#1890ff',
+    fillOpacity: 0.4
   }
 
   // 字体下拉框配置
@@ -252,6 +255,20 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
   // 轮廓线下拉框配置
   private lineTypes = ['实线', '虚线']
+
+  get lineColor() {
+    return {
+      hex: this.measureStyle.lineColor,
+      a: this.measureStyle.lineOpacity
+    }
+  }
+
+  get fillColor() {
+    return {
+      hex: this.measureStyle.fillColor,
+      a: this.measureStyle.fillOpacity
+    }
+  }
 
   // 下拉框配置
   get getSelectOptions() {
@@ -319,14 +336,21 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     this.results = { ...results }
   }
 
-  // 选中文字颜色拾取器对应事件
-  private getFontColor(val) {
-    this.formData.textColor = val.hex
+  // 文字颜色拾取器对应事件
+  private onTextColorChange(val) {
+    this.measureStyle.textColor = val.hex
   }
 
-  // 选中轮廓线颜色拾取器对应事件
-  private getLineColor(val) {
-    this.formData.lineColor = val.hex
+  // 线颜色拾取器对应事件
+  private onLineColorChange(val) {
+    this.measureStyle.lineColor = val.hex
+    this.measureStyle.lineOpacity = val.a
+  }
+
+  // 填充颜色拾取器对应事件
+  private onFillColorChange(val) {
+    this.measureStyle.fillColor = val.hex
+    this.measureStyle.fillOpacity = val.a
   }
 
   // 格式化滑动条Tooltip内容
@@ -369,43 +393,28 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     }
   }
   .measure-result {
-    .measure-result-title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding-top: 8px;
-      font-weight: bold;
-    }
+    font-size: 13px;
+    margin-top: 8px;
     .result-item {
-      margin-top: 8px;
-    }
-    .result-item :nth-child(2) {
-      margin-left: 8px;
+      line-height: 20px;
+      .name {
+        color: @heading-color;
+      }
+      .value {
+        color: @text-color;
+      }
     }
   }
-  .measure-style {
-    .measure-style-title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 8px 0;
-      font-weight: bold;
+  .setting-panel {
+    display: flex;
+    flex-direction: column;
+    .ant-divider-horizontal {
+      margin: 8px 0;
     }
-    .ant-form-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 0;
-    }
-    .color-input {
-      ::v-deep .ant-input-wrapper,
-      ::v-deep .ant-input {
-        background: inherit;
-      }
-      ::v-deep .ant-input-group-addon {
-        background: inherit;
-        cursor: pointer;
-      }
+    .color {
+      height: 30px;
+      box-shadow: @shadow-1-down;
+      border-radius: 3px;
     }
   }
 }
