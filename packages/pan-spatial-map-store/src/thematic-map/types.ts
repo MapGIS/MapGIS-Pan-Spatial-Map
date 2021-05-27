@@ -105,7 +105,7 @@ export interface IGetters {
   configTimeList: (s: IState, g: IGetters) => string[]
 }
 
-export interface IGettersResult {
+interface IGettersResult {
   isVisible: (t: ModuleType) => boolean
   loading: boolean
   selected: string

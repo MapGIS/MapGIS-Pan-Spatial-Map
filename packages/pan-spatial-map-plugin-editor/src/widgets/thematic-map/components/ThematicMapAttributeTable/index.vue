@@ -85,6 +85,8 @@ import RowFlex from '../RowFlex'
   }
 })
 export default class ThematicMapAttributeTable extends Vue {
+  atVisible = false
+
   // 专题
   subject = ''
 

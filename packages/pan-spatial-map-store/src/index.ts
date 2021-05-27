@@ -27,6 +27,7 @@ export { vectorTileListInstance } from './vector-tile-list'
 
 // 专题服务
 export {
+  thematicMapStore,
   mapGetters,
   mapMutations,
   moduleTypes,

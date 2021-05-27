@@ -1,9 +1,10 @@
-import { ModuleType, IThematicMapBaseConfig, IState, IGetters } from './types'
+import Vue from 'vue'
+import { ModuleType, IState, IGetters } from '../types'
 
-export default {
+const getters = {
   // 获取某个专题服务展示弹框的开关状态
-  isVisible: (state: IState) => (type: ModuleType) =>
-    state.moduleTypes.includes(type),
+  isVisible: ({ moduleTypes }: IState) => (type: ModuleType) =>
+    moduleTypes.includes(type),
   // 加载
   loading: (state: IState) => state.loading,
   // 获取选中专题ID
@@ -60,3 +61,5 @@ export default {
   configTimeList: (state: IState, getters: IGetters) =>
     getters.subjectConfig(state)?.configTimeList || []
 }
+
+export default Vue.observable(getters)

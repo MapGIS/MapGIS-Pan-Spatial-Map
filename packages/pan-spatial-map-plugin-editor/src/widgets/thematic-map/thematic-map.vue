@@ -133,11 +133,11 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       ? selectedList[selectedList.length - 1].id
       : ''
     if (!selected) {
-      // this.onClose()
+      this.resetVisible()
     } else {
       this.setSelected(selected)
       this.setSelectedList(selectedList)
-      this.onVisible()
+      moduleTypes.forEach(v => this.setVisible(v))
     }
     this.selected = selected
   }
@@ -161,13 +161,6 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    */
   onClose() {
     moduleTypes.forEach(v => this.resetVisible(v))
-  }
-
-  /**
-   * 专题服务功能面板打开
-   */
-  onVisible() {
-    moduleTypes.forEach(v => this.setVisible(v))
   }
 }
 </script>

@@ -1,5 +1,5 @@
 import _cloneDeep from 'lodash/cloneDeep'
-import { queryFeaturesInstance, FeatureIGS } from '../service'
+import { queryFeaturesInstance, FeatureIGS } from '../../service'
 import {
   ModuleType,
   IThematicMapConfig,
@@ -7,9 +7,9 @@ import {
   IThematicMapSubjectConfig,
   IContext,
   IGetters
-} from './types'
+} from '../types'
 
-export default {
+const mutations = {
   /**
    * 加载
    */
@@ -73,7 +73,7 @@ export default {
         table: { showFields }
       } = configSubData
       const fields = showFields.join(',')
-      let params = {
+      let params: any = {
         ip,
         port,
         fields,
@@ -154,7 +154,13 @@ export default {
    * 重置专题服务展示弹框的开关
    */
   resetVisible({ state }: IContext, type: ModuleType) {
-    state.moduleTypes.splice(state.moduleTypes.indexOf(type), 1)
+    if (type) {
+      state.moduleTypes.splice(state.moduleTypes.indexOf(type), 1)
+    } else {
+      state.moduleTypes = []
+    }
     console.log('state.moduleTypes', state.moduleTypes)
   }
 }
+
+export default mutations

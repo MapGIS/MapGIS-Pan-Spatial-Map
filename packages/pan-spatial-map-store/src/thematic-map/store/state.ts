@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { IState } from './types'
+import { IState } from '../types'
 
 export default Vue.observable<IState>({
   // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
