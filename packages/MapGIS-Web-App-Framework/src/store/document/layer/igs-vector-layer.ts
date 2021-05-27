@@ -42,7 +42,7 @@ export class IGSVectorLayer extends Layer {
 
   /**
    * 服务基地址
-   * 约定URL格式如下：http://[host]:[port]/igs/rest/mrms/layers
+   * 约定URL格式如下：[protocol]://[ip]:[port]/igs/rest/mrms/layers
    * @date 22/03/2021
    * @memberof IGSVectorLayer
    */
@@ -129,7 +129,7 @@ export class IGSVectorLayer extends Layer {
 
   /**
    * url解析,提取对应的ip、port
-   * 约定URL格式如下：http://[host]:[port]/igs/rest/mrms/map/layers
+   * 约定URL格式如下：[protocol]://[ip]:[port]/igs/rest/mrms/map/layers
    *
    * @date 23/03/2021
    * @private
