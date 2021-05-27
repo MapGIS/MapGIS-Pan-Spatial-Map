@@ -348,9 +348,9 @@ export default class MpAttributeTable extends Mixins(
     this.calcTableScrollY()
   }
 
-  onActive() {
-    this.addMarkers()
-    this.hightlightSelectionMarkers()
+  async onActive() {
+    await this.addMarkers()
+    await this.hightlightSelectionMarkers()
   }
 
   onDeActive() {
@@ -370,9 +370,9 @@ export default class MpAttributeTable extends Mixins(
     this.removeMarkers()
   }
 
-  private onSelectChange(selectedRowKeys, selectedRows) {
+  private async onSelectChange(selectedRowKeys, selectedRows) {
     this.selection = selectedRows
-    this.hightlightSelectionMarkers()
+    await this.hightlightSelectionMarkers()
   }
 
   private onPaginationChange(page, pageSize) {
@@ -573,7 +573,7 @@ export default class MpAttributeTable extends Mixins(
       this.removeMarkers()
       // 如果当前是激活状态，则添加markers
       if (this.isExhibitionActive) {
-        this.addMarkers()
+        await this.addMarkers()
       }
     } else if (serverType === LayerType.arcGISMapImage) {
       const { layerIndex, gdbp } = this.optionVal
@@ -638,7 +638,7 @@ export default class MpAttributeTable extends Mixins(
       this.removeMarkers()
       // 如果当前是激活状态，则添加markers
       if (this.isExhibitionActive) {
-        this.addMarkers()
+        await this.addMarkers()
       }
     }
   }
@@ -685,9 +685,9 @@ export default class MpAttributeTable extends Mixins(
   }
 
   // 清除选择集
-  private clearSelection() {
+  private async clearSelection() {
     this.selection = []
-    this.hightlightSelectionMarkers()
+    await this.hightlightSelectionMarkers()
   }
 
   // 高亮选择集对应的标注图标

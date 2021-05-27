@@ -9,6 +9,7 @@
     :fullscreen-button="false"
     style="height: 100%; width: 100%"
   >
+    <base-layers-cesium :document="document" />
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
@@ -27,14 +28,17 @@
         :show="layerProps.show"
         :id="layerProps.layerId"
         :url="layerProps.url"
-        :options="layerProps.options"
+        :layers="layerProps.layers"
       />
       <mapgis-3d-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
         :show="layerProps.show"
         :id="layerProps.layerId"
-        :url="layerProps.url"
         :options="layerProps.options"
+        :url="layerProps.url"
+        :layer="layerProps.layer"
+        :wmtsStyle="layerProps.wmtsStyle"
+        :tileMatrixSet="layerProps.tileMatrixSet"
       />
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type)"
@@ -59,10 +63,11 @@ import {
   LoadStatus,
   IGSSceneSublayerRenderType
 } from '@mapgis/web-app-framework'
+import BaseLayersCesium from '../BaseLayers/BaseLayersCesium'
 
 export default {
   name: 'MpCesiumView',
-  components: {},
+  components: { BaseLayersCesium },
   props: {
     document: {
       type: Object,
@@ -224,9 +229,10 @@ export default {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
+            tileMatrixSet: `EPSG:${layer.spatialReference.wkid}`,
+            layer: layer.activeLayer.id,
+            wmtsStyle: layer.activeLayer.styleId,
             options: {
-              layer: layer.activeLayer.id,
-              style: layer.activeLayer.styleId,
               version: layer.version,
               format: layer.activeLayer.imageFormat,
               tileMatrixSetID: layer.activeLayer.tileMatrixSetId
@@ -237,17 +243,15 @@ export default {
         case LayerType.OGCWMS:
           allLayerNames = []
           layer.allSublayers.forEach(element => {
-            if (element.visible) allLayerNames.push(element.name)
+            if (element.visible && element.name)
+              allLayerNames.push(element.name)
           })
 
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            options: {
-              layers: allLayerNames.join(','),
-              version: layer.version
-            }
+            layers: allLayerNames.join(',')
           }
 
           break
