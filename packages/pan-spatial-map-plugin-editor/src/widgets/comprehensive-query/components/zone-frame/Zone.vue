@@ -71,13 +71,11 @@
       </a-row>
     </div>
     <zone-frame-mapbox
-      v-if="is2DMapMode"
       :geojson="geojson"
       :fillOutlineColor="fillOutlineColor"
       :fillColor="fillColor"
     ></zone-frame-mapbox>
     <zone-frame-cesium
-      v-else
       :geojson="geojson"
       :fillOutlineColor="fillOutlineColor"
       :fillColor="fillColor"
