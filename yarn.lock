@@ -1223,6 +1223,15 @@
   dependencies:
     qs "^6.9.4"
 
+"@mapgis/webclient-es6-service@^10.5.3-beta":
+  version "10.5.3-beta"
+  resolved "https://registry.nlark.com/@mapgis/webclient-es6-service/download/@mapgis/webclient-es6-service-10.5.3-beta.tgz#2a3c3ad3f2776180fdd57b921498054e3239a769"
+  integrity sha1-Kjw60/J3YYD91XuSFJgFTjI5p2k=
+  dependencies:
+    "@turf/turf" "^6.3.0"
+    fast-xml-parser "^3.17.6"
+    qs "^6.9.4"
+
 "@mapgis/webclient-store@^1.0.0", "@mapgis/webclient-store@^1.0.13-fix":
   version "1.0.14"
   resolved "https://registry.nlark.com/@mapgis/webclient-store/download/@mapgis/webclient-store-1.0.14.tgz#4f7a83499f6c39dd4272e217944ab18c911f5dfa"
@@ -1320,7 +1329,7 @@
     "@turf/distance" "^5.1.5"
     "@turf/helpers" "^5.1.5"
 
-"@turf/along@^6.0.1":
+"@turf/along@^6.0.1", "@turf/along@^6.3.0":
   version "6.3.0"
   resolved "https://registry.npm.taobao.org/@turf/along/download/@turf/along-6.3.0.tgz#9a1d2d418027945f113e15029f53069b335bf426"
   integrity sha1-mh0tQYAnlF8RPhUCn1MGmzNb9CY=
@@ -1331,6 +1340,16 @@
     "@turf/helpers" "^6.3.0"
     "@turf/invariant" "^6.3.0"
 
+"@turf/angle@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/angle/download/@turf/angle-6.3.0.tgz#42496df9a6f581d88d12ddacacc71070f1b57ad4"
+  integrity sha1-Qklt+ab1gdiNEt2srMcQcPG1etQ=
+  dependencies:
+    "@turf/bearing" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/rhumb-bearing" "^6.3.0"
+
 "@turf/area@5.1.x", "@turf/area@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/area/download/@turf/area-5.1.5.tgz#efd899bfd260cdbd1541b2a3c155f8a5d2eefa1d"
@@ -1338,6 +1357,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/area@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/area/download/@turf/area-6.3.0.tgz#cdd02f8ca51da2889dfc90a3c9e8fef5d1e04dca"
+  integrity sha1-zdAvjKUdooid/JCjyej+9dHgTco=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/bbox-clip@5.1.x":
   version "5.1.5"
@@ -1348,12 +1375,35 @@
     "@turf/invariant" "^5.1.5"
     lineclip "^1.1.5"
 
+"@turf/bbox-clip@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/bbox-clip/download/@turf/bbox-clip-6.3.0.tgz#43bed0d963d06e254135c27e4bc13ed55ad89cf9"
+  integrity sha1-Q77Q2WPQbiVBNcJ+S8E+1VrYnPk=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/bbox-polygon@5.1.x", "@turf/bbox-polygon@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/bbox-polygon/download/@turf/bbox-polygon-5.1.5.tgz#6aeba4ed51d85d296e0f7c38b88c339f01eee024"
   integrity sha1-auuk7VHYXSluD3w4uIwznwHu4CQ=
   dependencies:
     "@turf/helpers" "^5.1.5"
+
+"@turf/bbox-polygon@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/bbox-polygon/download/@turf/bbox-polygon-6.3.0.tgz#9ffa79d56ae50cc7730b35b2a6d2a02493268365"
+  integrity sha1-n/p51WrlDMdzCzWyptKgJJMmg2U=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+
+"@turf/bbox@*", "@turf/bbox@^6.0.1", "@turf/bbox@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/bbox/download/@turf/bbox-6.3.0.tgz#0e1a9b59f32d6a2a40c806f54cbaa73575bead25"
+  integrity sha1-DhqbWfMtaipAyAb1TLqnNXW+rSU=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/bbox@5.1.x", "@turf/bbox@^5.1.5":
   version "5.1.5"
@@ -1362,14 +1412,6 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
-
-"@turf/bbox@^6.0.1":
-  version "6.3.0"
-  resolved "https://registry.npm.taobao.org/@turf/bbox/download/@turf/bbox-6.3.0.tgz#0e1a9b59f32d6a2a40c806f54cbaa73575bead25"
-  integrity sha1-DhqbWfMtaipAyAb1TLqnNXW+rSU=
-  dependencies:
-    "@turf/helpers" "^6.3.0"
-    "@turf/meta" "^6.3.0"
 
 "@turf/bearing@5.1.x", "@turf/bearing@^5.1.5":
   version "5.1.5"
@@ -1395,6 +1437,14 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/bezier-spline@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/bezier-spline/download/@turf/bezier-spline-6.3.0.tgz#8070322102bbbe53155a973daa8a45ed9fd2912c"
+  integrity sha1-gHAyIQK7vlMVWpc9qopF7Z/SkSw=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/boolean-clockwise@5.1.x", "@turf/boolean-clockwise@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/boolean-clockwise/download/@turf/boolean-clockwise-5.1.5.tgz#3302b7dac62c5e291a0789e29af7283387fa9deb"
@@ -1402,6 +1452,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+
+"@turf/boolean-clockwise@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-clockwise/download/@turf/boolean-clockwise-6.3.0.tgz#78652068d138ab8b12fa7c1250f15e0cdeb14d1d"
+  integrity sha1-eGUgaNE4q4sS+nwSUPFeDN6xTR0=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
 
 "@turf/boolean-contains@5.1.x", "@turf/boolean-contains@^5.1.5":
   version "5.1.5"
@@ -1414,6 +1472,17 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/boolean-contains@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-contains/download/@turf/boolean-contains-6.3.0.tgz#fe4fc359e408c8c3c89e7fb159c9d31fde48779a"
+  integrity sha1-/k/DWeQIyMPInn+xWcnTH95Id5o=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/boolean-point-on-line" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/boolean-crosses@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/boolean-crosses/download/@turf/boolean-crosses-5.1.5.tgz#01bfaea2596f164de4a4d325094dc7c255c715d6"
@@ -1424,6 +1493,17 @@
     "@turf/invariant" "^5.1.5"
     "@turf/line-intersect" "^5.1.5"
     "@turf/polygon-to-line" "^5.1.5"
+
+"@turf/boolean-crosses@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-crosses/download/@turf/boolean-crosses-6.3.0.tgz#0a3fbdeddeb344a653acef95cb8d404fab12fe2d"
+  integrity sha1-Cj+97d6zRKZTrO+Vy41AT6sS/i0=
+  dependencies:
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/line-intersect" "^6.3.0"
+    "@turf/polygon-to-line" "^6.3.0"
 
 "@turf/boolean-disjoint@5.1.x":
   version "5.1.6"
@@ -1436,6 +1516,17 @@
     "@turf/meta" "^5.1.5"
     "@turf/polygon-to-line" "^5.1.5"
 
+"@turf/boolean-disjoint@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-disjoint/download/@turf/boolean-disjoint-6.3.0.tgz#4b27fb3c3c9ff23f69fbcc8d2d03665e9f52c20e"
+  integrity sha1-Syf7PDyf8j9p+8yNLQNmXp9Swg4=
+  dependencies:
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/line-intersect" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/polygon-to-line" "^6.3.0"
+
 "@turf/boolean-equal@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/boolean-equal/download/@turf/boolean-equal-5.1.5.tgz#29f8f6d60bb84507dfd765b32254db8e72c938a4"
@@ -1445,6 +1536,25 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
     geojson-equality "0.1.6"
+
+"@turf/boolean-equal@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-equal/download/@turf/boolean-equal-6.3.0.tgz#d1c2404207f6174b6f5efd99e7a56344932c4850"
+  integrity sha1-0cJAQgf2F0tvXv2Z56VjRJMsSFA=
+  dependencies:
+    "@turf/clean-coords" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    geojson-equality "0.1.6"
+
+"@turf/boolean-intersects@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-intersects/download/@turf/boolean-intersects-6.3.0.tgz#aaa096e6e346e6da673984ad397d4a96cb97cb89"
+  integrity sha1-qqCW5uNG5tpnOYStOX1KlsuXy4k=
+  dependencies:
+    "@turf/boolean-disjoint" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/boolean-overlap@5.1.x", "@turf/boolean-overlap@^5.1.5":
   version "5.1.5"
@@ -1458,6 +1568,18 @@
     "@turf/meta" "^5.1.5"
     geojson-equality "0.1.6"
 
+"@turf/boolean-overlap@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-overlap/download/@turf/boolean-overlap-6.3.0.tgz#b696945154fc85f8e700b82f8e15502a03995b35"
+  integrity sha1-tpaUUVT8hfjnALgvjhVQKgOZWzU=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/line-intersect" "^6.3.0"
+    "@turf/line-overlap" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    geojson-equality "0.1.6"
+
 "@turf/boolean-parallel@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/boolean-parallel/download/@turf/boolean-parallel-5.1.5.tgz#739358475ea5b65c7e1827a3c3e0e8a687d3a85d"
@@ -1468,6 +1590,16 @@
     "@turf/line-segment" "^5.1.5"
     "@turf/rhumb-bearing" "^5.1.5"
 
+"@turf/boolean-parallel@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-parallel/download/@turf/boolean-parallel-6.3.0.tgz#560ac0ad21d9197b991ed5c4aa60d70f412b8194"
+  integrity sha1-VgrArSHZGXuZHtXEqmDXD0ErgZQ=
+  dependencies:
+    "@turf/clean-coords" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/line-segment" "^6.3.0"
+    "@turf/rhumb-bearing" "^6.3.0"
+
 "@turf/boolean-point-in-polygon@5.1.x", "@turf/boolean-point-in-polygon@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/boolean-point-in-polygon/download/@turf/boolean-point-in-polygon-5.1.5.tgz#f01cc194d1e030a548bfda981cba43cfd62941b7"
@@ -1476,6 +1608,14 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/boolean-point-in-polygon@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-point-in-polygon/download/@turf/boolean-point-in-polygon-6.3.0.tgz#784952a36c64119e90fbe94650245da62ecd8fc2"
+  integrity sha1-eElSo2xkEZ6Q++lGUCRdpi7Nj8I=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/boolean-point-on-line@5.1.x", "@turf/boolean-point-on-line@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/boolean-point-on-line/download/@turf/boolean-point-on-line-5.1.5.tgz#f633c5ff802ad24bb8f158dadbaf6ff4a023dd7b"
@@ -1483,6 +1623,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+
+"@turf/boolean-point-on-line@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-point-on-line/download/@turf/boolean-point-on-line-6.3.0.tgz#1fe7b5c0979695260011b93036f0e7042cb5195b"
+  integrity sha1-H+e1wJeWlSYAEbkwNvDnBCy1GVs=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
 
 "@turf/boolean-within@5.1.x", "@turf/boolean-within@^5.1.5":
   version "5.1.5"
@@ -1494,6 +1642,17 @@
     "@turf/boolean-point-on-line" "^5.1.5"
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+
+"@turf/boolean-within@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/boolean-within/download/@turf/boolean-within-6.3.0.tgz#5187298b4c88283b02b25691dc62b6b07b68dc96"
+  integrity sha1-UYcpi0yIKDsCslaR3GK2sHto3JY=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/boolean-point-on-line" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
 
 "@turf/buffer@5.1.x":
   version "5.1.5"
@@ -1508,6 +1667,19 @@
     d3-geo "1.7.1"
     turf-jsts "*"
 
+"@turf/buffer@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/buffer/download/@turf/buffer-6.3.0.tgz#cf1df21bb60c551aa48d75e71ae16fe9700dd1de"
+  integrity sha1-zx3yG7YMVRqkjXXnGuFv6XAN0d4=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/center" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/projection" "^6.3.0"
+    d3-geo "1.7.1"
+    turf-jsts "*"
+
 "@turf/center-mean@5.1.x", "@turf/center-mean@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/center-mean/download/@turf/center-mean-5.1.5.tgz#8c8e9875391e5f09f0e6e78f5d661b88b2108a0a"
@@ -1516,6 +1688,15 @@
     "@turf/bbox" "^5.1.5"
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/center-mean@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/center-mean/download/@turf/center-mean-6.3.0.tgz#9b838266056b6c81999e24594cdfefd883cd1e51"
+  integrity sha1-m4OCZgVrbIGZniRZTN/v2IPNHlE=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/center-median@5.1.x":
   version "5.1.5"
@@ -1528,6 +1709,17 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/center-median@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/center-median/download/@turf/center-median-6.3.0.tgz#eb4df3608bc15749d8e43774746ea8021e26c865"
+  integrity sha1-603zYIvBV0nY5Dd0dG6oAh4myGU=
+  dependencies:
+    "@turf/center-mean" "^6.3.0"
+    "@turf/centroid" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/center-of-mass@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/center-of-mass/download/@turf/center-of-mass-5.1.5.tgz#4d3bd79d88498dbab8324d4f69f0322f6520b9ca"
@@ -1539,6 +1731,17 @@
     "@turf/invariant" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/center-of-mass@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/center-of-mass/download/@turf/center-of-mass-6.3.0.tgz#303fa27f991f1a5ab3d1e25d96ce2059e9c70bce"
+  integrity sha1-MD+if5kfGlqz0eJdls4gWenHC84=
+  dependencies:
+    "@turf/centroid" "^6.3.0"
+    "@turf/convex" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/center@5.1.x", "@turf/center@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/center/download/@turf/center-5.1.5.tgz#44ab2cd954f63c0d37757f7158a99c3ef5114b80"
@@ -1546,6 +1749,14 @@
   dependencies:
     "@turf/bbox" "^5.1.5"
     "@turf/helpers" "^5.1.5"
+
+"@turf/center@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/center/download/@turf/center-6.3.0.tgz#dc46b94e77dc19f2822af8786a0e6d5d68deba0d"
+  integrity sha1-3Ea5TnfcGfKCKvh4ag5tXWjeug0=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
 
 "@turf/centroid@5.1.x", "@turf/centroid@^5.1.5":
   version "5.1.5"
@@ -1555,6 +1766,14 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/centroid@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/centroid/download/@turf/centroid-6.3.0.tgz#e86611e1e171fb0a38ade30453351a00e04956a3"
+  integrity sha1-6GYR4eFx+wo4reMEUzUaAOBJVqM=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/circle@5.1.x", "@turf/circle@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/circle/download/@turf/circle-5.1.5.tgz#9b1577835508ab52fb1c10b2a5065cba2b87b6a5"
@@ -1563,7 +1782,7 @@
     "@turf/destination" "^5.1.5"
     "@turf/helpers" "^5.1.5"
 
-"@turf/circle@^6.0.1":
+"@turf/circle@^6.0.1", "@turf/circle@^6.3.0":
   version "6.3.0"
   resolved "https://registry.npm.taobao.org/@turf/circle/download/@turf/circle-6.3.0.tgz#4cee9a2a412bda08bd433c15ea75cef09cce1e54"
   integrity sha1-TO6aKkEr2gi9QzwV6nXO8JzOHlQ=
@@ -1578,6 +1797,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+
+"@turf/clean-coords@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/clean-coords/download/@turf/clean-coords-6.3.0.tgz#e2f482789dfa6dc6a79d9f32dbf1d4ab2222fa58"
+  integrity sha1-4vSCeJ36bcannZ8y2/HUqyIi+lg=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
 
 "@turf/clone@5.1.x", "@turf/clone@^5.1.5":
   version "5.1.5"
@@ -1605,6 +1832,17 @@
     "@turf/meta" "^5.1.5"
     density-clustering "1.3.0"
 
+"@turf/clusters-dbscan@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/clusters-dbscan/download/@turf/clusters-dbscan-6.3.0.tgz#babb594218ccd01eb56284fab756827c90d7933e"
+  integrity sha1-urtZQhjM0B61YoT6t1aCfJDXkz4=
+  dependencies:
+    "@turf/clone" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    density-clustering "1.3.0"
+
 "@turf/clusters-kmeans@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/clusters-kmeans/download/@turf/clusters-kmeans-5.1.5.tgz#fd6dfea8b133ba8bdc2370ac3cacee1587a302f1"
@@ -1616,6 +1854,17 @@
     "@turf/meta" "^5.1.5"
     skmeans "0.9.7"
 
+"@turf/clusters-kmeans@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/clusters-kmeans/download/@turf/clusters-kmeans-6.3.0.tgz#1d472bfea7e1ad4aaf2a8c55fba393ccee59a0a4"
+  integrity sha1-HUcr/qfhrUqvKoxV+6OTzO5ZoKQ=
+  dependencies:
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    skmeans "0.9.7"
+
 "@turf/clusters@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/clusters/download/@turf/clusters-5.1.5.tgz#673a5e5f1b19c9cababc57c908eeadd682224dd4"
@@ -1623,6 +1872,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/clusters@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/clusters/download/@turf/clusters-6.3.0.tgz#6935f28597d1914585aad87c8f57f41f05f2043f"
+  integrity sha1-aTXyhZfRkUWFqth8j1f0HwXyBD8=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/collect@5.1.x":
   version "5.1.5"
@@ -1634,6 +1891,16 @@
     "@turf/helpers" "^5.1.5"
     rbush "^2.0.1"
 
+"@turf/collect@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/collect/download/@turf/collect-6.3.0.tgz#ae55e60055dfd5b33d39675060463abe1af7cac2"
+  integrity sha1-rlXmAFXf1bM9OWdQYEY6vhr3ysI=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    rbush "2.x"
+
 "@turf/combine@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/combine/download/@turf/combine-5.1.5.tgz#bb14bdefa55504357195fc1a124cd7d53a8c8905"
@@ -1641,6 +1908,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/combine@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/combine/download/@turf/combine-6.3.0.tgz#243a37dc4f4b24a93f3b4d662291b6d9c282485e"
+  integrity sha1-JDo33E9LJKk/O01mIpG22cKCSF4=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/concave@5.1.x":
   version "5.1.5"
@@ -1656,6 +1931,19 @@
     topojson-client "3.x"
     topojson-server "3.x"
 
+"@turf/concave@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/concave/download/@turf/concave-6.3.0.tgz#d207ddb77dd7629fc07ddbff8c85d7f09a41b737"
+  integrity sha1-0gfdt33XYp/Afdv/jIXX8JpBtzc=
+  dependencies:
+    "@turf/clone" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/tin" "^6.3.0"
+    topojson "3.x"
+
 "@turf/convex@5.1.x", "@turf/convex@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/convex/download/@turf/convex-5.1.5.tgz#0df9377dd002216ce9821b07f705e037dae3e01d"
@@ -1663,6 +1951,15 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
+    concaveman "*"
+
+"@turf/convex@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/convex/download/@turf/convex-6.3.0.tgz#d3eb866cf6863c075c85039edc89db7c595eee44"
+  integrity sha1-0+uGbPaGPAdchQOe3InbfFle7kQ=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
     concaveman "*"
 
 "@turf/destination@5.1.x", "@turf/destination@^5.1.5":
@@ -1692,6 +1989,15 @@
     "@turf/meta" "^5.1.5"
     turf-jsts "*"
 
+"@turf/difference@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/difference/download/@turf/difference-6.3.0.tgz#dee2bb10fb80896ba3a7c8fe30be3e9f9d604c1e"
+  integrity sha1-3uK7EPuAiWujp8j+ML4+n51gTB4=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    polygon-clipping "^0.15.2"
+
 "@turf/dissolve@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/dissolve/download/@turf/dissolve-5.1.5.tgz#2cf133a9021d2163831c3d7a958d6507f9d81938"
@@ -1706,6 +2012,31 @@
     "@turf/union" "^5.1.5"
     geojson-rbush "2.1.0"
     get-closest "*"
+
+"@turf/dissolve@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/dissolve/download/@turf/dissolve-6.3.0.tgz#a69a3d8f81826daf35e845552e458f7a8a20985e"
+  integrity sha1-ppo9j4GCba816EVVLkWPeoogmF4=
+  dependencies:
+    "@turf/boolean-overlap" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/line-intersect" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/union" "^6.3.0"
+    geojson-rbush "3.x"
+    get-closest "*"
+
+"@turf/distance-weight@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/distance-weight/download/@turf/distance-weight-6.3.0.tgz#14bb3ceb9903b92acf179befbc8980686348a029"
+  integrity sha1-FLs865kDuSrPF5vvvImAaGNIoCk=
+  dependencies:
+    "@turf/centroid" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/distance@5.1.x", "@turf/distance@^5.1.5":
   version "5.1.5"
@@ -1733,6 +2064,16 @@
     "@turf/rhumb-destination" "^5.1.5"
     "@turf/transform-rotate" "^5.1.5"
 
+"@turf/ellipse@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/ellipse/download/@turf/ellipse-6.3.0.tgz#5ebc89c9770ae54aee0f5b2523d7932e9f8cce6f"
+  integrity sha1-XryJyXcK5UruD1slI9eTLp+Mzm8=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/rhumb-destination" "^6.3.0"
+    "@turf/transform-rotate" "^6.3.0"
+
 "@turf/envelope@5.1.x", "@turf/envelope@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/envelope/download/@turf/envelope-5.1.5.tgz#5013309c53fdd43dfaf4b588a65c3fed7dbc108a"
@@ -1742,6 +2083,15 @@
     "@turf/bbox-polygon" "^5.1.5"
     "@turf/helpers" "^5.1.5"
 
+"@turf/envelope@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/envelope/download/@turf/envelope-6.3.0.tgz#9a8afd4161e93b5990bb21ea68a9c55154f60ac9"
+  integrity sha1-mor9QWHpO1mQuyHqaKnFUVT2Csk=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/bbox-polygon" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+
 "@turf/explode@5.1.x", "@turf/explode@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/explode/download/@turf/explode-5.1.5.tgz#b12b2f774004a1b48f62ba95b20a1c655a3de118"
@@ -1750,6 +2100,14 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/explode@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/explode/download/@turf/explode-6.3.0.tgz#da6d048316559455a32daa4b0b48e279ac0a3457"
+  integrity sha1-2m0EgxZVlFWjLapLC0jieawKNFc=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/flatten@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/flatten/download/@turf/flatten-5.1.5.tgz#da2927067133ed6169b0b9d607b9215688aa1358"
@@ -1757,6 +2115,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/flatten@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/flatten/download/@turf/flatten-6.3.0.tgz#af03b000d530054a7db7f656e28c3e2fc499cd3b"
+  integrity sha1-rwOwANUwBUp9t/ZW4ow+L8SZzTs=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/flip@5.1.x":
   version "5.1.5"
@@ -1767,6 +2133,15 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/flip@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/flip/download/@turf/flip-6.3.0.tgz#c6c5623e48569046a70043ee7c0114deb68db243"
+  integrity sha1-xsViPkhWkEanAEPufAEU3raNskM=
+  dependencies:
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/great-circle@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/great-circle/download/@turf/great-circle-5.1.5.tgz#debfb671ce475509cb637301c15fcfccfa359a93"
@@ -1774,6 +2149,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+
+"@turf/great-circle@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/great-circle/download/@turf/great-circle-6.3.0.tgz#4e41ebe07dac5c196bd2615fdd97889353e50415"
+  integrity sha1-TkHr4H2sXBlr0mFf3ZeIk1PlBBU=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
 
 "@turf/helpers@*", "@turf/helpers@6.x", "@turf/helpers@^6.1.4", "@turf/helpers@^6.3.0":
   version "6.3.0"
@@ -1795,6 +2178,16 @@
     "@turf/intersect" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/hex-grid@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/hex-grid/download/@turf/hex-grid-6.3.0.tgz#61e51a37db04239aac78410c61f441b79dab7fa1"
+  integrity sha1-YeUaN9sEI5qseEEMYfRBt52rf6E=
+  dependencies:
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/intersect" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/interpolate@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/interpolate/download/@turf/interpolate-5.1.5.tgz#0f12f0ab756d6dd10afb290ca6e877bdef013eaa"
@@ -1812,6 +2205,23 @@
     "@turf/square-grid" "^5.1.5"
     "@turf/triangle-grid" "^5.1.5"
 
+"@turf/interpolate@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/interpolate/download/@turf/interpolate-6.3.0.tgz#ded1667996c3035e4a5a3a108b5599be36252843"
+  integrity sha1-3tFmeZbDA15KWjoQi1WZvjYlKEM=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/centroid" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/hex-grid" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/point-grid" "^6.3.0"
+    "@turf/square-grid" "^6.3.0"
+    "@turf/triangle-grid" "^6.3.0"
+
 "@turf/intersect@5.1.x", "@turf/intersect@^5.1.5":
   version "5.1.6"
   resolved "https://registry.npm.taobao.org/@turf/intersect/download/@turf/intersect-5.1.6.tgz#13ffcceb7a529c2a7e5d6681ab3ba671f868e95f"
@@ -1822,6 +2232,15 @@
     "@turf/invariant" "^5.1.5"
     "@turf/truncate" "^5.1.5"
     turf-jsts "*"
+
+"@turf/intersect@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/intersect/download/@turf/intersect-6.3.0.tgz#b22b3e888e762ae4336e085eb6f21215d06652ea"
+  integrity sha1-sis+iI52KuQzbghetvISFdBmUuo=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    polygon-clipping "^0.15.2"
 
 "@turf/invariant@5.1.x":
   version "5.1.5"
@@ -1857,6 +2276,20 @@
     "@turf/invariant" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/isobands@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/isobands/download/@turf/isobands-6.3.0.tgz#982abcf16b45482bda637102acd251cf41ea3c8b"
+  integrity sha1-mCq88WtFSCvaY3ECrNJRz0HqPIs=
+  dependencies:
+    "@turf/area" "^6.3.0"
+    "@turf/bbox" "^6.3.0"
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/explode" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    object-assign "*"
+
 "@turf/isolines@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/isolines/download/@turf/isolines-5.1.5.tgz#8ab4e7f42bb3dfc54614e5bf155967f7e55d2de1"
@@ -1867,12 +2300,30 @@
     "@turf/invariant" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/isolines@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/isolines/download/@turf/isolines-6.3.0.tgz#e9280ee5f0e7bf4949c89e6c66b708df54ff1715"
+  integrity sha1-6SgO5fDnv0lJyJ5sZrcI31T/FxU=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    object-assign "*"
+
 "@turf/kinks@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/kinks/download/@turf/kinks-5.1.5.tgz#8abb6961d9bb0107213baddf2c2c2640d0256980"
   integrity sha1-irtpYdm7AQchO63fLCwmQNAlaYA=
   dependencies:
     "@turf/helpers" "^5.1.5"
+
+"@turf/kinks@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/kinks/download/@turf/kinks-6.3.0.tgz#a16b4ccc5a5aae139d43e36271e0a0494fdb4bf7"
+  integrity sha1-oWtMzFparhOdQ+NiceCgSU/bS/c=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
 
 "@turf/length@5.1.x", "@turf/length@^5.1.5":
   version "5.1.5"
@@ -1901,6 +2352,15 @@
     "@turf/destination" "^5.1.5"
     "@turf/helpers" "^5.1.5"
 
+"@turf/line-arc@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-arc/download/@turf/line-arc-6.3.0.tgz#9fc52f68743924544556e3babcd0c7a4af2e93ee"
+  integrity sha1-n8UvaHQ5JFRFVuO6vNDHpK8uk+4=
+  dependencies:
+    "@turf/circle" "^6.3.0"
+    "@turf/destination" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+
 "@turf/line-chunk@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/line-chunk/download/@turf/line-chunk-5.1.5.tgz#910a85c05c06d9d0f9c38977a05e0818d5085c42"
@@ -1910,6 +2370,16 @@
     "@turf/length" "^5.1.5"
     "@turf/line-slice-along" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/line-chunk@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-chunk/download/@turf/line-chunk-6.3.0.tgz#476895be2f8c6b5f8bfc17939e99361e647b7550"
+  integrity sha1-R2iVvi+Ma1+L/BeTnpk2HmR7dVA=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/length" "^6.3.0"
+    "@turf/line-slice-along" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/line-intersect@5.1.x", "@turf/line-intersect@^5.1.5":
   version "5.1.5"
@@ -1922,6 +2392,17 @@
     "@turf/meta" "^5.1.5"
     geojson-rbush "2.1.0"
 
+"@turf/line-intersect@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-intersect/download/@turf/line-intersect-6.3.0.tgz#726a50edc66bb7b5e798b052b103fb0da4d1c4f4"
+  integrity sha1-cmpQ7cZrt7XnmLBSsQP7DaTRxPQ=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/line-segment" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    geojson-rbush "3.x"
+
 "@turf/line-offset@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/line-offset/download/@turf/line-offset-5.1.5.tgz#2ab5b2f089f8c913e231d994378e79dca90b5a1e"
@@ -1930,6 +2411,15 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/line-offset@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-offset/download/@turf/line-offset-6.3.0.tgz#a1650bf738f653bef6000117fd2e2600e3c2c46e"
+  integrity sha1-oWUL9zj2U772AAEX/S4mAOPCxG4=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/line-overlap@5.1.x", "@turf/line-overlap@^5.1.5":
   version "5.1.5"
@@ -1944,6 +2434,20 @@
     "@turf/nearest-point-on-line" "^5.1.5"
     geojson-rbush "2.1.0"
 
+"@turf/line-overlap@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-overlap/download/@turf/line-overlap-6.3.0.tgz#c7e92c09e7626e1287a80742df7f509f0b4da693"
+  integrity sha1-x+ksCedibhKHqAdC339QnwtNppM=
+  dependencies:
+    "@turf/boolean-point-on-line" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/line-segment" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/nearest-point-on-line" "^6.3.0"
+    deep-equal "1.x"
+    geojson-rbush "3.x"
+
 "@turf/line-segment@5.1.x", "@turf/line-segment@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/line-segment/download/@turf/line-segment-5.1.5.tgz#3207aaee546ab24c3d8dc3cc63f91c770b8013e5"
@@ -1952,6 +2456,15 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/line-segment@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-segment/download/@turf/line-segment-6.3.0.tgz#b37d6877ee4425ebc12698860e7d355d1bf2ba9b"
+  integrity sha1-s31od+5EJevBJpiGDn01XRvyups=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/line-slice-along@5.1.x", "@turf/line-slice-along@^5.1.5":
   version "5.1.5"
@@ -1963,6 +2476,16 @@
     "@turf/distance" "^5.1.5"
     "@turf/helpers" "^5.1.5"
 
+"@turf/line-slice-along@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-slice-along/download/@turf/line-slice-along-6.3.0.tgz#2ae139b8b76c71ec62892a3d55d39570022400f9"
+  integrity sha1-KuE5uLdscexiiSo9VdOVcAIkAPk=
+  dependencies:
+    "@turf/bearing" "^6.3.0"
+    "@turf/destination" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+
 "@turf/line-slice@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/line-slice/download/@turf/line-slice-5.1.5.tgz#1ecfce1462a378579754cedf4464cde26829f2b5"
@@ -1971,6 +2494,15 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
     "@turf/nearest-point-on-line" "^5.1.5"
+
+"@turf/line-slice@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-slice/download/@turf/line-slice-6.3.0.tgz#db4398b96a366fcb4ccfe1aeac3edc0e5d21392b"
+  integrity sha1-20OYuWo2b8tMz+GurD7cDl0hOSs=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/nearest-point-on-line" "^6.3.0"
 
 "@turf/line-split@5.1.x":
   version "5.1.5"
@@ -1988,6 +2520,22 @@
     "@turf/truncate" "^5.1.5"
     geojson-rbush "2.1.0"
 
+"@turf/line-split@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-split/download/@turf/line-split-6.3.0.tgz#ee218f66cd65ce84eafc4956c24083663f6082ea"
+  integrity sha1-7iGPZs1lzoTq/ElWwkCDZj9gguo=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/line-intersect" "^6.3.0"
+    "@turf/line-segment" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/nearest-point-on-line" "^6.3.0"
+    "@turf/square" "^6.3.0"
+    "@turf/truncate" "^6.3.0"
+    geojson-rbush "3.x"
+
 "@turf/line-to-polygon@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/line-to-polygon/download/@turf/line-to-polygon-5.1.5.tgz#213cf41a68f8224778ba39d3187dec3e8b81865a"
@@ -1996,6 +2544,16 @@
     "@turf/bbox" "^5.1.5"
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+
+"@turf/line-to-polygon@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/line-to-polygon/download/@turf/line-to-polygon-6.3.0.tgz#db14f41aead889868f95ac18a1de379089bdf4df"
+  integrity sha1-2xT0GurYiYaPlawYod43kIm99N8=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
 
 "@turf/mask@5.1.x":
   version "5.1.5"
@@ -2006,6 +2564,17 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
     "@turf/union" "^5.1.5"
+    rbush "^2.0.1"
+
+"@turf/mask@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/mask/download/@turf/mask-6.3.0.tgz#23da9c6bc8f7e18d720f227f21f597c70c2f1244"
+  integrity sha1-I9qca8j34Y1yDyJ/IfWXxwwvEkQ=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/union" "^6.3.0"
     rbush "^2.0.1"
 
 "@turf/meta@*", "@turf/meta@6.x", "@turf/meta@^6.3.0":
@@ -2039,6 +2608,25 @@
     "@turf/distance" "^5.1.5"
     "@turf/helpers" "^5.1.5"
 
+"@turf/midpoint@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/midpoint/download/@turf/midpoint-6.3.0.tgz#42ba47f601f63ee60d97a542c5a615d1cbbe4ff8"
+  integrity sha1-QrpH9gH2PuYNl6VCxaYV0cu+T/g=
+  dependencies:
+    "@turf/bearing" "^6.3.0"
+    "@turf/destination" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+
+"@turf/moran-index@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/moran-index/download/@turf/moran-index-6.3.0.tgz#601f6b2f1650a4126b18957bdf9c40f784f44c03"
+  integrity sha1-YB9rLxZQpBJrGJV735xA94T0TAM=
+  dependencies:
+    "@turf/distance-weight" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/nearest-point-on-line@5.1.x", "@turf/nearest-point-on-line@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/nearest-point-on-line/download/@turf/nearest-point-on-line-5.1.5.tgz#5606ae297f15947524bea51a2a9ef51ec1bf9c36"
@@ -2052,6 +2640,19 @@
     "@turf/line-intersect" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/nearest-point-on-line@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/nearest-point-on-line/download/@turf/nearest-point-on-line-6.3.0.tgz#a33f14fb099c292777de136f8c96ef4a7cad8ae2"
+  integrity sha1-oz8U+wmcKSd33hNvjJbvSnytiuI=
+  dependencies:
+    "@turf/bearing" "^6.3.0"
+    "@turf/destination" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/line-intersect" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/nearest-point-to-line@5.1.x":
   version "5.1.6"
   resolved "https://registry.npm.taobao.org/@turf/nearest-point-to-line/download/@turf/nearest-point-to-line-5.1.6.tgz#d30b7606e56a3dce97f4db6d45d352470e0b3f88"
@@ -2061,6 +2662,17 @@
     "@turf/invariant" "6.x"
     "@turf/meta" "6.x"
     "@turf/point-to-line-distance" "^5.1.5"
+    object-assign "*"
+
+"@turf/nearest-point-to-line@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/nearest-point-to-line/download/@turf/nearest-point-to-line-6.3.0.tgz#8022c736d2b66e19cdcb4f69ef775ea0f26e82fc"
+  integrity sha1-gCLHNtK2bhnNy09p73deoPJugvw=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/point-to-line-distance" "^6.3.0"
     object-assign "*"
 
 "@turf/nearest-point@5.1.x", "@turf/nearest-point@^5.1.5":
@@ -2073,6 +2685,16 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/nearest-point@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/nearest-point/download/@turf/nearest-point-6.3.0.tgz#d888d3b4b4eb5c9deb6db1b410814398624df83d"
+  integrity sha1-2IjTtLTrXJ3rbbG0EIFDmGJN+D0=
+  dependencies:
+    "@turf/clone" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/planepoint@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/planepoint/download/@turf/planepoint-5.1.5.tgz#18bbdf006f759def5e42c6a006c9f9de81b2b7ff"
@@ -2080,6 +2702,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+
+"@turf/planepoint@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/planepoint/download/@turf/planepoint-6.3.0.tgz#d98d4f05e72c6f712f3e6a1a953598c367a3cecc"
+  integrity sha1-2Y1PBecsb3EvPmoalTWYw2ejzsw=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
 
 "@turf/point-grid@5.1.x", "@turf/point-grid@^5.1.5":
   version "5.1.5"
@@ -2091,6 +2721,16 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/point-grid@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/point-grid/download/@turf/point-grid-6.3.0.tgz#91674efb618da3bcf9893adfc2af5fda2d480e75"
+  integrity sha1-kWdO+2GNo7z5iTrfwq9f2i1IDnU=
+  dependencies:
+    "@turf/boolean-within" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/point-on-feature@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/point-on-feature/download/@turf/point-on-feature-5.1.5.tgz#30c7f032430277c6418d96d289e45b6bfb213fe7"
@@ -2101,6 +2741,17 @@
     "@turf/explode" "^5.1.5"
     "@turf/helpers" "^5.1.5"
     "@turf/nearest-point" "^5.1.5"
+
+"@turf/point-on-feature@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/point-on-feature/download/@turf/point-on-feature-6.3.0.tgz#a6f15f56a6ebd72080e12657fd37521990cee1c9"
+  integrity sha1-pvFfVqbr1yCA4SZX/TdSGZDO4ck=
+  dependencies:
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/center" "^6.3.0"
+    "@turf/explode" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/nearest-point" "^6.3.0"
 
 "@turf/point-to-line-distance@5.1.x", "@turf/point-to-line-distance@^5.1.5":
   version "5.1.6"
@@ -2116,6 +2767,20 @@
     "@turf/rhumb-bearing" "6.x"
     "@turf/rhumb-distance" "6.x"
 
+"@turf/point-to-line-distance@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/point-to-line-distance/download/@turf/point-to-line-distance-6.3.0.tgz#0d63efb8295f6a6e66fe0d431491d6b75aecc0be"
+  integrity sha1-DWPvuClfam5m/g1DFJHWt1rswL4=
+  dependencies:
+    "@turf/bearing" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/projection" "^6.3.0"
+    "@turf/rhumb-bearing" "^6.3.0"
+    "@turf/rhumb-distance" "^6.3.0"
+
 "@turf/points-within-polygon@5.1.x", "@turf/points-within-polygon@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/points-within-polygon/download/@turf/points-within-polygon-5.1.5.tgz#2b855a5df3aada57c2ee820a0754ab94928a2337"
@@ -2125,6 +2790,23 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/points-within-polygon@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/points-within-polygon/download/@turf/points-within-polygon-6.3.0.tgz#b8ff725f8088507e3f06af3556d5d948c077fb81"
+  integrity sha1-uP9yX4CIUH4/Bq81VtXZSMB3+4E=
+  dependencies:
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
+"@turf/polygon-smooth@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/polygon-smooth/download/@turf/polygon-smooth-6.3.0.tgz#7145930ddc3b3ba8aa9ea15b09be39df3bc7915e"
+  integrity sha1-cUWTDdw7O6iqnqFbCb453zvHkV4=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/polygon-tangents@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/polygon-tangents/download/@turf/polygon-tangents-5.1.5.tgz#2bf00991473025b178e250dc7cb9ae5409bbd652"
@@ -2133,6 +2815,18 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/polygon-tangents@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/polygon-tangents/download/@turf/polygon-tangents-6.3.0.tgz#1cbe9fa72bfeacf2e88a22f066964c680cfcd249"
+  integrity sha1-HL6fpyv+rPLoiiLwZpZMaAz80kk=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/boolean-within" "^6.3.0"
+    "@turf/explode" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/nearest-point" "^6.3.0"
+
 "@turf/polygon-to-line@5.1.x", "@turf/polygon-to-line@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/polygon-to-line/download/@turf/polygon-to-line-5.1.5.tgz#23bb448d84dc4c651999ac611a36d91c5925036a"
@@ -2140,6 +2834,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+
+"@turf/polygon-to-line@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/polygon-to-line/download/@turf/polygon-to-line-6.3.0.tgz#aa3e1a0ea074479e5cb6c5c111a924bb80ec553e"
+  integrity sha1-qj4aDqB0R55ctsXBEakku4DsVT4=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
 
 "@turf/polygonize@5.1.x":
   version "5.1.5"
@@ -2152,6 +2854,17 @@
     "@turf/invariant" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/polygonize@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/polygonize/download/@turf/polygonize-6.3.0.tgz#b6c64c570d22c1a4910050b7276308021a4c142b"
+  integrity sha1-tsZMVw0iwaSRAFC3J2MIAhpMFCs=
+  dependencies:
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/envelope" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/projection@5.1.x", "@turf/projection@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/projection/download/@turf/projection-5.1.5.tgz#24517eeeb2f36816ba9f712e7ae6d6a368edf757"
@@ -2161,7 +2874,7 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
-"@turf/projection@6.x":
+"@turf/projection@6.x", "@turf/projection@^6.3.0":
   version "6.3.0"
   resolved "https://registry.npm.taobao.org/@turf/projection/download/@turf/projection-6.3.0.tgz#4ec279670330164750cace9cdf8cbad73755f3eb"
   integrity sha1-TsJ5ZwMwFkdQys6c34y61zdV8+s=
@@ -2177,6 +2890,22 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
 
+"@turf/random@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/random/download/@turf/random-6.3.0.tgz#af47683faaa31344fd8cd1545ba66ba8765e3327"
+  integrity sha1-r0doP6qjE0T9jNFUW6ZrqHZeMyc=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+
+"@turf/rectangle-grid@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/rectangle-grid/download/@turf/rectangle-grid-6.3.0.tgz#d2ddae6b73ca97b30f9f59904227689d66427fa4"
+  integrity sha1-0t2ua3PKl7MPn1mQQidonWZCf6Q=
+  dependencies:
+    "@turf/boolean-intersects" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+
 "@turf/rewind@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/rewind/download/@turf/rewind-5.1.5.tgz#9ea3db4a68b73c1fd1dd11f57631b143cfefa1c9"
@@ -2188,6 +2917,17 @@
     "@turf/invariant" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/rewind@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/rewind/download/@turf/rewind-6.3.0.tgz#f52fcbad79c0e932965a2346f5e6d3dda22aac5f"
+  integrity sha1-9S/LrXnA6TKWWiNG9ebT3aIqrF8=
+  dependencies:
+    "@turf/boolean-clockwise" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/rhumb-bearing@5.1.x", "@turf/rhumb-bearing@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/rhumb-bearing/download/@turf/rhumb-bearing-5.1.5.tgz#acf6a502427eb8c49e18cda6ae0effab0c5ddcd2"
@@ -2196,7 +2936,7 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
-"@turf/rhumb-bearing@6.x":
+"@turf/rhumb-bearing@6.x", "@turf/rhumb-bearing@^6.3.0":
   version "6.3.0"
   resolved "https://registry.npm.taobao.org/@turf/rhumb-bearing/download/@turf/rhumb-bearing-6.3.0.tgz#a426fe8aec4c3853f685e806372f32deb2663917"
   integrity sha1-pCb+iuxMOFP2hegGNy8y3rJmORc=
@@ -2212,6 +2952,14 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/rhumb-destination@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/rhumb-destination/download/@turf/rhumb-destination-6.3.0.tgz#5c9919d689903b067aeb4969e5e524371492374c"
+  integrity sha1-XJkZ1omQOwZ660lp5eUkNxSSN0w=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/rhumb-distance@5.1.x", "@turf/rhumb-distance@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/rhumb-distance/download/@turf/rhumb-distance-5.1.5.tgz#1806857625f4225384dad413e69f39538ff5f765"
@@ -2220,7 +2968,7 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
-"@turf/rhumb-distance@6.x":
+"@turf/rhumb-distance@6.x", "@turf/rhumb-distance@^6.3.0":
   version "6.3.0"
   resolved "https://registry.npm.taobao.org/@turf/rhumb-distance/download/@turf/rhumb-distance-6.3.0.tgz#269c9a724058cebcecc85728184513e5a34f8032"
   integrity sha1-JpyackBYzrzsyFcoGEUT5aNPgDI=
@@ -2235,6 +2983,13 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
 
+"@turf/sample@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/sample/download/@turf/sample-6.3.0.tgz#5ac536888ac7725411b910328c09ba7aadaa469a"
+  integrity sha1-WsU2iIrHclQRuRAyjAm6eq2qRpo=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+
 "@turf/sector@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/sector/download/@turf/sector-5.1.5.tgz#ac2bb94c13edd6034f6fdc2b67008135d20f5e07"
@@ -2245,6 +3000,17 @@
     "@turf/invariant" "^5.1.5"
     "@turf/line-arc" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/sector@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/sector/download/@turf/sector-6.3.0.tgz#8e6a89e442ab272187ad7b4769d634c270dda314"
+  integrity sha1-jmqJ5EKrJyGHrXtHadY0wnDdoxQ=
+  dependencies:
+    "@turf/circle" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/line-arc" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/shortest-path@5.1.x":
   version "5.1.5"
@@ -2261,6 +3027,21 @@
     "@turf/meta" "^5.1.5"
     "@turf/transform-scale" "^5.1.5"
 
+"@turf/shortest-path@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/shortest-path/download/@turf/shortest-path-6.3.0.tgz#a692c19cc82cfaee0acb0e171b34093f9cd8f12a"
+  integrity sha1-ppLBnMgs+u4Kyw4XGzQJP5zY8So=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/bbox-polygon" "^6.3.0"
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/clean-coords" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/transform-scale" "^6.3.0"
+
 "@turf/simplify@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/simplify/download/@turf/simplify-5.1.5.tgz#0ac8f27a2eb4218183edd9998c3275abe408b926"
@@ -2270,6 +3051,16 @@
     "@turf/clone" "^5.1.5"
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/simplify@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/simplify/download/@turf/simplify-6.3.0.tgz#8d83bf7397ab00a19cee5630dac6adf6956d8f13"
+  integrity sha1-jYO/c5erAKGc7lYw2sat9pVtjxM=
+  dependencies:
+    "@turf/clean-coords" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/square-grid@5.1.x", "@turf/square-grid@^5.1.5":
   version "5.1.5"
@@ -2283,6 +3074,14 @@
     "@turf/intersect" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/square-grid@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/square-grid/download/@turf/square-grid-6.3.0.tgz#db25e033a1ea3e833bdb09129abd689d0b19d87f"
+  integrity sha1-2yXgM6HqPoM72wkSmr1onQsZ2H8=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/rectangle-grid" "^6.3.0"
+
 "@turf/square@5.1.x", "@turf/square@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/square/download/@turf/square-5.1.5.tgz#aa7b21e6033cc9252c3a5bd6f3d88dabd6fed180"
@@ -2290,6 +3089,14 @@
   dependencies:
     "@turf/distance" "^5.1.5"
     "@turf/helpers" "^5.1.5"
+
+"@turf/square@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/square/download/@turf/square-6.3.0.tgz#8e8ff24bf5d391714361c157c7b01a85cd55ac19"
+  integrity sha1-jo/yS/XTkXFDYcFXx7Aahc1VrBk=
+  dependencies:
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
 
 "@turf/standard-deviational-ellipse@5.1.x":
   version "5.1.5"
@@ -2303,6 +3110,18 @@
     "@turf/meta" "^5.1.5"
     "@turf/points-within-polygon" "^5.1.5"
 
+"@turf/standard-deviational-ellipse@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/standard-deviational-ellipse/download/@turf/standard-deviational-ellipse-6.3.0.tgz#388db48c6eec39af64aac9918ac1033e3683ec10"
+  integrity sha1-OI20jG7sOa9kqsmRisEDPjaD7BA=
+  dependencies:
+    "@turf/center-mean" "^6.3.0"
+    "@turf/ellipse" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/points-within-polygon" "^6.3.0"
+
 "@turf/tag@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/tag/download/@turf/tag-5.1.5.tgz#d1ee1a5088ecfd4a1411019c98239ccf2a497d20"
@@ -2313,6 +3132,16 @@
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
+"@turf/tag@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/tag/download/@turf/tag-6.3.0.tgz#e8ff2a8450e21cab2627c534692c940e78483cdf"
+  integrity sha1-6P8qhFDiHKsmJ8U0aSyUDnhIPN8=
+  dependencies:
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+
 "@turf/tesselate@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/tesselate/download/@turf/tesselate-5.1.5.tgz#32a594e9c21a00420a9f90d2c43df3e1166061cd"
@@ -2321,12 +3150,27 @@
     "@turf/helpers" "^5.1.5"
     earcut "^2.0.0"
 
+"@turf/tesselate@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/tesselate/download/@turf/tesselate-6.3.0.tgz#40fd580eb1aba04850a74839d8e9415914b42480"
+  integrity sha1-QP1YDrGroEhQp0g52OlBWRS0JIA=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    earcut "^2.0.0"
+
 "@turf/tin@5.1.x", "@turf/tin@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/tin/download/@turf/tin-5.1.5.tgz#28223eafc5fbe9ae9acca81cdcfea5d1424c917d"
   integrity sha1-KCI+r8X76a6azKgc3P6l0UJMkX0=
   dependencies:
     "@turf/helpers" "^5.1.5"
+
+"@turf/tin@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/tin/download/@turf/tin-6.3.0.tgz#34962ce92945e6c67adbdb731367f7709930b28a"
+  integrity sha1-NJYs6SlF5sZ629tzE2f3cJkwsoo=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
 
 "@turf/transform-rotate@5.1.x", "@turf/transform-rotate@^5.1.5":
   version "5.1.5"
@@ -2341,6 +3185,20 @@
     "@turf/rhumb-bearing" "^5.1.5"
     "@turf/rhumb-destination" "^5.1.5"
     "@turf/rhumb-distance" "^5.1.5"
+
+"@turf/transform-rotate@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/transform-rotate/download/@turf/transform-rotate-6.3.0.tgz#745373fc18c5435d54c9d83ac83567709c340426"
+  integrity sha1-dFNz/BjFQ11Uydg6yDVncJw0BCY=
+  dependencies:
+    "@turf/centroid" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/rhumb-bearing" "^6.3.0"
+    "@turf/rhumb-destination" "^6.3.0"
+    "@turf/rhumb-distance" "^6.3.0"
 
 "@turf/transform-scale@5.1.x", "@turf/transform-scale@^5.1.5":
   version "5.1.5"
@@ -2358,6 +3216,22 @@
     "@turf/rhumb-destination" "^5.1.5"
     "@turf/rhumb-distance" "^5.1.5"
 
+"@turf/transform-scale@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/transform-scale/download/@turf/transform-scale-6.3.0.tgz#57f398b118a2f81ff62468fd63529e0eeecb19a3"
+  integrity sha1-V/OYsRii+B/2JGj9Y1KeDu7LGaM=
+  dependencies:
+    "@turf/bbox" "^6.3.0"
+    "@turf/center" "^6.3.0"
+    "@turf/centroid" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/rhumb-bearing" "^6.3.0"
+    "@turf/rhumb-destination" "^6.3.0"
+    "@turf/rhumb-distance" "^6.3.0"
+
 "@turf/transform-translate@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/transform-translate/download/@turf/transform-translate-5.1.5.tgz#530a257fb1dc7268dadcab34e67901eb2a3dec63"
@@ -2369,6 +3243,17 @@
     "@turf/meta" "^5.1.5"
     "@turf/rhumb-destination" "^5.1.5"
 
+"@turf/transform-translate@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/transform-translate/download/@turf/transform-translate-6.3.0.tgz#063843088ab3e7f89dc5dfb515166425bf2ca7d3"
+  integrity sha1-BjhDCIqz5/idxd+1FRZkJb8sp9M=
+  dependencies:
+    "@turf/clone" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/rhumb-destination" "^6.3.0"
+
 "@turf/triangle-grid@5.1.x", "@turf/triangle-grid@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/triangle-grid/download/@turf/triangle-grid-5.1.5.tgz#7b36762108554c14f28caff3c48b1cfc82c8dc81"
@@ -2379,6 +3264,15 @@
     "@turf/intersect" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
+"@turf/triangle-grid@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/triangle-grid/download/@turf/triangle-grid-6.3.0.tgz#e26cdae235811c28fa1b02c7758c121df57d1960"
+  integrity sha1-4mza4jWBHCj6GwLHdYwSHfV9GWA=
+  dependencies:
+    "@turf/distance" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/intersect" "^6.3.0"
+
 "@turf/truncate@5.1.x", "@turf/truncate@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/truncate/download/@turf/truncate-5.1.5.tgz#9eedfb3b18ba81f2c98d3ead09431cca1884ad89"
@@ -2386,6 +3280,14 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
+
+"@turf/truncate@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/truncate/download/@turf/truncate-6.3.0.tgz#a2536f005d5f2ab575ad414fc49af4987cea8ea5"
+  integrity sha1-olNvAF1fKrV1rUFPxJr0mHzqjqU=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
 
 "@turf/turf@^5.1.6":
   version "5.1.6"
@@ -2493,6 +3395,117 @@
     "@turf/unkink-polygon" "5.1.x"
     "@turf/voronoi" "5.1.x"
 
+"@turf/turf@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/turf/download/@turf/turf-6.3.0.tgz#e8b11d85b908452d10477360c3621ce098e1b8ab"
+  integrity sha1-6LEdhbkIRS0QR3Ngw2Ic4JjhuKs=
+  dependencies:
+    "@turf/along" "^6.3.0"
+    "@turf/angle" "^6.3.0"
+    "@turf/area" "^6.3.0"
+    "@turf/bbox" "^6.3.0"
+    "@turf/bbox-clip" "^6.3.0"
+    "@turf/bbox-polygon" "^6.3.0"
+    "@turf/bearing" "^6.3.0"
+    "@turf/bezier-spline" "^6.3.0"
+    "@turf/boolean-clockwise" "^6.3.0"
+    "@turf/boolean-contains" "^6.3.0"
+    "@turf/boolean-crosses" "^6.3.0"
+    "@turf/boolean-disjoint" "^6.3.0"
+    "@turf/boolean-equal" "^6.3.0"
+    "@turf/boolean-intersects" "^6.3.0"
+    "@turf/boolean-overlap" "^6.3.0"
+    "@turf/boolean-parallel" "^6.3.0"
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/boolean-point-on-line" "^6.3.0"
+    "@turf/boolean-within" "^6.3.0"
+    "@turf/buffer" "^6.3.0"
+    "@turf/center" "^6.3.0"
+    "@turf/center-mean" "^6.3.0"
+    "@turf/center-median" "^6.3.0"
+    "@turf/center-of-mass" "^6.3.0"
+    "@turf/centroid" "^6.3.0"
+    "@turf/circle" "^6.3.0"
+    "@turf/clean-coords" "^6.3.0"
+    "@turf/clone" "^6.3.0"
+    "@turf/clusters" "^6.3.0"
+    "@turf/clusters-dbscan" "^6.3.0"
+    "@turf/clusters-kmeans" "^6.3.0"
+    "@turf/collect" "^6.3.0"
+    "@turf/combine" "^6.3.0"
+    "@turf/concave" "^6.3.0"
+    "@turf/convex" "^6.3.0"
+    "@turf/destination" "^6.3.0"
+    "@turf/difference" "^6.3.0"
+    "@turf/dissolve" "^6.3.0"
+    "@turf/distance" "^6.3.0"
+    "@turf/distance-weight" "^6.3.0"
+    "@turf/ellipse" "^6.3.0"
+    "@turf/envelope" "^6.3.0"
+    "@turf/explode" "^6.3.0"
+    "@turf/flatten" "^6.3.0"
+    "@turf/flip" "^6.3.0"
+    "@turf/great-circle" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/hex-grid" "^6.3.0"
+    "@turf/interpolate" "^6.3.0"
+    "@turf/intersect" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    "@turf/isobands" "^6.3.0"
+    "@turf/isolines" "^6.3.0"
+    "@turf/kinks" "^6.3.0"
+    "@turf/length" "^6.3.0"
+    "@turf/line-arc" "^6.3.0"
+    "@turf/line-chunk" "^6.3.0"
+    "@turf/line-intersect" "^6.3.0"
+    "@turf/line-offset" "^6.3.0"
+    "@turf/line-overlap" "^6.3.0"
+    "@turf/line-segment" "^6.3.0"
+    "@turf/line-slice" "^6.3.0"
+    "@turf/line-slice-along" "^6.3.0"
+    "@turf/line-split" "^6.3.0"
+    "@turf/line-to-polygon" "^6.3.0"
+    "@turf/mask" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    "@turf/midpoint" "^6.3.0"
+    "@turf/moran-index" "^6.3.0"
+    "@turf/nearest-point" "^6.3.0"
+    "@turf/nearest-point-on-line" "^6.3.0"
+    "@turf/nearest-point-to-line" "^6.3.0"
+    "@turf/planepoint" "^6.3.0"
+    "@turf/point-grid" "^6.3.0"
+    "@turf/point-on-feature" "^6.3.0"
+    "@turf/point-to-line-distance" "^6.3.0"
+    "@turf/points-within-polygon" "^6.3.0"
+    "@turf/polygon-smooth" "^6.3.0"
+    "@turf/polygon-tangents" "^6.3.0"
+    "@turf/polygon-to-line" "^6.3.0"
+    "@turf/polygonize" "^6.3.0"
+    "@turf/projection" "^6.3.0"
+    "@turf/random" "^6.3.0"
+    "@turf/rewind" "^6.3.0"
+    "@turf/rhumb-bearing" "^6.3.0"
+    "@turf/rhumb-destination" "^6.3.0"
+    "@turf/rhumb-distance" "^6.3.0"
+    "@turf/sample" "^6.3.0"
+    "@turf/sector" "^6.3.0"
+    "@turf/shortest-path" "^6.3.0"
+    "@turf/simplify" "^6.3.0"
+    "@turf/square" "^6.3.0"
+    "@turf/square-grid" "^6.3.0"
+    "@turf/standard-deviational-ellipse" "^6.3.0"
+    "@turf/tag" "^6.3.0"
+    "@turf/tesselate" "^6.3.0"
+    "@turf/tin" "^6.3.0"
+    "@turf/transform-rotate" "^6.3.0"
+    "@turf/transform-scale" "^6.3.0"
+    "@turf/transform-translate" "^6.3.0"
+    "@turf/triangle-grid" "^6.3.0"
+    "@turf/truncate" "^6.3.0"
+    "@turf/union" "^6.3.0"
+    "@turf/unkink-polygon" "^6.3.0"
+    "@turf/voronoi" "^6.3.0"
+
 "@turf/union@5.1.x", "@turf/union@^5.1.5":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/union/download/@turf/union-5.1.5.tgz#53285b6094047fc58d96aac0ea90865ec34d454b"
@@ -2500,6 +3513,15 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     turf-jsts "*"
+
+"@turf/union@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/union/download/@turf/union-6.3.0.tgz#12ff74d144c30f90bc8f5b8a34fe7d78acc6563a"
+  integrity sha1-Ev900UTDD5C8j1uKNP59eKzGVjo=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+    polygon-clipping "^0.15.2"
 
 "@turf/unkink-polygon@5.1.x":
   version "5.1.5"
@@ -2512,6 +3534,17 @@
     "@turf/meta" "^5.1.5"
     rbush "^2.0.1"
 
+"@turf/unkink-polygon@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/unkink-polygon/download/@turf/unkink-polygon-6.3.0.tgz#c73d359e083d2c48be930a9b797109927aba423a"
+  integrity sha1-xz01ngg9LEi+kwqbeXEJknq6Qjo=
+  dependencies:
+    "@turf/area" "^6.3.0"
+    "@turf/boolean-point-in-polygon" "^6.3.0"
+    "@turf/helpers" "^6.3.0"
+    "@turf/meta" "^6.3.0"
+    rbush "^2.0.1"
+
 "@turf/voronoi@5.1.x":
   version "5.1.5"
   resolved "https://registry.npm.taobao.org/@turf/voronoi/download/@turf/voronoi-5.1.5.tgz#e856e9406dcc2f25d66ddc898584e27c2ebfca66"
@@ -2519,6 +3552,15 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
+    d3-voronoi "1.1.2"
+
+"@turf/voronoi@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.npm.taobao.org/@turf/voronoi/download/@turf/voronoi-6.3.0.tgz#94f22bdf9d535c52f0d589ee5c9fe9e0611c1eb4"
+  integrity sha1-lPIr351TXFLw1YnuXJ/p4GEcHrQ=
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
     d3-voronoi "1.1.2"
 
 "@types/anymatch@*":
@@ -6188,7 +7230,7 @@ decompress-response@^3.3.0:
   dependencies:
     mimic-response "^1.0.0"
 
-deep-equal@^1.0.0, deep-equal@^1.0.1:
+deep-equal@1.x, deep-equal@^1.0.0, deep-equal@^1.0.1:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/deep-equal/download/deep-equal-1.1.1.tgz#b5c98c942ceffaf7cb051e24e1434a25a2e6076a"
   integrity sha1-tcmMlCzv+vfLBR4k4UNKJaLmB2o=
@@ -7219,6 +8261,11 @@ fast-levenshtein@~2.0.6:
   resolved "https://registry.npm.taobao.org/fast-levenshtein/download/fast-levenshtein-2.0.6.tgz?cache=0&sync_timestamp=1605292839055&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Ffast-levenshtein%2Fdownload%2Ffast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
+fast-xml-parser@^3.17.6:
+  version "3.19.0"
+  resolved "https://registry.npm.taobao.org/fast-xml-parser/download/fast-xml-parser-3.19.0.tgz#cb637ec3f3999f51406dd8ff0e6fc4d83e520d01"
+  integrity sha1-y2N+w/OZn1FAbdj/Dm/E2D5SDQE=
+
 faye-websocket@^0.11.3:
   version "0.11.3"
   resolved "https://registry.npm.taobao.org/faye-websocket/download/faye-websocket-0.11.3.tgz#5c0e9a8968e8912c286639fde977a8b209f2508e"
@@ -7631,6 +8678,16 @@ geojson-rbush@2.1.0:
     "@turf/helpers" "*"
     "@turf/meta" "*"
     rbush "*"
+
+geojson-rbush@3.x:
+  version "3.1.2"
+  resolved "https://registry.npm.taobao.org/geojson-rbush/download/geojson-rbush-3.1.2.tgz#577d6ec70ba986d4e60b741f1df5147faeb82c97"
+  integrity sha1-V31uxwuphtTmC3QfHfUUf664LJc=
+  dependencies:
+    "@turf/bbox" "*"
+    "@turf/helpers" "6.x"
+    "@turf/meta" "6.x"
+    rbush "^2.0.0"
 
 get-caller-file@^2.0.1, get-caller-file@^2.0.5:
   version "2.0.5"
@@ -9428,7 +10485,7 @@ mapbox-gl-inspect@^1.3.1:
     lodash.isequal "^4.4.0"
     randomcolor "^0.4.4"
 
-mapv@^2.0.56:
+mapv@^2.0.56, mapv@^2.0.62:
   version "2.0.62"
   resolved "https://registry.npm.taobao.org/mapv/download/mapv-2.0.62.tgz#02489df3814b278839e0d73431ef807e647ca693"
   integrity sha1-Akid84FLJ4g54Nc0Me+AfmR8ppM=
@@ -10782,6 +11839,13 @@ point-in-polygon@^1.0.1:
   resolved "https://registry.npm.taobao.org/point-in-polygon/download/point-in-polygon-1.0.1.tgz#d59b64e8fee41c49458aac82b56718c5957b2af7"
   integrity sha1-1Ztk6P7kHElFiqyCtWcYxZV7Kvc=
 
+polygon-clipping@^0.15.2:
+  version "0.15.3"
+  resolved "https://registry.nlark.com/polygon-clipping/download/polygon-clipping-0.15.3.tgz?cache=0&sync_timestamp=1618939788219&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fpolygon-clipping%2Fdownload%2Fpolygon-clipping-0.15.3.tgz#0215840438470ba2e9e6593625e4ea5c1087b4b7"
+  integrity sha1-AhWEBDhHC6Lp5lk2JeTqXBCHtLc=
+  dependencies:
+    splaytree "^3.1.0"
+
 portfinder@^1.0.13, portfinder@^1.0.26:
   version "1.0.28"
   resolved "https://registry.npm.taobao.org/portfinder/download/portfinder-1.0.28.tgz?cache=0&sync_timestamp=1596018197667&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fportfinder%2Fdownload%2Fportfinder-1.0.28.tgz#67c4622852bd5374dd1dd900f779f53462fac778"
@@ -11131,7 +12195,11 @@ postcss-selector-parser@^6.0.0, postcss-selector-parser@^6.0.2:
 
 postcss-svgo@^4.0.3:
   version "4.0.3"
+<<<<<<< HEAD
   resolved "https://registry.nlark.com/postcss-svgo/download/postcss-svgo-4.0.3.tgz?cache=0&sync_timestamp=1621449730580&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fpostcss-svgo%2Fdownload%2Fpostcss-svgo-4.0.3.tgz#343a2cdbac9505d416243d496f724f38894c941e"
+=======
+  resolved "https://registry.npm.taobao.org/postcss-svgo/download/postcss-svgo-4.0.3.tgz#343a2cdbac9505d416243d496f724f38894c941e"
+>>>>>>> 4481ccf (添加三维的缩放至功能)
   integrity sha1-NDos26yVBdQWJD1Jb3JPOIlMlB4=
   dependencies:
     postcss "^7.0.0"
@@ -11427,7 +12495,7 @@ rbush@*, rbush@^3.0.0:
   dependencies:
     quickselect "^2.0.0"
 
-rbush@^2.0.1:
+rbush@2.x, rbush@^2.0.0, rbush@^2.0.1:
   version "2.0.2"
   resolved "https://registry.npm.taobao.org/rbush/download/rbush-2.0.2.tgz#bb6005c2731b7ba1d5a9a035772927d16a614605"
   integrity sha1-u2AFwnMbe6HVqaA1dykn0WphRgU=
@@ -12413,6 +13481,11 @@ spdy@^4.0.2:
     select-hose "^2.0.0"
     spdy-transport "^3.0.0"
 
+splaytree@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npm.taobao.org/splaytree/download/splaytree-3.1.0.tgz#17d4a0108a6da3627579690b7b847241e18ddec8"
+  integrity sha1-F9SgEIpto2J1eWkLe4RyQeGN3sg=
+
 split-string@^3.0.1, split-string@^3.0.2:
   version "3.1.0"
   resolved "https://registry.npm.taobao.org/split-string/download/split-string-3.1.0.tgz#7cb09dda3a86585705c64b39a6466038682e8fe2"
@@ -13114,7 +14187,7 @@ topojson-simplify@3.0.2:
     commander "2"
     topojson-client "3"
 
-topojson@^3.0.2:
+topojson@3.x, topojson@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npm.taobao.org/topojson/download/topojson-3.0.2.tgz#fcb927306c3e0fa76656fa58deed4555d2346fb4"
   integrity sha1-/LknMGw+D6dmVvpY3u1FVdI0b7Q=
