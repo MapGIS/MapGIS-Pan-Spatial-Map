@@ -175,9 +175,11 @@ export default class MapView extends Mixins<Record<string, any>>(
   /**
    * 创建三维绘制
    */
-  onCesiumDrawCreated(cartesian3, lnglat) {
+  onCesiumDrawCreated(rect) {
     switch (this.operationType) {
       case 'QUERY':
+        this.onClear(true)
+        this.query(rect)
         break
       default:
         break
@@ -189,7 +191,6 @@ export default class MapView extends Mixins<Record<string, any>>(
    */
   enableDrawer() {
     const ref = this.is2DMapMode ? 'maboxView' : 'cesiumView'
-    console.log('enableDrawer', this.$refs[ref])
     this.$refs[ref].enableDrawer()
   }
 
@@ -219,7 +220,12 @@ export default class MapView extends Mixins<Record<string, any>>(
    * 复位点击
    */
   onResort() {
-    this.jumpToRect(this.initDisplayRect)
+    if (this.is2DMapMode) {
+      this.jumpToRect(this.initDisplayRect)
+    } else {
+      console.log('1', 1)
+      window.webGlobe.viewer.scene.camera.setView(this.initDisplayRect)
+    }
   }
 
   /**

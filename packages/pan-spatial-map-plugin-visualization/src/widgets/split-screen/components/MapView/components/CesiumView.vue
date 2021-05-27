@@ -11,6 +11,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MpCesiumView, Document } from '@mapgis/web-app-framework'
+import { Rect } from '../../../mixins/map-view'
 
 @Component({
   components: {
@@ -25,10 +26,8 @@ export default class CesiumView extends Vue {
   isMapLoaded = false
 
   enableDrawer() {
-    console.log('CesiumView.drawer', this.drawer)
     if (this.drawer) {
-      // todo 三维拉框待开发
-      // this.drawer.enableDrawPolygon()
+      this.drawer.enableDrawRectangle()
     }
   }
 
@@ -45,8 +44,26 @@ export default class CesiumView extends Vue {
 
   onCreate(cartesian3, lnglat) {
     if (this.isMapLoaded) {
+      const [lng, lat] = lnglat
       console.log('lnglat', cartesian3, lnglat)
-      this.$emit('on-create', cartesian3, lnglat)
+      let xmin: number
+      let xmax: number
+      let ymin: number
+      let ymax: number
+      if (!xmin || lng < xmin) {
+        xmin = lng
+      }
+      if (!xmax || lng > xmax) {
+        xmax = lng
+      }
+      if (!ymin || lat < ymin) {
+        ymin = lat
+      }
+      if (!ymax || lat > ymax) {
+        ymax = lat
+      }
+      const rect = new Rect(xmin, ymin, xmax, ymax)
+      this.$emit('on-create', rect)
     }
   }
 

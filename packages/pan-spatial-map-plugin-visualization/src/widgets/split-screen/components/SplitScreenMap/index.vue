@@ -23,8 +23,8 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { Layer } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { AppMixin, Layer } from '@mapgis/web-app-framework'
 import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
@@ -33,7 +33,9 @@ import MapView from '../MapView'
     MapView
   }
 })
-export default class SplitScreenMap extends Vue {
+export default class SplitScreenMap extends Mixins<Record<string, any>>(
+  AppMixin
+) {
   @Prop({ default: 12 }) mapSpan!: number
 
   @Prop({ default: () => [] }) screenNums!: number[]
@@ -67,7 +69,13 @@ export default class SplitScreenMap extends Vue {
   watchScreenNums(nV) {
     if (nV.length) {
       // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
-      mapViewStateInstance.initDisplayRect = this.layers[nV[0]].fullExtent
+      let initView: any
+      if (this.is2DMapMode) {
+        initView = this.layers[nV[0]].fullExtent
+      } else {
+        initView = window.webGlobe.viewer.scene.camera.getView()
+      }
+      mapViewStateInstance.initDisplayRect = initView
     }
   }
 }
