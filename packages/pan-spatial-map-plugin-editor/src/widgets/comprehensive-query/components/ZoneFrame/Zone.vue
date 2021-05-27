@@ -158,6 +158,9 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
   // 边线宽度
   private lineWidth = baseConfigInstance.config.colorConfig.feature.line.size
 
+  // 所选行政区的范围
+  private geoJSON = {}
+
   private get highlightStyle() {
     return {
       label: {
@@ -215,7 +218,14 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
     this.currentLevelFeature = feature
     this.currentLevelFitBound = fitBound
-    this.change(this.currentLevelFeature)
+
+    if (feature && JSON.stringify(feature) !== '{}') {
+      const box = bbox(feature)
+      this.geoJSON = bboxPolygon(box)
+    } else {
+      this.geoJSON = {}
+    }
+    this.change(this.geoJSON)
     this.getNextLevelZoneFeatures()
   }
 
@@ -388,7 +398,8 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
   private clear() {
     this.currentLevelFeature = {}
-    this.change(this.currentLevelFeature)
+    this.geoJSON = {}
+    this.change(this.geoJSON)
   }
 }
 </script>
