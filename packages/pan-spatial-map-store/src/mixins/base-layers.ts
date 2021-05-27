@@ -228,9 +228,15 @@ export default class BaseLayersMixin extends Vue {
   }
 
   protected get layers() {
-    return this.baseLayerManager.layerNames
-      .map(name => this.baseLayerManager.layerCache.get(name) || [])
+    const arr = this.baseLayerManager.layerNames.map(
+      name => this.baseLayerManager.layerCache.get(name) || []
+    )
+    return arr
       .reduce((x, y) => [...x, ...y], [])
+      .map((item, index) => ({
+        ...item,
+        layerIndex: index + 1
+      }))
   }
 
   protected get tdtLayers() {

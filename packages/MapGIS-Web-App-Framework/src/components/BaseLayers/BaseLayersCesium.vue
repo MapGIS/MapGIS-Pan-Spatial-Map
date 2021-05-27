@@ -19,7 +19,7 @@
     <mapgis-3d-tdt-layer
       v-for="layer in tdtLayers"
       :key="layer.id"
-      :layerStyle="{ zIndex: parseInt(Math.random() * 100) }"
+      :layerStyle="{ zIndex: layer.layerIndex }"
       :baseURL="layer.baseURL"
       :token="layer.token"
     />

@@ -13,12 +13,14 @@
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
+        :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
       />
       <mapgis-3d-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
+        :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
@@ -65,6 +67,7 @@ import {
   IGSSceneSublayerRenderType
 } from '@mapgis/web-app-framework'
 import BaseLayersCesium from '../BaseLayers/BaseLayersCesium'
+import { baseLayerManagerInstance } from '@mapgis/pan-spatial-map-store'
 
 export default {
   name: 'MpCesiumView',
@@ -83,7 +86,19 @@ export default {
   },
   data() {
     return {
-      layers: []
+      layers: [],
+      baseLayerManager: baseLayerManagerInstance
+    }
+  },
+  computed: {
+    baseLayers() {
+      if (this.baseLayerManager) {
+        const arr = this.baseLayerManager.layerNames.map(
+          name => this.baseLayerManager.layerCache.get(name) || []
+        )
+        return arr.reduce((x, y) => [...x, ...y], []).length
+      }
+      return 0
     }
   },
   watch: {
@@ -92,6 +107,12 @@ export default {
     },
     document: {
       deep: true,
+      handler() {
+        this.parseDocument()
+      }
+    },
+    baseLayers: {
+      immediate: true,
       handler() {
         this.parseDocument()
       }
@@ -110,7 +131,7 @@ export default {
       this.document.defaultMap
         .clone()
         .getFlatLayers()
-        .forEach(layer => {
+        .forEach((layer, index) => {
           if (layer.loadStatus === LoadStatus.loaded) {
             if (layer.type === LayerType.IGSScene) {
               layer.activeScene.layers.forEach(igsSceneSublayer => {
@@ -120,11 +141,12 @@ export default {
                 layers.push(layerComponentProps)
               })
             } else {
-              const layerComponentProps = this.genLayerComponentPropsByLayer(
-                layer
-              )
-              layers.push(layerComponentProps)
-            }
+            const layerComponentProps = this.genLayerComponentPropsByLayer(
+              layer,
+              index
+            )
+            layers.push(layerComponentProps)
+
           }
         })
 
@@ -162,8 +184,10 @@ export default {
 
       return layerComponentProps
     },
-    genLayerComponentPropsByLayer(layer) {
+    // genLayerComponentPropsByLayer(layer) {
       // 图层组件所需要的属性
+    genLayerComponentPropsByLayer(layer, index) {
+      // mapbox图层组件所需要的属性
       let layerComponentProps = {}
 
       let allLayerNames = []
@@ -173,7 +197,7 @@ export default {
       const layerStyle = {
         visible: layer.isVisible,
         opacity: layer.opacity,
-        zIndex: 100
+        zIndex: this.baseLayers + index + 1
       }
 
       let tempStr = ''
