@@ -727,7 +727,7 @@
             "describe": "三维地形",
             "ip": "",
             "port": "",
-            "layerServiceType": "TERRAIN",
+            "layerServiceType": "DOC3D",
             "name": "terrain",
             "searchName": "",
             "model": "globe",

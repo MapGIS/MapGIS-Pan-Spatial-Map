@@ -40,6 +40,12 @@
         :show="layerProps.show"
         :url="layerProps.url"
       />
+      <mapgis-3d-igs-terrain
+        v-if="isIgsTerrainLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :show="layerProps.show"
+        :url="layerProps.url"
+      />
     </div>
   </mapgis-web-scene>
 </template>
@@ -127,6 +133,13 @@ export default {
 
       switch (igsSceneSublayer.renderType) {
         case IGSSceneSublayerRenderType.modelCache:
+          layerComponentProps = {
+            type: igsSceneSublayer.renderType,
+            id: `${igsSceneSublayer.serverLayer.id}:${igsSceneSublayer.renderIndex}`,
+            url: igsSceneSublayer.serverLayer.url
+          }
+          break
+        case IGSSceneSublayerRenderType.elevation:
           layerComponentProps = {
             type: igsSceneSublayer.renderType,
             id: `${igsSceneSublayer.serverLayer.id}:${igsSceneSublayer.renderIndex}`,
@@ -344,8 +357,8 @@ export default {
     isIgsM3dLayer(type) {
       return type === IGSSceneSublayerRenderType.modelCache
     },
-    isTerrainLayer(type) {
-      return false
+    isIgsTerrainLayer(type) {
+      return type === IGSSceneSublayerRenderType.elevation
     },
     changePageHeight() {
       const div = document.getElementsByClassName('cesium-viewer')
