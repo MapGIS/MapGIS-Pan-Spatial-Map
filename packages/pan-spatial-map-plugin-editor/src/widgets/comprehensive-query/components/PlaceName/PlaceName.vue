@@ -58,6 +58,7 @@
       :cluster="cluster"
       :geojson="geojson"
     />
+    <PlaceNameCesium ref="place-name-cesium" :markers="markers" />
   </div>
 </template>
 
@@ -71,7 +72,8 @@ import {
   IAttributeTableExhibition,
   AttributeTableExhibition,
   baseConfigInstance,
-  Parser
+  Parser,
+  utilInstance
 } from '@mapgis/pan-spatial-map-store'
 import { LayerType, AppMixin, MapMixin } from '@mapgis/web-app-framework'
 import * as turf from '@turf/turf'

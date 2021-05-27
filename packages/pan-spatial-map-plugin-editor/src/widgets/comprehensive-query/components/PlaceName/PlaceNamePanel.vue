@@ -65,7 +65,8 @@ import {
   utilInstance,
   baseConfigInstance,
   ResultSetMixin,
-  IResultSetCategory
+  IResultSetCategory,
+  markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
 
 @Component
@@ -94,9 +95,9 @@ export default class PlaceNamePanel extends Vue {
 
   private maxCount = 0
 
-  private defaultImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
+  // private defaultImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
 
-  private selectedImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.selectedImg}`
+  // private selectedImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.selectedImg}`
 
   private markersInfos = []
 
@@ -214,6 +215,7 @@ export default class PlaceNamePanel extends Vue {
       )
       const { features } = geoJSONData
       const markerCoords: Record<string, any>[] = []
+      const defaultImg = await markerIconInstance.unSelectIcon()
       if (!this.cluster) {
         for (let j = 0; j < features.length; j += 1) {
           const feature = features[j]
@@ -224,8 +226,8 @@ export default class PlaceNamePanel extends Vue {
           const coords = {
             coordinates: utilInstance.getGeoJsonFeatureCenter(feature),
             properties,
-            id: UUID.uuid(),
-            img: this.defaultImg
+            id: `place-name-${j}`,
+            img: defaultImg
           }
           markerCoords.push(coords)
         }
@@ -249,13 +251,15 @@ export default class PlaceNamePanel extends Vue {
     }
   }
 
-  mouseOver(index) {
-    this.$set(this.markersInfos[index], 'img', this.selectedImg)
+  async mouseOver(index) {
+    const selectedImg = await markerIconInstance.selectIcon()
+    this.$set(this.markersInfos[index], 'img', selectedImg)
     this.updataMarkers()
   }
 
-  mouseLeave(index) {
-    this.$set(this.markersInfos[index], 'img', this.defaultImg)
+  async mouseLeave(index) {
+    const defaultImg = await markerIconInstance.unSelectIcon()
+    this.$set(this.markersInfos[index], 'img', defaultImg)
     this.updataMarkers()
   }
 
