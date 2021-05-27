@@ -17,6 +17,8 @@ export {
 
 export { baseConfigInstance, loadConfigs } from './config'
 
+export { markerIconInstance } from './marker-icon'
+
 export { dataCatalogManagerInstance, DataCatalogManager } from './data-catalog'
 
 export { vectorTileListInstance } from './vector-tile-list'

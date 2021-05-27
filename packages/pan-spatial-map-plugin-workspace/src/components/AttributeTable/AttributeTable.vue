@@ -184,7 +184,8 @@ import {
   FeatureIGS,
   queryArcgisInfoInstance,
   FeatureGeoJSON,
-  GFeature
+  GFeature,
+  markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
 import { AppMixin, LayerType, UUID } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
@@ -194,6 +195,7 @@ import MpMarkerPlotting from '../MarkerPlotting/MarkerPlotting.vue'
 import Mp3dMarkerPlotting from '../3dMarkerPlotting/3dMarkerPlotting.vue'
 import MpFilter from '../Filter/Filter.vue'
 import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
+import axios from 'axios'
 
 @Component({
   name: 'MpAttributeTable',
@@ -246,6 +248,10 @@ export default class MpAttributeTable extends Mixins(
 
   // 选中的行
   private selection: unknown[] = []
+
+  selectIcon = ''
+
+  unSelectIcon = ''
 
   // 分页信息
   private pagination = {
@@ -328,6 +334,11 @@ export default class MpAttributeTable extends Mixins(
   created() {
     this.addListener()
   }
+
+  // beforeMount() {
+  //   this.selectIcon = markerIconInstance.selectIcon
+  //   this.unSelectIcon = markerIconInstance.unselectIcon
+  // }
 
   beforeDestroy() {
     this.removeListener()
@@ -680,12 +691,14 @@ export default class MpAttributeTable extends Mixins(
   }
 
   // 高亮选择集对应的标注图标
-  private hightlightSelectionMarkers() {
+  private async hightlightSelectionMarkers() {
+    const selectIcon = await markerIconInstance.selectIcon()
+    const unSelectIcon = await markerIconInstance.unSelectIcon()
     this.markers.forEach(marker => {
       if (this.selectedRowKeys.includes(marker.fid)) {
-        marker.img = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.selectedImg}`
+        marker.img = selectIcon
       } else {
-        marker.img = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
+        marker.img = unSelectIcon
       }
     })
 
@@ -719,7 +732,8 @@ export default class MpAttributeTable extends Mixins(
   }
 
   // 添加标注
-  private addMarkers() {
+  private async addMarkers() {
+    const unSelectIcon = await markerIconInstance.unSelectIcon()
     const tempMarkers: Record<string, any>[] = []
     for (let i = 0; i < this.tableData.length; i += 1) {
       const feature = this.tableData[i]
@@ -728,7 +742,7 @@ export default class MpAttributeTable extends Mixins(
         const marker: Record<string, any> = {
           coordinates: center,
           fid: feature.properties[this.rowKey],
-          img: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
+          img: unSelectIcon,
           id: UUID.uuid(),
           properties: feature.properties,
           feature: feature

@@ -12195,11 +12195,7 @@ postcss-selector-parser@^6.0.0, postcss-selector-parser@^6.0.2:
 
 postcss-svgo@^4.0.3:
   version "4.0.3"
-<<<<<<< HEAD
-  resolved "https://registry.nlark.com/postcss-svgo/download/postcss-svgo-4.0.3.tgz?cache=0&sync_timestamp=1621449730580&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fpostcss-svgo%2Fdownload%2Fpostcss-svgo-4.0.3.tgz#343a2cdbac9505d416243d496f724f38894c941e"
-=======
   resolved "https://registry.npm.taobao.org/postcss-svgo/download/postcss-svgo-4.0.3.tgz#343a2cdbac9505d416243d496f724f38894c941e"
->>>>>>> 4481ccf (添加三维的缩放至功能)
   integrity sha1-NDos26yVBdQWJD1Jb3JPOIlMlB4=
   dependencies:
     postcss "^7.0.0"
