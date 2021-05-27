@@ -623,9 +623,16 @@ export default class TreeLayer extends Mixins(
       ymax = xmaxYmaxConverted[1]
     }
 
-    if (this.is2DMapMode) {
-      this.map.fitBounds([xmin, ymin, xmax, ymax])
-    }
+    this.map.fitBounds([xmin, ymin, xmax, ymax])
+    const rectangle = new this.Cesium.Rectangle.fromDegrees(
+      xmin,
+      ymin,
+      xmax,
+      ymax
+    )
+    this.webGlobe.viewer.camera.flyTo({
+      destination: rectangle
+    })
     this.clickPopover(item, false)
   }
 

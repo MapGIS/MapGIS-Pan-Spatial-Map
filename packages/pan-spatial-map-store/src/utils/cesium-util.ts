@@ -930,7 +930,6 @@ class CesiumUtil {
       iconHeight: option.iconHeight,
       name: option.name
     })
-
     if (!markerEntity) {
       return
     }
