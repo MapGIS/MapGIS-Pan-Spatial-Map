@@ -72,13 +72,11 @@
       </a-space>
     </div>
     <zone-frame-mapbox
-      v-if="is2DMapMode"
       :feature="currentLevelFeature"
       :fit-bound="currentLevelFitBound"
       :highlight-style="highlightStyle"
     ></zone-frame-mapbox>
     <zone-frame-cesium
-      v-else
       :feature="currentLevelFeature"
       :fit-bound="currentLevelFitBound"
       :highlight-style="highlightStyle"
@@ -87,7 +85,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Mixins, Prop, Model } from 'vue-property-decorator'
+import {
+  Component,
+  Watch,
+  Mixins,
+  Prop,
+  Model,
+  Emit
+} from 'vue-property-decorator'
 import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
 import Axios from 'axios'
 import {
@@ -111,11 +116,11 @@ import ZoneFrameCesium from './ZoneFrameCesium.vue'
   }
 })
 export default class Zone extends Mixins(AppMixin, MapMixin) {
-  @Model('change', { type: Object, required: false, default: null })
-  private value!: FeatureGeoJSON | null
-
   @Prop()
   readonly active!: boolean
+
+  @Emit()
+  change(val: FeatureGeoJSON | null) {}
 
   // 首级配置
   private defaults = {}
@@ -210,7 +215,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
     this.currentLevelFeature = feature
     this.currentLevelFitBound = fitBound
-
+    this.change(this.currentLevelFeature)
     this.getNextLevelZoneFeatures()
   }
 
@@ -383,6 +388,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
   private clear() {
     this.currentLevelFeature = {}
+    this.change(this.currentLevelFeature)
   }
 }
 </script>

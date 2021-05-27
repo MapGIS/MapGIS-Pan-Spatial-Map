@@ -118,7 +118,6 @@
       </a-row>
     </a-space>
     <coordinate-mapbox
-      v-if="is2DMapMode"
       :frame-feature="frameFeature"
       :pickable="pickable"
       :coordinate="coordInDefaultCRS"
@@ -127,7 +126,6 @@
       @picked-coordinate="onPickedCoordinate"
     ></coordinate-mapbox>
     <coordinate-cesium
-      v-else
       :frame-feature="frameFeature"
       :pickable="pickable"
       :coordinate="coordInDefaultCRS"
@@ -139,7 +137,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Mixins, Model, Prop } from 'vue-property-decorator'
+import {
+  Component,
+  Watch,
+  Mixins,
+  Model,
+  Prop,
+  Emit
+} from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
 import {
   FeatureGeoJSON,
@@ -153,9 +158,12 @@ import CoordinateCesium from './CoordinateCesium.vue'
   name: 'MpCoordinate',
   components: { CoordinateMapbox, CoordinateCesium }
 })
-export default class Coordinate extends Mixins(AppMixin) {
+export default class MpCoordinate extends Mixins(AppMixin) {
   @Prop()
   readonly active!: boolean
+
+  @Emit()
+  change(val: FeatureGeoJSON | null) {}
 
   private defaultConfig = baseConfigInstance.config
 
@@ -164,8 +172,6 @@ export default class Coordinate extends Mixins(AppMixin) {
 
   // 坐标系列表
   private crsOptions = this.defaultConfig.commonProjection.split(',')
-
-  loading = false
 
   // 坐标系
   private crs = this.defaultCrs
@@ -239,7 +245,6 @@ export default class Coordinate extends Mixins(AppMixin) {
     }
   }
 
-  @Watch('frameNo')
   private async frameNochange(val: string) {
     if (val) {
       const {
@@ -261,11 +266,12 @@ export default class Coordinate extends Mixins(AppMixin) {
                   [XMin, YMax],
                   [XMin, YMin]
                 ]
-              }
+              ]
             }
           }
         ]
       }
+      this.change(this.frameFeature)
     }
   }
 
@@ -284,11 +290,6 @@ export default class Coordinate extends Mixins(AppMixin) {
         xTemp = data.Data[0].x
         yTemp = data.Data[0].y
       }
-      this.$emit('change', this.geojson)
-    } catch (error) {
-      this.$message.error('获取图幅失败')
-    } finally {
-      this.loading = false
     }
 
     this.coordInDefaultCRS = [Number(xTemp), Number(yTemp)]
@@ -296,6 +297,10 @@ export default class Coordinate extends Mixins(AppMixin) {
 
     if (this.frameable) {
       this.getFrameNo()
+    } else {
+      this.frameFeature = {}
+
+      this.change(this.frameFeature)
     }
   }
 
@@ -303,13 +308,13 @@ export default class Coordinate extends Mixins(AppMixin) {
     const x = this.coordDecimal[0]
     const y = this.coordDecimal[1]
     const xx = utilInstance.coordinateStyleTransformation(x)
-    this.coordDMS[0][0] = xx.degree.toString()
-    this.coordDMS[0][1] = xx.minute!.toString()
-    this.coordDMS[0][2] = xx.second!.toString()
+    this.coordDMS[0][0] = xx.degree?.toString()
+    this.coordDMS[0][1] = xx.minute?.toString()
+    this.coordDMS[0][2] = xx.second?.toString()
     const yy = utilInstance.coordinateStyleTransformation(y)
     this.coordDMS[1][0] = yy.degree.toString()
-    this.coordDMS[1][1] = yy.minute!.toString()
-    this.coordDMS[1][2] = yy.second!.toString()
+    this.coordDMS[1][1] = yy.minute?.toString()
+    this.coordDMS[1][2] = yy.second?.toString()
   }
 
   private onDMSCoordChanged() {
@@ -330,7 +335,10 @@ export default class Coordinate extends Mixins(AppMixin) {
   }
 
   // 地图点击回调方法
-  private async onPickedCoordinate(val: number[]) {
+  private async onPickedCoordinate(val: number[], is2D) {
+    if (this.is2DMapMode !== is2D) {
+      return
+    }
     const [lng, lat] = val
 
     // 临时修改图上坐标，让标注可以跟随拾取位置移动，后面点击定位按钮后，会再次计算该值
@@ -354,12 +362,12 @@ export default class Coordinate extends Mixins(AppMixin) {
 
     const xx = utilInstance.coordinateStyleTransformation(x)
     this.coordDMS[0][0] = xx.degree.toString()
-    this.coordDMS[0][1] = xx.minute!.toString()
-    this.coordDMS[0][2] = xx.second!.toString()
+    this.coordDMS[0][1] = xx.minute?.toString()
+    this.coordDMS[0][2] = xx.second?.toString()
     const yy = utilInstance.coordinateStyleTransformation(y)
     this.coordDMS[1][0] = yy.degree.toString()
-    this.coordDMS[1][1] = yy.minute!.toString()
-    this.coordDMS[1][2] = yy.second!.toString()
+    this.coordDMS[1][1] = yy.minute?.toString()
+    this.coordDMS[1][2] = yy.second?.toString()
   }
 
   // 计算图幅号
@@ -373,6 +381,7 @@ export default class Coordinate extends Mixins(AppMixin) {
       this.crs
     )
     this.frameNo = frameNo
+    this.frameNochange(frameNo)
   }
 
   // 清除
