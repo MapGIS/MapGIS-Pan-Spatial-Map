@@ -8,6 +8,8 @@ export { getRequest, utilInstance, cesiumUtilInstance, Parser } from './utils'
 
 export { default as eventBus } from './event-bus'
 
+export { default as baseLayerManagerInstance } from './map/base-layers'
+
 export {
   ExhibitionMixin,
   ExhibitionControllerMixin,
@@ -16,6 +18,8 @@ export {
 } from './mixins'
 
 export { baseConfigInstance, loadConfigs } from './config'
+
+export { markerIconInstance } from './marker-icon'
 
 export { dataCatalogManagerInstance, DataCatalogManager } from './data-catalog'
 

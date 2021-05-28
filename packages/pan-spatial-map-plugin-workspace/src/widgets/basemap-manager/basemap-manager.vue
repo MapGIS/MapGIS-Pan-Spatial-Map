@@ -1,10 +1,10 @@
 <template>
-  <a-checkbox-group style="width:100%" v-model="layerNames">
+  <a-checkbox-group v-model="layerNames" style="width:100%">
     <ul class="mp-widget-basemap-manager">
       <li
         v-for="(item, index) in mapData"
         class="image-container"
-        :key="index"
+        :key="item.name"
         :style="setMargin(index)"
       >
         <div class="image-header">

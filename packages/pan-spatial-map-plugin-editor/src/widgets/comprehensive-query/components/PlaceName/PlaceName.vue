@@ -43,7 +43,6 @@
       </a-tabs>
     </div>
     <place-name-mapbox
-      v-if="mapRender === mapboxRender"
       ref="refPlaceNameMapbox"
       :markers="markers"
       :field-configs="fieldConfigs"
@@ -51,7 +50,6 @@
       :geojson="geojson"
     />
     <place-name-cesium
-      v-else
       ref="refPlaceNameCesium"
       :markers="markers"
       :field-configs="fieldConfigs"
@@ -71,7 +69,8 @@ import {
   IAttributeTableExhibition,
   AttributeTableExhibition,
   baseConfigInstance,
-  Parser
+  Parser,
+  utilInstance
 } from '@mapgis/pan-spatial-map-store'
 import { LayerType, AppMixin, MapMixin } from '@mapgis/web-app-framework'
 import * as turf from '@turf/turf'

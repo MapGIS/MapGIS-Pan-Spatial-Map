@@ -72,13 +72,11 @@
       </a-space>
     </div>
     <zone-frame-mapbox
-      v-if="is2DMapMode"
       :feature="currentLevelFeature"
       :fit-bound="currentLevelFitBound"
       :highlight-style="highlightStyle"
     ></zone-frame-mapbox>
     <zone-frame-cesium
-      v-else
       :feature="currentLevelFeature"
       :fit-bound="currentLevelFitBound"
       :highlight-style="highlightStyle"
@@ -87,7 +85,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Mixins, Prop, Model } from 'vue-property-decorator'
+import {
+  Component,
+  Watch,
+  Mixins,
+  Prop,
+  Model,
+  Emit
+} from 'vue-property-decorator'
 import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
 import Axios from 'axios'
 import {
@@ -111,11 +116,11 @@ import ZoneFrameCesium from './ZoneFrameCesium.vue'
   }
 })
 export default class Zone extends Mixins(AppMixin, MapMixin) {
-  @Model('change', { type: Object, required: false, default: null })
-  private value!: FeatureGeoJSON | null
-
   @Prop()
   readonly active!: boolean
+
+  @Emit()
+  change(val: FeatureGeoJSON | null) {}
 
   // 首级配置
   private defaults = {}
@@ -152,6 +157,9 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
   // 边线宽度
   private lineWidth = baseConfigInstance.config.colorConfig.feature.line.size
+
+  // 所选行政区的范围
+  private geoJSON = {}
 
   private get highlightStyle() {
     return {
@@ -211,6 +219,13 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
     this.currentLevelFeature = feature
     this.currentLevelFitBound = fitBound
 
+    if (feature && JSON.stringify(feature) !== '{}') {
+      const box = bbox(feature)
+      this.geoJSON = bboxPolygon(box)
+    } else {
+      this.geoJSON = {}
+    }
+    this.change(this.geoJSON)
     this.getNextLevelZoneFeatures()
   }
 
@@ -383,6 +398,8 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
   private clear() {
     this.currentLevelFeature = {}
+    this.geoJSON = {}
+    this.change(this.geoJSON)
   }
 }
 </script>

@@ -9,30 +9,39 @@
     :fullscreen-button="false"
     style="height: 100%; width: 100%"
   >
+    <base-layers-cesium :document="document" />
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
+        :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
       />
       <mapgis-3d-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
+        :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
       />
       <mapgis-3d-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
+        :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.baseUrl"
+        :url="layerProps.url"
+        :layers="layerProps.layers"
       />
       <mapgis-3d-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
+        :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.baseUrl"
+        :options="layerProps.options"
+        :url="layerProps.url"
+        :layer="layerProps.layer"
+        :wmtsStyle="layerProps.wmtsStyle"
+        :srs="layerProps.srs"
+        :tileMatrixSetID="layerProps.tileMatrixSetID"
       />
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type)"
@@ -57,10 +66,12 @@ import {
   LoadStatus,
   IGSSceneSublayerRenderType
 } from '@mapgis/web-app-framework'
+import BaseLayersCesium from '../BaseLayers/BaseLayersCesium'
+import { baseLayerManagerInstance } from '@mapgis/pan-spatial-map-store'
 
 export default {
   name: 'MpCesiumView',
-  components: {},
+  components: { BaseLayersCesium },
   props: {
     document: {
       type: Object,
@@ -75,7 +86,19 @@ export default {
   },
   data() {
     return {
-      layers: []
+      layers: [],
+      baseLayerManager: baseLayerManagerInstance
+    }
+  },
+  computed: {
+    baseLayers() {
+      if (this.baseLayerManager) {
+        const arr = this.baseLayerManager.layerNames.map(
+          name => this.baseLayerManager.layerCache.get(name) || []
+        )
+        return arr.reduce((x, y) => [...x, ...y], []).length
+      }
+      return 0
     }
   },
   watch: {
@@ -84,6 +107,12 @@ export default {
     },
     document: {
       deep: true,
+      handler() {
+        this.parseDocument()
+      }
+    },
+    baseLayers: {
+      immediate: true,
       handler() {
         this.parseDocument()
       }
@@ -102,7 +131,7 @@ export default {
       this.document.defaultMap
         .clone()
         .getFlatLayers()
-        .forEach(layer => {
+        .forEach((layer, index) => {
           if (layer.loadStatus === LoadStatus.loaded) {
             if (layer.type === LayerType.IGSScene) {
               layer.activeScene.layers.forEach(igsSceneSublayer => {
@@ -113,7 +142,8 @@ export default {
               })
             } else {
               const layerComponentProps = this.genLayerComponentPropsByLayer(
-                layer
+                layer,
+                index
               )
               layers.push(layerComponentProps)
             }
@@ -122,6 +152,7 @@ export default {
 
       this.layers = layers
     },
+
     genLayerComponentPropsByIGSSceneSublayer(igsSceneSublayer) {
       // 图层组件所需要的属性
       let layerComponentProps = {}
@@ -154,8 +185,10 @@ export default {
 
       return layerComponentProps
     },
-    genLayerComponentPropsByLayer(layer) {
-      // 图层组件所需要的属性
+    // genLayerComponentPropsByLayer(layer) {
+    // 图层组件所需要的属性
+    genLayerComponentPropsByLayer(layer, index) {
+      // mapbox图层组件所需要的属性
       let layerComponentProps = {}
 
       let allLayerNames = []
@@ -163,7 +196,9 @@ export default {
       let visibleSubLayers = []
       // 图层显示样式
       const layerStyle = {
-        show: layer.isVisible
+        visible: layer.isVisible,
+        opacity: layer.opacity,
+        zIndex: this.baseLayers + index + 1
       }
 
       let tempStr = ''
@@ -221,31 +256,26 @@ export default {
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            sourceId: layer.id,
-            baseUrl: layer.url,
-            wmtsLayer: layer.activeLayer.id,
-            tileMatrixSet: layer.activeLayer.tileMatrixSetId,
-            version: layer.version,
-            wmtsStyle: layer.activeLayer.styleId,
-            format: layer.activeLayer.imageFormat
+            url: layer.url,
+            srs: `EPSG:${layer.spatialReference.wkid}`,
+            tileMatrixSetID: layer.activeLayer.tileMatrixSetId,
+            layer: layer.activeLayer.id,
+            wmtsStyle: layer.activeLayer.styleId
           }
 
           break
         case LayerType.OGCWMS:
           allLayerNames = []
           layer.allSublayers.forEach(element => {
-            if (element.visible) allLayerNames.push(element.name)
+            if (element.visible && element.name)
+              allLayerNames.push(element.name)
           })
 
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            sourceId: layer.id,
-            baseUrl: layer.url,
-            layers: allLayerNames,
-            version: layer.version,
-            token: layer.tokenValue,
-            reversebbox: false
+            url: layer.url,
+            layers: allLayerNames.join(',')
           }
 
           break
@@ -304,7 +334,7 @@ export default {
       }
 
       if (layer.type !== LayerType.vectorTile)
-        layerComponentProps = { ...layerComponentProps, ...layerStyle }
+        layerComponentProps = { ...layerComponentProps, layerStyle }
 
       return layerComponentProps
     },
