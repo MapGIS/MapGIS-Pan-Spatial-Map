@@ -12,9 +12,10 @@
         :style="mapSpanStyle"
       >
         <map-view
-          :queryVisible.sync="queryVisible"
+          :mapIndex="s"
           :mapViewId="`split-screen-map-${s}`"
           :mapViewLayer="layers.find(({ id }) => layerIds[s] === id)"
+          :queryVisible.sync="queryVisible"
           :queryRect="queryRect"
           @on-query="onQuery"
         />
@@ -73,7 +74,8 @@ export default class SplitScreenMap extends Mixins<Record<string, any>>(
       if (this.is2DMapMode) {
         initView = this.layers[nV[0]].fullExtent
       } else {
-        initView = window.webGlobe.viewer.scene.camera.getView()
+        // todo 三维复位
+        // initView = window.webGlobe.viewer.scene.camera.getView()
       }
       mapViewStateInstance.initDisplayRect = initView
     }

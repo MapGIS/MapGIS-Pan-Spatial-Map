@@ -1,10 +1,15 @@
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Mixins } from 'vue-property-decorator'
+import { AppMixin } from '@mapgis/web-app-framework'
 import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
 
 export { Rect }
 
 @Component
-export default class MapViewMixin extends Vue {
+export default class MapViewMixin extends Mixins<Record<string, any>>(
+  AppMixin
+) {
+  @Prop({ default: 1 }) mapIndex!: number
+
   @Prop({ default: '' }) mapViewId!: string
 
   private map: any = {}
@@ -45,8 +50,22 @@ export default class MapViewMixin extends Vue {
   }
 
   /**
-   *  跳转至指定范围
-   * @param rect
+   * 三维转至指定范围
+   */
+  jumpToRect3d({ xmin, xmax, ymin, ymax }) {
+    const Rectangle = new this.Cesium.Rectangle.fromDegrees(
+      xmin,
+      ymin,
+      xmax,
+      ymax
+    )
+    this.webGlobe.viewer.camera.flyTo({
+      destination: Rectangle
+    })
+  }
+
+  /**
+   *  二维跳转至指定范围
    */
   jumpToRect({ xmin, xmax, ymin, ymax }: Rect) {
     this.map.fitBounds([
@@ -77,7 +96,11 @@ export default class MapViewMixin extends Vue {
    */
   zoomIn(rect: Rect) {
     if (this.isValidRect(rect)) {
-      this.jumpToRect(rect)
+      if (this.is2DMapMode) {
+        this.jumpToRect(rect)
+      } else {
+        this.jumpToRect3d(rect)
+      }
     } else {
       this.map.zoomIn()
     }
@@ -89,10 +112,14 @@ export default class MapViewMixin extends Vue {
    */
   zoomOut(rect: Rect) {
     if (this.isValidRect(rect)) {
-      this.map.flyTo({
-        zoom: this.map.getZoom() - 1,
-        center: [(rect.xmin + rect.xmin) / 2, (rect.ymin + rect.ymax) / 2]
-      })
+      if (this.is2DMapMode) {
+        this.map.flyTo({
+          zoom: this.map.getZoom() - 1,
+          center: [(rect.xmin + rect.xmin) / 2, (rect.ymin + rect.ymax) / 2]
+        })
+      } else {
+        this.jumpToRect3d(rect)
+      }
     }
   }
 }

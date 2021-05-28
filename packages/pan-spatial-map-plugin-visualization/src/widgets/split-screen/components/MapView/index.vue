@@ -6,9 +6,11 @@
     <mapbox-view
       v-if="is2DMapMode"
       ref="maboxView"
+      :mapIndex="mapIndex"
+      :mapViewId="mapViewId"
       :mapViewDocument="mapViewDocument"
       @on-load="onMapboxLoad"
-      @on-created="onMapboxDrawCreated"
+      @on-created="onDrawCreated"
     />
     <!-- 三维地图 -->
     <cesium-view
@@ -16,7 +18,7 @@
       ref="cesiumView"
       :mapViewDocument="mapViewDocument"
       @on-load="onCesiumLoad"
-      @on-create="onCesiumDrawCreated"
+      @on-create="onDrawCreated"
     />
     <!-- 标注 -->
     <mp-markers-highlight-popup
@@ -46,12 +48,12 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { AppMixin, Document, Layer } from '@mapgis/web-app-framework'
+import { Document, Layer } from '@mapgis/web-app-framework'
 import {
   MpQueryResultTree,
   MpMarkersHighlightPopup
 } from '../../../../components'
-import MapViewMixin from '../../mixins/map-view'
+import MapViewMixin, { Rect } from '../../mixins/map-view'
 import MapboxView from './components/MapboxView'
 import CesiumView from './components/CesiumView'
 import Tools, { OperationType, OperationFn } from './components/Tools'
@@ -76,10 +78,7 @@ import Tools, { OperationType, OperationFn } from './components/Tools'
     }
   }
 })
-export default class MapView extends Mixins<Record<string, any>>(
-  MapViewMixin,
-  AppMixin
-) {
+export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 图层
   @Prop({ default: () => ({}) }) mapViewLayer!: Layer
 
@@ -146,9 +145,16 @@ export default class MapView extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 创建二维绘制
+   * 三维地图初始化
    */
-  onMapboxDrawCreated(rect) {
+  onCesiumLoad(e) {
+    this.isMapLoaded = true
+  }
+
+  /**
+   * 创建二三维绘制
+   */
+  onDrawCreated(rect: Rect) {
     switch (this.operationType) {
       case 'QUERY':
         this.onClear(true)
@@ -159,27 +165,6 @@ export default class MapView extends Mixins<Record<string, any>>(
         break
       case 'ZOOMOUT':
         this.zoomOut(rect)
-        break
-      default:
-        break
-    }
-  }
-
-  /**
-   * 三维地图初始化
-   */
-  onCesiumLoad(e) {
-    this.isMapLoaded = true
-  }
-
-  /**
-   * 创建三维绘制
-   */
-  onCesiumDrawCreated(rect) {
-    switch (this.operationType) {
-      case 'QUERY':
-        this.onClear(true)
-        this.query(rect)
         break
       default:
         break
@@ -223,8 +208,8 @@ export default class MapView extends Mixins<Record<string, any>>(
     if (this.is2DMapMode) {
       this.jumpToRect(this.initDisplayRect)
     } else {
-      console.log('1', 1)
-      window.webGlobe.viewer.scene.camera.setView(this.initDisplayRect)
+      // todo 三维复位
+      // window.webGlobe.viewer.scene.camera.setView(this.initDisplayRect)
     }
   }
 

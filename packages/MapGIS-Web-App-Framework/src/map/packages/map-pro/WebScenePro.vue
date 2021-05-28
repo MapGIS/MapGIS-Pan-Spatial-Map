@@ -1,5 +1,6 @@
 <template>
   <mapgis-web-scene
+    ref="mapgisWebScene"
     :libPath="libPath"
     :plugin-path="pluginPath"
     @load="handleLoad"
@@ -89,7 +90,7 @@
         <mapgis-3d-statebar class="statebar" />
       </div>
     </div>
-    <slot></slot>
+    <slot />
   </mapgis-web-scene>
 </template>
 
@@ -397,9 +398,17 @@ export default {
       const { webGlobe } = window
       this.Cesium = Cesium
 
-      this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
-
-      this.$emit('map-load', payload)
+      // 将mapgis-web-scene的事件抛出
+      const listeners = this.$listeners
+      const webMapgisListeners = this.$refs.mapgisWebScene.$listeners
+      Object.entries(webMapgisListeners).forEach(
+        ([k, v]) => k && this.$emit(k, payload)
+      )
+      if (listeners && 'map-load' in listeners) {
+        this.$emit('map-load', payload)
+      } else {
+        this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
+      }
 
       this.changePageHeight()
     },

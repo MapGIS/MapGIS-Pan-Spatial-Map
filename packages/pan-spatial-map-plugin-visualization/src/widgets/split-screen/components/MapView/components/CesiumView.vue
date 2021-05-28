@@ -3,14 +3,26 @@
     v-if="mapViewDocument"
     :document="mapViewDocument"
     @map-load="onMapLoad"
+    :vueKey="vueKey"
+    :vueIndex="vueIndex"
   >
-    <mapgis-3d-draw @load="onLoad" @drawcreate="onCreate" />
+    <mapgis-3d-draw
+      @load="onLoad"
+      @drawcreate="onCreate"
+      :vueKeyG="vueKey"
+      :vueIndexG="vueIndex"
+    />
     <mapgis-3d-link :enable="true" />
   </mp-cesium-view>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { MpCesiumView, Document } from '@mapgis/web-app-framework'
+import {
+  MpCesiumView,
+  Document,
+  MapMixin,
+  UUID
+} from '@mapgis/web-app-framework'
 import { Rect } from '../../../mixins/map-view'
 
 @Component({
@@ -21,9 +33,21 @@ import { Rect } from '../../../mixins/map-view'
 export default class CesiumView extends Vue {
   @Prop() mapViewDocument!: Document
 
+  @Prop({ default: 1000 }) mapIndex!: number
+
+  @Prop({ default: UUID.uuid() }) mapViewId!: string
+
   drawer = null
 
   isMapLoaded = false
+
+  get vueKey() {
+    return this.mapViewId
+  }
+
+  get vueIndex() {
+    return this.mapIndex * 1000
+  }
 
   enableDrawer() {
     if (this.drawer) {
@@ -44,25 +68,9 @@ export default class CesiumView extends Vue {
 
   onCreate(cartesian3, lnglat) {
     if (this.isMapLoaded) {
-      const [lng, lat] = lnglat
-      console.log('lnglat', cartesian3, lnglat)
-      let xmin: number
-      let xmax: number
-      let ymin: number
-      let ymax: number
-      if (!xmin || lng < xmin) {
-        xmin = lng
-      }
-      if (!xmax || lng > xmax) {
-        xmax = lng
-      }
-      if (!ymin || lat < ymin) {
-        ymin = lat
-      }
-      if (!ymax || lat > ymax) {
-        ymax = lat
-      }
-      const rect = new Rect(xmin, ymin, xmax, ymax)
+      console.log('onCreate', cartesian3, lnglat)
+      const [[left, top], [right, bottom]] = lnglat
+      const rect = new Rect(left, bottom, right, top)
       this.$emit('on-create', rect)
     }
   }
