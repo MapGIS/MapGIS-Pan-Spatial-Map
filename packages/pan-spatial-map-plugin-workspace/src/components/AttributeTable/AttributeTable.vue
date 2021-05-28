@@ -738,7 +738,7 @@ export default class MpAttributeTable extends Mixins(
           coordinates: center,
           fid: feature.properties[this.rowKey],
           img: unSelectIcon,
-          id: UUID.uuid(),
+          markerId: UUID.uuid(),
           properties: feature.properties,
           feature: feature
         }

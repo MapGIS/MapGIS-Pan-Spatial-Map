@@ -2,19 +2,19 @@
   <mapgis-marker
     :coordinates="marker.coordinates"
     anchor="bottom"
-    @mouseenter="$emit('mouseenter', $event, marker.id)"
-    @mouseleave="$emit('mouseleave', $event, marker.id)"
+    @mouseenter="$emit('mouseenter', $event, marker.markerId)"
+    @mouseleave="$emit('mouseleave', $event, marker.markerId)"
   >
     <img
       slot="marker"
       :src="marker.img"
-      :ref="marker.id"
+      :ref="marker.markerId"
       @load="onMarkerImageLoad"
     />
     <mapgis-popup
       :coordinates="marker.coordinates"
       :showed="true"
-      :offset="popupOffset(marker.id)"
+      :offset="popupOffset(marker.markerId)"
       v-if="markerImageLoadStatus"
     >
       <a-list

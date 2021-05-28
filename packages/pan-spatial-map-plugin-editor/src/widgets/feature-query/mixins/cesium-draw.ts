@@ -75,7 +75,6 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     }
 
     this.queryType = ''
-
     this.queryLayer(bound)
   }
 

@@ -148,7 +148,7 @@ export default class MpAttributeTablePlotting extends Mixins(MapMixin) {
 
   private mouseEnterEvent(e: any, id) {
     // 高亮要素
-    const marker = this.markers.find(marker => marker.id == id)
+    const marker = this.markers.find(marker => marker.markerId == id)
 
     if (marker) {
       this.highlightFeature({
