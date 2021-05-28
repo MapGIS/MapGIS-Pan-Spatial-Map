@@ -9,7 +9,6 @@
       :verticalOffset="50"
     >
       <div class="thematic-map-attribute-table">
-        <div>{{ atVisible }}</div>
         <a-spin :spinning="loading">
           <row-flex
             :span="[13, 10]"
