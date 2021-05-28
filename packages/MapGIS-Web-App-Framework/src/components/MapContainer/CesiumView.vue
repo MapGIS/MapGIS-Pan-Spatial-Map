@@ -25,6 +25,14 @@
         :show="layerProps.show"
         :url="layerProps.url"
       />
+      <mapgis-3d-igs-vector-layer
+        v-if="isIgsVectorLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :url="layerProps.url"
+        :gdbps="layerProps.gdbps"
+        :layerStyle="layerProps.layerStyle"
+        :srs="layerProps.srs"
+      />
       <mapgis-3d-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
         :layerStyle="layerProps.layerStyle"
@@ -43,6 +51,22 @@
         :srs="layerProps.srs"
         :tileMatrixSetID="layerProps.tileMatrixSetID"
       />
+      <mapgis-3d-arcgis-tile-layer
+        v-if="isArcgisTileLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :url="layerProps.url"
+        :layerStyle="layerProps.layerStyle"
+        :srs="layerProps.srs"
+      />
+      <mapgis-3d-arcgis-map-layer
+        v-if="isArcgisMapLayer(layerProps.type)"
+        :id="layerProps.layerId"
+        :url="layerProps.url"
+        :layers="layerProps.layers"
+        :layerStyle="layerProps.layerStyle"
+        :srs="layerProps.srs"
+      />
+
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type)"
         :id="layerProps.layerId"
@@ -201,21 +225,28 @@ export default {
         zIndex: this.baseLayers + index + 1
       }
 
+      // 图层空间参照系
+      const srs = `EPSG:${layer.spatialReference.wkid}`
+
       let tempStr = ''
       let parms = {}
 
       switch (layer.type) {
         case LayerType.IGSTile:
+          // 修改说明：当前igs图层组件控制可见性的接口还没有放到layerStyle中。
+          // 修改人：马原野 2021年5月27日
           parms = layer._parseUrl(layer.url)
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            sourceId: layer.id,
             ip: parms.ip,
             port: parms.port,
-            serverName: parms.tileName
+            serverName: parms.tileName,
+            show: layer.isVisible,
+            alpha: layer.opacity
           }
+
           break
         case LayerType.IGSMapImage:
           showLayers = 'show:'
@@ -233,23 +264,27 @@ export default {
             }
           })
 
+          // 修改说明：当前igs图层组件控制可见性的接口还没有放到layerStyle中。
+          // 修改人：马原野 2021年5月27日
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            sourceId: layer.id,
             layers: showLayers,
-            serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
+            show: layer.isVisible,
+            alpha: layer.opacity,
+            serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值
           }
 
           break
         case LayerType.IGSVector:
+          // 修改说明：mapgis-3d-igs-vector-layer要求gdbps参数必须为数组。
+          // 修改人：马原野 2021年5月27日
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            sourceId: layer.id,
-            gdbps: layer.gdbps
+            gdbps: layer.gdbps.split(',')
           }
           break
         case LayerType.OGCWMTS:
@@ -257,10 +292,10 @@ export default {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            srs: `EPSG:${layer.spatialReference.wkid}`,
             tileMatrixSetID: layer.activeLayer.tileMatrixSetId,
             layer: layer.activeLayer.id,
-            wmtsStyle: layer.activeLayer.styleId
+            wmtsStyle: layer.activeLayer.styleId,
+            format: layer.activeLayer.imageFormat
           }
 
           break
@@ -283,13 +318,12 @@ export default {
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            baseUrl: layer.url,
-            sourceId: layer.id
+            url: layer.url
           }
 
           break
         case LayerType.arcGISMapImage:
-          showLayers = 'show:'
+          showLayers = ''
 
           visibleSubLayers = layer.allSublayers.filter(sublayer => {
             if (sublayer.visible) return true
@@ -307,9 +341,8 @@ export default {
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
-            baseUrl: layer.url,
-            layers: showLayers,
-            sourceId: layer.id
+            url: layer.url,
+            layers: showLayers
           }
           break
         case LayerType.aMapMercatorEMap:
@@ -334,7 +367,7 @@ export default {
       }
 
       if (layer.type !== LayerType.vectorTile)
-        layerComponentProps = { ...layerComponentProps, layerStyle }
+        layerComponentProps = { ...layerComponentProps, layerStyle, srs }
 
       return layerComponentProps
     },
