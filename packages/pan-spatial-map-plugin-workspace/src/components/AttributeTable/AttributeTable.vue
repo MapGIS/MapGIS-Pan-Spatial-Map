@@ -335,11 +335,6 @@ export default class MpAttributeTable extends Mixins(
     this.addListener()
   }
 
-  // beforeMount() {
-  //   this.selectIcon = markerIconInstance.selectIcon
-  //   this.unSelectIcon = markerIconInstance.unselectIcon
-  // }
-
   beforeDestroy() {
     this.removeListener()
   }

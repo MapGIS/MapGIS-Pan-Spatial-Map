@@ -1090,15 +1090,6 @@ class CesiumUtil {
       txtPos,
       attribute
     )
-    // const labelIcon = this.webGlobe.appendBillboard(
-    //   lon,
-    //   lat,
-    //   height,
-    //   opt.name,
-    //   'http://develop.smaryun.com:8899/static/assets/logo/mapgis_blue.png',
-    //   iconWidth,
-    //   iconHeight
-    // )
     if (opt.id) {
       labelIcon.id = opt.id
     }

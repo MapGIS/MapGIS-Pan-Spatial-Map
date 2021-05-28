@@ -95,10 +95,6 @@ export default class PlaceNamePanel extends Vue {
 
   private maxCount = 0
 
-  // private defaultImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
-
-  // private selectedImg = `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.selectedImg}`
-
   private markersInfos = []
 
   private spinning = false

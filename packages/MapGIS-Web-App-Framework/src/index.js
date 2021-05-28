@@ -72,8 +72,7 @@ import {
   MpWindow,
   MpWindowWrapper,
   MpContentWidgetPanel,
-  MpMapWidgetPanel,
-  MpCesiumMarker
+  MpMapWidgetPanel
 } from './components'
 
 const components = [
@@ -87,8 +86,7 @@ const components = [
   MpWindow,
   MpWindowWrapper,
   MpContentWidgetPanel,
-  MpMapWidgetPanel,
-  MpCesiumMarker
+  MpMapWidgetPanel
 ]
 
 const install = Vue => {
