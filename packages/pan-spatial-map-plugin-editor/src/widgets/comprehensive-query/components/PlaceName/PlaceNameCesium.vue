@@ -25,7 +25,7 @@ export default class PlaceNameCesium extends Mixins(MapMixin) {
   @Prop() geojson!: Record<string, unknown>
 
   setMapCenter(positionCoord) {
-    this.webGlobe.flyTo(positionCoord[0], positionCoord[1], 10000000, 2)
+    this.webGlobe.flyTo(positionCoord[0], positionCoord[1])
   }
 }
 </script>
