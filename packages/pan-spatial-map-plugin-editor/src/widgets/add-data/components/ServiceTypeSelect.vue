@@ -86,11 +86,11 @@
 
     <template v-if="isBaidu || isGaode || isGoogle || isGoogleExt">
       <div class="input-item">
-        <span>图层类型：</span>
+        <span>图层类型:</span>
         <a-input v-model="baiduGaodeGoogleInfo.layerType"></a-input>
       </div>
       <div class="input-item">
-        <span>服务名称：</span>
+        <span>服务名称:</span>
         <a-input v-model="baiduGaodeGoogleInfo.name"></a-input>
       </div>
     </template>

@@ -22,14 +22,13 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin, Document } from '@mapgis/web-app-framework'
+import { WidgetMixin, Document, UUID } from '@mapgis/web-app-framework'
 import {
   AddServicesMixin,
   ServiceType,
   Service,
   queryIgsServicesInfoInstance
 } from '@mapgis/pan-spatial-map-store'
-import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
 import AddServicesData from './components/AddServicesData.vue'
 import AddServiceUrl from './components/AddServiceUrl.vue'
 import AddServiceFile from './components/AddServiceFile.vue'
@@ -55,6 +54,12 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
   // 文件类型下拉项数据
   private tempfileTypes: object[] = []
 
+  // 监听渲染器的变化，获取对应渲染引擎下的数据
+  @Watch('mapRender')
+  onMapRenderChange() {
+    this.initData()
+  }
+
   created() {
     this.initData()
   }
@@ -62,9 +67,10 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
   // 初始化各项数据
   private initData() {
     this.widgetConfig = this.widgetInfo.config
-    this.tempServiceTypes = this.serviceTypes2D
-    this.tempfileTypes = this.fileTypes2D
-    if (!this.is2DMapMode) {
+    if (this.is2DMapMode) {
+      this.tempServiceTypes = this.serviceTypes2D
+      this.tempfileTypes = this.fileTypes2D
+    } else {
       this.tempServiceTypes = this.serviceTypes3D
       this.tempfileTypes = this.fileTypes3D
     }
@@ -78,21 +84,14 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
     const doc: Document = this.document
     const selectCategory = []
     let tempServices: Record<string, any>[] = []
+    // 将服务数据清空
+    this.services = []
+    // 将服务分类下拉项数据清空
     this.serviceCategories = []
     if (this.is2DMapMode) {
-      tempServices = this.widgetInfo.config.services2D.reduce(
-        (result, item) => {
-          if (item.id !== '') {
-            result.push(item)
-          } else {
-            result.push({ ...item, ...{ id: uuid() } })
-          }
-          return result
-        },
-        []
-      )
+      tempServices = this.handleConfigData(this.widgetInfo.config.services2D)
     } else {
-      tempServices = this.widgetInfo.config.services3D
+      tempServices = this.handleConfigData(this.widgetInfo.config.services3D)
     }
     if (!tempServices) {
       return
@@ -109,6 +108,18 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
       const service = tempServices[i]
       this.addService(service)
     }
+  }
+
+  // 对config中的配置数据进行处理
+  handleConfigData(data) {
+    return data.reduce((result, item) => {
+      if (item.id !== '') {
+        result.push(item)
+      } else {
+        result.push({ ...item, ...{ id: UUID.uuid() } })
+      }
+      return result
+    }, [])
   }
 }
 </script>

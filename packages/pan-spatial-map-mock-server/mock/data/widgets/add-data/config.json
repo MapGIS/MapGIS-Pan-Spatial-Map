@@ -76,46 +76,22 @@
   ],
   "services3D": [
     {
-      "nocheck": true,
-      "name": "在线地图",
-      "describe": "在线地图",
-      "isParent": true,
-      "children": [
-        {
-          "name": "baidu",
-          "type": "baidu",
-          "ip": "172.168.58.20",
-          "port": "6160",
-          "serverUrl": "",
-          "describe": "172.168.58.20 6160 baidu",
-          "extent": "",
-          "isImageLayer": "",
-          "ptype": "",
-          "layerType": "sate",
-          "layerType1": "",
-          "localUrl": "",
-          "Type": "",
-          "showName": "baidu",
-          "theme": "在线地图"
-        },
-        {
-          "name": "gaode",
-          "type": "gaode",
-          "ip": "172.168.58.20",
-          "port": "6160",
-          "serverUrl": "",
-          "describe": "172.168.58.20 6160 gaode",
-          "extent": "",
-          "isImageLayer": "true",
-          "ptype": "",
-          "layerType": "sate",
-          "layerType1": "",
-          "localUrl": "",
-          "Type": "",
-          "showName": "gaode",
-          "theme": "在线地图"
-        }
-      ]
+      "id": "",
+      "name": "baidu",
+      "category": "在线地图",
+      "type": "baidu",
+      "layerType": "sate",
+      "url": "sate",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "gaode",
+      "category": "在线地图",
+      "type": "gaode",
+      "layerType": "sate",
+      "url": "sate",
+      "visible": false
     }
   ]
 }
