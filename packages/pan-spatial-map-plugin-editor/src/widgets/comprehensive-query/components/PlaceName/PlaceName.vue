@@ -89,6 +89,8 @@ export default class PlaceName extends Mixins(
 
   private selected: string[] = []
 
+  private selectedCopy: string[] = []
+
   private showResult = false
 
   private keyword = ''
@@ -145,21 +147,42 @@ export default class PlaceName extends Mixins(
   }
 
   getBounds() {
-    const { _ne, _sw } = this.map.getBounds()
-    const { lng: xmax, lat: ymax } = _ne
-    const { lng: xmin, lat: ymin } = _sw
-    const polygon = turf.polygon(
-      [
+    let polygon
+    if (this.is2DMapMode) {
+      const { _ne, _sw } = this.map.getBounds()
+      const { lng: xmax, lat: ymax } = _ne
+      const { lng: xmin, lat: ymin } = _sw
+      polygon = turf.polygon(
         [
-          [xmin, ymax],
-          [xmax, ymax],
-          [xmax, ymin],
-          [xmin, ymin],
-          [xmin, ymax]
-        ]
-      ],
-      { name: 'bounds' }
-    )
+          [
+            [xmin, ymax],
+            [xmax, ymax],
+            [xmax, ymin],
+            [xmin, ymin],
+            [xmin, ymax]
+          ]
+        ],
+        { name: 'bounds' }
+      )
+    } else {
+      const Rectangle = this.webGlobe.viewer.camera.computeViewRectangle()
+      const xmin = (Rectangle.west / Math.PI) * 180
+      const ymax = (Rectangle.north / Math.PI) * 180
+      const xmax = (Rectangle.east / Math.PI) * 180
+      const ymin = (Rectangle.south / Math.PI) * 180
+      polygon = turf.polygon(
+        [
+          [
+            [xmin, ymax],
+            [xmax, ymax],
+            [xmax, ymin],
+            [xmin, ymin],
+            [xmin, ymax]
+          ]
+        ],
+        { name: 'bounds' }
+      )
+    }
     const result = Parser.changeToTangram(polygon)
     if (Array.isArray(result)) return result[0]
     return result
@@ -190,9 +213,24 @@ export default class PlaceName extends Mixins(
       this.geometryData = this.getBounds()
     }
     if (this.showResultSet) {
+      const arr = []
+      // 删除属性表中不包含在此次选择项的tab
+      this.selectedCopy.forEach(item => {
+        let bool = false
+        this.selected.forEach(row => {
+          if (row === item) {
+            bool = true
+          }
+        })
+        arr.push(item)
+      })
+      arr.forEach(item => {
+        this.openReseultSet(item, true)
+      })
       this.selected.forEach(item => {
         this.openReseultSet(item)
       })
+      this.selectedCopy = JSON.parse(JSON.stringify(this.selected))
     } else {
       this.showResult = false
       this.$nextTick(() => {
@@ -202,7 +240,17 @@ export default class PlaceName extends Mixins(
     }
   }
 
-  openReseultSet(item) {
+  removeResult() {
+    // 点击关闭面板的时候，删除属性表里面所有的tab
+    if (this.showResultSet === true) {
+      this.selectedCopy.forEach(item => {
+        this.openReseultSet(item, true)
+      })
+      this.closeExhibitionPanel()
+    }
+  }
+
+  openReseultSet(item, isDelete) {
     const { queryWay, ip, port, docName, allSearchName } = this.config
     const {
       gdbp,
@@ -249,8 +297,12 @@ export default class PlaceName extends Mixins(
         }
       }
     }
-    this.addExhibition(new AttributeTableExhibition(exhibition))
-    this.openExhibitionPanel()
+    if (!isDelete) {
+      this.addExhibition(new AttributeTableExhibition(exhibition))
+      this.openExhibitionPanel()
+    } else {
+      this.removeExhibition(exhibition.id)
+    }
   }
 
   private selectedItem(name) {

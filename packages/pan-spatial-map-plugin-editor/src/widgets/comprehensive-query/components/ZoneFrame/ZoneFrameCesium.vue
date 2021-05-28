@@ -59,7 +59,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
     if (this.feature && Object.keys(this.feature).length > 0) {
       // 行政区划几何类型一般是Polygon
 
-      const { features } = this.feature
+      const { features, geometry } = this.feature
       this.entityNames = []
       this.entityTextNames = []
 
@@ -72,9 +72,17 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
       )
 
       // const coords = this.feature.geometry.coordinates[0]
-
-      for (let i = 0; i < features.length; i += 1) {
-        const coords = features[i].geometry.coordinates[0]
+      let arr
+      if (this.center && this.center.length === 2) {
+        arr = features
+      } else {
+        arr = geometry.coordinates
+      }
+      for (let i = 0; i < arr.length; i += 1) {
+        const coords =
+          this.center && this.center.length === 2
+            ? arr[i].geometry.coordinates[0]
+            : arr[i]
         const name = `zone-frame-${i}`
         this.entityNames.push(name)
         this.cesiumUtil.appendPolygon(
