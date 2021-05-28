@@ -50,10 +50,10 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     flex-shrink: 0;
     list-style: none;
     display: flex;
-    height: 32px;
+    height: 28px;
     margin: 0;
     padding: 0;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     li {
       height: 100%;
       padding: 0 5px;

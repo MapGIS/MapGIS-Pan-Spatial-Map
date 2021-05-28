@@ -110,11 +110,7 @@
               </a-list-item>
             </a-list>
             <a-button @click.stop size="small" type="link">
-              <a-icon
-                type="ellipsis"
-                :style="{ fontSize: '22px', color: 'gray' }"
-              >
-              </a-icon>
+              <a-icon type="ellipsis" class="more"> </a-icon>
             </a-button>
           </a-popover>
         </div>
@@ -887,7 +883,6 @@ export default class TreeLayer extends Mixins(
   flex-direction: column;
   overflow: hidden;
   .tree-container {
-    margin-top: 10px;
     flex: 1 1 0%;
     overflow: auto;
     .tree-item-handle {
@@ -897,6 +892,10 @@ export default class TreeLayer extends Mixins(
       align-items: center;
       .filter-words {
         color: @primary-color;
+      }
+      .more {
+        font-size: 18px;
+        color: @text-color;
       }
       i {
         margin-right: 6px;

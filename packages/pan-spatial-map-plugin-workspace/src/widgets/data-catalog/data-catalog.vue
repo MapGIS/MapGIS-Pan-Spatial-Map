@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-data-catalog">
-    <div class="toolbal">
+    <div class="toolbar">
       <a-input-search
         v-model="searchValue"
         placeholder="搜索数据"
@@ -9,10 +9,7 @@
         @search="onSearch"
       ></a-input-search>
       <a-dropdown :trigger="['click']" class="action-more">
-        <a-icon
-          type="more"
-          :style="{ fontSize: '22px', paddingLeft: '5px' }"
-        ></a-icon>
+        <a-icon type="more"></a-icon>
         <a-menu slot="overlay">
           <a-menu-item key="0" @click="refreshTree">刷新</a-menu-item>
           <a-menu-item key="1" @click="bookMarksCheck">收藏</a-menu-item>
@@ -187,7 +184,6 @@ import {
   DataCatalogManager,
   eventBus,
   queryOGCInfoInstance,
-  getWidgetConfig,
   api
 } from '@mapgis/pan-spatial-map-store'
 
@@ -492,9 +488,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 刷新按钮
   async refreshTree() {
-    getWidgetConfig('data-catalog')
-    this.dataCatalogManager.init(this.widgetInfo.config)
+    const config = await api.getWidgetConfig('data-catalog')
+    this.dataCatalogManager.init(config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
+    this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
   }
 
   // 收藏按钮
@@ -644,10 +641,18 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   height: 100%;
   display: flex;
   flex-direction: column;
-  .toolbal {
+  .toolbar {
     display: flex;
     justify-content: center;
     align-content: center;
+    .action-more {
+      font-size: 17px;
+      color: @text-color;
+      padding-left: 12px;
+      &:hover {
+        color: @primary-color;
+      }
+    }
   }
   .tree-container {
     flex-grow: 1;
@@ -712,7 +717,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 }
 
 .unfilter-words {
-  color: #000000a6 !important;
+  color: @text-color !important;
 }
 .filter-words {
   color: @primary-color !important;

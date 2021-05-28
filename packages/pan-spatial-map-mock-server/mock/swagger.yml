@@ -57,6 +57,18 @@ paths:
           description: config name.
       responses:
   /api/app/widget-config:
+    get:
+      tags:
+        - app
+      summary: Get widget config
+      description: Get widget config.
+      operationId: getWidgetConfig
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: config name.
+      responses:
     put:
       tags:
         - app

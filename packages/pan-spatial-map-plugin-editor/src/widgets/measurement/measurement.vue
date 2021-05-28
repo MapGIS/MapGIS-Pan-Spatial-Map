@@ -42,8 +42,11 @@
         </a-tooltip>
       </div>
     </div>
-    <div class="measure-result">
-      <div v-show="showLengthSelect && isMeasureFinished">
+    <div>
+      <div
+        v-show="showLengthSelect && isMeasureFinished"
+        class="measure-result"
+      >
         <div class="result-item">
           <span class="name">投影平面长度: </span>
           <span class="value">{{ results.planeLength }}</span>
@@ -53,7 +56,7 @@
           <span class="value">{{ results.ellipsoidLength }}</span>
         </div>
       </div>
-      <div v-show="showAreaSelect && isMeasureFinished">
+      <div v-show="showAreaSelect && isMeasureFinished" class="measure-result">
         <div class="result-item">
           <span class="name">投影平面周长: </span>
           <span class="value">{{ results.planePerimeter }}</span>
