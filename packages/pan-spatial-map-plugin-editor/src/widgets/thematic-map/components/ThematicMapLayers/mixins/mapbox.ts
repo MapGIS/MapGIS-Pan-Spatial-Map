@@ -11,11 +11,11 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
 
   thematicMapLayer: any = null
 
-  showedPopup = false
+  showPopup = false
 
-  properties: any = {}
+  properties: Record<string, string> = {}
 
-  coordinates: number[] = [118.01427796777404, 36.29607217078218]
+  coordinates: number[] = [0, 0]
 
   // 获取某个专题某个年度的subData
   get subDataConfig() {
@@ -56,11 +56,10 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 展示信息窗口
+   * 开启信息窗口
    */
-  showInfoWin(e: any) {
-    this.closeInfoWin()
-    this.showedPopup = true
+  showInfoWin(e) {
+    this.showPopup = true
     this.showMapboxInfoWin(e)
   }
 
@@ -68,8 +67,6 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
    * 关闭信息窗口
    */
   closeInfoWin() {
-    this.showedPopup = false
-    this.properties = {}
-    this.coordinates = [0, 0]
+    this.showPopup = false
   }
 }

@@ -168,6 +168,7 @@ export default class ThematicMapTimeLine extends Vue {
   }
 
   beforeDestroyed() {
+    this.tlVisible = false
     if (this.chart) {
       this.chart.off('timelinechanged')
     }

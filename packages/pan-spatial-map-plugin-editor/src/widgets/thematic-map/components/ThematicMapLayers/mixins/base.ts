@@ -49,6 +49,6 @@ export default class BaseMinxin extends Vue {
   }
 
   beforeDestroy() {
-    // this.removeLayer()
+    this.removeLayer()
   }
 }

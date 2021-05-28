@@ -1,17 +1,31 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="showedPopup">
-    <div v-for="(v, k) in properties" :key="`statistic-label-properties-${k}`">
-      {{ k }} : {{ v }}
-    </div>
+  <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
+    <span v-if="!Object.keys(properties).length">暂无数据</span>
+    <template v-else>
+      <row-flex
+        v-for="(v, k) in properties"
+        :key="`statistic-label-properties-${v}`"
+        :label="k"
+        :span="[10, 14]"
+        class="popup-row"
+        >{{ v }}</row-flex
+      >
+    </template>
   </mapgis-popup>
 </template>
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
 import { RankSymbolThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
+import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import RowFlex from '../../../RowFlex'
 import MapboxMinxin from '../../mixins/mapbox'
 
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
   symbolSetting = {
     maxR: 25,
@@ -60,7 +74,10 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
     }
     this.thematicMapLayer.id = this.id
     this.thematicMapLayer.themeField = this.field
-    this.thematicMapLayer.on('mousemove', this.showInfoWin)
+    this.thematicMapLayer.on(
+      'mousemove',
+      utilInstance.debounce(this.showInfoWin, 200)
+    )
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
@@ -89,3 +106,8 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
   }
 }
 </script>
+<style lang="less" scoped>
+.popup-row {
+  min-width: 100px;
+}
+</style>

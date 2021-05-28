@@ -85,8 +85,6 @@ import RowFlex from '../RowFlex'
   }
 })
 export default class ThematicMapAttributeTable extends Vue {
-  atVisible = false
-
   // 专题
   subject = ''
 
@@ -255,6 +253,10 @@ export default class ThematicMapAttributeTable extends Vue {
 
   created() {
     this.onSubjectChange(this.subjectList[0].id)
+  }
+
+  beforeDestroyed() {
+    this.atVisible = false
   }
 }
 </script>

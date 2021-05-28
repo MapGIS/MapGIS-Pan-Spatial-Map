@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import _cloneDeep from 'lodash/cloneDeep'
 import { queryFeaturesInstance, FeatureIGS } from '../../service'
 import {
@@ -159,8 +160,7 @@ const mutations = {
     } else {
       state.moduleTypes = []
     }
-    console.log('state.moduleTypes', state.moduleTypes)
   }
 }
 
-export default mutations
+export default Vue.observable(mutations)

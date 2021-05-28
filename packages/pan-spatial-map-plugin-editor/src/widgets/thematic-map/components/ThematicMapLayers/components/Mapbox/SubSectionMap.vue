@@ -1,14 +1,17 @@
 <template>
   <!-- 分段专题图图层 -->
-  <mapgis-popup
-    anchor="top"
-    :coordinates="coordinates"
-    :offset="[0, 0]"
-    :showed="showedPopup"
-  >
-    <div v-for="(v, k) in properties" :key="`sub-section-map-properties-${k}`">
-      {{ k }} : {{ v }}
-    </div>
+  <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
+    <span v-if="!Object.keys(properties).length">暂无数据</span>
+    <template v-else>
+      <row-flex
+        v-for="(v, k) in properties"
+        :key="`sub-section-map-properties-${v}`"
+        :label="k"
+        :span="[10, 14]"
+        class="popup-row"
+        >{{ v }}</row-flex
+      >
+    </template>
   </mapgis-popup>
 </template>
 <script lang="ts">
@@ -21,6 +24,7 @@ import {
   ThemeStyle
 } from '@mapgis/webclient-es6-mapboxgl'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import RowFlex from '../../../RowFlex'
 import MapboxMinxin from '../../mixins/mapbox'
 
 interface IColor {
@@ -38,7 +42,11 @@ interface ISectionColor {
   sectionColor: string
 }
 
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   // 样式
   get colors() {
@@ -110,7 +118,10 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
       fillColor: '#00EEEE'
     })
     this.thematicMapLayer = _thematicMapLayer
-    this.thematicMapLayer.on('mousemove', this.showInfoWin)
+    this.thematicMapLayer.on(
+      'mousemove',
+      utilInstance.debounce(this.showInfoWin, 200)
+    )
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
@@ -139,3 +150,8 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   }
 }
 </script>
+<style lang="less" scoped>
+.popup-row {
+  min-width: 100px;
+}
+</style>

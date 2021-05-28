@@ -132,14 +132,10 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     const selected = selectedList.length
       ? selectedList[selectedList.length - 1].id
       : ''
-    if (!selected) {
-      this.resetVisible()
-    } else {
-      this.setSelected(selected)
-      this.setSelectedList(selectedList)
-      moduleTypes.forEach(v => this.setVisible(v))
-    }
+    this.setSelected(selected)
+    this.setSelectedList(selectedList)
     this.selected = selected
+    moduleTypes.forEach(v => this.setVisible(v))
   }
 
   /**

@@ -1,16 +1,30 @@
 <template>
   <!-- 聚合标注专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="showedPopup">
-    <div v-for="(v, k) in properties" :key="`label-properties-${k}`">
-      {{ k }} : {{ v }}
-    </div>
+  <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
+    <span v-if="!Object.keys(properties).length">暂无数据</span>
+    <template v-else>
+      <row-flex
+        v-for="(v, k) in properties"
+        :key="`label-properties-${v}`"
+        :label="k"
+        :span="[10, 14]"
+        class="popup-row"
+        >{{ v }}</row-flex
+      >
+    </template>
   </mapgis-popup>
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop } from 'vue-property-decorator'
+import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import RowFlex from '../../../RowFlex'
 import MapboxMinxin from '../../mixins/mapbox'
 
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class MapboxLabel extends Mixins(MapboxMinxin) {
   // 聚合层基础配置
   get cluster() {
@@ -97,7 +111,11 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
     this.map.on('mouseleave', `clusters${this.id}`, () => {
       canvas.style.cursor = ''
     })
-    this.map.on('mousemove', unclusterEl, this.showInfoWin)
+    this.map.on(
+      'mousemove',
+      unclusterEl,
+      utilInstance.debounce(this.showInfoWin, 200)
+    )
     this.map.on('mouseout', unclusterEl, this.closeInfoWin)
   }
 
@@ -135,3 +153,8 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
   }
 }
 </script>
+<style lang="less" scoped>
+.popup-row {
+  min-width: 100px;
+}
+</style>

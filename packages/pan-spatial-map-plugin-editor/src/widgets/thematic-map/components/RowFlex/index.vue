@@ -1,9 +1,9 @@
 <template>
   <a-row type="flex" :align="align" :justify="justify">
-    <a-col :span="labelSpan" :style="labelStyle">
+    <a-col :span="labelSpan" :style="labelStyle" class="row-flex-label">
       <slot name="label" v-show="label || $slots.label"> {{ label }}： </slot>
     </a-col>
-    <a-col :span="contentSpan" :style="contentStyle">
+    <a-col :span="contentSpan" :style="contentStyle" :class="{ ellipsis }">
       <slot></slot>
     </a-col>
   </a-row>
@@ -15,6 +15,8 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 @Component
 export default class extends Vue {
   @Prop() label!: string
+
+  @Prop({ default: false }) ellipsis!: boolean
 
   @Prop({ default: 'left' }) labelAlign!: 'left' | 'center' | 'right'
 
@@ -52,4 +54,6 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+@import './index.less';
+</style>

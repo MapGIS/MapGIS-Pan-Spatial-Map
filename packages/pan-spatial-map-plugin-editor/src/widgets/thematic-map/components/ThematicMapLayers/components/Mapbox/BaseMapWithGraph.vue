@@ -1,20 +1,31 @@
 <template>
   <!-- 统计专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="showedPopup">
-    <div
-      v-for="(v, k) in properties"
-      :key="`base-map-with-graph-properties-${k}`"
-    >
-      {{ k }} : {{ v }}
-    </div>
+  <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
+    <span v-if="!Object.keys(properties).length">暂无数据</span>
+    <template v-else>
+      <row-flex
+        v-for="(v, k) in properties"
+        :key="`base-map-with-graph-properties-${v}`"
+        :label="k"
+        :span="[10, 14]"
+        class="popup-row"
+        >{{ v }}</row-flex
+      >
+    </template>
   </mapgis-popup>
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
+import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import RowFlex from '../../../RowFlex'
 import MapboxMinxin from '../../mixins/mapbox'
 
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
   colors: string[] = ['#FFB980', '#5AB1EF', '#B6A2DE', '#2EC7C9', '#D87A80']
 
@@ -252,7 +263,10 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
     })
     _thematicMapLayer.id = this.id
     this.thematicMapLayer = _thematicMapLayer
-    this.thematicMapLayer.on('mousemove', this.showInfoWin)
+    this.thematicMapLayer.on(
+      'mousemove',
+      utilInstance.debounce(this.showInfoWin, 200)
+    )
     this.thematicMapLayer.on('mouseout', this.closeInfoWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
@@ -275,3 +289,8 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
   }
 }
 </script>
+<style lang="less" scoped>
+.popup-row {
+  min-width: 100px;
+}
+</style>
