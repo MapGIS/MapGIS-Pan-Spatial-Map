@@ -122,10 +122,10 @@ export default class Mp3dMarkerPro extends Vue {
     this.updateMarker()
   }
 
-  @Watch('currentMarkerId', { deep: true })
+  @Watch('currentMarkerId', { deep: true, immediate: true })
   hidePopup() {
     // 当前显示弹出框的标注与组件内的id不一致时，隐藏弹出框
-    if (this.currentMarkerId !== this.marker.id) {
+    if (this.currentMarkerId !== this.marker.markerId) {
       this.showPopup = false
     }
   }
@@ -138,12 +138,12 @@ export default class Mp3dMarkerPro extends Vue {
   }
 
   beforeDestroy() {
-    cesiumUtilInstance.removeEntityByName(this.marker.id)
+    cesiumUtilInstance.removeEntityByName(this.marker.markerId)
   }
 
   updateMarker() {
     cesiumUtilInstance.setCesiumGlobe(this.Cesium, this.webGlobe)
-    cesiumUtilInstance.removeEntityByName(this.marker.id)
+    cesiumUtilInstance.removeEntityByName(this.marker.markerId)
     const marker: any = { ...this.marker }
     marker.mouseOver = event => {
       this.mouseOver(event, marker)
@@ -151,19 +151,19 @@ export default class Mp3dMarkerPro extends Vue {
     marker.mouseOut = event => {
       this.mouseOut(event, marker)
     }
-    marker.name = marker.id
+    marker.name = marker.markerId
     marker.center = marker.coordinates
     cesiumUtilInstance.addMarkerByFeature(marker)
   }
 
   mouseOver(event, marker) {
     this.showPopup = true
-    this.emitId(marker.id)
-    this.$emit('mouseenter', event, marker.id)
+    this.emitId(marker.markerId)
+    this.$emit('mouseenter', event, marker.markerId)
   }
 
   mouseOut(event, marker) {
-    this.$emit('mouseleave', event, marker.id)
+    this.$emit('mouseleave', event, marker.markerId)
   }
 }
 </script>
