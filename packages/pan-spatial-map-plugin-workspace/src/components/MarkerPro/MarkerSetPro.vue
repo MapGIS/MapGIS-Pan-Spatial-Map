@@ -2,7 +2,7 @@
   <div>
     <mp-marker-pro
       v-for="marker in markers"
-      :key="marker.id"
+      :key="marker.markerId"
       :marker="marker"
       :field-configs="fieldConfigs"
       @mouseenter="mouseEnterEvent"

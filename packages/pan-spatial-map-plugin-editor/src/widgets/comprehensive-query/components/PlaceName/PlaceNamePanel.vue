@@ -5,7 +5,7 @@
         <ul class="comprehensive-place-name-panel">
           <li
             v-for="(item, i) in markersInfos"
-            :key="item.id"
+            :key="item.markerId"
             @mouseover="mouseOver(i)"
             @mouseleave="mouseLeave(i)"
             @click="setActivePoint(i)"
@@ -222,7 +222,7 @@ export default class PlaceNamePanel extends Vue {
           const coords = {
             coordinates: utilInstance.getGeoJsonFeatureCenter(feature),
             properties,
-            id: `place-name-${j}`,
+            markerId: `place-name-${j}`,
             img: defaultImg
           }
           markerCoords.push(coords)
