@@ -1,8 +1,12 @@
 <template>
   <div class="mp-widget-measurement">
-    <div class="measure-toolbar">
+    <div
+      :class="!is2DMapMode ? 'cesium-measure-toolbar' : ''"
+      class="measure-toolbar"
+    >
       <div class="actions">
         <a-tooltip
+          v-show="is2DMapMode"
           v-for="item in planeMeasureModes"
           :key="item.title"
           placement="bottom"
@@ -14,8 +18,22 @@
             :type="item.icon"
           />
         </a-tooltip>
+        <!-- 三维模式下的key值为每项的mode，避免和二维模式的key值重复 -->
+        <a-tooltip
+          v-show="!is2DMapMode"
+          v-for="item in cesiumMeasureModes"
+          :key="item.mode"
+          placement="bottom"
+          :title="item.title"
+        >
+          <a-icon
+            class="action"
+            @click="onOpenMeasure(item.mode)"
+            :type="item.icon"
+          />
+        </a-tooltip>
       </div>
-      <div class="unit">
+      <div v-show="is2DMapMode" class="unit">
         <a-select v-show="showLengthSelect" v-model="activeDistanceSelect">
           <a-select-option v-for="item in getSelectOptions" :key="item">{{
             item
@@ -32,7 +50,7 @@
           <a-icon class="action" @click="onClearMeasure" type="delete">
           </a-icon>
         </a-tooltip>
-        <a-tooltip placement="bottom" title="设置">
+        <a-tooltip v-show="is2DMapMode" placement="bottom" title="设置">
           <a-icon
             :class="{ action: true, active: showSettingPanel }"
             @click="showSettingPanel = !showSettingPanel"
@@ -42,7 +60,7 @@
         </a-tooltip>
       </div>
     </div>
-    <div class="measure-result">
+    <div v-show="is2DMapMode" class="measure-result">
       <div v-show="showLengthSelect && isMeasureFinished">
         <div class="result-item">
           <span class="name">投影平面长度: </span>
@@ -72,7 +90,7 @@
         </div>
       </div>
     </div>
-    <div v-show="showSettingPanel" class="setting-panel">
+    <div v-show="showSettingPanel && is2DMapMode" class="setting-panel">
       <a-divider></a-divider>
       <a-space direction="vertical" style="width: 100%;">
         <a-row>
@@ -179,6 +197,11 @@
       @finished="onMeasureFinished"
       @start="onMeasureStart"
     />
+    <CesiumMeasure
+      ref="cesiumMeasure"
+      v-show="!is2DMapMode"
+      :measureStyle="measureStyle"
+    ></CesiumMeasure>
   </div>
 </template>
 
@@ -187,10 +210,11 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { Sketch } from 'vue-color'
 import MapboxMeasure from './components/MapboxMeasure.vue'
+import CesiumMeasure from './components/CesiumMeasure.vue'
 
 @Component({
   name: 'MpMeasurement',
-  components: { 'sketch-picker': Sketch, MapboxMeasure }
+  components: { 'sketch-picker': Sketch, MapboxMeasure, CesiumMeasure }
 })
 export default class MpMeasurement extends Mixins(WidgetMixin) {
   private planeMeasureModes = [
@@ -203,6 +227,25 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
       mode: 'measure-area',
       title: '面积',
       icon: 'area-chart'
+    }
+  ]
+
+  // 三维模式下的量算模型组
+  private cesiumMeasureModes = [
+    {
+      mode: 'measure-length',
+      title: '长度',
+      icon: 'line-chart'
+    },
+    {
+      mode: 'measure-area',
+      title: '面积',
+      icon: 'area-chart'
+    },
+    {
+      mode: 'measure-triangulation',
+      title: '三角',
+      icon: 'heat-map'
     }
   ]
 
@@ -286,7 +329,9 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   }
 
   get measureComponent() {
-    return this.is2DMapMode ? this.$refs.mapboxMeasure : null
+    return this.is2DMapMode
+      ? this.$refs.mapboxMeasure
+      : this.$refs.cesiumMeasure
   }
 
   // 二三维地图模式切换时
@@ -294,6 +339,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   mapRenderChange() {
     if (this.is2DMapMode) {
       // 三维测量清除
+      this.$refs.cesiumMeasure.clearMeasure()
     } else {
       this.$refs.mapboxMeasure.clearMeasure()
     }
@@ -391,6 +437,12 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
       flex: 1;
       margin: 0 16px;
     }
+  }
+  .cesium-measure-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 32px;
   }
   .measure-result {
     font-size: 13px;
