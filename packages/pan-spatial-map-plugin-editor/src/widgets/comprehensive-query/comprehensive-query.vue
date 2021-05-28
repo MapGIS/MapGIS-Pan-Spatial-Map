@@ -145,6 +145,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   onClose() {
     this.locationPanelExpand = false
     this.searchPanelExpand = false
+    this.$refs.placeName.removeResult()
     this.$refs.placeName.reset()
     this.$refs.zone && this.$refs.zone.clear()
     this.$refs.coordinate && this.$refs.coordinate.clear()
