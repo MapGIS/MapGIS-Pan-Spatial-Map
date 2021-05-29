@@ -246,7 +246,6 @@ export default class PlaceName extends Mixins(
       this.selectedCopy.forEach(item => {
         this.openReseultSet(item, true)
       })
-      this.closeExhibitionPanel()
     }
   }
 

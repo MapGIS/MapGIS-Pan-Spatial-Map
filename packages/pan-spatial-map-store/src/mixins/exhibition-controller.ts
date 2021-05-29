@@ -15,6 +15,10 @@ export default class ExhibitionControllerMixin extends Vue {
 
   removeExhibition(exhibitionId: string) {
     this.exhibitionList.removeExhibition(exhibitionId)
+    // 当所有的展示都被移除时，自动关闭展示面板
+    if (this.exhibitions.length == 0) {
+      this.closeExhibitionPanel()
+    }
   }
 
   get activeExhibitionId() {
