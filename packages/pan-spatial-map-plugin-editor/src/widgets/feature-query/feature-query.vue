@@ -142,7 +142,7 @@ export default class MpFeatureQuery extends Mixins(
   @Watch('mapRender')
   mapRenderChange() {
     if (this.is2DMapMode) {
-      this.clearCesiumDraw()
+      this.clearCesiumDraw3D()
     } else {
       this.clearMapboxDraw()
     }
@@ -183,20 +183,20 @@ export default class MpFeatureQuery extends Mixins(
     if (this.is2DMapMode) {
       this.clearMapboxDraw()
     } else {
-      this.clearCesiumDraw()
+      this.clearCesiumDraw3D()
     }
   }
 
   handleCesium() {
     switch (this.queryType) {
       case 'Point':
-        this.togglePoint()
+        this.togglePoint3D()
         break
       case 'LineString':
-        this.togglePolyline()
+        this.togglePolyline3D()
         break
       case 'Polygon':
-        this.togglePolygon()
+        this.togglePolygon3D()
         break
       case 'Rectangle':
         // this.interactionDrawRectangle()
