@@ -18,14 +18,12 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
 
   handleDrawLoad(drawer) {
     this.drawer3d = drawer
-    console.log('drawer', drawer)
   }
 
   handleCreate(cartesian3, lnglat) {
-    console.log('create', cartesian3, lnglat)
     window.setTimeout(() => {
       this.setBound(cartesian3)
-      this.clearCesiumDraw()
+      this.clearCesiumDraw3D()
     }, 300)
   }
 
@@ -33,7 +31,6 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     const cartographic = this.Cesium.Cartographic.fromCartesian(cartesian)
     const lng = this.Cesium.Math.toDegrees(cartographic.longitude)
     const lat = this.Cesium.Math.toDegrees(cartographic.latitude)
-    console.log('1111', [lng, lat])
     return [lng, lat]
   }
 
@@ -82,25 +79,25 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     this.queryLayer(bound)
   }
 
-  togglePoint() {
-    this.clearCesiumDraw()
+  togglePoint3D() {
+    this.clearCesiumDraw3D()
     this.type3d = 0
     this.drawer3d?.enableDrawPoint()
   }
 
-  togglePolyline() {
-    this.clearCesiumDraw()
+  togglePolyline3D() {
+    this.clearCesiumDraw3D()
     this.type3d = 1
     this.drawer3d?.enableDrawLine()
   }
 
-  togglePolygon() {
-    this.clearCesiumDraw()
+  togglePolygon3D() {
+    this.clearCesiumDraw3D()
     this.type3d = 2
     this.drawer3d?.enableDrawPolygon()
   }
 
-  clearCesiumDraw() {
+  clearCesiumDraw3D() {
     this.type3d = -1
     this.queryType = ''
     this.drawer3d?.removeEntities()

@@ -3,6 +3,8 @@
     :layerStyle="layerStyle"
     :url="url_tdt"
     :srs="crs"
+    tileMatrixSetID=""
+    layer=""
   />
 </template>
 
@@ -74,6 +76,7 @@ export default {
   data() {
     return {
       url_tdt: '',
+      tilematrixSet: 'c',
       layerLabelMap: {
         vec: 'cva',
         ter: 'cta',
