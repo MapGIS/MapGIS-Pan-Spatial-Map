@@ -66,7 +66,10 @@
         :layerStyle="layerProps.layerStyle"
         :srs="layerProps.srs"
       />
-
+      <mapgis-3d-vectortile-layer
+        v-if="isVectorTileLayer(layerProps.type)"
+        :vectortilejson="layerProps.mvtStyle"
+      />
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type)"
         :id="layerProps.layerId"
@@ -359,7 +362,9 @@ export default {
         case LayerType.vectorTile:
           layerComponentProps = {
             type: layer.type,
-            mvtStyle: layer.currentStyle
+            mvtStyle: layer.currentStyle,
+            styleUrl:
+              'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/OSM全中国经纬度.json'
           }
           break
         default:
