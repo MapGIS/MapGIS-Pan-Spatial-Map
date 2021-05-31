@@ -148,7 +148,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       this.layers = this.currentLayer.currentStyle.layers
       // 为每个子图层新增一个checked属性，用来表示是否勾选了该子图层样式所对应的多选框
       this.layers.forEach(item => {
-        this.$set(item, 'checked', false)
+        this.$set(item, 'checked', true)
       })
     }
   }
@@ -197,6 +197,8 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
         },
         []
       )
+      // 矢量瓦片下拉项默认值为第0项数据
+      this.formData.vectorTileName = this.vectorTileOptions[0]
     } else {
       // 如果没有勾选任何矢量图层，则置空所有下拉项数据以及子图层
       this.vectorTileOptions = []
@@ -227,10 +229,20 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     event.stopPropagation()
   }
 
-  // 多选框点击事件(取消冒泡)
+  // 多选框点击事件(取消冒泡,同时多选框的勾选也控制该子图层的可见性(若该子图层有layout属性的话))
   private handleClick(event, item) {
     // If you don't want click extra trigger collapse, you can prevent this:
     item.checked = !item.checked
+
+    if (item.checked) {
+      if (item.layout) {
+        item.layout.visibility = 'visible'
+      }
+    } else {
+      if (item.layout) {
+        item.layout.visibility = 'none'
+      }
+    }
     event.stopPropagation()
   }
 }
