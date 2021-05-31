@@ -97,7 +97,6 @@ import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
 import Axios from 'axios'
 import {
   FeatureGeoJSON,
-  request,
   api,
   FeatureQueryParam,
   queryFeaturesInstance,
@@ -118,6 +117,9 @@ import ZoneFrameCesium from './ZoneFrameCesium.vue'
 export default class Zone extends Mixins(AppMixin, MapMixin) {
   @Prop()
   readonly active!: boolean
+
+  @Prop()
+  readonly district!: object
 
   @Emit()
   change(val: FeatureGeoJSON | null) {}
@@ -323,22 +325,19 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
     }
   }
 
-  private async init() {
-    const districtJson = await api.getConfig('district')
-    if (districtJson && districtJson.length > 0) {
-      const { defaults, gdbpInfos } = districtJson[0]
-      this.defaults = defaults
-      this.gdbpInfos = gdbpInfos
-      this.zoneBreadcrumbItems = [
-        {
-          name: this.defaults.text,
-          level: this.defaults.level,
-          code: this.defaults.code,
-          feature: {},
-          fitBound: {}
-        }
-      ]
-    }
+  private init() {
+    const { defaults, gdbpInfos } = this.district
+    this.defaults = defaults
+    this.gdbpInfos = gdbpInfos
+    this.zoneBreadcrumbItems = [
+      {
+        name: this.defaults.text,
+        level: this.defaults.level,
+        code: this.defaults.code,
+        feature: {},
+        fitBound: {}
+      }
+    ]
   }
 
   private filterCode(level, code) {
