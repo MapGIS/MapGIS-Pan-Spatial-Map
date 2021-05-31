@@ -261,6 +261,14 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     }
   }
 
+  created() {
+    this.$message.config({
+      top: '100px',
+      duration: 2,
+      maxCount: 1
+    })
+  }
+
   async mounted() {
     this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
     this.dataCatalogManager.init(this.widgetInfo.config)
@@ -614,7 +622,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   }
 
   // 上传文件之前的钩子
-  private beforeUpload(file) {}
+  private beforeUpload(file) {
+    const isLt2M = file.size / 1024 / 1024 < 2
+    if (!isLt2M) {
+      this.$message.error('上传图片大小需小于2M')
+    }
+    return isLt2M
+  }
 
   // 上传文件状态改变时的回调
   private async onChangeFile(info) {
