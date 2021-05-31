@@ -362,9 +362,7 @@ export default {
         case LayerType.vectorTile:
           layerComponentProps = {
             type: layer.type,
-            mvtStyle: layer.currentStyle,
-            styleUrl:
-              'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/OSM全中国经纬度.json'
+            mvtStyle: layer.currentStyle
           }
           break
         default:
