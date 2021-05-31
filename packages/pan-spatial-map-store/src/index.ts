@@ -46,7 +46,7 @@ export {
 
 export {
   queryOGCInfoInstance,
-  queryIGSMetaDataInstance,
+  queryIGSMetadataInstance,
   MetadataQueryParam,
   Metadata,
   LayerTable,

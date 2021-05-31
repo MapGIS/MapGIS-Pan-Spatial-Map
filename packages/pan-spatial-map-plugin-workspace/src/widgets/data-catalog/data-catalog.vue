@@ -157,8 +157,9 @@
     <mp-window-wrapper :visible="showMetaData">
       <mp-window
         title="元数据信息"
-        :width="550"
-        :height="400"
+        :is-full-screen="true"
+        :shrinkAction="false"
+        :fullScreenAction="false"
         :icon="widgetInfo.icon"
         :visible.sync="showMetaData"
       >
