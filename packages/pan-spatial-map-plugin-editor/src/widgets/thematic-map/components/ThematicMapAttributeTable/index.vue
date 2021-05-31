@@ -63,8 +63,8 @@ import RowFlex from '../RowFlex'
       'loading',
       'isVisible',
       'selected',
-      'selectedList',
       'selectedTime',
+      'selectedList',
       'pageDataSet',
       'configSubData',
       'configTimeList'
@@ -73,10 +73,10 @@ import RowFlex from '../RowFlex'
   methods: {
     ...mapMutations([
       'resetVisible',
-      'setFeaturesQuery',
       'setPage',
       'setSelected',
-      'setSelectedTime'
+      'setSelectedTime',
+      'setFeaturesQuery'
     ])
   },
   components: {
@@ -151,9 +151,9 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   getTableColumns() {
     const { showFields, showFieldsTitle } = this.configSubData.table
-    this.tableColumns = showFields.map((item: string, i: number) => {
+    this.tableColumns = showFields.map((v: string, i: number) => {
       const title =
-        showFieldsTitle && showFieldsTitle[item] ? showFieldsTitle[item] : item
+        showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
       return {
         title,
         dataIndex: title,

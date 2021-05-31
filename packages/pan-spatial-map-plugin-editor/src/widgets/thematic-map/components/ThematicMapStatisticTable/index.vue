@@ -87,7 +87,7 @@ interface IChartOption {
     ])
   },
   methods: {
-    ...mapMutations(['resetVisible', 'setFeaturesQuery'])
+    ...mapMutations(['resetVisible'])
   }
 })
 export default class ThematicMapStatisticTable extends Vue {
@@ -139,12 +139,60 @@ export default class ThematicMapStatisticTable extends Vue {
     }
   }
 
-  /**
-   * 图表是否有数据,是否展示友好提示
-   */
+  get graph() {
+    return this.configSubData.graph
+  }
+
+  // 图表是否有数据,是否展示友好提示
   get showChart() {
     const { x, y } = this.chartOption
     return x.length && y.length
+  }
+
+  /**
+   * 将query的结果设置图表配置里
+   * @param dataSet
+   */
+  getChartOptions(dataSet) {
+    const xArr = []
+    const yArr = []
+    if (dataSet && dataSet.AttStruct.FldName) {
+      const {
+        SFEleArray,
+        AttStruct: { FldName }
+      } = dataSet
+      const xIndex = FldName.indexOf(this.graph.field)
+      const yIndex = FldName.indexOf(this.target)
+      SFEleArray.forEach(({ AttValue }) => {
+        if (AttValue) {
+          xArr.push(AttValue[xIndex])
+          yArr.push(AttValue[yIndex])
+        }
+      })
+    }
+    this.chartOption.x = xArr
+    this.chartOption.y = yArr
+    this.onChartTypeChange('bar')
+  }
+
+  /**
+   * 设置指标列表数据
+   * @param <object>
+   */
+  getTargetList() {
+    const { showFields, showFieldsTitle } = this.graph
+    const targetList = showFields.reduce((results, v) => {
+      const value =
+        showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
+      results.push({
+        label: v,
+        value
+      })
+      return results
+    }, [])
+    this.targetList = targetList
+    this.target = targetList[0]?.value
+    this.chartOption.title = this.target
   }
 
   /**
@@ -183,65 +231,7 @@ export default class ThematicMapStatisticTable extends Vue {
   onTargetChange(value: string) {
     this.target = value
     this.chartOption.title = value
-    this.setFeaturesQuery({
-      onSuccess: this.getChartOptions
-    })
-  }
-
-  /**
-   * 将query的结果设置图表配置里
-   * @param dataSet
-   */
-  getChartOptions(dataSet) {
-    const xArr = []
-    const yArr = []
-    if (dataSet && dataSet.AttStruct.FldName) {
-      const {
-        SFEleArray,
-        AttStruct: { FldName }
-      } = dataSet
-      const {
-        graph: { field }
-      } = this.configSubData
-
-      const xIndex = FldName.indexOf(field)
-      const yIndex = FldName.indexOf(this.target)
-      SFEleArray.forEach(({ AttValue }) => {
-        if (AttValue) {
-          xArr.push(AttValue[xIndex])
-          yArr.push(AttValue[yIndex])
-        }
-      })
-    }
-    this.chartOption.x = xArr
-    this.chartOption.y = yArr
-    this.onChartTypeChange('bar')
-  }
-
-  /**
-   * 设置指标列表数据
-   * @param <object>
-   */
-  getTargetList() {
-    const {
-      field,
-      graph: { showFields, showFieldsTitle }
-    } = this.configSubData
-    const targetList = showFields.reduce((results, item) => {
-      if (item) {
-        const obj = {}
-        obj.label = item
-        obj.value =
-          showFieldsTitle && showFieldsTitle[item]
-            ? showFieldsTitle[item]
-            : item
-        results.push(obj)
-      }
-      return results
-    }, [])
-    this.targetList = targetList
-    this.target = targetList[0]?.value
-    this.chartOption.title = this.target
+    this.getChartOptions(this.pageDataSet)
   }
 
   /**

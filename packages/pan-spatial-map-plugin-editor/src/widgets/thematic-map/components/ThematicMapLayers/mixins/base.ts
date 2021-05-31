@@ -1,4 +1,4 @@
-import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+import { Component, Prop, Watch, Vue, Mixins } from 'vue-property-decorator'
 import {
   queryFeaturesInstance,
   FeatureIGS,
@@ -6,7 +6,7 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 
 @Component
-export default class BaseMinxin extends Vue {
+export default class BaseMinxin extends Mixins<Record<string, any>>(Vue) {
   // 专题的配置
   @Prop({ default: () => ({}) }) config!: any
 
@@ -29,15 +29,18 @@ export default class BaseMinxin extends Vue {
    * geojson
    */
   get geojson(): FeatureGeoJSON | null {
+    console.log('11111111')
     return this.dataSet
       ? queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(this.dataSet)
       : null
   }
 
-  /**
-   * 显示图层
-   */
-  showLayer() {}
+  // /**
+  //  * 显示图层
+  //  */
+  showLayer() {
+    console.log('1', 1)
+  }
 
   /**
    * 移除图层

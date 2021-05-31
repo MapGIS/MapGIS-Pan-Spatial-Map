@@ -17,7 +17,6 @@ const mutations = {
   setLoading({ state }: IContext, loading: boolean) {
     state.loading = loading
   },
-
   /**
    * 保存专题服务展示弹框的开关
    */
@@ -38,7 +37,6 @@ const mutations = {
       pageCount
     }
   },
-
   /**
    * 保存当前页的查询的要素数据
    */
@@ -115,14 +113,12 @@ const mutations = {
       }
     }
   },
-
   /**
    * 设置专题服务的基础和专题配置数据
    */
   setThematicMapConfig({ state }: IContext, config: IThematicMapConfig) {
     state.thematicMapConfig = config
   },
-
   /**
    * 设置选中的'单个专题服务配置'
    */
@@ -131,7 +127,6 @@ const mutations = {
       state.selected = id
     }
   },
-
   /**
    * 设置选中的'单个专题服务配置'列表
    */
@@ -141,7 +136,6 @@ const mutations = {
   ) {
     state.selectedList = configList
   },
-
   /**
    * 设置单个专题服务中选中的年度
    */
@@ -150,7 +144,6 @@ const mutations = {
       state.selectedTime = year
     }
   },
-
   /**
    * 重置专题服务展示弹框的开关
    */

@@ -57,13 +57,12 @@ export default class ThematicMapManageTools extends Vue {
         type: 'bar-chart',
         tooltip: '统计表',
         visibleType: 'st'
-      },
-
-      {
-        type: 'file-add',
-        tooltip: '新建专题图',
-        visibleType: 'sa'
       }
+      // {
+      //   type: 'file-add',
+      //   tooltip: '新建专题图',
+      //   visibleType: 'sa'
+      // }
     ]
     if (this.configTimeList && this.configTimeList.length > 1) {
       list.splice(2, 0, {

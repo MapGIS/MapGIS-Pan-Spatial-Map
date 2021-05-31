@@ -32,6 +32,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
    */
   showLayer() {
     if (!this.dataSet) return
+    this.removeLayer()
     this.showMapboxLayer()
   }
 

@@ -1,13 +1,10 @@
 <template>
   <!-- 蜂窝图 -->
-  <mapgis-mapv-layer
-    :geojson="geojsonPoint"
-    :options="options"
-    v-show="geojsonPoint"
-  />
+  <mapgis-mapv-layer :geojson="geojsonPoint" :options="options" />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
+import { MapMixin } from '@mapgis/web-app-framework'
 import {
   queryFeaturesInstance,
   FeatureIGS
@@ -15,20 +12,18 @@ import {
 import BaseMinxin from '../../mixins/base'
 
 @Component
-export default class MapboxHexBin extends Mixins(BaseMinxin) {
-  geojsonPoint = null
+export default class MapboxHexBin extends Mixins(BaseMinxin, MapMixin) {
+  geojsonPoint = {}
 
   options = {
     context: '2d',
-    draw: 'honeycomb',
-    max: '10',
-    size: '20',
+    size: 30,
     label: {
       show: true,
       fillStyle: 'white',
       shadowColor: 'yellow',
-      font: '10px Arial',
-      shadowBlur: '10'
+      font: '15px Arial',
+      shadowBlur: 10
     },
     gradient: {
       0: 'rgba(49, 54, 149, 0)',
@@ -41,7 +36,9 @@ export default class MapboxHexBin extends Mixins(BaseMinxin) {
       0.8: 'rgba(244,109,67,0.8)',
       0.9: 'rgba(215,48,39,0.8)',
       0.95: 'rgba(165, 0, 38,0.8)'
-    }
+    },
+    max: 100,
+    draw: 'honeycomb'
   }
 
   /**
@@ -50,6 +47,7 @@ export default class MapboxHexBin extends Mixins(BaseMinxin) {
   showLayer() {
     if (this.geojson) {
       this.geojsonPoint = this.geojson
+      console.log('蜂窝图geojson', this.geojsonPoint)
     }
   }
 

@@ -56,24 +56,27 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
    */
   showMapboxLayer() {
     if (!this.labelStyle) return
-    this.thematicMapLayer = new RankSymbolThemeLayer(
+    const _thematicMapLayer = new RankSymbolThemeLayer(
       'ThematicMapLayer',
       'Circle',
-      { calGravity: true }
+      {
+        calGravity: true,
+        map: this.map
+      }
     )
-    if (!this.thematicMapLayer) return
+    if (!_thematicMapLayer) return
     const {
       textStyle: { fillColor },
       radius
     } = this.labelStyle
     const { min, max } = radius[0]
-    this.thematicMapLayer.symbolSetting = {
+    _thematicMapLayer.symbolSetting = {
       fillColor,
       codomain: [min, max],
       ...this.symbolSetting
     }
-    this.thematicMapLayer.id = this.id
-    this.thematicMapLayer.themeField = this.field
+    _thematicMapLayer.themeField = this.field
+    this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on(
       'mousemove',
       utilInstance.debounce(this.showInfoWin, 200)

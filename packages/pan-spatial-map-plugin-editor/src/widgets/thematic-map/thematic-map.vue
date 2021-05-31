@@ -132,9 +132,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     const selected = selectedList.length
       ? selectedList[selectedList.length - 1].id
       : ''
-    this.setSelected(selected)
-    this.setSelectedList(selectedList)
-    this.selected = selected
+    this.onSetSelected(selected, selectedList)
     moduleTypes.forEach(v => this.setVisible(v))
   }
 
@@ -156,7 +154,17 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 专题服务面板关闭
    */
   onClose() {
+    this.onSetSelected('', [])
     moduleTypes.forEach(v => this.resetVisible(v))
+  }
+
+  /**
+   * 设置选中的值
+   */
+  onSetSelected(selected, selectedList) {
+    this.selected = selected
+    this.setSelected(selected)
+    this.setSelectedList(selectedList)
   }
 }
 </script>

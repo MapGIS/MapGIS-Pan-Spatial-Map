@@ -47,7 +47,6 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
   chartsSettingForPointOrLine = {
     width: 220,
     height: 100,
-
     xShapeBlank: [10, 10],
     backgroundStyle: {
       fillColor: '#d1eeee',
@@ -76,22 +75,24 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
     height: 100,
     sectorStyle: {
       fillOpacity: 0.8
-    }, // 柱状图中柱条的（表示字段值的图形）样式
+    },
     sectorHoverStyle: {
       fillOpacity: 1
     },
-    xShapeBlank: [10, 10, 10], // 水平方向上的空白间距参数
-    backgroundStyle: { fillColor: '#CCE8CF' }, // 背景样式
-    backgroundRadius: [5, 5, 5, 5] // 背景框圆角参数
+    xShapeBlank: [10, 10, 10],
+    backgroundStyle: { fillColor: '#CCE8CF' },
+    backgroundRadius: [5, 5, 5, 5]
   }
 
   // 设置graphThemeLayer option参数
   thematicMapLayerOptions = {
+    map: this.map,
     isOverLay: true,
+    calGravity: true,
     attributions: ' ',
     opacity: 0.9,
     chartsSetting: {},
-    calGravity: true
+    themeFields: []
   }
 
   get graph() {
@@ -111,40 +112,36 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
    */
   initGraphicStyles() {
     const { showFields, showFieldsTitle } = this.graph
+    const axisYTick = 4
     const codomain = [0, 30922]
-    const axisYTick = 3
-    const axisXLabels = showFields.map(v => showFieldsTitle[v] || v)
     const interval = Math.ceil((codomain[1] - codomain[0]) / axisYTick)
-    const axisYLabels = new Array(axisYTick)
-      .fill()
+    const axisXLabels = showFields.map(v =>
+      showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
+    )
+    const axisYLabels = axisXLabels
       .map((v, i) => Math.ceil(codomain[0] + i * interval))
       .sort((a, b) => b - a)
-
     const axisObj = {
+      axisYTick,
+      codomain,
       axisXLabels,
-      axisYLabels,
-      codomain
+      axisYLabels
     }
     this.chartsSettingForBarAddBar3DCommon = {
       ...this.chartsSettingForBarAddBar3DCommon,
-      ...axisObj,
-      axisYTick
+      ...axisObj
     }
-
     this.chartsSettingForPointOrLine = {
       ...this.chartsSettingForPointOrLine,
-      ...axisObj,
-      axisYTick
+      ...axisObj
     }
-
     this.chartsSettingForPieOrRing = {
+      sectorStyleByFields: this.faceStyleByFields,
       ...this.chartsSettingForPieOrRing,
-      ...axisObj,
-      sectorStyleByFields: this.faceStyleByFields
+      ...axisObj
     }
     this.thematicMapLayerOptions = {
       ...this.thematicMapLayerOptions,
-      map: this.map,
       themeFields: showFields
     }
   }
@@ -154,9 +151,8 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
    */
   createBarThematicMapLayer() {
     const chartsSettingForBar = this.chartsSettingForBarAddBar3DCommon
-    chartsSettingForBar.barStyle = { fillOpacity: 0.7 } // 柱状图中柱条的（表示字段值的图形）样式
-    chartsSettingForBar.barHoverStyle = { fillOpacity: 1 } //  柱条 hover 样式
-    // 阴影样式
+    chartsSettingForBar.barStyle = { fillOpacity: 0.7 }
+    chartsSettingForBar.barHoverStyle = { fillOpacity: 1 }
     chartsSettingForBar.barShadowStyle = {
       shadowBlur: 8,
       shadowOffsetX: 2,
@@ -177,11 +173,8 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
       strokeColor: '#008acd',
       strokeOpacity: 0.4
     }
-    // 3d 柱条正面样式（3d 柱条的侧面和顶面会以 3d 柱条正面样式为默认样式）
     chartsSettingForBar3D.barFaceStyle = { stroke: true }
-    // 按字段设置 3d 柱条正面样式
     chartsSettingForBar3D.barFaceStyleByFields = this.faceStyleByFields
-    // 3d 柱条正面 hover 样式（3d 柱条的侧面和顶面 hover 会以 3d 柱条正面 hover 样式为默认 hover 样式）
     chartsSettingForBar3D.barFaceHoverStyle = {
       stroke: true,
       strokeWidth: 1,
@@ -257,12 +250,12 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
       default:
         break
     }
-    const _thematicMapLayer = new GraphThemeLayer(`${type}Layer`, type, {
+    this.thematicMapLayer = new GraphThemeLayer(`${type}Layer`, type, {
       ...this.thematicMapLayerOptions,
+      map: this.map,
       chartsSetting
     })
-    _thematicMapLayer.id = this.id
-    this.thematicMapLayer = _thematicMapLayer
+    if (!this.thematicMapLayer) return
     this.thematicMapLayer.on(
       'mousemove',
       utilInstance.debounce(this.showInfoWin, 200)
