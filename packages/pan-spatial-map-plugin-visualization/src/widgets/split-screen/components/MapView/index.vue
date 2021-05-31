@@ -6,7 +6,6 @@
     <mapbox-view
       v-if="is2DMapMode"
       ref="maboxView"
-      :mapIndex="mapIndex"
       :mapViewId="mapViewId"
       :mapViewDocument="mapViewDocument"
       @on-load="onMapboxLoad"

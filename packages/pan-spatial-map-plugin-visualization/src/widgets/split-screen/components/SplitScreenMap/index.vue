@@ -12,7 +12,6 @@
         :style="mapSpanStyle"
       >
         <map-view
-          :mapIndex="s"
           :mapViewId="`split-screen-map-${s}`"
           :mapViewLayer="layers.find(({ id }) => layerIds[s] === id)"
           :queryVisible.sync="queryVisible"

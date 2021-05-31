@@ -4,14 +4,8 @@
     :document="mapViewDocument"
     @map-load="onMapLoad"
     :vueKey="vueKey"
-    :vueIndex="vueIndex"
   >
-    <mapgis-3d-draw
-      @load="onLoad"
-      @drawcreate="onCreate"
-      :vueKeyG="vueKey"
-      :vueIndexG="vueIndex"
-    />
+    <mapgis-3d-draw @load="onLoad" @drawcreate="onCreate" :vueKey="vueKey" />
     <mapgis-3d-link :enable="true" />
   </mp-cesium-view>
 </template>
@@ -33,8 +27,6 @@ import { Rect } from '../../../mixins/map-view'
 export default class CesiumView extends Vue {
   @Prop() mapViewDocument!: Document
 
-  @Prop({ default: 1000 }) mapIndex!: number
-
   @Prop({ default: UUID.uuid() }) mapViewId!: string
 
   drawer = null
@@ -43,10 +35,6 @@ export default class CesiumView extends Vue {
 
   get vueKey() {
     return this.mapViewId
-  }
-
-  get vueIndex() {
-    return this.mapIndex * 1000
   }
 
   enableDrawer() {
