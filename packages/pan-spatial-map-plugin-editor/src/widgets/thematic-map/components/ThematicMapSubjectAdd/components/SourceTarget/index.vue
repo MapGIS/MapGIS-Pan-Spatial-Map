@@ -8,8 +8,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import OnlineData from './OnlineData.vue'
-import LocalData from './LocalData.vue'
+import OnlineData from './components/OnlineData.vue'
+import LocalData from './components/LocalData.vue'
 
 @Component({
   components: {

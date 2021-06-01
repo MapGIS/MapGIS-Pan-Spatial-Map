@@ -34,7 +34,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import RowFlex from '../../../RowFlex'
+import RowFlex from '../../../../RowFlex'
 
 @Component({
   components: {
