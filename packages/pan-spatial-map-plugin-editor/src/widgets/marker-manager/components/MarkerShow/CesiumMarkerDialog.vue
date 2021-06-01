@@ -31,10 +31,13 @@ import {
   Emit
 } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { baseConfigInstance, eventBus } from '@mapgis/pan-spatial-map-store'
+import {
+  baseConfigInstance,
+  eventBus,
+  markerIconInstance
+} from '@mapgis/pan-spatial-map-store'
 import MarkerInfo from '../MarkerInfo/MarkerInfo.vue'
 import CesiumMarkerMixin from '../../mixins/cesium-marker'
-import markerBlue from '../../../../../../pan-spatial-map-framework/public/cesium/Widgets/Images/ImageryProviders/blueMarble.png'
 
 @Component({
   components: {
@@ -138,14 +141,16 @@ export default class CesiumMarkerDialog extends Mixins(
   }
 
   // 渲染该标注点
-  updateMarker() {
+  async updateMarker() {
     this.cesiumUtil.removeEntityByName(this.marker.id)
     const marker: any = { ...this.marker }
+    // 获取缓存的标注点的图标单例
+    const defaultImg = await markerIconInstance.unSelectIcon()
     marker.mouseOver = event => {
       this.mouseOver(event, marker)
     }
     marker.name = marker.id
-    marker.img = markerBlue
+    marker.img = defaultImg
     marker.iconWidth = this.defaultIconWidth
     marker.iconHeight = this.defaultIconHeight
     this.cesiumUtil.addMarkerByFeature(marker)

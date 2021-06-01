@@ -108,7 +108,7 @@
 
 <script lang="ts">
 import { Mixins, Component, Inject, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
 import {
   eventBus,
   api,
@@ -416,7 +416,49 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 读取保存的配置信息并展示
   private getConfigData() {
     api.getWidgetConfig('marker-manager').then(res => {
-      this.tableData = res
+      // 下面的操作都是为了兼容老版的三个标注点的数据(因为老版标注点的构造和新版的标注点构造不一样)
+      this.tableData = res.reduce((result, item) => {
+        if (Object.keys(item).includes('ftype')) {
+          // 老版标注点包含'ftype'属性
+          let coordinates = []
+          switch (item.fileType) {
+            case 'Polygon':
+              coordinates = [item.coordinates]
+              break
+            case 'LineString':
+              coordinates = item.coordinates
+              break
+            default:
+              coordinates = item.point
+              break
+          }
+          const geoJsonFeature = {
+            geometry: {
+              coordinates: coordinates,
+              type: item.fileType || 'Point'
+            },
+            id: UUID.uuid(),
+            properties: {},
+            type: 'Feature'
+          }
+          const marker = {
+            id: UUID.uuid(),
+            title: item.name,
+            description: item.info,
+            iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
+            edit: true,
+            features: [geoJsonFeature],
+            coordinates: coordinates,
+            center: item.point,
+            type: item.fileType || 'Point'
+          }
+          result.push(marker)
+        } else {
+          // 新版标注点不包含'ftype'属性
+          result.push(item)
+        }
+        return result
+      }, [])
     })
   }
 }
