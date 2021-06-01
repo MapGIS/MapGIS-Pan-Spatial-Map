@@ -43,8 +43,9 @@
         <a-collapse-panel :key="item.id">
           <template v-slot:header>
             <a-checkbox
-              :checked="item.checked"
-              @click="event => handleClick(event, item)"
+              default-checked
+              @change="event => onChange(event, item)"
+              @click="event => handleClick(event)"
             >
               {{ item.id }}
             </a-checkbox>
@@ -105,6 +106,9 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   // 区填充数据
   private spriteData = []
 
+  // 勾选的子图层id数组
+  private checkedLayerIDs = []
+
   // 批量设置样式属性集
   private multiSetting = {
     'fill-color': '#bedcaf',
@@ -142,13 +146,14 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       return false
     } else {
       const doc: Document = this.document
+      this.checkedLayerIDs = []
       this.currentLayer.currentStyle = this.currentLayer.styleList.find(
         item => item.name === newVal
       )
       this.layers = this.currentLayer.currentStyle.layers
-      // 为每个子图层新增一个checked属性，用来表示是否勾选了该子图层样式所对应的多选框
+      // 所有初始子图层默认勾选，所以初始所有子图层的id都会被push进勾选的子图层id数组
       this.layers.forEach(item => {
-        this.$set(item, 'checked', true)
+        this.checkedLayerIDs.push(item.id)
       })
     }
   }
@@ -159,7 +164,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     const multiSettingKeys = Object.keys(newVal)
     if (this.multiChecked) {
       this.layers = this.layers.reduce((result, item) => {
-        if (item.checked) {
+        if (this.checkedLayerIDs.includes(item.id)) {
           // 只修改该子图层样式属性集paint中含有的样式
           const layerPaintKeys = Object.keys(item.paint)
           layerPaintKeys.forEach(key => {
@@ -229,21 +234,24 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     event.stopPropagation()
   }
 
-  // 多选框点击事件(取消冒泡,同时多选框的勾选也控制该子图层的可见性(若该子图层有layout属性的话))
-  private handleClick(event, item) {
+  // 多选框点击事件(取消冒泡)
+  private handleClick(event) {
     // If you don't want click extra trigger collapse, you can prevent this:
-    item.checked = !item.checked
-
-    if (item.checked) {
-      if (item.layout) {
-        item.layout.visibility = 'visible'
-      }
-    } else {
-      if (item.layout) {
-        item.layout.visibility = 'none'
-      }
-    }
     event.stopPropagation()
+  }
+
+  // 子图层多选框勾选状态变化时回调函数(同时多选框的勾选也控制该子图层的可见性(若该子图层有layout属性的话))
+  private onChange(event, item) {
+    const isChecked = event.target.checked
+    if (isChecked) {
+      if (!this.checkedLayerIDs.includes(item.id))
+        this.checkedLayerIDs.push(item.id)
+      if (item.layout) item.layout.visibility = 'visible'
+    } else {
+      const index = this.checkedLayerIDs.findIndex(item2 => item2 === item.id)
+      if (index !== -1) this.checkedLayerIDs.splice(index, 1)
+      if (item.layout) item.layout.visibility = 'none'
+    }
   }
 }
 </script>
