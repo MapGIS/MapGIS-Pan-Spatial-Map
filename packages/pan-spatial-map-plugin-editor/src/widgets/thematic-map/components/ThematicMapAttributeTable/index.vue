@@ -26,7 +26,7 @@
             </template>
             <row-flex label="时间" :span="[5, 19]">
               <a-select :value="time" @change="onTimeChange">
-                <a-select-option v-for="y in configTimeList" :key="y">{{
+                <a-select-option v-for="y in selectedTimeList" :key="y">{{
                   y
                 }}</a-select-option>
               </a-select>
@@ -66,8 +66,8 @@ import RowFlex from '../RowFlex'
       'selectedTime',
       'selectedList',
       'pageDataSet',
-      'configSubData',
-      'configTimeList'
+      'selectedSubConfig',
+      'selectedTimeList'
     ])
   },
   methods: {
@@ -150,7 +150,7 @@ export default class ThematicMapAttributeTable extends Vue {
    * 设置列表配置
    */
   getTableColumns() {
-    const { showFields, showFieldsTitle } = this.configSubData.table
+    const { showFields, showFieldsTitle } = this.selectedSubConfig.table
     this.tableColumns = showFields.map((v: string, i: number) => {
       const title =
         showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
@@ -199,7 +199,7 @@ export default class ThematicMapAttributeTable extends Vue {
     this.updatePage(this.pageCount)
     this.subject = value
     this.setSelected(value)
-    this.onTimeChange(this.configTimeList[0])
+    this.onTimeChange(this.selectedTimeList[0])
   }
 
   /**

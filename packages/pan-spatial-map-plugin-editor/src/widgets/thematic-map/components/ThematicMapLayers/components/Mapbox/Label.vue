@@ -26,10 +26,22 @@ import MapboxMinxin from '../../mixins/mapbox'
   }
 })
 export default class MapboxLabel extends Mixins(MapboxMinxin) {
+  get clustersId() {
+    return `clusters-${this.id}`
+  }
+
+  get clusterCountId() {
+    return `cluster-count-${this.id}`
+  }
+
+  get unclustersId() {
+    return `unclustered-point-${this.id}`
+  }
+
   // 聚合层基础配置
   get cluster() {
     return {
-      id: `clusters-${this.id}`,
+      id: this.clustersId,
       type: 'circle',
       source: 'clusterdata',
       filter: ['has', 'point_count'],
@@ -43,7 +55,9 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
           750,
           '#f28cb1'
         ],
-        'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40]
+        'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+        'circle-stroke-color': '#FFFFFF',
+        'circle-stroke-width': 5
       }
     }
   }
@@ -51,7 +65,7 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
   // 非聚合层基础配置
   get uncluster() {
     return {
-      id: `unclustered-point-${this.id}`,
+      id: this.unclustersId,
       type: 'circle',
       source: 'clusterdata',
       filter: ['!', ['has', 'point_count']],
@@ -67,13 +81,13 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
   // 聚合层计数基础配置
   get clusterCount() {
     return {
-      id: `cluster-count-${this.id}`,
+      id: this.clusterCountId,
       type: 'symbol',
       source: 'clusterdata',
       filter: ['has', 'point_count'],
       layout: {
         'text-field': '{point_count_abbreviated}',
-        'text-font': ['黑体'],
+        'text-font': ['黑体', '黑体'],
         'text-size': 12
       }
     }
@@ -83,12 +97,9 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
    * 点击查看集群
    */
   attachEvents() {
-    const clusterEl = `clusters${this.id}`
-    const unclusterEl = `unclustered-point-${this.id}`
-    const canvas = this.map.getCanvas()
-    this.map.on('click', clusterEl, function(e: any) {
+    this.map.on('click', this.clustersId, function(e: any) {
       const features = this.map.queryRenderedFeatures(e.point, {
-        layers: [clusterEl]
+        layers: [this.clustersId]
       })
       const {
         properties: { cluster_id },
@@ -105,18 +116,19 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
           })
         })
     })
-    this.map.on('mouseenter', `clusters-${this.id}`, () => {
+    const canvas = this.map.getCanvas()
+    this.map.on('mouseenter', this.clustersId, () => {
       canvas.style.cursor = 'pointer'
     })
-    this.map.on('mouseleave', `clusters${this.id}`, () => {
+    this.map.on('mouseleave', this.clustersId, () => {
       canvas.style.cursor = ''
     })
     this.map.on(
       'mousemove',
-      unclusterEl,
+      this.unclustersId,
       utilInstance.debounce(this.showInfoWin, 200)
     )
-    this.map.on('mouseout', unclusterEl, this.closeInfoWin)
+    this.map.on('mouseout', this.unclustersId, this.closeInfoWin)
   }
 
   /**
@@ -132,6 +144,7 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
     })
     const adds = [this.cluster, this.clusterCount, this.uncluster]
     adds.forEach(v => this.map.addLayer(v))
+    console.log('showMapboxLayer', this.geojson, this.map)
     this.attachEvents()
   }
 

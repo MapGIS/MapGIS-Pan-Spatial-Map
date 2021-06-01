@@ -82,8 +82,8 @@ interface IChartOption {
       'selected',
       'selectedTime',
       'pageDataSet',
-      'configSubData',
-      'configTimeList'
+      'selectedSubConfig',
+      'selectedTimeList'
     ])
   },
   methods: {
@@ -140,7 +140,7 @@ export default class ThematicMapStatisticTable extends Vue {
   }
 
   get graph() {
-    return this.configSubData.graph
+    return this.selectedSubConfig.graph
   }
 
   // 图表是否有数据,是否展示友好提示

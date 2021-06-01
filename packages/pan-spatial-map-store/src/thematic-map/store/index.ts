@@ -2,33 +2,28 @@ import Vue from 'vue'
 import state from './state'
 import getters from './getters'
 import mutations from './mutations'
-import { IGetters } from '../types'
 
-export const mapGetters = (arr: Array<keyof IGetters>) => {
+export const mapGetters = (arr: Array<keyof typeof getters>) => {
   return Object.entries(getters).reduce((obj, [fnName, fn]) => {
-    if (arr.includes(fnName as keyof IGetters)) {
-      obj[fnName] = () => fn(state, getters)
+    if (arr.includes(fnName as keyof typeof getters)) {
+      obj[fnName] = () => fn(state)
     }
     return obj
   }, {})
 }
 
+const commit = (funName: string, payload: any) => {
+  if (funName && funName in mutations) {
+    mutations[funName].call(this, payload)
+  } else {
+    return false
+  }
+}
+
 export const mapMutations = (arr: string[]) => {
   return Object.entries(mutations).reduce((obj, [fnName, fn]) => {
     if (arr.includes(fnName)) {
-      obj[fnName] = (payload: never) => {
-        const _getters = Object.entries(getters).reduce((obj, [fnName, fn]) => {
-          obj[fnName] = fn(state, getters)
-          return obj
-        }, {} as Record<keyof IGetters, any>)
-        return fn(
-          {
-            state,
-            getters: _getters
-          },
-          payload
-        )
-      }
+      obj[fnName] = payload => fn({ state, commit }, payload)
     }
     return obj
   }, {})
@@ -47,15 +42,9 @@ class Store {
     this.mutations = mutations
   }
 
-  commit = (fun, payload) => {
-    if (fun) {
-      this.mutations[fun].call(this, payload)
-    } else {
-      return false
-    }
-  }
+  commit = commit
 
-  dispatch = (fun, params) => {}
+  // dispatch = (fun, params) => {}
 }
 
 const store = new Store({

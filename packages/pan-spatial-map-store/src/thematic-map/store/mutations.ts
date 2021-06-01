@@ -2,21 +2,13 @@ import Vue from 'vue'
 import _cloneDeep from 'lodash/cloneDeep'
 import { queryFeaturesInstance, FeatureIGS } from '../../service'
 import {
-  ModuleType,
-  IThematicMapConfig,
-  IThematicMapBaseConfig,
-  IThematicMapSubjectConfig,
   IContext,
-  IGetters
+  ModuleType,
+  IThematicMapBaseConfig,
+  IThematicMapSubjectConfig
 } from '../types'
 
 const mutations = {
-  /**
-   * 加载
-   */
-  setLoading({ state }: IContext, loading: boolean) {
-    state.loading = loading
-  },
   /**
    * 保存专题服务展示弹框的开关
    */
@@ -27,6 +19,12 @@ const mutations = {
     } else {
       state.moduleTypes.push(type)
     }
+  },
+  /**
+   * 加载
+   */
+  setLoading({ state }: IContext, loading: boolean) {
+    state.loading = loading
   },
   /**
    * 设置分页
@@ -48,20 +46,11 @@ const mutations = {
    * @param onSuccess
    * @param onError
    */
-  setFeaturesQuery(
-    { state, getters }: IContext,
-    {
-      onSuccess,
-      onError
-    }: {
-      onSuccess: (dataSet: FeatureIGS | any) => void
-      onError: (e: Event) => void
-    }
-  ) {
-    const { baseConfig, subjectConfig } = getters
-    if (subjectConfig) {
-      const { configType = 'gdbp', configSubData } = subjectConfig
+  setFeaturesQuery({ state }: IContext, { onSuccess, onError }) {
+    const { pageParam, selectedSubConfig, baseConfig } = state
+    if (selectedSubConfig) {
       const { baseIp, basePort } = baseConfig as IThematicMapBaseConfig
+      const { configType = 'gdbp' } = selectedSubConfig
       const {
         ip = baseIp,
         port = basePort,
@@ -70,7 +59,7 @@ const mutations = {
         layerName,
         layerIndex: layerIdxs,
         table: { showFields }
-      } = configSubData
+      } = selectedSubConfig
       const fields = showFields.join(',')
       let params: any = {
         ip,
@@ -79,7 +68,7 @@ const mutations = {
         IncludeGeometry: true,
         cursorType: 'backward',
         f: 'json',
-        ...state.pageParam
+        ...pageParam
       }
       switch (configType.toLowerCase()) {
         case 'gdbp':
@@ -116,19 +105,63 @@ const mutations = {
   /**
    * 设置专题服务的基础和专题配置数据
    */
-  setThematicMapConfig({ state }: IContext, config: IThematicMapConfig) {
-    state.thematicMapConfig = config
+  setThematicMapConfig({ state }: IContext, { baseConfig, subjectConfig }) {
+    state.baseConfig = baseConfig
+    state.subjectConfig = subjectConfig
   },
+
   /**
-   * 设置选中的'单个专题服务配置'
+   * 设置选中的单个专题服务
    */
-  setSelected({ state }: IContext, id: string) {
+  setSelected({ state, commit }: IContext, id: string) {
     if (state.selected !== id) {
       state.selected = id
+      const subject = state.selectedList.find(item => item.id === id)
+      if (subject && subject.config) {
+        const { type, data } = subject.config
+        if (data && data.length) {
+          commit(
+            'setSelectedTimeList',
+            data.map(v => v.time)
+          )
+          data.forEach(item => {
+            const { time, subData } = item
+            if (time === state.selectedTime) {
+              const selectedSubConfig =
+                subData && subData.length ? subData[0] : item
+              commit('setSelectedSubConfig', {
+                ...selectedSubConfig,
+                configType: type
+              })
+            }
+          })
+        }
+      }
+    }
+  },
+
+  /**
+   * 设置选中的年度
+   */
+  setSelectedTime({ state }: IContext, year: string) {
+    if (state.selectedTime !== year) {
+      state.selectedTime = year
     }
   },
   /**
-   * 设置选中的'单个专题服务配置'列表
+   * 设置选中专题的年度列表
+   */
+  setSelectedTimeList({ state }: IContext, timeList: string[]) {
+    state.selectedTimeList = timeList
+  },
+  /**
+   * 设置选中专题的年度列表
+   */
+  setSelectedSubConfig({ state }: IContext, config: any) {
+    state.selectedSubConfig = config
+  },
+  /**
+   * 设置选中的专题服务集合
    */
   setSelectedList(
     { state }: IContext,
@@ -136,14 +169,7 @@ const mutations = {
   ) {
     state.selectedList = configList
   },
-  /**
-   * 设置单个专题服务中选中的年度
-   */
-  setSelectedTime({ state }: IContext, year: string) {
-    if (state.selectedTime !== year) {
-      state.selectedTime = year
-    }
-  },
+
   /**
    * 重置专题服务展示弹框的开关
    */

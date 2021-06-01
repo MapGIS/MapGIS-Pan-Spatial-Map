@@ -33,7 +33,7 @@ interface IIcon {
 }
 @Component({
   computed: {
-    ...mapGetters(['isVisible', 'configTimeList'])
+    ...mapGetters(['isVisible', 'selectedTimeList'])
   },
   methods: {
     ...mapMutations(['setVisible'])
@@ -64,7 +64,7 @@ export default class ThematicMapManageTools extends Vue {
       //   visibleType: 'sa'
       // }
     ]
-    if (this.configTimeList && this.configTimeList.length > 1) {
+    if (this.selectedTimeList && this.selectedTimeList.length > 1) {
       list.splice(2, 0, {
         type: 'clock-circle',
         tooltip: '时间轴',

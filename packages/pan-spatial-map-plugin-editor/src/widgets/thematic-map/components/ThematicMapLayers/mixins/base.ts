@@ -8,7 +8,7 @@ import {
 @Component
 export default class BaseMinxin extends Mixins<Record<string, any>>(Vue) {
   // 专题的配置
-  @Prop({ default: () => ({}) }) config!: any
+  @Prop({ default: () => ({}) }) subDataConfig!: any
 
   // 专题某年度的要素数据
   @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
@@ -29,7 +29,6 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(Vue) {
    * geojson
    */
   get geojson(): FeatureGeoJSON | null {
-    console.log('11111111')
     return this.dataSet
       ? queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(this.dataSet)
       : null

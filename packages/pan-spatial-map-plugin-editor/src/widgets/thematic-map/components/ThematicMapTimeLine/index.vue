@@ -42,7 +42,7 @@ import { chartOption } from './config/timeLineChartOption'
     RowFlex
   },
   computed: {
-    ...mapGetters(['loading', 'isVisible', 'selectedTime', 'configTimeList'])
+    ...mapGetters(['loading', 'isVisible', 'selectedTime', 'selectedTimeList'])
   },
   methods: {
     ...mapMutations(['resetVisible', 'setSelectedTime'])
@@ -60,7 +60,7 @@ export default class ThematicMapTimeLine extends Vue {
 
   // 时间轴的列表数据
   get timeList() {
-    return this.configTimeList || []
+    return this.selectedTimeList || []
   }
 
   // 显示开关

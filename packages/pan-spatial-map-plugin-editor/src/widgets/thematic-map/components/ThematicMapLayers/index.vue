@@ -4,7 +4,7 @@
       <component
         :is="t"
         :key="t"
-        :config="config"
+        :subDataConfig="subDataConfig"
         :dataSet="dataSet"
         v-if="subjectType === t"
       />
@@ -24,7 +24,7 @@ import CesiumLayers from './components/Cesium'
     ...CesiumLayers
   },
   computed: {
-    ...mapGetters(['subjectConfig', 'pageDataSet'])
+    ...mapGetters(['selectedSubConfig', 'pageDataSet'])
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
@@ -33,8 +33,8 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 
   // 专题配置
-  get config() {
-    return this.subjectConfig
+  get subDataConfig() {
+    return this.selectedSubConfig
   }
 
   // 专题某年度的要素数据
@@ -44,7 +44,9 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   // 获取专题类别
   get subjectType() {
-    return this.config ? `${this.prefix}${this.config.type}` : ''
+    return this.subDataConfig
+      ? `${this.prefix}${this.subDataConfig.configType}`
+      : ''
   }
 
   // 获取渲染的子专题图层组件name集合

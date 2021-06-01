@@ -48,11 +48,6 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
     textSize: 21
   }
 
-  // 获取某个专题某个年度的subData
-  get subDataConfig() {
-    return this.config.configSubData
-  }
-
   // 信息弹框字段配置
   get popupConfig(): IPopupConfig | undefined {
     return this.subDataConfig.popup

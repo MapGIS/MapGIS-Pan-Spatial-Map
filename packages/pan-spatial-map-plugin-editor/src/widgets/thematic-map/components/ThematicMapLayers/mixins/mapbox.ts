@@ -17,11 +17,6 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
 
   coordinates: number[] = [0, 0]
 
-  // 获取某个专题某个年度的subData
-  get subDataConfig() {
-    return this.config.configSubData
-  }
-
   // 信息弹框字段配置
   get popupConfig() {
     return this.subDataConfig.popup
