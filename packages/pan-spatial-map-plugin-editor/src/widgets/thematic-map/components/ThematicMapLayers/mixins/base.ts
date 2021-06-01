@@ -34,12 +34,10 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(Vue) {
       : null
   }
 
-  // /**
-  //  * 显示图层
-  //  */
-  showLayer() {
-    console.log('1', 1)
-  }
+  /**
+   * 显示图层
+   */
+  showLayer() {}
 
   /**
    * 移除图层

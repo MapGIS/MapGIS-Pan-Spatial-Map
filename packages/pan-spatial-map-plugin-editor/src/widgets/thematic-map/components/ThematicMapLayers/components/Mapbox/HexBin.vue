@@ -47,7 +47,6 @@ export default class MapboxHexBin extends Mixins(BaseMinxin, MapMixin) {
   showLayer() {
     if (this.geojson) {
       this.geojsonPoint = this.geojson
-      console.log('蜂窝图geojson', this.geojsonPoint)
     }
   }
 

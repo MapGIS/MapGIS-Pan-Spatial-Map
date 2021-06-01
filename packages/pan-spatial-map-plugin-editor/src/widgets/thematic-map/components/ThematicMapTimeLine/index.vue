@@ -167,7 +167,7 @@ export default class ThematicMapTimeLine extends Vue {
     this.onSelecteTimeChange(this.selectedTime)
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
     this.tlVisible = false
     if (this.chart) {
       this.chart.off('timelinechanged')

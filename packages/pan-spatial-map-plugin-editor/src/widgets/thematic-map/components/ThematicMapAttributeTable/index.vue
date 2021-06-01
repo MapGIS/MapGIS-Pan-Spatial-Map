@@ -197,9 +197,10 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   onSubjectChange(value) {
     this.updatePage(this.pageCount)
-    this.subject = value
-    this.setSelected(value)
-    this.onTimeChange(this.selectedTimeList[0])
+    if (this.subject !== value) {
+      this.subject = value
+      this.setSelected(value)
+    }
   }
 
   /**
@@ -211,11 +212,13 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   onTimeChange(value) {
     this.updatePage(this.pageCount)
-    this.time = value
-    this.setSelectedTime(value)
-    this.getTableColumns()
-    if (this.time) {
-      this.getTableData()
+    if (this.time !== value) {
+      this.time = value
+      this.setSelectedTime(value)
+      this.getTableColumns()
+      if (this.time) {
+        this.getTableData()
+      }
     }
   }
 
@@ -235,9 +238,7 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   @Watch('selected')
   watchSelected(nV: string) {
-    if (this.subject !== nV) {
-      this.onSubjectChange(nV)
-    }
+    this.onSubjectChange(nV)
   }
 
   /**
@@ -245,16 +246,14 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   @Watch('selectedTime')
   watchSelectedTime(nV: string) {
-    if (this.time !== nV) {
-      this.onTimeChange(nV)
-    }
+    this.onTimeChange(nV)
   }
 
   created() {
-    this.onSubjectChange(this.subjectList[0].id)
+    this.onTimeChange(this.selectedTime)
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
     this.atVisible = false
   }
 }

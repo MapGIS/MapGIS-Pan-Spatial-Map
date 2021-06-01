@@ -43,7 +43,6 @@ export default class MapboxHeatMap extends Mixins(BaseMinxin, MapMixin) {
   showLayer() {
     if (this.geojson) {
       this.geojsonPoint = this.geojson
-      console.log('热力图geojson', this.geojsonPoint)
     }
   }
 

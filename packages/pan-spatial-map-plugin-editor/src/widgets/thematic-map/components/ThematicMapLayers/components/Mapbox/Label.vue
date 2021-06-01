@@ -144,7 +144,6 @@ export default class MapboxLabel extends Mixins(MapboxMinxin) {
     })
     const adds = [this.cluster, this.clusterCount, this.uncluster]
     adds.forEach(v => this.map.addLayer(v))
-    console.log('showMapboxLayer', this.geojson, this.map)
     this.attachEvents()
   }
 

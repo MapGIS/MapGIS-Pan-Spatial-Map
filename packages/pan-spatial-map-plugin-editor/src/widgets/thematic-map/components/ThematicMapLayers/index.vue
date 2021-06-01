@@ -45,7 +45,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   // 获取专题类别
   get subjectType() {
     return this.subDataConfig
-      ? `${this.prefix}${this.subDataConfig.configType}`
+      ? `${this.prefix}${this.subDataConfig.subjectType}`
       : ''
   }
 

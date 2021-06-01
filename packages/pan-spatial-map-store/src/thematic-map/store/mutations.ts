@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import _cloneDeep from 'lodash/cloneDeep'
+import _last from 'lodash/last'
 import { queryFeaturesInstance, FeatureIGS } from '../../service'
 import {
-  IContext,
   ModuleType,
   IThematicMapBaseConfig,
   IThematicMapSubjectConfig
@@ -12,24 +12,21 @@ const mutations = {
   /**
    * 保存专题服务展示弹框的开关
    */
-  setVisible({ state }: IContext, type: ModuleType) {
-    const index = state.moduleTypes.indexOf(type)
-    if (index !== -1) {
-      state.moduleTypes.splice(index, 1)
-    } else {
+  setVisible({ state }, type: ModuleType) {
+    if (state.moduleTypes.indexOf(type) < 0) {
       state.moduleTypes.push(type)
     }
   },
   /**
    * 加载
    */
-  setLoading({ state }: IContext, loading: boolean) {
+  setLoading({ state }, loading: boolean) {
     state.loading = loading
   },
   /**
    * 设置分页
    */
-  setPage({ state }: IContext, { page, pageCount }) {
+  setPage({ state }, { page, pageCount }) {
     state.pageParam = {
       page: page - 1,
       pageCount
@@ -38,7 +35,7 @@ const mutations = {
   /**
    * 保存当前页的查询的要素数据
    */
-  setPageDataSet({ state }: IContext, dataSet: FeatureIGS | null) {
+  setPageDataSet({ state }, dataSet: FeatureIGS | null) {
     state.pageDataSet = _cloneDeep(dataSet)
   },
   /**
@@ -46,7 +43,7 @@ const mutations = {
    * @param onSuccess
    * @param onError
    */
-  setFeaturesQuery({ state }: IContext, { onSuccess, onError }) {
+  setFeaturesQuery({ state }, { onSuccess, onError }) {
     const { pageParam, selectedSubConfig, baseConfig } = state
     if (selectedSubConfig) {
       const { baseIp, basePort } = baseConfig as IThematicMapBaseConfig
@@ -105,75 +102,72 @@ const mutations = {
   /**
    * 设置专题服务的基础和专题配置数据
    */
-  setThematicMapConfig({ state }: IContext, { baseConfig, subjectConfig }) {
+  setThematicMapConfig({ state }, { baseConfig, subjectConfig }) {
     state.baseConfig = baseConfig
     state.subjectConfig = subjectConfig
   },
-
+  /**
+   * 设置选中的单个专题服务的时间轴列表数据
+   */
+  setSelectedTimeList({ state, commit }, id: string) {
+    let selectedTimeList: string[] = []
+    const subject = state.selectedList.find(item => item.id === id)
+    if (subject && subject.config) {
+      const { data } = subject.config
+      if (data && data.length) {
+        selectedTimeList = data.map(v => v.time)
+      }
+    }
+    state.selectedTimeList = selectedTimeList
+    commit('setSelectedTime', selectedTimeList[0])
+  },
   /**
    * 设置选中的单个专题服务
    */
-  setSelected({ state, commit }: IContext, id: string) {
-    if (state.selected !== id) {
-      state.selected = id
-      const subject = state.selectedList.find(item => item.id === id)
-      if (subject && subject.config) {
-        const { type, data } = subject.config
-        if (data && data.length) {
-          commit(
-            'setSelectedTimeList',
-            data.map(v => v.time)
-          )
-          data.forEach(item => {
-            const { time, subData } = item
-            if (time === state.selectedTime) {
-              const selectedSubConfig =
-                subData && subData.length ? subData[0] : item
-              commit('setSelectedSubConfig', {
-                ...selectedSubConfig,
-                configType: type
-              })
-            }
-          })
+  setSelected({ state, commit }, id: string) {
+    state.selected = id
+    commit('setSelectedTimeList', id)
+  },
+  /**
+   * 设置选中专题的年度列表
+   */
+  setSelectedSubConfig({ state }, time) {
+    const subject = state.selectedList.find(({ id }) => id === state.selected)
+    if (subject && subject.config) {
+      const { type, data } = subject.config
+      if (data && data.length) {
+        const item = data.find(d => d.time === time)
+        const subData =
+          item.subData && item.subData.length ? item.subData[0] : item || {}
+        state.selectedSubConfig = {
+          ...subData,
+          subjectType: subject.type,
+          configType: type
         }
       }
     }
   },
-
   /**
    * 设置选中的年度
    */
-  setSelectedTime({ state }: IContext, year: string) {
-    if (state.selectedTime !== year) {
-      state.selectedTime = year
-    }
-  },
-  /**
-   * 设置选中专题的年度列表
-   */
-  setSelectedTimeList({ state }: IContext, timeList: string[]) {
-    state.selectedTimeList = timeList
-  },
-  /**
-   * 设置选中专题的年度列表
-   */
-  setSelectedSubConfig({ state }: IContext, config: any) {
-    state.selectedSubConfig = config
+  setSelectedTime({ state, commit }, time: string) {
+    state.selectedTime = time
+    commit('setSelectedSubConfig', time)
   },
   /**
    * 设置选中的专题服务集合
    */
   setSelectedList(
-    { state }: IContext,
-    configList: IThematicMapSubjectConfig[]
+    { state, commit },
+    selectedList: IThematicMapSubjectConfig[]
   ) {
-    state.selectedList = configList
+    state.selectedList = selectedList
+    commit('setSelected', _last(selectedList)?.id)
   },
-
   /**
    * 重置专题服务展示弹框的开关
    */
-  resetVisible({ state }: IContext, type: ModuleType) {
+  resetVisible({ state }, type: ModuleType) {
     if (type) {
       state.moduleTypes.splice(state.moduleTypes.indexOf(type), 1)
     } else {

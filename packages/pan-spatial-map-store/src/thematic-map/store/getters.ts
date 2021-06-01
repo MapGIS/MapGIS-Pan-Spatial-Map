@@ -13,10 +13,10 @@ const getters = {
   baseConfig: (state: IState) => state.baseConfig,
   // 专题配置
   subjectConfig: (state: IState) => state.subjectConfig,
-  // 获取选中专题ID
-  selected: (state: IState) => state.selected,
   // 获取选中专题集合
   selectedList: (state: IState) => state.selectedList,
+  // 获取选中专题ID
+  selected: (state: IState) => state.selected,
   // 获取时间轴已选中的年度
   selectedTime: (state: IState) => state.selectedTime,
   // 获取选中专题对应年度的subData的第一个数据

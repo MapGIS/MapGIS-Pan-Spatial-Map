@@ -12,7 +12,7 @@
         @check="onTreeCheck"
       />
     </a-spin>
-    <template v-if="selected">
+    <template v-if="selectedList.length">
       <!-- 属性表 -->
       <thematic-map-attribute-table />
       <!-- 统计表 -->
@@ -49,7 +49,6 @@ import ThematicMapLayers from './components/ThematicMapLayers'
   methods: {
     ...mapMutations([
       'setThematicMapConfig',
-      'setSelected',
       'setSelectedList',
       'setVisible',
       'resetVisible'
@@ -69,7 +68,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 ) {
   loading = false
 
-  selected = ''
+  selectedList = []
 
   treeData: any[] = []
 
@@ -122,17 +121,14 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * @param checkeddKeys<array>
    */
   onTreeCheck(checkeddKeys) {
-    const selectedList = checkeddKeys.reduce((results, id) => {
+    this.selectedList = checkeddKeys.reduce((results, id) => {
       const node = this.getSujectNodeById(this.treeData, id, null)
       if (node) {
         results.push(node)
       }
       return results
     }, [])
-    const selected = selectedList.length
-      ? selectedList[selectedList.length - 1].id
-      : ''
-    this.onSetSelected(selected, selectedList)
+    this.setSelectedList(this.selectedList)
     moduleTypes.forEach(v => this.setVisible(v))
   }
 
@@ -154,17 +150,9 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 专题服务面板关闭
    */
   onClose() {
-    this.onSetSelected('', [])
+    this.selectedList = []
+    this.setSelectedList([])
     moduleTypes.forEach(v => this.resetVisible(v))
-  }
-
-  /**
-   * 设置选中的值
-   */
-  onSetSelected(selected, selectedList) {
-    this.selected = selected
-    this.setSelected(selected)
-    this.setSelectedList(selectedList)
   }
 }
 </script>

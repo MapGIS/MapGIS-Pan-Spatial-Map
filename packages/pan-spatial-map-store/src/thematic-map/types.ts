@@ -74,14 +74,11 @@ export interface IState {
   selectedTime: string
   selectedSubConfig: {
     configType: ConfigType
+    subjectType: SubjectType
     [k: string]: any
   } | null
   selectedTimeList: string[]
   selectedList: IThematicMapSubjectConfig[]
   subjectConfig: IThematicMapSubjectConfig | null
   baseConfig: IThematicMapBaseConfig | null
-}
-export interface IContext {
-  state: IState
-  commit: (funName: string, payload: any) => void
 }

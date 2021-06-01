@@ -76,15 +76,7 @@ interface IChartOption {
     RowFlex
   },
   computed: {
-    ...mapGetters([
-      'loading',
-      'isVisible',
-      'selected',
-      'selectedTime',
-      'pageDataSet',
-      'selectedSubConfig',
-      'selectedTimeList'
-    ])
+    ...mapGetters(['loading', 'isVisible', 'pageDataSet', 'selectedSubConfig'])
   },
   methods: {
     ...mapMutations(['resetVisible'])
@@ -249,7 +241,7 @@ export default class ThematicMapStatisticTable extends Vue {
     )
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
     this.stVisible = false
   }
 }

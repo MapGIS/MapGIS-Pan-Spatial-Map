@@ -1,40 +1,15 @@
 import Vue from 'vue'
-import state from './state'
-import getters from './getters'
-import mutations from './mutations'
+import stateMap from './state'
+import gettersMap from './getters'
+import mutationsMap from './mutations'
+import { IState } from '../types'
 
-export const mapGetters = (arr: Array<keyof typeof getters>) => {
-  return Object.entries(getters).reduce((obj, [fnName, fn]) => {
-    if (arr.includes(fnName as keyof typeof getters)) {
-      obj[fnName] = () => fn(state)
-    }
-    return obj
-  }, {})
-}
+class Store<T = any, G = any, M = any> {
+  state: T
 
-const commit = (funName: string, payload: any) => {
-  if (funName && funName in mutations) {
-    mutations[funName].call(this, payload)
-  } else {
-    return false
-  }
-}
+  getters: G
 
-export const mapMutations = (arr: string[]) => {
-  return Object.entries(mutations).reduce((obj, [fnName, fn]) => {
-    if (arr.includes(fnName)) {
-      obj[fnName] = payload => fn({ state, commit }, payload)
-    }
-    return obj
-  }, {})
-}
-
-class Store {
-  state = {}
-
-  getters = {}
-
-  mutations = {}
+  mutations: M
 
   constructor({ state, getters, mutations }: any) {
     this.state = state
@@ -42,15 +17,45 @@ class Store {
     this.mutations = mutations
   }
 
-  commit = commit
+  commit = (funName: keyof M, payload: any) => {
+    if (funName) {
+      ;(this.mutations[funName] as any)(this, payload)
+    } else {
+      return false
+    }
+  }
 
   // dispatch = (fun, params) => {}
 }
 
-const store = new Store({
-  state,
-  getters,
-  mutations
+const store = new Store<IState>({
+  state: stateMap,
+  getters: gettersMap,
+  mutations: mutationsMap
 })
+
+export const mapGetters = (arr: Array<keyof typeof store.getters>) => {
+  return Object.entries(store.getters).reduce(
+    (obj, [fnName, fn]: [string, any]) => {
+      if (arr.includes(fnName)) {
+        obj[fnName] = () => fn(stateMap)
+      }
+      return obj
+    },
+    {}
+  )
+}
+
+export const mapMutations = (arr: Array<keyof typeof store.mutations>) => {
+  return Object.entries(store.mutations).reduce(
+    (obj, [fnName, fn]: [string, any]) => {
+      if (arr.includes(fnName)) {
+        obj[fnName] = (payload: never) => fn(store, payload)
+      }
+      return obj
+    },
+    {}
+  )
+}
 
 export default store

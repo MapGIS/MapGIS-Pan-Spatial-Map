@@ -5,6 +5,7 @@
       v-show="visible"
       @mousedown.native.capture="onClick"
     >
+      <span>{{ visible }}</span>
       <slot :z-index="state === this.activeState ? 2 : 1" />
     </mp-window-card>
   </div>
