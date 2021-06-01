@@ -56,7 +56,7 @@ import {
   ThematicMapInstance
 } from '@mapgis/pan-spatial-map-store'
 import { Empty } from 'ant-design-vue'
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import RowFlex from '../RowFlex'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'

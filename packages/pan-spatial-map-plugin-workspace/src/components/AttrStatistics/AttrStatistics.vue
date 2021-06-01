@@ -236,7 +236,7 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
 import axios from 'axios'
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import { Sketch } from 'vue-color'
 
 @Component({

@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 
 @Component
 export default class TimeLine extends Vue {

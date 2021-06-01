@@ -32,7 +32,7 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
 import { Empty } from 'ant-design-vue'
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 import RowFlex from '../RowFlex'
 import { chartOption } from './config/timeLineChartOption'
 
