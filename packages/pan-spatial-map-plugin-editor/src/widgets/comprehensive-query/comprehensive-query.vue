@@ -3,7 +3,9 @@
     <div class="search-box query-section">
       <div class="logo" @click="onLocate">
         <mp-icon :icon="logo" />
-        <span>{{ districtName }}</span>
+        <span class="district-title" v-if="logoType === 'district'">
+          {{ districtName }}</span
+        >
       </div>
       <a-divider type="vertical" />
       <a-input
@@ -33,21 +35,23 @@
         <a-tab-pane key="district" tab="行政区划定位">
           <zone
             ref="zone"
+            v-if="district"
+            :district="district"
             :active="locationType === 'district'"
-            v-model="geoJson"
+            @change="val => (geoJson = val)"
           />
         </a-tab-pane>
         <a-tab-pane key="coordinate" tab="坐标定位" force-render>
           <coordinate
             ref="coordinate"
             :active="locationType === 'coordinate'"
-            v-model="geoJson"
+            @change="val => (geoJson = val)"
           />
         </a-tab-pane>
         <a-tab-pane key="map-sheet" tab="图幅定位">
           <frame
             ref="map-sheet"
-            v-model="geoJson"
+            @change="val => (geoJson = val)"
             :active="locationType === 'map-sheet'"
           />
         </a-tab-pane>
@@ -75,7 +79,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { Parser, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
+import { Parser, FeatureGeoJSON, api } from '@mapgis/pan-spatial-map-store'
 import PlaceName from './components/PlaceName/PlaceName'
 import Zone from './components/ZoneFrame/Zone'
 import Coordinate from './components/Coordinate/Coordinate'
@@ -92,6 +96,8 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 
   private districtName = ''
 
+  private district = null
+
   private maxHeight = 0
 
   // 可选district：行政区划定位；coordinate：坐标定位；map-sheet：图幅号定位
@@ -101,13 +107,16 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 
   private geoJson: FeatureGeoJSON | null = null
 
+  get logoType() {
+    return this.locationType || 'district'
+  }
+
   get logo() {
-    return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${this
-      .locationType || 'district'}.png`
+    return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${this.logoType}.png`
   }
 
   private get geometry() {
-    if (this.geoJson) {
+    if (this.geoJson && JSON.stringify(this.geoJson) !== '{}') {
       const result = Parser.changeToTangram(this.geoJson)
       if (Array.isArray(result)) return result[0]
       return result
@@ -115,7 +124,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
     return null
   }
 
-  mounted() {
+  async mounted() {
     this.setMaxHeight()
     window.addEventListener(
       'resize',
@@ -124,6 +133,14 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
       },
       false
     )
+    const districtConfig = await api.getConfig('district')
+    if (districtConfig && districtConfig.length > 0) {
+      this.district = districtConfig[0]
+
+      const { defaults } = this.district
+
+      this.districtName = defaults.text
+    }
   }
 
   setMaxHeight() {
@@ -145,6 +162,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   onClose() {
     this.locationPanelExpand = false
     this.searchPanelExpand = false
+    this.$refs.placeName.removeResult()
     this.$refs.placeName.reset()
     this.$refs.zone && this.$refs.zone.clear()
     this.$refs.coordinate && this.$refs.coordinate.clear()
@@ -236,9 +254,19 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
     align-items: center;
     height: 32px;
     .logo {
+      display: flex;
+      align-items: center;
       padding: 6px 8px;
       cursor: pointer;
+      .district-title {
+        white-space: nowrap;
+        margin-left: 3px;
+        color: @text-color;
+      }
     }
+  }
+  .ant-divider-vertical {
+    top: 0;
   }
   .panel-container {
     padding: 10px;

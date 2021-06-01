@@ -47,13 +47,11 @@
       </a-spin>
     </a-space>
     <zone-frame-mapbox
-      v-if="is2DMapMode"
       :feature="frameFeature"
       :center="center"
       :highlight-style="highlightStyle"
     ></zone-frame-mapbox>
     <zone-frame-cesium
-      v-else
       :feature="frameFeature"
       :center="center"
       :highlight-style="highlightStyle"
@@ -62,7 +60,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Mixins, Model, Prop } from 'vue-property-decorator'
+import {
+  Component,
+  Watch,
+  Mixins,
+  Model,
+  Prop,
+  Emit
+} from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
@@ -82,6 +87,9 @@ import ZoneFrameCesium from './ZoneFrameCesium.vue'
 export default class Frame extends Mixins(AppMixin) {
   @Prop()
   readonly active!: boolean
+
+  @Emit()
+  change(val: FeatureGeoJSON | null) {}
 
   private scale = 'Scale_20w'
 
@@ -206,10 +214,13 @@ export default class Frame extends Mixins(AppMixin) {
       ]
     }
     this.center = [(XMin + XMax) / 2, (YMin + YMax) / 2]
+
+    this.change(this.frameFeature)
   }
 
   private clear() {
     this.frameFeature = {}
+    this.change(this.frameFeature)
   }
 }
 </script>

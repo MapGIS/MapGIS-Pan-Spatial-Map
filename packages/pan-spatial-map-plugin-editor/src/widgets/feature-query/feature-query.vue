@@ -7,6 +7,12 @@
       @added="onAdded"
       @drawCreate="onDrawFinish"
     />
+    <mapgis-3d-draw
+      ref="drawref"
+      @load="handleDrawLoad"
+      @drawcreate="handleCreate"
+    >
+    </mapgis-3d-draw>
     <div class="toolbar">
       <template v-for="type in queryTypes">
         <a-tooltip placement="bottom" :title="type.label" :key="type.id">
@@ -108,13 +114,7 @@ export default class MpFeatureQuery extends Mixins(
     'LineString'
   ]
 
-  private defaultQueryTypes3d = [
-    'Point',
-    'Rectangle',
-    'Polygon',
-    'LineString',
-    'PickModel'
-  ]
+  private defaultQueryTypes3d = ['Point', 'Polygon', 'LineString']
 
   private drawStyle = []
 
@@ -142,7 +142,7 @@ export default class MpFeatureQuery extends Mixins(
   @Watch('mapRender')
   mapRenderChange() {
     if (this.is2DMapMode) {
-      this.clearCesiumDraw()
+      this.clearCesiumDraw3D()
     } else {
       this.clearMapboxDraw()
     }
@@ -183,21 +183,20 @@ export default class MpFeatureQuery extends Mixins(
     if (this.is2DMapMode) {
       this.clearMapboxDraw()
     } else {
-      this.clearCesiumDraw()
+      this.clearCesiumDraw3D()
     }
   }
 
   handleCesium() {
-    this.createCesium()
     switch (this.queryType) {
       case 'Point':
-        this.interactionDrawPnt()
+        this.togglePoint3D()
         break
       case 'LineString':
-        this.interactionDrawLine()
+        this.togglePolyline3D()
         break
       case 'Polygon':
-        this.interactionDrawPolygon()
+        this.togglePolygon3D()
         break
       case 'Rectangle':
         // this.interactionDrawRectangle()
@@ -369,6 +368,7 @@ export default class MpFeatureQuery extends Mixins(
     height: 32px;
     font-size: 17px;
     color: @text-color;
+    justify-content: space-between;
     .command {
       margin: 0 8px;
       cursor: pointer;

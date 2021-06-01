@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-data-catalog">
-    <div class="toolbal">
+    <div class="toolbar">
       <a-input-search
         v-model="searchValue"
         placeholder="搜索数据"
@@ -9,10 +9,7 @@
         @search="onSearch"
       ></a-input-search>
       <a-dropdown :trigger="['click']" class="action-more">
-        <a-icon
-          type="more"
-          :style="{ fontSize: '22px', paddingLeft: '5px' }"
-        ></a-icon>
+        <a-icon type="more"></a-icon>
         <a-menu slot="overlay">
           <a-menu-item key="0" @click="refreshTree">刷新</a-menu-item>
           <a-menu-item key="1" @click="bookMarksCheck">收藏</a-menu-item>
@@ -128,17 +125,41 @@
                 >元数据信息</a-menu-item
               >
               <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
-              <a-menu-item v-if="hasLegend(item)" key="3">上传图例</a-menu-item>
+              <a-menu-item
+                v-if="hasLegend(item)"
+                key="3"
+                @click="onUploadLegend(item)"
+                >上传图例</a-menu-item
+              >
             </a-menu>
           </a-dropdown>
         </span>
       </a-tree>
     </div>
+    <a-modal v-model="showUploader" :width="300" :footer="null">
+      <a-upload
+        name="file"
+        accept=".jpg, image/*"
+        :action="uploadUrl"
+        :multiple="false"
+        method="post"
+        :withCredentials="true"
+        :before-upload="beforeUpload"
+        @change="onChangeFile"
+      >
+        <div class="upload-content">
+          <span>图片上传</span>
+          <a-icon type="upload" :style="{ fontSize: '18px' }"></a-icon>
+        </div>
+      </a-upload>
+    </a-modal>
+
     <mp-window-wrapper :visible="showMetaData">
       <mp-window
         title="元数据信息"
-        :width="550"
-        :height="400"
+        :is-full-screen="true"
+        :shrinkAction="false"
+        :fullScreenAction="false"
         :icon="widgetInfo.icon"
         :visible.sync="showMetaData"
       >
@@ -164,7 +185,7 @@ import {
   DataCatalogManager,
   eventBus,
   queryOGCInfoInstance,
-  getWidgetConfig
+  api
 } from '@mapgis/pan-spatial-map-store'
 
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
@@ -214,6 +235,15 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 元数据信息组件Props值
   private currentConfig: Record<string, unknown> = {}
 
+  // 图片上传器的显隐
+  private showUploader = false
+
+  // 上传地址
+  private uploadUrl = ''
+
+  // 上传图例的节点
+  private legendNode = {}
+
   // 设置选中的树节点
   get selectedKeys() {
     if (this.hasKeywordArr.length > 0 && this.searchIndex !== -1) {
@@ -229,6 +259,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   }
 
   async mounted() {
+    this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
     this.dataCatalogManager.init(this.widgetInfo.config)
 
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
@@ -240,6 +271,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   onCheckedNodeKeysChenged() {
     let newChecked = []
     let newUnChecked = []
+    eventBus.$emit('emitCheckedNodeKeys', this.checkedNodeKeys)
 
     if (this.preCheckedNodeKeys.length === 0) {
       newChecked = this.checkedNodeKeys
@@ -328,7 +360,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const layerConfigNodeList: [] = []
     nodekeys.forEach(key => {
       const layerConfig = this.dataCatalogManager.getLayerConfigByID(key)
-
       if (layerConfig) {
         layerConfigNodeList.push(layerConfig)
       }
@@ -337,7 +368,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     if (layerConfigNodeList.length > 0) {
       // 选中节点中保含有图层节点
       const doc: Document = this.document
-
       layerConfigNodeList.forEach(
         async (layerConfigNode): Layer => {
           if (isChecked) {
@@ -361,6 +391,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
               doc.defaultMap.findLayerById(layerConfigNode.guid)
             )
           }
+          eventBus.$emit('emitSelectLayer')
         }
       )
     }
@@ -458,9 +489,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 刷新按钮
   async refreshTree() {
-    getWidgetConfig('data-catalog')
-    this.dataCatalogManager.init(this.widgetInfo.config)
+    const config = await api.getWidgetConfig('data-catalog')
+    this.dataCatalogManager.init(config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
+    this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
   }
 
   // 收藏按钮
@@ -572,6 +604,36 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       this.dataCatalogManager.checkedLayerConfigIDs.push(node.guid)
     }
   }
+
+  // 点击上传图例响应事件
+  private onUploadLegend(item) {
+    this.showUploader = true
+    this.legendNode = item
+  }
+
+  // 上传文件之前的钩子
+  private beforeUpload(file) {}
+
+  // 上传文件状态改变时的回调
+  private async onChangeFile(info) {
+    if (info.file.status === 'uploading' || info.file.status === 'error') {
+      return
+    }
+    if (info.file.status === 'done') {
+      const url = info.file.response.url
+      const legendConfig = await api.getWidgetConfig('legend')
+      const key = this.legendNode.name
+      if (url) {
+        legendConfig[key] = url
+        const res = await api.saveWidgetConfig({
+          name: 'legend',
+          config: JSON.stringify(legendConfig)
+        })
+        eventBus.$emit('uploader-success')
+        this.showUploader = false
+      }
+    }
+  }
 }
 </script>
 
@@ -580,10 +642,18 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   height: 100%;
   display: flex;
   flex-direction: column;
-  .toolbal {
+  .toolbar {
     display: flex;
     justify-content: center;
     align-content: center;
+    .action-more {
+      font-size: 17px;
+      color: @text-color;
+      padding-left: 12px;
+      &:hover {
+        color: @primary-color;
+      }
+    }
   }
   .tree-container {
     flex-grow: 1;
@@ -648,9 +718,15 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 }
 
 .unfilter-words {
-  color: #000000a6 !important;
+  color: @text-color !important;
 }
 .filter-words {
   color: @primary-color !important;
+}
+
+.upload-content {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 </style>

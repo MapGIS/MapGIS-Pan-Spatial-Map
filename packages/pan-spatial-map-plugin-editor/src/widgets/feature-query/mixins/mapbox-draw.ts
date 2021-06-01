@@ -37,6 +37,7 @@ export default class MapboxDraw extends Vue {
   }
 
   onDrawFinish(e) {
+    debugger
     const { coordinates } = e.features[0].geometry
     let nearDis = this.limits * 1000
     const { projectionName } = baseConfigInstance.config
@@ -85,41 +86,40 @@ export default class MapboxDraw extends Vue {
     this.enableDrawer()
     this.type = 0
 
-    this.drawer && this.drawer.changeMode('draw_point')
+    this.drawer && this.drawer?.changeMode('draw_point')
   }
 
   togglePolyline() {
     this.enableDrawer()
     this.type = 1
 
-    this.drawer && this.drawer.changeMode('draw_line_string')
+    this.drawer && this.drawer?.changeMode('draw_line_string')
   }
 
   togglePolygon() {
     this.enableDrawer()
     this.type = 2
 
-    this.drawer && this.drawer.changeMode('draw_polygon')
+    this.drawer && this.drawer?.changeMode('draw_polygon')
   }
 
   toggleRect() {
     this.enableDrawer()
     this.type = 3
-
-    this.drawer && this.drawer.changeMode('draw_rectangle')
+    this.drawer && this.drawer?.changeMode('draw_rectangle')
   }
 
   toggleCircle() {
     this.enableDrawer()
     this.type = 4
 
-    this.drawer && this.drawer.changeMode('draw_circle')
+    this.drawer && this.drawer?.changeMode('draw_circle')
   }
 
   toggleDeleteAll() {
     this.type = -1
 
-    this.drawer && this.drawer.deleteAll()
+    this.drawer && this.drawer?.deleteAll()
   }
 
   clearMapboxDraw() {
@@ -129,7 +129,8 @@ export default class MapboxDraw extends Vue {
         'draw_point',
         'draw_line_string',
         'draw_polygon',
-        'draw_rectangle'
+        'draw_rectangle',
+        'draw_circle'
       ].includes(this.drawer.getMode())
     ) {
       this.type = -1

@@ -1,6 +1,6 @@
 export { default as queryOGCInfoInstance } from './query-ogc-info'
 
-export { default as queryIGSMetaDataInstance } from './query-igs-metadata'
+export { default as queryIGSMetadataInstance } from './query-igs-metadata'
 
 export {
   MetadataQueryParam,

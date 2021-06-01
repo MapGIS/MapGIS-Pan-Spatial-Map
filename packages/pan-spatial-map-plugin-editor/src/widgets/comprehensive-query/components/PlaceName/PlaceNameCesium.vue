@@ -14,7 +14,7 @@ import { MapMixin } from '@mapgis/web-app-framework'
 
 @Component({ components: {} })
 export default class PlaceNameCesium extends Mixins(MapMixin) {
-  @Prop({ type: Array, required: true, default: [] })
+  @Prop({ type: Array, required: true, default: () => [] })
   readonly fieldConfigs!: IFields[]
 
   @Prop({ type: [Array, Object], required: true, default: [] })
@@ -24,7 +24,9 @@ export default class PlaceNameCesium extends Mixins(MapMixin) {
 
   @Prop() geojson!: Record<string, unknown>
 
-  setMapCenter(positionCoord) {}
+  setMapCenter(positionCoord) {
+    this.webGlobe.flyTo(positionCoord[0], positionCoord[1])
+  }
 }
 </script>
 

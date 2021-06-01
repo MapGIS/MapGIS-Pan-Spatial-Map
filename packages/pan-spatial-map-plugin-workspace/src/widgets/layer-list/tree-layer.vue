@@ -110,11 +110,7 @@
               </a-list-item>
             </a-list>
             <a-button @click.stop size="small" type="link">
-              <a-icon
-                type="ellipsis"
-                :style="{ fontSize: '22px', color: 'gray' }"
-              >
-              </a-icon>
+              <a-icon type="ellipsis" class="more"> </a-icon>
             </a-button>
           </a-popover>
         </div>
@@ -124,8 +120,9 @@
       <template v-slot:default="slotProps">
         <mp-window
           title="元数据信息"
-          :width="550"
-          :height="400"
+          :is-full-screen="true"
+          :shrinkAction="false"
+          :fullScreenAction="false"
           :icon="widgetInfo.icon"
           :visible.sync="showMetadataInfo"
           anchor="top-center"
@@ -603,7 +600,6 @@ export default class TreeLayer extends Mixins(
     let {
       fullExtent: { xmin, xmax, ymin, ymax }
     } = item.dataRef
-
     if (
       item.dataRef.spatialReference.wkid === CoordinateSystemType.webMercator
     ) {
@@ -623,9 +619,16 @@ export default class TreeLayer extends Mixins(
       ymax = xmaxYmaxConverted[1]
     }
 
-    if (this.is2DMapMode) {
-      this.map.fitBounds([xmin, ymin, xmax, ymax])
-    }
+    this.map.fitBounds([xmin, ymin, xmax, ymax])
+    const rectangle = new this.Cesium.Rectangle.fromDegrees(
+      xmin,
+      ymin,
+      xmax,
+      ymax
+    )
+    this.webGlobe.viewer.camera.flyTo({
+      destination: rectangle
+    })
     this.clickPopover(item, false)
   }
 
@@ -881,7 +884,6 @@ export default class TreeLayer extends Mixins(
   flex-direction: column;
   overflow: hidden;
   .tree-container {
-    margin-top: 10px;
     flex: 1 1 0%;
     overflow: auto;
     .tree-item-handle {
@@ -891,6 +893,10 @@ export default class TreeLayer extends Mixins(
       align-items: center;
       .filter-words {
         color: @primary-color;
+      }
+      .more {
+        font-size: 18px;
+        color: @text-color;
       }
       i {
         margin-right: 6px;

@@ -50,13 +50,18 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
 
   private entityNames: string[] = []
 
+  private entityTextNames: string[] = []
+
   @Watch('feature', { deep: true })
   @Watch('highlightStyle', { deep: true })
   featureChange() {
     this.clear()
     if (this.feature && Object.keys(this.feature).length > 0) {
       // 行政区划几何类型一般是Polygon
+
+      const { features, geometry } = this.feature
       this.entityNames = []
+      this.entityTextNames = []
 
       const fillColor = new this.Cesium.Color.fromCssColorString(
         this.highlightStyle.feature.reg.color
@@ -66,18 +71,64 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
         this.highlightStyle.feature.line.color
       )
 
-      const coords = this.feature.geometry.coordinates[0]
-      const name = 'zone-frame'
-      this.entityNames.push(name)
-      this.cesiumUtil.appendPolygon(
-        name,
-        coords
-          .join(',')
-          .split(',')
-          .map(Number),
-        fillColor,
-        fillOutlineColor
-      )
+      // const coords = this.feature.geometry.coordinates[0]
+      let arr
+      if (this.center && this.center.length === 2) {
+        arr = features
+      } else {
+        arr = geometry.coordinates
+      }
+      for (let i = 0; i < arr.length; i += 1) {
+        const coords =
+          this.center && this.center.length === 2
+            ? arr[i].geometry.coordinates[0]
+            : arr[i]
+        const name = `zone-frame-${i}`
+        this.entityNames.push(name)
+        this.cesiumUtil.appendPolygon(
+          name,
+          coords
+            .join(',')
+            .split(',')
+            .map(Number),
+          fillColor,
+          fillOutlineColor
+        )
+        if (this.center && this.center.length === 2) {
+          const rgba = utilInstance.getRGBA('#FD6A6F', 1)
+          const textColor = new this.Cesium.Color(
+            rgba.r / 255,
+            rgba.g / 255,
+            rgba.b / 255,
+            rgba.a
+          )
+          const text = this.webGlobe.appendLabel(
+            // 经度、纬度、高程
+            this.center[0],
+            this.center[1],
+            0,
+            // 文本内容
+            features[i].properties.name,
+            {
+              // 文字大小、字体样式
+              font: '12pt 楷体',
+              // 文本颜色
+              fillColor: textColor,
+              // 文本样式，FILL：只填充；OUTLINE：只显示轮廓；FILL_AND_OUTLINE：填充颜色并显示轮廓
+              style: this.Cesium.LabelStyle.FILL_AND_OUTLINE,
+              // 边线颜色
+              outlineColor: this.Cesium.Color.RED,
+              // 边线宽度
+              outlineWidth: 3,
+              // 文本垂直方向与坐标点的相对位置：LEFT、CENTER、RIGHT
+              verticalOrigin: this.Cesium.VerticalOrigin.CENTER,
+              // 文本水平方向与坐标点的相对位置：LEFT、CENTER、RIGHT
+              horizontalOrigin: this.Cesium.HorizontalOrigin.CENTER
+            }
+          )
+          this.entityTextNames.push(text)
+        }
+      }
     }
   }
 
@@ -122,6 +173,10 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
     for (let i = this.entityNames.length - 1; i >= 0; i -= 1) {
       this.cesiumUtil.removeEntityByName(this.entityNames[i])
       this.entityNames.pop()
+    }
+    for (let i = this.entityTextNames.length - 1; i >= 0; i -= 1) {
+      this.webGlobe.viewer.entities.remove(this.entityTextNames[i])
+      this.entityTextNames.pop()
     }
   }
 }

@@ -72,13 +72,11 @@
       </a-space>
     </div>
     <zone-frame-mapbox
-      v-if="is2DMapMode"
       :feature="currentLevelFeature"
       :fit-bound="currentLevelFitBound"
       :highlight-style="highlightStyle"
     ></zone-frame-mapbox>
     <zone-frame-cesium
-      v-else
       :feature="currentLevelFeature"
       :fit-bound="currentLevelFitBound"
       :highlight-style="highlightStyle"
@@ -87,12 +85,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Mixins, Prop, Model } from 'vue-property-decorator'
+import {
+  Component,
+  Watch,
+  Mixins,
+  Prop,
+  Model,
+  Emit
+} from 'vue-property-decorator'
 import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
 import Axios from 'axios'
 import {
   FeatureGeoJSON,
-  request,
   api,
   FeatureQueryParam,
   queryFeaturesInstance,
@@ -111,11 +115,14 @@ import ZoneFrameCesium from './ZoneFrameCesium.vue'
   }
 })
 export default class Zone extends Mixins(AppMixin, MapMixin) {
-  @Model('change', { type: Object, required: false, default: null })
-  private value!: FeatureGeoJSON | null
-
   @Prop()
   readonly active!: boolean
+
+  @Prop()
+  readonly district!: object
+
+  @Emit()
+  change(val: FeatureGeoJSON | null) {}
 
   // 首级配置
   private defaults = {}
@@ -152,6 +159,9 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
   // 边线宽度
   private lineWidth = baseConfigInstance.config.colorConfig.feature.line.size
+
+  // 所选行政区的范围
+  private geoJSON = {}
 
   private get highlightStyle() {
     return {
@@ -211,6 +221,13 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
     this.currentLevelFeature = feature
     this.currentLevelFitBound = fitBound
 
+    if (feature && JSON.stringify(feature) !== '{}') {
+      const box = bbox(feature)
+      this.geoJSON = bboxPolygon(box)
+    } else {
+      this.geoJSON = {}
+    }
+    this.change(this.geoJSON)
     this.getNextLevelZoneFeatures()
   }
 
@@ -308,22 +325,19 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
     }
   }
 
-  private async init() {
-    const districtJson = await api.getConfig('district')
-    if (districtJson && districtJson.length > 0) {
-      const { defaults, gdbpInfos } = districtJson[0]
-      this.defaults = defaults
-      this.gdbpInfos = gdbpInfos
-      this.zoneBreadcrumbItems = [
-        {
-          name: this.defaults.text,
-          level: this.defaults.level,
-          code: this.defaults.code,
-          feature: {},
-          fitBound: {}
-        }
-      ]
-    }
+  private init() {
+    const { defaults, gdbpInfos } = this.district
+    this.defaults = defaults
+    this.gdbpInfos = gdbpInfos
+    this.zoneBreadcrumbItems = [
+      {
+        name: this.defaults.text,
+        level: this.defaults.level,
+        code: this.defaults.code,
+        feature: {},
+        fitBound: {}
+      }
+    ]
   }
 
   private filterCode(level, code) {
@@ -383,6 +397,8 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
   private clear() {
     this.currentLevelFeature = {}
+    this.geoJSON = {}
+    this.change(this.geoJSON)
   }
 }
 </script>
