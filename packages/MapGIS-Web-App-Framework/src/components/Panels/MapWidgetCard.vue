@@ -3,6 +3,7 @@
     v-bind="propObject"
     :title="widgetInfo.label"
     :icon="widgetInfo.icon"
+    :has-padding="widgetInfo.properties.hasPadding"
     :shrink-action="false"
     :full-screen-action="false"
     :z-index="zIndex"

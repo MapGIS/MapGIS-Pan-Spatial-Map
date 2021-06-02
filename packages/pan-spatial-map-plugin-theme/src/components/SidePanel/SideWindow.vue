@@ -10,7 +10,7 @@
       :title="title"
       class="window-wrapper"
       :headStyle="{ height: '36px' }"
-      :bodyStyle="{ height: 'calc(100% - 36px)' }"
+      :bodyStyle="bodyStyle"
     >
       <a-icon class="close-button" type="close" slot="extra" @click="onClose" />
       <div class="beauty-scroll window-content">
@@ -44,6 +44,8 @@ export default {
     width: { type: Number, default: 240 },
     // 是否全屏
     isFullScreen: { type: Boolean, default: false },
+    // 是否有边距
+    hasPadding: { type: Boolean, default: true },
     // 最大宽度，支持数值和函数，函数必须返回数值
     maxWidth: { type: [Number, Function] }
   },
@@ -75,6 +77,12 @@ export default {
       }
 
       return this.resizeWidth
+    },
+    bodyStyle() {
+      return {
+        height: 'calc(100% - 36px)',
+        padding: this.hasPadding ? '12px' : '0px'
+      }
     }
   },
   methods: {

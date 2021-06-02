@@ -4,6 +4,7 @@
     :title="widgetInfo.label"
     :icon="widgetInfo.icon"
     :is-full-screen="widgetInfo.properties.windowSize === 'max'"
+    :has-padding="widgetInfo.properties.hasPadding"
     :max-width="maxWidth"
     :visible="visible"
     @update:visible="onUpdateVisible"

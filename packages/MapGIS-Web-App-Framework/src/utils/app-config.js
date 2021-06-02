@@ -11,7 +11,8 @@ export const defaultWidgetProperties = {
   hasSettingPage: false,
   inPanel: true,
   settingUiComponent: '',
-  windowSize: 'normal'
+  windowSize: 'normal',
+  hasPadding: true
 }
 
 export const defaultWidgetPanelPosition = {

@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-swipe">
-    <a-row type="flex" class="swipe-row">
-      <a-col span="18" class="swipe-col1">
+    <div class="swipe-container">
+      <div class="swipe-content">
         <!-- 卷帘组件 -->
         <mapgis-compare
           :orientation="direction"
@@ -10,24 +10,47 @@
           <mp-mapbox-view
             slot="beforeMap"
             :document="aboveLayerDocument"
-            :mapStyle="mapStyle"
+            :map-style="mapStyle"
           />
           <mp-mapbox-view
             slot="afterMap"
             :document="belowLayerDocument"
-            :mapStyle="mapStyle"
+            :map-style="mapStyle"
           />
         </mapgis-compare>
         <!-- 空数据提示 -->
         <div class="swipe-no-data-tip" v-else>
           <a-empty description="卷帘分析功能至少需要选择2个图层" />
         </div>
-      </a-col>
-      <a-col span="6" class="swipe-col2">
-        <!-- 上图层 -->
-        <a-row>
-          <a-col> {{ directionLayerTitle.aboveTitle }}图层： </a-col>
-          <a-col>
+      </div>
+      <a-drawer
+        title="设置"
+        placement="right"
+        :closable="false"
+        :visible="settingPanelVisible"
+        :get-container="false"
+        :wrap-style="{ position: 'absolute' }"
+        :header-style="{ display: 'none' }"
+        :body-style="{ display: 'flex', padding: '12px' }"
+        :mask="false"
+      >
+        <div
+          class="swipe-setting-handle"
+          slot="handle"
+          @click="onToggleSettingPanel"
+        >
+          <a-icon :type="settingPanelVisible ? 'right' : 'left'" />
+        </div>
+        <a-space
+          class="swipe-setting-panel"
+          direction="vertical"
+          style="flex: 1;"
+        >
+          <!-- 上图层 -->
+          <a-row>
+            <label>{{ directionLayerTitle.aboveTitle }}图层</label>
+          </a-row>
+          <a-row>
             <a-select
               class="swipe-select"
               :value="aboveLayer"
@@ -40,12 +63,12 @@
                 >{{ item.title }}
               </a-select-option>
             </a-select>
-          </a-col>
-        </a-row>
-        <!-- 下图层 -->
-        <a-row>
-          <a-col> {{ directionLayerTitle.belowTitle }}图层： </a-col>
-          <a-col>
+          </a-row>
+          <!-- 下图层 -->
+          <a-row>
+            <label> {{ directionLayerTitle.belowTitle }}图层</label>
+          </a-row>
+          <a-row>
             <a-select
               class="swipe-select"
               :value="belowLayer"
@@ -58,23 +81,25 @@
                 >{{ item.title }}
               </a-select-option>
             </a-select>
-          </a-col>
-        </a-row>
-        <!-- 方向 -->
-        <a-radio-group
-          class="swipe-radio-group"
-          :value="direction"
-          @change="onDirectionChange"
-        >
-          <a-radio value="vertical">
-            垂直
-          </a-radio>
-          <a-radio value="horizontal" v-show="is2DMapMode">
-            水平
-          </a-radio>
-        </a-radio-group>
-      </a-col>
-    </a-row>
+          </a-row>
+          <a-row>
+            <!-- 方向 -->
+            <a-radio-group
+              class="swipe-radio-group"
+              :value="direction"
+              @change="onDirectionChange"
+            >
+              <a-radio value="vertical">
+                垂直
+              </a-radio>
+              <a-radio value="horizontal" v-show="is2DMapMode">
+                水平
+              </a-radio>
+            </a-radio-group>
+          </a-row>
+        </a-space>
+      </a-drawer>
+    </div>
   </div>
 </template>
 
@@ -130,35 +155,13 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
   // 图层样式
   mapStyle: any = {
     version: 8,
-    name: '空样式',
-    sources: {
-      Default: {
-        type: 'vector',
-        tiles: [
-          'http://localhost:6163/igs/rest/mrms/tile/IGServer/{z}/{y}/{x}?type=cpbf'
-        ],
-        minZoom: 0,
-        maxZoom: 15
-      }
-    },
-    sprite: 'http://localhost:6163/igs/rest/mrms/vtiles/sprite',
+    sources: {},
+    layers: [],
     glyphs:
-      'http://localhost:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf',
-    layers: [
-      {
-        id: '背景',
-        type: 'background',
-        paint: {
-          'background-color': {
-            stops: [
-              [6, '#4a5768'],
-              [8, '#424d5c']
-            ]
-          }
-        }
-      }
-    ]
+      'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf'
   }
+
+  settingPanelVisible = true
 
   /**
    * 卷帘方向变化，同步更改图层选择框的标题
@@ -213,6 +216,14 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
     this.direction = e.target.value
   }
 
+  onCloseSettingPanel() {
+    this.settingPanelVisible = false
+  }
+
+  onToggleSettingPanel() {
+    this.settingPanelVisible = !this.settingPanelVisible
+  }
+
   /**
    * 初始化图层列表
    */
@@ -259,4 +270,22 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
 
 <style lang="less" scoped>
 @import './swipe.less';
+</style>
+
+<style lang="less">
+.mp-widget-swipe {
+  .mapboxgl-compare {
+    user-select: none;
+    border: 1px solid @primary-color;
+    background-color: @border-color;
+    .compare-swiper-vertical,
+    .compare-swiper-horizontal {
+      background-color: @primary-color;
+    }
+  }
+  .ant-drawer-right.ant-drawer-open .ant-drawer-content-wrapper {
+    box-shadow: none;
+    border-left: 1px solid @primary-color;
+  }
+}
 </style>

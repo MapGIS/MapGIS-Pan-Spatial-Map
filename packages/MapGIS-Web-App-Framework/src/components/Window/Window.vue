@@ -43,7 +43,12 @@
     </div>
     <div
       v-show="!shrink"
-      class="beauty-scroll window-content window-panel-scroll-height"
+      :class="[
+        'beauty-scroll',
+        'window-content',
+        'window-panel-scroll-height',
+        hasPadding ? 'window-padding' : ''
+      ]"
       :style="
         currentHeightPixel ? null : { 'max-height': maxHeightPixelContent }
       "
@@ -175,6 +180,8 @@ export default {
     resizable: { type: Boolean, default: true },
     // 是否全屏
     isFullScreen: { type: Boolean, default: false },
+    // 是否有边距
+    hasPadding: { type: Boolean, default: true },
     // 层级
     zIndex: { type: Number, default: 1 }
   },
@@ -628,9 +635,11 @@ export default {
     }
   }
   .window-content {
-    padding: 12px;
     flex: auto;
     overflow-y: auto;
+  }
+  .window-padding {
+    padding: 12px;
   }
   .window-panel-scroll-height {
     display: flex;
