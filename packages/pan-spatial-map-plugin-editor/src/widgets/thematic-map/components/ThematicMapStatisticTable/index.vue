@@ -240,10 +240,6 @@ export default class ThematicMapStatisticTable extends Vue {
       document.getElementById('thematic-map-statistic-table-chart')
     )
   }
-
-  beforeDestroy() {
-    // this.stVisible = false
-  }
 }
 </script>
 <style lang="less" scoped>

@@ -89,11 +89,6 @@ export default class ThematicMapManageTools extends Vue {
   created() {
     this.mtVisible = this.visible
   }
-
-  beforeDestroy() {
-    // this.mtVisible = false
-    // this.resetVisible('mt')
-  }
 }
 </script>
 <style lang="less">

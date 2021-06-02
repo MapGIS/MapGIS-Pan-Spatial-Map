@@ -52,6 +52,7 @@ const mutations = {
    */
   setFeaturesQuery({ state, commit }, { onSuccess, onError }: any = {}) {
     const { pageParam, selectedSubConfig, baseConfig } = state
+    if (!selectedSubConfig) return
     const { baseIp, basePort } = baseConfig as IThematicMapBaseConfig
     const { configType = 'gdbp' } = selectedSubConfig
     const {
@@ -109,28 +110,28 @@ const mutations = {
    */
   setSelectedSubConfig({ state }, time) {
     const subject = state.selectedList.find(({ id }) => id === state.selected)
+    let selectedSubConfig = null
     if (subject && subject.config) {
       const { type, data } = subject.config
       if (data && data.length) {
         const item = data.find(d => d.time === time)
         const subData =
           item.subData && item.subData.length ? item.subData[0] : item || {}
-        state.selectedSubConfig = {
+        selectedSubConfig = {
           ...subData,
           subjectType: subject.type,
           configType: type
         }
       }
     }
+    state.selectedSubConfig = selectedSubConfig
   },
   /**
    * 设置选中的年度
    */
-  setSelectedTime({ state, commit }, time: string) {
-    if (state.selectedTime !== time) {
-      state.selectedTime = time
-      commit('setSelectedSubConfig', time)
-    }
+  setSelectedTime({ state, commit }, time = '') {
+    state.selectedTime = time
+    commit('setSelectedSubConfig', time)
   },
   /**
    * 设置选中的单个专题服务的时间轴列表数据
@@ -149,7 +150,7 @@ const mutations = {
   /**
    * 设置选中的单个专题服务
    */
-  setSelected({ state, commit }, id: string) {
+  setSelected({ state, commit }, id = '') {
     if (state.selected !== id) {
       state.selected = id
       commit('setSelectedTimeList', id)

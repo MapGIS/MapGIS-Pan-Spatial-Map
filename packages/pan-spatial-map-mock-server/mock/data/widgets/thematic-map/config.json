@@ -192,7 +192,7 @@
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "title": ""
+                          "title": "省名"
                         },
                         "colorLength": "5"
                       }
@@ -253,7 +253,7 @@
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "title": ""
+                          "title": "省名"
                         },
                         "colorLength": "5"
                       }
@@ -555,7 +555,6 @@
                     "docName": "",
                     "field": "GDP_2008",
                     "layerIndex": null,
-                    "graphType": "",
                     "table": {
                       "showFields": ["省名", "GDP_2008"],
                       "showFieldsTitle": {},

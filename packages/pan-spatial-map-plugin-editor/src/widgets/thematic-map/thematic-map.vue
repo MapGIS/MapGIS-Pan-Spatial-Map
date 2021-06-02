@@ -12,7 +12,7 @@
         @check="onTreeCheck"
       />
     </a-spin>
-    <template v-if="selectedList.length">
+    <template v-show="selectedList.length">
       <!-- 属性表 -->
       <thematic-map-attribute-table />
       <!-- 统计表 -->
@@ -128,8 +128,12 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       }
       return results
     }, [])
+    if (!this.selectedList.length) {
+      this.resetVisible()
+    } else {
+      moduleTypes.forEach(v => this.setVisible(v))
+    }
     this.setSelectedList(this.selectedList)
-    moduleTypes.forEach(v => this.setVisible(v))
   }
 
   /**
@@ -152,7 +156,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   onClose() {
     this.selectedList = []
     this.setSelectedList([])
-    moduleTypes.forEach(v => this.resetVisible(v))
+    this.resetVisible()
   }
 }
 </script>

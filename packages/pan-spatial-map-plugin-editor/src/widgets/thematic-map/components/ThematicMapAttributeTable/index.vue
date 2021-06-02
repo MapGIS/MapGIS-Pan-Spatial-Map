@@ -150,6 +150,7 @@ export default class ThematicMapAttributeTable extends Vue {
    * 设置列表配置
    */
   getTableColumns() {
+    if (!this.selectedSubConfig) return
     const { showFields, showFieldsTitle } = this.selectedSubConfig.table
     this.tableColumns = showFields.map((v: string, i: number) => {
       const title =
@@ -185,11 +186,6 @@ export default class ThematicMapAttributeTable extends Vue {
       }
     })
   }
-
-  /**
-   * 设置列表
-   */
-  onTableInit() {}
 
   /**
    * 专题切换
@@ -259,10 +255,6 @@ export default class ThematicMapAttributeTable extends Vue {
 
   created() {
     this.onSubjectChange(this.selected)
-  }
-
-  beforeDestroy() {
-    // this.atVisible = false
   }
 }
 </script>

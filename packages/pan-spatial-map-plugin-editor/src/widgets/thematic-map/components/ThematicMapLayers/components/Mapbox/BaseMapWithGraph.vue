@@ -211,7 +211,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
    */
   createRingThematicMapLayer() {
     this.chartsSettingForPieOrRing.innerRingRadius = 20
-    this.createPieThematicMapLayer()
+    return this.createPieThematicMapLayer()
   }
 
   /**
@@ -222,7 +222,6 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
     this.initGraphicStyles()
     let chartsSetting = null
     let type = ''
-    console.log('this.graphType', this.graphType)
     switch (this.graphType) {
       case 'bar':
         chartsSetting = this.createBarThematicMapLayer()
