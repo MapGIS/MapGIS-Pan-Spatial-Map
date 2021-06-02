@@ -152,6 +152,6 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
 </script>
 <style lang="less" scoped>
 .popup-row {
-  min-width: 100px;
+  min-width: 120px;
 }
 </style>
