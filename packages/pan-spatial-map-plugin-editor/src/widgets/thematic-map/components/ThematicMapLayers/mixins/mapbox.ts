@@ -13,7 +13,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
 
   showPopup = false
 
-  properties: Record<string, string> = {}
+  properties = null
 
   coordinates: number[] = [0, 0]
 
@@ -64,5 +64,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
    */
   closeInfoWin() {
     this.showPopup = false
+    this.properties = null
+    this.coordinates = [0, 0]
   }
 }

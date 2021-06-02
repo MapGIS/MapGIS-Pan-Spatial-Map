@@ -1,13 +1,13 @@
 <template>
   <!-- 统计专题图 -->
   <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
-    <span v-if="!Object.keys(properties).length">暂无数据</span>
+    <span v-if="!properties">暂无数据</span>
     <template v-else>
       <row-flex
         v-for="(v, k) in properties"
         :key="`base-map-with-graph-properties-${v}`"
         :label="k"
-        :span="[10, 14]"
+        :span="[12, 12]"
         class="popup-row"
         >{{ v }}</row-flex
       >
@@ -222,6 +222,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
     this.initGraphicStyles()
     let chartsSetting = null
     let type = ''
+    console.log('this.graphType', this.graphType)
     switch (this.graphType) {
       case 'bar':
         chartsSetting = this.createBarThematicMapLayer()
@@ -278,12 +279,13 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
       new this.mapbox.Point(event.x - offsetLeft, event.y - offsetTop - 60)
     )
     this.coordinates = [lng, lat]
-    this.properties[field] = value
+    this.properties = {}
+    this.$set(this.properties, field, value)
   }
 }
 </script>
 <style lang="less" scoped>
 .popup-row {
-  min-width: 100px;
+  min-width: 150px;
 }
 </style>

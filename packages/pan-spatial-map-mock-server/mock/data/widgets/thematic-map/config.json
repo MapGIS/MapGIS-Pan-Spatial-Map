@@ -56,30 +56,21 @@
                             "面积",
                             "周长",
                             "省名",
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
+                            "GDP_2007",
+                            "GDP_2008"
                           ],
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "field": "省名",
                           "target": ["万/人"]
                         },
                         "popup": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "title": ""
+                          "title": "省名"
                         },
                         "colorLength": "5"
                       }
@@ -126,28 +117,19 @@
                             "面积",
                             "周长",
                             "省名",
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
+                            "GDP_2007",
+                            "GDP_2008"
                           ],
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "field": "省名",
                           "target": ["万/人"]
                         },
                         "popup": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": ""
                         },
@@ -196,28 +178,19 @@
                             "面积",
                             "周长",
                             "省名",
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
+                            "GDP_2007",
+                            "GDP_2008"
                           ],
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "field": "省名",
                           "target": ["万/人"]
                         },
                         "popup": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": ""
                         },
@@ -266,28 +239,19 @@
                             "面积",
                             "周长",
                             "省名",
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
+                            "GDP_2007",
+                            "GDP_2008"
                           ],
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "field": "省名",
                           "target": ["万/人"]
                         },
                         "popup": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": ""
                         },
@@ -336,28 +300,19 @@
                             "面积",
                             "周长",
                             "省名",
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
+                            "GDP_2007",
+                            "GDP_2008"
                           ],
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "field": "省名",
                           "target": ["万/人"]
                         },
                         "popup": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": ""
                         },
@@ -406,24 +361,19 @@
                             "面积",
                             "周长",
                             "省名",
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
+                            "GDP_2007",
+                            "GDP_2008"
                           ],
                           "showFieldsTitle": {}
                         },
                         "graph": {
-                          "showFields": [
-                            "第一产业增加值_2008",
-                            "第二产业增加值_2008",
-                            "第三产业增加值_2008"
-                          ],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "field": "省名",
                           "target": ["万/人"]
                         },
                         "popup": {
-                          "showFields": [],
+                          "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": ""
                         },
@@ -470,27 +420,27 @@
                     "color": [
                       {
                         "min": "0",
-                        "max": "6355",
+                        "max": "2000000",
                         "sectionColor": "#FFFF66"
                       },
                       {
-                        "min": "6355",
-                        "max": "12711",
+                        "min": "2000000",
+                        "max": "40000000",
                         "sectionColor": "#FFCC66"
                       },
                       {
-                        "min": "12711",
-                        "max": "19066",
+                        "min": "40000000",
+                        "max": "60000000",
                         "sectionColor": "#FF9999"
                       },
                       {
-                        "min": "19066",
-                        "max": "25422",
+                        "min": "60000000",
+                        "max": "80000000",
                         "sectionColor": "#FF66CC"
                       },
                       {
-                        "min": "25422",
-                        "max": "31777",
+                        "min": "80000000",
+                        "max": "100000000",
                         "sectionColor": "#FF3399"
                       }
                     ],
@@ -502,10 +452,10 @@
                       "showFields": ["人口数"],
                       "showFieldsTitle": {},
                       "field": "省名",
-                      "target": ["人"]
+                      "target": ["人口数"]
                     },
                     "popup": {
-                      "showFields": ["省名", "人口数"],
+                      "showFields": ["人口数"],
                       "showFieldsTitle": {},
                       "title": ""
                     }

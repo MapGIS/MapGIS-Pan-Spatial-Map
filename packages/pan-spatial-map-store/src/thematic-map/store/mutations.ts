@@ -10,6 +10,13 @@ import {
 
 const mutations = {
   /**
+   * 设置专题服务的基础和专题配置数据
+   */
+  setThematicMapConfig({ state }, { baseConfig, subjectConfig }) {
+    state.baseConfig = baseConfig
+    state.subjectConfig = subjectConfig
+  },
+  /**
    * 保存专题服务展示弹框的开关
    */
   setVisible({ state }, type: ModuleType) {
@@ -43,90 +50,59 @@ const mutations = {
    * @param onSuccess
    * @param onError
    */
-  setFeaturesQuery({ state }, { onSuccess, onError }) {
+  setFeaturesQuery({ state, commit }, { onSuccess, onError }: any = {}) {
     const { pageParam, selectedSubConfig, baseConfig } = state
-    if (selectedSubConfig) {
-      const { baseIp, basePort } = baseConfig as IThematicMapBaseConfig
-      const { configType = 'gdbp' } = selectedSubConfig
-      const {
-        ip = baseIp,
-        port = basePort,
-        gdbp,
-        docName,
-        layerName,
-        layerIndex: layerIdxs,
-        table: { showFields }
-      } = selectedSubConfig
-      const fields = showFields.join(',')
-      let params: any = {
-        ip,
-        port,
-        fields,
-        IncludeGeometry: true,
-        cursorType: 'backward',
-        f: 'json',
-        ...pageParam
-      }
-      switch (configType.toLowerCase()) {
-        case 'gdbp':
-          params = {
-            ...params,
-            gdbp
-          }
-          break
-        case 'doc':
-          params = {
-            docName,
-            layerName,
-            layerIdxs,
-            ...params
-          }
-          break
-        default:
-          break
-      }
-      state.loading = true
-      const fn = queryFeaturesInstance.query(params)
-      if (fn && fn.then) {
-        fn.then((dataSet: FeatureIGS | any) => {
-          state.loading = false
-          state.pageDataSet = dataSet
-          onSuccess && onSuccess(dataSet)
-        }).catch(e => {
-          onError && onError(e)
-          state.loading = false
-        })
-      }
+    const { baseIp, basePort } = baseConfig as IThematicMapBaseConfig
+    const { configType = 'gdbp' } = selectedSubConfig
+    const {
+      ip = baseIp,
+      port = basePort,
+      gdbp,
+      docName,
+      layerName,
+      layerIndex: layerIdxs,
+      table: { showFields }
+    } = selectedSubConfig
+    const fields = showFields.join(',')
+    let params: any = {
+      ip,
+      port,
+      fields,
+      IncludeGeometry: true,
+      cursorType: 'backward',
+      f: 'json',
+      ...pageParam
     }
-  },
-  /**
-   * 设置专题服务的基础和专题配置数据
-   */
-  setThematicMapConfig({ state }, { baseConfig, subjectConfig }) {
-    state.baseConfig = baseConfig
-    state.subjectConfig = subjectConfig
-  },
-  /**
-   * 设置选中的单个专题服务的时间轴列表数据
-   */
-  setSelectedTimeList({ state, commit }, id: string) {
-    let selectedTimeList: string[] = []
-    const subject = state.selectedList.find(item => item.id === id)
-    if (subject && subject.config) {
-      const { data } = subject.config
-      if (data && data.length) {
-        selectedTimeList = data.map(v => v.time)
-      }
+    switch (configType.toLowerCase()) {
+      case 'gdbp':
+        params = {
+          ...params,
+          gdbp
+        }
+        break
+      case 'doc':
+        params = {
+          docName,
+          layerName,
+          layerIdxs,
+          ...params
+        }
+        break
+      default:
+        break
     }
-    state.selectedTimeList = selectedTimeList
-    commit('setSelectedTime', selectedTimeList[0])
-  },
-  /**
-   * 设置选中的单个专题服务
-   */
-  setSelected({ state, commit }, id: string) {
-    state.selected = id
-    commit('setSelectedTimeList', id)
+    commit('setLoading', true)
+    const fn = queryFeaturesInstance.query(params)
+    if (fn && fn.then) {
+      fn.then((dataSet: FeatureIGS | any) => {
+        commit('setLoading', false)
+        commit('setPageDataSet', dataSet)
+        onSuccess && onSuccess(dataSet)
+      }).catch(e => {
+        commit('setLoading', false)
+        onError && onError(e)
+      })
+    }
   },
   /**
    * 设置选中专题的年度列表
@@ -151,8 +127,33 @@ const mutations = {
    * 设置选中的年度
    */
   setSelectedTime({ state, commit }, time: string) {
-    state.selectedTime = time
-    commit('setSelectedSubConfig', time)
+    if (state.selectedTime !== time) {
+      state.selectedTime = time
+      commit('setSelectedSubConfig', time)
+    }
+  },
+  /**
+   * 设置选中的单个专题服务的时间轴列表数据
+   */
+  setSelectedTimeList({ state, commit }, id: string) {
+    let selectedTimeList: string[] = []
+    const subject = state.selectedList.find(item => item.id === id)
+    if (subject && subject.config) {
+      const { data } = subject.config
+      if (data && data.length) {
+        selectedTimeList = data.map(v => v.time)
+      }
+    }
+    state.selectedTimeList = selectedTimeList
+  },
+  /**
+   * 设置选中的单个专题服务
+   */
+  setSelected({ state, commit }, id: string) {
+    if (state.selected !== id) {
+      state.selected = id
+      commit('setSelectedTimeList', id)
+    }
   },
   /**
    * 设置选中的专题服务集合

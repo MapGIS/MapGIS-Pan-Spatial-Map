@@ -227,7 +227,7 @@ export default class ThematicMapStatisticTable extends Vue {
   }
 
   /**
-   * 监听: 分页数据变化, 设置统计数据
+   * 监听: 分页数据变化
    */
   @Watch('pageDataSet', { deep: true })
   watchPageDataSet(nV) {
@@ -242,7 +242,7 @@ export default class ThematicMapStatisticTable extends Vue {
   }
 
   beforeDestroy() {
-    this.stVisible = false
+    // this.stVisible = false
   }
 }
 </script>

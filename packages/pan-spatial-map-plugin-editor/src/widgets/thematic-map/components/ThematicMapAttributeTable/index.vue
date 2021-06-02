@@ -52,7 +52,8 @@ import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import {
   queryFeaturesInstance,
   mapGetters,
-  mapMutations
+  mapMutations,
+  FeatureIGS
 } from '@mapgis/pan-spatial-map-store'
 import ThematicMapMixin from '../../mixins/thematic-map'
 import RowFlex from '../RowFlex'
@@ -65,7 +66,6 @@ import RowFlex from '../RowFlex'
       'selected',
       'selectedTime',
       'selectedList',
-      'pageDataSet',
       'selectedSubConfig',
       'selectedTimeList'
     ])
@@ -163,30 +163,33 @@ export default class ThematicMapAttributeTable extends Vue {
   }
 
   /**
-   * 获取列表数据
+   * 设置列表数据
    */
   getTableData() {
     this.setFeaturesQuery({
-      onSuccess: dataSet => {
-        const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
-          dataSet
-        )
-        this.total = geojsonData.dataCount
-        this.tableData = geojsonData.features.map(
-          ({ properties }) => properties
-        )
+      onSuccess: (dataSet: FeatureIGS | null) => {
+        if (dataSet) {
+          const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
+            dataSet
+          )
+          if (geojsonData) {
+            this.total = geojsonData.dataCount
+            this.tableData = geojsonData.features.map(
+              ({ properties }) => properties
+            )
+          }
+        } else {
+          this.total = 0
+          this.tableData = []
+        }
       }
     })
   }
 
   /**
-   * 更新、重置分页页码
+   * 设置列表
    */
-  updatePage(pageCount = 10, page = 1) {
-    this.page = page
-    this.pageCount = pageCount
-    this.setPage({ page, pageCount })
-  }
+  onTableInit() {}
 
   /**
    * 专题切换
@@ -196,11 +199,9 @@ export default class ThematicMapAttributeTable extends Vue {
    * @param value<string>
    */
   onSubjectChange(value) {
-    this.updatePage(this.pageCount)
-    if (this.subject !== value) {
-      this.subject = value
-      this.setSelected(value)
-    }
+    this.subject = value
+    this.setSelected(value)
+    this.onTimeChange(this.selectedTimeList[0])
   }
 
   /**
@@ -211,15 +212,13 @@ export default class ThematicMapAttributeTable extends Vue {
    * @param value<string>
    */
   onTimeChange(value) {
-    this.updatePage(this.pageCount)
-    if (this.time !== value) {
-      this.time = value
-      this.setSelectedTime(value)
-      this.getTableColumns()
-      if (this.time) {
-        this.getTableData()
-      }
-    }
+    this.time = value
+    this.setSelectedTime(value)
+    this.getTableColumns()
+    this.onTableChange({
+      current: 1,
+      pageSize: this.pageCount
+    })
   }
 
   /**
@@ -229,16 +228,23 @@ export default class ThematicMapAttributeTable extends Vue {
    * @param 分页参数 current: 当前页; pageSize: 页容量
    */
   onTableChange({ current, pageSize }) {
-    this.updatePage(pageSize, current)
+    this.page = current
+    this.pageCount = pageSize
+    this.setPage({
+      page: current,
+      pageCount: pageSize
+    })
     this.getTableData()
   }
 
   /**
-   * 监听:侧边栏的单个专题的选择发生变化,需要同步更新专题选项
+   * 监听: 专题变化
    */
   @Watch('selected')
   watchSelected(nV: string) {
-    this.onSubjectChange(nV)
+    if (this.subject !== nV) {
+      this.onSubjectChange(nV)
+    }
   }
 
   /**
@@ -246,15 +252,17 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   @Watch('selectedTime')
   watchSelectedTime(nV: string) {
-    this.onTimeChange(nV)
+    if (this.time !== nV) {
+      this.onTimeChange(nV)
+    }
   }
 
   created() {
-    this.onTimeChange(this.selectedTime)
+    this.onSubjectChange(this.selected)
   }
 
   beforeDestroy() {
-    this.atVisible = false
+    // this.atVisible = false
   }
 }
 </script>

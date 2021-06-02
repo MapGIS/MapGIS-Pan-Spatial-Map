@@ -1,15 +1,15 @@
 <template>
   <!-- 聚合标注专题图 -->
   <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
-    <span v-if="!Object.keys(properties).length">暂无数据</span>
+    <span v-if="!properties">暂无数据</span>
     <template v-else>
       <row-flex
         v-for="(v, k) in properties"
         :key="`label-properties-${v}`"
-        :label="k"
+        :label="`${k}`"
         :span="[10, 14]"
         class="popup-row"
-        >{{ v }}</row-flex
+        >{{ `${v}` }}</row-flex
       >
     </template>
   </mapgis-popup>

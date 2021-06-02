@@ -1,7 +1,7 @@
 <template>
   <!-- 等级符号专题图 -->
   <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
-    <span v-if="!Object.keys(properties).length">暂无数据</span>
+    <span v-if="!properties">暂无数据</span>
     <template v-else>
       <row-flex
         v-for="(v, k) in properties"
