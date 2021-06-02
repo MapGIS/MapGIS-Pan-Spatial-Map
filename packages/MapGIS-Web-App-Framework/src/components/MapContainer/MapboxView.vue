@@ -102,13 +102,9 @@
 <script>
 import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
 import { Layer, LayerType, LoadStatus } from '@mapgis/web-app-framework'
-import BaseLayersMapbox from '../BaseLayers/BaseLayersMapbox'
 
 export default {
   name: 'MpMapboxView',
-  components: {
-    BaseLayersMapbox
-  },
   props: {
     mapStyle: {
       type: Object,

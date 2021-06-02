@@ -87,7 +87,6 @@ module.exports = {
     indent: 'off',
 
     'max-classes-per-file': 'off',
-    'vue/no-unused-components': 'off',
 
     'import/first': 'off',
     'import/named': 'error',

@@ -91,12 +91,8 @@ import {
   LoadStatus,
   IGSSceneSublayerRenderType
 } from '@mapgis/web-app-framework'
-import BaseLayersCesium from '../BaseLayers/BaseLayersCesium'
-import { baseLayerManagerInstance } from '@mapgis/pan-spatial-map-store'
-
 export default {
   name: 'MpCesiumView',
-  components: { BaseLayersCesium },
   props: {
     document: {
       type: Object,
@@ -111,19 +107,7 @@ export default {
   },
   data() {
     return {
-      layers: [],
-      baseLayerManager: baseLayerManagerInstance
-    }
-  },
-  computed: {
-    baseLayers() {
-      if (this.baseLayerManager) {
-        const arr = this.baseLayerManager.layerNames.map(
-          name => this.baseLayerManager.layerCache.get(name) || []
-        )
-        return arr.reduce((x, y) => [...x, ...y], []).length
-      }
-      return 0
+      layers: []
     }
   },
   watch: {
@@ -132,12 +116,6 @@ export default {
     },
     document: {
       deep: true,
-      handler() {
-        this.parseDocument()
-      }
-    },
-    baseLayers: {
-      immediate: true,
       handler() {
         this.parseDocument()
       }
