@@ -1,6 +1,19 @@
 .mp-widget-swipe {
   width: 100%;
   height: 100%;
+  /deep/ .mapboxgl-compare {
+    user-select: none;
+    border: 1px solid @primary-color;
+    background-color: @border-color;
+    .compare-swiper-vertical,
+    .compare-swiper-horizontal {
+      background-color: @primary-color;
+    }
+  }
+  /deep/ .ant-drawer-right.ant-drawer-open .ant-drawer-content-wrapper {
+    box-shadow: none;
+    border-left: 1px solid @primary-color;
+  }
   .swipe-container {
     width: 100%;
     height: 100%;

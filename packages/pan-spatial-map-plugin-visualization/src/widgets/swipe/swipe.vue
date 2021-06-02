@@ -47,56 +47,26 @@
           style="flex: 1;"
         >
           <!-- 上图层 -->
-          <a-row>
-            <label>{{ directionLayerTitle.aboveTitle }}图层</label>
-          </a-row>
-          <a-row>
+          <row :title="directionLayerTitle.aboveTitle">
             <a-select
-              class="swipe-select"
-              :value="aboveLayer"
-              @change="getLayers($event, 'aboveLayer', 'belowLayers')"
-            >
-              <a-select-option
-                v-for="item in aboveLayers"
-                :value="item.id"
-                :key="item.id"
-                >{{ item.title }}
-              </a-select-option>
-            </a-select>
-          </a-row>
+              :value="aboveLayer.id"
+              :options="aboveLayers"
+              @change="onAboveChange"
+            />
+          </row>
           <!-- 下图层 -->
-          <a-row>
-            <label> {{ directionLayerTitle.belowTitle }}图层</label>
-          </a-row>
-          <a-row>
+          <row :title="directionLayerTitle.belowTitle">
             <a-select
-              class="swipe-select"
-              :value="belowLayer"
-              @change="getLayers($event, 'belowLayer', 'aboveLayers')"
-            >
-              <a-select-option
-                v-for="item in belowLayers"
-                :value="item.id"
-                :key="item.id"
-                >{{ item.title }}
-              </a-select-option>
-            </a-select>
-          </a-row>
-          <a-row>
-            <!-- 方向 -->
-            <a-radio-group
-              class="swipe-radio-group"
-              :value="direction"
-              @change="onDirectionChange"
-            >
-              <a-radio value="vertical">
-                垂直
-              </a-radio>
-              <a-radio value="horizontal" v-show="is2DMapMode">
-                水平
-              </a-radio>
-            </a-radio-group>
-          </a-row>
+              :value="belowLayer.id"
+              :options="belowLayers"
+              @change="onBelowChange"
+            />
+          </row>
+          <!-- 方向 -->
+          <a-radio-group :value="direction" @change="onDirectionChange">
+            <a-radio value="vertical"> 垂直 </a-radio>
+            <a-radio value="horizontal" v-show="is2DMapMode"> 水平 </a-radio>
+          </a-radio-group>
         </a-space>
       </a-drawer>
     </div>
@@ -268,22 +238,4 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
 
 <style lang="less" scoped>
 @import './swipe.less';
-</style>
-
-<style lang="less">
-.mp-widget-swipe {
-  .mapboxgl-compare {
-    user-select: none;
-    border: 1px solid @primary-color;
-    background-color: @border-color;
-    .compare-swiper-vertical,
-    .compare-swiper-horizontal {
-      background-color: @primary-color;
-    }
-  }
-  .ant-drawer-right.ant-drawer-open .ant-drawer-content-wrapper {
-    box-shadow: none;
-    border-left: 1px solid @primary-color;
-  }
-}
 </style>
