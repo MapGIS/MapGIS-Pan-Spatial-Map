@@ -2,9 +2,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import * as Zondy from '@mapgis/webclient-es6-service'
 
-@Component({
-  components: {}
-})
+@Component
 export default class MapboxDraw extends Vue {
   // -1 空状态、0  点、1  线、2   面、3  矩形、 4圆形
   private type = -1
@@ -37,7 +35,6 @@ export default class MapboxDraw extends Vue {
   }
 
   onDrawFinish(e) {
-    debugger
     const { coordinates } = e.features[0].geometry
     let nearDis = this.limits * 1000
     const { projectionName } = baseConfigInstance.config

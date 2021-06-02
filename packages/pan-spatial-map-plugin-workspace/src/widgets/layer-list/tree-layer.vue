@@ -41,6 +41,7 @@
                 item.title.toUpperCase().indexOf(filter.toUpperCase()) > -1
             "
             :id="`tree_${item.key}`"
+            :title="setTooltip(item)"
           >
             <span>{{
               item.title.substr(
@@ -61,7 +62,9 @@
               )
             }}</span>
           </span>
-          <span v-else :id="`tree_${item.key}`">{{ item.title }}</span>
+          <span v-else :id="`tree_${item.key}`" :title="setTooltip(item)">{{
+            item.title
+          }}</span>
           <a-popover
             placement="bottomLeft"
             arrow-point-at-center
@@ -272,6 +275,8 @@ export default class TreeLayer extends Mixins(
 ) {
   @Prop() widgetInfo: Record<string, any>
 
+  @Prop() dataCatalog: Array<Record<string, any>>
+
   private filter = ''
 
   private ticked: Array<string> = []
@@ -317,6 +322,27 @@ export default class TreeLayer extends Mixins(
 
     return []
   }
+
+  setTooltip(item) {
+    return ''
+    // if (this.isParentLayer(item)) {
+    //   const arr = []
+    //   this.findParentName(item.id, arr, this.dataCatalog)
+    //   return item.title
+    // } else {
+    //   return null
+    // }
+  }
+
+  // findParentName(id, arr, dataCatalog) {
+  //   dataCatalog.forEach(item => {
+  //     if (item.guid === id) {
+  //       arr.push(item.label)
+  //     } else if (item.children) {
+  //       this.findParentName(id, arr, item.children)
+  //     }
+  //   })
+  // }
 
   @Watch('document.defaultMap', { deep: true, immediate: true })
   documentChange(newValue, oldValue) {

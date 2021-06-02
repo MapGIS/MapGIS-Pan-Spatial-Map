@@ -9,26 +9,24 @@
     :fullscreen-button="false"
     style="height: 100%; width: 100%"
   >
-    <base-layers-cesium :document="document" />
+    <!-- <base-layers-cesium :document="document" /> -->
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
       />
       <mapgis-3d-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
         :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
-        :show="layerProps.show"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
       />
       <mapgis-3d-igs-vector-layer
         v-if="isIgsVectorLayer(layerProps.type)"
         :id="layerProps.layerId"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
         :gdbps="layerProps.gdbps"
         :layerStyle="layerProps.layerStyle"
         :srs="layerProps.srs"
@@ -37,7 +35,7 @@
         v-if="isWMSLayer(layerProps.type)"
         :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
         :layers="layerProps.layers"
       />
       <mapgis-3d-ogc-wmts-layer
@@ -45,23 +43,23 @@
         :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :options="layerProps.options"
-        :url="layerProps.url"
-        :layer="layerProps.layer"
+        :baseUrl="layerProps.url"
+        :wmtsLayer="layerProps.layer"
         :wmtsStyle="layerProps.wmtsStyle"
         :srs="layerProps.srs"
-        :tileMatrixSetID="layerProps.tileMatrixSetID"
+        :tileMatrixSet="layerProps.tileMatrixSetID"
       />
       <mapgis-3d-arcgis-tile-layer
         v-if="isArcgisTileLayer(layerProps.type)"
         :id="layerProps.layerId"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
         :layerStyle="layerProps.layerStyle"
         :srs="layerProps.srs"
       />
       <mapgis-3d-arcgis-map-layer
         v-if="isArcgisMapLayer(layerProps.type)"
         :id="layerProps.layerId"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
         :layers="layerProps.layers"
         :layerStyle="layerProps.layerStyle"
         :srs="layerProps.srs"
@@ -93,12 +91,8 @@ import {
   LoadStatus,
   IGSSceneSublayerRenderType
 } from '@mapgis/web-app-framework'
-import BaseLayersCesium from '../BaseLayers/BaseLayersCesium'
-import { baseLayerManagerInstance } from '@mapgis/pan-spatial-map-store'
-
 export default {
   name: 'MpCesiumView',
-  components: { BaseLayersCesium },
   props: {
     document: {
       type: Object,
@@ -113,19 +107,7 @@ export default {
   },
   data() {
     return {
-      layers: [],
-      baseLayerManager: baseLayerManagerInstance
-    }
-  },
-  computed: {
-    baseLayers() {
-      if (this.baseLayerManager) {
-        const arr = this.baseLayerManager.layerNames.map(
-          name => this.baseLayerManager.layerCache.get(name) || []
-        )
-        return arr.reduce((x, y) => [...x, ...y], []).length
-      }
-      return 0
+      layers: []
     }
   },
   watch: {
@@ -134,12 +116,6 @@ export default {
     },
     document: {
       deep: true,
-      handler() {
-        this.parseDocument()
-      }
-    },
-    baseLayers: {
-      immediate: true,
       handler() {
         this.parseDocument()
       }
@@ -154,6 +130,26 @@ export default {
 
       // 先将图层置空，避免图层重复添加
       const layers = []
+
+      this.document.baseLayerMap
+        .clone()
+        .getFlatLayers()
+        .forEach((layer, index) => {
+          if (layer.type === LayerType.IGSScene) {
+            layer.activeScene.layers.forEach(igsSceneSublayer => {
+              const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
+                igsSceneSublayer
+              )
+              layers.push(layerComponentProps)
+            })
+          } else {
+            const layerComponentProps = this.genLayerComponentPropsByLayer(
+              layer,
+              index
+            )
+            layers.push(layerComponentProps)
+          }
+        })
 
       this.document.defaultMap
         .clone()
@@ -170,7 +166,8 @@ export default {
             } else {
               const layerComponentProps = this.genLayerComponentPropsByLayer(
                 layer,
-                index
+                this.document.baseLayerMap.clone().getFlatLayers().length +
+                  index
               )
               layers.push(layerComponentProps)
             }
@@ -178,6 +175,7 @@ export default {
         })
 
       this.layers = layers
+      console.log(layers)
     },
 
     genLayerComponentPropsByIGSSceneSublayer(igsSceneSublayer) {
@@ -225,7 +223,7 @@ export default {
       const layerStyle = {
         visible: layer.isVisible,
         opacity: layer.opacity,
-        zIndex: this.baseLayers + index + 1
+        zIndex: index + 1
       }
 
       // 图层空间参照系
@@ -308,7 +306,6 @@ export default {
             if (element.visible && element.name)
               allLayerNames.push(element.name)
           })
-
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -326,7 +323,7 @@ export default {
 
           break
         case LayerType.arcGISMapImage:
-          showLayers = ''
+          showLayers = 'show:'
 
           visibleSubLayers = layer.allSublayers.filter(sublayer => {
             if (sublayer.visible) return true

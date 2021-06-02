@@ -3,8 +3,8 @@ import Vue from 'vue'
 import VueMapbox from '@mapgis/webclient-vue-mapboxgl'
 import VueCesium from '@mapgis/webclient-vue-cesium'
 
-Vue.use(VueMapbox)
-Vue.use(VueCesium)
+Vue.use(VueMapbox, {})
+Vue.use(VueCesium, {})
 
 export { AppManager, WidgetManager } from './managers'
 

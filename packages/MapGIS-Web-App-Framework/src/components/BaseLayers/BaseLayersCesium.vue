@@ -3,7 +3,7 @@
     <mapgis-3d-igs-doc-layer
       v-for="layer in docLayers"
       :key="layer.id"
-      :url="layer.url"
+      :baseUrl="layer.url"
       :ip="layer.ip"
       :port="layer.port"
       :serverName="layer.serverName"
@@ -11,7 +11,7 @@
     <mapgis-3d-igs-tile-layer
       v-for="layer in tileLayers"
       :key="layer.id"
-      :url="layer.url"
+      :baseUrl="layer.url"
       :ip="layer.ip"
       :port="layer.port"
       :serverName="layer.serverName"

@@ -30,15 +30,13 @@
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { envInstance, BaseLayersMixin } from '@mapgis/pan-spatial-map-store'
+import { envInstance } from '@mapgis/pan-spatial-map-store'
+import baseMapUtil from './base-map-util'
 
 @Component({ name: 'MpBasemapManager' })
-export default class MpBasemapManager extends Mixins(
-  WidgetMixin,
-  BaseLayersMixin
-) {
+export default class MpBasemapManager extends Mixins(WidgetMixin, baseMapUtil) {
   private get mapData() {
-    return this.baseLayerConfig.filter(config => {
+    return this.config.filter(config => {
       const { scene, visible } = config
       if (this.is2DMapMode) {
         return (scene === '2D' || scene === '23D') && visible === 'true'
