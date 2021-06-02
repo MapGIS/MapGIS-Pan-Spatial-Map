@@ -1,6 +1,11 @@
 import { Layer } from '@mapgis/webclient-store'
 import { Component, Vue, Mixins, Watch } from 'vue-property-decorator'
-import { WidgetMixin, UUID, LayerType } from '@mapgis/web-app-framework'
+import {
+  WidgetMixin,
+  UUID,
+  LayerType,
+  LoadStatus
+} from '@mapgis/web-app-framework'
 import {
   utilInstance,
   baseConfigInstance,
@@ -67,7 +72,8 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
                 token: '2ddaabf906d4b5418aed0078e1657029',
                 ip: serverip,
                 port: serverport,
-                guid
+                guid,
+                layerType
               })
               break
             case 'WMTS':
@@ -105,21 +111,8 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
                 port: serverport,
                 layerType: tempLayerType,
                 guid,
-                baseURL: `http://services.arcgisonline.com/ArcGIS/rest/services/${tempLayerType}/MapServer`,
+                baseURL: templateUrl,
                 serverURL: `http://services.arcgisonline.com/ArcGIS/rest/services/${tempLayerType}/MapServer`
-              })
-              break
-            case 'google':
-            case 'googleExt':
-              // eslint-disable-next-line no-case-declarations
-              const { pType } = item
-              layer = this.createGoogleLayer({
-                ip: serverip,
-                port: serverport,
-                layerType,
-                serverURL: serverUrl,
-                pType,
-                guid
               })
               break
             case 'baidu':
@@ -170,13 +163,25 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
             default:
               break
           }
-          arr.push(DataCatalogManager.generateLayerByConfig({ ...layer, name }))
+
+          const mapLayer = DataCatalogManager.generateLayerByConfig({
+            ...layer,
+            name
+          })
+          // 2.将图层添加到全局的document中。
+          if (mapLayer) {
+            arr.push(mapLayer)
+          }
         })
       }
     })
     this.document.baseLayerMap.removeAll()
-    arr.forEach(layer => {
+    arr.map(async layer => {
+      if (layer.loadStatus === LoadStatus.notLoaded) {
+        await layer.load()
+      }
       this.document.baseLayerMap.add(layer)
+      return null
     })
   }
 
@@ -227,12 +232,79 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
   }
 
   public createTianDiTuLayer(
-    layer: Record<string, unknown>
+    item: Record<string, string>
   ): Record<string, unknown> {
-    layer.serverType = LayerType.OGCWMTS
-    layer.guid = layer.guid || UUID.uuid()
+    // layer.serverType = LayerType.OGCWMTS
+    // layer.guid = layer.guid || UUID.uuid()
 
-    return layer
+    const { baseURL, token, ip, port, guid } = item
+    let { layerType } = item
+
+    let url_tdt = ''
+    const layerLabelMap = {
+      vec: 'cva',
+      ter: 'cta',
+      img: 'cia'
+    }
+    const layerZoomMap = {
+      vec: 18,
+      ter: 14,
+      img: 18
+    }
+    const version = '1.0.0'
+    const tdtStyle = 'default'
+    const format = 'tiles'
+    const tileSize = 512
+
+    let layer: string = layerType
+    const tilematrixSet = 'c'
+    if (baseURL) {
+      let str = baseURL.split('gov.cn/')[1]
+      if (baseURL.indexOf('?') > 0) {
+        str = str.split('?')[0]
+      }
+      layerType = str.substring(0, str.length - 7)
+      layer = layerType
+      url_tdt = baseURL
+      if (!baseURL.includes('?')) {
+        url_tdt += '?'
+      }
+    } else {
+      const tempUrl = `http://t${Math.round(
+        Math.random() * 7
+      )}.tianditu.gov.cn/{layer}_{proj}/wmts?`
+      url_tdt = tempUrl
+        .replace('{layer}', layer)
+        .replace('{proj}', tilematrixSet)
+    }
+
+    const params: Array<string> = []
+    if (!layerType.includes('igs')) {
+      params.push('request=GetTile')
+      params.push(`version=${version}`)
+      params.push(`style=${tdtStyle}`)
+      params.push(`tilematrixSet=${tilematrixSet}`)
+      params.push(`format=${format}`)
+      params.push(`width=${tileSize}`)
+      params.push(`height=${tileSize}`)
+      params.push(`layer=${layer}`)
+      params.push('tilematrix={TileMatrix}')
+      params.push('tilerow={TileRow}')
+      params.push('tilecol={TileCol}')
+    }
+    if (token) {
+      params.push(`tk=${token}`)
+    }
+    params.push('service=WMTS')
+    url_tdt += params.join('&')
+
+    return {
+      serverType: LayerType.OGCWMTS,
+      guid: item.guid || UUID.uuid(),
+      ip,
+      port,
+      serverURL: url_tdt
+    }
   }
 
   public createIgsWmtsLayer(
@@ -247,7 +319,9 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
   public createArcgisLayer(
     layer: Record<string, unknown>
   ): Record<string, unknown> {
-    layer.serverType = LayerType.arcGISTile
+    layer.serverType = (layer.baseURL as string).includes('{z}/{y}/{x}')
+      ? LayerType.arcGISTile
+      : LayerType.arcGISMapImage
     layer.guid = layer.guid || UUID.uuid()
 
     return layer

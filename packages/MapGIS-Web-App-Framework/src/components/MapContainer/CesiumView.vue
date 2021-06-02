@@ -136,19 +136,21 @@ export default {
         .clone()
         .getFlatLayers()
         .forEach((layer, index) => {
-          if (layer.type === LayerType.IGSScene) {
-            layer.activeScene.layers.forEach(igsSceneSublayer => {
-              const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
-                igsSceneSublayer
+          if (layer.loadStatus === LoadStatus.loaded) {
+            if (layer.type === LayerType.IGSScene) {
+              layer.activeScene.layers.forEach(igsSceneSublayer => {
+                const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
+                  igsSceneSublayer
+                )
+                layers.push(layerComponentProps)
+              })
+            } else {
+              const layerComponentProps = this.genLayerComponentPropsByLayer(
+                layer,
+                index
               )
               layers.push(layerComponentProps)
-            })
-          } else {
-            const layerComponentProps = this.genLayerComponentPropsByLayer(
-              layer,
-              index
-            )
-            layers.push(layerComponentProps)
+            }
           }
         })
 

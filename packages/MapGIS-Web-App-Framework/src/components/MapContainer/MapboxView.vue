@@ -327,12 +327,12 @@ export default {
         .clone()
         .getFlatLayers()
         .forEach(layer => {
-          // if (layer.loadStatus === LoadStatus.loaded) {
-          const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
-            layer
-          )
-          layers.push(mapboxLayerComponentProps)
-          // }
+          if (layer.loadStatus === LoadStatus.loaded) {
+            const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
+              layer
+            )
+            layers.push(mapboxLayerComponentProps)
+          }
         })
 
       this.document.defaultMap
