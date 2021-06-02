@@ -103,6 +103,6 @@ export default class TimeLine extends Vue {
 .time-line-chart {
   width: 400px;
   height: 48px;
-  margin: 10px 0 20px;
+  margin: 10px 0 10px;
 }
 </style>

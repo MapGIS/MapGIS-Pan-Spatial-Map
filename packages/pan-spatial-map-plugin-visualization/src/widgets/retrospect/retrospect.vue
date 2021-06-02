@@ -1,11 +1,11 @@
 <template>
   <div class="mp-widget-retrospect">
     <a-spin tip="正在加载..." :spinning="loading">
-      <a-row type="flex" align="middle" justify="start" class="retrospect-row">
-        <a-col :span="5">
-          专题选择：
-        </a-col>
-        <a-col :span="19">
+      <div class="retrospect-body">
+        <a-row class="retrospect-row">
+          <label>专题选择</label>
+        </a-row>
+        <a-row class="retrospect-row">
           <a-tree-select
             class="retrospect-tree-select"
             :value="subject"
@@ -14,22 +14,25 @@
             :replaceFields="replaceFields"
             :tree-data="treeData"
           />
-        </a-col>
-      </a-row>
-      <div class="retrospect-time-line" v-show="timeLineList.length">
-        <time-line
-          id="retrospect-time-line"
-          ref="time-line"
-          v-model="timeIndex"
-          :timeLineList="timeLineYearList"
-          :playInterval="interval"
-          :autoPlay="isPlay"
-        />
+        </a-row>
+        <a-row class="retrospect-row">
+          <div class="retrospect-time-line" v-show="timeLineList.length">
+            <time-line
+              id="retrospect-time-line"
+              ref="time-line"
+              v-model="timeIndex"
+              :timeLineList="timeLineYearList"
+              :playInterval="interval"
+              :autoPlay="isPlay"
+            />
+          </div>
+        </a-row>
         <a-row
-          class="retrospect-row"
           type="flex"
           align="middle"
           justify="space-between"
+          class="retrospect-row"
+          v-show="timeLineList.length"
         >
           <a-col :span="24 / btns.length" v-for="btn in btns" :key="btn.name">
             <a-tooltip placement="bottom" :title="btn.tooltip">
@@ -41,32 +44,31 @@
             </a-tooltip>
           </a-col>
         </a-row>
-        <transition name="fade">
-          <a-row
-            class="retrospect-row"
-            type="flex"
-            align="middle"
-            justify="end"
-            v-show="showInterval"
-          >
-            <a-col :span="7">
-              时间间隔：
-            </a-col>
-            <a-col :span="15">
-              <a-input-number
-                class="retrospect-input-number"
-                v-model="interval"
-                :min="1"
-              />
-            </a-col>
-            <a-col :span="2" class="retrospect-input-number-unit">
-              秒
-            </a-col>
-          </a-row>
-        </transition>
+        <a-divider v-show="showInterval"></a-divider>
+        <a-row v-show="showInterval" class="retrospect-row">
+          <label>时间间隔</label>
+        </a-row>
+        <a-row
+          type="flex"
+          align="middle"
+          justify="start"
+          class="retrospect-row"
+          v-show="showInterval"
+        >
+          <a-col :span="22">
+            <a-input-number
+              class="retrospect-input-number"
+              v-model="interval"
+              :min="1"
+            />
+          </a-col>
+          <a-col :span="2" class="retrospect-input-number-unit">
+            秒
+          </a-col>
+        </a-row>
+        <!-- 空数据友好提示 -->
+        <a-empty :image="simpleImage" v-show="!timeLineList.length" />
       </div>
-      <!-- 空数据友好提示 -->
-      <a-empty :image="simpleImage" v-show="!timeLineList.length" />
     </a-spin>
   </div>
 </template>
@@ -422,31 +424,40 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
 
 <style lang="less" scoped>
 .mp-widget-retrospect {
-  min-width: 400px;
-  max-width: 1600px;
-}
-.retrospect-tree-select,
-.retrospect-input-number {
-  width: 100%;
-}
-
-.retrospect-row {
-  margin: 5px 0;
-}
-
-.retrospect-input-number-unit {
-  text-align: right;
-}
-.retrospect-time-line {
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-.retrospect-btn {
-  font-size: 16px;
-  cursor: pointer;
-  &:hover {
-    color: @primary-color;
+  .retrospect-body {
+    display: flex;
+    flex-direction: column;
+    .retrospect-row {
+      margin-bottom: 8px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    .retrospect-input-number-unit {
+      text-align: right;
+    }
+    .retrospect-tree-select,
+    .retrospect-input-number {
+      width: 100%;
+    }
+    .retrospect-time-line {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .retrospect-btn {
+      font-size: 16px;
+      cursor: pointer;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+    .ant-divider-horizontal {
+      margin: 8px 0;
+    }
+    .ant-empty-normal {
+      margin: 8px 0;
+    }
   }
 }
 </style>
