@@ -139,7 +139,12 @@
         </span>
       </a-tree>
     </div>
-    <a-modal v-model="showUploader" :width="300" :footer="null">
+    <a-modal
+      v-model="showUploader"
+      :dialog-style="{ top: '150px' }"
+      :width="300"
+      :footer="null"
+    >
       <a-upload
         name="file"
         accept=".jpg, image/*"
@@ -619,6 +624,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   private onUploadLegend(item) {
     this.showUploader = true
     this.legendNode = item
+    this.$message.info('建议上传宽高比为1:1的图片')
   }
 
   // 上传文件之前的钩子
