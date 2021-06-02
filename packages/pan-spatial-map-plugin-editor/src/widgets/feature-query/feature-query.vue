@@ -114,7 +114,7 @@ export default class MpFeatureQuery extends Mixins(
     'LineString'
   ]
 
-  private defaultQueryTypes3d = ['Point', 'Polygon', 'LineString']
+  private defaultQueryTypes3d = ['Point', 'Polygon', 'LineString', 'Rectangle']
 
   private drawStyle = []
 
@@ -199,7 +199,7 @@ export default class MpFeatureQuery extends Mixins(
         this.togglePolygon3D()
         break
       case 'Rectangle':
-        // this.interactionDrawRectangle()
+        this.toggleRect3D()
         break
       case 'PickModel':
         // this.interactionPickModel()
