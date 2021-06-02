@@ -160,42 +160,6 @@
     "defaultVisible": "true"
   },
   {
-    "name": "谷歌地图",
-    "image": "/upload/terrainmap.png",
-    "scene": "3D",
-    "children": [
-      {
-        "serverType": "google",
-        "serverUrl": "",
-        "layerType": "lyrs=s@130",
-        "projection": "ol.proj.get('EPSG:4326')",
-        "serverip": "",
-        "serverport": "",
-        "layerName": "TestMap2"
-      }
-    ],
-    "visible": "true"
-  },
-  {
-    "name": "谷歌地图扩展",
-    "scene": "3D",
-    "image": "/upload/terrainmap.png",
-    "children": [
-      {
-        "serverType": "googleExt",
-        "serverUrl": "",
-        "layerType": null,
-        "projection": "ol.proj.get('EPSG:4326')",
-        "serverip": "",
-        "serverport": "",
-        "layerName": "TestMap3",
-        "isImageLayer": null,
-        "pType": "s,r"
-      }
-    ],
-    "visible": "true"
-  },
-  {
     "name": "天地图",
     "scene": "3D",
     "image": "/upload/terrainmap.png",

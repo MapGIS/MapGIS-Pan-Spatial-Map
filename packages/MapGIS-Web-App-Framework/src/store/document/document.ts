@@ -34,6 +34,24 @@ export class Document {
   }
 
   /**
+   * 获取底图地图.
+   * 底图地图为地图列表中的第1个。
+   *
+   * @date 06/04/2021
+   * @readonly
+   * @type {(Map | undefined)}
+   * @memberof Document
+   */
+  get baseLayerMap(): Map | undefined {
+    if (this.maps.length === 0) {
+      this.maps = [new Map(), new Map()]
+    } else if (this.maps.length === 1) {
+      this.maps.push(new Map())
+    }
+    return this.maps[1]
+  }
+
+  /**
    * 创建一个深度克隆的Map
    *
    * @date 06/04/2021

@@ -10,11 +10,18 @@
         {{ label }}
       </li>
     </ul>
-    <tree-layer v-show="tab === 'tree'" :widgetInfo="widgetInfo" />
-    <layer-opacity
-      v-show="tab === 'opacity'"
-      :layers="document.defaultMap.layers()"
-    />
+    <template v-if="dataCatalog">
+      <tree-layer
+        v-show="tab === 'tree'"
+        :data-catalog="dataCatalog"
+        :widgetInfo="widgetInfo"
+      />
+      <layer-opacity
+        v-show="tab === 'opacity'"
+        :data-catalog="dataCatalog"
+        :layers="document.defaultMap.layers()"
+      />
+    </template>
   </div>
 </template>
 
@@ -23,6 +30,7 @@ import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
 import treeLayer from './tree-layer'
 import layerOpacity from './layer-opacity'
+import { api } from '@mapgis/pan-spatial-map-store'
 
 @Component({
   name: 'MpLayerList',
@@ -31,10 +39,23 @@ import layerOpacity from './layer-opacity'
 export default class MpLayerList extends Mixins(WidgetMixin) {
   private tab = 'tree'
 
+  private dataCatalog = null
+
   private tabs = [
     { key: 'tree', label: '图层树' },
     { key: 'opacity', label: '透明度' }
   ]
+
+  async mounted() {
+    try {
+      const { treeConfig } = await api.getWidgetConfig('data-catalog')
+      if (treeConfig) {
+        this.dataCatalog = treeConfig.treeData
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
 </script>
 

@@ -9,7 +9,7 @@
     @load="handleLoad"
     style="height: 100%; width: 100%"
   >
-    <base-layers-mapbox :document="document" />
+    <!-- <base-layers-mapbox :document="document" /> -->
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
@@ -245,7 +245,8 @@ export default {
         case LayerType.OGCWMS:
           allLayerNames = []
           layer.allSublayers.forEach(element => {
-            if (element.visible) allLayerNames.push(element.name)
+            if (element.visible && element.name)
+              allLayerNames.push(element.name)
           })
 
           mapboxLayerComponentProps = {
@@ -253,7 +254,7 @@ export default {
             layerId: layer.id,
             sourceId: layer.id,
             baseUrl: layer.url,
-            layers: allLayerNames,
+            layers: allLayerNames.join(','),
             version: layer.version,
             token: layer.tokenValue,
             reversebbox: false
@@ -325,6 +326,18 @@ export default {
 
       // 先将图层置空，避免图层重复添加
       const layers = []
+
+      this.document.baseLayerMap
+        .clone()
+        .getFlatLayers()
+        .forEach(layer => {
+          // if (layer.loadStatus === LoadStatus.loaded) {
+          const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
+            layer
+          )
+          layers.push(mapboxLayerComponentProps)
+          // }
+        })
 
       this.document.defaultMap
         .clone()

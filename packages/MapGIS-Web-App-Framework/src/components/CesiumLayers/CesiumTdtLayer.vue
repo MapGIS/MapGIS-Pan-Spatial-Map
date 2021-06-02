@@ -1,10 +1,10 @@
 <template>
   <mapgis-3d-ogc-wmts-layer
     :layerStyle="layerStyle"
-    :url="url_tdt"
+    :baseUrl="url_tdt"
     :srs="crs"
-    tileMatrixSetID=""
-    layer=""
+    tileMatrixSet=""
+    wmtsLayer=""
   />
 </template>
 
