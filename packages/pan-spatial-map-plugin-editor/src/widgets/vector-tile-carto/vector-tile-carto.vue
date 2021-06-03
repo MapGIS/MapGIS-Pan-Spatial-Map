@@ -202,8 +202,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
         },
         []
       )
-      // 矢量瓦片下拉项默认值为第0项数据
-      this.formData.vectorTileName = this.vectorTileOptions[0]
+      if (this.vectorTileOptions.length > 0) {
+        // 矢量瓦片下拉项默认值为第0项数据
+        this.formData.vectorTileName = this.vectorTileOptions[0]
+      }
     } else {
       // 如果没有勾选任何矢量图层，则置空所有下拉项数据以及子图层
       this.vectorTileOptions = []
