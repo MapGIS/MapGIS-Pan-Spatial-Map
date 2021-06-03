@@ -73,6 +73,12 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
         })
       )
       bound = new Zondy.Common.Polygon(arr)
+    } else if (this.type3d === 3) {
+      if (cartesian3.length === 2) {
+        const [xmin, ymax] = this.setLonLat(cartesian3[0])
+        const [xmax, ymin] = this.setLonLat(cartesian3[1])
+        bound = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
+      }
     }
 
     this.queryType = ''
@@ -95,6 +101,12 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     this.clearCesiumDraw3D()
     this.type3d = 2
     this.drawer3d?.enableDrawPolygon()
+  }
+
+  toggleRect3D() {
+    this.clearCesiumDraw3D()
+    this.type3d = 3
+    this.drawer3d?.enableDrawRectangle()
   }
 
   clearCesiumDraw3D() {
