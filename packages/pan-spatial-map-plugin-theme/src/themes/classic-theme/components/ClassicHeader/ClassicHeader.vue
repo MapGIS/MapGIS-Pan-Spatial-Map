@@ -99,11 +99,6 @@ export default {
 
 <style lang="less" scoped>
 .header-wrapper {
-  &.night {
-    .menu {
-      background: @base-bg-color;
-    }
-  }
   .header-wide {
     .header-menu {
       height: 100%;
