@@ -217,7 +217,61 @@ export default class AddServicesData extends Mixins(
 
   // 点击保存服务按钮的回调
   private onSave() {
-    const config = { ...this.widgetConfig, ...{ services2D: this.services } }
+    let configData = this.is2DMapMode
+      ? this.widgetConfig.services2D
+      : this.widgetConfig.services3D
+
+    // 若用户新增了自定义的服务分类,得先保存用户新增的服务分类
+    this.serviceCategories.forEach(item => {
+      if (!configData.some(item2 => item2.name === item.name)) {
+        configData.push({
+          name: item.name,
+          describe: item.name,
+          nocheck: true,
+          isParent: true,
+          children: []
+        })
+      }
+    })
+
+    // 将当前服务数据存储到各自对应的服务分类的children数组中
+    configData = configData.reduce((result, item) => {
+      const serviceArr = this.services.filter(
+        item2 => item2.category === item.name
+      )
+      item.children = []
+
+      if (serviceArr.length > 0) {
+        serviceArr.forEach(service => {
+          item.children.push({
+            name: service.name,
+            type: service.type,
+            ip: service.ip,
+            port: service.port,
+            serverUrl: service.url,
+            describe: '',
+            extent: service.extend || '',
+            isImageLayer: '',
+            ptype: '',
+            layerType: service.layerType || '',
+            layerType1: '',
+            localUrl: '',
+            Type: service.type,
+            theme: service.category,
+            showName: service.name,
+            gdbp: service.gdbp || '',
+            token: service.token || ''
+          })
+        })
+      }
+      result.push(item)
+      return result
+    }, [])
+
+    const config = this.is2DMapMode
+      ? { ...this.widgetConfig, services2D: configData }
+      : { ...this.widgetConfig, services3D: configData }
+
     api
       .saveWidgetConfig({
         name: 'add-data',

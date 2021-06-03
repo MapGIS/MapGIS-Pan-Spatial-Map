@@ -88,38 +88,60 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
     this.services = []
     // 将服务分类下拉项数据清空
     this.serviceCategories = []
+
     if (this.is2DMapMode) {
-      tempServices = this.handleConfigData(this.widgetInfo.config.services2D)
+      tempServices = this.widgetInfo.config.services2D
     } else {
-      tempServices = this.handleConfigData(this.widgetInfo.config.services3D)
+      tempServices = this.widgetInfo.config.services3D
     }
+
     if (!tempServices) {
       return
     }
-    // 初始化服务分类下拉项
-    tempServices.forEach(item => {
-      if (!selectCategory.includes(item.category)) {
-        const selectOption = { name: item.category, desc: item.category }
-        selectCategory.push(item.category)
-        this.addServiceCategory(selectOption)
-      }
-    })
-    for (let i = 0; i < tempServices.length; i++) {
-      const service = tempServices[i]
-      this.addService(service)
-    }
-  }
 
-  // 对config中的配置数据进行处理
-  handleConfigData(data) {
-    return data.reduce((result, item) => {
-      if (item.id !== '') {
-        result.push(item)
-      } else {
-        result.push({ ...item, ...{ id: UUID.uuid() } })
+    // 初始化服务分类下拉项
+    tempServices
+      .map(item => ({ name: item.name, desc: item.name }))
+      .forEach(item => this.addServiceCategory(item))
+
+    for (const item of tempServices) {
+      const itemConfig = item.children
+      for (const config of itemConfig) {
+        let type = config.type
+
+        if (type === 'Layer') {
+          type = 'layer'
+        } else if (type === 'MapGIS') {
+          // const data = await queryIgsServicesInfoInstance.getMapInfoService(
+          //   config.ip,
+          //   config.port,
+          //   config.name
+          // )
+          // if (!data) {
+          //   console.log('该类型有问题')
+          // } else {
+          //   type = data.type
+          // }
+        }
+
+        const service = {
+          id: UUID.uuid(),
+          ip: config.ip,
+          port: config.port,
+          name: config.name,
+          category: config.theme,
+          visible: false,
+          layerType: config.layerType,
+          extent: config.extent,
+          token: config.token || '',
+          url: config.serverUrl,
+          type: type,
+          gdbp: config.gdbp || ''
+        }
+
+        this.addService(service)
       }
-      return result
-    }, [])
+    }
   }
 }
 </script>
