@@ -54,55 +54,63 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
   // 文件类型下拉项数据
   private tempfileTypes: object[] = []
 
+  // 二维视图下的服务数据
+  private services2D = []
+
+  // 三维视图下的服务数据
+  private services3D = []
+
+  // 二维视图下的服务分类下拉数据
+  private serviceCategories2D = []
+
+  // 三维视图下的服务分类下拉数据
+  private serviceCategories3D = []
+
+  // 二维视图下的服务类型与文件类型下拉项数据的集合
+  private allTypes2D: object[] = []
+
+  // 三维视图下的服务类型与文件类型下拉项数据的集合
+  private allTypes3D: object[] = []
+
   // 监听渲染器的变化，获取对应渲染引擎下的数据
   @Watch('mapRender')
   onMapRenderChange() {
-    this.initData()
+    this.getMapRenderData()
   }
 
   created() {
     this.initData()
   }
 
-  // 初始化各项数据
+  // 初始化各项数据(一开始就将二三维数据都构造好)
   private initData() {
     this.widgetConfig = this.widgetInfo.config
-    if (this.is2DMapMode) {
-      this.tempServiceTypes = this.serviceTypes2D
-      this.tempfileTypes = this.fileTypes2D
-    } else {
-      this.tempServiceTypes = this.serviceTypes3D
-      this.tempfileTypes = this.fileTypes3D
-    }
-    this.allTypes = [...this.tempServiceTypes, ...this.tempfileTypes]
+    this.allTypes2D = [...this.serviceTypes2D, ...this.fileTypes2D]
+    this.allTypes3D = [...this.serviceTypes3D, ...this.fileTypes3D]
 
-    this.getConfigData()
+    this.services2D = []
+    this.services3D = []
+    this.serviceCategories2D = []
+    this.serviceCategories3D = []
+
+    const tempServices2D = this.widgetInfo.config.services2D
+    const tempServices3D = this.widgetInfo.config.services3D
+
+    this.initConfigData(tempServices2D, true)
+    this.initConfigData(tempServices3D, false)
+
+    this.getMapRenderData()
   }
 
   // 通过配置获取数据，并初始化服务分类下拉项
-  private getConfigData() {
-    const doc: Document = this.document
-    const selectCategory = []
-    let tempServices: Record<string, any>[] = []
-    // 将服务数据清空
-    this.services = []
-    // 将服务分类下拉项数据清空
-    this.serviceCategories = []
-
-    if (this.is2DMapMode) {
-      tempServices = this.widgetInfo.config.services2D
-    } else {
-      tempServices = this.widgetInfo.config.services3D
-    }
-
-    if (!tempServices) {
-      return
-    }
-
+  private initConfigData(tempServices, is2DMap) {
     // 初始化服务分类下拉项
     tempServices
       .map(item => ({ name: item.name, desc: item.name }))
-      .forEach(item => this.addServiceCategory(item))
+      .forEach(item => {
+        if (is2DMap) this.serviceCategories2D.push(item)
+        else this.serviceCategories3D.push(item)
+      })
 
     for (const item of tempServices) {
       const itemConfig = item.children
@@ -139,8 +147,23 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
           gdbp: config.gdbp || ''
         }
 
-        this.addService(service)
+        if (is2DMap) this.services2D.push(service)
+        else this.services3D.push(service)
+        // this.addService(service)
       }
+    }
+  }
+
+  // 获取对应渲染引擎下的数据
+  private getMapRenderData() {
+    if (this.is2DMapMode) {
+      this.services = this.services2D
+      this.serviceCategories = this.serviceCategories2D
+      this.allTypes = this.allTypes2D
+    } else {
+      this.services = this.services3D
+      this.serviceCategories = this.serviceCategories3D
+      this.allTypes = this.allTypes3D
     }
   }
 }

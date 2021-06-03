@@ -121,6 +121,13 @@ export default class AddServicesData extends Mixins(
   // Table上一次选中项 key 数组
   private preSelectedRowKeys = []
 
+  // 当二三维切换时，子服务分类下拉项变化，重新初始化下拉项的默认值
+  @Watch('serviceTypes', { immediate: true })
+  onSelectOptionsChange() {
+    this.serviceCategory = this.serviceCategories[0].name
+    this.serviceType = this.serviceTypes[0].value
+  }
+
   @Watch('serviceCategory', { immediate: true })
   @Watch('serviceType', { immediate: true })
   getData() {
@@ -146,8 +153,6 @@ export default class AddServicesData extends Mixins(
 
   // 初始化各项数据
   private initData() {
-    this.serviceCategory = this.serviceCategories[0].name
-    this.serviceType = this.serviceTypes[0].value
     this.$message.config({
       top: '100px',
       duration: 2,
