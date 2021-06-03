@@ -13,6 +13,7 @@
         v-model="keyword"
         allow-clear
         @focus="onSearchFocus"
+        @pressEnter="onSearch"
       />
       <a-divider type="vertical" />
       <a-button class="close-button" icon="close" @click="onClose" />

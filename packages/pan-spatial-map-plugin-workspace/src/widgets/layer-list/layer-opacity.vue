@@ -1,7 +1,7 @@
 <template>
   <ul>
     <li v-for="item in layers" :key="item.id">
-      <label>{{ item.title }}</label>
+      <label :title="setTooltip(item)">{{ item.title }}</label>
       <a-slider
         :value="100 - Number(item.opacity) * 100"
         @change="val => setOpacity(val, item)"
@@ -23,8 +23,33 @@ const { IDocument } = require('@mapgis/webclient-store')
 export default class LayerOpacity extends Mixins(AppMixin) {
   @Prop({ required: true }) layers: Array
 
+  @Prop() dataCatalog: Array<Record<string, any>>
+
   setOpacity(val, item) {
     item.opacity = Number((100 - val) / 100)
+  }
+
+  setTooltip(item) {
+    const parentName = ''
+    const arr = []
+    this.findParentName(item.id, parentName, this.dataCatalog, arr)
+    if (arr.length > 0) {
+      return arr[0]
+    }
+    return ''
+  }
+
+  findParentName(id, parentName, dataCatalog, arr) {
+    dataCatalog.forEach(item => {
+      let copy = parentName
+      if (item.guid === id) {
+        parentName += item.label
+        arr.push(parentName)
+      } else if (item.children) {
+        copy += `${item.label}-`
+        this.findParentName(id, copy, item.children, arr)
+      }
+    })
   }
 }
 </script>
