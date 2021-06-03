@@ -10,28 +10,16 @@
       background-color: @primary-color;
     }
   }
-  /deep/ .ant-drawer-right.ant-drawer-open .ant-drawer-content-wrapper {
-    box-shadow: none;
-    border-left: 1px solid @primary-color;
+  /deep/ .ant-drawer-right.ant-drawer-open {
+    .ant-drawer-content-wrapper {
+      box-shadow: none;
+      border-left: 1px solid @primary-color;
+    }
   }
   .swipe-container {
     width: 100%;
     height: 100%;
     position: relative;
-    .swipe-content {
-      height: 100%;
-      overflow: auto;
-      position: relative;
-      > div {
-        height: 100%;
-      }
-      .swipe-no-data-tip {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
     .swipe-setting-handle {
       position: absolute;
       height: 64px;
@@ -53,10 +41,8 @@
       }
     }
     .swipe-setting-panel {
+      width: 100%;
       height: 100%;
-      .swipe-select {
-        width: 100%;
-      }
     }
   }
 }

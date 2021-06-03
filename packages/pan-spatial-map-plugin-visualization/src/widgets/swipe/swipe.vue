@@ -1,28 +1,11 @@
 <template>
   <div class="mp-widget-swipe">
     <div class="swipe-container">
-      <div class="swipe-content">
-        <!-- 卷帘组件 -->
-        <mapgis-compare
-          :orientation="direction"
-          v-if="aboveLayer && belowLayer"
-        >
-          <mp-web-map-pro
-            slot="beforeMap"
-            :document="aboveLayerDocument"
-            :map-style="mapStyle"
-          />
-          <mp-web-map-pro
-            slot="afterMap"
-            :document="belowLayerDocument"
-            :map-style="mapStyle"
-          />
-        </mapgis-compare>
-        <!-- 空数据提示 -->
-        <div class="swipe-no-data-tip" v-if="!showCompare">
-          <a-empty description="卷帘分析功能至少需要选择2个图层" />
-        </div>
-      </div>
+      <mapbox-compare
+        :aboveLayer="aboveLayer"
+        :belowLayer="belowLayer"
+        :direction="direction"
+      />
       <a-drawer
         title="设置"
         placement="right"
@@ -48,19 +31,25 @@
         >
           <!-- 上图层 -->
           <row :title="directionLayerTitle.aboveTitle">
-            <a-select
-              :value="aboveLayer.id"
-              :options="aboveLayers"
-              @change="onAboveChange"
-            />
+            <a-select :value="aboveLayer.id" @change="onAboveChange">
+              <a-select-option
+                v-for="p in aboveLayers"
+                :key="p.id"
+                :value="p.id"
+                >{{ p.title }}</a-select-option
+              ></a-select
+            >
           </row>
           <!-- 下图层 -->
           <row :title="directionLayerTitle.belowTitle">
-            <a-select
-              :value="belowLayer.id"
-              :options="belowLayers"
-              @change="onBelowChange"
-            />
+            <a-select :value="belowLayer.id" @change="onBelowChange">
+              <a-select-option
+                v-for="p in belowLayers"
+                :key="p.id"
+                :value="p.id"
+                >{{ p.title }}</a-select-option
+              >
+            </a-select>
           </row>
           <!-- 方向 -->
           <a-radio-group :value="direction" @change="onDirectionChange">
@@ -110,20 +99,10 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   // 卷帘方向
   direction: Direction = 'vertical'
 
-  // 图层样式
-  mapStyle: any = {
-    version: 8,
-    sources: {},
-    layers: [],
-    glyphs:
-      'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf'
-  }
-
+  // 弹框开关
   settingPanelVisible = true
 
-  /**
-   * 卷帘方向变化，同步更改图层选择框的标题
-   */
+  // 卷帘方向变化，同步更改图层选择框的标题
   get directionLayerTitle(): {
     aboveTitle: string
     belowTitle: string

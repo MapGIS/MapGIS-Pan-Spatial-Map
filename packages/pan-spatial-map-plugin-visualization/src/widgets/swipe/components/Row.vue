@@ -14,4 +14,8 @@ export default class Row extends Vue {
   @Prop() readonly title?: string
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/deep/.ant-select {
+  width: 100%;
+}
+</style>
