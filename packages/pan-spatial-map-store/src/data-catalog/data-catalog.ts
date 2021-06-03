@@ -111,7 +111,6 @@ export class DataCatalogManager {
         break
       case LayerType.OGCWMTS:
         url = layerConfig.serverURL
-        debugger
         layer = new OGCWMTSLayer({ url })
         break
       case LayerType.OGCWMS:

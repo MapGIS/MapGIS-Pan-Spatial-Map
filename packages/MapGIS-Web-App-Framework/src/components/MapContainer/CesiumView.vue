@@ -178,7 +178,6 @@ export default {
         })
 
       this.layers = layers
-      console.log(layers)
     },
 
     genLayerComponentPropsByIGSSceneSublayer(igsSceneSublayer) {
