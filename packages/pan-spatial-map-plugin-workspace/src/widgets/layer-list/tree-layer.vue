@@ -324,25 +324,31 @@ export default class TreeLayer extends Mixins(
   }
 
   setTooltip(item) {
-    return ''
-    // if (this.isParentLayer(item)) {
-    //   const arr = []
-    //   this.findParentName(item.id, arr, this.dataCatalog)
-    //   return item.title
-    // } else {
-    //   return null
-    // }
+    if (this.isParentLayer(item)) {
+      const parentName = ''
+      const arr = []
+      this.findParentName(item.id, parentName, this.dataCatalog, arr)
+      if (arr.length > 0) {
+        return arr[0]
+      }
+      return ''
+    } else {
+      return null
+    }
   }
 
-  // findParentName(id, arr, dataCatalog) {
-  //   dataCatalog.forEach(item => {
-  //     if (item.guid === id) {
-  //       arr.push(item.label)
-  //     } else if (item.children) {
-  //       this.findParentName(id, arr, item.children)
-  //     }
-  //   })
-  // }
+  findParentName(id, parentName, dataCatalog, arr) {
+    dataCatalog.forEach(item => {
+      let copy = parentName
+      if (item.guid === id) {
+        parentName += item.label
+        arr.push(parentName)
+      } else if (item.children) {
+        copy += `${item.label}-`
+        this.findParentName(id, copy, item.children, arr)
+      }
+    })
+  }
 
   @Watch('document.defaultMap', { deep: true, immediate: true })
   documentChange(newValue, oldValue) {
