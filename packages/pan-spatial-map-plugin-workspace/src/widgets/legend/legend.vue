@@ -135,7 +135,7 @@ export default class MpLegend extends Mixins(WidgetMixin) {
 
 .contain-img {
   width: 246px;
-  height: 200px;
+  height: 246px;
   object-fit: contain;
   background: rgba(128, 128, 128, 0.2);
 }
