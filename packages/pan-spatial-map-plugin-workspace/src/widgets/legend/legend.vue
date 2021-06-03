@@ -17,7 +17,7 @@
           <template>
             <div v-for="(item, index) in data" :key="index">
               <div>{{ item.name }}</div>
-              <a-avatar :src="item.imgUrl" />
+              <img class="contain-img" :src="item.imgUrl" alt="" />
             </div>
           </template>
         </MpWindow>
@@ -128,4 +128,15 @@ export default class MpLegend extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.mp-widget-legend {
+  margin-bottom: 8px;
+}
+
+.contain-img {
+  width: 246px;
+  height: 246px;
+  object-fit: contain;
+  background: rgba(128, 128, 128, 0.2);
+}
+</style>

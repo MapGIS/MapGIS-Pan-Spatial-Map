@@ -136,7 +136,12 @@
         </span>
       </a-tree>
     </div>
-    <a-modal v-model="showUploader" :width="300" :footer="null">
+    <a-modal
+      v-model="showUploader"
+      :dialog-style="{ top: '150px' }"
+      :width="300"
+      :footer="null"
+    >
       <a-upload
         name="file"
         accept=".jpg, image/*"
@@ -256,6 +261,14 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     return function(node) {
       return node.pos.split('-').length - 1
     }
+  }
+
+  created() {
+    this.$message.config({
+      top: '100px',
+      duration: 2,
+      maxCount: 1
+    })
   }
 
   async mounted() {
@@ -609,10 +622,17 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   private onUploadLegend(item) {
     this.showUploader = true
     this.legendNode = item
+    this.$message.info('建议上传宽高比为1:1的图片')
   }
 
   // 上传文件之前的钩子
-  private beforeUpload(file) {}
+  private beforeUpload(file) {
+    const isLt2M = file.size / 1024 / 1024 < 2
+    if (!isLt2M) {
+      this.$message.error('上传图片大小需小于2M')
+    }
+    return isLt2M
+  }
 
   // 上传文件状态改变时的回调
   private async onChangeFile(info) {
