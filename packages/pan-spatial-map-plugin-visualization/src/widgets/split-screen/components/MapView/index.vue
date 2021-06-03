@@ -93,6 +93,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
 
   mapbox: any = {}
 
+  drawWebGlobe = null
+
   // 地图是否加载完成
   isMapLoaded = false
 
@@ -115,9 +117,9 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     if (!this.mapViewDocument) {
       this.mapViewDocument = new Document()
     }
-    const { defaultMap } = this.mapViewDocument
-    defaultMap.removeAll()
-    defaultMap.add(this.mapViewLayer)
+    const _defaultMap = this.mapViewDocument.defaultMap.clone()
+    _defaultMap.removeAll()
+    _defaultMap.add(this.mapViewLayer)
     this.onClear()
   }
 
@@ -131,7 +133,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     this.map.on('move', () => {
       if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
         const { _sw, _ne } = this.map.getBounds()
-        this.activeMapViewDisplayRect = {
+        this.activeMapboxView = {
           xmin: _sw.lng,
           ymin: _sw.lat,
           xmax: _ne.lng,
@@ -146,8 +148,10 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 三维地图初始化
    */
-  onCesiumLoad(e) {
+  onCesiumLoad(e, webGlobe) {
     this.isMapLoaded = true
+    this.drawWebGlobe = webGlobe
+    this.onResort()
   }
 
   /**
@@ -205,10 +209,9 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    */
   onResort() {
     if (this.is2DMapMode) {
-      this.jumpToRect(this.initDisplayRect)
+      this.jumpToRect(this.initView)
     } else {
-      // todo 三维复位
-      // window.webGlobe.viewer.scene.camera.setView(this.initDisplayRect)
+      // this.drawWebGlobe.viewer.scene.camera.setView(this.initView)
     }
   }
 
@@ -296,8 +299,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 监听: 更新地图视图范围
    */
-  @Watch('activeMapViewDisplayRect', { deep: true })
-  watchActiveMapViewDisplayRect(nV) {
+  @Watch('activeMapboxView', { deep: true })
+  watchActiveMapboxView(nV) {
     if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
       this.jumpToRect(nV)
     }

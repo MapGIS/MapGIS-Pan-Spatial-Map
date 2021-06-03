@@ -90,7 +90,6 @@
         <mapgis-3d-statebar class="statebar" />
       </div>
     </div>
-    <slot />
   </mapgis-web-scene>
 </template>
 

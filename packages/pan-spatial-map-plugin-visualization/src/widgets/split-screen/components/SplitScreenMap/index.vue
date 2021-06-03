@@ -25,7 +25,8 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import { AppMixin, Layer } from '@mapgis/web-app-framework'
-import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
+import { Common } from '@mapgis/webclient-es6-service'
+import mStateInstance from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -71,12 +72,13 @@ export default class SplitScreenMap extends Mixins<Record<string, any>>(
       // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
       let initView: any
       if (this.is2DMapMode) {
-        initView = this.layers[nV[0]].fullExtent
+        initView =
+          this.layers[nV[0]].fullExtent ||
+          new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
       } else {
-        // todo 三维复位
-        // initView = window.webGlobe.viewer.scene.camera.getView()
+        initView = window.webGlobe.viewer.scene.camera.getView()
       }
-      mapViewStateInstance.initDisplayRect = initView
+      mStateInstance.initView = initView
     }
   }
 }

@@ -1,13 +1,13 @@
 <template>
-  <mp-cesium-view
-    v-if="mapViewDocument"
-    :document="mapViewDocument"
-    @map-load="onMapLoad"
-    :vueKey="vueKey"
-  >
+  <div v-if="mapViewDocument">
+    <mp-cesium-view
+      :document="mapViewDocument"
+      @map-load="onMapLoad"
+      :vueKey="vueKey"
+    ></mp-cesium-view>
     <mapgis-3d-draw @load="onLoad" @drawcreate="onCreate" :vueKey="vueKey" />
-    <mapgis-3d-link :enable="true" />
-  </mp-cesium-view>
+    <mapgis-3d-link :vueKey="vueKey" :enable="true" />
+  </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
@@ -43,8 +43,8 @@ export default class CesiumView extends Vue {
     }
   }
 
-  onMapLoad(e) {
-    this.$emit('on-load', e)
+  onMapLoad(e, webGlobe) {
+    this.$emit('on-load', e, webGlobe)
     this.isMapLoaded = true
   }
 

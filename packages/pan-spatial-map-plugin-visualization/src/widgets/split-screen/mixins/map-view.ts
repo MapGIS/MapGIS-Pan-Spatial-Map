@@ -1,9 +1,8 @@
 import { Vue, Component, Prop, Mixins } from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
-import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
+import mStateInstance, { MapViewState, Rect } from './map-view-state'
 
 export { Rect }
-
 @Component
 export default class MapViewMixin extends Mixins<Record<string, any>>(
   AppMixin
@@ -17,7 +16,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   private mapbox: any = {}
 
   // 公共状态
-  private activeMapViewState: MapViewState = mapViewStateInstance
+  private activeMapViewState: MapViewState = mStateInstance
 
   // 获取当前激活的地图视图的ID
   get activeMapViewId(): string {
@@ -30,23 +29,23 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   // 获取当前激活的地图视图的范围
-  get activeMapViewDisplayRect(): Rect {
-    return this.activeMapViewState.displayRect
+  get activeMapboxView(): Rect {
+    return this.activeMapViewState.mapboxView
   }
 
   // 设置当前激活的地图视图的范围
-  set activeMapViewDisplayRect(displayRect: Rect) {
-    this.activeMapViewState.displayRect = displayRect
+  set activeMapboxView(rect: Rect) {
+    this.activeMapViewState.mapboxView = rect
   }
 
   // 获取地图视图的复位范围
-  get initDisplayRect(): Rect {
-    return this.activeMapViewState.initDisplayRect
+  get initView() {
+    return this.activeMapViewState.initView
   }
 
   // 设置地图视图的复位范围
-  set initDisplayRect(initDisplayRect: Rect) {
-    this.activeMapViewState.initDisplayRect = initDisplayRect
+  set initView(view) {
+    this.activeMapViewState.initView = view
   }
 
   /**
@@ -59,7 +58,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
       xmax,
       ymax
     )
-    this.webGlobe.viewer.camera.flyTo({
+    this.drawWebGlobe.viewer.camera.flyTo({
       destination: Rectangle
     })
   }
