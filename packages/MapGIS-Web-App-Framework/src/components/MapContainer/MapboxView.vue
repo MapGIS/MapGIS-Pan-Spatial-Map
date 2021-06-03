@@ -10,7 +10,7 @@
     style="height: 100%; width: 100%"
   >
     <!-- <base-layers-mapbox :document="document" /> -->
-    <div v-for="layerProps in layers" :key="layerProps.layerId">
+    <div v-for="(layerProps, index) in layers" :key="layerProps.layerId">
       <mapgis-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :layer="layerProps.layer"
@@ -18,6 +18,7 @@
         :sourceId="layerProps.sourceId"
         :url="layerProps.url"
         :serverName="layerProps.serverName"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
@@ -27,6 +28,7 @@
         :url="layerProps.url"
         :layers="layerProps.layers"
         :serverName="layerProps.serverName"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-igs-vector-layer
         v-if="isIgsVectorLayer(layerProps.type)"
@@ -35,6 +37,7 @@
         :sourceId="layerProps.sourceId"
         :url="layerProps.url"
         :gdbps="layerProps.gdbps"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
@@ -47,6 +50,7 @@
         :version="layerProps.version"
         :wmtsStyle="layerProps.wmtsStyle"
         :format="layerProps.format"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
@@ -58,6 +62,7 @@
         :version="layerProps.version"
         :token="layerProps.token"
         :reversebbox="layerProps.reversebbox"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-arcgis-map-layer
         v-if="isArcgisMapLayer(layerProps.type)"
@@ -66,6 +71,7 @@
         :sourceId="layerProps.sourceId"
         :baseUrl="layerProps.baseUrl"
         :layers="layerProps.layers"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-arcgis-tile-layer
         v-if="isArcgisTileLayer(layerProps.type)"
@@ -73,6 +79,7 @@
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
         :baseUrl="layerProps.baseUrl"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-rastertile-layer
         v-if="isRasterLayer(layerProps.type)"
@@ -80,6 +87,7 @@
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
         :url="layerProps.url"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-igs-tdt-layer
         v-if="isIgsTdtLayer(layerProps.type)"
@@ -89,10 +97,12 @@
         :baseURL="layerProps.baseURL"
         :token="layerProps.token"
         :crs="crs"
+        :before="getBeforeLayerId(index)"
       />
       <mapgis-mvt-style-layer
         v-if="isVectorTileLayer(layerProps.type)"
         :mvtStyle="layerProps.mvtStyle"
+        :before="getBeforeLayerId(index)"
       />
     </div>
     <mapgis-scale :position="'left-bottom'" />
@@ -149,6 +159,13 @@ export default {
     this.parseDocument()
   },
   methods: {
+    getBeforeLayerId(index) {
+      if (index + 1 >= this.layers.length) {
+        return undefined
+      } else {
+        return this.layers[index + 1].layerId
+      }
+    },
     handleLoad(payload) {
       // const { map, mapbox } = payload
       const listeners = this.$listeners
@@ -327,12 +344,12 @@ export default {
         .clone()
         .getFlatLayers()
         .forEach(layer => {
-          // if (layer.loadStatus === LoadStatus.loaded) {
-          const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
-            layer
-          )
-          layers.push(mapboxLayerComponentProps)
-          // }
+          if (layer.loadStatus === LoadStatus.loaded) {
+            const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
+              layer
+            )
+            layers.push(mapboxLayerComponentProps)
+          }
         })
 
       this.document.defaultMap
