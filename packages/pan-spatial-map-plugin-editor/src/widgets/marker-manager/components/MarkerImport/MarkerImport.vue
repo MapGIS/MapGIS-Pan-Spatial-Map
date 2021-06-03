@@ -56,12 +56,9 @@
 <script lang="ts">
 import { Mixins, Component, Emit } from 'vue-property-decorator'
 import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
-import { ThemeStyleMixin, AppMixin } from '@mapgis/web-app-framework'
-import { UUID } from '@mapgis/webclient-store/src/utils'
+import { ThemeStyleMixin, AppMixin, UUID } from '@mapgis/web-app-framework'
 import MarkerAddMixin from '../../mixins/marker-add'
 import MarkerImportFileDesc from './MarkerImportFileDesc.vue'
-import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
-import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
 
 @Component({
   name: 'MpMarkerImport',

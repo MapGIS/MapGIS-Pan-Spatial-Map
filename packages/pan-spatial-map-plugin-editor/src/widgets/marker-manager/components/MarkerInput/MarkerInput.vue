@@ -74,10 +74,7 @@ import {
   eventBus,
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
-import { ThemeStyleMixin, AppMixin } from '@mapgis/web-app-framework'
-import { UUID } from '@mapgis/webclient-store/src/utils'
-import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
-import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
+import { ThemeStyleMixin, AppMixin, UUID } from '@mapgis/web-app-framework'
 import MarkerAddMixin from '../../mixins/marker-add'
 
 @Component({ name: 'MpMarkerInput' })

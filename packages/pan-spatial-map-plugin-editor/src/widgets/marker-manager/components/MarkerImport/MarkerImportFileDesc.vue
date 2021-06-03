@@ -73,7 +73,6 @@
 import { Mixins, Component, Emit } from 'vue-property-decorator'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import { ThemeStyleMixin } from '@mapgis/web-app-framework'
-import { UUID } from '@mapgis/webclient-store/src/utils'
 import MarkerAddMixin from '../../mixins/marker-add'
 
 @Component({

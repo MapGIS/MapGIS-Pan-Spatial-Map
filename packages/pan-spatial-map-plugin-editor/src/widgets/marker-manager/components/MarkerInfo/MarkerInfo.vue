@@ -1,13 +1,13 @@
 <template>
-  <div class="marker-info-wrapper text-body2">
-    <div v-if="markerInfo.edit" class="column items-start">
+  <div class="marker-info-wrapper">
+    <div v-if="markerInfo.edit">
       <div class="marker-content edit">
         <div class="content-title">标题：</div>
-        <a-input class="col" v-model="title"></a-input>
+        <a-input v-model="title"></a-input>
       </div>
       <div class="marker-content edit">
         <div class="content-title">内容：</div>
-        <a-input class="col" v-model="description"></a-input>
+        <a-input v-model="description"></a-input>
       </div>
       <div class="marker-content edit">
         <div class="content-title">图片：</div>
@@ -31,24 +31,26 @@
         <a-button size="small" @click="handleCancel">取消</a-button>
       </div>
     </div>
-    <div v-else class="column items-start">
+    <div v-else>
       <div class="marker-content">
         <div class="content-title">
           标题：
         </div>
-        <span style="word-break: break-all;">{{ markerInfo.title }}</span>
+        <span>{{ markerInfo.title }}</span>
       </div>
       <div class="marker-content">
         <div class="content-title">
           内容：
         </div>
-        <span style="word-break: break-all;">{{ markerInfo.description }}</span>
+        <span>{{ markerInfo.description }}</span>
       </div>
       <div class="marker-content">
         <div class="content-title">图片：</div>
-        <a-avatar :src="`${baseUrl}${img}`" />
-        <a-button shape="circle" icon="edit" size="small" @click="handleEdit">
-        </a-button>
+        <div class="edit-img">
+          <a-avatar :src="`${baseUrl}${img}`" />
+          <a-button shape="circle" icon="edit" size="small" @click="handleEdit">
+          </a-button>
+        </div>
       </div>
     </div>
     <a-modal v-model="showUploader" :width="300" :footer="null">
@@ -95,8 +97,6 @@ export default class MarkerInfo extends Mixins(AppMixin) {
   emitCancel(markerInfo: any) {}
 
   created() {
-    console.log(this.baseUrl)
-
     this.title = this.markerInfo.title
     this.description = this.markerInfo.description
     this.img = this.markerInfo.img
@@ -151,13 +151,11 @@ export default class MarkerInfo extends Mixins(AppMixin) {
 .marker-content {
   display: flex;
   align-items: center;
+  margin-top: 4px;
 
   .content-title {
     white-space: nowrap;
   }
-}
-.edit {
-  margin-top: 4px;
 }
 .edit-img {
   display: flex;

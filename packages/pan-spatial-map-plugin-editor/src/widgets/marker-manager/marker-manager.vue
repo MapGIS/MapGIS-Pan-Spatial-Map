@@ -68,12 +68,29 @@
       "
     >
     </a-table>
-    <marker-add
-      v-if="mapboxShow"
-      :drawMode="activeMode"
-      @addMarker="addMarker"
-    ></marker-add>
-    <marker-show :markers="tableData"></marker-show>
+    <div class="marker-add">
+      <MapboxMarkerAdd
+        v-show="is2DMapMode"
+        ref="mapboxMarkerAdd"
+        @addMarker="addMarker"
+      ></MapboxMarkerAdd>
+      <CesiumMarkerAdd
+        v-show="!is2DMapMode"
+        ref="cesiumMarkerAdd"
+        @addMarker="addMarker"
+      ></CesiumMarkerAdd>
+    </div>
+
+    <div class="marker-show">
+      <MapboxMarkerShow
+        v-show="is2DMapMode"
+        :markers="tableData"
+      ></MapboxMarkerShow>
+      <CesiumMarkerShow
+        v-show="!is2DMapMode"
+        :markers="tableData"
+      ></CesiumMarkerShow>
+    </div>
     <a-modal v-model="modalInput" title="输入坐标" :width="360" :footer="null">
       <marker-input @addMarker="addMarker" @closeModal="modalInput = false" />
     </a-modal>
@@ -91,24 +108,32 @@
 
 <script lang="ts">
 import { Mixins, Component, Inject, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
 import {
   eventBus,
   api,
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
 
-import MarkerAdd from './components/MarkerAdd/MarkerAdd.vue'
-import MarkerShow from './components/MarkerShow/MarkerShow.vue'
+import MapboxMarkerAdd from './components/MarkerAdd/MapboxMarkerAdd'
+import CesiumMarkerAdd from './components/MarkerAdd/CesiumMarkerAdd'
+import MapboxMarkerShow from './components/MarkerShow/MapboxMarkerShow.vue'
+import CesiumMarkerShow from './components/MarkerShow/CesiumMarkerShow.vue'
 import MarkerInput from './components/MarkerInput/MarkerInput.vue'
 import MarkerImport from './components/MarkerImport/MarkerImport.vue'
 import MarkerExport from './components/MarkerExport/MarkerExport.vue'
-import markerRed from '../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
-import markerBlue from '../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
 
 @Component({
   name: 'MpMarkerManager',
-  components: { MarkerInput, MarkerImport, MarkerExport, MarkerAdd, MarkerShow }
+  components: {
+    MarkerInput,
+    MarkerImport,
+    MarkerExport,
+    MapboxMarkerAdd,
+    CesiumMarkerAdd,
+    MapboxMarkerShow,
+    CesiumMarkerShow
+  }
 })
 export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 鼠标交互模块
@@ -203,17 +228,28 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 导出对话框的显隐
   private modalExport = false
 
-  // 控制mapbox绘制组件，防止id冲突
-  private mapboxShow = false
-
-  // 当前激活项
-  private activeMode = { mode: '', var: 0 }
-
   // 表格数据(标注点构成的数组)
   private markers: any[] = []
 
+  // 当前微件窗口是否全屏
   private isFullScreen = false
 
+  // 获取当前渲染引擎下的标注添加组件
+  get markerAddComponent() {
+    return this.is2DMapMode
+      ? this.$refs.mapboxMarkerAdd
+      : this.$refs.cesiumMarkerAdd
+  }
+
+  // 监听渲染器切换事件，切换回二维时，通知三维标注点隐藏信息窗口
+  @Watch('mapRender')
+  mapRenderChange() {
+    if (this.is2DMapMode) {
+      eventBus.$emit('emitMapRenderChange')
+    }
+  }
+
+  // table勾选项变化时，对应标注点图标也会变化
   @Watch('selectedRowKeys')
   onSelectedRowKeysChange() {
     let newSelected = []
@@ -285,77 +321,73 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   }
 
   onOpen() {
-    this.mapboxShow = true
-    this.$message.config({
-      top: '100px',
-      duration: 2,
-      maxCount: 1
-    })
-    // api.getWidgetConfig('MarkerManager').then(res => {
-    //   this.oldConfigToNew(res)
-    // })
+    this.getConfigData()
+    // 监听标注点编辑信息改变事件，并更新该标注点
     eventBus.$on('edit-marker-info', markerInfo => {
       const index = this.tableData.findIndex(item => item.id === markerInfo.id)
       if (index !== -1) {
         this.$set(this.tableData, index, markerInfo)
       }
     })
+    this.$message.config({
+      top: '100px',
+      duration: 2,
+      maxCount: 1
+    })
   }
 
   onClose() {
-    this.mapboxShow = false
     this.tableData = []
+    this.selectedRowKeys = []
     eventBus.$off('edit-marker-info')
   }
 
+  // 微件窗口模式切换时回调
   onWindowSize(mode) {
     this.isFullScreen = mode === 'max'
   }
 
   // 点击不同类型标注图标回调事件
-  startMark(mode) {
-    this.activeMode.mode = mode
-    this.activeMode.var += 1
+  private startMark(mode) {
+    this.markerAddComponent && this.markerAddComponent.openMarker(mode)
   }
 
   // 添加标注
-  addMarker(marker: any) {
+  private addMarker(marker: any) {
     this.tableData.push(marker)
   }
 
   // 通过文件导入添加标注
-  addMarkers(markers: any[]) {
-    console.log('hahah')
-
+  private addMarkers(markers: any[]) {
     this.tableData.push(markers[0])
   }
 
   // Table选中项发生变化时的回调
-  onSelectChange(selectedRowKeys) {
+  private onSelectChange(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys
   }
 
   // 键盘按钮回调事件
-  addMarkerByInputCoord() {
+  private addMarkerByInputCoord() {
     this.modalInput = true
   }
 
   // 导入按钮回调事件
-  addMarkerByImportFile() {
+  private addMarkerByImportFile() {
     this.modalImport = true
   }
 
   // 导出按钮回调事件
-  exportMarkers() {
+  private exportMarkers() {
     this.modalExport = true
   }
 
   // 保存按钮回调事件
-  saveMarkers() {
+  private saveMarkers() {
     const this_ = this
     api
       .saveWidgetConfig({
-        name: 'MarkerManager',
+        name: 'marker-manager',
         config: JSON.stringify(this.tableData)
       })
       .then(() => {
@@ -367,7 +399,7 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   }
 
   // 删除按钮回调事件
-  deleteMarkers() {
+  private deleteMarkers() {
     if (this.selectedRowKeys.length === 0) {
       this.$message.info('请至少勾选一项进行删除')
       return false
@@ -379,6 +411,55 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
         return result
       }, [])
     }
+  }
+
+  // 读取保存的配置信息并展示
+  private getConfigData() {
+    api.getWidgetConfig('marker-manager').then(res => {
+      // 下面的操作都是为了兼容老版的三个标注点的数据(因为老版标注点的构造和新版的标注点构造不一样)
+      this.tableData = res.reduce((result, item) => {
+        if (Object.keys(item).includes('ftype')) {
+          // 老版标注点包含'ftype'属性
+          let coordinates = []
+          switch (item.fileType) {
+            case 'Polygon':
+              coordinates = [item.coordinates]
+              break
+            case 'LineString':
+              coordinates = item.coordinates
+              break
+            default:
+              coordinates = item.point
+              break
+          }
+          const geoJsonFeature = {
+            geometry: {
+              coordinates: coordinates,
+              type: item.fileType || 'Point'
+            },
+            id: UUID.uuid(),
+            properties: {},
+            type: 'Feature'
+          }
+          const marker = {
+            id: UUID.uuid(),
+            title: item.name,
+            description: item.info,
+            iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
+            edit: true,
+            features: [geoJsonFeature],
+            coordinates: coordinates,
+            center: item.point,
+            type: item.fileType || 'Point'
+          }
+          result.push(marker)
+        } else {
+          // 新版标注点不包含'ftype'属性
+          result.push(item)
+        }
+        return result
+      }, [])
+    })
   }
 }
 </script>

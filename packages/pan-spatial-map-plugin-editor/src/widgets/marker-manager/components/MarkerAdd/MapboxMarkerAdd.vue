@@ -18,20 +18,20 @@ import {
   Watch,
   Mixins
 } from 'vue-property-decorator'
-import { UUID } from '@mapgis/webclient-store/src/utils'
 import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
-import { MapMixin, AppMixin } from '@mapgis/web-app-framework'
-import markerRed from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerRed.png'
-import markerBlue from '../../../../../../pan-spatial-map-plugin-workspace/src/assets/images/markerBlue.png'
+import { MapMixin, AppMixin, UUID } from '@mapgis/web-app-framework'
+import MarkerCommonMixin from '../../mixins/marker-common'
 
 @Component({
   components: {}
 })
-export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
+export default class MapboxMarkerAdd extends Mixins(
+  MapMixin,
+  AppMixin,
+  MarkerCommonMixin
+) {
   @Provide()
   actions = undefined
-
-  @Prop({ type: Object, default: '' }) drawMode!: Record<string, any>
 
   @Emit('addMarker')
   emitAddMarker(marker: any) {}
@@ -45,29 +45,29 @@ export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
     uncombine_features: false
   }
 
+  // 标注工具
   private drawer: any = null
 
-  private drawModes = {
-    point: 'point',
-    line: 'line',
-    polygon: 'polygon'
+  // 打开标注
+  openMarker(mode) {
+    this.enableDrawer()
+    this.setMarkerMode(mode)
   }
 
-  @Watch('drawMode', { deep: true })
-  changeDrawMode() {
-    this.enableDrawer()
-    switch (this.drawMode.mode) {
-      case this.drawModes.point:
+  // 设置标注模式到标注工具中
+  private setMarkerMode(mode) {
+    switch (mode) {
+      case 'point':
         if (this.drawer) {
           this.drawer.changeMode('draw_point')
         }
         break
-      case this.drawModes.line:
+      case 'line':
         if (this.drawer) {
           this.drawer.changeMode('draw_line_string')
         }
         break
-      case this.drawModes.polygon:
+      case 'polygon':
         if (this.drawer) {
           this.drawer.changeMode('draw_polygon')
         }
@@ -77,12 +77,22 @@ export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
     }
   }
 
-  handleAdded(e: any) {
+  // 使能标注
+  private enableDrawer() {
+    const markerComponent = this.$refs.markerDrawer
+
+    if (markerComponent) {
+      markerComponent.enableDrawer()
+    }
+  }
+
+  // 标注工具准备好
+  private handleAdded(e: any) {
     const { drawer } = e
     this.drawer = drawer
   }
 
-  handleCreate(e: any) {
+  private handleCreate(e: any) {
     const center = utilInstance.getGeoJsonFeatureCenter(e.features[0])
     const marker = {
       id: UUID.uuid(),
@@ -93,19 +103,11 @@ export default class MapboxMarkerAdd extends Mixins(MapMixin, AppMixin) {
       edit: true,
       features: [e.features[0]],
       center,
-      coordinates: e.features[0]
+      coordinates: e.features[0].geometry.coordinates
     }
     this.drawer.delete(e.features[0].id)
 
     this.emitAddMarker(marker)
-  }
-
-  enableDrawer() {
-    const component = this.$refs.markerDrawer
-
-    if (component) {
-      ;(component as any).enableDrawer()
-    }
   }
 }
 </script>
