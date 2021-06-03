@@ -7,7 +7,7 @@
         v-for="(v, k) in properties"
         :key="`statistic-label-properties-${v}`"
         :label="k"
-        :span="[10, 14]"
+        :span="[12, 12]"
         class="popup-row"
         >{{ v }}</row-flex
       >
@@ -111,6 +111,6 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
 </script>
 <style lang="less" scoped>
 .popup-row {
-  min-width: 100px;
+  min-width: 150px;
 }
 </style>

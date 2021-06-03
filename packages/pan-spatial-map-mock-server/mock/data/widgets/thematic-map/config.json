@@ -585,7 +585,7 @@
                       "radiusLength": "1"
                     },
                     "popup": {
-                      "showFields": ["省名", "GDP_2008"],
+                      "showFields": ["GDP_2008"],
                       "showFieldsTitle": {},
                       "title": ""
                     }
