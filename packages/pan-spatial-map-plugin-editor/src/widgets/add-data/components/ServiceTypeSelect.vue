@@ -55,7 +55,7 @@
     </template>
 
     <template v-if="isMapGIS">
-      <div class="mapgis-server">
+      <div class="mapgis-servers">
         <div class="input-item">
           <div class="short-title1">IP地址:</div>
           <a-input class="short-input" v-model="ip"></a-input>
@@ -73,7 +73,7 @@
           />
         </div>
         <div v-if="showMap" class="input-item">
-          <div class="long-title2">地图服务名称:</div>
+          <div class="long-title">地图服务名称:</div>
           <MapgisServer
             :ip="ip"
             :port="port"
@@ -292,7 +292,7 @@ export default class ServiceTypeSelect extends Vue {
   margin-left: 16px;
   flex-grow: 1;
 }
-.mapgis-server {
+.mapgis-servers {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -322,10 +322,6 @@ export default class ServiceTypeSelect extends Vue {
 
   .long-title {
     width: 59px;
-    white-space: pre-wrap;
-  }
-  .long-title2 {
-    width: 64px;
     white-space: pre-wrap;
   }
 }
