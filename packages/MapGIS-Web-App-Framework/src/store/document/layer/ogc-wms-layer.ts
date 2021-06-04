@@ -444,7 +444,11 @@ export class OGCWMSLayer extends Layer {
       })
     }
     // 1.通过url(基地址)生成获取元数据的URL
-    const getCapabilitiesURL = OGCWMSLayer.generateGetCapabilitiesURL(this.url)
+    let getCapabilitiesURL = OGCWMSLayer.generateGetCapabilitiesURL(this.url)
+
+    // 加入token
+    if (this.tokenValue != '')
+      getCapabilitiesURL += `&${this.tokenKey}=${this.tokenValue}`
 
     // 2.发起网络请求
     const promise = new Promise((resolve, reject) => {
@@ -544,20 +548,21 @@ export class OGCWMSLayer extends Layer {
    */
   public static generateGetCapabilitiesURL(url: string) {
     let tempUrl: string = url
-    if (
-      !url.toLowerCase().includes('service=wms') &&
-      !url.toLowerCase().includes('request=getcapabilities')
-    ) {
-      if (!url.includes('?')) {
-        tempUrl += '?'
-      }
-      if (url.toLowerCase().includes('ime-cloud')) {
-        // 吉威的数据
-        tempUrl += 'service=WMS&REQUEST=GetCapabilities&version=1.1.1'
-      } else {
-        tempUrl += 'service=WMS&request=GetCapabilities&version=1.1.1'
-      }
+    if (url.includes('?')) {
+      tempUrl = url.split('?')[0]
+    } else {
+      tempUrl = url
     }
+
+    tempUrl += '?'
+
+    if (url.toLowerCase().includes('ime-cloud')) {
+      // 吉威的数据
+      tempUrl += 'service=WMS&REQUEST=GetCapabilities&version=1.1.1'
+    } else {
+      tempUrl += 'service=WMS&request=GetCapabilities&version=1.1.1'
+    }
+
     if (
       url.toLowerCase().indexOf('tianditu') > 0 &&
       !url.toLowerCase().includes('tk')

@@ -239,7 +239,7 @@ export abstract class TileLayer extends Layer {
    * @date 22/03/2021
    * @memberof TileLayer
    */
-  tokenKey = ''
+  tokenKey = 'token'
 
   /**
    * token的参数值
