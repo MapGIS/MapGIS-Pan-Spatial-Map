@@ -95,7 +95,6 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           ip,
           port
         }
-        this.addService(service)
         break
       case 'tile':
         service = {
@@ -109,7 +108,6 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           ip,
           port
         }
-        this.addService(service)
         break
       case 'layer':
         service = {
@@ -123,7 +121,6 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           ip,
           port
         }
-        this.addService(service)
         break
       case 'WMS':
       case 'WMTS':
@@ -135,7 +132,6 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           url: url as string,
           visible: true
         }
-        this.addService(service)
         break
       case 'tianDiTu':
         const tempayerType: string = this.serviceInfo.layerType as string
@@ -151,7 +147,6 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           token,
           visible: true
         }
-        this.addService(service)
         break
       case 'arcgis':
         let layerType
@@ -170,7 +165,6 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           url: url as string,
           visible: true
         }
-        this.addService(service)
         break
       case 'baidu':
       case 'gaode':
@@ -186,12 +180,21 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           url: tempLayerType as string,
           visible: true
         }
-        this.addService(service)
         break
       default:
         this.$message.wraning('未支持的服务类型')
         break
     }
+
+    // 将服务加入到对应渲染引擎下的数据中
+    if (this.is2DMapMode) {
+      this.$emit('emitAddService2D', service, true)
+    } else {
+      this.$emit('emitAddService3D', service, false)
+    }
+
+    // 现在的addService方法仅仅只是将服务对应的图层加入到document中
+    this.addService(service)
   }
 }
 </script>

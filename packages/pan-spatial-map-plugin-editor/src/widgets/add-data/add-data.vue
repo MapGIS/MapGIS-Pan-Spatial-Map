@@ -8,7 +8,11 @@
         />
       </a-tab-pane>
       <a-tab-pane key="2" tab="URL">
-        <add-service-url :service-types="tempServiceTypes" />
+        <add-service-url
+          :service-types="tempServiceTypes"
+          @emitAddService2D="onAddService"
+          @emitAddService3D="onAddService"
+        />
       </a-tab-pane>
       <a-tab-pane key="3" tab="文件">
         <add-service-file
@@ -88,6 +92,7 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
     this.allTypes2D = [...this.serviceTypes2D, ...this.fileTypes2D]
     this.allTypes3D = [...this.serviceTypes3D, ...this.fileTypes3D]
 
+    // 将table数据以及服务分类下拉项数据置空
     this.services2D = []
     this.services3D = []
     this.serviceCategories2D = []
@@ -149,9 +154,16 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
 
         if (is2DMap) this.services2D.push(service)
         else this.services3D.push(service)
-        // this.addService(service)
       }
     }
+  }
+
+  // 响应URl Tab页的添加服务数据事件
+  private onAddService(service, is2DMap) {
+    if (is2DMap) this.services2D.push(service)
+    else this.services3D.push(service)
+
+    this.getMapRenderData()
   }
 
   // 获取对应渲染引擎下的数据
@@ -160,10 +172,14 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
       this.services = this.services2D
       this.serviceCategories = this.serviceCategories2D
       this.allTypes = this.allTypes2D
+      this.tempServiceTypes = this.serviceTypes2D
+      this.tempfileTypes = this.fileTypes2D
     } else {
       this.services = this.services3D
       this.serviceCategories = this.serviceCategories3D
       this.allTypes = this.allTypes3D
+      this.tempServiceTypes = this.serviceTypes3D
+      this.tempfileTypes = this.fileTypes3D
     }
   }
 }

@@ -60,7 +60,8 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
 
   public addService(service: Service) {
     // 添加服务
-    this.servicesManager.addService(service)
+    // 不再通过这里添加service数据了，直接在对应的组件里添加service
+    // this.servicesManager.addService(service)
 
     // 把服务对应的图层加入到document中
     if (service.visible && service.visible === true) {
