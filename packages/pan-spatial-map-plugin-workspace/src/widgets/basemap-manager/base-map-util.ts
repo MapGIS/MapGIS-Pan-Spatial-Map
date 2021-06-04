@@ -27,30 +27,32 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
 
   @Watch('layerNames', { deep: true, immediate: true })
   async layerNamesChange(newValue: Array<string>, oldValue: Array<string>) {
-    // 取消勾选的时候删除图层
-    for (let index = 0; index < oldValue.length; index++) {
-      const name = oldValue[index]
-      if (!newValue.includes(name)) {
-        const info: any = this.config.find(item => item.name === name)
-        for (let i = 0; i < info.children.length; i++) {
-          const layer = info.children[i]
-          this.document.baseLayerMap.remove(layer)
+    if (oldValue && oldValue.length >= 0 && newValue && newValue.length >= 0) {
+      // 取消勾选的时候删除图层
+      for (let index = 0; index < oldValue.length; index++) {
+        const name = oldValue[index]
+        if (!newValue.includes(name)) {
+          const info: any = this.config.find(item => item.name === name)
+          for (let i = 0; i < info.children.length; i++) {
+            const layer = info.children[i]
+            this.document.baseLayerMap.remove(layer)
+          }
         }
       }
-    }
 
-    // 勾选的时候添加图层，这里使用for是为了 异步await
-    for (let index = 0; index < newValue.length; index++) {
-      const name = newValue[index]
-      if (!oldValue.includes(name)) {
-        const info: any = this.config.find(item => item.name === name)
-        for (let i = 0; i < info.children.length; i++) {
-          const layer = info.children[i]
-          if (layer.loadStatus === LoadStatus.notLoaded) {
-            await layer.load()
-            this.document.baseLayerMap.add(layer)
-          } else {
-            this.document.baseLayerMap.add(layer)
+      // 勾选的时候添加图层，这里使用for是为了 异步await
+      for (let index = 0; index < newValue.length; index++) {
+        const name = newValue[index]
+        if (!oldValue.includes(name)) {
+          const info: any = this.config.find(item => item.name === name)
+          for (let i = 0; i < info.children.length; i++) {
+            const layer = info.children[i]
+            if (layer.loadStatus === LoadStatus.notLoaded) {
+              await layer.load()
+              this.document.baseLayerMap.add(layer)
+            } else {
+              this.document.baseLayerMap.add(layer)
+            }
           }
         }
       }
