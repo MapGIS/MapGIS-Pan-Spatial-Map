@@ -71,16 +71,20 @@
         </a-row>
       </a-space>
     </div>
-    <zone-frame-mapbox
-      :feature="currentLevelFeature"
-      :fit-bound="currentLevelFitBound"
-      :highlight-style="highlightStyle"
-    ></zone-frame-mapbox>
-    <zone-frame-cesium
-      :feature="currentLevelFeature"
-      :fit-bound="currentLevelFitBound"
-      :highlight-style="highlightStyle"
-    ></zone-frame-cesium>
+    <template v-if="active">
+      <zone-frame-mapbox
+        v-if="is2DMapMode"
+        :feature="currentLevelFeature"
+        :fit-bound="currentLevelFitBound"
+        :highlight-style="highlightStyle"
+      ></zone-frame-mapbox>
+      <zone-frame-cesium
+        v-else
+        :feature="currentLevelFeature"
+        :fit-bound="currentLevelFitBound"
+        :highlight-style="highlightStyle"
+      ></zone-frame-cesium>
+    </template>
   </div>
 </template>
 
@@ -398,6 +402,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
   private clear() {
     this.currentLevelFeature = {}
     this.geoJSON = {}
+    this.currentLevelFitBound = {}
     this.change(this.geoJSON)
   }
 }

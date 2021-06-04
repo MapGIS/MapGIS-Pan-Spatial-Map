@@ -9,7 +9,6 @@
     @load="handleLoad"
     style="height: 100%; width: 100%"
   >
-    <!-- <base-layers-mapbox :document="document" /> -->
     <div v-for="(layerProps, index) in layers" :key="layerProps.layerId">
       <mapgis-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"

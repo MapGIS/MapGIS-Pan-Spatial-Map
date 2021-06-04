@@ -43,6 +43,12 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
   })
   readonly highlightStyle!: Record<string, any>
 
+  mounted() {
+    this.featureChange()
+    this.centerChange()
+    this.fitBoundChange()
+  }
+
   @Watch('feature', { deep: true })
   @Watch('highlightStyle', { deep: true })
   featureChange() {

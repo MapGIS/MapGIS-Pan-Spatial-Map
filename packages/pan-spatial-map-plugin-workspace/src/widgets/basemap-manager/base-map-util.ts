@@ -150,10 +150,12 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
           const tilematrixSet = projection.includes('EPSG:4326') ? 'c' : 'w'
           layer.serverURL = `http://t${Math.round(
             Math.random() * 7
-          )}.tianditu.gov.cn/${type}_${tilematrixSet}/wmts?tk=2ddaabf906d4b5418aed0078e1657029`
+          )}.tianditu.gov.cn/${type}_${tilematrixSet}/wmts`
         }
 
         layer.serverType = LayerType.OGCWMTS
+        layer.tokenKey = 'tk'
+        layer.tokenValue = '2ddaabf906d4b5418aed0078e1657029'
         break
       case 'WMTS':
         layer.serverType = LayerType.OGCWMTS

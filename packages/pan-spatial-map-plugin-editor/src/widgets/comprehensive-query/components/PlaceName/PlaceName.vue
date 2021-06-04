@@ -43,6 +43,7 @@
       </a-tabs>
     </div>
     <place-name-mapbox
+      v-if="is2DMapMode"
       ref="refPlaceNameMapbox"
       :markers="markers"
       :field-configs="fieldConfigs"
@@ -50,6 +51,7 @@
       :geojson="geojson"
     />
     <place-name-cesium
+      v-else
       ref="refPlaceNameCesium"
       :markers="markers"
       :field-configs="fieldConfigs"
