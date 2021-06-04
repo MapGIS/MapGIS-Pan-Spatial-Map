@@ -22,6 +22,7 @@
         :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :baseUrl="layerProps.url"
+        :layers="layerProps.layers"
       />
       <mapgis-3d-igs-vector-layer
         v-if="isIgsVectorLayer(layerProps.type)"
