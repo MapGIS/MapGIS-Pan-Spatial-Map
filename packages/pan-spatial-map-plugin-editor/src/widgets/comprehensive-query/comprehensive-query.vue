@@ -9,6 +9,7 @@
       </div>
       <a-divider type="vertical" />
       <a-input
+        class="search-input"
         placeholder="请输入关键字"
         v-model="keyword"
         allow-clear
@@ -264,6 +265,16 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
         margin-left: 3px;
         color: @text-color;
       }
+    }
+    .search-input {
+      flex: 1;
+    }
+    .search-button {
+      font-size: 14px;
+      width: 46px;
+    }
+    .close-button {
+      font-size: 14px;
     }
   }
   .ant-divider-vertical {

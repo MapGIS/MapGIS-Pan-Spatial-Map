@@ -1,7 +1,9 @@
 <template>
   <div class="zone-container">
     <div class="search-head-container">
-      <a-input v-model="keyword" placeholder="请输入行政区关键字" allow-clear />
+      <a-input v-model="keyword" placeholder="请输入行政区关键字" allow-clear>
+        <a-icon slot="prefix" type="search" />
+      </a-input>
       <div class="actions">
         <a-tooltip placement="bottom" title="设置">
           <a-icon
@@ -360,7 +362,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
   }
 
   private includeZone(name: string, keyword: string) {
-    return keyword && name.includes(keyword)
+    return keyword && name && name.includes(keyword)
   }
 
   private getFeatureFitBound(feature) {
