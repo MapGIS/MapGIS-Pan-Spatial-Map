@@ -19,7 +19,7 @@
         <img :src="item.iconImg" />
       </div>
       <mapgis-popup :coordinates="item.center" :showed="true">
-        <marker-info :markerInfo="item" @delete="interactCancel(item)" />
+        <marker-info :markerInfo="item" />
       </mapgis-popup>
     </mapgis-marker>
   </div>
@@ -185,11 +185,6 @@ export default class MapboxMarkerShow extends Mixins(MapMixin) {
       default:
         break
     }
-  }
-
-  interactCancel(item: any) {
-    const index = this.markers.indexOf(item)
-    this.markers.splice(index, 1)
   }
 }
 </script>
