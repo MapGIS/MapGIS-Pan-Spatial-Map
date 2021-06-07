@@ -1,8 +1,9 @@
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
+import { Point2D } from '@mapgis/webclient-es6-service/common/Point2D'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import axios from 'axios'
 import { LoadStatus, LayerType, Layer } from './layer'
-import { TileInfo } from './tile-layer'
+import { TileInfo, LOD } from './tile-layer'
 import { ObjectTool } from '../../utils/object-tool'
 import { SpatialReference, CoordinateSystemType } from '../spatial-reference'
 
@@ -97,6 +98,34 @@ export class TileMatrixSet {
     }
 
     // todo:还剩下TileMatrix未解析。
+    if (
+      jsonObject.TileMatrix &&
+      jsonObject.TileMatrix.length &&
+      jsonObject.TileMatrix.length > 0
+    ) {
+      jsonObject.TileMatrix.forEach((element, index) => {
+        const lod = new LOD()
+        lod.level = index
+
+        if (element.Identifier) {
+          lod.levelValue = element.Identifier
+        }
+
+        this.tileInfo.lods.push(lod)
+
+        if (index === 0) {
+          if (element.TileWidth) this.tileInfo.size[0] = element.TileWidth
+          if (element.TileHeight) this.tileInfo.size[1] = element.TileHeight
+
+          if (element.TopLeftCorner) {
+            this.tileInfo.origin = new Point2D(
+              element.TopLeftCorner[1],
+              element.TopLeftCorner[0]
+            )
+          }
+        }
+      })
+    }
   }
 
   /**

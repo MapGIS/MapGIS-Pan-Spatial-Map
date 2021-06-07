@@ -233,6 +233,7 @@ export default {
 
       let tempStr = ''
       let parms = {}
+      let tileMatrixSet = {}
 
       switch (layer.type) {
         case LayerType.IGSTile:
@@ -291,6 +292,12 @@ export default {
           }
           break
         case LayerType.OGCWMTS:
+          // 修改说明：修订吉威的wmts服务在三维场景下显示不了的问题。
+          // 初始级别 默认为0 有的为1 比如吉威的瓦片服务
+          // 修改人：马原野 2021年6月7日
+
+          tileMatrixSet = layer.activeLayer.tileMatrixSet
+
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -298,7 +305,10 @@ export default {
             tileMatrixSetID: layer.activeLayer.tileMatrixSetId,
             layer: layer.activeLayer.id,
             wmtsStyle: layer.activeLayer.styleId,
-            format: layer.activeLayer.imageFormat
+            format: layer.activeLayer.imageFormat,
+            options: {
+              startLevel: parseInt(tileMatrixSet.tileInfo.lods[0].levelValue)
+            }
           }
 
           break
