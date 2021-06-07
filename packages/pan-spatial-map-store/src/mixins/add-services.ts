@@ -1,15 +1,25 @@
 /* eslint-disable max-classes-per-file */
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { IDocument, Layer } from '@mapgis/webclient-store'
 import servicesManagerInstance, {
   ServicesManager,
   ServiceCategory,
   Service
 } from '../add-services/services-manager'
+import {
+  dataCatalogManagerInstance,
+  DataCatalogManager
+} from '@mapgis/pan-spatial-map-store'
+import {
+  WidgetMixin,
+  Document,
+  LoadStatus,
+  LayerType
+} from '@mapgis/web-app-framework'
 
-const { LayerType, SubLayerType } = Layer
+const { serviceLayerType, SubLayerType } = Layer
 @Component({})
-export default class AddServicesMixin extends Vue {
+export default class AddServicesMixin extends Mixins(WidgetMixin) {
   private servicesManager: ServicesManager = servicesManagerInstance
 
   public get serviceCategories() {
@@ -50,7 +60,8 @@ export default class AddServicesMixin extends Vue {
 
   public addService(service: Service) {
     // 添加服务
-    this.servicesManager.addService(service)
+    // 不再通过这里添加service数据了，直接在对应的组件里添加service
+    // this.servicesManager.addService(service)
 
     // 把服务对应的图层加入到document中
     if (service.visible && service.visible === true) {
@@ -83,7 +94,7 @@ export default class AddServicesMixin extends Vue {
         // 修改人：马原野 2020年11月11日
         layerExtInfo = {
           serverUrl: url,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.OgcWmsLayer
         }
         break
@@ -92,7 +103,7 @@ export default class AddServicesMixin extends Vue {
         // 修改人：马原野 2020年11月11日
         layerExtInfo = {
           serverUrl: url,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.OgcWmtsLayer
         }
         break
@@ -100,7 +111,7 @@ export default class AddServicesMixin extends Vue {
         layerExtInfo = {
           ip,
           port,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.IgsTileLayer
         }
         break
@@ -108,7 +119,7 @@ export default class AddServicesMixin extends Vue {
         layerExtInfo = {
           ip,
           port,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.IgsDocLayer,
           title: name
         }
@@ -119,7 +130,7 @@ export default class AddServicesMixin extends Vue {
           port,
           gdbps: gdbp || url,
           id,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.IgsVectorLayer
         }
         break
@@ -133,7 +144,7 @@ export default class AddServicesMixin extends Vue {
           baseURL: url,
           id,
           token,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.RasterTiandituLayer
         }
         break
@@ -141,7 +152,7 @@ export default class AddServicesMixin extends Vue {
         layerExtInfo = {
           serverUrl: url,
           id,
-          type: LayerType.RasterTile,
+          type: serviceLayerType.RasterTile,
           subtype: SubLayerType.RasterArcgisLayer
         }
         break
@@ -191,25 +202,88 @@ export default class AddServicesMixin extends Vue {
     return layer
   }
 
-  public addLayerToDocumentByService(service: Service) {
-    const layer = this.createLayerByService(service)
-
-    const doc = IDocument.clone(this.document)
-
-    doc.addLayerInGroup(layer)
-
-    this.document = doc
+  public async addLayerToDocumentByService(service: Service) {
+    const doc: Document = this.document
+    let dealService = JSON.parse(JSON.stringify(service))
+    const { ip, port, type, gdbp, name, url } = dealService
+    switch (type) {
+      case 'doc':
+        dealService = {
+          ip,
+          port,
+          guid: dealService.id,
+          serverName: name,
+          name,
+          serverType: LayerType.IGSMapImage
+        }
+        break
+      case 'layer':
+        dealService = {
+          ip,
+          port,
+          guid: dealService.id,
+          gdbps: gdbp,
+          name,
+          serverType: LayerType.IGSVector
+        }
+        break
+      case 'tile':
+        dealService = {
+          ip,
+          port,
+          guid: dealService.id,
+          serverName: name,
+          name,
+          serverType: LayerType.IGSTile
+        }
+        break
+      case 'WMS':
+        dealService = {
+          guid: dealService.id,
+          name,
+          serverURL: url,
+          serverType: LayerType.OGCWMS
+        }
+        break
+      case 'WMTS':
+        dealService = {
+          guid: dealService.id,
+          name,
+          serverURL: url,
+          serverType: LayerType.OGCWMTS
+        }
+        break
+      case 'tianDiTu':
+        dealService = {
+          guid: dealService.id,
+          serverURL: url,
+          name,
+          serverType: LayerType.OGCWMTS
+        }
+        break
+      case 'arcgis':
+        dealService = {
+          guid: dealService.id,
+          serverURL: url,
+          name,
+          serverType: LayerType.arcGISMapImage
+        }
+        break
+      default:
+        break
+    }
+    const layer = DataCatalogManager.generateLayerByConfig(dealService)
+    if (layer) {
+      if (layer.loadStatus === LoadStatus.notLoaded) {
+        await layer.load()
+      }
+      doc.defaultMap.add(layer)
+    }
   }
 
   public removeLayerFromDocumentByService(service: Service) {
-    const doc = IDocument.clone(this.document)
-
-    // service ID与Layer ID相同,因些可以直接通过service ID查找对应的图层
-    const existLayers = doc.getLayersById(service.id)
-    if (existLayers && existLayers.length > 0) {
-      doc.deleteLayer(service.id)
-    }
-
-    this.document = doc
+    const doc: Document = this.document
+    const layer = doc.defaultMap.findLayerById(service.id)
+    doc.defaultMap.remove(layer)
   }
 }
