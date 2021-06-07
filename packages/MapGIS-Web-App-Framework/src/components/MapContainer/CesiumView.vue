@@ -9,7 +9,6 @@
     :fullscreen-button="false"
     style="height: 100%; width: 100%"
   >
-    <!-- <base-layers-cesium :document="document" /> -->
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"

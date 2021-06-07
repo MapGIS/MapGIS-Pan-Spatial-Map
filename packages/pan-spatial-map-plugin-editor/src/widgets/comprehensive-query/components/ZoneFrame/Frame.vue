@@ -46,16 +46,20 @@
         </a-list>
       </a-spin>
     </a-space>
-    <zone-frame-mapbox
-      :feature="frameFeature"
-      :center="center"
-      :highlight-style="highlightStyle"
-    ></zone-frame-mapbox>
-    <zone-frame-cesium
-      :feature="frameFeature"
-      :center="center"
-      :highlight-style="highlightStyle"
-    ></zone-frame-cesium>
+    <template v-if="active">
+      <zone-frame-mapbox
+        v-if="is2DMapMode"
+        :feature="frameFeature"
+        :center="center"
+        :highlight-style="highlightStyle"
+      ></zone-frame-mapbox>
+      <zone-frame-cesium
+        v-else
+        :feature="frameFeature"
+        :center="center"
+        :highlight-style="highlightStyle"
+      ></zone-frame-cesium>
+    </template>
   </div>
 </template>
 
@@ -220,6 +224,7 @@ export default class Frame extends Mixins(AppMixin) {
 
   private clear() {
     this.frameFeature = {}
+    this.center = []
     this.change(this.frameFeature)
   }
 }

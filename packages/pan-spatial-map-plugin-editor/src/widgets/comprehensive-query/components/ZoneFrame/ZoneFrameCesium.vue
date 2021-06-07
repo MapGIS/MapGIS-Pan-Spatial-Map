@@ -52,6 +52,12 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
 
   private entityTextNames: string[] = []
 
+  mounted() {
+    this.featureChange()
+    this.centerChange()
+    this.fitBoundChange()
+  }
+
   @Watch('feature', { deep: true })
   @Watch('highlightStyle', { deep: true })
   featureChange() {
@@ -161,7 +167,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
     }
   }
 
-  mounted() {
+  created() {
     this.cesiumUtil.setCesiumGlobe(this.Cesium, this.webGlobe)
   }
 

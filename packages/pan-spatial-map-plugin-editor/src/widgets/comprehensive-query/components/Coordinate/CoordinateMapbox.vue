@@ -66,7 +66,7 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
 
   private markerImg = `${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
 
-  @Watch('pickable')
+  @Watch('pickable', { immediate: true })
   private pickableChange() {
     const canvas = this.map.getCanvasContainer()
 
@@ -79,14 +79,14 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
     }
   }
 
-  @Watch('center', { deep: true })
+  @Watch('center', { deep: true, immediate: true })
   centerChange() {
     if (this.center && this.center.length > 0) {
       this.map.panTo([this.center[0], this.center[1]])
     }
   }
 
-  @Watch('frameFeature', { deep: true })
+  @Watch('frameFeature', { deep: true, immediate: true })
   private frameFeatureChange(val: FeatureGeoJSON | null) {
     this.clear()
     if (val && Object.keys(val).length > 0) {

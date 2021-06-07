@@ -117,22 +117,26 @@
         </a-button>
       </a-row>
     </a-space>
-    <coordinate-mapbox
-      :frame-feature="frameFeature"
-      :pickable="pickable"
-      :coordinate="coordInDefaultCRS"
-      :center="center"
-      :highlight-style="highlightStyle"
-      @picked-coordinate="onPickedCoordinate"
-    ></coordinate-mapbox>
-    <coordinate-cesium
-      :frame-feature="frameFeature"
-      :pickable="pickable"
-      :coordinate="coordInDefaultCRS"
-      :center="center"
-      :highlight-style="highlightStyle"
-      @picked-coordinate="onPickedCoordinate"
-    ></coordinate-cesium>
+    <template v-if="active">
+      <coordinate-mapbox
+        v-if="is2DMapMode"
+        :frame-feature="frameFeature"
+        :pickable="pickable"
+        :coordinate="coordInDefaultCRS"
+        :center="center"
+        :highlight-style="highlightStyle"
+        @picked-coordinate="onPickedCoordinate"
+      ></coordinate-mapbox>
+      <coordinate-cesium
+        v-else
+        :frame-feature="frameFeature"
+        :pickable="pickable"
+        :coordinate="coordInDefaultCRS"
+        :center="center"
+        :highlight-style="highlightStyle"
+        @picked-coordinate="onPickedCoordinate"
+      ></coordinate-cesium>
+    </template>
   </div>
 </template>
 
@@ -390,6 +394,7 @@ export default class MpCoordinate extends Mixins(AppMixin) {
     this.frameNo = ''
     this.frameFeature = {}
     this.coordInDefaultCRS = []
+    this.center = []
   }
 }
 </script>
