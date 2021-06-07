@@ -48,7 +48,13 @@
         <div class="content-title">图片：</div>
         <div class="edit-img">
           <a-avatar :src="`${baseUrl}${img}`" />
-          <a-button shape="circle" icon="edit" size="small" @click="handleEdit">
+          <a-button
+            class="popup-button"
+            shape="circle"
+            icon="edit"
+            size="small"
+            @click="handleEdit"
+          >
           </a-button>
         </div>
       </div>
@@ -90,17 +96,17 @@ export default class MarkerInfo extends Mixins(AppMixin) {
   // 图片上传器的显隐
   private showUploader = false
 
-  @Emit('ok')
-  emitOk(markerInfo: any) {}
-
-  @Emit('cancel')
-  emitCancel(markerInfo: any) {}
-
   created() {
     this.title = this.markerInfo.title
     this.description = this.markerInfo.description
     this.img = this.markerInfo.img
     this.uploadUrl = this.baseUrl
+
+    eventBus.$on('emitClickEdit', id => {
+      if (this.markerInfo.id === id) {
+        console.log(this.markerInfo.title)
+      }
+    })
   }
 
   mounted() {
@@ -120,13 +126,11 @@ export default class MarkerInfo extends Mixins(AppMixin) {
     this.markerInfo.description = this.description
     this.markerInfo.img = this.img
 
-    this.emitOk(this.markerInfo)
     eventBus.$emit('edit-marker-info', this.markerInfo)
   }
 
   handleCancel() {
     this.markerInfo.edit = false
-    this.emitCancel(this.markerInfo)
   }
 
   selectImg() {

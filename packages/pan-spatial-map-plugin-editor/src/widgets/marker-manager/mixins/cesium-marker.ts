@@ -78,9 +78,9 @@ export default class CesiumMarkerMixin extends Mixins(MapMixin) {
     const entityName =
       new Date().toLocaleString().split(' ')[0] +
       new Date().toLocaleString().split(' ')[1]
-    const fillColor = new this.Cesium.Color.fromCssColorString('#f6cea7')
+    const fillColor = new this.Cesium.Color.fromCssColorString('#f3f5c4')
 
-    const fillOutlineColor = new this.Cesium.Color.fromCssColorString('#ff9a35')
+    const fillOutlineColor = new this.Cesium.Color.fromCssColorString('#f3f5c4')
 
     const entity = this.cesiumUtil.appendPolygon(
       entityName,
@@ -116,7 +116,7 @@ export default class CesiumMarkerMixin extends Mixins(MapMixin) {
       new Date().toLocaleString().split(' ')[0] +
       new Date().toLocaleString().split(' ')[1]
 
-    const color = new this.Cesium.Color.fromCssColorString('#ff9a35')
+    const color = new this.Cesium.Color.fromCssColorString('#ff0000')
 
     const lineSize = 2 // 线宽【根据配置文件 宽度改变】
     const entity = this.cesiumUtil.appendLine({
