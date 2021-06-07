@@ -447,7 +447,8 @@ export class DataCatalogManager {
       ip: this.config.paramConfig.SERVERIP, // 服务ip(可选)
       port: this.config.paramConfig.SERVERPORT, // 服务端口(可选)
       bindData: 'bindData', // 绑定数据：与该服务图层相关联的服务信息,比如：与该瓦片服务对应的地图服务。应用中利用该字段可实现对瓦片服务的查询功能
-      gdbps: 'gdbps' // 图层的gdbp地址，允许多个图层
+      gdbps: 'gdbps', // 图层的gdbp地址，允许多个图层
+      data: 'data' // 非空间数据节点中用于记录数据在ftp服务器上的目录名
     }
 
     this.configConverted.keyConfig = keyConfig
@@ -498,6 +499,7 @@ export class DataCatalogManager {
         commonInfo.guid = guid
 
         const layerServeiceType = node[this.config.paramConfig.LAYERSERVICETYPE]
+        const data = node[this.config.paramConfig.DATA]
 
         if (layerServeiceType && layerServeiceType !== '') {
           // 服务图层节点
@@ -546,6 +548,9 @@ export class DataCatalogManager {
           if (isLayerValid) {
             this._allLayerConfigItems.push(nodeConverted)
           }
+        } else if (data && data !== '') {
+          // 非空间数据节点
+          nodeConverted = { ...commonInfo, data }
         } else {
           nodeConverted = { ...commonInfo }
           // 组节点
