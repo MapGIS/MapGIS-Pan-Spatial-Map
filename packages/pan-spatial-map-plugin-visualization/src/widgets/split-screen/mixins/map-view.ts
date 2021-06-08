@@ -52,15 +52,15 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * 三维转至指定范围
    */
   jumpToRect3d({ xmin, xmax, ymin, ymax }) {
-    const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-      xmin,
-      ymin,
-      xmax,
-      ymax
-    )
-    this.drawWebGlobe.viewer.camera.flyTo({
-      destination: Rectangle
-    })
+    // const Rectangle = new this.Cesium.Rectangle.fromDegrees(
+    //   xmin,
+    //   ymin,
+    //   xmax,
+    //   ymax
+    // )
+    // drawWebGlobe.viewer.camera.flyTo({
+    //   destination: Rectangle
+    // })
   }
 
   /**

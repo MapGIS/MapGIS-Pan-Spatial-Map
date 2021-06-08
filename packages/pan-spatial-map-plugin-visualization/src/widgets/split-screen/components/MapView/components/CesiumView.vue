@@ -2,8 +2,8 @@
   <div v-if="mapViewDocument">
     <mp-cesium-view
       :document="mapViewDocument"
-      @map-load="onMapLoad"
       :vueKey="vueKey"
+      @map-load="onMapLoad"
     ></mp-cesium-view>
     <mapgis-3d-draw @load="onLoad" @drawcreate="onCreate" :vueKey="vueKey" />
     <mapgis-3d-link :vueKey="vueKey" :enable="true" />
@@ -34,6 +34,7 @@ export default class CesiumView extends Vue {
   isMapLoaded = false
 
   get vueKey() {
+    console.log('this.mapViewId', this.mapViewId)
     return this.mapViewId
   }
 
@@ -43,8 +44,8 @@ export default class CesiumView extends Vue {
     }
   }
 
-  onMapLoad(e, webGlobe) {
-    this.$emit('on-load', e, webGlobe)
+  onMapLoad(e) {
+    this.$emit('on-load', e)
     this.isMapLoaded = true
   }
 
@@ -56,7 +57,6 @@ export default class CesiumView extends Vue {
 
   onCreate(cartesian3, lnglat) {
     if (this.isMapLoaded) {
-      console.log('onCreate', cartesian3, lnglat)
       const [[left, top], [right, bottom]] = lnglat
       const rect = new Rect(left, bottom, right, top)
       this.$emit('on-create', rect)

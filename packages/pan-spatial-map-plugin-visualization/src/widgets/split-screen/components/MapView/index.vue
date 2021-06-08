@@ -15,6 +15,7 @@
     <cesium-view
       v-else
       ref="cesiumView"
+      :mapViewId="mapViewId"
       :mapViewDocument="mapViewDocument"
       @on-load="onCesiumLoad"
       @on-create="onDrawCreated"
@@ -93,8 +94,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
 
   mapbox: any = {}
 
-  drawWebGlobe = null
-
   // 地图是否加载完成
   isMapLoaded = false
 
@@ -150,7 +149,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    */
   onCesiumLoad(e, webGlobe) {
     this.isMapLoaded = true
-    this.drawWebGlobe = webGlobe
     this.onResort()
   }
 
@@ -211,7 +209,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     if (this.is2DMapMode) {
       this.jumpToRect(this.initView)
     } else {
-      // this.drawWebGlobe.viewer.scene.camera.setView(this.initView)
+      this.jumpToRect3d(this.initView)
     }
   }
 

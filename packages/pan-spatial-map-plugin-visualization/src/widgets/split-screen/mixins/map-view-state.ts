@@ -21,6 +21,7 @@ export class Rect {
   }
 }
 
+const initRectangle = new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
 /**
  * 地图视图状态类.记录地图的ID、显示范围信息
  */
@@ -29,10 +30,10 @@ export class MapViewState {
   private _mapViewId = ''
 
   // 二三维维地图复位时的视图范围
-  private _initView = null
+  private _initView = initRectangle
 
   // 二维地图当前的显示视图范围
-  private _mapboxView: Rect = new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
+  private _mapboxView: Rect = initRectangle
 
   get mapViewId(): string {
     return this._mapViewId
