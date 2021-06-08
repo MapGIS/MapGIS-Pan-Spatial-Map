@@ -1,0 +1,19 @@
+@import 'flex.scss';
+
+.ant-form-horizontal {
+  margin-top: 16px;
+}
+
+.ant-form-item {
+  @include flex();
+}
+
+::v-deep .ant-form-item-control-wrapper {
+  flex-grow: 1;
+}
+
+::v-deep .ant-form-item-children {
+  @include flex($justify-content: space-between);
+
+  width: 100%;
+}
