@@ -7,6 +7,7 @@
     :base-layer-picker="false"
     :animation="false"
     :fullscreen-button="false"
+    :vueKey="vueKey"
     style="height: 100%; width: 100%"
   >
     <div v-for="layerProps in layers" :key="layerProps.layerId">
@@ -108,6 +109,10 @@ export default {
     },
     pluginPath: {
       type: String
+    },
+    vueKey: {
+      type: String,
+      default: 'default'
     }
   },
   data() {

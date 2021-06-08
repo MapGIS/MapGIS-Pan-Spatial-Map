@@ -1,23 +1,32 @@
 <template>
   <div class="mp-widget-swipe">
-    <div class="swipe-container">
+    <div :class="swipeContainerCls">
       <mapbox-compare
+        v-if="is2DMapMode"
         :aboveLayer="aboveLayer"
         :belowLayer="belowLayer"
         :direction="direction"
+      />
+      <cesium-compare
+        v-else
+        :aboveLayer="aboveLayer"
+        :belowLayer="belowLayer"
       />
       <a-drawer
         title="设置"
         placement="right"
         :closable="false"
-        :visible="settingPanelVisible"
         :get-container="false"
-        :wrap-style="{ position: 'absolute' }"
-        :header-style="{ display: 'none' }"
-        :body-style="{ display: 'flex', padding: '12px' }"
+        :visible="settingPanelVisible"
+        :width="drawerWidth"
+        :wrap-style="drawerWrapStyle"
+        :drawer-style="drawerStyle"
+        :header-style="drawerHeaderStyle"
+        :body-style="drawerBodyStyle"
         :mask="false"
       >
         <div
+          v-show="is2DMapMode"
           class="swipe-setting-handle"
           slot="handle"
           @click="onToggleSettingPanel"
@@ -36,6 +45,7 @@
                 v-for="p in aboveLayers"
                 :key="p.id"
                 :value="p.id"
+                :title="p.title"
                 >{{ p.title }}</a-select-option
               ></a-select
             >
@@ -47,6 +57,7 @@
                 v-for="p in belowLayers"
                 :key="p.id"
                 :value="p.id"
+                :title="p.title"
                 >{{ p.title }}</a-select-option
               >
             </a-select>
@@ -101,6 +112,48 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
 
   // 弹框开关
   settingPanelVisible = true
+
+  // 卷帘类
+  get swipeContainerCls() {
+    return {
+      'swipe-container': true,
+      'is-3d': !this.is2DMapMode
+    }
+  }
+
+  // 弹框宽度
+  get drawerWidth() {
+    return this.is2DMapMode ? 240 : '100%'
+  }
+
+  // 弹框wrap样式
+  get drawerWrapStyle() {
+    return {
+      position: 'absolute',
+      width: this.is2DMapMode ? '240px' : '100%'
+    }
+  }
+
+  // 弹框样式
+  get drawerStyle() {
+    return !this.is2DMapMode
+      ? {
+          'border-left': 'none'
+        }
+      : {}
+  }
+
+  // 弹框头部样式
+  get drawerHeaderStyle() {
+    return {
+      display: 'none'
+    }
+  }
+
+  // 弹框内容样式
+  get drawerBodyStyle() {
+    return { display: 'flex', padding: '12px' }
+  }
 
   // 卷帘方向变化，同步更改图层选择框的标题
   get directionLayerTitle(): {

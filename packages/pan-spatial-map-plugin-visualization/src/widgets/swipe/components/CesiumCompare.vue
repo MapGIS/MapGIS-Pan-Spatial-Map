@@ -1,5 +1,9 @@
 <template>
-  <mapgis-3d-compare :beforeLayers="[aboveLayer]" :afterLayers="[belowLayer]" />
+  <mapgis-3d-compare
+    v-if="showCompare"
+    :beforeLayers="beforeLayers"
+    :afterLayers="afterLayers"
+  />
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
@@ -10,6 +14,17 @@ export default class CesiumCompare extends Vue {
 
   @Prop({ default: () => ({}) }) readonly belowLayer!: Layer
 
-  @Prop({ default: 'vertical' }) readonly direction!: Direction
+  // 是否展示卷帘
+  get showCompare() {
+    return this.aboveLayer.id && this.belowLayer.id
+  }
+
+  get beforeLayers() {
+    return [this.aboveLayer.id]
+  }
+
+  get afterLayers() {
+    return [this.belowLayer.id]
+  }
 }
 </script>

@@ -1,11 +1,12 @@
 <template>
   <div class="swipe-mapbox-compare">
     <!-- 空数据提示 -->
-    <div class="swipe-no-data-tip" v-if="!showCompare">
-      <a-empty description="卷帘分析功能至少需要选择2个图层" />
-    </div>
+    <a-empty
+      description="卷帘分析功能至少需要选择2个图层"
+      v-if="!showCompare"
+    />
     <!-- 卷帘组件 -->
-    <mapgis-compare :orientation="direction" v-else>
+    <mapgis-compare v-else :orientation="direction">
       <mp-mapbox-view
         slot="beforeMap"
         :document="aboveDocument"
@@ -74,19 +75,17 @@ export default class MapboxCompare extends Vue {
       defaultMap.add(nV)
     }
   }
+
+  created() {
+    this.update(this.aboveLayer, 'above')
+    this.update(this.belowLayer, 'below')
+  }
 }
 </script>
 <style lang="less" scoped>
 .swipe-mapbox-compare {
-  width: 1600px;
+  width: 100%;
   height: 100%;
-  overflow: auto;
   position: relative;
-}
-.swipe-no-data-tip {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

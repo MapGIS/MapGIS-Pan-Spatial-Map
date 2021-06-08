@@ -17,9 +17,15 @@
     }
   }
   .swipe-container {
-    width: 100%;
-    height: 100%;
     position: relative;
+    min-width: 1064px;
+    min-height: 794px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &.is-3d {
+      min-width: 240px;
+    }
     .swipe-setting-handle {
       position: absolute;
       height: 64px;
