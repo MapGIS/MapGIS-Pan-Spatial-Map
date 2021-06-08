@@ -15,7 +15,7 @@
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
         :serverName="layerProps.serverName"
         :before="getBeforeLayerId(index)"
       />
@@ -24,7 +24,7 @@
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
         :layers="layerProps.layers"
         :serverName="layerProps.serverName"
         :before="getBeforeLayerId(index)"
@@ -34,7 +34,7 @@
         :layer="layerProps.layer"
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
-        :url="layerProps.url"
+        :baseUrl="layerProps.url"
         :gdbps="layerProps.gdbps"
         :before="getBeforeLayerId(index)"
       />

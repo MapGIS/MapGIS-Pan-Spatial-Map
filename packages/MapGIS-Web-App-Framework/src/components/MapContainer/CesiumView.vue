@@ -67,6 +67,7 @@
       <mapgis-3d-vectortile-layer
         v-if="isVectorTileLayer(layerProps.type)"
         :vectortilejson="layerProps.mvtStyle"
+        :tilingScheme="layerProps.tilingScheme"
       />
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type)"
@@ -369,9 +370,12 @@ export default {
           }
           break
         case LayerType.vectorTile:
+          // 修改说明：当前mapgis-3d-vectortile-layer图层的切片方式设置方式和其它图层还不一致。
+          // 修改人：马原野 2021年6月8日
           layerComponentProps = {
             type: layer.type,
-            mvtStyle: layer.currentStyle
+            mvtStyle: layer.currentStyle,
+            tilingScheme: this.getTilingSchemeBySrs(srs)
           }
           break
         default:
@@ -387,6 +391,7 @@ export default {
       const { Cesium, CesiumZondy } = payload
       // 底层传递到window上,通过window取当分屏时是否存在问题???
       const { webGlobe } = window
+      this.Cesium = Cesium
 
       this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
 
@@ -434,6 +439,25 @@ export default {
     },
     isIgsTerrainLayer(type) {
       return type === IGSSceneSublayerRenderType.elevation
+    },
+    getTilingSchemeBySrs(srs) {
+      let tilingScheme = null
+
+      if (this.Cesium == null) return null
+
+      if (
+        srs === 'EPSG:4326' ||
+        srs === 'EPSG:4490' ||
+        srs === 'EPSG:4610' ||
+        srs === 'EPSG:4214'
+      ) {
+        tilingScheme = new this.Cesium.GeographicTilingScheme()
+      } else if (srs === 'EPSG:3857') {
+        tilingScheme = new this.Cesium.WebMercatorTilingScheme()
+      } else {
+        tilingScheme = new this.Cesium.GeographicTilingScheme()
+      }
+      return tilingScheme
     },
     changePageHeight() {
       const div = document.getElementsByClassName('cesium-viewer')
