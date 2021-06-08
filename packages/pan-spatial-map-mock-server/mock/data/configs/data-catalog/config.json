@@ -721,7 +721,7 @@
             "ip": "",
             "port": "",
             "layerServiceType": "IGSIMAGE",
-            "name": "北京市1",
+            "name": "北京市0630_hdf",
             "searchName": "",
             "token": "",
             "guid": "3049a1df-e633-4df2-a0a1-76e145724e9a",
@@ -880,7 +880,7 @@
             "ip": "",
             "port": "",
             "layerServiceType": "IGSTILED",
-            "name": "250DEM",
+            "name": "DEM250",
             "searchName": "",
             "token": "",
             "guid": "1c3bd807-52c5-42d5-bdcb-08234af8b4e8",
@@ -959,7 +959,7 @@
             "searchName": "",
             "token": "",
             "guid": "8baba6b1-7eb9-423f-aefa-cb187bb1d4a9",
-            "serverUrl": "http://develop.smaryun.com:6163/igs/rest/ogc/doc/北京市/WMSServer",
+            "serverUrl": "http://localhost:6163/igs/rest/ogc/doc/北京市0630_hdf/WMSServer",
             "wfsUrl": "",
             "extent": ""
           },
@@ -973,7 +973,7 @@
             "searchName": "",
             "token": "",
             "guid": "a96fea53-d97d-401a-a502-f5621f098c14",
-            "serverUrl": "http://develop.smaryun.com:6163/igs/rest/ogc/WORLDMKTTILE2/WMTSServer",
+            "serverUrl": "http://localhost:6163/igs/rest/ogc/WORLDMKTTILE2/WMTSServer",
             "wfsUrl": "",
             "extent": ""
           }
