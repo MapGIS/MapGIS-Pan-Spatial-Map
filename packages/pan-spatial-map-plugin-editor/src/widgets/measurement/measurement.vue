@@ -1,67 +1,66 @@
 <template>
   <div class="mp-widget-measurement">
-    <div
-      :class="!is2DMapMode ? 'cesium-measure-toolbar' : ''"
-      class="measure-toolbar"
-    >
-      <div class="actions">
-        <a-tooltip
-          v-show="is2DMapMode"
+    <mp-toolbar>
+      <mp-toolbar-command-group v-show="is2DMapMode">
+        <mp-toolbar-command
           v-for="item in planeMeasureModes"
           :key="item.title"
-          placement="bottom"
           :title="item.title"
-        >
-          <a-icon
-            class="action"
-            @click="onOpenMeasure(item.mode)"
-            :type="item.icon"
-          />
-        </a-tooltip>
-        <!-- 三维模式下的key值为每项的mode，避免和二维模式的key值重复 -->
-        <a-tooltip
-          v-show="!is2DMapMode"
+          :icon="item.icon"
+          @click="onOpenMeasure(item.mode)"
+        />
+      </mp-toolbar-command-group>
+      <!-- 三维模式下的key值为每项的mode，避免和二维模式的key值重复 -->
+      <mp-toolbar-command-group v-show="!is2DMapMode">
+        <mp-toolbar-command
           v-for="item in cesiumMeasureModes"
           :key="item.mode"
-          placement="bottom"
           :title="item.title"
-        >
-          <a-icon
-            class="action"
-            @click="onOpenMeasure(item.mode)"
-            :type="item.icon"
-          />
-        </a-tooltip>
-      </div>
+          :icon="item.icon"
+          @click="onOpenMeasure(item.mode)"
+        />
+      </mp-toolbar-command-group>
       <div v-show="is2DMapMode" class="unit">
-        <a-select v-show="showLengthSelect" v-model="activeDistanceSelect">
-          <a-select-option v-for="item in getSelectOptions" :key="item">{{
-            item
-          }}</a-select-option>
+        <a-select
+          size="small"
+          v-show="showLengthSelect"
+          v-model="activeDistanceSelect"
+        >
+          <a-select-option v-for="item in getSelectOptions" :key="item">
+            {{ item }}
+          </a-select-option>
         </a-select>
-        <a-select v-show="showAreaSelect" v-model="activeAreaSelect">
-          <a-select-option v-for="item in getSelectOptions" :key="item">{{
-            item
-          }}</a-select-option>
+        <a-select
+          size="small"
+          v-show="showAreaSelect"
+          v-model="activeAreaSelect"
+        >
+          <a-select-option v-for="item in getSelectOptions" :key="item">
+            {{ item }}
+          </a-select-option>
         </a-select>
       </div>
-      <div class="actions">
-        <a-tooltip placement="bottom" title="清除">
-          <a-icon class="action" @click="onClearMeasure" type="delete">
-          </a-icon>
-        </a-tooltip>
-        <a-tooltip v-show="is2DMapMode" placement="bottom" title="设置">
-          <a-icon
-            :class="{ action: true, active: showSettingPanel }"
-            @click="showSettingPanel = !showSettingPanel"
-            type="setting"
-          >
-          </a-icon>
-        </a-tooltip>
-      </div>
-    </div>
-    <div v-show="is2DMapMode" class="measure-result">
-      <div v-show="showLengthSelect && isMeasureFinished">
+      <mp-toolbar-space />
+      <mp-toolbar-command-group>
+        <mp-toolbar-command
+          title="清除"
+          icon="delete"
+          @click="onClearMeasure"
+        />
+        <mp-toolbar-command
+          v-show="is2DMapMode"
+          title="设置"
+          icon="setting"
+          :active="showSettingPanel"
+          @click="showSettingPanel = !showSettingPanel"
+        />
+      </mp-toolbar-command-group>
+    </mp-toolbar>
+    <div v-show="is2DMapMode">
+      <div
+        v-show="showLengthSelect && isMeasureFinished"
+        class="measure-result"
+      >
         <div class="result-item">
           <span class="name">投影平面长度: </span>
           <span class="value">{{ results.planeLength }}</span>
@@ -408,41 +407,8 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
 <style lang="less" scoped>
 .mp-widget-measurement {
-  .measure-toolbar {
-    display: flex;
-    align-items: center;
-    height: 32px;
-    .actions {
-      display: flex;
-      align-items: center;
-      text-align: right;
-      font-size: 17px;
-      color: @text-color;
-      .action {
-        margin: 0 8px;
-        cursor: pointer;
-        &:hover,
-        &.active {
-          color: @primary-color;
-        }
-        &:first-child {
-          margin-left: 0;
-        }
-        &:last-child {
-          margin-right: 0;
-        }
-      }
-    }
-    .unit {
-      flex: 1;
-      margin: 0 16px;
-    }
-  }
-  .cesium-measure-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 32px;
+  .unit {
+    margin: 0 6px;
   }
   .measure-result {
     font-size: 13px;

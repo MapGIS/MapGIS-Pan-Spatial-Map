@@ -98,4 +98,8 @@ export default class MpAttributeTableList extends Mixins(ExhibitionMixin) {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.mp-attribute-table-list {
+  padding-top: 2px;
+}
+</style>

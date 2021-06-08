@@ -1,20 +1,20 @@
 <template>
   <div class="zone-container">
-    <div class="search-head-container">
+    <mp-toolbar class="search-head-container" :bordered="false">
       <a-input v-model="keyword" placeholder="请输入行政区关键字" allow-clear>
         <a-icon slot="prefix" type="search" />
       </a-input>
-      <div class="actions">
-        <a-tooltip placement="bottom" title="设置">
-          <a-icon
-            :class="{ action: true, active: showSettingPanel }"
-            @click="showSettingPanel = !showSettingPanel"
-            type="setting"
-          >
-          </a-icon>
-        </a-tooltip>
-      </div>
-    </div>
+      <mp-toolbar-space />
+      <mp-toolbar-command-group :remove-first-command-left-margin="false">
+        <mp-toolbar-command
+          title="设置"
+          icon="setting"
+          :active="showSettingPanel"
+          :hover-bordered="false"
+          @click="showSettingPanel = !showSettingPanel"
+        />
+      </mp-toolbar-command-group>
+    </mp-toolbar>
     <a-spin :spinning="spinning">
       <div>
         <div separator=">" class="current-name">
@@ -416,32 +416,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
   flex-direction: column;
   padding-top: 10px;
   .search-head-container {
-    display: flex;
-    align-items: center;
     margin-bottom: 10px;
-    .actions {
-      display: flex;
-      align-items: center;
-      flex: 1;
-      text-align: right;
-      font-size: 17px;
-      color: @text-color;
-      padding-left: 10px;
-      .action {
-        margin: 0 8px;
-        cursor: pointer;
-        &:hover,
-        &.active {
-          color: @primary-color;
-        }
-        &:first-child {
-          margin-left: 0;
-        }
-        &:last-child {
-          margin-right: 0;
-        }
-      }
-    }
   }
   .current-name {
     display: flex;

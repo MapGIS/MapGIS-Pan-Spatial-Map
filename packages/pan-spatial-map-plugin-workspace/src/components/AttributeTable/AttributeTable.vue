@@ -1,62 +1,49 @@
 <template>
   <div ref="attributeTable" :id="id" class="mp-attribute-table">
-    <div class="header-bar">
-      <div class="left-bar">
-        <div class="title">
-          {{ selectedDescription }}
-        </div>
-        <a-switch
-          checked-children="范围过滤"
-          un-checked-children="范围过滤"
-          v-model="filterWithMap"
-          size="small"
-          style="margin: 0 8px"
-        />
-        <div class="actions">
-          <a-tooltip title="缩放至已选择">
-            <a-icon @click="onZoomTo" class="action" type="environment" />
-          </a-tooltip>
-          <a-tooltip title="清除选择">
-            <a-icon
-              @click="onClearSelection"
-              class="action"
-              type="close-square"
-            />
-          </a-tooltip>
-        </div>
+    <mp-toolbar class="header-bar" size="small" :bordered="false">
+      <div class="title">
+        {{ selectedDescription }}
       </div>
-      <div class="actions">
-        <a-tooltip title="属性统计">
-          <a-icon @click="onStatistics" class="action" type="bar-chart" />
-        </a-tooltip>
-        <a-tooltip title="过滤器">
-          <a-icon @click="onFilter" class="action" type="filter" />
-        </a-tooltip>
-        <a-divider type="vertical" />
-        <a-tooltip title="刷新">
-          <a-icon
-            @click="onRefresh"
-            class="action"
-            :type="loading ? 'loading' : 'reload'"
-          />
-        </a-tooltip>
-        <a-tooltip title="列配置">
-          <mp-action-columns
-            v-if="tableColumns.length"
-            :columns="tableColumns"
-            class="action"
-          >
-          </mp-action-columns>
-        </a-tooltip>
-        <a-tooltip title="全屏">
-          <a-icon
-            @click="onToggleScreen"
-            class="action"
-            :type="fullScreen ? 'fullscreen-exit' : 'fullscreen'"
-          />
-        </a-tooltip>
-      </div>
-    </div>
+      <a-switch
+        checked-children="范围过滤"
+        un-checked-children="范围过滤"
+        v-model="filterWithMap"
+        size="small"
+        style="margin: 0 8px"
+      />
+      <mp-toolbar-command
+        title="缩放至已选择"
+        icon="environment"
+        @click="onZoomTo"
+      />
+      <mp-toolbar-command
+        title="清除选择"
+        icon="close-square"
+        @click="onClearSelection"
+      />
+      <mp-toolbar-space />
+      <mp-toolbar-command
+        title="属性统计"
+        icon="bar-chart"
+        @click="onStatistics"
+      />
+      <mp-toolbar-command title="过滤器" icon="filter" @click="onFilter" />
+      <a-divider type="vertical" />
+      <mp-toolbar-command
+        title="刷新"
+        :icon="loading ? 'loading' : 'reload'"
+        @click="onRefresh"
+      />
+      <mp-attribute-table-column-setting
+        v-if="tableColumns.length"
+        :columns="tableColumns"
+      />
+      <mp-toolbar-command
+        title="全屏"
+        :icon="fullScreen ? 'fullscreen-exit' : 'fullscreen'"
+        @click="onToggleScreen"
+      />
+    </mp-toolbar>
     <a-table
       :id="tableId"
       bordered
@@ -190,7 +177,7 @@ import {
 import { AppMixin, LayerType, UUID } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
-import MpActionColumns from './ActionColumns.vue'
+import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
 import MpMarkerPlotting from '../MarkerPlotting/MarkerPlotting.vue'
 import Mp3dMarkerPlotting from '../3dMarkerPlotting/3dMarkerPlotting.vue'
 import MpFilter from '../Filter/Filter.vue'
@@ -200,7 +187,7 @@ import axios from 'axios'
 @Component({
   name: 'MpAttributeTable',
   components: {
-    MpActionColumns,
+    MpAttributeTableColumnSetting,
     MpMarkerPlotting,
     Mp3dMarkerPlotting,
     MpAttrStatistics,
@@ -872,34 +859,10 @@ export default class MpAttributeTable extends Mixins(
   height: 100%;
   background-color: @base-bg-color;
   .header-bar {
-    padding: 4px 10px 4px 17px;
-    display: flex;
-    align-items: center;
-    transition: all 0.3s;
-    .left-bar {
-      flex: 1;
-      display: flex;
-      .title {
-        transition: all 0.3s;
-        font-size: 14px;
-        line-height: 14px;
-        color: @title-color;
-        min-width: 64px;
-      }
-    }
-    .actions {
-      display: flex;
-      align-items: center;
-      text-align: right;
-      font-size: 14px;
-      color: @text-color;
-      .action {
-        margin: 0 8px;
-        cursor: pointer;
-        &:hover {
-          color: @primary-color;
-        }
-      }
+    padding: 0 10px 0 17px;
+    .columns {
+      margin: 0 8px;
+      cursor: pointer;
     }
   }
 }

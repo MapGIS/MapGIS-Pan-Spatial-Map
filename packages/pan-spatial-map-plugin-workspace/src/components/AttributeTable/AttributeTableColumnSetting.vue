@@ -1,5 +1,5 @@
 <template>
-  <div class="action-columns" ref="root">
+  <div class="mp-attribute-table-column-setting" ref="root">
     <a-popover
       v-model="visible"
       placement="bottomRight"
@@ -45,7 +45,7 @@
           </a-list-item>
         </a-list>
       </div>
-      <a-icon class="action" type="setting" />
+      <mp-toolbar-command title="列配置" icon="setting" />
     </a-popover>
   </div>
 </template>
@@ -54,7 +54,7 @@
 import cloneDeep from 'lodash.clonedeep'
 
 export default {
-  name: 'MpActionColumns',
+  name: 'MpAttributeTableColumnSetting',
   props: ['columns'],
   data() {
     return {
@@ -126,7 +126,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-.action-columns {
+.mp-attribute-table-column-setting {
   display: inline-block;
   .check-all {
     margin-right: 8px;

@@ -4,7 +4,7 @@
       <!--地图微件 -->
       <template v-if="mapWidgets">
         <mp-map-widget-container
-          v-for="(widget, i) in mapWidgets.widgets"
+          v-for="(widget, i) in visibleMapWidgets"
           :key="i"
           :widget="widget"
         />
@@ -13,7 +13,7 @@
       <component
         :is="mapWidgetPanelComponent"
         v-bind="mapWidgets.panel"
-        :widgets="mapWidgets.widgets"
+        :widgets="visibleMapWidgets"
       />
 
       <!--内容微件的弹出面板集 -->
@@ -109,6 +109,13 @@ export default {
       }
 
       return components
+    },
+    visibleMapWidgets() {
+      return this.mapWidgets.widgets.filter(widget => {
+        const { visible = true } = widget
+
+        return visible
+      })
     }
   },
   methods: {

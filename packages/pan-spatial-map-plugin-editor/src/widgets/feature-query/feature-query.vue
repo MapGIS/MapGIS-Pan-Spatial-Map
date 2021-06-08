@@ -13,31 +13,39 @@
       @drawcreate="handleCreate"
     >
     </mapgis-3d-draw>
-    <div class="toolbar">
-      <template v-for="type in queryTypes">
-        <a-tooltip placement="bottom" :title="type.label" :key="type.id">
-          <div
-            :class="{ command: true, active: queryType === type.id }"
-            @click="onQueryDraw(type.id)"
-            :key="type.id"
-          >
-            <span v-if="type.icon.startsWith('icon-')">{{ type.label }}</span>
-            <mp-icon v-else :icon="type.icon" />
-          </div>
-        </a-tooltip>
-      </template>
-    </div>
-    <div class="buffer-container">
-      缓冲半径(km):
-    </div>
-    <div>
-      <a-slider
-        v-model="sliderIndex"
-        :marks="marks"
-        :min="0"
-        :max="limitsArray.length - 1"
-        :tipFormatter="() => `${limits}km`"
-      />
+    <mp-toolbar>
+      <mp-toolbar-command-group>
+        <mp-toolbar-command
+          v-for="type in queryTypes"
+          :key="type.id"
+          :title="type.label"
+          :icon="type.icon"
+          :active="queryType === type.id"
+          @click="onQueryDraw(type.id)"
+        >
+        </mp-toolbar-command>
+        <a-divider type="vertical" />
+        <mp-toolbar-command
+          title="设置"
+          icon="setting"
+          :active="showSettingPanel"
+          @click="showSettingPanel = !showSettingPanel"
+        />
+      </mp-toolbar-command-group>
+    </mp-toolbar>
+    <div v-show="showSettingPanel">
+      <div class="buffer-container">
+        缓冲半径(km)
+      </div>
+      <div>
+        <a-slider
+          v-model="sliderIndex"
+          :marks="marks"
+          :min="0"
+          :max="limitsArray.length - 1"
+          :tipFormatter="() => `${limits}km`"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -96,11 +104,7 @@ export default class MpFeatureQuery extends Mixins(
 
   private limitsArray: Array<number> = [0, 0.1, 0.5, 1, 5]
 
-  private get marks() {
-    return {
-      ...this.limitsArray
-    }
-  }
+  private showSettingPanel = false
 
   private sliderIndex = 0
 
@@ -117,6 +121,12 @@ export default class MpFeatureQuery extends Mixins(
   private defaultQueryTypes3d = ['Point', 'Polygon', 'LineString', 'Rectangle']
 
   private drawStyle = []
+
+  private get marks() {
+    return {
+      ...this.limitsArray
+    }
+  }
 
   private get limits() {
     return this.limitsArray[this.sliderIndex]
@@ -360,30 +370,6 @@ export default class MpFeatureQuery extends Mixins(
 .mp-widget-feature-query {
   display: flex;
   flex-direction: column;
-  color: @text-color;
-  .toolbar {
-    display: flex;
-    align-items: center;
-    text-align: right;
-    height: 32px;
-    font-size: 17px;
-    color: @text-color;
-    justify-content: space-between;
-    .command {
-      margin: 0 8px;
-      cursor: pointer;
-      &:hover,
-      &.active {
-        color: @primary-color;
-      }
-      &:first-child {
-        margin-left: 0;
-      }
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
   .buffer-container {
     margin-top: 12px;
     color: @title-color;
