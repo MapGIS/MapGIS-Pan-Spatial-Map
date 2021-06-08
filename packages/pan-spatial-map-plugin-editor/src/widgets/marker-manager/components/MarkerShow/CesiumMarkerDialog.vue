@@ -9,38 +9,79 @@
       v-on:load="bindEvent"
     >
       <div slot="default">
-        <marker-info :markerInfo="marker"></marker-info>
+        <a-form-model :model="marker">
+          <a-form-model-item label="标题:">
+            <span>{{ marker.title }}</span>
+          </a-form-model-item>
+          <a-form-model-item label="内容:">
+            <span>{{ marker.description }}</span>
+          </a-form-model-item>
+          <a-form-model-item label="图片:">
+            <a-avatar :src="`${baseUrl}${marker.img}`" />
+            <a-button
+              class="popup-button"
+              type="primary"
+              shape="circle"
+              icon="edit"
+            >
+            </a-button>
+          </a-form-model-item>
+        </a-form-model>
       </div>
     </mapgis-3d-popup>
+
+    <a-modal v-model="showInfo" :width="400" @ok="onClickOk">
+      <a-form-model :model="formData">
+        <a-form-model-item label="标题:">
+          <a-input v-model="formData.title" />
+        </a-form-model-item>
+        <a-form-model-item label="内容:">
+          <a-input v-model="formData.description" />
+        </a-form-model-item>
+        <a-form-model-item label="图片:">
+          <a-avatar :src="`${baseUrl}${formData.img}`" />
+          <a-button
+            type="primary"
+            shape="circle"
+            icon="picture"
+            @click="onClickImg"
+          >
+          </a-button>
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
+
+    <a-modal v-model="showUploader" :width="300" :footer="null">
+      <uploader
+        :url="baseUrl + '/api/local-storage/pictures'"
+        label="图片上传"
+        @success="successHandleUploader"
+      ></uploader>
+    </a-modal>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  Component,
-  Mixins,
-  Provide,
-  Prop,
-  Watch,
-  Emit
-} from 'vue-property-decorator'
+import { Component, Mixins, Prop, Watch, Emit } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
   eventBus,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
-import MarkerInfo from '../MarkerInfo/MarkerInfo.vue'
 import CesiumMarkerMixin from '../../mixins/cesium-marker'
+import uploader from '../Uploader/uploader'
+import MarkerInfoMixin from '../../mixins/marker-info'
 
 @Component({
   components: {
-    MarkerInfo
+    uploader
   }
 })
 export default class CesiumMarkerDialog extends Mixins(
   WidgetMixin,
-  CesiumMarkerMixin
+  CesiumMarkerMixin,
+  MarkerInfoMixin
 ) {
   // 当前标注点
   @Prop({ type: Object, required: true }) marker!: Record<string, any>
@@ -96,6 +137,11 @@ export default class CesiumMarkerDialog extends Mixins(
     eventBus.$on('emitMapRenderChange', () => {
       this.showMarkerDialog = false
     })
+
+    // 标注点默认图标
+    this.marker.img =
+      baseConfigInstance.config.colorConfig.label.image.defaultImg
+
     if (this.Cesium) {
       this.cesiumUtil.setCesiumGlobe(this.Cesium, this.webGlobe)
       this.updateMarker()
@@ -107,6 +153,7 @@ export default class CesiumMarkerDialog extends Mixins(
     this.cesiumUtil.removeEntityByName(this.marker.id)
   }
 
+  // 为三维popup里的内容绑定事件
   private bindEvent() {
     const editBtn = document.getElementsByClassName('popup-button')
 
@@ -116,7 +163,7 @@ export default class CesiumMarkerDialog extends Mixins(
 
   // 点击popup内部的编辑按钮响应事件
   private handleClickEdit() {
-    eventBus.$emit('emitClickEdit', this.marker.id)
+    this.showInfo = true
   }
 
   // 渲染该标注点
@@ -156,4 +203,6 @@ export default class CesiumMarkerDialog extends Mixins(
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="scss" scoped>
+@import '../../../../styles/marker.scss';
+</style>

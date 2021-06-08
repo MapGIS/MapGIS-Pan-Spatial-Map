@@ -19,7 +19,7 @@
         <img :src="item.iconImg" />
       </div>
       <mapgis-popup :coordinates="item.center" :showed="true">
-        <marker-info :markerInfo="item" />
+        <MapboxMarkerDialog :marker="item"></MapboxMarkerDialog>
       </mapgis-popup>
     </mapgis-marker>
   </div>
@@ -29,11 +29,11 @@
 import { Component, Mixins, Provide, Prop } from 'vue-property-decorator'
 import { MapMixin } from '@mapgis/web-app-framework'
 import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
-import MarkerInfo from '../MarkerInfo/MarkerInfo.vue'
+import MapboxMarkerDialog from './MapboxMarkerDialog'
 
 @Component({
   components: {
-    MarkerInfo
+    MapboxMarkerDialog
   }
 })
 export default class MapboxMarkerShow extends Mixins(MapMixin) {
