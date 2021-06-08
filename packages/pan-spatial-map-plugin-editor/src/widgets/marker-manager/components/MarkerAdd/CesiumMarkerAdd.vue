@@ -1,5 +1,21 @@
 <template>
-  <div class="add-marker-wrapper"></div>
+  <div class="add-marker-wrapper">
+    <a-modal
+      v-model="showInfo"
+      :width="400"
+      @cancel="onClickCancel"
+      @ok="onClickOk"
+    >
+      <a-form-model :model="formData">
+        <a-form-model-item label="标题:">
+          <a-input v-model="formData.title" />
+        </a-form-model-item>
+        <a-form-model-item label="内容:">
+          <a-input v-model="formData.description" />
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
+  </div>
 </template>
 
 <script lang="ts">
@@ -28,10 +44,31 @@ export default class MapboxMarkerAdd extends Mixins(
 
   private drawing = false
 
+  // 编辑对话框的表单数据
+  private formData = {
+    title: '',
+    description: '',
+    img: baseConfigInstance.config.colorConfig.label.image.defaultImg
+  }
+
+  // 编辑对话框的显隐
+  private showInfo = false
+
+  // 当前选择的标注模式
+  private selectMode = ''
+
+  // 记录点类型的移动距离
+  private moveMent = {}
+
+  // 记录线、区类型标注轨迹的坐标
+  private array = []
+
   @Emit('addMarker')
   emitAddMarker(marker: any) {}
 
   created() {
+    this.$message.config({ top: '100px', duration: 2, maxCount: 1 })
+
     if (this.Cesium) {
       this.handler = new this.Cesium.ScreenSpaceEventHandler(
         this.webGlobe.viewer.scene._canvas
@@ -42,34 +79,16 @@ export default class MapboxMarkerAdd extends Mixins(
 
   // 开始标注
   openMarker(mode) {
-    let array: any[] = []
+    this.selectMode = mode
+    this.array = []
     let positions: any[] = []
-    let centerCoordinates: any
+
     if (mode === 'point') {
       // 设置鼠标移动事件的处理函数，这里负责监听x,y坐标值变化
       this.handler.setInputAction((movement: any) => {
-        const currentCoor = this.coordinateConvert(movement) // 将笛卡尔坐标转换为二维经纬度
-        const geojsonFeature = {
-          geometry: {
-            coordinates: currentCoor,
-            type: 'Point'
-          },
-          id: UUID.uuid(),
-          properties: {},
-          type: 'Feature'
-        }
-        const marker = {
-          id: UUID.uuid(),
-          title: '',
-          description: '',
-          iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
-          edit: true,
-          features: [geojsonFeature],
-          coordinates: currentCoor,
-          center: currentCoor,
-          type: 'Point'
-        }
-        this.emitAddMarker(marker)
+        this.moveMent = movement
+        // 弹出Dialog框
+        this.showInfo = true
       }, this.Cesium.ScreenSpaceEventType.LEFT_CLICK)
     } else if (mode === 'line') {
       this.drawing = true
@@ -86,12 +105,12 @@ export default class MapboxMarkerAdd extends Mixins(
           const currentCoor = this.coordinateConvert(movement) // 将笛卡尔坐标转换为二维经纬度
           if (positions.length >= 1) {
             this.removeAllPolygonLine() // 删除线、区。。。
-            array = []
+            this.array = []
             for (let i = 0; i < positions.length; i += 1) {
-              array.push(positions[i])
+              this.array.push(positions[i])
             }
-            array.push(currentCoor) // 添加鼠标位置
-            centerCoordinates = this.appendLine(array) // 绘制线求中心点
+            this.array.push(currentCoor) // 添加鼠标位置
+            this.appendLine(this.array) // 绘制鼠标移动轨迹
           }
         }
       }, this.Cesium.ScreenSpaceEventType.MOUSE_MOVE)
@@ -99,28 +118,8 @@ export default class MapboxMarkerAdd extends Mixins(
       this.handler.setInputAction(() => {
         this.removeAllPolygonLine() // 删除线、区
         if (this.drawing) {
-          centerCoordinates = this.appendLine(array) // 绘制线求中心点
-          const geojsonFeature = {
-            geometry: {
-              coordinates: array,
-              type: 'LineString'
-            },
-            id: UUID.uuid(),
-            properties: {},
-            type: 'Feature'
-          }
-          const marker = {
-            id: UUID.uuid(),
-            title: '',
-            description: '',
-            iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
-            edit: true,
-            features: [geojsonFeature],
-            coordinates: array,
-            center: centerCoordinates,
-            type: 'LineString'
-          }
-          this.emitAddMarker(marker)
+          // 弹出Dialog框
+          this.showInfo = true
         }
         this.drawing = false
       }, this.Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
@@ -139,13 +138,13 @@ export default class MapboxMarkerAdd extends Mixins(
           const currentCoor = this.coordinateConvert(movement) // 将笛卡尔坐标转换为二维经纬度
           if (positions.length >= 1) {
             this.removeAllPolygonLine() // 删除线、区。
-            array = []
+            this.array = []
             for (let i = 0; i < positions.length; i += 1) {
-              array.push(positions[i])
+              this.array.push(positions[i])
             }
-            array.push(currentCoor) // 填加鼠标位置
-            array.push(array[0]) // 保证区坐标首尾一致
-            centerCoordinates = this.appendPolygon(array) // 绘制简单区求中心点
+            this.array.push(currentCoor) // 填加鼠标位置
+            this.array.push(this.array[0]) // 保证区坐标首尾一致
+            this.appendPolygon(this.array) // 绘制鼠标移动轨迹
           }
         }
       }, this.Cesium.ScreenSpaceEventType.MOUSE_MOVE)
@@ -153,31 +152,108 @@ export default class MapboxMarkerAdd extends Mixins(
       this.handler.setInputAction(() => {
         this.removeAllPolygonLine() // 删除线、区
         if (this.drawing) {
-          centerCoordinates = this.appendPolygon(array) // 绘制简单区求中心点
-          const geojsonFeature = {
-            geometry: {
-              coordinates: [array],
-              type: 'Polygon'
-            },
-            id: UUID.uuid(),
-            properties: {},
-            type: 'Feature'
-          }
-          const marker = {
-            id: UUID.uuid(),
-            title: '',
-            description: '',
-            iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
-            edit: true,
-            features: [geojsonFeature],
-            coordinates: [array],
-            center: centerCoordinates,
-            type: 'Polygon'
-          }
-          this.emitAddMarker(marker)
+          // 弹出Dialog框
+          this.showInfo = true
         }
         this.drawing = false
       }, this.Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
+    }
+  }
+
+  // 每次添加一个标注点后，都得清空formData，避免上一个标注点的信息遗留下来
+  private clearFormData() {
+    this.formData.title = ''
+    this.formData.description = ''
+  }
+
+  // 点击dialog取消按钮回调
+  private onClickCancel() {
+    this.clearFormData()
+  }
+
+  // 点击dialog确定按钮回调
+  private onClickOk() {
+    if (this.formData.title === '' || this.formData.description === '') {
+      this.$message.warning('标注点的标题或内容不能为空')
+    } else {
+      if (this.selectMode === 'point') {
+        const currentCoor = this.coordinateConvert(this.moveMent) // 将笛卡尔坐标转换为二维经纬度
+        const geojsonFeature = {
+          geometry: {
+            coordinates: currentCoor,
+            type: 'Point'
+          },
+          id: UUID.uuid(),
+          properties: {},
+          type: 'Feature'
+        }
+        const marker = {
+          id: UUID.uuid(),
+          title: this.formData.title,
+          description: this.formData.description,
+          iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
+          edit: true,
+          features: [geojsonFeature],
+          coordinates: currentCoor,
+          center: currentCoor,
+          type: 'Point'
+        }
+
+        this.emitAddMarker(marker)
+        this.clearFormData()
+        this.showInfo = false
+      } else if (this.selectMode === 'line') {
+        // 该方法既可以绘制线型轨迹，同时也可以获取中心点坐标，此处是获取中心点坐标
+        const centerCoordinates = this.appendLine(this.array)
+        const geojsonFeature = {
+          geometry: {
+            coordinates: this.array,
+            type: 'LineString'
+          },
+          id: UUID.uuid(),
+          properties: {},
+          type: 'Feature'
+        }
+        const marker = {
+          id: UUID.uuid(),
+          title: this.formData.title,
+          description: this.formData.description,
+          iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
+          edit: true,
+          features: [geojsonFeature],
+          coordinates: this.array,
+          center: centerCoordinates,
+          type: 'LineString'
+        }
+        this.emitAddMarker(marker)
+        this.clearFormData()
+        this.showInfo = false
+      } else if (this.selectMode === 'polygon') {
+        const centerCoordinates = this.appendPolygon(this.array) // 绘制简单区求中心点
+        const geojsonFeature = {
+          geometry: {
+            coordinates: [this.array],
+            type: 'Polygon'
+          },
+          id: UUID.uuid(),
+          properties: {},
+          type: 'Feature'
+        }
+        const marker = {
+          id: UUID.uuid(),
+          title: this.formData.title,
+          description: this.formData.description,
+          iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
+          edit: true,
+          features: [geojsonFeature],
+          coordinates: [this.array],
+          center: centerCoordinates,
+          type: 'Polygon'
+        }
+        this.emitAddMarker(marker)
+        this.clearFormData()
+        this.showInfo = false
+      }
     }
   }
 
@@ -212,4 +288,6 @@ export default class MapboxMarkerAdd extends Mixins(
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="scss" scoped>
+@import '../../../../styles/marker.scss';
+</style>
