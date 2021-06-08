@@ -66,6 +66,7 @@
           return record.id
         }
       "
+      @change="onPageChange"
     >
     </a-table>
     <div class="marker-add">
@@ -84,11 +85,11 @@
     <div class="marker-show">
       <MapboxMarkerShow
         v-show="is2DMapMode"
-        :markers="tableData"
+        :markers="showMarkers"
       ></MapboxMarkerShow>
       <CesiumMarkerShow
         v-show="!is2DMapMode"
-        :markers="tableData"
+        :markers="showMarkers"
       ></CesiumMarkerShow>
     </div>
     <a-modal v-model="modalInput" title="输入坐标" :width="360" :footer="null">
@@ -205,6 +206,9 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 表格数据(标注点构成的数组)
   private tableData: any[] = []
 
+  // table当前页显示的标注点
+  private showMarkers: any[] = []
+
   // 表格选中项的 key 数组,需要和 onChange 进行配合
   private selectedRowKeys = []
 
@@ -213,10 +217,13 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
   // 分页器配置
   private pagination = {
+    current: 1,
     showSizeChanger: true,
     size: 'small',
     total: this.tableData.length,
-    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
+    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+    pageSizeOptions: ['5', '10', '15', '20'],
+    pageSize: 10
   }
 
   // 键盘对话框的显隐
@@ -355,11 +362,39 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 添加标注
   private addMarker(marker: any) {
     this.tableData.push(marker)
+
+    this.getShowMarkers()
   }
 
   // 通过文件导入添加标注
   private addMarkers(markers: any[]) {
     this.tableData.push(markers[0])
+
+    this.getShowMarkers()
+  }
+
+  // 判断添加后的标注点当前处于table中的哪一页
+  private getShowMarkers() {
+    let currentPage
+
+    if (this.tableData.length % this.pagination.pageSize === 0) {
+      currentPage = this.tableData.length / this.pagination.pageSize
+      this.pagination.current = currentPage
+    } else {
+      currentPage = Math.floor(this.tableData.length / this.pagination.pageSize)
+      this.pagination.current = currentPage + 1
+    }
+
+    this.onPageChange(this.pagination)
+  }
+
+  // table分页变化时回调
+  private onPageChange(pagination) {
+    this.pagination = { ...pagination }
+    const startIndex = (pagination.current - 1) * pagination.pageSize
+    const endIndex = pagination.current * pagination.pageSize
+
+    this.showMarkers = this.tableData.slice(startIndex, endIndex)
   }
 
   // Table选中项发生变化时的回调
@@ -385,6 +420,7 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   // 保存按钮回调事件
   private saveMarkers() {
     const this_ = this
+
     api
       .saveWidgetConfig({
         name: 'marker-manager',
@@ -410,6 +446,8 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
         }
         return result
       }, [])
+
+      this.getShowMarkers()
     }
   }
 
@@ -459,6 +497,9 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
         }
         return result
       }, [])
+
+      // 默认每一页显示10条数据，所以初始显示的marker取table的前10项
+      this.showMarkers = this.tableData.slice(0, this.pagination.pageSize)
     })
   }
 }
