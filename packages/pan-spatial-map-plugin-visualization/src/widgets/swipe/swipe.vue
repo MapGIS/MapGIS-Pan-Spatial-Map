@@ -254,6 +254,8 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
    */
   onClose() {
     this.isOpen = false
+    this.aboveLayer = {}
+    this.belowLayer = {}
   }
 
   /**
