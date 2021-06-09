@@ -16,15 +16,15 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
       postRenderFrame: 10
     },
     context: '2d',
-    size: 13,
-    max: 60,
+    size: 30,
+    max: 5,
     draw: 'heatmap',
     gradient: {
-      0.25: 'rgb(0,0,255)',
-      0.55: 'rgb(0,255,0)',
+      0.25: 'rgb(255,0,255)',
+      0.55: 'rgb(255,255,0)',
       0.85: 'yellow',
       1.0: 'rgb(255,0,0)'
-    },
+    } /* ,
     animation: {
       type: 'time',
       stepsRange: {
@@ -33,7 +33,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
       },
       trails: 10,
       duration: 4
-    }
+    } */
   }
 
   /**

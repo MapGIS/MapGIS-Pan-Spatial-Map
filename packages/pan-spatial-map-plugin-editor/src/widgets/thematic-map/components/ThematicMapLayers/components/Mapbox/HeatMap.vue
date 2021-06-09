@@ -20,7 +20,7 @@ export default class MapboxHeatMap extends Mixins(BaseMinxin) {
       0.55: 'rgb(0,255,0)',
       0.85: 'yellow',
       1.0: 'rgb(255,0,0)'
-    },
+    } /* ,
     animation: {
       type: 'time',
       stepsRange: {
@@ -29,7 +29,7 @@ export default class MapboxHeatMap extends Mixins(BaseMinxin) {
       },
       trails: 10,
       duration: 4
-    }
+    } */
   }
 
   /**

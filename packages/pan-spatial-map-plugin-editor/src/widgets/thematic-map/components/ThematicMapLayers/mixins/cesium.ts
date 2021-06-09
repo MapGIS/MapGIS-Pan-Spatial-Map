@@ -33,8 +33,6 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
 
   thematicMapLayer: any = null
 
-  material = null
-
   properties: any = null
 
   popupPosition: IPopupPosition = {}

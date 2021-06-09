@@ -16,8 +16,8 @@ export default class CesiumHexBin extends Mixins(BaseMinxin) {
       postRenderFrame: 0
     },
     context: '2d',
-    size: 30,
-    max: 100,
+    size: 30, // 六边形圆的半径
+    max: 5, // 六边形数量上限
     draw: 'honeycomb',
     label: {
       show: true,
