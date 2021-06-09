@@ -17,7 +17,9 @@ export default class MapboxHexBin extends Mixins(BaseMinxin, MapMixin) {
 
   options = {
     context: '2d',
-    size: 30,
+    draw: 'honeycomb',
+    max: 10,
+    size: 20,
     label: {
       show: true,
       fillStyle: 'white',
@@ -36,9 +38,7 @@ export default class MapboxHexBin extends Mixins(BaseMinxin, MapMixin) {
       0.8: 'rgba(244,109,67,0.8)',
       0.9: 'rgba(215,48,39,0.8)',
       0.95: 'rgba(165, 0, 38,0.8)'
-    },
-    max: 100,
-    draw: 'honeycomb'
+    }
   }
 
   /**

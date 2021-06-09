@@ -1,31 +1,26 @@
 <template>
   <!-- 蜂窝图 -->
-  <cesium-mapv-layer
-    :geojson="geojsonPoint"
-    :options="options"
-    v-show="geojsonPoint"
-  />
+  <mapgis-3d-mapv-layer :geojson="geojsonPoint" :options="options" />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { CesiumMapvLayer } from '@mapgis/webclient-vue-cesium'
 import BaseMinxin from '../../mixins/base'
 
 @Component
 export default class CesiumHexBin extends Mixins(BaseMinxin) {
-  geojsonPoint = null
+  geojsonPoint = {}
 
   options = {
     context: '2d',
     draw: 'honeycomb',
-    max: '10',
-    size: '20',
+    max: 10,
+    size: 20,
     label: {
       show: true,
       fillStyle: 'white',
       shadowColor: 'yellow',
       font: '10px Arial',
-      shadowBlur: '10'
+      shadowBlur: 10
     },
     gradient: {
       0: 'rgba(49, 54, 149, 0)',
