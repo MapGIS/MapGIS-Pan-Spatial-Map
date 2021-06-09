@@ -44,10 +44,6 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(Vue) {
    */
   removeLayer() {}
 
-  created() {
-    this.showLayer()
-  }
-
   beforeDestroy() {
     this.removeLayer()
   }

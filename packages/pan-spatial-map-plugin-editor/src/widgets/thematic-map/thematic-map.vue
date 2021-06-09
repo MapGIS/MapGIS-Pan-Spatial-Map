@@ -9,10 +9,11 @@
         :show-line="true"
         :tree-data="treeData"
         :replace-fields="{ key: 'id' }"
+        :checkedKeys="checkedKeys"
         @check="onTreeCheck"
       />
     </a-spin>
-    <template v-show="selectedList.length">
+    <div v-show="checkedKeys.length">
       <!-- 属性表 -->
       <thematic-map-attribute-table />
       <!-- 统计表 -->
@@ -25,7 +26,7 @@
       <thematic-map-manage-tools />
       <!-- 5类专题服务图层 -->
       <thematic-map-layers />
-    </template>
+    </div>
   </div>
 </template>
 
@@ -68,7 +69,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 ) {
   loading = false
 
-  selectedList = []
+  checkedKeys: string[] = []
 
   treeData: any[] = []
 
@@ -118,22 +119,23 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   /**
    * 专题服务树选中
-   * @param checkeddKeys<array>
+   * @param checkedKeys<array>
    */
-  onTreeCheck(checkeddKeys) {
-    this.selectedList = checkeddKeys.reduce((results, id) => {
+  onTreeCheck(checkedKeys) {
+    this.checkedKeys = checkedKeys
+    const selectedList = checkedKeys.reduce((results, id) => {
       const node = this.getSujectNodeById(this.treeData, id, null)
       if (node) {
         results.push(node)
       }
       return results
     }, [])
-    if (!this.selectedList.length) {
+    if (!selectedList.length) {
       this.resetVisible()
     } else {
       moduleTypes.forEach(v => this.setVisible(v))
     }
-    this.setSelectedList(this.selectedList)
+    this.setSelectedList(selectedList)
   }
 
   /**
@@ -154,7 +156,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 专题服务面板关闭
    */
   onClose() {
-    this.selectedList = []
+    this.checkedKeys = []
     this.setSelectedList([])
     this.resetVisible()
   }

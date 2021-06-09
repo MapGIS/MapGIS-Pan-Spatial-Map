@@ -36,7 +36,7 @@ export const barChartOptions = ({ title, x, y }) => {
     dataZoom: {
       show: true,
       realtime: true,
-      bottom: 44,
+      bottom: 50,
       height: 8,
       fillerColor: '#40a9ff',
       startValue: 1,

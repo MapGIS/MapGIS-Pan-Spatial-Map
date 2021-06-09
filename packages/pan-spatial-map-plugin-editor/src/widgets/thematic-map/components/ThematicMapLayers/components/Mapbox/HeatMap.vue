@@ -19,10 +19,10 @@ export default class MapboxHeatMap extends Mixins(BaseMinxin, MapMixin) {
     context: '2d',
     size: 13,
     gradient: {
-      0.25: 'rgb(0,0,255)',
-      0.55: 'rgb(0,255,0)',
-      0.85: 'yellow',
-      1.0: 'rgb(255,0,0)'
+      0.25: 'rgb(218,21,21)',
+      0.55: 'rgb(206,104,32)',
+      0.85: 'rgb(206,177,32)',
+      1.0: 'rgb(222,192,45)'
     },
     max: 60,
     animation: {
