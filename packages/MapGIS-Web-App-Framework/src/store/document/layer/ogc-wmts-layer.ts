@@ -747,13 +747,6 @@ export class OGCWMTSLayer extends Layer {
       tempUrl += 'service=WMTS&request=GetCapabilities'
     }
 
-    if (
-      url.toLowerCase().indexOf('tianditu') > 0 &&
-      !url.toLowerCase().includes('tk')
-    ) {
-      tempUrl += '&tk=4c27d6e0e8a90715b23a989d42272fd8'
-    }
-
     return tempUrl
   }
 }

@@ -49,6 +49,7 @@
         :version="layerProps.version"
         :wmtsStyle="layerProps.wmtsStyle"
         :format="layerProps.format"
+        :token="layerProps.token"
         :before="getBeforeLayerId(index)"
       />
       <mapgis-ogc-wms-layer
@@ -148,9 +149,7 @@ export default {
     document: {
       deep: true,
       handler() {
-        try {
-          this.parseDocument()
-        } catch (e) {}
+        this.parseDocument()
       }
     }
   },
@@ -190,6 +189,11 @@ export default {
       const layerStyle = {
         layout: { visibility: layer.isVisible ? 'visible' : 'none' },
         paint: { 'raster-opacity': layer.opacity }
+      }
+
+      // 图层组件的共有属性
+      const commonProps = {
+        token: layer.tokenValue
       }
 
       let tempStr = ''
@@ -326,6 +330,12 @@ export default {
           break
         default:
           break
+      }
+
+      // 共有属性
+      mapboxLayerComponentProps = {
+        ...mapboxLayerComponentProps,
+        ...commonProps
       }
 
       if (layer.type !== LayerType.vectorTile)

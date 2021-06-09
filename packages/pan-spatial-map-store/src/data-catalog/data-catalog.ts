@@ -71,6 +71,8 @@ export class DataCatalogManager {
     let url = ''
     const layerID = layerConfig.guid
     const layerTitle = layerConfig.name
+    const tokenKey = layerConfig.tokenKey ? layerConfig.tokenKey : ''
+    const tokenValue = layerConfig.tokenValue ? layerConfig.tokenValue : ''
 
     switch (layerConfig.serverType) {
       case LayerType.IGSTile:
@@ -148,6 +150,8 @@ export class DataCatalogManager {
     if (layer) {
       layer.title = layerTitle
       layer.id = layerID
+      layer.tokenKey = tokenKey
+      layer.tokenValue = tokenValue
     }
 
     return layer
