@@ -4,15 +4,10 @@
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { MapMixin } from '@mapgis/web-app-framework'
-import {
-  queryFeaturesInstance,
-  FeatureIGS
-} from '@mapgis/pan-spatial-map-store'
 import BaseMinxin from '../../mixins/base'
 
 @Component
-export default class MapboxHeatMap extends Mixins(BaseMinxin, MapMixin) {
+export default class MapboxHeatMap extends Mixins(BaseMinxin) {
   geojsonPoint = {}
 
   options = {
@@ -21,10 +16,10 @@ export default class MapboxHeatMap extends Mixins(BaseMinxin, MapMixin) {
     size: 13,
     max: 60,
     gradient: {
-      0.25: 'rgb(218,21,21)',
-      0.55: 'rgb(206,104,32)',
-      0.85: 'rgb(206,177,32)',
-      1.0: 'rgb(222,192,45)'
+      0.25: 'rgb(0,0,255)',
+      0.55: 'rgb(0,255,0)',
+      0.85: 'yellow',
+      1.0: 'rgb(255,0,0)'
     },
     animation: {
       type: 'time',

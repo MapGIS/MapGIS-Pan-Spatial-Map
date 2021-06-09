@@ -215,9 +215,9 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
   }
 
   /**
-   * 展示图层
+   * 获取专题服务图层
    */
-  showMapboxLayer() {
+  getThematicMapLayer() {
     if (!this.graph) return
     this.initGraphicStyles()
     let chartsSetting = null
@@ -258,16 +258,16 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
     if (!this.thematicMapLayer) return
     this.thematicMapLayer.on(
       'mousemove',
-      utilInstance.debounce(this.showInfoWin, 200)
+      utilInstance.debounce(this.showPopupWin, 200)
     )
-    this.thematicMapLayer.on('mouseout', this.closeInfoWin)
+    this.thematicMapLayer.on('mouseout', this.closePopupWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
 
   /**
    * 展示信息弹框
    */
-  showMapboxInfoWin({ event, target }: any) {
+  getPopupInfos({ event, target }: any) {
     const { showFields, showFieldsTitle } = this.popupConfig
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return

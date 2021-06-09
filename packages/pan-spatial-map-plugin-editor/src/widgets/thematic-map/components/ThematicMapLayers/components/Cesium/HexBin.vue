@@ -11,15 +11,19 @@ export default class CesiumHexBin extends Mixins(BaseMinxin) {
   geojsonPoint = {}
 
   options = {
+    cesium: {
+      postRender: true,
+      postRenderFrame: 0
+    },
     context: '2d',
+    size: 30,
+    max: 100,
     draw: 'honeycomb',
-    max: 10,
-    size: 20,
     label: {
       show: true,
       fillStyle: 'white',
       shadowColor: 'yellow',
-      font: '10px Arial',
+      font: '15px Arial',
       shadowBlur: 10
     },
     gradient: {

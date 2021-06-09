@@ -4,22 +4,17 @@
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { MapMixin } from '@mapgis/web-app-framework'
-import {
-  queryFeaturesInstance,
-  FeatureIGS
-} from '@mapgis/pan-spatial-map-store'
 import BaseMinxin from '../../mixins/base'
 
 @Component
-export default class MapboxHexBin extends Mixins(BaseMinxin, MapMixin) {
+export default class MapboxHexBin extends Mixins(BaseMinxin) {
   geojsonPoint = {}
 
   options = {
     context: '2d',
+    size: 30,
+    max: 100,
     draw: 'honeycomb',
-    max: 10,
-    size: 20,
     label: {
       show: true,
       fillStyle: 'white',

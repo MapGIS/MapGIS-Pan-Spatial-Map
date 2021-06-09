@@ -15,7 +15,7 @@
   </mapgis-popup>
 </template>
 <script lang="ts">
-import { Component, Prop, Mixins } from 'vue-property-decorator'
+import { Component, Mixins } from 'vue-property-decorator'
 import { RankSymbolThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
 import RowFlex from '../../../RowFlex'
@@ -52,9 +52,9 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
   }
 
   /**
-   * 展示图层
+   * 获取专题服务图层
    */
-  showMapboxLayer() {
+  getThematicMapLayer() {
     if (!this.labelStyle) return
     const _thematicMapLayer = new RankSymbolThemeLayer(
       'ThematicMapLayer',
@@ -79,16 +79,16 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
     this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on(
       'mousemove',
-      utilInstance.debounce(this.showInfoWin, 200)
+      utilInstance.debounce(this.showPopupWin, 200)
     )
-    this.thematicMapLayer.on('mouseout', this.closeInfoWin)
+    this.thematicMapLayer.on('mouseout', this.closePopupWin)
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
 
   /**
    * 展示信息窗口
    */
-  showMapboxInfoWin({ target }: any) {
+  getPopupInfos({ target }: any) {
     const { showFields, showFieldsTitle } = this.popupConfig
     if (!target || !target.refDataID || !showFields || !showFields.length) {
       return

@@ -1,11 +1,24 @@
 <template>
   <!-- 分段专题图图层 -->
-  <mapgis-3d-popup :position="position" :container="attrTable" />
+  <mapgis-3d-popup :position="position" :showed="true">
+    <span v-if="!properties">暂无数据</span>
+    <template v-else>
+      <row-flex
+        v-for="(v, k) in properties"
+        :key="`label-properties-${v}`"
+        :label="`${k}`"
+        :span="[10, 14]"
+        class="popup-row"
+        >{{ `${v}` }}</row-flex
+      >
+    </template>
+  </mapgis-3d-popup>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer } from '@mapgis/web-app-framework'
 import { FeatureGeoJSON, GFeature } from '@mapgis/pan-spatial-map-store'
+import RowFlex from '../../../RowFlex'
 import CesiumMinxin from '../../mixins/cesium'
 
 interface ISectionColor {
@@ -14,14 +27,18 @@ interface ISectionColor {
   sectionColor: string
 }
 
-@Component
+@Component({
+  components: {
+    RowFlex
+  }
+})
 export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
   get isShow3D() {
     return this.subDataConfig?.isShow3D
   }
 
   get setting3D() {
-    return this.subDataConfig?.setting3D
+    return this.subDataConfig?.setting3D || {}
   }
 
   get colors() {
@@ -34,7 +51,6 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
 
   /**
    * 获取形状
-   * @param setting3D
    */
   getShapePoints({ strokeWidth, sides }) {
     const positions = []
@@ -80,15 +96,14 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
   }
 
   /**
-   * PointEntity
-   * @param layer 图层
+   * 点图层
    * @param coordinates 坐标
    * @param extrudedHeight 高度
    * @param material 材质
-   * @param setting3D
    */
-  getPointEntity(layer, coordinates, length = 0.1, material, { strokeWidth }) {
-    return this.addEntityToLayer(layer, {
+  getPointEntity(coordinates, length = 0.1, material) {
+    const { strokeWidth } = this.setting3D
+    this.addEntityToLayer(this.thematicMapLayer, {
       position: this.getPosition(coordinates[0], coordinates[1]),
       cylinder: {
         length,
@@ -100,20 +115,14 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
   }
 
   /**
-   * LineStringEntity
-   * @param layer 图层
+   * 线图层
    * @param coordinates 坐标
    * @param extrudedHeight 高度
    * @param material 材质
    * @param setting3D
    */
-  getLineStringEntity(
-    layer,
-    coordinates,
-    extrudedHeight = 0.1,
-    material,
-    { lineType, strokeWidth, sides }
-  ) {
+  getLineStringEntity(coordinates, extrudedHeight = 0.1, material) {
+    const { lineType, strokeWidth, sides } = this.setting3D
     const [first, second] = coordinates[0]
     const positions = this.Cesium.Cartesian3.fromDegreesArray([first, second])
     let option = {
@@ -151,48 +160,39 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
           break
       }
     }
-    return this.addEntityToLayer(layer, option)
+    this.addEntityToLayer(this.thematicMapLayer, option)
   }
 
   /**
-   * PolygonEntity
-   * @param layer 图层
+   * 区图层
    * @param coordinates 坐标
    * @param extrudedHeight 高度
-   * @param material 材质
    */
-  getPolygonEntity(layer, coordinates, extrudedHeight, material) {
+  getPolygonEntity(coordinates, extrudedHeight) {
     const [first, second] = coordinates[0]
     const hierarchy = this.Cesium.Cartesian3.fromDegreesArray([first, second])
-    return this.addEntityToLayer(layer, {
+    this.addEntityToLayer(this.thematicMapLayer, {
       polygon: {
         hierarchy,
         extrudedHeight,
-        material
+        material: this.setting3D.material
       }
     })
   }
 
   /**
    * 获取图层要素数据
-   * @param layer 图层
-   * @param features 要素集合
-   * @param colors 分段样式配置集合
    */
-  getGeoJSONFeaturesLayer(
-    layer: Layer,
-    { features }: FeatureGeoJSON,
-    colors: ISectionColor[]
-  ) {
-    if (!features) return
+  getGeoJSONFeaturesLayer() {
+    if (!this.geojson || !this.geojson.features) return
     const { useHeightScale, heightScale } = this.setting3D
-    features.forEach((feature: GFeature) => {
+    this.geojson.features.forEach((feature: GFeature) => {
       const {
         properties,
         geometry: { type, coordinates }
       } = feature
       const value = properties[this.field]
-      const featureColor = this.getSegmentstyle(colors, value)
+      const featureColor = this.getSegmentstyle(this.colors, value)
       if (featureColor) {
         const material = this.getColor(featureColor)
         const heightScaleValue = this.isShow3D
@@ -200,47 +200,21 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
             ? value
             : value * heightScale
           : 0
-        const args = [
-          layer,
-          coordinates,
-          heightScaleValue,
-          material,
-          this.setting3D
-        ]
-        let entity = {}
         switch (type) {
           case 'Point':
-            entity = this.getPointEntity(...args)
+            this.getPointEntity(coordinates, heightScaleValue, material)
             break
           case 'LineString':
-            entity = this.getLineStringEntity(...args)
+            this.getLineStringEntity(coordinates, heightScaleValue, material)
             break
           case 'Polygon':
-            entity = this.getPolygonEntity(...args)
+            this.getPolygonEntity(coordinates, heightScaleValue, material)
             break
           default:
             break
         }
-        const popupContent = this.getPopupContent(feature)
-        if (popupContent && popupContent !== '</div>') {
-          entity.attrTable = popupContent
-        }
-        this.popupEntity = entity
       }
     })
-  }
-
-  /**
-   * 展示图层
-   */
-  showCesiumLayer() {
-    this.getGeoJSONFeaturesLayer(
-      this.thematicMapLayer,
-      this.geojson,
-      this.colors
-    )
-    this.webGlobe.viewer.dataSources.add(this.thematicMapLayer)
-    this.clickShowPopup(this.webGlobe)
   }
 }
 </script>

@@ -1,4 +1,5 @@
 import { Component, Prop, Watch, Vue, Mixins } from 'vue-property-decorator'
+import { MapMixin } from '@mapgis/web-app-framework'
 import {
   queryFeaturesInstance,
   FeatureIGS,
@@ -6,7 +7,7 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 
 @Component
-export default class BaseMinxin extends Mixins<Record<string, any>>(Vue) {
+export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
   // 专题的配置
   @Prop({ default: () => ({}) }) subDataConfig!: any
 

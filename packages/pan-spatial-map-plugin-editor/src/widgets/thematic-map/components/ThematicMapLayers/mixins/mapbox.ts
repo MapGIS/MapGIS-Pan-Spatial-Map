@@ -1,11 +1,10 @@
 import { Component, Mixins } from 'vue-property-decorator'
-import { UUID, MapMixin } from '@mapgis/web-app-framework'
+import { UUID } from '@mapgis/web-app-framework'
 import BaseMinxin from './base'
 
 @Component
 export default class MapboxMinxin extends Mixins<Record<string, any>>(
-  BaseMinxin,
-  MapMixin
+  BaseMinxin
 ) {
   id = UUID.uuid()
 
@@ -28,7 +27,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
   showLayer() {
     if (!this.dataSet) return
     this.removeLayer()
-    this.showMapboxLayer()
+    this.getThematicMapLayer()
   }
 
   /**
@@ -54,15 +53,15 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
   /**
    * 开启信息窗口
    */
-  showInfoWin(e) {
+  showPopupWin(e) {
     this.showPopup = true
-    this.showMapboxInfoWin(e)
+    this.getPopupInfos(e)
   }
 
   /**
    * 关闭信息窗口
    */
-  closeInfoWin() {
+  closePopupWin() {
     this.showPopup = false
     this.properties = null
     this.coordinates = [0, 0]
