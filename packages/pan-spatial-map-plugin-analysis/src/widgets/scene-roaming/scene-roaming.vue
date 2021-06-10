@@ -561,11 +561,11 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="scss" scoped>
-@import '../../styles/flex.scss';
-
+<style lang="less" scoped>
 .mp-widget-scene-roaming {
-  @include flex($direction: column);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .window-size {
@@ -573,7 +573,8 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 }
 
 .scene-title {
-  @include flex();
+  display: flex;
+  align-items: center;
   width: 100%;
   padding: 8px 0;
 
@@ -591,7 +592,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   width: 100%;
   margin-top: 8px;
   .ant-form-item {
-    @include flex();
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
   }
   .ant-input {
     padding: 4px 11px;
@@ -599,7 +602,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 }
 
 .scene-footer {
-  @include flex($direction: column);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   margin-top: 16px;
 
@@ -607,13 +612,17 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     width: 100%;
 
     .ant-checkbox-group {
-      @include flex($justify-content: space-between);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       width: 100%;
     }
   }
 
   .footer-btn {
-    @include flex($justify-content: space-between);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
     margin-top: 16px;
 
