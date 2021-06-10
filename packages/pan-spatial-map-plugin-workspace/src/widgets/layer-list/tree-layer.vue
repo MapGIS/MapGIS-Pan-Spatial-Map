@@ -577,7 +577,8 @@ export default class TreeLayer extends Mixins(
     const bool =
       (this.isSubLayer(item) && this.isIgsDocLayer(item)) ||
       (this.isSubLayer(item) && this.isIgsArcgisLayer(item)) ||
-      this.isIgsVectorLayer(item)
+      this.isIgsVectorLayer(item) ||
+      this.isIGSScene(item)
     return bool
   }
 
@@ -632,7 +633,9 @@ export default class TreeLayer extends Mixins(
     let {
       fullExtent: { xmin, xmax, ymin, ymax }
     } = item.dataRef
+    const { type } = item.dataRef
     if (
+      item.dataRef.spatialReference &&
       item.dataRef.spatialReference.wkid === CoordinateSystemType.webMercator
     ) {
       const xminYminConverted = CoordinateTransformation.mercatorToWGS84([
@@ -650,8 +653,9 @@ export default class TreeLayer extends Mixins(
       xmax = xmaxYmaxConverted[0]
       ymax = xmaxYmaxConverted[1]
     }
-
-    this.map.fitBounds([xmin, ymin, xmax, ymax])
+    if (type !== LayerType.IGSScene) {
+      this.map.fitBounds([xmin, ymin, xmax, ymax])
+    }
     const rectangle = new this.Cesium.Rectangle.fromDegrees(
       xmin,
       ymin,
@@ -793,13 +797,7 @@ export default class TreeLayer extends Mixins(
     this.clickPopover(layer, false)
     const parent: IGSMapImageLayer = layer.layer
     let exhibition: IAttributeTableExhibition = null
-    if (
-      parent &&
-      this.isIgsDocLayer(parent)
-      // TODO：新版document的暂时还没有封装RasterArcgisLayer，这里留着以后做
-      //  ||
-      // parent.subtype === SubLayerType.RasterArcgisLayer
-    ) {
+    if (parent && this.isIgsDocLayer(parent)) {
       const { ip, port, docName } = parent._parseUrl(parent.url)
       exhibition = {
         id: `${parent.title} ${layer.title} ${layer.id}`,
@@ -842,6 +840,23 @@ export default class TreeLayer extends Mixins(
           serverUrl: parent.url
         }
       }
+    } else if (this.isIGSScene(layer)) {
+      const sceneLayer = layer.dataRef
+      const { ip, port, docName } = sceneLayer._parseUrl(sceneLayer.url)
+      const {
+        activeScene: { sceneIndex, layers }
+      } = sceneLayer
+      exhibition = {
+        id: `${sceneLayer.title} ${sceneLayer.id}`,
+        name: `${sceneLayer.title} 属性表`,
+        option: {
+          id: `${sceneLayer.id}:${sceneIndex}`,
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: sceneLayer.type,
+          gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型'
+        }
+      }
     }
     this.addExhibition(new AttributeTableExhibition(exhibition))
     this.openExhibitionPanel()
@@ -873,6 +888,10 @@ export default class TreeLayer extends Mixins(
 
   isIgsVectorLayer({ type }) {
     return type === LayerType.IGSVector
+  }
+
+  isIGSScene({ type }) {
+    return type === LayerType.IGSScene
   }
 
   isIgsTileLayer({ type }) {

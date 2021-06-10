@@ -71,7 +71,8 @@
       />
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type)"
-        :id="layerProps.layerId"
+        :vueIndex="layerProps.id"
+        :id="layerProps.id"
         :show="layerProps.show"
         :url="layerProps.url"
       />
