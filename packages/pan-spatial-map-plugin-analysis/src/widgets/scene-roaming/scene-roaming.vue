@@ -4,11 +4,18 @@
     :class="isFullScreen ? '' : 'window-size'"
   >
     <div class="scene-title">
-      <a-button type="primary" icon="pull-request">交互选点</a-button>
-      <a-button type="primary">取消选点</a-button>
+      <a-button
+        type="primary"
+        icon="pull-request"
+        :disabled="isShowPointTable"
+        @click="onClickCreatPath"
+        >交互选点</a-button
+      >
+      <a-button type="primary" @click="onClickCancelPath">取消选点</a-button>
     </div>
     <div class="scene-panel-table">
       <a-table
+        v-show="!isShowPointTable"
         :columns="columns"
         :data-source="tableData"
         :pagination="pagination"
@@ -33,10 +40,15 @@
         </template>
       </a-table>
       <a-table
-        v-show="false"
+        v-show="isShowPointTable"
         :columns="pointColumns"
         :data-source="pointTableData"
         :pagination="pointPagination"
+        :rowKey="
+          record => {
+            return record.id
+          }
+        "
       >
       </a-table>
     </div>
@@ -113,10 +125,14 @@
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
+import { api } from '@mapgis/pan-spatial-map-store'
 
 @Component({ name: 'MpSceneRoaming' })
 export default class MpSceneRoaming extends Mixins(WidgetMixin) {
+  // 绘制路径工具
+  private draw
+
   // 表格一列配置
   private columns = [
     {
@@ -146,17 +162,23 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     {
       title: 'x坐标',
       dataIndex: 'xCoord',
-      key: 'xCoord'
+      key: 'xCoord',
+      align: 'center',
+      ellipsis: true
     },
     {
       title: 'y坐标',
       dataIndex: 'yCoord',
-      key: 'yCoord'
+      key: 'yCoord',
+      align: 'center',
+      ellipsis: true
     },
     {
       title: 'z坐标',
       dataIndex: 'zCoord',
-      key: 'zCoord'
+      key: 'zCoord',
+      align: 'center',
+      ellipsis: true
     }
   ]
 
@@ -258,8 +280,19 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   // 微件窗口是否全屏显示
   private isFullScreen = false
 
+  // 是否显示表格二
+  private isShowPointTable = false
+
+  // 新增路径的坐标点
+  private coordsArr = []
+
   created() {
     this.initData()
+  }
+
+  onClose() {
+    this.onClickStop()
+    this.onClickCancelPath()
   }
 
   onWindowSize(mode) {
@@ -274,11 +307,22 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       return { ...item, path: item.path.join() }
     })
 
+    //  默认勾选表格的第一项数据
+    this.onSelectChange([this.tableData[0].id])
+
     window.SceneWanderManager = {
       animation: null
     }
 
-    console.log(configData)
+    //  初始化漫游动画
+    window.SceneWanderManager.animation = new this.Cesium.AnimationAnalyse(
+      this.webGlobe.viewer,
+      {
+        modelUrl: 'models/CesiumAir/Cesium_Air.gltf'
+      }
+    )
+
+    this.$message.config({ top: '100px', duration: 2, maxCount: 1 })
   }
 
   // 表格一选中项发生变化时的回调
@@ -324,6 +368,52 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     }, [])
   }
 
+  // 点击交互选点按钮回调(创建路径)
+  private onClickCreatPath() {
+    this.isShowPointTable = true
+    this.pointTableData = []
+    this.coordsArr = []
+    this.draw = new this.Cesium.DrawElement(this.webGlobe.viewer)
+
+    const material = this.Cesium.Material.fromType('Color')
+    material.uniforms.color = new this.Cesium.Color(0.9, 0.6, 0.1, 0.5)
+
+    this.draw.startDrawingMarker({
+      material,
+      addDefaultMark: true,
+      callback: coord => {
+        // 获取当前坐标系标准
+        const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+        // 根据坐标系标准，将笛卡尔坐标转换为地理坐标
+        const cartographic = ellipsoid.cartesianToCartographic(coord)
+        // 获取该位置的经纬度坐标和镜头高度
+        const lonDegree = this.Cesium.Math.toDegrees(cartographic.longitude)
+        const latDegree = this.Cesium.Math.toDegrees(cartographic.latitude)
+        const height = cartographic.height + 3000
+
+        this.coordsArr.push(lonDegree)
+        this.coordsArr.push(latDegree)
+        this.coordsArr.push(height)
+
+        const pointDataItem = {
+          id: UUID.uuid(),
+          xCoord: lonDegree,
+          yCoord: latDegree,
+          zCoord: height
+        }
+
+        this.pointTableData.push(pointDataItem)
+      }
+    })
+  }
+
+  // 点击取消选点按钮回调(取消创建路径)
+  private onClickCancelPath() {
+    if (this.draw) this.draw.stopDrawing()
+
+    this.isShowPointTable = false
+  }
+
   // 点击删除列按钮回调
   private onClickDelete(record) {
     const index = this.tableData.findIndex(item => item.id === record.id)
@@ -335,13 +425,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   private onClickStart() {
     const pathCoords = this.selectedRow.path.split(',')
 
-    window.SceneWanderManager.animation = new this.Cesium.AnimationAnalyse(
-      this.webGlobe.viewer,
-      {
-        modelUrl: 'models/CesiumAir/Cesium_Air.gltf'
-      }
-    )
+    this.onClickCancelPath()
 
+    // 设置播放动画的各项属性
     if (pathCoords.length > 0) {
       window.SceneWanderManager.animation.positions = this.Cesium.Cartesian3.fromDegreesArrayHeights(
         pathCoords
@@ -351,19 +437,13 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       window.SceneWanderManager.animation.offsetX = this.formData.azimuth
       window.SceneWanderManager.animation.offsetZ = this.formData.pitch
       window.SceneWanderManager.animation.animationType = this.formData.perspective
-      window.SceneWanderManager.animation.isLoop = false
-      window.SceneWanderManager.animation.isShowPath = false
-      window.SceneWanderManager.animation.showInfo = false
-
-      if (this.checkedVal.includes('isLoop')) {
-        window.SceneWanderManager.animation.isLoop = true
-      }
-      if (this.checkedVal.includes('showPath')) {
-        window.SceneWanderManager.animation.isShowPath = true
-      }
-      if (this.checkedVal.includes('showInfo')) {
-        window.SceneWanderManager.animation.showInfo = true
-      }
+      window.SceneWanderManager.animation.isLoop = this.judgeIsCheckd('isLoop')
+      window.SceneWanderManager.animation.isShowPath = this.judgeIsCheckd(
+        'showPath'
+      )
+      window.SceneWanderManager.animation.showInfo = this.judgeIsCheckd(
+        'showInfo'
+      )
 
       switch (this.formData.interpolation) {
         case 'LagrangePolynomialApproximation':
@@ -388,7 +468,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   private onClickStop() {
     window.SceneWanderManager.animation.stop()
     this.isStart = false
-    this.isPause = false
+
+    // 若点击停止时处于暂停状态，则将状态改为“继续”
+    if (this.isPause) this.onClickGoOn()
   }
 
   // 点击继续按钮回调
@@ -403,8 +485,79 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     this.isPause = true
   }
 
+  // 判断是否勾选了对应的多选框
+  private judgeIsCheckd(type) {
+    return this.checkedVal.includes(type)
+  }
+
   // 点击保存按钮回调
-  private onClickSave() {}
+  private onClickSave() {
+    let configData = []
+
+    configData = this.tableData
+      .map(item => ({
+        ...item,
+        path: item.path.split(',')
+      }))
+      .reduce((result, item) => {
+        // 只改变已勾选路径的各项表单参数，不改变未勾选的路径
+        if (item.id === this.selectedRow.id) {
+          item.para = {
+            speed: this.formData.speed,
+            exHeight: this.formData.exHeight,
+            til: this.formData.azimuth,
+            pitch: this.formData.pitch,
+            animationType: this.formData.perspective,
+            interpolationAlgorithm: this.formData.interpolation,
+            isLoop: this.judgeIsCheckd('isLoop'),
+            showPath: this.judgeIsCheckd('showPath'),
+            showInfo: this.judgeIsCheckd('showInfo')
+          }
+        }
+        result.push(item)
+        return result
+      }, [])
+
+    if (this.coordsArr.length > 0) {
+      let pathID
+      if (this.tableData.length > 0) {
+        pathID = this.tableData[this.tableData.length - 1].id + 1
+      } else {
+        pathID = 1
+      }
+      const pathItem = {
+        name: `路线${pathID}`,
+        id: pathID,
+        path: this.coordsArr,
+        para: {
+          speed: this.formData.speed,
+          exHeight: this.formData.exHeight,
+          til: this.formData.azimuth,
+          pitch: this.formData.pitch,
+          animationType: this.formData.perspective,
+          interpolationAlgorithm: this.formData.interpolation,
+          isLoop: this.judgeIsCheckd('isLoop'),
+          showPath: this.judgeIsCheckd('showPath'),
+          showInfo: this.judgeIsCheckd('showInfo')
+        }
+      }
+
+      configData.push(pathItem)
+    }
+
+    api
+      .saveWidgetConfig({
+        name: 'scene-roaming',
+        config: JSON.stringify(configData)
+      })
+      .then(_ => {
+        this.$message.success('保存成功')
+        this.onClickCancelPath()
+      })
+      .catch(_ => {
+        this.$message.error('保存失败')
+      })
+  }
 }
 </script>
 
