@@ -15,7 +15,11 @@
               <template slot="content">
                 <sketch-picker
                   :value="arrayColor[index]"
-                  @input="onColorChange"
+                  @input="
+                    val => {
+                      onColorChange(val, index)
+                    }
+                  "
                 />
               </template>
               <div
@@ -65,7 +69,8 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
 
   mounted() {}
 
-  destroyed() {
+  // 微件失活时
+  onDeActive() {
     this.remove()
     window.AspectAnalyzeManage.advancedAnalysisManager = null
   }
@@ -141,8 +146,8 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
   }
 
   // 颜色拾取器对应事件
-  private onColorChange(val) {
-    Vue.set(this.arrayColor, 0, utilInstance.rgbaToString(val.rgba))
+  private onColorChange(val, index) {
+    Vue.set(this.arrayColor, index, utilInstance.rgbaToString(val.rgba))
   }
 }
 </script>

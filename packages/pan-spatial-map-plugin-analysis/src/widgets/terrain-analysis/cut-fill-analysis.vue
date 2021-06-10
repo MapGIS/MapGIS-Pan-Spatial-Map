@@ -106,7 +106,8 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  destroyed() {
+  // 微件失活时
+  onDeActive() {
     this.stopCutFillM()
   }
 

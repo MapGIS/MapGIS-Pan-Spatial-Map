@@ -514,13 +514,13 @@ class Util {
   ) {
     let colorStr = ''
     if (rgba.a !== undefined) {
-      colorStr = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, '${rgba.a})`
+      colorStr = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
       // 已传入needOpacity，并且为false
       if (needOpacity !== undefined && !needOpacity) {
-        colorStr = `rgba${rgba.r}, ${rgba.g}, ${rgba.b})`
+        colorStr = `rgb(${rgba.r}, ${rgba.g}, ${rgba.b})`
       }
     } else {
-      colorStr = `rgba${rgba.r}, ${rgba.g}, ${rgba.b})`
+      colorStr = `rgb(${rgba.r}, ${rgba.g}, ${rgba.b})`
     }
     return colorStr
   }

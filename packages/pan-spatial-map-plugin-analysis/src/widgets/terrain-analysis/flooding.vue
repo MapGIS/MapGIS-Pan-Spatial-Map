@@ -174,7 +174,8 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     }
   }
 
-  destroyed() {
+  // 微件失活时
+  onDeActive() {
     this.stopFloodAnalysis()
   }
 
