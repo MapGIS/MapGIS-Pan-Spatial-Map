@@ -353,6 +353,16 @@ export class Scene {
 
 export class IGSSceneSublayer {
   /**
+   * 图层唯一id
+   *
+   * @author Yuanye Ma
+   * @date 12/03/2021
+   * @type {string}
+   * @memberof IGSSceneSublayer
+   */
+  id = ''
+
+  /**
    * 子图层的索引
    *
    * @date 25/05/2021
@@ -508,6 +518,8 @@ export class IGSSceneSublayer {
         jsonObject.frameSizes[0].hel
       )
     }
+
+    if (this.layer) this.id = `${this.layer.id}:${this.renderIndex}`
   }
 
   /**

@@ -192,16 +192,10 @@ export default {
 
       switch (igsSceneSublayer.renderType) {
         case IGSSceneSublayerRenderType.modelCache:
-          layerComponentProps = {
-            type: igsSceneSublayer.renderType,
-            id: `${igsSceneSublayer.layer.id}:${igsSceneSublayer.renderIndex}`,
-            url: igsSceneSublayer.layer.url
-          }
-          break
         case IGSSceneSublayerRenderType.elevation:
           layerComponentProps = {
             type: igsSceneSublayer.renderType,
-            id: `${igsSceneSublayer.layer.id}:${igsSceneSublayer.renderIndex}`,
+            id: igsSceneSublayer.id,
             url: igsSceneSublayer.layer.url
           }
           break
