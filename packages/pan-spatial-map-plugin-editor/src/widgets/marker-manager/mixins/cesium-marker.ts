@@ -1,5 +1,6 @@
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { cesiumUtilInstance } from '@mapgis/pan-spatial-map-store'
+import { MapMixin } from '@mapgis/web-app-framework'
 
 class CesiumMarkers {
   private _entityArray: any[] = []
@@ -16,7 +17,7 @@ class CesiumMarkers {
 export const cesiumMarkersInstance = new CesiumMarkers()
 
 @Component({})
-export default class CesiumMarkerMixin extends Vue {
+export default class CesiumMarkerMixin extends Mixins(MapMixin) {
   public cesiumUtil = cesiumUtilInstance
 
   private cesiumMarkers: CesiumMarkers = cesiumMarkersInstance
@@ -77,7 +78,16 @@ export default class CesiumMarkerMixin extends Vue {
     const entityName =
       new Date().toLocaleString().split(' ')[0] +
       new Date().toLocaleString().split(' ')[1]
-    const entity = this.cesiumUtil.appendPolygon(entityName, coordArray, '', '') // 绘制多边形
+    const fillColor = new this.Cesium.Color.fromCssColorString('#f3f5c4')
+
+    const fillOutlineColor = new this.Cesium.Color.fromCssColorString('#f3f5c4')
+
+    const entity = this.cesiumUtil.appendPolygon(
+      entityName,
+      coordArray,
+      fillColor,
+      fillOutlineColor
+    ) // 绘制多边形
     this.entityArray.push(entity)
     return polygonCenter
   }
@@ -106,12 +116,14 @@ export default class CesiumMarkerMixin extends Vue {
       new Date().toLocaleString().split(' ')[0] +
       new Date().toLocaleString().split(' ')[1]
 
+    const color = new this.Cesium.Color.fromCssColorString('#ff0000')
+
     const lineSize = 2 // 线宽【根据配置文件 宽度改变】
     const entity = this.cesiumUtil.appendLine({
       name: entityName,
       pointsArray: coordArray,
       width: lineSize,
-      color: ''
+      color: color
     })
     this.entityArray.push(entity)
     return centerCoordinates

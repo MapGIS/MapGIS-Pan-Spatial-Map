@@ -1,52 +1,87 @@
 <template>
   <div class="cesium-marker-dialog-wrapper">
-    <mp-window-wrapper :visible="showMarkerDialog">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="标注"
-          :width="240"
-          :height="180"
-          :visible.sync="showMarkerDialog"
-          :anchor="'top-left'"
-          :shrinkAction="false"
-          :fullScreenAction="false"
-          :horizontalOffset="dialogOffset[0]"
-          :verticalOffset="dialogOffset[1]"
-          v-bind="slotProps"
-        >
-          <marker-info :markerInfo="marker"></marker-info>
-        </mp-window>
-      </template>
-    </mp-window-wrapper>
+    <mapgis-3d-popup
+      :position="{
+        longitude: popupPosition.longitude,
+        latitude: popupPosition.latitude
+      }"
+      :showed="showMarkerDialog"
+      v-on:load="bindEvent"
+    >
+      <div slot="default">
+        <a-form-model :model="marker">
+          <a-form-model-item label="标题:">
+            <span>{{ marker.title }}</span>
+          </a-form-model-item>
+          <a-form-model-item label="内容:">
+            <span>{{ marker.description }}</span>
+          </a-form-model-item>
+          <a-form-model-item label="图片:">
+            <a-avatar :src="`${baseUrl}${marker.img}`" />
+            <a-button
+              class="popup-button"
+              type="primary"
+              shape="circle"
+              icon="edit"
+            >
+            </a-button>
+          </a-form-model-item>
+        </a-form-model>
+      </div>
+    </mapgis-3d-popup>
+
+    <a-modal v-model="showInfo" :width="400" @ok="onClickOk">
+      <a-form-model :model="formData">
+        <a-form-model-item label="标题:">
+          <a-input v-model="formData.title" />
+        </a-form-model-item>
+        <a-form-model-item label="内容:">
+          <a-input v-model="formData.description" />
+        </a-form-model-item>
+        <a-form-model-item label="图片:">
+          <a-avatar :src="`${baseUrl}${formData.img}`" />
+          <a-button
+            type="primary"
+            shape="circle"
+            icon="picture"
+            @click="onClickImg"
+          >
+          </a-button>
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
+
+    <a-modal v-model="showUploader" :width="300" :footer="null">
+      <uploader
+        :url="baseUrl + '/api/local-storage/pictures'"
+        label="图片上传"
+        @success="successHandleUploader"
+      ></uploader>
+    </a-modal>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  Component,
-  Mixins,
-  Provide,
-  Prop,
-  Watch,
-  Emit
-} from 'vue-property-decorator'
+import { Component, Mixins, Prop, Watch, Emit } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
   eventBus,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
-import MarkerInfo from '../MarkerInfo/MarkerInfo.vue'
 import CesiumMarkerMixin from '../../mixins/cesium-marker'
+import uploader from '../Uploader/uploader'
+import MarkerInfoMixin from '../../mixins/marker-info'
 
 @Component({
   components: {
-    MarkerInfo
+    uploader
   }
 })
 export default class CesiumMarkerDialog extends Mixins(
   WidgetMixin,
-  CesiumMarkerMixin
+  CesiumMarkerMixin,
+  MarkerInfoMixin
 ) {
   // 当前标注点
   @Prop({ type: Object, required: true }) marker!: Record<string, any>
@@ -54,23 +89,33 @@ export default class CesiumMarkerDialog extends Mixins(
   // 当前显示弹出框的标注点id
   @Prop({ type: String, required: true }) currentMarkerId!: string
 
-  // 添加三维标注时默认图标的宽
-  private defaultIconWidth = 24
-
-  private defaultIconHeight = 24
-
   // 标注信息窗口的显隐
   private showMarkerDialog = false
 
-  // 标注信息窗口的偏移
-  private dialogOffset = [0, 0]
+  // 标注点是否被勾选了
+  private isMarkerSelected = false
+
+  // popup显示的位置
+  get popupPosition() {
+    if (!this.marker) {
+      return {}
+    }
+    const position = {
+      longitude: +this.marker.center[0],
+      latitude: +this.marker.center[1]
+    }
+    return position
+  }
 
   @Emit('currentMarkerId')
   emitId(id: string) {}
 
   // 当该标注点的icon变化时，重新渲染三维视图下的标注点
   @Watch('marker.iconImg')
-  markerSelectedChange() {
+  markerSelectedChange(newVal) {
+    if (newVal.includes('selected')) this.isMarkerSelected = true
+    else this.isMarkerSelected = false
+
     this.updateMarker()
   }
 
@@ -84,23 +129,7 @@ export default class CesiumMarkerDialog extends Mixins(
 
   @Watch('showMarkerDialog')
   showMarkerDialogChange(newVal) {
-    if (newVal) {
-      this.setDialogPosition()
-      this.webGlobe.viewer.scene.camera.changed.addEventListener(() => {
-        this.setDialogPosition()
-      })
-      this.webGlobe.viewer.scene.camera.moveStart.addEventListener(() => {
-        this.setDialogPosition()
-      })
-      this.webGlobe.viewer.scene.camera.moveEnd.addEventListener(() => {
-        this.setDialogPosition()
-      })
-    } else {
-      this.removeAllPolygonLine() // 删除线、区
-      this.webGlobe.viewer.scene.camera.changed.removeEventListener()
-      this.webGlobe.viewer.scene.camera.moveStart.removeEventListener()
-      this.webGlobe.viewer.scene.camera.moveEnd.removeEventListener()
-    }
+    if (!newVal) this.removeAllPolygonLine() // 删除线、区
   }
 
   created() {
@@ -108,70 +137,72 @@ export default class CesiumMarkerDialog extends Mixins(
     eventBus.$on('emitMapRenderChange', () => {
       this.showMarkerDialog = false
     })
+
+    // 标注点默认图标
+    this.marker.img =
+      baseConfigInstance.config.colorConfig.label.image.defaultImg
+
     if (this.Cesium) {
       this.cesiumUtil.setCesiumGlobe(this.Cesium, this.webGlobe)
       this.updateMarker()
-      this.setDialogPosition()
     }
   }
 
   beforeDestroy() {
     this.removeAllPolygonLine() // 删除线、区
     this.cesiumUtil.removeEntityByName(this.marker.id)
-    this.webGlobe.viewer.scene.camera.changed.removeEventListener()
-    this.webGlobe.viewer.scene.camera.moveStart.removeEventListener()
-    this.webGlobe.viewer.scene.camera.moveEnd.removeEventListener()
   }
 
-  // 设置标注信息框的偏移位置
-  setDialogPosition() {
-    if (this.showMarkerDialog) {
-      const { center } = this.marker
-      const position = this.Cesium.Cartesian3.fromDegrees(
-        Number(center[0]),
-        Number(center[1])
-      )
-      // cartesianToCanvasCoordinates 转换三维空间坐标到canvas坐标（窗口坐标）
-      const canvasPosition = this.webGlobe.viewer.scene.cartesianToCanvasCoordinates(
-        position,
-        new this.Cesium.Cartesian2()
-      )
-      this.dialogOffset = [canvasPosition.x, canvasPosition.y]
-    }
+  // 为三维popup里的内容绑定事件
+  private bindEvent() {
+    const editBtn = document.getElementsByClassName('popup-button')
+
+    if (editBtn.length > 0)
+      editBtn[0].addEventListener('click', this.handleClickEdit.bind(this))
+  }
+
+  // 点击popup内部的编辑按钮响应事件
+  private handleClickEdit() {
+    this.showInfo = true
   }
 
   // 渲染该标注点
-  async updateMarker() {
+  private async updateMarker() {
     this.cesiumUtil.removeEntityByName(this.marker.id)
     const marker: any = { ...this.marker }
     // 获取缓存的标注点的图标单例
     const defaultImg = await markerIconInstance.unSelectIcon()
+    const selectedImg = await markerIconInstance.selectIcon()
+
+    marker.name = marker.id
+    marker.img = this.isMarkerSelected ? selectedImg : defaultImg
     marker.mouseOver = event => {
       this.mouseOver(event, marker)
     }
-    marker.name = marker.id
-    marker.img = defaultImg
-    marker.iconWidth = this.defaultIconWidth
-    marker.iconHeight = this.defaultIconHeight
+    marker.mouseOut = event => {
+      this.mouseOut(event, marker)
+    }
+
     this.cesiumUtil.addMarkerByFeature(marker)
   }
 
   // 鼠标悬浮在标注点上时回调事件
-  mouseOver(event: any, marker: any) {
-    // 修订鼠标在标注图标中移动时，弹出窗口跟随移动、图形反复添加删除的问题。
-    if (this.showMarkerDialog === false) {
-      this.showMarkerDialog = true
-      // 通知其他标注点隐藏其信息窗口
-      this.emitId(this.marker.id)
-      // 删除线、区
-      this.removeAllPolygonLine()
-      if (marker.type === 'LineString') {
-        this.appendLine(marker.coordinates)
-      } else if (marker.type === 'Polygon') {
-        this.appendPolygon(marker.coordinates[0])
-      }
+  private mouseOver(event: any, marker: any) {
+    this.showMarkerDialog = true
+    this.emitId(marker.id)
+    this.removeAllPolygonLine()
+    if (marker.type === 'LineString') {
+      this.appendLine(marker.coordinates)
+    } else if (marker.type === 'Polygon') {
+      this.appendPolygon(marker.coordinates[0])
     }
+  }
+
+  private mouseOut(event, marker) {
+    // this.$emit('mouseleave', event, marker.markerId)
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="scss" scoped>
+@import '../../../../styles/marker.scss';
+</style>
