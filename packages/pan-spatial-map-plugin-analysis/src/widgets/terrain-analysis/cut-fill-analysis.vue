@@ -114,18 +114,6 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     this.reset()
     this.remove()
 
-    // 初始化视图功能管理类
-    const sceneManager = new CesiumZondy.Manager.SceneManager({
-      viewer: window.webGlobe.viewer
-    })
-    // 视点跳转
-    sceneManager.flyToEx(120.9819, 23.5307, {
-      height: 9161,
-      heading: 30,
-      pitch: -10,
-      roll: 0
-    })
-
     // 初始化交互式绘制控件
     window.CutFillAnalyzeManage.drawElement =
       window.CutFillAnalyzeManage.drawElement ||
