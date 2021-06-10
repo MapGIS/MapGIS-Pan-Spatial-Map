@@ -1,15 +1,15 @@
 <template>
   <!-- 分段专题图图层 -->
-  <mapgis-3d-popup :position="position" :showed="true">
-    <span v-if="!properties">暂无数据</span>
+  <mapgis-3d-popup :position="popupPosition" :showed="showPopup">
+    <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
     <template v-else>
       <row-flex
-        v-for="(v, k) in properties"
-        :key="`label-properties-${v}`"
-        :label="`${k}`"
-        :span="[10, 14]"
-        class="popup-row"
-        >{{ `${v}` }}</row-flex
+        v-for="(v, k) in popupProperties"
+        :key="`sub-section-map-properties-${v}`"
+        :label="k"
+        :span="[12, 12]"
+        class="popup-row popup-fontsize"
+        >{{ v }}</row-flex
       >
     </template>
   </mapgis-3d-popup>
@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer } from '@mapgis/web-app-framework'
-import { FeatureGeoJSON, GFeature } from '@mapgis/pan-spatial-map-store'
+import { GFeature } from '@mapgis/pan-spatial-map-store'
 import RowFlex from '../../../RowFlex'
 import CesiumMinxin from '../../mixins/cesium'
 
@@ -51,21 +51,23 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
 
   /**
    * 获取形状
+   * @param 半径
+   * @param 边数
    */
-  getShapePoints({ strokeWidth, sides }) {
-    const positions = []
+  getShapePoints(radius: number, sides: number) {
+    const shapePoints = []
     const interval = 360 / sides
     for (let i = 0; i < 360; i += interval) {
       const radians = this.Cesium.Math.toRadians(i)
-      positions.push(
+      shapePoints.push(
         new this.Cesium.Cartesian2(
-          strokeWidth * Math.cos(radians),
-          strokeWidth * Math.sin(radians)
+          radius * Math.cos(radians),
+          radius * Math.sin(radians)
         )
       )
     }
 
-    return positions
+    return shapePoints
   }
 
   /**
@@ -100,18 +102,19 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
    * @param coordinates 坐标
    * @param extrudedHeight 高度
    * @param material 材质
+   * @param setting3D
    */
-  getPointEntity(coordinates, length = 0.1, material) {
-    const { strokeWidth } = this.setting3D
-    this.addEntityToLayer(this.thematicMapLayer, {
-      position: this.getPosition(coordinates[0], coordinates[1]),
+  getPointEntity(coordinates, length = 0.1, material, { strokeWidth }) {
+    const position = this.getPosition(coordinates[0], coordinates[1])
+    return {
+      position,
       cylinder: {
         length,
         material,
         topRadius: strokeWidth, // 圆柱体的顶部半径。
         bottomRadius: strokeWidth // 圆柱体底部的半径。
       }
-    })
+    }
   }
 
   /**
@@ -121,11 +124,16 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
    * @param material 材质
    * @param setting3D
    */
-  getLineStringEntity(coordinates, extrudedHeight = 0.1, material) {
-    const { lineType, strokeWidth, sides } = this.setting3D
-    const [first, second] = coordinates[0]
-    const positions = this.Cesium.Cartesian3.fromDegreesArray([first, second])
-    let option = {
+  getLineStringEntity(
+    coordinates,
+    extrudedHeight = 0.1,
+    material,
+    { lineType, strokeWidth, sides }
+  ) {
+    const positions = this.Cesium.Cartesian3.fromDegreesArray(
+      coordinates[0].flat()
+    )
+    let option: any = {
       positions,
       material
     }
@@ -141,7 +149,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
           }
           break
         case '多边形柱': {
-          const shape = this.getShapePoints({ strokeWidth, sides })
+          const shape = this.getShapePoints(strokeWidth, sides)
           option = {
             polylineVolume: {
               shape,
@@ -160,7 +168,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
           break
       }
     }
-    this.addEntityToLayer(this.thematicMapLayer, option)
+    return option
   }
 
   /**
@@ -168,22 +176,24 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
    * @param coordinates 坐标
    * @param extrudedHeight 高度
    */
-  getPolygonEntity(coordinates, extrudedHeight) {
-    const [first, second] = coordinates[0]
-    const hierarchy = this.Cesium.Cartesian3.fromDegreesArray([first, second])
-    this.addEntityToLayer(this.thematicMapLayer, {
+  getPolygonEntity(coordinates, extrudedHeight, material) {
+    const hierarchy = this.Cesium.Cartesian3.fromDegreesArray(
+      coordinates[0].flat()
+    )
+    return {
       polygon: {
         hierarchy,
         extrudedHeight,
-        material: this.setting3D.material
+        material
       }
-    })
+    }
   }
 
   /**
-   * 获取图层要素数据
+   * 获取图层geo要素数据存入实体中
+   * @param layer 图层
    */
-  getGeoJSONFeaturesLayer() {
+  addGeoJSONFeaturesToEntity(layer: Layer) {
     if (!this.geojson || !this.geojson.features) return
     const { useHeightScale, heightScale } = this.setting3D
     this.geojson.features.forEach((feature: GFeature) => {
@@ -200,21 +210,32 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
             ? value
             : value * heightScale
           : 0
+        const args = [coordinates, heightScaleValue, material, this.setting3D]
+        let option: any
         switch (type) {
           case 'Point':
-            this.getPointEntity(coordinates, heightScaleValue, material)
+            option = this.getPointEntity(...args)
             break
           case 'LineString':
-            this.getLineStringEntity(coordinates, heightScaleValue, material)
+            option = this.getLineStringEntity(...args)
             break
           case 'Polygon':
-            this.getPolygonEntity(coordinates, heightScaleValue, material)
+            option = this.getPolygonEntity(...args)
             break
           default:
             break
         }
+        this.addEntityToLayer(layer, feature, option)
       }
     })
   }
 }
 </script>
+<style lang="less" scoped>
+.popup-row {
+  min-width: 130px;
+}
+.popup-fontsize {
+  font-size: 12px;
+}
+</style>

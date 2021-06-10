@@ -132,7 +132,7 @@ export default class ThematicMapStatisticTable extends Vue {
   }
 
   get graph() {
-    return this.selectedSubConfig.graph
+    return this.selectedSubConfig?.graph
   }
 
   // 图表是否有数据,是否展示友好提示
@@ -148,7 +148,7 @@ export default class ThematicMapStatisticTable extends Vue {
   getChartOptions(dataSet) {
     const xArr = []
     const yArr = []
-    if (dataSet && dataSet.AttStruct.FldName) {
+    if (dataSet && dataSet.AttStruct.FldName && this.graph) {
       const {
         SFEleArray,
         AttStruct: { FldName }
@@ -172,6 +172,7 @@ export default class ThematicMapStatisticTable extends Vue {
    * @param <object>
    */
   getTargetList() {
+    if (!this.graph) return
     const { showFields, showFieldsTitle } = this.graph
     const targetList = showFields.reduce((results, v) => {
       const value =

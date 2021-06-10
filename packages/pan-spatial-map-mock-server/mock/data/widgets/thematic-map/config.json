@@ -424,7 +424,7 @@
                       "strokeWidth": 1,
                       "lineType": "走廊状",
                       "sides": 5,
-                      "useHeightScale": false,
+                      "useHeightScale": true,
                       "heightScale": 0.000001
                     },
                     "color": [

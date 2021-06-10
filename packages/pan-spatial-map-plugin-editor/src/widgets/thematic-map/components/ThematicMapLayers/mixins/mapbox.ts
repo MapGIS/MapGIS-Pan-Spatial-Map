@@ -25,9 +25,10 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
    * 显示图层
    */
   showLayer() {
-    if (!this.dataSet) return
     this.removeLayer()
-    this.getThematicMapLayer()
+    if (!this.thematicMapLayer) {
+      this.getThematicMapLayer()
+    }
   }
 
   /**
@@ -47,6 +48,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
         }
       }
       this.thematicMapLayer = null
+      this.closePopupWin()
     }
   }
 

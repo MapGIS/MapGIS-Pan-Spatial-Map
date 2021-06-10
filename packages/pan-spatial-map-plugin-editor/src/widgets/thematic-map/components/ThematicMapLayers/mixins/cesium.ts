@@ -1,63 +1,77 @@
-/* eslint-disable no-new */
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Inject } from 'vue-property-decorator'
 import { UUID, Layer } from '@mapgis/web-app-framework'
-import { GFeature, utilInstance } from '@mapgis/pan-spatial-map-store'
+import {
+  GFeature,
+  utilInstance,
+  cesiumUtilInstance
+} from '@mapgis/pan-spatial-map-store'
 import BaseMinxin from './base'
 
-interface IPopupConfig {
-  showFields: string[]
-  showFieldsTitle: Record<string, string>
-}
 interface ILngLat {
   longitude?: number
   latitude?: number
-}
-
-interface IPoint {
-  lng: number
-  lat: number
-  alt: number
-  x: number
-  y: number
-  z: number
-}
-
-interface IPopupPosition extends ILngLat {
-  height?: number
 }
 @Component
 export default class CesiumMinxin extends Mixins<Record<string, any>>(
   BaseMinxin
 ) {
+  @Inject('CesiumZondy') CesiumZondy
+
   id = UUID.uuid()
 
   thematicMapLayer: any = null
 
-  properties: any = null
+  showPopup = false
 
-  popupPosition: IPopupPosition = {}
+  popupProperties: any = null
+
+  popupPosition: ILngLat = {}
 
   // 信息弹框字段配置
-  get popupConfig(): IPopupConfig | undefined {
+  get popupConfig() {
     return this.subDataConfig.popup
   }
 
-  // 位置信息
-  get position() {
-    const { longitude, latitude } = this.popupPosition
-    return {
-      longitude,
-      latitude
+  /**
+   * 添加图层
+   */
+  addDataSourceToViewer(layer: Layer) {
+    if (layer) {
+      this.webGlobe.viewer.dataSources.add(layer)
     }
   }
 
   /**
-   * 1
-   * @param layer
-   * @param option
+   * 移除图层
+   * @param layer 图层
    */
-  addEntityToLayer(layer: Layer, option: any) {
-    return layer.entities.add(new this.Cesium.Entity(option))
+  removeViewerLayer(layer: Layer) {
+    if (layer) {
+      this.webGlobe.viewer.dataSources.remove(layer)
+      layer = null
+    }
+  }
+
+  /**
+   * 添加实体到图层
+   * @param layer 图层
+   * @param feature 要素数据
+   * @param option 实体配置
+   */
+  addEntityToLayer(layer: Layer, feature: GFeature, option: any) {
+    const entity = new this.Cesium.Entity(option)
+    entity.geojsonFeature = feature
+    layer.entities.add(entity)
+  }
+
+  /**
+   * 移除所有实体
+   * @param layer 图层
+   */
+  removeAllEntity(layer: Layer) {
+    if (layer) {
+      layer.entities.removeAll()
+    }
   }
 
   /**
@@ -70,7 +84,15 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 获取位置坐标
+   * 获取颜色值
+   * @param color 颜色
+   */
+  getCssColorStr(color: string) {
+    return new this.Cesium.Color.fromCssColorString(color)
+  }
+
+  /**
+   * 获取Cartesian坐标
    * @param lng
    * @param lat
    * @param alt
@@ -80,83 +102,68 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 获取笛卡尔坐标
-   * @param position
+   * 获取实体弹框的信息
+   * @param feature 要素数据
    */
-  getFromCartesian(position: any) {
+  getPopupInfos(feature: GFeature | null) {
+    const { showFields, showFieldsTitle } = this.popupConfig
+    if (!feature || !showFields || !showFields.length) return
+    this.popupProperties = showFields.reduce((obj: any, v: string) => {
+      const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
+      obj[tag] = feature.properties[v]
+      return obj
+    }, {})
+  }
+
+  /**
+   * 获取经纬度坐标
+   * @param CommonFuncManager
+   * @param position 屏幕位置坐标
+   */
+  getCartographic(CommonFuncManager: any, position: any) {
     const {
       longitude,
-      latitude,
-      height
-    } = this.Cesium.Cartographic.fromCartesian(position)
-    const lngAndlat = Object.entries({ longitude, latitude }).reduce(
-      (obj, v, k) => {
+      latitude
+    } = CommonFuncManager.screenPositionToCartographic(position)
+    this.popupPosition = Object.entries({ longitude, latitude }).reduce(
+      (obj, [k, v]) => {
         obj[k] = this.Cesium.Math.toDegrees(v)
         return obj
       },
       {} as ILngLat
     )
-    return {
-      ...lngAndlat,
-      height
-    }
   }
 
   /**
-   * 展示信息窗口
-   */
-  getPopupInfos({ target }: any) {
-    const { showFields, showFieldsTitle } = this.popupConfig as IPopupConfig
-    if (!target || !target.refDataID || !showFields || !showFields.length) {
-      return
-    }
-    const feature = this.thematicMapLayer.getFeatureById(target.refDataID)
-    if (feature) {
-      const { attributes } = feature
-      this.properties = showFields.reduce((obj, v: string) => {
-        const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
-        obj[tag] = attributes[v]
-        return obj
-      }, {})
-    }
-  }
-
-  /**
-   * 显示弹出框
-   */
-  getPopupPosition(scene: any, position: any) {
-    const pick = scene.pick(position)
-    if (pick && pick.id) {
-      const RayInstance = new this.Cesium.Ray()
-      const Cartesian3Instance = new this.Cesium.Cartesian3()
-      const pickRay = scene.camera.getPickRay(position, RayInstance)
-      const pickPosition1 = scene.globe.pick(pickRay, scene, Cartesian3Instance)
-      const pickPosition2 = scene.pickPosition(position)
-      if (!pickPosition1 && !pickPosition2) return
-      scene.postProcessStages.fxaa.enabled = false
-      const { longitude, latitude, height } = this.getFromCartesian(
-        pickPosition2 || pickPosition1
-      )
-      this.popupPosition = {
-        longitude,
-        latitude,
-        height: height > 0 ? height : 0
-      }
-    }
-  }
-
-  /**
-   * 右击显示弹出框
+   * 点击显示实体弹框
    */
   showPopupWin() {
-    const handler3D = new this.Cesium.ScreenSpaceEventHandler(
-      this.webGlobe.scene.canvas
-    )
-    handler3D.setInputAction(e => {
-      const { position } = e
-      // this.getPopupInfos()
-      this.getPopupPosition(this.webGlobe.scene, position)
-    }, this.Cesium.ScreenSpaceEventType.LEFT_CLICK)
+    const { viewer, scene } = this.webGlobe
+    const { Manager } = this.CesiumZondy
+    const mouseEventManager = new Manager.MouseEventManager({ viewer })
+    const CommonFuncManager = new Manager.CommonFuncManager({ viewer })
+    mouseEventManager.unRegisterMouseEvent('LEFT_CLICK')
+    mouseEventManager.registerMouseEvent('LEFT_CLICK', ({ position }) => {
+      this.closePopupWin()
+      const pick = scene.pick(position)
+      if (pick && pick.id) {
+        this.getCartographic(CommonFuncManager, position)
+        this.getPopupInfos(pick.id.geojsonFeature)
+        this.showPopup = true
+        console.log('图层实体列表', this.thematicMapLayer.entities)
+        console.log('位置', this.popupPosition)
+        console.log('弹框信息', this.popupProperties)
+      }
+    })
+  }
+
+  /**
+   * 关闭实体弹框
+   */
+  closePopupWin() {
+    this.showPopup = false
+    this.popupPosition = {}
+    this.popupProperties = null
   }
 
   /**
@@ -167,8 +174,8 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
     if (!this.thematicMapLayer) {
       this.thematicMapLayer = new this.Cesium.CustomDataSource(this.id)
     }
-    this.getGeoJSONFeaturesLayer()
-    this.webGlobe.viewer.dataSources.add(this.thematicMapLayer)
+    this.addGeoJSONFeaturesToEntity(this.thematicMapLayer)
+    this.addDataSourceToViewer(this.thematicMapLayer)
     this.showPopupWin()
   }
 
@@ -177,9 +184,9 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
    */
   removeLayer() {
     if (this.thematicMapLayer) {
-      this.webGlobe.viewer.dataSources.remove(this.thematicMapLayer)
-      this.thematicMapLayer.entities.removeAll()
-      this.thematicMapLayer = null
+      this.removeViewerLayer(this.thematicMapLayer)
+      this.removeAllEntity(this.thematicMapLayer)
+      this.closePopupWin()
     }
   }
 }
