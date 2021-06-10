@@ -504,6 +504,28 @@ class Util {
   }
 
   /**
+   * rgba转字符串
+   * @param rgba rgba对象
+   * @param needOpacity 是否使用透明度
+   */
+  rgbaToString(
+    rgba: { r: number; g: number; b: number; a?: number },
+    needOpacity?: boolean
+  ) {
+    let colorStr = ''
+    if (rgba.a !== undefined) {
+      colorStr = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
+      // 已传入needOpacity，并且为false
+      if (needOpacity !== undefined && !needOpacity) {
+        colorStr = `rgb(${rgba.r}, ${rgba.g}, ${rgba.b})`
+      }
+    } else {
+      colorStr = `rgb(${rgba.r}, ${rgba.g}, ${rgba.b})`
+    }
+    return colorStr
+  }
+
+  /**
    * 获取一组要素的中心
    * @param features
    */
