@@ -92,35 +92,33 @@
       >
       </a-pagination>
     </div>
-    <template v-if="!isIGSScence">
-      <mp-marker-plotting
-        v-if="mapRender === mapboxRender"
-        ref="refMarkerPlotting"
-        :markers="markers"
-        :filter-with-map="filterWithMap"
-        :fit-bound="fitBound"
-        :selection-bound="selectionBound"
-        :highlight-style="highlightStyle"
-        @map-bound-change="onGetGeometry"
-      />
-      <mp-3d-marker-plotting
-        v-else
-        ref="ref3dMarkerPlotting"
-        :markers="markers"
-        :filter-with-map="filterWithMap"
-        :fit-bound="fitBound"
-        :selection-bound="selectionBound"
-        :highlight-style="highlightStyle"
-        @map-bound-change="onGetGeometry"
-      />
-    </template>
-    <m-3-d-cesium
+    <mp-marker-plotting
+      v-if="mapRender === mapboxRender && !isIGSScence"
+      ref="refMarkerPlotting"
+      :markers="markers"
+      :filter-with-map="filterWithMap"
+      :fit-bound="fitBound"
+      :selection-bound="selectionBound"
+      :highlight-style="highlightStyle"
+      @map-bound-change="onGetGeometry"
+    />
+    <mp-3d-marker-plotting
+      v-else
+      ref="ref3dMarkerPlotting"
+      :markers="markers"
+      :filter-with-map="filterWithMap"
+      :fit-bound="fitBound"
+      :selection-bound="selectionBound"
+      :highlight-style="highlightStyle"
+      @map-bound-change="onGetGeometry"
+    />
+    <!-- <m-3-d-cesium
       v-else-if="mapRender !== mapboxRender"
       :fit-bound="fitBound"
       :vue-index="optionVal.id"
       :filter-with-map="filterWithMap"
       @map-bound-change="onGetGeometry"
-    />
+    /> -->
     <mp-window-wrapper :visible="showAttrStatistics">
       <template v-slot:default="slotProps">
         <mp-window
@@ -169,7 +167,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
+import { Component, Mixins, Prop, Watch, Inject } from 'vue-property-decorator'
 import {
   ExhibitionMixin,
   IAttributeTableOption,
@@ -181,9 +179,10 @@ import {
   queryArcgisInfoInstance,
   FeatureGeoJSON,
   GFeature,
-  markerIconInstance
+  markerIconInstance,
+  cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
-import { AppMixin, LayerType, UUID } from '@mapgis/web-app-framework'
+import { AppMixin, LayerType, UUID, MapMixin } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
 import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
@@ -207,8 +206,11 @@ import M3DCesium from '../M3DCesium/M3DCesium.vue'
 })
 export default class MpAttributeTable extends Mixins(
   ExhibitionMixin,
-  AppMixin
+  AppMixin,
+  MapMixin
 ) {
+  @Inject('CesiumZondy') CesiumZondy
+
   // 属性表选项
   @Prop({ type: Object }) exhibition!: IAttributeTableExhibition
 
@@ -386,32 +388,24 @@ export default class MpAttributeTable extends Mixins(
 
   // 双击行
   private onRowDblclick(row: unknown) {
-    if (!this.isIGSScence) {
-      const feature = row as GFeature
-      let { bound } = feature
-      if (bound === undefined) {
-        bound = utilInstance.getGeoJsonFeatureBound(feature)
-      }
-      // 把bound缩小到1/2
-      const width = bound.xmax - bound.xmin
-      const height = bound.ymax - bound.ymin
-      const center = {
-        x: (bound.xmin + bound.xmax) / 2,
-        y: (bound.ymin + bound.ymax) / 2
-      }
-      bound = {
-        xmin: center.x - width,
-        ymin: center.y - height,
-        xmax: center.x + width,
-        ymax: center.y + height
-      }
-      this.fitBound = { ...(bound as Record<string, number>) }
-    } else {
-      const {
-        properties: { bound }
-      } = row
-      this.fitBound = bound
+    const feature = row as GFeature
+    let { bound } = feature
+    if (bound === undefined) {
+      bound = utilInstance.getGeoJsonFeatureBound(feature)
     }
+    const width = bound.xmax - bound.xmin
+    const height = bound.ymax - bound.ymin
+    const center = {
+      x: (bound.xmin + bound.xmax) / 2,
+      y: (bound.ymin + bound.ymax) / 2
+    }
+    bound = {
+      xmin: center.x - width,
+      ymin: center.y - height,
+      xmax: center.x + width,
+      ymax: center.y + height
+    }
+    this.fitBound = { ...(bound as Record<string, number>) }
   }
 
   private onRefresh() {
@@ -621,9 +615,22 @@ export default class MpAttributeTable extends Mixins(
       const columns = this.setTableScroll(AttStruct)
       this.tableColumns = columns
       this.pagination.total = TotalCount
+      // 查找矩阵集
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        this.optionVal.id
+      )
       this.tableData = (SFEleArray || []).map(
         ({ AttValue = [], bound = {}, FID }) => {
-          const properties = { bound, FID }
+          let boundObj = null
+          if (source.length > 0) {
+            const tranform = source[0].root.transform
+            boundObj = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+              bound,
+              tranform
+            )
+          }
+          const properties = { FID }
           for (let index = 0; index < FldNumber; index++) {
             const name = FldName[index]
             const value = AttValue[index]
@@ -632,12 +639,19 @@ export default class MpAttributeTable extends Mixins(
           return {
             geometry: {
               coordinates: [],
-              type: 'Polygon'
+              type: '3DPolygon'
             },
+            id: this.optionVal.id,
+            bound: boundObj,
             properties
           }
         }
       )
+      this.removeMarkers()
+      // 如果当前是激活状态，则添加markers
+      if (this.isExhibitionActive) {
+        await this.addMarkers()
+      }
     }
   }
 
@@ -787,14 +801,21 @@ export default class MpAttributeTable extends Mixins(
   // 添加标注
   private async addMarkers() {
     const { serverType } = this.optionVal
-    if (this.isIGSScence) {
-      return
-    }
+
     const unSelectIcon = await markerIconInstance.unSelectIcon()
     const tempMarkers: Record<string, any>[] = []
     for (let i = 0; i < this.tableData.length; i += 1) {
       const feature = this.tableData[i]
-      const center = utilInstance.getGeoJsonFeatureCenter(feature)
+      let center = []
+      if (this.isIGSScence) {
+        const { xmin, xmax, ymin, ymax } = feature.bound
+        const longitude = (xmin + xmax) / 2
+        const latitude = (ymin + ymax) / 2
+        // const height = await this.getModelHeight(longitude, latitude)
+        center = [longitude, latitude]
+      } else {
+        center = utilInstance.getGeoJsonFeatureCenter(feature)
+      }
       if (!(Number.isNaN(center[0]) || Number.isNaN(center[1]))) {
         const marker: Record<string, any> = {
           coordinates: center,
@@ -807,7 +828,40 @@ export default class MpAttributeTable extends Mixins(
         tempMarkers.push(marker)
       }
     }
+    if (this.isIGSScence) {
+      const arr = await this.getModelHeight(tempMarkers)
+      if (arr.length === tempMarkers.length) {
+        arr.forEach((item, index) => {
+          const { longitude, latitude, height } = item
+          tempMarkers[index].coordinates = [longitude, latitude, height]
+        })
+      }
+    }
     this.markers = [...tempMarkers]
+  }
+
+  getModelHeight(tempMarkers: Array<unknown>) {
+    return new Promise((resolve, reject) => {
+      const positions = tempMarkers.map(item => {
+        return new this.Cesium.Cartesian3.fromDegrees(
+          item.coordinates[0],
+          item.coordinates[1]
+        )
+      })
+      const sampleElevationTool = new this.Cesium.SampleElevationTool(
+        this.webGlobe.viewer,
+        positions,
+        'model',
+        elevationPosition => {
+          if (elevationPosition && elevationPosition.length > 0) {
+            resolve(elevationPosition)
+          } else {
+            resolve([])
+          }
+        }
+      )
+      sampleElevationTool.start()
+    })
   }
 
   // 移除标注
@@ -828,7 +882,8 @@ export default class MpAttributeTable extends Mixins(
     const { serverType, gdbp, serverUrl } = this.optionVal
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
       this.statisticAndFilterParamas = {
         ip: this.optionVal.ip.toString(),

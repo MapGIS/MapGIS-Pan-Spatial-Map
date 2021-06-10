@@ -787,6 +787,23 @@ export default class TreeLayer extends Mixins(
           gdbp: igsVectorLayer.gdbps
         }
       }
+    } else if (this.isIGSScene(layer)) {
+      const sceneLayer = layer.dataRef
+      const { ip, port, docName } = sceneLayer._parseUrl(sceneLayer.url)
+      const {
+        activeScene: { sceneIndex, layers }
+      } = sceneLayer
+      this.queryParams = {
+        id: `${sceneLayer.title} ${sceneLayer.id} 自定义查询`,
+        name: `${sceneLayer.title} 自定义查询`,
+        option: {
+          id: `${sceneLayer.id}:${sceneIndex}`,
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: sceneLayer.type,
+          gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型'
+        }
+      }
     }
   }
 

@@ -925,6 +925,7 @@ class CesiumUtil {
     const markerEntity = this.appendPictureLabel({
       lon: option.center[0],
       lat: option.center[1],
+      height: option.center.length > 2 ? option.center[2] : 0,
       iconUrl: option.img,
       iconWidth: option.iconWidth,
       iconHeight: option.iconHeight,

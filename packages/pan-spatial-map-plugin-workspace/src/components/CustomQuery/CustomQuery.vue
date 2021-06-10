@@ -226,20 +226,25 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
     } = option
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
       // 地图文档的图层
-      const result = await queryFeaturesInstance.query({
-        ip,
-        port: port.toString(),
-        f: 'json',
-        cursorType: 'cursorType',
-        page: 0,
-        pageCount: 1,
-        docName: serverName,
-        layerIdxs: layerIndex,
-        gdbp
-      })
+      const result = await queryFeaturesInstance.query(
+        {
+          ip,
+          port: port.toString(),
+          f: 'json',
+          cursorType: 'cursorType',
+          page: 0,
+          pageCount: 1,
+          docName: serverName,
+          layerIdxs: layerIndex,
+          gdbp
+        },
+        false,
+        serverType === LayerType.IGSScene
+      )
       const {
         AttStruct: { FldName, FldType }
       } = result
@@ -297,19 +302,24 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
     const { layerIndex, id, ip, port, serverName, serverType, gdbp } = option
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
-      const result = await queryFeaturesInstance.query({
-        ip,
-        port: port.toString(),
-        f: 'json',
-        cursorType: 'cursorType',
-        page: 0,
-        pageCount: Number(this.valueSize),
-        docName: serverName,
-        layerIdxs: layerIndex,
-        gdbp
-      })
+      const result = await queryFeaturesInstance.query(
+        {
+          ip,
+          port: port.toString(),
+          f: 'json',
+          cursorType: 'cursorType',
+          page: 0,
+          pageCount: Number(this.valueSize),
+          docName: serverName,
+          layerIdxs: layerIndex,
+          gdbp
+        },
+        false,
+        serverType === LayerType.IGSScene
+      )
       const { SFEleArray: features } = result
       const index = this.fieldTableData.findIndex(
         x => x === this.fieldCurrentRow

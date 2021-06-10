@@ -10,7 +10,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Mixins, Emit } from 'vue-property-decorator'
+import {
+  Component,
+  Prop,
+  Watch,
+  Mixins,
+  Emit,
+  Inject
+} from 'vue-property-decorator'
 import {
   FeatureGeoJSON,
   utilInstance,
@@ -24,6 +31,8 @@ import Mp3dMarkerSetPro from '../3dMarkerPro/3dMarkerSetPro.vue'
   components: { Mp3dMarkerSetPro }
 })
 export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
+  @Inject('CesiumZondy') CesiumZondy
+
   @Prop({
     type: Boolean,
     default: false
@@ -83,6 +92,10 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
     this.zoomOrPanTo(this.selectionBound)
   }
 
+  currentLayer = null
+
+  analysisManager = null
+
   changeFilterWithMap() {
     if (!this.filterWithMap) {
       return
@@ -101,6 +114,9 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   emitMapBoundChange(bound: Record<string, any>) {}
 
   mounted() {
+    this.analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
+      viewer: this.webGlobe.viewer
+    })
     cesiumUtilInstance.setCesiumGlobe(this.Cesium, this.webGlobe)
     this.webGlobe.viewer.camera.changed.addEventListener(
       this.changeFilterWithMap
@@ -108,6 +124,7 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   }
 
   destroyed() {
+    this.analysisManager = null
     this.webGlobe.viewer.camera.changed.removeEventListener(
       this.changeFilterWithMap
     )
@@ -175,6 +192,7 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
 
   private mouseLeaveEvent(e: any, id) {
     this.clearHighlight()
+    this.stopDisplay()
   }
 
   private highlightFeature(featureGeoJson) {
@@ -220,6 +238,37 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
           fillOutlineColor
         )
       }
+    } else if (featureGeoJson.features[0].geometry.type === '3DPolygon') {
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        featureGeoJson.features[0].id
+      )
+      if (source && source.length > 0) {
+        this.stopDisplay()
+        this.currentLayer = [source[0]]
+        const idList = [featureGeoJson.features[0].properties.FID]
+        const options = {
+          // 高亮颜色
+          color: new this.Cesium.Color.fromCssColorString(
+            this.highlightStyle.feature.reg.color
+          ),
+          // 高亮模式：REPLACE为替换
+          colorBlendMode: this.Cesium.Cesium3DTileColorBlendMode.REPLACE
+        }
+        // 开始闪烁查找到的模型
+        this.analysisManager.startCustomDisplay(
+          this.currentLayer,
+          idList,
+          options
+        )
+      }
+    }
+  }
+
+  stopDisplay() {
+    if (this.currentLayer) {
+      this.analysisManager.stopCustomDisplay(this.currentLayer)
+      this.currentLayer = null
     }
   }
 
