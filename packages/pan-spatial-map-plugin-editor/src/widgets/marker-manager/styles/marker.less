@@ -1,11 +1,11 @@
-@import 'flex.scss';
-
 .ant-form-horizontal {
   margin-top: 16px;
 }
 
 .ant-form-item {
-  @include flex();
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
 }
 
 ::v-deep .ant-form-item-control-wrapper {
@@ -13,7 +13,8 @@
 }
 
 ::v-deep .ant-form-item-children {
-  @include flex($justify-content: space-between);
-
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
 }
