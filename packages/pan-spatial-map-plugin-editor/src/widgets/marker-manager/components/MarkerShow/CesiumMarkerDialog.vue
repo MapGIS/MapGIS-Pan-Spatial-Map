@@ -203,6 +203,6 @@ export default class CesiumMarkerDialog extends Mixins(
   }
 }
 </script>
-<style lang="scss" scoped>
-@import '../../../../styles/marker.scss';
+<style lang="less" scoped>
+@import '../../styles/marker.less';
 </style>

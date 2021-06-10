@@ -92,8 +92,8 @@ export default class MapboxMarkerDialog extends Mixins(
 }
 </script>
 
-<style lang="scss" scoped>
-@import '../../../../styles/marker.scss';
+<style lang="less" scoped>
+@import '../../styles/marker.less';
 
 .marker-info-wrapper {
   width: 100%;
