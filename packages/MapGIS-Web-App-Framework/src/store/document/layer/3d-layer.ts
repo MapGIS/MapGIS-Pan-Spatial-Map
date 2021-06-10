@@ -129,4 +129,12 @@ export abstract class Layer3D extends Layer {
   set fullExtent(rect: Rectangle3D) {
     this._fullExtent = rect
   }
+
+  /**
+   * 空间参数信息
+   *
+   * @date 28/04/2021
+   * @memberof TileLayer
+   */
+  spatialReference: SpatialReference = new SpatialReference()
 }

@@ -89,7 +89,7 @@ export class IGSSceneLayer extends SceneLayer {
               res.sceneInfos.forEach(sceneInfo => {
                 const scene = new Scene()
 
-                scene.serverLayer = this
+                scene.layer = this
 
                 scene.fromJSON(sceneInfo)
 
@@ -222,7 +222,7 @@ export enum IGSSceneSublayerRenderType {
 
 export class Scene {
   /**
-   * 子图层所在的场景在场景文档中的索引
+   * 该场景在场景文档中的索引
    *
    * @date 25/05/2021
    * @memberof Scene
@@ -262,7 +262,7 @@ export class Scene {
    * @type {(IGSSceneLayer | undefined)}
    * @memberof Scene
    */
-  serverLayer: IGSSceneLayer | undefined
+  layer: IGSSceneLayer | undefined
 
   /**
    * 通过json对象初始化该对象
@@ -292,7 +292,7 @@ export class Scene {
       jsonObject.layers.forEach(layer => {
         const sceneSublayer = new IGSSceneSublayer()
 
-        sceneSublayer.serverLayer = this.serverLayer
+        sceneSublayer.layer = this.layer
 
         sceneSublayer.fromJSON(layer)
 
@@ -319,15 +319,15 @@ export class Scene {
    * @return {*}  {Scene}
    * @memberof Scene
    */
-  clone(serverLayer?: IGSSceneLayer): Scene {
+  clone(layer?: IGSSceneLayer): Scene {
     const result = new Scene()
 
-    result.serverLayer = serverLayer
+    result.layer = layer
 
     Object.entries(this).forEach(element => {
       const key = element[0]
       const valueIndex = 1
-      if (key === 'serverLayer') {
+      if (key === 'layer') {
       } else if (key === 'layers') {
         const sublayers = element[valueIndex]
         const sublayersCopy: IGSSceneSublayer[] = []
@@ -369,7 +369,7 @@ export class IGSSceneSublayer {
   name = ''
 
   /**
-   * 子图层gdbp地址
+   * 子图层gdbp地址,如果是模型缓存图层的话，为mcj文件的路径。
    *
    * @date 25/05/2021
    * @memberof IGSSceneSublayer
@@ -446,13 +446,13 @@ export class IGSSceneSublayer {
   maxFrameSize: Size | undefined
 
   /**
-   * 场景所属的场景服务图层
+   * 子图层所属的场景服务图层
    *
    * @date 26/05/2021
    * @type {(IGSSceneLayer | undefined)}
    * @memberof IGSSceneSublayer
    */
-  serverLayer: IGSSceneLayer | undefined
+  layer: IGSSceneLayer | undefined
 
   /**
    * 通过json对象初始化该对象
@@ -535,8 +535,8 @@ export class IGSSceneSublayer {
       const key = element[0]
       const valueIndex = 1
 
-      if (key === 'serverLayer') {
-        if (scene) result[key] = scene.serverLayer
+      if (key === 'layer') {
+        if (scene) result[key] = scene.layer
       } else {
         result[key] = ObjectTool.deepClone(element[valueIndex])
       }

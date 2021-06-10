@@ -139,7 +139,7 @@ export default {
         .forEach((layer, index) => {
           if (layer.loadStatus === LoadStatus.loaded) {
             if (layer.type === LayerType.IGSScene) {
-              layer.activeScene.layers.forEach(igsSceneSublayer => {
+              layer.activeScene.sublayers.forEach(igsSceneSublayer => {
                 const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
                   igsSceneSublayer
                 )
@@ -194,15 +194,15 @@ export default {
         case IGSSceneSublayerRenderType.modelCache:
           layerComponentProps = {
             type: igsSceneSublayer.renderType,
-            id: `${igsSceneSublayer.serverLayer.id}:${igsSceneSublayer.renderIndex}`,
-            url: igsSceneSublayer.serverLayer.url
+            id: `${igsSceneSublayer.layer.id}:${igsSceneSublayer.renderIndex}`,
+            url: igsSceneSublayer.layer.url
           }
           break
         case IGSSceneSublayerRenderType.elevation:
           layerComponentProps = {
             type: igsSceneSublayer.renderType,
-            id: `${igsSceneSublayer.serverLayer.id}:${igsSceneSublayer.renderIndex}`,
-            url: igsSceneSublayer.serverLayer.url
+            id: `${igsSceneSublayer.layer.id}:${igsSceneSublayer.renderIndex}`,
+            url: igsSceneSublayer.layer.url
           }
           break
         default:
