@@ -253,7 +253,7 @@ export class Scene {
    * @type {IGSSceneSublayer[]}
    * @memberof Scene
    */
-  layers: IGSSceneSublayer[] = []
+  sublayers: IGSSceneSublayer[] = []
 
   /**
    * 场景所属的场景服务图层
@@ -296,7 +296,7 @@ export class Scene {
 
         sceneSublayer.fromJSON(layer)
 
-        this.layers.push(sceneSublayer)
+        this.sublayers.push(sceneSublayer)
       })
     }
   }
@@ -328,7 +328,7 @@ export class Scene {
       const key = element[0]
       const valueIndex = 1
       if (key === 'layer') {
-      } else if (key === 'layers') {
+      } else if (key === 'sublayers') {
         const sublayers = element[valueIndex]
         const sublayersCopy: IGSSceneSublayer[] = []
         let sublayerCopy: IGSSceneSublayer | undefined

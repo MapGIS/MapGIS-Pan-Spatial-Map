@@ -161,7 +161,7 @@ export default {
         .forEach((layer, index) => {
           if (layer.loadStatus === LoadStatus.loaded) {
             if (layer.type === LayerType.IGSScene) {
-              layer.activeScene.layers.forEach(igsSceneSublayer => {
+              layer.activeScene.sublayers.forEach(igsSceneSublayer => {
                 const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
                   igsSceneSublayer
                 )
