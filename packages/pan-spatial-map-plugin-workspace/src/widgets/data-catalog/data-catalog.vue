@@ -47,7 +47,7 @@
                     -1
               "
             >
-              <span class="unfilter-words" :title="item.name">
+              <span class="unfilter-words" :title="item.description">
                 {{
                   item.name.substr(
                     0,
@@ -55,7 +55,7 @@
                   )
                 }}
               </span>
-              <span class="filter-words" :title="item.name">
+              <span class="filter-words" :title="item.description">
                 {{
                   item.name.substr(
                     item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
@@ -63,7 +63,7 @@
                   )
                 }}
               </span>
-              <span class="unfilter-words" :title="item.name">
+              <span class="unfilter-words" :title="item.description">
                 {{
                   item.name.substr(
                     item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
@@ -72,7 +72,7 @@
                 }}
               </span>
             </span>
-            <span v-else :title="item.name">{{ item.name }}</span>
+            <span v-else :title="item.description">{{ item.name }}</span>
           </span>
           <a-dropdown
             v-else
@@ -92,7 +92,7 @@
                     -1
               "
             >
-              <span class="unfilter-words" :title="item.name">
+              <span class="unfilter-words" :title="item.description">
                 {{
                   item.name.substr(
                     0,
@@ -100,7 +100,7 @@
                   )
                 }}
               </span>
-              <span class="filter-words" :title="item.name">
+              <span class="filter-words" :title="item.description">
                 {{
                   item.name.substr(
                     item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
@@ -108,7 +108,7 @@
                   )
                 }}
               </span>
-              <span class="unfilter-words" :title="item.name">
+              <span class="unfilter-words" :title="item.description">
                 {{
                   item.name.substr(
                     item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
@@ -117,7 +117,7 @@
                 }}
               </span>
             </span>
-            <span v-else @click="onClick(item)" :title="item.name">{{
+            <span v-else @click="onClick(item)" :title="item.description">{{
               item.name
             }}</span>
             <a-menu slot="overlay">
