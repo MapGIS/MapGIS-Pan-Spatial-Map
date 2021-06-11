@@ -80,6 +80,7 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   // 点击开始分析按钮回调
   private onClickStart() {
     this.isAnalyze = true
+    // 开启地形深度测试
     this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
     this.tilesetArray = this.webGlobe._m3dServerLayer
     // 初始化分析工具

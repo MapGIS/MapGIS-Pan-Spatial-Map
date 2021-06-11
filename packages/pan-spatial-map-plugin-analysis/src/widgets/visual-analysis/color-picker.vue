@@ -31,7 +31,7 @@ export default class ColorPicker extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .color-input {
   ::v-deep .ant-input-wrapper,
   ::v-deep .ant-input {
