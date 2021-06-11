@@ -3,16 +3,16 @@
     <div class="visual-panel">
       <a-form-model v-model="formData">
         <a-form-model-item label="方位角">
-          <a-input v-model="formData.azimuthAngle" />
+          <a-input v-model.number="formData.azimuthAngle" type="number" />
         </a-form-model-item>
         <a-form-model-item label="水平夹角">
-          <a-input v-model="formData.horizontAngle" />
+          <a-input v-model.number="formData.horizontAngle" type="number" />
         </a-form-model-item>
         <a-form-model-item label="俯仰角">
-          <a-input v-model="formData.pitchAngle" />
+          <a-input v-model.number="formData.pitchAngle" type="number" />
         </a-form-model-item>
         <a-form-model-item label="垂直夹角">
-          <a-input v-model="formData.verticalAngle" />
+          <a-input v-model.number="formData.verticalAngle" type="number" />
         </a-form-model-item>
         <a-form-model-item label="不可视区域颜色">
           <ColorPicker :color.sync="formData.unVisibleColor"></ColorPicker>
@@ -66,6 +66,10 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.initData()
   }
 
+  onClose() {
+    this.onClickStop()
+  }
+
   // 初始化各项数据
   private initData() {
     window.VisualAnalysisManage = {
@@ -77,10 +81,19 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   private onClickStart() {
     this.isAnalyze = true
     this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+    this.tilesetArray = this.webGlobe._m3dServerLayer
     // 初始化分析工具
     window.VisualAnalysisManage.visualAnalysis = new this.Cesium.ViewshedAnalysis()
 
     this.addEventListener()
+
+    // 锁定图层帧数,只显示一个可视域结果
+    for (let i = 0; i < this.tilesetArray.length; i++) {
+      this.tilesetArray[i][0].debugFreezeFrame = true
+    }
+
+    // 移除可视域分析结果
+    this.webGlobe.viewer.scene.VisualAnalysisManager._visualAnalysisList = []
 
     // 设置可视域分析工具的配置
     const unVisibleColor = new this.Cesium.Color.fromCssColorString(
@@ -116,6 +129,10 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.webGlobe.unRegisterMouseEvent('LEFT_CLICK')
     this.webGlobe.unRegisterMouseEvent('RIGHT_CLICK')
 
+    for (let i = 0; i < (this.tilesetArray || []).length; i++) {
+      this.tilesetArray[i][0].debugFreezeFrame = false
+    }
+
     // 移除可视域分析工具
     window.VisualAnalysisManage.visualAnalysis = null
 
@@ -123,7 +140,6 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.webGlobe.viewer.scene.VisualAnalysisManager._visualAnalysisList = []
 
     this.isAddEventListener = false
-    this.isAnalyze = true
     this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
   }
 
@@ -186,7 +202,6 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
   // 注册可视域分析鼠标右键点击事件
   private registerMouseRClickEvent(event) {
-    console.log('R——click')
     const cartesian = this.webGlobe.viewer.getCartesian3Position(event.position)
 
     if (this.hasViewPosition) {
