@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Mixins, Watch } from 'vue-property-decorator'
+import { Component, Vue, Mixins, Watch, Inject } from 'vue-property-decorator'
 import {
   dataCatalogInstance,
   queryFeaturesInstance,
@@ -59,7 +59,8 @@ import {
   baseConfigInstance,
   ExhibitionControllerMixin,
   IAttributeTableListExhibition,
-  AttributeTableListExhibition
+  AttributeTableListExhibition,
+  cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
 import {
   WidgetMixin,
@@ -91,6 +92,8 @@ export default class MpFeatureQuery extends Mixins(
   AppMixin,
   ExhibitionControllerMixin
 ) {
+  @Inject('CesiumZondy') CesiumZondy
+
   controls = {
     point: false,
     line_string: false,
@@ -249,29 +252,69 @@ export default class MpFeatureQuery extends Mixins(
     const layerArr = this.document.defaultMap.layers()
     layerArr.forEach(item => {
       const mapData = item
-      if (!this.isCross(bound, item.fullExtent)) {
+      if (!this.isCross(bound, item)) {
         return
       }
       if (mapData.type === LayerType.IGSVector) {
         this.quertFeatruesByVector(mapData, bound)
       } else if (mapData.type === LayerType.IGSMapImage) {
         this.queryFeaturesByDoc(mapData, bound)
+      } else if (mapData.type === LayerType.IGSScene) {
+        this.queryFeaturesByIGSScene(mapData, bound)
+      } else if (mapData.type === LayerType.arcGISMapImage) {
+        this.queryFeaturesByArcgis(mapData, bound)
       }
     })
   }
 
-  private isCross(bound, fullExtent): boolean {
+  private isCross(bound, item): boolean {
+    const { fullExtent, type } = item
     let feature
     const { ymax, ymin, xmax, xmin } = fullExtent
-    const extentPolygon = polygon([
-      [
-        [Number(xmin), Number(ymin)],
-        [Number(xmax), Number(ymin)],
-        [Number(xmax), Number(ymax)],
-        [Number(xmin), Number(ymax)],
-        [Number(xmin), Number(ymin)]
-      ]
-    ])
+    let extentPolygon
+    if (!this.is2DMapMode && type === LayerType.IGSScene) {
+      const {
+        activeScene: { sublayers }
+      } = item
+      let vueKey = ''
+      ;(sublayers || []).forEach(item => {
+        if (item.isVisible) {
+          vueKey = item.id
+        }
+      })
+      if (vueKey !== '') {
+        const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+          'default',
+          vueKey
+        )
+        if (source.length > 0) {
+          const tranform = source[0].root.transform
+          const boundObj = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+            fullExtent,
+            tranform
+          )
+          extentPolygon = polygon([
+            [
+              [Number(boundObj.xmin), Number(boundObj.ymin)],
+              [Number(boundObj.xmax), Number(boundObj.ymin)],
+              [Number(boundObj.xmax), Number(boundObj.ymax)],
+              [Number(boundObj.xmin), Number(boundObj.ymax)],
+              [Number(boundObj.xmin), Number(boundObj.ymin)]
+            ]
+          ])
+        }
+      }
+    } else {
+      extentPolygon = polygon([
+        [
+          [Number(xmin), Number(ymin)],
+          [Number(xmax), Number(ymin)],
+          [Number(xmax), Number(ymax)],
+          [Number(xmin), Number(ymax)],
+          [Number(xmin), Number(ymin)]
+        ]
+      ])
+    }
     switch (bound.getGeometryType()) {
       case 'point':
         feature = point([bound.x, bound.y])
@@ -305,7 +348,41 @@ export default class MpFeatureQuery extends Mixins(
     return !booleanDisjoint(extentPolygon, feature)
   }
 
-  queryFeaturesByDoc(mapData: IGSMapImageLayer, geo) {
+  queryFeaturesByIGSScene(mapData, geo) {
+    if (!mapData.isVisible) {
+      return
+    }
+    const { ip, port, docName } = mapData._parseUrl(mapData.url)
+
+    const exhibition: IAttributeTableListExhibition = {
+      id: `${mapData.id}`,
+      name: `${mapData.title} 查询结果`,
+      description: '',
+      options: []
+    }
+    const {
+      activeScene: { sublayers }
+    } = mapData
+    sublayers.forEach(layer => {
+      if (!layer.isVisible) {
+        return
+      }
+      exhibition.options.push({
+        id: layer.id,
+        name: layer.title || layer.name,
+        ip: ip || baseConfigInstance.config.ip,
+        port: Number(port || baseConfigInstance.config.port),
+        serverType: mapData.type,
+        gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型',
+        geometry: geo
+      })
+    })
+
+    this.addExhibition(new AttributeTableListExhibition(exhibition))
+    this.openExhibitionPanel()
+  }
+
+  queryFeaturesByDoc(mapData, geo) {
     if (!mapData.isVisible) {
       return
     }
@@ -331,6 +408,37 @@ export default class MpFeatureQuery extends Mixins(
         serverType: mapData.type,
         layerIndex: layer.id,
         serverName: docName,
+        serverUrl: mapData.url,
+        geometry: geo
+      })
+    })
+
+    this.addExhibition(new AttributeTableListExhibition(exhibition))
+    this.openExhibitionPanel()
+  }
+
+  queryFeaturesByArcgis(mapData, geo) {
+    if (!mapData.isVisible) {
+      return
+    }
+
+    const exhibition: IAttributeTableListExhibition = {
+      id: `${mapData.id}`,
+      name: `${mapData.title} 查询结果`,
+      description: '',
+      options: []
+    }
+
+    const subLayers = mapData.allSublayers
+    subLayers.forEach(layer => {
+      if (!layer.visible) {
+        return
+      }
+      exhibition.options.push({
+        id: layer.id,
+        name: layer.title,
+        serverType: mapData.type,
+        layerIndex: layer.id,
         serverUrl: mapData.url,
         geometry: geo
       })

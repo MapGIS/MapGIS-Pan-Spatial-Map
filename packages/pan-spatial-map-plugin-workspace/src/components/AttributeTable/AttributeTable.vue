@@ -828,7 +828,7 @@ export default class MpAttributeTable extends Mixins(
         tempMarkers.push(marker)
       }
     }
-    if (this.isIGSScence) {
+    if (this.isIGSScence && tempMarkers.length > 0) {
       const arr = await this.getModelHeight(tempMarkers)
       if (arr.length === tempMarkers.length) {
         arr.forEach((item, index) => {
