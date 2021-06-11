@@ -368,6 +368,12 @@ export default class TreeLayer extends Mixins(
         item.key = index.toString()
         item.scopedSlots = { title: 'custom' }
         item.visiblePopover = false
+        if (this.isIGSScene(item)) {
+          item.sublayers = item.activeScene.sublayers.map(row => ({
+            ...row,
+            title: row.name
+          }))
+        }
         if (this.isWMTSLayer(item)) {
           if (item.isVisible || item.visible) {
             arr.push(item.key)
@@ -561,9 +567,18 @@ export default class TreeLayer extends Mixins(
             return
           }
           if (index === childrenArr.length - 1) {
-            layerItem.sublayers[i].visible = !layerItem.sublayers[i].visible
+            if (this.isIGSScene(layerItem)) {
+              layerItem.activeScene.sublayers[i].isVisible = !layerItem
+                .activeScene.sublayers[i].isVisible
+            } else {
+              layerItem.sublayers[i].visible = !layerItem.sublayers[i].visible
+            }
           } else {
-            layerItem = layerItem.sublayers[i]
+            if (this.isIGSScene(layerItem)) {
+              layerItem = layerItem.activeScene.sublayers[i]
+            } else {
+              layerItem = layerItem.sublayers[i]
+            }
           }
         })
       } else {
@@ -576,9 +591,10 @@ export default class TreeLayer extends Mixins(
   private isAttributes(item) {
     const bool =
       (this.isSubLayer(item) && this.isIgsDocLayer(item)) ||
+      (this.isSubLayer(item) && this.isIGSScene(item)) ||
       (this.isSubLayer(item) && this.isIgsArcgisLayer(item)) ||
-      this.isIgsVectorLayer(item) ||
-      this.isIGSScene(item)
+      this.isIgsVectorLayer(item)
+
     return bool
   }
 
@@ -589,7 +605,7 @@ export default class TreeLayer extends Mixins(
       this.isIgsVectorLayer(item) ||
       this.isIgsTileLayer(item) ||
       this.isWMTSLayer(item) ||
-      this.isWMTSLayer(item)
+      this.isWMSLayer(item)
     return bool
   }
 
@@ -812,7 +828,7 @@ export default class TreeLayer extends Mixins(
    */
   attributes(layer) {
     this.clickPopover(layer, false)
-    const parent: IGSMapImageLayer = layer.layer
+    const parent = layer.layer
     let exhibition: IAttributeTableExhibition = null
     if (parent && this.isIgsDocLayer(parent)) {
       const { ip, port, docName } = parent._parseUrl(parent.url)
@@ -859,18 +875,16 @@ export default class TreeLayer extends Mixins(
       }
     } else if (this.isIGSScene(layer)) {
       const sceneLayer = layer.dataRef
-      const { ip, port, docName } = sceneLayer._parseUrl(sceneLayer.url)
-      const {
-        activeScene: { sceneIndex, layers }
-      } = sceneLayer
+      const { ip, port, docName } = parent._parseUrl(parent.url)
+      const { id, name, title } = sceneLayer
       exhibition = {
-        id: `${sceneLayer.title} ${sceneLayer.id}`,
-        name: `${sceneLayer.title} 属性表`,
+        id: `${title || name} ${id}`,
+        name: `${title || name} 属性表`,
         option: {
-          id: `${sceneLayer.id}:${sceneIndex}`,
+          id: `${id}`,
           ip: ip || baseConfigInstance.config.ip,
           port: Number(port || baseConfigInstance.config.port),
-          serverType: sceneLayer.type,
+          serverType: parent.type,
           gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型'
         }
       }
@@ -895,7 +909,11 @@ export default class TreeLayer extends Mixins(
     this.showCustomQuery = false
   }
 
-  isSubLayer({ key, sublayers }) {
+  isSubLayer(item) {
+    const { key, sublayers, activeScene } = item
+    if (this.isIGSScene(item) && activeScene) {
+      return !activeScene.sublayers || activeScene.sublayers.length === 0
+    }
     return !sublayers || sublayers.length === 0
   }
 
@@ -907,8 +925,12 @@ export default class TreeLayer extends Mixins(
     return type === LayerType.IGSVector
   }
 
-  isIGSScene({ type }) {
-    return type === LayerType.IGSScene
+  isIGSScene({ type, layer }) {
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+    }
+    return layerType === LayerType.IGSScene
   }
 
   isIgsTileLayer({ type }) {
@@ -936,11 +958,15 @@ export default class TreeLayer extends Mixins(
   }
 
   isIgsArcgisLayer({ layer, type }) {
-    if (type) {
-      return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+      return layerType === LayerType.arcGISMapImage
     }
-
-    return layer.type === LayerType.arcGISMapImage
+    return (
+      layerType === LayerType.arcGISMapImage ||
+      layerType === LayerType.arcGISTile
+    )
   }
 }
 </script>
