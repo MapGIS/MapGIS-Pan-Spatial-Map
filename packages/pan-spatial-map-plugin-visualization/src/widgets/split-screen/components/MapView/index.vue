@@ -4,44 +4,44 @@
     <tools :title="mapViewLayer.title" @on-icon-click="onIconClick" />
     <!-- 二维地图 -->
     <mapbox-view
-      v-if="is2DMapMode"
+      v-if="is2dLayer"
       ref="maboxView"
-      :mapViewId="mapViewId"
-      :mapViewDocument="mapViewDocument"
       @on-load="onMapboxLoad"
       @on-created="onDrawCreated"
+      :map-view-document="mapViewDocument"
     />
     <!-- 三维地图 -->
     <cesium-view
       v-else
       ref="cesiumView"
-      :mapViewId="mapViewId"
-      :mapViewDocument="mapViewDocument"
       @on-load="onCesiumLoad"
       @on-create="onDrawCreated"
+      :map-view-id="mapViewId"
+      :map-view-document="mapViewDocument"
     />
     <!-- 标注 -->
     <mp-markers-highlight-popup
       v-if="isMapLoaded"
+      :vue-key="mapViewId"
       :features="queryFeatures"
-      :highlightIds="querySelection"
+      :highlight-ids="querySelection"
       :normalize="({ key }) => ({ uid: key })"
     />
-    <!-- 联合查询结果树 -->
+    <!-- 结果树 -->
     <mp-window
       title="查询结果"
       :width="200"
       :height="200"
       :visible.sync="windowVisible"
-      :verticalOffset="30"
-      :fullScreenAction="false"
+      :vertical-offset="30"
+      :full-screen-action="false"
     >
       <mp-query-result-tree
-        :layer="mapViewLayer"
-        :queryRect="queryRect"
+        v-if="windowVisible"
         @on-load-done="onQueryLoadDone"
         @on-select="onQuerySelect"
-        v-if="windowVisible"
+        :query-rect="queryRect"
+        :layer="mapViewLayer"
       />
     </mp-window>
   </div>
@@ -70,10 +70,10 @@ import Tools, { OperationType, OperationFn } from './components/Tools'
     const self = this
     return {
       get mapbox() {
-        return self.mapbox
+        return self.ssMapbox
       },
       get map() {
-        return self.map
+        return self.ssMap
       }
     }
   }
@@ -90,9 +90,9 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
 
   mapViewDocument: Document | null = null
 
-  map: any = {}
+  ssMap: any = this.map
 
-  mapbox: any = {}
+  ssMapbox: any = this.mapbox
 
   // 地图是否加载完成
   isMapLoaded = false
@@ -112,50 +112,42 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 初始化图层
    */
-  onInitDocument() {
+  onInit() {
+    this.onClear()
     if (!this.mapViewDocument) {
       this.mapViewDocument = new Document()
     }
-    const _defaultMap = this.mapViewDocument.defaultMap.clone()
-    _defaultMap.removeAll()
-    _defaultMap.add(this.mapViewLayer)
-    this.onClear()
+    const { defaultMap } = this.mapViewDocument
+    defaultMap.removeAll()
+    defaultMap.add(this.mapViewLayer)
   }
 
   /**
    * 二维地图初始化
+   * @param payload
    */
   onMapboxLoad({ map, mapbox }) {
-    this.map = map
-    this.mapbox = mapbox
-    this.map.on('mousemove', () => (this.activeMapViewId = this.mapViewId))
-    this.map.on('move', () => {
-      if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
-        const { _sw, _ne } = this.map.getBounds()
-        this.activeMapboxView = {
-          xmin: _sw.lng,
-          ymin: _sw.lat,
-          xmax: _ne.lng,
-          ymax: _ne.lat
-        }
-      }
-    })
+    this.ssMap = map
+    this.ssMapbox = mapbox
     this.isMapLoaded = true
-    this.onResort()
+    this.registerMapboxEvent()
+    this.resort()
   }
 
   /**
    * 三维地图初始化
    */
-  onCesiumLoad(e, webGlobe) {
+  onCesiumLoad() {
     this.isMapLoaded = true
-    this.onResort()
+    this.resort()
   }
 
   /**
    * 创建二三维绘制
+   * @param Rect 绘制范围
    */
-  onDrawCreated(rect: Rect) {
+  onDrawCreated({ xmin, ymin, xmax, ymax }: Rect) {
+    const rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'QUERY':
         this.onClear(true)
@@ -176,7 +168,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 启用绘制
    */
   enableDrawer() {
-    const ref = this.is2DMapMode ? 'maboxView' : 'cesiumView'
+    const ref = this.is2dLayer ? 'maboxView' : 'cesiumView'
     this.$refs[ref].enableDrawer()
   }
 
@@ -191,7 +183,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 放大点击
    */
   onZoomIn() {
-    this.onPan(false)
+    this.pan(false)
     this.enableDrawer()
   }
 
@@ -206,32 +198,26 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 复位点击
    */
   onResort() {
-    if (this.is2DMapMode) {
-      this.jumpToRect(this.initView)
-    } else {
-      this.jumpToRect3d(this.initView)
-    }
+    this.resort()
   }
 
   /**
    * 拖拽点击, 通过滚轮控制放大缩小
+   * @param enable
    */
-  onPan(enable = true) {
-    const dragPan = this.map.dragPan
-    if (enable) {
-      dragPan.enable()
-    } else {
-      dragPan.disable()
-    }
+  onPan() {
+    this.pan()
   }
 
   /**
    * 清除点击, 清除图层上的标注
+   * @param visible
    */
-  onClear(windowVisible = false) {
-    this.windowVisible = windowVisible
+  onClear(visible = false) {
+    this.windowVisible = visible
     this.queryFeatures = []
     this.querySelection = []
+    this.clear()
   }
 
   /**
@@ -290,7 +276,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   @Watch('mapViewLayer.id')
   watchMapViewLayer(nV: string, oV: string) {
     if (nV && nV !== oV) {
-      this.onInitDocument()
+      this.onInit()
     }
   }
 
@@ -300,12 +286,12 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   @Watch('activeMapboxView', { deep: true })
   watchActiveMapboxView(nV) {
     if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
-      this.jumpToRect(nV)
+      this.resort(nV)
     }
   }
 
   created() {
-    this.onInitDocument()
+    this.onInit()
   }
 }
 </script>

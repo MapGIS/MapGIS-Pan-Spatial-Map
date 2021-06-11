@@ -9,7 +9,8 @@
     :animation="false"
     :fullscreen-button="false"
     :vueKey="vueKey"
-    style="height: 100%; width: 100%"
+    :height="height"
+    style="width: 100%; height: 100%;"
   >
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
@@ -90,6 +91,8 @@
         <mapgis-3d-statebar class="statebar" />
       </div>
     </div>
+    <!-- 三维联动控件使用，如果后期支持不使用插槽，需同步更改分屏的cesiumView里的组件 -->
+    <slot />
   </mapgis-web-scene>
 </template>
 
@@ -114,6 +117,11 @@ export default {
     pluginPath: {
       type: String
     },
+    // 三维地图的高度设定
+    height: {
+      type: Number
+    },
+    // 初始化多个scene的时候vueKey必传
     vueKey: {
       type: String,
       default: 'default'

@@ -12,19 +12,19 @@
         :style="mapSpanStyle"
       >
         <map-view
-          :mapViewId="`split-screen-map-${s}`"
-          :mapViewLayer="layers.find(({ id }) => layerIds[s] === id)"
-          :queryVisible.sync="queryVisible"
-          :queryRect="queryRect"
           @on-query="onQuery"
+          :map-view-id="`split-screen-map-${s}`"
+          :map-view-layer="layers.find(({ id }) => layerIds[s] === id)"
+          :queryVisible.sync="queryVisible"
+          :query-rect="queryRect"
         />
       </a-col>
     </a-row>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
-import { AppMixin, Layer } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Layer } from '@mapgis/web-app-framework'
 import mStateInstance from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
@@ -33,9 +33,7 @@ import MapView from '../MapView'
     MapView
   }
 })
-export default class SplitScreenMap extends Mixins<Record<string, any>>(
-  AppMixin
-) {
+export default class SplitScreenMap extends Vue {
   @Prop({ default: 12 }) mapSpan!: number
 
   @Prop({ default: () => [] }) screenNums!: number[]
@@ -44,10 +42,22 @@ export default class SplitScreenMap extends Mixins<Record<string, any>>(
 
   @Prop({ default: () => [] }) layers!: Layer[]
 
+  /**
+   * 监听: 分屏数量变化
+   */
+  @Watch('screenNums')
+  watchScreenNums(nV) {
+    if (nV.length) {
+      // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
+      mStateInstance.initView = this.layers[nV[0]].fullExtent
+    }
+  }
+
   queryVisible = false
 
   queryRect: Rect = {}
 
+  // 每个屏的高度
   get mapSpanStyle() {
     const height = this.screenNums.length > 2 ? '50%' : '100%'
     return { height }
@@ -60,17 +70,6 @@ export default class SplitScreenMap extends Mixins<Record<string, any>>(
   onQuery(result: Rect) {
     this.queryVisible = true
     this.queryRect = result
-  }
-
-  /**
-   * 监听: 分屏数量变化
-   */
-  @Watch('screenNums')
-  watchScreenNums(nV) {
-    if (nV.length) {
-      // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
-      mStateInstance.initView = this.layers[nV[0]].fullExtent
-    }
   }
 }
 </script>

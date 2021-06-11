@@ -1,22 +1,23 @@
-import { Vue, Component, Prop, Mixins } from 'vue-property-decorator'
-import { AppMixin } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
+import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
+import { cesiumUtilInstance } from '@mapgis/pan-spatial-map-store'
 import mStateInstance, { MapViewState, Rect } from './map-view-state'
 
 export { Rect }
 @Component
 export default class MapViewMixin extends Mixins<Record<string, any>>(
+  MapMixin,
   AppMixin
 ) {
-  @Prop({ default: 1 }) mapIndex!: number
-
-  @Prop({ default: '' }) mapViewId!: string
-
-  private map: any = {}
-
-  private mapbox: any = {}
+  @Prop() mapViewId!: string
 
   // 公共状态
-  private activeMapViewState: MapViewState = mStateInstance
+  activeMapViewState: MapViewState = mStateInstance
+
+  // 是否是二维图层
+  get is2dLayer() {
+    return this.mapViewLayer.is3d || this.is2DMapMode
+  }
 
   // 获取当前激活的地图视图的ID
   get activeMapViewId(): string {
@@ -49,28 +50,99 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 三维转至指定范围
+   * 获取三维viewer
    */
-  jumpToRect3d({ xmin, xmax, ymin, ymax }) {
-    // const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-    //   xmin,
-    //   ymin,
-    //   xmax,
-    //   ymax
-    // )
-    // drawWebGlobe.viewer.camera.flyTo({
-    //   destination: Rectangle
-    // })
+  getWebGlobe() {
+    return cesiumUtilInstance.findWebGlobe(this.mapViewId)
   }
 
   /**
-   *  二维跳转至指定范围
+   * 二维地图注册事件
    */
-  jumpToRect({ xmin, xmax, ymin, ymax }: Rect) {
-    this.map.fitBounds([
+  registerMapboxEvent() {
+    this.ssMap.on('mousemove', () => (this.activeMapViewId = this.mapViewId))
+    this.ssMap.on('move', () => {
+      if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
+        const { _sw, _ne } = this.ssMap.getBounds()
+        this.activeMapboxView = {
+          xmin: _sw.lng,
+          ymin: _sw.lat,
+          xmax: _ne.lng,
+          ymax: _ne.lat
+        }
+      }
+    })
+  }
+
+  /**
+   * 三维跳转
+   * @param destination
+   */
+  flyTo3d(destination: any) {
+    const globe = this.getWebGlobe()
+    globe.viewer.camera.flyTo({ destination })
+  }
+
+  /**
+   * 二维拖拽开关
+   * @param enable
+   */
+  togglePan(enable = true) {
+    const { dragPan } = this.ssMap
+    if (enable) {
+      dragPan.enable()
+    } else {
+      dragPan.disable()
+    }
+  }
+
+  /**
+   * 三维拖拽开关
+   * @param enable
+   */
+  toggle3dPan(enable = true) {
+    const globe = this.getWebGlobe()
+    globe.viewer.scene.screenSpaceCameraController.enableZoom = enable
+  }
+
+  /**
+   * 三维放大至指定范围
+   */
+  zoomInToRect3d(rect: Rect) {
+    this.flyTo3d(cesiumUtilInstance.getRect(rect))
+  }
+
+  /**
+   *  二维缩小至指定范围
+   */
+  zoomOutToRect3d({ xmin, xmax, ymin, ymax }: Rect) {
+    const globe = this.getWebGlobe()
+    const destination = cesiumUtilInstance.getCartesian3(
+      (xmin + xmax) / 2,
+      (ymin + ymax) / 2,
+      globe.viewer.camera.positionCartographic.height * 2
+    )
+    this.flyTo3d(destination)
+  }
+
+  /**
+   *  二维放大至指定范围
+   */
+  zoomInToRect({ xmin, xmax, ymin, ymax }: Rect) {
+    this.ssMap.fitBounds([
       [xmax, ymin],
       [xmin, ymax]
     ])
+  }
+
+  /**
+   *  二维缩小至指定范围
+   */
+  zoomOutToRect({ xmin, xmax, ymin, ymax }: Rect) {
+    this.ssMap.flyTo({
+      zoom: this.ssMap.getZoom() - 1,
+      center: [(xmin + xmin) / 2, (ymin + ymax) / 2]
+    })
   }
 
   /**
@@ -82,7 +154,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 查询地图
+   * 查询
    * @param {Rect} rect 指定区域
    */
   query(rect: Rect) {
@@ -95,13 +167,13 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    */
   zoomIn(rect: Rect) {
     if (this.isValidRect(rect)) {
-      if (this.is2DMapMode) {
-        this.jumpToRect(rect)
+      if (this.is2dLayer) {
+        this.zoomInToRect(rect)
       } else {
-        this.jumpToRect3d(rect)
+        this.zoomInToRect3d(rect)
       }
     } else {
-      this.map.zoomIn()
+      this.ssMap.zoomIn()
     }
   }
 
@@ -111,14 +183,46 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    */
   zoomOut(rect: Rect) {
     if (this.isValidRect(rect)) {
-      if (this.is2DMapMode) {
-        this.map.flyTo({
-          zoom: this.map.getZoom() - 1,
-          center: [(rect.xmin + rect.xmin) / 2, (rect.ymin + rect.ymax) / 2]
-        })
+      if (this.is2dLayer) {
+        this.zoomOutToRect(rect)
       } else {
-        this.jumpToRect3d(rect)
+        this.zoomOutToRect3d(rect)
       }
+    } else {
+      this.ssMap.zoomOut()
     }
+  }
+
+  /**
+   * 复位
+   * @param view 视图范围
+   */
+  resort(view: Rect) {
+    const _view = view || this.initView
+    if (this.is2dLayer) {
+      this.zoomInToRect(_view)
+    } else {
+      this.zoomInToRect3d(_view)
+    }
+  }
+
+  /**
+   * 拖拽
+   * @param enable
+   */
+  pan(enable?: boolean) {
+    if (this.is2dLayer) {
+      this.togglePan(enable)
+    } else {
+      this.toggle3dPan(enable)
+    }
+  }
+
+  /**
+   * 清除地图上的实体
+   */
+  clear() {
+    const globe = this.getWebGlobe()
+    globe.viewer.entities.removeAll()
   }
 }

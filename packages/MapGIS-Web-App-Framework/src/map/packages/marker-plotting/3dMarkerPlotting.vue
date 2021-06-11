@@ -1,6 +1,7 @@
 <template>
   <div>
     <mp-3d-marker-set-pro
+      :vue-key="vueKey"
       :markers="markers"
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
@@ -35,6 +36,8 @@ export default class Mp3dMarkerPlotting extends Vue {
   @Inject('CesiumZondy') CesiumZondy: any
 
   @Inject('webGlobe') webGlobe: any
+
+  @Prop() readonly vueKey!: string
 
   @Prop({
     type: Boolean,
@@ -83,18 +86,9 @@ export default class Mp3dMarkerPlotting extends Vue {
   private entityNames: string[] = []
 
   @Watch('fitBound')
-  changeMapBound() {
-    if (this.fitBound) {
-      const { xmin, ymin, xmax, ymax } = this.fitBound
-      const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-        xmin,
-        ymin,
-        xmax,
-        ymax
-      )
-      this.webGlobe.viewer.camera.flyTo({
-        destination: Rectangle
-      })
+  changeMapBound(nV) {
+    if (nV) {
+      this.zoomTo(nV)
     }
   }
 
@@ -163,15 +157,7 @@ export default class Mp3dMarkerPlotting extends Vue {
   }
 
   private zoomTo(bound) {
-    const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-      bound.xmin,
-      bound.ymin,
-      bound.xmax,
-      bound.ymax
-    )
-    this.webGlobe.viewer.camera.flyTo({
-      destination: Rectangle
-    })
+    cesiumUtilInstance.flyTo(cesiumUtilInstance.getRect(bound))
   }
 
   private zoomOrPanTo(bound) {
@@ -190,23 +176,15 @@ export default class Mp3dMarkerPlotting extends Vue {
       bound.xmax - bound.xmin > mapBound.xmax - mapBound.xmin ||
       bound.ymax - bound.ymin > mapBound.ymax - mapBound.ymin
     ) {
-      const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-        bound.xmin,
-        bound.ymin,
-        bound.xmax,
-        bound.ymax
-      )
-      this.webGlobe.viewer.camera.flyTo({
-        destination: Rectangle
-      })
+      this.zoomTo(bound)
     } else {
-      this.webGlobe.viewer.camera.flyTo({
-        destination: this.Cesium.Cartesian3.fromDegrees(
+      cesiumUtilInstance.flyTo(
+        cesiumUtilInstance.getCartesian3(
           (bound.xmin + bound.xmax) / 2,
           (bound.ymin + bound.ymax) / 2,
-          this.webGlobe.viewer.camera.positionCartographic.height
+          cesiumUtilInstance.getPositionCartographicHeight()
         )
-      })
+      )
     }
   }
 
@@ -313,10 +291,10 @@ export default class Mp3dMarkerPlotting extends Vue {
 
   private getViewExtend() {
     const params = {}
-    const extend = this.webGlobe.viewer.camera.computeViewRectangle()
+    const extend = cesiumUtilInstance.getComputeViewRectangle()
     if (typeof extend === 'undefined') {
       // 2D下会可能拾取不到坐标，extend返回undefined,所以做以下转换
-      const canvas = this.webGlobe.viewer.scene.canvas
+      const canvas = cesiumUtilInstance.getCanvas()
       // canvas左上角坐标转2d坐标
       const upperLeft = new this.Cesium.Cartesian2(0, 0)
       // canvas右下角坐标转2d坐标
@@ -325,25 +303,22 @@ export default class Mp3dMarkerPlotting extends Vue {
         canvas.clientHeight
       )
 
-      const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+      const ellipsoid = cesiumUtilInstance.getEllipsoid()
       // 2D转3D世界坐标
-      const upperLeft3 = this.webGlobe.viewer.camera.pickEllipsoid(
-        upperLeft,
-        ellipsoid
-      )
+      const upperLeft3 = cesiumUtilInstance.pickEllipsoid(upperLeft, ellipsoid)
 
       // 2D转3D世界坐标
-      const lowerRight3 = this.webGlobe.viewer.camera.pickEllipsoid(
+      const lowerRight3 = cesiumUtilInstance.pickEllipsoid(
         lowerRight,
         ellipsoid
       )
 
       // 3D世界坐标转弧度
-      const upperLeftCartographic = this.webGlobe.viewer.scene.globe.ellipsoid.cartesianToCartographic(
+      const upperLeftCartographic = ellipsoid.cartesianToCartographic(
         upperLeft3
       )
       // 3D世界坐标转弧度
-      const lowerRightCartographic = this.webGlobe.viewer.scene.globe.ellipsoid.cartesianToCartographic(
+      const lowerRightCartographic = ellipsoid.cartesianToCartographic(
         lowerRight3
       )
 

@@ -1,6 +1,7 @@
 <template>
   <div class="mapgis-marker-3d">
     <mapgis-3d-popup
+      :vue-key="vueKey"
       :position="{
         longitude: popupPosition.longitude,
         latitude: popupPosition.latitude,
@@ -68,6 +69,8 @@ export default class Mp3dMarkerPro extends Vue {
   @Inject('CesiumZondy') CesiumZondy: any
 
   @Inject('webGlobe') webGlobe: any
+
+  @Prop() readonly vueKey!: string
 
   @Prop({ type: Object, required: true }) marker!: Record<string, any>
 

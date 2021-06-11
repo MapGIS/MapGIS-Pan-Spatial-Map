@@ -2,6 +2,7 @@
   <div>
     <mp-3d-marker-pro
       v-for="marker in markers"
+      :vue-key="vueKey"
       :key="marker.markerId"
       :marker="marker"
       :current-marker-id="currentMarkerId"
@@ -27,6 +28,8 @@ import Mp3dMarkerPro from './3dMarkerPro.vue'
   components: { Mp3dMarkerPro }
 })
 export default class Mp3dMarkerSetPro extends Vue {
+  @Prop() vueKey!: string
+
   @Prop({
     type: Array,
     required: true

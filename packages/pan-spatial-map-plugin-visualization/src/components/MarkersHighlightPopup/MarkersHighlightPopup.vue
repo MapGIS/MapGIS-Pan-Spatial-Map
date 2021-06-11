@@ -1,11 +1,6 @@
 <template>
-  <mp-marker-plotting
-    :markers="markers"
-    :fit-bound="fitBound"
-    :filter-with-map="filterWithMap"
-    :selection-bound="selectionBound"
-    :highlight-style="highlightStyle"
-  />
+  <mp-marker-plotting v-if="is2dMode" v-bind="bindProps" />
+  <mp-3d-marker-plotting v-else v-bind="bindProps" :vue-key="vueKey" />
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
@@ -34,13 +29,17 @@ interface IMarker {
   id: string
 }
 
-@Component({
-  components: {}
-})
+@Component
 export default class MpMarkersHighlightPopup extends Mixins<
   Record<string, any>
 >(AppMixin) {
-  // 所有的标注点
+  // 三维地图vueKey
+  @Prop() vueKey!: string
+
+  // 是否二维地图
+  @Prop() is2d!: boolean
+
+  // 所有的标注点信息
   @Prop({ required: true, default: () => [] }) features!: IFeature[]
 
   // 需要高亮的标注点
@@ -61,21 +60,42 @@ export default class MpMarkersHighlightPopup extends Mixins<
   // 当前数据范围
   fitBound: Record<string, any> = {}
 
+  // 是否二维地图模式
+  get is2dMode() {
+    return typeof this.is2d !== 'undefined' ? this.is2d : this.is2DMapMode
+  }
+
+  // 颜色配置
   get colorConfig() {
     return baseConfigInstance.config.colorConfig
   }
 
+  // 标注图标
   get colorConfigImg() {
     return this.colorConfig.label.image
-  }
-
-  get highlightStyle() {
-    return this.colorConfig.feature
   }
 
   // 格式化后的标注数据
   get normalizedFeatures() {
     return this.getNormalizedFeatures(this.features)
+  }
+
+  // 二三维marker组件绑定的属性
+  get bindProps() {
+    const {
+      markers,
+      fitBound,
+      filterWithMap,
+      selectionBound,
+      colorConfig
+    } = this
+    return {
+      markers,
+      fitBound,
+      filterWithMap,
+      selectionBound,
+      highlightStyle: colorConfig
+    }
   }
 
   /**

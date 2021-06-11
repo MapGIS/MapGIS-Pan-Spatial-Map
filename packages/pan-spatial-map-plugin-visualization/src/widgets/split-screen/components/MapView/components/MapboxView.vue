@@ -1,23 +1,24 @@
 <template>
   <div v-if="mapViewDocument">
+    <!-- 二维地图组件 -->
     <mp-mapbox-view
+      @map-load="onMapLoad"
       :document="mapViewDocument"
-      :mapStyle="mapStyle"
-      @map-load="onLoad"
+      :map-style="mapStyle"
     />
+    <!-- 二维地图绘制组件 -->
     <mapgis-draw
       v-if="isMapLoaded"
       ref="mapgisDraw"
-      :controls="controls"
-      @added="onAdded"
+      @added="onDrawAdded"
       @drawCreate="onDrawCreated"
+      :controls="controls"
     />
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MpMapboxView, Document } from '@mapgis/web-app-framework'
-import { Rect } from '../../../mixins/map-view'
 import defaultStyle from '../../../../../assets/style/default-style.json'
 
 @Component({
@@ -43,6 +44,9 @@ export default class MapboxView extends Vue {
     uncombine_features: false
   }
 
+  /**
+   * 开启绘制
+   */
   enableDrawer() {
     const drawEl = this.$refs.mapgisDraw
     if (drawEl) {
@@ -53,18 +57,30 @@ export default class MapboxView extends Vue {
     }
   }
 
-  onLoad(payload) {
+  /**
+   * 地图加载成功回调
+   * @param payload { map, mapbox }
+   */
+  onMapLoad(payload) {
     this.isMapLoaded = true
     this.$emit('on-load', payload)
   }
 
-  onAdded({ drawer }) {
+  /**
+   * 地图绘制添加
+   * @param e { drawer }
+   */
+  onDrawAdded({ drawer }) {
     if (this.isMapLoaded) {
       this.drawer = drawer
       this.$emit('on-add', drawer)
     }
   }
 
+  /**
+   * 地图绘制创建
+   * @param 要素信息
+   */
   onDrawCreated({ features }) {
     if (this.isMapLoaded) {
       const {
@@ -92,8 +108,7 @@ export default class MapboxView extends Vue {
           ymax = lat
         }
       })
-      const rect = new Rect(xmin, ymin, xmax, ymax)
-      this.$emit('on-created', rect)
+      this.$emit('on-created', { xmin, ymin, xmax, ymax })
     }
   }
 
@@ -102,4 +117,3 @@ export default class MapboxView extends Vue {
   }
 }
 </script>
-<style lang="less" scoped></style>
