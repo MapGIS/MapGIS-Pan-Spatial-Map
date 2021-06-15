@@ -376,7 +376,7 @@ export class IGSSceneSublayer {
    * @date 25/05/2021
    * @memberof IGSSceneSublayer
    */
-  name = ''
+  title = ''
 
   /**
    * 子图层gdbp地址,如果是模型缓存图层的话，为mcj文件的路径。
@@ -392,7 +392,7 @@ export class IGSSceneSublayer {
    * @date 25/05/2021
    * @memberof IGSSceneSublayer
    */
-  isVisible = true
+  visible = true
 
   /**
    * 子图层类型
@@ -475,12 +475,11 @@ export class IGSSceneSublayer {
     if (jsonObject.layerRenderIndex !== undefined)
       this.renderIndex = jsonObject.layerRenderIndex
 
-    if (jsonObject.layerName !== undefined) this.name = jsonObject.layerName
+    if (jsonObject.layerName !== undefined) this.title = jsonObject.layerName
 
     if (jsonObject.gdbpUrl !== undefined) this.url = jsonObject.gdbpUrl
 
-    if (jsonObject.isVisible !== undefined)
-      this.isVisible = jsonObject.isVisible
+    if (jsonObject.isVisible !== undefined) this.visible = jsonObject.isVisible
 
     if (jsonObject.layerType !== undefined)
       this.type = parseInt(jsonObject.layerType) // 字符转数字。
