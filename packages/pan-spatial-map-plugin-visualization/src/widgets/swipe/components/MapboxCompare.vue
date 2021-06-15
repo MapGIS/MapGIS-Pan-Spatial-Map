@@ -36,8 +36,8 @@
       <swipe-setting
         :is-open="isOpen"
         @on-direct-change="onDirectChange"
-        @on-above-layer-change="onAboveLayerChange"
-        @on-below-layer-change="onBelowLayerChange"
+        @on-above-change="onUpdate"
+        @on-below-change="onUpdate"
       />
     </a-drawer>
   </div>
@@ -45,9 +45,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Document, MpMapboxView, Layer } from '@mapgis/web-app-framework'
-import SwipeSetting from './SwipeSetting'
-
-export type Direction = 'vertical' | 'horizontal'
+import SwipeSetting, { LayerDirect, Direction } from './SwipeSetting'
 
 @Component({
   components: {
@@ -57,6 +55,7 @@ export type Direction = 'vertical' | 'horizontal'
 })
 export default class MapboxCompare extends Vue {
   @Prop() readonly isOpen!: boolean
+
   // 上级(左侧)图层
   aboveLayer: Layer | object = {}
 
@@ -111,15 +110,11 @@ export default class MapboxCompare extends Vue {
     }
   }
 
-  onCloseSettingPanel() {
-    this.settingPanelVisible = false
-  }
-
   onToggleSettingPanel() {
     this.settingPanelVisible = !this.settingPanelVisible
   }
 
-  onUpdate(layer: Layer, type: 'above' | 'below') {
+  onUpdate(layer: Layer, type: LayerDirect) {
     const defaultMap = this[`${type}Document`].defaultMap
     defaultMap.removeAll()
     if (layer) {
@@ -131,25 +126,22 @@ export default class MapboxCompare extends Vue {
   onDirectChange(direct) {
     this.direction = direct
   }
-
-  onAboveLayerChange(aLayer) {
-    this.onUpdate(aLayer, 'above')
-  }
-
-  onBelowLayerChange(bLayer) {
-    this.onUpdate(bLayer, 'below')
-  }
 }
 </script>
 <style lang="less" scoped>
+/deep/ .ant-drawer-right.ant-drawer-open {
+  .ant-drawer-content-wrapper {
+    box-shadow: none;
+    border-left: 1px solid @primary-color;
+  }
+}
+
 .swipe-mapbox-compare {
   width: 100%;
   height: 100%;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
+
 .drawer-handle {
   position: absolute;
   height: 64px;

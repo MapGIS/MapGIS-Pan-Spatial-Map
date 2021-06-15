@@ -7,8 +7,8 @@
     />
     <swipe-setting
       :is-open="isOpen"
-      @on-above-layer-change="onAboveLayerChange"
-      @on-below-layer-change="onBelowLayerChange"
+      @on-above-change="onAboveChange"
+      @on-below-change="onBelowChange"
     />
   </div>
 </template>
@@ -24,6 +24,7 @@ import SwipeSetting from './SwipeSetting'
 })
 export default class CesiumCompare extends Vue {
   @Prop() readonly isOpen!: boolean
+
   // 上级(左侧)图层列表
   beforeLayers: string[] = []
 
@@ -35,11 +36,11 @@ export default class CesiumCompare extends Vue {
     return this.beforeLayers.length && this.afterLayers.length
   }
 
-  onAboveLayerChange({ id }) {
+  onAboveChange({ id }) {
     this.beforeLayers = [id]
   }
 
-  onBelowLayerChange({ id }) {
+  onBelowChange({ id }) {
     this.afterLayers = [id]
   }
 }

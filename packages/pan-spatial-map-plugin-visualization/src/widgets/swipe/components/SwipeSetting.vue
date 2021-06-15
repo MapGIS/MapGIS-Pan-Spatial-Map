@@ -1,5 +1,5 @@
 <template>
-  <a-space class="swipe-setting-panel" direction="vertical" style="flex: 1;">
+  <a-space class="swipe-setting" direction="vertical" style="flex: 1;">
     <!-- 上图层 -->
     <row :title="directionLayerTitle.aboveTitle">
       <a-select :value="aboveLayer.id" @change="onAboveChange">
@@ -33,10 +33,12 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { Layer } from '@mapgis/web-app-framework'
+import { AppMixin, Layer } from '@mapgis/web-app-framework'
 import Row from './Row'
 
-type LayerType = 'above' | 'below'
+export type LayerDirect = 'above' | 'below'
+
+export type Direction = 'vertical' | 'horizontal'
 
 @Component({
   components: {
@@ -48,12 +50,7 @@ export default class SwipeSetting extends Mixins(AppMixin) {
 
   @Watch('isOpen')
   watchIsOpen(nV) {
-    if (nV) {
-      this.initMap()
-    } else {
-      this.aboveLayer = {}
-      this.belowLayer = {}
-    }
+    this.initMap(nV)
   }
 
   /**
@@ -61,9 +58,7 @@ export default class SwipeSetting extends Mixins(AppMixin) {
    */
   @Watch('document.defaultMap', { deep: true })
   watchDefaultMap() {
-    if (this.isOpen) {
-      this.initMap()
-    }
+    this.initMap(this.isOpen)
   }
 
   // 上级(左侧)图层
@@ -104,16 +99,18 @@ export default class SwipeSetting extends Mixins(AppMixin) {
   /**
    * 初始化图层列表
    */
-  initMap() {
+  initMap(isOpen = false) {
     let _fId = ''
     let _sId = ''
-    const _layers: Layer[] = this.document.defaultMap
-      .clone()
-      .getFlatLayers()
-      .filter(v => v.isVisible)
-    if (_layers && _layers.length > 1) {
-      _fId = _layers[0].id
-      _sId = _layers[1].id
+    if (isOpen) {
+      const _layers: Layer[] = this.document.defaultMap
+        .clone()
+        .getFlatLayers()
+        .filter(v => v.isVisible)
+      if (_layers && _layers.length > 1) {
+        _fId = _layers[0].id
+        _sId = _layers[1].id
+      }
     }
     this.layers = _layers
     this.onAboveChange(_fId)
@@ -126,16 +123,12 @@ export default class SwipeSetting extends Mixins(AppMixin) {
    * @param layerkey
    * @param layersKey
    */
-  getLayers(value: string, layerkey: LayerType, layersKey: LayerType) {
-    let layer: Layer | object = {}
-    let layers: Layer[] = []
-    if (value) {
-      layer = this.layers.find(({ id }: Layer) => id === value)
-      layers = this.layers.filter(({ id }: Layer) => id !== value)
-    }
-    this[`${layerkey}Layer`] = layer
+  getLayers(value: string, layerKey: LayerDirect, layersKey: LayerDirect) {
+    const layer = this.layers.find(({ id }: Layer) => id === value) || {}
+    const layers = this.layers.filter(({ id }: Layer) => id !== value)
+    this[`${layerKey}Layer`] = layer
     this[`${layersKey}Layers`] = layers
-    this.$emit(`on-${layerKey}-change`, layer)
+    this.$emit(`on-${layerKey}-change`, layer, layerKey)
   }
 
   /**
@@ -162,7 +155,7 @@ export default class SwipeSetting extends Mixins(AppMixin) {
 }
 </script>
 <style lang="less" scoped>
-.swipe-setting-panel {
+.swipe-setting {
   width: 100%;
   height: 100%;
 }
