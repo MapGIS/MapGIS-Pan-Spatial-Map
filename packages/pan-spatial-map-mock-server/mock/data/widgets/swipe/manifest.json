@@ -11,7 +11,7 @@
     "hasConfig": false,
     "hasSettingPage": true,
     "settingUiComponent": "",
-    "windowSize": "normal",
+    "windowSize": "max",
     "hasPadding": false
   }
 }

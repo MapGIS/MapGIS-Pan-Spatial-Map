@@ -18,35 +18,56 @@
         :mapStyle="mapStyle"
       />
     </mapgis-compare>
+    <a-drawer
+      title="设置"
+      placement="right"
+      :closable="false"
+      :get-container="false"
+      :width="240"
+      :visible="settingPanelVisible"
+      :wrap-style="drawerWrapStyle"
+      :header-style="drawerHeaderStyle"
+      :body-style="drawerBodyStyle"
+      :mask="false"
+    >
+      <div class="drawer-handle" slot="handle" @click="onToggleSettingPanel">
+        <a-icon :type="settingPanelVisible ? 'right' : 'left'" />
+      </div>
+      <swipe-setting
+        :is-open="isOpen"
+        @on-direct-change="onDirectChange"
+        @on-above-layer-change="onAboveLayerChange"
+        @on-below-layer-change="onBelowLayerChange"
+      />
+    </a-drawer>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Document, MpMapboxView, Layer } from '@mapgis/web-app-framework'
+import SwipeSetting from './SwipeSetting'
 
 export type Direction = 'vertical' | 'horizontal'
 
 @Component({
   components: {
-    MpMapboxView
+    MpMapboxView,
+    SwipeSetting
   }
 })
 export default class MapboxCompare extends Vue {
-  @Prop({ default: () => ({}) }) readonly aboveLayer!: Layer
+  @Prop() readonly isOpen!: boolean
+  // 上级(左侧)图层
+  aboveLayer: Layer | object = {}
 
-  @Prop({ default: () => ({}) }) readonly belowLayer!: Layer
+  // 下级(右侧)图层
+  belowLayer: Layer | object = {}
 
-  @Prop({ default: 'vertical' }) readonly direction!: Direction
+  // 卷帘方向
+  direction: Direction = 'vertical'
 
-  @Watch('aboveLayer', { deep: true })
-  watchAbove(nV: Layer) {
-    this.update(nV, 'above')
-  }
-
-  @Watch('belowLayer', { deep: true })
-  watchBelow(nV: Layer) {
-    this.update(nV, 'below')
-  }
+  // 弹框开关
+  settingPanelVisible = true
 
   // 上级(左侧)地图Document
   aboveDocument = new Document()
@@ -68,17 +89,55 @@ export default class MapboxCompare extends Vue {
     return this.aboveLayer.id && this.belowLayer.id
   }
 
-  update(nV: Layer, type: 'above' | 'below') {
-    const defaultMap = this[`${type}Document`].defaultMap
-    defaultMap.removeAll()
-    if (nV) {
-      defaultMap.add(nV)
+  // 弹框wrap样式
+  get drawerWrapStyle() {
+    return {
+      position: 'absolute'
     }
   }
 
-  created() {
-    this.update(this.aboveLayer, 'above')
-    this.update(this.belowLayer, 'below')
+  // 弹框头部样式
+  get drawerHeaderStyle() {
+    return {
+      display: 'none'
+    }
+  }
+
+  // 弹框内容样式
+  get drawerBodyStyle() {
+    return {
+      display: 'flex',
+      padding: '12px'
+    }
+  }
+
+  onCloseSettingPanel() {
+    this.settingPanelVisible = false
+  }
+
+  onToggleSettingPanel() {
+    this.settingPanelVisible = !this.settingPanelVisible
+  }
+
+  onUpdate(layer: Layer, type: 'above' | 'below') {
+    const defaultMap = this[`${type}Document`].defaultMap
+    defaultMap.removeAll()
+    if (layer) {
+      this[`${type}Layer`] = layer
+      defaultMap.add(layer)
+    }
+  }
+
+  onDirectChange(direct) {
+    this.direction = direct
+  }
+
+  onAboveLayerChange(aLayer) {
+    this.onUpdate(aLayer, 'above')
+  }
+
+  onBelowLayerChange(bLayer) {
+    this.onUpdate(bLayer, 'below')
   }
 }
 </script>
@@ -87,5 +146,28 @@ export default class MapboxCompare extends Vue {
   width: 100%;
   height: 100%;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.drawer-handle {
+  position: absolute;
+  height: 64px;
+  top: calc(50% - 32px);
+  left: -16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: @base-bg-color;
+  border-radius: 4px 0 0 4px;
+  border: 1px solid @primary-color;
+  border-right-color: transparent;
+  cursor: pointer;
+
+  &:hover {
+    color: white;
+    background: @primary-color;
+  }
 }
 </style>

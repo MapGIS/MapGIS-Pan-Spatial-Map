@@ -1,30 +1,46 @@
 <template>
-  <mapgis-3d-compare
-    v-if="showCompare"
-    :beforeLayers="beforeLayers"
-    :afterLayers="afterLayers"
-  />
+  <div class="swipe-cesium-compare">
+    <mapgis-3d-compare
+      v-if="showCompare"
+      :beforeLayers="beforeLayers"
+      :afterLayers="afterLayers"
+    />
+    <swipe-setting
+      :is-open="isOpen"
+      @on-above-layer-change="onAboveLayerChange"
+      @on-below-layer-change="onBelowLayerChange"
+    />
+  </div>
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Layer } from '@mapgis/web-app-framework'
+import SwipeSetting from './SwipeSetting'
 
-@Component
+@Component({
+  components: {
+    SwipeSetting
+  }
+})
 export default class CesiumCompare extends Vue {
-  @Prop({ default: () => ({}) }) readonly aboveLayer!: Layer
+  @Prop() readonly isOpen!: boolean
+  // 上级(左侧)图层列表
+  beforeLayers: string[] = []
 
-  @Prop({ default: () => ({}) }) readonly belowLayer!: Layer
+  // 下级(右侧)图层列表
+  afterLayers: string[] = []
 
   // 是否展示卷帘
   get showCompare() {
-    return this.aboveLayer.id && this.belowLayer.id
+    return this.beforeLayers.length && this.afterLayers.length
   }
 
-  get beforeLayers() {
-    return [this.aboveLayer.id]
+  onAboveLayerChange({ id }) {
+    this.beforeLayers = [id]
   }
 
-  get afterLayers() {
-    return [this.belowLayer.id]
+  onBelowLayerChange({ id }) {
+    this.afterLayers = [id]
   }
 }
 </script>

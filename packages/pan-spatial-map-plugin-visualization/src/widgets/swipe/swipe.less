@@ -16,39 +16,4 @@
       border-left: 1px solid @primary-color;
     }
   }
-  .swipe-container {
-    position: relative;
-    min-width: 1064px;
-    min-height: 794px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    &.is-3d {
-      min-width: 240px;
-    }
-    .swipe-setting-handle {
-      position: absolute;
-      height: 64px;
-      top: calc(50% - 32px);
-      left: -16px;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      background-color: @base-bg-color;
-      border-radius: 4px 0 0 4px;
-      border: 1px solid @primary-color;
-      border-right-color: transparent;
-      cursor: pointer;
-
-      &:hover {
-        color: white;
-        background: @primary-color;
-      }
-    }
-    .swipe-setting-panel {
-      width: 100%;
-      height: 100%;
-    }
-  }
 }
