@@ -2,13 +2,13 @@
   <div class="swipe-cesium-compare">
     <mapgis-3d-compare
       v-if="showCompare"
-      :beforeLayers="beforeLayers"
-      :afterLayers="afterLayers"
+      :before-layers="aboveLayers"
+      :after-layers="belowLayers"
     />
     <swipe-setting
+      @on-above-change="onChange"
+      @on-below-change="onChange"
       :is-open="isOpen"
-      @on-above-change="onAboveChange"
-      @on-below-change="onBelowChange"
     />
   </div>
 </template>
@@ -26,22 +26,24 @@ export default class CesiumCompare extends Vue {
   @Prop() readonly isOpen!: boolean
 
   // 上级(左侧)图层列表
-  beforeLayers: string[] = []
+  aboveLayers: string[] = []
 
   // 下级(右侧)图层列表
-  afterLayers: string[] = []
+  belowLayers: string[] = []
 
   // 是否展示卷帘
   get showCompare() {
-    return this.beforeLayers.length && this.afterLayers.length
+    return this.aboveLayers.length && this.belowLayers.length
   }
 
-  onAboveChange({ id }) {
-    this.beforeLayers = [id]
-  }
-
-  onBelowChange({ id }) {
-    this.afterLayers = [id]
+  onChange({ id }, type) {
+    this[`${type}Layers`] = id ? [id] : []
   }
 }
 </script>
+<style lang="less" scoped>
+.swipe-cesium-compare {
+  padding: 0 12px;
+  min-height: 600px;
+}
+</style>

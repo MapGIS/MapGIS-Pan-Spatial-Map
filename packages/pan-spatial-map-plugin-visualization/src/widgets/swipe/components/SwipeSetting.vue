@@ -102,8 +102,9 @@ export default class SwipeSetting extends Mixins(AppMixin) {
   initMap(isOpen = false) {
     let _fId = ''
     let _sId = ''
+    let _layers = []
     if (isOpen) {
-      const _layers: Layer[] = this.document.defaultMap
+      _layers = this.document.defaultMap
         .clone()
         .getFlatLayers()
         .filter(v => v.isVisible)

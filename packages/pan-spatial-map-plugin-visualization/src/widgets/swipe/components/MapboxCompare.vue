@@ -34,10 +34,10 @@
         <a-icon :type="settingPanelVisible ? 'right' : 'left'" />
       </div>
       <swipe-setting
-        :is-open="isOpen"
         @on-direct-change="onDirectChange"
         @on-above-change="onUpdate"
         @on-below-change="onUpdate"
+        :is-open="isOpen"
       />
     </a-drawer>
   </div>
