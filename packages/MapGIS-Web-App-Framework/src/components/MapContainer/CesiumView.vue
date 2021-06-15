@@ -81,6 +81,7 @@
         :show="layerProps.show"
         :url="layerProps.url"
       />
+      <mapgis-3d-statebar />
     </div>
   </mapgis-web-scene>
 </template>
