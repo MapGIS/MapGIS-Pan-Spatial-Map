@@ -36,7 +36,6 @@
           />
           <span
             v-if="item.children && item.children.length > 0"
-            @click="onClick(item)"
             class="tree-node"
             :id="`tree_${item.guid}`"
           >
@@ -173,6 +172,21 @@
         </template>
       </mp-window>
     </mp-window-wrapper>
+
+    <mp-window-wrapper :visible="showNoSpatial">
+      <mp-window
+        title="非空间数据"
+        :is-full-screen="true"
+        :shrinkAction="false"
+        :fullScreenAction="false"
+        :icon="widgetInfo.icon"
+        :visible.sync="showNoSpatial"
+      >
+        <template>
+          <NonSpatial></NonSpatial>
+        </template>
+      </mp-window>
+    </mp-window-wrapper>
   </div>
 </template>
 
@@ -194,11 +208,13 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
+import NonSpatial from './non-spatial.vue'
 
 @Component({
   name: 'MpDataCatalog',
   components: {
-    MpMetadataInfo
+    MpMetadataInfo,
+    NonSpatial
   }
 })
 export default class MpDataCatalog extends Mixins(WidgetMixin) {
@@ -248,6 +264,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 上传图例的节点
   private legendNode = {}
+
+  // 非空间数据窗口的显隐
+  private showNoSpatial = false
 
   // 设置选中的树节点
   get selectedKeys() {
@@ -517,7 +536,12 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     )
   }
 
-  onClick(item) {}
+  onClick(item) {
+    console.log(item)
+    if (item.description.includes('非空间数据')) {
+      this.showNoSpatial = true
+    }
+  }
 
   // 对目录树数据进行处理
   handleTreeData(data: object[]) {
