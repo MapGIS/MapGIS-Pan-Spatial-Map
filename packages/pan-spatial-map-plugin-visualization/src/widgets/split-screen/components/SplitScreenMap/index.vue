@@ -10,9 +10,11 @@
         :key="s"
         :span="mapSpan"
         :style="mapSpanStyle"
+        class="split-screen-map-col"
       >
         <map-view
           @on-query="onQuery"
+          :map-view-height="mapViewHeight"
           :map-view-id="`split-screen-map-${s}`"
           :map-view-layer="layers.find(({ id }) => layerIds[s] === id)"
           :queryVisible.sync="queryVisible"
@@ -50,8 +52,11 @@ export default class SplitScreenMap extends Vue {
     if (nV.length) {
       // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
       mStateInstance.initView = this.layers[nV[0]].fullExtent
+      this.setMapViewHeight()
     }
   }
+
+  mapViewHeight = 0
 
   queryVisible = false
 
@@ -64,12 +69,29 @@ export default class SplitScreenMap extends Vue {
   }
 
   /**
+   * 地图高度
+   */
+  setMapViewHeight() {
+    this.$nextTick(() => {
+      const _el = document.getElementsByClassName('split-screen-map-col')[0]
+      if (_el) {
+        this.mapViewHeight = _el.clientHeight - 32
+      }
+    })
+  }
+
+  /**
    * 某个地图的查询抛出的事件
-   * @param result<object>
+   * @param result 查询结果
    */
   onQuery(result: Rect) {
     this.queryVisible = true
     this.queryRect = result
+  }
+
+  mounted() {
+    this.setMapViewHeight()
+    window.onresize = this.setMapViewHeight
   }
 }
 </script>

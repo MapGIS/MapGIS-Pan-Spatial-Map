@@ -29,16 +29,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     this.activeMapViewState.mapViewId = id
   }
 
-  // 获取当前激活的地图视图的范围
-  get activeMapboxView(): Rect {
-    return this.activeMapViewState.mapboxView
-  }
-
-  // 设置当前激活的地图视图的范围
-  set activeMapboxView(rect: Rect) {
-    this.activeMapViewState.mapboxView = rect
-  }
-
   // 获取地图视图的复位范围
   get initView() {
     return this.activeMapViewState.initView
@@ -47,6 +37,26 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   // 设置地图视图的复位范围
   set initView(view) {
     this.activeMapViewState.initView = view
+  }
+
+  // 获取当前激活的地图视图的范围
+  get activeView(): Rect {
+    return this.activeMapViewState.activeView
+  }
+
+  // 设置当前激活的地图视图的范围
+  set activeView(rect: Rect) {
+    this.activeMapViewState.activeView = rect
+  }
+
+  /**
+   * 监听: 更新地图视图范围
+   */
+  @Watch('activeView', { deep: true })
+  watchActiveView(nV: Rect) {
+    if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
+      this.resort(nV)
+    }
   }
 
   /**
@@ -60,11 +70,13 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * 二维地图注册事件
    */
   registerMapboxEvent() {
-    this.ssMap.on('mousemove', () => (this.activeMapViewId = this.mapViewId))
+    this.ssMap.on('mousemove', () => {
+      this.activeMapViewId = this.mapViewId
+    })
     this.ssMap.on('move', () => {
       if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
         const { _sw, _ne } = this.ssMap.getBounds()
-        this.activeMapboxView = {
+        this.activeView = {
           xmin: _sw.lng,
           ymin: _sw.lat,
           xmax: _ne.lng,

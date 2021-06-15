@@ -33,7 +33,7 @@ export class MapViewState {
   private _initView = initRectangle
 
   // 二维地图当前的显示视图范围
-  private _mapboxView: Rect = initRectangle
+  private _activeView: Rect = initRectangle
 
   get mapViewId(): string {
     return this._mapViewId
@@ -43,12 +43,12 @@ export class MapViewState {
     this._mapViewId = id
   }
 
-  get mapboxView(): Rect {
-    return this._mapboxView
+  get activeView(): Rect {
+    return this._activeView
   }
 
-  set mapboxView(rect: Rect) {
-    this._mapboxView = rect
+  set activeView(rect: Rect) {
+    this._activeView = rect
   }
 
   get initView() {

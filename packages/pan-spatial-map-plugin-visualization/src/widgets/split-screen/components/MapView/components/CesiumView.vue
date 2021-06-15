@@ -5,10 +5,10 @@
       @map-load="onMapLoad"
       :document="mapViewDocument"
       :vue-key="vueKey"
-      :height="700"
+      :height="mapViewHeight"
     >
       <!-- 多屏联动组件 -->
-      <mapgis-3d-link :vue-key="vueKey" :enable="isMapLoaded" />
+      <mapgis-3d-link :vue-key="vueKey" :enable="enableLink()" />
     </mp-cesium-view>
     <!-- 绘制组件 -->
     <mapgis-3d-draw
@@ -22,6 +22,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MpCesiumView, Document, UUID } from '@mapgis/web-app-framework'
+import mStateInstance from '../../mixins/map-view-state'
 
 @Component({
   components: {
@@ -33,12 +34,26 @@ export default class CesiumView extends Vue {
 
   @Prop({ default: UUID.uuid() }) mapViewId!: string
 
+  @Prop({ default: 819 }) mapViewHeight!: number
+
   drawer = null
 
   isMapLoaded = false
 
+  enable = false
+
   get vueKey() {
     return this.mapViewId
+  }
+
+  /**
+   * 开启联动
+   */
+  enableLink() {
+    const timer = setTimeout(() => {
+      this.enable = true
+      clearTimeout(timer)
+    }, 2000)
   }
 
   /**

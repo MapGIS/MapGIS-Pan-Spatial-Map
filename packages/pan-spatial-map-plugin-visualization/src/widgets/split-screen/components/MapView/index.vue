@@ -17,6 +17,7 @@
       @on-load="onCesiumLoad"
       @on-create="onDrawCreated"
       :map-view-id="mapViewId"
+      :map-view-height="mapViewHeight"
       :map-view-document="mapViewDocument"
     />
     <!-- 标注 -->
@@ -82,6 +83,9 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 图层
   @Prop({ default: () => ({}) }) mapViewLayer!: Layer
 
+  // 地图高度
+  @Prop() mapViewHeight!: number
+
   // 双向绑定弹框开关
   @Prop({ default: false }) queryVisible!: boolean
 
@@ -113,7 +117,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 初始化图层
    */
   onInit() {
-    this.onClear()
     if (!this.mapViewDocument) {
       this.mapViewDocument = new Document()
     }
@@ -280,18 +283,12 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     }
   }
 
-  /**
-   * 监听: 更新地图视图范围
-   */
-  @Watch('activeMapboxView', { deep: true })
-  watchActiveMapboxView(nV) {
-    if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
-      this.resort(nV)
-    }
-  }
-
   created() {
     this.onInit()
+  }
+
+  beforeDestroyed() {
+    this.onClear()
   }
 }
 </script>

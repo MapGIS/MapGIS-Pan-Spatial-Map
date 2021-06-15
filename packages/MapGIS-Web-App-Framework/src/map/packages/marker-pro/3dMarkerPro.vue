@@ -163,6 +163,18 @@ export default class Mp3dMarkerPro extends Vue {
   @Emit('marker-id')
   emitId(id: string) {}
 
+  @Watch('vueKey')
+  changeVueKey() {
+    this.setCesiumGlobe()
+  }
+
+  setCesiumGlobe() {
+    cesiumUtilInstance.setCesiumGlobe(
+      this.Cesium,
+      cesiumUtilInstance.findWebGlobe(this.vueKey)
+    )
+  }
+
   mounted() {
     this.sceneOverlays = SceneOverlays.getInstance(
       this.Cesium,
