@@ -57,40 +57,23 @@ export default class MapboxDraw extends Vue {
 
     let bound: any
     if (this.queryType === QueryType.Point) {
-      // bound = new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
-      //   nearDis
-      // })
-      bound = {
-        x: coordinates[0],
-        y: coordinates[1],
+      bound = new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
         nearDis
-      }
+      })
     } else if (this.queryType === QueryType.LineString) {
       const arr = coordinates.map((item: Array<number>) => {
-        // return new Zondy.Common.Point2D(item[0], item[1], {
-        //   nearDis
-        // })
-        return {
-          x: item[0],
-          y: item[1],
+        return new Zondy.Common.Point2D(item[0], item[1], {
           nearDis
-        }
+        })
       })
-      // bound = new Zondy.Common.PolyLine(arr, { nearDis })
-      bound = arr
+      bound = new Zondy.Common.PolyLine(arr, { nearDis })
     } else if (this.queryType === QueryType.Polygon) {
       const arr = coordinates[0].map((item: Array<number>) => {
-        // return new Zondy.Common.Point2D(item[0], item[1], {
-        //   nearDis
-        // })
-        return {
-          x: item[0],
-          y: item[1],
+        return new Zondy.Common.Point2D(item[0], item[1], {
           nearDis
-        }
+        })
       })
-      // bound = new Zondy.Common.Polygon(arr)
-      bound = arr
+      bound = new Zondy.Common.Polygon(arr)
     } else if (
       this.queryType === QueryType.Circle ||
       this.queryType === QueryType.Rectangle
@@ -98,13 +81,7 @@ export default class MapboxDraw extends Vue {
       const { xmin, ymin, xmax, ymax } = utilInstance.getGeoJsonFeatureBound(
         e.features[0]
       )
-      // bound = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
-      bound = {
-        xmin,
-        ymin,
-        xmax,
-        ymax
-      }
+      bound = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
     }
     this.toggleDeleteAll()
 

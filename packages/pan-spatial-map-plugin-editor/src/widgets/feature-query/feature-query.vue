@@ -84,6 +84,15 @@ import MapBoxDraw from './mixins/mapbox-draw'
 import CesiumDraw from './mixins/cesium-draw'
 import DrawStyle from '../../styles/draw-style'
 
+enum QueryType {
+  Point = 'Point',
+  Circle = 'Circle',
+  Rectangle = 'Rectangle',
+  Polygon = 'Polygon',
+  LineString = 'LineString',
+  PickModel = 'PickModel'
+}
+
 @Component
 export default class MpFeatureQuery extends Mixins(
   MapBoxDraw,
@@ -114,14 +123,19 @@ export default class MpFeatureQuery extends Mixins(
   private queryType = ''
 
   private defaultQueryTypes2d = [
-    'Point',
-    'Circle',
-    'Rectangle',
-    'Polygon',
-    'LineString'
+    QueryType.Point,
+    QueryType.Circle,
+    QueryType.Rectangle,
+    QueryType.Polygon,
+    QueryType.LineString
   ]
 
-  private defaultQueryTypes3d = ['Point', 'Polygon', 'LineString', 'Rectangle']
+  private defaultQueryTypes3d = [
+    QueryType.Point,
+    QueryType.Polygon,
+    QueryType.LineString,
+    QueryType.Rectangle
+  ]
 
   private drawStyle = []
 
@@ -164,7 +178,7 @@ export default class MpFeatureQuery extends Mixins(
   created() {
     this.widgetInfo.config.queryType.forEach(type => {
       if (type.id === '') {
-        type.id = 'Rectangle'
+        type.id = QueryType.Rectangle
       }
     })
   }
@@ -202,19 +216,19 @@ export default class MpFeatureQuery extends Mixins(
 
   handleCesium() {
     switch (this.queryType) {
-      case 'Point':
+      case QueryType.Point:
         this.togglePoint3D()
         break
-      case 'LineString':
+      case QueryType.LineString:
         this.togglePolyline3D()
         break
-      case 'Polygon':
+      case QueryType.Polygon:
         this.togglePolygon3D()
         break
-      case 'Rectangle':
+      case QueryType.Rectangle:
         this.toggleRect3D()
         break
-      case 'PickModel':
+      case QueryType.PickModel:
         // this.interactionPickModel()
         break
       default:
@@ -224,19 +238,19 @@ export default class MpFeatureQuery extends Mixins(
 
   handleMapbox() {
     switch (this.queryType) {
-      case 'Point':
+      case QueryType.Point:
         this.togglePoint()
         break
-      case 'LineString':
+      case QueryType.LineString:
         this.togglePolyline()
         break
-      case 'Polygon':
+      case QueryType.Polygon:
         this.togglePolygon()
         break
-      case 'Rectangle':
+      case QueryType.Rectangle:
         this.toggleRect()
         break
-      case 'Circle':
+      case QueryType.Circle:
         this.toggleCircle()
         break
       default:
