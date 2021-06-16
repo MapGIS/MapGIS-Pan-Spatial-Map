@@ -1,31 +1,26 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
-    <span v-if="!properties">暂无数据</span>
-    <template v-else>
-      <row-flex
+  <mapgis-popup :coordinates="coordinates" :showed="showPopup">
+    <span class="popup-fontsize" v-if="!properties">暂无数据</span>
+    <div v-else>
+      <div
         v-for="(v, k) in properties"
         :key="`statistic-label-properties-${v}`"
-        :label="k"
-        :span="[12, 12]"
-        class="popup-row"
-        >{{ v }}</row-flex
+        class="popup-row popup-fontsize"
       >
-    </template>
+        <span>{{ `${k}：` }}</span>
+        <span>{{ v }}</span>
+      </div>
+    </div>
   </mapgis-popup>
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import { RankSymbolThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
-import RowFlex from '../../../RowFlex'
 import MapboxMinxin from '../../mixins/mapbox'
 
-@Component({
-  components: {
-    RowFlex
-  }
-})
+@Component
 export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
   symbolSetting = {
     maxR: 25,
@@ -81,18 +76,17 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
       'mousemove',
       utilInstance.debounce(this.showPopupWin, 200)
     )
-    this.thematicMapLayer.on('mouseout', this.closePopupWin)
+    this.thematicMapLayer.on(
+      'mouseout',
+      utilInstance.debounce(this.closePopupWin, 200)
+    )
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
 
   /**
    * 展示信息窗口
    */
-  getPopupInfos({ target }: any) {
-    const { showFields, showFieldsTitle } = this.popupConfig
-    if (!target || !target.refDataID || !showFields || !showFields.length) {
-      return
-    }
+  getPopupInfos({ target }: any, { showFields, showFieldsTitle }: any) {
     const feature = this.thematicMapLayer.getFeatureById(target.refDataID)
     if (feature) {
       const {
@@ -111,6 +105,9 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
 </script>
 <style lang="less" scoped>
 .popup-row {
-  min-width: 150px;
+  line-height: 20px;
+}
+.popup-fontsize {
+  font-size: 14px;
 }
 </style>

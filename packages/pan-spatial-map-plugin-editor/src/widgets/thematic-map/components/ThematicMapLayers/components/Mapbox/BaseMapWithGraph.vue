@@ -1,31 +1,26 @@
 <template>
   <!-- 统计专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="true" v-if="showPopup">
-    <span v-if="!properties">暂无数据</span>
-    <template v-else>
-      <row-flex
+  <mapgis-popup :coordinates="coordinates" :showed="showPopup">
+    <span class="popup-fontsize" v-if="!properties">暂无数据</span>
+    <div v-else>
+      <div
         v-for="(v, k) in properties"
         :key="`base-map-with-graph-properties-${v}`"
-        :label="k"
-        :span="[12, 12]"
-        class="popup-row"
-        >{{ v }}</row-flex
+        class="popup-row popup-fontsize"
       >
-    </template>
+        <span>{{ `${k}：` }}</span>
+        <span>{{ v }}</span>
+      </div>
+    </div>
   </mapgis-popup>
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
 import { utilInstance } from '@mapgis/pan-spatial-map-store'
-import RowFlex from '../../../RowFlex'
 import MapboxMinxin from '../../mixins/mapbox'
 
-@Component({
-  components: {
-    RowFlex
-  }
-})
+@Component
 export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
   colors: string[] = ['#FFB980', '#5AB1EF', '#B6A2DE', '#2EC7C9', '#D87A80']
 
@@ -260,31 +255,34 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
       'mousemove',
       utilInstance.debounce(this.showPopupWin, 200)
     )
-    this.thematicMapLayer.on('mouseout', this.closePopupWin)
+    this.thematicMapLayer.on(
+      'mouseout',
+      utilInstance.debounce(this.closePopupWin, 200)
+    )
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
 
   /**
    * 展示信息弹框
    */
-  getPopupInfos({ event, target }: any) {
-    const { showFields, showFieldsTitle } = this.popupConfig
-    if (!target || !target.refDataID || !showFields || !showFields.length) {
-      return
-    }
+  getPopupInfos({ event, target }: any, { showFields }: any) {
     const { field, value } = target.dataInfo
     const { offsetTop, offsetLeft } = this.map.getContainer()
     const { lng, lat } = this.map.unproject(
       new this.mapbox.Point(event.x - offsetLeft, event.y - offsetTop - 60)
     )
     this.coordinates = [lng, lat]
-    this.properties = {}
-    this.$set(this.properties, field, value)
+    this.properties = {
+      [field]: value
+    }
   }
 }
 </script>
 <style lang="less" scoped>
 .popup-row {
-  min-width: 150px;
+  line-height: 20px;
+}
+.popup-fontsize {
+  font-size: 14px;
 }
 </style>

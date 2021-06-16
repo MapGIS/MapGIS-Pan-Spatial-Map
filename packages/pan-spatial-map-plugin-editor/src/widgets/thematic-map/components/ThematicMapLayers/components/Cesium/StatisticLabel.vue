@@ -2,30 +2,25 @@
   <!-- 等级符号专题图 -->
   <mapgis-3d-popup :position="popupPosition" :showed="showPopup">
     <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
-    <template v-else>
-      <row-flex
+    <div v-else>
+      <div
         v-for="(v, k) in popupProperties"
         :key="`statistic-label-properties-${v}`"
-        :label="k"
-        :span="[12, 12]"
         class="popup-row popup-fontsize"
-        >{{ v }}</row-flex
       >
-    </template>
+        <span>{{ `${k}：` }}</span>
+        <span>{{ v }}</span>
+      </div>
+    </div>
   </mapgis-3d-popup>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer } from '@mapgis/web-app-framework'
 import { GFeature, utilInstance } from '@mapgis/pan-spatial-map-store'
-import RowFlex from '../../../RowFlex'
 import CesiumMinxin from '../../mixins/cesium'
 
-@Component({
-  components: {
-    RowFlex
-  }
-})
+@Component
 export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
   get labelStyle() {
     return this.subDataConfig.labelStyle
@@ -69,7 +64,7 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
 </script>
 <style lang="less" scoped>
 .popup-row {
-  min-width: 140px;
+  line-height: 20px;
 }
 .popup-fontsize {
   font-size: 12px;

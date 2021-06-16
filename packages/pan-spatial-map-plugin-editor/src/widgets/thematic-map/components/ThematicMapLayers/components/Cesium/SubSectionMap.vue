@@ -2,23 +2,22 @@
   <!-- 分段专题图图层 -->
   <mapgis-3d-popup :position="popupPosition" :showed="showPopup">
     <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
-    <template v-else>
-      <row-flex
+    <div v-else>
+      <div
         v-for="(v, k) in popupProperties"
         :key="`sub-section-map-properties-${v}`"
-        :label="k"
-        :span="[12, 12]"
         class="popup-row popup-fontsize"
-        >{{ v }}</row-flex
       >
-    </template>
+        <span>{{ `${k}：` }}</span>
+        <span>{{ v }}</span>
+      </div>
+    </div>
   </mapgis-3d-popup>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer } from '@mapgis/web-app-framework'
 import { GFeature } from '@mapgis/pan-spatial-map-store'
-import RowFlex from '../../../RowFlex'
 import CesiumMinxin from '../../mixins/cesium'
 
 interface ISectionColor {
@@ -27,11 +26,7 @@ interface ISectionColor {
   sectionColor: string
 }
 
-@Component({
-  components: {
-    RowFlex
-  }
-})
+@Component
 export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
   get isShow3D() {
     return this.subDataConfig?.isShow3D
@@ -233,7 +228,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
 </script>
 <style lang="less" scoped>
 .popup-row {
-  min-width: 130px;
+  line-height: 20px;
 }
 .popup-fontsize {
   font-size: 12px;

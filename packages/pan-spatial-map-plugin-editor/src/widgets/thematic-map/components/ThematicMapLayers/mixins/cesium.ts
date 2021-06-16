@@ -29,7 +29,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
 
   // 信息弹框字段配置
   get popupConfig() {
-    return this.subDataConfig.popup
+    return this.subDataConfig.popup || {}
   }
 
   /**
@@ -150,9 +150,6 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
         this.getCartographic(CommonFuncManager, position)
         this.getPopupInfos(pick.id.geojsonFeature)
         this.showPopup = true
-        console.log('图层实体列表', this.thematicMapLayer.entities)
-        console.log('位置', this.popupPosition)
-        console.log('弹框信息', this.popupProperties)
       }
     })
   }

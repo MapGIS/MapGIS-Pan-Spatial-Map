@@ -18,7 +18,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
 
   // 信息弹框字段配置
   get popupConfig() {
-    return this.subDataConfig.popup
+    return this.subDataConfig.popup || {}
   }
 
   /**
@@ -55,9 +55,13 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
   /**
    * 开启信息窗口
    */
-  showPopupWin(e) {
+  showPopupWin(e: any) {
+    const { showFields } = this.popupConfig
+    if (!e.target || !e.target.refDataID || !showFields || !showFields.length) {
+      return
+    }
     this.showPopup = true
-    this.getPopupInfos(e)
+    this.getPopupInfos(e, this.popupConfig)
   }
 
   /**
