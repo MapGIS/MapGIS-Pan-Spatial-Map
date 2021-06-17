@@ -2,6 +2,7 @@
   <div class="mp-widget-non-spatial">
     <div class="non-spatial-header">
       <a-input-search
+        v-model="searchValue"
         placeholder="请输入查询条件"
         enter-button="搜索"
         allow-clear
@@ -113,6 +114,9 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 目录树微件的配置
   @Prop({ type: Object }) treeConfig: object
 
+  // 搜索框输入值
+  private searchValue = ''
+
   // 类型下拉值
   private selectType = ''
 
@@ -120,23 +124,24 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   private typeOptions = [
     {
       label: '全部',
-      value: 'all'
+      value:
+        'doc、docx、xls、xlsx、ppt、pptx、jpg、png、mp4、avi、pcx、ogg、pdf'
     },
     {
       label: '图片',
-      value: 'img'
+      value: 'jpg、png'
     },
     {
       label: '文档',
-      value: 'word'
+      value: 'doc、docx'
     },
     {
       label: '表格',
-      value: 'xls'
+      value: 'xls、xlsx'
     },
     {
       label: '视频',
-      value: 'video'
+      value: 'mp4、avi、pcx、ogg'
     }
   ]
 
@@ -185,6 +190,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 分页器当前页数
   private currentPage = 1
 
+  // 监听非空间数据url变化，初始化table表格数据及大图状态数据
   @Watch('url')
   onUrlChange(newVal) {
     console.log(newVal)
@@ -194,7 +200,9 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
       this.tableData = res.content
       this.pageTotal = res.totalElements
 
-      this.getPictureData()
+      if (this.showPicutre) {
+        this.getPictureData()
+      }
     })
   }
 
@@ -203,7 +211,9 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   }
 
   // 初始化各项数据
-  private initData() {}
+  private initData() {
+    this.selectType = this.typeOptions[0].value
+  }
 
   // 初始化非空间数据
   private getNonSpatialData() {
@@ -259,11 +269,37 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   }
 
   // 搜索框搜索事件回调
-  private onSearch() {}
+  private onSearch(value) {
+    this.onFilterData()
+  }
 
   // 下拉项变化时回调
   private onSelectChange(value) {
-    console.log(value)
+    this.onFilterData()
+  }
+
+  // 通过搜索框与下拉项筛选数据
+  // 可能同时存在搜索值与下拉项值，所以筛选数据都放在一块处理
+  private onFilterData() {
+    this.getNonSpatialData().then(res => {
+      this.tableData = res.content
+
+      this.tableData = this.tableData.reduce((result, item) => {
+        const type = item.type.toLowerCase()
+        if (
+          this.selectType.includes(type) &&
+          item.name.includes(this.searchValue)
+        ) {
+          result.push(item)
+        }
+        return result
+      }, [])
+      this.pageTotal = this.tableData.length
+
+      if (this.showPicutre) {
+        this.getPictureData()
+      }
+    })
   }
 
   // 点击大图图标回调
