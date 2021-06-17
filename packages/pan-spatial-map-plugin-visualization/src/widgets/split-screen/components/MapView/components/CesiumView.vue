@@ -1,14 +1,14 @@
 <template>
-  <div v-if="mapViewDocument">
+  <div v-if="document" class="cesium-view">
     <!-- 三维地图组件 -->
     <mp-cesium-view
       @map-load="onMapLoad"
-      :document="mapViewDocument"
+      :document="document"
       :vue-key="vueKey"
-      :height="mapViewHeight"
+      :height="height"
     >
       <!-- 多屏联动组件 -->
-      <mapgis-3d-link :vue-key="vueKey" :enable="enableLink()" />
+      <mapgis-3d-link :enable="true" />
     </mp-cesium-view>
     <!-- 绘制组件 -->
     <mapgis-3d-draw
@@ -30,31 +30,17 @@ import mStateInstance from '../../mixins/map-view-state'
   }
 })
 export default class CesiumView extends Vue {
-  @Prop() mapViewDocument!: Document
+  @Prop() document!: Document
 
-  @Prop({ default: UUID.uuid() }) mapViewId!: string
+  @Prop({ default: UUID.uuid() }) vueKey!: string
 
-  @Prop({ default: 819 }) mapViewHeight!: number
+  @Prop({ default: 500 }) height!: number
 
   drawer = null
 
   isMapLoaded = false
 
   enable = false
-
-  get vueKey() {
-    return this.mapViewId
-  }
-
-  /**
-   * 开启联动
-   */
-  enableLink() {
-    const timer = setTimeout(() => {
-      this.enable = true
-      clearTimeout(timer)
-    }, 2000)
-  }
 
   /**
    * 开启绘制
@@ -85,6 +71,15 @@ export default class CesiumView extends Vue {
   }
 
   /**
+   * 移除地图绘制实体
+   */
+  onDrawRemove() {
+    if (this.drawer) {
+      this.drawer.removeEntities()
+    }
+  }
+
+  /**
    * 地图绘制创建
    * @param 笛卡尔集坐标
    * @param 经纬度坐标
@@ -93,14 +88,19 @@ export default class CesiumView extends Vue {
     if (this.isMapLoaded) {
       const [[xmin, ymax], [xmax, ymin]] = lnglat
       this.$emit('on-create', { xmin, ymin, xmax, ymax })
-      if (this.drawer) {
-        this.drawer.removeEntities()
-      }
+      this.onDrawRemove()
     }
   }
 
   beforeDestroyed() {
     this.isMapLoaded = false
+    this.onDrawLoad()
   }
 }
 </script>
+<style lang="less" scoped>
+.cesium-view {
+  flex: 1;
+  overflow: hidden;
+}
+</style>

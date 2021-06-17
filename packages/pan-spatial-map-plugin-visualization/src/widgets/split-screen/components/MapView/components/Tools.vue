@@ -7,9 +7,11 @@
     justify="space-between"
     class="tools"
   >
-    <a-tooltip v-for="item in tools" :key="item.label" :title="item.label">
-      <a-icon :type="item.icon" @click.stop="onIconClick(item)" />
-    </a-tooltip>
+    <slot>
+      <a-tooltip v-for="item in tools" :key="item.label" :title="item.label">
+        <a-icon :type="item.icon" @click.stop="onIconClick(item)" />
+      </a-tooltip>
+    </slot>
   </row-flex>
 </template>
 <script lang="ts">

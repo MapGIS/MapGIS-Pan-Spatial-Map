@@ -1,37 +1,41 @@
 <template>
-  <div class="split-screen-setting">
-    <row-flex label="屏数">
-      <a-select :value="screenCount" @change="onScreenCountChange">
-        <a-select-option v-for="(s, i) in layers" :key="i" :value="i + 1">{{
-          i + 1
-        }}</a-select-option>
-      </a-select>
-    </row-flex>
-    <row-flex label="图示" align="top" v-show="screenNums.length">
-      <a-row class="split-screen-grid">
-        <a-col
-          v-for="s in screenNums"
-          :key="s"
-          :span="mapSpan"
-          class="split-screen-grid-col"
-          >{{ s + 1 }}</a-col
-        >
-      </a-row>
-    </row-flex>
-    <row-flex v-for="s in screenNums" :label="`第${screenLabel[s]}屏`" :key="s">
-      <a-select :value="layerIds[s]" @change="onLayerChange($event, s)">
-        <a-select-option
-          v-for="{ id, title } in layers"
-          :key="id"
-          :value="id"
-          :title="title"
-          >{{ title }}</a-select-option
-        >
-      </a-select>
-    </row-flex>
-    <div class="split-screen-btns">
-      <a-button type="primary" @click="onFullScreen">全屏展示</a-button>
-      <a-button @click="onCancel">取消</a-button>
+  <div class="split-screen-setting" :class="{ collapsed: !visible }">
+    <div class="setting-handle" @click="onToggle">
+      <a-icon :type="handleIcon" />
+    </div>
+    <div class="setting-content">
+      <row-flex label="屏数">
+        <a-select :value="screenCount" @change="onScreenCountChange">
+          <a-select-option v-for="(s, i) in layers" :key="i" :value="i + 1">{{
+            i + 1
+          }}</a-select-option>
+        </a-select>
+      </row-flex>
+      <row-flex label="图示" align="top" v-show="screenNums.length">
+        <a-row class="grid">
+          <a-col v-for="s in screenNums" :key="s" :span="mapSpan" class="col">{{
+            s + 1
+          }}</a-col>
+        </a-row>
+      </row-flex>
+      <row-flex
+        v-for="s in screenNums"
+        :label="`第${screenLabel[s]}屏`"
+        :key="s"
+      >
+        <a-select :value="layerIds[s]" @change="onLayerChange($event, s)">
+          <a-select-option
+            v-for="{ id, title } in layers"
+            :key="id"
+            :value="id"
+            :title="title"
+            >{{ title }}</a-select-option
+          >
+        </a-select>
+      </row-flex>
+      <div class="btns">
+        <a-button type="primary" @click="onFullScreen">全屏展示</a-button>
+      </div>
     </div>
   </div>
 </template>
@@ -64,11 +68,25 @@ export default class SplitScreenSetting extends Vue {
 
   @Prop({ default: () => [] }) layers!: Layer[]
 
+  visible = true
+
   opera: Opera = 'null'
 
   screenLabel = ScreenLabel
 
   screenCount = null
+
+  // 设置面板的收缩开关icon
+  get handleIcon() {
+    return this.visible ? 'right' : 'left'
+  }
+
+  /**
+   * 设置面板展开收缩
+   */
+  onToggle() {
+    this.visible = !this.visible
+  }
 
   /**
    * 屏数变化
@@ -106,13 +124,6 @@ export default class SplitScreenSetting extends Vue {
   }
 
   /**
-   * 取消
-   */
-  onCancel() {
-    // todo 手动调用弹框关闭事件
-  }
-
-  /**
    * 监听: 分屏数量变化
    */
   @Watch('screenNums')
@@ -133,6 +144,7 @@ export default class SplitScreenSetting extends Vue {
   }
 }
 </script>
+
 <style lang="less" scoped>
 @import './index.less';
 </style>

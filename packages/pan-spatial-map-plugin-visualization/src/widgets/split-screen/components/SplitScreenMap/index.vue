@@ -10,15 +10,14 @@
         :key="s"
         :span="mapSpan"
         :style="mapSpanStyle"
-        class="split-screen-map-col"
       >
         <map-view
           @on-query="onQuery"
+          :queryVisible.sync="queryVisible"
+          :query-rect="queryRect"
           :map-view-height="mapViewHeight"
           :map-view-id="`split-screen-map-${s}`"
           :map-view-layer="layers.find(({ id }) => layerIds[s] === id)"
-          :queryVisible.sync="queryVisible"
-          :query-rect="queryRect"
         />
       </a-col>
     </a-row>

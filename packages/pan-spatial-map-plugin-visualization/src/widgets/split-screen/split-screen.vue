@@ -1,35 +1,25 @@
 <template>
-  <row-flex
-    class="mp-widget-split-screen"
-    align="top"
-    justify="space-between"
-    :span="[18, 6]"
-    :gutter="[0, 10]"
-  >
+  <div class="mp-widget-split-screen">
     <!-- 分屏地图 -->
-    <template #label>
-      <split-screen-map v-bind="bindProps" />
-    </template>
+    <split-screen-map v-bind="bindProps" />
     <!-- 分屏设置 -->
     <split-screen-setting
       v-bind="bindProps"
       @on-screen-count-change="onScreenCountChange"
       @on-layer-change="onLayerChange"
     />
-  </row-flex>
+  </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
-import RowFlex from './components/RowFlex'
-import SplitScreenMap, { IActiveScreen } from './components/SplitScreenMap'
+import SplitScreenMap from './components/SplitScreenMap'
 import SplitScreenSetting from './components/SplitScreenSetting'
 
 @Component({
   name: 'MpSplitScreen',
   components: {
-    RowFlex,
     SplitScreenMap,
     SplitScreenSetting
   }
@@ -68,11 +58,24 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
   }
 
   get bindProps() {
+    const { mapSpan, screenNums, layerIds, layers } = this
     return {
-      mapSpan: this.mapSpan,
-      screenNums: this.screenNums,
-      layerIds: this.layerIds,
-      layers: this.layers
+      mapSpan,
+      screenNums,
+      layerIds,
+      layers
+    }
+  }
+
+  /**
+   * 初始化地图信息
+   */
+  setLayers(screenNums?: number) {
+    this.screenNums = []
+    this.layerIds = []
+    for (let i = 0; i < screenNums; i++) {
+      this.screenNums.push(i)
+      this.layerIds.push(this.layers[i].id)
     }
   }
 
@@ -87,18 +90,6 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
     const { length } = this.layers
     if (length) {
       this.setLayers(length < 7 ? length : 6)
-    }
-  }
-
-  /**
-   * 初始化地图信息
-   */
-  setLayers(screenNums?: number) {
-    this.screenNums = []
-    this.layerIds = []
-    for (let i = 0; i < screenNums; i++) {
-      this.screenNums.push(i)
-      this.layerIds.push(this.layers[i].id)
     }
   }
 
@@ -145,12 +136,10 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .mp-widget-split-screen {
   width: 100%;
   height: 100%;
-  > .ant-col {
-    height: 100%;
-  }
+  display: flex;
 }
 </style>

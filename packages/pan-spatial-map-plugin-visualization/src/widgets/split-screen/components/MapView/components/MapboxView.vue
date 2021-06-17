@@ -1,9 +1,9 @@
 <template>
-  <div v-if="mapViewDocument">
+  <div v-if="document" class="mapbox-view">
     <!-- 二维地图组件 -->
     <mp-mapbox-view
       @map-load="onMapLoad"
-      :document="mapViewDocument"
+      :document="document"
       :map-style="mapStyle"
     />
     <!-- 二维地图绘制组件 -->
@@ -27,7 +27,7 @@ import defaultStyle from '../../../../../assets/style/default-style.json'
   }
 })
 export default class MapboxView extends Vue {
-  @Prop() mapViewDocument!: Document
+  @Prop() document!: Document
 
   isMapLoaded = false
 
@@ -117,3 +117,9 @@ export default class MapboxView extends Vue {
   }
 }
 </script>
+<style lang="less" scoped>
+.mapbox-view {
+  flex: 1;
+  overflow: hidden;
+}
+</style>

@@ -8,7 +8,7 @@
       ref="maboxView"
       @on-load="onMapboxLoad"
       @on-created="onDrawCreated"
-      :map-view-document="mapViewDocument"
+      :document="mapViewDocument"
     />
     <!-- 三维地图 -->
     <cesium-view
@@ -16,9 +16,9 @@
       ref="cesiumView"
       @on-load="onCesiumLoad"
       @on-create="onDrawCreated"
-      :map-view-id="mapViewId"
-      :map-view-height="mapViewHeight"
-      :map-view-document="mapViewDocument"
+      :vue-key="mapViewId"
+      :height="mapViewHeight"
+      :document="mapViewDocument"
     />
     <!-- 标注 -->
     <mp-markers-highlight-popup
