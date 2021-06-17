@@ -804,19 +804,32 @@ export default class TreeLayer extends Mixins(
       }
     } else if (this.isIGSScene(layer)) {
       const sceneLayer = layer.dataRef
-      const { ip, port, docName } = sceneLayer._parseUrl(sceneLayer.url)
-      const {
-        activeScene: { sceneIndex, layers }
-      } = sceneLayer
+      const { ip, port, docName } = sceneLayer.layer._parseUrl(
+        sceneLayer.layer.url
+      )
       this.queryParams = {
         id: `${sceneLayer.title} ${sceneLayer.id} 自定义查询`,
         name: `${sceneLayer.title} 自定义查询`,
         option: {
-          id: `${sceneLayer.id}:${sceneIndex}`,
+          id: `${sceneLayer.id}`,
           ip: ip || baseConfigInstance.config.ip,
           port: Number(port || baseConfigInstance.config.port),
-          serverType: sceneLayer.type,
+          serverType: sceneLayer.layer.type,
           gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型'
+        }
+      }
+    } else if (this.isIgsArcgisLayer(layer)) {
+      const { ip, port, docName } = parent._parseUrl(parent.url)
+      this.queryParams = {
+        id: `${parent.title} ${layer.title} ${layer.id}`,
+        name: `${layer.title} 属性表`,
+        description: `${parent.title} ${layer.title}`,
+        option: {
+          id: layer.id,
+          name: layer.title,
+          serverType: parent.type,
+          layerIndex: layer.id,
+          serverUrl: parent.url
         }
       }
     }
@@ -963,8 +976,9 @@ export default class TreeLayer extends Mixins(
       return layerType === LayerType.arcGISMapImage
     }
     return (
-      layerType === LayerType.arcGISMapImage ||
-      layerType === LayerType.arcGISTile
+      layerType === LayerType.arcGISMapImage
+      //  ||
+      // layerType === LayerType.arcGISTile
     )
   }
 }

@@ -299,7 +299,16 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       return
     }
     const { option } = this.queryParams
-    const { layerIndex, id, ip, port, serverName, serverType, gdbp } = option
+    const {
+      layerIndex,
+      id,
+      ip,
+      port,
+      serverName,
+      serverType,
+      gdbp,
+      serverUrl
+    } = option
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector ||
@@ -328,9 +337,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
         new Set(features.map(({ AttValue }) => AttValue[index]))
       ).map(value => ({ value }))
       this.valueTableData = values
-    }
-    //  TODO:此段代码请勿删除，该版本暂未适配ArcgisLayer，后续已此段代码作为参考
-    /* else if (subtype === SubLayerType.RasterArcgisLayer) {
+    } else if (serverType === LayerType.arcGISMapImage) {
       const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
         f: 'json',
         serverUrl,
@@ -341,6 +348,10 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       })
       const values = Array.from(new Set(result.value.map(value => ({ value }))))
       this.valueTableData = values
+    }
+    //  TODO:此段代码请勿删除，该版本暂未适配ArcgisLayer，后续已此段代码作为参考
+    /* else if (subtype === SubLayerType.RasterArcgisLayer) {
+
     } */
   }
 
