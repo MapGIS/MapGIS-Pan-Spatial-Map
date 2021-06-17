@@ -111,6 +111,9 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 非空间数据资源url
   @Prop({ type: String }) url: string
 
+  // 非空间数据类型
+  @Prop({ type: String }) type: string
+
   // 目录树微件的配置
   @Prop({ type: Object }) treeConfig: object
 
@@ -195,7 +198,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   onUrlChange(newVal) {
     console.log(newVal)
 
-    this.getNonSpatialData().then(res => {
+    this.getUrlData(newVal).then(res => {
       console.log(res)
       this.tableData = res.content
       this.pageTotal = res.totalElements
@@ -215,12 +218,12 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     this.selectType = this.typeOptions[0].value
   }
 
-  // 初始化非空间数据
-  private getNonSpatialData() {
+  // 通过发送请求获取对应服务数据
+  private getUrlData(url) {
     return new Promise((resolve, reject) => {
       const request = new XMLHttpRequest()
       request.responseType = 'json'
-      request.open('GET', this.url)
+      request.open('GET', url)
       request.withCredentials = true
       request.onreadystatechange = () => {
         if (request.readyState === 4) {
@@ -281,7 +284,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 通过搜索框与下拉项筛选数据
   // 可能同时存在搜索值与下拉项值，所以筛选数据都放在一块处理
   private onFilterData() {
-    this.getNonSpatialData().then(res => {
+    this.getUrlData(this.url).then(res => {
       this.tableData = res.content
 
       this.tableData = this.tableData.reduce((result, item) => {
@@ -316,7 +319,31 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
 
   // 点击下载图标回调
   private onClickDownLoad(record) {
-    console.log(record)
+    const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=ftp://192.168.21.191:21`
+    this.getUrlData(downLoadUrl).then(res => {
+      const downLoadPath = this.baseUrl + res.path
+
+      const xhr = new XMLHttpRequest()
+      xhr.open('get', downLoadPath)
+      xhr.responseType = 'blob'
+      xhr.withCredentials = true
+      xhr.send()
+      xhr.onload = function() {
+        if (this.status === 200 || this.status === 304) {
+          const fileReader = new FileReader()
+          fileReader.readAsDataURL(this.response)
+          fileReader.onload = function() {
+            const a = document.createElement('a')
+            a.style.display = 'none'
+            a.href = this.result
+            a.download = record.name
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+          }
+        }
+      }
+    })
   }
 }
 </script>

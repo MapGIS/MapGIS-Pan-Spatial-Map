@@ -185,6 +185,7 @@
         <template>
           <NonSpatial
             :url="nonSpatialUrl"
+            :type="nonSpatialType"
             :treeConfig="widgetConfig"
           ></NonSpatial>
         </template>
@@ -273,6 +274,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 非空间数据资源url
   private nonSpatialUrl = ''
+
+  // 非空间数据类型(文档数据、图片数据、...)
+  private nonSpatialType = ''
 
   // 目录树配置
   private widgetConfig = {}
@@ -552,6 +556,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   onClick(item) {
     console.log(item)
     const widgetConfig = this.widgetInfo.config
+    this.nonSpatialType = item.data
 
     if (item.description.includes('非空间数据')) {
       this.showNoSpatial = true
