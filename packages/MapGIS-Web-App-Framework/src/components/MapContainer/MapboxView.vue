@@ -193,7 +193,7 @@ export default {
 
       // 图层组件的共有属性
       const commonProps = {
-        token: layer.tokenValue
+        token: { key: layer.tokenKey, value: layer.tokenValue }
       }
 
       let tempStr = ''
@@ -272,7 +272,6 @@ export default {
             baseUrl: layer.url,
             layers: allLayerNames.join(','),
             version: layer.version,
-            token: layer.tokenValue,
             reversebbox: false
           }
 

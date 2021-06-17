@@ -15,6 +15,7 @@
         :layerStyle="layerProps.layerStyle"
         :id="layerProps.layerId"
         :baseUrl="layerProps.url"
+        :tilingScheme="layerProps.srs"
       />
       <mapgis-3d-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
@@ -29,7 +30,6 @@
         :baseUrl="layerProps.url"
         :gdbps="layerProps.gdbps"
         :layerStyle="layerProps.layerStyle"
-        :srs="layerProps.srs"
       />
       <mapgis-3d-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
@@ -37,6 +37,7 @@
         :id="layerProps.layerId"
         :baseUrl="layerProps.url"
         :layers="layerProps.layers"
+        :srs="layerProps.srs"
       />
       <mapgis-3d-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
@@ -46,15 +47,16 @@
         :baseUrl="layerProps.url"
         :wmtsLayer="layerProps.layer"
         :wmtsStyle="layerProps.wmtsStyle"
-        :srs="layerProps.srs"
+        :tilingScheme="layerProps.srs"
         :tileMatrixSet="layerProps.tileMatrixSetID"
+        :format="layerProps.format"
+        :token="layerProps.token"
       />
       <mapgis-3d-arcgis-tile-layer
         v-if="isArcgisTileLayer(layerProps.type)"
         :id="layerProps.layerId"
         :baseUrl="layerProps.url"
         :layerStyle="layerProps.layerStyle"
-        :srs="layerProps.srs"
       />
       <mapgis-3d-arcgis-map-layer
         v-if="isArcgisMapLayer(layerProps.type)"
@@ -67,7 +69,7 @@
       <mapgis-3d-vectortile-layer
         v-if="isVectorTileLayer(layerProps.type)"
         :vectortilejson="layerProps.mvtStyle"
-        :tilingScheme="layerProps.tilingScheme"
+        :tilingScheme="layerProps.srs"
       />
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type)"
@@ -227,6 +229,8 @@ export default {
       // 图层空间参照系
       const srs = `EPSG:${layer.spatialReference.wkid}`
 
+      const token = { key: layer.tokenKey, value: layer.tokenValue }
+
       let tempStr = ''
       let parms = {}
       let tileMatrixSet = {}
@@ -377,8 +381,7 @@ export default {
           break
       }
 
-      if (layer.type !== LayerType.vectorTile)
-        layerComponentProps = { ...layerComponentProps, layerStyle, srs }
+      layerComponentProps = { ...layerComponentProps, layerStyle, srs, token }
 
       return layerComponentProps
     },
