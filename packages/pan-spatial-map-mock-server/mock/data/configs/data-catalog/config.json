@@ -891,27 +891,6 @@
         ]
       },
       {
-        "label": "动态裁图",
-        "describe": "动态裁图",
-        "children": [
-          {
-            "label": "网络分析",
-            "describe": "网络分析",
-            "ip": "192.168.176.40",
-            "port": "6163",
-            "layerServiceType": "IGSIMAGE",
-            "name": "网络分析",
-            "searchName": "",
-            "token": "",
-            "guid": "45099867-d458-46c8-8194-20d2de8b0485",
-            "serverUrl": "",
-            "wfsUrl": "",
-            "extent": "",
-            "gdbTypeList": "Local,Local,Local"
-          }
-        ]
-      },
-      {
         "label": "IGS图层",
         "describe": "IGS图层",
         "children": [
