@@ -749,7 +749,7 @@
             "serverUrl": ""
           },
           {
-            "label": "全国地形",
+            "label": "全国地形_unavailable",
             "describe": "全国地形",
             "ip": "",
             "port": "",
@@ -773,7 +773,7 @@
             "serverUrl": ""
           },
           {
-            "label": "倾斜摄影数据",
+            "label": "倾斜摄影数据_unavailable",
             "describe": "倾斜摄影数据",
             "ip": "",
             "port": "",
@@ -785,8 +785,8 @@
             "serverUrl": ""
           },
           {
-            "label": "M3D缓存数据",
-            "describe": "M3D缓存数据",
+            "label": "地质体",
+            "describe": "地质体",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -797,7 +797,7 @@
             "serverUrl": ""
           },
           {
-            "label": "景观模型",
+            "label": "景观模型_unavailable",
             "describe": "景观模型",
             "ip": "",
             "port": "",
@@ -809,7 +809,7 @@
             "serverUrl": ""
           },
           {
-            "label": "BIM模型",
+            "label": "BIM模型_unavailable",
             "describe": "BIM模型",
             "ip": "",
             "port": "",
@@ -821,8 +821,8 @@
             "serverUrl": ""
           },
           {
-            "label": "地质体",
-            "describe": "地质体",
+            "label": "地质体_福田_unavailable",
+            "describe": "地质体_福田",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -833,8 +833,8 @@
             "serverUrl": ""
           },
           {
-            "label": "钻孔模型",
-            "describe": "钻孔模型",
+            "label": "钻孔模型_福田_unavailable",
+            "describe": "钻孔模型_福田",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -845,19 +845,7 @@
             "serverUrl": ""
           },
           {
-            "label": "建模粗模",
-            "describe": "建模粗模",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "buildings",
-            "searchName": "",
-            "model": "surface",
-            "guid": "9d85801c-9c7c-46c3-ad29-934c264d488a",
-            "serverUrl": ""
-          },
-          {
-            "label": "地质体网格",
+            "label": "地质体网格_unavailable",
             "describe": "地质体网格",
             "ip": "",
             "port": "",
@@ -911,8 +899,8 @@
           {
             "label": "湖北省市级区划",
             "describe": "湖北省市级区划",
-            "ip": "192.168.84.101",
-            "port": "6163",
+            "ip": "",
+            "port": "",
             "layerServiceType": "IGSVECTOR",
             "name": "湖北",
             "searchName": "",
