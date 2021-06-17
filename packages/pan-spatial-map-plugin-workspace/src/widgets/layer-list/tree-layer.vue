@@ -251,7 +251,8 @@ import {
   queryFeaturesInstance,
   dataCatalogInstance,
   queryOGCInfoInstance,
-  queryArcgisInfoInstance
+  queryArcgisInfoInstance,
+  cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
@@ -273,6 +274,8 @@ export default class TreeLayer extends Mixins(
   AppMixin,
   ExhibitionControllerMixin
 ) {
+  @Inject('CesiumZondy') CesiumZondy
+
   @Prop() widgetInfo: Record<string, any>
 
   @Prop() dataCatalog: Array<Record<string, any>>
@@ -670,16 +673,47 @@ export default class TreeLayer extends Mixins(
     }
     if (type !== LayerType.IGSScene) {
       this.map.fitBounds([xmin, ymin, xmax, ymax])
+      const rectangle = new this.Cesium.Rectangle.fromDegrees(
+        xmin,
+        ymin,
+        xmax,
+        ymax
+      )
+      this.webGlobe.viewer.camera.flyTo({
+        destination: rectangle
+      })
+    } else {
+      const {
+        activeScene: { sublayers },
+        fullExtent: { zmin, zmax }
+      } = item.dataRef
+      let id = ''
+      sublayers.forEach(item => {
+        if (item.visible) {
+          id = item.id
+        }
+      })
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        id
+      )
+      if (source.length > 0) {
+        const tranform = source[0].root.transform
+        const bound = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+          { xmin, xmax, ymin, ymax, zmin, zmax },
+          tranform
+        )
+        const rectangle = new this.Cesium.Rectangle.fromDegrees(
+          bound.xmin,
+          bound.ymin,
+          bound.xmax,
+          bound.ymax
+        )
+        this.webGlobe.viewer.camera.flyTo({
+          destination: rectangle
+        })
+      }
     }
-    const rectangle = new this.Cesium.Rectangle.fromDegrees(
-      xmin,
-      ymin,
-      xmax,
-      ymax
-    )
-    this.webGlobe.viewer.camera.flyTo({
-      destination: rectangle
-    })
     this.clickPopover(item, false)
   }
 
