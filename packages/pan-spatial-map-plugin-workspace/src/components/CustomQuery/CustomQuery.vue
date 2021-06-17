@@ -226,20 +226,25 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
     } = option
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
       // 地图文档的图层
-      const result = await queryFeaturesInstance.query({
-        ip,
-        port: port.toString(),
-        f: 'json',
-        cursorType: 'cursorType',
-        page: 0,
-        pageCount: 1,
-        docName: serverName,
-        layerIdxs: layerIndex,
-        gdbp
-      })
+      const result = await queryFeaturesInstance.query(
+        {
+          ip,
+          port: port.toString(),
+          f: 'json',
+          cursorType: 'cursorType',
+          page: 0,
+          pageCount: 1,
+          docName: serverName,
+          layerIdxs: layerIndex,
+          gdbp
+        },
+        false,
+        serverType === LayerType.IGSScene
+      )
       const {
         AttStruct: { FldName, FldType }
       } = result
@@ -294,22 +299,36 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       return
     }
     const { option } = this.queryParams
-    const { layerIndex, id, ip, port, serverName, serverType, gdbp } = option
+    const {
+      layerIndex,
+      id,
+      ip,
+      port,
+      serverName,
+      serverType,
+      gdbp,
+      serverUrl
+    } = option
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
-      const result = await queryFeaturesInstance.query({
-        ip,
-        port: port.toString(),
-        f: 'json',
-        cursorType: 'cursorType',
-        page: 0,
-        pageCount: Number(this.valueSize),
-        docName: serverName,
-        layerIdxs: layerIndex,
-        gdbp
-      })
+      const result = await queryFeaturesInstance.query(
+        {
+          ip,
+          port: port.toString(),
+          f: 'json',
+          cursorType: 'cursorType',
+          page: 0,
+          pageCount: Number(this.valueSize),
+          docName: serverName,
+          layerIdxs: layerIndex,
+          gdbp
+        },
+        false,
+        serverType === LayerType.IGSScene
+      )
       const { SFEleArray: features } = result
       const index = this.fieldTableData.findIndex(
         x => x === this.fieldCurrentRow
@@ -318,9 +337,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
         new Set(features.map(({ AttValue }) => AttValue[index]))
       ).map(value => ({ value }))
       this.valueTableData = values
-    }
-    //  TODO:此段代码请勿删除，该版本暂未适配ArcgisLayer，后续已此段代码作为参考
-    /* else if (subtype === SubLayerType.RasterArcgisLayer) {
+    } else if (serverType === LayerType.arcGISMapImage) {
       const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
         f: 'json',
         serverUrl,
@@ -331,6 +348,10 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       })
       const values = Array.from(new Set(result.value.map(value => ({ value }))))
       this.valueTableData = values
+    }
+    //  TODO:此段代码请勿删除，该版本暂未适配ArcgisLayer，后续已此段代码作为参考
+    /* else if (subtype === SubLayerType.RasterArcgisLayer) {
+
     } */
   }
 

@@ -507,7 +507,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     let options: OptionItem[] = []
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
       const info = await queryFeaturesInstance.query(
         {
@@ -522,7 +523,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
           IncludeWebGraphic: false,
           cursorType: 'cursorType'
         },
-        false
+        false,
+        serverType === LayerType.IGSScene
       )
       const {
         AttStruct: { FldName, FldType, FldNumber }
@@ -587,7 +589,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     let data: any
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
       let url
       if (serverType === LayerType.IGSMapImage) {

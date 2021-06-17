@@ -3,17 +3,25 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import * as Zondy from '@mapgis/webclient-es6-service'
 
+enum QueryType {
+  Point = 'Point',
+  Circle = 'Circle',
+  Rectangle = 'Rectangle',
+  Polygon = 'Polygon',
+  LineString = 'LineString',
+  PickModel = 'PickModel'
+}
+
 @Component
 export default class CesiumDraw extends Mixins(WidgetMixin) {
   // -1 空状态、0  点、1  线、2   面、3  矩形、 4圆形
-  private type3d = -1
 
   queryType = ''
 
   drawer3d = null
 
   beforeDestroy() {
-    this.drawer3d = undefined
+    this.drawer3d = null
   }
 
   handleDrawLoad(drawer) {
@@ -21,17 +29,18 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
   }
 
   handleCreate(cartesian3, lnglat) {
-    window.setTimeout(() => {
-      this.setBound(cartesian3)
-      this.clearCesiumDraw3D()
-    }, 300)
+    // window.setTimeout(() => {
+    this.setBound(cartesian3)
+    this.clearCesiumDraw3D()
+    // }, 300)
   }
 
   setLonLat(cartesian) {
     const cartographic = this.Cesium.Cartographic.fromCartesian(cartesian)
     const lng = this.Cesium.Math.toDegrees(cartographic.longitude)
     const lat = this.Cesium.Math.toDegrees(cartographic.latitude)
-    return [lng, lat]
+    const alt = cartographic.height
+    return [lng, lat, alt]
   }
 
   setBound(cartesian3) {
@@ -46,72 +55,91 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
       nearDis /= distanceUnits
     }
     let bound: any
-    if (this.type3d === 0) {
+    if (this.queryType === QueryType.Point) {
       const coordinates = this.setLonLat(cartesian3)
-      bound = new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
+      bound = {
+        x: coordinates[0],
+        y: coordinates[1],
+        z: coordinates[2],
         nearDis
-      })
-    } else if (this.type3d === 1) {
+      }
+    } else if (this.queryType === QueryType.LineString) {
       const arr = cartesian3.map((item: Array<number>) => {
         const coordinates = this.setLonLat(item)
-        return new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
+        return {
+          x: coordinates[0],
+          y: coordinates[1],
+          z: coordinates[2],
           nearDis
-        })
+        }
       })
-      bound = new Zondy.Common.PolyLine(arr, { nearDis })
-    } else if (this.type3d === 2) {
+      bound = arr
+    } else if (this.queryType === QueryType.Polygon) {
       const arr = cartesian3.map((item: Array<number>) => {
         const coordinates = this.setLonLat(item)
-        return new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
+        return {
+          x: coordinates[0],
+          y: coordinates[1],
+          z: coordinates[2],
           nearDis
-        })
+        }
       })
       const coordinates = this.setLonLat(cartesian3[0])
-      arr.push(
-        new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
-          nearDis
-        })
-      )
-      bound = new Zondy.Common.Polygon(arr)
-    } else if (this.type3d === 3) {
+      // const coordinates = lnglat[0]
+      arr.push({
+        x: coordinates[0],
+        y: coordinates[1],
+        z: coordinates[2],
+        nearDis
+      })
+      bound = arr
+    } else if (this.queryType === QueryType.Rectangle) {
       if (cartesian3.length === 2) {
-        const [xmin, ymax] = this.setLonLat(cartesian3[0])
-        const [xmax, ymin] = this.setLonLat(cartesian3[1])
-        bound = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
+        const [xmin, ymax, z1] = this.setLonLat(cartesian3[0])
+        const [xmax, ymin, z2] = this.setLonLat(cartesian3[1])
+        const zmax = z1 - z2 >= 0 ? z1 : z2
+        const zmin = z1 - z2 < 0 ? z1 : z2
+        bound = {
+          xmin,
+          ymax,
+          zmax,
+          xmax,
+          ymin,
+          zmin
+        }
       }
     }
 
-    this.queryType = ''
     this.queryLayer(bound)
   }
 
   togglePoint3D() {
     this.clearCesiumDraw3D()
-    this.type3d = 0
+    this.queryType = QueryType.Point
     this.drawer3d?.enableDrawPoint()
   }
 
   togglePolyline3D() {
     this.clearCesiumDraw3D()
-    this.type3d = 1
+    this.queryType = QueryType.LineString
     this.drawer3d?.enableDrawLine()
   }
 
   togglePolygon3D() {
     this.clearCesiumDraw3D()
-    this.type3d = 2
+    this.queryType = QueryType.Polygon
     this.drawer3d?.enableDrawPolygon()
   }
 
   toggleRect3D() {
     this.clearCesiumDraw3D()
-    this.type3d = 3
+    this.queryType = QueryType.Rectangle
     this.drawer3d?.enableDrawRectangle()
   }
 
   clearCesiumDraw3D() {
-    this.type3d = -1
     this.queryType = ''
+    this.drawer3d?.getDrawElement(this.webGlobe).stopDrawing()
     this.drawer3d?.removeEntities()
   }
 }

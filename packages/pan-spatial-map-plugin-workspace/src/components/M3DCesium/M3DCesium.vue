@@ -1,12 +1,5 @@
 <template>
-  <div>
-    <mp-3d-marker-set-pro
-      :markers="markers"
-      @mouseenter="mouseEnterEvent"
-      @mouseleave="mouseLeaveEvent"
-    >
-    </mp-3d-marker-set-pro>
-  </div>
+  <div></div>
 </template>
 
 <script lang="ts">
@@ -16,6 +9,7 @@ import {
   Watch,
   Mixins,
   Emit,
+  InjectReactive,
   Inject
 } from 'vue-property-decorator'
 import {
@@ -23,14 +17,10 @@ import {
   utilInstance,
   cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
-import { MapMixin } from '@mapgis/web-app-framework'
-import Mp3dMarkerSetPro from '../3dMarkerPro/3dMarkerSetPro.vue'
+import { MapMixin, ThemeMixin } from '@mapgis/web-app-framework'
 
-@Component({
-  name: 'Mp3dMarkerPlotting',
-  components: { Mp3dMarkerSetPro }
-})
-export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
+@Component
+export default class M3DCesium extends Mixins(MapMixin) {
   @Inject('CesiumZondy') CesiumZondy
 
   @Prop({
@@ -40,10 +30,10 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   readonly filterWithMap!: boolean
 
   @Prop({
-    type: Array,
-    required: true
+    type: String,
+    default: ''
   })
-  readonly markers!: Record<string, any>[]
+  readonly vueIndex!: string
 
   @Prop({
     type: Object,
@@ -59,7 +49,7 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
       return {}
     }
   })
-  readonly selectionBound!: Record<string, any>
+  readonly highlightStyle!: Record<string, any>
 
   @Prop({
     type: Object,
@@ -67,23 +57,48 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
       return {}
     }
   })
-  readonly highlightStyle!: Record<string, any>
-
-  private entityNames: string[] = []
+  readonly selectionBound!: Record<string, any>
 
   @Watch('fitBound')
   changeMapBound() {
     if (this.fitBound) {
-      const { xmin, ymin, xmax, ymax } = this.fitBound
-      const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-        xmin,
-        ymin,
-        xmax,
-        ymax
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        this.vueIndex
       )
-      this.webGlobe.viewer.camera.flyTo({
-        destination: Rectangle
-      })
+      if (source.length > 0) {
+        const tranform = source[0].root.transform
+        // const { xmin, ymin, xmax, ymax, zmin, zmax } = this.fitBound
+        // const center = {
+        //   x: (xmin + xmax) / 2,
+        //   y: (ymin + ymax) / 2,
+        //   z: zmax * 4
+        // }
+        let bound = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+          this.fitBound,
+          tranform
+        )
+        const width = bound.xmax - bound.xmin
+        const height = bound.ymax - bound.ymin
+        const center = {
+          x: (bound.xmin + bound.xmax) / 2,
+          y: (bound.ymin + bound.ymax) / 2
+        }
+        bound = {
+          xmin: center.x - width,
+          ymin: center.y - height,
+          xmax: center.x + width,
+          ymax: center.y + height
+        }
+        this.webGlobe.viewer.camera.flyTo({
+          destination: this.Cesium.Rectangle.fromDegrees(
+            bound.xmin,
+            bound.ymin,
+            bound.xmax,
+            bound.ymax
+          )
+        })
+      }
     }
   }
 
@@ -91,10 +106,6 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   changeSelectionBound() {
     this.zoomOrPanTo(this.selectionBound)
   }
-
-  currentLayer = null
-
-  analysisManager = null
 
   changeFilterWithMap() {
     if (!this.filterWithMap) {
@@ -114,9 +125,6 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   emitMapBoundChange(bound: Record<string, any>) {}
 
   mounted() {
-    this.analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
-      viewer: this.webGlobe.viewer
-    })
     cesiumUtilInstance.setCesiumGlobe(this.Cesium, this.webGlobe)
     this.webGlobe.viewer.camera.changed.addEventListener(
       this.changeFilterWithMap
@@ -124,22 +132,9 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   }
 
   destroyed() {
-    this.analysisManager = null
     this.webGlobe.viewer.camera.changed.removeEventListener(
       this.changeFilterWithMap
     )
-  }
-
-  private zoomTo(bound) {
-    const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-      bound.xmin,
-      bound.ymin,
-      bound.xmax,
-      bound.ymax
-    )
-    this.webGlobe.viewer.camera.flyTo({
-      destination: Rectangle
-    })
   }
 
   private zoomOrPanTo(bound) {
@@ -175,107 +170,6 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
           this.webGlobe.viewer.camera.positionCartographic.height
         )
       })
-    }
-  }
-
-  private mouseEnterEvent(e: any, id) {
-    // 高亮要素
-    const marker = this.markers.find(marker => marker.markerId == id)
-
-    if (marker) {
-      this.highlightFeature({
-        features: [marker.feature],
-        type: 'FeatureCollection'
-      })
-    }
-  }
-
-  private mouseLeaveEvent(e: any, id) {
-    this.clearHighlight()
-    this.stopDisplay()
-  }
-
-  private highlightFeature(featureGeoJson) {
-    // 需要根据要素类型来使用不同的type
-    if (featureGeoJson.features[0].geometry.type === 'Point') {
-      // 点要素的高亮符号怎么处理?
-    } else if (featureGeoJson.features[0].geometry.type === 'LineString') {
-      const lineColor = new this.Cesium.Color.fromCssColorString(
-        this.highlightStyle.feature.line.color
-      )
-      for (let i = 0; i < featureGeoJson.features.length; i += 1) {
-        const coords = featureGeoJson.features[i].geometry.coordinates
-        const name = `result-entity-${i}`
-        this.entityNames.push(name)
-        cesiumUtilInstance.appendLine({
-          name: name,
-          pointsArray: coords
-            .join(',')
-            .split(',')
-            .map(Number),
-          width: this.highlightStyle.feature.line.size,
-          color: lineColor
-        })
-      }
-    } else if (featureGeoJson.features[0].geometry.type === 'Polygon') {
-      const fillColor = new this.Cesium.Color.fromCssColorString(
-        this.highlightStyle.feature.reg.color
-      )
-      const fillOutlineColor = new this.Cesium.Color.fromCssColorString(
-        this.highlightStyle.feature.line.color
-      )
-      for (let i = 0; i < featureGeoJson.features.length; i += 1) {
-        const coords = featureGeoJson.features[i].geometry.coordinates[0]
-        const name = `result-entity-${i}`
-        this.entityNames.push(name)
-        cesiumUtilInstance.appendPolygon(
-          name,
-          coords
-            .join(',')
-            .split(',')
-            .map(Number),
-          fillColor,
-          fillOutlineColor
-        )
-      }
-    } else if (featureGeoJson.features[0].geometry.type === '3DPolygon') {
-      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
-        'default',
-        featureGeoJson.features[0].id
-      )
-      if (source && source.length > 0) {
-        this.stopDisplay()
-        this.currentLayer = [source[0]]
-        const idList = [featureGeoJson.features[0].properties.FID]
-        const options = {
-          // 高亮颜色
-          color: new this.Cesium.Color.fromCssColorString(
-            this.highlightStyle.feature.reg.color
-          ),
-          // 高亮模式：REPLACE为替换
-          colorBlendMode: this.Cesium.Cesium3DTileColorBlendMode.REPLACE
-        }
-        // 开始闪烁查找到的模型
-        this.analysisManager.startCustomDisplay(
-          this.currentLayer,
-          idList,
-          options
-        )
-      }
-    }
-  }
-
-  stopDisplay() {
-    if (this.currentLayer) {
-      this.analysisManager.stopCustomDisplay(this.currentLayer)
-      this.currentLayer = null
-    }
-  }
-
-  private clearHighlight() {
-    for (let i = this.entityNames.length - 1; i >= 0; i -= 1) {
-      cesiumUtilInstance.removeEntityByName(this.entityNames[i])
-      this.entityNames.pop()
     }
   }
 

@@ -2,12 +2,18 @@ import { Component, Vue } from 'vue-property-decorator'
 import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import * as Zondy from '@mapgis/webclient-es6-service'
 
+enum QueryType {
+  Point = 'Point',
+  Circle = 'Circle',
+  Rectangle = 'Rectangle',
+  Polygon = 'Polygon',
+  LineString = 'LineString',
+  PickModel = 'PickModel'
+}
+
 @Component
 export default class MapboxDraw extends Vue {
-  // -1 空状态、0  点、1  线、2   面、3  矩形、 4圆形
-  private type = -1
-
-  private clickType = ''
+  private queryType = ''
 
   // 绘制组件
   drawer = null
@@ -24,14 +30,14 @@ export default class MapboxDraw extends Vue {
   }
 
   beforeDestroy() {
-    this.drawer = undefined
+    this.drawer = null
   }
 
   onAdded(e, data) {
     const { drawer, map } = e
     // 赋值绘制组件
     this.drawer = drawer || {}
-    this.type = -1
+    this.queryType = ''
   }
 
   onDrawFinish(e) {
@@ -48,73 +54,85 @@ export default class MapboxDraw extends Vue {
     }
 
     let bound: any
-    if (this.type === 0) {
-      bound = new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
+    if (this.queryType === QueryType.Point) {
+      bound = {
+        x: coordinates[0],
+        y: coordinates[1],
         nearDis
-      })
-    } else if (this.type === 1) {
+      }
+    } else if (this.queryType === QueryType.LineString) {
       const arr = coordinates.map((item: Array<number>) => {
-        return new Zondy.Common.Point2D(item[0], item[1], {
+        return {
+          x: item[0],
+          y: item[1],
           nearDis
-        })
+        }
       })
-      bound = new Zondy.Common.PolyLine(arr, { nearDis })
-    } else if (this.type === 2) {
+      bound = arr
+    } else if (this.queryType === QueryType.Polygon) {
       const arr = coordinates[0].map((item: Array<number>) => {
-        return new Zondy.Common.Point2D(item[0], item[1], {
+        return {
+          x: item[0],
+          y: item[1],
           nearDis
-        })
+        }
       })
-      bound = new Zondy.Common.Polygon(arr)
-    } else if (this.type === 3 || this.type === 4) {
+      bound = arr
+    } else if (
+      this.queryType === QueryType.Circle ||
+      this.queryType === QueryType.Rectangle
+    ) {
       const { xmin, ymin, xmax, ymax } = utilInstance.getGeoJsonFeatureBound(
         e.features[0]
       )
-      bound = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
+      bound = {
+        xmin,
+        ymin,
+        xmax,
+        ymax
+      }
     }
-    this.toggleDeleteAll()
-
-    this.queryType = ''
-
     this.queryLayer(bound)
+
+    this.toggleDeleteAll()
   }
 
   togglePoint() {
     this.enableDrawer()
-    this.type = 0
+    this.queryType = QueryType.Point
 
     this.drawer && this.drawer?.changeMode('draw_point')
   }
 
   togglePolyline() {
     this.enableDrawer()
-    this.type = 1
+    this.queryType = QueryType.LineString
 
     this.drawer && this.drawer?.changeMode('draw_line_string')
   }
 
   togglePolygon() {
     this.enableDrawer()
-    this.type = 2
+    this.queryType = QueryType.Polygon
 
     this.drawer && this.drawer?.changeMode('draw_polygon')
   }
 
   toggleRect() {
     this.enableDrawer()
-    this.type = 3
+    this.queryType = QueryType.Rectangle
     this.drawer && this.drawer?.changeMode('draw_rectangle')
   }
 
   toggleCircle() {
     this.enableDrawer()
-    this.type = 4
+    this.queryType = QueryType.Circle
 
     this.drawer && this.drawer?.changeMode('draw_circle')
   }
 
   toggleDeleteAll() {
-    this.type = -1
+    this.queryType = ''
 
     this.drawer && this.drawer?.deleteAll()
   }
@@ -130,7 +148,6 @@ export default class MapboxDraw extends Vue {
         'draw_circle'
       ].includes(this.drawer.getMode())
     ) {
-      this.type = -1
       this.queryType = ''
       this.drawer.deleteAll()
       this.drawer.changeMode('simple_select')

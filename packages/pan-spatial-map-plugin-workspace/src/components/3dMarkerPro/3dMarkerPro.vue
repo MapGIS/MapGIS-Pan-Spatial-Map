@@ -3,7 +3,8 @@
     <mapgis-3d-popup
       :position="{
         longitude: popupPosition.longitude,
-        latitude: popupPosition.latitude
+        latitude: popupPosition.latitude,
+        height: popupPosition.height
       }"
       :showed="showPopup"
     >
@@ -79,9 +80,11 @@ export default class Mp3dMarkerPro extends Vue {
       return {}
     }
     const { coordinates } = this.marker
+    const height = coordinates.length > 2 ? Number(coordinates[2]) : 0
     const position = {
       longitude: Number(coordinates[0]),
-      latitude: Number(coordinates[1])
+      latitude: Number(coordinates[1]),
+      height: height
     }
     return position
   }

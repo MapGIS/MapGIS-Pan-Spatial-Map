@@ -93,7 +93,7 @@
       </a-pagination>
     </div>
     <mp-marker-plotting
-      v-if="mapRender === mapboxRender"
+      v-if="mapRender === mapboxRender && !isIGSScence"
       ref="refMarkerPlotting"
       :markers="markers"
       :filter-with-map="filterWithMap"
@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
+import { Component, Mixins, Prop, Watch, Inject } from 'vue-property-decorator'
 import {
   ExhibitionMixin,
   IAttributeTableOption,
@@ -172,9 +172,16 @@ import {
   queryArcgisInfoInstance,
   FeatureGeoJSON,
   GFeature,
-  markerIconInstance
+  markerIconInstance,
+  cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
-import { AppMixin, LayerType, UUID } from '@mapgis/web-app-framework'
+import {
+  AppMixin,
+  LayerType,
+  UUID,
+  MapMixin,
+  Rectangle3D
+} from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
 import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
@@ -183,6 +190,7 @@ import Mp3dMarkerPlotting from '../3dMarkerPlotting/3dMarkerPlotting.vue'
 import MpFilter from '../Filter/Filter.vue'
 import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
 import axios from 'axios'
+import M3DCesium from '../M3DCesium/M3DCesium.vue'
 
 @Component({
   name: 'MpAttributeTable',
@@ -191,13 +199,17 @@ import axios from 'axios'
     MpMarkerPlotting,
     Mp3dMarkerPlotting,
     MpAttrStatistics,
-    MpFilter
+    MpFilter,
+    M3DCesium
   }
 })
 export default class MpAttributeTable extends Mixins(
   ExhibitionMixin,
-  AppMixin
+  AppMixin,
+  MapMixin
 ) {
+  @Inject('CesiumZondy') CesiumZondy
+
   // 属性表选项
   @Prop({ type: Object }) exhibition!: IAttributeTableExhibition
 
@@ -232,6 +244,8 @@ export default class MpAttributeTable extends Mixins(
 
   // 地图范围
   private geometry?: Record<string, unknown> = undefined
+
+  private geometry3D?: Record<string, unknown> = undefined
 
   // 选中的行
   private selection: unknown[] = []
@@ -287,6 +301,8 @@ export default class MpAttributeTable extends Mixins(
       return 'fid'
     } else if (serverType === LayerType.arcGISMapImage) {
       return 'ID'
+    } else if (this.isIGSScence) {
+      return 'FID'
     }
     return 'fid'
   }
@@ -378,7 +394,6 @@ export default class MpAttributeTable extends Mixins(
     if (bound === undefined) {
       bound = utilInstance.getGeoJsonFeatureBound(feature)
     }
-    // 把bound缩小到1/2
     const width = bound.xmax - bound.xmin
     const height = bound.ymax - bound.ymin
     const center = {
@@ -443,8 +458,17 @@ export default class MpAttributeTable extends Mixins(
   }
 
   async onGetGeometry(val: Record<string, any>) {
-    const { xmin, ymin, xmax, ymax } = val
+    const { xmin, ymin, xmax, ymax, height = 0 } = val
     this.geometry = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
+
+    this.geometry3D = {
+      xmin,
+      ymin,
+      zmin: -100000,
+      xmax,
+      ymax,
+      zmax: 100000
+    }
     // 分页初始化到第一页
     this.pagination.current = 1
     // 记录当前选中的行（避免双击定位同时根据范围过滤时导致信息刷新）
@@ -504,51 +528,7 @@ export default class MpAttributeTable extends Mixins(
         queryGeometry,
         queryWhere
       )
-      const columns: Array = []
-      const {
-        FldNumber = 0,
-        FldName = [],
-        FldAlias = [],
-        FldType = []
-      } = AttStruct
-      // 根据字段数计算useScrollX
-      if (FldNumber <= 10) {
-        // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
-        this.useScrollX = false
-      } else {
-        // 10个以上，每个设固定宽度180，且启用水平滚动条
-        this.useScrollX = true
-      }
-      for (let index = 0; index < FldNumber; index++) {
-        const name = FldName[index]
-        const alias = FldAlias[index] ? `${FldAlias[index]}` : ''
-        const type = FldType[index]
-        const sortable = !['GEOMETRY', 'STRING'].includes(type.toUpperCase())
-        const obj = {
-          title: alias.length ? alias : name,
-          key: name,
-          dataIndex: `properties.${name}`,
-          align: 'left',
-          // 超过宽度将自动省略
-          ellipsis: true
-        }
-        if (this.useScrollX) {
-          obj.width = 180
-        }
-        columns.push(
-          sortable
-            ? {
-                ...obj,
-                sorter: (a, b) =>
-                  this.sorterFunciton(
-                    a.properties[name],
-                    b.properties[name],
-                    type
-                  )
-              }
-            : obj
-        )
-      }
+      const columns = this.setTableScroll(AttStruct)
       this.tableColumns = columns
       this.pagination.total = TotalCount
       this.tableData = geojson.features
@@ -571,7 +551,6 @@ export default class MpAttributeTable extends Mixins(
         serverUrl,
         layerIndex
       })
-      console.log(totalCount)
       const geojson = await queryArcgisInfoInstance.query({
         f: 'json',
         where: queryWhere,
@@ -622,7 +601,145 @@ export default class MpAttributeTable extends Mixins(
       if (this.isExhibitionActive) {
         await this.addMarkers()
       }
+    } else if (serverType === LayerType.IGSScene) {
+      // 查找矩阵集
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        this.optionVal.id
+      )
+      const { gdbp } = this.optionVal
+      const queryWhere = where || this.optionVal.where
+      const queryGeometry = geometry
+        ? this.getGeometry3D(source)
+        : this.optionVal.geometry
+      const { current, pageSize } = this.pagination
+      const json = (await queryFeaturesInstance.query(
+        {
+          ip,
+          port: port.toString(),
+          where: queryWhere,
+          geometry: queryGeometry,
+          page: current - 1,
+          pageCount: pageSize,
+          gdbp,
+          coordPrecision: 8
+        },
+        false,
+        serverType === LayerType.IGSScene
+      )) as FeatureGeoJSON
+      const { AttStruct, SFEleArray = [], TotalCount } = json
+      const { FldNumber = 0, FldName = [] } = AttStruct
+      const columns = this.setTableScroll(AttStruct)
+      this.tableColumns = columns
+      this.pagination.total = TotalCount
+      this.tableData = (SFEleArray || []).map(
+        ({ AttValue = [], bound = {}, FID }) => {
+          let boundObj = null
+          if (source.length > 0) {
+            const tranform = source[0].root.transform
+            boundObj = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+              bound,
+              tranform
+            )
+          }
+          const properties = { FID }
+          for (let index = 0; index < FldNumber; index++) {
+            const name = FldName[index]
+            const value = AttValue[index]
+            properties[name] = value
+          }
+          return {
+            geometry: {
+              coordinates: [],
+              type: '3DPolygon'
+            },
+            id: this.optionVal.id,
+            bound: boundObj,
+            properties
+          }
+        }
+      )
+      this.removeMarkers()
+      // 如果当前是激活状态，则添加markers
+      if (this.isExhibitionActive) {
+        await this.addMarkers()
+      }
     }
+  }
+
+  getGeometry3D(source) {
+    if (source.length > 0) {
+      const transform = source[0].root.transform
+      const { xmin, ymin, xmax, ymax, zmin, zmax } = this.geometry3D
+      const minPosition = cesiumUtilInstance.degreeToDataPosition(
+        { x: xmin, y: ymin, z: zmin },
+        transform
+      )
+      const maxPosition = cesiumUtilInstance.degreeToDataPosition(
+        { x: xmax, y: ymax, z: zmax },
+        transform
+      )
+      return new Rectangle3D(
+        minPosition.x,
+        minPosition.y,
+        zmin,
+        maxPosition.x,
+        maxPosition.y,
+        zmax
+      )
+    }
+
+    return undefined
+  }
+
+  private setTableScroll(AttStruct) {
+    const columns: Array = []
+    const {
+      FldNumber = 0,
+      FldName = [],
+      FldAlias = [],
+      FldType = []
+    } = AttStruct
+    // 根据字段数计算useScrollX
+    if (FldNumber <= 10) {
+      // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
+      this.useScrollX = false
+    } else {
+      // 10个以上，每个设固定宽度180，且启用水平滚动条
+      this.useScrollX = true
+    }
+    for (let index = 0; index < FldNumber; index++) {
+      const name = FldName[index]
+      const alias = FldAlias[index] ? `${FldAlias[index]}` : ''
+      const type = FldType[index]
+      const sortable = !['GEOMETRY', 'STRING'].includes(type.toUpperCase())
+      const obj = {
+        title: alias.length ? alias : name,
+        key: name,
+        dataIndex: `properties.${name}`,
+        align: 'left',
+        // 超过宽度将自动省略
+        ellipsis: true
+      }
+      if (this.useScrollX) {
+        obj.width = 180
+      }
+      columns.push(
+        sortable
+          ? {
+              ...obj,
+              sorter: (a, b) =>
+                this.sorterFunciton(
+                  a.properties[name],
+                  b.properties[name],
+                  type
+                )
+            }
+          : obj
+      )
+    }
+
+    return columns
   }
 
   private async queryCount(geometry?: Record<string, any>, where?: string) {
@@ -713,13 +830,29 @@ export default class MpAttributeTable extends Mixins(
     )
   }
 
+  private get isIGSScence() {
+    const { serverType } = this.optionVal
+    return serverType === LayerType.IGSScene
+  }
+
   // 添加标注
   private async addMarkers() {
+    const { serverType } = this.optionVal
+
     const unSelectIcon = await markerIconInstance.unSelectIcon()
     const tempMarkers: Record<string, any>[] = []
     for (let i = 0; i < this.tableData.length; i += 1) {
       const feature = this.tableData[i]
-      const center = utilInstance.getGeoJsonFeatureCenter(feature)
+      let center = []
+      if (this.isIGSScence) {
+        const { xmin, xmax, ymin, ymax } = feature.bound
+        const longitude = (xmin + xmax) / 2
+        const latitude = (ymin + ymax) / 2
+        // const height = await this.getModelHeight(longitude, latitude)
+        center = [longitude, latitude]
+      } else {
+        center = utilInstance.getGeoJsonFeatureCenter(feature)
+      }
       if (!(Number.isNaN(center[0]) || Number.isNaN(center[1]))) {
         const marker: Record<string, any> = {
           coordinates: center,
@@ -732,7 +865,40 @@ export default class MpAttributeTable extends Mixins(
         tempMarkers.push(marker)
       }
     }
+    if (this.isIGSScence && tempMarkers.length > 0) {
+      const arr = await this.getModelHeight(tempMarkers)
+      if (arr.length === tempMarkers.length) {
+        arr.forEach((item, index) => {
+          const { longitude, latitude, height } = item
+          tempMarkers[index].coordinates = [longitude, latitude, height]
+        })
+      }
+    }
     this.markers = [...tempMarkers]
+  }
+
+  getModelHeight(tempMarkers: Array<unknown>) {
+    return new Promise((resolve, reject) => {
+      const positions = tempMarkers.map(item => {
+        return new this.Cesium.Cartesian3.fromDegrees(
+          item.coordinates[0],
+          item.coordinates[1]
+        )
+      })
+      const sampleElevationTool = new this.Cesium.SampleElevationTool(
+        this.webGlobe.viewer,
+        positions,
+        'model',
+        elevationPosition => {
+          if (elevationPosition && elevationPosition.length > 0) {
+            resolve(elevationPosition)
+          } else {
+            resolve([])
+          }
+        }
+      )
+      sampleElevationTool.start()
+    })
   }
 
   // 移除标注
@@ -753,7 +919,8 @@ export default class MpAttributeTable extends Mixins(
     const { serverType, gdbp, serverUrl } = this.optionVal
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
       this.statisticAndFilterParamas = {
         ip: this.optionVal.ip.toString(),

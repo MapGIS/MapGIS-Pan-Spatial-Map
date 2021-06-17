@@ -330,7 +330,8 @@ export default class FilterItem extends Vue {
     let options: OptionItem[] = []
     if (
       serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
+      serverType === LayerType.IGSVector ||
+      serverType === LayerType.IGSScene
     ) {
       const info = await queryFeaturesInstance.query(
         {
@@ -345,7 +346,8 @@ export default class FilterItem extends Vue {
           cursorType: 'cursorType',
           gdbp
         },
-        false
+        false,
+        serverType === LayerType.IGSScene
       )
 
       const {
