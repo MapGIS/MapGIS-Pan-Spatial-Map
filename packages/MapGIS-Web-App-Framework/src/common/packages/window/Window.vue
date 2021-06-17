@@ -336,6 +336,9 @@ export default {
     verticalOffset(newVal) {
       this.dragVerticalOffset = newVal
     },
+    isFullScreen(newVal) {
+      this.fullScreen = newVal
+    },
     resizeHeight: {
       handler() {
         if (this.resizeHeight) {

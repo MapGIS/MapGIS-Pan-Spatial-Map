@@ -1,29 +1,35 @@
 <template>
   <a-space class="swipe-setting" direction="vertical" style="flex: 1;">
     <!-- 上图层 -->
-    <row :title="directionLayerTitle.aboveTitle">
-      <a-select :value="aboveLayer.id" @change="onAboveChange">
-        <a-select-option
-          v-for="p in aboveLayers"
-          :key="p.id"
-          :value="p.id"
-          :title="p.title"
-          >{{ p.title }}</a-select-option
-        ></a-select
-      >
-    </row>
-    <!-- 下图层 -->
-    <row :title="directionLayerTitle.belowTitle">
-      <a-select :value="belowLayer.id" @change="onBelowChange">
-        <a-select-option
-          v-for="p in belowLayers"
-          :key="p.id"
-          :value="p.id"
-          :title="p.title"
-          >{{ p.title }}</a-select-option
+    <a-row>
+      <a-col> {{ directionLayerTitle.aboveTitle }}图层： </a-col>
+      <a-col>
+        <a-select :value="aboveLayer.id" @change="onAboveChange">
+          <a-select-option
+            v-for="p in aboveLayers"
+            :key="p.id"
+            :value="p.id"
+            :title="p.title"
+            >{{ p.title }}</a-select-option
+          ></a-select
         >
-      </a-select>
-    </row>
+      </a-col>
+    </a-row>
+    <!-- 下图层 -->
+    <a-row>
+      <a-col> {{ directionLayerTitle.belowTitle }}图层： </a-col>
+      <a-col>
+        <a-select :value="belowLayer.id" @change="onBelowChange">
+          <a-select-option
+            v-for="p in belowLayers"
+            :key="p.id"
+            :value="p.id"
+            :title="p.title"
+            >{{ p.title }}</a-select-option
+          >
+        </a-select>
+      </a-col>
+    </a-row>
     <!-- 方向 -->
     <a-radio-group :value="direction" @change="onDirectionChange">
       <a-radio value="vertical"> 垂直 </a-radio>
@@ -32,40 +38,22 @@
   </a-space>
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
+import {
+  Mixins,
+  Vue,
+  Watch,
+  Component,
+  InjectReactive
+} from 'vue-property-decorator'
 import { AppMixin, Layer } from '@mapgis/web-app-framework'
-import Row from './Row'
 
-export type LayerDirect = 'above' | 'below'
-
-export type Direction = 'vertical' | 'horizontal'
-
-@Component({
-  components: {
-    Row
-  }
-})
+@Component
 export default class SwipeSetting extends Mixins(AppMixin) {
-  @Prop() readonly isOpen!: boolean
-
-  @Watch('isOpen')
-  watchIsOpen(nV) {
-    this.initMap(nV)
-  }
-
-  /**
-   * 监听: defaultMap变化
-   */
-  @Watch('document.defaultMap', { deep: true })
-  watchDefaultMap() {
-    this.initMap(this.isOpen)
-  }
-
-  // 上级(左侧)图层
-  aboveLayer: Layer | object = {}
-
-  // 下级(右侧)图层
-  belowLayer: Layer | object = {}
+  @InjectReactive({
+    from: 'swipe',
+    default: () => ({})
+  })
+  swipe: any
 
   // 上级(左侧)图层列表
   aboveLayers: Layer[] = []
@@ -73,11 +61,10 @@ export default class SwipeSetting extends Mixins(AppMixin) {
   // 下级(右侧)图层列表
   belowLayers: Layer[] = []
 
-  // 目录树勾选的图层
-  layers: Layer[] = []
-
   // 卷帘方向
-  direction: Direction = 'vertical'
+  get direction() {
+    return this.swipe.direction || 'vertical'
+  }
 
   // 卷帘方向变化，同步更改图层选择框的标题
   get directionLayerTitle(): {
@@ -96,62 +83,56 @@ export default class SwipeSetting extends Mixins(AppMixin) {
     }
   }
 
-  /**
-   * 初始化图层列表
-   */
-  initMap(isOpen = false) {
-    let _fId = ''
-    let _sId = ''
-    let _layers = []
-    if (isOpen) {
-      _layers = this.document.defaultMap
-        .clone()
-        .getFlatLayers()
-        .filter(v => v.isVisible)
-      if (_layers && _layers.length > 1) {
-        _fId = _layers[0].id
-        _sId = _layers[1].id
-      }
-    }
-    this.layers = _layers
-    this.onAboveChange(_fId)
-    this.onBelowChange(_sId)
+  // 上级(左侧)图层
+  get aboveLayer() {
+    return this.swipe.aboveLayer || {}
+  }
+
+  // 下级(右侧)图层
+  get belowLayer() {
+    return this.swipe.belowLayer || {}
+  }
+
+  // 选择的所有图层列表
+  get layers() {
+    return this.swipe.layers || []
   }
 
   /**
-   * 上下图层选择变化时获取对应的图层逻辑
-   * @param value 切换的值
-   * @param layerkey
-   * @param layersKey
+   * 上下图层选择变化时获取对应的图层列表
    */
-  getLayers(value: string, layerKey: LayerDirect, layersKey: LayerDirect) {
-    const layer = this.layers.find(({ id }: Layer) => id === value) || {}
-    const layers = this.layers.filter(({ id }: Layer) => id !== value)
-    this[`${layerKey}Layer`] = layer
-    this[`${layersKey}Layers`] = layers
-    this.$emit(`on-${layerKey}-change`, layer, layerKey)
-  }
-
-  /**
-   * 卷帘方向变化
-   */
-  onDirectionChange(e) {
-    this.direction = e.target.value
-    this.$emit('on-direct-change', this.direction)
+  getLayers(layers: Layer[], { id }: Layer) {
+    return layers.filter((l: Layer) => l.id !== id)
   }
 
   /**
    * 上层(左侧)图层变化
    */
   onAboveChange(value: string) {
-    this.getLayers(value, 'above', 'below')
+    this.swipe.onAboveChange(value)
   }
 
   /**
    * 下层(右侧)图层变化
    */
   onBelowChange(value: string) {
-    this.getLayers(value, 'below', 'above')
+    this.swipe.onBelowChange(value)
+  }
+
+  /**
+   * 卷帘方向变化
+   */
+  onDirectionChange(e) {
+    this.swipe.onDirectChange(e.target.value)
+  }
+
+  /**
+   * 监听: 图层列表化
+   */
+  @Watch('layers')
+  watchLayers(nV) {
+    this.aboveLayers = this.getLayers(nV, this.belowLayer)
+    this.belowLayers = this.getLayers(nV, this.aboveLayer)
   }
 }
 </script>
@@ -159,5 +140,8 @@ export default class SwipeSetting extends Mixins(AppMixin) {
 .swipe-setting {
   width: 100%;
   height: 100%;
+  /deep/ .ant-select {
+    width: 100%;
+  }
 }
 </style>

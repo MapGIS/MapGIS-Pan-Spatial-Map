@@ -1,10 +1,9 @@
 <template>
   <div class="swipe-mapbox-compare">
     <!-- 空数据提示 -->
-    <a-empty
-      description="卷帘分析功能至少需要选择2个图层"
-      v-if="!showCompare"
-    />
+    <div class="swipe-mapbox-empty" v-if="!showCompare">
+      <a-empty description="卷帘分析功能至少需要选择2个图层" />
+    </div>
     <!-- 卷帘组件 -->
     <mapgis-compare v-else :orientation="direction">
       <mp-mapbox-view
@@ -18,6 +17,7 @@
         :mapStyle="mapStyle"
       />
     </mapgis-compare>
+    <!-- 图层设置 -->
     <a-drawer
       title="设置"
       placement="right"
@@ -33,19 +33,14 @@
       <div class="drawer-handle" slot="handle" @click="onToggleSettingPanel">
         <a-icon :type="settingPanelVisible ? 'right' : 'left'" />
       </div>
-      <swipe-setting
-        @on-direct-change="onDirectChange"
-        @on-above-change="onUpdate"
-        @on-below-change="onUpdate"
-        :is-open="isOpen"
-      />
+      <swipe-setting />
     </a-drawer>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Watch, InjectReactive } from 'vue-property-decorator'
 import { Document, MpMapboxView, Layer } from '@mapgis/web-app-framework'
-import SwipeSetting, { LayerDirect, Direction } from './SwipeSetting'
+import SwipeSetting from './SwipeSetting'
 
 @Component({
   components: {
@@ -54,25 +49,20 @@ import SwipeSetting, { LayerDirect, Direction } from './SwipeSetting'
   }
 })
 export default class MapboxCompare extends Vue {
-  @Prop() readonly isOpen!: boolean
+  @InjectReactive({
+    from: 'swipe',
+    default: () => ({})
+  })
+  swipe: any
 
-  // 上级(左侧)图层
-  aboveLayer: Layer | object = {}
+  // 上级(左侧)地图Document
+  aboveDocument: Document = new Document()
 
-  // 下级(右侧)图层
-  belowLayer: Layer | object = {}
-
-  // 卷帘方向
-  direction: Direction = 'vertical'
+  // 下级(右侧)地图Document
+  belowDocument: Document = new Document()
 
   // 弹框开关
   settingPanelVisible = true
-
-  // 上级(左侧)地图Document
-  aboveDocument = new Document()
-
-  // 下级(右侧)地图Document
-  belowDocument = new Document()
 
   // 图层样式
   mapStyle: any = {
@@ -81,6 +71,21 @@ export default class MapboxCompare extends Vue {
     layers: [],
     glyphs:
       'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf'
+  }
+
+  // 卷帘方向
+  get direction() {
+    return this.swipe.direction || 'vertical'
+  }
+
+  // 上级(左侧)图层
+  get aboveLayer() {
+    return this.swipe.aboveLayer || {}
+  }
+
+  // 下级(右侧)图层
+  get belowLayer() {
+    return this.swipe.belowLayer || {}
   }
 
   // 是否展示卷帘
@@ -110,21 +115,31 @@ export default class MapboxCompare extends Vue {
     }
   }
 
-  onToggleSettingPanel() {
-    this.settingPanelVisible = !this.settingPanelVisible
-  }
-
-  onUpdate(layer: Layer, type: LayerDirect) {
-    const defaultMap = this[`${type}Document`].defaultMap
-    defaultMap.removeAll()
+  addLayerToMap({ defaultMap }: Document, layer: Layer) {
     if (layer) {
-      this[`${type}Layer`] = layer
+      defaultMap.removeAll()
       defaultMap.add(layer)
     }
   }
 
-  onDirectChange(direct) {
-    this.direction = direct
+  onToggleSettingPanel() {
+    this.settingPanelVisible = !this.settingPanelVisible
+  }
+
+  /**
+   * 监听: 上级(左侧)图层
+   */
+  @Watch('aboveLayer.id')
+  watchAboveLayer(nV) {
+    this.addLayerToMap(this.aboveDocument, this.aboveLayer)
+  }
+
+  /**
+   * 监听: 下级(右侧)图层
+   */
+  @Watch('belowLayer.id')
+  watchBelowLayer(nV) {
+    this.addLayerToMap(this.belowDocument, this.belowLayer)
   }
 }
 </script>
@@ -140,6 +155,19 @@ export default class MapboxCompare extends Vue {
   width: 100%;
   height: 100%;
   position: relative;
+  /deep/ .mapgis-compare-bar {
+    width: 100%;
+    height: 100%;
+    min-width: 77vw;
+    min-height: 77vh;
+  }
+}
+
+.swipe-mapbox-empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .drawer-handle {

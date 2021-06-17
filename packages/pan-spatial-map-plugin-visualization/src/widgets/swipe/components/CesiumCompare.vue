@@ -1,19 +1,22 @@
 <template>
   <div class="swipe-cesium-compare">
+    <!-- 卷帘组件 -->
     <mapgis-3d-compare
       v-if="showCompare"
-      :before-layers="aboveLayers"
-      :after-layers="belowLayers"
+      :before-layers="beforeLayers"
+      :after-layers="afterLayers"
     />
-    <swipe-setting
-      @on-above-change="onChange"
-      @on-below-change="onChange"
-      :is-open="isOpen"
+    <!-- 空数据提示 -->
+    <a-empty
+      v-show="!showCompare"
+      description="卷帘分析功能至少需要选择2个图层"
     />
+    <!-- 图层设置 -->
+    <swipe-setting v-show="showCompare" />
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, InjectReactive } from 'vue-property-decorator'
 import { Layer } from '@mapgis/web-app-framework'
 import SwipeSetting from './SwipeSetting'
 
@@ -23,27 +26,37 @@ import SwipeSetting from './SwipeSetting'
   }
 })
 export default class CesiumCompare extends Vue {
-  @Prop() readonly isOpen!: boolean
+  @InjectReactive({
+    from: 'swipe',
+    default: () => ({})
+  })
+  swipe: any
 
   // 上级(左侧)图层列表
-  aboveLayers: string[] = []
+  get beforeLayers() {
+    return this.getLayerIds(this.swipe.aboveLayer)
+  }
 
   // 下级(右侧)图层列表
-  belowLayers: string[] = []
+  get afterLayers() {
+    return this.getLayerIds(this.swipe.belowLayer)
+  }
 
   // 是否展示卷帘
   get showCompare() {
-    return this.aboveLayers.length && this.belowLayers.length
+    return this.beforeLayers.length && this.afterLayers.length
   }
 
-  onChange({ id }, type) {
-    this[`${type}Layers`] = id ? [id] : []
+  getLayerIds({ id }: Layer) {
+    return id ? [id] : []
   }
 }
 </script>
 <style lang="less" scoped>
 .swipe-cesium-compare {
-  padding: 0 12px;
-  min-height: 600px;
+  padding: 20px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
