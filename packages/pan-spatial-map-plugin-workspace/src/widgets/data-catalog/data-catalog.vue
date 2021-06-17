@@ -183,7 +183,10 @@
         :visible.sync="showNoSpatial"
       >
         <template>
-          <NonSpatial></NonSpatial>
+          <NonSpatial
+            :url="nonSpatialUrl"
+            :treeConfig="widgetConfig"
+          ></NonSpatial>
         </template>
       </mp-window>
     </mp-window-wrapper>
@@ -268,6 +271,12 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 非空间数据窗口的显隐
   private showNoSpatial = false
 
+  // 非空间数据资源url
+  private nonSpatialUrl = ''
+
+  // 目录树配置
+  private widgetConfig = {}
+
   // 设置选中的树节点
   get selectedKeys() {
     if (this.hasKeywordArr.length > 0 && this.searchIndex !== -1) {
@@ -288,9 +297,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       duration: 2,
       maxCount: 1
     })
+
+    this.widgetConfig = this.widgetInfo.config
   }
 
   async mounted() {
+    console.log(this.widgetInfo.config)
+
     this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
     this.dataCatalogManager.init(this.widgetInfo.config)
 
@@ -538,8 +551,17 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   onClick(item) {
     console.log(item)
+    const widgetConfig = this.widgetInfo.config
+
     if (item.description.includes('非空间数据')) {
       this.showNoSpatial = true
+
+      if (
+        widgetConfig.treeConfig.useLocalData ||
+        widgetConfig.treeConfig.useLocalParam
+      ) {
+        this.nonSpatialUrl = `${this.baseUrl}/api/non-spatial/files?pageNumber=0&pageSize=1000&path=${item.data}&protocol=ftp&url=ftp://192.168.21.191:21`
+      }
     }
   }
 

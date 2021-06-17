@@ -4,14 +4,15 @@
       <a-input-search
         placeholder="请输入查询条件"
         enter-button="搜索"
+        allow-clear
         @search="onSearch"
       />
       <div class="header-right">
         <div class="right-item first">
           <span>类型:</span>
-          <a-select v-model="selectType" size="small">
-            <a-select-option v-for="item in typeOptions" :key="item">
-              {{ item }}
+          <a-select v-model="selectType" size="small" @change="onSelectChange">
+            <a-select-option v-for="item in typeOptions" :key="item.value">
+              {{ item.label }}
             </a-select-option>
           </a-select>
         </div>
@@ -37,6 +38,13 @@
         v-show="!showPicutre"
         :columns="columns"
         :data-source="tableData"
+        :pagination="pagination"
+        :rowKey="
+          record => {
+            return record.id
+          }
+        "
+        @change="onTablePageChange"
       >
         <template slot="name" slot-scope="text">
           <a-icon type="file" />
@@ -47,83 +55,93 @@
         </template>
       </a-table>
       <div v-show="showPicutre" class="panel-content">
-        <div class="content-item" v-for="item in tableData" :key="item.key">
-          <div class="item-img"></div>
-          <div>label</div>
+        <div class="content-item" v-for="item in pictrueData" :key="item.id">
+          <div class="item-img">
+            <img
+              :src="`http://localhost:8015${treeConfig.iconConfig[1]}`"
+              alt=""
+            />
+          </div>
+          <div class="item-label">
+            <a-popover placement="bottom">
+              <template slot="content">
+                <span>{{ item.name }}</span>
+              </template>
+              <div class="lable-text">{{ item.name }}</div>
+            </a-popover>
+          </div>
         </div>
       </div>
     </div>
     <div class="non-spatial-footer">
       <a-pagination
-        :total="85"
+        v-show="!showPicutre"
+        :total="pageTotal"
         :show-total="
           (total, range) => `${range[0]}-${range[1]} of ${total} items`
         "
-        :page-size="20"
+        :page-size="8"
         :default-current="1"
+        @change="onPageChange"
+      />
+
+      <a-pagination
+        v-show="showPicutre"
+        :current="currentPage"
+        :total="pageTotal"
+        :show-total="
+          (total, range) => `${range[0]}-${range[1]} of ${total} items`
+        "
+        :page-size="10"
+        :default-current="1"
+        @change="onPicturePageChange"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
+import axios from 'axios'
 
 @Component({ name: 'MpNonSpatial' })
 export default class MpNonSpatial extends Mixins(WidgetMixin) {
-  // 搜索框搜索事件
-  private onSearch() {}
+  // 非空间数据资源url
+  @Prop({ type: String }) url: string
+
+  // 目录树微件的配置
+  @Prop({ type: Object }) treeConfig: object
 
   // 类型下拉值
   private selectType = ''
 
   // 类型下拉项数组
-  private typeOptions = []
-
-  // 表格数据
-  private tableData = [
+  private typeOptions = [
     {
-      key: '1',
-      name: 'John Brown',
-      type: 32
+      label: '全部',
+      value: 'all'
     },
     {
-      key: '2',
-      name: 'Jim Green',
-      type: 42
+      label: '图片',
+      value: 'img'
     },
     {
-      key: '3',
-      name: 'Joe Black',
-      type: 32
+      label: '文档',
+      value: 'word'
     },
     {
-      key: '4',
-      name: 'Joe Black',
-      type: 32
+      label: '表格',
+      value: 'xls'
     },
     {
-      key: '5',
-      name: 'Joe Black',
-      type: 32
-    },
-    {
-      key: '6',
-      name: 'Joe Black',
-      type: 32
-    },
-    {
-      key: '7',
-      name: 'Joe Black',
-      type: 32
-    },
-    {
-      key: '8',
-      name: 'Joe Black',
-      type: 32
+      label: '视频',
+      value: 'video'
     }
   ]
+
+  // 表格数据
+  private tableData = []
 
   // 表格列配置
   private columns = [
@@ -147,18 +165,112 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     }
   ]
 
+  // 以大图方式显示的数据
+  private pictrueData = []
+
   // 数据是否以大图显示
   private showPicutre = false
+
+  // 分页器配置
+  private pagination = {
+    current: 1,
+    total: this.tableData.length,
+    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+    pageSize: 8
+  }
+
+  // 分页器总数
+  private pageTotal = 0
+
+  // 分页器当前页数
+  private currentPage = 1
+
+  @Watch('url')
+  onUrlChange(newVal) {
+    console.log(newVal)
+
+    this.getNonSpatialData().then(res => {
+      console.log(res)
+      this.tableData = res.content
+      this.pageTotal = res.totalElements
+
+      this.getPictureData()
+    })
+  }
 
   created() {
     this.initData()
   }
 
+  // 初始化各项数据
   private initData() {}
+
+  // 初始化非空间数据
+  private getNonSpatialData() {
+    return new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest()
+      request.responseType = 'json'
+      request.open('GET', this.url)
+      request.withCredentials = true
+      request.onreadystatechange = () => {
+        if (request.readyState === 4) {
+          if (request.status >= 200 && request.status <= 304) {
+            const data = JSON.parse(JSON.stringify(request.response))
+            resolve(data)
+          } else {
+            reject(request.response)
+          }
+        }
+      }
+      request.send()
+    })
+  }
+
+  // 分页页码改变的回调(列表状态显示)
+  private onPageChange(page, pageSize) {
+    this.pagination.current = page
+    this.pagination.pageSize = pageSize
+
+    // 同步更新table表格的分页器
+    this.onTablePageChange(this.pagination)
+  }
+
+  // 分页页码改变的回调(大图状态显示)
+  private onPicturePageChange(page) {
+    this.currentPage = page
+
+    this.getPictureData()
+  }
+
+  // table分页变化时回调
+  private onTablePageChange(pagination) {
+    this.pagination = { ...pagination }
+  }
+
+  // 获取大图状态显示下的数据
+  private getPictureData() {
+    if (this.tableData.length <= 10) {
+      this.pictrueData = this.tableData
+    } else {
+      const startIndex = (this.currentPage - 1) * 10
+      const endIndex = this.currentPage * 10
+      this.pictrueData = this.tableData.slice(startIndex, endIndex)
+    }
+  }
+
+  // 搜索框搜索事件回调
+  private onSearch() {}
+
+  // 下拉项变化时回调
+  private onSelectChange(value) {
+    console.log(value)
+  }
 
   // 点击大图图标回调
   private onPicture() {
     this.showPicutre = true
+
+    this.getPictureData()
   }
 
   // 点击列表图标回调
@@ -208,6 +320,10 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     .first {
       margin-right: 24px;
     }
+
+    .ant-select {
+      width: 64px;
+    }
   }
 
   .non-spatial-panel {
@@ -229,15 +345,49 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     }
 
     .content-item {
-      width: 16.6%;
-      height: 33%;
+      width: 18.6%;
+      height: 39%;
       display: flex;
       flex-direction: column;
-      border: 1px solid red;
       padding: 8px;
+      margin-bottom: 16px;
     }
+
+    .content-item:hover {
+      color: #169bd5;
+      cursor: pointer;
+    }
+
     .item-img {
       flex-grow: 1;
+      width: 100%;
+      position: relative;
+      border: 1px solid #dcdcdc;
+
+      img {
+        height: 65%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+      }
+    }
+
+    .item-label {
+      border: 1px solid #dcdcdc;
+      padding: 2px;
+
+      .lable-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    ::v-deep.ant-table-pagination {
+      visibility: hidden;
     }
   }
 
@@ -245,7 +395,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 16px;
+    margin: 12px;
   }
 }
 </style>
