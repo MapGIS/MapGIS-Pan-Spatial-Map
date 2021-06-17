@@ -370,8 +370,7 @@ export default class TreeLayer extends Mixins(
         item.visiblePopover = false
         if (this.isIGSScene(item)) {
           item.sublayers = item.activeScene.sublayers.map(row => ({
-            ...row,
-            title: row.name
+            ...row
           }))
         }
         if (this.isWMTSLayer(item)) {
@@ -568,8 +567,8 @@ export default class TreeLayer extends Mixins(
           }
           if (index === childrenArr.length - 1) {
             if (this.isIGSScene(layerItem)) {
-              layerItem.activeScene.sublayers[i].isVisible = !layerItem
-                .activeScene.sublayers[i].isVisible
+              layerItem.activeScene.sublayers[i].visible = !layerItem
+                .activeScene.sublayers[i].visible
             } else {
               layerItem.sublayers[i].visible = !layerItem.sublayers[i].visible
             }
@@ -878,8 +877,8 @@ export default class TreeLayer extends Mixins(
       const { ip, port, docName } = parent._parseUrl(parent.url)
       const { id, name, title } = sceneLayer
       exhibition = {
-        id: `${title || name} ${id}`,
-        name: `${title || name} 属性表`,
+        id: `${title} ${id}`,
+        name: `${title} 属性表`,
         option: {
           id: `${id}`,
           ip: ip || baseConfigInstance.config.ip,

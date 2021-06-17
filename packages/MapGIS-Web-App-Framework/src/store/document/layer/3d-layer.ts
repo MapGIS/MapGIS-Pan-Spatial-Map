@@ -30,6 +30,19 @@ export class Rectangle3D extends Rectangle {
     this.zmax = zmax
   }
 
+  getGeometryType() {
+    return 'Rect3D'
+  }
+
+  /**
+   * @function Zondy.Object.Rectangle.prototype.toString
+   * @description 对象转化为字符串
+   * @returns {String} 返回一个字符串来表示此矩形
+   */
+  toString() {
+    return `${this.xmin},${this.ymin},${this.zmin},${this.xmax},${this.ymax},${this.zmax}`
+  }
+
   /**
    * z最小值
    *
@@ -71,7 +84,30 @@ export class Point3D extends Point2D {
     this.z = z
   }
 
+  /**
+   * @description 获取几何类型名称
+   * @returns {String} point
+   */
+  getGeometryType() {
+    return 'Point3D'
+  }
+
+  /**
+   * @description 对象转化为字符串
+   * @returns {String} 返回一个以字符串形式表示的点
+   */
+  toString() {
+    /// <summary>返回一个以字符串形式表示的点</summary>
+    if (this.x === null || this.y === null || this.z === null) return ''
+    const str = `${this.x},${this.y},${this.z}`
+    return str
+  }
+
   z = 0.0
+
+  // x = 0.0
+
+  // y = 0.0
 }
 
 /**

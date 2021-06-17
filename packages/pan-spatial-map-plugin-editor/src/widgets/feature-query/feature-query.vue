@@ -69,7 +69,9 @@ import {
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
-  Sublayer
+  Sublayer,
+  Rectangle3D,
+  Point3D
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import {
@@ -78,7 +80,8 @@ import {
   point,
   booleanCrosses,
   booleanPointInPolygon,
-  booleanDisjoint
+  booleanDisjoint,
+  booleanContains
 } from '@turf/turf'
 import MapBoxDraw from './mixins/mapbox-draw'
 import CesiumDraw from './mixins/cesium-draw'
@@ -258,27 +261,209 @@ export default class MpFeatureQuery extends Mixins(
     }
   }
 
-  queryLayer(bound: Record<string, number>) {
+  queryLayer(bound: unknown) {
     if (!this.document) {
       return
     }
-
     const layerArr = this.document.defaultMap.layers()
     layerArr.forEach(item => {
       const mapData = item
-      if (!this.isCross(bound, item)) {
+      if (!this.isCross(bound, mapData)) {
         return
       }
+      const geometry = this.setGeometry(mapData, bound)
       if (mapData.type === LayerType.IGSVector) {
-        this.quertFeatruesByVector(mapData, bound)
+        this.quertFeatruesByVector(mapData, geometry)
       } else if (mapData.type === LayerType.IGSMapImage) {
-        this.queryFeaturesByDoc(mapData, bound)
+        this.queryFeaturesByDoc(mapData, geometry)
       } else if (mapData.type === LayerType.IGSScene) {
-        this.queryFeaturesByIGSScene(mapData, bound)
+        this.queryFeaturesByIGSScene(mapData, geometry)
       } else if (mapData.type === LayerType.arcGISMapImage) {
-        this.queryFeaturesByArcgis(mapData, bound)
+        this.queryFeaturesByArcgis(mapData, geometry)
       }
     })
+  }
+
+  setGeometry(
+    mapData,
+    bound: Record<string, number> | Array<Record<string, number>>
+  ) {
+    let geo
+    switch (this.queryType) {
+      case QueryType.Point:
+        if (!this.is2DMapMode && mapData.type === LayerType.IGSScene) {
+          // 三维查询需要用到局部坐标，这里吧经纬度转换成局部坐标,这里z轴不做转换
+          const transform = this.getTranform(mapData)
+          if (transform) {
+            const { x, y, z } = cesiumUtilInstance.degreeToDataPosition(
+              bound,
+              transform
+            )
+            geo = new Point3D(x, y, bound.z)
+          }
+        } else {
+          geo = new Zondy.Common.Point2D(bound.x, bound.y, {
+            nearDis: bound.nearDis
+          })
+        }
+        break
+
+      case QueryType.LineString:
+        if (!this.is2DMapMode && mapData.type === LayerType.IGSScene) {
+          // 三维查询需要用到局部坐标，这里吧经纬度转换成局部坐标,这里z轴不做转换
+          const transform = this.getTranform(mapData)
+          if (transform) {
+            const { xmin, ymin, xmax, ymax, zmin, zmax } = this.getRect(
+              bound,
+              transform
+            )
+            geo = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
+          }
+        } else {
+          let nearDis = 0
+          const arr = bound.map((item: Record<string, number>) => {
+            nearDis = item.nearDis
+            return new Zondy.Common.Point2D(item.x, item.y, {
+              nearDis
+            })
+          })
+          geo = new Zondy.Common.PolyLine(arr, { nearDis })
+        }
+        break
+
+      case QueryType.Polygon:
+        if (!this.is2DMapMode && mapData.type === LayerType.IGSScene) {
+          // 三维查询需要用到局部坐标，这里吧经纬度转换成局部坐标,这里z轴不做转换
+          const transform = this.getTranform(mapData)
+          if (transform) {
+            const { xmin, ymin, xmax, ymax, zmin, zmax } = this.getRect(
+              bound,
+              transform
+            )
+            geo = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
+          }
+        } else {
+          const arr = bound.map((item: Record<string, number>) => {
+            const nearDis = item.nearDis
+            return new Zondy.Common.Point2D(item.x, item.y, {
+              nearDis
+            })
+          })
+          geo = new Zondy.Common.Polygon(arr)
+        }
+        break
+
+      case QueryType.Circle:
+      case QueryType.Rectangle:
+        if (!this.is2DMapMode && mapData.type === LayerType.IGSScene) {
+          // 三维查询需要用到局部坐标，这里吧经纬度转换成局部坐标,这里z轴不做转换
+          const transform = this.getTranform(mapData)
+          const { xmin, ymin, xmax, ymax, zmin, zmax } = bound
+          geo = this.setRect3D(
+            { xmin, ymin, xmax, ymax, zmin: -100000, zmax: 100000 },
+            transform
+          )
+        } else {
+          const { xmin, ymin, xmax, ymax } = bound
+          geo = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
+        }
+        break
+
+      default:
+        return false
+    }
+
+    return geo
+  }
+
+  setRect3D({ xmin, ymin, xmax, ymax, zmin, zmax }, transform) {
+    if (transform) {
+      const minPosition = cesiumUtilInstance.degreeToDataPosition(
+        { x: xmin, y: ymin, z: zmin },
+        transform
+      )
+      const maxPosition = cesiumUtilInstance.degreeToDataPosition(
+        { x: xmax, y: ymax, z: zmax },
+        transform
+      )
+      return new Rectangle3D(
+        minPosition.x,
+        minPosition.y,
+        minPosition.z,
+        maxPosition.x,
+        maxPosition.y,
+        maxPosition.z
+      )
+    }
+    return undefined
+  }
+
+  getRect(arr, transform) {
+    const positions = arr.map(bound => {
+      const { x, y, z } = cesiumUtilInstance.degreeToDataPosition(
+        bound,
+        transform
+      )
+      return {
+        x,
+        y,
+        z: bound.z
+      }
+    })
+    let xmin = 0
+    let ymin = 0
+    let zmin = 0
+    let xmax = 0
+    let ymax = 0
+    let zmax = 0
+    positions.forEach(({ x, y, z }, index) => {
+      if (index === 0) {
+        xmin = x
+        ymin = y
+        zmin = z
+        xmax = x
+        ymax = y
+        zmax = z
+      } else {
+        xmin = xmin - x < 0 ? xmin : x
+        ymin = ymin - y < 0 ? ymin : y
+        zmin = zmin - z < 0 ? zmin : z
+        xmax = xmax - x > 0 ? xmax : x
+        ymax = ymax - y > 0 ? ymax : y
+        zmax = zmax - z > 0 ? zmax : z
+      }
+    })
+    return {
+      xmin,
+      ymin,
+      xmax,
+      ymax,
+      zmin,
+      zmax
+    }
+  }
+
+  getTranform(item) {
+    const {
+      activeScene: { sublayers }
+    } = item
+    let vueKey = ''
+    let tranform = null
+    ;(sublayers || []).forEach(item => {
+      if (item.visible) {
+        vueKey = item.id
+      }
+    })
+    if (vueKey !== '') {
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        vueKey
+      )
+      if (source.length > 0) {
+        tranform = source[0].root.transform
+      }
+    }
+    return tranform
   }
 
   private isCross(bound, item): boolean {
@@ -287,36 +472,21 @@ export default class MpFeatureQuery extends Mixins(
     const { ymax, ymin, xmax, xmin } = fullExtent
     let extentPolygon
     if (!this.is2DMapMode && type === LayerType.IGSScene) {
-      const {
-        activeScene: { sublayers }
-      } = item
-      let vueKey = ''
-      ;(sublayers || []).forEach(item => {
-        if (item.isVisible) {
-          vueKey = item.id
-        }
-      })
-      if (vueKey !== '') {
-        const { source } = this.CesiumZondy.M3DIgsManager.findSource(
-          'default',
-          vueKey
+      const tranform = this.getTranform(item)
+      if (tranform) {
+        const boundObj = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+          fullExtent,
+          tranform
         )
-        if (source.length > 0) {
-          const tranform = source[0].root.transform
-          const boundObj = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
-            fullExtent,
-            tranform
-          )
-          extentPolygon = polygon([
-            [
-              [Number(boundObj.xmin), Number(boundObj.ymin)],
-              [Number(boundObj.xmax), Number(boundObj.ymin)],
-              [Number(boundObj.xmax), Number(boundObj.ymax)],
-              [Number(boundObj.xmin), Number(boundObj.ymax)],
-              [Number(boundObj.xmin), Number(boundObj.ymin)]
-            ]
-          ])
-        }
+        extentPolygon = polygon([
+          [
+            [Number(boundObj.xmin), Number(boundObj.ymin)],
+            [Number(boundObj.xmax), Number(boundObj.ymin)],
+            [Number(boundObj.xmax), Number(boundObj.ymax)],
+            [Number(boundObj.xmin), Number(boundObj.ymax)],
+            [Number(boundObj.xmin), Number(boundObj.ymin)]
+          ]
+        ])
       }
     } else {
       extentPolygon = polygon([
@@ -329,20 +499,21 @@ export default class MpFeatureQuery extends Mixins(
         ]
       ])
     }
-    switch (bound.getGeometryType()) {
-      case 'point':
+    switch (this.queryType) {
+      case QueryType.Point:
         feature = point([bound.x, bound.y])
         break
 
-      case 'line':
-        feature = lineString(bound.pointArr.map(point => [point.x, point.y]))
+      case QueryType.LineString:
+        feature = lineString(bound.map(point => [point.x, point.y]))
         break
 
-      case 'polygon':
-        feature = polygon([bound.pointArr.map(point => [point.x, point.y])])
+      case QueryType.Polygon:
+        feature = polygon([bound.map(point => [point.x, point.y])])
         break
 
-      case 'rect':
+      case QueryType.Circle:
+      case QueryType.Rectangle:
         const { ymax, ymin, xmax, xmin } = bound
         feature = polygon([
           [
@@ -358,8 +529,12 @@ export default class MpFeatureQuery extends Mixins(
       default:
         return false
     }
-
-    return !booleanDisjoint(extentPolygon, feature)
+    return (
+      // 交叉或者包含都会继续查询
+      !booleanDisjoint(extentPolygon, feature) ||
+      booleanContains(extentPolygon, feature) ||
+      booleanContains(feature, extentPolygon)
+    )
   }
 
   queryFeaturesByIGSScene(mapData, geo) {
@@ -378,7 +553,7 @@ export default class MpFeatureQuery extends Mixins(
       activeScene: { sublayers }
     } = mapData
     sublayers.forEach(layer => {
-      if (!layer.isVisible) {
+      if (!layer.visible) {
         return
       }
       exhibition.options.push({

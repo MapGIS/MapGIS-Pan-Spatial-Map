@@ -490,6 +490,7 @@ export default class MpAttributeTable extends Mixins(
     geometry: Record<string, unknown> | undefined,
     where: string | undefined
   ) {
+    debugger
     this.currentTableParams = { ...this.optionVal }
     const { ip, port, serverName, serverType, serverUrl } = this.optionVal
     if (
@@ -596,6 +597,7 @@ export default class MpAttributeTable extends Mixins(
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry || this.optionVal.geometry
       const { current, pageSize } = this.pagination
+      debugger
       const json = (await queryFeaturesInstance.query(
         {
           ip,

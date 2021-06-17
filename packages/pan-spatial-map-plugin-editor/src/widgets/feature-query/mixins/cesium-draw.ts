@@ -16,10 +16,6 @@ enum QueryType {
 export default class CesiumDraw extends Mixins(WidgetMixin) {
   // -1 空状态、0  点、1  线、2   面、3  矩形、 4圆形
 
-  webGlobe = null
-
-  limits = 0
-
   queryType = ''
 
   drawer3d = null
@@ -33,12 +29,9 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
   }
 
   handleCreate(cartesian3, lnglat) {
-    console.group()
-    console.log('cartesian3:', cartesian3)
-    console.log('lnglat:', lnglat)
-    console.groupEnd()
+    debugger
     // window.setTimeout(() => {
-    this.setBound(cartesian3)
+    this.setBound(lnglat)
     this.clearCesiumDraw3D()
     // }, 300)
   }
@@ -47,10 +40,11 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     const cartographic = this.Cesium.Cartographic.fromCartesian(cartesian)
     const lng = this.Cesium.Math.toDegrees(cartographic.longitude)
     const lat = this.Cesium.Math.toDegrees(cartographic.latitude)
-    return [lng, lat]
+    const alt = cartographic.height
+    return [lng, lat, alt]
   }
 
-  setBound(cartesian3) {
+  setBound(lnglat) {
     let nearDis = this.limits * 1000
     const { projectionName } = baseConfigInstance.config
     if (
@@ -63,42 +57,60 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     }
     let bound: any
     if (this.queryType === QueryType.Point) {
-      const coordinates = this.setLonLat(cartesian3)
-      console.log(coordinates)
-      bound = new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
+      const coordinates = lnglat
+      bound = {
+        x: coordinates[0],
+        y: coordinates[1],
+        z: coordinates[2],
+        nearDis
+      }
+    } else if (this.queryType === QueryType.LineString) {
+      const arr = lnglat.map((coordinates: Array<number>) => {
+        // const coordinates = this.setLonLat(item)
+        return {
+          x: coordinates[0],
+          y: coordinates[1],
+          z: coordinates[2],
+          nearDis
+        }
+      })
+      bound = arr
+    } else if (this.queryType === QueryType.Polygon) {
+      const arr = lnglat.map((coordinates: Array<number>) => {
+        // const coordinates = this.setLonLat(item)
+        return {
+          x: coordinates[0],
+          y: coordinates[1],
+          z: coordinates[2],
+          nearDis
+        }
+      })
+      // const coordinates = this.setLonLat(cartesian3[0])
+      const coordinates = lnglat[0]
+      arr.push({
+        x: coordinates[0],
+        y: coordinates[1],
+        z: coordinates[2],
         nearDis
       })
-    } else if (this.queryType === QueryType.LineString) {
-      const arr = cartesian3.map((item: Array<number>) => {
-        const coordinates = this.setLonLat(item)
-        return new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
-          nearDis
-        })
-      })
-      bound = new Zondy.Common.PolyLine(arr, { nearDis })
-    } else if (this.queryType === QueryType.Polygon) {
-      const arr = cartesian3.map((item: Array<number>) => {
-        const coordinates = this.setLonLat(item)
-        return new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
-          nearDis
-        })
-      })
-      const coordinates = this.setLonLat(cartesian3[0])
-      arr.push(
-        new Zondy.Common.Point2D(coordinates[0], coordinates[1], {
-          nearDis
-        })
-      )
-      bound = new Zondy.Common.Polygon(arr)
+      bound = arr
     } else if (this.queryType === QueryType.Rectangle) {
-      if (cartesian3.length === 2) {
-        const [xmin, ymax] = this.setLonLat(cartesian3[0])
-        const [xmax, ymin] = this.setLonLat(cartesian3[1])
-        bound = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
+      if (lnglat.length === 2) {
+        const [xmin, ymax, z1] = lnglat[0]
+        const [xmax, ymin, z2] = lnglat[1]
+        const zmax = z1 - z2 >= 0 ? z1 : z2
+        const zmin = z1 - z2 < 0 ? z1 : z2
+        bound = {
+          xmin,
+          ymax,
+          zmax,
+          xmax,
+          ymin,
+          zmin
+        }
       }
     }
 
-    this.queryType = ''
     this.queryLayer(bound)
   }
 

@@ -49,7 +49,9 @@ export {
   AMapMercatorSatelliteAnnMapLayer,
   VectorTileLayer,
   IGSSceneLayer,
-  IGSSceneSublayerRenderType
+  IGSSceneSublayerRenderType,
+  Rectangle3D,
+  Point3D
 } from './store/document/layer'
 
 export { Document, Map } from './store/document'

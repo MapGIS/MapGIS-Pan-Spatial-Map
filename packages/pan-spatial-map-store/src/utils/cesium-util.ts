@@ -1225,17 +1225,17 @@ class CesiumUtil {
       return null
     }
     // 笛卡尔转屏幕
-    const cartesian2 = this.Cesium.SceneTransforms.wgs84ToWindowCoordinates(
-      this.webGlobe.viewer.scene,
-      c3
-    )
-    // 屏幕转数据
-    let car3 = new this.Cesium.Cartesian3()
-    car3 = this.webGlobe.viewer.getCartesian3Position(cartesian2, car3)
+    // const cartesian2 = this.Cesium.SceneTransforms.wgs84ToWindowCoordinates(
+    //   this.webGlobe.viewer.scene,
+    //   c3
+    // )
+    // // 屏幕转数据
+    // let car3 = new this.Cesium.Cartesian3()
+    // car3 = this.webGlobe.viewer.getCartesian3Position(cartesian2, car3)
     let matrixInver = new this.Cesium.Matrix4()
     matrixInver = this.Cesium.Matrix4.inverse(transform, matrixInver)
-    const maxCar = new this.Cesium.Cartographic()
-    this.Cesium.Matrix4.multiplyByPoint(matrixInver, car3, maxCar)
+    const maxCar = new this.Cesium.Cartesian3()
+    this.Cesium.Matrix4.multiplyByPoint(matrixInver, c3, maxCar)
     return maxCar
   }
 

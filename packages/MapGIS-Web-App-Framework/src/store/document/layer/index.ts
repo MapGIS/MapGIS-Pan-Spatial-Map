@@ -22,6 +22,8 @@ import {
 import { VectorTileLayer } from './vector-tile-layer'
 import { IGSSceneLayer, IGSSceneSublayerRenderType } from './igs-scene-layer'
 
+import { Rectangle3D, Point3D } from './3d-layer'
+
 export {
   Layer,
   LayerType,
@@ -49,5 +51,7 @@ export {
   AMapMercatorSatelliteAnnMapLayer,
   VectorTileLayer,
   IGSSceneLayer,
-  IGSSceneSublayerRenderType
+  IGSSceneSublayerRenderType,
+  Rectangle3D,
+  Point3D
 }
