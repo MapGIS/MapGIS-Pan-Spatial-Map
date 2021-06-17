@@ -29,9 +29,8 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
   }
 
   handleCreate(cartesian3, lnglat) {
-    debugger
     // window.setTimeout(() => {
-    this.setBound(lnglat)
+    this.setBound(cartesian3)
     this.clearCesiumDraw3D()
     // }, 300)
   }
@@ -44,7 +43,7 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     return [lng, lat, alt]
   }
 
-  setBound(lnglat) {
+  setBound(cartesian3) {
     let nearDis = this.limits * 1000
     const { projectionName } = baseConfigInstance.config
     if (
@@ -57,7 +56,7 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
     }
     let bound: any
     if (this.queryType === QueryType.Point) {
-      const coordinates = lnglat
+      const coordinates = this.setLonLat(cartesian3)
       bound = {
         x: coordinates[0],
         y: coordinates[1],
@@ -65,8 +64,8 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
         nearDis
       }
     } else if (this.queryType === QueryType.LineString) {
-      const arr = lnglat.map((coordinates: Array<number>) => {
-        // const coordinates = this.setLonLat(item)
+      const arr = cartesian3.map((item: Array<number>) => {
+        const coordinates = this.setLonLat(item)
         return {
           x: coordinates[0],
           y: coordinates[1],
@@ -76,8 +75,8 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
       })
       bound = arr
     } else if (this.queryType === QueryType.Polygon) {
-      const arr = lnglat.map((coordinates: Array<number>) => {
-        // const coordinates = this.setLonLat(item)
+      const arr = cartesian3.map((item: Array<number>) => {
+        const coordinates = this.setLonLat(item)
         return {
           x: coordinates[0],
           y: coordinates[1],
@@ -85,8 +84,8 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
           nearDis
         }
       })
-      // const coordinates = this.setLonLat(cartesian3[0])
-      const coordinates = lnglat[0]
+      const coordinates = this.setLonLat(cartesian3[0])
+      // const coordinates = lnglat[0]
       arr.push({
         x: coordinates[0],
         y: coordinates[1],
@@ -95,9 +94,9 @@ export default class CesiumDraw extends Mixins(WidgetMixin) {
       })
       bound = arr
     } else if (this.queryType === QueryType.Rectangle) {
-      if (lnglat.length === 2) {
-        const [xmin, ymax, z1] = lnglat[0]
-        const [xmax, ymin, z2] = lnglat[1]
+      if (cartesian3.length === 2) {
+        const [xmin, ymax, z1] = this.setLonLat(cartesian3[0])
+        const [xmax, ymin, z2] = this.setLonLat(cartesian3[1])
         const zmax = z1 - z2 >= 0 ? z1 : z2
         const zmin = z1 - z2 < 0 ? z1 : z2
         bound = {

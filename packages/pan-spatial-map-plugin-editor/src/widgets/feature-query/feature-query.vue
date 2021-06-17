@@ -389,10 +389,10 @@ export default class MpFeatureQuery extends Mixins(
       return new Rectangle3D(
         minPosition.x,
         minPosition.y,
-        minPosition.z,
+        zmin,
         maxPosition.x,
         maxPosition.y,
-        maxPosition.z
+        zmax
       )
     }
     return undefined

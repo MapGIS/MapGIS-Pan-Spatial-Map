@@ -333,7 +333,6 @@ export default class FilterItem extends Vue {
       serverType === LayerType.IGSVector ||
       serverType === LayerType.IGSScene
     ) {
-      debugger
       const info = await queryFeaturesInstance.query(
         {
           ip: this.queryParams.ip,

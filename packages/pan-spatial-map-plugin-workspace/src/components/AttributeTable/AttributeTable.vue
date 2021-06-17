@@ -112,13 +112,6 @@
       :highlight-style="highlightStyle"
       @map-bound-change="onGetGeometry"
     />
-    <!-- <m-3-d-cesium
-      v-else-if="mapRender !== mapboxRender"
-      :fit-bound="fitBound"
-      :vue-index="optionVal.id"
-      :filter-with-map="filterWithMap"
-      @map-bound-change="onGetGeometry"
-    /> -->
     <mp-window-wrapper :visible="showAttrStatistics">
       <template v-slot:default="slotProps">
         <mp-window
@@ -182,7 +175,13 @@ import {
   markerIconInstance,
   cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
-import { AppMixin, LayerType, UUID, MapMixin } from '@mapgis/web-app-framework'
+import {
+  AppMixin,
+  LayerType,
+  UUID,
+  MapMixin,
+  Rectangle3D
+} from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
 import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
@@ -245,6 +244,8 @@ export default class MpAttributeTable extends Mixins(
 
   // 地图范围
   private geometry?: Record<string, unknown> = undefined
+
+  private geometry3D?: Record<string, unknown> = undefined
 
   // 选中的行
   private selection: unknown[] = []
@@ -457,8 +458,17 @@ export default class MpAttributeTable extends Mixins(
   }
 
   async onGetGeometry(val: Record<string, any>) {
-    const { xmin, ymin, xmax, ymax } = val
+    const { xmin, ymin, xmax, ymax, height = 0 } = val
     this.geometry = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
+
+    this.geometry3D = {
+      xmin,
+      ymin,
+      zmin: -100000,
+      xmax,
+      ymax,
+      zmax: 100000
+    }
     // 分页初始化到第一页
     this.pagination.current = 1
     // 记录当前选中的行（避免双击定位同时根据范围过滤时导致信息刷新）
@@ -490,7 +500,6 @@ export default class MpAttributeTable extends Mixins(
     geometry: Record<string, unknown> | undefined,
     where: string | undefined
   ) {
-    debugger
     this.currentTableParams = { ...this.optionVal }
     const { ip, port, serverName, serverType, serverUrl } = this.optionVal
     if (
@@ -593,11 +602,17 @@ export default class MpAttributeTable extends Mixins(
         await this.addMarkers()
       }
     } else if (serverType === LayerType.IGSScene) {
+      // 查找矩阵集
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        this.optionVal.id
+      )
       const { gdbp } = this.optionVal
       const queryWhere = where || this.optionVal.where
-      const queryGeometry = geometry || this.optionVal.geometry
+      const queryGeometry = geometry
+        ? this.getGeometry3D(source)
+        : this.optionVal.geometry
       const { current, pageSize } = this.pagination
-      debugger
       const json = (await queryFeaturesInstance.query(
         {
           ip,
@@ -617,11 +632,6 @@ export default class MpAttributeTable extends Mixins(
       const columns = this.setTableScroll(AttStruct)
       this.tableColumns = columns
       this.pagination.total = TotalCount
-      // 查找矩阵集
-      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
-        'default',
-        this.optionVal.id
-      )
       this.tableData = (SFEleArray || []).map(
         ({ AttValue = [], bound = {}, FID }) => {
           let boundObj = null
@@ -655,6 +665,31 @@ export default class MpAttributeTable extends Mixins(
         await this.addMarkers()
       }
     }
+  }
+
+  getGeometry3D(source) {
+    if (source.length > 0) {
+      const transform = source[0].root.transform
+      const { xmin, ymin, xmax, ymax, zmin, zmax } = this.geometry3D
+      const minPosition = cesiumUtilInstance.degreeToDataPosition(
+        { x: xmin, y: ymin, z: zmin },
+        transform
+      )
+      const maxPosition = cesiumUtilInstance.degreeToDataPosition(
+        { x: xmax, y: ymax, z: zmax },
+        transform
+      )
+      return new Rectangle3D(
+        minPosition.x,
+        minPosition.y,
+        zmin,
+        maxPosition.x,
+        maxPosition.y,
+        zmax
+      )
+    }
+
+    return undefined
   }
 
   private setTableScroll(AttStruct) {
