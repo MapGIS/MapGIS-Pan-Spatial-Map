@@ -45,7 +45,6 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
 
       // 勾选的时候添加图层，这里使用for是为了 异步await
       for (let index = 0; index < newValue.length; index++) {
-        debugger
         const name = newValue[index]
         if (!oldValue.includes(name)) {
           const info: any = this.config.find(item => item.name === name)
