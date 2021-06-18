@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "title": "土地利用现状大数据分析",
+    "htmlLink": "http://192.168.176.3:5601/goto/a9fef3670aef9b8e8ab242e0e02b6232?embed=true",
+    "imgLink": "/Content/bigDataAnalysis/images/土地利用现状大数据分析.PNG"
+  },
+  {
+    "title": "测绘地理信息统计分析",
+    "htmlLink": "http://192.168.176.3:5601/goto/a9fef3670aef9b8e8ab242e0e02b6232?embed=true",
+    "imgLink": "/Content/bigDataAnalysis/images/测绘地理信息统计分析.PNG"
+  },
+  {
+    "title": "矿产资源分布分析",
+    "htmlLink": "/Content/bigDataAnalysis/kibana/590346e4d45f890449aec1b6e823548d.htm",
+    "imgLink": "/Content/bigDataAnalysis/images/矿产资源分布分析.PNG"
+  },
+  {
+    "title": "矿权预警分析",
+    "htmlLink": "/Content/bigDataAnalysis/kibana/e30b75c85326cc404e6a92d51e40eacb.htm",
+    "imgLink": "/Content/bigDataAnalysis/images/矿权预警分析.PNG"
+  },
+  {
+    "title": "热点分布分析",
+    "htmlLink": "/Content/bigDataAnalysis/kibana/f2a212ac1dc2123a674c924b7460b18c.htm",
+    "imgLink": "/Content/bigDataAnalysis/images/热点分布分析.PNG"
+  },
+  {
+    "htmlLink": "/Content/bigDataAnalysis/kibana/b17151465b41c9de95685d59170fdbc6.htm",
+    "imgLink": "/Content/bigDataAnalysis/images/国家农产品主产区产能变化分析.PNG",
+    "title": "国家农产品主产区产能变化分析"
+  }
+]
