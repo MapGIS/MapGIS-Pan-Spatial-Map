@@ -47,6 +47,9 @@ export default class CesiumCompare extends Vue {
     return this.beforeLayers.length && this.afterLayers.length
   }
 
+  /**
+   * 获取图层ID列表
+   */
   getLayerIds({ id }: Layer) {
     return id ? [id] : []
   }

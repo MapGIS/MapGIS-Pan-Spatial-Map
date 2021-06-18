@@ -115,6 +115,9 @@ export default class MapboxCompare extends Vue {
     }
   }
 
+  /**
+   * 添加图层
+   */
   addLayerToMap({ defaultMap }: Document, layer: Layer) {
     if (layer) {
       defaultMap.removeAll()
@@ -122,6 +125,9 @@ export default class MapboxCompare extends Vue {
     }
   }
 
+  /**
+   * 面板开关
+   */
   onToggleSettingPanel() {
     this.settingPanelVisible = !this.settingPanelVisible
   }

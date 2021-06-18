@@ -47,15 +47,6 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   layers: Layer[] = []
 
   /**
-   * 重置图层信息
-   */
-  resetLayer() {
-    this.layers = []
-    this.aboveLayer = {}
-    this.belowLayer = {}
-  }
-
-  /**
    * 图层初始化和重置操作
    */
   initLayer() {
@@ -64,17 +55,22 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
       .getFlatLayers()
       .filter(v => v.isVisible)
     if (_layers && _layers.length > 1) {
-      const [bLayer, aLayer] = _layers
-      if (this.aboveLayer.id !== aLayer.id) {
-        this.aboveLayer = aLayer
-      }
-      if (this.belowLayer.id !== bLayer.id) {
-        this.belowLayer = bLayer
-      }
+      const [{ id: bId }, { id: aId }] = _layers
       this.layers = _layers
+      this.onAboveChange(aId)
+      this.onBelowChange(bId)
     } else {
       this.resetLayer()
     }
+  }
+
+  /**
+   * 重置图层信息
+   */
+  resetLayer() {
+    this.layers = []
+    this.aboveLayer = {}
+    this.belowLayer = {}
   }
 
   /**
@@ -85,17 +81,55 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   }
 
   /**
+   * 三维上图层更新
+   */
+  onCesiumAboveUpdate() {
+    if (this.aboveLayer.id) {
+      const cacheLayer = this.aboveLayer.clone()
+      this.aboveLayer = {}
+      const timer = setTimeout(() => {
+        this.aboveLayer = cacheLayer.clone()
+        clearTimeout(timer)
+      }, 400)
+    }
+  }
+
+  /**
+   * 三维下图层更新
+   */
+  onCesiumBelowUpdate() {
+    if (this.belowLayer.id) {
+      const cacheLayer = this.belowLayer.clone()
+      this.belowLayer = {}
+      const timer = setTimeout(() => {
+        this.belowLayer = cacheLayer.clone()
+        clearTimeout(timer)
+      }, 400)
+    }
+  }
+
+  /**
    * 上层(左侧)图层变化
    */
   onAboveChange(layerId: string) {
-    this.aboveLayer = this.getLayer(layerId)
+    if (this.aboveLayer.id !== layerId) {
+      this.aboveLayer = this.getLayer(layerId)
+    }
+    if (!this.is2DMapMode) {
+      this.onCesiumAboveUpdate()
+    }
   }
 
   /**
    * 下层(右侧)图层变化
    */
   onBelowChange(layerId: string) {
-    this.belowLayer = this.getLayer(layerId)
+    if (this.belowLayer.id !== layerId) {
+      this.belowLayer = this.getLayer(layerId)
+    }
+    if (!this.is2DMapMode) {
+      this.onCesiumBelowUpdate()
+    }
   }
 
   /**
@@ -118,19 +152,23 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
    */
   onClose() {
     this.isOpen = false
+    this.direction = 'vertical'
     this.resetLayer()
   }
 
   /**
-   * 监听: mapRender变化
+   * 监听: is2DMapMode变化
    */
-  @Watch('mapRender', { immediate: true })
-  mapRenderChange() {
-    this.$set(
-      this.widget.manifest.properties,
-      'windowSize',
-      this.is2DMapMode ? 'max' : 'normal'
-    )
+  @Watch('is2DMapMode', { immediate: true })
+  watchMapMode(nV) {
+    let _windowSize = 'max'
+    if (!nV) {
+      _windowSize = 'normal'
+      this.onCesiumAboveUpdate()
+      this.onCesiumBelowUpdate()
+    } else {
+    }
+    this.$set(this.widget.manifest.properties, 'windowSize', _windowSize)
   }
 
   /**

@@ -33,22 +33,16 @@
     <!-- 方向 -->
     <a-radio-group :value="direction" @change="onDirectionChange">
       <a-radio value="vertical"> 垂直 </a-radio>
-      <a-radio value="horizontal" v-show="is2DMapMode"> 水平 </a-radio>
+      <a-radio value="horizontal" v-show="swipe.is2DMapMode"> 水平 </a-radio>
     </a-radio-group>
   </a-space>
 </template>
 <script lang="ts">
-import {
-  Mixins,
-  Vue,
-  Watch,
-  Component,
-  InjectReactive
-} from 'vue-property-decorator'
-import { AppMixin, Layer } from '@mapgis/web-app-framework'
+import { Vue, Watch, Component, InjectReactive } from 'vue-property-decorator'
+import { Layer } from '@mapgis/web-app-framework'
 
 @Component
-export default class SwipeSetting extends Mixins(AppMixin) {
+export default class SwipeSetting extends Vue {
   @InjectReactive({
     from: 'swipe',
     default: () => ({})
@@ -63,7 +57,7 @@ export default class SwipeSetting extends Mixins(AppMixin) {
 
   // 卷帘方向
   get direction() {
-    return this.swipe.direction || 'vertical'
+    return this.swipe.is2DMapMode ? this.swipe.direction : 'vertical'
   }
 
   // 卷帘方向变化，同步更改图层选择框的标题
@@ -129,8 +123,8 @@ export default class SwipeSetting extends Mixins(AppMixin) {
   /**
    * 监听: 图层列表化
    */
-  @Watch('layers')
-  watchLayers(nV) {
+  @Watch('layers', { immediate: true, deep: true })
+  watchLayers(nV: Layer[]) {
     this.aboveLayers = this.getLayers(nV, this.belowLayer)
     this.belowLayers = this.getLayers(nV, this.aboveLayer)
   }
