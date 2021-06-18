@@ -47,19 +47,54 @@
         "
         @change="onTablePageChange"
       >
-        <template slot="name" slot-scope="text">
+        <template slot="name" slot-scope="text, record">
           <a-icon type="file" />
-          <span>{{ text }}</span>
+          <span @click="onView(record)">{{ text }}</span>
         </template>
         <template slot="action" slot-scope="text, record">
           <a-icon type="download" @click="onClickDownLoad(record)" />
         </template>
       </a-table>
       <div v-show="showPicutre" class="panel-content">
-        <div class="content-item" v-for="item in pictrueData" :key="item.id">
+        <div
+          class="content-item"
+          v-for="item in pictrueData"
+          :key="item.id"
+          @click="onView(item)"
+        >
           <div class="item-img">
             <img
-              :src="`http://localhost:8015${treeConfig.iconConfig[1]}`"
+              v-if="item.type === 'doc' || item.type === 'docx'"
+              src="./images/word.png"
+              alt=""
+            />
+            <img
+              v-if="item.type === 'xls' || item.type === 'xlsx'"
+              src="./images/excel.png"
+              alt=""
+            />
+            <img
+              v-if="
+                item.type === 'ppt' ||
+                  item.type === 'pptx' ||
+                  item.type === 'pdf'
+              "
+              src="./images/pdf.png"
+              alt=""
+            />
+            <img
+              v-if="
+                item.type === 'mp4' ||
+                  item.type === 'avi' ||
+                  item.type === 'pcx' ||
+                  item.type === 'ogg'
+              "
+              src="./images/video.png"
+              alt=""
+            />
+            <img
+              v-if="item.type === 'jpg' || item.type === 'png'"
+              src="./images/img.png"
               alt=""
             />
           </div>
@@ -98,6 +133,32 @@
         @change="onPicturePageChange"
       />
     </div>
+    <a-modal v-model="showModal" :footer="null" :width="800">
+      <iframe
+        v-if="showFileType === 'text'"
+        :src="fileUrl"
+        width="100%"
+        height="100%"
+        frameborder="1"
+      >
+      </iframe>
+      <video
+        v-if="showFileType === 'video'"
+        :src="videoUrl"
+        alt="预览"
+        id="video"
+        controls="controls"
+        width="752"
+        height="632"
+      ></video>
+      <img
+        v-if="showFileType === 'img'"
+        :src="imgUrl"
+        alt=""
+        width="752"
+        height="632"
+      />
+    </a-modal>
   </div>
 </template>
 
@@ -192,6 +253,21 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
 
   // 分页器当前页数
   private currentPage = 1
+
+  // 点击的文件对应的资源url
+  private fileUrl = ''
+
+  // 媒体文件对应的资源url
+  private videoUrl = ''
+
+  // 图片文件对应的资源url
+  private imgUrl = ''
+
+  // 预览对话框的显隐
+  private showModal = false
+
+  // 当前预览的文件类型
+  private showFileType = ''
 
   // 监听非空间数据url变化，初始化table表格数据及大图状态数据
   @Watch('url')
@@ -345,6 +421,32 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
       }
     })
   }
+
+  private onView(record) {
+    const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=ftp://192.168.21.191:21`
+    this.getUrlData(downLoadUrl).then(res => {
+      this.fileUrl = this.baseUrl + res.path
+      console.log(this.fileUrl)
+
+      switch (this.type) {
+        case '文档资料':
+          this.showFileType = 'text'
+          break
+        case '音视频资料':
+          this.showFileType = 'video'
+          this.videoUrl = this.fileUrl
+          break
+        case '图集资料':
+          this.showFileType = 'img'
+          this.imgUrl = this.fileUrl
+          break
+        default:
+          break
+      }
+
+      this.showModal = true
+    })
+  }
 }
 </script>
 
@@ -460,5 +562,17 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     align-items: center;
     margin: 12px;
   }
+}
+::v-deep .ant-modal {
+  top: 60px;
+}
+::v-deep .ant-modal-body {
+  height: 680px;
+}
+::v-deep .ant-modal-close-x {
+  display: flex;
+  justify-content: center;
+  width: 28px;
+  padding-top: 8px;
 }
 </style>
