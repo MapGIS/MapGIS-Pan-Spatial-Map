@@ -272,10 +272,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 监听非空间数据url变化，初始化table表格数据及大图状态数据
   @Watch('url')
   onUrlChange(newVal) {
-    console.log(newVal)
-
     this.getUrlData(newVal).then(res => {
-      console.log(res)
       this.tableData = res.content
       this.pageTotal = res.totalElements
 
@@ -426,7 +423,6 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=ftp://192.168.21.191:21`
     this.getUrlData(downLoadUrl).then(res => {
       this.fileUrl = this.baseUrl + res.path
-      console.log(this.fileUrl)
 
       switch (this.type) {
         case '文档资料':

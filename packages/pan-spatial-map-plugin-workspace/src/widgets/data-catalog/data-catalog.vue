@@ -306,8 +306,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   }
 
   async mounted() {
-    console.log(this.widgetInfo.config)
-
     this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
     this.dataCatalogManager.init(this.widgetInfo.config)
 
@@ -554,7 +552,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   }
 
   onClick(item) {
-    console.log(item)
     const widgetConfig = this.widgetInfo.config
     this.nonSpatialType = item.data
 
