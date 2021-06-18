@@ -6,7 +6,8 @@
         latitude: popupPosition.latitude,
         height: popupPosition.height
       }"
-      :showed="showPopup"
+      :visible="showPopup"
+      @change="changePopup"
     >
       <div slot="default">
         <a-list
@@ -67,6 +68,9 @@ export default class Mp3dMarkerPro extends Vue {
   // 当前显示弹出框的标注id
   @Prop({ type: String, required: false }) currentMarkerId?: string
 
+  @Emit()
+  change(currentMarkerId) {}
+
   private showPopup = false
 
   private entityNames: string[] = []
@@ -87,6 +91,13 @@ export default class Mp3dMarkerPro extends Vue {
       height: height
     }
     return position
+  }
+
+  private changePopup(val) {
+    this.showPopup = val
+    if (!val) {
+      this.change('')
+    }
   }
 
   // 根据filedConfigs做一个过滤，去除不可见的
