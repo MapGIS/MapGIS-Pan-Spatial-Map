@@ -19,5 +19,3 @@ export function deepClone(source) {
   })
   return targetObj
 }
-
-export { default as WidgetState } from './widget-state'

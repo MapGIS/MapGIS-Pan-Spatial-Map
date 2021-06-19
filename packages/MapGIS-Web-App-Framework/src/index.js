@@ -6,9 +6,10 @@ import VueCesium from '@mapgis/webclient-vue-cesium'
 Vue.use(VueMapbox, {})
 Vue.use(VueCesium, {})
 
-export { AppManager, WidgetManager } from './managers'
-
 export {
+  AppManager,
+  WidgetManager,
+  WidgetState,
   AppMixin,
   WidgetInfoMixin,
   WidgetMixin,
@@ -16,13 +17,14 @@ export {
   ThemeContentMixin,
   PanelMixin,
   MapMixin
-} from './mixins'
-
-export { MpMapboxView, MpCesiumView } from './components'
-
-export { WidgetState } from './utils'
+} from './builder'
 
 export {
+  UUID,
+  ObjectTool,
+  CoordinateTransformation,
+  Document,
+  Map,
   Layer,
   LayerType,
   LoadStatus,
@@ -52,60 +54,16 @@ export {
   IGSSceneSublayerRenderType,
   Rectangle3D,
   Point3D
-} from './store/document/layer'
+} from './model'
 
-export { Document, Map } from './store/document'
-
-export {
-  CoordinateSystemType,
-  SpatialReference
-} from './store/document/spatial-reference'
-
-export { UUID, ObjectTool, CoordinateTransformation } from './store/utils'
-
-import {
-  MpAppLoader,
-  MpMapContainer,
-  MpMapboxView,
-  MpCesiumView,
-  MpPlacement,
-  MpIcon,
-  MpMapWidgetButton,
-  MpToolbarSpace,
-  MpToolbarCommand,
-  MpToolbarCommandGroup,
-  MpToolbar,
-  MpWindow,
-  MpWindowWrapper,
-  MpContentWidgetPanel,
-  MpMapWidgetPanel
-} from './components'
-
-const components = [
-  MpAppLoader,
-  MpMapContainer,
-  MpMapboxView,
-  MpCesiumView,
-  MpPlacement,
-  MpIcon,
-  MpMapWidgetButton,
-  MpToolbarSpace,
-  MpToolbarCommand,
-  MpToolbarCommandGroup,
-  MpToolbar,
-  MpWindow,
-  MpWindowWrapper,
-  MpContentWidgetPanel,
-  MpMapWidgetPanel
-]
+import { CommonComponents } from './common'
+import { MapComponents } from './map'
+import { BuilderComponents } from './builder'
 
 const install = Vue => {
-  components.forEach(component => {
-    Vue.component(
-      (component.options && component.options.name) || component.name,
-      component
-    )
-  })
+  Vue.use(CommonComponents)
+  Vue.use(MapComponents)
+  Vue.use(BuilderComponents)
 }
 
 export default {

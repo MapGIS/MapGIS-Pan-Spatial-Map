@@ -3,7 +3,7 @@
     <!-- 标题/工具栏 -->
     <map-view-tools :title="mapViewLayer.title" @on-icon-click="onIconClick" />
     <!-- 地图 -->
-    <mp-mapbox-view
+    <mp-web-map-pro
       :document="document"
       :mapStyle="mapStyle"
       @map-load="onMapLoad"

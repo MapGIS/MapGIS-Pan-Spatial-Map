@@ -14,7 +14,7 @@ export default class CesiumMeasure extends Mixins(WidgetMixin, MeasureMixin) {
   // 打开测量工具
   openMeasure(mode) {
     // 每次打开绘制前先关闭之前的
-    this.clearMeasure()
+    this.closeMeasure()
     // 设置测量模式
     this.setMeasureMode(mode)
     this.measureTool.startTool()
