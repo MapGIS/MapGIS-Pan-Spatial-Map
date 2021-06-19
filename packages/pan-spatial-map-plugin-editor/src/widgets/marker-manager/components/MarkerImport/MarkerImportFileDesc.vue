@@ -1,9 +1,9 @@
 <template>
   <div class="marker-import-file-desc-wrapper">
     <div class="tabs-content">
-      <a-tabs>
+      <a-tabs type="card">
         <a-tab-pane key="point" tab="点文件">
-          <p>
+          <p class="sample">
             名称：点示例1<br />
             描述：text123456<br />
             类型：点<br />
@@ -15,7 +15,7 @@
           </p>
         </a-tab-pane>
         <a-tab-pane key="line" tab="线文件">
-          <p>
+          <p class="sample">
             名称：线示例1<br />
             描述：text123456<br />
             类型：线<br />
@@ -27,7 +27,7 @@
           </p>
         </a-tab-pane>
         <a-tab-pane key="polygon" tab="区文件">
-          <p>
+          <p class="sample">
             名称：区示例1<br />
             描述：text123456<br />
             类型：区<br />
@@ -39,7 +39,7 @@
           </p>
         </a-tab-pane>
         <a-tab-pane key="multiPolygon" tab="组合区文件">
-          <p>
+          <p class="sample">
             名称：组合区示例1<br />
             描述：text123456<br />
             类型：组合区<br />
@@ -50,7 +50,7 @@
           </p>
         </a-tab-pane>
         <a-tab-pane key="holePolygon" tab="带洞区文件">
-          <p>
+          <p class="sample">
             名称：带洞区示例1<br />
             描述：text123456<br />
             类型：带洞区<br />
@@ -61,24 +61,35 @@
         </a-tab-pane>
       </a-tabs>
     </div>
-    <p class="text-weight-light">
-      格式为.txt文本，编码为UTF-8；<br />
-      x，y之间之间使用英文,分隔；坐标点间空格分隔；要素间使用#分隔，表示一个标注包含多个要素。<br />
-      多个标注依次往后追加。
-    </p>
+    <a-alert message="提示" type="info">
+      <p slot="description" class="info">
+        格式为.txt文本，编码为UTF-8；<br />
+        x，y之间之间使用英文,分隔；坐标点间空格分隔；要素间使用#分隔，表示一个标注包含多个要素。<br />
+        多个标注依次往后追加。
+      </p>
+    </a-alert>
   </div>
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Emit } from 'vue-property-decorator'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
-import { ThemeStyleMixin } from '@mapgis/web-app-framework'
-import MarkerAddMixin from '../../mixins/marker-add'
+import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
   name: 'MarkerImportFileDesc'
 })
-export default class MarkerImportFileDesc extends Mixins() {}
+export default class MarkerImportFileDesc extends Vue {}
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.marker-import-file-desc-wrapper {
+  .sample {
+    font-size: 14px;
+    margin-left: 15px;
+  }
+
+  .info {
+    color: @text-color-secondary;
+    margin: 0;
+  }
+}
+</style>

@@ -1,3 +1,3 @@
 export default {
-  inject: ['map', 'mapbox', 'webGlobe', 'Cesium']
+  inject: ['map', 'mapbox', 'webGlobe', 'Cesium', 'CesiumZondy']
 }

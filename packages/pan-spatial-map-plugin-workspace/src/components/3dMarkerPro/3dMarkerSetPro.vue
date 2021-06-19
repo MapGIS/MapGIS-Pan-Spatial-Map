@@ -11,6 +11,9 @@
       @mouseleave="mouseLeaveEvent"
       @change="changePopup"
     >
+      <template slot="popup" slot-scope="slotProps">
+        <slot name="popup" v-bind="slotProps"></slot>
+      </template>
     </mp-3d-marker-pro>
   </div>
 </template>

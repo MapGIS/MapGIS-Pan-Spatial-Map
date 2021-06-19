@@ -5,19 +5,15 @@
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
     >
+      <template slot="popup" slot-scope="slotProps">
+        <slot name="popup" v-bind="slotProps"></slot>
+      </template>
     </mp-3d-marker-set-pro>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  Component,
-  Prop,
-  Watch,
-  Mixins,
-  Emit,
-  Inject
-} from 'vue-property-decorator'
+import { Component, Prop, Watch, Mixins, Emit } from 'vue-property-decorator'
 import {
   FeatureGeoJSON,
   utilInstance,
@@ -31,8 +27,6 @@ import Mp3dMarkerSetPro from '../3dMarkerPro/3dMarkerSetPro.vue'
   components: { Mp3dMarkerSetPro }
 })
 export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
-  @Inject('CesiumZondy') CesiumZondy
-
   @Prop({
     type: Boolean,
     default: false
@@ -60,6 +54,14 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
     }
   })
   readonly selectionBound!: Record<string, any>
+
+  @Prop({
+    type: Array,
+    default: () => {
+      return [0, 0]
+    }
+  })
+  readonly center!: number[]
 
   @Prop({
     type: Object,
@@ -108,6 +110,17 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
       ymax: cExtent.ymax
     }
     this.emitMapBoundChange(bounds)
+  }
+
+  @Watch('center')
+  changeCenter() {
+    this.webGlobe.viewer.camera.flyTo({
+      destination: this.Cesium.Cartesian3.fromDegrees(
+        this.center[0],
+        this.center[1],
+        this.webGlobe.viewer.camera.positionCartographic.height
+      )
+    })
   }
 
   @Emit('map-bound-change')

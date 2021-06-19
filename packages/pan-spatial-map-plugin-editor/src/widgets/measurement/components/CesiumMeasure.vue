@@ -11,17 +11,17 @@ import MeasureMixin from '../mixins/measure'
 export default class CesiumMeasure extends Mixins(WidgetMixin, MeasureMixin) {
   private measureTool: any = null
 
-  // 打开测量
+  // 打开测量工具
   openMeasure(mode) {
-    // 每次打开绘制前先清除
+    // 每次打开绘制前先关闭之前的
     this.clearMeasure()
     // 设置测量模式
     this.setMeasureMode(mode)
     this.measureTool.startTool()
   }
 
-  // 清除测量
-  clearMeasure() {
+  // 关闭测量工具
+  closeMeasure() {
     if (this.measureTool && this.measureTool._handler) {
       this.measureTool.stopTool()
     }

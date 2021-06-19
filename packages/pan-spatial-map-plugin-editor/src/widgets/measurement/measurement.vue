@@ -336,14 +336,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   // 二三维地图模式切换时
   @Watch('mapRender')
   mapRenderChange() {
-    if (this.is2DMapMode) {
-      // 三维测量清除
-      this.$refs.cesiumMeasure.clearMeasure()
-    } else {
-      this.$refs.mapboxMeasure.clearMeasure()
-    }
-
-    this.isMeasureFinished = false
+    this.onClearMeasure()
   }
 
   // 微件关闭时
@@ -362,9 +355,9 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     this.measureComponent && this.measureComponent.openMeasure(mode)
   }
 
-  // 移除测量
+  // 清除并关闭测量
   private onClearMeasure() {
-    this.measureComponent && this.measureComponent.clearMeasure()
+    this.measureComponent && this.measureComponent.closeMeasure()
 
     this.isMeasureFinished = false
     this.activeMode = ''
@@ -396,11 +389,6 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   private onFillColorChange(val) {
     this.measureStyle.fillColor = val.hex
     this.measureStyle.fillOpacity = val.a
-  }
-
-  // 格式化滑动条Tooltip内容
-  private formatter(value) {
-    return `${value}%`
   }
 }
 </script>

@@ -4,6 +4,7 @@ import {
   Mp3dMarkerPro,
   Mp3dMarkerSetPro,
   MpMarkerPlotting,
+  Mp3dMarkerPlotting,
   MpAttributeTable,
   MpAttributeTableList
 } from './components'
@@ -31,6 +32,7 @@ const components = [
   Mp3dMarkerPro,
   Mp3dMarkerSetPro,
   MpMarkerPlotting,
+  Mp3dMarkerPlotting,
   MpAttributeTable,
   MpAttributeTableList,
   MpBasemapManager,

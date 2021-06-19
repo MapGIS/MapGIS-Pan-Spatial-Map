@@ -17,25 +17,32 @@
       :offset="popupOffset(marker.markerId)"
       v-if="markerImageLoadStatus"
     >
-      <a-list
-        item-layout="horizontal"
-        :data-source="propertyKeys"
-        size="small"
-        class="table-markers"
+      <slot
+        name="popup"
+        :marker="marker"
+        :field-configs="fieldConfigs"
+        :property-keys="propertyKeys"
       >
-        <a-list-item
-          slot="renderItem"
-          slot-scope="item"
-          class="table-marker-item"
+        <a-list
+          item-layout="horizontal"
+          :data-source="propertyKeys"
+          size="small"
+          class="table-marker"
         >
-          <div style="width: 130px" :title="propertyName(item)">
-            {{ propertyName(item) }}
-          </div>
-          <div style="width: 170px" :title="marker.properties[item]">
-            {{ marker.properties[item] }}
-          </div>
-        </a-list-item>
-      </a-list>
+          <a-list-item
+            slot="renderItem"
+            slot-scope="item"
+            class="table-marker-item"
+          >
+            <div style="width: 130px" :title="propertyName(item)">
+              {{ propertyName(item) }}
+            </div>
+            <div style="width: 170px" :title="marker.properties[item]">
+              {{ marker.properties[item] }}
+            </div>
+          </a-list-item>
+        </a-list>
+      </slot>
     </mapgis-popup>
   </mapgis-marker>
 </template>
@@ -115,7 +122,7 @@ export default class MpMarkerPro extends Vue {
 }
 </script>
 <style lang="less" scoped>
-.table-markers {
+.table-marker {
   max-height: 200px;
   overflow: auto;
   .table-marker-item {

@@ -1,46 +1,57 @@
 <template>
-  <div class="marker-export-wrapper">
-    <a-form-model
-      :model="formExport"
-      :label-col="{ span: 8 }"
-      :wrapper-col="{ span: 16 }"
-    >
-      <a-form-model-item label="文件名称:">
-        <a-input v-model="formExport.exportFileName"> </a-input>
-      </a-form-model-item>
-      <a-form-model-item label="导出格式:">
-        <a-select v-model="formExport.exportFileType">
-          <a-select-option v-for="item in exportFileTypes" :key="item">{{
-            item
-          }}</a-select-option>
-        </a-select>
-      </a-form-model-item>
-      <a-divider />
-      <div class="btn-group">
-        <a-button type="primary" @click="onClickConfirm">确认</a-button>
-        <a-button @click="onClickCancel">取消</a-button>
-      </div>
-    </a-form-model>
-  </div>
+  <a-modal
+    class="marker-export-wrapper"
+    :visible="visible"
+    title="导出标注"
+    :width="360"
+    :mask="false"
+    @cancel="onExportCancel"
+    @ok="onExportOk"
+  >
+    <div class="marker-export-body">
+      <a-space direction="vertical" style="flex: 1">
+        <a-row>
+          <label>文件名称</label>
+        </a-row>
+        <a-row>
+          <a-input v-model="exportOptions.exportFileName"> </a-input>
+        </a-row>
+        <a-row>
+          <label>导出格式</label>
+        </a-row>
+        <a-row>
+          <a-select v-model="exportOptions.exportFileType" style="width: 100%;">
+            <a-select-option v-for="item in exportFileTypes" :key="item">
+              {{ item }}
+            </a-select-option>
+          </a-select>
+        </a-row>
+      </a-space>
+    </div>
+  </a-modal>
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Vue, Prop, Emit } from 'vue-property-decorator'
-import { ThemeStyleMixin } from '@mapgis/web-app-framework'
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import {
   baseConfigInstance,
-  ExportMarkersToFileInstance
+  exportMarkersToFileInstance
 } from '@mapgis/pan-spatial-map-store'
 import axios from 'axios'
 
 @Component({ name: 'MarkerExport' })
-export default class MarkerExport extends Mixins() {
+export default class MarkerExport extends Vue {
+  @Emit('finished')
+  emitFinished() {}
+
+  @Prop({ type: Boolean, default: false }) visible
+
   @Prop({ type: Array, required: true }) readonly markers!: Array<
     Record<string, any>
   >
 
   // 表单数据
-  private formExport = {
+  private exportOptions = {
     exportFileName: '',
     exportFileType: 'shp格式'
   }
@@ -60,36 +71,65 @@ export default class MarkerExport extends Mixins() {
 
   private shpOr6xOption: any
 
-  @Emit('closeModal')
-  closeModal() {}
-
-  // 取消按钮回调函数
-  onClickCancel() {
-    this.closeModal()
-  }
-
   // 确认按钮回调函数
-  onClickConfirm() {
-    this.closeModal()
-    if (this.formExport.exportFileName !== '') {
-      switch (this.formExport.exportFileType) {
-        case 'shp格式':
-          this.ouputToShpOr6x(this.formExport.exportFileName, 'shp')
-          break
-        case '6x格式':
-          this.ouputToShpOr6x(this.formExport.exportFileName, '6x')
-          break
-        case 'excel格式':
-          this.ouputToExcel(this.formExport.exportFileName)
-          break
-        default:
-          break
+  private onExportOk() {
+    if (this.markers.length) {
+      if (this.exportOptions.exportFileName !== '') {
+        const exportedMarkers = this.markers.map(marker => {
+          const {
+            markerId,
+            title,
+            description,
+            coordinates,
+            feature,
+            picture
+          } = marker
+
+          return {
+            id: markerId,
+            title,
+            description,
+            center: coordinates,
+            features: [feature]
+          }
+        })
+
+        switch (this.exportOptions.exportFileType) {
+          case 'shp格式':
+            this.ouputToShpOr6x(
+              this.exportOptions.exportFileName,
+              exportedMarkers,
+              'shp'
+            )
+            break
+          case '6x格式':
+            this.ouputToShpOr6x(
+              this.exportOptions.exportFileName,
+              exportedMarkers,
+              '6x'
+            )
+            break
+          case 'excel格式':
+            this.ouputToExcel(
+              this.exportOptions.exportFileName,
+              exportedMarkers
+            )
+            break
+          default:
+            break
+        }
       }
     }
+
+    this.emitFinished()
+  }
+
+  private onExportCancel() {
+    this.emitFinished()
   }
 
   // 发送请求创建简单要素类 --> 发送请求将简单要素类保存
-  creatFeature(flieName: string, featureSet: any, featureType: string) {
+  private creatFeature(flieName: string, featureSet: any, featureType: string) {
     const { projectionName } = this.defaultConfig // 获取目标参考系
     const { userName, passWord } = this.markerServerConfig
     const getFeatureUrl = `http://${this.markerServerConfig.ip}:${this.markerServerConfig.port}/onemap/featureSet/export?path=${flieName}&srsName=${projectionName}&type=${featureType}&f=json&user=${userName}&password=${passWord}`
@@ -154,8 +194,10 @@ export default class MarkerExport extends Mixins() {
   }
 
   // 导出形式为shp文件或6x
-  ouputToShpOr6x(flieName: string, fileType: string) {
-    const setOption = ExportMarkersToFileInstance.getSetByMarkers(this.markers) // 获取结果集对象
+  private ouputToShpOr6x(flieName: string, exportedMarkers, fileType: string) {
+    const setOption = exportMarkersToFileInstance.getSetByMarkers(
+      exportedMarkers
+    ) // 获取结果集对象
     let flieNameItem: string
     if (setOption.featureSet1.SFEleArray.length > 0) {
       // 有点要素
@@ -197,20 +239,20 @@ export default class MarkerExport extends Mixins() {
   }
 
   // 导出格式为Excel
-  ouputToExcel(flieName: string) {
+  private ouputToExcel(flieName: string, exportedMarkers) {
     const managerBaseUrl = ''
     const url = `${managerBaseUrl}WebService/ExportToExcel`
     const record: Array<Record<string, any>> = []
-    for (let i = 0; i < this.markers.length; i += 1) {
+    for (let i = 0; i < exportedMarkers.length; i += 1) {
       let coord = ''
       let fileType = '点'
       // 区标注只有一个feature，一个feature里可以有多个面
-      if (this.markers[i].features) {
-        for (let f = 0; f < this.markers[i].features.length; f += 1) {
+      if (exportedMarkers[i].features) {
+        for (let f = 0; f < exportedMarkers[i].features.length; f += 1) {
           if (f > 0) {
             coord += '#'
           }
-          const { geometry } = this.markers[i].features[f]
+          const { geometry } = exportedMarkers[i].features[f]
           const { type, coordinates } = geometry
           fileType = type
           // 要素之间用'#'分隔，坐标之间用' '分隔，xy之间用','分隔
@@ -245,14 +287,14 @@ export default class MarkerExport extends Mixins() {
           }
         }
       } else {
-        coord = this.markers[i].coordinates.join(',')
+        coord = exportedMarkers[i].center.join(',')
       }
       const opt = {
         标注序号: i + 1,
-        标注名称: this.markers[i].title,
+        标注名称: exportedMarkers[i].title,
         标注类型: fileType,
-        备注: this.markers[i].description,
-        中心点坐标: this.markers[i].coordinates,
+        备注: exportedMarkers[i].description,
+        中心点坐标: exportedMarkers[i].center,
         几何坐标: coord
       }
       record.push(opt)
@@ -278,22 +320,9 @@ export default class MarkerExport extends Mixins() {
 </script>
 
 <style lang="less" scoped>
-.ant-form-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-}
-.ant-divider {
-  margin: 12px 0;
-}
-.btn-group {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-
-  .ant-btn {
-    margin-left: 8px;
+.marker-export-wrapper {
+  .marker-export-body {
+    display: flex;
   }
 }
 </style>

@@ -1,86 +1,116 @@
 <template>
-  <div class="marker-input">
-    <a-form-model
-      :model="formInput"
-      :label-col="{ span: 8 }"
-      :wrapper-col="{ span: 16 }"
-    >
-      <a-form-model-item label="坐标单位:">
-        <a-select v-model="formInput.unit">
-          <a-select-option v-for="item in unitTypes" :key="item">{{
-            item
-          }}</a-select-option>
-        </a-select>
-      </a-form-model-item>
-      <a-form-model-item label="X坐标:">
-        <a-input
-          v-show="formInput.unit === '十进制'"
-          v-model.number="formInput.coordX"
-          type="number"
+  <a-modal
+    class="marker-input-wrapper"
+    :visible="visible"
+    title="输入坐标"
+    :width="360"
+    :mask="false"
+    @cancel="onInputCancel"
+    @ok="onInputOk"
+  >
+    <div class="marker-input-body">
+      <a-space direction="vertical" style="flex: 1">
+        <a-row>
+          <label>坐标系</label>
+        </a-row>
+        <a-row>
+          <a-select v-model="inputOptions.crsName" style="width: 100%;">
+            <a-select-option v-for="item in crsNames" :key="item">
+              {{ item }}
+            </a-select-option>
+          </a-select>
+        </a-row>
+        <a-row>
+          <label>单位</label>
+        </a-row>
+        <a-row>
+          <a-select v-model="inputOptions.unit" style="width: 100%;">
+            <a-select-option v-for="item in unitTypes" :key="item">
+              {{ item }}
+            </a-select-option>
+          </a-select>
+        </a-row>
+        <a-row>
+          <label>X坐标</label>
+        </a-row>
+        <a-row v-show="inputOptions.unit === '十进制'">
+          <a-input v-model.number="inputOptions.coordX" type="number" />
+        </a-row>
+        <a-row
+          v-show="inputOptions.unit === '度分秒'"
+          type="flex"
+          :gutter="[10, 0]"
+          align="middle"
         >
-        </a-input>
-        <div v-show="formInput.unit === '度分秒'" class="coord-input">
-          <a-input v-model="formInput.degreeX" type="number"> </a-input>
-          <span>度</span>
-          <a-input v-model="formInput.minuteX" type="number"> </a-input>
-          <span>分</span>
-          <a-input v-model="formInput.secondX" type="number"> </a-input>
-          <span>秒</span>
-        </div>
-      </a-form-model-item>
-      <a-form-model-item label="Y坐标:">
-        <a-input
-          v-show="formInput.unit === '十进制'"
-          v-model.number="formInput.coordY"
-          type="number"
+          <a-col :span="6">
+            <a-input type="number" v-model="inputOptions.degreeX" />
+          </a-col>
+          <a-col :span="2">度</a-col>
+          <a-col :span="6">
+            <a-input type="number" v-model="inputOptions.minuteX" />
+          </a-col>
+          <a-col :span="2">分</a-col>
+          <a-col :span="6">
+            <a-input type="number" v-model="inputOptions.secondX" />
+          </a-col>
+          <a-col :span="2">秒</a-col>
+        </a-row>
+        <a-row>
+          <label>Y坐标</label>
+        </a-row>
+        <a-row v-show="inputOptions.unit === '十进制'">
+          <a-input v-model.number="inputOptions.coordY" type="number" />
+        </a-row>
+        <a-row
+          v-show="inputOptions.unit === '度分秒'"
+          type="flex"
+          :gutter="[10, 0]"
+          align="middle"
         >
-        </a-input>
-        <div v-show="formInput.unit === '度分秒'" class="coord-input">
-          <a-input v-model="formInput.degreeY" type="number"> </a-input>
-          <span>度</span>
-          <a-input v-model="formInput.minuteY" type="number"> </a-input>
-          <span>分</span>
-          <a-input v-model="formInput.secondY" type="number"> </a-input>
-          <span>秒</span>
-        </div>
-      </a-form-model-item>
-      <a-checkbox
-        class="crs-checkbox"
-        :default-checked="true"
-        @change="onChange"
-      >
-        设置输入坐标空间参考系
-      </a-checkbox>
-      <a-form-model-item v-show="showCrsSelect" label="参考系:">
-        <a-select v-model="formInput.crsName">
-          <a-select-option v-for="item in crsNames" :key="item">{{
-            item
-          }}</a-select-option>
-        </a-select>
-      </a-form-model-item>
-      <a-divider />
-      <div class="btn-group">
-        <a-button type="primary" @click="onClickConfirm">确认</a-button>
-        <a-button @click="onClickCancel">取消</a-button>
-      </div>
-    </a-form-model>
-  </div>
+          <a-col :span="6">
+            <a-input type="number" v-model="inputOptions.degreeY" />
+          </a-col>
+          <a-col :span="2">度</a-col>
+          <a-col :span="6">
+            <a-input type="number" v-model="inputOptions.minuteY" />
+          </a-col>
+          <a-col :span="2">分</a-col>
+          <a-col :span="6">
+            <a-input type="number" v-model="inputOptions.secondY" />
+          </a-col>
+          <a-col :span="2">秒</a-col>
+        </a-row>
+      </a-space>
+    </div>
+  </a-modal>
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Emit } from 'vue-property-decorator'
+import { Component, Prop, Emit, Mixins } from 'vue-property-decorator'
 import {
   utilInstance,
-  eventBus,
+  markerIconInstance,
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
-import { ThemeStyleMixin, AppMixin, UUID } from '@mapgis/web-app-framework'
-import MarkerAddMixin from '../../mixins/marker-add'
+import { UUID } from '@mapgis/web-app-framework'
+import moment from 'moment'
+import MarkerMixin from '../../mixins/marker-add'
 
 @Component({ name: 'MpMarkerInput' })
-export default class MpMarkerInput extends Mixins(MarkerAddMixin, AppMixin) {
-  // 表单数据
-  private formInput = {
+export default class MpMarkerInput extends Mixins(MarkerMixin) {
+  @Emit('added')
+  emitAdded(marker) {}
+
+  @Emit('finished')
+  emitFinished() {}
+
+  @Prop({ type: Boolean, default: false }) visible
+
+  // 底图坐标系
+  private defaultCrs = baseConfigInstance.config.projectionName
+
+  // 输入选项
+  private inputOptions = {
     unit: '十进制',
     coordX: 0,
     coordY: 0,
@@ -90,121 +120,76 @@ export default class MpMarkerInput extends Mixins(MarkerAddMixin, AppMixin) {
     degreeY: 0,
     minuteY: 0,
     secondY: 0,
-    crsName: 'WGS1984_度'
+    crsName: this.defaultCrs
   }
 
   // 坐标单位下拉配置
   private unitTypes = ['十进制', '度分秒']
 
   // 坐标系下拉配置
-  private crsNames = ['WGS1984_度', 'Web墨卡托_WGS1984']
-
-  // 参考系选择器的显隐
-  private showCrsSelect = true
-
-  @Emit('addMarker')
-  addInputMarker(marker) {}
-
-  @Emit('closeModal')
-  closeModal() {}
-
-  // 多选框变化时回调函数
-  onChange(e) {
-    this.showCrsSelect = e.target.checked
-  }
-
-  // 取消按钮回调函数
-  onClickCancel() {
-    this.closeModal()
-  }
+  private crsNames = baseConfigInstance.config.commonProjection.split(',')
 
   // 确认按钮回调函数
-  async onClickConfirm() {
-    if (this.formInput.unit === '度分秒') {
-      this.formInput.coordX = utilInstance.degreeToDecimal(
-        Number(this.formInput.degreeX),
-        Number(this.formInput.minuteX),
-        Number(this.formInput.secondX)
+  private async onInputOk() {
+    if (this.inputOptions.unit === '度分秒') {
+      this.inputOptions.coordX = utilInstance.degreeToDecimal(
+        Number(this.inputOptions.degreeX),
+        Number(this.inputOptions.minuteX),
+        Number(this.inputOptions.secondX)
       )
-      this.formInput.coordY = utilInstance.degreeToDecimal(
-        Number(this.formInput.degreeY),
-        Number(this.formInput.minuteY),
-        Number(this.formInput.secondY)
+      this.inputOptions.coordY = utilInstance.degreeToDecimal(
+        Number(this.inputOptions.degreeY),
+        Number(this.inputOptions.minuteY),
+        Number(this.inputOptions.secondY)
       )
     }
     let pointCoords: number[][] = [
-      [Number(this.formInput.coordX), Number(this.formInput.coordY)]
+      [Number(this.inputOptions.coordX), Number(this.inputOptions.coordY)]
     ]
-    if (this.showCrsSelect) {
-      pointCoords = await this.transPoints(
-        [[Number(this.formInput.coordX), Number(this.formInput.coordY)]],
-        this.formInput.crsName
-      )
-    }
-    this.structMarker(pointCoords[0])
-    this.closeModal()
-  }
 
-  // 构造marker
-  structMarker(coord) {
+    pointCoords = await this.transPoints(
+      [[Number(this.inputOptions.coordX), Number(this.inputOptions.coordY)]],
+      this.inputOptions.crsName,
+      this.defaultCrs
+    )
+
+    // 构造marker
+    const unSelectIcon = await markerIconInstance.unSelectIcon()
+
     const feature = {
       geometry: {
-        coordinates: [...coord],
+        coordinates: [...pointCoords[0]],
         type: 'Point'
       },
-      id: UUID.uuid(),
       properties: {},
       type: 'Feature'
     }
 
     const marker = {
-      id: UUID.uuid(),
-      title: '',
+      markerId: UUID.uuid(),
+      title: `标注 ${moment().format('YYYY-MM-DD HH:mm:ss')}`,
       description: '',
-      iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
-      img: '',
-      edit: true,
-      features: [feature],
-      coordinates: [...coord],
-      center: [...coord]
+      coordinates: [...pointCoords[0]],
+      img: unSelectIcon,
+      properties: feature.properties,
+      feature,
+      picture: ''
     }
-    this.addInputMarker(marker)
+
+    this.emitAdded(marker)
+    this.emitFinished()
+  }
+
+  private onInputCancel() {
+    this.emitFinished()
   }
 }
 </script>
 
 <style lang="less" scoped>
-.ant-form-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-}
-::v-deep .ant-form-item-label {
-  width: 104px;
-}
-::v-deep .ant-form-item-control-wrapper {
-  width: 208px;
-}
-
-.crs-checkbox {
-  margin: 8px 0 18px 32px;
-}
-.coord-input {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-}
-.ant-divider {
-  margin: 12px 0;
-}
-.btn-group {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-
-  .ant-btn {
-    margin-left: 8px;
+.marker-input-wrapper {
+  .marker-input-body {
+    display: flex;
   }
 }
 </style>

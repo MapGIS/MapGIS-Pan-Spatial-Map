@@ -3,15 +3,7 @@
 </template>
 
 <script lang="ts">
-import {
-  Component,
-  Prop,
-  Watch,
-  Mixins,
-  Emit,
-  InjectReactive,
-  Inject
-} from 'vue-property-decorator'
+import { Component, Prop, Watch, Mixins, Emit } from 'vue-property-decorator'
 import {
   FeatureGeoJSON,
   utilInstance,
@@ -21,8 +13,6 @@ import { MapMixin, ThemeMixin } from '@mapgis/web-app-framework'
 
 @Component
 export default class M3DCesium extends Mixins(MapMixin) {
-  @Inject('CesiumZondy') CesiumZondy
-
   @Prop({
     type: Boolean,
     default: false

@@ -93,7 +93,7 @@
       </a-pagination>
     </div>
     <mp-marker-plotting
-      v-if="mapRender === mapboxRender && !isIGSScence"
+      v-if="is2DMapMode && !isIGSScence"
       ref="refMarkerPlotting"
       :markers="markers"
       :filter-with-map="filterWithMap"
@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch, Inject } from 'vue-property-decorator'
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import {
   ExhibitionMixin,
   IAttributeTableOption,
@@ -190,7 +190,6 @@ import Mp3dMarkerPlotting from '../3dMarkerPlotting/3dMarkerPlotting.vue'
 import MpFilter from '../Filter/Filter.vue'
 import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
 import axios from 'axios'
-import M3DCesium from '../M3DCesium/M3DCesium.vue'
 
 @Component({
   name: 'MpAttributeTable',
@@ -199,8 +198,7 @@ import M3DCesium from '../M3DCesium/M3DCesium.vue'
     MpMarkerPlotting,
     Mp3dMarkerPlotting,
     MpAttrStatistics,
-    MpFilter,
-    M3DCesium
+    MpFilter
   }
 })
 export default class MpAttributeTable extends Mixins(
@@ -208,8 +206,6 @@ export default class MpAttributeTable extends Mixins(
   AppMixin,
   MapMixin
 ) {
-  @Inject('CesiumZondy') CesiumZondy
-
   // 属性表选项
   @Prop({ type: Object }) exhibition!: IAttributeTableExhibition
 
@@ -325,6 +321,12 @@ export default class MpAttributeTable extends Mixins(
     return baseConfigInstance.config.colorConfig
   }
 
+  private get markerPlottingComponent() {
+    return this.is2DMapMode
+      ? this.$refs.refMarkerPlotting
+      : this.$refs.ref3dMarkerPlotting
+  }
+
   @Watch('optionVal', { deep: true, immediate: true })
   optionChange() {
     this.clearSelection()
@@ -424,15 +426,8 @@ export default class MpAttributeTable extends Mixins(
   private onZoomTo() {
     if (this.selection.length == 0) return
 
-    if (this.mapRender === this.mapboxRender) {
-      if (this.$refs.refMarkerPlotting) {
-        this.$refs.refMarkerPlotting.zoomTo(this.selectionBound)
-      }
-    } else {
-      if (this.$refs.ref3dMarkerPlotting) {
-        this.$refs.ref3dMarkerPlotting.zoomTo(this.selectionBound)
-      }
-    }
+    this.markerPlottingComponent &&
+      this.markerPlottingComponent.zoomTo(this.selectionBound)
   }
 
   private onClearSelection() {
@@ -855,10 +850,10 @@ export default class MpAttributeTable extends Mixins(
       }
       if (!(Number.isNaN(center[0]) || Number.isNaN(center[1]))) {
         const marker: Record<string, any> = {
+          markerId: UUID.uuid(),
           coordinates: center,
           fid: feature.properties[this.rowKey],
           img: unSelectIcon,
-          markerId: UUID.uuid(),
           properties: feature.properties,
           feature: feature
         }

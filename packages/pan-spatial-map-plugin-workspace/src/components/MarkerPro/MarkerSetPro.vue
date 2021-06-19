@@ -8,6 +8,9 @@
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
     >
+      <template slot="popup" slot-scope="slotProps">
+        <slot name="popup" v-bind="slotProps"></slot>
+      </template>
     </mp-marker-pro>
   </div>
 </template>

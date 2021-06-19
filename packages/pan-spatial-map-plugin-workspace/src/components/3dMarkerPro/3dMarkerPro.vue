@@ -10,21 +10,32 @@
       @change="changePopup"
     >
       <div slot="default">
-        <a-list
-          item-layout="horizontal"
-          :data-source="propertyKeys"
-          size="small"
-          class="markers"
+        <slot
+          name="popup"
+          :marker="marker"
+          :field-configs="fieldConfigs"
+          :property-keys="propertyKeys"
         >
-          <a-list-item slot="renderItem" slot-scope="item" class="marker-item">
-            <div style="width: 130px" :title="propertyName(item)">
-              {{ propertyName(item) }}
-            </div>
-            <div style="width: 170px" :title="marker.properties[item]">
-              {{ marker.properties[item] }}
-            </div>
-          </a-list-item>
-        </a-list>
+          <a-list
+            item-layout="horizontal"
+            :data-source="propertyKeys"
+            size="small"
+            class="table-marker"
+          >
+            <a-list-item
+              slot="renderItem"
+              slot-scope="item"
+              class="table-marker-item"
+            >
+              <div style="width: 130px" :title="propertyName(item)">
+                {{ propertyName(item) }}
+              </div>
+              <div style="width: 170px" :title="marker.properties[item]">
+                {{ marker.properties[item] }}
+              </div>
+            </a-list-item>
+          </a-list>
+        </slot>
       </div>
     </mapgis-3d-popup>
   </div>
@@ -210,11 +221,11 @@ export default class Mp3dMarkerPro extends Vue {
 <style lang="less" scoped>
 .cesium-popup {
   .cesium-popup-content-wrapper {
-    .markers {
+    .table-marker {
       max-width: 240px;
       max-height: 200px;
       overflow: auto;
-      .marker-item {
+      .table-marker-item {
         padding: 0;
         font-size: 10px;
         div {
