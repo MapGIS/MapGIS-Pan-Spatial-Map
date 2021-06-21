@@ -739,8 +739,8 @@
           {
             "label": "台湾省地形",
             "describe": "台湾省地形",
-            "ip": "",
-            "port": "",
+            "ip": "develop.smaryun.com",
+            "port": "6163",
             "layerServiceType": "DOC3D",
             "name": "terrain",
             "searchName": "",
