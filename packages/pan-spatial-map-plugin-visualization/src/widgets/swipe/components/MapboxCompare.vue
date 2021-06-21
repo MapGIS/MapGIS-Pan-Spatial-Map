@@ -6,12 +6,12 @@
     </div>
     <!-- 卷帘组件 -->
     <mapgis-compare v-else :orientation="direction">
-      <mp-mapbox-view
+      <mp-web-map-pro
         slot="beforeMap"
         :document="aboveDocument"
         :mapStyle="mapStyle"
       />
-      <mp-mapbox-view
+      <mp-web-map-pro
         slot="afterMap"
         :document="belowDocument"
         :mapStyle="mapStyle"
@@ -39,12 +39,12 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch, InjectReactive } from 'vue-property-decorator'
-import { Document, MpMapboxView, Layer } from '@mapgis/web-app-framework'
+import { Document, MpWebMapPro, Layer } from '@mapgis/web-app-framework'
 import SwipeSetting from './SwipeSetting'
 
 @Component({
   components: {
-    MpMapboxView,
+    MpWebMapPro,
     SwipeSetting
   }
 })
