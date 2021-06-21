@@ -2,7 +2,7 @@
   <div class="swipe-cesium-compare">
     <!-- 卷帘组件 -->
     <mapgis-3d-compare
-      v-if="showCompare"
+      v-if="showCompare && refreshFlag()"
       :before-layers="beforeLayers"
       :after-layers="afterLayers"
     />
@@ -45,6 +45,11 @@ export default class CesiumCompare extends Vue {
   // 是否展示卷帘
   get showCompare() {
     return this.beforeLayers.length && this.afterLayers.length
+  }
+
+  // 刷新标志
+  get refreshFlag() {
+    return () => this.swipe.refreshCesiumCompare
   }
 
   /**

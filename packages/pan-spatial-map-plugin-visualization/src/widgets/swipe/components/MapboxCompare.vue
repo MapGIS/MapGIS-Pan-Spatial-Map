@@ -118,7 +118,9 @@ export default class MapboxCompare extends Vue {
   /**
    * 添加图层
    */
-  addLayerToMap({ defaultMap }: Document, layer: Layer) {
+  addLayerToMap(type: 'above' | 'below') {
+    const { defaultMap } = this[`${type}Document`]
+    const layer = this[`${type}Layer`]
     if (layer) {
       defaultMap.removeAll()
       defaultMap.add(layer)
@@ -135,17 +137,17 @@ export default class MapboxCompare extends Vue {
   /**
    * 监听: 上级(左侧)图层
    */
-  @Watch('aboveLayer.id')
-  watchAboveLayer(nV) {
-    this.addLayerToMap(this.aboveDocument, this.aboveLayer)
+  @Watch('aboveLayer.id', { immediate: true })
+  watchAboveLayer() {
+    this.addLayerToMap('above')
   }
 
   /**
    * 监听: 下级(右侧)图层
    */
-  @Watch('belowLayer.id')
-  watchBelowLayer(nV) {
-    this.addLayerToMap(this.belowDocument, this.belowLayer)
+  @Watch('belowLayer.id', { immediate: true })
+  watchBelowLayer() {
+    this.addLayerToMap('below')
   }
 }
 </script>

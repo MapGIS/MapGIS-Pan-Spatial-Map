@@ -39,7 +39,6 @@
 </template>
 <script lang="ts">
 import { Vue, Watch, Component, InjectReactive } from 'vue-property-decorator'
-import { Layer } from '@mapgis/web-app-framework'
 
 @Component
 export default class SwipeSetting extends Vue {
@@ -48,12 +47,6 @@ export default class SwipeSetting extends Vue {
     default: () => ({})
   })
   swipe: any
-
-  // 上级(左侧)图层列表
-  aboveLayers: Layer[] = []
-
-  // 下级(右侧)图层列表
-  belowLayers: Layer[] = []
 
   // 卷帘方向
   get direction() {
@@ -87,16 +80,14 @@ export default class SwipeSetting extends Vue {
     return this.swipe.belowLayer || {}
   }
 
-  // 选择的所有图层列表
-  get layers() {
-    return this.swipe.layers || []
+  // 上级(左侧)图层列表
+  get aboveLayers() {
+    return this.swipe.aboveLayers || []
   }
 
-  /**
-   * 上下图层选择变化时获取对应的图层列表
-   */
-  getLayers(layers: Layer[], { id }: Layer) {
-    return layers.filter((l: Layer) => l.id !== id)
+  // 下级(右侧)图层列表
+  get belowLayers() {
+    return this.swipe.belowLayers || []
   }
 
   /**
@@ -118,15 +109,6 @@ export default class SwipeSetting extends Vue {
    */
   onDirectionChange(e) {
     this.swipe.onDirectChange(e.target.value)
-  }
-
-  /**
-   * 监听: 图层列表化
-   */
-  @Watch('layers', { immediate: true, deep: true })
-  watchLayers(nV: Layer[]) {
-    this.aboveLayers = this.getLayers(nV, this.belowLayer)
-    this.belowLayers = this.getLayers(nV, this.aboveLayer)
   }
 }
 </script>

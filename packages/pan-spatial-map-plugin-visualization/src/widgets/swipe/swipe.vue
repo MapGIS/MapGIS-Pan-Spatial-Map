@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-swipe" v-if="isOpen">
-    <mapbox-compare v-show="is2DMapMode" />
-    <cesium-compare v-show="!is2DMapMode" />
+    <mapbox-compare v-if="is2DMapMode" />
+    <cesium-compare v-else />
   </div>
 </template>
 
@@ -15,6 +15,7 @@ import {
 import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
 import MapboxCompare from './components/MapboxCompare'
 import CesiumCompare from './components/CesiumCompare'
+import { Layer } from 'app/packages/MapGIS-Web-App-Framework/src/store/document/layer'
 
 type Direction = 'vertical' | 'horizontal'
 
@@ -34,6 +35,9 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   // 卷帘功能弹框开关
   isOpen = false
 
+  // 强制刷新三维卷帘
+  refreshCesiumCompare = false
+
   // 卷帘方向
   direction: Direction = 'vertical'
 
@@ -46,31 +50,14 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   // 目录树勾选的图层
   layers: Layer[] = []
 
-  /**
-   * 图层初始化和重置操作
-   */
-  initLayer() {
-    const _layers = this.document.defaultMap
-      .clone()
-      .getFlatLayers()
-      .filter(v => v.isVisible)
-    if (_layers && _layers.length > 1) {
-      const [{ id: bId }, { id: aId }] = _layers
-      this.layers = _layers
-      this.onAboveChange(aId)
-      this.onBelowChange(bId)
-    } else {
-      this.resetLayer()
-    }
+  // 上级(左侧)图层列表
+  get aboveLayers() {
+    return this.getLayers(this.belowLayer.id)
   }
 
-  /**
-   * 重置图层信息
-   */
-  resetLayer() {
-    this.layers = []
-    this.aboveLayer = {}
-    this.belowLayer = {}
+  // 下级(右侧)图层列表
+  get belowLayers() {
+    return this.getLayers(this.aboveLayer.id)
   }
 
   /**
@@ -81,30 +68,49 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   }
 
   /**
-   * 三维上图层更新
+   * 上下图层选择变化时获取对应的图层列表
    */
-  onCesiumAboveUpdate() {
-    if (this.aboveLayer.id) {
-      const cacheLayer = this.aboveLayer.clone()
-      this.aboveLayer = {}
+  getLayers(layerId: string) {
+    return this.layers.filter((l: Layer) => l.id !== layerId)
+  }
+
+  /**
+   * fixme
+   * 强制刷新三维卷帘，解决切换二三维，不触发三维卷帘的更新的问题
+   */
+  onForceRefreshCesiumCompare() {
+    if (!this.is2DMapMode) {
+      this.refreshCesiumCompare = false
       const timer = setTimeout(() => {
-        this.aboveLayer = cacheLayer.clone()
+        this.refreshCesiumCompare = true
         clearTimeout(timer)
-      }, 400)
+      })
     }
   }
 
   /**
-   * 三维下图层更新
+   * 重置图层信息
    */
-  onCesiumBelowUpdate() {
-    if (this.belowLayer.id) {
-      const cacheLayer = this.belowLayer.clone()
-      this.belowLayer = {}
-      const timer = setTimeout(() => {
-        this.belowLayer = cacheLayer.clone()
-        clearTimeout(timer)
-      }, 400)
+  resetLayer() {
+    this.layers = []
+    this.aboveLayer = {}
+    this.belowLayer = {}
+    this.refreshCesiumCompare = false
+  }
+
+  /**
+   * 图层初始化和重置操作
+   */
+  initLayer(success: (l: layer[]) => void) {
+    const _layers = this.document.defaultMap
+      .clone()
+      .getFlatLayers()
+      .filter(v => v.isVisible)
+    if (_layers && _layers.length > 1) {
+      success(_layers)
+      this.onForceRefreshCesiumCompare()
+    } else {
+      this.resetLayer()
     }
   }
 
@@ -115,9 +121,6 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
     if (this.aboveLayer.id !== layerId) {
       this.aboveLayer = this.getLayer(layerId)
     }
-    if (!this.is2DMapMode) {
-      this.onCesiumAboveUpdate()
-    }
   }
 
   /**
@@ -126,9 +129,6 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   onBelowChange(layerId: string) {
     if (this.belowLayer.id !== layerId) {
       this.belowLayer = this.getLayer(layerId)
-    }
-    if (!this.is2DMapMode) {
-      this.onCesiumBelowUpdate()
     }
   }
 
@@ -144,7 +144,11 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
    */
   onOpen() {
     this.isOpen = true
-    this.initLayer()
+    this.initLayer((layers: Layer[]) => {
+      this.aboveLayer = layers[1]
+      this.belowLayer = layers[0]
+      this.layers = layers
+    })
   }
 
   /**
@@ -152,7 +156,7 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
    */
   onClose() {
     this.isOpen = false
-    this.direction = 'vertical'
+    this.onDirectChange('vertical')
     this.resetLayer()
   }
 
@@ -161,23 +165,25 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
    */
   @Watch('is2DMapMode', { immediate: true })
   watchMapMode(nV) {
-    let _windowSize = 'max'
-    if (!nV) {
-      _windowSize = 'normal'
-      this.onCesiumAboveUpdate()
-      this.onCesiumBelowUpdate()
-    } else {
-    }
-    this.$set(this.widget.manifest.properties, 'windowSize', _windowSize)
+    this.refreshCesiumCompare = !nV
+    this.$set(
+      this.widget.manifest.properties,
+      'windowSize',
+      !nV ? 'normal' : 'max'
+    )
   }
 
   /**
    * 监听: defaultMap变化
    */
-  @Watch('document.defaultMap', { deep: true })
+  @Watch('document.defaultMap', { immediate: true, deep: true })
   watchDefaultMap() {
     if (this.isOpen) {
-      this.initLayer()
+      this.initLayer((layers: Layer[]) => {
+        this.layers = layers
+        this.aboveLayer = this.aboveLayers[0]
+        this.belowLayer = this.belowLayers[0]
+      })
     }
   }
 }
