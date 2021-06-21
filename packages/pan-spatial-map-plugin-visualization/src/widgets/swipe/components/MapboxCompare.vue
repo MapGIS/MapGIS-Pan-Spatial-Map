@@ -39,12 +39,11 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch, InjectReactive } from 'vue-property-decorator'
-import { Document, MpWebMapPro, Layer } from '@mapgis/web-app-framework'
+import { Document, Layer } from '@mapgis/web-app-framework'
 import SwipeSetting from './SwipeSetting'
 
 @Component({
   components: {
-    MpWebMapPro,
     SwipeSetting
   }
 })
