@@ -1,6 +1,10 @@
 <template>
   <!-- 分段专题图图层 -->
-  <mapgis-3d-popup :position="popupPosition" :showed="showPopup">
+  <mapgis-3d-popup
+    :position="popupPosition"
+    :showed="showPopup"
+    :destroyOnClose="true"
+  >
     <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
     <div v-else>
       <div
@@ -229,6 +233,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
 <style lang="less" scoped>
 .popup-row {
   line-height: 20px;
+  margin-top: 8px;
 }
 .popup-fontsize {
   font-size: 12px;

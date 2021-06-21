@@ -1,6 +1,10 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mapgis-3d-popup :position="popupPosition" :showed="showPopup">
+  <mapgis-3d-popup
+    :position="popupPosition"
+    :showed="showPopup"
+    :destroyOnClose="true"
+  >
     <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
     <div v-else>
       <div
@@ -65,6 +69,7 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
 <style lang="less" scoped>
 .popup-row {
   line-height: 20px;
+  margin-top: 8px;
 }
 .popup-fontsize {
   font-size: 12px;

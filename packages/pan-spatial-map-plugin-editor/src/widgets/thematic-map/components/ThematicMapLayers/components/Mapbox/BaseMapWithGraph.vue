@@ -1,6 +1,6 @@
 <template>
   <!-- 统计专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="showPopup">
+  <mapgis-popup :coordinates="coordinates" :showed="showPopup" v-if="showPopup">
     <span class="popup-fontsize" v-if="!properties">暂无数据</span>
     <div v-else>
       <div
@@ -281,6 +281,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
 <style lang="less" scoped>
 .popup-row {
   line-height: 20px;
+  margin-top: 8px;
 }
 .popup-fontsize {
   font-size: 14px;
