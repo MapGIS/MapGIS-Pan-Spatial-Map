@@ -2,14 +2,8 @@
   <div class="mp-widget-visual-analysis">
     <div class="visual-panel">
       <a-form-model v-model="formData">
-        <a-form-model-item label="方位角">
-          <a-input v-model.number="formData.azimuthAngle" type="number" />
-        </a-form-model-item>
         <a-form-model-item label="水平夹角">
           <a-input v-model.number="formData.horizontAngle" type="number" />
-        </a-form-model-item>
-        <a-form-model-item label="俯仰角">
-          <a-input v-model.number="formData.pitchAngle" type="number" />
         </a-form-model-item>
         <a-form-model-item label="垂直夹角">
           <a-input v-model.number="formData.verticalAngle" type="number" />
@@ -44,9 +38,7 @@ import ColorPicker from './color-picker'
 export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   // 表单数据
   private formData = {
-    azimuthAngle: 0,
     horizontAngle: 60,
-    pitchAngle: 0,
     verticalAngle: 60,
     unVisibleColor: '#ff0000',
     visibleColor: '#00ff00',
@@ -107,9 +99,7 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
       this.formData.maskColor
     )
 
-    window.VisualAnalysisManage.visualAnalysis.azimuthAngle = this.formData.azimuthAngle
     window.VisualAnalysisManage.visualAnalysis.horizontAngle = this.formData.horizontAngle
-    window.VisualAnalysisManage.visualAnalysis.pitchAngle = this.formData.pitchAngle
     window.VisualAnalysisManage.visualAnalysis.verticalAngle = this.formData.verticalAngle
     window.VisualAnalysisManage.visualAnalysis._unVisibleColor = unVisibleColor
     window.VisualAnalysisManage.visualAnalysis._visibleColor = visibleColor
