@@ -37,4 +37,13 @@ export {
   SpatialReference
 } from './document/spatial-reference'
 
-export { UUID, ObjectTool, CoordinateTransformation } from './utils'
+export { UUID, CoordinateTransformation, SceneUtil } from './utils'
+
+import * as Objects from 'objects'
+import * as Catalog from './catalog'
+import * as Feature from './feature'
+import * as Metadata from './metadata'
+import * as Overlay from './overlay'
+import * as Analysis from './anslysis'
+
+export { Objects, Catalog, Feature, Metadata, Overlay, Analysis }

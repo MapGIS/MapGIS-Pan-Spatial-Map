@@ -7,6 +7,16 @@ Vue.use(VueMapbox, {})
 Vue.use(VueCesium, {})
 
 export {
+  CommonUtil,
+  ObjectUtil,
+  ArrayUtil,
+  StringUtil,
+  TimeUtil,
+  ColorUtil,
+  DomUtil
+} from './utils'
+
+export {
   AppManager,
   WidgetManager,
   WidgetState,
@@ -21,8 +31,8 @@ export {
 
 export {
   UUID,
-  ObjectTool,
   CoordinateTransformation,
+  SceneUtil,
   Document,
   Map,
   Layer,
@@ -53,7 +63,13 @@ export {
   IGSSceneLayer,
   IGSSceneSublayerRenderType,
   Rectangle3D,
-  Point3D
+  Point3D,
+  Objects,
+  Catalog,
+  Feature,
+  Metadata,
+  Overlay,
+  Analysis
 } from './model'
 
 import { CommonComponents } from './common'
