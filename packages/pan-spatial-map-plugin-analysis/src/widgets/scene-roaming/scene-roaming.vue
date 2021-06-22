@@ -31,13 +31,56 @@
           }
         "
       >
+        <template slot="name" slot-scope="text, record">
+          <a-input
+            v-if="record.editable"
+            :value="text"
+            @change="e => handleChange(e.target.value, record, 'name')"
+          ></a-input>
+          <template v-else>
+            {{ text }}
+          </template>
+        </template>
+        <template slot="path" slot-scope="text, record">
+          <a-input
+            v-if="record.editable"
+            :value="text"
+            @change="e => handleChange(e.target.value, record, 'path')"
+          ></a-input>
+          <template v-else>
+            {{ text }}
+          </template>
+        </template>
         <template slot="operate" slot-scope="text, record">
-          <a-tooltip placement="bottom">
-            <template slot="title">
-              <span>删除</span>
-            </template>
-            <a-icon type="delete" @click="onClickDelete(record)"></a-icon>
-          </a-tooltip>
+          <div v-if="record.editable">
+            <a-icon type="check" @click="onClickCheck(record)"></a-icon>
+            <a-icon type="close" @click="onClickClose(record)"></a-icon>
+          </div>
+
+          <div v-else>
+            <a-tooltip placement="bottom">
+              <template slot="title">
+                <span>删除</span>
+              </template>
+              <a-button
+                :disabled="editingKey !== ''"
+                shape="circle"
+                icon="delete"
+                @click="onClickDelete(record)"
+              />
+            </a-tooltip>
+            <a-tooltip placement="bottom">
+              <template slot="title">
+                <span>编辑</span>
+              </template>
+              <a-button
+                :disabled="editingKey !== ''"
+                shape="circle"
+                icon="edit"
+                @click="onClickEdit(record)"
+              />
+            </a-tooltip>
+          </div>
         </template>
       </a-table>
       <a-table
@@ -119,7 +162,12 @@
         <a-button v-show="!isPause" type="primary" @click="onClickPause"
           >暂停</a-button
         >
-        <a-button type="primary" @click="onClickSave">保存</a-button>
+        <a-button
+          :disabled="editingKey !== ''"
+          type="primary"
+          @click="onClickSave"
+          >保存</a-button
+        >
       </div>
     </div>
   </div>
@@ -141,14 +189,17 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      align: 'center'
+      align: 'center',
+      ellipsis: true,
+      scopedSlots: { customRender: 'name' }
     },
     {
       title: '坐标',
       dataIndex: 'path',
       key: 'path',
       align: 'center',
-      ellipsis: true
+      ellipsis: true,
+      scopedSlots: { customRender: 'path' }
     },
     {
       title: '操作',
@@ -186,6 +237,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 
   // 表格一数据
   private tableData = []
+
+  // 表格一老版数据(未编辑更新前数据)
+  private cacheTableData = []
 
   // 表格二数据
   private pointTableData = []
@@ -288,6 +342,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   // 新增路径的坐标点
   private coordsArr = []
 
+  // 正在编辑行的key
+  private editingKey = ''
+
   created() {
     this.initData()
   }
@@ -308,6 +365,8 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     this.tableData = configData.map(item => {
       return { ...item, path: item.path.join() }
     })
+
+    this.cacheTableData = this.tableData.map(item => ({ ...item }))
 
     //  默认勾选表格的第一项数据
     this.onSelectChange([this.tableData[0].id])
@@ -421,6 +480,66 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     const index = this.tableData.findIndex(item => item.id === record.id)
 
     this.tableData.splice(index, 1)
+  }
+
+  // 点击编辑列按钮回调
+  private onClickEdit(record) {
+    this.editingKey = record.id
+
+    this.tableData = this.tableData.reduce((result, item) => {
+      if (item.id === record.id) {
+        item.editable = true
+      }
+      result.push(item)
+      return result
+    }, [])
+
+    console.log(this.tableData)
+  }
+
+  // 点击保存编辑列按钮回调
+  private onClickCheck(record) {
+    console.log(this.tableData)
+    this.editingKey = ''
+
+    this.tableData = this.tableData.reduce((result, item) => {
+      if (item.id === record.id) {
+        delete item.editable
+      }
+      result.push(item)
+      return result
+    }, [])
+
+    this.cacheTableData = this.tableData.map(item => ({ ...item }))
+  }
+
+  // 点击取消编辑列按钮回调
+  private onClickClose(record) {
+    this.editingKey = ''
+    const oldTargetData = this.cacheTableData.find(
+      item => item.id === record.id
+    )
+    this.tableData = this.tableData.reduce((result, item) => {
+      if (item.id === record.id) {
+        Object.assign(item, oldTargetData)
+        delete item.editable
+      }
+      result.push(item)
+      return result
+    }, [])
+
+    console.log(this.tableData)
+  }
+
+  // 编辑框输入值变化时回调
+  private handleChange(value, record, colName) {
+    this.tableData = this.tableData.reduce((result, item) => {
+      if (item.id === record.id) {
+        item[colName] = value
+      }
+      result.push(item)
+      return result
+    }, [])
   }
 
   // 点击开始按钮回调
@@ -560,6 +679,8 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
           this.tableData = res.map(item => {
             return { ...item, path: item.path.join() }
           })
+
+          this.cacheTableData = this.tableData.map(item => ({ ...item }))
         })
       })
       .catch(_ => {
@@ -594,6 +715,19 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 
 .scene-panel-table {
   width: 100%;
+
+  ::v-deep .anticon-edit {
+    margin-left: 8px;
+  }
+
+  ::v-deep .anticon-close {
+    margin-left: 8px;
+  }
+
+  ::v-deep .ant-btn-circle {
+    border: none;
+    background: transparent;
+  }
 }
 
 .scene-panel-form {
