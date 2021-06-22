@@ -358,273 +358,11 @@ class CesiumUtil {
     this.webGlobe.viewer.scene.VisualAnalysisManager.removeAll()
   }
 
-  // /**
-  //  * 填挖方分析
-  //  * @param {Function} callFillDig 填挖方分析成功回调
-  //  * @param {Object} opt 填挖方参数
-  //  * @param {String} opt.xPaneNum x方向采样点
-  //  * @param {String} opt.yPaneNum y方向采样点
-  //  * @param {String} opt.heightSmooth 平整高程
-  //  * @example
-  //  *  Zondy.OneMap.Globe.BaseGlobe.DigFillAyalysis(callFillDig, drawCallBack)
-  //  */
-  // digFillAyalysis(callFillDig, opt) {
-  //   this.digFill = new this.Cesium.CutFillAnalyzeC(this.webGlobe.viewer, {
-  //     callBack: callFillDig
-  //   })
-  //   this.changeInteraction('Polygon', (position: any) => {
-  //     this.drawCallBack(position, opt)
-  //   })
-  // }
-
-  // drawGreenWall(viewer, positions) {
-  //   positions.push(positions[0])
-  //   viewer.entities.add({
-  //     name: '围栏',
-  //     wall: {
-  //       positions,
-  //       material: this.Cesium.Color.GREEN,
-  //       outline: true,
-  //       outlineWidth: 2.0
-  //     }
-  //   })
-  // }
-
-  // drawCallBack(positions, opt) {
-  //   this.webGlobe.viewer.entities.removeAll()
-  //   this.drawGreenWall(this.webGlobe.viewer, positions)
-  //   const { xPaneNum, yPaneNum, heightSmooth } = opt
-  //   this.digFill.xPaneNumber = xPaneNum
-  //   this.digFill.yPaneNumber = yPaneNum
-  //   this.digFill.height = heightSmooth
-  //   // eslint-disable-next-line no-underscore-dangle
-  //   this.digFill._pointsPolygon = positions
-  //   const minMax = this.digFill.getMinAndMaxCartesian()
-  //   this.digFill.start(minMax)
-  // }
-
-  // /**
-  //  * 结束填挖方分析
-  //  */
-  // removeDigFillAyalysis() {
-  //   const { viewer } = this.webGlobe
-  //   if (viewer) {
-  //     viewer.entities.removeAll()
-  //     this.stopInteraction()
-  //   }
-  // }
-
-  // /**
-  //  * 洪水淹没
-  //  * @param {Object} opt
-  //  * @param {String} opt.minHeight 设置洪水淹没区域最底高度
-  //  * @param {String} opt.maxHeight 设置洪水淹没区域最高高度
-  //  * @param {String} opt.floodSpeed 设置洪水上涨速度
-  //  */
-  // floodAnalysis(opt) {
-  //   this.removeFloodAnalysis()
-
-  //   // 初始化洪水淹没分析类
-  //   const floodAnaly = new this.Cesium.FloodAnalysis(this.webGlobe.scene)
-  //   // 添加洪水淹没结果显示
-  //   this.webGlobe.scene.VisualAnalysisManager.add(floodAnaly)
-  //   this.changeInteraction('Polygon', (positions: any) => {
-  //     positions.push(positions[0])
-  //     // 设置洪水淹没分析区域点集
-  //     floodAnaly.dotsList = positions
-  //     floodAnaly.minHeight = opt.minHeight || 0
-  //     floodAnaly.maxHeight = opt.maxHeight || 10000
-  //     floodAnaly.floodSpeed = opt.floodSpeed || 200
-  //   })
-  // }
-
-  // /**
-  //  * 结束洪水淹没
-  //  */
-  // removeFloodAnalysis() {
-  //   this.webGlobe.scene.VisualAnalysisManager.removeAll()
-  //   // 取消交互式绘制矩形事件激活状态
-  //   this.stopInteraction()
-
-  //   this.webGlobe.viewer.entities.removeAll()
-  // }
-
   /**
    * 截图
    */
   outputImage() {
     this.webGlobe.outputImage()
-  }
-
-  /**
-   *
-   * @param {Object} opt
-   * @param {String} opt.edgeColor 相切边缘色
-   * @param {String} opt.axis 坐标轴
-   * @param {String} opt.model 参与剖面的模型
-   * @example
-   * Zondy.OneMap.Globe.BaseGlobe.ClippingPlane(opt)
-   */
-  clippingPlane(opt) {
-    const globe = this.webGlobe
-    this.targetY = 0.0 // 剖面位置
-    let clippingPlane
-    let edgeColor
-    let tilesetclippingPlanes
-    let plane
-    let planeEntity
-    let transformCenter
-    if (opt.edgeColor) {
-      const Color = opt.edgeColor.split(',')
-      const ColorRgb = {
-        green: Number(Color[1] / 255),
-        // eslint-disable-next-line radix
-        blue: Number(parseInt(Color[2]) / 255),
-        red: Number(Color[0].split('(')[1] / 255)
-      }
-      edgeColor = new this.Cesium.Color(
-        ColorRgb.red,
-        ColorRgb.green,
-        ColorRgb.blue,
-        1.0
-      )
-    }
-    // var coordinate;
-    if (opt.axis === 'X') {
-      clippingPlane = new this.Cesium.ClippingPlane(
-        new this.Cesium.Cartesian3(-1.0, 0.0, 0.0),
-        0.0
-      )
-    } else if (opt.axis === 'Y') {
-      clippingPlane = new this.Cesium.ClippingPlane(
-        new this.Cesium.Cartesian3(0.0, 1.0, 0.0),
-        0.0
-      )
-    } else {
-      clippingPlane = new this.Cesium.ClippingPlane(
-        new this.Cesium.Cartesian3(0.0, 0.0, -1.0),
-        0.0
-      )
-    }
-    const clippingPlanes = new this.Cesium.ClippingPlaneCollection({
-      planes: [clippingPlane],
-      edgeColor: edgeColor || this.Cesium.Color.WHITE,
-      edgeWidth: 1
-    })
-    this.removeClippingPlane()
-    for (let j = 0; j < opt.model.length; j += 1) {
-      // eslint-disable-next-line no-underscore-dangle
-      for (let i = 0; i < globe._appendCollection.length; i += 1) {
-        if (
-          // eslint-disable-next-line no-underscore-dangle
-          opt.model[j].name === globe._appendCollection[i].name &&
-          // eslint-disable-next-line no-underscore-dangle
-          globe._appendCollection[i][0].boundingSphere &&
-          // eslint-disable-next-line no-underscore-dangle
-          globe._appendCollection &&
-          opt.model[j].checked
-        ) {
-          if (
-            !this.Cesium.Matrix4.equals(
-              // eslint-disable-next-line no-underscore-dangle
-              globe._appendCollection[i][0].root.transform,
-              this.Cesium.Matrix4.IDENTITY
-            )
-          ) {
-            // The clipping plane is initially positioned at the tileset's root transform.
-            // Apply an additional matrix to center the clipping plane on the bounding sphere center.
-            transformCenter = this.Cesium.Matrix4.getTranslation(
-              // eslint-disable-next-line no-underscore-dangle
-              globe._appendCollection[i][0].root.transform,
-              new this.Cesium.Cartesian3()
-            )
-            // var boundingSphere = globe._appendCollection[i][0].boundingSphere;
-            // var radius = boundingSphere.radius;
-          }
-          // eslint-disable-next-line no-underscore-dangle
-          globe._appendCollection[i][0].clippingPlanes = clippingPlanes
-          // eslint-disable-next-line no-continue
-          continue
-        }
-      }
-      for (let i = 0; i < this.tilesetArray.length; i += 1) {
-        if (
-          this.tilesetArray[i].name === opt.model[j].name &&
-          opt.model[j].checked
-        ) {
-          tilesetclippingPlanes = new this.Cesium.ClippingPlaneCollection({
-            planes: [clippingPlane],
-            edgeColor: edgeColor || this.Cesium.Color.WHITE,
-            edgeWidth: 1,
-            modelMatrix: this.Cesium.Transforms.eastNorthUpToFixedFrame(
-              transformCenter
-            )
-          })
-          this.tilesetArray[i].clippingPlanes = tilesetclippingPlanes
-          // eslint-disable-next-line no-continue
-          continue
-        }
-      }
-    }
-
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < clippingPlanes.length; ++i) {
-      plane = clippingPlanes.get(i)
-      planeEntity = globe.viewer.entities.add({
-        position: transformCenter,
-        plane: {
-          dimensions: new this.Cesium.Cartesian2(10, 10),
-          material: this.Cesium.Color.WHITE.withAlpha(0.0),
-          plane: new this.Cesium.CallbackProperty(
-            this.createPlaneUpdateFunction(plane),
-            false
-          )
-        }
-      })
-    }
-    if (tilesetclippingPlanes) {
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < tilesetclippingPlanes.length; ++i) {
-        plane = tilesetclippingPlanes.get(i)
-        planeEntity = this.webGlobe.viewer.entities.add({
-          position: transformCenter,
-          plane: {
-            dimensions: new this.Cesium.Cartesian2(10, 10),
-            material: this.Cesium.Color.WHITE.withAlpha(0.0),
-            plane: new this.Cesium.CallbackProperty(
-              this.createPlaneUpdateFunction(plane),
-              false
-            )
-          }
-        })
-      }
-    }
-  }
-
-  // 更新剖面位置
-  createPlaneUpdateFunction(plane) {
-    return () => {
-      plane.distance = this.targetY
-      return plane
-    }
-  }
-
-  // 清除剖面
-  removeClippingPlane() {
-    this.webGlobe.viewer.entities.removeAll()
-    // eslint-disable-next-line no-underscore-dangle
-    for (let i = 0; i < this.webGlobe._appendCollection.length; i += 1) {
-      // eslint-disable-next-line no-underscore-dangle
-      if (this.webGlobe._appendCollection[i][0].clippingPlanes) {
-        // eslint-disable-next-line no-underscore-dangle
-        this.webGlobe._appendCollection[i][0].clippingPlanes.removeAll()
-      }
-    }
-    for (let i = 0; i < this.tilesetArray.length; i += 1) {
-      if (this.tilesetArray[i].clippingPlanes) {
-        this.tilesetArray[i].clippingPlanes.removeAll()
-      }
-    }
   }
 
   coordinateConvert(mousePoint: any) {
@@ -1262,7 +1000,7 @@ class CesiumUtil {
    * @param  {object} transform 对应数据的transform信息
    * @return {object}  Position 经纬度坐标
    */
-  dataPositionExtenToDegreeExtend(extend3D, transform) {
+  dataPositionExtentToDegreeExtent(extend3D, transform) {
     const centerMinPoint = new this.Cesium.Cartesian3()
     centerMinPoint.x = extend3D.xmin
     centerMinPoint.y = extend3D.ymin
@@ -1279,6 +1017,23 @@ class CesiumUtil {
       ymin: positions1.y,
       xmax: positions2.x,
       ymax: positions2.y
+    }
+    return bound
+  }
+
+  /**
+   * 三维模型的坐标范围转经纬度范围
+   * @param cesiumZondy
+   * @param igsSceneSubLayer IGS三维图层
+   * @retu rns 经纬度坐标
+   */
+  layerPositionExtentToDegreeExtent(cesiumZondy, igsSceneSubLayer) {
+    const { id, range } = igsSceneSubLayer
+    const { source } = cesiumZondy.M3DIgsManager.findSource('default', id)
+    let bound: any = null
+    if (source.length > 0) {
+      const tranform = source[0].root.transform
+      bound = this.dataPositionExtentToDegreeExtent(range, tranform)
     }
     return bound
   }

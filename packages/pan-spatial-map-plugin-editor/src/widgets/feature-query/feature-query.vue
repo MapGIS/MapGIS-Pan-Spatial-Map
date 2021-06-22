@@ -561,7 +561,7 @@ export default class MpFeatureQuery extends Mixins(
     if (!this.is2DMapMode && type === LayerType.IGSScene) {
       const tranform = this.getLayerTranform(layer)
       if (tranform) {
-        const extent = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+        const extent = cesiumUtilInstance.dataPositionExtentToDegreeExtent(
           fullExtent,
           tranform
         )

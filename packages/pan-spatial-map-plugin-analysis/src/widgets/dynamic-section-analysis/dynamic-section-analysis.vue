@@ -78,7 +78,7 @@
           <a-col :span="16">
             <a-slider
               v-model="distance"
-              :min="-max"
+              :min="min"
               :max="max"
               @change="setDistance"
               :disabled="readonly"
@@ -88,9 +88,9 @@
       </a-space>
     </div>
     <div class="btn">
-      <a-button type="primary" @click="startClipping">个体切割</a-button>
-      <a-button type="primary" @click="stopClipping">结束分析</a-button>
-      <a-button type="primary" @click="animation">自动动画</a-button>
+      <a-button type="primary" @click="startClipping">开始</a-button>
+      <a-button type="primary" @click="stopClipping">结束</a-button>
+      <a-button type="primary" @click="animation">动画</a-button>
     </div>
   </div>
 </template>
@@ -102,7 +102,8 @@ import { WidgetMixin, LayerType, LoadStatus } from '@mapgis/web-app-framework'
 import { Sketch } from 'vue-color'
 import {
   queryFeaturesInstance,
-  utilInstance
+  utilInstance,
+  cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
 
 @Component({
@@ -134,11 +135,17 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   // 最大剖切距离
   private max = 10000
 
+  // 最小剖切距离
+  private min = -10000
+
   // 时间轴
   private timer = null
 
   // slider滑块是否禁用
   private readonly = false
+
+  // 组件是否已激活
+  private isActive = false
 
   // radio样式
   radioStyle = {
@@ -174,6 +181,37 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   }
 
   /**
+   * 切换三维模型
+   */
+  @Watch('model', { deep: true, immediate: true })
+  changeModel() {
+    if (!this.isActive || !this.model) return
+    const bound = cesiumUtilInstance.layerPositionExtentToDegreeExtent(
+      CesiumZondy,
+      this.model.activeScene.sublayers[0]
+    )
+    if (bound) {
+      this.webGlobe.viewer.camera.flyTo({
+        destination: this.Cesium.Rectangle.fromDegrees(
+          bound.xmin,
+          bound.ymin,
+          bound.xmax,
+          bound.ymax
+        )
+      })
+    }
+    this.getMaxMin()
+  }
+
+  /**
+   * 切换坐标轴
+   */
+  @Watch('axis', { deep: true, immediate: true })
+  changeAxis() {
+    this.getMaxMin()
+  }
+
+  /**
    * 打开模块
    */
   onOpen() {
@@ -189,6 +227,18 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    */
   onClose() {
     this.stopClipping()
+    this.isActive = false
+  }
+
+  // 微件激活时
+  onActive() {
+    this.isActive = true
+    this.changeModel()
+  }
+
+  // 微件失活时
+  onDeActive() {
+    this.isActive = false
   }
 
   /**
@@ -203,8 +253,6 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     }
     window.WebClippingPlaneManage.plane = null
     this.landscapeLayer = []
-    this.max = 10000
-    this.distance = 0
   }
 
   /**
@@ -235,7 +283,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
         )
       case 'Y':
         return new this.Cesium.ClippingPlane(
-          new this.Cesium.Cartesian3(0.0, 1.0, 0.0),
+          new this.Cesium.Cartesian3(0.0, -1.0, 0.0),
           0.0
         )
       case 'Z':
@@ -302,8 +350,6 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     }
     // 进行剖切分析的面，从上往下切，Cesium.Cartesian3中第一个参数是左右，第二个参数是前后，第三个参数是上下
     window.WebClippingPlaneManage.plane = this.clippingPlane()
-    // 获取最大值
-    this.getMax()
     // 获取切割图层
     this.landscapeLayer = this.landscapeLayerFuc()
     // 创建剖切对象实例
@@ -329,20 +375,20 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    * 动画设置
    */
   animation() {
-    if (!this.max) {
+    if (this.max == undefined || this.min == undefined) {
       return
     }
     this.clearTimer()
-    this.distance = -this.max
+    this.distance = this.min
     const self = this
     this.timer = window.setInterval(() => {
       if (self.readonly === false) {
         self.readonly = true
       }
-      const step = (self.max * 2) / (self.time * 10)
+      const step = ((self.max - self.min) * 2) / (self.time * 10)
       self.distance += step
       if (self.distance >= self.max) {
-        self.distance = -self.max
+        self.distance = self.min
       }
       self.setDistance(self.distance)
     }, 100)
@@ -383,21 +429,32 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   }
 
   /**
-   * 获取剖切距离最大值
+   * 获取剖切距离最大最小值
    */
-  getMax() {
+  getMaxMin() {
     let max = 10000
-    for (let i = 0; i < this.webGlobe._appendCollection.length; i++) {
-      if (this.webGlobe._appendCollection[i][0].boundingSphere) {
-        // 判断是否为地形数据
-        const { boundingSphere } = this.webGlobe._appendCollection[i][0]
-
-        max = parseInt(Math.max(max, boundingSphere.radius)) * 2
-      }
+    let min = -max
+    if (!this.model) return
+    const { range } = this.model.activeScene.sublayers[0]
+    switch (this.axis) {
+      case 'X':
+        max = range.xmax
+        min = range.xmin
+        break
+      case 'Y':
+        max = range.ymax
+        min = range.ymin
+        break
+      case 'Z':
+        max = range.zmax
+        min = range.zmin
+        break
+      default:
+        break
     }
-
     this.max = max
-    this.distance = max / 2
+    this.min = min
+    this.distance = (min + max) / 2
   }
 }
 </script>

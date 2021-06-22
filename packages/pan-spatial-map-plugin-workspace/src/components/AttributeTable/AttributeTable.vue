@@ -632,7 +632,7 @@ export default class MpAttributeTable extends Mixins(
           let boundObj = null
           if (source.length > 0) {
             const tranform = source[0].root.transform
-            boundObj = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+            boundObj = cesiumUtilInstance.dataPositionExtentToDegreeExtent(
               bound,
               tranform
             )
