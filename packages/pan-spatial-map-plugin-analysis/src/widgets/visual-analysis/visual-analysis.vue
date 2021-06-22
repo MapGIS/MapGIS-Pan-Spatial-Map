@@ -2,10 +2,10 @@
   <div class="mp-widget-visual-analysis">
     <div class="visual-panel">
       <a-form-model v-model="formData">
-        <a-form-model-item label="水平夹角">
+        <a-form-model-item label="水平视角">
           <a-input v-model.number="formData.horizontAngle" type="number" />
         </a-form-model-item>
-        <a-form-model-item label="垂直夹角">
+        <a-form-model-item label="垂直视角">
           <a-input v-model.number="formData.verticalAngle" type="number" />
         </a-form-model-item>
         <a-form-model-item label="不可视区域颜色">
