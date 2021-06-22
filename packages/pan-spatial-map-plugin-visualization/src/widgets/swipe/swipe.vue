@@ -1,195 +1,142 @@
 <template>
-  <div class="mp-widget-swipe">
-    <div class="swipe-container">
-      <div class="swipe-content">
-        <!-- 卷帘组件 -->
-        <mapgis-compare
-          :orientation="direction"
-          v-if="aboveLayer && belowLayer"
-        >
-          <mp-web-map-pro
-            slot="beforeMap"
-            :document="aboveLayerDocument"
-            :map-style="mapStyle"
-          />
-          <mp-web-map-pro
-            slot="afterMap"
-            :document="belowLayerDocument"
-            :map-style="mapStyle"
-          />
-        </mapgis-compare>
-        <!-- 空数据提示 -->
-        <div class="swipe-no-data-tip" v-else>
-          <a-empty description="卷帘分析功能至少需要选择2个图层" />
-        </div>
-      </div>
-      <a-drawer
-        title="设置"
-        placement="right"
-        :closable="false"
-        :visible="settingPanelVisible"
-        :get-container="false"
-        :wrap-style="{ position: 'absolute' }"
-        :header-style="{ display: 'none' }"
-        :body-style="{ display: 'flex', padding: '12px' }"
-        :mask="false"
-      >
-        <div
-          class="swipe-setting-handle"
-          slot="handle"
-          @click="onToggleSettingPanel"
-        >
-          <a-icon :type="settingPanelVisible ? 'right' : 'left'" />
-        </div>
-        <a-space
-          class="swipe-setting-panel"
-          direction="vertical"
-          style="flex: 1;"
-        >
-          <!-- 上图层 -->
-          <a-row>
-            <label>{{ directionLayerTitle.aboveTitle }}图层</label>
-          </a-row>
-          <a-row>
-            <a-select
-              class="swipe-select"
-              :value="aboveLayer"
-              @change="getLayers($event, 'aboveLayer', 'belowLayers')"
-            >
-              <a-select-option
-                v-for="item in aboveLayers"
-                :value="item.id"
-                :key="item.id"
-                >{{ item.title }}
-              </a-select-option>
-            </a-select>
-          </a-row>
-          <!-- 下图层 -->
-          <a-row>
-            <label> {{ directionLayerTitle.belowTitle }}图层</label>
-          </a-row>
-          <a-row>
-            <a-select
-              class="swipe-select"
-              :value="belowLayer"
-              @change="getLayers($event, 'belowLayer', 'aboveLayers')"
-            >
-              <a-select-option
-                v-for="item in belowLayers"
-                :value="item.id"
-                :key="item.id"
-                >{{ item.title }}
-              </a-select-option>
-            </a-select>
-          </a-row>
-          <a-row>
-            <!-- 方向 -->
-            <a-radio-group
-              class="swipe-radio-group"
-              :value="direction"
-              @change="onDirectionChange"
-            >
-              <a-radio value="vertical">
-                垂直
-              </a-radio>
-              <a-radio value="horizontal" v-show="is2DMapMode">
-                水平
-              </a-radio>
-            </a-radio-group>
-          </a-row>
-        </a-space>
-      </a-drawer>
-    </div>
+  <div class="mp-widget-swipe" v-if="isOpen">
+    <mapbox-compare v-if="is2DMapMode" />
+    <cesium-compare v-else />
   </div>
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
 import {
-  Document,
-  MpMapboxView,
-  WidgetMixin,
-  AppMixin,
-  Layer
-} from '@mapgis/web-app-framework'
+  Mixins,
+  Component,
+  Watch,
+  ProvideReactive
+} from 'vue-property-decorator'
+import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
+import MapboxCompare from './components/MapboxCompare'
+import CesiumCompare from './components/CesiumCompare'
+import { Layer } from 'app/packages/MapGIS-Web-App-Framework/src/store/document/layer'
 
 type Direction = 'vertical' | 'horizontal'
 
 @Component({
   name: 'MpSwipe',
   components: {
-    MpMapboxView
+    MapboxCompare,
+    CesiumCompare
   }
 })
-export default class MpSwipe extends Mixins<Record<string, any>>(
-  WidgetMixin,
-  AppMixin
-) {
+export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
+  @ProvideReactive()
+  get swipe() {
+    return this
+  }
+
   // 卷帘功能弹框开关
   isOpen = false
 
-  // 选中的上级图层
-  aboveLayer = ''
-
-  // 选中的下级图层
-  belowLayer = ''
-
-  // 上级图层列表
-  aboveLayers: Layer[] = []
-
-  // 下级图层列表
-  belowLayers: Layer[] = []
-
-  // 上级地图Document
-  aboveLayerDocument = new Document()
-
-  // 下级地图Document
-  belowLayerDocument = new Document()
-
-  // 目录树勾选的图层
-  layers: Layer[] = []
+  // 强制刷新三维卷帘
+  refreshCesiumCompare = false
 
   // 卷帘方向
   direction: Direction = 'vertical'
 
-  // 图层样式
-  mapStyle: any = {
-    version: 8,
-    sources: {},
-    layers: [],
-    glyphs:
-      'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf'
+  // 上级(左侧)图层
+  aboveLayer: Layer | object = {}
+
+  // 下级(右侧)图层
+  belowLayer: Layer | object = {}
+
+  // 目录树勾选的图层
+  layers: Layer[] = []
+
+  // 上级(左侧)图层列表
+  get aboveLayers() {
+    return this.getLayers(this.belowLayer.id)
   }
 
-  settingPanelVisible = true
-
-  /**
-   * 卷帘方向变化，同步更改图层选择框的标题
-   */
-  get directionLayerTitle(): {
-    aboveTitle: string
-    belowTitle: string
-  } {
-    let aboveTitle = '左侧'
-    let belowTitle = '右侧'
-    if (this.direction !== 'vertical') {
-      aboveTitle = '上级'
-      belowTitle = '下级'
-    }
-    return {
-      aboveTitle,
-      belowTitle
-    }
+  // 下级(右侧)图层列表
+  get belowLayers() {
+    return this.getLayers(this.aboveLayer.id)
   }
 
   /**
-   * 监听: defaultMap变化
+   * 获取对应的图层
    */
-  @Watch('document.defaultMap', { deep: true })
-  watchDefaultMap() {
-    if (this.isOpen) {
-      this.initLayers()
+  getLayer(layerId: string) {
+    return this.layers.find(({ id }: Layer) => id === layerId) || {}
+  }
+
+  /**
+   * 上下图层选择变化时获取对应的图层列表
+   */
+  getLayers(layerId: string) {
+    return this.layers.filter((l: Layer) => l.id !== layerId)
+  }
+
+  /**
+   * fixme
+   * 强制刷新三维卷帘，解决切换二三维，不触发三维卷帘的更新的问题
+   */
+  onForceRefreshCesiumCompare() {
+    if (!this.is2DMapMode) {
+      this.refreshCesiumCompare = false
+      const timer = setTimeout(() => {
+        this.refreshCesiumCompare = true
+        clearTimeout(timer)
+      })
     }
+  }
+
+  /**
+   * 重置图层信息
+   */
+  resetLayer() {
+    this.layers = []
+    this.aboveLayer = {}
+    this.belowLayer = {}
+    this.refreshCesiumCompare = false
+  }
+
+  /**
+   * 图层初始化和重置操作
+   */
+  initLayer(success: (l: layer[]) => void) {
+    const _layers = this.document.defaultMap
+      .clone()
+      .getFlatLayers()
+      .filter(v => v.isVisible)
+    if (_layers && _layers.length > 1) {
+      success(_layers)
+      this.onForceRefreshCesiumCompare()
+    } else {
+      this.resetLayer()
+    }
+  }
+
+  /**
+   * 上层(左侧)图层变化
+   */
+  onAboveChange(layerId: string) {
+    if (this.aboveLayer.id !== layerId) {
+      this.aboveLayer = this.getLayer(layerId)
+    }
+  }
+
+  /**
+   * 下层(右侧)图层变化
+   */
+  onBelowChange(layerId: string) {
+    if (this.belowLayer.id !== layerId) {
+      this.belowLayer = this.getLayer(layerId)
+    }
+  }
+
+  /**
+   * 卷帘方向变化
+   */
+  onDirectChange(direct: Direction) {
+    this.direction = direct
   }
 
   /**
@@ -197,7 +144,11 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
    */
   onOpen() {
     this.isOpen = true
-    this.initLayers()
+    this.initLayer((layers: Layer[]) => {
+      this.aboveLayer = layers[1]
+      this.belowLayer = layers[0]
+      this.layers = layers
+    })
   }
 
   /**
@@ -205,64 +156,34 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
    */
   onClose() {
     this.isOpen = false
-    this.direction = 'vertical'
+    this.onDirectChange('vertical')
+    this.resetLayer()
   }
 
   /**
-   * 卷帘方向变化
-   * @param e<object>
+   * 监听: is2DMapMode变化
    */
-  onDirectionChange(e) {
-    this.direction = e.target.value
-  }
-
-  onCloseSettingPanel() {
-    this.settingPanelVisible = false
-  }
-
-  onToggleSettingPanel() {
-    this.settingPanelVisible = !this.settingPanelVisible
+  @Watch('is2DMapMode', { immediate: true })
+  watchMapMode(nV) {
+    this.refreshCesiumCompare = !nV
+    this.$set(
+      this.widget.manifest.properties,
+      'windowSize',
+      !nV ? 'normal' : 'max'
+    )
   }
 
   /**
-   * 初始化图层列表
+   * 监听: defaultMap变化
    */
-  initLayers() {
-    let _fId = ''
-    let _sId = ''
-    const _layers: Layer[] = this.document.defaultMap
-      .clone()
-      .getFlatLayers()
-      .filter(v => v.isVisible)
-    if (_layers && _layers.length > 1) {
-      _fId = _layers[0].id
-      _sId = _layers[1].id
-    }
-    this.layers = _layers
-    this.getLayers(_fId, 'aboveLayer', 'belowLayers')
-    this.getLayers(_sId, 'belowLayer', 'aboveLayers')
-  }
-
-  /**
-   * 上下图层选择变化时获取对应的图层逻辑
-   * @param value<string> 切换的值
-   * @param valuekey<string>
-   * @param layersKey<string>
-   */
-  getLayers(
-    value: string,
-    valuekey: 'aboveLayer' | 'belowLayer',
-    layersKey: 'aboveLayers' | 'belowLayers'
-  ) {
-    this[valuekey] = value
-    this[layersKey] = [...this.layers.filter(({ id }) => value && id !== value)]
-    const currenLayer = this.layers.find(v => value && v.id === value)
-    const _defaultMap = this[`${valuekey}Document`].defaultMap
-    if (currenLayer) {
-      _defaultMap.removeAll()
-      _defaultMap.add(currenLayer)
-    } else {
-      _defaultMap.removeAll()
+  @Watch('document.defaultMap', { immediate: true, deep: true })
+  watchDefaultMap() {
+    if (this.isOpen) {
+      this.initLayer((layers: Layer[]) => {
+        this.layers = layers
+        this.aboveLayer = this.aboveLayers[0]
+        this.belowLayer = this.belowLayers[0]
+      })
     }
   }
 }
@@ -270,22 +191,4 @@ export default class MpSwipe extends Mixins<Record<string, any>>(
 
 <style lang="less" scoped>
 @import './swipe.less';
-</style>
-
-<style lang="less">
-.mp-widget-swipe {
-  .mapboxgl-compare {
-    user-select: none;
-    border: 1px solid @primary-color;
-    background-color: @border-color;
-    .compare-swiper-vertical,
-    .compare-swiper-horizontal {
-      background-color: @primary-color;
-    }
-  }
-  .ant-drawer-right.ant-drawer-open .ant-drawer-content-wrapper {
-    box-shadow: none;
-    border-left: 1px solid @primary-color;
-  }
-}
 </style>
