@@ -5,6 +5,9 @@
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
     >
+      <template slot="popup" slot-scope="slotProps">
+        <slot name="popup" v-bind="slotProps"></slot>
+      </template>
     </mp-marker-set-pro>
   </div>
 </template>
@@ -16,10 +19,10 @@ import { MapMixin } from '@mapgis/web-app-framework'
 import MpMarkerSetPro from '../MarkerPro/MarkerSetPro.vue'
 
 @Component({
-  name: 'MpAttributeTablePlotting',
+  name: 'MpMarkerPlotting',
   components: { MpMarkerSetPro }
 })
-export default class MpAttributeTablePlotting extends Mixins(MapMixin) {
+export default class MpMarkerPlotting extends Mixins(MapMixin) {
   @Prop({
     type: Boolean,
     default: false
@@ -47,6 +50,14 @@ export default class MpAttributeTablePlotting extends Mixins(MapMixin) {
     }
   })
   readonly selectionBound!: Record<string, any>
+
+  @Prop({
+    type: Array,
+    default: () => {
+      return [0, 0]
+    }
+  })
+  readonly center!: number[]
 
   @Prop({
     type: Object,
@@ -100,6 +111,11 @@ export default class MpAttributeTablePlotting extends Mixins(MapMixin) {
     } else {
       this.map.off('move', this.move)
     }
+  }
+
+  @Watch('center')
+  changeCenter() {
+    this.map.panTo(this.center)
   }
 
   @Emit('map-bound-change')

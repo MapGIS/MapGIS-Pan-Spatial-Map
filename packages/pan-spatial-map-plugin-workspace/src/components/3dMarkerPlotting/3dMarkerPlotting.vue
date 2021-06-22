@@ -5,6 +5,9 @@
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
     >
+      <template slot="popup" slot-scope="slotProps">
+        <slot name="popup" v-bind="slotProps"></slot>
+      </template>
     </mp-3d-marker-set-pro>
   </div>
 </template>
@@ -53,6 +56,14 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   readonly selectionBound!: Record<string, any>
 
   @Prop({
+    type: Array,
+    default: () => {
+      return [0, 0]
+    }
+  })
+  readonly center!: number[]
+
+  @Prop({
     type: Object,
     default: () => {
       return {}
@@ -83,20 +94,32 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
     this.zoomOrPanTo(this.selectionBound)
   }
 
-  @Watch('filterWithMap')
-  changeFilterWithMap(val: boolean) {
-    this.webGlobe.viewer.camera.changed.addEventListener(() => {
-      if (!val) {
-        return
-      }
-      const cExtent = cesiumUtilInstance.getCurrentExtent(this.webGlobe)
-      const bounds = {
-        xmin: cExtent.xmin,
-        ymin: cExtent.ymin,
-        xmax: cExtent.xmax,
-        ymax: cExtent.ymax
-      }
-      this.emitMapBoundChange(bounds)
+  currentLayer = null
+
+  analysisManager = null
+
+  changeFilterWithMap() {
+    if (!this.filterWithMap) {
+      return
+    }
+    const cExtent = cesiumUtilInstance.getCurrentExtent(this.webGlobe)
+    const bounds = {
+      xmin: cExtent.xmin,
+      ymin: cExtent.ymin,
+      xmax: cExtent.xmax,
+      ymax: cExtent.ymax
+    }
+    this.emitMapBoundChange(bounds)
+  }
+
+  @Watch('center')
+  changeCenter() {
+    this.webGlobe.viewer.camera.flyTo({
+      destination: this.Cesium.Cartesian3.fromDegrees(
+        this.center[0],
+        this.center[1],
+        this.webGlobe.viewer.camera.positionCartographic.height
+      )
     })
   }
 
@@ -104,7 +127,20 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   emitMapBoundChange(bound: Record<string, any>) {}
 
   mounted() {
+    this.analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
+      viewer: this.webGlobe.viewer
+    })
     cesiumUtilInstance.setCesiumGlobe(this.Cesium, this.webGlobe)
+    this.webGlobe.viewer.camera.changed.addEventListener(
+      this.changeFilterWithMap
+    )
+  }
+
+  destroyed() {
+    this.analysisManager = null
+    this.webGlobe.viewer.camera.changed.removeEventListener(
+      this.changeFilterWithMap
+    )
   }
 
   private zoomTo(bound) {
@@ -169,6 +205,7 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
 
   private mouseLeaveEvent(e: any, id) {
     this.clearHighlight()
+    this.stopDisplay()
   }
 
   private highlightFeature(featureGeoJson) {
@@ -214,6 +251,37 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
           fillOutlineColor
         )
       }
+    } else if (featureGeoJson.features[0].geometry.type === '3DPolygon') {
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        featureGeoJson.features[0].id
+      )
+      if (source && source.length > 0) {
+        this.stopDisplay()
+        this.currentLayer = [source[0]]
+        const idList = [featureGeoJson.features[0].properties.FID]
+        const options = {
+          // 高亮颜色
+          color: new this.Cesium.Color.fromCssColorString(
+            this.highlightStyle.feature.reg.color
+          ),
+          // 高亮模式：REPLACE为替换
+          colorBlendMode: this.Cesium.Cesium3DTileColorBlendMode.REPLACE
+        }
+        // 开始闪烁查找到的模型
+        this.analysisManager.startCustomDisplay(
+          this.currentLayer,
+          idList,
+          options
+        )
+      }
+    }
+  }
+
+  stopDisplay() {
+    if (this.currentLayer) {
+      this.analysisManager.stopCustomDisplay(this.currentLayer)
+      this.currentLayer = null
     }
   }
 

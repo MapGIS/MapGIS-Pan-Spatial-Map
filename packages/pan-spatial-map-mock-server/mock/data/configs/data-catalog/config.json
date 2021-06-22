@@ -721,7 +721,7 @@
             "ip": "",
             "port": "",
             "layerServiceType": "IGSIMAGE",
-            "name": "北京市1",
+            "name": "北京市0630_hdf",
             "searchName": "",
             "token": "",
             "guid": "3049a1df-e633-4df2-a0a1-76e145724e9a",
@@ -739,8 +739,8 @@
           {
             "label": "台湾省地形",
             "describe": "台湾省地形",
-            "ip": "",
-            "port": "",
+            "ip": "develop.smaryun.com",
+            "port": "6163",
             "layerServiceType": "DOC3D",
             "name": "terrain",
             "searchName": "",
@@ -749,7 +749,7 @@
             "serverUrl": ""
           },
           {
-            "label": "全国地形",
+            "label": "全国地形_unavailable",
             "describe": "全国地形",
             "ip": "",
             "port": "",
@@ -773,7 +773,7 @@
             "serverUrl": ""
           },
           {
-            "label": "倾斜摄影数据",
+            "label": "倾斜摄影数据_unavailable",
             "describe": "倾斜摄影数据",
             "ip": "",
             "port": "",
@@ -785,8 +785,8 @@
             "serverUrl": ""
           },
           {
-            "label": "M3D缓存数据",
-            "describe": "M3D缓存数据",
+            "label": "地质体",
+            "describe": "地质体",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -797,7 +797,7 @@
             "serverUrl": ""
           },
           {
-            "label": "景观模型",
+            "label": "景观模型_unavailable",
             "describe": "景观模型",
             "ip": "",
             "port": "",
@@ -809,7 +809,7 @@
             "serverUrl": ""
           },
           {
-            "label": "BIM模型",
+            "label": "BIM模型_unavailable",
             "describe": "BIM模型",
             "ip": "",
             "port": "",
@@ -821,8 +821,8 @@
             "serverUrl": ""
           },
           {
-            "label": "地质体",
-            "describe": "地质体",
+            "label": "地质体_福田_unavailable",
+            "describe": "地质体_福田",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -833,8 +833,8 @@
             "serverUrl": ""
           },
           {
-            "label": "钻孔模型",
-            "describe": "钻孔模型",
+            "label": "钻孔模型_福田_unavailable",
+            "describe": "钻孔模型_福田",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -845,19 +845,7 @@
             "serverUrl": ""
           },
           {
-            "label": "建模粗模",
-            "describe": "建模粗模",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "buildings",
-            "searchName": "",
-            "model": "surface",
-            "guid": "9d85801c-9c7c-46c3-ad29-934c264d488a",
-            "serverUrl": ""
-          },
-          {
-            "label": "地质体网格",
+            "label": "地质体网格_unavailable",
             "describe": "地质体网格",
             "ip": "",
             "port": "",
@@ -880,7 +868,7 @@
             "ip": "",
             "port": "",
             "layerServiceType": "IGSTILED",
-            "name": "250DEM",
+            "name": "DEM250",
             "searchName": "",
             "token": "",
             "guid": "1c3bd807-52c5-42d5-bdcb-08234af8b4e8",
@@ -891,35 +879,14 @@
         ]
       },
       {
-        "label": "动态裁图",
-        "describe": "动态裁图",
-        "children": [
-          {
-            "label": "网络分析",
-            "describe": "网络分析",
-            "ip": "192.168.176.40",
-            "port": "6163",
-            "layerServiceType": "IGSIMAGE",
-            "name": "网络分析",
-            "searchName": "",
-            "token": "",
-            "guid": "45099867-d458-46c8-8194-20d2de8b0485",
-            "serverUrl": "",
-            "wfsUrl": "",
-            "extent": "",
-            "gdbTypeList": "Local,Local,Local"
-          }
-        ]
-      },
-      {
         "label": "IGS图层",
         "describe": "IGS图层",
         "children": [
           {
             "label": "中国地级市x",
             "describe": "中国地级市x",
-            "ip": "develop.smaryun.com",
-            "port": "6163",
+            "ip": "",
+            "port": "",
             "layerServiceType": "IGSVECTOR",
             "name": "中国",
             "searchName": "",
@@ -932,8 +899,8 @@
           {
             "label": "湖北省市级区划",
             "describe": "湖北省市级区划",
-            "ip": "192.168.84.101",
-            "port": "6163",
+            "ip": "",
+            "port": "",
             "layerServiceType": "IGSVECTOR",
             "name": "湖北",
             "searchName": "",
@@ -959,7 +926,7 @@
             "searchName": "",
             "token": "",
             "guid": "8baba6b1-7eb9-423f-aefa-cb187bb1d4a9",
-            "serverUrl": "http://develop.smaryun.com:6163/igs/rest/ogc/doc/北京市/WMSServer",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/doc/北京市0630_hdf/WMSServer",
             "wfsUrl": "",
             "extent": ""
           },
@@ -973,7 +940,7 @@
             "searchName": "",
             "token": "",
             "guid": "a96fea53-d97d-401a-a502-f5621f098c14",
-            "serverUrl": "http://develop.smaryun.com:6163/igs/rest/ogc/WORLDMKTTILE2/WMTSServer",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/WORLDMKTTILE2/WMTSServer",
             "wfsUrl": "",
             "extent": ""
           }
@@ -993,7 +960,7 @@
             "searchName": "",
             "token": "",
             "guid": "8c74f367-191a-458c-946f-de1cd3778538",
-            "serverUrl": "http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/街道-墨卡托.json,http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/蓝色-墨卡托.json",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/mrms/vtiles/styles/街道-墨卡托.json,http://192.168.21.191:6163/igs/rest/mrms/vtiles/styles/蓝色-墨卡托.json",
             "wfsUrl": "",
             "extent": ""
           },
@@ -1007,7 +974,7 @@
             "searchName": "",
             "token": "",
             "guid": "8c74f367-191a-458c-946f-de1cd3778537",
-            "serverUrl": "http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/OSM全中国经纬度.json",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/mrms/vtiles/styles/OSM全中国经纬度.json",
             "wfsUrl": "",
             "extent": ""
           }

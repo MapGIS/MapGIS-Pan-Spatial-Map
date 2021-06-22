@@ -7,12 +7,12 @@
           :orientation="direction"
           v-if="aboveLayer && belowLayer"
         >
-          <mp-mapbox-view
+          <mp-web-map-pro
             slot="beforeMap"
             :document="aboveLayerDocument"
             :map-style="mapStyle"
           />
-          <mp-mapbox-view
+          <mp-web-map-pro
             slot="afterMap"
             :document="belowLayerDocument"
             :map-style="mapStyle"

@@ -82,10 +82,10 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
     this.measure = undefined
   }
 
-  // 打开测量
+  // 打开测量工具
   openMeasure(mode) {
-    // 每次打开绘制前先清除
-    this.clearMeasure()
+    // 每次打开绘制前先关闭之前的
+    this.closeMeasure()
     // 使能渲染（如果没有开启会开启测量工具）
     this.enableMeasure()
     // 保存当前测量模式
@@ -96,7 +96,8 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
     this.emitMeasureStart()
   }
 
-  clearMeasure() {
+  // 关闭测量工具
+  closeMeasure() {
     // 如果在交互中或者已经获取到测量结果，需要清除
     if (
       (this.measure &&

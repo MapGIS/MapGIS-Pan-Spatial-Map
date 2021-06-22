@@ -251,7 +251,8 @@ import {
   queryFeaturesInstance,
   dataCatalogInstance,
   queryOGCInfoInstance,
-  queryArcgisInfoInstance
+  queryArcgisInfoInstance,
+  cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
@@ -273,6 +274,8 @@ export default class TreeLayer extends Mixins(
   AppMixin,
   ExhibitionControllerMixin
 ) {
+  @Inject('CesiumZondy') CesiumZondy
+
   @Prop() widgetInfo: Record<string, any>
 
   @Prop() dataCatalog: Array<Record<string, any>>
@@ -368,6 +371,11 @@ export default class TreeLayer extends Mixins(
         item.key = index.toString()
         item.scopedSlots = { title: 'custom' }
         item.visiblePopover = false
+        if (this.isIGSScene(item)) {
+          item.sublayers = item.activeScene.sublayers.map(row => ({
+            ...row
+          }))
+        }
         if (this.isWMTSLayer(item)) {
           if (item.isVisible || item.visible) {
             arr.push(item.key)
@@ -561,9 +569,18 @@ export default class TreeLayer extends Mixins(
             return
           }
           if (index === childrenArr.length - 1) {
-            layerItem.sublayers[i].visible = !layerItem.sublayers[i].visible
+            if (this.isIGSScene(layerItem)) {
+              layerItem.activeScene.sublayers[i].visible = !layerItem
+                .activeScene.sublayers[i].visible
+            } else {
+              layerItem.sublayers[i].visible = !layerItem.sublayers[i].visible
+            }
           } else {
-            layerItem = layerItem.sublayers[i]
+            if (this.isIGSScene(layerItem)) {
+              layerItem = layerItem.activeScene.sublayers[i]
+            } else {
+              layerItem = layerItem.sublayers[i]
+            }
           }
         })
       } else {
@@ -576,8 +593,10 @@ export default class TreeLayer extends Mixins(
   private isAttributes(item) {
     const bool =
       (this.isSubLayer(item) && this.isIgsDocLayer(item)) ||
+      (this.isSubLayer(item) && this.isIGSScene(item)) ||
       (this.isSubLayer(item) && this.isIgsArcgisLayer(item)) ||
       this.isIgsVectorLayer(item)
+
     return bool
   }
 
@@ -588,7 +607,7 @@ export default class TreeLayer extends Mixins(
       this.isIgsVectorLayer(item) ||
       this.isIgsTileLayer(item) ||
       this.isWMTSLayer(item) ||
-      this.isWMTSLayer(item)
+      this.isWMSLayer(item)
     return bool
   }
 
@@ -632,7 +651,9 @@ export default class TreeLayer extends Mixins(
     let {
       fullExtent: { xmin, xmax, ymin, ymax }
     } = item.dataRef
+    const { type } = item.dataRef
     if (
+      item.dataRef.spatialReference &&
       item.dataRef.spatialReference.wkid === CoordinateSystemType.webMercator
     ) {
       const xminYminConverted = CoordinateTransformation.mercatorToWGS84([
@@ -650,17 +671,49 @@ export default class TreeLayer extends Mixins(
       xmax = xmaxYmaxConverted[0]
       ymax = xmaxYmaxConverted[1]
     }
-
-    this.map.fitBounds([xmin, ymin, xmax, ymax])
-    const rectangle = new this.Cesium.Rectangle.fromDegrees(
-      xmin,
-      ymin,
-      xmax,
-      ymax
-    )
-    this.webGlobe.viewer.camera.flyTo({
-      destination: rectangle
-    })
+    if (type !== LayerType.IGSScene) {
+      this.map.fitBounds([xmin, ymin, xmax, ymax])
+      const rectangle = new this.Cesium.Rectangle.fromDegrees(
+        xmin,
+        ymin,
+        xmax,
+        ymax
+      )
+      this.webGlobe.viewer.camera.flyTo({
+        destination: rectangle
+      })
+    } else {
+      const {
+        activeScene: { sublayers },
+        fullExtent: { zmin, zmax }
+      } = item.dataRef
+      let id = ''
+      sublayers.forEach(item => {
+        if (item.visible) {
+          id = item.id
+        }
+      })
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        id
+      )
+      if (source.length > 0) {
+        const tranform = source[0].root.transform
+        const bound = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+          { xmin, xmax, ymin, ymax, zmin, zmax },
+          tranform
+        )
+        const rectangle = new this.Cesium.Rectangle.fromDegrees(
+          bound.xmin,
+          bound.ymin,
+          bound.xmax,
+          bound.ymax
+        )
+        this.webGlobe.viewer.camera.flyTo({
+          destination: rectangle
+        })
+      }
+    }
     this.clickPopover(item, false)
   }
 
@@ -783,6 +836,36 @@ export default class TreeLayer extends Mixins(
           gdbp: igsVectorLayer.gdbps
         }
       }
+    } else if (this.isIGSScene(layer)) {
+      const sceneLayer = layer.dataRef
+      const { ip, port, docName } = sceneLayer.layer._parseUrl(
+        sceneLayer.layer.url
+      )
+      this.queryParams = {
+        id: `${sceneLayer.title} ${sceneLayer.id} 自定义查询`,
+        name: `${sceneLayer.title} 自定义查询`,
+        option: {
+          id: `${sceneLayer.id}`,
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: sceneLayer.layer.type,
+          gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型'
+        }
+      }
+    } else if (this.isIgsArcgisLayer(layer)) {
+      const { ip, port, docName } = parent._parseUrl(parent.url)
+      this.queryParams = {
+        id: `${parent.title} ${layer.title} ${layer.id}`,
+        name: `${layer.title} 属性表`,
+        description: `${parent.title} ${layer.title}`,
+        option: {
+          id: layer.id,
+          name: layer.title,
+          serverType: parent.type,
+          layerIndex: layer.id,
+          serverUrl: parent.url
+        }
+      }
     }
   }
 
@@ -791,15 +874,9 @@ export default class TreeLayer extends Mixins(
    */
   attributes(layer) {
     this.clickPopover(layer, false)
-    const parent: IGSMapImageLayer = layer.layer
+    const parent = layer.layer
     let exhibition: IAttributeTableExhibition = null
-    if (
-      parent &&
-      this.isIgsDocLayer(parent)
-      // TODO：新版document的暂时还没有封装RasterArcgisLayer，这里留着以后做
-      //  ||
-      // parent.subtype === SubLayerType.RasterArcgisLayer
-    ) {
+    if (parent && this.isIgsDocLayer(parent)) {
       const { ip, port, docName } = parent._parseUrl(parent.url)
       exhibition = {
         id: `${parent.title} ${layer.title} ${layer.id}`,
@@ -842,6 +919,21 @@ export default class TreeLayer extends Mixins(
           serverUrl: parent.url
         }
       }
+    } else if (this.isIGSScene(layer)) {
+      const sceneLayer = layer.dataRef
+      const { ip, port, docName } = parent._parseUrl(parent.url)
+      const { id, name, title } = sceneLayer
+      exhibition = {
+        id: `${title} ${id}`,
+        name: `${title} 属性表`,
+        option: {
+          id: `${id}`,
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: parent.type,
+          gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型'
+        }
+      }
     }
     this.addExhibition(new AttributeTableExhibition(exhibition))
     this.openExhibitionPanel()
@@ -863,7 +955,11 @@ export default class TreeLayer extends Mixins(
     this.showCustomQuery = false
   }
 
-  isSubLayer({ key, sublayers }) {
+  isSubLayer(item) {
+    const { key, sublayers, activeScene } = item
+    if (this.isIGSScene(item) && activeScene) {
+      return !activeScene.sublayers || activeScene.sublayers.length === 0
+    }
     return !sublayers || sublayers.length === 0
   }
 
@@ -873,6 +969,14 @@ export default class TreeLayer extends Mixins(
 
   isIgsVectorLayer({ type }) {
     return type === LayerType.IGSVector
+  }
+
+  isIGSScene({ type, layer }) {
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+    }
+    return layerType === LayerType.IGSScene
   }
 
   isIgsTileLayer({ type }) {
@@ -900,11 +1004,16 @@ export default class TreeLayer extends Mixins(
   }
 
   isIgsArcgisLayer({ layer, type }) {
-    if (type) {
-      return type === LayerType.arcGISMapImage || type === LayerType.arcGISTile
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+      return layerType === LayerType.arcGISMapImage
     }
-
-    return layer.type === LayerType.arcGISMapImage
+    return (
+      layerType === LayerType.arcGISMapImage
+      //  ||
+      // layerType === LayerType.arcGISTile
+    )
   }
 }
 </script>

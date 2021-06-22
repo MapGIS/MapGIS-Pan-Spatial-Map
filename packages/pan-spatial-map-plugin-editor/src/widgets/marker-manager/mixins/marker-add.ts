@@ -3,19 +3,11 @@ import { utilInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component({})
 export default class MarkerAddMixin extends Vue {
-  async transPoints(points: any[], srcSref: string) {
-    if (
-      srcSref.includes('度') ||
-      srcSref.includes('分') ||
-      srcSref.includes('秒')
-    ) {
+  async transPoints(points: any[], srcSref: string, destSref: string) {
+    if (srcSref === destSref) {
       return points
     }
-    const result: any = await utilInstance.transPoint(
-      points,
-      srcSref,
-      'WGS1984_度'
-    )
+    const result: any = await utilInstance.transPoint(points, srcSref, destSref)
     if (result.Data && result.Data.length > 0) {
       const datas: any[] = []
       for (let i = 0; i < result.Data.length; i += 1) {

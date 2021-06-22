@@ -3,26 +3,39 @@
     <mapgis-3d-popup
       :position="{
         longitude: popupPosition.longitude,
-        latitude: popupPosition.latitude
+        latitude: popupPosition.latitude,
+        height: popupPosition.height
       }"
-      :showed="showPopup"
+      :visible="showPopup"
+      @change="changePopup"
     >
       <div slot="default">
-        <a-list
-          item-layout="horizontal"
-          :data-source="propertyKeys"
-          size="small"
-          class="markers"
+        <slot
+          name="popup"
+          :marker="marker"
+          :field-configs="fieldConfigs"
+          :property-keys="propertyKeys"
         >
-          <a-list-item slot="renderItem" slot-scope="item" class="marker-item">
-            <div style="width: 130px" :title="propertyName(item)">
-              {{ propertyName(item) }}
-            </div>
-            <div style="width: 170px" :title="marker.properties[item]">
-              {{ marker.properties[item] }}
-            </div>
-          </a-list-item>
-        </a-list>
+          <a-list
+            item-layout="horizontal"
+            :data-source="propertyKeys"
+            size="small"
+            class="table-marker"
+          >
+            <a-list-item
+              slot="renderItem"
+              slot-scope="item"
+              class="table-marker-item"
+            >
+              <div style="width: 130px" :title="propertyName(item)">
+                {{ propertyName(item) }}
+              </div>
+              <div style="width: 170px" :title="marker.properties[item]">
+                {{ marker.properties[item] }}
+              </div>
+            </a-list-item>
+          </a-list>
+        </slot>
       </div>
     </mapgis-3d-popup>
   </div>
@@ -66,6 +79,9 @@ export default class Mp3dMarkerPro extends Vue {
   // 当前显示弹出框的标注id
   @Prop({ type: String, required: false }) currentMarkerId?: string
 
+  @Emit()
+  change(currentMarkerId) {}
+
   private showPopup = false
 
   private entityNames: string[] = []
@@ -79,11 +95,20 @@ export default class Mp3dMarkerPro extends Vue {
       return {}
     }
     const { coordinates } = this.marker
+    const height = coordinates.length > 2 ? Number(coordinates[2]) : 0
     const position = {
       longitude: Number(coordinates[0]),
-      latitude: Number(coordinates[1])
+      latitude: Number(coordinates[1]),
+      height: height
     }
     return position
+  }
+
+  private changePopup(val) {
+    this.showPopup = val
+    if (!val) {
+      this.change('')
+    }
   }
 
   // 根据filedConfigs做一个过滤，去除不可见的
@@ -196,11 +221,11 @@ export default class Mp3dMarkerPro extends Vue {
 <style lang="less" scoped>
 .cesium-popup {
   .cesium-popup-content-wrapper {
-    .markers {
+    .table-marker {
       max-width: 240px;
       max-height: 200px;
       overflow: auto;
-      .marker-item {
+      .table-marker-item {
         padding: 0;
         font-size: 10px;
         div {

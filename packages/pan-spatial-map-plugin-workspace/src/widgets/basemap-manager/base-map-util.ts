@@ -35,7 +35,10 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
           const info: any = this.config.find(item => item.name === name)
           for (let i = 0; i < info.children.length; i++) {
             const layer = info.children[i]
-            this.document.baseLayerMap.remove(layer)
+            const maplayer = this.document.baseLayerMap.findLayerById(
+              layer.guid
+            )
+            this.document.baseLayerMap.remove(maplayer)
           }
         }
       }
@@ -47,11 +50,12 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
           const info: any = this.config.find(item => item.name === name)
           for (let i = 0; i < info.children.length; i++) {
             const layer = info.children[i]
-            if (layer.loadStatus === LoadStatus.notLoaded) {
-              await layer.load()
-              this.document.baseLayerMap.add(layer)
+            const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
+            if (mapLayer.loadStatus === LoadStatus.notLoaded) {
+              await mapLayer.load()
+              this.document.baseLayerMap.add(mapLayer)
             } else {
-              this.document.baseLayerMap.add(layer)
+              this.document.baseLayerMap.add(mapLayer)
             }
           }
         }
@@ -196,11 +200,8 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
       default:
         break
     }
-    const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
-    // if (mapLayer.loadStatus === LoadStatus.notLoaded) {
-    //   await mapLayer.load()
-    // }
-    return mapLayer
+    // const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
+    return layer
   }
 
   public createDefaultBaseLayer(baseConfig: Record<string, unknown>) {

@@ -1,18 +1,12 @@
 <template>
   <div class="mp-widget-feature-query">
-    <mapgis-draw
-      ref="drawer"
-      :controls="controls"
-      :styles="drawStyle"
-      @added="onAdded"
-      @drawCreate="onDrawFinish"
-    />
-    <mapgis-3d-draw
-      ref="drawref"
-      @load="handleDrawLoad"
-      @drawcreate="handleCreate"
+    <mp-draw-pro ref="draw" @start="onDrawStart" @finished="onDrawFinished" />
+    <mp-3d-draw-pro
+      ref="draw3d"
+      @start="onDrawStart"
+      @finished="onDrawFinished"
     >
-    </mapgis-3d-draw>
+    </mp-3d-draw-pro>
     <mp-toolbar>
       <mp-toolbar-command-group>
         <mp-toolbar-command
@@ -21,7 +15,7 @@
           :title="type.label"
           :icon="type.icon"
           :active="queryType === type.id"
-          @click="onQueryDraw(type.id)"
+          @click="onOpenDraw(type.id)"
         >
         </mp-toolbar-command>
         <a-divider type="vertical" />
@@ -51,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Mixins, Watch } from 'vue-property-decorator'
+import { Component, Vue, Mixins, Watch, Inject } from 'vue-property-decorator'
 import {
   dataCatalogInstance,
   queryFeaturesInstance,
@@ -59,16 +53,18 @@ import {
   baseConfigInstance,
   ExhibitionControllerMixin,
   IAttributeTableListExhibition,
-  AttributeTableListExhibition
+  AttributeTableListExhibition,
+  cesiumUtilInstance
 } from '@mapgis/pan-spatial-map-store'
 import {
   WidgetMixin,
-  AppMixin,
   LayerType,
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
-  Sublayer
+  Sublayer,
+  Rectangle3D,
+  Point3D
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import {
@@ -77,31 +73,24 @@ import {
   point,
   booleanCrosses,
   booleanPointInPolygon,
-  booleanDisjoint
+  booleanDisjoint,
+  booleanContains
 } from '@turf/turf'
-import MapBoxDraw from './mixins/mapbox-draw'
-import CesiumDraw from './mixins/cesium-draw'
-import DrawStyle from '../../styles/draw-style'
+
+enum QueryType {
+  Point = 'Point',
+  Circle = 'Circle',
+  Rectangle = 'Rectangle',
+  Polygon = 'Polygon',
+  LineString = 'LineString',
+  PickModel = 'PickModel'
+}
 
 @Component
 export default class MpFeatureQuery extends Mixins(
-  MapBoxDraw,
-  CesiumDraw,
   WidgetMixin,
-  AppMixin,
   ExhibitionControllerMixin
 ) {
-  controls = {
-    point: false,
-    line_string: false,
-    polygon: false,
-    trash: false,
-    combine_features: false,
-    uncombine_features: false
-  }
-
-  private show = false
-
   private limitsArray: Array<number> = [0, 0.1, 0.5, 1, 5]
 
   private showSettingPanel = false
@@ -111,16 +100,27 @@ export default class MpFeatureQuery extends Mixins(
   private queryType = ''
 
   private defaultQueryTypes2d = [
-    'Point',
-    'Circle',
-    'Rectangle',
-    'Polygon',
-    'LineString'
+    QueryType.Point,
+    QueryType.Circle,
+    QueryType.Rectangle,
+    QueryType.Polygon,
+    QueryType.LineString
   ]
 
-  private defaultQueryTypes3d = ['Point', 'Polygon', 'LineString', 'Rectangle']
+  private defaultQueryTypes3d = [
+    QueryType.Point,
+    QueryType.Polygon,
+    QueryType.LineString,
+    QueryType.Rectangle
+  ]
 
-  private drawStyle = []
+  private queryTypes2DrawModes = {
+    Point: 'draw-point',
+    Circle: 'draw-circle',
+    Rectangle: 'draw-rectangle',
+    Polygon: 'draw-polygon',
+    LineString: 'draw-polyline'
+  }
 
   private get marks() {
     return {
@@ -148,146 +148,458 @@ export default class MpFeatureQuery extends Mixins(
     return this.is2DMapMode ? this.queryTypes2d : this.queryTypes3d
   }
 
+  get drawComponent() {
+    return this.is2DMapMode ? this.$refs.draw : this.$refs.draw3d
+  }
+
   // 二三维地图模式切换时
   @Watch('mapRender')
   mapRenderChange() {
-    if (this.is2DMapMode) {
-      this.clearCesiumDraw3D()
-    } else {
-      this.clearMapboxDraw()
-    }
+    this.onClearDraw()
   }
 
   created() {
     this.widgetInfo.config.queryType.forEach(type => {
       if (type.id === '') {
-        type.id = 'Rectangle'
+        type.id = QueryType.Rectangle
       }
     })
-  }
-
-  mounted() {
-    this.drawStyle = DrawStyle
   }
 
   // 微件关闭时
   onClose() {
-    this.clearDraw()
+    this.onClearDraw()
   }
 
   // 微件失活时
   onDeActive() {
-    this.clearDraw()
+    this.onClearDraw()
   }
 
-  onQueryDraw(type) {
+  // 打开绘制，点击图标激活对应类型的绘制功能
+  private onOpenDraw(type) {
     this.queryType = type
-    if (this.is2DMapMode) {
-      this.handleMapbox()
-    } else {
-      this.handleCesium()
-    }
+    this.drawComponent &&
+      this.drawComponent.openDraw(this.queryTypes2DrawModes[type])
   }
 
-  clearDraw() {
-    if (this.is2DMapMode) {
-      this.clearMapboxDraw()
-    } else {
-      this.clearCesiumDraw3D()
-    }
+  // 移除绘制
+  private onClearDraw() {
+    this.queryType = ''
+    this.drawComponent && this.drawComponent.closeDraw()
   }
 
-  handleCesium() {
-    switch (this.queryType) {
-      case 'Point':
-        this.togglePoint3D()
-        break
-      case 'LineString':
-        this.togglePolyline3D()
-        break
-      case 'Polygon':
-        this.togglePolygon3D()
-        break
-      case 'Rectangle':
-        this.toggleRect3D()
-        break
-      case 'PickModel':
-        // this.interactionPickModel()
-        break
-      default:
-        break
+  // 'start'响应事件(开始绘制)
+  private onDrawStart() {}
+
+  // 'finished'响应事件(结束绘制)
+  private onDrawFinished({ mode, feature, shape, center }) {
+    if (shape) {
+      this.queryLayers(shape)
     }
+
+    this.queryType = ''
   }
 
-  handleMapbox() {
-    switch (this.queryType) {
-      case 'Point':
-        this.togglePoint()
-        break
-      case 'LineString':
-        this.togglePolyline()
-        break
-      case 'Polygon':
-        this.togglePolygon()
-        break
-      case 'Rectangle':
-        this.toggleRect()
-        break
-      case 'Circle':
-        this.toggleCircle()
-        break
-      default:
-        break
-    }
-  }
-
-  queryLayer(bound: Record<string, number>) {
+  private queryLayers(shape: Record<string, number>) {
     if (!this.document) {
       return
     }
 
-    const layerArr = this.document.defaultMap.layers()
-    layerArr.forEach(item => {
-      const mapData = item
-      if (!this.isCross(bound, item.fullExtent)) {
+    let nearDis = this.limits * 1000
+    const { projectionName } = baseConfigInstance.config
+
+    if (
+      projectionName.indexOf('度') !== -1 ||
+      projectionName.indexOf('分') !== -1 ||
+      projectionName.indexOf('秒') !== -1
+    ) {
+      const distanceUnits = 103133.845
+      nearDis /= distanceUnits
+    }
+
+    const layers = this.document.defaultMap.layers()
+
+    layers.forEach(layer => {
+      if (!this.isCrossWithLayer(layer, shape)) {
         return
       }
-      if (mapData.type === LayerType.IGSVector) {
-        this.quertFeatruesByVector(mapData, bound)
-      } else if (mapData.type === LayerType.IGSMapImage) {
-        this.queryFeaturesByDoc(mapData, bound)
+
+      const geometry = this.toQueryGeometry(layer, shape, nearDis)
+
+      switch (layer.type) {
+        case LayerType.IGSVector:
+          this.quertFeatruesByVector(layer, geometry)
+          break
+        case LayerType.IGSMapImage:
+          this.queryFeaturesByDoc(layer, geometry)
+          break
+        case LayerType.IGSScene:
+          this.queryFeaturesByIGSScene(layer, geometry)
+          break
+        case LayerType.arcGISMapImage:
+          this.queryFeaturesByArcgis(layer, geometry)
+          break
+        default:
+          break
       }
     })
   }
 
-  private isCross(bound, fullExtent): boolean {
-    let feature
-    const { ymax, ymin, xmax, xmin } = fullExtent
-    const extentPolygon = polygon([
-      [
-        [Number(xmin), Number(ymin)],
-        [Number(xmax), Number(ymin)],
-        [Number(xmax), Number(ymax)],
-        [Number(xmin), Number(ymax)],
-        [Number(xmin), Number(ymin)]
+  private queryFeaturesByIGSScene(layer, geometry) {
+    if (!layer.isVisible) {
+      return
+    }
+    const { ip, port, docName } = layer._parseUrl(layer.url)
+
+    const exhibition: IAttributeTableListExhibition = {
+      id: `${layer.id}`,
+      name: `${layer.title} 查询结果`,
+      description: '',
+      options: []
+    }
+    const {
+      activeScene: { sublayers }
+    } = layer
+    sublayers.forEach(layer => {
+      if (!layer.visible) {
+        return
+      }
+      exhibition.options.push({
+        id: layer.id,
+        name: layer.title || layer.name,
+        ip: ip || baseConfigInstance.config.ip,
+        port: Number(port || baseConfigInstance.config.port),
+        serverType: layer.type,
+        gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型',
+        geometry: geometry
+      })
+    })
+
+    this.addExhibition(new AttributeTableListExhibition(exhibition))
+    this.openExhibitionPanel()
+  }
+
+  private queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
+    if (!layer.isVisible) {
+      return
+    }
+    const { ip, port, docName } = layer._parseUrl(layer.url)
+
+    const exhibition: IAttributeTableListExhibition = {
+      id: `${layer.id}`,
+      name: `${layer.title} 查询结果`,
+      description: '',
+      options: []
+    }
+
+    const sublayers = layer.allSublayers
+    sublayers.forEach(sublayer => {
+      if (!sublayer.visible) {
+        return
+      }
+      exhibition.options.push({
+        id: sublayer.id,
+        name: sublayer.title,
+        ip: ip || baseConfigInstance.config.ip,
+        port: Number(port || baseConfigInstance.config.port),
+        serverType: layer.type,
+        layerIndex: sublayer.id,
+        serverName: docName,
+        serverUrl: layer.url,
+        geometry: geometry
+      })
+    })
+
+    this.addExhibition(new AttributeTableListExhibition(exhibition))
+    this.openExhibitionPanel()
+  }
+
+  private quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
+    if (!layer.isVisible) {
+      return
+    }
+    const { ip, port, docName } = layer._parseUrl(layer.url)
+
+    const exhibition: IAttributeTableListExhibition = {
+      id: `${layer.id}`,
+      name: `${layer.title} 查询结果`,
+      options: [
+        {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: layer.type,
+          gdbp: layer.gdbps,
+          geometry: geometry
+        }
       ]
-    ])
-    switch (bound.getGeometryType()) {
-      case 'point':
-        feature = point([bound.x, bound.y])
-        break
+    }
 
-      case 'line':
-        feature = lineString(bound.pointArr.map(point => [point.x, point.y]))
-        break
+    this.addExhibition(new AttributeTableListExhibition(exhibition))
+    this.openExhibitionPanel()
+  }
 
-      case 'polygon':
-        feature = polygon([bound.pointArr.map(point => [point.x, point.y])])
-        break
+  private queryFeaturesByArcgis(layer, geometry) {
+    if (!layer.isVisible) {
+      return
+    }
 
-      case 'rect':
-        const { ymax, ymin, xmax, xmin } = bound
-        feature = polygon([
+    const exhibition: IAttributeTableListExhibition = {
+      id: `${layer.id}`,
+      name: `${layer.title} 查询结果`,
+      description: '',
+      options: []
+    }
+
+    const sublayers = layer.allSublayers
+    sublayers.forEach(sublayer => {
+      if (!layer.visible) {
+        return
+      }
+      exhibition.options.push({
+        id: sublayer.id,
+        name: sublayer.title,
+        serverType: layer.type,
+        layerIndex: sublayer.id,
+        serverUrl: layer.url,
+        geometry: geometry
+      })
+    })
+
+    this.addExhibition(new AttributeTableListExhibition(exhibition))
+    this.openExhibitionPanel()
+  }
+
+  private toQueryGeometry(
+    layer,
+    shape: Record<string, number> | Array<Record<string, number>>,
+    nearDis
+  ) {
+    let geometry
+
+    switch (this.queryType) {
+      case QueryType.Point:
+        if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
+          // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
+          const transform = this.getLayerTranform(layer)
+          if (transform) {
+            const { x, y, z } = cesiumUtilInstance.degreeToDataPosition(
+              shape,
+              transform
+            )
+            geometry = new Point3D(x, y, shape.z)
+          }
+        } else {
+          geometry = new Zondy.Common.Point2D(shape.x, shape.y, { nearDis })
+        }
+        break
+      case QueryType.LineString:
+        if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
+          // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
+          const transform = this.getLayerTranform(layer)
+          if (transform) {
+            const { xmin, ymin, xmax, ymax, zmin, zmax } = this.toQueryRect3D(
+              shape,
+              transform
+            )
+
+            geometry = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
+          }
+        } else {
+          const pointArray = shape.map((item: Record<string, number>) => {
+            return new Zondy.Common.Point2D(item.x, item.y, { nearDis })
+          })
+
+          geometry = new Zondy.Common.PolyLine(pointArray, { nearDis })
+        }
+        break
+      case QueryType.Polygon:
+        if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
+          // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
+          const transform = this.getLayerTranform(layer)
+          if (transform) {
+            const { xmin, ymin, xmax, ymax, zmin, zmax } = this.toQueryRect3D(
+              shape,
+              transform
+            )
+
+            geometry = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
+          }
+        } else {
+          const pointArray = shape.map((item: Record<string, number>) => {
+            return new Zondy.Common.Point2D(item.x, item.y, { nearDis })
+          })
+
+          geometry = new Zondy.Common.Polygon(pointArray)
+        }
+        break
+      case QueryType.Circle:
+      case QueryType.Rectangle:
+        if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
+          // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
+          const transform = this.getLayerTranform(layer)
+          if (transform) {
+            const { xmin, ymin, xmax, ymax, zmin, zmax } = shape
+
+            geometry = this.transQueryRect3D(
+              { xmin, ymin, xmax, ymax, zmin: -100000, zmax: 100000 },
+              transform
+            )
+          }
+        } else {
+          const { xmin, ymin, xmax, ymax } = shape
+          geometry = new Zondy.Common.Rectangle(xmin, ymin, xmax, ymax)
+        }
+        break
+      default:
+        break
+    }
+
+    return geometry
+  }
+
+  private transQueryRect3D({ xmin, ymin, xmax, ymax, zmin, zmax }, transform) {
+    if (transform) {
+      const minPosition = cesiumUtilInstance.degreeToDataPosition(
+        { x: xmin, y: ymin, z: zmin },
+        transform
+      )
+      const maxPosition = cesiumUtilInstance.degreeToDataPosition(
+        { x: xmax, y: ymax, z: zmax },
+        transform
+      )
+      return new Rectangle3D(
+        minPosition.x,
+        minPosition.y,
+        zmin,
+        maxPosition.x,
+        maxPosition.y,
+        zmax
+      )
+    }
+    return undefined
+  }
+
+  private toQueryRect3D(shape, transform) {
+    const positions = shape.map(item => {
+      const { x, y, z } = cesiumUtilInstance.degreeToDataPosition(
+        item,
+        transform
+      )
+      return {
+        x,
+        y,
+        z: item.z
+      }
+    })
+    let xmin = 0
+    let ymin = 0
+    let zmin = 0
+    let xmax = 0
+    let ymax = 0
+    let zmax = 0
+    positions.forEach(({ x, y, z }, index) => {
+      if (index === 0) {
+        xmin = x
+        ymin = y
+        zmin = z
+        xmax = x
+        ymax = y
+        zmax = z
+      } else {
+        xmin = xmin - x < 0 ? xmin : x
+        ymin = ymin - y < 0 ? ymin : y
+        zmin = zmin - z < 0 ? zmin : z
+        xmax = xmax - x > 0 ? xmax : x
+        ymax = ymax - y > 0 ? ymax : y
+        zmax = zmax - z > 0 ? zmax : z
+      }
+    })
+    return {
+      xmin,
+      ymin,
+      xmax,
+      ymax,
+      zmin,
+      zmax
+    }
+  }
+
+  private getLayerTranform(layer) {
+    let tranform = null
+    const {
+      activeScene: { sublayers }
+    } = layer
+    let visibleSublayerId = ''
+
+    if (sublayers) {
+      sublayers.forEach(sublayer => {
+        if (sublayer.visible) {
+          visibleSublayerId = sublayer.id
+        }
+      })
+    }
+
+    if (visibleSublayerId !== '') {
+      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+        'default',
+        visibleSublayerId
+      )
+      if (source.length > 0) {
+        tranform = source[0].root.transform
+      }
+    }
+    return tranform
+  }
+
+  private isCrossWithLayer(layer, shape): boolean {
+    const { fullExtent, type } = layer
+    const { ymax, ymin, xmax, xmin } = fullExtent
+    let geometry
+    let extentPolygon
+
+    if (!this.is2DMapMode && type === LayerType.IGSScene) {
+      const tranform = this.getLayerTranform(layer)
+      if (tranform) {
+        const extent = cesiumUtilInstance.dataPositionExtenToDegreeExtend(
+          fullExtent,
+          tranform
+        )
+        extentPolygon = polygon([
+          [
+            [Number(extent.xmin), Number(extent.ymin)],
+            [Number(extent.xmax), Number(extent.ymin)],
+            [Number(extent.xmax), Number(extent.ymax)],
+            [Number(extent.xmin), Number(extent.ymax)],
+            [Number(extent.xmin), Number(extent.ymin)]
+          ]
+        ])
+      }
+    } else {
+      extentPolygon = polygon([
+        [
+          [Number(xmin), Number(ymin)],
+          [Number(xmax), Number(ymin)],
+          [Number(xmax), Number(ymax)],
+          [Number(xmin), Number(ymax)],
+          [Number(xmin), Number(ymin)]
+        ]
+      ])
+    }
+    switch (this.queryType) {
+      case QueryType.Point:
+        geometry = point([shape.x, shape.y])
+        break
+      case QueryType.LineString:
+        geometry = lineString(shape.map(point => [point.x, point.y]))
+        break
+      case QueryType.Polygon:
+        geometry = polygon([shape.map(point => [point.x, point.y])])
+        break
+      case QueryType.Circle:
+      case QueryType.Rectangle:
+        const { ymax, ymin, xmax, xmin } = shape
+        geometry = polygon([
           [
             [xmin, ymin],
             [xmax, ymin],
@@ -297,71 +609,15 @@ export default class MpFeatureQuery extends Mixins(
           ]
         ])
         break
-
       default:
         return false
     }
-
-    return !booleanDisjoint(extentPolygon, feature)
-  }
-
-  queryFeaturesByDoc(mapData: IGSMapImageLayer, geo) {
-    if (!mapData.isVisible) {
-      return
-    }
-    const { ip, port, docName } = mapData._parseUrl(mapData.url)
-
-    const exhibition: IAttributeTableListExhibition = {
-      id: `${mapData.id}`,
-      name: `${mapData.title} 查询结果`,
-      description: '',
-      options: []
-    }
-
-    const subLayers = mapData.allSublayers
-    subLayers.forEach(layer => {
-      if (!layer.visible) {
-        return
-      }
-      exhibition.options.push({
-        id: layer.id,
-        name: layer.title,
-        ip: ip || baseConfigInstance.config.ip,
-        port: Number(port || baseConfigInstance.config.port),
-        serverType: mapData.type,
-        layerIndex: layer.id,
-        serverName: docName,
-        serverUrl: mapData.url,
-        geometry: geo
-      })
-    })
-
-    this.addExhibition(new AttributeTableListExhibition(exhibition))
-    this.openExhibitionPanel()
-  }
-
-  quertFeatruesByVector(mapData: IGSVectorLayer, geo) {
-    if (!mapData.isVisible) {
-      return
-    }
-    const { ip, port, docName } = mapData._parseUrl(mapData.url)
-
-    const exhibition: IAttributeTableListExhibition = {
-      id: `${mapData.id}`,
-      name: `${mapData.title} 查询结果`,
-      options: [
-        {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: mapData.type,
-          gdbp: mapData.gdbps,
-          geometry: geo
-        }
-      ]
-    }
-
-    this.addExhibition(new AttributeTableListExhibition(exhibition))
-    this.openExhibitionPanel()
+    return (
+      // 交叉或者包含都会继续查询
+      !booleanDisjoint(extentPolygon, geometry) ||
+      booleanContains(extentPolygon, geometry) ||
+      booleanContains(geometry, extentPolygon)
+    )
   }
 }
 </script>

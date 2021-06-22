@@ -89,7 +89,7 @@ class AttributeTableOption implements IAttributeTableOption {
     this.serverName = info.serverName
     this.serverUrl = info.serverUrl
     this.gdbp = info.gdbp || ''
-    this.layerIndex = info.layerIndex || ''
+    this.layerIndex = info.layerIndex === undefined ? '' : info.layerIndex
     this.where = info.where || ''
     this.fields = info.fields || []
     this.geometry = info.geometry

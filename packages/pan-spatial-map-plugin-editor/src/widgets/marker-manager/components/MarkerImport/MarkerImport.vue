@@ -1,108 +1,119 @@
 <template>
-  <div class="marker-import">
-    <a-form-model
-      :model="formImport"
-      :label-col="{ span: 8 }"
-      :wrapper-col="{ span: 16 }"
-    >
-      <a-form-model-item label="文件路径:">
-        <div class="upload-content">
-          <input
-            ref="fileInput"
-            class="inputfile"
-            type="file"
-            id="file"
-            accept=".txt"
-            @input="readImportFile"
-          />
-          <label ref="fileLabel" class="labelfile" for="file">上传文件</label>
-        </div>
-      </a-form-model-item>
-      <div class="btn-content">
-        <a-button type="primary" @click="openImportFileDesc = true"
-          >查看支持导入文件的数据结构</a-button
-        >
-      </div>
-      <a-checkbox
-        class="crs-checkbox"
-        :default-checked="true"
-        @change="onChange"
-      >
-        设置输入坐标空间参考系
-      </a-checkbox>
-      <a-form-model-item v-show="showCrsSelect" label="参考系:">
-        <a-select v-model="formImport.crsName">
-          <a-select-option v-for="item in crsNames" :key="item">{{
-            item
-          }}</a-select-option>
-        </a-select>
-      </a-form-model-item>
-      <a-divider />
-      <div class="btn-group">
-        <a-button type="primary" @click="onClickConfirm">确认</a-button>
-        <a-button @click="onClickCancel">取消</a-button>
-      </div>
-    </a-form-model>
+  <a-modal
+    class="marker-import-wrapper"
+    :visible="visible"
+    title="导入文件"
+    :width="300"
+    :mask="false"
+    @cancel="onImportCancel"
+    @ok="onImportOk"
+  >
+    <div class="marker-import-body">
+      <a-space direction="vertical" style="flex: 1">
+        <a-row>
+          <label>文件路径</label>
+        </a-row>
+        <a-row>
+          <div style="display: flex;">
+            <div class="upload-content">
+              <input
+                ref="fileInput"
+                class="inputfile"
+                type="file"
+                id="file"
+                accept=".txt"
+                @input="readImportFile"
+              />
+              <label ref="fileLabel" class="labelfile" for="file"
+                >上传文件</label
+              >
+            </div>
+            <div class="upload-tip" @click="openImportFileDesc = true">
+              <a-tooltip title="文件格式说明">
+                <a-icon type="info-circle-o" />
+              </a-tooltip>
+            </div>
+          </div>
+        </a-row>
+        <a-row>
+          <label>坐标系</label>
+        </a-row>
+        <a-row>
+          <a-select v-model="importOptions.crsName" style="width: 100%;">
+            <a-select-option v-for="item in crsNames" :key="item">
+              {{ item }}
+            </a-select-option>
+          </a-select>
+        </a-row>
+      </a-space>
+    </div>
     <a-modal
       v-model="openImportFileDesc"
       title="文件结构"
+      :width="500"
+      :footer="null"
+      :mask="false"
       @ok="openImportFileDesc = false"
     >
       <marker-import-file-desc />
     </a-modal>
-  </div>
+  </a-modal>
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Emit } from 'vue-property-decorator'
-import { utilInstance, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
-import { ThemeStyleMixin, AppMixin, UUID } from '@mapgis/web-app-framework'
-import MarkerAddMixin from '../../mixins/marker-add'
+import { Component, Prop, Emit, Mixins } from 'vue-property-decorator'
+import {
+  utilInstance,
+  markerIconInstance,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-store'
+import { UUID } from '@mapgis/web-app-framework'
+import moment from 'moment'
 import MarkerImportFileDesc from './MarkerImportFileDesc.vue'
+import MarkerMixin from '../../mixins/marker-add'
 
 @Component({
   name: 'MpMarkerImport',
   components: { MarkerImportFileDesc }
 })
-export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
-  private formImport = {
-    crsName: 'WGS1984_度'
+export default class MpMarkerImport extends Mixins(MarkerMixin) {
+  @Emit('added')
+  emitAdded(markers) {}
+
+  @Emit('finished')
+  emitFinished() {}
+
+  @Prop({ type: Boolean, default: false }) visible
+
+  // 底图坐标系
+  private defaultCrs = baseConfigInstance.config.projectionName
+
+  private importOptions = {
+    crsName: this.defaultCrs
   }
 
-  private crsNames = ['WGS1984_度', 'Web墨卡托_WGS1984']
+  // 坐标系下拉配置
+  private crsNames = baseConfigInstance.config.commonProjection.split(',')
 
   // 支持导入文件描述对话框的显隐
   private openImportFileDesc = false
 
-  // 参考系选择器的显隐
-  private showCrsSelect = true
-
-  private importMarkers: any[] = []
-
-  @Emit('closeModal')
-  closeModal() {}
-
-  @Emit('addMarkers')
-  emitAddMarkers(markers: any[]) {}
-
-  // 多选框变化时回调函数
-  onChange(e) {
-    this.showCrsSelect = e.target.checked
-  }
-
-  // 取消按钮回调函数
-  onClickCancel() {
-    this.closeModal()
-  }
+  private markers = []
 
   // 确认按钮回调函数
-  onClickConfirm() {
-    this.closeModal()
-    this.emitAddMarkers(this.importMarkers)
+  private onImportOk() {
+    if (this.markers.length) {
+      this.emitAdded(this.markers)
+    }
+
+    this.emitFinished()
+  }
+
+  private onImportCancel() {
+    this.emitFinished()
   }
 
   readImportFile() {
-    console.log(this.$refs.fileInput.files)
     const file = this.$refs.fileInput.files[0]
     this.$refs.fileLabel.innerHTML = file.name
     const reader = new FileReader()
@@ -116,7 +127,10 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
   }
 
   async analyzeFile(str: string) {
-    this.importMarkers = []
+    this.markers = []
+
+    const unSelectIcon = await markerIconInstance.unSelectIcon()
+
     const lines: string[] = str.split('\n')
 
     for (let i = 0; i < lines.length; i += 4) {
@@ -140,14 +154,11 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
         }
 
         const obj: Record<string, any> = {
-          id: UUID.uuid(),
+          markerId: UUID.uuid(),
           title,
           description,
-          features: [],
-          coordinates: [],
-          iconImg: `${this.baseUrl}${baseConfigInstance.config.colorConfig.label.image.defaultImg}`,
-          img: '',
-          type: ''
+          img: unSelectIcon,
+          picture: ''
         }
 
         let feature: Record<string, any> = {}
@@ -171,7 +182,7 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
             if (this.showCrsSelect) {
               arcCoords = await this.transPoints(
                 arcCoordinates,
-                this.formImport.crsName
+                this.importOptions.crsName
               )
             }
             polygonCoords.push(arcCoords)
@@ -182,15 +193,14 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
               coordinates: polygonCoords,
               type: 'Polygon'
             },
-            id: UUID.uuid(),
             properties: {},
             type: 'Feature'
           }
           const coordinates = utilInstance.getGeoJsonFeatureCenter(feature)
-          obj.features.push(feature)
-          obj.coordinates = feature.geometry.coordinates
-          obj.center = coordinates
-          obj.type = 'Polygon'
+
+          obj.feature = feature
+          obj.coordinates = coordinates
+          obj.properties = feature.properties
         } else if (featureType.includes('点') || featureType.includes('线')) {
           for (let j = 0; j < featuresCoord.length; j += 1) {
             const coordStr = featuresCoord[j]
@@ -201,22 +211,20 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
                 Number(pointCoordStrs[1])
               ]
               let pointCoords = [pointCoordinates]
-              if (this.showCrsSelect) {
-                pointCoords = await this.transPoints(
-                  [pointCoordinates],
-                  this.formImport.crsName
-                )
-              }
+
+              pointCoords = await this.transPoints(
+                [pointCoordinates],
+                this.importOptions.crsName,
+                this.defaultCrs
+              )
               feature = {
                 geometry: {
                   coordinates: pointCoords[0],
                   type: 'Point'
                 },
-                id: UUID.uuid(),
                 properties: {},
                 type: 'Feature'
               }
-              obj.type = 'Point'
             } else if (featureType.includes('线')) {
               const lineStrs = coordStr.split(' ')
               const lineCoordinates: any[] = []
@@ -233,7 +241,7 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
               if (this.showCrsSelect) {
                 lineCoords = await this.transPoints(
                   lineCoordinates,
-                  this.formImport.crsName
+                  this.importOptions.crsName
                 )
               }
               feature = {
@@ -241,19 +249,18 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
                   coordinates: lineCoords,
                   type: 'LineString'
                 },
-                id: UUID.uuid(),
                 properties: {},
                 type: 'Feature'
               }
-              obj.type = 'LineString'
             }
             const coordinates = utilInstance.getGeoJsonFeatureCenter(feature)
-            obj.features.push(feature)
-            obj.coordinates = feature.geometry.coordinates
-            obj.center = coordinates
+
+            obj.feature = feature
+            obj.coordinates = coordinates
+            obj.properties = feature.properties
           }
         }
-        this.importMarkers.push(obj)
+        this.markers.push(obj)
       }
     }
   }
@@ -261,62 +268,48 @@ export default class MpMarkerImport extends Mixins(MarkerAddMixin, AppMixin) {
 </script>
 
 <style lang="less" scoped>
-.ant-form-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-}
-.upload-content {
-  width: 208px;
-  height: 32px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-
-  .anticon-upload {
-    margin-right: 10px;
+.marker-import-wrapper {
+  .marker-import-body {
+    display: flex;
   }
-  .inputfile {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-  }
-  .inputfile:focus + label,
-  .inputfile + label:hover {
-    cursor: pointer;
-  }
-  .labelfile {
-    width: 100%;
-    height: 100%;
+  .upload-content {
+    flex: 1;
+    height: 32px;
+    border: 1px solid @primary-color;
+    border-radius: 4px;
     display: flex;
     align-items: center;
-    margin-left: 8px;
-  }
-}
-.btn-content {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin: 8px 0;
-}
-.crs-checkbox {
-  margin: 8px 0 18px 32px;
-}
-.ant-divider {
-  margin: 12px 0;
-}
-.btn-group {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
 
-  .ant-btn {
-    margin-left: 8px;
+    .anticon-upload {
+      margin-right: 10px;
+    }
+    .inputfile {
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      z-index: -1;
+    }
+    .inputfile:focus + label,
+    .inputfile + label:hover {
+      cursor: pointer;
+    }
+    .labelfile {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      margin-left: 8px;
+    }
+  }
+
+  .upload-tip {
+    width: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>

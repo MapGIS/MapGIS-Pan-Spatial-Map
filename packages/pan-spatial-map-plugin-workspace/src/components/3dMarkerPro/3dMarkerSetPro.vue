@@ -9,7 +9,11 @@
       @marker-id="updateCurrentMarkerId"
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
+      @change="changePopup"
     >
+      <template slot="popup" slot-scope="slotProps">
+        <slot name="popup" v-bind="slotProps"></slot>
+      </template>
     </mp-3d-marker-pro>
   </div>
 </template>
@@ -49,6 +53,10 @@ export default class Mp3dMarkerSetPro extends Vue {
 
   private mouseLeaveEvent(e, id) {
     this.$emit('mouseleave', e, id)
+  }
+
+  changePopup(val) {
+    this.currentMarkerId = val
   }
 }
 </script>

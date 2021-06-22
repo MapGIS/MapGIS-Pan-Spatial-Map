@@ -1084,8 +1084,8 @@ class QueryFeatures {
       queryParam.geometry = option.geometry.toString()
     }
     queryParam.where = option.where || null
-    queryParam.pageIndex = option.page || 0
-    queryParam.recordNumber = option.pageCount || 10
+    queryParam.page = option.page || 0
+    queryParam.pageCount = option.pageCount || 10
     queryParam.rule = new Zondy.MRFS.QueryFeatureRule({
       CompareRectOnly:
         option.CompareRectOnly !== undefined ? option.CompareRectOnly : false,
@@ -1116,7 +1116,7 @@ class QueryFeatures {
     let queryService: any
     if (option.gdbp) {
       // 矢量图层
-      queryService = new Zondy.MRCS.G3DMapDoc({
+      queryService = new Zondy.G3D.G3DMapDoc({
         ip: option.ip,
         port: option.port,
         gdbp: option.gdbp,
@@ -1132,7 +1132,7 @@ class QueryFeatures {
       // 图层索引号
       const layerIdxs =
         option.layerIdxs || option.layerIdxs === '0' ? option.layerIdxs : '*'
-      queryService = new Zondy.MRCS.G3DMapDoc({
+      queryService = new Zondy.G3D.G3DMapDoc({
         ip: option.ip,
         port: option.port,
         docName,

@@ -124,6 +124,12 @@ export default class PlaceName extends Mixins(
     return this.widgetInfo.config.placeName || this.widgetInfo.config.dataStore
   }
 
+  private get placeNameComponent() {
+    return this.is2DMapMode
+      ? this.$refs.refPlaceNameMapbox
+      : this.$refs.refPlaceNameCesium
+  }
+
   @Watch('geometry', { immediate: true })
   geometryChange(val) {
     this.geometryData = val
@@ -329,15 +335,8 @@ export default class PlaceName extends Mixins(
   }
 
   setCenter(positionCoord) {
-    if (this.mapRender === this.mapboxRender) {
-      if (this.$refs.refPlaceNameMapbox) {
-        this.$refs.refPlaceNameMapbox.setMapCenter(positionCoord)
-      }
-    } else {
-      if (this.$refs.refPlaceNameCesium) {
-        this.$refs.refPlaceNameCesium.setMapCenter(positionCoord)
-      }
-    }
+    this.placeNameComponent &&
+      this.placeNameComponent.setMapCenter(positionCoord)
   }
 }
 </script>

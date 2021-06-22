@@ -40,11 +40,11 @@ export default class MeasureMixin extends Vue {
     this.onMeasureStyleChange()
   }
 
-  // 打开测量
+  // 打开测量工具
   openMeasure(mode) {}
 
-  // 清除测量
-  clearMeasure() {}
+  // 关闭测量工具
+  closeMeasure() {}
 
   // 距离单位变化
   onDistanceUnitChange() {}
