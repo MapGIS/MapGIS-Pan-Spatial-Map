@@ -19,6 +19,7 @@
         :columns="columns"
         :data-source="tableData"
         :pagination="pagination"
+        :scroll="{ y: 108 }"
         :row-selection="{
           selectedRowKeys: selectedRowKeys,
           type: 'radio',
@@ -44,6 +45,7 @@
         :columns="pointColumns"
         :data-source="pointTableData"
         :pagination="pointPagination"
+        :scroll="{ y: 108 }"
         :rowKey="
           record => {
             return record.id
@@ -63,7 +65,7 @@
           <a-input
             v-model.number="formData.speed"
             type="number"
-            addon-after="(经纬度/秒)"
+            addon-after="(米/秒)"
           />
         </a-form-model-item>
         <a-form-model-item label="附加高程:">
@@ -553,6 +555,12 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       .then(_ => {
         this.$message.success('保存成功')
         this.onClickCancelPath()
+
+        api.getWidgetConfig('scene-roaming').then(res => {
+          this.tableData = res.map(item => {
+            return { ...item, path: item.path.join() }
+          })
+        })
       })
       .catch(_ => {
         this.$message.error('保存失败')
@@ -606,7 +614,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-top: 16px;
+  margin-top: 8px;
 
   .footer-checkbox {
     width: 100%;
@@ -624,7 +632,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-top: 16px;
+    margin-top: 8px;
 
     .ant-btn {
       padding: 0 15px;
