@@ -15,8 +15,8 @@
             :tree-data="treeData"
           />
         </a-row>
-        <a-row class="retrospect-row">
-          <div class="retrospect-time-line" v-show="timeLineList.length">
+        <a-row class="retrospect-row" v-show="timeLineList.length">
+          <div class="retrospect-time-line">
             <time-line
               id="retrospect-time-line"
               ref="time-line"
@@ -44,7 +44,7 @@
             </a-tooltip>
           </a-col>
         </a-row>
-        <a-divider v-show="showInterval"></a-divider>
+        <a-divider v-show="showInterval" />
         <a-row v-show="showInterval" class="retrospect-row">
           <label>时间间隔</label>
         </a-row>
@@ -67,7 +67,7 @@
           </a-col>
         </a-row>
         <!-- 空数据友好提示 -->
-        <a-empty :image="simpleImage" v-show="!timeLineList.length" />
+        <a-empty v-show="timeLineList.length" />
       </div>
     </a-spin>
   </div>
@@ -414,10 +414,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
       const ids = this.getCheckedIds(this.timeLineList[nV])
       this.updateCheckedIds(ids)
     }
-  }
-
-  beforeCreate() {
-    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 }
 </script>

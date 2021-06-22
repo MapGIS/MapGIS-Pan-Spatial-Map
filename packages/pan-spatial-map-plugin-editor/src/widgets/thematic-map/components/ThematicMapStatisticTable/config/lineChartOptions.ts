@@ -19,7 +19,7 @@ export const lineChartOptions = ({ title, x, y }) => {
     dataZoom: {
       show: true,
       realtime: true,
-      bottom: 44,
+      bottom: 50,
       height: 8,
       fillerColor: '#40a9ff',
       start: 0,
@@ -41,11 +41,9 @@ export const lineChartOptions = ({ title, x, y }) => {
       axisLabel: {
         rotate: -60,
         interval: 1,
-        textStyle: {
-          fontSize: 10,
-          fontFamily: '微软雅黑',
-          color: txtColor
-        }
+        fontSize: 10,
+        fontFamily: '微软雅黑',
+        color: txtColor
       },
       axisTick: {
         lineStyle: {
@@ -60,10 +58,8 @@ export const lineChartOptions = ({ title, x, y }) => {
     },
     yAxis: {
       axisLabel: {
-        textStyle: {
-          fontFamily: '微软雅黑',
-          color: txtColor
-        }
+        fontFamily: '微软雅黑',
+        color: txtColor
       },
       axisTick: {
         lineStyle: {

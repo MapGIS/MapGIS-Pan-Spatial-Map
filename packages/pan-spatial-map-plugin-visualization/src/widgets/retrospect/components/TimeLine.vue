@@ -91,7 +91,7 @@ export default class TimeLine extends Vue {
     this.Chart.setOption(this.option, true)
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
     if (this.Chart) {
       this.Chart.off('timelinechanged')
     }

@@ -16,7 +16,7 @@
     <row-flex label="专题类型" label-align="right">
       <a-select v-model="sujectType" :options="sujectTypeList" />
     </row-flex>
-    <subject-type :type="sujectType" />
+    <subject-types :type="sujectType" />
     <!-- 数据来源 -->
     <row-flex label="数据来源" label-align="right">
       <a-select v-model="sourceTarget" :options="sourceTargetList" />
@@ -25,27 +25,20 @@
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component } from 'vue-property-decorator'
+import { subjectTypes } from '@mapgis/pan-spatial-map-store'
 import RowFlex from '../../RowFlex'
 import SourceTarget from './SourceTarget'
-import SubjectType from './SubjectType'
-
-interface IItem {
-  label: string
-  value: string
-}
+import SubjectTypes from './SubjectTypes'
 
 @Component({
   components: {
     RowFlex,
     SourceTarget,
-    SubjectType
+    SubjectTypes
   }
 })
-export default class BaseItems extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class BaseItems extends Vue {
   // 专题服务名称
   subjectName = ''
 
@@ -59,14 +52,7 @@ export default class BaseItems extends Mixins<{
   sujectType = ''
 
   // 专题类型列表
-  sujectTypeList: IItem[] = [
-    { value: 'SubSectionMap', label: '分段专题图' },
-    { value: 'BaseMapWithGraph', label: '统计专题图' },
-    { value: 'StatisticLabel', label: '等级符号专题图' },
-    { value: 'Label', label: '聚合标注专题图' },
-    { value: 'HeatMap', label: '热力图' },
-    { value: 'HexBin', label: '蜂窝图' }
-  ]
+  sujectTypeList = subjectTypes
 
   // 数据来源
   sourceTarget = ''

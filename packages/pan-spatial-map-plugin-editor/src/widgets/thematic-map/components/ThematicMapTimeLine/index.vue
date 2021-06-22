@@ -8,29 +8,30 @@
       :verticalOffset="30"
     >
       <div class="thematic-map-time-line">
-        <!-- 时间轴 -->
-        <row-flex :span="[2, 22]" v-show="timeList.length">
-          <template #label>
-            <a-tooltip placement="bottom" :title="autoPlay.tooltip">
-              <a-icon
-                class="thematic-map-time-line-btn"
-                :type="autoPlay.type"
-                @click="btnPlay"
-              />
-            </a-tooltip>
-          </template>
-          <div id="thematic-map-time-line-chart" />
-        </row-flex>
-        <!-- 空数据友好提示 -->
-        <a-empty :image="simpleImage" v-show="!timeList.length" />
+        <a-spin :spinning="loading">
+          <!-- 时间轴 -->
+          <row-flex :span="[2, 22]" v-show="timeList.length">
+            <template #label>
+              <a-tooltip placement="bottom" :title="autoPlay.tooltip">
+                <a-icon
+                  class="thematic-map-time-line-btn"
+                  :type="autoPlay.type"
+                  @click="btnPlay"
+                />
+              </a-tooltip>
+            </template>
+            <div id="thematic-map-time-line-chart" />
+          </row-flex>
+          <!-- 空数据友好提示 -->
+          <a-empty v-show="!timeList.length" />
+        </a-spin>
       </div>
     </mp-window>
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import { ThematicMapInstance } from '@mapgis/pan-spatial-map-store'
+import { Vue, Component, Watch } from 'vue-property-decorator'
+import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
 import { Empty } from 'ant-design-vue'
 import * as echarts from 'echarts'
 import RowFlex from '../RowFlex'
@@ -39,11 +40,15 @@ import { chartOption } from './config/timeLineChartOption'
 @Component({
   components: {
     RowFlex
+  },
+  computed: {
+    ...mapGetters(['loading', 'isVisible', 'selectedTime', 'selectedTimeList'])
+  },
+  methods: {
+    ...mapMutations(['resetVisible', 'setSelectedTime'])
   }
 })
-export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
-  WidgetMixin
-) {
+export default class ThematicMapTimeLine extends Vue {
   // 图表
   chart: any = null
 
@@ -53,29 +58,25 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   // 当前播放的数据索引
   currentIndex = 0
 
+  // 时间轴的列表数据
+  get timeList() {
+    return this.selectedTimeList || []
+  }
+
   // 显示开关
   get tlVisible() {
-    const visible = ThematicMapInstance.isVisible('tl')
-    if (visible) {
+    const visible = this.isVisible('tl')
+    const _visible = visible && this.timeList.length > 1
+    if (_visible) {
       this.onUpdateChart()
     }
-    return visible
+    return _visible
   }
 
   set tlVisible(nV) {
     if (!nV) {
-      ThematicMapInstance.resetVisible('tl')
+      this.resetVisible('tl')
     }
-  }
-
-  // 属性表或者时间轴选中的时间数据
-  get selectedTime() {
-    return ThematicMapInstance.getSelectedTime
-  }
-
-  // 时间轴的列表数据
-  get timeList() {
-    return ThematicMapInstance.getSelectedTimeList
   }
 
   // 播放文案和提示设置
@@ -108,6 +109,22 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
   }
 
   /**
+   * currentIndex变化
+   */
+  onCurrentIndexChange(value) {
+    this.setSelectedTime(this.timeList[value])
+    this.onUpdateChart()
+  }
+
+  /**
+   * selecteTime变化
+   */
+  onSelecteTimeChange(value) {
+    this.currentIndex = value ? this.timeList.indexOf(value) : 0
+    this.onUpdateChart()
+  }
+
+  /**
    * 播放或暂停
    */
   btnPlay() {
@@ -128,8 +145,7 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
    */
   @Watch('currentIndex')
   watchCurrentIndex(nV) {
-    ThematicMapInstance.setSelectedTime(this.timeList[nV])
-    this.onUpdateChart()
+    this.onCurrentIndexChange(nV)
   }
 
   /**
@@ -137,15 +153,7 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
    */
   @Watch('selectedTime')
   watchTimeList(nV) {
-    const _index = this.timeList.indexOf(nV)
-    if (!_index || this.currentIndex !== _index) {
-      this.currentIndex = _index
-      this.onUpdateChart()
-    }
-  }
-
-  beforeCreate() {
-    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
+    this.onSelecteTimeChange(nV)
   }
 
   mounted() {
@@ -156,9 +164,10 @@ export default class ThematicMapTimeLine extends Mixins<{ [k: string]: any }>(
       'timelinechanged',
       ({ currentIndex }) => (this.currentIndex = currentIndex)
     )
+    this.onSelecteTimeChange(this.selectedTime)
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
     if (this.chart) {
       this.chart.off('timelinechanged')
     }

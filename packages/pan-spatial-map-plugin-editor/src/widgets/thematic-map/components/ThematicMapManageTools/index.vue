@@ -1,5 +1,5 @@
 <template>
-  <!-- 工具栏 -->
+  <!-- 侧边工具栏 -->
   <mp-window-wrapper :visible="mtVisible">
     <transition name="slide-fade">
       <mp-placement
@@ -23,54 +23,62 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import { ThematicMapInstance, TModuleType } from '@mapgis/pan-spatial-map-store'
+import { Vue, Component, Watch } from 'vue-property-decorator'
+import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
 
 interface IIcon {
   type: string
   tooltip: string
-  visibleType: TModuleType
+  visibleType: string
 }
-@Component
-export default class ThematicMapManageTools extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+@Component({
+  computed: {
+    ...mapGetters(['isVisible', 'selectedTimeList'])
+  },
+  methods: {
+    ...mapMutations(['setVisible', 'resetVisible'])
+  }
+})
+export default class ThematicMapManageTools extends Vue {
   mtVisible = false
 
-  iconList: IIcon[] = [
-    {
-      type: 'table',
-      tooltip: '属性表',
-      visibleType: 'at'
-    },
-    {
-      type: 'bar-chart',
-      tooltip: '统计表',
-      visibleType: 'st'
-    },
-    {
-      type: 'clock-circle',
-      tooltip: '时间轴',
-      visibleType: 'tl'
-    },
-    {
-      type: 'file-add',
-      tooltip: '新建专题图',
-      visibleType: 'sa'
-    }
-  ]
-
   get visible() {
-    return ThematicMapInstance.isVisible('mt')
+    return this.isVisible('mt')
+  }
+
+  get iconList() {
+    const list = [
+      {
+        type: 'table',
+        tooltip: '属性表',
+        visibleType: 'at'
+      },
+      {
+        type: 'bar-chart',
+        tooltip: '统计表',
+        visibleType: 'st'
+      }
+      // {
+      //   type: 'file-add',
+      //   tooltip: '新建专题图',
+      //   visibleType: 'sa'
+      // }
+    ]
+    if (this.selectedTimeList && this.selectedTimeList.length > 1) {
+      list.splice(2, 0, {
+        type: 'clock-circle',
+        tooltip: '时间轴',
+        visibleType: 'tl'
+      })
+    }
+    return list
   }
 
   /**
    * 按钮变化
-   * @param visibleType<string>
    */
-  onToolIconChange(visibleType: TModuleType) {
-    ThematicMapInstance.setVisible(visibleType)
+  onToolIconChange(visibleType: string) {
+    this.setVisible(visibleType)
   }
 
   @Watch('visible')

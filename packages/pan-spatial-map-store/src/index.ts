@@ -27,9 +27,11 @@ export { vectorTileListInstance } from './vector-tile-list'
 
 // 专题服务
 export {
-  ThematicMapInstance,
-  TModuleType,
-  IThematicMapSubjectConfig
+  thematicMapStore,
+  mapGetters,
+  mapMutations,
+  moduleTypes,
+  subjectTypes
 } from './thematic-map'
 
 export {

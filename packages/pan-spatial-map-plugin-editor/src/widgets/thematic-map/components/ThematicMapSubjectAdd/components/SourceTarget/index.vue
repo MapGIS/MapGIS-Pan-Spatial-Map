@@ -7,10 +7,9 @@
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import OnlineData from './OnlineData.vue'
-import LocalData from './LocalData.vue'
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import OnlineData from './components/OnlineData.vue'
+import LocalData from './components/LocalData.vue'
 
 @Component({
   components: {
@@ -18,9 +17,7 @@ import LocalData from './LocalData.vue'
     LocalData
   }
 })
-export default class SourceTarget extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class SourceTarget extends Vue {
   @Prop() type!: 'onLineData' | 'localData'
 }
 </script>

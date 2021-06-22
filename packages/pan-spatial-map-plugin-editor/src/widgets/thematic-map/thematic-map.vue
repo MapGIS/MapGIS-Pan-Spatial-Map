@@ -2,24 +2,31 @@
   <div class="mp-widget-thematic-map">
     <!-- 专题服务树 -->
     <a-spin :spinning="loading">
+      <a-empty v-if="!treeData.length" />
       <a-tree
+        v-else
         checkable
         :show-line="true"
         :tree-data="treeData"
         :replace-fields="{ key: 'id' }"
+        :checkedKeys="checkedKeys"
         @check="onTreeCheck"
       />
     </a-spin>
-    <!-- 属性表 -->
-    <thematic-map-attribute-table />
-    <!-- 统计表 -->
-    <thematic-map-statistic-table />
-    <!-- 时间轴 -->
-    <thematic-map-time-line />
-    <!-- 新建专题图 -->
-    <thematic-map-subject-add />
-    <!-- 工具栏 -->
-    <thematic-map-manage-tools />
+    <div v-show="checkedKeys.length">
+      <!-- 属性表 -->
+      <thematic-map-attribute-table />
+      <!-- 统计表 -->
+      <thematic-map-statistic-table />
+      <!-- 时间轴 -->
+      <thematic-map-time-line />
+      <!-- 新建专题图 -->
+      <thematic-map-subject-add />
+      <!-- 工具栏 -->
+      <thematic-map-manage-tools />
+      <!-- 5类专题服务图层 -->
+      <thematic-map-layers />
+    </div>
   </div>
 </template>
 
@@ -27,32 +34,44 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import {
-  ThematicMapInstance,
-  TModuleType,
-  IThematicMapSubjectConfig
+  mapGetters,
+  mapMutations,
+  moduleTypes
 } from '@mapgis/pan-spatial-map-store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
 import ThematicMapStatisticTable from './components/ThematicMapStatisticTable'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
 import ThematicMapManageTools from './components/ThematicMapManageTools'
 import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
+import ThematicMapLayers from './components/ThematicMapLayers'
 
 @Component({
   name: 'MpThematicMap',
+  methods: {
+    ...mapMutations([
+      'setThematicMapConfig',
+      'setSelectedList',
+      'setVisible',
+      'resetVisible'
+    ])
+  },
   components: {
     ThematicMapAttributeTable,
     ThematicMapStatisticTable,
     ThematicMapTimeLine,
     ThematicMapManageTools,
-    ThematicMapSubjectAdd
+    ThematicMapSubjectAdd,
+    ThematicMapLayers
   }
 })
-export default class MpThematicMap extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
+export default class MpThematicMap extends Mixins<Record<string, any>>(
+  WidgetMixin
+) {
   loading = false
 
-  treeData: IThematicMapSubjectConfig[] = []
+  checkedKeys: string[] = []
+
+  treeData: any[] = []
 
   /**
    * 获取专题服务树中选中的节点配置
@@ -60,11 +79,7 @@ export default class MpThematicMap extends Mixins<{
    * @param id<string>
    * @param node<object>
    */
-  getSujectNodeById(
-    treeData: IThematicMapSubjectConfig[],
-    id: string,
-    node: IThematicMapSubjectConfig | null
-  ) {
+  getSujectNodeById(treeData: any[], id: string, node: any) {
     if (!treeData) {
       return null
     }
@@ -85,6 +100,9 @@ export default class MpThematicMap extends Mixins<{
    * @param treeData<array>
    */
   normalizeTreeData(treeData) {
+    if (!treeData || !treeData.length) {
+      return []
+    }
     for (let i = 0; i < treeData.length; i++) {
       const item = treeData[i]
       if (item.nodeType) {
@@ -101,20 +119,23 @@ export default class MpThematicMap extends Mixins<{
 
   /**
    * 专题服务树选中
-   * @param checkeddKeys<array>
+   * @param checkedKeys<array>
    */
-  onTreeCheck(checkeddKeys) {
-    const configList = checkeddKeys.reduce((results, id) => {
+  onTreeCheck(checkedKeys) {
+    this.checkedKeys = checkedKeys
+    const selectedList = checkedKeys.reduce((results, id) => {
       const node = this.getSujectNodeById(this.treeData, id, null)
       if (node) {
         results.push(node)
       }
       return results
     }, [])
-    // console.log('选中的专题的列表', configList)
-    const lastId = configList.length ? configList[configList.length - 1].id : ''
-    ThematicMapInstance.setSelected(lastId)
-    ThematicMapInstance.setSelectedList(configList)
+    if (!selectedList.length) {
+      this.resetVisible()
+    } else {
+      moduleTypes.forEach(v => this.setVisible(v))
+    }
+    this.setSelectedList(selectedList)
   }
 
   /**
@@ -126,10 +147,8 @@ export default class MpThematicMap extends Mixins<{
       config,
       config: { subjectConfig }
     } = this.widgetInfo
-    this.onVisible()
-    ThematicMapInstance.setThematicMapConfig(config)
+    this.setThematicMapConfig(config)
     this.treeData = this.normalizeTreeData(subjectConfig)
-    // console.log('专题服务树', this.treeData)
     this.loading = false
   }
 
@@ -137,15 +156,9 @@ export default class MpThematicMap extends Mixins<{
    * 专题服务面板关闭
    */
   onClose() {
-    ThematicMapInstance.resetVisible()
-  }
-
-  /**
-   * 功能面板开关
-   */
-  onVisible() {
-    const openModules: TModuleType[] = ['at', 'st', 'tl', 'mt']
-    openModules.forEach(item => ThematicMapInstance.setVisible(item))
+    this.checkedKeys = []
+    this.setSelectedList([])
+    this.resetVisible()
   }
 }
 </script>

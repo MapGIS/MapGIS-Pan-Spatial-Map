@@ -41,23 +41,18 @@
           <!-- 图表 -->
           <div id="thematic-map-statistic-table-chart" v-show="showChart" />
           <!-- 空数据友好提示 -->
-          <a-empty :image="simpleImage" v-show="!showChart" />
+          <a-empty v-show="!showChart" />
         </a-spin>
       </div>
     </mp-window>
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import {
-  queryFeaturesInstance,
-  FeatureQueryParam,
-  ThematicMapInstance
-} from '@mapgis/pan-spatial-map-store'
-import { Empty } from 'ant-design-vue'
+import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
+import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
 import * as echarts from 'echarts'
 import RowFlex from '../RowFlex'
+import ThematicMapMixin from '../../mixins/thematic-map'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
@@ -79,13 +74,15 @@ interface IChartOption {
 @Component({
   components: {
     RowFlex
+  },
+  computed: {
+    ...mapGetters(['loading', 'isVisible', 'pageDataSet', 'selectedSubConfig'])
+  },
+  methods: {
+    ...mapMutations(['resetVisible'])
   }
 })
-export default class ThematicMapStatisticTable extends Mixins<{
-  [k: string]: any
-}>(WidgetMixin) {
-  loading = false
-
+export default class ThematicMapStatisticTable extends Vue {
   // 当前活动的图标
   activeChart: TChartType = 'bar'
 
@@ -125,41 +122,70 @@ export default class ThematicMapStatisticTable extends Mixins<{
   ]
 
   get stVisible() {
-    return ThematicMapInstance.isVisible('st')
+    return this.isVisible('st')
   }
 
   set stVisible(nV) {
     if (!nV) {
-      ThematicMapInstance.resetVisible('st')
+      this.resetVisible('st')
     }
   }
 
-  // 获取选中专题
-  get selected() {
-    return ThematicMapInstance.getSelected
+  get graph() {
+    return this.selectedSubConfig?.graph
   }
 
-  // 获取时间轴已选中的年度(回显至时间选项)
-  get selectedTime() {
-    return ThematicMapInstance.getSelectedTime
-  }
-
-  // 获取分页变化
-  get pageParam() {
-    return ThematicMapInstance.pageParam
-  }
-
-  // 获取选中专题对应年度的配置数据以及配置数据, 结果参考getSelectedSujectConfig的注释说明或者ts接口
-  get selectedConfigSubData() {
-    return ThematicMapInstance.getSelectedConfig?.configSubData
-  }
-
-  /**
-   * 图表是否有数据,是否展示友好提示
-   */
+  // 图表是否有数据,是否展示友好提示
   get showChart() {
     const { x, y } = this.chartOption
     return x.length && y.length
+  }
+
+  /**
+   * 将query的结果设置图表配置里
+   * @param dataSet
+   */
+  getChartOptions(dataSet) {
+    const xArr = []
+    const yArr = []
+    if (dataSet && dataSet.AttStruct.FldName && this.graph) {
+      const {
+        SFEleArray,
+        AttStruct: { FldName }
+      } = dataSet
+      const xIndex = FldName.indexOf(this.graph.field)
+      const yIndex = FldName.indexOf(this.target)
+      SFEleArray.forEach(({ AttValue }) => {
+        if (AttValue) {
+          xArr.push(AttValue[xIndex])
+          yArr.push(AttValue[yIndex])
+        }
+      })
+    }
+    this.chartOption.x = xArr
+    this.chartOption.y = yArr
+    this.onChartTypeChange('bar')
+  }
+
+  /**
+   * 设置指标列表数据
+   * @param <object>
+   */
+  getTargetList() {
+    if (!this.graph) return
+    const { showFields, showFieldsTitle } = this.graph
+    const targetList = showFields.reduce((results, v) => {
+      const value =
+        showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
+      results.push({
+        label: v,
+        value
+      })
+      return results
+    }, [])
+    this.targetList = targetList
+    this.target = targetList[0]?.value
+    this.chartOption.title = this.target
   }
 
   /**
@@ -188,114 +214,26 @@ export default class ThematicMapStatisticTable extends Mixins<{
         this.chart.setOption(options(this.chartOption))
         this.chart.resize()
       }
-      this.loading = false
     })
   }
 
   /**
-   * 指标选项变化
-   * @param value<string>
+   * 指标选项变化, 获取某指标对应的统计数据
+   * @param value
    */
-  onTargetChange(value) {
+  onTargetChange(value: string) {
     this.target = value
     this.chartOption.title = value
-    this.onUpdateStatistic()
+    this.getChartOptions(this.pageDataSet)
   }
 
   /**
-   * 设置指标数据
-   * @param <object>
+   * 监听: 分页数据变化
    */
-  onSetTargetList() {
-    let targetList = []
-    let chartTitle = ''
-    if (this.selectedConfigSubData) {
-      const {
-        field,
-        graph: { showFields, showFieldsTitle }
-      } = this.selectedConfigSubData
-      chartTitle = field
-      const isFieldsTitle =
-        showFieldsTitle && Object.keys(showFieldsTitle).length
-      targetList = showFields.reduce((results, item) => {
-        if (item) {
-          const obj = {}
-          obj.label = item
-          obj.value =
-            isFieldsTitle && isFieldsTitle[item] ? isFieldsTitle[item] : item
-          results.push(obj)
-        }
-        return results
-      }, [])
-    }
-    this.targetList = targetList
-    this.onTargetChange(chartTitle || targetList[0]?.value)
-  }
-
-  /**
-   * 更新图表数据
-   */
-  async onUpdateStatistic() {
-    const xArr = []
-    const yArr = []
-    if (ThematicMapInstance.getRequestParams) {
-      const fn = queryFeaturesInstance.query(
-        ThematicMapInstance.getRequestParams
-      )
-      if (fn && fn.then) {
-        this.loading = true
-        const dataSet = await fn
-        if (dataSet && dataSet.AttStruct.FldName) {
-          const {
-            SFEleArray,
-            AttStruct: { FldName }
-          } = dataSet
-          const {
-            graph: { field }
-          } = this.selectedConfigSubData
-
-          const xIndex = FldName.indexOf(field)
-          const yIndex = FldName.indexOf(this.target)
-          SFEleArray.forEach(({ AttValue }) => {
-            if (AttValue) {
-              xArr.push(AttValue[xIndex])
-              yArr.push(AttValue[yIndex])
-            }
-          })
-        }
-      }
-    }
-    this.chartOption.x = xArr
-    this.chartOption.y = yArr
-    this.onChartTypeChange('bar')
-  }
-
-  /**
-   * 监听: 选中的专题的变化
-   */
-  @Watch('selected')
-  watchSelected() {
-    this.onSetTargetList()
-  }
-
-  /**
-   * 监听: 年度时间轴数据变化
-   */
-  @Watch('selectedTime')
-  watchSelectedTime() {
-    this.onSetTargetList()
-  }
-
-  /**
-   * 监听: 选中的专题的变化
-   */
-  @Watch('pageParam', { deep: true })
-  watchPageParam() {
-    this.onUpdateStatistic()
-  }
-
-  beforeCreate() {
-    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
+  @Watch('pageDataSet', { deep: true })
+  watchPageDataSet(nV) {
+    this.getTargetList()
+    this.getChartOptions(nV)
   }
 
   mounted() {

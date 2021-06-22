@@ -127,7 +127,7 @@ export default {
     center: {
       type: [Object, Array],
       default() {
-        return { lng: 114, lat: 30 }
+        return { lng: 112.247175, lat: 30.152892 }
       }
     },
     zoom: {

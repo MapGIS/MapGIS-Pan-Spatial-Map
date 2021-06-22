@@ -13,7 +13,7 @@ export const getGridX = (y: number[]) => {
   const arrs = [[1, 2, 3], [4, 5], [6, 7], [8]]
   arrs.forEach((arr: number[]) => {
     if (arr.includes(numLength)) {
-      gridX = Math.max(...arr) * 8
+      gridX = Math.max(...arr) * 10
     }
   })
   return gridX
@@ -36,7 +36,7 @@ export const barChartOptions = ({ title, x, y }) => {
     dataZoom: {
       show: true,
       realtime: true,
-      bottom: 44,
+      bottom: 50,
       height: 8,
       fillerColor: '#40a9ff',
       startValue: 1,
@@ -64,11 +64,9 @@ export const barChartOptions = ({ title, x, y }) => {
       axisLabel: {
         rotate: -60,
         interval: 0,
-        textStyle: {
-          fontSize: 10,
-          fontFamily: '微软雅黑',
-          color: txtColor
-        }
+        fontSize: 10,
+        fontFamily: '微软雅黑',
+        color: txtColor
       },
       axisTick: {
         lineStyle: {
@@ -83,10 +81,8 @@ export const barChartOptions = ({ title, x, y }) => {
     },
     yAxis: {
       axisLabel: {
-        textStyle: {
-          fontFamily: '微软雅黑',
-          color: txtColor
-        }
+        fontFamily: '微软雅黑',
+        color: txtColor
       },
       axisTick: {
         lineStyle: {
