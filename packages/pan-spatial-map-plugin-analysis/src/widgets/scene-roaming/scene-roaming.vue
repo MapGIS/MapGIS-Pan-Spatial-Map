@@ -11,7 +11,12 @@
         @click="onClickCreatPath"
         >交互选点</a-button
       >
-      <a-button type="primary" @click="onClickCancelPath">取消选点</a-button>
+      <a-button
+        type="primary"
+        :disabled="!isCreatePath"
+        @click="onClickCancelPath"
+        >取消选点</a-button
+      >
     </div>
     <div class="scene-panel-table">
       <a-table
@@ -113,7 +118,7 @@
         v-show="isShowEditTable"
         :columns="editColumns"
         :data-source="editTableData"
-        :pagination="editPagination"
+        :pagination="false"
         :scroll="{ y: 393 }"
         :rowKey="
           record => {
@@ -152,17 +157,28 @@
           <a-input
             v-model.number="formData.speed"
             type="number"
-            addon-after="(米/秒)"
+            min="1"
+            :addon-after="`(${(formData.speed * 3.6).toFixed(1)}公里/小时)`"
           />
         </a-form-model-item>
         <a-form-model-item label="附加高程:">
-          <a-input v-model.number="formData.exHeight" type="number" />
+          <a-input v-model.number="formData.exHeight" type="number" min="0" />
         </a-form-model-item>
         <a-form-model-item label="方位角:">
-          <a-input v-model.number="formData.azimuth" type="number" />
+          <a-input
+            v-model.number="formData.azimuth"
+            type="number"
+            min="-180"
+            max="180"
+          />
         </a-form-model-item>
         <a-form-model-item label="俯仰角:">
-          <a-input v-model.number="formData.pitch" type="number" />
+          <a-input
+            v-model.number="formData.pitch"
+            type="number"
+            min="-180"
+            max="180"
+          />
         </a-form-model-item>
         <a-form-model-item label="视角:">
           <a-select v-model="formData.perspective">
@@ -222,7 +238,7 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
 import { api } from '@mapgis/pan-spatial-map-store'
 import EditableCell from './editable-cell'
@@ -350,14 +366,6 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
   }
 
-  // 表格三分页器配置
-  private editPagination = {
-    showSizeChanger: true,
-    size: 'small',
-    total: this.editTableData.length,
-    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
-  }
-
   // 表格一选中项 key 数组
   private selectedRowKeys = []
 
@@ -449,6 +457,14 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   // 表格三正在编辑行的id
   private editingID = ''
 
+  // 是否正在新建路径
+  private isCreatePath = false
+
+  // @Watch('formData', { deep: true })
+  // onAnimationChange() {
+  //   this.changeAnimation()
+  // }
+
   created() {
     this.initData()
   }
@@ -535,6 +551,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 
   // 点击交互选点按钮回调(创建路径)
   private onClickCreatPath() {
+    this.isCreatePath = true
     this.isShowPointTable = true
     this.pointTableData = []
     this.coordsArr = []
@@ -577,6 +594,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     if (this.draw) this.draw.stopDrawing()
 
     this.isShowPointTable = false
+    this.isCreatePath = false
   }
 
   // 点击删除列按钮回调
@@ -671,35 +689,52 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       window.SceneWanderManager.animation.positions = this.Cesium.Cartesian3.fromDegreesArrayHeights(
         pathCoords
       )
-      window.SceneWanderManager.animation.speed = this.formData.speed
-      window.SceneWanderManager.animation.exHeight = this.formData.exHeight
-      window.SceneWanderManager.animation.offsetX = this.formData.azimuth
-      window.SceneWanderManager.animation.offsetZ = this.formData.pitch
-      window.SceneWanderManager.animation.animationType = this.formData.perspective
-      window.SceneWanderManager.animation.isLoop = this.judgeIsCheckd('isLoop')
-      window.SceneWanderManager.animation.isShowPath = this.judgeIsCheckd(
-        'showPath'
-      )
-      window.SceneWanderManager.animation.showInfo = this.judgeIsCheckd(
-        'showInfo'
-      )
-
-      switch (this.formData.interpolation) {
-        case 'LagrangePolynomialApproximation':
-          window.SceneWanderManager.animation.interpolationAlgorithm = this.Cesium.LagrangePolynomialApproximation // 拉格朗日插值
-          break
-        case 'LinearApproximation':
-          window.SceneWanderManager.animation.interpolationAlgorithm = this.Cesium.LinearApproximation // 线性近似
-          break
-        case 'HermitePolynomialApproximation':
-          window.SceneWanderManager.animation.interpolationAlgorithm = this.Cesium.HermitePolynomialApproximation // 埃尔米特插值
-          break
-        default:
-          break
-      }
+      this.setAnimationAttr()
 
       window.SceneWanderManager.animation.start()
       this.isStart = true
+    }
+  }
+
+  // 动画的播放设置变化时回调
+  // private changeAnimation() {
+  //   if (this.isStart) {
+  //     window.SceneWanderManager.animation.speed = this.formData.speed
+  //   }
+  // }
+
+  // 设置动画的播放属性
+  private setAnimationAttr() {
+    window.SceneWanderManager.animation.speed = this.formData.speed
+    window.SceneWanderManager.animation.exHeight = this.formData.exHeight
+    window.SceneWanderManager.animation._heading = this.formData.azimuth
+    window.SceneWanderManager.animation._pitch = this.formData.pitch
+    window.SceneWanderManager.animation.animationType = this.formData.perspective
+    window.SceneWanderManager.animation.isLoop = this.judgeIsCheckd('isLoop')
+    window.SceneWanderManager.animation.isShowPath = this.judgeIsCheckd(
+      'showPath'
+    )
+    window.SceneWanderManager.animation.showInfo = this.judgeIsCheckd(
+      'showInfo'
+    )
+
+    switch (this.formData.interpolation) {
+      case 'LagrangePolynomialApproximation':
+        window.SceneWanderManager.animation.interpolationAlgorithm = this.Cesium.LagrangePolynomialApproximation // 拉格朗日插值
+        break
+      case 'LinearApproximation':
+        window.SceneWanderManager.animation.interpolationAlgorithm = this.Cesium.LinearApproximation // 线性近似
+        break
+      case 'HermitePolynomialApproximation':
+        window.SceneWanderManager.animation.interpolationAlgorithm = this.Cesium.HermitePolynomialApproximation // 埃尔米特插值
+        break
+      default:
+        break
+    }
+
+    // 若是上帝视角，设置动画的视角高度为4000
+    if (window.SceneWanderManager.animation.animationType === 3) {
+      window.SceneWanderManager.animation.range = 4000
     }
   }
 
@@ -802,6 +837,11 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
           this.tableData = res.map(item => {
             return { ...item, path: item.path.join() }
           })
+
+          if (this.tableData.length > this.cacheTableData.length) {
+            //  默认勾选表格的最新一项数据
+            this.onSelectChange([this.tableData[this.tableData.length - 1].id])
+          }
 
           this.cacheTableData = this.tableData.map(item => ({ ...item }))
         })
@@ -959,6 +999,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-top: 8px;
 
   .ant-btn {
     margin-left: 16px;
