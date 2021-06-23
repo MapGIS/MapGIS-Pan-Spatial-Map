@@ -85,8 +85,8 @@
         :show="layerProps.show"
         :url="layerProps.url"
       />
-      <div class="statebar">
-        <mapgis-3d-statebar />
+      <div class="statebardiv">
+        <mapgis-3d-statebar class="statebar" />
       </div>
     </div>
   </mapgis-web-scene>
@@ -464,11 +464,17 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.statebar {
+.statebardiv {
   background-color: rgba(220, 220, 220, 0.5);
   width: 100%;
   position: absolute;
   height: 30px;
   bottom: 0px;
+  .statebar {
+    margin-left: 0%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 </style>

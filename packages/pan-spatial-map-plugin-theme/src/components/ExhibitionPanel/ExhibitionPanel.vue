@@ -212,10 +212,8 @@ export default {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    background-color: @base-bg-color;
+    background-color: transparent;
     border-radius: 4px 4px 0 0;
-    border: 1px solid @primary-color;
-    border-bottom-color: transparent;
     cursor: pointer;
 
     &:hover {
