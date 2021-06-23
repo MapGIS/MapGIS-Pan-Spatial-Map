@@ -60,13 +60,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 获取三维viewer
-   */
-  getWebGlobe() {
-    return cesiumUtilInstance.findWebGlobe(this.mapViewId)
-  }
-
-  /**
    * 二维地图注册事件
    */
   registerMapboxEvent() {
@@ -84,6 +77,23 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
         }
       }
     })
+  }
+
+  /**
+   * 获取三维viewer
+   */
+  getWebGlobe() {
+    return cesiumUtilInstance.findWebGlobe(this.mapViewId)
+  }
+
+  /**
+   * 清除三维地图上的实体
+   */
+  clearCesiumEntities() {
+    if (!this.is2dLayer) {
+      const globe = this.getWebGlobe()
+      globe.viewer.entities.removeAll()
+    }
   }
 
   /**
@@ -219,13 +229,5 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     } else {
       this.toggle3dPan(enable)
     }
-  }
-
-  /**
-   * 清除地图上的实体
-   */
-  clear() {
-    const globe = this.getWebGlobe()
-    globe.viewer.entities.removeAll()
   }
 }

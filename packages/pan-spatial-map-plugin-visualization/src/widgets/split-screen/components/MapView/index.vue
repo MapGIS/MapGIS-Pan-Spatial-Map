@@ -106,7 +106,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   @Watch('queryVisible')
   watchQueryVisible(nV) {
     if (nV) {
-      this.queryWindowVisible = nV
+      this.onToggleQueryWindow(nV)
     }
   }
 
@@ -116,6 +116,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   @Watch('queryWindowVisible')
   watchqueryWindowVisible(nV) {
     if (!nV) {
+      this.onToggleQueryWindow()
       this.onClear()
       this.$emit('update:queryVisible', false)
     }
@@ -197,7 +198,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     const rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'QUERY':
-        this.onClear(true)
+        this.onToggleQueryWindow(true)
+        this.onClear()
         this.query(rect)
         break
       case 'ZOOMIN':
@@ -258,13 +260,12 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
 
   /**
    * 清除点击, 清除图层上的标注
-   * @param visible
    */
-  onClear(visible = false) {
-    this.queryWindowVisible = visible
+  onClear() {
     this.queryFeatures = []
     this.querySelection = []
-    this.clear()
+    this.onToggleQueryWindow()
+    this.clearCesiumEntities()
   }
 
   /**
@@ -297,6 +298,13 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   /**
+   * 结果树弹框开关设置
+   */
+  onToggleQueryWindow(visible = false) {
+    this.queryWindowVisible = visible
+  }
+
+  /**
    * resize
    */
   onResize() {
@@ -316,6 +324,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   beforeDestroyed() {
+    this.onToggleQueryWindow()
     this.onClear()
   }
 }
