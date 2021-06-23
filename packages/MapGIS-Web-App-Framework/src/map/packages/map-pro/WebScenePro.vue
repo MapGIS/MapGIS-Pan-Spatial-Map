@@ -465,7 +465,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .statebardiv {
-  background-color: rgba(220, 220, 220, 0.5);
+  background-color: rgba(120, 120, 120, 0.5);
   width: 100%;
   position: absolute;
   height: 30px;
