@@ -51,7 +51,7 @@ import {
   Emit
 } from 'vue-property-decorator'
 import { CesiumPopup } from '@mapgis/webclient-vue-cesium'
-import { cesiumUtilInstance, IFields } from '@mapgis/pan-spatial-map-store'
+import { SceneOverlays } from '../../../model/overlay'
 
 /**
  * cesium标注，弹出框使用@mapgis/webclient-vue-cesium里的popup
@@ -63,9 +63,11 @@ import { cesiumUtilInstance, IFields } from '@mapgis/pan-spatial-map-store'
   }
 })
 export default class Mp3dMarkerPro extends Vue {
-  @Inject('webGlobe') webGlobe: any
-
   @Inject('Cesium') Cesium: any
+
+  @Inject('CesiumZondy') CesiumZondy: any
+
+  @Inject('webGlobe') webGlobe: any
 
   @Prop({ type: Object, required: true }) marker!: Record<string, any>
 
@@ -74,7 +76,7 @@ export default class Mp3dMarkerPro extends Vue {
     required: false,
     default: () => []
   })
-  readonly fieldConfigs!: IFields[]
+  readonly fieldConfigs!: any[]
 
   // 当前显示弹出框的标注id
   @Prop({ type: String, required: false }) currentMarkerId?: string
@@ -159,16 +161,20 @@ export default class Mp3dMarkerPro extends Vue {
   emitId(id: string) {}
 
   mounted() {
+    this.sceneOverlays = SceneOverlays.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
     this.updateMarker()
   }
 
   beforeDestroy() {
-    cesiumUtilInstance.removeEntityByName(this.marker.markerId)
+    this.sceneOverlays.removeEntityByName(this.marker.markerId)
   }
 
   updateMarker() {
-    cesiumUtilInstance.setCesiumGlobe(this.Cesium, this.webGlobe)
-    cesiumUtilInstance.removeEntityByName(this.marker.markerId)
+    this.sceneOverlays.removeEntityByName(this.marker.markerId)
     const marker: any = { ...this.marker }
     marker.mouseOver = event => {
       this.mouseOver(event, marker)
@@ -178,7 +184,7 @@ export default class Mp3dMarkerPro extends Vue {
     }
     marker.name = marker.markerId
     marker.center = marker.coordinates
-    cesiumUtilInstance.addMarkerByFeature(marker)
+    this.sceneOverlays.addMarker(marker)
   }
 
   mouseOver(event, marker) {

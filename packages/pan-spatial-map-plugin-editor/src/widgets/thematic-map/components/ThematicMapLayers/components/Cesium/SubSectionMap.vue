@@ -20,8 +20,7 @@
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { Layer } from '@mapgis/web-app-framework'
-import { GFeature } from '@mapgis/pan-spatial-map-store'
+import { Layer, Feature } from '@mapgis/web-app-framework'
 import CesiumMinxin from '../../mixins/cesium'
 
 interface ISectionColor {
@@ -195,7 +194,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
   addGeoJSONFeaturesToEntity(layer: Layer) {
     if (!this.geojson || !this.geojson.features) return
     const { useHeightScale, heightScale } = this.setting3D
-    this.geojson.features.forEach((feature: GFeature) => {
+    this.geojson.features.forEach((feature: Feature.GFeature) => {
       const {
         properties,
         geometry: { type, coordinates }

@@ -15,10 +15,10 @@ import {
   ArcGISMapImageLayer,
   VectorTileLayer,
   IGSSceneLayer,
-  UUID
+  UUID,
+  Catalog
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
-import { queryIgsServicesInfoInstance } from '../service'
 
 /**
  * 数据目录管理类
@@ -247,15 +247,19 @@ export class DataCatalogManager {
       let tileServiceInfo: any = {}
       let docServiceInfo: any = {}
 
-      await queryIgsServicesInfoInstance
-        .getTiles({ ip: defaultIp, port: defaultPort })
+      await Catalog.DocumentCatalog.getTiles({
+        ip: defaultIp,
+        port: defaultPort
+      })
         .then(tiles => {
           tileServiceInfo = tiles
         })
         .catch(err => {})
 
-      await queryIgsServicesInfoInstance
-        .getDocs({ ip: defaultIp, port: defaultPort })
+      await Catalog.DocumentCatalog.getDocs({
+        ip: defaultIp,
+        port: defaultPort
+      })
         .then(docs => {
           docServiceInfo = docs
         })

@@ -149,11 +149,11 @@ import {
   Prop,
   Emit
 } from 'vue-property-decorator'
-import { AppMixin } from '@mapgis/web-app-framework'
+import { AppMixin, Objects, Feature } from '@mapgis/web-app-framework'
 import {
-  FeatureGeoJSON,
-  utilInstance,
-  baseConfigInstance
+  api,
+  baseConfigInstance,
+  ProjectionTransformationUtil
 } from '@mapgis/pan-spatial-map-store'
 import CoordinateMapbox from './CoordinateMapbox.vue'
 import CoordinateCesium from './CoordinateCesium.vue'
@@ -167,15 +167,13 @@ export default class MpCoordinate extends Mixins(AppMixin) {
   readonly active!: boolean
 
   @Emit()
-  change(val: FeatureGeoJSON | null) {}
-
-  private defaultConfig = baseConfigInstance.config
+  change(val: Feature.FeatureGeoJSON | null) {}
 
   // 底图坐标系
-  private defaultCrs = this.defaultConfig.projectionName
+  private defaultCrs = baseConfigInstance.config.projectionName
 
   // 坐标系列表
-  private crsOptions = this.defaultConfig.commonProjection.split(',')
+  private crsOptions = baseConfigInstance.config.commonProjection.split(',')
 
   // 坐标系
   private crs = this.defaultCrs
@@ -230,6 +228,13 @@ export default class MpCoordinate extends Mixins(AppMixin) {
 
   private frameFeature: Record<string, any> = {}
 
+  private frameConfig = {
+    ip: '',
+    port: '',
+    name: '',
+    gdbp: ''
+  }
+
   private get highlightStyle() {
     return baseConfigInstance.config.colorConfig
   }
@@ -249,11 +254,21 @@ export default class MpCoordinate extends Mixins(AppMixin) {
     }
   }
 
+  async mounted() {
+    this.frameConfig = await api.getConfig('sheet')
+  }
+
   private async frameNochange(val: string) {
     if (val) {
       const {
         data: { XMin, YMin, XMax, YMax }
-      } = await utilInstance.getRectByFrameNo(val)
+      } = await api.getFrameExtentByNo(
+        this.frameConfig.ip,
+        this.frameConfig.port,
+        val,
+        baseConfigInstance.config.projectionName,
+        baseConfigInstance.config.projectionName
+      )
       this.frameFeature = {
         type: 'FeatureCollection',
         features: [
@@ -285,7 +300,7 @@ export default class MpCoordinate extends Mixins(AppMixin) {
 
     if (this.crs !== this.defaultCrs) {
       // 底图和用户选择的坐标系不一样
-      const { data } = await utilInstance.transPoint(
+      const { data } = await ProjectionTransformationUtil.projectPoint(
         [[Number(xTemp), Number(yTemp)]],
         this.crs,
         this.defaultCrs
@@ -311,25 +326,26 @@ export default class MpCoordinate extends Mixins(AppMixin) {
   private onDecimalCoordChanged() {
     const x = this.coordDecimal[0]
     const y = this.coordDecimal[1]
-    const xx = utilInstance.coordinateStyleTransformation(x)
-    this.coordDMS[0][0] = xx.degree?.toString()
-    this.coordDMS[0][1] = xx.minute?.toString()
-    this.coordDMS[0][2] = xx.second?.toString()
-    const yy = utilInstance.coordinateStyleTransformation(y)
-    this.coordDMS[1][0] = yy.degree.toString()
-    this.coordDMS[1][1] = yy.minute?.toString()
-    this.coordDMS[1][2] = yy.second?.toString()
+
+    const xx = Objects.AngleConvert.dToDMS(x)
+    this.coordDMS[0][0] = xx.d?.toString()
+    this.coordDMS[0][1] = xx.m?.toString()
+    this.coordDMS[0][2] = xx.s?.toString()
+    const yy = Objects.AngleConvert.dToDMS(y)
+    this.coordDMS[1][0] = yy.d.toString()
+    this.coordDMS[1][1] = yy.m?.toString()
+    this.coordDMS[1][2] = yy.s?.toString()
   }
 
   private onDMSCoordChanged() {
     const xDFM = this.coordDMS[0]
-    const x = utilInstance.degreeToDecimal(
+    const x = Objects.AngleConvert.dmsToD(
       Number(xDFM[0]),
       Number(xDFM[1]),
       Number(xDFM[2])
     )
     const yDFM = this.coordDMS[1]
-    const y = utilInstance.degreeToDecimal(
+    const y = Objects.AngleConvert.dmsToD(
       Number(yDFM[0]),
       Number(yDFM[1]),
       Number(yDFM[2])
@@ -352,7 +368,7 @@ export default class MpCoordinate extends Mixins(AppMixin) {
     let y = lat.toString()
     if (this.crs !== this.defaultCrs) {
       // 底图和用户选择的坐标系不一样
-      const { data } = await utilInstance.transPoint(
+      const { data } = await ProjectionTransformationUtil.transPoint(
         [[lng, lat]],
         this.defaultCrs,
         this.crs
@@ -364,25 +380,28 @@ export default class MpCoordinate extends Mixins(AppMixin) {
     }
     this.coordDecimal = [Number(x), Number(y)]
 
-    const xx = utilInstance.coordinateStyleTransformation(x)
-    this.coordDMS[0][0] = xx.degree.toString()
-    this.coordDMS[0][1] = xx.minute?.toString()
-    this.coordDMS[0][2] = xx.second?.toString()
-    const yy = utilInstance.coordinateStyleTransformation(y)
-    this.coordDMS[1][0] = yy.degree.toString()
-    this.coordDMS[1][1] = yy.minute?.toString()
-    this.coordDMS[1][2] = yy.second?.toString()
+    const xx = Objects.AngleConvert.dToDMS(x)
+    this.coordDMS[0][0] = xx.d.toString()
+    this.coordDMS[0][1] = xx.m?.toString()
+    this.coordDMS[0][2] = xx.s?.toString()
+    const yy = Objects.AngleConvert.dToDMS(y)
+    this.coordDMS[1][0] = yy.d.toString()
+    this.coordDMS[1][1] = yy.m?.toString()
+    this.coordDMS[1][2] = yy.s?.toString()
   }
 
   // 计算图幅号
   private async getFrameNo() {
     const {
       data: { frameNo }
-    } = await utilInstance.getClipByPoint(
+    } = await api.getFrameNoByCoord(
+      this.frameConfig.ip,
+      this.frameConfig.port,
       this.coordInDefaultCRS[0],
       this.coordInDefaultCRS[1],
       this.scale,
-      this.crs
+      this.crs,
+      baseConfigInstance.config.projectionName
     )
     this.frameNo = frameNo
     this.frameNochange(frameNo)

@@ -80,8 +80,8 @@
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import { Parser, FeatureGeoJSON, api } from '@mapgis/pan-spatial-map-store'
+import { WidgetMixin, Featrue } from '@mapgis/web-app-framework'
+import { api } from '@mapgis/pan-spatial-map-store'
 import PlaceName from './components/PlaceName/PlaceName'
 import Zone from './components/ZoneFrame/Zone'
 import Coordinate from './components/Coordinate/Coordinate'
@@ -107,7 +107,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 
   private locationPanelExpand = false
 
-  private geoJson: FeatureGeoJSON | null = null
+  private geoJson: Featrue.FeatureGeoJSON | null = null
 
   get logoType() {
     return this.locationType || 'district'
@@ -119,7 +119,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 
   private get geometry() {
     if (this.geoJson && JSON.stringify(this.geoJson) !== '{}') {
-      const result = Parser.changeToTangram(this.geoJson)
+      const result = Feature.FeatureConvert.toTangram(this.geoJson)
       if (Array.isArray(result)) return result[0]
       return result
     }

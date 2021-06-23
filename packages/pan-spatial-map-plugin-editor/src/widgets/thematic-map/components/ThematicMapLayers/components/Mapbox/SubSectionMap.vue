@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { RangeThemeLayer, ThemeStyle } from '@mapgis/webclient-es6-mapboxgl'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import { CommonUtil, ColorUtil } from '@mapgis/web-app-framework'
 import RowFlex from '../../../RowFlex'
 import MapboxMinxin from '../../mixins/mapbox'
 
@@ -58,7 +58,7 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   getStyleGroups() {
     return this.colors.map<IColor>(
       ({ sectionColor, min, max }: ISectionColor) => {
-        const color = utilInstance.colorRGBtoHex(sectionColor)
+        const color = ColorUtil.rgbToHex(sectionColor)
         return {
           start: Number(min),
           end: Number(max),
@@ -114,11 +114,11 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
     this.thematicMapLayer = _thematicMapLayer
     this.thematicMapLayer.on(
       'mousemove',
-      utilInstance.debounce(this.showPopupWin, 200)
+      CommonUtil.debounce(this.showPopupWin, 200)
     )
     this.thematicMapLayer.on(
       'mouseout',
-      utilInstance.debounce(this.closePopupWin, 200)
+      CommonUtil.debounce(this.closePopupWin, 200)
     )
     this.thematicMapLayer.addFeatures(this.dataSet)
   }

@@ -24,10 +24,8 @@ import {
   Emit,
   Mixins
 } from 'vue-property-decorator'
-import {
-  queryIgsServicesInfoInstance,
-  eventBus
-} from '@mapgis/pan-spatial-map-store'
+import { eventBus } from '@mapgis/pan-spatial-map-store'
+import { Catalog } from '@mapgis/web-app-framework'
 import SelectTreeMixin from '../../mixins/select-tree.ts'
 
 /**
@@ -54,15 +52,13 @@ export default class MapgisServer extends Mixins(SelectTreeMixin) {
       return
     }
     if (type === 'doc') {
-      queryIgsServicesInfoInstance
-        .getDocs({ ip, port })
+      Catalog.DocumentCatalog.getDocs({ ip, port })
         .then(res => {
           this.treeData = this.parseDocs(res)
         })
         .catch(() => {})
     } else if (type === 'tile') {
-      queryIgsServicesInfoInstance
-        .getTiles({ ip, port })
+      Catalog.DocumentCatalog.getTiles({ ip, port })
         .then(res => {
           this.treeData = this.parseTiles(res)
         })

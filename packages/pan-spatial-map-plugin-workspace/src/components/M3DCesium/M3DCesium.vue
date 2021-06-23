@@ -4,12 +4,7 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Mixins, Emit } from 'vue-property-decorator'
-import {
-  FeatureGeoJSON,
-  utilInstance,
-  cesiumUtilInstance
-} from '@mapgis/pan-spatial-map-store'
-import { MapMixin, ThemeMixin } from '@mapgis/web-app-framework'
+import { MapMixin, ThemeMixin, Objects } from '@mapgis/web-app-framework'
 
 @Component
 export default class M3DCesium extends Mixins(MapMixin) {
@@ -64,7 +59,7 @@ export default class M3DCesium extends Mixins(MapMixin) {
         //   y: (ymin + ymax) / 2,
         //   z: zmax * 4
         // }
-        let bound = cesiumUtilInstance.dataPositionExtentToDegreeExtent(
+        let bound = this.sceneController.dataPositionExtentToDegreeExtent(
           this.fitBound,
           tranform
         )
@@ -101,7 +96,7 @@ export default class M3DCesium extends Mixins(MapMixin) {
     if (!this.filterWithMap) {
       return
     }
-    const cExtent = cesiumUtilInstance.getCurrentExtent(this.webGlobe)
+    const cExtent = this.sceneController.getCurrentExtent(this.webGlobe)
     const bounds = {
       xmin: cExtent.xmin,
       ymin: cExtent.ymin,
@@ -115,7 +110,11 @@ export default class M3DCesium extends Mixins(MapMixin) {
   emitMapBoundChange(bound: Record<string, any>) {}
 
   mounted() {
-    cesiumUtilInstance.setCesiumGlobe(this.Cesium, this.webGlobe)
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
     this.webGlobe.viewer.camera.changed.addEventListener(
       this.changeFilterWithMap
     )

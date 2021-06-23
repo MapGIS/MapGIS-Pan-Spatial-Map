@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import { CommonUtil } from '@mapgis/web-app-framework'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
@@ -253,11 +253,11 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
     if (!this.thematicMapLayer) return
     this.thematicMapLayer.on(
       'mousemove',
-      utilInstance.debounce(this.showPopupWin, 200)
+      CommonUtil.debounce(this.showPopupWin, 200)
     )
     this.thematicMapLayer.on(
       'mouseout',
-      utilInstance.debounce(this.closePopupWin, 200)
+      CommonUtil.debounce(this.closePopupWin, 200)
     )
     this.thematicMapLayer.addFeatures(this.dataSet)
   }

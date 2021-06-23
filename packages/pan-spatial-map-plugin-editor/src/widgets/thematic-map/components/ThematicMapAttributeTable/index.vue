@@ -49,12 +49,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
-import {
-  queryFeaturesInstance,
-  mapGetters,
-  mapMutations,
-  FeatureIGS
-} from '@mapgis/pan-spatial-map-store'
+import { Feature } from '@mapgis/web-app-framework'
+import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
 import ThematicMapMixin from '../../mixins/thematic-map'
 import RowFlex from '../RowFlex'
 
@@ -168,9 +164,9 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   getTableData() {
     this.setFeaturesQuery({
-      onSuccess: (dataSet: FeatureIGS | null) => {
+      onSuccess: (dataSet: Feature.FeatureIGS | null) => {
         if (dataSet) {
-          const geojsonData = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
+          const geojsonData = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
             dataSet
           )
           if (geojsonData) {

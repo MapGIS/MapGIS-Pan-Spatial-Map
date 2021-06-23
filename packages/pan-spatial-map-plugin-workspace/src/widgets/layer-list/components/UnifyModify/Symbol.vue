@@ -18,10 +18,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 
-import {
-  queryFeaturesInstance,
-  igsFeatureModifyInstance
-} from '@mapgis/pan-spatial-map-store'
+import { Catalog } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpSymbol',
@@ -33,13 +30,11 @@ export default class MpSymbol extends Vue {
   private symbols: Record<string, any> = {}
 
   mounted() {
-    console.log(this.queryParams)
     this.changeParams()
   }
 
   @Watch('queryParams', { deep: true })
   async changeParams() {
-    console.log(this.queryParams)
     if (Object.keys(this.queryParams).length < 1) {
       return
     }
@@ -52,19 +47,19 @@ export default class MpSymbol extends Vue {
     } else if (geomType.indexOf('Pnt') >= 0) {
       geomType = 'GeomPnt'
     }
-    const libName = await igsFeatureModifyInstance.getSystemlibrarieNameByGuid({
-      ip,
-      port,
-      sysLibraryGuid
-    })
-    console.log(libName)
-    const res = await igsFeatureModifyInstance.getSymbols({
+    const libName = await Catalog.SystemLibraryCatalog.getSystemLibraryNameByGuid(
+      {
+        ip,
+        port,
+        sysLibraryGuid
+      }
+    )
+    const res = await Catalog.SystemLibraryCatalog.getSymbols({
       ip,
       port,
       systemLibName: libName,
       geomType
     })
-    console.log(res)
     this.symbols = res.Data
   }
 

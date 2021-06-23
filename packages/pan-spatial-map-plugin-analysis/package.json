@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-plugin-analysis",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "全空间一张图空间分析插件",
   "author": "MapGIS",
   "license": "Apache-2.0",

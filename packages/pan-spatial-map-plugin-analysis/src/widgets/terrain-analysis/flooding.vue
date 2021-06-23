@@ -117,11 +117,9 @@
   </div>
 </template>
 <script lang="ts">
-declare const CesiumZondy
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
 import { Sketch } from 'vue-color'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component({
   name: 'MpFlooding',
@@ -147,7 +145,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
         blue: Number(parseInt(Color[2]) / 255),
         red: Number(Color[0].split('(')[1] / 255)
       }
-      return new window.Cesium.Color(
+      return new this.Cesium.Color(
         ColorRgb.red,
         ColorRgb.green,
         ColorRgb.blue,
@@ -159,7 +157,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
       blue: 0.5,
       red: 0.4
     }
-    return new window.Cesium.Color(
+    return new this.Cesium.Color(
       ColorRgb.red,
       ColorRgb.green,
       ColorRgb.blue,
@@ -180,10 +178,10 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
   }
 
   add() {
-    const { viewer } = window.webGlobe
+    const { viewer } = this.webGlobe
     // 初始化交互式绘制控件
     window.FloodingManage.drawElement =
-      window.FloodingManage.drawElement || new window.Cesium.DrawElement(viewer)
+      window.FloodingManage.drawElement || new this.Cesium.DrawElement(viewer)
     // 激活交互式绘制工具
     window.FloodingManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
@@ -198,7 +196,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
           amplitude
         } = this.form
         // 初始化高级分析功能管理类
-        const advancedAnalysisManager = new window.CesiumZondy.Manager.AdvancedAnalysisManager(
+        const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
           {
             viewer: viewer
           }
@@ -226,7 +224,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 
         viewer.scene.globe.depthTestAgainstTerrain = true
         // 添加洪水淹没结果显示
-        window.webGlobe.scene.VisualAnalysisManager.add(
+        this.webGlobe.scene.VisualAnalysisManager.add(
           window.FloodingManage.flood
         )
       }
@@ -239,7 +237,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
   rise() {
     window.FloodingManage.flood.maxHeight += 1000
     window.FloodingManage.flood.isDownFlood = false
-    window.webGlobe.scene.requestRender()
+    this.webGlobe.scene.requestRender()
   }
 
   /**
@@ -248,20 +246,20 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
   down() {
     window.FloodingManage.flood.maxHeight -= 1000
     window.FloodingManage.flood.isDownFlood = true
-    window.webGlobe.scene.requestRender()
+    this.webGlobe.scene.requestRender()
   }
 
   /* 移除洪水淹没分析 */
   stopFloodAnalysis() {
     this.remove()
-    window.webGlobe.viewer.entities.removeAll()
+    this.webGlobe.viewer.entities.removeAll()
   }
 
   remove() {
     // 判断是否已有洪水淹没分析结果
     if (window.FloodingManage.flood) {
       // 移除洪水淹没分析显示结果
-      window.webGlobe.scene.VisualAnalysisManager.remove(
+      this.webGlobe.scene.VisualAnalysisManager.remove(
         window.FloodingManage.flood
       )
       window.FloodingManage.flood = null
@@ -276,7 +274,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 
   // 颜色拾取器对应事件
   private onColorChange(val) {
-    this.form.floodColor = utilInstance.rgbaToString(val.rgba, false)
+    this.form.floodColor = ColorUtil.colorObjectToRgba(val.rgba, false)
   }
 }
 </script>

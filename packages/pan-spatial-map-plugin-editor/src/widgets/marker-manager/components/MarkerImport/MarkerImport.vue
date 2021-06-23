@@ -63,11 +63,10 @@
 <script lang="ts">
 import { Component, Prop, Emit, Mixins } from 'vue-property-decorator'
 import {
-  utilInstance,
   markerIconInstance,
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
-import { UUID } from '@mapgis/web-app-framework'
+import { UUID, Feature } from '@mapgis/web-app-framework'
 import moment from 'moment'
 import MarkerImportFileDesc from './MarkerImportFileDesc.vue'
 import MarkerMixin from '../../mixins/marker-add'
@@ -196,7 +195,7 @@ export default class MpMarkerImport extends Mixins(MarkerMixin) {
             properties: {},
             type: 'Feature'
           }
-          const coordinates = utilInstance.getGeoJsonFeatureCenter(feature)
+          const coordinates = Feature.getGeoJsonFeatureCenter(feature)
 
           obj.feature = feature
           obj.coordinates = coordinates
@@ -253,7 +252,7 @@ export default class MpMarkerImport extends Mixins(MarkerMixin) {
                 type: 'Feature'
               }
             }
-            const coordinates = utilInstance.getGeoJsonFeatureCenter(feature)
+            const coordinates = Feature.getGeoJsonFeatureCenter(feature)
 
             obj.feature = feature
             obj.coordinates = coordinates

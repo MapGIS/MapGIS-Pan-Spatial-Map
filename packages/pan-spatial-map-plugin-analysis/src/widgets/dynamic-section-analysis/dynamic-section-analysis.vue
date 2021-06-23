@@ -92,15 +92,16 @@
 </template>
 
 <script lang="ts">
-declare const CesiumZondy
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin, LayerType, LoadStatus } from '@mapgis/web-app-framework'
-import { Sketch } from 'vue-color'
 import {
-  queryFeaturesInstance,
-  utilInstance,
-  cesiumUtilInstance
-} from '@mapgis/pan-spatial-map-store'
+  WidgetMixin,
+  LayerType,
+  LoadStatus,
+  ColorUtil,
+  Objects,
+  Query
+} from '@mapgis/web-app-framework'
+import { Sketch } from 'vue-color'
 
 @Component({
   name: 'MpDynamicSectionAnalysis',
@@ -182,10 +183,11 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   @Watch('model', { deep: true, immediate: true })
   changeModel() {
     if (!this.isActive || !this.model) return
-    const bound = cesiumUtilInstance.layerPositionExtentToDegreeExtent(
-      CesiumZondy,
-      this.model.activeScene.sublayers[0]
-    )
+    const bound = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    ).layerPositionExtentToDegreeExtent(this.model.activeScene.sublayers[0])
     if (bound) {
       this.webGlobe.viewer.camera.flyTo({
         destination: this.Cesium.Rectangle.fromDegrees(
@@ -264,7 +266,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
 
   // 颜色拾取器对应事件
   private onColorChange(val) {
-    this.color = utilInstance.rgbaToString(val.rgba)
+    this.color = ColorUtil.colorObjectToRgba(val.rgba)
   }
 
   /**
@@ -321,7 +323,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     this.clearTimer()
     // 初始化分析功能管理类
     if (!window.WebClippingPlaneManage.analysisManager) {
-      window.WebClippingPlaneManage.analysisManager = new CesiumZondy.Manager.AnalysisManager(
+      window.WebClippingPlaneManage.analysisManager = new this.CesiumZondy.Manager.AnalysisManager(
         {
           viewer: this.webGlobe.viewer
         }
@@ -405,7 +407,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    */
   landscapeLayerFuc() {
     const { id } = this.model.activeScene.sublayers[0]
-    const { source } = CesiumZondy.M3DIgsManager.findSource('default', id)
+    const { source } = this.CesiumZondy.M3DIgsManager.findSource('default', id)
     return source
   }
 

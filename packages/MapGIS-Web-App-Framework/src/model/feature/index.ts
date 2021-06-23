@@ -18,7 +18,10 @@ export {
   GeoCRS,
   GGeometry,
   GFeature,
-  FeatureGeoJSON
+  FeatureGeoJSON,
+  getGeoJsonFeatureCenter,
+  getGeoJsonFeaturesCenter,
+  getGeoJsonFeatureBound
 } from './feature-geojson'
 
 export { default as FeatureConvert } from './feature-convert'

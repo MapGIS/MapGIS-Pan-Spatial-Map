@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import _cloneDeep from 'lodash/cloneDeep'
 import _last from 'lodash/last'
-import { queryFeaturesInstance, FeatureIGS } from '../../service'
+import { Feature } from '@mapgis/web-app-framework'
 import {
   ModuleType,
   IThematicMapBaseConfig,
@@ -42,7 +42,7 @@ const mutations = {
   /**
    * 保存当前页的查询的要素数据
    */
-  setPageDataSet({ state }, dataSet: FeatureIGS | null) {
+  setPageDataSet({ state }, dataSet: Feature.FeatureIGS | null) {
     state.pageDataSet = _cloneDeep(dataSet)
   },
   /**
@@ -93,9 +93,9 @@ const mutations = {
         break
     }
     commit('setLoading', true)
-    const fn = queryFeaturesInstance.query(params)
+    const fn = Feature.FeatureQuery.query(params)
     if (fn && fn.then) {
-      fn.then((dataSet: FeatureIGS | any) => {
+      fn.then((dataSet: Feature.FeatureIGS | any) => {
         commit('setLoading', false)
         commit('setPageDataSet', dataSet)
         onSuccess && onSuccess(dataSet)

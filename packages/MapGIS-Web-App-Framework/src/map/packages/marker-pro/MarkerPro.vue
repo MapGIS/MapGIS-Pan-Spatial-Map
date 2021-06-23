@@ -49,7 +49,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { IFields } from '@mapgis/pan-spatial-map-store'
 
 @Component({
   name: 'MpMarkerPro'
@@ -72,7 +71,7 @@ export default class MpMarkerPro extends Vue {
     required: false,
     default: () => []
   })
-  readonly fieldConfigs!: IFields[]
+  readonly fieldConfigs!: any[]
 
   private markerImageLoadStatus = false
 

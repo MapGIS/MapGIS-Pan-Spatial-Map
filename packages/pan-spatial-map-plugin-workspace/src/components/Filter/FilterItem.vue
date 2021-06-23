@@ -101,11 +101,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Model } from 'vue-property-decorator'
-import {
-  queryFeaturesInstance,
-  queryArcgisInfoInstance
-} from '@mapgis/pan-spatial-map-store'
-import { LayerType } from '@mapgis/web-app-framework'
+import { LayerType, Feature } from '@mapgis/web-app-framework'
 
 export interface SelectOptionItem {
   label: string
@@ -333,7 +329,7 @@ export default class FilterItem extends Vue {
       serverType === LayerType.IGSVector ||
       serverType === LayerType.IGSScene
     ) {
-      const info = await queryFeaturesInstance.query(
+      const info = await Feature.FeatureQuery.query(
         {
           ip: this.queryParams.ip,
           port: this.queryParams.port,
@@ -362,7 +358,7 @@ export default class FilterItem extends Vue {
         })
       }
     } else if (serverType === LayerType.arcGISMapImage) {
-      const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
+      const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,
         layerIndex
@@ -474,7 +470,7 @@ export default class FilterItem extends Vue {
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
     ) {
-      const result = await queryFeaturesInstance.query({
+      const result = await Feature.FeatureQuery.query({
         ip,
         port: port.toString(),
         f: 'json',
@@ -494,7 +490,7 @@ export default class FilterItem extends Vue {
         return value
       })
     } else if (serverType === LayerType.arcGISMapImage) {
-      const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
+      const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,
         layerIndex,

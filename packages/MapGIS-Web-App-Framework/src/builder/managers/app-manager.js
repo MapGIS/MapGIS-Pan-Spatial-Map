@@ -1,5 +1,5 @@
 import ConfigService from '../services/config-service'
-import { deepClone } from '../../utils'
+import { deepClone } from '../../utils/object-util'
 import { default2DMapRender } from '../utils/map-render'
 import WidgetState from '../utils/widget-state'
 import { Document } from '../../model/document'

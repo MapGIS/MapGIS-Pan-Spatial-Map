@@ -48,8 +48,7 @@ import {
   Emit
 } from 'vue-property-decorator'
 
-import { MapMixin } from '@mapgis/web-app-framework'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import { MapMixin, Objects } from '@mapgis/web-app-framework'
 import MeasureMixin from '../mixins/measure'
 import DrawStyle from '../../../styles/draw-style'
 
@@ -233,7 +232,7 @@ export default class Measure extends Mixins(MapMixin, MeasureMixin) {
         geographyArea = (result.geographyArea / areaUnitExp.areaR).toFixed(2)
 
         marker = {
-          coordinates: utilInstance.getCenterOfGravityPoint(
+          coordinates: Objects.GeometryExp.getCenterOfGravityPoint(
             result.coordinates[0]
           ),
           text: [

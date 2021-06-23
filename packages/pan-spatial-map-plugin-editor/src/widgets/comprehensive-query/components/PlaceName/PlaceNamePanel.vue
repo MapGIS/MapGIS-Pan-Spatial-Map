@@ -58,16 +58,8 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator'
-import { UUID, AppMixin } from '@mapgis/web-app-framework'
-import {
-  dataCatalogInstance,
-  queryFeaturesInstance,
-  utilInstance,
-  baseConfigInstance,
-  ResultSetMixin,
-  IResultSetCategory,
-  markerIconInstance
-} from '@mapgis/pan-spatial-map-store'
+import { UUID, AppMixin, Feature } from '@mapgis/web-app-framework'
+import { markerIconInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component
 export default class PlaceNamePanel extends Vue {
@@ -172,7 +164,7 @@ export default class PlaceNamePanel extends Vue {
    * igs地名地址查询
    */
   async igsQuery(where: any) {
-    const igsParams: FeatureQueryParam = {
+    const igsParams: Feature.FeatureQueryParam = {
       ip: this.config.ip,
       port: this.config.port,
       pageCount: this.cluster ? this.config.clusterMaxCount : 10,
@@ -197,16 +189,15 @@ export default class PlaceNamePanel extends Vue {
     const combine = this.config.combine === 'true'
     this.spinning = true
     try {
-      const igsRes: any = await queryFeaturesInstance.query(igsParams, combine)
+      const igsRes: any = await Feature.FeatureQuery.query(igsParams, combine)
       let data: any = igsRes
       if (combine) {
-        // eslint-disable-next-line prefer-destructuring
         data = igsRes[0]
       }
       if (!data || !data.SFEleArray) {
         return
       }
-      const geoJSONData: FeatureGeoJSON = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(
+      const geoJSONData: FeatureGeoJSON = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
         data
       )
       const { features } = geoJSONData
@@ -220,7 +211,7 @@ export default class PlaceNamePanel extends Vue {
             properties[this.fields[f]] = feature.properties[this.fields[f]]
           }
           const coords = {
-            coordinates: utilInstance.getGeoJsonFeatureCenter(feature),
+            coordinates: Feature.getGeoJsonFeatureCenter(feature),
             properties,
             markerId: `place-name-${j}`,
             img: defaultImg

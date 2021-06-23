@@ -20,8 +20,7 @@
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { Layer } from '@mapgis/web-app-framework'
-import { GFeature, utilInstance } from '@mapgis/pan-spatial-map-store'
+import { Layer, Feature } from '@mapgis/web-app-framework'
 import CesiumMinxin from '../../mixins/cesium'
 
 @Component
@@ -40,9 +39,9 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
    */
   addGeoJSONFeaturesToEntity(layer: Layer) {
     if (!this.geojson || !this.geojson.features) return
-    this.geojson.features.forEach((feature: GFeature) => {
+    this.geojson.features.forEach((feature: Feature.GFeature) => {
       const value = feature.properties[this.field]
-      const center = utilInstance.getGeoJsonFeatureCenter(feature)
+      const center = Feature.getGeoJsonFeatureCenter(feature)
       const {
         textStyle: { fillColor },
         radius

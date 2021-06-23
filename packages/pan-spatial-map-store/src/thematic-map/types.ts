@@ -1,4 +1,4 @@
-import { FeatureIGS } from '../service'
+import { Feature } from '@mapgis/web-app-framework'
 
 // 基础配置
 export interface IThematicMapBaseConfig {
@@ -69,7 +69,7 @@ export interface IState {
   moduleTypes: ModuleType[]
   loading: boolean
   pageParam: IPageParam
-  pageDataSet: FeatureIGS | null
+  pageDataSet: Feature.FeatureIGS | null
   selected: string
   selectedTime: string
   selectedSubConfig: {

@@ -6,10 +6,7 @@ import servicesManagerInstance, {
   ServiceCategory,
   Service
 } from '../add-services/services-manager'
-import {
-  dataCatalogManagerInstance,
-  DataCatalogManager
-} from '@mapgis/pan-spatial-map-store'
+import { DataCatalogManager } from '@mapgis/pan-spatial-map-store'
 import {
   WidgetMixin,
   Document,

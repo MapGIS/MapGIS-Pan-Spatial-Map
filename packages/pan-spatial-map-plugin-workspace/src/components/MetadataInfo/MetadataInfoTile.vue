@@ -16,7 +16,7 @@
       <a-tab-pane key="storage" tab="瓦片存储信息">
         <div class="info-body">
           <div
-            v-for="(storageInfoItem, si) in getJsonTag(tileStorageInfo)"
+            v-for="(storageInfoItem, si) in Object.keys(tileStorageInfo)"
             :key="'瓦片存储' + storageInfoItem + si"
             class="info-item"
           >
@@ -72,7 +72,7 @@ import MetadataInfoMixin from './mixins/metadata-info'
 @Component({ name: 'MpMetadataInfoTile', components: {} })
 export default class MpMetadataInfoTile extends Mixins(MetadataInfoMixin) {
   private get generalInfo() {
-    return this.getJsonTag(this.metadata).filter(item => {
+    return Object.keys(this.metadata).filter(item => {
       return item !== '瓦片存储信息'
     })
   }

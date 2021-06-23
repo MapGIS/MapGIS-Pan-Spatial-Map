@@ -88,11 +88,10 @@
 <script lang="ts">
 import { Component, Prop, Emit, Mixins } from 'vue-property-decorator'
 import {
-  utilInstance,
   markerIconInstance,
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
-import { UUID } from '@mapgis/web-app-framework'
+import { UUID, Objects } from '@mapgis/web-app-framework'
 import moment from 'moment'
 import MarkerMixin from '../../mixins/marker-add'
 
@@ -132,12 +131,12 @@ export default class MpMarkerInput extends Mixins(MarkerMixin) {
   // 确认按钮回调函数
   private async onInputOk() {
     if (this.inputOptions.unit === '度分秒') {
-      this.inputOptions.coordX = utilInstance.degreeToDecimal(
+      this.inputOptions.coordX = Objects.AngleConvert.dmsToD(
         Number(this.inputOptions.degreeX),
         Number(this.inputOptions.minuteX),
         Number(this.inputOptions.secondX)
       )
-      this.inputOptions.coordY = utilInstance.degreeToDecimal(
+      this.inputOptions.coordY = Objects.AngleConvert.dmsToD(
         Number(this.inputOptions.degreeY),
         Number(this.inputOptions.minuteY),
         Number(this.inputOptions.secondY)

@@ -38,11 +38,9 @@
   </div>
 </template>
 <script lang="ts">
-declare const CesiumZondy
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
 import { Sketch } from 'vue-color'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component({
   name: 'MpAspectAnalysis',
@@ -79,7 +77,7 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
     this.remove()
     /** 视点跳转仅用于测试用（拖动球体，再去绘制，很难找到坡向分析支持的视角，导致绘制后不显示分析结果） */
     // 初始化视图功能管理类
-    // const sceneManager = new CesiumZondy.Manager.SceneManager({
+    // const sceneManager = new this.CesiumZondy.Manager.SceneManager({
     //   viewer: this.webGlobe.viewer
     // })
     // // 视点跳转（跳转到台湾）
@@ -91,10 +89,10 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
     // })
     window.AspectAnalyzeManage.advancedAnalysisManager =
       window.AspectAnalyzeManage.advancedAnalysisManager ||
-      new CesiumZondy.Manager.AdvancedAnalysisManager({
-        viewer: window.webGlobe.viewer
+      new this.CesiumZondy.Manager.AdvancedAnalysisManager({
+        viewer: this.webGlobe.viewer
       })
-    window.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+    this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
     const arr = this.transformColor(this.arrayColor)
     if (arr.length > 0) {
       window.AspectAnalyzeManage.AspectAnalysis = window.AspectAnalyzeManage.advancedAnalysisManager.createAspectAnalysis(
@@ -119,7 +117,7 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
           red: Number(Color[0].split('(')[1] / 255),
           alpha: Number(Color[3].split(')')[0])
         }
-        return new window.Cesium.Color(
+        return new this.Cesium.Color(
           ColorRgb.red,
           ColorRgb.green,
           ColorRgb.blue,
@@ -137,7 +135,7 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
 
   remove() {
     if (window.AspectAnalyzeManage.AspectAnalysis) {
-      window.webGlobe.scene.VisualAnalysisManager.remove(
+      this.webGlobe.scene.VisualAnalysisManager.remove(
         window.AspectAnalyzeManage.AspectAnalysis
       )
       window.AspectAnalyzeManage.AspectAnalysis.stop()
@@ -147,7 +145,7 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
 
   // 颜色拾取器对应事件
   private onColorChange(val, index) {
-    Vue.set(this.arrayColor, index, utilInstance.rgbaToString(val.rgba))
+    Vue.set(this.arrayColor, index, ColorUtil.colorObjectToRgba(val.rgba))
   }
 }
 </script>

@@ -32,11 +32,7 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
-import {
-  eventBus,
-  api,
-  dataCatalogInstance
-} from '@mapgis/pan-spatial-map-store'
+import { eventBus, api } from '@mapgis/pan-spatial-map-store'
 import { TreeConfig } from '@mapgis/pan-spatial-map-plugin-visualization/src/widgets/bookmark/tree-config'
 import base from 'app/packages/pan-spatial-map-store/src/config/base'
 
@@ -54,8 +50,6 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
   private nodeParentLevel: number[] = []
 
   private mounted(): void {
-    // console.log(TreeConfig.getInstance().config.GUID)
-
     this.treeData = this.widgetInfo.config
     eventBus.$on('add-to-mark', this.clickMark)
     eventBus.$on('check-to-mark', this.checkMark)

@@ -67,8 +67,6 @@ export default class MarkerExport extends Vue {
     passWord: 'sa.mapgis'
   }
 
-  private defaultConfig = baseConfigInstance.config
-
   private shpOr6xOption: any
 
   // 确认按钮回调函数
@@ -130,7 +128,7 @@ export default class MarkerExport extends Vue {
 
   // 发送请求创建简单要素类 --> 发送请求将简单要素类保存
   private creatFeature(flieName: string, featureSet: any, featureType: string) {
-    const { projectionName } = this.defaultConfig // 获取目标参考系
+    const { projectionName } = baseConfigInstance.config // 获取目标参考系
     const { userName, passWord } = this.markerServerConfig
     const getFeatureUrl = `http://${this.markerServerConfig.ip}:${this.markerServerConfig.port}/onemap/featureSet/export?path=${flieName}&srsName=${projectionName}&type=${featureType}&f=json&user=${userName}&password=${passWord}`
     console.log(getFeatureUrl)

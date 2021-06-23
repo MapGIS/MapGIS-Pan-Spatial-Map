@@ -1,3 +1,4 @@
+import axios from 'axios'
 export class AngleConvert {
   /**
    * 十进制度转度分秒 d.m.s -> {d,m,s}
@@ -26,5 +27,31 @@ export class AngleConvert {
   public static dmsToD(d, m, s) {
     const deci = d + m / 60 + s / (60 * 60)
     return deci
+  }
+}
+
+export class ProjectionTransformation {
+  async projectPoint(
+    points: number[][],
+    srcSref: string,
+    desSref,
+    ip,
+    port,
+    serverName,
+    gdbName,
+    userName,
+    password
+  ) {
+    if (points.length <= 0 || !srcSref) {
+      throw new Error('参数错误')
+    }
+
+    const pointArr = points.map(([x, y]) => `${x},${y}`).join(';')
+    const url =
+      `http://${ip}:${port}/igs/rest/mrgs/geomservice/projectpoints` +
+      `?f=json&srcSref=${srcSref}&desSref=${desSref}` +
+      `&serverName=${serverName}&gdbName=${gdbName}&userName=${userName}&password=${password}`
+
+    return axios.post(url, pointArr)
   }
 }

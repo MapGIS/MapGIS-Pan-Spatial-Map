@@ -166,37 +166,30 @@ import {
   IAttributeTableOption,
   IAttributeTableExhibition,
   baseConfigInstance,
-  utilInstance,
-  queryFeaturesInstance,
-  FeatureIGS,
-  queryArcgisInfoInstance,
-  FeatureGeoJSON,
-  GFeature,
-  markerIconInstance,
-  cesiumUtilInstance
+  markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
 import {
   AppMixin,
   LayerType,
   UUID,
   MapMixin,
-  Rectangle3D
+  Rectangle3D,
+  Feature,
+  Objects
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
 import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
-import MpMarkerPlotting from '../MarkerPlotting/MarkerPlotting.vue'
-import Mp3dMarkerPlotting from '../3dMarkerPlotting/3dMarkerPlotting.vue'
 import MpFilter from '../Filter/Filter.vue'
 import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
 import axios from 'axios'
+
+const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
 
 @Component({
   name: 'MpAttributeTable',
   components: {
     MpAttributeTableColumnSetting,
-    MpMarkerPlotting,
-    Mp3dMarkerPlotting,
     MpAttrStatistics,
     MpFilter
   }
@@ -340,6 +333,14 @@ export default class MpAttributeTable extends Mixins(
     this.addListener()
   }
 
+  mounted() {
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+  }
+
   beforeDestroy() {
     this.removeListener()
   }
@@ -394,7 +395,7 @@ export default class MpAttributeTable extends Mixins(
     const feature = row as GFeature
     let { bound } = feature
     if (bound === undefined) {
-      bound = utilInstance.getGeoJsonFeatureBound(feature)
+      bound = Feature.getGeoJsonFeatureBound(feature)
     }
     const width = bound.xmax - bound.xmin
     const height = bound.ymax - bound.ymin
@@ -505,7 +506,7 @@ export default class MpAttributeTable extends Mixins(
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry || this.optionVal.geometry
       const { current, pageSize } = this.pagination
-      const geojson = (await queryFeaturesInstance.query({
+      const geojson = await FeatureQuery.query({
         ip,
         port: port.toString(),
         f: 'geojson',
@@ -517,7 +518,7 @@ export default class MpAttributeTable extends Mixins(
         docName: serverName,
         layerIdxs: layerIndex,
         coordPrecision: 8
-      })) as FeatureGeoJSON
+      })
 
       const { AttStruct, TotalCount } = await this.queryCount(
         queryGeometry,
@@ -537,16 +538,14 @@ export default class MpAttributeTable extends Mixins(
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry || this.optionVal.geometry
       const { current, pageSize } = this.pagination
-      const {
-        count: totalCount
-      } = await queryArcgisInfoInstance.getArcGISQueryTotal({
+      const { count: totalCount } = await ArcGISFeatureQuery.getTotal({
         f: 'json',
         where: queryWhere,
         geometry: queryGeometry,
         serverUrl,
         layerIndex
       })
-      const geojson = await queryArcgisInfoInstance.query({
+      const geojson = await ArcGISFeatureQuery.query({
         f: 'json',
         where: queryWhere,
         geometry: queryGeometry,
@@ -558,7 +557,7 @@ export default class MpAttributeTable extends Mixins(
       })
       const columns: Array = []
       const { properties } = geojson.features[0]
-      const tags = utilInstance.getJsonTag(properties)
+      const tags = Object.keys(properties)
       if (tags.length <= 10) {
         // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
         this.useScrollX = false
@@ -608,7 +607,7 @@ export default class MpAttributeTable extends Mixins(
         ? this.getGeometry3D(source)
         : this.optionVal.geometry
       const { current, pageSize } = this.pagination
-      const json = (await queryFeaturesInstance.query(
+      const json = await FeatureQuery.query(
         {
           ip,
           port: port.toString(),
@@ -621,7 +620,7 @@ export default class MpAttributeTable extends Mixins(
         },
         false,
         serverType === LayerType.IGSScene
-      )) as FeatureGeoJSON
+      )
       const { AttStruct, SFEleArray = [], TotalCount } = json
       const { FldNumber = 0, FldName = [] } = AttStruct
       const columns = this.setTableScroll(AttStruct)
@@ -632,7 +631,7 @@ export default class MpAttributeTable extends Mixins(
           let boundObj = null
           if (source.length > 0) {
             const tranform = source[0].root.transform
-            boundObj = cesiumUtilInstance.dataPositionExtentToDegreeExtent(
+            boundObj = this.sceneController.dataPositionExtentToDegreeExtent(
               bound,
               tranform
             )
@@ -662,15 +661,15 @@ export default class MpAttributeTable extends Mixins(
     }
   }
 
-  getGeometry3D(source) {
+  private getGeometry3D(source) {
     if (source.length > 0) {
       const transform = source[0].root.transform
       const { xmin, ymin, xmax, ymax, zmin, zmax } = this.geometry3D
-      const minPosition = cesiumUtilInstance.degreeToDataPosition(
+      const minPosition = this.sceneController.degreeToDataPosition(
         { x: xmin, y: ymin, z: zmin },
         transform
       )
-      const maxPosition = cesiumUtilInstance.degreeToDataPosition(
+      const maxPosition = this.sceneController.degreeToDataPosition(
         { x: xmax, y: ymax, z: zmax },
         transform
       )
@@ -740,7 +739,7 @@ export default class MpAttributeTable extends Mixins(
   private async queryCount(geometry?: Record<string, any>, where?: string) {
     const { ip, port, serverName } = this.optionVal
     const { layerIndex, gdbp } = this.optionVal
-    const featureSet = (await queryFeaturesInstance.query({
+    const featureSet = await FeatureQuery.query({
       ip,
       port: port.toString(),
       f: 'json',
@@ -753,7 +752,7 @@ export default class MpAttributeTable extends Mixins(
       gdbp,
       docName: serverName,
       layerIdxs: layerIndex
-    })) as FeatureIGS
+    })
     return featureSet
   }
 
@@ -807,7 +806,7 @@ export default class MpAttributeTable extends Mixins(
         const feature = cur as GFeature
         let { bound } = feature
         if (bound === undefined) {
-          bound = utilInstance.getGeoJsonFeatureBound(feature)
+          bound = Feature.getGeoJsonFeatureBound(feature)
         }
         return {
           xmin: bound.xmin < prev.xmin ? bound.xmin : prev.xmin,
@@ -846,7 +845,7 @@ export default class MpAttributeTable extends Mixins(
         // const height = await this.getModelHeight(longitude, latitude)
         center = [longitude, latitude]
       } else {
-        center = utilInstance.getGeoJsonFeatureCenter(feature)
+        center = Feature.getGeoJsonFeatureCenter(feature)
       }
       if (!(Number.isNaN(center[0]) || Number.isNaN(center[1]))) {
         const marker: Record<string, any> = {

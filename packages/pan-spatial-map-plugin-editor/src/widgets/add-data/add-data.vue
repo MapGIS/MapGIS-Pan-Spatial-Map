@@ -26,12 +26,16 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin, Document, UUID } from '@mapgis/web-app-framework'
+import {
+  WidgetMixin,
+  Document,
+  UUID,
+  Metadata
+} from '@mapgis/web-app-framework'
 import {
   AddServicesMixin,
   ServiceType,
-  Service,
-  queryIgsServicesInfoInstance
+  Service
 } from '@mapgis/pan-spatial-map-store'
 import AddServicesData from './components/AddServicesData.vue'
 import AddServiceUrl from './components/AddServiceUrl.vue'
@@ -125,7 +129,7 @@ export default class MpAddData extends Mixins(WidgetMixin, AddServicesMixin) {
         if (type === 'Layer') {
           type = 'layer'
         } else if (type === 'MapGIS') {
-          // const data = await queryIgsServicesInfoInstance.getMapInfoService(
+          // const data = await Metadata.MetaDataQuery.getMapServiceInfo(
           //   config.ip,
           //   config.port,
           //   config.name

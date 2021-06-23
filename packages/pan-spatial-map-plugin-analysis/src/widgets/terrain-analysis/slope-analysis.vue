@@ -40,9 +40,8 @@
 <script lang="ts">
 declare const CesiumZondy
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
 import { Sketch } from 'vue-color'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component({ name: 'MpSlopeAnalysis', components: { 'sketch-picker': Sketch } })
 export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
@@ -89,9 +88,9 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     window.SlopeAnalyzeManage.advancedAnalysisManager =
       window.SlopeAnalyzeManage.advancedAnalysisManager ||
       new CesiumZondy.Manager.AdvancedAnalysisManager({
-        viewer: window.webGlobe.viewer
+        viewer: this.webGlobe.viewer
       })
-    window.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+    this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
     const arr = this.transformColor(this.arrayColor)
     if (arr.length > 0) {
       window.SlopeAnalyzeManage.SlopeAnalysis = window.SlopeAnalyzeManage.advancedAnalysisManager.createSlopeAnalysis(
@@ -116,7 +115,7 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
           red: Number(Color[0].split('(')[1] / 255),
           alpha: Number(Color[3].split(')')[0])
         }
-        return new window.Cesium.Color(
+        return new this.Cesium.Color(
           ColorRgb.red,
           ColorRgb.green,
           ColorRgb.blue,
@@ -134,7 +133,7 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
 
   remove() {
     if (window.SlopeAnalyzeManage.SlopeAnalysis) {
-      window.webGlobe.scene.VisualAnalysisManager.remove(
+      this.webGlobe.scene.VisualAnalysisManager.remove(
         window.SlopeAnalyzeManage.SlopeAnalysis
       )
       window.SlopeAnalyzeManage.SlopeAnalysis.stop()
@@ -144,7 +143,7 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
 
   // 颜色拾取器对应事件
   private onColorChange(val, index) {
-    Vue.set(this.arrayColor, index, utilInstance.rgbaToString(val.rgba))
+    Vue.set(this.arrayColor, index, ColorUtil.colorObjectToRgba(val.rgba))
   }
 }
 </script>

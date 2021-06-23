@@ -17,16 +17,12 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import {
-  queryIGSMetadataInstance,
-  MetadataQueryParam,
-  dataCatalogManagerInstance
-} from '@mapgis/pan-spatial-map-store'
-import {
   LayerType,
   IGSMapImageLayer,
   IGSVectorLayer,
   IGSTileLayer,
-  Layer
+  Layer,
+  Metadata
 } from '@mapgis/web-app-framework'
 
 import MpMetadataInfoDoc from './MetadataInfoDoc'
@@ -55,7 +51,7 @@ export default class MpMetadataInfo extends Vue {
       if (type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {
         return
       }
-      let option: MetadataQueryParam = {}
+      let option: Metadata.MetadataQueryParam = {}
       switch (type) {
         case LayerType.IGSMapImage: {
           if (this.currentLayer.layer) {
@@ -92,7 +88,7 @@ export default class MpMetadataInfo extends Vue {
           break
       }
       this.spinning = true
-      this.metadata = await queryIGSMetadataInstance.getMetadta(option)
+      this.metadata = await Metadata.MetaDataQuery.query(option)
       this.spinning = false
     }
   }
@@ -104,7 +100,7 @@ export default class MpMetadataInfo extends Vue {
       if (type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {
         return
       }
-      let option: MetadataQueryParam = {}
+      let option: Metadata.MetadataQueryParam = {}
       const { ip, port, serverName, gdbps } = this.currentConfig
       switch (type) {
         case LayerType.IGSMapImage: {
@@ -123,7 +119,7 @@ export default class MpMetadataInfo extends Vue {
           break
       }
       this.spinning = true
-      this.metadata = await queryIGSMetadataInstance.getMetadta(option)
+      this.metadata = await Metadata.MetaDataQuery.query(option)
       this.spinning = false
     }
   }

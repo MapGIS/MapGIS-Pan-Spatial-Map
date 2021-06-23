@@ -4,8 +4,7 @@
 
 <script lang="ts">
 import { Component, Watch, Mixins, Prop, Provide } from 'vue-property-decorator'
-import { MapMixin } from '@mapgis/web-app-framework'
-import { utilInstance, FeatureGeoJSON } from '@mapgis/pan-spatial-map-store'
+import { MapMixin, Feature } from '@mapgis/web-app-framework'
 import { bboxPolygon, lineString, bbox } from '@turf/turf'
 
 @Component({})
@@ -17,7 +16,7 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
       return {}
     }
   })
-  readonly feature!: FeatureGeoJSON | null
+  readonly feature!: Feature.FeatureGeoJSON | null
 
   @Prop({
     type: Array,

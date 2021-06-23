@@ -116,13 +116,11 @@
 
 <script lang="ts">
 import { Component, Mixins, Watch, Prop } from 'vue-property-decorator'
-import { LayerType } from '@mapgis/web-app-framework'
+import { LayerType, Feature } from '@mapgis/web-app-framework'
 import {
   IAttributeTableExhibition,
   AttributeTableExhibition,
-  ExhibitionControllerMixin,
-  queryFeaturesInstance,
-  queryArcgisInfoInstance
+  ExhibitionControllerMixin
 } from '@mapgis/pan-spatial-map-store'
 
 @Component({
@@ -230,7 +228,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       serverType === LayerType.IGSScene
     ) {
       // 地图文档的图层
-      const result = await queryFeaturesInstance.query(
+      const result = await Feature.FeatureQuery.query(
         {
           ip,
           port: port.toString(),
@@ -260,7 +258,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       }))
     } else if (serverType === LayerType.arcGISMapImage) {
       // arcgis图层
-      const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
+      const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,
         layerIndex
@@ -314,7 +312,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       serverType === LayerType.IGSVector ||
       serverType === LayerType.IGSScene
     ) {
-      const result = await queryFeaturesInstance.query(
+      const result = await Feature.FeatureQuery.query(
         {
           ip,
           port: port.toString(),
@@ -338,7 +336,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
       ).map(value => ({ value }))
       this.valueTableData = values
     } else if (serverType === LayerType.arcGISMapImage) {
-      const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
+      const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,
         layerIndex,

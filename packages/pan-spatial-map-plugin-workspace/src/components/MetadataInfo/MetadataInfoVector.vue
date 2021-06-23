@@ -162,7 +162,7 @@ export default class MpMetadataInfoVector extends Mixins(MetadataInfoMixin) {
   private entityKeys = ['实体类型', '简单要素类', '注记类']
 
   private get generalInfo() {
-    return this.getJsonTag(this.metadata).filter(item => {
+    return Object.keys(this.metadata).filter(item => {
       return !['空间范围', '空间参照系', '实体', '属性'].includes(item)
     })
   }

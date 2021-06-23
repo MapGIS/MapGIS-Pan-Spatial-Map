@@ -1,5 +1,5 @@
 import { Vue, Component } from 'vue-property-decorator'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
+import { ProjectionTransformationUtil } from '@mapgis/pan-spatial-map-store'
 
 @Component({})
 export default class MarkerAddMixin extends Vue {
@@ -7,7 +7,11 @@ export default class MarkerAddMixin extends Vue {
     if (srcSref === destSref) {
       return points
     }
-    const result: any = await utilInstance.transPoint(points, srcSref, destSref)
+    const result: any = await ProjectionTransformationUtil.projectPoint(
+      points,
+      srcSref,
+      destSref
+    )
     if (result.Data && result.Data.length > 0) {
       const datas: any[] = []
       for (let i = 0; i < result.Data.length; i += 1) {

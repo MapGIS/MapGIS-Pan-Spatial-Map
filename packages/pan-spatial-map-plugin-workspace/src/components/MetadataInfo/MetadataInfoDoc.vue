@@ -22,7 +22,7 @@
           >
             <div class="info-body">
               <div
-                v-for="(mapInfoItem, mi) in getJsonTag(mapInfo)"
+                v-for="(mapInfoItem, mi) in Object.keys(mapInfo)"
                 :key="'地图文档地图列表图层列表' + mapInfoItem + mi"
                 class="info-item"
               >
@@ -78,7 +78,7 @@ import MetadataInfoMixin from './mixins/metadata-info'
 @Component({ name: 'MpMetadataInfoDoc', components: {} })
 export default class MpMetadataInfoDoc extends Mixins(MetadataInfoMixin) {
   private get generalInfo() {
-    return this.getJsonTag(this.metadata).filter(item => {
+    return Object.keys(this.metadata).filter(item => {
       return item !== '地图列表'
     })
   }

@@ -1,10 +1,5 @@
 import { Component, Prop, Watch, Vue, Mixins } from 'vue-property-decorator'
-import { MapMixin } from '@mapgis/web-app-framework'
-import {
-  queryFeaturesInstance,
-  FeatureIGS,
-  FeatureGeoJSON
-} from '@mapgis/pan-spatial-map-store'
+import { MapMixin, Feature } from '@mapgis/web-app-framework'
 
 @Component
 export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
@@ -12,13 +7,13 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
   @Prop({ default: () => ({}) }) subDataConfig!: any
 
   // 专题某年度的要素数据
-  @Prop({ default: () => ({}) }) dataSet!: FeatureIGS
+  @Prop({ default: () => ({}) }) dataSet!: Feature.FeatureIGS
 
   /**
    * 监听: 要素数据变化
    */
   @Watch('dataSet', { deep: true })
-  watchDataSet(nV: FeatureIGS | null) {
+  watchDataSet(nV: Feature.FeatureIGS | null) {
     if (nV && nV.SFEleArray) {
       this.showLayer()
     } else {
@@ -29,9 +24,9 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
   /**
    * geojson
    */
-  get geojson(): FeatureGeoJSON | null {
+  get geojson(): Feature.FeatureGeoJSON | null {
     return this.dataSet
-      ? queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(this.dataSet)
+      ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(this.dataSet)
       : null
   }
 

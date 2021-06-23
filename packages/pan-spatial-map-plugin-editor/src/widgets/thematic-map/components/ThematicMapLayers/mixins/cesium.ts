@@ -1,10 +1,5 @@
 import { Component, Mixins, Inject } from 'vue-property-decorator'
-import { UUID, Layer } from '@mapgis/web-app-framework'
-import {
-  GFeature,
-  utilInstance,
-  cesiumUtilInstance
-} from '@mapgis/pan-spatial-map-store'
+import { UUID, Layer, ColorUtil, Feature } from '@mapgis/web-app-framework'
 import BaseMinxin from './base'
 
 interface ILngLat {
@@ -58,7 +53,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
    * @param feature 要素数据
    * @param option 实体配置
    */
-  addEntityToLayer(layer: Layer, feature: GFeature, option: any) {
+  addEntityToLayer(layer: Layer, feature: Feature.GFeature, option: any) {
     const entity = new this.Cesium.Entity(option)
     entity.geojsonFeature = feature
     layer.entities.add(entity)
@@ -79,7 +74,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
    * @param color 颜色
    */
   getColor(color: string) {
-    const { r, g, b, a } = utilInstance.getRGBA(color)
+    const { r, g, b, a } = ColorUtil.getColorObject(color)
     return new this.Cesium.Color(r / 255, g / 255, b / 255, a)
   }
 
@@ -105,7 +100,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
    * 获取实体弹框的信息
    * @param feature 要素数据
    */
-  getPopupInfos(feature: GFeature | null) {
+  getPopupInfos(feature: Feature.GFeature | null) {
     const { showFields, showFieldsTitle } = this.popupConfig
     if (!feature || !showFields || !showFields.length) return
     this.popupProperties = showFields.reduce((obj: any, v: string) => {

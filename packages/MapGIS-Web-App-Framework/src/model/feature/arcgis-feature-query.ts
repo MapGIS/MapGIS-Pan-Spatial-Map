@@ -330,7 +330,7 @@ export default class ArcGISFeatureQuery {
    * @param {string|null} params.layerIndex 索引号
    * @param {string} params.serverUrl 服务地址
    */
-  public static getArcGISQueryTotal(params: ArcGISQueryParam) {
+  public static getTotal(params: ArcGISQueryParam) {
     if (!params.serverUrl) {
       return
     }
@@ -370,7 +370,7 @@ export default class ArcGISFeatureQuery {
    * @param {string} queryParams.page 页码
    * @param {string} queryParams.pageCount 每页记录数
    */
-  public static getArcGISlayerFileds(queryParams) {
+  public static getLayerFileds(queryParams) {
     if (!queryParams || !queryParams.serverUrl) {
       return
     }

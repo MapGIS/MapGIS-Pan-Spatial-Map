@@ -70,11 +70,14 @@ import {
   ExhibitionControllerMixin,
   IAttributeTableExhibition,
   AttributeTableExhibition,
-  baseConfigInstance,
-  Parser,
-  utilInstance
+  baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
-import { LayerType, AppMixin, MapMixin } from '@mapgis/web-app-framework'
+import {
+  LayerType,
+  AppMixin,
+  MapMixin,
+  Feature
+} from '@mapgis/web-app-framework'
 import * as turf from '@turf/turf'
 
 @Component({ components: { PlaceNamePanel, PlaceNameMapbox, PlaceNameCesium } })
@@ -191,7 +194,7 @@ export default class PlaceName extends Mixins(
         { name: 'bounds' }
       )
     }
-    const result = Parser.changeToTangram(polygon)
+    const result = Feature.FeatureConvert.toTangram(polygon)
     if (Array.isArray(result)) return result[0]
     return result
   }

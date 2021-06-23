@@ -26,11 +26,8 @@ import {
   Emit,
   Mixins
 } from 'vue-property-decorator'
-import {
-  queryIgsServicesInfoInstance,
-  eventBus
-} from '@mapgis/pan-spatial-map-store'
-import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
+import { eventBus } from '@mapgis/pan-spatial-map-store'
+import { Catalog, UUID } from '@mapgis/web-app-framework'
 import SelectTreeMixin from '../../mixins/select-tree.ts'
 
 const MapGISLocal = 'MapGISLocal'
@@ -59,13 +56,12 @@ export default class MapgisLayer extends Mixins(SelectTreeMixin) {
       return
     }
     this.treeData = []
-    queryIgsServicesInfoInstance
-      .getDataSource({ ip, port })
+    Catalog.DataSourceCatalog.getDataSource({ ip, port })
       .then(res => {
         this.treeData = res.reduce((result, item) => {
           result.push({
-            id: uuid(),
-            value: uuid(),
+            id: UUID.uuid(),
+            value: UUID.uuid(),
             name: item,
             lazy: true,
             level: 1,
@@ -96,15 +92,15 @@ export default class MapgisLayer extends Mixins(SelectTreeMixin) {
               if (res && res.length > 0) {
                 const arr = [...res]
                 arr.map(a => {
-                  a.id = uuid()
+                  a.id = UUID.uuid()
                   a.level = 2
-                  a.value = uuid()
+                  a.value = UUID.uuid()
                   if (a.children && a.children.length > 0) {
                     a.children.map(c => {
-                      c.id = uuid()
+                      c.id = UUID.uuid()
                       c.level = 3
                       c.lazy = true
-                      c.value = uuid()
+                      c.value = UUID.uuid()
                       return c
                     })
                   }
@@ -121,98 +117,92 @@ export default class MapgisLayer extends Mixins(SelectTreeMixin) {
         case 3:
           const { gdbp, key, user, password } = node.dataRef
           // 展开简单要素类等节点
-          queryIgsServicesInfoInstance
-            .getGDBData({
-              ip: this.ip,
-              port: this.port,
-              gdbp: gdbp,
-              type: key,
-              user: user,
-              password: password
-            })
-            .then(res => {
-              const arr: any[] = []
-              switch (key) {
-                case 'ds':
-                  for (const { Name: dsName, SFClsInfos } of res) {
-                    const children: any[] = []
-                    const obj = {
-                      id: uuid(),
-                      value: uuid(),
-                      name: dsName,
-                      icon: 'tree-icon tree-icon-ds',
-                      children: [
-                        {
-                          id: uuid(),
-                          value: uuid(),
-                          name: '简单要素类',
-                          icon: 'tree-icon tree-icon-ds',
-                          children: []
-                        },
-                        {
-                          id: uuid(),
-                          value: uuid(),
-                          name: '注记类',
-                          icon: 'tree-icon tree-icon-ds',
-                          children: []
-                        }
-                      ]
-                    }
-                    for (const {
-                      Name: clsName,
-                      GeomType,
-                      Type
-                    } of SFClsInfos) {
-                      const info = {
-                        id: uuid(),
-                        value: uuid(),
-                        name: clsName,
-                        icon: `tree-icon tree-icon-${GeomType}`,
-                        leaf: true,
-                        gdbp: `gdbp://${gdbp}/${key}/${dsName}/sfcls/${clsName}`
+          Catalog.DataSourceCatalog.getGDBData({
+            ip: this.ip,
+            port: this.port,
+            gdbp: gdbp,
+            type: key,
+            user: user,
+            password: password
+          }).then(res => {
+            const arr: any[] = []
+            switch (key) {
+              case 'ds':
+                for (const { Name: dsName, SFClsInfos } of res) {
+                  const children: any[] = []
+                  const obj = {
+                    id: UUID.uuid(),
+                    value: UUID.uuid(),
+                    name: dsName,
+                    icon: 'tree-icon tree-icon-ds',
+                    children: [
+                      {
+                        id: UUID.uuid(),
+                        value: UUID.uuid(),
+                        name: '简单要素类',
+                        icon: 'tree-icon tree-icon-ds',
+                        children: []
+                      },
+                      {
+                        id: UUID.uuid(),
+                        value: UUID.uuid(),
+                        name: '注记类',
+                        icon: 'tree-icon tree-icon-ds',
+                        children: []
                       }
-                      switch (Type) {
-                        case 30:
-                          obj.children[0].children.push(info)
-                          break
-
-                        default:
-                          obj.children[1].children.push(info)
-                          break
-                      }
-                    }
-                    arr.push(obj)
+                    ]
                   }
-                  break
-                case 'acls':
-                  for (const clsName of res) {
-                    arr.push({
-                      id: uuid(),
-                      value: uuid(),
-                      name: clsName,
-                      icon: 'tree-icon tree-icon-acls',
-                      leaf: true,
-                      gdbp: `gdbp://${gdbp}/${key}/${clsName}`
-                    })
-                  }
-                  break
-                default:
-                  for (const { Name: clsName, GeomType } of res) {
-                    arr.push({
-                      id: uuid(),
-                      value: uuid(),
+                  for (const { Name: clsName, GeomType, Type } of SFClsInfos) {
+                    const info = {
+                      id: UUID.uuid(),
+                      value: UUID.uuid(),
                       name: clsName,
                       icon: `tree-icon tree-icon-${GeomType}`,
                       leaf: true,
-                      gdbp: `gdbp://${gdbp}/sfcls/${clsName}`
-                    })
+                      gdbp: `gdbp://${gdbp}/${key}/${dsName}/sfcls/${clsName}`
+                    }
+                    switch (Type) {
+                      case 30:
+                        obj.children[0].children.push(info)
+                        break
+
+                      default:
+                        obj.children[1].children.push(info)
+                        break
+                    }
                   }
-                  break
-              }
-              node.dataRef.children = arr
-              this.treeData = [...this.treeData]
-              resolve()
-            })
+                  arr.push(obj)
+                }
+                break
+              case 'acls':
+                for (const clsName of res) {
+                  arr.push({
+                    id: UUID.uuid(),
+                    value: UUID.uuid(),
+                    name: clsName,
+                    icon: 'tree-icon tree-icon-acls',
+                    leaf: true,
+                    gdbp: `gdbp://${gdbp}/${key}/${clsName}`
+                  })
+                }
+                break
+              default:
+                for (const { Name: clsName, GeomType } of res) {
+                  arr.push({
+                    id: UUID.uuid(),
+                    value: UUID.uuid(),
+                    name: clsName,
+                    icon: `tree-icon tree-icon-${GeomType}`,
+                    leaf: true,
+                    gdbp: `gdbp://${gdbp}/sfcls/${clsName}`
+                  })
+                }
+                break
+            }
+            node.dataRef.children = arr
+            this.treeData = [...this.treeData]
+            resolve()
+          })
           break
         default:
           break
@@ -224,8 +214,13 @@ export default class MapgisLayer extends Mixins(SelectTreeMixin) {
   // 获取数据库节点
   private resolveDataBase(ip, port, dataSource, user = '', password = '') {
     return new Promise((resolve, reject) => {
-      queryIgsServicesInfoInstance
-        .getDataBase({ ip, port, dataSource, user, password })
+      Catalog.DataSourceCatalog.getDataBase({
+        ip,
+        port,
+        dataSource,
+        user,
+        password
+      })
         .then(res => {
           const arr: any[] = []
           for (const item of res) {

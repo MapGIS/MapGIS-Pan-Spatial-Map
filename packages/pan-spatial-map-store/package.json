@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-store",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "全空间一张图全局上下文环境&存储结构",
   "author": "MapGIS",
   "license": "MIT",

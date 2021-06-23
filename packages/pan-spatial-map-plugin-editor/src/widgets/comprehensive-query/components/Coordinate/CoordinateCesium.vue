@@ -12,15 +12,15 @@ import {
   Emit
 } from 'vue-property-decorator'
 
-import { MapMixin, AppMixin } from '@mapgis/web-app-framework'
-
 import {
-  FeatureGeoJSON,
-  cesiumUtilInstance,
-  utilInstance,
-  baseConfigInstance,
-  markerIconInstance
-} from '@mapgis/pan-spatial-map-store'
+  MapMixin,
+  AppMixin,
+  ColorUtil,
+  Feature,
+  Overlay
+} from '@mapgis/web-app-framework'
+
+import { markerIconInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component({
   components: {}
@@ -55,7 +55,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
       return {}
     }
   })
-  readonly frameFeature!: FeatureGeoJSON | null
+  readonly frameFeature!: Feature.FeatureGeoJSON | null
 
   @Prop({
     type: Object,
@@ -64,8 +64,6 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
     }
   })
   readonly highlightStyle!: Record<string, any>
-
-  private cesiumUtil = cesiumUtilInstance
 
   private entityNames: string[] = []
 
@@ -114,7 +112,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   }
 
   @Watch('frameFeature', { deep: true, immediate: true })
-  private frameFeatureChange(val: FeatureGeoJSON | null) {
+  private frameFeatureChange(val: Feature.FeatureGeoJSON | null) {
     this.clearFrame()
     if (val && Object.keys(val).length > 0) {
       // 行政区划几何类型一般是Polygon
@@ -131,7 +129,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
         const coords = features[i].geometry.coordinates[0]
         const name = `zone-frame-${i}`
         this.entityNames.push(name)
-        this.cesiumUtil.appendPolygon(
+        this.sceneOverlays.addPolygon(
           name,
           coords
             .join(',')
@@ -140,8 +138,8 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
           fillColor,
           fillOutlineColor
         )
-        const center = utilInstance.getGeoJsonFeatureCenter(features[i])
-        const rgba = utilInstance.getRGBA('#FD6A6F', 1)
+        const center = Feature.getGeoJsonFeatureCenter(features[i])
+        const rgba = ColorUtil.getColorObject('#FD6A6F', 1)
         const textColor = new this.Cesium.Color(
           rgba.r / 255,
           rgba.g / 255,
@@ -185,7 +183,15 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
       center: this.coordinate,
       img: defaultImg
     }
-    this.cesiumUtil.addMarkerByFeature(marker)
+    this.sceneOverlays.addMarker(marker)
+  }
+
+  mounted() {
+    this.sceneOverlays = Overlay.SceneOverlays.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
   }
 
   private beforeDestroy() {
@@ -196,7 +202,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   // 清除
   private clearFrame() {
     for (let i = this.entityNames.length - 1; i >= 0; i -= 1) {
-      this.cesiumUtil.removeEntityByName(this.entityNames[i])
+      this.sceneOverlays.removeEntityByName(this.entityNames[i])
       this.entityNames.pop()
     }
     for (let i = this.entityTextNames.length - 1; i >= 0; i -= 1) {
@@ -206,7 +212,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   }
 
   private clearMarker() {
-    this.cesiumUtil.removeEntityByName('coordinate-marker')
+    this.sceneOverlays.removeEntityByName('coordinate-marker')
   }
 }
 </script>

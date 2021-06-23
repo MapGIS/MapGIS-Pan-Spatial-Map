@@ -93,13 +93,12 @@
 
 <script lang="ts">
 import { Component, Mixins, Watch, Prop } from 'vue-property-decorator'
-import { AppMixin, LayerType } from '@mapgis/web-app-framework'
 import {
-  queryFeaturesInstance,
-  queryArcgisInfoInstance,
-  igsFeatureModifyInstance,
-  utilInstance
-} from '@mapgis/pan-spatial-map-store'
+  AppMixin,
+  LayerType,
+  Catalog,
+  Feature
+} from '@mapgis/web-app-framework'
 import { Slider, Sketch, Chrome } from 'vue-color'
 import MpSymbol from './Symbol.vue'
 
@@ -157,7 +156,6 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
 
   @Watch('unifyModifyParams', { deep: true })
   async changeParams() {
-    // console.log(this.unifyModifyParams)
     const res = await this.queryFeatures(1)
   }
 
@@ -181,7 +179,7 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
     } = this.unifyModifyParams
     if (serverType === LayerType.IGSMapImage) {
       // 地图文档的图层
-      const result = await queryFeaturesInstance.query({
+      const result = await Feature.FeatueQuery.query({
         ip,
         port: port.toString(),
         f: 'json',
@@ -193,7 +191,6 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
         IncludeWebGraphic: true,
         IncludeGeometry: false
       })
-      // console.log(result)
       const graphic = result.SFEleArray[0].GraphicInfo
       this.infoType = graphic.InfoType
       if (graphic.InfoType === 1) {
@@ -320,18 +317,16 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
   async getColorNo(val, key) {
     this.tempColor = val.hex
     const { ip, port } = this.unifyModifyParams
-    const res = await igsFeatureModifyInstance.getColorNo({
+    const res = await Catalog.SystemLibraryCatalog.getColorNo({
       ip,
       port,
       color: this.tempColor
     })
-    // console.log(res)
     this.info[key] = res.value
   }
 
   async sureClick() {
     const result = await this.queryFeatures(10000)
-    // console.log(result)
     if (result && result.TotalCount > 0) {
     }
     const graphic = result.SFEleArray[0].GraphicInfo
@@ -349,7 +344,7 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
       }
     }
     const { ip, port, gdbps } = this.unifyModifyParams
-    const res = await igsFeatureModifyInstance.editFeature({
+    const res = await Feature.FeatureEdit.update({
       ip,
       port,
       featureSet: result,
@@ -357,7 +352,6 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
       updateAttribute: false,
       updateGeometry: false
     })
-    // console.log(res)
     if (res.succeed) {
       this.$message.success('修改成功')
     }

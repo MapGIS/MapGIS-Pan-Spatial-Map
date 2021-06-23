@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-plugin-workspace",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "全空间一张图工作空间插件",
   "author": "MapGIS",
   "license": "Apache-2.0",

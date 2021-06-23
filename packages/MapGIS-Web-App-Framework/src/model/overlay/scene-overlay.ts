@@ -1,7 +1,8 @@
-import { createUniqueString } from '../../utils/string-util'
 import { getGeoJsonFeatureCenter } from '../feature/feature-geojson'
 
 export class SceneOverlays {
+  public static sceneOverlaysArray: { webGlobe; sceneOverlays }[] = []
+
   private entityArray: any[] = [] // 实体数组
 
   private markerOptions: any[] = [] // 标注点的参数feature信息进行存储
@@ -10,8 +11,29 @@ export class SceneOverlays {
 
   private webGlobe: any = undefined
 
-  constructor(Cesium, webGlobe) {
+  private CesiumZondy: any = undefined
+
+  public static getInstance(Cesium, CesiumZondy, webGlobe) {
+    let sceneOverlaysValue = this.sceneOverlaysArray.find(item => {
+      return item.webGlobe === webGlobe
+    })
+
+    if (sceneOverlaysValue) {
+      return sceneOverlaysValue.sceneOverlays
+    }
+
+    sceneOverlaysValue = {
+      webGlobe: webGlobe,
+      sceneOverlays: new SceneOverlays(Cesium, CesiumZondy, webGlobe)
+    }
+    this.sceneOverlaysArray.push(sceneOverlaysValue)
+
+    return sceneOverlaysValue
+  }
+
+  constructor(Cesium, CesiumZondy, webGlobe) {
     this.Cesium = Cesium
+    this.CesiumZondy = CesiumZondy
     this.webGlobe = webGlobe
   }
 
@@ -437,28 +459,5 @@ export class SceneOverlays {
         break
       }
     }
-  }
-}
-
-export class SceneOverlaysManager {
-  public static sceneOverlaysArray: { key; webGlobe; sceneOverlays }[] = []
-
-  public static getSceneOverlays(Cesium, webGlobe) {
-    let sceneOverlaysValue = this.sceneOverlaysArray.find(item => {
-      return item.webGlobe === webGlobe
-    })
-
-    if (sceneOverlaysValue) {
-      return sceneOverlaysValue.sceneOverlays
-    }
-
-    sceneOverlaysValue = {
-      key: createUniqueString(),
-      webGlobe: webGlobe,
-      sceneOverlays: new SceneOverlays(Cesium, webGlobe)
-    }
-    this.sceneOverlaysArray.push(sceneOverlaysValue)
-
-    return sceneOverlaysValue
   }
 }

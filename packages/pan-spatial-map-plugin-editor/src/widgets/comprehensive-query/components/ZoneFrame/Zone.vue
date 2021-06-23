@@ -99,15 +99,8 @@ import {
   Model,
   Emit
 } from 'vue-property-decorator'
-import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
-import Axios from 'axios'
-import {
-  FeatureGeoJSON,
-  api,
-  FeatureQueryParam,
-  queryFeaturesInstance,
-  baseConfigInstance
-} from '@mapgis/pan-spatial-map-store'
+import { AppMixin, MapMixin, Feature } from '@mapgis/web-app-framework'
+import { api, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import { bboxPolygon, lineString, bbox } from '@turf/turf'
 import { Sketch } from 'vue-color'
 import ZoneFrameMapbox from './ZoneFrameMapbox.vue'
@@ -128,7 +121,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
   readonly district!: object
 
   @Emit()
-  change(val: FeatureGeoJSON | null) {}
+  change(val: Feature.FeatureGeoJSON | null) {}
 
   // 首级配置
   private defaults = {}
@@ -273,7 +266,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
       if (this.currentZoneBreadcrumbItem) {
         const { ip, port, queryWay, docName } = this.defaults
         const { code, level } = this.currentZoneBreadcrumbItem
-        const params: FeatureQueryParam = {
+        const params: Feature.FeatureQueryParam = {
           ip,
           port,
           f: 'geojson',
@@ -292,7 +285,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
           } else if (queryWay === 'gdbp') {
             params.gdbp = gdbp
           }
-          const info = await queryFeaturesInstance.query(params, false)
+          const info = await Feature.FeatureQuery.query(params, false)
           this.nextLevelFeatures = {
             type: 'FeatureCollection',
             features: info.features
@@ -314,7 +307,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
           } else if (queryWay === 'gdbp') {
             params.gdbp = gdbp
           }
-          const info = await queryFeaturesInstance.query(params, false)
+          const info = await Feature.FeatureQuery.query(params, false)
           this.nextLevelFeatures = {
             type: 'FeatureCollection',
             features: info.features

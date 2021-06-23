@@ -183,13 +183,13 @@ import {
   Document,
   Map,
   LayerType,
-  LoadStatus
+  LoadStatus,
+  Metadata
 } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
   DataCatalogManager,
   eventBus,
-  queryOGCInfoInstance,
   api
 } from '@mapgis/pan-spatial-map-store'
 
@@ -575,11 +575,11 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       const url = item.serverURL
       let getCapabilitiesURL = ''
       if (item.serverType === LayerType.OGCWMS) {
-        getCapabilitiesURL = queryOGCInfoInstance.generateWMSGetCapabilitiesURL(
+        getCapabilitiesURL = Metadata.OGCMetadataQuery.generateWMSGetCapabilitiesURL(
           url
         )
       } else if (item.serverType === LayerType.OGCWMTS) {
-        getCapabilitiesURL = queryOGCInfoInstance.generateWMTSGetCapabilitiesURL(
+        getCapabilitiesURL = Metadata.OGCMetadataQuery.generateWMTSGetCapabilitiesURL(
           url
         )
       }

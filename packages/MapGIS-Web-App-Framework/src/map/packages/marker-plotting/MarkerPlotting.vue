@@ -13,16 +13,23 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Mixins, Emit } from 'vue-property-decorator'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
-import { MapMixin } from '@mapgis/web-app-framework'
-import MpMarkerSetPro from '../MarkerPro/MarkerSetPro.vue'
+import {
+  Component,
+  Prop,
+  Watch,
+  Inject,
+  Emit,
+  Vue
+} from 'vue-property-decorator'
+import MpMarkerSetPro from '../marker-pro/MarkerSetPro.vue'
 
 @Component({
   name: 'MpMarkerPlotting',
   components: { MpMarkerSetPro }
 })
-export default class MpMarkerPlotting extends Mixins(MapMixin) {
+export default class MpMarkerPlotting extends Vue {
+  @Inject('map') map
+
   @Prop({
     type: Boolean,
     default: false

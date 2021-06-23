@@ -118,13 +118,13 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     // 初始化交互式绘制控件
     window.CutFillAnalyzeManage.drawElement =
       window.CutFillAnalyzeManage.drawElement ||
-      new window.Cesium.DrawElement(window.webGlobe.viewer)
+      new this.Cesium.DrawElement(this.webGlobe.viewer)
     // 激活交互式绘制工具
     window.CutFillAnalyzeManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
         this.stopDraw()
-        const { viewer } = window.webGlobe
+        const { viewer } = this.webGlobe
         const { x, y, z } = this.form
         // 移除视图中所有的实体对象
         viewer.entities.removeAll()
@@ -136,23 +136,23 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
         const array = []
         for (let i = 0; i < positions.length; i++) {
           const point = positions[i]
-          const resPoint = new window.Cesium.Cartesian3()
-          const invserTran = new window.Cesium.Matrix4()
-          window.Cesium.Matrix4.inverse(transform, invserTran)
-          window.Cesium.Matrix4.multiplyByPoint(invserTran, point, resPoint)
+          const resPoint = new this.Cesium.Cartesian3()
+          const invserTran = new this.Cesium.Matrix4()
+          this.Cesium.Matrix4.inverse(transform, invserTran)
+          this.Cesium.Matrix4.multiplyByPoint(invserTran, point, resPoint)
           array.push(
-            new window.Cesium.Cartesian3(resPoint.x, resPoint.y, resPoint.z)
+            new this.Cesium.Cartesian3(resPoint.x, resPoint.y, resPoint.z)
           )
         }
         const newArray = []
         for (let arraylength = 0; arraylength < array.length; arraylength++) {
           array[arraylength].z = Number(z)
           const point = array[arraylength]
-          const resPoint = new window.Cesium.Cartesian3()
-          const invserTran = new window.Cesium.Matrix4()
-          window.Cesium.Matrix4.multiplyByPoint(transform, point, resPoint)
+          const resPoint = new this.Cesium.Cartesian3()
+          const invserTran = new this.Cesium.Matrix4()
+          this.Cesium.Matrix4.multiplyByPoint(transform, point, resPoint)
           newArray.push(
-            new window.Cesium.Cartesian3(resPoint.x, resPoint.y, resPoint.z)
+            new this.Cesium.Cartesian3(resPoint.x, resPoint.y, resPoint.z)
           )
         }
         // 在视图中添加围栏实体
@@ -165,7 +165,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
             // 实体点数组
             positions: newArray,
             // 实体材质
-            material: new window.Cesium.Color(0.2, 0.5, 0.4, 0.7),
+            material: new this.Cesium.Color(0.2, 0.5, 0.4, 0.7),
             // 实体轮廓
             outline: true
           }
@@ -215,35 +215,35 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     // 修改模型高度
     const height = 50.0
     // 定位方法
-    let hpr = new window.Cesium.Matrix3()
-    // new window.Cesium.HeadingPitchRoll(heading, pitch, roll)
+    let hpr = new this.Cesium.Matrix3()
+    // new this.Cesium.HeadingPitchRoll(heading, pitch, roll)
     // heading围绕负z轴的旋转。pitch是围绕负y轴的旋转。Roll是围绕正x轴的旋转
-    const hprObj = new window.Cesium.HeadingPitchRoll(
-      window.Cesium.Math.PI,
-      window.Cesium.Math.PI,
-      window.Cesium.Math.PI
+    const hprObj = new this.Cesium.HeadingPitchRoll(
+      this.Cesium.Math.PI,
+      this.Cesium.Math.PI,
+      this.Cesium.Math.PI
     )
-    hpr = window.Cesium.Matrix3.fromHeadingPitchRoll(hprObj, hpr)
+    hpr = this.Cesium.Matrix3.fromHeadingPitchRoll(hprObj, hpr)
     // 2、平移
     // 2.3储存平移的结果
-    const modelMatrix = window.Cesium.Matrix4.multiplyByTranslation(
+    const modelMatrix = this.Cesium.Matrix4.multiplyByTranslation(
       // 2.1从以度为单位的经度和纬度值返回Cartesian3位置
       // 2.2计算4x4变换矩阵
-      window.Cesium.Transforms.eastNorthUpToFixedFrame(
-        window.Cesium.Cartesian3.fromDegrees(lo, la, height)
+      this.Cesium.Transforms.eastNorthUpToFixedFrame(
+        this.Cesium.Cartesian3.fromDegrees(lo, la, height)
       ),
-      new window.Cesium.Cartesian3(),
-      new window.Cesium.Matrix4()
+      new this.Cesium.Cartesian3(),
+      new this.Cesium.Matrix4()
     )
     /// 3、应用旋转
-    // window.Cesium.Matrix4.multiplyByMatrix3 （矩阵，旋转，结果）
-    window.Cesium.Matrix4.multiplyByMatrix3(modelMatrix, hpr, modelMatrix)
+    // this.Cesium.Matrix4.multiplyByMatrix3 （矩阵，旋转，结果）
+    this.Cesium.Matrix4.multiplyByMatrix3(modelMatrix, hpr, modelMatrix)
     return modelMatrix
   }
 
   // 移除填挖方计算
   stopCutFillM() {
-    // const { viewer } = window.webGlobe
+    // const { viewer } = this.webGlobe
     // // 移除视图中所有的实体对象
     // viewer.entities.removeAll()
     this.stopDraw()
@@ -269,7 +269,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
   remove() {
     if (window.CutFillAnalyzeManage.cutFill) {
-      const { viewer } = window.webGlobe
+      const { viewer } = this.webGlobe
       // 移除视图中所有的实体对象
       viewer.entities.removeById('cutfill')
       window.CutFillAnalyzeManage.cutFill = null

@@ -33,16 +33,13 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
   eventBus,
-  api,
-  envInstance
+  api
 } from '@mapgis/pan-spatial-map-store'
 
 @Component({ name: 'MpLegend' })
 export default class MpLegend extends Mixins(WidgetMixin) {
   // 图例微件的显隐
   private visible = false
-
-  private dataCatalog = dataCatalogManagerInstance
 
   // 目录树数据
   private treeData = []
@@ -58,8 +55,8 @@ export default class MpLegend extends Mixins(WidgetMixin) {
 
   async created() {
     const treeConfig = await api.getWidgetConfig('data-catalog')
-    this.dataCatalog.init(treeConfig)
-    this.treeData = await this.dataCatalog.getDataCatalogTreeData()
+    dataCatalogManagerInstance.init(treeConfig)
+    this.treeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
     eventBus.$on('uploader-success', this.onGetConfig)
     eventBus.$on('emitCheckedNodeKeys', this.onCheckedKeysChange)
     this.$message.config({

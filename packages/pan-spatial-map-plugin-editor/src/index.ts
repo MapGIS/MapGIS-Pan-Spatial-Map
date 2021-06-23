@@ -1,5 +1,3 @@
-import { MpDrawPro, Mp3dDrawPro } from './components'
-
 import {
   MpMeasurement,
   MpMarkerManager,
@@ -11,8 +9,6 @@ import {
 } from './widgets'
 
 const components = [
-  MpDrawPro,
-  Mp3dDrawPro,
   MpMeasurement,
   MpMarkerManager,
   MpAddData,

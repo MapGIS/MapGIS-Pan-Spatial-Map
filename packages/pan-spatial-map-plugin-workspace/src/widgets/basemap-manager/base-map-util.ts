@@ -7,7 +7,6 @@ import {
   LoadStatus
 } from '@mapgis/web-app-framework'
 import {
-  utilInstance,
   baseConfigInstance,
   api,
   DataCatalogManager

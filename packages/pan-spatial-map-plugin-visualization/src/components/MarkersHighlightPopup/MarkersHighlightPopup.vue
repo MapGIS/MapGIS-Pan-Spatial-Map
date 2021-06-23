@@ -9,19 +9,13 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { AppMixin, UUID } from '@mapgis/web-app-framework'
-import {
-  baseConfigInstance,
-  utilInstance,
-  GFeature
-} from '@mapgis/pan-spatial-map-store'
-// 本地测试使用的临时地址
-import MpMarkerPlotting from '../../../../pan-spatial-map-plugin-workspace/src/components/MarkerPlotting/MarkerPlotting.vue'
+import { AppMixin, UUID, Feature } from '@mapgis/web-app-framework'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 
 interface IFeature {
   key?: string // 图层UUID
   title?: string // 图层名称
-  feature?: GFeature
+  feature?: Feature.GFeature
 }
 
 interface INormalizedFeature {
@@ -33,7 +27,7 @@ interface INormalizedFeature {
 interface IMarker {
   img: stirng
   coordinates: number[]
-  feature: GFeature
+  feature: Feature.GFeature
   properties: any
   fid: string
   id: string
@@ -43,9 +37,7 @@ interface IMarker {
  * 目前只支持二维,三维后期会加, AppMixin => is2DMapMode
  */
 @Component({
-  components: {
-    MpMarkerPlotting
-  }
+  components: {}
 })
 export default class MpMarkersHighlightPopup extends Mixins<
   Record<string, any>
@@ -117,7 +109,7 @@ export default class MpMarkersHighlightPopup extends Mixins<
     }
     this.markers = this.normalizedFeatures.reduce<IMarker[]>(
       (result, { uid, feature }) => {
-        const coordinates = utilInstance.getGeoJsonFeatureCenter(feature)
+        const coordinates = Feature.getGeoJsonFeatureCenter(feature)
         const centerItems = [coordinates[0], coordinates[1]]
         if (centerItems.every(v => !Number.isNaN(v))) {
           const img = this.getColorConfigImg('defaultImg')
@@ -155,9 +147,8 @@ export default class MpMarkersHighlightPopup extends Mixins<
     })
     const { MIN_VALUE, MAX_VALUE } = Number
     this.selectionBound = this.normalizedFeatures.reduce(
-      ({ xmin, xmax, ymin, ymax }, { feature }: GFeature) => {
-        const _bound =
-          feature.bound || utilInstance.getGeoJsonFeatureBound(feature)
+      ({ xmin, xmax, ymin, ymax }, { feature }: Feature.GFeature) => {
+        const _bound = feature.bound || Feature.getGeoJsonFeatureBound(feature)
         return {
           xmin: _bound.xmin < xmin ? _bound.xmin : xmin,
           ymin: _bound.ymin < ymin ? _bound.ymin : ymin,

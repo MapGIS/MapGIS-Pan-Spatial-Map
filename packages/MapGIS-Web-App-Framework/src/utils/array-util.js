@@ -2,14 +2,14 @@ import { _isNaN } from './common-util'
 
 // 求取数组中非NaN数据中的最小值
 // min([1, 2, '11', null, 'fdf', []]) ==> 1
-function min(arr) {
+export function min(arr) {
   arr = arr.filter(item => !_isNaN(item))
   return arr.length ? Math.min.apply(null, arr) : undefined
 }
 
 // 求取数组中非NaN数据中的最大值
 // max([1, 2, '11', null, 'fdf', []]) ==> 11
-function max(arr) {
+export function max(arr) {
   arr = arr.filter(item => !_isNaN(item))
   return arr.length ? Math.max.apply(null, arr) : undefined
 }

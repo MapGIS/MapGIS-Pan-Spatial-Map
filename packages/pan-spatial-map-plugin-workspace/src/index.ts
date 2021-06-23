@@ -1,13 +1,4 @@
-import {
-  MpMarkerPro,
-  MpMarkerSetPro,
-  Mp3dMarkerPro,
-  Mp3dMarkerSetPro,
-  MpMarkerPlotting,
-  Mp3dMarkerPlotting,
-  MpAttributeTable,
-  MpAttributeTableList
-} from './components'
+import { MpAttributeTable, MpAttributeTableList } from './components'
 
 import {
   MpZoom,
@@ -27,12 +18,6 @@ const components = [
   MpScalebar,
   MpDataCatalog,
   MpLayerList,
-  MpMarkerPro,
-  MpMarkerSetPro,
-  Mp3dMarkerPro,
-  Mp3dMarkerSetPro,
-  MpMarkerPlotting,
-  Mp3dMarkerPlotting,
   MpAttributeTable,
   MpAttributeTableList,
   MpBasemapManager,

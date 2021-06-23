@@ -17,11 +17,8 @@ import {
   Prop,
   Emit
 } from 'vue-property-decorator'
-import { MapMixin, AppMixin } from '@mapgis/web-app-framework'
-import {
-  FeatureGeoJSON,
-  baseConfigInstance
-} from '@mapgis/pan-spatial-map-store'
+import { MapMixin, AppMixin, Feature } from '@mapgis/web-app-framework'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component
 export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
@@ -54,7 +51,7 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
       return {}
     }
   })
-  readonly frameFeature!: FeatureGeoJSON | null
+  readonly frameFeature!: Feature.FeatureGeoJSON | null
 
   @Prop({
     type: Object,
@@ -87,7 +84,7 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
   }
 
   @Watch('frameFeature', { deep: true, immediate: true })
-  private frameFeatureChange(val: FeatureGeoJSON | null) {
+  private frameFeatureChange(val: Feature.FeatureGeoJSON | null) {
     this.clear()
     if (val && Object.keys(val).length > 0) {
       this.map.addSource('coordinate', { type: 'geojson', data: val })

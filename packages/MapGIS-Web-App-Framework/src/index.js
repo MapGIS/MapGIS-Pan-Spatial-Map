@@ -32,7 +32,6 @@ export {
 export {
   UUID,
   CoordinateTransformation,
-  SceneUtil,
   Document,
   Map,
   Layer,

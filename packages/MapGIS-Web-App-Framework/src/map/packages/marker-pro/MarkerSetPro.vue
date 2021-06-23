@@ -1,33 +1,29 @@
 <template>
   <div>
-    <mp-3d-marker-pro
+    <mp-marker-pro
       v-for="marker in markers"
       :key="marker.markerId"
       :marker="marker"
-      :current-marker-id="currentMarkerId"
       :field-configs="fieldConfigs"
-      @marker-id="updateCurrentMarkerId"
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
-      @change="changePopup"
     >
       <template slot="popup" slot-scope="slotProps">
         <slot name="popup" v-bind="slotProps"></slot>
       </template>
-    </mp-3d-marker-pro>
+    </mp-marker-pro>
   </div>
 </template>
 
 <script lang="ts">
+import MpMarkerPro from './MarkerPro.vue'
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { IFields } from '@mapgis/pan-spatial-map-store'
-import Mp3dMarkerPro from './3dMarkerPro.vue'
 
 @Component({
-  name: 'Mp3dMarkerSetPro',
-  components: { Mp3dMarkerPro }
+  name: 'MpMarkerSetPro',
+  components: { MpMarkerPro }
 })
-export default class Mp3dMarkerSetPro extends Vue {
+export default class MpMarkerSetPro extends Vue {
   @Prop({
     type: Array,
     required: true
@@ -39,25 +35,23 @@ export default class Mp3dMarkerSetPro extends Vue {
     required: false,
     default: () => []
   })
-  readonly fieldConfigs!: IFields[]
+  readonly fieldConfigs!: any[]
 
-  private currentMarkerId = ''
+  private prePopup: any = undefined
 
-  private updateCurrentMarkerId(id: string) {
-    this.currentMarkerId = id
-  }
+  private mouseEnterEvent(e: any, id) {
+    if (this.prePopup && this.prePopup.isOpen()) {
+      this.prePopup.remove()
+    }
+    e.marker.togglePopup()
+    this.prePopup = e.marker.getPopup()
 
-  private mouseEnterEvent(e, id) {
     this.$emit('mouseenter', e, id)
   }
 
-  private mouseLeaveEvent(e, id) {
+  private mouseLeaveEvent(e: any, id) {
     this.$emit('mouseleave', e, id)
-  }
-
-  changePopup(val) {
-    this.currentMarkerId = val
   }
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="less" scoped></style>

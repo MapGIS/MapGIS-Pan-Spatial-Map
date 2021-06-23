@@ -47,14 +47,10 @@
 <script lang="ts">
 import { Component, Vue, Mixins, Watch, Inject } from 'vue-property-decorator'
 import {
-  dataCatalogInstance,
-  queryFeaturesInstance,
-  utilInstance,
   baseConfigInstance,
   ExhibitionControllerMixin,
   IAttributeTableListExhibition,
-  AttributeTableListExhibition,
-  cesiumUtilInstance
+  AttributeTableListExhibition
 } from '@mapgis/pan-spatial-map-store'
 import {
   WidgetMixin,
@@ -64,7 +60,8 @@ import {
   OGCWMTSLayer,
   Sublayer,
   Rectangle3D,
-  Point3D
+  Point3D,
+  Objects
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import {
@@ -164,6 +161,14 @@ export default class MpFeatureQuery extends Mixins(
         type.id = QueryType.Rectangle
       }
     })
+  }
+
+  mounted() {
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
   }
 
   // 微件关闭时
@@ -383,7 +388,7 @@ export default class MpFeatureQuery extends Mixins(
           // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
           const transform = this.getLayerTranform(layer)
           if (transform) {
-            const { x, y, z } = cesiumUtilInstance.degreeToDataPosition(
+            const { x, y, z } = this.sceneController.degreeToDataPosition(
               shape,
               transform
             )
@@ -460,11 +465,11 @@ export default class MpFeatureQuery extends Mixins(
 
   private transQueryRect3D({ xmin, ymin, xmax, ymax, zmin, zmax }, transform) {
     if (transform) {
-      const minPosition = cesiumUtilInstance.degreeToDataPosition(
+      const minPosition = this.sceneController.degreeToDataPosition(
         { x: xmin, y: ymin, z: zmin },
         transform
       )
-      const maxPosition = cesiumUtilInstance.degreeToDataPosition(
+      const maxPosition = this.sceneController.degreeToDataPosition(
         { x: xmax, y: ymax, z: zmax },
         transform
       )
@@ -482,7 +487,7 @@ export default class MpFeatureQuery extends Mixins(
 
   private toQueryRect3D(shape, transform) {
     const positions = shape.map(item => {
-      const { x, y, z } = cesiumUtilInstance.degreeToDataPosition(
+      const { x, y, z } = this.sceneController.degreeToDataPosition(
         item,
         transform
       )
@@ -561,7 +566,7 @@ export default class MpFeatureQuery extends Mixins(
     if (!this.is2DMapMode && type === LayerType.IGSScene) {
       const tranform = this.getLayerTranform(layer)
       if (tranform) {
-        const extent = cesiumUtilInstance.dataPositionExtentToDegreeExtent(
+        const extent = this.sceneController.dataPositionExtentToDegreeExtent(
           fullExtent,
           tranform
         )

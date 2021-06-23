@@ -241,18 +241,14 @@ import {
   AppMixin,
   WMTSSublayer,
   CoordinateTransformation,
-  CoordinateSystemType
+  CoordinateSystemType,
+  Objects
 } from '@mapgis/web-app-framework'
 import {
   ExhibitionControllerMixin,
   IAttributeTableExhibition,
   AttributeTableExhibition,
-  baseConfigInstance,
-  queryFeaturesInstance,
-  dataCatalogInstance,
-  queryOGCInfoInstance,
-  queryArcgisInfoInstance,
-  cesiumUtilInstance
+  baseConfigInstance
 } from '@mapgis/pan-spatial-map-store'
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
@@ -324,33 +320,6 @@ export default class TreeLayer extends Mixins(
     }
 
     return []
-  }
-
-  setTooltip(item) {
-    if (this.isParentLayer(item)) {
-      const parentName = ''
-      const arr = []
-      this.findParentName(item.id, parentName, this.dataCatalog, arr)
-      if (arr.length > 0) {
-        return arr[0]
-      }
-      return ''
-    } else {
-      return null
-    }
-  }
-
-  findParentName(id, parentName, dataCatalog, arr) {
-    dataCatalog.forEach(item => {
-      let copy = parentName
-      if (item.guid === id) {
-        parentName += item.label
-        arr.push(parentName)
-      } else if (item.children) {
-        copy += `${item.label}-`
-        this.findParentName(id, copy, item.children, arr)
-      }
-    })
   }
 
   @Watch('document.defaultMap', { deep: true, immediate: true })
@@ -431,6 +400,41 @@ export default class TreeLayer extends Mixins(
         }, 700)
       }
     }
+  }
+
+  mounted() {
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+  }
+
+  setTooltip(item) {
+    if (this.isParentLayer(item)) {
+      const parentName = ''
+      const arr = []
+      this.findParentName(item.id, parentName, this.dataCatalog, arr)
+      if (arr.length > 0) {
+        return arr[0]
+      }
+      return ''
+    } else {
+      return null
+    }
+  }
+
+  findParentName(id, parentName, dataCatalog, arr) {
+    dataCatalog.forEach(item => {
+      let copy = parentName
+      if (item.guid === id) {
+        parentName += item.label
+        arr.push(parentName)
+      } else if (item.children) {
+        copy += `${item.label}-`
+        this.findParentName(id, copy, item.children, arr)
+      }
+    })
   }
 
   onSearch(val) {
@@ -699,7 +703,7 @@ export default class TreeLayer extends Mixins(
       )
       if (source.length > 0) {
         const tranform = source[0].root.transform
-        const bound = cesiumUtilInstance.dataPositionExtentToDegreeExtent(
+        const bound = this.sceneController.dataPositionExtentToDegreeExtent(
           { xmin, xmax, ymin, ymax, zmin, zmax },
           tranform
         )

@@ -30,7 +30,6 @@
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { envInstance } from '@mapgis/pan-spatial-map-store'
 import baseMapUtil from './base-map-util'
 
 @Component({ name: 'MpBasemapManager' })

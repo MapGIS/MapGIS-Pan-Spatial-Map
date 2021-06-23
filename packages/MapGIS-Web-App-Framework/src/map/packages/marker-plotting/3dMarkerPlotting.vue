@@ -13,20 +13,29 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Mixins, Emit } from 'vue-property-decorator'
 import {
-  FeatureGeoJSON,
-  utilInstance,
-  cesiumUtilInstance
-} from '@mapgis/pan-spatial-map-store'
-import { MapMixin } from '@mapgis/web-app-framework'
-import Mp3dMarkerSetPro from '../3dMarkerPro/3dMarkerSetPro.vue'
+  Component,
+  Prop,
+  Watch,
+  Inject,
+  Vue,
+  Emit
+} from 'vue-property-decorator'
+import Mp3dMarkerSetPro from '../marker-pro/3dMarkerSetPro.vue'
+import { SceneOverlays } from '../../../model/overlay'
+import { SceneController } from '../../../model/objects'
 
 @Component({
   name: 'Mp3dMarkerPlotting',
   components: { Mp3dMarkerSetPro }
 })
-export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
+export default class Mp3dMarkerPlotting extends Vue {
+  @Inject('Cesium') Cesium: any
+
+  @Inject('CesiumZondy') CesiumZondy: any
+
+  @Inject('webGlobe') webGlobe: any
+
   @Prop({
     type: Boolean,
     default: false
@@ -102,7 +111,7 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
     if (!this.filterWithMap) {
       return
     }
-    const cExtent = cesiumUtilInstance.getCurrentExtent(this.webGlobe)
+    const cExtent = this.sceneController.getCurrentExtent()
     const bounds = {
       xmin: cExtent.xmin,
       ymin: cExtent.ymin,
@@ -127,10 +136,20 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
   emitMapBoundChange(bound: Record<string, any>) {}
 
   mounted() {
+    this.sceneOverlays = SceneOverlays.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+    this.sceneController = SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+
     this.analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
       viewer: this.webGlobe.viewer
     })
-    cesiumUtilInstance.setCesiumGlobe(this.Cesium, this.webGlobe)
     this.webGlobe.viewer.camera.changed.addEventListener(
       this.changeFilterWithMap
     )
@@ -220,7 +239,7 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
         const coords = featureGeoJson.features[i].geometry.coordinates
         const name = `result-entity-${i}`
         this.entityNames.push(name)
-        cesiumUtilInstance.appendLine({
+        this.sceneOverlays.addLine({
           name: name,
           pointsArray: coords
             .join(',')
@@ -241,7 +260,7 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
         const coords = featureGeoJson.features[i].geometry.coordinates[0]
         const name = `result-entity-${i}`
         this.entityNames.push(name)
-        cesiumUtilInstance.appendPolygon(
+        this.sceneOverlays.addPolygon(
           name,
           coords
             .join(',')
@@ -287,7 +306,7 @@ export default class Mp3dMarkerPlotting extends Mixins(MapMixin) {
 
   private clearHighlight() {
     for (let i = this.entityNames.length - 1; i >= 0; i -= 1) {
-      cesiumUtilInstance.removeEntityByName(this.entityNames[i])
+      this.sceneOverlays.removeEntityByName(this.entityNames[i])
       this.entityNames.pop()
     }
   }

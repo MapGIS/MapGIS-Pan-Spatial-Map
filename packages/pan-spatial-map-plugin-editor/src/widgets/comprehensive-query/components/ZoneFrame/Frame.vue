@@ -72,13 +72,9 @@ import {
   Prop,
   Emit
 } from 'vue-property-decorator'
-import { AppMixin } from '@mapgis/web-app-framework'
-import {
-  baseConfigInstance,
-  MapTypeChanageMixin,
-  FeatureGeoJSON,
-  utilInstance
-} from '@mapgis/pan-spatial-map-store'
+import { AppMixin, Feature } from '@mapgis/web-app-framework'
+import { baseConfigInstance, api } from '@mapgis/pan-spatial-map-store'
+import axios from 'axios'
 import ZoneFrameMapbox from './ZoneFrameMapbox.vue'
 import ZoneFrameCesium from './ZoneFrameCesium.vue'
 
@@ -93,7 +89,7 @@ export default class Frame extends Mixins(AppMixin) {
   readonly active!: boolean
 
   @Emit()
-  change(val: FeatureGeoJSON | null) {}
+  change(val: Feature.FeatureGeoJSON | null) {}
 
   private scale = 'Scale_20w'
 
@@ -126,6 +122,13 @@ export default class Frame extends Mixins(AppMixin) {
   private frameFeature: Record<string, any> = {}
 
   private center = []
+
+  private frameConfig = {
+    ip: '',
+    port: '',
+    name: '',
+    gdbp: ''
+  }
 
   private get pagination() {
     if (this.total) {
@@ -170,16 +173,36 @@ export default class Frame extends Mixins(AppMixin) {
     }
   }
 
+  async mounted() {
+    this.frameConfig = await api.getConfig('sheet')
+  }
+
   private async onSearch() {
     this.loading = true
     try {
       const { scale, pageNumber, pageSize, keyword } = this
-      const { content, totalElements } = await utilInstance.getFrameNoList({
+      // 通过sheetConfig内的ip、port、name去获取地图范围，构造成[xMin, yMin, xMax, yMax]，用于查询图幅号
+      const {
+        data: { xMin, yMin, xMax, yMax }
+      } = await axios.get(
+        `http://${this.frameConfig.ip}:${this.frameConfig.port}/igs/rest/mrms/info/${this.frameConfig.name}`
+      )
+
+      const { content, totalElements } = await api.getFrameNoList(
+        this.frameConfig.ip,
+        this.frameConfig.port,
+        this.frameConfig.gdbp,
+        xMin,
+        yMin,
+        xMax,
+        yMax,
         scale,
-        pageNumber: pageNumber - 1,
+        pageNumber - 1,
         pageSize,
-        keyword
-      })
+        keyword,
+        baseConfigInstance.config.projectionName,
+        baseConfigInstance.config.projectionName
+      )
       this.list = content || []
       this.total = totalElements || 0
     } catch (error) {
@@ -194,7 +217,14 @@ export default class Frame extends Mixins(AppMixin) {
     this.selectItem = item
     const {
       data: { XMin, YMin, XMax, YMax }
-    } = await utilInstance.getRectByFrameNo(item)
+    } = await api.getFrameExtentByNo(
+      this.frameConfig.ip,
+      this.frameConfig.port,
+      item,
+      baseConfigInstance.config.projectionName,
+      baseConfigInstance.config.projectionName
+    )
+
     this.clear()
     this.frameFeature = {
       type: 'FeatureCollection',

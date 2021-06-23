@@ -1,1 +1,1 @@
-export { SceneOverlays, SceneOverlaysManager } from './scene-overlay'
+export { SceneOverlays } from './scene-overlay'

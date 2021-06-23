@@ -37,9 +37,9 @@ export {
   SpatialReference
 } from './document/spatial-reference'
 
-export { UUID, CoordinateTransformation, SceneUtil } from './utils'
+export { UUID, CoordinateTransformation } from './utils'
 
-import * as Objects from 'objects'
+import * as Objects from './objects'
 import * as Catalog from './catalog'
 import * as Feature from './feature'
 import * as Metadata from './metadata'

@@ -17,12 +17,14 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
-import { UUID, LayerType } from '@mapgis/web-app-framework'
 import {
-  queryFeaturesInstance,
-  DocInfoQueryParam,
-  dataCatalogManagerInstance
-} from '@mapgis/pan-spatial-map-store'
+  UUID,
+  LayerType,
+  Objects,
+  Feature,
+  Catalog
+} from '@mapgis/web-app-framework'
+import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
 
 interface IRect {
   xmin: number
@@ -31,7 +33,7 @@ interface IRect {
   ymax: number
 }
 
-interface IQueryParams extends DocInfoQueryParam {
+interface IQueryParams extends Catalog.DocInfoQueryParam {
   id: string
   gdbps: string
   type: LayerType
@@ -103,7 +105,7 @@ export default class MpQueryResultTree extends Vue {
   // 获取范围
   get goemetry() {
     const { xmin, ymin, xmax, ymax } = this.queryRect
-    return queryFeaturesInstance.creatRectByMinMax(xmin, ymin, xmax, ymax)
+    return Objects.GeometryExp.creatRectByMinMax(xmin, ymin, xmax, ymax)
   }
 
   @Watch('layer', { deep: true })
@@ -146,7 +148,7 @@ export default class MpQueryResultTree extends Vue {
    * @param queryParam
    */
   async getIGSMapImageLayerInfo({ ip, port, docName }: IQueryParams) {
-    const docInfo = await queryFeaturesInstance.getDocInfo({
+    const docInfo = await Catalog.DocumentCatalog.getDocInfo({
       ip,
       port,
       serverName: docName
@@ -155,20 +157,21 @@ export default class MpQueryResultTree extends Vue {
       const mapInfo: DocInfoMapInfo = docInfo.MapInfos[this.mapIndex]
       if (mapInfo) {
         const { CatalogLayer } = mapInfo
-        const layerIndexs: string[] = queryFeaturesInstance.getVectorIndex(
+        const layerIndexes: string[] = Catalog.DocumentCatalog.getLayerIndexesByNamesOrCodes(
           CatalogLayer,
           this.querySubLayerNames,
           this.queryDistrictCode,
           [],
           []
         )
-        const names = queryFeaturesInstance
-          .getVectorByIndex(layerIndexs.join(','), CatalogLayer)
-          .map(({ LayerName }) => LayerName)
-        if (names.length && names.length === layerIndexs.length) {
+        const names = Catalog.DocumentCatalog.getLayersByIndexes(
+          layerIndexes.join(','),
+          CatalogLayer
+        ).map(({ LayerName }) => LayerName)
+        if (names.length && names.length === layerIndexes.length) {
           return names.map<IQueryLayerInfo>((name, i) => ({
             layerName: name,
-            layerIndex: layerIndexs[i]
+            layerIndex: layerIndexes[i]
           }))
         }
       }
@@ -317,14 +320,14 @@ export default class MpQueryResultTree extends Vue {
         default:
           break
       }
-      const result = await queryFeaturesInstance.query(queryParams)
+      const result = await Feature.FeatureQuery.query(queryParams)
       if (result) {
         const resultArray = Array.isArray(result) ? result : [result]
         return resultArray.map<ITreeNode>((featureSet, index) => {
           const { layerName } = this.layerInfos[treeNodeIndexs[index]]
           const {
             features
-          } = queryFeaturesInstance.igsFeaturesToGeoJSONFeatures(featureSet)
+          } = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(featureSet)
           const resultForPerLayer =
             features && features.length
               ? features.map(item => ({

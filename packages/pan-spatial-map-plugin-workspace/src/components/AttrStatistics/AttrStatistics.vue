@@ -228,13 +228,15 @@
 
 <script lang="ts">
 import { Component, Mixins, Watch, Prop, Ref } from 'vue-property-decorator'
-import { AppMixin, LayerType } from '@mapgis/web-app-framework'
 import {
-  queryFeaturesInstance,
-  queryArcgisInfoInstance,
-  utilInstance
-} from '@mapgis/pan-spatial-map-store'
-import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
+  UUID,
+  AppMixin,
+  LayerType,
+  ColorUtil,
+  Feature,
+  Catalog,
+  Metadata
+} from '@mapgis/web-app-framework'
 import axios from 'axios'
 import * as echarts from 'echarts'
 import { Sketch } from 'vue-color'
@@ -453,7 +455,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   private async getLayerInfosByServerName() {
     const { serverType, serverName, serverUrl, ip, port } = this.queryParams
     if (serverType === LayerType.IGSMapImage) {
-      const docInfo = await queryFeaturesInstance.getDocInfo({
+      const docInfo = await Catalog.DocumentCatalog.getDocInfo({
         serverName,
         ip,
         port
@@ -472,12 +474,12 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         return []
       }
 
-      const layerIndexs = queryFeaturesInstance
-        .getVectorIndex(CatalogLayer)
-        .join(',')
+      const layerIndexes = Catalog.DocumentCatalog.getLayerIndexesByNamesOrCodes(
+        CatalogLayer
+      ).join(',')
 
-      const layers = queryFeaturesInstance.getVectorByIndex(
-        layerIndexs,
+      const layers = Catalog.DocumentCatalog.getLayersByIndexes(
+        layerIndexes,
         CatalogLayer
       )
       this.layerOptions = layers.map(layer => ({
@@ -485,7 +487,9 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         value: layer.layerIndex
       }))
     } else if (serverType === LayerType.arcGISMapImage) {
-      const result = await queryArcgisInfoInstance.getArcgisInfo(serverUrl)
+      const result = await Metadata.ArcGISMetadataQuery.getServiceInfo(
+        serverUrl
+      )
       const { layers } = result
       this.layerOptions = layers.map((child, index) => ({
         label: child.name,
@@ -510,7 +514,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       serverType === LayerType.IGSVector ||
       serverType === LayerType.IGSScene
     ) {
-      const info = await queryFeaturesInstance.query(
+      const info = await Feature.FeatureQuery.query(
         {
           ip: this.queryParams.ip,
           port: this.queryParams.port,
@@ -538,7 +542,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         })
       }
     } else if (serverType === LayerType.arcGISMapImage) {
-      const result = await queryArcgisInfoInstance.getArcGISlayerFileds({
+      const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,
         layerIndex
@@ -563,8 +567,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     if (step === 0) return []
     if (step === 1) return [start]
     if (step === 2) return [start, end]
-    const startRgba = utilInstance.getRGBA(start)
-    const endRgba = utilInstance.getRGBA(end)
+    const startRgba = ColorUtil.getColorObject(start)
+    const endRgba = ColorUtil.getColorObject(end)
     const rgbArr: string[] = []
     for (let i = 0; i < step; i += 1) {
       const r = startRgba.r + i * Math.floor((endRgba.r - startRgba.r) / step)
@@ -624,9 +628,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       })
       dataset.push(...items)
     } else if (serverType === LayerType.arcGISMapImage) {
-      const {
-        count: totalCount
-      } = await queryArcgisInfoInstance.getArcGISQueryTotal({
+      const { count: totalCount } = await Feature.ArcGISFeatureQuery.getTotal({
         f: 'json',
         serverUrl,
         layerIndex: this.layer
@@ -641,7 +643,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       })
       let obj = {}
       if (this.groupType === 'single') {
-        const geojson = await queryArcgisInfoInstance.query({
+        const geojson = await Feature.ArcGISFeatureQuery.query({
           f: 'json',
           page: 0,
           pageCount: totalCount,
@@ -653,7 +655,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         })
         obj = this.setArcgisSingleData(geojson)
       } else {
-        const { features } = await queryArcgisInfoInstance.query({
+        const { features } = await Feature.ArcGISFeatureQuery.query({
           f: 'json',
           page: 0,
           pageCount: totalCount,
@@ -709,7 +711,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     }
     for (let index = 0; index < limistArr.length; index++) {
       const limits = limistArr[index]
-      const { features } = await queryArcgisInfoInstance.query({
+      const { features } = await Feature.ArcGISFeatureQuery.query({
         f: 'json',
         page: 0,
         pageCount: totalCount,
@@ -963,7 +965,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     for (let i = 1; i < dataset.length; i += 1) {
       const row = dataset[i]
       const obj: Record<string, any> = {}
-      obj.id = uuid()
+      obj.id = UUID.uuid()
       for (let j = 0; j < tableColumns.length; j += 1) {
         const col = tableColumns[j]
         obj[col.dataIndex] = row[j]

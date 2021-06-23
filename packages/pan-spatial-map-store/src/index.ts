@@ -1,10 +1,8 @@
-import { defaultServer } from './service/query-default-server'
-
 import * as api from './api'
 
 export { api }
 
-export { getRequest, utilInstance, cesiumUtilInstance, Parser } from './utils'
+export { getRequest, ProjectionTransformationUtil } from './utils'
 
 export { default as eventBus } from './event-bus'
 
@@ -46,43 +44,4 @@ export {
   ExhibitionList
 } from './exhibition'
 
-export {
-  queryOGCInfoInstance,
-  queryIGSMetadataInstance,
-  MetadataQueryParam,
-  Metadata,
-  LayerTable,
-  LayerList,
-  queryFeaturesInstance,
-  DocInfoQueryParam,
-  MapInfoCatalogLayer,
-  DocInfoMapInfo,
-  DocInfo,
-  FeatureQueryParam,
-  MetaInfoGeoSpatialAttr,
-  MetaInfoGeometry,
-  GMetaInfo,
-  GeoCRS,
-  GGeometry,
-  GFeature,
-  FeatureGeoJSON,
-  FeatureIGSAttStruct,
-  Bound,
-  XY,
-  Arc,
-  Ring,
-  PntGeom,
-  LinGeom,
-  RegGeom,
-  FGeom,
-  FeatureIGSSFEle,
-  FeatureIGS,
-  GeoCodeFeature,
-  ESGeoCodeFeatures,
-  LayerInfoQueryParam,
-  exportMarkersToFileInstance,
-  queryIgsServicesInfoInstance,
-  queryArcgisInfoInstance,
-  igsFeatureModifyInstance,
-  queryLayerInfoInstance
-} from './service'
+export { exportMarkersToFileInstance } from './service'

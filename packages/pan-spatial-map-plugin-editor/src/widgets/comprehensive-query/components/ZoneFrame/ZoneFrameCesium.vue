@@ -4,12 +4,12 @@
 
 <script lang="ts">
 import { Component, Watch, Mixins, Prop, Provide } from 'vue-property-decorator'
-import { MapMixin } from '@mapgis/web-app-framework'
 import {
-  utilInstance,
-  FeatureGeoJSON,
-  cesiumUtilInstance
-} from '@mapgis/pan-spatial-map-store'
+  MapMixin,
+  ColorUtil,
+  Overlay,
+  Feature
+} from '@mapgis/web-app-framework'
 
 @Component({})
 export default class ZoneFramCesium extends Mixins(MapMixin) {
@@ -20,7 +20,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
       return {}
     }
   })
-  readonly feature!: FeatureGeoJSON | null
+  readonly feature!: Feature.FeatureGeoJSON | null
 
   @Prop({
     type: Object,
@@ -46,13 +46,16 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
   })
   readonly fitBound!: Record<string, any>
 
-  private cesiumUtil = cesiumUtilInstance
-
   private entityNames: string[] = []
 
   private entityTextNames: string[] = []
 
   mounted() {
+    this.sceneOverlays = Overlay.SceneOverlays.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
     this.featureChange()
     this.centerChange()
     this.fitBoundChange()
@@ -91,7 +94,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
             : arr[i]
         const name = `zone-frame-${i}`
         this.entityNames.push(name)
-        this.cesiumUtil.appendPolygon(
+        this.sceneOverlays.addPolygon(
           name,
           coords
             .join(',')
@@ -101,7 +104,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
           fillOutlineColor
         )
         if (this.center && this.center.length === 2) {
-          const rgba = utilInstance.getRGBA('#FD6A6F', 1)
+          const rgba = ColorUtil.getColorObject('#FD6A6F', 1)
           const textColor = new this.Cesium.Color(
             rgba.r / 255,
             rgba.g / 255,
@@ -167,17 +170,13 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
     }
   }
 
-  created() {
-    this.cesiumUtil.setCesiumGlobe(this.Cesium, this.webGlobe)
-  }
-
   beforeDestroy() {
     this.clear()
   }
 
   private clear() {
     for (let i = this.entityNames.length - 1; i >= 0; i -= 1) {
-      this.cesiumUtil.removeEntityByName(this.entityNames[i])
+      this.sceneOverlays.removeEntityByName(this.entityNames[i])
       this.entityNames.pop()
     }
     for (let i = this.entityTextNames.length - 1; i >= 0; i -= 1) {
