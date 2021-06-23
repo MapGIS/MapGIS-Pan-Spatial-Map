@@ -37,6 +37,8 @@ import MapView from '../MapView'
 export default class SplitScreenMap extends Vue {
   @Prop() readonly resize!: string
 
+  @Prop() readonly isFullScreen!: boolean
+
   @Prop({ default: 12 }) readonly mapSpan!: number
 
   @Prop({ default: () => [] }) readonly screenNums!: number[]
@@ -44,6 +46,16 @@ export default class SplitScreenMap extends Vue {
   @Prop({ default: () => [] }) readonly layerIds!: string[]
 
   @Prop({ default: () => [] }) readonly layers!: Layer[]
+
+  /**
+   * 监听: 全屏
+   */
+  @Watch('isFullScreen')
+  watchIsFullScreen(nV) {
+    if (nV) {
+      this.onFullScreen()
+    }
+  }
 
   /**
    * 监听: 分屏数量变化

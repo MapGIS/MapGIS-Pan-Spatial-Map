@@ -93,6 +93,10 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
    */
   setFullScreen() {
     this.isFullScreen = true
+    const timer = setTimeout(() => {
+      this.isFullScreen = false
+      clearTimeout(timer)
+    }, 200)
   }
 
   /**
