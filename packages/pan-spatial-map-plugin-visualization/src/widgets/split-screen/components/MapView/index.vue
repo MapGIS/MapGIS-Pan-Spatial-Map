@@ -86,15 +86,15 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 图层
   @Prop({ default: () => ({}) }) readonly mapViewLayer!: Layer
 
-  // 地图高度
-  // @Prop() readonly mapViewHeight!: number
-
   // 双向绑定弹框开关
   @Prop({ default: false }) readonly queryVisible!: boolean
 
   // 查询范围
   @Prop({ default: () => ({}) }) readonly queryRect!: boolean
 
+  /**
+   * 监听:  窗口变化
+   */
   @Watch('resize', { immediate: true })
   watchResizeOrigin() {
     this.onResize()
@@ -116,7 +116,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   @Watch('queryWindowVisible')
   watchqueryWindowVisible(nV) {
     if (!nV) {
-      this.onToggleQueryWindow()
       this.onClear()
       this.$emit('update:queryVisible', false)
     }
@@ -198,8 +197,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     const rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'QUERY':
+        this.onQueryResultClear()
         this.onToggleQueryWindow(true)
-        this.onClear()
         this.query(rect)
         break
       case 'ZOOMIN':
@@ -252,7 +251,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
 
   /**
    * 拖拽点击, 通过滚轮控制放大缩小
-   * @param enable
    */
   onPan() {
     this.pan()
@@ -262,10 +260,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 清除点击, 清除图层上的标注
    */
   onClear() {
-    this.queryFeatures = []
-    this.querySelection = []
-    this.onToggleQueryWindow()
-    this.clearCesiumEntities()
+    this.onQueryResultClear()
+    this.onToggleQueryWindow(false)
   }
 
   /**
@@ -278,6 +274,13 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     if (this.isMapLoaded && this[fnName]) {
       this[fnName]()
     }
+  }
+
+  /**
+   * 结果树弹框开关设置
+   */
+  onToggleQueryWindow(visible: boolean) {
+    this.queryWindowVisible = visible
   }
 
   /**
@@ -298,10 +301,12 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   /**
-   * 结果树弹框开关设置
+   * 清除查询结果
    */
-  onToggleQueryWindow(visible = false) {
-    this.queryWindowVisible = visible
+  onQueryResultClear() {
+    this.queryFeatures = []
+    this.querySelection = []
+    this.clearCesiumEntities()
   }
 
   /**
@@ -324,7 +329,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   beforeDestroyed() {
-    this.onToggleQueryWindow()
     this.onClear()
   }
 }
