@@ -7,7 +7,7 @@
       <a-button
         type="primary"
         icon="pull-request"
-        :disabled="isShowPointTable"
+        :disabled="isShowPointTable || isShowEditTable"
         @click="onClickCreatPath"
         >交互选点</a-button
       >
@@ -15,7 +15,7 @@
     </div>
     <div class="scene-panel-table">
       <a-table
-        v-show="!isShowPointTable"
+        v-show="!isShowPointTable && !isShowEditTable"
         :columns="columns"
         :data-source="tableData"
         :pagination="pagination"
@@ -48,13 +48,24 @@
             @change="e => handleChange(e.target.value, record, 'path')"
           ></a-input>
           <template v-else>
-            {{ text }}
+            <EditableCell
+              :text="text"
+              @editPath="onEditPath(record)"
+            ></EditableCell>
           </template>
         </template>
         <template slot="operate" slot-scope="text, record">
           <div v-if="record.editable">
-            <a-icon type="check" @click="onClickCheck(record)"></a-icon>
-            <a-icon type="close" @click="onClickClose(record)"></a-icon>
+            <a-button
+              shape="circle"
+              icon="check"
+              @click="onClickCheck(record)"
+            />
+            <a-button
+              shape="circle"
+              icon="close"
+              @click="onClickClose(record)"
+            />
           </div>
 
           <div v-else>
@@ -83,6 +94,7 @@
           </div>
         </template>
       </a-table>
+
       <a-table
         v-show="isShowPointTable"
         :columns="pointColumns"
@@ -96,8 +108,40 @@
         "
       >
       </a-table>
+
+      <a-table
+        v-show="isShowEditTable"
+        :columns="editColumns"
+        :data-source="editTableData"
+        :pagination="editPagination"
+        :scroll="{ y: 393 }"
+        :rowKey="
+          record => {
+            return record.id
+          }
+        "
+      >
+        <template slot="xCoord" slot-scope="text, record">
+          <a-input
+            :value="text"
+            @change="e => handleEditChange(e.target.value, record, 'xCoord')"
+          ></a-input>
+        </template>
+        <template slot="yCoord" slot-scope="text, record">
+          <a-input
+            :value="text"
+            @change="e => handleEditChange(e.target.value, record, 'yCoord')"
+          ></a-input>
+        </template>
+        <template slot="zCoord" slot-scope="text, record">
+          <a-input
+            :value="text"
+            @change="e => handleEditChange(e.target.value, record, 'zCoord')"
+          ></a-input>
+        </template>
+      </a-table>
     </div>
-    <div class="scene-panel-form">
+    <div v-show="!isShowEditTable" class="scene-panel-form">
       <a-form-model
         :model="formData"
         :label-col="{ span: 8 }"
@@ -142,7 +186,7 @@
         </a-form-model-item>
       </a-form-model>
     </div>
-    <div class="scene-footer">
+    <div v-show="!isShowEditTable" class="scene-footer">
       <div class="footer-checkbox">
         <a-checkbox-group
           v-model="checkedVal"
@@ -170,6 +214,10 @@
         >
       </div>
     </div>
+    <div v-show="isShowEditTable" class="edit-footer">
+      <a-button type="primary" @click="onCancelEdit">取消</a-button>
+      <a-button type="primary" @click="onConfirmEdit">确认</a-button>
+    </div>
   </div>
 </template>
 
@@ -177,8 +225,9 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
 import { api } from '@mapgis/pan-spatial-map-store'
+import EditableCell from './editable-cell'
 
-@Component({ name: 'MpSceneRoaming' })
+@Component({ name: 'MpSceneRoaming', components: { EditableCell } })
 export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   // 绘制路径工具
   private draw
@@ -235,14 +284,55 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     }
   ]
 
+  // 表格三列配置
+  private editColumns = [
+    {
+      title: '序号',
+      dataIndex: 'number',
+      key: 'number',
+      align: 'center',
+      ellipsis: true
+    },
+    {
+      title: 'x坐标',
+      dataIndex: 'xCoord',
+      key: 'xCoord',
+      align: 'center',
+      ellipsis: true,
+      scopedSlots: { customRender: 'xCoord' }
+    },
+    {
+      title: 'y坐标',
+      dataIndex: 'yCoord',
+      key: 'yCoord',
+      align: 'center',
+      ellipsis: true,
+      scopedSlots: { customRender: 'yCoord' }
+    },
+    {
+      title: 'z坐标',
+      dataIndex: 'zCoord',
+      key: 'zCoord',
+      align: 'center',
+      ellipsis: true,
+      scopedSlots: { customRender: 'zCoord' }
+    }
+  ]
+
   // 表格一数据
   private tableData = []
 
-  // 表格一老版数据(未编辑更新前数据)
+  // 表格一老版数据(未更新编辑数据)
   private cacheTableData = []
 
   // 表格二数据
   private pointTableData = []
+
+  // 表格三数据
+  private editTableData = []
+
+  // 表格三老版数据(未更新编辑数据)
+  private cacheEditData = []
 
   // 表格一分页器配置
   private pagination = {
@@ -257,6 +347,14 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     showSizeChanger: true,
     size: 'small',
     total: this.pointTableData.length,
+    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
+  }
+
+  // 表格三分页器配置
+  private editPagination = {
+    showSizeChanger: true,
+    size: 'small',
+    total: this.editTableData.length,
     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
   }
 
@@ -339,11 +437,17 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   // 是否显示表格二
   private isShowPointTable = false
 
+  // 是否显示表格三
+  private isShowEditTable = false
+
   // 新增路径的坐标点
   private coordsArr = []
 
-  // 正在编辑行的key
+  // 表格一正在编辑行的key
   private editingKey = ''
+
+  // 表格三正在编辑行的id
+  private editingID = ''
 
   created() {
     this.initData()
@@ -493,24 +597,29 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       result.push(item)
       return result
     }, [])
-
-    console.log(this.tableData)
   }
 
   // 点击保存编辑列按钮回调
   private onClickCheck(record) {
-    console.log(this.tableData)
-    this.editingKey = ''
+    // 首先得判断修改的路径名是否和其他行路径名重复
+    const copyTable = this.tableData.filter(item => item.id !== record.id)
+    const targetData = this.tableData.find(item => item.id === record.id)
 
-    this.tableData = this.tableData.reduce((result, item) => {
-      if (item.id === record.id) {
-        delete item.editable
-      }
-      result.push(item)
-      return result
-    }, [])
+    if (copyTable.some(item => item.name === targetData.name)) {
+      this.$message.warning('修改的路径名重复，请重新修改')
+    } else {
+      this.editingKey = ''
 
-    this.cacheTableData = this.tableData.map(item => ({ ...item }))
+      this.tableData = this.tableData.reduce((result, item) => {
+        if (item.id === record.id) {
+          delete item.editable
+        }
+        result.push(item)
+        return result
+      }, [])
+
+      this.cacheTableData = this.tableData.map(item => ({ ...item }))
+    }
   }
 
   // 点击取消编辑列按钮回调
@@ -527,13 +636,22 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       result.push(item)
       return result
     }, [])
-
-    console.log(this.tableData)
   }
 
-  // 编辑框输入值变化时回调
+  // 表格一编辑框输入值变化时回调
   private handleChange(value, record, colName) {
     this.tableData = this.tableData.reduce((result, item) => {
+      if (item.id === record.id) {
+        item[colName] = value
+      }
+      result.push(item)
+      return result
+    }, [])
+  }
+
+  // 表格三编辑框输入值变化时回调
+  private handleEditChange(value, record, colName) {
+    this.editTableData = this.editTableData.reduce((result, item) => {
       if (item.id === record.id) {
         item[colName] = value
       }
@@ -642,7 +760,12 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     if (this.coordsArr.length > 0) {
       let pathID
       if (this.tableData.length > 0) {
-        pathID = this.tableData[this.tableData.length - 1].id + 1
+        const PathIdArr = this.tableData
+          .map(item => item.name.replace(/[^\d]/g, ''))
+          .sort((a, b) => {
+            return a - b
+          })
+        pathID = +PathIdArr[PathIdArr.length - 1] + 1
       } else {
         pathID = 1
       }
@@ -686,6 +809,63 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       .catch(_ => {
         this.$message.error('保存失败')
       })
+  }
+
+  // 点击具体坐标列编辑按钮回调
+  private onEditPath(record) {
+    this.isShowEditTable = true
+    this.editingID = record.id
+    const pathArr = record.path.split(',')
+    const newArr = []
+
+    for (let i = 0; i < pathArr.length; i += 3) {
+      const item = pathArr.slice(i, i + 3)
+      newArr.push(item)
+    }
+
+    this.editTableData = newArr.reduce((result, item, index) => {
+      result.push({
+        id: UUID.uuid(),
+        number: index + 1,
+        xCoord: item[0],
+        yCoord: item[1],
+        zCoord: item[2]
+      })
+      return result
+    }, [])
+
+    this.cacheEditData = this.editTableData.map(item => ({ ...item }))
+  }
+
+  // 取消编辑table按钮回调
+  private onCancelEdit() {
+    this.isShowEditTable = false
+    this.editingID = ''
+    this.editTableData = this.cacheEditData
+  }
+
+  // 确认编辑table按钮回调
+  private onConfirmEdit() {
+    this.isShowEditTable = false
+
+    const pathArr = this.editTableData
+      .reduce((result, item) => {
+        result.push([item.xCoord, item.yCoord, item.zCoord])
+        return result
+      }, [])
+      .map(item => item.join(','))
+      .join(',')
+
+    this.tableData = this.tableData.reduce((result, item) => {
+      if (item.id === this.editingID) {
+        item.path = pathArr
+      }
+      result.push(item)
+      return result
+    }, [])
+
+    this.cacheTableData = this.tableData.map(item => ({ ...item }))
+    this.editingID = ''
   }
 }
 </script>
@@ -771,6 +951,18 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     .ant-btn {
       padding: 0 15px;
     }
+  }
+}
+
+.edit-footer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  .ant-btn {
+    margin-left: 16px;
+    padding: 0 15px;
   }
 }
 </style>
