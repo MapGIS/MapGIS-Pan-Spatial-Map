@@ -103,7 +103,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 监听: 结果树开关
    */
-  @Watch('queryVisible')
+  @Watch('queryVisible', { immediate: true })
   watchQueryVisible(nV) {
     if (nV) {
       this.onToggleQueryWindow(nV)
@@ -113,7 +113,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
    */
-  @Watch('queryWindowVisible')
+  @Watch('queryWindowVisible', { immediate: true })
   watchqueryWindowVisible(nV) {
     if (!nV) {
       this.onClear()
@@ -124,7 +124,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 监听: 图层变化
    */
-  @Watch('mapViewLayer.id')
+  @Watch('mapViewLayer.id', { immediate: true })
   watchMapViewLayer(nV: string, oV: string) {
     if (nV && nV !== oV) {
       this.onInit()
