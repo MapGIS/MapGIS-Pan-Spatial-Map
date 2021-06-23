@@ -48,16 +48,12 @@
         </a-row>
         <a-row>
           <a-col :span="8" class="col">
-            裁剪边缘颜色
+            剖面颜色
           </a-col>
           <a-col :span="16">
             <a-popover trigger="click">
               <template slot="content">
-                <sketch-picker
-                  :disableAlpha="true"
-                  :value="color"
-                  @input="onColorChange"
-                />
+                <sketch-picker :value="color" @input="onColorChange" />
               </template>
               <div :style="{ background: color }" class="color"></div>
             </a-popover>
@@ -268,7 +264,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
 
   // 颜色拾取器对应事件
   private onColorChange(val) {
-    this.color = utilInstance.rgbaToString(val.rgba, false)
+    this.color = utilInstance.rgbaToString(val.rgba)
   }
 
   /**
@@ -304,30 +300,15 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    */
   edgeColor() {
     if (this.color) {
-      const Color = this.color.split(',')
-      const ColorRgb = {
-        green: Number(Color[1] / 255),
-        blue: Number(parseInt(Color[2]) / 255),
-        red: Number(Color[0].split('(')[1] / 255)
-      }
+      const color = utilInstance.getRGBA(this.color)
       return new this.Cesium.Color(
-        ColorRgb.red,
-        ColorRgb.green,
-        ColorRgb.blue,
-        0.3
+        color.r / 255,
+        color.g / 255,
+        color.b / 255,
+        color.a
       )
     }
-    const ColorRgb = {
-      green: Number(255 / 255),
-      blue: Number(255 / 255),
-      red: Number(255 / 255)
-    }
-    return new this.Cesium.Color(
-      ColorRgb.red,
-      ColorRgb.green,
-      ColorRgb.blue,
-      0.3
-    )
+    return new this.Cesium.Color(1, 1, 1, 0.3)
   }
 
   /**
