@@ -1,7 +1,7 @@
 <template>
   <div v-if="document" class="mapbox-view">
     <!-- 二维地图组件 -->
-    <mp-mapbox-view
+    <mp-web-map-pro
       @map-load="onMapLoad"
       :document="document"
       :map-style="mapStyle"
@@ -18,16 +18,12 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { MpMapboxView, Document } from '@mapgis/web-app-framework'
+import { Document } from '@mapgis/web-app-framework'
 import defaultStyle from '../../../../../assets/style/default-style.json'
 
-@Component({
-  components: {
-    MpMapboxView
-  }
-})
+@Component
 export default class MapboxView extends Vue {
-  @Prop() document!: Document
+  @Prop() readonly document!: Document
 
   isMapLoaded = false
 

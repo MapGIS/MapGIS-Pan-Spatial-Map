@@ -60,13 +60,13 @@ enum ScreenLabel {
   }
 })
 export default class SplitScreenSetting extends Vue {
-  @Prop({ default: 12 }) mapSpan!: number
+  @Prop({ default: 12 }) readonly mapSpan!: number
 
-  @Prop({ default: () => [] }) screenNums!: number[]
+  @Prop({ default: () => [] }) readonly screenNums!: number[]
 
-  @Prop({ default: () => [] }) layerIds!: string[]
+  @Prop({ default: () => [] }) readonly layerIds!: string[]
 
-  @Prop({ default: () => [] }) layers!: Layer[]
+  @Prop({ default: () => [] }) readonly layers!: Layer[]
 
   visible = true
 
@@ -111,16 +111,32 @@ export default class SplitScreenSetting extends Vue {
    */
   onFullScreen() {
     const element = document.getElementsByClassName('split-screen-map')[0]
-    if (element.requestFullscreen) {
-      element.requestFullscreen()
-    } else if (element.mozRequestFullScreen) {
-      element.mozRequestFullScreen()
-    } else if (element.webkitRequestFullscreen) {
-      element.webkitRequestFullscreen()
-    } else if (element.msRequestFullscreen) {
-      element.msRequestFullscreen()
+    const exploreType = [
+      'requestFullscreen',
+      'mozRequestFullScreen',
+      'webkitRequestFullscreen',
+      'msRequestFullscreen'
+    ]
+    const classList = element.classList
+    const hasScrollCls = classList.contains('beauty-scroll')
+    if (exploreType.every(v => !(v in element))) {
+      this.$message.warn('对不起，您的浏览器不支持全屏模式')
+      if (hasScrollCls) {
+        classList.remove('beauty-scroll')
+      }
+    } else {
+      this.opera = 'openFullScreen'
+      if (!hasScrollCls) {
+        classList.add('beauty-scroll')
+      }
+      // eslint-disable-next-line prefer-const
+      for (let v of exploreType) {
+        if (v in element) {
+          element[v]()
+          break
+        }
+      }
     }
-    this.opera = 'openFullScreen'
   }
 
   /**

@@ -28,7 +28,7 @@ import Mp3dMarkerPro from './3dMarkerPro.vue'
   components: { Mp3dMarkerPro }
 })
 export default class Mp3dMarkerSetPro extends Vue {
-  @Prop() vueKey!: string
+  @Prop({ default: 'default' }) readonly vueKey!: string
 
   @Prop({
     type: Array,

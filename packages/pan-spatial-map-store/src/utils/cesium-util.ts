@@ -1070,5 +1070,16 @@ class CesiumUtil {
     }
     return bound
   }
+
+  /* 查找对应的WebGlobe
+   * @param vueKey 传给mapgis-web-scene组件的vueKey值
+   * @returns 不传vueKey默认getWebGlobe方法会返回vueKey为default的WebGlobe
+   */
+  findWebGlobe(vueKey?: string) {
+    const { CesiumZondy } = window as any
+    return CesiumZondy && typeof CesiumZondy.getWebGlobe === 'function'
+      ? CesiumZondy.getWebGlobe(vueKey)
+      : this.webGlobe
+  }
 }
 export default new CesiumUtil()

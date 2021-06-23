@@ -23,6 +23,7 @@
     <!-- 标注 -->
     <mp-markers-highlight-popup
       v-if="isMapLoaded"
+      :is-2d="is2dLayer"
       :vue-key="mapViewId"
       :features="queryFeatures"
       :highlight-ids="querySelection"
@@ -81,16 +82,16 @@ import Tools, { OperationType, OperationFn } from './components/Tools'
 })
 export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 图层
-  @Prop({ default: () => ({}) }) mapViewLayer!: Layer
+  @Prop({ default: () => ({}) }) readonly mapViewLayer!: Layer
 
   // 地图高度
-  @Prop() mapViewHeight!: number
+  @Prop() readonly mapViewHeight!: number
 
   // 双向绑定弹框开关
-  @Prop({ default: false }) queryVisible!: boolean
+  @Prop({ default: false }) readonly queryVisible!: boolean
 
   // 查询范围
-  @Prop({ default: () => ({}) }) queryRect!: boolean
+  @Prop({ default: () => ({}) }) readonly queryRect!: boolean
 
   mapViewDocument: Document | null = null
 

@@ -48,7 +48,7 @@ interface ITool {
   }
 })
 export default class Tools extends Vue {
-  @Prop() title!: string
+  @Prop() readonly title!: string
 
   tools: ITool[] = [
     {

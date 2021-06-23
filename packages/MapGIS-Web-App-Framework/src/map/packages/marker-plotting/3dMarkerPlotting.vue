@@ -142,7 +142,7 @@ export default class Mp3dMarkerPlotting extends Vue {
     )
 
     this.analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
-      viewer: this.webGlobe.viewer
+      viewer: webGlobe.viewer
     })
     this.webGlobe.viewer.camera.changed.addEventListener(
       this.changeFilterWithMap
@@ -156,8 +156,16 @@ export default class Mp3dMarkerPlotting extends Vue {
     )
   }
 
-  private zoomTo(bound) {
-    cesiumUtilInstance.flyTo(cesiumUtilInstance.getRect(bound))
+  private zoomTo({ xmin, ymin, xmax, ymax }) {
+    const destination = new this.Cesium.Rectangle.fromDegrees(
+      xmin,
+      ymin,
+      xmax,
+      ymax
+    )
+    this.webGlobe.viewer.camera.flyTo({
+      destination
+    })
   }
 
   private zoomOrPanTo(bound) {
@@ -178,11 +186,11 @@ export default class Mp3dMarkerPlotting extends Vue {
     ) {
       this.zoomTo(bound)
     } else {
-      cesiumUtilInstance.flyTo(
-        cesiumUtilInstance.getCartesian3(
+      this.webGlobe.viewer.camera.flyTo(
+        this.Cesium.Cartesian3.fromDegrees(
           (bound.xmin + bound.xmax) / 2,
           (bound.ymin + bound.ymax) / 2,
-          cesiumUtilInstance.getPositionCartographicHeight()
+          this.webGlobe.viewer.camera.positionCartographic.height
         )
       )
     }
@@ -291,10 +299,10 @@ export default class Mp3dMarkerPlotting extends Vue {
 
   private getViewExtend() {
     const params = {}
-    const extend = cesiumUtilInstance.getComputeViewRectangle()
+    const extend = this.webGlobe.viewer.camera.computeViewRectangle()
     if (typeof extend === 'undefined') {
       // 2D下会可能拾取不到坐标，extend返回undefined,所以做以下转换
-      const canvas = cesiumUtilInstance.getCanvas()
+      const canvas = this.webGlobe.viewer.scene.canvas
       // canvas左上角坐标转2d坐标
       const upperLeft = new this.Cesium.Cartesian2(0, 0)
       // canvas右下角坐标转2d坐标
@@ -303,12 +311,15 @@ export default class Mp3dMarkerPlotting extends Vue {
         canvas.clientHeight
       )
 
-      const ellipsoid = cesiumUtilInstance.getEllipsoid()
+      const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
       // 2D转3D世界坐标
-      const upperLeft3 = cesiumUtilInstance.pickEllipsoid(upperLeft, ellipsoid)
+      const upperLeft3 = this.webGlobe.viewer.camera.pickEllipsoid(
+        upperLeft,
+        ellipsoid
+      )
 
       // 2D转3D世界坐标
-      const lowerRight3 = cesiumUtilInstance.pickEllipsoid(
+      const lowerRight3 = this.webGlobe.viewer.camera.pickEllipsoid(
         lowerRight,
         ellipsoid
       )

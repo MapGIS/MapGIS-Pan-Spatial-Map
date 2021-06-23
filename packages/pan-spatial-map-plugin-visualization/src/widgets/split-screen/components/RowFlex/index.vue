@@ -15,22 +15,22 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
 export default class RowFlex extends Vue {
-  @Prop({ default: 'middle' }) align!: 'top' | 'middle' | 'bottom'
+  @Prop({ default: 'middle' }) readonly align!: 'top' | 'middle' | 'bottom'
 
-  @Prop({ default: 'start' }) justify!:
+  @Prop({ default: 'start' }) readonly justify!:
     | 'start'
     | 'end'
     | 'center'
     | 'space-between'
     | 'space-around'
 
-  @Prop({ default: () => 0 }) gutter!: number | Array<number>
+  @Prop({ default: () => 0 }) readonly gutter!: number | Array<number>
 
-  @Prop({ default: () => [5, 19] }) span!: number[]
+  @Prop({ default: () => [5, 19] }) readonly span!: number[]
 
-  @Prop({ default: true }) colon!: boolean
+  @Prop({ default: true }) readonly colon!: boolean
 
-  @Prop() label!: string
+  @Prop() readonly label!: string
 
   get labelSpan() {
     return this.span[0]

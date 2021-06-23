@@ -1,15 +1,14 @@
 <template>
   <div v-if="document" class="cesium-view">
     <!-- 三维地图组件 -->
-    <mp-cesium-view
+    <mp-web-scene-pro
       @map-load="onMapLoad"
       :document="document"
       :vue-key="vueKey"
       :height="height"
-    >
-      <!-- 多屏联动组件 -->
-      <mapgis-3d-link :enable="true" />
-    </mp-cesium-view>
+    />
+    <!-- 多屏联动组件 -->
+    <mapgis-3d-link :vue-key="vueKey" :enable="true" />
     <!-- 绘制组件 -->
     <mapgis-3d-draw
       v-if="isMapLoaded"
@@ -21,26 +20,20 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { MpCesiumView, Document, UUID } from '@mapgis/web-app-framework'
+import { Document, UUID } from '@mapgis/web-app-framework'
 import mStateInstance from '../../mixins/map-view-state'
 
-@Component({
-  components: {
-    MpCesiumView
-  }
-})
+@Component
 export default class CesiumView extends Vue {
-  @Prop() document!: Document
+  @Prop() readonly document!: Document
 
-  @Prop({ default: UUID.uuid() }) vueKey!: string
+  @Prop({ default: UUID.uuid() }) readonly vueKey!: string
 
-  @Prop({ default: 500 }) height!: number
+  @Prop({ default: 500 }) readonly height!: number
 
   drawer = null
 
   isMapLoaded = false
-
-  enable = false
 
   /**
    * 开启绘制
@@ -94,7 +87,7 @@ export default class CesiumView extends Vue {
 
   beforeDestroyed() {
     this.isMapLoaded = false
-    this.onDrawLoad()
+    this.onDrawLoad(null)
   }
 }
 </script>

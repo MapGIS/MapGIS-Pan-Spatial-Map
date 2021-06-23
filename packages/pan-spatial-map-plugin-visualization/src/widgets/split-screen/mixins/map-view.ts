@@ -120,8 +120,14 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   /**
    * 三维放大至指定范围
    */
-  zoomInToRect3d(rect: Rect) {
-    this.flyTo3d(cesiumUtilInstance.getRect(rect))
+  zoomInToRect3d({ xmin, ymin, xmax, ymax }: Rect) {
+    const destination = new this.Cesium.Rectangle.fromDegrees(
+      xmin,
+      ymin,
+      xmax,
+      ymax
+    )
+    this.flyTo3d(destination)
   }
 
   /**
@@ -129,7 +135,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    */
   zoomOutToRect3d({ xmin, xmax, ymin, ymax }: Rect) {
     const globe = this.getWebGlobe()
-    const destination = cesiumUtilInstance.getCartesian3(
+    const destination = this.Cesium.Cartesian3.fromDegrees(
       (xmin + xmax) / 2,
       (ymin + ymax) / 2,
       globe.viewer.camera.positionCartographic.height * 2

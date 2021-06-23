@@ -91,8 +91,6 @@
         <mapgis-3d-statebar class="statebar" />
       </div>
     </div>
-    <!-- 三维联动控件使用，如果后期支持不使用插槽，需同步更改分屏的cesiumView里的组件 -->
-    <slot />
   </mapgis-web-scene>
 </template>
 
@@ -416,8 +414,6 @@ export default {
       } else {
         this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
       }
-
-      this.changePageHeight()
     },
     isIgsDocLayer(type) {
       return type === LayerType.IGSMapImage

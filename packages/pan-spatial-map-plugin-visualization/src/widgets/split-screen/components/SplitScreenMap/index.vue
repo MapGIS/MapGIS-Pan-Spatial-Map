@@ -35,13 +35,13 @@ import MapView from '../MapView'
   }
 })
 export default class SplitScreenMap extends Vue {
-  @Prop({ default: 12 }) mapSpan!: number
+  @Prop({ default: 12 }) readonly mapSpan!: number
 
-  @Prop({ default: () => [] }) screenNums!: number[]
+  @Prop({ default: () => [] }) readonly screenNums!: number[]
 
-  @Prop({ default: () => [] }) layerIds!: string[]
+  @Prop({ default: () => [] }) readonly layerIds!: string[]
 
-  @Prop({ default: () => [] }) layers!: Layer[]
+  @Prop({ default: () => [] }) readonly layers!: Layer[]
 
   /**
    * 监听: 分屏数量变化
