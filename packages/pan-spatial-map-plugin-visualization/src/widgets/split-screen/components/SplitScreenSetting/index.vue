@@ -68,9 +68,15 @@ export default class SplitScreenSetting extends Vue {
 
   @Prop({ default: () => [] }) readonly layers!: Layer[]
 
-  visible = true
+  /**
+   * 监听: 分屏数量变化
+   */
+  @Watch('screenNums')
+  watchScreenNums(nV: number[]) {
+    this.screenCount = nV.length
+  }
 
-  opera: Opera = 'null'
+  visible = true
 
   screenLabel = ScreenLabel
 
@@ -86,6 +92,7 @@ export default class SplitScreenSetting extends Vue {
    */
   onToggle() {
     this.visible = !this.visible
+    this.$emit('on-setting-panel-toggle')
   }
 
   /**
@@ -110,53 +117,7 @@ export default class SplitScreenSetting extends Vue {
    * 全屏
    */
   onFullScreen() {
-    const element = document.getElementsByClassName('split-screen-map')[0]
-    const exploreType = [
-      'requestFullscreen',
-      'mozRequestFullScreen',
-      'webkitRequestFullscreen',
-      'msRequestFullscreen'
-    ]
-    const classList = element.classList
-    const hasScrollCls = classList.contains('beauty-scroll')
-    if (exploreType.every(v => !(v in element))) {
-      this.$message.warn('对不起，您的浏览器不支持全屏模式')
-      if (hasScrollCls) {
-        classList.remove('beauty-scroll')
-      }
-    } else {
-      this.opera = 'openFullScreen'
-      if (!hasScrollCls) {
-        classList.add('beauty-scroll')
-      }
-      // eslint-disable-next-line prefer-const
-      for (let v of exploreType) {
-        if (v in element) {
-          element[v]()
-          break
-        }
-      }
-    }
-  }
-
-  /**
-   * 监听: 分屏数量变化
-   */
-  @Watch('screenNums')
-  watchScreenNums(nV: number[]) {
-    this.screenCount = nV.length
-  }
-
-  mounted() {
-    window.onresize = () => {
-      if (this.refresh) {
-        this.refresh(this.opera)
-      }
-
-      if (this.opera === 'openFullScreen') {
-        this.opera = 'closeFullScreen'
-      }
-    }
+    this.$emit('on-full-screen')
   }
 }
 </script>

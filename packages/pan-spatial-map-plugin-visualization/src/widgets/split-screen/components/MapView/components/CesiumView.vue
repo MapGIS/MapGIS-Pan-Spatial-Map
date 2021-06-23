@@ -7,15 +7,16 @@
       :vue-key="vueKey"
       :height="height"
     />
-    <!-- 多屏联动组件 -->
-    <mapgis-3d-link :vue-key="vueKey" :enable="true" />
-    <!-- 绘制组件 -->
-    <mapgis-3d-draw
-      v-if="isMapLoaded"
-      @load="onDrawLoad"
-      @drawCreate="onDrawCreate"
-      :vue-key="vueKey"
-    />
+    <template v-if="isMapLoaded">
+      <!-- 多屏联动组件 -->
+      <mapgis-3d-link :vue-key="vueKey" :enable="isMapLoaded" />
+      <!-- 绘制组件 -->
+      <mapgis-3d-draw
+        @load="onDrawLoad"
+        @drawCreate="onDrawCreate"
+        :vue-key="vueKey"
+      />
+    </template>
   </div>
 </template>
 <script lang="ts">

@@ -15,9 +15,9 @@
           @on-query="onQuery"
           :queryVisible.sync="queryVisible"
           :query-rect="queryRect"
-          :map-view-height="mapViewHeight"
           :map-view-id="`split-screen-map-${s}`"
           :map-view-layer="layers.find(({ id }) => layerIds[s] === id)"
+          :resize="resize"
         />
       </a-col>
     </a-row>
@@ -35,6 +35,8 @@ import MapView from '../MapView'
   }
 })
 export default class SplitScreenMap extends Vue {
+  @Prop() readonly resize!: string
+
   @Prop({ default: 12 }) readonly mapSpan!: number
 
   @Prop({ default: () => [] }) readonly screenNums!: number[]
@@ -51,11 +53,10 @@ export default class SplitScreenMap extends Vue {
     if (nV.length) {
       // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
       mStateInstance.initView = this.layers[nV[0]].fullExtent
-      this.setMapViewHeight()
     }
   }
 
-  mapViewHeight = 0
+  opera: Opera = 'null'
 
   queryVisible = false
 
@@ -68,18 +69,6 @@ export default class SplitScreenMap extends Vue {
   }
 
   /**
-   * 地图高度
-   */
-  setMapViewHeight() {
-    this.$nextTick(() => {
-      const _el = document.getElementsByClassName('split-screen-map-col')[0]
-      if (_el) {
-        this.mapViewHeight = _el.clientHeight - 32
-      }
-    })
-  }
-
-  /**
    * 某个地图的查询抛出的事件
    * @param result 查询结果
    */
@@ -88,9 +77,49 @@ export default class SplitScreenMap extends Vue {
     this.queryRect = result
   }
 
+  /**
+   * 全屏
+   */
+  onFullScreen() {
+    const element = this.$el
+    const exploreType = [
+      'requestFullscreen',
+      'mozRequestFullScreen',
+      'webkitRequestFullscreen',
+      'msRequestFullscreen'
+    ]
+    const classList = element.classList
+    const hasScrollCls = classList.contains('beauty-scroll')
+    if (exploreType.every(v => !(v in element))) {
+      this.$message.warn('对不起，您的浏览器不支持全屏模式')
+      if (hasScrollCls) {
+        classList.remove('beauty-scroll')
+      }
+    } else {
+      this.opera = 'openFullScreen'
+      if (!hasScrollCls) {
+        classList.add('beauty-scroll')
+      }
+      // eslint-disable-next-line prefer-const
+      for (let v of exploreType) {
+        if (v in element) {
+          element[v]()
+          break
+        }
+      }
+    }
+  }
+
   mounted() {
-    this.setMapViewHeight()
-    window.onresize = this.setMapViewHeight
+    window.onresize = () => {
+      if (this.refresh) {
+        this.refresh(this.opera)
+      }
+
+      if (this.opera === 'openFullScreen') {
+        this.opera = 'closeFullScreen'
+      }
+    }
   }
 }
 </script>

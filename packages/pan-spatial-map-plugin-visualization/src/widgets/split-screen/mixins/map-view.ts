@@ -87,12 +87,104 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 三维跳转
-   * @param destination
+   * 查询
+   * @param {Rect} rect 指定区域
    */
-  flyTo3d(destination: any) {
+  query(rect: Rect) {
+    this.$emit('on-query', rect)
+  }
+
+  /**
+   * 三维放大至指定范围
+   */
+  zoomToRect3d({ xmin, ymin, xmax, ymax }: Rect, type = 'in') {
     const globe = this.getWebGlobe()
+    let destination: any
+    if (type === 'in') {
+      destination = new this.Cesium.Rectangle.fromDegrees(
+        xmin,
+        ymin,
+        xmax,
+        ymax
+      )
+    } else {
+      destination = this.Cesium.Cartesian3.fromDegrees(
+        (xmin + xmax) / 2,
+        (ymin + ymax) / 2,
+        globe.viewer.camera.positionCartographic.height * 2
+      )
+    }
     globe.viewer.camera.flyTo({ destination })
+  }
+
+  /**
+   *  二维放大至指定范围
+   */
+  zoomToRect({ xmin, xmax, ymin, ymax }: Rect, type = 'in') {
+    if (type === 'in') {
+      this.ssMap.fitBounds([
+        [xmax, ymin],
+        [xmin, ymax]
+      ])
+    } else {
+      this.ssMap.flyTo({
+        zoom: this.ssMap.getZoom() - 1,
+        center: [(xmin + xmin) / 2, (ymin + ymax) / 2]
+      })
+    }
+  }
+
+  /**
+   * 判断矩形范围是否可用
+   * @param {Rect} rect
+   */
+  isValidRect(rect: Rect) {
+    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
+  }
+
+  /**
+   * 放大地图到指定区域的中心
+   * @param {Rect} rect 指定区域
+   */
+  zoomIn(rect: Rect) {
+    if (this.isValidRect(rect)) {
+      if (this.is2dLayer) {
+        this.zoomToRect(rect)
+      } else {
+        this.zoomToRect3d(rect)
+      }
+    } else {
+      this.ssMap.zoomIn()
+    }
+  }
+
+  /**
+   * 缩小地图到指定区域的中心
+   * @param {Rect} rect 指定区域
+   */
+  zoomOut(rect: Rect) {
+    if (this.isValidRect(rect)) {
+      if (this.is2dLayer) {
+        this.zoomToRect(rect, 'out')
+      } else {
+        this.zoomToRect3d(rect, 'out')
+      }
+    } else {
+      this.ssMap.zoomOut()
+    }
+  }
+
+  /**
+   * 复位
+   * @param view 视图范围
+   */
+  resort(view: Rect) {
+    const _view = view || this.initView
+    if (this.is2dLayer) {
+      this.zoomToRect(_view)
+    } else {
+      this.zoomToRect3d(_view)
+    }
   }
 
   /**
@@ -115,113 +207,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   toggle3dPan(enable = true) {
     const globe = this.getWebGlobe()
     globe.viewer.scene.screenSpaceCameraController.enableZoom = enable
-  }
-
-  /**
-   * 三维放大至指定范围
-   */
-  zoomInToRect3d({ xmin, ymin, xmax, ymax }: Rect) {
-    const destination = new this.Cesium.Rectangle.fromDegrees(
-      xmin,
-      ymin,
-      xmax,
-      ymax
-    )
-    this.flyTo3d(destination)
-  }
-
-  /**
-   *  二维缩小至指定范围
-   */
-  zoomOutToRect3d({ xmin, xmax, ymin, ymax }: Rect) {
-    const globe = this.getWebGlobe()
-    const destination = this.Cesium.Cartesian3.fromDegrees(
-      (xmin + xmax) / 2,
-      (ymin + ymax) / 2,
-      globe.viewer.camera.positionCartographic.height * 2
-    )
-    this.flyTo3d(destination)
-  }
-
-  /**
-   *  二维放大至指定范围
-   */
-  zoomInToRect({ xmin, xmax, ymin, ymax }: Rect) {
-    this.ssMap.fitBounds([
-      [xmax, ymin],
-      [xmin, ymax]
-    ])
-  }
-
-  /**
-   *  二维缩小至指定范围
-   */
-  zoomOutToRect({ xmin, xmax, ymin, ymax }: Rect) {
-    this.ssMap.flyTo({
-      zoom: this.ssMap.getZoom() - 1,
-      center: [(xmin + xmin) / 2, (ymin + ymax) / 2]
-    })
-  }
-
-  /**
-   * 判断矩形范围是否可用
-   * @param {Rect} rect
-   */
-  isValidRect(rect: Rect) {
-    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
-  }
-
-  /**
-   * 查询
-   * @param {Rect} rect 指定区域
-   */
-  query(rect: Rect) {
-    this.$emit('on-query', rect)
-  }
-
-  /**
-   * 放大地图到指定区域的中心
-   * @param {Rect} rect 指定区域
-   */
-  zoomIn(rect: Rect) {
-    if (this.isValidRect(rect)) {
-      if (this.is2dLayer) {
-        this.zoomInToRect(rect)
-      } else {
-        this.zoomInToRect3d(rect)
-      }
-    } else {
-      this.ssMap.zoomIn()
-    }
-  }
-
-  /**
-   * 缩小地图到指定区域的中心
-   * @param {Rect} rect 指定区域
-   */
-  zoomOut(rect: Rect) {
-    if (this.isValidRect(rect)) {
-      if (this.is2dLayer) {
-        this.zoomOutToRect(rect)
-      } else {
-        this.zoomOutToRect3d(rect)
-      }
-    } else {
-      this.ssMap.zoomOut()
-    }
-  }
-
-  /**
-   * 复位
-   * @param view 视图范围
-   */
-  resort(view: Rect) {
-    const _view = view || this.initView
-    if (this.is2dLayer) {
-      this.zoomInToRect(_view)
-    } else {
-      this.zoomInToRect3d(_view)
-    }
   }
 
   /**

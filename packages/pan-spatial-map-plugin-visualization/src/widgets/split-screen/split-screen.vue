@@ -1,10 +1,16 @@
 <template>
-  <div class="mp-widget-split-screen">
+  <div class="mp-widget-split-screen" :class="mode">
     <!-- 分屏地图 -->
-    <split-screen-map v-bind="bindProps" />
+    <split-screen-map
+      v-bind="bindProps"
+      :resize="resize"
+      :is-full-screen="isFullScreen"
+    />
     <!-- 分屏设置 -->
     <split-screen-setting
       v-bind="bindProps"
+      @on-setting-panel-toggle="setResize"
+      @on-full-screen="setFullScreen"
       @on-screen-count-change="onScreenCountChange"
       @on-layer-change="onLayerChange"
     />
@@ -17,6 +23,8 @@ import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
 import SplitScreenMap from './components/SplitScreenMap'
 import SplitScreenSetting from './components/SplitScreenSetting'
 
+type Mode = 'normal' | 'max'
+
 @Component({
   name: 'MpSplitScreen',
   components: {
@@ -28,6 +36,12 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
   WidgetMixin
 ) {
   isOpen = false
+
+  isFullScreen = false
+
+  resize = ''
+
+  mode: Mode = 'max'
 
   // 分屏数量
   screenNums: number[] = []
@@ -68,6 +82,20 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
   }
 
   /**
+   * 设置是否resize
+   */
+  setResize() {
+    this.resize = `${(Math.random() * 10000).toFixed(0)}`
+  }
+
+  /**
+   * 设置全屏
+   */
+  setFullScreen() {
+    this.isFullScreen = true
+  }
+
+  /**
    * 初始化地图信息
    */
   setLayers(screenNums?: number) {
@@ -98,6 +126,7 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
    */
   onOpen() {
     this.isOpen = true
+    this.setResize()
     this.initLayers()
   }
 
@@ -111,11 +140,22 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
   }
 
   /**
+   * 面板窗口size变化
+   */
+  onWindowSize(mode: Mode) {
+    if (this.mode !== mode) {
+      this.mode = mode
+      this.setResize()
+    }
+  }
+
+  /**
    * 屏数变化
    * @param screenCount<number>
    */
   onScreenCountChange(screenCount: number) {
     this.setLayers(screenCount)
+    this.setResize()
   }
 
   /**
@@ -139,7 +179,12 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
 <style lang="less" scoped>
 .mp-widget-split-screen {
   width: 100%;
-  height: 100%;
   display: flex;
+  &.max {
+    height: 100%;
+  }
+  &.normal {
+    height: 500px;
+  }
 }
 </style>

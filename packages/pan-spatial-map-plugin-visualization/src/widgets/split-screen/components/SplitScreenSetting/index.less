@@ -2,23 +2,27 @@
   position: relative;
   width: 256px;
   height: 100%;
-  margin-left: 16px;
+  margin-left: 8px;
   border-left: 1px solid @primary-color;
-  transition: transform 0.3s, width 0.3s, marginLeft 0.3s;
+  transition: transform 0.3s, width 0.3s;
   .setting-handle {
     position: absolute;
+    width: 20px;
     height: 64px;
     line-height: 64px;
     top: 50%;
-    left: -15px;
+    left: -1px;
+    margin-top: -32px;
     text-align: center;
     color: @primary-color;
     background-color: @base-bg-color;
-    border-top-left-radius: @border-radius-base;
-    border-bottom-left-radius: @border-radius-base;
+    border-top-right-radius: @border-radius-base;
+    border-bottom-right-radius: @border-radius-base;
     border: 1px solid @primary-color;
-    border-right-color: transparent;
+    border-left-color: transparent;
     cursor: pointer;
+    z-index: 1;
+    transition: left 0.2s, border 0.2s;
     i {
       transition: transform 0.3s;
     }
@@ -65,10 +69,14 @@
   }
   &.collapsed {
     width: 0;
-    margin-left: 4px;
     transform: translateX(calc(100% + 12px));
-    .setting-handle i {
-      transform: rotate(360deg);
+    .setting-handle {
+      left: -15px;
+      border-radius: @border-radius-base;
+      border-left-color: @primary-color;
+      i {
+        transform: rotate(360deg);
+      }
     }
     .setting-content {
       opacity: 0;

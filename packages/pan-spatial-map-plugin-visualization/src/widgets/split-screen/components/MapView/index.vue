@@ -34,12 +34,12 @@
       title="查询结果"
       :width="200"
       :height="200"
-      :visible.sync="windowVisible"
+      :visible.sync="queryWindowVisible"
       :vertical-offset="30"
       :full-screen-action="false"
     >
       <mp-query-result-tree
-        v-if="windowVisible"
+        v-if="queryWindowVisible"
         @on-load-done="onQueryLoadDone"
         @on-select="onQuerySelect"
         :query-rect="queryRect"
@@ -81,11 +81,13 @@ import Tools, { OperationType, OperationFn } from './components/Tools'
   }
 })
 export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
+  @Prop() readonly resize!: string
+
   // 图层
   @Prop({ default: () => ({}) }) readonly mapViewLayer!: Layer
 
   // 地图高度
-  @Prop() readonly mapViewHeight!: number
+  // @Prop() readonly mapViewHeight!: number
 
   // 双向绑定弹框开关
   @Prop({ default: false }) readonly queryVisible!: boolean
@@ -93,10 +95,51 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 查询范围
   @Prop({ default: () => ({}) }) readonly queryRect!: boolean
 
+  @Watch('resize', { immediate: true })
+  watchResizeOrigin() {
+    this.onResize()
+  }
+
+  /**
+   * 监听: 结果树开关
+   */
+  @Watch('queryVisible')
+  watchQueryVisible(nV) {
+    if (nV) {
+      this.queryWindowVisible = nV
+    }
+  }
+
+  /**
+   * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
+   */
+  @Watch('queryWindowVisible')
+  watchqueryWindowVisible(nV) {
+    if (!nV) {
+      this.onClear()
+      this.$emit('update:queryVisible', false)
+    }
+  }
+
+  /**
+   * 监听: 图层变化
+   */
+  @Watch('mapViewLayer.id')
+  watchMapViewLayer(nV: string, oV: string) {
+    if (nV && nV !== oV) {
+      this.onInit()
+    }
+  }
+
   mapViewDocument: Document | null = null
 
+  // 地图高度
+  mapViewHeight = 0
+
+  // 分屏二维地图
   ssMap: any = this.map
 
+  // 分屏二维mapbox
   ssMapbox: any = this.mapbox
 
   // 地图是否加载完成
@@ -106,7 +149,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   operationType: OperationType = 'UNKNOW'
 
   // 结果树弹框开关
-  windowVisible = false
+  queryWindowVisible = false
 
   // 结果树中展开的节点的所有子节点
   queryFeatures: Record<string, any>[] = []
@@ -218,7 +261,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * @param visible
    */
   onClear(visible = false) {
-    this.windowVisible = visible
+    this.queryWindowVisible = visible
     this.queryFeatures = []
     this.querySelection = []
     this.clear()
@@ -254,38 +297,22 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   /**
-   * 监听: 结果树开关
+   * resize
    */
-  @Watch('queryVisible')
-  watchQueryVisible(nV) {
-    if (nV) {
-      this.windowVisible = nV
-    }
+  onResize() {
+    this.$nextTick(() => {
+      if (!this.is2dLayer) {
+        this.mapViewHeight = this.$el.clientHeight - 32
+      } else {
+        this.ssMap.resize()
+      }
+    })
   }
 
-  /**
-   * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
-   */
-  @Watch('windowVisible')
-  watchWindowVisible(nV) {
-    if (!nV) {
-      this.onClear()
-      this.$emit('update:queryVisible', false)
-    }
-  }
-
-  /**
-   * 监听: 图层变化
-   */
-  @Watch('mapViewLayer.id')
-  watchMapViewLayer(nV: string, oV: string) {
-    if (nV && nV !== oV) {
-      this.onInit()
-    }
-  }
-
-  created() {
+  mounted() {
     this.onInit()
+    this.onResize()
+    window.onresize = this.onResize
   }
 
   beforeDestroyed() {

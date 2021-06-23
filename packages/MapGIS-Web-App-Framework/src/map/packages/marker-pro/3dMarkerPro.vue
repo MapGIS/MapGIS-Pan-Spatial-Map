@@ -173,6 +173,7 @@ export default class Mp3dMarkerPro extends Vue {
       this.Cesium,
       cesiumUtilInstance.findWebGlobe(this.vueKey)
     )
+    this.updateMarker()
   }
 
   mounted() {

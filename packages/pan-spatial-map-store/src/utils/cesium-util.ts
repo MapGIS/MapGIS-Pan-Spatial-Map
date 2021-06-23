@@ -141,7 +141,7 @@ class CesiumUtil {
     ) {
       this.webGlobe = webGlobe
     }
-    this.registerGlobeMouseEvent()
+    this.registerGlobeMouseEvent(this.webGlobe)
   }
 
   /**
@@ -892,10 +892,10 @@ class CesiumUtil {
    * 给添加的addMarkerByFeature添加绑定事件
    * @param {Event} event 事件对象
    */
-  registerMarkerEvent(event: any) {
+  registerMarkerEvent(event: any, webGlobe) {
     if (this.markerEvent) {
       const options = this.markerOptions
-      const collection = this.webGlobe.scene.pick(event.endPosition)
+      const collection = webGlobe.scene.pick(event.endPosition)
       for (let i = 0; i < options.length; i += 1) {
         const option = options[i]
         if (
@@ -920,11 +920,20 @@ class CesiumUtil {
   /**
    * 注册事件
    */
-  registerGlobeMouseEvent() {
+  unRegisterGlobeMouseEvent(webGlobe = this.webGlobe) {
+    const events = ['MOUSE_MOVE', 'LEFT_CLICK', 'RIGHT_CLICK']
+    events.forEach(n => webGlobe.unRegisterMouseEvent(n))
+  }
+
+  /**
+   * 注册事件
+   */
+  registerGlobeMouseEvent(webGlobe = this.webGlobe) {
+    this.unRegisterGlobeMouseEvent(webGlobe)
     // 注册鼠标移动事件
     this.registerMouseEvent('MOUSE_MOVE', event => {
       // console.log(event)
-      this.registerMarkerEvent(event) // 标注点增加hover事件
+      this.registerMarkerEvent(event, webGlobe) // 标注点增加hover事件
     })
     // 注册鼠标左击事件
     this.registerMouseEvent('LEFT_CLICK', event => {
