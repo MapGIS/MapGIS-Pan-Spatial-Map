@@ -212,13 +212,17 @@ export default {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    background-color: transparent;
+    background-color: @base-bg-color;
     border-radius: 4px 4px 0 0;
+    border: 1px solid @primary-color;
+    border-bottom-color: transparent;
     cursor: pointer;
+    opacity: 0.35;
 
     &:hover {
       color: white;
       background: @primary-color;
+      opacity: 1;
     }
   }
   .exhibition-panel-wrapper {
