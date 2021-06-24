@@ -25,7 +25,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { Layer, Layer3D } from '@mapgis/web-app-framework'
+import { Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
 import mapViewStateInstance from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
@@ -87,6 +87,7 @@ export default class SplitScreenMap extends Vue {
     let initView: Rect = layer.fullExtent
     if (layer instanceof Layer3D) {
       // todo 三维图层fullExtent转范围
+      // initView = Objects.SceneController.layerLocalExtentToGlobelExtent(layer)
     }
     return initView
   }
