@@ -177,7 +177,7 @@ export default class MpMarkersHighlightPopup extends Mixins<
     this.getDefaultIcon(defaultIcon => {
       this.markers = this.normalizedFeatures.reduce<IMarker[]>(
         (result, { uid, feature }) => {
-          const coordinates = Feature.getGeoJsonFeatureCenter(feature)
+          const coordinates = Feature.getGeoJSONFeatureCenter(feature)
           const centerItems = [coordinates[0], coordinates[1]]
           if (centerItems.every(v => !Number.isNaN(v))) {
             result.push({
