@@ -409,7 +409,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
             const a = document.createElement('a')
             a.style.display = 'none'
             a.href = this.result
-            a.download = record.name
+            a.download = `${record.name}.${record.type}`
             document.body.appendChild(a)
             a.click()
             document.body.removeChild(a)
@@ -419,20 +419,25 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     })
   }
 
+  // 点击文件项进行预览回调
   private onView(record) {
     const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=ftp://192.168.21.191:21`
     this.getUrlData(downLoadUrl).then(res => {
       this.fileUrl = this.baseUrl + res.path
 
-      switch (this.type) {
-        case '文档资料':
+      switch (record.type) {
+        // 目前iframe只支持pdf文件的预览
+        case 'pdf':
           this.showFileType = 'text'
           break
-        case '音视频资料':
+        // 目前video标签只支持mp4、ogg格式视频文件的预览
+        case 'mp4':
+        case 'ogg':
           this.showFileType = 'video'
           this.videoUrl = this.fileUrl
           break
-        case '图集资料':
+        case 'jpg':
+        case 'png':
           this.showFileType = 'img'
           this.imgUrl = this.fileUrl
           break
