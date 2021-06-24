@@ -18,7 +18,12 @@
 
     <mp-toolbar class="marker-toolbar">
       <mp-toolbar-command-group>
-        <mp-toolbar-command title="编辑" icon="edit" @click="onMarkerEdit" />
+        <mp-toolbar-command
+          class="popup-button"
+          title="编辑"
+          icon="edit"
+          @click="onMarkerEdit"
+        />
       </mp-toolbar-command-group>
     </mp-toolbar>
 
@@ -34,6 +39,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
+import { eventBus } from '@mapgis/pan-spatial-map-store'
 import MarkerEditWindow from '../MarkerWindow/MarkerEditWindow'
 
 @Component({ components: { MarkerEditWindow } })
@@ -43,6 +49,14 @@ export default class MarkerShowWindow extends Mixins(AppMixin) {
   private editWindowVisible = false
 
   private previewVisible = false
+
+  created() {
+    eventBus.$on('emitClickEdit', markerId => {
+      if (this.marker.markerId === markerId) {
+        this.editWindowVisible = true
+      }
+    })
+  }
 
   private onPreviewPicture() {
     this.previewVisible = true

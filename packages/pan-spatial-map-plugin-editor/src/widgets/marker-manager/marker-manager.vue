@@ -75,6 +75,7 @@
       :markers="markersCurrentPage"
       :center="currentMarkerCenter"
       :highlight-style="highlightStyle"
+      @popupload="popupLoad"
     >
       <template slot="popup" slot-scope="{ marker }">
         <marker-show-window :marker="marker"></marker-show-window>
@@ -113,7 +114,8 @@ import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
 import {
   api,
   baseConfigInstance,
-  markerIconInstance
+  markerIconInstance,
+  eventBus
 } from '@mapgis/pan-spatial-map-store'
 
 import MarkerAdd from './components/MarkerAdd/MarkerAdd'
@@ -491,6 +493,23 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     }
 
     this.onPageChange(this.pagination)
+  }
+
+  // 为三维popup内部的按钮绑定事件
+  private popupLoad(markerId) {
+    const editBtn = document.getElementsByClassName('popup-button')
+
+    for (const button of editBtn) {
+      button.addEventListener(
+        'click',
+        this.handleClickEdit.bind(this, markerId)
+      )
+    }
+  }
+
+  // 点击三维popup内部的编辑按钮响应事件
+  private handleClickEdit(markerId) {
+    eventBus.$emit('emitClickEdit', markerId)
   }
 }
 </script>

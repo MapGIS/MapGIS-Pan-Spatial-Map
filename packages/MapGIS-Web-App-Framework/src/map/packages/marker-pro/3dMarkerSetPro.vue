@@ -10,6 +10,7 @@
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
       @change="changePopup"
+      @popupload="popupLoad"
     >
       <template slot="popup" slot-scope="slotProps">
         <slot name="popup" v-bind="slotProps"></slot>
@@ -52,6 +53,10 @@ export default class Mp3dMarkerSetPro extends Vue {
 
   private mouseLeaveEvent(e, id) {
     this.$emit('mouseleave', e, id)
+  }
+
+  private popupLoad(markerId) {
+    this.$emit('popupload', markerId)
   }
 
   changePopup(val) {

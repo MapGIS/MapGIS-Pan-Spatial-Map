@@ -8,6 +8,7 @@
       }"
       :visible="showPopup"
       @change="changePopup"
+      v-on:load="bindEvent"
     >
       <div slot="default">
         <slot
@@ -141,6 +142,10 @@ export default class Mp3dMarkerPro extends Vue {
 
       return key
     }
+  }
+
+  private bindEvent() {
+    this.$emit('popupload', this.marker.markerId)
   }
 
   // 更换图片，更换地图上的标注

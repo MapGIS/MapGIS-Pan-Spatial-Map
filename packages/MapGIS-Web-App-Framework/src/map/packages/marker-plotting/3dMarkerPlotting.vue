@@ -4,6 +4,7 @@
       :markers="markers"
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
+      @popupload="popupLoad"
     >
       <template slot="popup" slot-scope="slotProps">
         <slot name="popup" v-bind="slotProps"></slot>
@@ -225,6 +226,10 @@ export default class Mp3dMarkerPlotting extends Vue {
   private mouseLeaveEvent(e: any, id) {
     this.clearHighlight()
     this.stopDisplay()
+  }
+
+  private popupLoad(markerId) {
+    this.$emit('popupload', markerId)
   }
 
   private highlightFeature(featureGeoJSON) {
