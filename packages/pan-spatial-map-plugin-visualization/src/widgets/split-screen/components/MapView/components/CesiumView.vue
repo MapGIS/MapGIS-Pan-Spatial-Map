@@ -88,7 +88,7 @@ export default class CesiumView extends Vue {
 
   beforeDestroyed() {
     this.isMapLoaded = false
-    this.onDrawLoad(null)
+    this.drawer = null
   }
 }
 </script>

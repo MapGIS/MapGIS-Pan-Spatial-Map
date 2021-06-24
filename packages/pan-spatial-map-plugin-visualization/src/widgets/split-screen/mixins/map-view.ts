@@ -1,5 +1,5 @@
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
+import { AppMixin, MapMixin, Objects } from '@mapgis/web-app-framework'
 import mStateInstance, { MapViewState, Rect } from './map-view-state'
 
 export { Rect }
@@ -51,11 +51,33 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   /**
    * 监听: 更新地图视图范围
    */
-  @Watch('activeView', { deep: true })
+  @Watch('activeView', { immediate: true, deep: true })
   watchActiveView(nV: Rect) {
     if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
       this.resort(nV)
     }
+  }
+
+  /**
+   * 清除三维地图上的实体
+   */
+  clearWebGlobeEntities() {
+    if (!this.is2dLayer && this.sceneController) {
+      this.sceneController.webGlobe.viewer.entities.removeAll()
+    }
+  }
+
+  /**
+   * 注册三维webGlobe
+   */
+  setWebGlobe() {
+    const webGlobe =
+      this.CesiumZondy.getWebGlobe(this.mapViewId) || this.webGlobe
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      webGlobe
+    )
   }
 
   /**
@@ -79,23 +101,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 获取三维viewer
-   */
-  getWebGlobe() {
-    return this.CesiumZondy.getWebGlobe(this.mapViewId) || this.webGlobe
-  }
-
-  /**
-   * 清除三维地图上的实体
-   */
-  clearCesiumEntities() {
-    if (!this.is2dLayer) {
-      const globe = this.getWebGlobe()
-      globe.viewer.entities.removeAll()
-    }
-  }
-
-  /**
    * 查询
    * @param {Rect} rect 指定区域
    */
@@ -106,24 +111,19 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   /**
    * 三维放大至指定范围
    */
-  zoomToRect3d({ xmin, ymin, xmax, ymax }: Rect, type = 'in') {
-    const globe = this.getWebGlobe()
+  zoomToRect3d(bound: Rect, type = 'in') {
     let destination: any
     if (type === 'in') {
-      destination = new this.Cesium.Rectangle.fromDegrees(
-        xmin,
-        ymin,
-        xmax,
-        ymax
-      )
+      destination = this.sceneController.getRectangleFromDegrees(bound)
     } else {
-      destination = this.Cesium.Cartesian3.fromDegrees(
+      const { xmin, ymin, xmax, ymax } = bound
+      destination = this.sceneController.getCartesian3FromDegrees(
         (xmin + xmax) / 2,
         (ymin + ymax) / 2,
-        globe.viewer.camera.positionCartographic.height * 2
+        this.sceneController.getPsitionCartographicHeight * 2
       )
     }
-    globe.viewer.camera.flyTo({ destination })
+    this.sceneController.cameraFlyTo({ destination })
   }
 
   /**
@@ -214,8 +214,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * @param enable
    */
   toggle3dPan(enable = true) {
-    const globe = this.getWebGlobe()
-    globe.viewer.scene.screenSpaceCameraController.enableZoom = enable
+    this.sceneController.webGlobe.viewer.scene.screenSpaceCameraController.enableZoom = enable
   }
 
   /**

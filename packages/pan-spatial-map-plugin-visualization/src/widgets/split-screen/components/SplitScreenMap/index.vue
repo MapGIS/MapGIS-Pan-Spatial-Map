@@ -68,8 +68,6 @@ export default class SplitScreenMap extends Vue {
     }
   }
 
-  opera: Opera = 'null'
-
   queryVisible = false
 
   queryRect: Rect = {}
@@ -108,7 +106,6 @@ export default class SplitScreenMap extends Vue {
         classList.remove('beauty-scroll')
       }
     } else {
-      this.opera = 'openFullScreen'
       if (!hasScrollCls) {
         classList.add('beauty-scroll')
       }
@@ -122,16 +119,9 @@ export default class SplitScreenMap extends Vue {
     }
   }
 
-  mounted() {
-    window.onresize = () => {
-      if (this.refresh) {
-        this.refresh(this.opera)
-      }
-
-      if (this.opera === 'openFullScreen') {
-        this.opera = 'closeFullScreen'
-      }
-    }
+  beforeDestroyed() {
+    this.queryVisible = false
+    this.queryRect = {}
   }
 }
 </script>

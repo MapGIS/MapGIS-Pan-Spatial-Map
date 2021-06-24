@@ -124,48 +124,33 @@ export default class Mp3dMarkerPlotting extends Vue {
   emitMapBoundChange(bound: Record<string, any>) {}
 
   mounted() {
-    this.sceneOverlays = SceneOverlays.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
-    )
-    this.sceneController = SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
-    )
-
+    const webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey) || this.webGlobe
+    const cesiumZondyWebGlobe = [this.Cesium, this.CesiumZondy, webGlobe]
+    this.sceneOverlays = SceneOverlays.getInstance(...cesiumZondyWebGlobe)
+    this.sceneController = SceneController.getInstance(...cesiumZondyWebGlobe)
     this.analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
       viewer: webGlobe.viewer
     })
-    webGlobe.viewer.camera.changed.addEventListener(this.changeFilterWithMap)
+    this.sceneController.addCameraChangedEvent(this.changeFilterWithMap)
   }
 
   destroyed() {
     this.analysisManager = null
-    const webGlobe = this.getWebGlobe()
-    webGlobe.viewer.camera.changed.removeEventListener(this.changeFilterWithMap)
+    this.sceneController.removeCameraChangedEvent(this.changeFilterWithMap)
   }
 
   private zoomToCartesian3(x, y) {
-    const webGlobe = this.getWebGlobe()
-    const destination = this.Cesium.Cartesian3.fromDegrees(
+    const destination = this.sceneController.getCartesian3FromDegrees(
       x,
       y,
-      webGlobe.viewer.camera.positionCartographic.height
+      this.sceneController.getPsitionCartographicHeight
     )
-    webGlobe.viewer.camera.flyTo({ destination })
+    this.sceneController.cameraFlyTo({ destination })
   }
 
-  private zoomTo({ xmin, ymin, xmax, ymax }) {
-    const webGlobe = this.getWebGlobe()
-    const destination = new this.Cesium.Rectangle.fromDegrees(
-      xmin,
-      ymin,
-      xmax,
-      ymax
-    )
-    webGlobe.viewer.camera.flyTo({ destination })
+  private zoomTo(bound) {
+    const destination = new this.sceneController.getRectangleFromDegrees(bound)
+    this.sceneController.cameraFlyTo({ destination })
   }
 
   private zoomOrPanTo({ xmin, ymin, xmax, ymax }) {
@@ -290,7 +275,7 @@ export default class Mp3dMarkerPlotting extends Vue {
 
   private getViewExtend() {
     const params = {}
-    const webGlobe = this.getWebGlobe()
+    const { webGlobe } = this.sceneController
     const extend = webGlobe.viewer.camera.computeViewRectangle()
     if (typeof extend === 'undefined') {
       // 2D下会可能拾取不到坐标，extend返回undefined,所以做以下转换

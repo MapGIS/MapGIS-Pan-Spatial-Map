@@ -164,10 +164,11 @@ export default class Mp3dMarkerPro extends Vue {
   emitId(id: string) {}
 
   mounted() {
+    const webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey) || this.webGlobe
     this.sceneOverlays = SceneOverlays.getInstance(
       this.Cesium,
       this.CesiumZondy,
-      this.webGlobe
+      webGlobe
     )
     this.updateMarker()
   }

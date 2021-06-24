@@ -110,6 +110,7 @@ export default class MapboxView extends Vue {
 
   beforeDestroyed() {
     this.isMapLoaded = false
+    this.drawer = null
   }
 }
 </script>

@@ -5,7 +5,10 @@
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { AppMixin, UUID, Feature } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import {
+  baseConfigInstance,
+  markerIconInstance
+} from '@mapgis/pan-spatial-map-store'
 import _last from 'lodash/last'
 
 interface IFeature {

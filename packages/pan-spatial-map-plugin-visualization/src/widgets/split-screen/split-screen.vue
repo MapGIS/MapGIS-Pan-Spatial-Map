@@ -1,5 +1,5 @@
 <template>
-  <div class="mp-widget-split-screen" :class="mode">
+  <div class="mp-widget-split-screen" :class="mode" v-if="isOpen">
     <!-- 分屏地图 -->
     <split-screen-map
       v-bind="bindProps"

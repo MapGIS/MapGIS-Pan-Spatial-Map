@@ -92,45 +92,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 查询范围
   @Prop({ default: () => ({}) }) readonly queryRect!: boolean
 
-  /**
-   * 监听:  窗口变化
-   */
-  @Watch('resize', { immediate: true })
-  watchResizeOrigin() {
-    this.onResize()
-  }
-
-  /**
-   * 监听: 结果树开关
-   */
-  @Watch('queryVisible', { immediate: true })
-  watchQueryVisible(nV) {
-    if (nV) {
-      this.onToggleQueryWindow(nV)
-    }
-  }
-
-  /**
-   * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
-   */
-  @Watch('queryWindowVisible', { immediate: true })
-  watchqueryWindowVisible(nV) {
-    if (!nV) {
-      this.onClear()
-      this.$emit('update:queryVisible', false)
-    }
-  }
-
-  /**
-   * 监听: 图层变化
-   */
-  @Watch('mapViewLayer.id', { immediate: true })
-  watchMapViewLayer(nV: string, oV: string) {
-    if (nV && nV !== oV) {
-      this.onInit()
-    }
-  }
-
+  // document
   mapViewDocument: Document | null = null
 
   // 地图高度
@@ -260,6 +222,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 清除点击, 清除图层上的标注
    */
   onClear() {
+    this.onIconClick('UNKNOW')
     this.onQueryResultClear()
     this.onToggleQueryWindow(false)
   }
@@ -271,7 +234,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    */
   onIconClick(operationType: OperationType, fnName: OperationFn) {
     this.operationType = operationType
-    if (this.isMapLoaded && this[fnName]) {
+    if (fnName && this[fnName] && this.isMapLoaded) {
       this[fnName]()
     }
   }
@@ -306,7 +269,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   onQueryResultClear() {
     this.queryFeatures = []
     this.querySelection = []
-    this.clearCesiumEntities()
+    this.clearWebGlobeEntities()
   }
 
   /**
@@ -322,13 +285,54 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     })
   }
 
+  /**
+   * 监听:  窗口变化
+   */
+  @Watch('resize', { immediate: true })
+  watchResizeOrigin() {
+    this.onResize()
+  }
+
+  /**
+   * 监听: 结果树开关
+   */
+  @Watch('queryVisible', { immediate: true })
+  watchQueryVisible(nV) {
+    if (nV) {
+      this.onToggleQueryWindow(nV)
+    }
+  }
+
+  /**
+   * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
+   */
+  @Watch('queryWindowVisible', { immediate: true })
+  watchqueryWindowVisible(nV) {
+    if (!nV) {
+      this.onQueryResultClear()
+      this.$emit('update:queryVisible', false)
+    }
+  }
+
+  /**
+   * 监听: 图层变化
+   */
+  @Watch('mapViewLayer.id', { immediate: true })
+  watchMapViewLayer(nV: string) {
+    if (nV) {
+      this.onInit()
+    }
+  }
+
   mounted() {
     this.onInit()
+    this.setWebGlobe()
     this.onResize()
     window.onresize = this.onResize
   }
 
   beforeDestroyed() {
+    this.isMapLoaded = false
     this.onClear()
   }
 }
