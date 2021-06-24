@@ -388,7 +388,11 @@ export default class MpFeatureQuery extends Mixins(
           // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
           const transform = this.getLayerTranform(layer)
           if (transform) {
-            const { x, y, z } = this.sceneController.degreeToDataPosition(
+            const {
+              x,
+              y,
+              z
+            } = this.sceneController.globelPositionToLocalPosition(
               shape,
               transform
             )
@@ -465,11 +469,11 @@ export default class MpFeatureQuery extends Mixins(
 
   private transQueryRect3D({ xmin, ymin, xmax, ymax, zmin, zmax }, transform) {
     if (transform) {
-      const minPosition = this.sceneController.degreeToDataPosition(
+      const minPosition = this.sceneController.globelPositionToLocalPosition(
         { x: xmin, y: ymin, z: zmin },
         transform
       )
-      const maxPosition = this.sceneController.degreeToDataPosition(
+      const maxPosition = this.sceneController.globelPositionToLocalPosition(
         { x: xmax, y: ymax, z: zmax },
         transform
       )
@@ -487,7 +491,7 @@ export default class MpFeatureQuery extends Mixins(
 
   private toQueryRect3D(shape, transform) {
     const positions = shape.map(item => {
-      const { x, y, z } = this.sceneController.degreeToDataPosition(
+      const { x, y, z } = this.sceneController.globelPositionToLocalPosition(
         item,
         transform
       )
@@ -566,7 +570,7 @@ export default class MpFeatureQuery extends Mixins(
     if (!this.is2DMapMode && type === LayerType.IGSScene) {
       const tranform = this.getLayerTranform(layer)
       if (tranform) {
-        const extent = this.sceneController.dataPositionExtentToDegreeExtent(
+        const extent = this.sceneController.localExtentToGlobelExtent(
           fullExtent,
           tranform
         )

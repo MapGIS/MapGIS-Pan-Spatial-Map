@@ -59,7 +59,7 @@ export default class M3DCesium extends Mixins(MapMixin) {
         //   y: (ymin + ymax) / 2,
         //   z: zmax * 4
         // }
-        let bound = this.sceneController.dataPositionExtentToDegreeExtent(
+        let bound = this.sceneController.localExtentToGlobelExtent(
           this.fitBound,
           tranform
         )

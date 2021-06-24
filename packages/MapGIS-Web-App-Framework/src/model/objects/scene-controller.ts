@@ -88,7 +88,8 @@ export class SceneController {
     return extent
   }
 
-  public mousePositionToDegree(mousePoint) {
+  // 屏幕坐标转地理坐标
+  public screenPositionToGlobelPosition(mousePoint) {
     // 通过指定的椭球或者地图对应的坐标系，将鼠标的二维坐标转换为对应椭球体三维坐标
     const { ellipsoid } = this.webGlobe.scene.globe
     let cartesian
@@ -117,12 +118,12 @@ export class SceneController {
   }
 
   /**
-   * 经纬度坐标转数据坐标
+   * 地理坐标转局部坐标
    * @param  {object} position 经纬度点
    * @param  {object} transform 对应数据的transform信息
    * @return {Cartographic}  Cartographic 数据坐标
    */
-  public degreeToDataPosition(position, transform) {
+  public globelPositionToLocalPosition(position, transform) {
     // 度转迪卡尔
     const c3 = this.Cesium.Cartesian3.fromDegrees(
       position.x,
@@ -137,12 +138,12 @@ export class SceneController {
   }
 
   /**
-   * 数据坐标转经纬坐标
+   * 数据局部坐标转经纬度地理坐标
    * @param  {object} position 数据坐标点
    * @param  {object} transform 对应数据的transform信息
    * @return {object}  Position 经纬度坐标
    */
-  public dataPositionToDegree(position, transform) {
+  public localPositionToGlobelPosition(position, transform) {
     let car3 = new this.Cesium.Cartesian3()
     car3 = this.Cesium.Matrix4.multiplyByPoint(transform, position, car3)
     const cartographic = this.Cesium.Cartographic.fromCartesian(car3)
@@ -154,28 +155,50 @@ export class SceneController {
   }
 
   /**
-   * 数据坐标范围转经纬坐标范围
+   * 数据局部坐标范围转经纬度地理坐标范围
    * @param  {object} extent3D 数据坐标点范围
    * @param  {object} transform 对应数据的transform信息
    * @return {object}  Position 经纬度坐标
    */
-  public dataPositionExtentToDegreeExtent(extent3D, transform) {
+  public localExtentToGlobelExtent(extent3D, transform) {
     const centerMinPoint = new this.Cesium.Cartesian3()
     centerMinPoint.x = extent3D.xmin
     centerMinPoint.y = extent3D.ymin
     centerMinPoint.z = extent3D.zmin
-    const positions1 = this.dataPositionToDegree(centerMinPoint, transform) // 数据坐标转经纬度坐标
+    const positions1 = this.localPositionToGlobelPosition(
+      centerMinPoint,
+      transform
+    ) // 数据坐标转经纬度坐标
 
     const centerMaxPoint = new this.Cesium.Cartesian3()
     centerMaxPoint.x = extent3D.xmax
     centerMaxPoint.y = extent3D.ymax
     centerMaxPoint.z = extent3D.zmax
-    const positions2 = this.dataPositionToDegree(centerMaxPoint, transform) // 数据坐标转经纬度坐标
+    const positions2 = this.localPositionToGlobelPosition(
+      centerMaxPoint,
+      transform
+    ) // 数据坐标转经纬度坐标
     const bound = {
       xmin: positions1.x,
       ymin: positions1.y,
       xmax: positions2.x,
       ymax: positions2.y
+    }
+    return bound
+  }
+
+  /**
+   * 图层数据局部坐标范围转经纬度地理范围
+   * @param igsSceneSubLayer IGS三维图层
+   * @retu rns 经纬度坐标
+   */
+  layerLocalExtentToGlobelExtent(igsSceneSubLayer) {
+    const { id, range } = igsSceneSubLayer
+    const { source } = this.CesiumZondy.M3DIgsManager.findSource('default', id)
+    let bound: any = null
+    if (source.length > 0) {
+      const tranform = source[0].root.transform
+      bound = this.localExtentToGlobelExtent(range, tranform)
     }
     return bound
   }

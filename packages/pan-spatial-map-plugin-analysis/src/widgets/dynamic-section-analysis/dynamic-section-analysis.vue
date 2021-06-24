@@ -187,7 +187,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
       this.Cesium,
       this.CesiumZondy,
       this.webGlobe
-    ).layerPositionExtentToDegreeExtent(this.model.activeScene.sublayers[0])
+    ).layerLocalExtentToGlobelExtent(this.model.activeScene.sublayers[0])
     if (bound) {
       this.webGlobe.viewer.camera.flyTo({
         destination: this.Cesium.Rectangle.fromDegrees(
@@ -302,7 +302,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    */
   edgeColor() {
     if (this.color) {
-      const color = utilInstance.getRGBA(this.color)
+      const color = ColorUtil.getColorObject(this.color)
       return new this.Cesium.Color(
         color.r / 255,
         color.g / 255,

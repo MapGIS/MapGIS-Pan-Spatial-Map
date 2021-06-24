@@ -703,7 +703,7 @@ export default class TreeLayer extends Mixins(
       )
       if (source.length > 0) {
         const tranform = source[0].root.transform
-        const bound = this.sceneController.dataPositionExtentToDegreeExtent(
+        const bound = this.sceneController.localExtentToGlobelExtent(
           { xmin, xmax, ymin, ymax, zmin, zmax },
           tranform
         )

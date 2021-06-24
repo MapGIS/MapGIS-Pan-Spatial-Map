@@ -631,7 +631,7 @@ export default class MpAttributeTable extends Mixins(
           let boundObj = null
           if (source.length > 0) {
             const tranform = source[0].root.transform
-            boundObj = this.sceneController.dataPositionExtentToDegreeExtent(
+            boundObj = this.sceneController.localExtentToGlobelExtent(
               bound,
               tranform
             )
@@ -665,11 +665,11 @@ export default class MpAttributeTable extends Mixins(
     if (source.length > 0) {
       const transform = source[0].root.transform
       const { xmin, ymin, xmax, ymax, zmin, zmax } = this.geometry3D
-      const minPosition = this.sceneController.degreeToDataPosition(
+      const minPosition = this.sceneController.globelPositionToLocalPosition(
         { x: xmin, y: ymin, z: zmin },
         transform
       )
-      const maxPosition = this.sceneController.degreeToDataPosition(
+      const maxPosition = this.sceneController.globelPositionToLocalPosition(
         { x: xmax, y: ymax, z: zmax },
         transform
       )
