@@ -25,8 +25,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { Layer } from '@mapgis/web-app-framework'
-import mStateInstance from '../../mixins/map-view-state'
+import { Layer, Layer3D } from '@mapgis/web-app-framework'
+import mapViewStateInstance from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -63,8 +63,7 @@ export default class SplitScreenMap extends Vue {
   @Watch('screenNums', { immediate: true })
   watchScreenNums(nV) {
     if (nV.length) {
-      // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
-      mStateInstance.initView = this.layers[nV[0]].fullExtent
+      mapViewStateInstance.initView = this.getInitView()
     }
   }
 
@@ -76,6 +75,20 @@ export default class SplitScreenMap extends Vue {
   get mapSpanStyle() {
     const height = this.screenNums.length > 2 ? '50%' : '100%'
     return { height }
+  }
+
+  /**
+   * 格式化初始视角范围数据
+   * 默认取第一个图层的全图范围
+   */
+  getInitView() {
+    const layer = this.layers[0]
+    // eslint-disable-next-line prefer-const
+    let initView: Rect = layer.fullExtent
+    if (layer instanceof Layer3D) {
+      // todo 三维图层fullExtent转范围
+    }
+    return initView
   }
 
   /**

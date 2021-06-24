@@ -22,7 +22,6 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Document, UUID } from '@mapgis/web-app-framework'
-import mStateInstance from '../../mixins/map-view-state'
 
 @Component
 export default class CesiumView extends Vue {

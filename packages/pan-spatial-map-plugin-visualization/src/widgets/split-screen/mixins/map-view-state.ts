@@ -60,6 +60,6 @@ export class MapViewState {
   }
 }
 
-const mStateInstance: MapViewState = new MapViewState()
+const mapViewStateInstance: MapViewState = new MapViewState()
 
-export default mStateInstance
+export default mapViewStateInstance

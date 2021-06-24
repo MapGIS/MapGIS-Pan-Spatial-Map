@@ -538,6 +538,73 @@
                     }
                   }
                 ]
+              },
+              {
+                "time": "2008",
+                "subData": [
+                  {
+                    "minZoom": "0",
+                    "maxZoom": "10",
+                    "queryFeatureNum": "10000+",
+                    "ip": "develop.smaryun.com",
+                    "port": "6163",
+                    "src": "",
+                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
+                    "docName": "",
+                    "layerIndex": "",
+                    "layerName": "undefined",
+                    "showLegend": "true",
+                    "field": "人口数",
+                    "webglTextField": "省名",
+                    "dataBase": {
+                      "code": "",
+                      "codeYear": "",
+                      "dataYear": ""
+                    },
+                    "color": [
+                      {
+                        "min": "0",
+                        "max": "6355",
+                        "sectionColor": "#FFFF66"
+                      },
+                      {
+                        "min": "6355",
+                        "max": "12711",
+                        "sectionColor": "#FFCC66"
+                      },
+                      {
+                        "min": "12711",
+                        "max": "19066",
+                        "sectionColor": "#FF9999"
+                      },
+                      {
+                        "min": "19066",
+                        "max": "25422",
+                        "sectionColor": "#FF66CC"
+                      },
+                      {
+                        "min": "25422",
+                        "max": "31777",
+                        "sectionColor": "#FF3399"
+                      }
+                    ],
+                    "table": {
+                      "showFields": ["面积", "周长", "省名", "人口数"],
+                      "showFieldsTitle": {}
+                    },
+                    "graph": {
+                      "showFields": ["人口数"],
+                      "showFieldsTitle": {},
+                      "field": "省名",
+                      "target": []
+                    },
+                    "popup": {
+                      "showFields": ["省名", "人口数"],
+                      "showFieldsTitle": {},
+                      "title": ""
+                    }
+                  }
+                ]
               }
             ]
           },

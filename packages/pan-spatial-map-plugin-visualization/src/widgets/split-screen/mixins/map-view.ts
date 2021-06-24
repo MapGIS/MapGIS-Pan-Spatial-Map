@@ -4,10 +4,11 @@ import {
   MapMixin,
   /* Layer3D, */ Objects
 } from '@mapgis/web-app-framework'
-import mStateInstance, { MapViewState, Rect } from './map-view-state'
+import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
 import { Layer3D } from '../../../../../MapGIS-Web-App-Framework/src/model'
 
 export { Rect }
+
 @Component
 export default class MapViewMixin extends Mixins<Record<string, any>>(
   MapMixin,
@@ -16,7 +17,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   @Prop() mapViewId!: string
 
   // 公共状态
-  activeMapViewState: MapViewState = mStateInstance
+  activeMapViewState: MapViewState = mapViewStateInstance
 
   // 是否是二维图层
   get is2dLayer() {
