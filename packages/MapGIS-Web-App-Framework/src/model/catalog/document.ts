@@ -598,6 +598,7 @@ export default class DocumentCatalog {
             range.ymax < extent[1] ||
             range.ymin > extent[3]
           ) {
+            // eslint-disable-next-line no-continue
             continue
           }
         }
