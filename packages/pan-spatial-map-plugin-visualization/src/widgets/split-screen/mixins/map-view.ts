@@ -1,6 +1,5 @@
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { AppMixin, MapMixin } from '@mapgis/web-app-framework'
-import { cesiumUtilInstance } from '@mapgis/pan-spatial-map-store'
 import mStateInstance, { MapViewState, Rect } from './map-view-state'
 
 export { Rect }
@@ -83,7 +82,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * 获取三维viewer
    */
   getWebGlobe() {
-    return cesiumUtilInstance.findWebGlobe(this.mapViewId)
+    return this.CesiumZondy.getWebGlobe(this.mapViewId) || this.webGlobe
   }
 
   /**
