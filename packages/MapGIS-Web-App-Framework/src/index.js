@@ -68,7 +68,8 @@ export {
   Feature,
   Metadata,
   Overlay,
-  Analysis
+  Analysis,
+  CoordinateSystemType
 } from './model'
 
 import { CommonComponents } from './common'

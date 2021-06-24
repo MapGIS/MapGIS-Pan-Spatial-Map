@@ -716,6 +716,21 @@
             "gdbTypeList": "Local,Local,Local"
           },
           {
+            "label": "道路交通网",
+            "describe": "网络分析",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSIMAGE",
+            "name": "网络分析",
+            "searchName": "",
+            "token": "",
+            "guid": "e6c67296-8725-7f4b-a0c7-317ec3dd271b",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": "Local,Local"
+          },
+          {
             "label": "北京市",
             "describe": "北京市",
             "ip": "",

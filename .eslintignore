@@ -5,3 +5,4 @@ node_modules/
 dist/
 out/
 ./packages/pan-spatial-map-plugin-editor/libs
+WebClient-Vue/
