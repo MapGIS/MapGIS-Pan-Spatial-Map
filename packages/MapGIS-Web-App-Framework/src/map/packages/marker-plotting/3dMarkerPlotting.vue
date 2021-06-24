@@ -124,12 +124,13 @@ export default class Mp3dMarkerPlotting extends Vue {
   emitMapBoundChange(bound: Record<string, any>) {}
 
   mounted() {
-    const webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey) || this.webGlobe
-    const cesiumZondyWebGlobe = [this.Cesium, this.CesiumZondy, webGlobe]
+    const _webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey) || this.webGlobe
+    const cesiumZondyWebGlobe = [this.Cesium, this.CesiumZondy, _webGlobe]
+    this.sceneControllerWebGlobe = _webGlobe
     this.sceneOverlays = SceneOverlays.getInstance(...cesiumZondyWebGlobe)
     this.sceneController = SceneController.getInstance(...cesiumZondyWebGlobe)
     this.analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
-      viewer: webGlobe.viewer
+      viewer: _webGlobe.viewer
     })
     this.sceneController.addCameraChangedEvent(this.changeFilterWithMap)
   }
@@ -275,7 +276,7 @@ export default class Mp3dMarkerPlotting extends Vue {
 
   private getViewExtend() {
     const params = {}
-    const { webGlobe } = this.sceneController
+    const webGlobe = this.sceneControllerWebGlobe
     const extend = webGlobe.viewer.camera.computeViewRectangle()
     if (typeof extend === 'undefined') {
       // 2D下会可能拾取不到坐标，extend返回undefined,所以做以下转换

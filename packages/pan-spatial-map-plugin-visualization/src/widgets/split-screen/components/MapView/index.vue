@@ -148,6 +148,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    */
   onCesiumLoad() {
     this.isMapLoaded = true
+    this.setWebGlobe()
     this.resort()
   }
 
@@ -296,7 +297,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 监听: 结果树开关
    */
-  @Watch('queryVisible', { immediate: true })
+  @Watch('queryVisible')
   watchQueryVisible(nV) {
     if (nV) {
       this.onToggleQueryWindow(nV)
@@ -306,7 +307,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
    */
-  @Watch('queryWindowVisible', { immediate: true })
+  @Watch('queryWindowVisible')
   watchqueryWindowVisible(nV) {
     if (!nV) {
       this.onQueryResultClear()
@@ -326,7 +327,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
 
   mounted() {
     this.onInit()
-    this.setWebGlobe()
     this.onResize()
     window.onresize = this.onResize
   }

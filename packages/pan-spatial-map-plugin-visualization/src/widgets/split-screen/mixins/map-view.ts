@@ -59,28 +59,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 清除三维地图上的实体
-   */
-  clearWebGlobeEntities() {
-    if (!this.is2dLayer && this.sceneController) {
-      this.sceneController.webGlobe.viewer.entities.removeAll()
-    }
-  }
-
-  /**
-   * 注册三维webGlobe
-   */
-  setWebGlobe() {
-    const webGlobe =
-      this.CesiumZondy.getWebGlobe(this.mapViewId) || this.webGlobe
-    this.sceneController = Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      webGlobe
-    )
-  }
-
-  /**
    * 二维地图注册事件
    */
   registerMapboxEvent() {
@@ -98,6 +76,29 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
         }
       }
     })
+  }
+
+  /**
+   * 注册三维webGlobe
+   */
+  setWebGlobe() {
+    const webGlobe =
+      this.CesiumZondy.getWebGlobe(this.mapViewId) || this.webGlobe
+    this._webGlobe = webGlobe
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      webGlobe
+    ).sceneController
+  }
+
+  /**
+   * 清除三维地图上的实体
+   */
+  clearWebGlobeEntities() {
+    if (!this.is2dLayer && this._webGlobe) {
+      this._webGlobe.viewer.entities.removeAll()
+    }
   }
 
   /**
@@ -214,7 +215,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * @param enable
    */
   toggle3dPan(enable = true) {
-    this.sceneController.webGlobe.viewer.scene.screenSpaceCameraController.enableZoom = enable
+    this._webGlobe.viewer.scene.screenSpaceCameraController.enableZoom = enable
   }
 
   /**
