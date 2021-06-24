@@ -138,7 +138,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
           fillColor,
           fillOutlineColor
         )
-        const center = Feature.getGeoJsonFeatureCenter(features[i])
+        const center = Feature.getGeoJSONFeatureCenter(features[i])
         const rgba = ColorUtil.getColorObject('#FD6A6F', 1)
         const textColor = new this.Cesium.Color(
           rgba.r / 255,

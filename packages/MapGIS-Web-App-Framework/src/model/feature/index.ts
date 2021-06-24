@@ -19,9 +19,9 @@ export {
   GGeometry,
   GFeature,
   FeatureGeoJSON,
-  getGeoJsonFeatureCenter,
-  getGeoJsonFeaturesCenter,
-  getGeoJsonFeatureBound
+  getGeoJSONFeatureCenter,
+  getGeoJSONFeaturesCenter,
+  getGeoJSONFeatureBound
 } from './feature-geojson'
 
 export { default as FeatureConvert } from './feature-convert'

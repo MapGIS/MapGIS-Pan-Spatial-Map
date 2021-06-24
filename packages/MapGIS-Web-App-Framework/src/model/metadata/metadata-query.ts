@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { CommonUtil } from '../../utils'
 
 export interface MetadataQueryParam {
   protocol?: string // 网络协议
@@ -65,7 +66,7 @@ export default class MetaDataQuery {
   public static metadata = {}
 
   public static query(option: MetadataQueryParam) {
-    if (!option) {
+    if (CommonUtil.isEmpty(option)) {
       return null
     }
     const name = option.gdbp || option.docName + (option.layerIdxs || '')
@@ -74,7 +75,7 @@ export default class MetaDataQuery {
     }
     let domain = option.domain || null
     if (!domain) {
-      const protocol = option.protocol
+      const protocol = option.protocol || 'http'
       const ip = option.ip
       const port = option.port
       domain = `${protocol}://${ip}:${port}`

@@ -240,7 +240,7 @@ export default class FeatureQuery {
 
     let domain = option.domain || null
     if (!domain) {
-      const protocol = option.protocol
+      const protocol = option.protocol || 'http'
       const ip = option.ip
       const port = option.port
       domain = `${protocol}://${ip}:${port}`
@@ -393,7 +393,7 @@ export default class FeatureQuery {
 
     let domain = option.domain || null
     if (!domain) {
-      const protocol = option.protocol
+      const protocol = option.protocol || 'http'
       const ip = option.ip
       const port = option.port
       domain = `${protocol}://${ip}:${port}`
@@ -695,7 +695,7 @@ export default class FeatureQuery {
     const ip = option.ip
     const port = option.port
     if (!domain) {
-      const protocol = option.protocol
+      const protocol = option.protocol || 'http'
       domain = `${protocol}://${ip}:${port}`
     }
     queryParam.domain = domain
@@ -754,7 +754,7 @@ export default class FeatureQuery {
     const ip = option.ip
     const port = option.port
     if (!domain) {
-      const protocol = option.protocol
+      const protocol = option.protocol || 'http'
       domain = `${protocol}://${ip}:${port}`
     }
     queryParam.domain = domain

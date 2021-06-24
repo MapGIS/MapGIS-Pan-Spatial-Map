@@ -195,7 +195,7 @@ export default class MpMarkerImport extends Mixins(MarkerMixin) {
             properties: {},
             type: 'Feature'
           }
-          const coordinates = Feature.getGeoJsonFeatureCenter(feature)
+          const coordinates = Feature.getGeoJSONFeatureCenter(feature)
 
           obj.feature = feature
           obj.coordinates = coordinates
@@ -252,7 +252,7 @@ export default class MpMarkerImport extends Mixins(MarkerMixin) {
                 type: 'Feature'
               }
             }
-            const coordinates = Feature.getGeoJsonFeatureCenter(feature)
+            const coordinates = Feature.getGeoJSONFeatureCenter(feature)
 
             obj.feature = feature
             obj.coordinates = coordinates

@@ -1,4 +1,4 @@
-import { getGeoJsonFeatureCenter } from '../feature/feature-geojson'
+import { getGeoJSONFeatureCenter } from '../feature/feature-geojson'
 
 export class SceneOverlays {
   public static sceneOverlaysArray: { webGlobe; sceneOverlays }[] = []
@@ -28,7 +28,7 @@ export class SceneOverlays {
     }
     this.sceneOverlaysArray.push(sceneOverlaysValue)
 
-    return sceneOverlaysValue
+    return sceneOverlaysValue.sceneOverlays
   }
 
   constructor(Cesium, CesiumZondy, webGlobe) {
@@ -318,7 +318,7 @@ export class SceneOverlays {
     option.name = option.name || 'markerOverlay'
 
     // 计算中心点
-    option.center = option.center || getGeoJsonFeatureCenter(option.features[0])
+    option.center = option.center || getGeoJSONFeatureCenter(option.features[0])
     const markerEntity = this.addLabelIcon({
       lon: option.center[0],
       lat: option.center[1],
@@ -350,6 +350,10 @@ export class SceneOverlays {
             this.markerMouseOut(event, option)
           }
     this.markerOptions.push(option)
+    if (this.markerOptions.length == 1) {
+      this.registerMarkerMouseEvent()
+    }
+
     return markerEntity
   }
 
@@ -377,7 +381,11 @@ export class SceneOverlays {
       this.removeEntity(entity)
     })
     this.entityArray = []
-    this.markerOptions = []
+
+    if (this.markerOptions.length) {
+      this.unregisterMarkerMouseEvent()
+      this.markerOptions = []
+    }
   }
 
   /**
@@ -427,6 +435,10 @@ export class SceneOverlays {
       if (markers[i] && markers[i].name && markers[i].name === name) {
         markers.splice(i, 1)
       }
+    }
+
+    if (this.markerOptions.length == 0) {
+      this.unregisterMarkerMouseEvent()
     }
   }
 

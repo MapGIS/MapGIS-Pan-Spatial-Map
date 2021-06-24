@@ -10,8 +10,8 @@
 
 <script>
 import {
-  getGeoJsonFeatureCenter,
-  getGeoJsonFeatureBound
+  getGeoJSONFeatureCenter,
+  getGeoJSONFeatureBound
 } from '../../../model/feature'
 import DrawMixin from './mixins/draw'
 import DrawStyle from '../../styles/draw-style'
@@ -86,7 +86,7 @@ export default {
       // 规范化结果，然后发送完成事件
       const { features } = e
       const feature = features[0]
-      const center = getGeoJsonFeatureCenter(feature)
+      const center = getGeoJSONFeatureCenter(feature)
       const { coordinates } = feature.geometry
 
       let shape
@@ -116,7 +116,7 @@ export default {
           break
         case 'draw-circle':
         case 'draw-rectangle':
-          const { xmin, ymin, xmax, ymax } = getGeoJsonFeatureBound(feature)
+          const { xmin, ymin, xmax, ymax } = getGeoJSONFeatureBound(feature)
           shape = {
             xmin,
             ymin,

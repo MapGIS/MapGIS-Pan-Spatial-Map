@@ -185,15 +185,15 @@ export default class MpMarkerPlotting extends Vue {
     this.clearHighlight()
   }
 
-  private highlightFeature(featureGeoJson) {
+  private highlightFeature(featureGeoJSON) {
     this.map.addSource('highlight', {
       type: 'geojson',
-      data: featureGeoJson
+      data: featureGeoJSON
     })
     // 需要根据要素类型来使用不同的type
-    if (featureGeoJson.features[0].geometry.type === 'Point') {
+    if (featureGeoJSON.features[0].geometry.type === 'Point') {
       // 点要素的高亮符号怎么处理?
-    } else if (featureGeoJson.features[0].geometry.type === 'LineString') {
+    } else if (featureGeoJSON.features[0].geometry.type === 'LineString') {
       this.map.addLayer({
         id: 'highlight-layer',
         type: 'line',
@@ -203,7 +203,7 @@ export default class MpMarkerPlotting extends Vue {
           'line-width': parseInt(this.highlightStyle.feature.line.size)
         }
       })
-    } else if (featureGeoJson.features[0].geometry.type === 'Polygon') {
+    } else if (featureGeoJSON.features[0].geometry.type === 'Polygon') {
       this.map.addLayer({
         id: 'highlight-layer',
         type: 'fill',

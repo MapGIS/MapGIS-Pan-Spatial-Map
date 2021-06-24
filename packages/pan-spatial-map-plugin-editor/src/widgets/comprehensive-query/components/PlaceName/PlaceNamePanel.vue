@@ -211,7 +211,7 @@ export default class PlaceNamePanel extends Vue {
             properties[this.fields[f]] = feature.properties[this.fields[f]]
           }
           const coords = {
-            coordinates: Feature.getGeoJsonFeatureCenter(feature),
+            coordinates: Feature.getGeoJSONFeatureCenter(feature),
             properties,
             markerId: `place-name-${j}`,
             img: defaultImg

@@ -395,7 +395,7 @@ export default class MpAttributeTable extends Mixins(
     const feature = row as GFeature
     let { bound } = feature
     if (bound === undefined) {
-      bound = Feature.getGeoJsonFeatureBound(feature)
+      bound = Feature.getGeoJSONFeatureBound(feature)
     }
     const width = bound.xmax - bound.xmin
     const height = bound.ymax - bound.ymin
@@ -479,7 +479,7 @@ export default class MpAttributeTable extends Mixins(
     this.loading = true
     try {
       this.clearSelection()
-      await this.queryGeoJson(
+      await this.queryGeoJSON(
         this.filterWithMap ? this.geometry : undefined,
         where
       )
@@ -492,7 +492,7 @@ export default class MpAttributeTable extends Mixins(
     }
   }
 
-  private async queryGeoJson(
+  private async queryGeoJSON(
     geometry: Record<string, unknown> | undefined,
     where: string | undefined
   ) {
@@ -806,7 +806,7 @@ export default class MpAttributeTable extends Mixins(
         const feature = cur as GFeature
         let { bound } = feature
         if (bound === undefined) {
-          bound = Feature.getGeoJsonFeatureBound(feature)
+          bound = Feature.getGeoJSONFeatureBound(feature)
         }
         return {
           xmin: bound.xmin < prev.xmin ? bound.xmin : prev.xmin,
@@ -845,7 +845,7 @@ export default class MpAttributeTable extends Mixins(
         // const height = await this.getModelHeight(longitude, latitude)
         center = [longitude, latitude]
       } else {
-        center = Feature.getGeoJsonFeatureCenter(feature)
+        center = Feature.getGeoJSONFeatureCenter(feature)
       }
       if (!(Number.isNaN(center[0]) || Number.isNaN(center[1]))) {
         const marker: Record<string, any> = {

@@ -227,16 +227,16 @@ export default class Mp3dMarkerPlotting extends Vue {
     this.stopDisplay()
   }
 
-  private highlightFeature(featureGeoJson) {
+  private highlightFeature(featureGeoJSON) {
     // 需要根据要素类型来使用不同的type
-    if (featureGeoJson.features[0].geometry.type === 'Point') {
+    if (featureGeoJSON.features[0].geometry.type === 'Point') {
       // 点要素的高亮符号怎么处理?
-    } else if (featureGeoJson.features[0].geometry.type === 'LineString') {
+    } else if (featureGeoJSON.features[0].geometry.type === 'LineString') {
       const lineColor = new this.Cesium.Color.fromCssColorString(
         this.highlightStyle.feature.line.color
       )
-      for (let i = 0; i < featureGeoJson.features.length; i += 1) {
-        const coords = featureGeoJson.features[i].geometry.coordinates
+      for (let i = 0; i < featureGeoJSON.features.length; i += 1) {
+        const coords = featureGeoJSON.features[i].geometry.coordinates
         const name = `result-entity-${i}`
         this.entityNames.push(name)
         this.sceneOverlays.addLine({
@@ -249,15 +249,15 @@ export default class Mp3dMarkerPlotting extends Vue {
           color: lineColor
         })
       }
-    } else if (featureGeoJson.features[0].geometry.type === 'Polygon') {
+    } else if (featureGeoJSON.features[0].geometry.type === 'Polygon') {
       const fillColor = new this.Cesium.Color.fromCssColorString(
         this.highlightStyle.feature.reg.color
       )
       const fillOutlineColor = new this.Cesium.Color.fromCssColorString(
         this.highlightStyle.feature.line.color
       )
-      for (let i = 0; i < featureGeoJson.features.length; i += 1) {
-        const coords = featureGeoJson.features[i].geometry.coordinates[0]
+      for (let i = 0; i < featureGeoJSON.features.length; i += 1) {
+        const coords = featureGeoJSON.features[i].geometry.coordinates[0]
         const name = `result-entity-${i}`
         this.entityNames.push(name)
         this.sceneOverlays.addPolygon(
@@ -270,15 +270,15 @@ export default class Mp3dMarkerPlotting extends Vue {
           fillOutlineColor
         )
       }
-    } else if (featureGeoJson.features[0].geometry.type === '3DPolygon') {
+    } else if (featureGeoJSON.features[0].geometry.type === '3DPolygon') {
       const { source } = this.CesiumZondy.M3DIgsManager.findSource(
         'default',
-        featureGeoJson.features[0].id
+        featureGeoJSON.features[0].id
       )
       if (source && source.length > 0) {
         this.stopDisplay()
         this.currentLayer = [source[0]]
-        const idList = [featureGeoJson.features[0].properties.FID]
+        const idList = [featureGeoJSON.features[0].properties.FID]
         const options = {
           // 高亮颜色
           color: new this.Cesium.Color.fromCssColorString(

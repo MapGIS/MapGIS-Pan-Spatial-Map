@@ -122,6 +122,7 @@ module.exports = {
     'no-bitwise': 'off',
     'no-dupe-class-members': 'off',
     'new-cap': 'off',
+    'no-continue': 'off',
 
     // TypeScript
     quotes: ['warn', 'single'],

@@ -22,7 +22,7 @@ export class SceneController {
     }
     this.sceneControllerArray.push(sceneControllerValue)
 
-    return sceneControllerValue
+    return sceneControllerValue.sceneController
   }
 
   constructor(Cesium, CesiumZondy, webGlobe) {

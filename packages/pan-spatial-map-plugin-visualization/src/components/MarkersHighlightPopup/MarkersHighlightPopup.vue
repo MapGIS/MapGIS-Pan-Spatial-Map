@@ -109,7 +109,7 @@ export default class MpMarkersHighlightPopup extends Mixins<
     }
     this.markers = this.normalizedFeatures.reduce<IMarker[]>(
       (result, { uid, feature }) => {
-        const coordinates = Feature.getGeoJsonFeatureCenter(feature)
+        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
         const centerItems = [coordinates[0], coordinates[1]]
         if (centerItems.every(v => !Number.isNaN(v))) {
           const img = this.getColorConfigImg('defaultImg')
@@ -148,7 +148,7 @@ export default class MpMarkersHighlightPopup extends Mixins<
     const { MIN_VALUE, MAX_VALUE } = Number
     this.selectionBound = this.normalizedFeatures.reduce(
       ({ xmin, xmax, ymin, ymax }, { feature }: Feature.GFeature) => {
-        const _bound = feature.bound || Feature.getGeoJsonFeatureBound(feature)
+        const _bound = feature.bound || Feature.getGeoJSONFeatureBound(feature)
         return {
           xmin: _bound.xmin < xmin ? _bound.xmin : xmin,
           ymin: _bound.ymin < ymin ? _bound.ymin : ymin,

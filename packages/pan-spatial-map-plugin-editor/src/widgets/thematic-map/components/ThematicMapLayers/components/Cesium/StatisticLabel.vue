@@ -41,7 +41,7 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
     if (!this.geojson || !this.geojson.features) return
     this.geojson.features.forEach((feature: Feature.GFeature) => {
       const value = feature.properties[this.field]
-      const center = Feature.getGeoJsonFeatureCenter(feature)
+      const center = Feature.getGeoJSONFeatureCenter(feature)
       const {
         textStyle: { fillColor },
         radius

@@ -380,7 +380,7 @@ export class DataCatalogManager {
      */
     CZML: 'CZML',
     /**
-     * GeoJson
+     * GeoJSON
      * @type {string}
      */
     GEOJSON: 'GEOJSON',

@@ -67,9 +67,9 @@ export interface FeatureGeoJSON {
 
 /**
  *
- * @param feature 获取GeoJson要素的中心点坐标
+ * @param feature 获取GeoJSON要素的中心点坐标
  */
-export function getGeoJsonFeatureCenter(feature: GFeature) {
+export function getGeoJSONFeatureCenter(feature: GFeature) {
   const { geometry } = feature
   let center: number[] = []
   switch (geometry.type) {
@@ -115,11 +115,11 @@ export function getGeoJsonFeatureCenter(feature: GFeature) {
  * 获取一组要素的中心
  * @param features
  */
-export function getGeoJsonFeaturesCenter(features: GFeature[]) {
+export function getGeoJSONFeaturesCenter(features: GFeature[]) {
   const centers: number[][] = []
   for (let i = 0; i < features.length; i += 1) {
     const feature = features[i]
-    const featureCenter = getGeoJsonFeatureCenter(feature)
+    const featureCenter = getGeoJSONFeatureCenter(feature)
     if (featureCenter.length > 0) {
       centers.push(featureCenter)
     }
@@ -141,7 +141,7 @@ export function getGeoJsonFeaturesCenter(features: GFeature[]) {
  * 获取GeoJSON的外包矩形
  * @param feature GeoJSON的Feature
  */
-export function getGeoJsonFeatureBound(feature: GFeature) {
+export function getGeoJSONFeatureBound(feature: GFeature) {
   // 获取所有坐标值（0：x，1：y)
   const getNumbers = (coordinates: unknown[], index: number): number[] => {
     const obj = coordinates[index]

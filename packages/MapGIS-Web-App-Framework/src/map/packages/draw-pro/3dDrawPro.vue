@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { UUID } from '../../../model/utils'
-import { getGeoJsonFeatureCenter } from '../../../model/feature'
+import { getGeoJSONFeatureCenter } from '../../../model/feature'
 import DrawMixin from './mixins/draw'
 
 export default {
@@ -134,7 +134,7 @@ export default {
         properties: {},
         type: 'Feature'
       }
-      const center = getGeoJsonFeatureCenter(feature)
+      const center = getGeoJSONFeatureCenter(feature)
 
       this.emitDrawFineshed({ mode: this.drawMode, feature, shape, center })
       this.closeDraw()
