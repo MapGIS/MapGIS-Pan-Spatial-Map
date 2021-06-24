@@ -179,7 +179,7 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
     } = this.unifyModifyParams
     if (serverType === LayerType.IGSMapImage) {
       // 地图文档的图层
-      const result = await Feature.FeatueQuery.query({
+      const result = await Feature.FeatureQuery.query({
         ip,
         port: port.toString(),
         f: 'json',

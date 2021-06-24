@@ -62,7 +62,7 @@ export default class CesiumCompare extends Vue {
 </script>
 <style lang="less" scoped>
 .swipe-cesium-compare {
-  padding: 20px 12px;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;

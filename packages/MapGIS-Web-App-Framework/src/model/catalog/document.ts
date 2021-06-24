@@ -194,7 +194,7 @@ export default class DocumentCatalog {
     }
     let domain = option.domain || null
     if (!domain) {
-      const protocol = option.protocol
+      const protocol = option.protocol || 'http'
       const ip = option.ip
       const port = option.port
       domain = `${protocol}://${ip}:${port}`

@@ -5,7 +5,7 @@ export default class SystemLibraryCatalog {
   public static getSystemLibraryNameByGuid(params) {
     let domain = params.domain || null
     if (!domain) {
-      const protocol = params.protocol
+      const protocol = params.protocol || 'http'
       const ip = params.ip
       const port = params.port
       domain = `${protocol}://${ip}:${port}`
@@ -45,7 +45,7 @@ export default class SystemLibraryCatalog {
   public static getSymbols(params) {
     let domain = params.domain || null
     if (!domain) {
-      const protocol = params.protocol
+      const protocol = params.protocol || 'http'
       const ip = params.ip
       const port = params.port
       domain = `${protocol}://${ip}:${port}`

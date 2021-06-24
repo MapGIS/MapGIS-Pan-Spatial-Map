@@ -2,7 +2,9 @@
   <a-space class="swipe-setting" direction="vertical" style="flex: 1;">
     <!-- 上图层 -->
     <a-row>
-      <a-col> {{ directionLayerTitle.aboveTitle }}图层： </a-col>
+      <a-col> {{ directionLayerTitle.aboveTitle }}图层</a-col>
+    </a-row>
+    <a-row>
       <a-col>
         <a-select :value="aboveLayer.id" @change="onAboveChange">
           <a-select-option
@@ -17,7 +19,9 @@
     </a-row>
     <!-- 下图层 -->
     <a-row>
-      <a-col> {{ directionLayerTitle.belowTitle }}图层： </a-col>
+      <a-col> {{ directionLayerTitle.belowTitle }}图层</a-col>
+    </a-row>
+    <a-row>
       <a-col>
         <a-select :value="belowLayer.id" @change="onBelowChange">
           <a-select-option
