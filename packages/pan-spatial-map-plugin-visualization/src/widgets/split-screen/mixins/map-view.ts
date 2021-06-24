@@ -1,6 +1,11 @@
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { AppMixin, MapMixin, Objects } from '@mapgis/web-app-framework'
+import {
+  AppMixin,
+  MapMixin,
+  /* Layer3D, */ Objects
+} from '@mapgis/web-app-framework'
 import mStateInstance, { MapViewState, Rect } from './map-view-state'
+import { Layer3D } from '../../../../../MapGIS-Web-App-Framework/src/model'
 
 export { Rect }
 @Component
@@ -15,7 +20,8 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   // 是否是二维图层
   get is2dLayer() {
-    return this.mapViewLayer.is3d || this.is2DMapMode
+    const is3dLayer = this.mapViewLayer instanceof Layer3D
+    return typeof is3dLayer === 'boolean' ? !is3dLayer : this.is2DMapMode
   }
 
   // 获取当前激活的地图视图的ID
@@ -84,12 +90,13 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   setWebGlobe() {
     const webGlobe =
       this.CesiumZondy.getWebGlobe(this.mapViewId) || this.webGlobe
-    this._webGlobe = webGlobe
-    this.sceneController = Objects.SceneController.getInstance(
+    const controller = Objects.SceneController.getInstance(
       this.Cesium,
       this.CesiumZondy,
       webGlobe
-    ).sceneController
+    )
+    this._webGlobe = webGlobe
+    this.sceneController = controller.sceneController || controller
   }
 
   /**

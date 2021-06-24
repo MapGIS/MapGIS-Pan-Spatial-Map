@@ -22,7 +22,7 @@
     />
     <!-- 标注 -->
     <mp-markers-highlight-popup
-      v-if="isMapLoaded"
+      v-if="isMapLoaded && queryWindowVisible"
       :is-2d="is2dLayer"
       :vue-key="mapViewId"
       :features="queryFeatures"

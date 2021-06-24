@@ -251,6 +251,12 @@ export default class MpMarkersHighlightPopup extends Mixins<
     this.getFitBound()
     this.hightlightMarkers()
   }
+
+  beforeDestroyed() {
+    this.fitBound = {}
+    this.selectionBound = {}
+    this.removeMarkers()
+  }
 }
 </script>
 <style lang="less" scoped></style>

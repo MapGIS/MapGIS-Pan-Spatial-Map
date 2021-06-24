@@ -22,10 +22,11 @@ import {
 import { VectorTileLayer } from './vector-tile-layer'
 import { IGSSceneLayer, IGSSceneSublayerRenderType } from './igs-scene-layer'
 
-import { Rectangle3D, Point3D } from './3d-layer'
+import { Rectangle3D, Point3D, Layer3D } from './3d-layer'
 
 export {
   Layer,
+  Layer3D,
   LayerType,
   LoadStatus,
   LOD,

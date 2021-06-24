@@ -137,7 +137,9 @@ export default class Mp3dMarkerPlotting extends Vue {
 
   destroyed() {
     this.analysisManager = null
-    this.sceneController.removeCameraChangedEvent(this.changeFilterWithMap)
+    if (this.sceneController) {
+      this.sceneController.removeCameraChangedEvent(this.changeFilterWithMap)
+    }
   }
 
   private zoomToCartesian3(x, y) {

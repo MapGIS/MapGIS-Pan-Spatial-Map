@@ -1,5 +1,6 @@
 export {
   Layer,
+  Layer3D,
   LayerType,
   LoadStatus,
   LOD,
