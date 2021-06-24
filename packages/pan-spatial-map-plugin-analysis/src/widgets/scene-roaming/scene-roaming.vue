@@ -162,7 +162,7 @@
             v-model.number="formData.speed"
             type="number"
             min="1"
-            :addon-after="`(${(formData.speed * 3.6).toFixed(1)}公里/小时)`"
+            addon-after="公里/小时"
           />
         </a-form-model-item>
         <a-form-model-item label="附加高程:">
@@ -464,11 +464,6 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   // 是否正在新建路径
   private isCreatePath = false
 
-  // @Watch('formData', { deep: true })
-  // onAnimationChange() {
-  //   this.changeAnimation()
-  // }
-
   created() {
     this.initData()
   }
@@ -700,16 +695,12 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     }
   }
 
-  // 动画的播放设置变化时回调
-  // private changeAnimation() {
-  //   if (this.isStart) {
-  //     window.SceneWanderManager.animation.speed = this.formData.speed
-  //   }
-  // }
-
   // 设置动画的播放属性
   private setAnimationAttr() {
-    window.SceneWanderManager.animation.speed = this.formData.speed
+    // 默认速度的单位为m/s，这里将公里每小时转换为m/s
+    window.SceneWanderManager.animation.speed = (
+      this.formData.speed * 0.28
+    ).toFixed(2)
     window.SceneWanderManager.animation.exHeight = this.formData.exHeight
     window.SceneWanderManager.animation._heading = this.formData.azimuth
     window.SceneWanderManager.animation._pitch = this.formData.pitch
