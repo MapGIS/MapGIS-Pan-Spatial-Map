@@ -1154,10 +1154,14 @@
   version "0.0.0"
   uid ""
 
-
-"@mapgis/webclient-es6-service@link:../WebClient-JavaScript/src/service":
-  version "0.0.0"
-  uid ""
+"@mapgis/webclient-es6-service@^10.5.3-beta", "@mapgis/webclient-es6-service@^10.5.4":
+  version "10.5.3-beta"
+  resolved "https://registry.nlark.com/@mapgis/webclient-es6-service/download/@mapgis/webclient-es6-service-10.5.3-beta.tgz#2a3c3ad3f2776180fdd57b921498054e3239a769"
+  integrity sha1-Kjw60/J3YYD91XuSFJgFTjI5p2k=
+  dependencies:
+    "@turf/turf" "^6.3.0"
+    fast-xml-parser "^3.17.6"
+    qs "^6.9.4"
 
 "@mapgis/webclient-store@^1.0.0", "@mapgis/webclient-store@^1.0.14":
   version "1.0.14"
@@ -4562,7 +4566,7 @@ ant-design-vue@1.7.2:
 
 ant-design-vue@^1.7.5:
   version "1.7.5"
-  resolved "https://registry.nlark.com/ant-design-vue/download/ant-design-vue-1.7.5.tgz?cache=0&sync_timestamp=1620892630050&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fant-design-vue%2Fdownload%2Fant-design-vue-1.7.5.tgz#e7ed04cb358adc56be02c7453d2db026d2c405e3"
+  resolved "https://registry.nlark.com/ant-design-vue/download/ant-design-vue-1.7.5.tgz#e7ed04cb358adc56be02c7453d2db026d2c405e3"
   integrity sha1-5+0EyzWK3Fa+AsdFPS2wJtLEBeM=
   dependencies:
     "@ant-design/icons" "^2.1.1"
@@ -7232,7 +7236,7 @@ ecc-jsbn@~0.1.1:
 
 echarts@^4.8.0:
   version "4.9.0"
-  resolved "https://registry.nlark.com/echarts/download/echarts-4.9.0.tgz?cache=0&sync_timestamp=1619495447964&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fecharts%2Fdownload%2Fecharts-4.9.0.tgz#a9b9baa03f03a2a731e6340c55befb57a9e1347d"
+  resolved "https://registry.nlark.com/echarts/download/echarts-4.9.0.tgz#a9b9baa03f03a2a731e6340c55befb57a9e1347d"
   integrity sha1-qbm6oD8Doqcx5jQMVb77V6nhNH0=
   dependencies:
     zrender "4.3.2"
@@ -8876,7 +8880,7 @@ https-browserify@^1.0.0:
 
 human-signals@^1.1.1:
   version "1.1.1"
-  resolved "https://registry.npm.taobao.org/human-signals/download/human-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
+  resolved "https://registry.nlark.com/human-signals/download/human-signals-1.1.1.tgz?cache=0&sync_timestamp=1624364695595&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fhuman-signals%2Fdownload%2Fhuman-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
   integrity sha1-xbHNFPUK6uCatsWf5jujOV/k36M=
 
 iconv-lite@0.4, iconv-lite@0.4.24, iconv-lite@^0.4.24:
@@ -13959,7 +13963,7 @@ typedarray@^0.0.6:
 
 typescript@~3.7.0:
   version "3.7.7"
-  resolved "https://registry.nlark.com/typescript/download/typescript-3.7.7.tgz?cache=0&sync_timestamp=1624260434346&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftypescript%2Fdownload%2Ftypescript-3.7.7.tgz#c931733e2ec10dda56b855b379cc488a72a81199"
+  resolved "https://registry.nlark.com/typescript/download/typescript-3.7.7.tgz?cache=0&sync_timestamp=1624346394231&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftypescript%2Fdownload%2Ftypescript-3.7.7.tgz#c931733e2ec10dda56b855b379cc488a72a81199"
   integrity sha1-yTFzPi7BDdpWuFWzecxIinKoEZk=
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
@@ -14987,9 +14991,9 @@ zrender@4.3.2:
   resolved "https://registry.nlark.com/zrender/download/zrender-4.3.2.tgz#ec7432f9415c82c73584b6b7b8c47e1b016209c6"
   integrity sha1-7HQy+UFcgsc1hLa3uMR+GwFiCcY=
 
-zrender@5.1.0:
-  version "5.1.0"
-  resolved "https://registry.nlark.com/zrender/download/zrender-5.1.0.tgz#b6a84c3aa7ccc6642ee0519901ca4c0835c4d85e"
-  integrity sha1-tqhMOqfMxmQu4FGZAcpMCDXE2F4=
+zrender@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.nlark.com/zrender/download/zrender-5.1.1.tgz#0515f4f8cc0f4742f02a6b8819550a6d13d64c5c"
+  integrity sha1-BRX0+MwPR0LwKmuIGVUKbRPWTFw=
   dependencies:
     tslib "2.0.3"
