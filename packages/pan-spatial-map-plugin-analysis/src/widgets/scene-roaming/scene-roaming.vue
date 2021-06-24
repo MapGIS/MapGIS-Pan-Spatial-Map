@@ -4,27 +4,29 @@
     :class="isFullScreen ? '' : 'window-size'"
   >
     <div class="scene-title">
-      <a-button
-        type="primary"
-        icon="pull-request"
-        :disabled="isShowPointTable || isShowEditTable"
-        @click="onClickCreatPath"
-        >交互选点</a-button
-      >
-      <a-button
-        type="primary"
-        :disabled="!isCreatePath"
-        @click="onClickCancelPath"
-        >取消选点</a-button
-      >
+      <mp-toolbar>
+        <mp-toolbar-command
+          title="交互选点"
+          icon="pull-request"
+          :disabled="isShowPointTable || isShowEditTable"
+          @click="onClickCreatPath"
+        />
+        <mp-toolbar-command
+          title="取消选点"
+          icon="close"
+          :disabled="!isCreatePath"
+          @click="onClickCancelPath"
+        />
+      </mp-toolbar>
     </div>
     <div class="scene-panel-table">
       <a-table
         v-show="!isShowPointTable && !isShowEditTable"
+        size="small"
         :columns="columns"
         :data-source="tableData"
         :pagination="pagination"
-        :scroll="{ y: 108 }"
+        :scroll="{ y: 104 }"
         :row-selection="{
           selectedRowKeys: selectedRowKeys,
           type: 'radio',
@@ -102,10 +104,11 @@
 
       <a-table
         v-show="isShowPointTable"
+        size="small"
         :columns="pointColumns"
         :data-source="pointTableData"
         :pagination="pointPagination"
-        :scroll="{ y: 108 }"
+        :scroll="{ y: 104 }"
         :rowKey="
           record => {
             return record.id
@@ -116,6 +119,7 @@
 
       <a-table
         v-show="isShowEditTable"
+        size="small"
         :columns="editColumns"
         :data-source="editTableData"
         :pagination="false"
@@ -925,7 +929,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 8px 0;
+  padding: 0 0 8px 0;
 
   .ant-btn {
     margin-right: 16px;
@@ -952,7 +956,6 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 
 .scene-panel-form {
   width: 100%;
-  margin-top: 8px;
   .ant-form-item {
     display: flex;
     align-items: center;
