@@ -226,6 +226,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     this.onIconClick('UNKNOW')
     this.onQueryResultClear()
     this.onToggleQueryWindow(false)
+    this.$emit('update:queryVisible', false)
+    // this.onToggleQueryWindow(false)
   }
 
   /**
@@ -297,21 +299,10 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 监听: 结果树开关
    */
-  @Watch('queryVisible')
+  @Watch('queryVisible', { immediate: true })
   watchQueryVisible(nV) {
     if (nV) {
       this.onToggleQueryWindow(nV)
-    }
-  }
-
-  /**
-   * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
-   */
-  @Watch('queryWindowVisible')
-  watchqueryWindowVisible(nV) {
-    if (!nV) {
-      this.onQueryResultClear()
-      this.$emit('update:queryVisible', false)
     }
   }
 

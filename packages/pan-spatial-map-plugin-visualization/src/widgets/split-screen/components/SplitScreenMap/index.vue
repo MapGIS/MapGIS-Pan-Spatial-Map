@@ -60,7 +60,7 @@ export default class SplitScreenMap extends Vue {
   /**
    * 监听: 分屏数量变化
    */
-  @Watch('screenNums')
+  @Watch('screenNums', { immediate: true })
   watchScreenNums(nV) {
     if (nV.length) {
       // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次

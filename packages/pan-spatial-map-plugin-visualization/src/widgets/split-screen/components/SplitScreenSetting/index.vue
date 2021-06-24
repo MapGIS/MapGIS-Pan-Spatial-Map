@@ -71,7 +71,7 @@ export default class SplitScreenSetting extends Vue {
   /**
    * 监听: 分屏数量变化
    */
-  @Watch('screenNums')
+  @Watch('screenNums', { immediate: true })
   watchScreenNums(nV: number[]) {
     this.screenCount = nV.length
   }
