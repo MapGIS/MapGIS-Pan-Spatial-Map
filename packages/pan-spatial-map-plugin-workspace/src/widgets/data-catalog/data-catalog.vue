@@ -36,7 +36,6 @@
           />
           <span
             v-if="item.children && item.children.length > 0"
-            @click="onClick(item)"
             class="tree-node"
             :id="`tree_${item.guid}`"
           >
@@ -173,6 +172,25 @@
         </template>
       </mp-window>
     </mp-window-wrapper>
+
+    <mp-window-wrapper :visible="showNoSpatial">
+      <mp-window
+        title="非空间数据"
+        :is-full-screen="true"
+        :shrinkAction="false"
+        :fullScreenAction="false"
+        :icon="widgetInfo.icon"
+        :visible.sync="showNoSpatial"
+      >
+        <template>
+          <NonSpatial
+            :url="nonSpatialUrl"
+            :type="nonSpatialType"
+            :treeConfig="widgetConfig"
+          ></NonSpatial>
+        </template>
+      </mp-window>
+    </mp-window-wrapper>
   </div>
 </template>
 
@@ -194,11 +212,13 @@ import {
 } from '@mapgis/pan-spatial-map-store'
 
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
+import NonSpatial from './non-spatial.vue'
 
 @Component({
   name: 'MpDataCatalog',
   components: {
-    MpMetadataInfo
+    MpMetadataInfo,
+    NonSpatial
   }
 })
 export default class MpDataCatalog extends Mixins(WidgetMixin) {
@@ -249,6 +269,18 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 上传图例的节点
   private legendNode = {}
 
+  // 非空间数据窗口的显隐
+  private showNoSpatial = false
+
+  // 非空间数据资源url
+  private nonSpatialUrl = ''
+
+  // 非空间数据类型(文档数据、图片数据、...)
+  private nonSpatialType = ''
+
+  // 目录树配置
+  private widgetConfig = {}
+
   // 设置选中的树节点
   get selectedKeys() {
     if (this.hasKeywordArr.length > 0 && this.searchIndex !== -1) {
@@ -269,6 +301,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       duration: 2,
       maxCount: 1
     })
+
+    this.widgetConfig = this.widgetInfo.config
   }
 
   async mounted() {
@@ -517,7 +551,21 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     )
   }
 
-  onClick(item) {}
+  onClick(item) {
+    const widgetConfig = this.widgetInfo.config
+    this.nonSpatialType = item.data
+
+    if (item.description.includes('非空间数据')) {
+      this.showNoSpatial = true
+
+      if (
+        widgetConfig.treeConfig.useLocalData ||
+        widgetConfig.treeConfig.useLocalParam
+      ) {
+        this.nonSpatialUrl = `${this.baseUrl}/api/non-spatial/files?pageNumber=0&pageSize=1000&path=${item.data}&protocol=ftp&url=ftp://192.168.21.191:21`
+      }
+    }
+  }
 
   // 对目录树数据进行处理
   handleTreeData(data: object[]) {
