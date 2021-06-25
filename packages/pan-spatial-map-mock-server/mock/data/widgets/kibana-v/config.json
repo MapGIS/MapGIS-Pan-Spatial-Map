@@ -1,32 +1,32 @@
 [
   {
-    "title": "土地利用现状大数据分析",
+    "title": "土地利用现状大数据分析(测试)",
     "htmlLink": "https://echarts.apache.org/examples/zh/editor.html?c=effectScatter-bmap",
     "imgLink": "/Content/bigDataAnalysis/images/土地利用现状大数据分析.PNG"
   },
   {
-    "title": "测绘地理信息统计分析",
+    "title": "测绘地理信息统计分析(测试)",
     "htmlLink": "https://echarts.apache.org/examples/zh/editor.html?c=lines-bmap",
     "imgLink": "/Content/bigDataAnalysis/images/测绘地理信息统计分析.PNG"
   },
   {
-    "title": "矿产资源分布分析",
+    "title": "矿产资源分布分析(测试)",
     "htmlLink": "https://echarts.apache.org/examples/zh/editor.html?c=lines-bmap-bus",
     "imgLink": "/Content/bigDataAnalysis/images/矿产资源分布分析.PNG"
   },
   {
-    "title": "矿权预警分析",
+    "title": "矿权预警分析(测试)",
     "htmlLink": "https://echarts.apache.org/examples/zh/editor.html?c=lines-ny",
     "imgLink": "/Content/bigDataAnalysis/images/矿权预警分析.PNG"
   },
   {
-    "title": "热点分布分析",
+    "title": "热点分布分析(测试)",
     "htmlLink": "https://echarts.apache.org/examples/zh/editor.html?c=lines-bmap-effect",
     "imgLink": "/Content/bigDataAnalysis/images/热点分布分析.PNG"
   },
   {
     "htmlLink": "https://echarts.apache.org/examples/zh/editor.html?c=map-HK",
     "imgLink": "/Content/bigDataAnalysis/images/国家农产品主产区产能变化分析.PNG",
-    "title": "国家农产品主产区产能变化分析"
+    "title": "国家农产品主产区产能变化分析(测试)"
   }
 ]
