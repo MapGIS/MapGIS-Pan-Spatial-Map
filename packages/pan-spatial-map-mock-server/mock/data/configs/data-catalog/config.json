@@ -926,16 +926,16 @@
             "extent": ""
           },
           {
-            "label": "中国县级市",
-            "describe": "中国县级市",
+            "label": "县城驻地",
+            "describe": "县城驻地",
             "ip": "",
             "port": "",
             "layerServiceType": "IGSVECTOR",
-            "name": "中国县级市",
+            "name": "县城驻地",
             "searchName": "",
             "token": "",
             "guid": "d9081e7b-8a56-441f-a511-68902560b54e",
-            "serverUrl": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
+            "serverUrl": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
             "wfsUrl": "",
             "extent": ""
           },
