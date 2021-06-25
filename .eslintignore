@@ -6,3 +6,4 @@ dist/
 out/
 ./packages/pan-spatial-map-plugin-editor/libs
 WebClient-Vue/
+WebClient-JavaScript/

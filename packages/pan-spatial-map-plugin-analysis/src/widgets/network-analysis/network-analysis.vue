@@ -128,10 +128,14 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
+import {
+  LayerType,
+  WidgetMixin,
+  Analysis,
+  UUID
+} from '@mapgis/web-app-framework'
 import {
   dataCatalogInstance,
-  queryFeaturesInstance,
   utilInstance,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
@@ -329,7 +333,10 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     this.layerArrOption = []
     const arr = []
     val.layers().forEach(data => {
-      if (data.type === LayerType.IGSMapImage) {
+      if (
+        data.type === LayerType.IGSMapImage ||
+        data.type === LayerType.IGSVector
+      ) {
         arr.push(data)
       }
     })
@@ -458,7 +465,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     }
     try {
       this.showLoading = true
-      const res = await queryFeaturesInstance.executeWorkflow(opt)
+      const res = await Analysis.WorkflowAnalysis.executeWorkflow(opt)
       this.getStatus(res)
     } catch (error) {
       this.showLoading = false
@@ -470,33 +477,29 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     const { ip, port, docName } = this.layerSelect._parseUrl(
       this.layerSelect.url
     )
-    queryFeaturesInstance
-      .getWorkflowStatus({
-        id: guid,
-        ip,
-        port
-      })
-      .then(status => {
-        if (status === 'Succeeded') {
-          this.tab = 'analysisRes'
-          queryFeaturesInstance
-            .getWorkflowResult({
-              id: guid,
-              ip,
-              port
-            })
-            .then(res => {
-              this.dealWithExecuteRes(res)
-            })
-        } else if (status === 'Runing') {
-          window.setTimeout(() => {
-            this.getStatus(guid)
-          }, 1000)
-        } else {
-          this.showLoading = false
-          this.$message.error('分析失败')
-        }
-      })
+    Analysis.WorkflowAnalysis.getWorkflowStatus({
+      id: guid,
+      ip,
+      port
+    }).then(status => {
+      if (status === 'Succeeded') {
+        this.tab = 'analysisRes'
+        Analysis.WorkflowAnalysis.getWorkflowResult({
+          id: guid,
+          ip,
+          port
+        }).then(res => {
+          // this.dealWithExecuteRes(res)
+        })
+      } else if (status === 'Runing') {
+        window.setTimeout(() => {
+          this.getStatus(guid)
+        }, 1000)
+      } else {
+        this.showLoading = false
+        this.$message.error('分析失败')
+      }
+    })
   }
 
   showSetting() {
@@ -512,6 +515,9 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     this.networkLayerIndex = null
     this.networkLayerOption = []
     const arr = []
+    if (!this.layerSelect.allSublayers) {
+      return
+    }
     this.layerSelect.allSublayers.forEach(item => {
       if (item.geomType === 'NetworkAnalysis') {
         arr.push(item)
@@ -558,6 +564,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     const data = {
       type: 'Feature',
       properties: obj,
+      id: UUID.uuid(),
       geometry: {
         type: 'Point',
         coordinates: [e.shape.x, e.shape.y]

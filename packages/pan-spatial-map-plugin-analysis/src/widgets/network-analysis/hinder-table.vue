@@ -9,6 +9,7 @@
       :scroll="{
         y: 160
       }"
+      rowKey="id"
       bordered
       :customRow="
         record => ({

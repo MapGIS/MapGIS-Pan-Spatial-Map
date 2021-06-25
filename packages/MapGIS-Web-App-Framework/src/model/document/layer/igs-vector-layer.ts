@@ -4,6 +4,14 @@ import { SpatialReference } from '../spatial-reference'
 
 export class IGSVectorLayer extends Layer {
   /**
+   * 网络分析类特有字段，此字段等于NetworkAnalysis时为网络分析类
+   *
+   * @date 24/06/2021
+   * @memberof IGSVectorLayer
+   */
+  geomType = ''
+
+  /**
    * 深度克隆一个IGS在线矢量图层
    *
    * @date 06/04/2021

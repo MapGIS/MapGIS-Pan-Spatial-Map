@@ -938,6 +938,20 @@
             "serverUrl": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
             "wfsUrl": "",
             "extent": ""
+          },
+          {
+            "label": "网络分析",
+            "describe": "道路交通网",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSVECTOR",
+            "name": "道路交通网",
+            "searchName": "",
+            "token": "",
+            "guid": "e76f9c13-0fcb-8537-96ab-daa533bf5dc9",
+            "serverUrl": "gdbp://MapGISLocal/sample/ncls/道路交通网",
+            "wfsUrl": "",
+            "extent": ""
           }
         ]
       },
