@@ -754,7 +754,7 @@
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
-            "name": "250DEM_3D",
+            "name": "DEM250_3D",
             "searchName": "",
             "model": "globe",
             "guid": "68744fd8-61be-400d-a861-4a0415a339c2",
@@ -907,6 +907,20 @@
             "token": "",
             "guid": "d9081e7b-8a56-441f-a511-68902560b54d",
             "serverUrl": "gdbp://MapGISLocal/Templates/sfcls/湖北省市级区划",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
+            "label": "中国县级市",
+            "describe": "中国县级市",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSVECTOR",
+            "name": "中国县级市",
+            "searchName": "",
+            "token": "",
+            "guid": "d9081e7b-8a56-441f-a511-68902560b54e",
+            "serverUrl": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
             "wfsUrl": "",
             "extent": ""
           }
