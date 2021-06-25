@@ -19,7 +19,7 @@
     <mp-toolbar class="marker-toolbar">
       <mp-toolbar-command-group>
         <mp-toolbar-command
-          class="popup-button"
+          class="marker-manager-toolbar-edit-button"
           title="编辑"
           icon="edit"
           @click="onMarkerEdit"
@@ -51,7 +51,7 @@ export default class MarkerShowWindow extends Mixins(AppMixin) {
   private previewVisible = false
 
   created() {
-    eventBus.$on('emitClickEdit', markerId => {
+    eventBus.$on('marker-manager-toolbar-edit-button-click', markerId => {
       if (this.marker.markerId === markerId) {
         this.editWindowVisible = true
       }

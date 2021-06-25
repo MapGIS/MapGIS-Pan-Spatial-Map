@@ -497,19 +497,21 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
   // 为三维popup内部的按钮绑定事件
   private popupLoad(markerId) {
-    const editBtn = document.getElementsByClassName('popup-button')
+    const editBtn = document.getElementsByClassName(
+      'marker-manager-toolbar-edit-button'
+    )
 
     for (const button of editBtn) {
       button.addEventListener(
         'click',
-        this.handleClickEdit.bind(this, markerId)
+        this.handleMarkerEditButtonClick.bind(this, markerId)
       )
     }
   }
 
   // 点击三维popup内部的编辑按钮响应事件
-  private handleClickEdit(markerId) {
-    eventBus.$emit('emitClickEdit', markerId)
+  private handleMarkerEditButtonClick(markerId) {
+    eventBus.$emit('marker-manager-toolbar-edit-button-click', markerId)
   }
 }
 </script>
