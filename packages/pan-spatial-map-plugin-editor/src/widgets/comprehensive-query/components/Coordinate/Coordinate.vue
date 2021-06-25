@@ -300,7 +300,7 @@ export default class MpCoordinate extends Mixins(AppMixin) {
 
     if (this.crs !== this.defaultCrs) {
       // 底图和用户选择的坐标系不一样
-      const { data } = await ProjectionTransformationUtil.projectPoint(
+      const { data } = await ProjectionTransformationUtil.projectPoints(
         [[Number(xTemp), Number(yTemp)]],
         this.crs,
         this.defaultCrs

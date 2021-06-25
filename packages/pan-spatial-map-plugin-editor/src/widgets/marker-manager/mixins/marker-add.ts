@@ -7,7 +7,7 @@ export default class MarkerAddMixin extends Vue {
     if (srcSref === destSref) {
       return points
     }
-    const result: any = await ProjectionTransformationUtil.projectPoint(
+    const result: any = await ProjectionTransformationUtil.projectPoints(
       points,
       srcSref,
       destSref
