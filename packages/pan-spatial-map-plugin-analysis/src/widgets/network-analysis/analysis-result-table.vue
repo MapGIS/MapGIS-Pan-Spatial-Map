@@ -1,54 +1,55 @@
 <template>
-  <q-table
-    class="my-sticky-header-table"
-    :data="data"
-    :columns="columns"
-    separator="cell"
-    flat
-    no-data-label="暂无数据"
-    rows-per-page-label="条数："
-    :pagination-label="
-      (firstRowIndex, endRowIndex, totalRowsNumber) =>
-        `${firstRowIndex}~${endRowIndex} 共${totalRowsNumber}条`
-    "
-  >
-    <template v-slot:body="props">
-      <q-tr :props="props" class @click="rowClick(props.row)">
-        <q-td key="index" :props="props">{{ props.rowIndex + 1 }}</q-td>
-        <q-td key="name" :props="props">{{ props.row.name || '--' }}</q-td>
-      </q-tr>
-    </template>
-  </q-table>
+  <div class="analysis-result-table-container">
+    <a-table
+      :columns="columns"
+      :data-source="data"
+      size="small"
+      :pagination="{ size: 'small' }"
+      :class="isFullScreen === true ? '' : 'fixed-table'"
+      :scroll="{
+        y: 160
+      }"
+      rowKey="id"
+      bordered
+      :customRow="
+        record => ({
+          on: {
+            // 事件
+            click: event => {
+              rowClick(record)
+            } // 点击行
+          }
+        })
+      "
+    >
+      <span slot="index" slot-scope="text">{{ text + 1 }} </span>
+      <span slot="name" slot-scope="text" :title="text">{{ text }} </span>
+    </a-table>
+  </div>
 </template>
 <script lang="ts">
 import { Vue, Prop, Component, Emit, Watch } from 'vue-property-decorator'
-import { utilInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component({ name: 'MpAnakysisResultTable' })
 export default class MpCoordinateTable extends Vue {
-  @Prop(Object) map!: object
-
-  // @Prop(Function) showDialogFuc!: function
-
-  @Prop(String) color!: string
-
-  @Prop(Object) circleColor!: object
-
-  pointSourceId = 'analysisPointSourceId'
-
-  pointLayerId = 'analysisPointLayerId'
-
-  lineSourceId = 'analysisLineSourceId'
-
-  lineLayerId = 'analysisLineLayerId'
-
-  lineClickSourceId = 'analysisClickLineSourceId'
-
-  lineClickLayerId = 'analysisClickLineLayerId'
+  @Prop(Boolean) isFullScreen!: boolean
 
   columns = [
-    { name: 'index', label: '', field: 'index' },
-    { name: 'name', label: '名称', field: 'name', align: 'center' }
+    {
+      title: '',
+      key: 'id',
+      dataIndex: 'id',
+      scopedSlots: { customRender: 'index' },
+      width: '80px',
+      align: 'center'
+    },
+    {
+      title: '名称',
+      dataIndex: 'name',
+      scopedSlots: { customRender: 'name' },
+      ellipsis: true,
+      align: 'center'
+    }
   ]
 
   data = []
@@ -66,11 +67,7 @@ export default class MpCoordinateTable extends Vue {
       features: []
     }
     if (!result.results) {
-      // this.showDialogFuc('分析失败')
-      this.$q.notify({
-        position: 'center',
-        message: '分析失败'
-      })
+      this.$message.error('分析失败')
       return
     }
     const value = result.results[0].Value
@@ -78,22 +75,18 @@ export default class MpCoordinateTable extends Vue {
       return
     }
     const res = JSON.parse(value)
-    const path = utilInstance.isArrayFn(res) ? res[0].Paths[0] : res.Paths[0]
-    const edgeFieldNameArray = utilInstance.isArrayFn(res)
+    const path = res[0] ? res[0].Paths[0] : res.Paths[0]
+    const edgeFieldNameArray = res[0]
       ? res[0].edgeFieldNameArray
       : res.edgeFieldNameArray
     const lines = path.Edges
     const points = path.Nodes
     // const map = this.getBaseMap();
     if (!lines || !points) {
-      // this.showDialogFuc('未分析出结果')
-      this.$q.notify({
-        position: 'center',
-        message: '未分析出结果'
-      })
+      this.$message.error('未分析出结果')
       return
     }
-    const max1 = lines.length > 100 ? 100 : lines.length
+    const max1 = lines.length
     const lineArr = []
     for (let i = 0; i < max1; i++) {
       const data = []
@@ -112,7 +105,7 @@ export default class MpCoordinateTable extends Vue {
         coordinates: lineArr
       }
     })
-    const max2 = points.length > 100 ? 100 : points.length
+    const max2 = points.length
     const pointArr = []
     for (let i = 0; i < max2; i++) {
       const dot = points[i].Node
@@ -127,52 +120,10 @@ export default class MpCoordinateTable extends Vue {
         coordinates: pointArr
       }
     })
-
-    // 添加点图层
-    this.map.addSource(this.pointSourceId, {
-      type: 'geojson',
-      data: layerPoint
+    this.$emit('draw-result', {
+      layerPoint,
+      layerLine
     })
-    this.map.addLayer({
-      id: this.pointLayerId,
-      type: 'circle',
-      source: this.pointSourceId,
-      paint: this.circleColor
-    })
-
-    // 添加线图层
-    this.map.addSource(this.lineSourceId, {
-      type: 'geojson',
-      data: layerLine
-    })
-    this.map.addLayer({
-      id: this.lineLayerId,
-      type: 'line',
-      source: this.lineSourceId,
-      paint: {
-        'line-color': this.color,
-        'line-width': 4
-      }
-    })
-
-    // 添加高亮图层
-    this.map.addSource(this.lineClickSourceId, {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: []
-      }
-    })
-    this.map.addLayer({
-      id: this.lineClickLayerId,
-      type: 'line',
-      source: this.lineClickSourceId,
-      paint: {
-        'line-color': 'blue',
-        'line-width': 4
-      }
-    })
-
     this.initTableAndPage(lines, edgeFieldNameArray)
   }
 
@@ -188,6 +139,7 @@ export default class MpCoordinateTable extends Vue {
     const dataArray = []
     for (let i = 0; i < data.length; i++) {
       dataArray.push({
+        id: i,
         name: data[i].FieldValus[index],
         dots: data[i].Dots
       })
@@ -196,78 +148,42 @@ export default class MpCoordinateTable extends Vue {
   }
 
   rowClick(row) {
-    if (this.map.getSource(this.lineClickSourceId)) {
-      const array = []
-      const { dots } = row
-      let allX = 0
-      let allY = 0
-      for (let j = 0; j < dots.length; j++) {
-        array.push([dots[j].x, dots[j].y])
-        allX += dots[j].x
-        allY += dots[j].y
-      }
-      const center = [allX / dots.length, allY / dots.length]
-      this.map.panTo(center)
-      this.map.getSource(this.lineClickSourceId).setData({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: array
-            }
-          }
-        ]
-      })
+    const array = []
+    const { dots } = row
+    let allX = 0
+    let allY = 0
+    for (let j = 0; j < dots.length; j++) {
+      array.push([dots[j].x, dots[j].y])
+      allX += dots[j].x
+      allY += dots[j].y
     }
+    const center = [allX / dots.length, allY / dots.length]
+    const highResultSource = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { id: row.id },
+          geometry: {
+            type: 'LineString',
+            coordinates: array
+          }
+        }
+      ]
+    }
+    this.$emit('fly-to-high', center)
+    this.$emit('draw-high-result', highResultSource)
   }
 
   clearLayer() {
     this.data = []
-    if (this.map.getLayer(this.pointLayerId)) {
-      this.map.removeLayer(this.pointLayerId)
-      this.map.removeSource(this.pointSourceId)
-    }
-    if (this.map.getLayer(this.lineLayerId)) {
-      this.map.removeLayer(this.lineLayerId)
-      this.map.removeSource(this.lineSourceId)
-    }
-
-    if (this.map.getLayer(this.lineClickLayerId)) {
-      this.map.removeLayer(this.lineClickLayerId)
-      this.map.removeSource(this.lineClickSourceId)
-    }
   }
 }
 </script>
-<style lang="scss" scoped>
-.my-sticky-header-table {
-  // height: 250px;
-  max-height: 100%;
-  ::v-deep thead tr th {
-    position: sticky;
-    z-index: 2;
-  }
-
-  ::v-deep thead tr:first-child th {
-    background-color: white;
-  }
-
-  ::v-deep thead tr:first-child th {
-    top: 0;
-    z-index: 2;
-  }
-  ::v-deep td:last-child {
-    background-color: white;
-  }
-
-  ::v-deep th:last-child,
-  td:last-child {
-    position: sticky;
-    right: 0;
-    z-index: 1;
-  }
-}
+<style lang="less">
+// .analysis-result-table-container {
+//   .fixed-table {
+//     width: 350px;
+//   }
+// }
 </style>

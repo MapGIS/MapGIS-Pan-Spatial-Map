@@ -14,6 +14,7 @@ export class IGSSublayer extends Sublayer {
   /**
    * 几何类型
    *
+   * @value Lin:线、Pnt:点、Net:网络类
    * @date 09/04/2021
    * @memberof IGSSublayer
    */
@@ -73,7 +74,7 @@ export class IGSSublayer extends Sublayer {
         jsonObject.Weight !== undefined &&
         jsonObject.Weight !== ''
       ) {
-        this.geomType = 'NetworkAnalysis'
+        this.geomType = 'Net'
       } else {
         this.geomType = jsonObject.GeomType
       }

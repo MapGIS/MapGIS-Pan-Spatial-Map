@@ -56,9 +56,9 @@ export default class MpHinderTable extends Vue {
 }
 </script>
 <style lang="less">
-.hinder-table-container {
-  .fixed-table {
-    width: 350px;
-  }
-}
+// .hinder-table-container {
+//   .fixed-table {
+//     width: 350px;
+//   }
+// }
 </style>

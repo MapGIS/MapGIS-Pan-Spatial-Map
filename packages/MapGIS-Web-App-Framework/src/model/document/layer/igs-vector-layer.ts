@@ -4,7 +4,7 @@ import { SpatialReference } from '../spatial-reference'
 
 export class IGSVectorLayer extends Layer {
   /**
-   * 网络分析类特有字段，此字段等于NetworkAnalysis时为网络分析类
+   * 网络分析类特有字段，此字段等于Net时为网络分析类
    *
    * @date 24/06/2021
    * @memberof IGSVectorLayer
@@ -116,6 +116,11 @@ export class IGSVectorLayer extends Layer {
               res.Range.xmax,
               res.Range.ymax
             )
+          }
+
+          if (res && res.Type == 22) {
+            // 当Type为22 设置geomType为网络类
+            this.geomType = 'Net'
           }
 
           // 2.2获取字段名称、类型

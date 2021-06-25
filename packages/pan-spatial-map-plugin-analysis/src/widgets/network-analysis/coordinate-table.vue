@@ -61,9 +61,9 @@ export default class MpCoordinateTable extends Vue {
 }
 </script>
 <style lang="less">
-.coordinate-table-container {
-  .fixed-table {
-    width: 350px;
-  }
-}
+// .coordinate-table-container {
+//   .fixed-table {
+//     width: 350px;
+//   }
+// }
 </style>

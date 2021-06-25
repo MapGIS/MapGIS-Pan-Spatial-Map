@@ -94,7 +94,13 @@
               ></mp-hinder-table>
             </a-tab-pane>
             <a-tab-pane key="analysisRes" tab="分析结果">
-              Content of Tab Pane 3
+              <mp-anakysis-result-table
+                :isFullScreen="isFullScreen"
+                ref="MpNetworkAnalysis"
+                @draw-high-result="drawHighResult"
+                @draw-result="drawResult"
+                @fly-to-high="flyToHigh"
+              />
             </a-tab-pane>
           </a-tabs>
         </a-form-item>
@@ -114,12 +120,27 @@
       </a-form>
     </a-spin>
     <mapbox-layer
+      v-if="is2DMapMode"
       ref="mapboxLayer"
-      @finish-draw="clickFunciton"
       :dataBarrierArr="dataBarrierArr"
       :dataCoordinateArr="dataCoordinateArr"
       :marker="centerMarker"
+      :result="result"
+      :highResultSource="highResultSource"
+      :color="color"
+      @finish-draw="clickFunciton"
     />
+    <cesium-layer
+      v-else
+      ref="cesiumLayer"
+      :dataBarrierArr="dataBarrierArr"
+      :dataCoordinateArr="dataCoordinateArr"
+      :marker="centerMarker"
+      :result="result"
+      :highResultSource="highResultSource"
+      :color="color"
+      @finish-draw="clickFunciton"
+    ></cesium-layer>
     <a-modal v-model="settingDialog" title="设置参数" centered :footer="null">
       <setting v-model="settingForm" />
     </a-modal>
@@ -145,6 +166,7 @@ import MpCoordinateTable from './coordinate-table'
 import MpAnakysisResultTable from './analysis-result-table'
 import setting from './setting'
 import mapboxLayer from './map-layer/mapbox-layer.vue'
+import cesiumLayer from './map-layer/cesium-layer'
 
 @Component({
   name: 'MpNetworkAnalysis',
@@ -153,7 +175,8 @@ import mapboxLayer from './map-layer/mapbox-layer.vue'
     MpCoordinateTable,
     setting,
     MpAnakysisResultTable,
-    mapboxLayer
+    mapboxLayer,
+    cesiumLayer
   }
 })
 export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
@@ -201,14 +224,32 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     features: []
   }
 
+  circleColor = {
+    'circle-radius': 5, // 半径
+    'circle-color': '#FF9933', // 颜色
+    'circle-opacity': 1 // 透明度
+  }
+
   // 点集的source
   dataBarrierArr = {
     type: 'FeatureCollection',
     features: []
   }
 
+  highResultSource = { type: 'FeatureCollection', features: [] }
+
+  result = {
+    layerPoint: { type: 'FeatureCollection', features: [] },
+    layerLine: { type: 'FeatureCollection', features: [] }
+  }
+
   get drawComponent() {
-    return this.is2DMapMode ? this.$refs.mapboxLayer : null
+    return this.is2DMapMode ? this.$refs.mapboxLayer : this.$refs.cesiumLayer
+  }
+
+  // 面板关闭时候触发函数
+  onClose() {
+    this.wayChange()
   }
 
   wayOptions = [
@@ -263,32 +304,37 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
           title: '',
           key: 'index',
           scopedSlots: { customRender: 'index' },
-          width: '40px'
+          width: '40px',
+          align: 'center'
         },
         {
           title: 'X坐标',
           dataIndex: 'geometry.coordinates[0]',
           scopedSlots: { customRender: 'x' },
-          ellipsis: true
+          ellipsis: true,
+          align: 'center'
         },
         {
           title: 'Y坐标',
           dataIndex: 'geometry.coordinates[1]',
           scopedSlots: { customRender: 'y' },
-          ellipsis: true
+          ellipsis: true,
+          align: 'center'
         },
         {
           title: '类型',
           dataIndex: 'properties.type',
           scopedSlots: { customRender: 'type' },
           ellipsis: true,
-          width: '60px'
+          width: '60px',
+          align: 'center'
         },
         {
           title: '操作',
           key: 'action',
           scopedSlots: { customRender: 'action' },
-          width: '60px'
+          width: '60px',
+          align: 'center'
         }
       ]
     }
@@ -297,25 +343,29 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
         title: '',
         key: 'index',
         scopedSlots: { customRender: 'index' },
-        width: '40px'
+        width: '40px',
+        align: 'center'
       },
       {
         title: 'X坐标',
         dataIndex: 'geometry.coordinates[0]',
         scopedSlots: { customRender: 'x' },
-        ellipsis: true
+        ellipsis: true,
+        align: 'center'
       },
       {
         title: 'Y坐标',
         dataIndex: 'geometry.coordinates[1]',
         scopedSlots: { customRender: 'y' },
-        ellipsis: true
+        ellipsis: true,
+        align: 'center'
       },
       {
         title: '操作',
         key: 'action',
         scopedSlots: { customRender: 'action' },
-        width: '60px'
+        width: '60px',
+        align: 'center'
       }
     ]
   }
@@ -349,6 +399,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
 
   async startAnalysis() {
     this.clearClick()
+    this.clearResult()
     let param
     const type = this.way.id
     const workFlowId = this.way.workflowId
@@ -489,7 +540,8 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
           ip,
           port
         }).then(res => {
-          // this.dealWithExecuteRes(res)
+          this.showLoading = false
+          this.dealWithExecuteRes(res)
         })
       } else if (status === 'Runing') {
         window.setTimeout(() => {
@@ -506,9 +558,55 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     this.settingDialog = true
   }
 
+  dealWithExecuteRes(result) {
+    if (this.$refs.MpNetworkAnalysis) {
+      this.drawComponent && this.drawComponent.clearHighLayer()
+      this.drawComponent && this.drawComponent.clearResultLayer()
+      this.$refs.MpNetworkAnalysis.clearLayer()
+      this.$refs.MpNetworkAnalysis.onValueChange(result)
+    }
+  }
+
+  clearResult() {
+    this.drawComponent && this.drawComponent.clearHighLayer()
+    this.drawComponent && this.drawComponent.clearResultLayer()
+    this.$refs.MpNetworkAnalysis && this.$refs.MpNetworkAnalysis.clearLayer()
+  }
+
+  drawHighResult(val) {
+    this.highResultSource = val
+  }
+
+  drawResult(val) {
+    this.result = val
+  }
+
+  flyToHigh(val) {
+    this.drawComponent && this.drawComponent.flyToHigh(val)
+  }
+
   wayChange() {
     this.clearClick()
     this.clearMarker()
+    this.clearResult()
+    // 点集的source
+    this.dataCoordinateArr = {
+      type: 'FeatureCollection',
+      features: []
+    }
+
+    // 点集的source
+    this.dataBarrierArr = {
+      type: 'FeatureCollection',
+      features: []
+    }
+
+    this.highResultSource = { type: 'FeatureCollection', features: [] }
+
+    this.result = {
+      layerPoint: { type: 'FeatureCollection', features: [] },
+      layerLine: { type: 'FeatureCollection', features: [] }
+    }
   }
 
   setNetWorkLayer() {
@@ -516,13 +614,23 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     this.networkLayerOption = []
     const arr = []
     if (!this.layerSelect.allSublayers) {
-      return
-    }
-    this.layerSelect.allSublayers.forEach(item => {
-      if (item.geomType === 'NetworkAnalysis') {
-        arr.push(item)
+      if (this.layerSelect.geomType === 'Net') {
+        arr.push({
+          title: this.layerSelect.title,
+          url: this.layerSelect.gdbps
+        })
       }
-    })
+    } else {
+      this.layerSelect.allSublayers.forEach(item => {
+        if (item.geomType === 'Net') {
+          arr.push({
+            title: item.title,
+            url: item.url
+          })
+        }
+      })
+    }
+
     if (arr.length > 0) {
       this.networkLayerIndex = 0
       this.networkLayerOption = arr
@@ -539,9 +647,23 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
   }
 
   async rowClick(row) {
-    this.map.panTo(row.geometry.coordinates)
     const img = await markerIconInstance.unSelectIcon()
-    this.centerMarker = { coordinates: row.geometry.coordinates, img }
+    this.centerMarker = {
+      name: 'coordinate-marker',
+      center: row.geometry.coordinates,
+      img
+    }
+    if (this.is2DMapMode) {
+      this.map.panTo(row.geometry.coordinates)
+    } else {
+      this.webGlobe.viewer.camera.flyTo({
+        destination: this.Cesium.Cartesian3.fromDegrees(
+          row.geometry.coordinates[0],
+          row.geometry.coordinates[1],
+          this.webGlobe.viewer.camera.positionCartographic.height
+        )
+      })
+    }
   }
 
   createMarker(val, type) {
@@ -597,6 +719,9 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
 .mp-widget-network-analysis {
   display: flex;
   flex-direction: column;
+  .fixed-table {
+    width: 350px;
+  }
   .ant-form-item {
     margin-bottom: 10px;
     .control-button-container {
