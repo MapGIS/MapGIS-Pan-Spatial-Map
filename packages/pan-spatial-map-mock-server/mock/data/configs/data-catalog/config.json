@@ -1024,7 +1024,7 @@
             "type": "normal",
             "children": [
               {
-                "label": "文档数据（非空间数据）",
+                "label": "文档数据",
                 "describe": "自然保护区文档数据（非空间数据）",
                 "data": "文档资料",
                 "type": "normal"
@@ -1037,7 +1037,7 @@
             "type": "normal",
             "children": [
               {
-                "label": "影音数据（非空间数据）",
+                "label": "影音数据",
                 "describe": "自然保护区影音数据（非空间数据）",
                 "data": "音视频资料",
                 "type": "normal"
@@ -1050,7 +1050,7 @@
             "type": "normal",
             "children": [
               {
-                "label": "图片集（非空间数据）",
+                "label": "图片集",
                 "describe": "生态保护图片集（非空间数据）",
                 "data": "图集资料",
                 "type": "normal"

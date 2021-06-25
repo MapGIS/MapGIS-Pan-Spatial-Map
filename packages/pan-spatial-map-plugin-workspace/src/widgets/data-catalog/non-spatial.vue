@@ -38,6 +38,7 @@
       <a-table
         v-show="!showPicutre"
         :columns="columns"
+        :loading="loading"
         :data-source="tableData"
         :pagination="pagination"
         :rowKey="
@@ -234,6 +235,9 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     }
   ]
 
+  // 数据是否加载中
+  private loading = false
+
   // 以大图方式显示的数据
   private pictrueData = []
 
@@ -272,7 +276,9 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 监听非空间数据url变化，初始化table表格数据及大图状态数据
   @Watch('url')
   onUrlChange(newVal) {
+    this.loading = true
     this.getUrlData(newVal).then(res => {
+      this.loading = false
       this.tableData = res.content
       this.pageTotal = res.totalElements
 
@@ -357,7 +363,9 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 通过搜索框与下拉项筛选数据
   // 可能同时存在搜索值与下拉项值，所以筛选数据都放在一块处理
   private onFilterData() {
+    this.loading = true
     this.getUrlData(this.url).then(res => {
+      this.loading = false
       this.tableData = res.content
 
       this.tableData = this.tableData.reduce((result, item) => {
