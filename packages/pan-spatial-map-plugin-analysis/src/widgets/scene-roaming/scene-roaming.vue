@@ -554,6 +554,17 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     this.isShowPointTable = true
     this.pointTableData = []
     this.coordsArr = []
+    // 创建路径时，默认参数如下
+    this.formData = {
+      speed: 60,
+      exHeight: 1000,
+      azimuth: 0,
+      pitch: 0,
+      perspective: 1,
+      interpolation: 'LagrangePolynomialApproximation'
+    }
+    this.checkedVal = ['isLoop', 'showPath', 'showInfo']
+
     this.draw = new this.Cesium.DrawElement(this.webGlobe.viewer)
 
     const material = this.Cesium.Material.fromType('Color')
@@ -591,6 +602,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   // 点击取消选点按钮回调(取消创建路径)
   private onClickCancelPath() {
     if (this.draw) this.draw.stopDrawing()
+
+    //  根据之前勾选项，初始化form表单数据
+    this.onSelectChange(this.selectedRowKeys)
 
     this.isShowPointTable = false
     this.isCreatePath = false
