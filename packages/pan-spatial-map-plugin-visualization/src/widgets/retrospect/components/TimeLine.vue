@@ -18,7 +18,7 @@ export default class TimeLine extends Vue {
 
   @Prop({ default: false }) autoPlay!: boolean
 
-  Chart: any | null = null
+  chart: any | null = null
 
   get timelineOptions() {
     return {
@@ -73,27 +73,27 @@ export default class TimeLine extends Vue {
 
   @Watch('timelineOptions', { deep: true })
   timelineOptionsChange() {
-    this.Chart.setOption(this.option, true)
+    this.chart.setOption(this.option, true)
   }
 
   resize(width) {
-    if (this.Chart) {
+    if (this.chart) {
       this.chartEl.style.width = width
-      this.Chart.resize({ width })
+      this.chart.resize({ width })
     }
   }
 
   mounted() {
-    this.Chart = echarts.init(this.chartEl as HTMLDivElement)
-    this.Chart.on('timelinechanged', ({ currentIndex }) =>
+    this.chart = echarts.init(this.chartEl as HTMLDivElement)
+    this.chart.on('timelinechanged', ({ currentIndex }) =>
       this.$emit('input', currentIndex)
     )
-    this.Chart.setOption(this.option, true)
+    this.chart.setOption(this.option, true)
   }
 
   beforeDestroy() {
-    if (this.Chart) {
-      this.Chart.off('timelinechanged')
+    if (this.chart) {
+      this.chart.off('timelinechanged')
     }
   }
 }
