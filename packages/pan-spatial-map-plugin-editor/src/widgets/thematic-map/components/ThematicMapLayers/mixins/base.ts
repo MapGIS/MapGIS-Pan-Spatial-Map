@@ -1,5 +1,6 @@
 import { Component, Prop, Watch, Vue, Mixins } from 'vue-property-decorator'
 import { MapMixin, Feature } from '@mapgis/web-app-framework'
+import _isNumber from 'lodash/isNumber'
 
 @Component
 export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
@@ -36,11 +37,13 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
    * @returns
    */
   addCountToGeoJSON(geojson: Feature.FeatureGeoJSON) {
+    const { weight } = this.subDataConfig
+    const count = _isNumber(weight) ? weight : weight ? Number(weight) : null
     const features = geojson.features.map((feature: Feature.GFeature) => ({
       ...feature,
       properties: {
         ...feature.properties,
-        count: this.subDataConfig.weight
+        count
       }
     }))
     return {

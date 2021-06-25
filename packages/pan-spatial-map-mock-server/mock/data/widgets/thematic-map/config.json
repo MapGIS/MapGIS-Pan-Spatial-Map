@@ -34,8 +34,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -96,8 +96,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -157,8 +157,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -218,8 +218,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -279,8 +279,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -340,8 +340,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -403,8 +403,8 @@
                     "minZoom": "0",
                     "maxZoom": "10",
                     "queryFeatureNum": "10000+",
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "docName": "",
@@ -479,8 +479,8 @@
                     "minZoom": "0",
                     "maxZoom": "10",
                     "queryFeatureNum": "10000+",
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "docName": "",
@@ -546,8 +546,8 @@
                     "minZoom": "0",
                     "maxZoom": "10",
                     "queryFeatureNum": "10000+",
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "docName": "",
@@ -624,8 +624,8 @@
                   {
                     "minZoom": 1,
                     "maxZoom": 10,
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "showTextLabel": "true",
@@ -705,13 +705,10 @@
                 },
                 "table": {
                   "showFields": ["NAME", "AREA"],
-                  "showFieldsTitle": {
-                    "NAME": "名称",
-                    "AREA": "面积"
-                  }
+                  "showFieldsTitle": {}
                 },
                 "graph": {
-                  "showFields": ["NAME", "AREA"],
+                  "showFields": ["AREA"],
                   "showFieldsTitle": {},
                   "field": "NAME",
                   "target": []
@@ -748,15 +745,12 @@
                 },
                 "table": {
                   "showFields": ["NAME", "AREA"],
-                  "showFieldsTitle": {
-                    "NAME": "名称",
-                    "AREA": "面积"
-                  }
+                  "showFieldsTitle": {}
                 },
                 "graph": {
-                  "showFields": ["NAME", "AREA"],
+                  "showFields": ["NAME"],
                   "showFieldsTitle": {},
-                  "field": "NAME",
+                  "field": "AREA",
                   "target": []
                 }
               }
@@ -801,9 +795,7 @@
                     },
                     "table": {
                       "showFields": ["name"],
-                      "showFieldsTitle": {
-                        "name": "名称"
-                      }
+                      "showFieldsTitle": {}
                     },
                     "graph": {
                       "showFields": ["name"],
