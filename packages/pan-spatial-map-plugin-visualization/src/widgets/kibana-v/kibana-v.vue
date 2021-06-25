@@ -1,14 +1,9 @@
 <template>
   <div class="mp-widget-kibana-v">
     <div class="kibana-v-panel">
-      <div
-        class="panel-item"
-        v-for="(item, index) in configData"
-        :key="index"
-        @click="onView(item)"
-      >
-        <img :src="item.imgUrl" alt="" />
-        <div class="item-label">{{ item.title }}</div>
+      <div class="panel-item" v-for="(item, index) in configData" :key="index">
+        <img :src="item.imgUrl" alt="" @click="onView(item)" />
+        <div class="item-label" @click="onView(item)">{{ item.title }}</div>
       </div>
     </div>
   </div>
@@ -55,18 +50,22 @@ export default class MpKibanaV extends Mixins(WidgetMixin) {
       width: 20%;
       height: 43%;
       padding: 20px;
-      cursor: pointer;
 
       img {
         border: 1px solid #dcdcdc;
         flex-grow: 1;
         object-fit: cover;
+        cursor: pointer;
       }
 
       .item-label {
         border: 1px solid #dcdcdc;
         font-size: 12px;
         padding: 2px 10px;
+        cursor: pointer;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
 
       .item-label:hover {
