@@ -1,8 +1,8 @@
 <template>
-  <div class="unify-modify">
+  <div class="unify-modify-wrapper">
     <a-form
-      :label-col="{ span: 10 }"
-      :wrapper-col="{ span: 14 }"
+      :label-col="{ span: 9 }"
+      :wrapper-col="{ span: 15 }"
       labelAlign="left"
     >
       <a-form-item
@@ -55,6 +55,13 @@
             </a-popover>
           </span>
         </a-input>
+        <template v-else-if="key === 'OutPenW'">
+          <a-row type="flex" justify="space-between" v-for="i in 3" :key="i">
+            <a-col>
+              <a-input v-model="info[key][i - 1]" class="fill-width" />
+            </a-col>
+          </a-row>
+        </template>
         <a-input-number
           class="fill-width"
           v-else
@@ -63,8 +70,8 @@
           @focus="showSymbol(key)"
         />
       </a-form-item>
-      <a-form-item :wrapper-col="{ offset: 10 }">
-        <a-button type="primary" @click="sureClick">
+      <a-form-item :wrapper-col="{ offset: 0 }">
+        <a-button type="primary" @click="sureClick" class="fill-width">
           确定
         </a-button>
       </a-form-item>
@@ -76,6 +83,7 @@
           :width="300"
           :height="400"
           anchor="center-right"
+          :horizontalOffset="10"
           :visible.sync="showSymbolWin"
           v-bind="slotProps"
         >
@@ -360,17 +368,15 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
 </script>
 
 <style lang="less" scoped>
-.unify-modify {
-  margin: 0.5em;
-}
-.table {
-  margin-right: 2em;
-  height: 11em;
-}
-.top-02em {
-  margin-top: 0.2em;
-}
-.fill-width {
-  width: 100%;
+.unify-modify-wrapper {
+  .fill-width {
+    width: 100%;
+  }
+  .ant-form-item {
+    margin-bottom: 8px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 </style>
