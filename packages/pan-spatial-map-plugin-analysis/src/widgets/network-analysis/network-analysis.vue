@@ -14,7 +14,7 @@
           </a-select>
         </a-form-item>
         <a-form-item label="选择图层" style="display:flex">
-          <a-select v-model="networkLayerIndex" @change="wayChange">
+          <a-select v-model="networkLayerIndex" @change="resetLayer">
             <a-select-option
               v-for="(item, index) in networkLayerOption"
               :key="index"
@@ -25,7 +25,7 @@
           </a-select>
         </a-form-item>
         <a-form-item label="选择方式" style="display:flex">
-          <a-select v-model="wayIndex" @change="wayChange">
+          <a-select v-model="wayIndex" @change="resetLayer">
             <a-select-option
               v-for="(item, index) in wayOptions"
               :key="index"
@@ -34,6 +34,16 @@
               {{ item.name }}
             </a-select-option>
           </a-select>
+        </a-form-item>
+        <a-form-item
+          v-if="showButton"
+          label="选择类型"
+          style="display:flex;align-items: center;"
+        >
+          <div class="control-button-container">
+            <a-radio-group v-model="groupRadio" :options="optionsRadio">
+            </a-radio-group>
+          </div>
         </a-form-item>
         <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
           <div v-if="showButton" class="control-button-container">
@@ -63,7 +73,7 @@
             <a-button class="control-button" @click="clearClick">
               结束绘制
             </a-button>
-            <a-button class="control-button" @click="clearMarker">
+            <a-button class="control-button" @click="resetLayer">
               清空
             </a-button>
           </div>
@@ -218,6 +228,19 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
 
   tab = 'coordinateArr'
 
+  groupRadio = '1'
+
+  optionsRadio = [
+    {
+      label: '点上网标',
+      value: '1'
+    },
+    {
+      label: '线上网标',
+      value: '2'
+    }
+  ]
+
   // 点集的source
   dataCoordinateArr = {
     type: 'FeatureCollection',
@@ -249,7 +272,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
 
   // 面板关闭时候触发函数
   onClose() {
-    this.wayChange()
+    this.resetLayer()
   }
 
   wayOptions = [
@@ -585,7 +608,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     this.drawComponent && this.drawComponent.flyToHigh(val)
   }
 
-  wayChange() {
+  resetLayer() {
     this.clearClick()
     this.clearMarker()
     this.clearResult()
