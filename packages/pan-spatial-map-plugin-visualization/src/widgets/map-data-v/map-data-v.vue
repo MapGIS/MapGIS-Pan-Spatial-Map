@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-map-data-v">
     <iframe
-      src="http://localhost:8016/BigData#/sharedProjectSource"
+      src="https://www.baidu.com/"
       frameborder="0"
       width="100%"
       height="100%"
