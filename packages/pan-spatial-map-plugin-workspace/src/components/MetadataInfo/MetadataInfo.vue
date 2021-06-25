@@ -48,7 +48,7 @@ export default class MpMetadataInfo extends Vue {
   private async currentLayerChange() {
     if (this.currentLayer) {
       const { type } = this.currentLayer.layer || this.currentLayer
-      if (type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {
+      if (!type || type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {
         return
       }
       let option: Metadata.MetadataQueryParam = {}
@@ -97,7 +97,7 @@ export default class MpMetadataInfo extends Vue {
   private async currentConfigChange() {
     if (this.currentConfig) {
       const { type } = this.currentConfig
-      if (type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {
+      if (!type || type === LayerType.OGCWMS || type === LayerType.OGCWMTS) {
         return
       }
       let option: Metadata.MetadataQueryParam = {}

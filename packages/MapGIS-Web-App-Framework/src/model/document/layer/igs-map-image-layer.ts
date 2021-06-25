@@ -14,6 +14,7 @@ export class IGSSublayer extends Sublayer {
   /**
    * 几何类型
    *
+   * @value Lin:线、Pnt:点、Net:网络类
    * @date 09/04/2021
    * @memberof IGSSublayer
    */
@@ -61,8 +62,23 @@ export class IGSSublayer extends Sublayer {
 
     if (jsonObject.SysLibraryGuid)
       this.sysLibraryGuid = jsonObject.SysLibraryGuid
-
-    if (jsonObject.GeomType) this.geomType = jsonObject.GeomType
+    if (jsonObject.GeomType) {
+      /**
+       * @修改说明 网络分析类需要特殊处理，当Weight有值并且GeomType为Unknown时，判断为网络分析类
+       *          其他情况找矢量文档逻辑处理
+       * @修改人 龚瑞强
+       */
+      if (
+        jsonObject.GeomType === 'Unknown' &&
+        jsonObject.Weight !== null &&
+        jsonObject.Weight !== undefined &&
+        jsonObject.Weight !== ''
+      ) {
+        this.geomType = 'Net'
+      } else {
+        this.geomType = jsonObject.GeomType
+      }
+    }
   }
 
   /**

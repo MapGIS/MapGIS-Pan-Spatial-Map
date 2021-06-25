@@ -716,6 +716,21 @@
             "gdbTypeList": "Local,Local,Local"
           },
           {
+            "label": "道路交通网",
+            "describe": "网络分析",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSIMAGE",
+            "name": "网络分析",
+            "searchName": "",
+            "token": "",
+            "guid": "e6c67296-8725-7f4b-a0c7-317ec3dd271b",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": "Local,Local"
+          },
+          {
             "label": "北京市",
             "describe": "北京市",
             "ip": "",
@@ -921,6 +936,20 @@
             "token": "",
             "guid": "d9081e7b-8a56-441f-a511-68902560b54e",
             "serverUrl": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
+            "label": "网络分析",
+            "describe": "道路交通网",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSVECTOR",
+            "name": "道路交通网",
+            "searchName": "",
+            "token": "",
+            "guid": "e76f9c13-0fcb-8537-96ab-daa533bf5dc9",
+            "serverUrl": "gdbp://MapGISLocal/sample/ncls/道路交通网",
             "wfsUrl": "",
             "extent": ""
           }

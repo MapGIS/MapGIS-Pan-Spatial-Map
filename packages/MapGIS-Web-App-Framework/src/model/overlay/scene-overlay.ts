@@ -63,12 +63,15 @@ export class SceneOverlays {
     }
     const width = opt.width || ''
     const color = opt.color || ''
+    const isHeight = opt.isHeight || false
+    const isGround = opt.isGround || true
     const lineEntity: any = this.webGlobe.appendLine(
       opt.name,
       opt.pointsArray,
       width,
       color,
-      opt.isGround,
+      isHeight,
+      isGround,
       opt.options
     )
     this.entityArray.push(lineEntity)
@@ -286,6 +289,46 @@ export class SceneOverlays {
     // labelIcon.pixelOffsetScaleByDistance = new cesium.NearFarScalar(1.5e2, 0.0, 8.0e6, 10.0);//随远近改变大小
     labelIcon.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY
     labelIcon.name = opt.name
+
+    this.entityArray.push(labelIcon)
+    return labelIcon
+  }
+
+  /**
+   * 添加标注点
+   * @param option
+   * @returns
+   */
+  public addPoint(opt: Record<string, any>) {
+    if (!this.Cesium) {
+      console.log('Cesium缺失')
+      return null
+    }
+    if (!opt.lon || !opt.lat) {
+      return null
+    }
+    const text = opt.text || ''
+    const lon = opt.lon || 0
+    const lat = opt.lat || 0
+    const height = opt.height || 0
+    const font = opt.font || 6
+    const fillColor = opt.fillColor || ''
+    const outLineColor = opt.outLineColor || ''
+    const outlineWidth = opt.outlineWidth || 1
+    opt.name = opt.name || 'pictureLabel'
+    const labelIcon = this.webGlobe.appendPoint(
+      lon,
+      lat,
+      height,
+      text,
+      font,
+      fillColor,
+      outLineColor,
+      outlineWidth
+    )
+    if (opt.id) {
+      labelIcon.id = opt.id
+    }
 
     this.entityArray.push(labelIcon)
     return labelIcon
