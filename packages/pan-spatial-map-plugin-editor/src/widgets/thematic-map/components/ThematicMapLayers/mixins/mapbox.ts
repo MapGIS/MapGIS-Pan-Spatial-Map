@@ -57,9 +57,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
    */
   showPopupWin(e: any) {
     const { showFields } = this.popupConfig
-    if (!e.target || !e.target.refDataID || !showFields || !showFields.length) {
-      return
-    }
+    if (!e.target || !showFields || !showFields.length) return
     this.showPopup = true
     this.getPopupInfos(e, this.popupConfig)
   }

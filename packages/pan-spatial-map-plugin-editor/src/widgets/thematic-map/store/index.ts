@@ -1,5 +1,5 @@
 import { ModuleType, ISubjectType } from './types'
-import thematicMapStore, { mapGetters, mapMutations } from './store'
+import thematicMapStore, { mapGetters, mapMutations } from './module'
 
 // 功能模块缩写
 const moduleTypes: ModuleType[] = ['at', 'st', 'tl', 'mt']

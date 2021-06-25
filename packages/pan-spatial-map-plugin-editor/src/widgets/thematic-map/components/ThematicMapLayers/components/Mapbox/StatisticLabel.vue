@@ -1,6 +1,6 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="showPopup" v-if="showPopup">
+  <mapgis-popup :showed="showPopup" :coordinates="coordinates" v-if="showPopup">
     <span class="popup-fontsize" v-if="!properties">暂无数据</span>
     <div v-else>
       <div
@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import { RankSymbolThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
-import { CommonUtil } from '@mapgis/web-app-framework'
+import _debounce from 'lodash/debounce'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
@@ -72,14 +72,8 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
     }
     _thematicMapLayer.themeField = this.field
     this.thematicMapLayer = _thematicMapLayer
-    this.thematicMapLayer.on(
-      'mousemove',
-      CommonUtil.debounce(this.showPopupWin, 200)
-    )
-    this.thematicMapLayer.on(
-      'mouseout',
-      CommonUtil.debounce(this.closePopupWin, 200)
-    )
+    this.thematicMapLayer.on('mousemove', _debounce(this.showPopupWin, 200))
+    this.thematicMapLayer.on('mouseout', _debounce(this.closePopupWin, 200))
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
 
@@ -87,6 +81,7 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
    * 展示信息窗口
    */
   getPopupInfos({ target }: any, { showFields, showFieldsTitle }: any) {
+    if (!target.refDataID) return
     const feature = this.thematicMapLayer.getFeatureById(target.refDataID)
     if (feature) {
       const {

@@ -2,11 +2,8 @@ import Vue from 'vue'
 import _cloneDeep from 'lodash/cloneDeep'
 import _last from 'lodash/last'
 import { Feature } from '@mapgis/web-app-framework'
-import {
-  ModuleType,
-  IThematicMapBaseConfig,
-  IThematicMapSubjectConfig
-} from '../types'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { ModuleType, IThematicMapSubjectConfig } from '../types'
 
 const mutations = {
   /**
@@ -42,8 +39,8 @@ const mutations = {
   /**
    * 保存当前页的查询的要素数据
    */
-  setPageDataSet({ state }, dataSet: Feature.FeatureIGS | null) {
-    state.pageDataSet = _cloneDeep(dataSet)
+  setDataSet({ state }, pageDataSet: Feature.FeatureIGS | null) {
+    state.pageDataSet = _cloneDeep(pageDataSet)
   },
   /**
    * 查询要素
@@ -51,53 +48,54 @@ const mutations = {
    * @param onError
    */
   setFeaturesQuery({ state, commit }, { onSuccess, onError }: any = {}) {
-    const { pageParam, selectedSubConfig, baseConfig } = state
-    if (!selectedSubConfig) return
-    const { baseIp, basePort } = baseConfig as IThematicMapBaseConfig
-    const { configType = 'gdbp' } = selectedSubConfig
+    if (!state.selectedSubConfig) return
+    const { pageParam, selectedSubConfig, baseConfig = {} } = state
+    const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
+    const { baseIp, basePort } = baseConfig
     const {
-      ip = baseIp,
-      port = basePort,
+      ip,
+      port,
       gdbp,
       docName,
       layerName,
+      configType = 'gdbp',
       layerIndex: layerIdxs,
       table: { showFields }
     } = selectedSubConfig
-    const fields = showFields.join(',')
-    let params: any = {
-      ip,
-      port,
-      fields,
-      IncludeGeometry: true,
-      cursorType: 'backward',
-      f: 'json',
-      ...pageParam
-    }
+    const _ip = ip || baseIp || baseConfigIp
+    const _port = port || basePort || baseConfigPort
+    let otherParams: any = {}
     switch (configType.toLowerCase()) {
       case 'gdbp':
-        params = {
-          ...params,
+        otherParams = {
           gdbp
         }
         break
       case 'doc':
-        params = {
+        otherParams = {
           docName,
           layerName,
-          layerIdxs,
-          ...params
+          layerIdxs
         }
         break
       default:
         break
     }
     commit('setLoading', true)
-    const fn = Feature.FeatureQuery.query(params)
+    const fn = Feature.FeatureQuery.query({
+      ip: _ip,
+      port: _port,
+      IncludeGeometry: true,
+      f: 'json',
+      cursorType: 'backward',
+      fields: showFields.join(','),
+      ...pageParam,
+      ...otherParams
+    })
     if (fn && fn.then) {
       fn.then((dataSet: Feature.FeatureIGS | any) => {
         commit('setLoading', false)
-        commit('setPageDataSet', dataSet)
+        commit('setDataSet', dataSet)
         onSuccess && onSuccess(dataSet)
       }).catch(e => {
         commit('setLoading', false)
@@ -108,7 +106,7 @@ const mutations = {
   /**
    * 设置选中专题的年度列表
    */
-  setSelectedSubConfig({ state }, time) {
+  setSelectedSubConfig({ state }, time: string) {
     const subject = state.selectedList.find(({ id }) => id === state.selected)
     let selectedSubConfig = null
     if (subject && subject.config) {

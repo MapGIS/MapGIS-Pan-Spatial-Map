@@ -4,7 +4,6 @@
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import RowFlex from '../../../RowFlex'
 import BaseMinxin from '../../mixins/base'
 
 @Component
@@ -39,7 +38,7 @@ export default class MapboxLabel extends Mixins(BaseMinxin) {
    */
   showLayer() {
     if (this.geojson) {
-      this.geojsonPoint = this.geojson
+      this.geojsonPoint = this.addCountToGeoJSON(this.geojson)
     }
   }
 

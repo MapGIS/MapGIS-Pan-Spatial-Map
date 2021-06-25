@@ -24,7 +24,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
+import { mapGetters, mapMutations } from '../../store'
 
 interface IIcon {
   type: string

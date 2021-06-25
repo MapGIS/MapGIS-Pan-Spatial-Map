@@ -1,7 +1,7 @@
 import { Feature } from '@mapgis/web-app-framework'
 
 // 基础配置
-export interface IThematicMapBaseConfig {
+interface IThematicMapBaseConfig {
   baseIp: string // 主题服务默认 ip
   basePort: string // 主题服务默认 port
   isLocation: boolean // 是否覆盖
@@ -80,5 +80,5 @@ export interface IState {
   selectedTimeList: string[]
   selectedList: IThematicMapSubjectConfig[]
   subjectConfig: IThematicMapSubjectConfig | null
-  baseConfig: IThematicMapBaseConfig | null
+  baseConfig?: IThematicMapBaseConfig | null
 }
