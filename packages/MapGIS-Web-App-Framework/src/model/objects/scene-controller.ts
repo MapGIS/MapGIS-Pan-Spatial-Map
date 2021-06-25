@@ -202,4 +202,54 @@ export class SceneController {
     }
     return bound
   }
+
+  /**
+   * 根据经纬度获取范围
+   * @param bound { xmin, ymin, xmax, ymax }
+   * @returns Rectangle bound
+   */
+  public getRectangleFromDegrees({ xmin, ymin, xmax, ymax }) {
+    return new this.Cesium.Rectangle.fromDegrees(xmin, ymin, xmax, ymax)
+  }
+
+  /**
+   * 获取positionCartographic.height
+   * @returns positionCartographic.height
+   */
+  public getPsitionCartographicHeight() {
+    return this.webGlobe.viewer.camera.positionCartographic.height
+  }
+
+  /**
+   * 根据经纬度获取Cartesian3坐标
+   * @param x,y,z
+   * @returns Cartesian3坐标
+   */
+  public getCartesian3FromDegrees(x: number, y: number, z: number) {
+    return this.Cesium.Cartesian3.fromDegrees(x, y, z)
+  }
+
+  /**
+   * 相机视角跳转
+   * @param params
+   */
+  public cameraFlyTo(params: any) {
+    this.webGlobe.viewer.camera.flyTo(params)
+  }
+
+  /**
+   * 监听相机变化的事件
+   * @param callback
+   */
+  public addCameraChangedEvent(callback: () => void) {
+    this.webGlobe.viewer.camera.changed.addEventListener(callback)
+  }
+
+  /**
+   * 监听相机变化的事件
+   * @param callback
+   */
+  public removeCameraChangedEvent(callback: () => void) {
+    this.webGlobe.viewer.camera.changed.removeEventListener(callback)
+  }
 }

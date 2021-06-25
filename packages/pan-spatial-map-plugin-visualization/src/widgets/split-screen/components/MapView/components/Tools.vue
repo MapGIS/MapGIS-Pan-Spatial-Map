@@ -1,20 +1,23 @@
 <template>
   <row-flex
     :label="title"
-    :span="[14, 10]"
+    :span="[12, 12]"
     :colon="false"
     :gutter="0"
     justify="space-between"
-    class="map-view-tools"
+    class="tools"
   >
-    <a-tooltip v-for="item in tools" :key="item.label" :title="item.label">
-      <a-icon :type="item.icon" @click.stop="onSettingIconClick(item)" />
-    </a-tooltip>
+    <slot>
+      <a-tooltip v-for="item in tools" :key="item.label" :title="item.label">
+        <a-icon :type="item.icon" @click.stop="onIconClick(item)" />
+      </a-tooltip>
+    </slot>
   </row-flex>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import RowFlex from '../RowFlex'
+import _upperFirst from 'lodash/upperFirst'
+import RowFlex from '../../RowFlex'
 
 export type OperationType =
   | 'UNKNOW'
@@ -24,6 +27,14 @@ export type OperationType =
   | 'RESORT'
   | 'PAN'
   | 'CLEAR'
+
+export type OperationFn =
+  | 'onQuery'
+  | 'onZoomIn'
+  | 'onZoomOut'
+  | 'onResort'
+  | 'onPan'
+  | 'onClear'
 
 interface ITool {
   label: string
@@ -36,10 +47,9 @@ interface ITool {
     RowFlex
   }
 })
-export default class MapViewTools extends Vue {
-  @Prop() title!: string
+export default class Tools extends Vue {
+  @Prop() readonly title!: string
 
-  // 工具按钮
   tools: ITool[] = [
     {
       label: '查询',
@@ -74,17 +84,30 @@ export default class MapViewTools extends Vue {
     }
   ]
 
-  /**
-   * 设置图标点击操作
-   * @param item<object>
-   */
-  onSettingIconClick({ operationType }: ITool) {
-    const fnName = `${operationType}Click`
-    const _operationType = operationType.toUpperCase()
+  onIconClick({ operationType }: ITool) {
+    const fnName: OperationFn = `on${_upperFirst(operationType)}`
+    const _operationType: OperationType = operationType.toUpperCase()
     this.$emit('on-icon-click', _operationType, fnName)
   }
 }
 </script>
 <style lang="less" scoped>
-@import './index.less';
+.tools {
+  color: @white;
+  background-color: @primary-color;
+  line-height: 32px;
+  padding: 0 8px;
+  /deep/ .ant-col:last-of-type {
+    text-align: right;
+    .anticon {
+      font-size: 18px;
+      margin-left: 8px;
+      vertical-align: middle;
+      margin-top: -0.125em;
+    }
+  }
+  + div {
+    flex: 1;
+  }
+}
 </style>

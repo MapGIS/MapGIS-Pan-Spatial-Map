@@ -1,4 +1,4 @@
-import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
+import { Common } from '@mapgis/webclient-es6-service'
 
 export class Rect {
   /**
@@ -21,6 +21,7 @@ export class Rect {
   }
 }
 
+const initRectangle = new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
 /**
  * 地图视图状态类.记录地图的ID、显示范围信息
  */
@@ -28,11 +29,11 @@ export class MapViewState {
   // 地图视图的ID
   private _mapViewId = ''
 
-  // 地图当前的显示范围
-  private _displayRect: Rect = new Rectangle(0.0, 0.0, 0.0, 0.0)
+  // 二三维维地图复位时的视图范围
+  private _initView = initRectangle
 
-  // 地图复位时的范围
-  private _initDisplayRect: Rect = new Rectangle(0.0, 0.0, 0.0, 0.0)
+  // 二维地图当前的显示视图范围
+  private _activeView: Rect = initRectangle
 
   get mapViewId(): string {
     return this._mapViewId
@@ -42,20 +43,20 @@ export class MapViewState {
     this._mapViewId = id
   }
 
-  get displayRect(): Rect {
-    return this._displayRect
+  get activeView(): Rect {
+    return this._activeView
   }
 
-  set displayRect(displayRect: Rect) {
-    this._displayRect = displayRect
+  set activeView(rect: Rect) {
+    this._activeView = rect
   }
 
-  get initDisplayRect(): Rect {
-    return this._initDisplayRect
+  get initView() {
+    return this._initView
   }
 
-  set initDisplayRect(initDisplayRect: Rect) {
-    this._initDisplayRect = initDisplayRect
+  set initView(view) {
+    this._initView = view
   }
 }
 

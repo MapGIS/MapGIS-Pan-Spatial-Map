@@ -1,17 +1,50 @@
 .split-screen-setting {
+  position: relative;
+  width: 256px;
   height: 100%;
-  border-left: 1px solid #f0f0f0;
-  padding-left: 12px;
-  margin-left: 12px;
-  /deep/ .ant-select {
+  margin-left: 8px;
+  border-left: 1px solid @primary-color;
+  transition: transform 0.3s, width 0.3s;
+  .setting-handle {
+    position: absolute;
+    width: 20px;
+    height: 64px;
+    line-height: 64px;
+    top: 50%;
+    left: -1px;
+    margin-top: -32px;
+    text-align: center;
+    color: @primary-color;
+    background-color: @base-bg-color;
+    border-top-right-radius: @border-radius-base;
+    border-bottom-right-radius: @border-radius-base;
+    border: 1px solid @primary-color;
+    border-left-color: transparent;
+    cursor: pointer;
+    z-index: 1;
+    transition: left 0.2s, border 0.2s;
+    i {
+      transition: transform 0.3s;
+    }
+    &:hover {
+      color: white;
+      background: @primary-color;
+    }
+  }
+  .setting-content {
     width: 100%;
-  }
-  /deep/ .ant-row-flex {
-    margin: 12px 0;
-  }
-  .split-screen-grid {
-    width: 88px;
-    &-col {
+    height: 100%;
+    padding-left: 12px;
+    /deep/ .ant-select {
+      width: 100%;
+    }
+    /deep/ .ant-row-flex {
+      margin: 12px 0;
+    }
+    .grid {
+      width: 88px;
+    }
+    .col {
       width: 30px;
       height: 20px;
       line-height: 20px;
@@ -29,12 +62,24 @@
         border-left: none;
       }
     }
+    .btns {
+      text-align: right;
+      margin: 12px 0;
+    }
   }
-  .split-screen-btns {
-    text-align: right;
-    margin: 12px 0;
-    button {
-      margin-left: 8px;
+  &.collapsed {
+    width: 0;
+    transform: translateX(calc(100% + 12px));
+    .setting-handle {
+      left: -15px;
+      border-radius: @border-radius-base;
+      border-left-color: @primary-color;
+      i {
+        transform: rotate(360deg);
+      }
+    }
+    .setting-content {
+      opacity: 0;
     }
   }
 }

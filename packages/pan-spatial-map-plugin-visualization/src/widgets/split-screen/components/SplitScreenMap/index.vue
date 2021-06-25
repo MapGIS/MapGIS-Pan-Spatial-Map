@@ -12,20 +12,21 @@
         :style="mapSpanStyle"
       >
         <map-view
-          :queryVisible.sync="queryVisible"
-          :mapViewId="`split-screen-map-${s}`"
-          :mapViewLayer="layers.find(({ id }) => layerIds[s] === id)"
-          :queryRect="queryRect"
           @on-query="onQuery"
+          :queryVisible.sync="queryVisible"
+          :query-rect="queryRect"
+          :map-view-id="`split-screen-map-${s}`"
+          :map-view-layer="layers.find(({ id }) => layerIds[s] === id)"
+          :resize="resize"
         />
       </a-col>
     </a-row>
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { AppMixin, Layer } from '@mapgis/web-app-framework'
-import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
+import mapViewStateInstance from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -33,29 +34,67 @@ import MapView from '../MapView'
     MapView
   }
 })
-export default class SplitScreenMap extends Mixins<Record<string, any>>(
-  AppMixin
-) {
-  @Prop({ default: 12 }) mapSpan!: number
+export default class SplitScreenMap extends Vue {
+  @Prop() readonly resize!: string
 
-  @Prop({ default: () => [] }) screenNums!: number[]
+  @Prop() readonly isFullScreen!: boolean
 
-  @Prop({ default: () => [] }) layerIds!: string[]
+  @Prop({ default: 12 }) readonly mapSpan!: number
 
-  @Prop({ default: () => [] }) layers!: Layer[]
+  @Prop({ default: () => [] }) readonly screenNums!: number[]
+
+  @Prop({ default: () => [] }) readonly layerIds!: string[]
+
+  @Prop({ default: () => [] }) readonly layers!: Layer[]
+
+  /**
+   * 监听: 全屏
+   */
+  @Watch('isFullScreen')
+  watchIsFullScreen(nV) {
+    if (nV) {
+      this.onFullScreen()
+    }
+  }
+
+  /**
+   * 监听: 分屏数量变化
+   */
+  @Watch('screenNums', { immediate: true })
+  watchScreenNums(nV) {
+    if (nV.length) {
+      mapViewStateInstance.initView = this.getInitView()
+    }
+  }
 
   queryVisible = false
 
   queryRect: Rect = {}
 
+  // 每个屏的高度
   get mapSpanStyle() {
     const height = this.screenNums.length > 2 ? '50%' : '100%'
     return { height }
   }
 
   /**
+   * 格式化初始视角范围数据
+   * 默认取第一个图层的全图范围
+   */
+  getInitView() {
+    const layer = this.layers[0]
+    // eslint-disable-next-line prefer-const
+    let initView: Rect = layer.fullExtent
+    if (layer instanceof Layer3D) {
+      // todo 三维图层fullExtent转范围
+      // initView = Objects.SceneController.layerLocalExtentToGlobelExtent(layer)
+    }
+    return initView
+  }
+
+  /**
    * 某个地图的查询抛出的事件
-   * @param result<object>
+   * @param result 查询结果
    */
   onQuery(result: Rect) {
     this.queryVisible = true
@@ -63,14 +102,40 @@ export default class SplitScreenMap extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 监听: 分屏数量变化
+   * 全屏
    */
-  @Watch('screenNums')
-  watchScreenNums(nV) {
-    if (nV.length) {
-      // 保存初始复位范围, 默认取第一个图层的全图范围, 只取一次
-      mapViewStateInstance.initDisplayRect = this.layers[nV[0]].fullExtent
+  onFullScreen() {
+    const element = this.$el
+    const exploreType = [
+      'requestFullscreen',
+      'mozRequestFullScreen',
+      'webkitRequestFullscreen',
+      'msRequestFullscreen'
+    ]
+    const classList = element.classList
+    const hasScrollCls = classList.contains('beauty-scroll')
+    if (exploreType.every(v => !(v in element))) {
+      this.$message.warn('对不起，您的浏览器不支持全屏模式')
+      if (hasScrollCls) {
+        classList.remove('beauty-scroll')
+      }
+    } else {
+      if (!hasScrollCls) {
+        classList.add('beauty-scroll')
+      }
+      // eslint-disable-next-line prefer-const
+      for (let v of exploreType) {
+        if (v in element) {
+          element[v]()
+          break
+        }
+      }
     }
+  }
+
+  beforeDestroyed() {
+    this.queryVisible = false
+    this.queryRect = {}
   }
 }
 </script>

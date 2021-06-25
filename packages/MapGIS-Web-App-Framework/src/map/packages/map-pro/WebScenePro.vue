@@ -1,5 +1,6 @@
 <template>
   <mapgis-web-scene
+    ref="mapgisWebScene"
     :libPath="libPath"
     :plugin-path="pluginPath"
     @load="handleLoad"
@@ -8,7 +9,8 @@
     :animation="false"
     :fullscreen-button="false"
     :vueKey="vueKey"
-    style="height: 100%; width: 100%"
+    :height="height"
+    style="width: 100%; height: 100%;"
   >
     <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
@@ -113,6 +115,11 @@ export default {
     pluginPath: {
       type: String
     },
+    // 三维地图的高度设定
+    height: {
+      type: Number
+    },
+    // 初始化多个scene的时候vueKey必传
     vueKey: {
       type: String,
       default: 'default'
@@ -396,7 +403,17 @@ export default {
       const { webGlobe } = window
       this.Cesium = Cesium
 
-      this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
+      // 将mapgis-web-scene的事件抛出
+      const listeners = this.$listeners
+      const webMapgisListeners = this.$refs.mapgisWebScene.$listeners
+      Object.entries(webMapgisListeners).forEach(
+        ([k, v]) => k && this.$emit(k, payload)
+      )
+      if (listeners && 'map-load' in listeners) {
+        this.$emit('map-load', payload)
+      } else {
+        this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
+      }
     },
     isIgsDocLayer(type) {
       return type === LayerType.IGSMapImage

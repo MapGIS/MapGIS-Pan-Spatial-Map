@@ -1,64 +1,70 @@
 <template>
   <div class="map-view-wrap">
     <!-- 标题/工具栏 -->
-    <map-view-tools :title="mapViewLayer.title" @on-icon-click="onIconClick" />
-    <!-- 地图 -->
-    <mp-web-map-pro
-      :document="document"
-      :mapStyle="mapStyle"
-      @map-load="onMapLoad"
-      v-if="document"
+    <tools :title="mapViewLayer.title" @on-icon-click="onIconClick" />
+    <!-- 二维地图 -->
+    <mapbox-view
+      v-if="is2dLayer"
+      ref="maboxView"
+      @on-load="onMapboxLoad"
+      @on-created="onDrawCreated"
+      :document="mapViewDocument"
     />
-    <template v-if="isMapLoaded">
-      <!-- 区域绘制 -->
-      <mapgis-draw
-        ref="mapboxBaseDrawer"
-        :controls="controls"
-        @added="onAdded"
-        @drawCreate="onGraphicCreated"
-      />
-      <!-- 地图标注 -->
-      <mp-markers-highlight-popup
-        :features="queryFeatures"
-        :highlightIds="querySelection"
-        :normalize="({ key }) => ({ uid: key })"
-      />
-    </template>
-    <!-- 联合查询结果树 -->
+    <!-- 三维地图 -->
+    <cesium-view
+      v-else
+      ref="cesiumView"
+      @on-load="onCesiumLoad"
+      @on-create="onDrawCreated"
+      :vue-key="mapViewId"
+      :height="mapViewHeight"
+      :document="mapViewDocument"
+    />
+    <!-- 标注 -->
+    <mp-markers-highlight-popup
+      v-if="isMapLoaded && queryWindowVisible"
+      :is-2d="is2dLayer"
+      :vue-key="mapViewId"
+      :features="queryFeatures"
+      :highlight-ids="querySelection"
+      :normalize="({ key }) => ({ uid: key })"
+    />
+    <!-- 结果树 -->
     <mp-window
       title="查询结果"
       :width="200"
       :height="200"
-      :visible.sync="windowVisible"
-      :verticalOffset="30"
-      :fullScreenAction="false"
+      :visible.sync="queryWindowVisible"
+      :vertical-offset="30"
+      :full-screen-action="false"
     >
       <mp-query-result-tree
-        :layer="mapViewLayer"
-        :queryRect="queryRect"
+        v-if="queryWindowVisible"
         @on-load-done="onQueryLoadDone"
         @on-select="onQuerySelect"
-        v-if="windowVisible"
+        :query-rect="queryRect"
+        :layer="mapViewLayer"
       />
     </mp-window>
   </div>
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { MpMapboxView, Document, Layer } from '@mapgis/web-app-framework'
-import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
-import defaultStyle from '../../../../assets/style/default-style.json'
+import { Document, Layer } from '@mapgis/web-app-framework'
 import {
   MpQueryResultTree,
   MpMarkersHighlightPopup
 } from '../../../../components'
-import MapViewTools, { OperationType } from '../MapViewTools'
 import MapViewMixin, { Rect } from '../../mixins/map-view'
+import MapboxView from './components/MapboxView'
+import CesiumView from './components/CesiumView'
+import Tools, { OperationType, OperationFn } from './components/Tools'
 
 @Component({
   components: {
-    MapViewTools,
-    MpMapboxView,
+    Tools,
+    MapboxView,
+    CesiumView,
     MpQueryResultTree,
     MpMarkersHighlightPopup
   },
@@ -66,35 +72,37 @@ import MapViewMixin, { Rect } from '../../mixins/map-view'
     const self = this
     return {
       get mapbox() {
-        return self.mapbox
+        return self.ssMapbox
       },
       get map() {
-        return self.map
+        return self.ssMap
       }
     }
   }
 })
 export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
+  @Prop() readonly resize!: string
+
   // 图层
-  @Prop({ default: () => ({}) }) mapViewLayer!: Layer
+  @Prop({ default: () => ({}) }) readonly mapViewLayer!: Layer
 
   // 双向绑定弹框开关
-  @Prop({ default: false }) queryVisible!: boolean
+  @Prop({ default: false }) readonly queryVisible!: boolean
 
   // 查询范围
-  @Prop({ default: () => ({}) }) queryRect!: boolean
+  @Prop({ default: () => ({}) }) readonly queryRect!: boolean
 
-  document: Document | undefined = null
+  // document
+  mapViewDocument: Document | null = null
 
-  map: any = {}
+  // 地图高度
+  mapViewHeight = 0
 
-  mapbox: any = {}
+  // 分屏二维地图
+  ssMap: any = this.map
 
-  // 图层样式
-  mapStyle: any = defaultStyle
-
-  // basedraw对象
-  mapboxBaseDrawer: any = null
+  // 分屏二维mapbox
+  ssMapbox: any = this.mapbox
 
   // 地图是否加载完成
   isMapLoaded = false
@@ -103,7 +111,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   operationType: OperationType = 'UNKNOW'
 
   // 结果树弹框开关
-  windowVisible = false
+  queryWindowVisible = false
 
   // 结果树中展开的节点的所有子节点
   queryFeatures: Record<string, any>[] = []
@@ -111,90 +119,49 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   // 结果树选中的节点
   querySelection: string[] = []
 
-  // 矩形区域绘制配置
-  controls = {
-    point: false,
-    line_string: false,
-    polygon: false,
-    trash: false,
-    combine_features: false,
-    uncombine_features: false
-  }
-
   /**
    * 初始化图层
    */
-  onInitDocument() {
-    if (this.document === null) this.document = new Document()
-
-    const defaultMap = this.document.defaultMap
+  onInit() {
+    if (!this.mapViewDocument) {
+      this.mapViewDocument = new Document()
+    }
+    const { defaultMap } = this.mapViewDocument
     defaultMap.removeAll()
     defaultMap.add(this.mapViewLayer)
-
-    this.clearClick()
   }
 
   /**
-   * 地图初始化
-   * @param payload<object>
+   * 二维地图初始化
+   * @param payload
    */
-  onMapLoad({ map, mapbox }) {
-    this.map = map
-    this.mapbox = mapbox
-    this.map.on('mousemove', () => (this.activeMapViewId = this.mapViewId))
-    this.map.on('move', () => {
-      if (this.mapViewId && this.activeMapViewId === this.mapViewId) {
-        const { _sw, _ne } = this.map.getBounds()
-        this.activeMapViewDisplayRect = {
-          xmin: _sw.lng,
-          ymin: _sw.lat,
-          xmax: _ne.lng,
-          ymax: _ne.lat
-        }
-      }
-    })
+  onMapboxLoad({ map, mapbox }) {
+    this.ssMap = map
+    this.ssMapbox = mapbox
     this.isMapLoaded = true
-    this.resortClick()
+    this.registerMapboxEvent()
+    this.resort()
   }
 
   /**
-   * 添加绘制
+   * 三维地图初始化
    */
-  onAdded(e) {
-    if (!this.isMapLoaded) return
-    this.mapboxBaseDrawer = e.drawer
+  onCesiumLoad() {
+    this.isMapLoaded = true
+    this.setWebGlobe()
+    this.resort()
   }
 
   /**
-   * 创建绘制
+   * 创建二三维绘制
+   * @param Rect 绘制范围
    */
-  onGraphicCreated(e) {
-    if (!this.isMapLoaded) return
-    const { id, geometry } = e.features[0]
-    if (this.mapboxBaseDrawer) {
-      this.mapboxBaseDrawer.delete(id)
-    }
-    let xmin: number
-    let xmax: number
-    let ymin: number
-    let ymax: number
-    geometry.coordinates[0].forEach(([lng, lat]) => {
-      if (!xmin || lng < xmin) {
-        xmin = lng
-      }
-      if (!xmax || lng > xmax) {
-        xmax = lng
-      }
-      if (!ymin || lat < ymin) {
-        ymin = lat
-      }
-      if (!ymax || lat > ymax) {
-        ymax = lat
-      }
-    })
-    const rect: Rect = new Rect(xmin, ymin, xmax, ymax)
+  onDrawCreated({ xmin, ymin, xmax, ymax }: Rect) {
+    const rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'QUERY':
+        this.onQueryResultClear()
+        this.onToggleQueryWindow(true)
         this.query(rect)
         break
       case 'ZOOMIN':
@@ -209,15 +176,77 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   /**
-   * 操作按钮点击
-   * @param operationType<string> 按钮类型
-   * @param fnName<string> 按钮事件名
+   * 启用绘制
    */
-  onIconClick(operationType, fnName) {
+  enableDrawer() {
+    const ref = this.is2dLayer ? 'maboxView' : 'cesiumView'
+    this.$refs[ref].enableDrawer()
+  }
+
+  /**
+   * 查询点击
+   */
+  onQuery() {
+    this.enableDrawer()
+  }
+
+  /**
+   * 放大点击
+   */
+  onZoomIn() {
+    this.pan(false)
+    this.enableDrawer()
+  }
+
+  /**
+   * 缩小点击
+   */
+  onZoomOut() {
+    this.onZoomIn()
+  }
+
+  /**
+   * 复位点击
+   */
+  onResort() {
+    this.resort()
+  }
+
+  /**
+   * 拖拽点击, 通过滚轮控制放大缩小
+   */
+  onPan() {
+    this.pan()
+  }
+
+  /**
+   * 清除点击, 清除图层上的标注
+   */
+  onClear() {
+    this.onIconClick('UNKNOW')
+    this.onQueryResultClear()
+    this.onToggleQueryWindow(false)
+    this.$emit('update:queryVisible', false)
+    // this.onToggleQueryWindow(false)
+  }
+
+  /**
+   * 操作按钮点击
+   * @param operationType 按钮类型
+   * @param fnName 按钮事件名
+   */
+  onIconClick(operationType: OperationType, fnName: OperationFn) {
     this.operationType = operationType
-    if (this.isMapLoaded && this[fnName]) {
+    if (fnName && this[fnName] && this.isMapLoaded) {
       this[fnName]()
     }
+  }
+
+  /**
+   * 结果树弹框开关设置
+   */
+  onToggleQueryWindow(visible: boolean) {
+    this.queryWindowVisible = visible
   }
 
   /**
@@ -225,8 +254,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * @param loadKeys
    * @param loadNode
    */
-  onQueryLoadDone(loadKeys, loadNode) {
-    this.queryFeatures = loadNode.children || []
+  onQueryLoadDone(loadKeys, { children }) {
+    this.queryFeatures = children || []
   }
 
   /**
@@ -238,120 +267,64 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   }
 
   /**
-   * 启用绘制
+   * 清除查询结果
    */
-  enableDrawer() {
-    const drawerEl: any = this.$refs.mapboxBaseDrawer
-    if (drawerEl) {
-      drawerEl.enableDrawer()
-    }
-
-    if (this.mapboxBaseDrawer) {
-      this.mapboxBaseDrawer.changeMode('draw_rectangle')
-    }
-  }
-
-  /**
-   * 启用拖拽,该函数在MapboxBaseDrawer开启时不起作用。
-   * @param isEnable<boolean>
-   */
-  enableDragPanMap(isEnable: boolean) {
-    const dragPan = this.map.dragPan
-    if (isEnable) {
-      dragPan.enable()
-    } else {
-      dragPan.disable()
-    }
-  }
-
-  /**
-   * 查询点击
-   */
-  queryClick() {
-    this.enableDrawer()
-  }
-
-  /**
-   * 放大点击
-   */
-  zoomInClick() {
-    this.enableDragPanMap(false)
-    this.enableDrawer()
-  }
-
-  /**
-   * 缩小点击
-   */
-  zoomOutClick() {
-    this.zoomInClick()
-  }
-
-  /**
-   * 复位点击
-   */
-  resortClick() {
-    this.jumpToRect(this.initDisplayRect)
-  }
-
-  /**
-   * 拖拽点击, 通过滚轮控制放大缩小
-   */
-  panClick() {
-    this.enableDragPanMap(true)
-  }
-
-  /**
-   * 清除点击, 清除图层上的标注
-   */
-  clearClick(windowVisible = false) {
-    this.windowVisible = windowVisible
+  onQueryResultClear() {
     this.queryFeatures = []
     this.querySelection = []
+    this.clearWebGlobeEntities()
+  }
+
+  /**
+   * resize
+   */
+  onResize() {
+    this.$nextTick(() => {
+      if (!this.is2dLayer) {
+        this.mapViewHeight = this.$el.clientHeight - 32
+      } else {
+        this.ssMap.resize()
+      }
+    })
+  }
+
+  /**
+   * 监听:  窗口变化
+   */
+  @Watch('resize', { immediate: true })
+  watchResizeOrigin() {
+    this.onResize()
   }
 
   /**
    * 监听: 结果树开关
    */
-  @Watch('queryVisible')
+  @Watch('queryVisible', { immediate: true })
   watchQueryVisible(nV) {
     if (nV) {
-      this.windowVisible = nV
-    }
-  }
-
-  /**
-   * 监听: 结果树弹框关闭按钮点击, 重置标注和弹框
-   */
-  @Watch('windowVisible')
-  watchWindowVisible(nV) {
-    if (!nV) {
-      this.clearClick()
-      this.$emit('update:queryVisible', false)
+      this.onToggleQueryWindow(nV)
     }
   }
 
   /**
    * 监听: 图层变化
    */
-  @Watch('mapViewLayer.id')
-  watchMapViewLayer(nV: string, oV: string) {
-    if (nV && nV !== oV) {
-      this.onInitDocument()
+  @Watch('mapViewLayer.id', { immediate: true })
+  watchMapViewLayer(nV: string) {
+    if (nV) {
+      this.onInit()
     }
   }
 
-  /**
-   * 监听: 更新地图视图范围
-   */
-  @Watch('activeMapViewDisplayRect', { deep: true })
-  watchActiveMapViewDisplayRect(nV) {
-    if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
-      this.jumpToRect(nV)
-    }
+  mounted() {
+    this.onInit()
+    this.onResize()
+    window.onresize = this.onResize
   }
 
-  created() {
-    this.onInitDocument()
+  beforeDestroyed() {
+    this.isMapLoaded = false
+    this.onClear()
   }
 }
 </script>

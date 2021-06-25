@@ -1,6 +1,7 @@
 <template>
   <div>
     <mp-3d-marker-set-pro
+      :vue-key="vueKey"
       :markers="markers"
       @mouseenter="mouseEnterEvent"
       @mouseleave="mouseLeaveEvent"
@@ -36,6 +37,8 @@ export default class Mp3dMarkerPlotting extends Vue {
   @Inject('CesiumZondy') CesiumZondy: any
 
   @Inject('webGlobe') webGlobe: any
+
+  @Prop() readonly vueKey!: string
 
   @Prop({
     type: Boolean,
@@ -84,24 +87,15 @@ export default class Mp3dMarkerPlotting extends Vue {
   private entityNames: string[] = []
 
   @Watch('fitBound')
-  changeMapBound() {
-    if (this.fitBound) {
-      const { xmin, ymin, xmax, ymax } = this.fitBound
-      const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-        xmin,
-        ymin,
-        xmax,
-        ymax
-      )
-      this.webGlobe.viewer.camera.flyTo({
-        destination: Rectangle
-      })
+  changeMapBound(nV) {
+    if (nV) {
+      this.zoomTo(nV)
     }
   }
 
   @Watch('selectionBound')
-  changeSelectionBound() {
-    this.zoomOrPanTo(this.selectionBound)
+  changeSelectionBound(nV) {
+    this.zoomOrPanTo(nV)
   }
 
   currentLayer = null
@@ -123,91 +117,62 @@ export default class Mp3dMarkerPlotting extends Vue {
   }
 
   @Watch('center')
-  changeCenter() {
-    this.webGlobe.viewer.camera.flyTo({
-      destination: this.Cesium.Cartesian3.fromDegrees(
-        this.center[0],
-        this.center[1],
-        this.webGlobe.viewer.camera.positionCartographic.height
-      )
-    })
+  changeCenter(nV) {
+    this.zoomToCartesian3(nV[0], nV[1])
   }
 
   @Emit('map-bound-change')
   emitMapBoundChange(bound: Record<string, any>) {}
 
   mounted() {
-    this.sceneOverlays = SceneOverlays.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
-    )
-    this.sceneController = SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
-    )
-
+    const _webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey) || this.webGlobe
+    const cesiumZondyWebGlobe = [this.Cesium, this.CesiumZondy, _webGlobe]
+    this.sceneControllerWebGlobe = _webGlobe
+    this.sceneOverlays = SceneOverlays.getInstance(...cesiumZondyWebGlobe)
+    this.sceneController = SceneController.getInstance(...cesiumZondyWebGlobe)
     this.analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
-      viewer: this.webGlobe.viewer
+      viewer: _webGlobe.viewer
     })
-    this.webGlobe.viewer.camera.changed.addEventListener(
-      this.changeFilterWithMap
-    )
+    this.sceneController.addCameraChangedEvent(this.changeFilterWithMap)
   }
 
   destroyed() {
     this.analysisManager = null
-    this.webGlobe.viewer.camera.changed.removeEventListener(
-      this.changeFilterWithMap
+    if (this.sceneController) {
+      this.sceneController.removeCameraChangedEvent(this.changeFilterWithMap)
+    }
+  }
+
+  private zoomToCartesian3(x, y) {
+    const destination = this.sceneController.getCartesian3FromDegrees(
+      x,
+      y,
+      this.sceneController.getPsitionCartographicHeight
     )
+    this.sceneController.cameraFlyTo({ destination })
   }
 
   private zoomTo(bound) {
-    const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-      bound.xmin,
-      bound.ymin,
-      bound.xmax,
-      bound.ymax
-    )
-    this.webGlobe.viewer.camera.flyTo({
-      destination: Rectangle
-    })
+    const destination = new this.sceneController.getRectangleFromDegrees(bound)
+    this.sceneController.cameraFlyTo({ destination })
   }
 
-  private zoomOrPanTo(bound) {
-    const mapBound = this.getViewExtend()
+  private zoomOrPanTo({ xmin, ymin, xmax, ymax }) {
+    const {
+      xmin: b_xmin,
+      ymin: b_ymin,
+      xmax: b_xmax,
+      ymax: b_ymax
+    } = this.getViewExtend()
     // 先查看是否在地图范围内
-    if (
-      bound.xmin > mapBound.xmin &&
-      bound.ymin > mapBound.ymin &&
-      bound.xmax < mapBound.xmax &&
-      bound.ymax < mapBound.ymax
-    ) {
+    if (xmin > b_xmin && ymin > b_ymin && xmax < b_xmax && ymax < b_ymax) {
       return
     }
     // 然后查看两个矩形的范围大小，如果选择集的范围较当前大，需要做缩放
-    if (
-      bound.xmax - bound.xmin > mapBound.xmax - mapBound.xmin ||
-      bound.ymax - bound.ymin > mapBound.ymax - mapBound.ymin
-    ) {
-      const Rectangle = new this.Cesium.Rectangle.fromDegrees(
-        bound.xmin,
-        bound.ymin,
-        bound.xmax,
-        bound.ymax
-      )
-      this.webGlobe.viewer.camera.flyTo({
-        destination: Rectangle
-      })
+    if (xmax - xmin > b_xmax - b_xmin || ymax - ymin > b_ymax - b_ymin) {
+      this.zoomTo({ xmin, ymin, xmax, ymax })
     } else {
-      this.webGlobe.viewer.camera.flyTo({
-        destination: this.Cesium.Cartesian3.fromDegrees(
-          (bound.xmin + bound.xmax) / 2,
-          (bound.ymin + bound.ymax) / 2,
-          this.webGlobe.viewer.camera.positionCartographic.height
-        )
-      })
+      this.zoomToCartesian3((xmin + xmax) / 2, (ymin + ymax) / 2)
     }
   }
 
@@ -318,10 +283,11 @@ export default class Mp3dMarkerPlotting extends Vue {
 
   private getViewExtend() {
     const params = {}
-    const extend = this.webGlobe.viewer.camera.computeViewRectangle()
+    const webGlobe = this.sceneControllerWebGlobe
+    const extend = webGlobe.viewer.camera.computeViewRectangle()
     if (typeof extend === 'undefined') {
       // 2D下会可能拾取不到坐标，extend返回undefined,所以做以下转换
-      const canvas = this.webGlobe.viewer.scene.canvas
+      const canvas = webGlobe.viewer.scene.canvas
       // canvas左上角坐标转2d坐标
       const upperLeft = new this.Cesium.Cartesian2(0, 0)
       // canvas右下角坐标转2d坐标
@@ -330,25 +296,25 @@ export default class Mp3dMarkerPlotting extends Vue {
         canvas.clientHeight
       )
 
-      const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+      const ellipsoid = webGlobe.viewer.scene.globe.ellipsoid
       // 2D转3D世界坐标
-      const upperLeft3 = this.webGlobe.viewer.camera.pickEllipsoid(
+      const upperLeft3 = webGlobe.viewer.camera.pickEllipsoid(
         upperLeft,
         ellipsoid
       )
 
       // 2D转3D世界坐标
-      const lowerRight3 = this.webGlobe.viewer.camera.pickEllipsoid(
+      const lowerRight3 = webGlobe.viewer.camera.pickEllipsoid(
         lowerRight,
         ellipsoid
       )
 
       // 3D世界坐标转弧度
-      const upperLeftCartographic = this.webGlobe.viewer.scene.globe.ellipsoid.cartesianToCartographic(
+      const upperLeftCartographic = ellipsoid.cartesianToCartographic(
         upperLeft3
       )
       // 3D世界坐标转弧度
-      const lowerRightCartographic = this.webGlobe.viewer.scene.globe.ellipsoid.cartesianToCartographic(
+      const lowerRightCartographic = ellipsoid.cartesianToCartographic(
         lowerRight3
       )
 
