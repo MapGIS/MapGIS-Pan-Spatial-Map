@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
+import { UUID } from '@mapgis/web-app-framework'
 import baseLayerManagerInstance, { BaseLayersManager } from '../map/base-layers'
 import { getConfig } from '../api/config'
 import { baseConfigInstance } from '../config'
@@ -80,7 +80,7 @@ export default class BaseLayersMixin extends Vue {
             } = item
             let layer: Record<string, unknown> = {}
             let templateUrl = serverUrl
-            const id = uuid()
+            const id = UUID.uuid()
             switch (serverType) {
               case 'tdt':
               case 'tianDi':

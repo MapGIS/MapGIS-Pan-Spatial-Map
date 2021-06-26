@@ -30,8 +30,7 @@
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
+import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
 import { eventBus, api } from '@mapgis/pan-spatial-map-store'
 import { TreeConfig } from '@mapgis/pan-spatial-map-plugin-visualization/src/widgets/bookmark/tree-config'
 import base from 'app/packages/pan-spatial-map-store/src/config/base'
@@ -138,7 +137,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
     } else {
       this.treeData.push({
         name: type,
-        guid: uuid(),
+        guid: UUID.uuid(),
         children: [copyParams]
       })
       this.showMessage()

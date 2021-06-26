@@ -1,4 +1,3 @@
-import { Layer } from '@mapgis/webclient-store'
 import { Component, Vue, Mixins, Watch } from 'vue-property-decorator'
 import {
   WidgetMixin,

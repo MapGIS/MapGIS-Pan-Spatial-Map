@@ -17,8 +17,7 @@ import {
   Service,
   eventBus
 } from '@mapgis/pan-spatial-map-store'
-import { AppMixin, LayerType } from '@mapgis/web-app-framework'
-import { uuid } from '@mapgis/webclient-store/src/utils/uuid'
+import { AppMixin, LayerType, UUID } from '@mapgis/web-app-framework'
 import ServiceCategorySelect from './ServiceCategorySelect.vue'
 import ServiceTypeSelect from './ServiceTypeSelect.vue'
 
@@ -85,7 +84,7 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
     switch (type) {
       case 'doc':
         service = {
-          id: uuid(),
+          id: UUID.uuid(),
           name: serverName as string,
           category,
           type,
@@ -98,7 +97,7 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         break
       case 'tile':
         service = {
-          id: uuid(),
+          id: UUID.uuid(),
           name: serverName as string,
           category,
           type,
@@ -111,7 +110,7 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
         break
       case 'layer':
         service = {
-          id: uuid(),
+          id: UUID.uuid(),
           gdbp: gdbp as string,
           url: gdbp as string,
           category,
@@ -125,7 +124,7 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
       case 'WMS':
       case 'WMTS':
         service = {
-          id: uuid(),
+          id: UUID.uuid(),
           name: name as string,
           category,
           type,
@@ -139,7 +138,7 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
           Math.random() * 7
         )}.tianditu.gov.cn/${tempayerType}_c/wmts`
         service = {
-          id: uuid(),
+          id: UUID.uuid(),
           name: name as string,
           category,
           type,
@@ -156,7 +155,7 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
             .split('services/')[1]
         }
         service = {
-          id: uuid(),
+          id: UUID.uuid(),
           name: name as string,
           category,
           type,
@@ -172,7 +171,7 @@ export default class AddServiceUrl extends Mixins(AddServicesMixin, AppMixin) {
       case 'googleExt':
         const tempLayerType = this.serviceInfo.layerType
         service = {
-          id: uuid(),
+          id: UUID.uuid(),
           name: name as string,
           category,
           type,
