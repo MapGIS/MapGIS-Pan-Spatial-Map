@@ -1,10 +1,10 @@
 <template>
   <div class="split-screen-map">
     <a-empty
-      description="请在目录树中勾选需要分屏的专题"
+      description="请在数据目录中选择需要分屏的数据"
       v-if="!screenNums.length"
     />
-    <a-row :gutter="[5, 8]" v-else>
+    <a-row :gutter="[5, 5]" v-else>
       <a-col
         v-for="s in screenNums"
         :key="s"
@@ -37,8 +37,6 @@ import MapView from '../MapView'
 export default class SplitScreenMap extends Vue {
   @Prop() readonly resize!: string
 
-  @Prop() readonly isFullScreen!: boolean
-
   @Prop({ default: 12 }) readonly mapSpan!: number
 
   @Prop({ default: () => [] }) readonly screenNums!: number[]
@@ -46,16 +44,6 @@ export default class SplitScreenMap extends Vue {
   @Prop({ default: () => [] }) readonly layerIds!: string[]
 
   @Prop({ default: () => [] }) readonly layers!: Layer[]
-
-  /**
-   * 监听: 全屏
-   */
-  @Watch('isFullScreen')
-  watchIsFullScreen(nV) {
-    if (nV) {
-      this.onFullScreen()
-    }
-  }
 
   /**
    * 监听: 分屏数量变化
@@ -99,38 +87,6 @@ export default class SplitScreenMap extends Vue {
   onQuery(result: Rect) {
     this.queryVisible = true
     this.queryRect = result
-  }
-
-  /**
-   * 全屏
-   */
-  onFullScreen() {
-    const element = this.$el
-    const exploreType = [
-      'requestFullscreen',
-      'mozRequestFullScreen',
-      'webkitRequestFullscreen',
-      'msRequestFullscreen'
-    ]
-    const classList = element.classList
-    const hasScrollCls = classList.contains('beauty-scroll')
-    if (exploreType.every(v => !(v in element))) {
-      this.$message.warn('对不起，您的浏览器不支持全屏模式')
-      if (hasScrollCls) {
-        classList.remove('beauty-scroll')
-      }
-    } else {
-      if (!hasScrollCls) {
-        classList.add('beauty-scroll')
-      }
-      // eslint-disable-next-line prefer-const
-      for (let v of exploreType) {
-        if (v in element) {
-          element[v]()
-          break
-        }
-      }
-    }
   }
 
   beforeDestroyed() {

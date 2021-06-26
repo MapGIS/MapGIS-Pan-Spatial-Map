@@ -1,50 +1,62 @@
 <template>
-  <div class="split-screen-setting" :class="{ collapsed: !visible }">
-    <div class="setting-handle" @click="onToggle">
-      <a-icon :type="handleIcon" />
-    </div>
-    <div class="setting-content">
-      <row-flex label="屏数">
-        <a-select :value="screenCount" @change="onScreenCountChange">
-          <a-select-option v-for="(s, i) in layers" :key="i" :value="i + 1">{{
-            i + 1
-          }}</a-select-option>
-        </a-select>
-      </row-flex>
-      <row-flex label="图示" align="top" v-show="screenNums.length">
-        <a-row class="grid">
-          <a-col v-for="s in screenNums" :key="s" :span="mapSpan" class="col">{{
-            s + 1
-          }}</a-col>
-        </a-row>
-      </row-flex>
-      <row-flex
+  <a-space class="split-screen-setting" direction="vertical" style="flex: 1;">
+    <a-row>
+      <mp-toolbar>
+        <mp-toolbar-title>设置</mp-toolbar-title>
+        <mp-toolbar-command-group>
+          <mp-toolbar-command
+            title="全屏"
+            :icon="fullScreen ? 'fullscreen-exit' : 'fullscreen'"
+            @click="onToggleScreen"
+          />
+        </mp-toolbar-command-group>
+      </mp-toolbar>
+    </a-row>
+    <a-row>
+      <a-col>屏数</a-col>
+    </a-row>
+    <a-row>
+      <a-select :value="screenCount" @change="onScreenCountChange">
+        <a-select-option v-for="(s, i) in layers" :key="i" :value="i + 1">
+          {{ i + 1 }}
+        </a-select-option>
+      </a-select>
+    </a-row>
+    <a-row v-show="screenNums.length">
+      <a-col>图示</a-col>
+    </a-row>
+    <a-row class="diagram-grid" v-show="screenNums.length">
+      <a-col
         v-for="s in screenNums"
-        :label="`第${screenLabel[s]}屏`"
         :key="s"
+        :span="mapSpan"
+        class="diagram-col"
+        >{{ s + 1 }}</a-col
       >
+    </a-row>
+    <template v-for="s in screenNums">
+      <a-row :key="s">
+        <a-col>{{ `第${screenLabel[s]}屏` }}</a-col>
+      </a-row>
+      <a-row :key="s">
         <a-select :value="layerIds[s]" @change="onLayerChange($event, s)">
           <a-select-option
             v-for="{ id, title } in layers"
             :key="id"
             :value="id"
             :title="title"
-            >{{ title }}</a-select-option
           >
+            {{ title }}
+          </a-select-option>
         </a-select>
-      </row-flex>
-      <div class="btns">
-        <a-button type="primary" @click="onFullScreen">全屏展示</a-button>
-      </div>
-    </div>
-  </div>
+      </a-row>
+    </template>
+  </a-space>
 </template>
+
 <script lang="ts">
 import { Vue, Component, Watch, Prop } from 'vue-property-decorator'
 import { Layer } from '@mapgis/web-app-framework'
-import RowFlex from '../RowFlex'
-
-type Opera = 'openFullScreen' | 'closeFullScreen' | 'null'
 
 enum ScreenLabel {
   '一' = 0,
@@ -54,11 +66,7 @@ enum ScreenLabel {
   '五',
   '六'
 }
-@Component({
-  components: {
-    RowFlex
-  }
-})
+@Component({})
 export default class SplitScreenSetting extends Vue {
   @Prop({ default: 12 }) readonly mapSpan!: number
 
@@ -68,6 +76,19 @@ export default class SplitScreenSetting extends Vue {
 
   @Prop({ default: () => [] }) readonly layers!: Layer[]
 
+  private visible = true
+
+  private screenLabel = ScreenLabel
+
+  private screenCount = null
+
+  private fullScreen = false
+
+  // 设置面板的收缩开关icon
+  get handleIcon() {
+    return this.visible ? 'right' : 'left'
+  }
+
   /**
    * 监听: 分屏数量变化
    */
@@ -76,23 +97,12 @@ export default class SplitScreenSetting extends Vue {
     this.screenCount = nV.length
   }
 
-  visible = true
-
-  screenLabel = ScreenLabel
-
-  screenCount = null
-
-  // 设置面板的收缩开关icon
-  get handleIcon() {
-    return this.visible ? 'right' : 'left'
+  created() {
+    this.addListener()
   }
 
-  /**
-   * 设置面板展开收缩
-   */
-  onToggle() {
-    this.visible = !this.visible
-    this.$emit('on-setting-panel-toggle')
+  beforeDestroy() {
+    this.removeListener()
   }
 
   /**
@@ -116,8 +126,35 @@ export default class SplitScreenSetting extends Vue {
   /**
    * 全屏
    */
-  onFullScreen() {
-    this.$emit('on-full-screen')
+  onToggleScreen() {
+    if (this.fullScreen) {
+      this.$emit('out-full-screen')
+    } else {
+      this.$emit('in-full-screen')
+    }
+  }
+
+  private addListener() {
+    document.addEventListener('fullscreenchange', this.fullScreenListener)
+    document.addEventListener('webkitfullscreenchange', this.fullScreenListener)
+    document.addEventListener('mozfullscreenchange', this.fullScreenListener)
+    document.addEventListener('msfullscreenchange', this.fullScreenListener)
+  }
+
+  private removeListener() {
+    document.removeEventListener('fullscreenchange', this.fullScreenListener)
+    document.removeEventListener(
+      'webkitfullscreenchange',
+      this.fullScreenListener
+    )
+    document.removeEventListener('mozfullscreenchange', this.fullScreenListener)
+    document.removeEventListener('msfullscreenchange', this.fullScreenListener)
+  }
+
+  private fullScreenListener(e) {
+    if (e.target.id === this.id) {
+      this.fullScreen = !this.fullScreen
+    }
   }
 }
 </script>

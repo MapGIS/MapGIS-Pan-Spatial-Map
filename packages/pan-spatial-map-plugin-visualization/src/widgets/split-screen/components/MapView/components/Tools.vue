@@ -1,5 +1,5 @@
 <template>
-  <row-flex
+  <mp-row-flex
     :label="title"
     :span="[12, 12]"
     :colon="false"
@@ -12,12 +12,11 @@
         <a-icon :type="item.icon" @click.stop="onIconClick(item)" />
       </a-tooltip>
     </slot>
-  </row-flex>
+  </mp-row-flex>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import _upperFirst from 'lodash/upperFirst'
-import RowFlex from '../../RowFlex'
 
 export type OperationType =
   | 'UNKNOW'
@@ -43,9 +42,7 @@ interface ITool {
 }
 
 @Component({
-  components: {
-    RowFlex
-  }
+  components: {}
 })
 export default class Tools extends Vue {
   @Prop() readonly title!: string

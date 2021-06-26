@@ -9,7 +9,7 @@ import yaml from 'yamljs'
 import * as api from './api'
 
 const app = express()
-const port = 8015
+const port = 8016
 const { connector, summarise } = require('swagger-routes-express')
 
 // Compression
