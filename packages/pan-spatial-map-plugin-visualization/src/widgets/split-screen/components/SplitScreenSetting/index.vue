@@ -2,7 +2,7 @@
   <a-space class="split-screen-setting" direction="vertical" style="flex: 1;">
     <a-row>
       <mp-toolbar>
-        <mp-toolbar-title>设置</mp-toolbar-title>
+        <mp-toolbar-title :has-padding="false">设置</mp-toolbar-title>
         <mp-toolbar-command-group>
           <mp-toolbar-command
             title="全屏"

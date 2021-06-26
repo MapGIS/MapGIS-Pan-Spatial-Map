@@ -7,19 +7,12 @@
       :map-style="mapStyle"
     />
     <!-- 二维地图绘制组件 -->
-    <mapgis-draw
-      v-if="isMapLoaded"
-      ref="mapgisDraw"
-      @added="onDrawAdded"
-      @drawCreate="onDrawCreated"
-      :controls="controls"
-    />
+    <mp-draw-pro v-if="isMapLoaded" ref="draw" @finished="onDrawFinished" />
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Document } from '@mapgis/web-app-framework'
-import defaultStyle from '../../../../../assets/style/default-style.json'
 
 @Component
 export default class MapboxView extends Vue {
@@ -27,30 +20,35 @@ export default class MapboxView extends Vue {
 
   isMapLoaded = false
 
-  mapStyle = defaultStyle
+  // 图层样式
+  mapStyle = {
+    version: 8,
+    sources: {},
+    layers: [],
+    glyphs:
+      'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf'
+  }
 
-  drawer = null
+  get drawComponent() {
+    return this.$refs.draw
+  }
 
-  controls = {
-    point: false,
-    line_string: false,
-    polygon: false,
-    trash: false,
-    combine_features: false,
-    uncombine_features: false
+  beforeDestroyed() {
+    this.isMapLoaded = false
   }
 
   /**
-   * 开启绘制
+   * 供父组件调用
    */
-  enableDrawer() {
-    const drawEl = this.$refs.mapgisDraw
-    if (drawEl) {
-      drawEl.enableDrawer()
-    }
-    if (this.drawer) {
-      this.drawer.changeMode('draw_rectangle')
-    }
+  openDraw(mode) {
+    this.drawComponent.openDraw(mode || 'draw-rectangle')
+  }
+
+  /**
+   * 供父组件调用
+   */
+  closeDraw() {
+    this.drawComponent.closeDraw()
   }
 
   /**
@@ -59,61 +57,17 @@ export default class MapboxView extends Vue {
    */
   onMapLoad(payload) {
     this.isMapLoaded = true
-    this.$emit('on-load', payload)
+    this.$emit('load', payload)
   }
 
-  /**
-   * 地图绘制添加
-   * @param e { drawer }
-   */
-  onDrawAdded({ drawer }) {
+  onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
-      this.drawer = drawer
-      this.$emit('on-add', drawer)
+      this.$emit('draw-finished', { mode, feature, shape, center })
     }
-  }
-
-  /**
-   * 地图绘制创建
-   * @param 要素信息
-   */
-  onDrawCreated({ features }) {
-    if (this.isMapLoaded) {
-      const {
-        id,
-        geometry: { coordinates }
-      } = features[0]
-      if (this.drawer) {
-        this.drawer.delete(id)
-      }
-      let xmin: number
-      let xmax: number
-      let ymin: number
-      let ymax: number
-      coordinates[0].forEach(([lng, lat]) => {
-        if (!xmin || lng < xmin) {
-          xmin = lng
-        }
-        if (!xmax || lng > xmax) {
-          xmax = lng
-        }
-        if (!ymin || lat < ymin) {
-          ymin = lat
-        }
-        if (!ymax || lat > ymax) {
-          ymax = lat
-        }
-      })
-      this.$emit('on-created', { xmin, ymin, xmax, ymax })
-    }
-  }
-
-  beforeDestroyed() {
-    this.isMapLoaded = false
-    this.drawer = null
   }
 }
 </script>
+
 <style lang="less" scoped>
 .mapbox-view {
   flex: 1;

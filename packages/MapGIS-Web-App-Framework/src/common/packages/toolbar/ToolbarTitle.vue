@@ -1,12 +1,18 @@
 <template>
-  <div class="mp-toolbar-title">
+  <div :class="{ 'mp-toolbar-title': true, 'has-padding': hasPadding }">
     <slot></slot>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'MpToolbarTitle'
+  name: 'MpToolbarTitle',
+  props: {
+    hasPadding: {
+      type: Boolean,
+      default: true
+    }
+  }
 }
 </script>
 
@@ -21,5 +27,8 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  &.has-padding {
+    padding: 0 12px;
+  }
 }
 </style>

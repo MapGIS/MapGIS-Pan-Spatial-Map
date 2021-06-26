@@ -1,5 +1,9 @@
 <template>
-  <mapgis-3d-draw @load="onAdded" @drawcreate="onDrawFinish" />
+  <mapgis-3d-draw
+    :vue-key="vueKey"
+    @load="onAdded"
+    @drawcreate="onDrawFinish"
+  />
 </template>
 
 <script lang="ts">
@@ -11,6 +15,11 @@ export default {
   name: 'Mp3dDrawPro',
   mixins: [DrawMixin],
   inject: ['webGlobe'],
+  props: {
+    vueKey: {
+      type: String
+    }
+  },
   data() {
     return {
       // 绘制组件
