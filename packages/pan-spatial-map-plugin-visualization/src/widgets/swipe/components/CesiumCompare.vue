@@ -68,3 +68,13 @@ export default class CesiumCompare extends Vue {
   justify-content: center;
 }
 </style>
+
+<style lang="less">
+.mp-map-container {
+  .cesium-map-wrapper .slider {
+    border: 1px solid @primary-color;
+    background-color: @border-color;
+    width: 3px;
+  }
+}
+</style>
