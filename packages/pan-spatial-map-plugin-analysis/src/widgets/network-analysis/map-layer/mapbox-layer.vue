@@ -221,9 +221,9 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
   beforeDestroy() {
     this.stopDraw()
     this.clearDataBarrierArr()
-    this.clearDataCoordinateArr
-    this.clearResultLayer
-    this.clearHighLayer
+    this.clearDataCoordinateArr()
+    this.clearResultLayer()
+    this.clearHighLayer()
   }
 }
 </script>

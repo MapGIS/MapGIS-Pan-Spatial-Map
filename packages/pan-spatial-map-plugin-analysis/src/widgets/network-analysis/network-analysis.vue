@@ -1,8 +1,8 @@
 <template>
   <div class="mp-widget-network-analysis">
     <a-spin :spinning="showLoading">
-      <a-form :label-col="{ style: 'width: atuo' }" :wrapper-col="{ flex: 1 }">
-        <a-form-item label="选择数据" style="display:flex">
+      <a-form :label-col="{ style: 'width: 70px' }" :wrapper-col="{ flex: 1 }">
+        <a-form-item label="图层" style="display:flex">
           <a-select v-model="layerSelectIndex" @change="setNetWorkLayer">
             <a-select-option
               v-for="(item, index) in layerArrOption"
@@ -13,7 +13,7 @@
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="选择图层" style="display:flex">
+        <a-form-item label="网络类" style="display:flex">
           <a-select v-model="networkLayerIndex" @change="resetLayer">
             <a-select-option
               v-for="(item, index) in networkLayerOption"
@@ -24,7 +24,7 @@
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="选择方式" style="display:flex">
+        <a-form-item label="分析方式" style="display:flex">
           <a-select v-model="wayIndex" @change="resetLayer">
             <a-select-option
               v-for="(item, index) in wayOptions"
@@ -37,7 +37,7 @@
         </a-form-item>
         <a-form-item
           v-if="showButton"
-          label="选择类型"
+          label="网标类型"
           style="display:flex;align-items: center;"
         >
           <div class="control-button-container">
@@ -116,9 +116,9 @@
         </a-form-item>
         <a-form-item style="text-align: left;">
           <a-space>
-            <a-button @click="showSetting" :disable="showLoading"
+            <!-- <a-button @click="showSetting" :disable="showLoading"
               >设置参数</a-button
-            >
+            > -->
             <a-button
               type="primary"
               @click="startAnalysis"

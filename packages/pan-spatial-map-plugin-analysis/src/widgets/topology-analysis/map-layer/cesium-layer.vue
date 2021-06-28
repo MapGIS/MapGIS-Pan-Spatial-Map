@@ -1,0 +1,179 @@
+<template>
+  <div>
+    <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" />
+  </div>
+</template>
+
+<script lang="ts">
+import {
+  Component,
+  Vue,
+  Mixins,
+  Emit,
+  Prop,
+  Watch
+} from 'vue-property-decorator'
+import { LayerType, WidgetMixin, Overlay } from '@mapgis/web-app-framework'
+
+@Component
+export default class CesiumLayer extends Mixins(WidgetMixin) {
+  @Prop() geoJSONAnalysis: Recod<string, unknown>
+
+  @Prop() geoJSONTarget: Recod<string, unknown>
+
+  // 点集资源ID
+  sourceTargetArr = []
+
+  // 点集资源ID
+  sourceAnalysisArr = []
+
+  get drawComponent() {
+    return this.$refs.draw3d
+  }
+
+  mounted() {
+    this.sceneOverlays = Overlay.SceneOverlays.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+    this.geoJSONChange('Analysis')
+    this.geoJSONChange('Target')
+  }
+
+  @Watch('geoJSONAnalysis', { deep: true })
+  geoJSONAnalysisChange() {
+    this.geoJSONChange('Analysis')
+  }
+
+  @Watch('geoJSONTarget', { deep: true })
+  geoJSONTargetChange() {
+    this.geoJSONChange('Target')
+  }
+
+  geoJSONChange(val) {
+    let geoJSON
+    let sourceArr
+    if (val === 'Target') {
+      this.clearDataTargetArr()
+      geoJSON = this.geoJSONTarget
+      sourceArr = this.sourceTargetArr
+    } else {
+      this.clearDataAnalysisArr()
+      geoJSON = this.geoJSONAnalysis
+      sourceArr = this.sourceAnalysisArr
+    }
+
+    if (!geoJSON) {
+      return
+    }
+
+    const { features } = geoJSON
+    const {
+      properties: { bound, center },
+      geometry: { type, coordinates }
+    } = features[0]
+    if (type === 'Point') {
+      const fillColor = this.Cesium.Color.fromCssColorString('#FFA500')
+      const outLineColor = this.Cesium.Color.WHITE
+      const entity = this.sceneOverlays.addPoint({
+        lon: coordinates[0],
+        lat: coordinates[1],
+        fillColor,
+        outLineColor
+      })
+      this.webGlobe.viewer.camera.flyTo({
+        destination: this.Cesium.Cartesian3.fromDegrees(
+          center[0],
+          center[1],
+          this.webGlobe.viewer.camera.positionCartographic.height
+        )
+      })
+      sourceArr.push(entity)
+    } else if (type === 'LineString') {
+      coordinates.forEach((item, index) => {
+        let lineArr = []
+        item.forEach(lines => {
+          lineArr = lineArr.concat(lines)
+        })
+        const fillColor = this.Cesium.Color.fromCssColorString('#FFA500')
+        const entity = this.sceneOverlays.addLine({
+          name: `sourceArr-${index}`,
+          pointsArray: lineArr,
+          width: 3,
+          color: fillColor
+        })
+        this.webGlobe.viewer.camera.flyTo({
+          destination: this.Cesium.Rectangle.fromDegrees(
+            bound[0][0],
+            bound[0][1],
+            bound[1][0],
+            bound[1][1]
+          )
+        })
+        sourceArr.push(entity)
+      })
+    } else if (type === 'Polygon') {
+      coordinates.forEach((item, index) => {
+        let lineArr = []
+        item.forEach(lines => {
+          lineArr = lineArr.concat(lines)
+        })
+        const fillColor = this.Cesium.Color.fromCssColorString('#FFA500')
+        const outlineColor = this.Cesium.Color.WHITE
+        const entity = this.sceneOverlays.addPolygon(
+          `sourceArr-${index}`,
+          lineArr,
+          fillColor,
+          outlineColor
+        )
+        this.webGlobe.viewer.camera.flyTo({
+          destination: this.Cesium.Rectangle.fromDegrees(
+            bound[0][0],
+            bound[0][1],
+            bound[1][0],
+            bound[1][1]
+          )
+        })
+        sourceArr.push(entity)
+      })
+    }
+  }
+
+  // 打开绘制，点击图标激活对应类型的绘制功能
+  private onOpenDraw() {
+    this.drawComponent && this.drawComponent.openDraw('draw-rectangle')
+  }
+
+  private stopDraw() {
+    this.drawComponent && this.drawComponent.closeDraw()
+  }
+
+  @Emit()
+  finishDraw(e) {}
+
+  onDrawFinished(e) {
+    this.finishDraw(e)
+  }
+
+  clearDataTargetArr() {
+    this.sourceTargetArr.forEach(entity => {
+      this.sceneOverlays.removeEntity(entity)
+    })
+  }
+
+  clearDataAnalysisArr() {
+    this.sourceAnalysisArr.forEach(entity => {
+      this.sceneOverlays.removeEntity(entity)
+    })
+  }
+
+  beforeDestroy() {
+    this.stopDraw()
+    this.clearDataTargetArr()
+    this.clearDataAnalysisArr()
+  }
+}
+</script>
+
+<style scoped></style>
