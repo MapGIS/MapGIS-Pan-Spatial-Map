@@ -24,8 +24,8 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
-import { Layer } from '@mapgis/web-app-framework'
+import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { MapMixin, Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
 import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
@@ -34,7 +34,7 @@ import MapView from '../MapView'
     MapView
   }
 })
-export default class SplitScreenMap extends Vue {
+export default class SplitScreenMap extends Mixins(MapMixin) {
   @Prop() readonly resize!: string
 
   @Prop({ default: 12 }) readonly mapSpan!: number
@@ -66,6 +66,28 @@ export default class SplitScreenMap extends Vue {
   }
 
   /**
+   * 获取初始范围
+   */
+  getInitView() {
+    const layer = this.layers[0]
+    const { fullExtent, scenes } = layer
+    if (layer instanceof Layer3D) {
+      const controller = Objects.SceneController.getInstance(
+        this.Cesium,
+        this.CesiumZondy,
+        this.webGlobe
+      )
+      const sceneController = controller.sceneController || controller
+      const subLayer = scenes[0].sublayers[0]
+      const bound = sceneController.layerLocalExtentToGlobelExtent(subLayer)
+      if (bound) {
+        return bound
+      }
+    }
+    return fullExtent
+  }
+
+  /**
    * 某个地图的查询抛出的事件
    * @param result 查询结果
    */
@@ -80,7 +102,7 @@ export default class SplitScreenMap extends Vue {
   @Watch('screenNums', { immediate: true })
   watchScreenNums(nV) {
     if (nV.length) {
-      this.initView = this.layers[0].fullExtent
+      this.initView = this.getInitView()
     }
   }
 

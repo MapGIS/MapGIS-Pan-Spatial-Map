@@ -112,9 +112,9 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   zoomOut(rect: Rect) {
     if (this.isValidRect(rect)) {
       if (this.is2dLayer) {
-        this.zoomToRect(rect, 'out')
+        this.zoomToRect(rect, 'zoomOut')
       } else {
-        this.zoomToRect3d(rect, 'out')
+        this.zoomToRect3d(rect, 'zoomOut')
       }
     } else {
       this.ssMap.zoomOut()

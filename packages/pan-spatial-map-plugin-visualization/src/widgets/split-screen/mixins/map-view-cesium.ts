@@ -19,35 +19,17 @@ export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
     this.sceneController = controller.sceneController || controller
   }
 
-  /**
-   * 设置三维地图初始范围
-   * 获取第一个地图的全图范围
-   */
-  setCesiumInitView() {
-    const firstVueKey = 'split-screen-map-0'
-    if (this.mapViewId === firstVueKey) {
-      const subLayer = this.mapViewLayer.scenes[0].sublayers[0]
-      const bound = this.sceneController.layerLocalExtentToGlobelExtent(
-        subLayer
-      )
-      if (bound) {
-        this.initView = bound
-      }
-      // console.log('setCesiumInitView1', bound)
-    }
-  }
-
-  /**
-   * 三维地图move
-   */
-  setCesiumMove({ west, east, north, south }) {
-    // this.setActiveView({
-    //   xmin: west,
-    //   xmax: east,
-    //   ymax: north,
-    //   ymin: south
-    // })
-  }
+  // /**
+  //  * todo三维地图move
+  //  */
+  // setCesiumMove({ west, east, north, south }) {
+  //   this.setActiveView({
+  //     xmin: west,
+  //     xmax: east,
+  //     ymax: north,
+  //     ymin: south
+  //   })
+  // }
 
   /**
    * 清除三维地图上的实体
@@ -59,11 +41,11 @@ export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
   }
 
   /**
-   * 三维放大至指定范围
+   * 三维放大/缩小至指定范围
    */
-  zoomToRect3d(bound: Rect, type = 'in') {
+  zoomToRect3d(bound: Rect, type: 'zoomIn' | 'zoomOut' = 'zoomIn') {
     let destination: any
-    if (type === 'in') {
+    if (type === 'zoomIn') {
       destination = this.sceneController.getRectangleFromDegrees(bound)
     } else {
       const { xmin, ymin, xmax, ymax } = bound

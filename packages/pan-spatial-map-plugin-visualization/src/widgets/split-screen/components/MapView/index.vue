@@ -15,7 +15,6 @@
       v-else
       ref="cesiumView"
       @load="onCesiumLoad"
-      @link-changed="setCesiumMove"
       @draw-finished="onDrawFinished"
       :vue-key="mapViewId"
       :height="mapViewHeight"
@@ -151,7 +150,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   onCesiumLoad() {
     this.isMapLoaded = true
     this.setWebGlobe()
-    this.setCesiumInitView()
     this.resort()
   }
 

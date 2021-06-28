@@ -23,17 +23,14 @@ export default class MapboxMixin extends Mixins<Record<string, any>>(Vue) {
     })
   }
 
-  setMapboxInitView() {
-    if (!this.initView) {
-      this.initView = this.mapViewLayer.fullExtent
-    }
-  }
-
   /**
    *  二维放大至指定范围
    */
-  zoomToRect({ xmin, xmax, ymin, ymax }: Rect, type = 'in') {
-    if (type === 'in') {
+  zoomToRect(
+    { xmin, xmax, ymin, ymax }: Rect,
+    type: 'zoomIn' | 'zoomOut' = 'zoomIn'
+  ) {
+    if (type === 'zoomIn') {
       this.ssMap.fitBounds([
         [xmax, ymin],
         [xmin, ymax]

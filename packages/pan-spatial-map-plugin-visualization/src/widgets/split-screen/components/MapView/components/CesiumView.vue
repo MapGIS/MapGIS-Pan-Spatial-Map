@@ -79,7 +79,7 @@ export default class CesiumView extends Vue {
   }
 
   onLinkChange({ '3d': view3d, '2d': rect2d }) {
-    console.log('onLinkChange', view3d, rect2d)
+    // console.log('onLinkChange', view3d, rect2d)
     this.$emit('link-changed', rect2d)
   }
 }
