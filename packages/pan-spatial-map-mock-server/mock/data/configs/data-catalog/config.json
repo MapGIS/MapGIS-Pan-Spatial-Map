@@ -716,12 +716,12 @@
             "gdbTypeList": "Local,Local,Local"
           },
           {
-            "label": "道路交通网",
+            "label": "网络分析",
             "describe": "网络分析",
             "ip": "",
             "port": "",
             "layerServiceType": "IGSIMAGE",
-            "name": "网络分析",
+            "name": "网络分析_1",
             "searchName": "",
             "token": "",
             "guid": "e6c67296-8725-7f4b-a0c7-317ec3dd271b",

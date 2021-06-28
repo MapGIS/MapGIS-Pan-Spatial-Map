@@ -113,7 +113,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
           lon: item[0],
           lat: item[1],
           fillColor,
-          outLineColor
+          font: 9
         })
         this.entityPointResultArray.push(entity)
       })
@@ -179,8 +179,10 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         const entity = this.sceneOverlays.addPoint({
           lon: coordinates[0],
           lat: coordinates[1],
+          font: 11,
           fillColor,
-          outLineColor
+          outLineColor,
+          outlineWidth: 1
         })
         this.entityCoordinateArray.push(entity)
       })
@@ -200,7 +202,9 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
           lon: coordinates[0],
           lat: coordinates[1],
           fillColor,
-          outLineColor
+          font: 11,
+          outLineColor,
+          outlineWidth: 1
         })
         this.entityBarrierArray.push(entity)
       })
