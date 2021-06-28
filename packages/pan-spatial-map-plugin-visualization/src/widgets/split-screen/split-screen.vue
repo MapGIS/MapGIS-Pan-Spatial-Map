@@ -36,7 +36,12 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
+import {
+  DomUtil,
+  WidgetMixin,
+  WidgetState,
+  Layer
+} from '@mapgis/web-app-framework'
 import SplitScreenMap from './components/SplitScreenMap'
 import SplitScreenSetting from './components/SplitScreenSetting'
 
@@ -203,36 +208,16 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
   onInFullScreen() {
     this.settingPanelVisible = false
     const el = this.$refs.splitScreenMap.$el
-    if (el.requestFullscreen) {
-      el.requestFullscreen()
-      return true
-    } else if (el.webkitRequestFullScreen) {
-      el.webkitRequestFullScreen()
-      return true
-    } else if (el.mozRequestFullScreen) {
-      el.mozRequestFullScreen()
-      return true
-    } else if (el.msRequestFullscreen) {
-      el.msRequestFullscreen()
-      return true
+    if (!DomUtil.inFullScreen(el)) {
+      this.$message.warn('对不起，您的浏览器不支持全屏模式')
     }
-    this.$message.warn('对不起，您的浏览器不支持全屏模式')
-    return false
   }
 
   /**
    * 退出全屏
    */
   onOutFullScreen() {
-    if (document.exitFullscreen) {
-      document.exitFullscreen()
-    } else if (document.webkitCancelFullScreen) {
-      document.webkitCancelFullScreen()
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen()
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen()
-    }
+    DomUtil.outFullScreen()
   }
 
   /**

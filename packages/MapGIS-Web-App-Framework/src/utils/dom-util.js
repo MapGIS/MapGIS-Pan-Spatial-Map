@@ -73,3 +73,49 @@ export function downloadFile(obj, name, suffix) {
   link.click()
   document.body.removeChild(link)
 }
+
+export function addFullScreenListener(listener) {
+  document.addEventListener('fullscreenchange', listener)
+  document.addEventListener('webkitfullscreenchange', listener)
+  document.addEventListener('mozfullscreenchange', listener)
+  document.addEventListener('msfullscreenchange', listener)
+}
+
+export function removeFullScreenListener(listener) {
+  document.removeEventListener('fullscreenchange', listener)
+  document.removeEventListener('webkitfullscreenchange', listener)
+  document.removeEventListener('mozfullscreenchange', listener)
+  document.removeEventListener('msfullscreenchange', listener)
+}
+
+export function inFullScreen(el) {
+  if (el.requestFullscreen) {
+    el.requestFullscreen()
+    return true
+  } else if (el.webkitRequestFullScreen) {
+    el.webkitRequestFullScreen()
+    return true
+  } else if (el.mozRequestFullScreen) {
+    el.mozRequestFullScreen()
+    return true
+  } else if (el.msRequestFullscreen) {
+    el.msRequestFullscreen()
+    return true
+  }
+  return false
+}
+
+/**
+ * 退出全屏
+ */
+export function outFullScreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen()
+  } else if (document.webkitCancelFullScreen) {
+    document.webkitCancelFullScreen()
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen()
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen()
+  }
+}

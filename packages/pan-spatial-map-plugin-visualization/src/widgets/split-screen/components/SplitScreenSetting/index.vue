@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import { Vue, Component, Watch, Prop } from 'vue-property-decorator'
-import { Layer } from '@mapgis/web-app-framework'
+import { DomUtil, Layer } from '@mapgis/web-app-framework'
 
 enum ScreenLabel {
   '一' = 0,
@@ -98,11 +98,11 @@ export default class SplitScreenSetting extends Vue {
   }
 
   created() {
-    this.addListener()
+    DomUtil.addFullScreenListener(this.fullScreenListener)
   }
 
   beforeDestroy() {
-    this.removeListener()
+    DomUtil.removeFullScreenListener(this.fullScreenListener)
   }
 
   /**
@@ -132,23 +132,6 @@ export default class SplitScreenSetting extends Vue {
     } else {
       this.$emit('in-full-screen')
     }
-  }
-
-  private addListener() {
-    document.addEventListener('fullscreenchange', this.fullScreenListener)
-    document.addEventListener('webkitfullscreenchange', this.fullScreenListener)
-    document.addEventListener('mozfullscreenchange', this.fullScreenListener)
-    document.addEventListener('msfullscreenchange', this.fullScreenListener)
-  }
-
-  private removeListener() {
-    document.removeEventListener('fullscreenchange', this.fullScreenListener)
-    document.removeEventListener(
-      'webkitfullscreenchange',
-      this.fullScreenListener
-    )
-    document.removeEventListener('mozfullscreenchange', this.fullScreenListener)
-    document.removeEventListener('msfullscreenchange', this.fullScreenListener)
   }
 
   private fullScreenListener(e) {
