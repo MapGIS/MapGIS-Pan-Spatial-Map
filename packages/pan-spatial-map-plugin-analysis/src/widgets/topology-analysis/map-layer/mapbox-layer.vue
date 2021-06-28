@@ -17,13 +17,111 @@ import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component
 export default class MapboxLayer extends Mixins(WidgetMixin) {
+  @Prop() geoJSONAnalysis: Recod<string, unknown>
+
+  @Prop() geoJSONTarget: Recod<string, unknown>
+
+  // 点集图层ID
+  layerTargetId = 'topologyAnalysisTarget'
+
+  // 点集资源ID
+  sourceTargetId = 'topology-analysis-target'
+
+  // 点集图层ID
+  layerAnalysisId = 'topologyAnalysisAnalysis'
+
+  // 点集资源ID
+  sourceAnalysisId = 'topology-analysis-analysis'
+
   get drawComponent() {
     return this.$refs.draw
   }
 
+  @Watch('geoJSONAnalysis', { deep: true, immediate: true })
+  geoJSONAnalysisChange() {
+    this.geoJSONChange('Analysis')
+  }
+
+  @Watch('geoJSONTarget', { deep: true, immediate: true })
+  geoJSONTargetChange() {
+    this.geoJSONChange('Target')
+  }
+
+  geoJSONChange(val) {
+    let geoJSON
+    let layerId
+    let sourceId
+    if (val === 'Target') {
+      this.clearDataTargetArr()
+      geoJSON = this.geoJSONTarget
+      layerId = this.layerTargetId
+      sourceId = this.sourceTargetId
+    } else {
+      this.clearDataAnalysisArr()
+      geoJSON = this.geoJSONAnalysis
+      layerId = this.layerAnalysisId
+      sourceId = this.sourceAnalysisId
+    }
+
+    if (!geoJSON) {
+      return
+    }
+    this.map.addSource(sourceId, {
+      type: 'geojson',
+      data: geoJSON // 一开始的数据是空的,后面请求到了再更新
+    })
+    const { features } = geoJSON
+    const {
+      properties: { bound, center },
+      geometry: { type, coordinates }
+    } = features[0]
+    if (type === 'Point') {
+      this.map.addLayer({
+        id: layerId,
+        type: 'circle',
+        source: sourceId,
+        paint: {
+          'circle-radius': 5, // 半径
+          'circle-color': '#FFA500', // 颜色
+          'circle-opacity': 1 // 透明度
+        }
+      })
+      this.map.panTo(center)
+    } else if (type === 'LineString') {
+      this.map.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        paint: {
+          // 设置填充颜色
+          'line-color': '#FFA500',
+          'line-opacity': 1,
+          'line-width': 3
+        }
+      })
+      this.map.fitBounds(bound, {
+        padding: { top: 100, bottom: 100, left: 200, right: 200 }
+      })
+    } else if (type === 'Polygon') {
+      this.map.addLayer({
+        id: layerId,
+        type: 'fill',
+        source: sourceId,
+        paint: {
+          // 设置填充颜色
+          'fill-color': '#FFA500',
+          'fill-outline-color': 'grey'
+        }
+      })
+      this.map.fitBounds(bound, {
+        padding: { top: 100, bottom: 100, left: 200, right: 200 }
+      })
+    }
+  }
+
   // 打开绘制，点击图标激活对应类型的绘制功能
   private onOpenDraw() {
-    this.drawComponent && this.drawComponent.openDraw('draw-point')
+    this.drawComponent && this.drawComponent.openDraw('draw-rectangle')
   }
 
   private stopDraw() {
@@ -33,12 +131,32 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
   @Emit()
   finishDraw(e) {}
 
-  flyToHigh(val) {
-    this.map.panTo(val)
-  }
-
   onDrawFinished(e) {
     this.finishDraw(e)
+  }
+
+  clearDataTargetArr() {
+    if (this.map.getLayer(this.layerTargetId)) {
+      this.map.removeLayer(this.layerTargetId)
+    }
+    if (this.map.getSource(this.sourceTargetId)) {
+      this.map.removeSource(this.sourceTargetId)
+    }
+  }
+
+  clearDataAnalysisArr() {
+    if (this.map.getLayer(this.layerAnalysisId)) {
+      this.map.removeLayer(this.layerAnalysisId)
+    }
+    if (this.map.getSource(this.sourceAnalysisId)) {
+      this.map.removeSource(this.sourceAnalysisId)
+    }
+  }
+
+  beforeDestroy() {
+    this.stopDraw()
+    this.clearDataTargetArr()
+    this.clearDataAnalysisArr()
   }
 }
 </script>
