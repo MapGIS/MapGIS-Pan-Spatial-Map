@@ -601,10 +601,11 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 
   // 点击取消选点按钮回调(取消创建路径)
   private onClickCancelPath() {
-    if (this.draw) this.draw.stopDrawing()
-
-    //  根据之前勾选项，初始化form表单数据
-    this.onSelectChange(this.selectedRowKeys)
+    if (this.draw) {
+      this.draw.stopDrawing()
+      //  根据之前勾选项，初始化form表单数据(适用于绘制路径后想退出绘制)
+      this.onSelectChange(this.selectedRowKeys)
+    }
 
     this.isShowPointTable = false
     this.isCreatePath = false
