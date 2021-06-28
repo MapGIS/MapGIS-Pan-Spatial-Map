@@ -1,15 +1,13 @@
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { AppMixin, Layer3D, Objects } from '@mapgis/web-app-framework'
+import { AppMixin, MapMixin, Layer3D, Objects } from '@mapgis/web-app-framework'
 import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
-import MapboxMixin from './map-view-mapbox'
-import CesiumMixin from './map-view-cesium'
+// import { Layer3D } from '../../../../../MapGIS-Web-App-Framework/src/model'
 
 export { Rect }
 
 @Component
 export default class MapViewMixin extends Mixins<Record<string, any>>(
-  MapboxMixin,
-  CesiumMixin,
+  MapMixin,
   AppMixin
 ) {
   @Prop() mapViewId!: string
@@ -23,35 +21,33 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     return typeof is3dLayer === 'boolean' ? !is3dLayer : this.is2DMapMode
   }
 
-  // 获取当前激活的地图视图的ID
-  get activeMapViewId(): string {
-    return this.activeMapViewState.mapViewId
-  }
-
-  set activeMapViewId(id: string) {
-    this.activeMapViewState.mapViewId = id
-  }
-
   // 获取地图视图的复位范围
   get initView() {
     return this.activeMapViewState.initView
   }
 
-  set initView(rect: Rect) {
-    this.activeMapViewState.initView = rect
+  get isCurrentView() {
+    return this.activeMapViewId === this.mapViewId
   }
 
-  // 当前激活的地图视图的范围
+  // 获取当前激活的地图视图的ID
+  get activeMapViewId(): string {
+    return this.activeMapViewState.mapViewId
+  }
+
+  // 设置当前激活的地图视图的ID
+  set activeMapViewId(id: string) {
+    this.activeMapViewState.mapViewId = id
+  }
+
+  // 获取当前激活的地图视图的范围
   get activeView(): Rect {
     return this.activeMapViewState.activeView
   }
 
+  // 设置当前激活的地图视图的范围
   set activeView(rect: Rect) {
     this.activeMapViewState.activeView = rect
-  }
-
-  get isCurrentView() {
-    return this.activeMapViewId === this.mapViewId
   }
 
   /**
@@ -65,10 +61,10 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 更新地图视图范围
+   * 二三维地图move
    */
-  setActiveView(rect: Rect) {
-    if (this.isCurrentView) {
+  setMapMove(rect: Rect) {
+    if (this.isMapLoaded && this.isCurrentView) {
       this.activeView = rect
     }
   }

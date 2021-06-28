@@ -15,6 +15,7 @@
       v-else
       ref="cesiumView"
       @load="onCesiumLoad"
+      @link-changed="setCesiumMove"
       @draw-finished="onDrawFinished"
       :vue-key="mapViewId"
       :height="mapViewHeight"
@@ -136,10 +137,11 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * @param payload
    */
   onMapboxLoad({ map, mapbox }) {
+    this.isMapLoaded = true
     this.ssMap = map
     this.ssMapbox = mapbox
-    this.isMapLoaded = true
-    this.registerMapboxEvent()
+    this.ssMap.on('mousemove', this.setMapboxMouseMove)
+    this.ssMap.on('move', this.setMapboxMove)
     this.resort()
   }
 
@@ -149,6 +151,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   onCesiumLoad() {
     this.isMapLoaded = true
     this.setWebGlobe()
+    this.setCesiumInitView()
     this.resort()
   }
 
@@ -158,7 +161,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    */
   onDrawFinished({ mode, feature, shape, center }) {
     const { xmin, ymin, xmax, ymax }: Rect = shape
-
     const rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'QUERY':
@@ -229,7 +231,6 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     this.onQueryResultClear()
     this.onToggleQueryWindow(false)
     this.$emit('update:queryVisible', false)
-    // this.onToggleQueryWindow(false)
   }
 
   /**

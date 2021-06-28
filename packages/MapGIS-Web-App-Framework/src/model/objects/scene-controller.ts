@@ -190,11 +190,12 @@ export class SceneController {
   /**
    * 图层数据局部坐标范围转经纬度地理范围
    * @param igsSceneSubLayer IGS三维图层
+   * @param vueKey 对应WebGlobe的key
    * @retu rns 经纬度坐标
    */
-  layerLocalExtentToGlobelExtent(igsSceneSubLayer) {
+  layerLocalExtentToGlobelExtent(igsSceneSubLayer, vueKey = 'default') {
     const { id, range } = igsSceneSubLayer
-    const { source } = this.CesiumZondy.M3DIgsManager.findSource('default', id)
+    const { source } = this.CesiumZondy.M3DIgsManager.findSource(vueKey, id)
     let bound: any = null
     if (source.length > 0) {
       const tranform = source[0].root.transform

@@ -24,9 +24,9 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
-import mapViewStateInstance from '../../mixins/map-view-state'
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+import { Layer } from '@mapgis/web-app-framework'
+import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -45,16 +45,6 @@ export default class SplitScreenMap extends Vue {
 
   @Prop({ default: () => [] }) readonly layers!: Layer[]
 
-  /**
-   * 监听: 分屏数量变化
-   */
-  @Watch('screenNums', { immediate: true })
-  watchScreenNums(nV) {
-    if (nV.length) {
-      mapViewStateInstance.initView = this.getInitView()
-    }
-  }
-
   queryVisible = false
 
   queryRect: Rect = {}
@@ -65,19 +55,14 @@ export default class SplitScreenMap extends Vue {
     return { height }
   }
 
-  /**
-   * 格式化初始视角范围数据
-   * 默认取第一个图层的全图范围
-   */
-  getInitView() {
-    const layer = this.layers[0]
-    // eslint-disable-next-line prefer-const
-    let initView: Rect = layer.fullExtent
-    if (layer instanceof Layer3D) {
-      // todo 三维图层fullExtent转范围
-      // initView = Objects.SceneController.layerLocalExtentToGlobelExtent(layer)
-    }
-    return initView
+  // 获取初始地图视图的复位范围
+  get initView() {
+    return mapViewStateInstance.initView
+  }
+
+  // 设置初始地图视图的复位范围
+  set initView(view: Rect) {
+    mapViewStateInstance.initView = view
   }
 
   /**
@@ -87,6 +72,16 @@ export default class SplitScreenMap extends Vue {
   onQuery(result: Rect) {
     this.queryVisible = true
     this.queryRect = result
+  }
+
+  /**
+   * 监听: 分屏数量变化
+   */
+  @Watch('screenNums', { immediate: true })
+  watchScreenNums(nV) {
+    if (nV.length) {
+      this.initView = this.layers[0].fullExtent
+    }
   }
 
   beforeDestroyed() {
