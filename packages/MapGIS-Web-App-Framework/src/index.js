@@ -35,6 +35,7 @@ export {
   Document,
   Map,
   Layer,
+  Layer3D,
   LayerType,
   LoadStatus,
   LOD,

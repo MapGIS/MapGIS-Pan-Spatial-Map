@@ -1,6 +1,6 @@
 <template>
   <!-- 统计专题图 -->
-  <mapgis-popup :coordinates="coordinates" :showed="showPopup" v-if="showPopup">
+  <mapgis-popup :showed="showPopup" :coordinates="coordinates" v-if="showPopup">
     <span class="popup-fontsize" v-if="!properties">暂无数据</span>
     <div v-else>
       <div
@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
-import { CommonUtil } from '@mapgis/web-app-framework'
+import _debounce from 'lodash/debounce'
 import MapboxMinxin from '../../mixins/mapbox'
 
 @Component
@@ -251,21 +251,16 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
       chartsSetting
     })
     if (!this.thematicMapLayer) return
-    this.thematicMapLayer.on(
-      'mousemove',
-      CommonUtil.debounce(this.showPopupWin, 200)
-    )
-    this.thematicMapLayer.on(
-      'mouseout',
-      CommonUtil.debounce(this.closePopupWin, 200)
-    )
     this.thematicMapLayer.addFeatures(this.dataSet)
+    this.thematicMapLayer.on('mousemove', _debounce(this.showPopupWin, 200))
+    this.thematicMapLayer.on('mouseout', _debounce(this.closePopupWin, 200))
   }
 
   /**
    * 展示信息弹框
    */
   getPopupInfos({ event, target }: any, { showFields }: any) {
+    if (!target.dataInfo) return
     const { field, value } = target.dataInfo
     const { offsetTop, offsetLeft } = this.map.getContainer()
     const { lng, lat } = this.map.unproject(

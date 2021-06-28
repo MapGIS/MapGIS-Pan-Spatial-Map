@@ -1,7 +1,7 @@
 {
   "baseConfig": {
-    "baseIp": "develop.smaryun.com",
-    "basePort": "6163",
+    "baseIp": "",
+    "basePort": "",
     "isOverlay": true,
     "isLocation": true,
     "startZindex": 3000
@@ -34,8 +34,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -96,8 +96,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -157,8 +157,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -218,8 +218,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -279,8 +279,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -340,8 +340,8 @@
                         "minZoom": 1,
                         "maxZoom": 10,
                         "queryFeatureNum": "10000+",
-                        "ip": "develop.smaryun.com",
-                        "port": "6163",
+                        "ip": "",
+                        "port": "",
                         "src": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "docName": "",
@@ -403,8 +403,8 @@
                     "minZoom": "0",
                     "maxZoom": "10",
                     "queryFeatureNum": "10000+",
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "docName": "",
@@ -479,8 +479,8 @@
                     "minZoom": "0",
                     "maxZoom": "10",
                     "queryFeatureNum": "10000+",
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "docName": "",
@@ -546,8 +546,8 @@
                     "minZoom": "0",
                     "maxZoom": "10",
                     "queryFeatureNum": "10000+",
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "docName": "",
@@ -624,8 +624,8 @@
                   {
                     "minZoom": 1,
                     "maxZoom": 10,
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "showTextLabel": "true",
@@ -691,12 +691,10 @@
             "data": [
               {
                 "time": "2008",
-                "ip": "develop.smaryun.com",
-                "port": "6163",
-                "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
+                "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
                 "docName": "",
                 "layerIndex": null,
-                "weight": "8",
+                "field": "面积",
                 "hexBinStyle": {
                   "style": "gradient",
                   "size": "5",
@@ -706,15 +704,13 @@
                   "opacity": "0.6"
                 },
                 "table": {
-                  "showFields": ["name", "AREA"],
-                  "showFieldsTitle": {
-                    "name": "名称"
-                  }
+                  "showFields": ["NAME", "AREA"],
+                  "showFieldsTitle": {}
                 },
                 "graph": {
                   "showFields": ["AREA"],
                   "showFieldsTitle": {},
-                  "field": "name",
+                  "field": "NAME",
                   "target": []
                 }
               }
@@ -732,9 +728,11 @@
             "data": [
               {
                 "time": "2008",
-                "ip": "develop.smaryun.com",
-                "port": "6163",
-                "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
+                "ip": "",
+                "port": "",
+                "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
+                "weight": "8",
+                "field": "面积",
                 "docName": "",
                 "layerIndex": null,
                 "hexBinStyle": {
@@ -746,15 +744,13 @@
                   "style": "gradient"
                 },
                 "table": {
-                  "showFields": ["name", "AREA"],
-                  "showFieldsTitle": {
-                    "name": "名称"
-                  }
+                  "showFields": ["NAME", "AREA"],
+                  "showFieldsTitle": {}
                 },
                 "graph": {
-                  "showFields": ["AREA"],
+                  "showFields": ["NAME"],
                   "showFieldsTitle": {},
-                  "field": "name",
+                  "field": "AREA",
                   "target": []
                 }
               }
@@ -776,9 +772,10 @@
                   {
                     "minZoom": 1,
                     "maxZoom": 10,
-                    "ip": "develop.smaryun.com",
-                    "port": "6163",
+                    "ip": "",
+                    "port": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
+                    "weight": "30",
                     "docName": "",
                     "layerIndex": null,
                     "dataBase": {
@@ -798,15 +795,13 @@
                     },
                     "table": {
                       "showFields": ["name"],
-                      "showFieldsTitle": {
-                        "name": "名称"
-                      }
+                      "showFieldsTitle": {}
                     },
                     "graph": {
                       "showFields": ["name"],
                       "showFieldsTitle": {},
                       "field": "name",
-                      "target": ["AREA"]
+                      "target": []
                     },
                     "popup": {
                       "showFields": ["name"],

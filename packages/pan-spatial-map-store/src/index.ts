@@ -23,15 +23,6 @@ export { dataCatalogManagerInstance, DataCatalogManager } from './data-catalog'
 
 export { vectorTileListInstance } from './vector-tile-list'
 
-// 专题服务
-export {
-  thematicMapStore,
-  mapGetters,
-  mapMutations,
-  moduleTypes,
-  subjectTypes
-} from './thematic-map'
-
 export {
   exhibitionListInstance,
   IFields,

@@ -50,8 +50,7 @@
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
-import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
-import ThematicMapMixin from '../../mixins/thematic-map'
+import { mapGetters, mapMutations } from '../../store'
 import RowFlex from '../RowFlex'
 
 @Component({
@@ -90,7 +89,7 @@ export default class ThematicMapAttributeTable extends Vue {
   page = 0
 
   // 列表页容量
-  pageCount = 10
+  pageCount = 100
 
   // 列表总数
   total = 0
@@ -130,6 +129,7 @@ export default class ThematicMapAttributeTable extends Vue {
       pageSize: this.pageCount,
       total: this.total,
       showSizeChanger: true,
+      pageSizeOptions: ['100', '500', '1000', '1500', '2000'],
       showTotal: total => `共${total}条`
     }
   }

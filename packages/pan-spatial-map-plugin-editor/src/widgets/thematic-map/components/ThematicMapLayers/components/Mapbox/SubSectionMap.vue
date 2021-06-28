@@ -1,6 +1,6 @@
 <template>
   <!-- 分段专题图图层 -->
-  <mapgis-popup :coordinates="coordinates" :showed="showPopup" v-if="showPopup">
+  <mapgis-popup :showed="showPopup" :coordinates="coordinates" v-if="showPopup">
     <span class="popup-fontsize" v-if="!properties">暂无数据</span>
     <div v-else>
       <div
@@ -17,8 +17,8 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { RangeThemeLayer, ThemeStyle } from '@mapgis/webclient-es6-mapboxgl'
-import { CommonUtil, ColorUtil } from '@mapgis/web-app-framework'
-import RowFlex from '../../../RowFlex'
+import { ColorUtil } from '@mapgis/web-app-framework'
+import _debounce from 'lodash/debounce'
 import MapboxMinxin from '../../mixins/mapbox'
 
 interface IColor {
@@ -36,11 +36,7 @@ interface ISectionColor {
   sectionColor: string
 }
 
-@Component({
-  components: {
-    RowFlex
-  }
-})
+@Component
 export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   // 样式
   get colors() {
@@ -112,14 +108,8 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
       fillColor: '#00EEEE'
     })
     this.thematicMapLayer = _thematicMapLayer
-    this.thematicMapLayer.on(
-      'mousemove',
-      CommonUtil.debounce(this.showPopupWin, 200)
-    )
-    this.thematicMapLayer.on(
-      'mouseout',
-      CommonUtil.debounce(this.closePopupWin, 200)
-    )
+    this.thematicMapLayer.on('mousemove', _debounce(this.showPopupWin, 200))
+    this.thematicMapLayer.on('mouseout', _debounce(this.closePopupWin, 200))
     this.thematicMapLayer.addFeatures(this.dataSet)
   }
 
@@ -127,6 +117,7 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
    * 展示信息窗口
    */
   getPopupInfos({ target }: any, { showFields, showFieldsTitle }: any) {
+    if (!target.refDataID) return
     const feature = this.thematicMapLayer.getFeatureById(target.refDataID)
     if (feature) {
       const {

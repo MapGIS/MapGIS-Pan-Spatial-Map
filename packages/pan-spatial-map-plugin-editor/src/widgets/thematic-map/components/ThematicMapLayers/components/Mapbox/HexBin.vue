@@ -41,7 +41,7 @@ export default class MapboxHexBin extends Mixins(BaseMinxin) {
    */
   showLayer() {
     if (this.geojson) {
-      this.geojsonPoint = this.geojson
+      this.geojsonPoint = this.addCountToGeoJSON(this.geojson)
     }
   }
 

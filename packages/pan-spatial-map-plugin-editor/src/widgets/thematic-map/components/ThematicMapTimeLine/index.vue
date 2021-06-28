@@ -31,9 +31,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
-import { Empty } from 'ant-design-vue'
 import * as echarts from 'echarts'
+import { mapGetters, mapMutations } from '../../store'
 import RowFlex from '../RowFlex'
 import { chartOption } from './config/timeLineChartOption'
 
