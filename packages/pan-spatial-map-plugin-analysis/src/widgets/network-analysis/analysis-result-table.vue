@@ -75,12 +75,18 @@ export default class MpCoordinateTable extends Vue {
       return
     }
     const res = JSON.parse(value)
-    const path = res[0] ? res[0].Paths[0] : res.Paths[0]
+    const paths = res[0] ? res[0].Paths : res.Paths
     const edgeFieldNameArray = res[0]
       ? res[0].edgeFieldNameArray
       : res.edgeFieldNameArray
-    const lines = path.Edges
-    const points = path.Nodes
+    let lines = []
+    paths.forEach(path => {
+      lines = lines.concat(path.Edges)
+    })
+    let points = []
+    paths.forEach(path => {
+      points = points.concat(path.Nodes)
+    })
     // const map = this.getBaseMap();
     if (!lines || !points) {
       this.$message.error('未分析出结果')
@@ -89,12 +95,14 @@ export default class MpCoordinateTable extends Vue {
     const max1 = lines.length
     const lineArr = []
     for (let i = 0; i < max1; i++) {
-      const data = []
-      const dots = lines[i].Dots
-      for (let j = 0; j < dots.length; j++) {
-        data.push([dots[j].x, dots[j].y])
+      if (lines[i] && lines[i].Dots) {
+        const data = []
+        const dots = lines[i].Dots
+        for (let j = 0; j < dots.length; j++) {
+          data.push([dots[j].x, dots[j].y])
+        }
+        lineArr.push(data)
       }
-      lineArr.push(data)
     }
     // 线的数据集
     layerLine.features.push({
@@ -108,8 +116,11 @@ export default class MpCoordinateTable extends Vue {
     const max2 = points.length
     const pointArr = []
     for (let i = 0; i < max2; i++) {
-      const dot = points[i].Node
-      pointArr.push([dot.x, dot.y])
+      if (points[i] && points[i].Node) {
+        const dot = points[i].Node
+
+        pointArr.push([dot.x, dot.y])
+      }
     }
     // 点的数据集
     layerPoint.features.push({
@@ -140,7 +151,7 @@ export default class MpCoordinateTable extends Vue {
     for (let i = 0; i < data.length; i++) {
       dataArray.push({
         id: i,
-        name: data[i].FieldValus[index],
+        name: data[i].FieldValus[index] || '--',
         dots: data[i].Dots
       })
     }
