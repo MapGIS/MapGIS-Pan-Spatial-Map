@@ -88,7 +88,7 @@ export default class MpCoordinateTable extends Vue {
       points = points.concat(path.Nodes)
     })
     // const map = this.getBaseMap();
-    if (!lines || !points) {
+    if (lines.length === 0 || points.length === 0) {
       this.$message.error('未分析出结果')
       return
     }
@@ -140,8 +140,9 @@ export default class MpCoordinateTable extends Vue {
 
   initTableAndPage(data, nameArray) {
     let index = 0
-    for (let i = 0; i < nameArray.length; i++) {
-      if (nameArray[i].toLowerCase().indexOf('name') >= 0) {
+    const arr = nameArray || []
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].toLowerCase().indexOf('name') >= 0) {
         index = i
       }
     }
@@ -149,11 +150,13 @@ export default class MpCoordinateTable extends Vue {
     const total = data.length
     const dataArray = []
     for (let i = 0; i < data.length; i++) {
-      dataArray.push({
-        id: i,
-        name: data[i].FieldValus[index] || '--',
-        dots: data[i].Dots
-      })
+      if (data[i]) {
+        dataArray.push({
+          id: i,
+          name: data[i].FieldValus[index] || '--',
+          dots: data[i].Dots
+        })
+      }
     }
     this.data = dataArray
   }

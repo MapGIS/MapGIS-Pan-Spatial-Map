@@ -45,9 +45,11 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
   lineResultClickLayerId = 'analysisClickLineLayerId'
 
   circleColor = {
-    'circle-radius': 5, // 半径
+    'circle-radius': 6, // 半径
     'circle-color': '#FF9933', // 颜色
-    'circle-opacity': 1 // 透明度
+    'circle-opacity': 1, // 透明度
+    'circle-stroke-color': '#ffffff',
+    'circle-stroke-width': 1
   }
 
   // 点集图层ID
@@ -86,7 +88,11 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
       id: this.pointResultLayerId,
       type: 'circle',
       source: this.pointResultSourceId,
-      paint: this.circleColor
+      paint: {
+        'circle-radius': 5, // 半径
+        'circle-color': this.circleColor['circle-color'], // 颜色
+        'circle-opacity': this.circleColor['circle-opacity'] // 透明度
+      }
     })
 
     // 添加线图层

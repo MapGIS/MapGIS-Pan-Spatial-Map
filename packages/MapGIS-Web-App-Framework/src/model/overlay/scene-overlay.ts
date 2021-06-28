@@ -314,7 +314,7 @@ export class SceneOverlays {
     const font = opt.font || 6
     const fillColor = opt.fillColor || ''
     const outLineColor = opt.outLineColor || ''
-    const outlineWidth = opt.outlineWidth || 1
+    const outlineWidth = opt.outlineWidth || 0
     opt.name = opt.name || 'pictureLabel'
     const labelIcon = this.webGlobe.appendPoint(
       lon,
