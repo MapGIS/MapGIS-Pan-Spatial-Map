@@ -693,16 +693,8 @@
                 "time": "2008",
                 "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
                 "docName": "",
+                "weight": "30",
                 "layerIndex": null,
-                "field": "面积",
-                "hexBinStyle": {
-                  "style": "gradient",
-                  "size": "5",
-                  "showLayerImage": "true",
-                  "showSourceFeature": "true",
-                  "polygonSideNum": "6",
-                  "opacity": "0.6"
-                },
                 "table": {
                   "showFields": ["NAME", "AREA"],
                   "showFieldsTitle": {}
@@ -732,7 +724,6 @@
                 "port": "",
                 "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
                 "weight": "8",
-                "field": "面积",
                 "docName": "",
                 "layerIndex": null,
                 "hexBinStyle": {
@@ -748,9 +739,9 @@
                   "showFieldsTitle": {}
                 },
                 "graph": {
-                  "showFields": ["NAME"],
+                  "showFields": ["AREA"],
                   "showFieldsTitle": {},
-                  "field": "AREA",
+                  "field": "NAME",
                   "target": []
                 }
               }
@@ -774,7 +765,7 @@
                     "maxZoom": 10,
                     "ip": "",
                     "port": "",
-                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
+                    "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
                     "weight": "30",
                     "docName": "",
                     "layerIndex": null,
@@ -794,19 +785,19 @@
                       "type": "att"
                     },
                     "table": {
-                      "showFields": ["name"],
+                      "showFields": ["NAME", "AREA"],
                       "showFieldsTitle": {}
                     },
                     "graph": {
-                      "showFields": ["name"],
+                      "showFields": ["AREA"],
                       "showFieldsTitle": {},
-                      "field": "name",
+                      "field": "NAME",
                       "target": []
                     },
                     "popup": {
-                      "showFields": ["name"],
+                      "showFields": ["NAME"],
                       "showFieldsTitle": {},
-                      "title": "name"
+                      "title": "NAME"
                     }
                   }
                 ]
