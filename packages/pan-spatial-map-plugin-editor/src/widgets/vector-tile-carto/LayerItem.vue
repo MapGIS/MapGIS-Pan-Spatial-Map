@@ -91,7 +91,7 @@ export default class LayerItem extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .layer-item-container {
   display: flex;
   flex-direction: column;

@@ -332,10 +332,11 @@ export default class LayerSetting extends Vue {
         break
     }
     if (this.paint[type].stops.length <= 2) {
-      // 如果该样式数量<=2，则删除该样式属性的stops属性，重新为其赋值为stops中的最后一项
-      const stopsLength = this.paint[type].stops.length
-      const lastValue = this.paint[type].stops[stopsLength - 1][1]
-      this.paint[type] = lastValue
+      // 如果该样式数量<=2，则删除该样式属性的stops属性，重新为其赋值为stops中的未被删除的那一项
+      const item = this.paint[type].stops.find(
+        (item, index) => index !== delIndex
+      )
+      this.paint[type] = item[1]
     } else {
       // 否则只需删除该样式属性中stops属性中的该项即可
       this.paint[type].stops.splice(delIndex, 1)
@@ -344,7 +345,7 @@ export default class LayerSetting extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .style-single-item {
   display: flex;
   align-items: center;
