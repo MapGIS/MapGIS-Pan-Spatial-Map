@@ -824,8 +824,8 @@
             "serverUrl": ""
           },
           {
-            "label": "BIM模型_unavailable",
-            "describe": "BIM模型",
+            "label": "学校BIM模型",
+            "describe": "学校BIM模型",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -836,7 +836,7 @@
             "serverUrl": ""
           },
           {
-            "label": "地质体_福田_unavailable",
+            "label": "地质体_福田",
             "describe": "地质体_福田",
             "ip": "",
             "port": "",
@@ -848,7 +848,7 @@
             "serverUrl": ""
           },
           {
-            "label": "钻孔模型_福田_unavailable",
+            "label": "钻孔模型_福田",
             "describe": "钻孔模型_福田",
             "ip": "",
             "port": "",
