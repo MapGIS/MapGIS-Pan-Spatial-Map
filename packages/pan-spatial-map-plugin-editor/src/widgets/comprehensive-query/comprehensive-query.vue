@@ -80,7 +80,7 @@
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin, Featrue } from '@mapgis/web-app-framework'
+import { WidgetMixin, Feature } from '@mapgis/web-app-framework'
 import { api } from '@mapgis/pan-spatial-map-store'
 import PlaceName from './components/PlaceName/PlaceName'
 import Zone from './components/ZoneFrame/Zone'
@@ -119,7 +119,16 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 
   private get geometry() {
     if (this.geoJson && JSON.stringify(this.geoJson) !== '{}') {
-      const result = Feature.FeatureConvert.toTangram(this.geoJson)
+      let geojson
+      if (this.geoJson.features) {
+        geojson = this.geoJson
+      } else {
+        geojson = {
+          type: 'FeatureCollection',
+          features: [this.geoJson]
+        }
+      }
+      const result = Feature.FeatureConvert.toTangram(geojson)
       if (Array.isArray(result)) return result[0]
       return result
     }

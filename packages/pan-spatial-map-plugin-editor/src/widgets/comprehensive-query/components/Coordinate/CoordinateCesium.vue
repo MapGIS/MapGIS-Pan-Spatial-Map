@@ -125,6 +125,9 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
       const fillOutlineColor = new this.Cesium.Color.fromCssColorString(
         this.highlightStyle.feature.line.color
       )
+
+      const width = parseInt(this.highlightStyle.feature.line.size)
+
       for (let i = 0; i < features.length; i += 1) {
         const coords = features[i].geometry.coordinates[0]
         const name = `zone-frame-${i}`
@@ -136,7 +139,8 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
             .split(',')
             .map(Number),
           fillColor,
-          fillOutlineColor
+          fillOutlineColor,
+          { drawOutLine: true, outlineWidth: width }
         )
         const center = Feature.getGeoJSONFeatureCenter(features[i])
         const rgba = ColorUtil.getColorObject('#FD6A6F', 1)

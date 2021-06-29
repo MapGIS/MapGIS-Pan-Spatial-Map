@@ -857,7 +857,6 @@ export default class TreeLayer extends Mixins(
         }
       }
     } else if (this.isIgsArcgisLayer(layer)) {
-      const { ip, port, docName } = parent._parseUrl(parent.url)
       this.queryParams = {
         id: `${parent.title} ${layer.title} ${layer.id}`,
         name: `${layer.title} 属性表`,
