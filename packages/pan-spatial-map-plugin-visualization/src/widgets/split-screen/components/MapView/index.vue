@@ -1,7 +1,11 @@
 <template>
   <div class="map-view-wrap">
     <!-- 标题/工具栏 -->
-    <tools :title="mapViewLayer.title" @on-icon-click="onIconClick" />
+    <tools
+      :title="mapViewLayer.title"
+      :excludes="excludesTools"
+      @on-icon-click="onIconClick"
+    />
     <!-- 二维地图 -->
     <mapbox-view
       v-if="is2dLayer"
@@ -52,6 +56,7 @@
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import { Document, Layer } from '@mapgis/web-app-framework'
+import _upperFirst from 'lodash/upperFirst'
 import {
   MpQueryResultTree,
   MpMarkersHighlightPopup
@@ -59,7 +64,7 @@ import {
 import MapViewMixin, { Rect } from './mixins/map-view'
 import MapboxView from './components/MapboxView'
 import CesiumView from './components/CesiumView'
-import Tools, { OperationType, OperationFn } from './components/Tools'
+import Tools, { ToolType } from './components/Tools'
 
 @Component({
   components: {
@@ -82,15 +87,19 @@ import Tools, { OperationType, OperationFn } from './components/Tools'
   }
 })
 export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
-  @Prop() readonly resize!: string
+  // 需要resize
+  @Prop() readonly resize!: string | boolean
+
+  // 图层不需要的操作按钮
+  @Prop() readonly excludesTools!: string | Array<ToolType>
 
   // 图层
   @Prop({ default: () => ({}) }) readonly mapViewLayer!: Layer
 
-  // 双向绑定弹框开关
+  // 查询弹框开关
   @Prop({ default: false }) readonly queryVisible!: boolean
 
-  // 查询范围
+  // 根据查询的范围显示标注
   @Prop({ default: () => ({}) }) readonly queryRect!: boolean
 
   // document
@@ -109,7 +118,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   isMapLoaded = false
 
   // 操作按钮类型
-  operationType: OperationType = 'UNKNOW'
+  operationType: ToolType = ''
 
   // 结果树弹框开关
   queryWindowVisible = false
@@ -225,7 +234,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 清除点击, 清除图层上的标注
    */
   onClear() {
-    this.onIconClick('UNKNOW')
+    this.onIconClick('')
     this.onQueryResultClear()
     this.onToggleQueryWindow(false)
     this.$emit('update:queryVisible', false)
@@ -233,13 +242,14 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
 
   /**
    * 操作按钮点击
-   * @param operationType 按钮类型
+   * @param ToolType 按钮类型
    * @param fnName 按钮事件名
    */
-  onIconClick(operationType: OperationType, fnName: OperationFn) {
+  onIconClick(operationType: ToolType, fnName: string) {
     this.operationType = operationType
-    if (fnName && this[fnName] && this.isMapLoaded) {
-      this[fnName]()
+    const _fnName = `on${_upperFirst(fnName)}`
+    if (this[_fnName] && this.isMapLoaded) {
+      this[_fnName]()
     }
   }
 
