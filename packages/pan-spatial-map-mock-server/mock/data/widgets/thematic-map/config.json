@@ -697,11 +697,16 @@
                 "layerIndex": null,
                 "table": {
                   "showFields": ["NAME", "AREA"],
-                  "showFieldsTitle": {}
+                  "showFieldsTitle": {
+                    "NAME": "名称",
+                    "AREA": "面积"
+                  }
                 },
                 "graph": {
                   "showFields": ["AREA"],
-                  "showFieldsTitle": {},
+                  "showFieldsTitle": {
+                    "AREA": "面积"
+                  },
                   "field": "NAME",
                   "target": []
                 }
@@ -736,11 +741,16 @@
                 },
                 "table": {
                   "showFields": ["NAME", "AREA"],
-                  "showFieldsTitle": {}
+                  "showFieldsTitle": {
+                    "NAME": "名称",
+                    "AREA": "面积"
+                  }
                 },
                 "graph": {
                   "showFields": ["AREA"],
-                  "showFieldsTitle": {},
+                  "showFieldsTitle": {
+                    "AREA": "面积"
+                  },
                   "field": "NAME",
                   "target": []
                 }
@@ -786,11 +796,16 @@
                     },
                     "table": {
                       "showFields": ["NAME", "AREA"],
-                      "showFieldsTitle": {}
+                      "showFieldsTitle": {
+                        "NAME": "名称",
+                        "AREA": "面积"
+                      }
                     },
                     "graph": {
                       "showFields": ["AREA"],
-                      "showFieldsTitle": {},
+                      "showFieldsTitle": {
+                        "AREA": "面积"
+                      },
                       "field": "NAME",
                       "target": []
                     },
