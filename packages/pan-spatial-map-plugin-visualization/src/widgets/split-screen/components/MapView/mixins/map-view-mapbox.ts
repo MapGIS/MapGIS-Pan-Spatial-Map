@@ -1,21 +1,23 @@
 import { Mixins, Vue, Component } from 'vue-property-decorator'
+import _debounce from 'lodash/debounce'
 import { Rect } from './map-view-state'
 
 @Component
 export default class MapboxMixin extends Mixins<Record<string, any>>(Vue) {
   /**
-   * 二维地图mousemove
+   * 地图事件注册
    */
-  setMapboxMouseMove() {
-    this.activeMapViewId = this.mapViewId
+  registerMapboxEvent() {
+    this.ssMap.on('mousemove', this.setActiveMapView)
+    this.ssMap.on('move', _debounce(this.onMapboxMove, 400))
   }
 
   /**
-   * 二维地图move
+   * 地图move
    */
-  setMapboxMove() {
+  onMapboxMove() {
     const { _sw, _ne } = this.ssMap.getBounds()
-    this.setActiveView({
+    this.updateActiveMapViewBound({
       xmin: _sw.lng,
       ymin: _sw.lat,
       xmax: _ne.lng,
@@ -24,30 +26,29 @@ export default class MapboxMixin extends Mixins<Record<string, any>>(Vue) {
   }
 
   /**
-   *  二维放大至指定范围
+   *  放大至指定范围
    * @param 经纬度范围
-   * @param type zoomIn|zoomOut
    */
-  zoomToRect(
-    { xmin, xmax, ymin, ymax }: Rect,
-    type: 'zoomIn' | 'zoomOut' = 'zoomIn'
-  ) {
-    console.log('zoomToRect', { xmin, xmax, ymin, ymax })
-    if (type === 'zoomIn') {
-      this.ssMap.fitBounds([
-        [xmax, ymin],
-        [xmin, ymax]
-      ])
-    } else {
-      this.ssMap.flyTo({
-        zoom: this.ssMap.getZoom() - 1,
-        center: [(xmin + xmin) / 2, (ymin + ymax) / 2]
-      })
-    }
+  zoomInToRect({ xmin, xmax, ymin, ymax }: Rect) {
+    this.ssMap.fitBounds([
+      [xmax, ymin],
+      [xmin, ymax]
+    ])
   }
 
   /**
-   * 二维拖拽开关
+   *  缩小至指定范围
+   * @param 经纬度范围
+   */
+  zoomOutToRect({ xmin, xmax, ymin, ymax }: Rect) {
+    this.ssMap.flyTo({
+      zoom: this.ssMap.getZoom() - 1,
+      center: [(xmin + xmin) / 2, (ymin + ymax) / 2]
+    })
+  }
+
+  /**
+   * 拖拽
    * @param enable
    */
   togglePan(enable = true) {

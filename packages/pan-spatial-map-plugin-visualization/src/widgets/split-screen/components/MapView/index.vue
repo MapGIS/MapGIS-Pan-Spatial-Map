@@ -16,6 +16,7 @@
       ref="cesiumView"
       @load="onCesiumLoad"
       @draw-finished="onDrawFinished"
+      @link-changed="onCesiumChanged"
       :vue-key="mapViewId"
       :height="mapViewHeight"
       :document="mapViewDocument"
@@ -136,11 +137,10 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * @param payload
    */
   onMapboxLoad({ map, mapbox }) {
-    this.isMapLoaded = true
     this.ssMap = map
     this.ssMapbox = mapbox
-    this.ssMap.on('mousemove', this.setMapboxMouseMove)
-    this.ssMap.on('move', this.setMapboxMove)
+    this.isMapLoaded = true
+    this.registerMapboxEvent()
     this.resort()
   }
 

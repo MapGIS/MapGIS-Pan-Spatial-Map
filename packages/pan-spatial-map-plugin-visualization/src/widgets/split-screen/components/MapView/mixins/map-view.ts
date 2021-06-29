@@ -33,40 +33,48 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   // 获取地图视图的复位范围
-  get initView() {
-    return this.activeMapViewState.initView
+  get initBound() {
+    return this.activeMapViewState.initBound
   }
 
   // 当前激活的地图视图的范围
-  get activeView(): Rect {
-    return this.activeMapViewState.activeView
+  get activeMapViewBound(): Rect {
+    return this.activeMapViewState.activeMapViewBound
   }
 
-  set activeView(rect: Rect) {
-    this.activeMapViewState.activeView = rect
+  set activeMapViewBound(rect: Rect) {
+    this.activeMapViewState.activeMapViewBound = rect
   }
 
-  // 判断是否是当前活动地图
-  get isCurrentView() {
+  // 是否为当前活动的地图
+  get isActiveMapView() {
     return this.activeMapViewId === this.mapViewId
   }
 
   /**
-   * 监听: 更新活动地图视图范围
+   * 监听: 更新活动地图经纬度范围
    */
-  @Watch('activeView', { immediate: true, deep: true })
+  @Watch('activeMapViewBound', { immediate: true, deep: true })
   watchActiveView(nV: Rect) {
-    if (this.isMapLoaded && !this.isCurrentView) {
+    if (this.isMapLoaded && !this.isActiveMapView) {
       this.resort(nV)
     }
   }
 
   /**
-   * 设置活动地图视图范围
+   * 设置活动地图
    */
-  setActiveView(rect: Rect) {
-    if (this.isMapLoaded && this.isCurrentView) {
-      this.activeView = rect
+  setActiveMapView() {
+    this.activeMapViewId = this.mapViewId
+  }
+
+  /**
+   * 更新活动地图视图经纬度范围
+   * @param rect 经纬度范围
+   */
+  updateActiveMapViewBound(rect: Rect) {
+    if (this.isMapLoaded && this.isActiveMapView) {
+      this.activeMapViewBound = rect
     }
   }
 
@@ -85,9 +93,9 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   zoomIn(rect: Rect) {
     if (this.activeMapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
-        this.zoomToRect(rect)
+        this.zoomInToRect(rect)
       } else {
-        this.zoomToRect3d(rect)
+        this.zoomInToRect3d(rect)
       }
     } else {
       this.ssMap.zoomIn()
@@ -101,9 +109,9 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   zoomOut(rect: Rect) {
     if (this.activeMapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
-        this.zoomToRect(rect, 'zoomOut')
+        this.zoomOutToRect(rect)
       } else {
-        this.zoomToRect3d(rect, 'zoomOut')
+        this.zoomOutToRect3d(rect)
       }
     } else {
       this.ssMap.zoomOut()
@@ -112,14 +120,13 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   /**
    * 复位
-   * @param view 经纬度范围
+   * @param bound 经纬度范围
    */
-  resort(view: Rect) {
-    const _view = view || this.initView
+  resort(bound: Rect = this.initBound) {
     if (this.is2dLayer) {
-      this.zoomToRect(_view)
+      this.zoomInToRect(bound)
     } else {
-      this.zoomToRect3d(_view)
+      this.zoomInToRect3d(bound)
     }
   }
 
@@ -131,7 +138,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     if (this.is2dLayer) {
       this.togglePan(enable)
     } else {
-      this.toggle3dPan(enable)
+      this.togglePan3d(enable)
     }
   }
 }

@@ -30,10 +30,10 @@ export class MapViewState {
   private _mapViewId = ''
 
   // 二三维维地图复位时的经纬度范围
-  private _initView = initRectangle
+  private _initBound = initRectangle
 
   // 二三维当前活动的地图经纬度范围
-  private _activeView: Rect = initRectangle
+  private _activeMapViewBound: Rect = initRectangle
 
   get mapViewId(): string {
     return this._mapViewId
@@ -43,23 +43,23 @@ export class MapViewState {
     this._mapViewId = id
   }
 
-  get activeView(): Rect {
-    return this._activeView
+  get activeMapViewBound(): Rect {
+    return this._activeMapViewBound
   }
 
-  set activeView(rect: Rect) {
+  set activeMapViewBound(rect: Rect) {
     if (this.isValidRect(rect)) {
-      this._activeView = rect
+      this._activeMapViewBound = rect
     }
   }
 
-  get initView() {
-    return this._initView
+  get initBound() {
+    return this._initBound
   }
 
-  set initView(rect: Rect) {
+  set initBound(rect: Rect) {
     if (this.isValidRect(rect)) {
-      this._initView = rect
+      this._initBound = rect
     }
   }
 

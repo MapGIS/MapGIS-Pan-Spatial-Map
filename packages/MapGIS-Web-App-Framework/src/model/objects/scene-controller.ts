@@ -205,8 +205,8 @@ export class SceneController {
   }
 
   /**
-   * 根据经纬度获取范围
-   * @param bound { xmin, ymin, xmax, ymax }
+   * 根据经纬度范围获取经纬度
+   * @param bound  经纬度范围
    * @returns Rectangle bound
    */
   public getRectangleFromDegrees({ xmin, ymin, xmax, ymax }) {

@@ -24,7 +24,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { Component, Prop, Mixins } from 'vue-property-decorator'
 import { MapMixin, Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
 import mapViewStateInstance, { Rect } from '../MapView/mixins/map-view-state'
 import MapView from '../MapView'
@@ -56,19 +56,19 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
   }
 
   // 获取初始地图视图的复位范围
-  get initView() {
-    return mapViewStateInstance.initView
+  get initBound() {
+    return mapViewStateInstance.initBound
   }
 
   // 设置初始地图视图的复位范围
-  set initView(view: Rect) {
-    mapViewStateInstance.initView = view
+  set initBound(bound: Rect) {
+    mapViewStateInstance.initBound = bound
   }
 
   /**
-   * 获取初始范围
+   * 获取初始经纬度坐标范围
    */
-  getInitView() {
+  getInitBound() {
     const layer = this.layers[0]
     const { fullExtent, scenes } = layer
     if (layer instanceof Layer3D) {
@@ -95,13 +95,9 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
     this.queryRect = result
   }
 
-  /**
-   * 监听: 分屏数量变化
-   */
-  @Watch('screenNums', { immediate: true })
-  watchScreenNums(nV) {
-    if (nV.length) {
-      this.initView = this.getInitView()
+  created() {
+    if (this.screenNums.length) {
+      this.initBound = this.getInitBound()
     }
   }
 
