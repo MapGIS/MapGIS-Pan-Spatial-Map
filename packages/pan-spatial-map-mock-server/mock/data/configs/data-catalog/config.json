@@ -812,8 +812,8 @@
             "serverUrl": ""
           },
           {
-            "label": "景观模型_unavailable",
-            "describe": "景观模型",
+            "label": "中地景观模型",
+            "describe": "中地景观模型",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
