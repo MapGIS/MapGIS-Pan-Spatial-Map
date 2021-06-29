@@ -35,6 +35,7 @@ export {
   Document,
   Map,
   Layer,
+  Layer3D,
   LayerType,
   LoadStatus,
   LOD,
@@ -68,7 +69,8 @@ export {
   Feature,
   Metadata,
   Overlay,
-  Analysis
+  Analysis,
+  CoordinateSystemType
 } from './model'
 
 import { CommonComponents } from './common'

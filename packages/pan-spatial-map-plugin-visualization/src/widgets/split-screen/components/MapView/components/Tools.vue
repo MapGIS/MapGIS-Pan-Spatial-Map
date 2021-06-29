@@ -1,23 +1,24 @@
 <template>
-  <row-flex
-    :label="title"
-    :span="[12, 12]"
-    :colon="false"
-    :gutter="0"
-    justify="space-between"
-    class="tools"
-  >
-    <slot>
-      <a-tooltip v-for="item in tools" :key="item.label" :title="item.label">
-        <a-icon :type="item.icon" @click.stop="onIconClick(item)" />
-      </a-tooltip>
-    </slot>
-  </row-flex>
+  <mp-toolbar class="mp-split-screen-toolbar">
+    <mp-toolbar-title>
+      {{ title }}
+    </mp-toolbar-title>
+    <mp-toolbar-command-group>
+      <mp-toolbar-command
+        v-for="item in tools"
+        :key="item.label"
+        :title="item.label"
+        :icon="item.icon"
+        @click="onIconClick(item)"
+      >
+      </mp-toolbar-command>
+    </mp-toolbar-command-group>
+  </mp-toolbar>
 </template>
+
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import _upperFirst from 'lodash/upperFirst'
-import RowFlex from '../../RowFlex'
 
 export type OperationType =
   | 'UNKNOW'
@@ -43,9 +44,7 @@ interface ITool {
 }
 
 @Component({
-  components: {
-    RowFlex
-  }
+  components: {}
 })
 export default class Tools extends Vue {
   @Prop() readonly title!: string
@@ -92,22 +91,9 @@ export default class Tools extends Vue {
 }
 </script>
 <style lang="less" scoped>
-.tools {
-  color: @white;
-  background-color: @primary-color;
-  line-height: 32px;
-  padding: 0 8px;
-  /deep/ .ant-col:last-of-type {
-    text-align: right;
-    .anticon {
-      font-size: 18px;
-      margin-left: 8px;
-      vertical-align: middle;
-      margin-top: -0.125em;
-    }
-  }
-  + div {
-    flex: 1;
+.mp-split-screen-toolbar {
+  /deep/ .mp-toolbar-title {
+    color: @primary-color;
   }
 }
 </style>

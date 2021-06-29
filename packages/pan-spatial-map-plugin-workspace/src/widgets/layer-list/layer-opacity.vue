@@ -17,8 +17,6 @@
 import { Component, Vue, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
 
-const { IDocument } = require('@mapgis/webclient-store')
-
 @Component
 export default class LayerOpacity extends Mixins(AppMixin) {
   @Prop({ required: true }) layers: Array

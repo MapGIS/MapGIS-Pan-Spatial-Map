@@ -11,11 +11,8 @@
       <!-- 多屏联动组件 -->
       <mapgis-3d-link :vue-key="vueKey" :enable="isMapLoaded" />
       <!-- 绘制组件 -->
-      <mapgis-3d-draw
-        @load="onDrawLoad"
-        @drawCreate="onDrawCreate"
-        :vue-key="vueKey"
-      />
+      <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" :vue-key="vueKey">
+      </mp-3d-draw-pro>
     </template>
   </div>
 </template>
@@ -31,17 +28,28 @@ export default class CesiumView extends Vue {
 
   @Prop({ default: 500 }) readonly height!: number
 
-  drawer = null
-
   isMapLoaded = false
 
+  get drawComponent() {
+    return this.$refs.draw3d
+  }
+
+  beforeDestroyed() {
+    this.isMapLoaded = false
+  }
+
   /**
-   * 开启绘制
+   * 供父组件调用
    */
-  enableDrawer() {
-    if (this.drawer) {
-      this.drawer.enableDrawRectangle()
-    }
+  openDraw(mode) {
+    this.drawComponent.openDraw(mode || 'draw-rectangle')
+  }
+
+  /**
+   * 供父组件调用
+   */
+  closeDraw() {
+    this.drawComponent.closeDraw()
   }
 
   /**
@@ -50,44 +58,13 @@ export default class CesiumView extends Vue {
    */
   onMapLoad(payload) {
     this.isMapLoaded = true
-    this.$emit('on-load', payload)
+    this.$emit('load', payload)
   }
 
-  /**
-   * 地图绘制组件加载成功的回调
-   * @param 绘制组件实例
-   */
-  onDrawLoad(drawer) {
-    if (!this.drawer) {
-      this.drawer = drawer
-    }
-  }
-
-  /**
-   * 移除地图绘制实体
-   */
-  onDrawRemove() {
-    if (this.drawer) {
-      this.drawer.removeEntities()
-    }
-  }
-
-  /**
-   * 地图绘制创建
-   * @param 笛卡尔集坐标
-   * @param 经纬度坐标
-   */
-  onDrawCreate(cartesian3, lnglat) {
+  onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
-      const [[xmin, ymax], [xmax, ymin]] = lnglat
-      this.$emit('on-create', { xmin, ymin, xmax, ymax })
-      this.onDrawRemove()
+      this.$emit('draw-finished', { mode, feature, shape, center })
     }
-  }
-
-  beforeDestroyed() {
-    this.isMapLoaded = false
-    this.drawer = null
   }
 }
 </script>

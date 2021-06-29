@@ -49,10 +49,9 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
-import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
 import * as echarts from 'echarts'
+import { mapGetters, mapMutations } from '../../store'
 import RowFlex from '../RowFlex'
-import ThematicMapMixin from '../../mixins/thematic-map'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'

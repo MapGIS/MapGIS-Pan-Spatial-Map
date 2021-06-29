@@ -5,17 +5,17 @@
     <!-- 二维地图 -->
     <mapbox-view
       v-if="is2dLayer"
-      ref="maboxView"
-      @on-load="onMapboxLoad"
-      @on-created="onDrawCreated"
+      ref="mapboxView"
+      @load="onMapboxLoad"
+      @draw-finished="onDrawFinished"
       :document="mapViewDocument"
     />
     <!-- 三维地图 -->
     <cesium-view
       v-else
       ref="cesiumView"
-      @on-load="onCesiumLoad"
-      @on-create="onDrawCreated"
+      @load="onCesiumLoad"
+      @draw-finished="onDrawFinished"
       :vue-key="mapViewId"
       :height="mapViewHeight"
       :document="mapViewDocument"
@@ -156,7 +156,9 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    * 创建二三维绘制
    * @param Rect 绘制范围
    */
-  onDrawCreated({ xmin, ymin, xmax, ymax }: Rect) {
+  onDrawFinished({ mode, feature, shape, center }) {
+    const { xmin, ymin, xmax, ymax }: Rect = shape
+
     const rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'QUERY':
@@ -178,16 +180,16 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 启用绘制
    */
-  enableDrawer() {
-    const ref = this.is2dLayer ? 'maboxView' : 'cesiumView'
-    this.$refs[ref].enableDrawer()
+  openDraw() {
+    const ref = this.is2dLayer ? 'mapboxView' : 'cesiumView'
+    this.$refs[ref].openDraw()
   }
 
   /**
    * 查询点击
    */
   onQuery() {
-    this.enableDrawer()
+    this.openDraw()
   }
 
   /**
@@ -195,7 +197,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    */
   onZoomIn() {
     this.pan(false)
-    this.enableDrawer()
+    this.openDraw()
   }
 
   /**

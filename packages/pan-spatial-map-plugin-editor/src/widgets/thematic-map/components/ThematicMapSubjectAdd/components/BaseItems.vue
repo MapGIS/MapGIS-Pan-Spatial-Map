@@ -26,7 +26,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { subjectTypes } from '@mapgis/pan-spatial-map-store'
+import { subjectTypes } from '../../../store'
 import RowFlex from '../../RowFlex'
 import SourceTarget from './SourceTarget'
 import SubjectTypes from './SubjectTypes'

@@ -1,8 +1,9 @@
 <template>
   <!-- 等级符号专题图 -->
   <mapgis-3d-popup
+    v-model="showPopup"
     :position="popupPosition"
-    :showed="showPopup"
+    :forceRender="true"
     :destroyOnClose="true"
   >
     <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>

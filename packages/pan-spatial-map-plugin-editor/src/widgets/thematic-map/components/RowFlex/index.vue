@@ -10,7 +10,6 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component
 export default class extends Vue {

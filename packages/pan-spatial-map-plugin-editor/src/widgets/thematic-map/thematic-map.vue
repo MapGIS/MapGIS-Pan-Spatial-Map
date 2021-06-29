@@ -33,11 +33,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import {
-  mapGetters,
-  mapMutations,
-  moduleTypes
-} from '@mapgis/pan-spatial-map-store'
+import { mapGetters, mapMutations, moduleTypes } from './store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
 import ThematicMapStatisticTable from './components/ThematicMapStatisticTable'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'

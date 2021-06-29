@@ -28,7 +28,8 @@
       :wrap-style="drawerWrapStyle"
       :header-style="drawerHeaderStyle"
       :body-style="drawerBodyStyle"
-      :mask="false"
+      :maskStyle="drawerMaskStyle"
+      @close="onSettingPanelClose"
     >
       <div class="drawer-handle" slot="handle" @click="onToggleSettingPanel">
         <a-icon :type="settingPanelVisible ? 'right' : 'left'" />
@@ -115,22 +116,12 @@ export default class MapboxCompare extends Vue {
   }
 
   /**
-   * 添加图层
+   * 遮罩层样式
    */
-  addLayerToMap(type: 'above' | 'below') {
-    const { defaultMap } = this[`${type}Document`]
-    const layer = this[`${type}Layer`]
-    if (layer) {
-      defaultMap.removeAll()
-      defaultMap.add(layer)
+  get drawerMaskStyle() {
+    return {
+      backgroundColor: 'transparent'
     }
-  }
-
-  /**
-   * 面板开关
-   */
-  onToggleSettingPanel() {
-    this.settingPanelVisible = !this.settingPanelVisible
   }
 
   /**
@@ -147,6 +138,32 @@ export default class MapboxCompare extends Vue {
   @Watch('belowLayer.id', { immediate: true })
   watchBelowLayer() {
     this.addLayerToMap('below')
+  }
+
+  /**
+   * 点击遮罩层关闭面板
+   */
+  onSettingPanelClose() {
+    this.settingPanelVisible = false
+  }
+
+  /**
+   * 面板开关
+   */
+  onToggleSettingPanel() {
+    this.settingPanelVisible = !this.settingPanelVisible
+  }
+
+  /**
+   * 添加图层
+   */
+  private addLayerToMap(type: 'above' | 'below') {
+    const { defaultMap } = this[`${type}Document`]
+    const layer = this[`${type}Layer`]
+    if (layer) {
+      defaultMap.removeAll()
+      defaultMap.add(layer)
+    }
   }
 }
 </script>

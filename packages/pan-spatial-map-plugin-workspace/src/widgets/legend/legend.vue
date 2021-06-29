@@ -76,7 +76,7 @@ export default class MpLegend extends Mixins(WidgetMixin) {
     this.visible = !this.visible
     if (this.visible && this.data.length === 0) {
       this.$message.warning(
-        '未勾选专题或未配置专题图例，可在后台配置或右键专题节点上传图例'
+        '未选择数据或未配置数据图例，可在后台配置或在数据目录节点上上传图例'
       )
     }
   }

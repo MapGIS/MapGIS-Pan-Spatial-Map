@@ -83,7 +83,8 @@
               <a-list-item v-if="isAttributes(item)" @click="customQuery(item)">
                 自定义查询
               </a-list-item>
-              <a-list-item
+              <!-- 要素统改目前只有符号统改，功能较单一且应用性较弱，从产品角度考虑先去除，待后面要素统改（参数<->参数、属性<->参数）需求强烈且明确后再增加
+                <a-list-item
                 v-if="
                   (isSubLayer(item) && isIgsDocLayer(item)) ||
                     isIgsVectorLayer(item)
@@ -91,7 +92,8 @@
                 @click="unifyMode(item)"
               >
                 要素统改
-              </a-list-item>
+              </a-list-item> 
+              -->
               <a-list-item v-if="isParentLayer(item)" @click="fitBounds(item)">
                 缩放至
               </a-list-item>
@@ -184,8 +186,6 @@
       <template v-slot:default="slotProps">
         <mp-window
           title="要素统改"
-          :width="300"
-          :bottom="10"
           :verticalOffset="10"
           :icon="widgetInfo.icon"
           :visible.sync="showUnifyModify"

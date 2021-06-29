@@ -2,24 +2,46 @@
   <div class="mp-widget-split-screen" :class="mode" v-if="isOpen">
     <!-- 分屏地图 -->
     <split-screen-map
+      ref="splitScreenMap"
       v-bind="bindProps"
       :resize="resize"
-      :is-full-screen="isFullScreen"
     />
     <!-- 分屏设置 -->
-    <split-screen-setting
-      v-bind="bindProps"
-      @on-setting-panel-toggle="setResize"
-      @on-full-screen="setFullScreen"
-      @on-screen-count-change="onScreenCountChange"
-      @on-layer-change="onLayerChange"
-    />
+    <a-drawer
+      title="设置"
+      placement="right"
+      :closable="false"
+      :get-container="false"
+      :width="240"
+      :visible="settingPanelVisible"
+      :wrap-style="drawerWrapStyle"
+      :header-style="drawerHeaderStyle"
+      :body-style="drawerBodyStyle"
+      :maskStyle="drawerMaskStyle"
+      @close="onSettingPanelClose"
+    >
+      <div class="drawer-handle" slot="handle" @click="onToggleSettingPanel">
+        <a-icon :type="settingPanelVisible ? 'right' : 'left'" />
+      </div>
+      <split-screen-setting
+        v-bind="bindProps"
+        @in-full-screen="onInFullScreen"
+        @out-full-screen="onOutFullScreen"
+        @on-screen-count-change="onScreenCountChange"
+        @on-layer-change="onLayerChange"
+      />
+    </a-drawer>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin, WidgetState, Layer } from '@mapgis/web-app-framework'
+import {
+  DomUtil,
+  WidgetMixin,
+  WidgetState,
+  Layer
+} from '@mapgis/web-app-framework'
 import SplitScreenMap from './components/SplitScreenMap'
 import SplitScreenSetting from './components/SplitScreenSetting'
 
@@ -37,8 +59,6 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
 ) {
   isOpen = false
 
-  isFullScreen = false
-
   resize = ''
 
   mode: Mode = 'max'
@@ -51,6 +71,9 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
 
   // 目录树可见图层
   layers: Layer[] = []
+
+  // 弹框开关
+  settingPanelVisible = true
 
   // 地图排列
   get mapSpan() {
@@ -81,47 +104,41 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
     }
   }
 
-  /**
-   * 设置是否resize
-   */
-  setResize() {
-    this.resize = `${(Math.random() * 10000).toFixed(0)}`
+  // 弹框wrap样式
+  get drawerWrapStyle() {
+    return {
+      position: 'absolute'
+    }
   }
 
-  /**
-   * 设置全屏
-   */
-  setFullScreen() {
-    this.isFullScreen = true
-    const timer = setTimeout(() => {
-      this.isFullScreen = false
-      clearTimeout(timer)
-    }, 200)
+  // 弹框头部样式
+  get drawerHeaderStyle() {
+    return {
+      display: 'none'
+    }
   }
 
-  /**
-   * 初始化地图信息
-   */
-  setLayers(screenNums?: number) {
-    this.screenNums = []
-    this.layerIds = []
-    for (let i = 0; i < screenNums; i++) {
-      this.screenNums.push(i)
-      this.layerIds.push(this.layers[i].id)
+  // 弹框内容样式
+  get drawerBodyStyle() {
+    return {
+      display: 'flex',
+      padding: '12px'
     }
   }
 
   /**
-   * 初始化图层
+   * 遮罩层样式
    */
-  initLayers() {
-    this.layers = this.document.defaultMap
-      .clone()
-      .getFlatLayers()
-      .filter(v => v.isVisible)
-    const { length } = this.layers
-    if (length) {
-      this.setLayers(length < 7 ? length : 6)
+  get drawerMaskStyle() {
+    return {
+      backgroundColor: 'transparent'
+    }
+  }
+
+  @Watch('document.defaultMap', { deep: true })
+  watchDefaultMap() {
+    if (this.isOpen) {
+      this.initLayers()
     }
   }
 
@@ -171,10 +188,68 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
     this.layerIds.splice(index, 1, layerId)
   }
 
-  @Watch('document.defaultMap', { deep: true })
-  watchDefaultMap() {
-    if (this.isOpen) {
-      this.initLayers()
+  /**
+   * 点击遮罩层关闭面板
+   */
+  onSettingPanelClose() {
+    this.settingPanelVisible = false
+  }
+
+  /**
+   * 面板开关
+   */
+  onToggleSettingPanel() {
+    this.settingPanelVisible = !this.settingPanelVisible
+  }
+
+  /**
+   * 进入全屏
+   */
+  onInFullScreen() {
+    this.settingPanelVisible = false
+    const el = this.$refs.splitScreenMap.$el
+    if (!DomUtil.inFullScreen(el)) {
+      this.$message.warn('对不起，您的浏览器不支持全屏模式')
+    }
+  }
+
+  /**
+   * 退出全屏
+   */
+  onOutFullScreen() {
+    DomUtil.outFullScreen()
+  }
+
+  /**
+   * 设置是否resize
+   */
+  private setResize() {
+    this.resize = `${(Math.random() * 10000).toFixed(0)}`
+  }
+
+  /**
+   * 初始化图层
+   */
+  private initLayers() {
+    this.layers = this.document.defaultMap
+      .clone()
+      .getFlatLayers()
+      .filter(v => v.isVisible)
+    const { length } = this.layers
+    if (length) {
+      this.setLayers(length < 7 ? length : 6)
+    }
+  }
+
+  /**
+   * 初始化地图信息
+   */
+  private setLayers(screenNums?: number) {
+    this.screenNums = []
+    this.layerIds = []
+    for (let i = 0; i < screenNums; i++) {
+      this.screenNums.push(i)
+      this.layerIds.push(this.layers[i].id)
     }
   }
 }
@@ -183,12 +258,38 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
 <style lang="less" scoped>
 .mp-widget-split-screen {
   width: 100%;
-  display: flex;
+  position: relative;
   &.max {
     height: 100%;
   }
   &.normal {
     height: 500px;
+  }
+  /deep/ .ant-drawer-right.ant-drawer-open {
+    .ant-drawer-content-wrapper {
+      box-shadow: none;
+      border-left: 1px solid @primary-color;
+    }
+  }
+  .drawer-handle {
+    position: absolute;
+    height: 64px;
+    top: calc(50% - 32px);
+    left: -16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: @base-bg-color;
+    border-radius: 4px 0 0 4px;
+    border: 1px solid @primary-color;
+    border-right-color: transparent;
+    cursor: pointer;
+
+    &:hover {
+      color: white;
+      background: @primary-color;
+    }
   }
 }
 </style>

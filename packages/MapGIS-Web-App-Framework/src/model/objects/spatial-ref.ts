@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 export class AngleConvert {
   /**
    * 十进制度转度分秒 d.m.s -> {d,m,s}

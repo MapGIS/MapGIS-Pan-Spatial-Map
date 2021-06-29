@@ -29,14 +29,8 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import {
-  Mixins,
-  Component,
-  Watch,
-  ProvideReactive
-} from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import { mapGetters, mapMutations } from '@mapgis/pan-spatial-map-store'
+import { Vue, Component } from 'vue-property-decorator'
+import { mapGetters, mapMutations } from '../../store'
 import BaseItems from './components/BaseItems.vue'
 import TimeLineItems from './components/TimeLineItems.vue'
 import AttributeTableItems from './components/AttributeTableItems.vue'
@@ -58,9 +52,7 @@ import PopupItems from './components/PopupItems.vue'
     ...mapMutations(['setVisible'])
   }
 })
-export default class ThematicMapSubjectAdd extends Mixins<Record<string, any>>(
-  WidgetMixin
-) {
+export default class ThematicMapSubjectAdd extends Vue {
   get saVisible() {
     return this.isVisible('sa')
   }

@@ -14,7 +14,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { AppMixin } from '@mapgis/web-app-framework'
-import { mapGetters, subjectTypes } from '@mapgis/pan-spatial-map-store'
+import { mapGetters, subjectTypes } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
 
