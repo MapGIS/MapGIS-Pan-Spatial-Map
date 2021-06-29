@@ -97,7 +97,7 @@ export class TileMatrixSet {
       )
     }
 
-    // todo:还剩下TileMatrix未解析。
+
     if (
       jsonObject.TileMatrix &&
       jsonObject.TileMatrix.length &&
@@ -108,7 +108,14 @@ export class TileMatrixSet {
         lod.level = index
 
         if (element.Identifier) {
-          lod.levelValue = element.Identifier
+          // 存在两种情况，其一是参照系:级数,其二是只为级数
+          const pos = element.Identifier.lastIndexOf(':')
+          if (pos >= 0) {
+            // zoom = atol(strValue.Mid(pos + 1))
+            lod.levelValue = parseInt(element.Identifier.substring(pos + 1))
+          } else {
+            lod.levelValue = parseInt(element.Identifier)
+          }
         }
 
         this.tileInfo.lods.push(lod)
@@ -371,7 +378,15 @@ export class WMTSSublayer {
 
     if (jsonObject.Format) this.imageFormats = jsonObject.Format
 
-    if (this.imageFormats.length > 0) [this.imageFormat] = this.imageFormats
+    if (this.imageFormats.length > 0) {
+      // 默认获取png格式的图片,不支持png格式图片的话，取第0个。
+      const pngFormat = this.imageFormats.find(item => item.includes('png'))
+      if (pngFormat) {
+        this.imageFormat = pngFormat
+      } else {
+        ;[this.imageFormat] = this.imageFormats
+      }
+    }
 
     if (jsonObject.Identifier) this.id = jsonObject.Identifier
 

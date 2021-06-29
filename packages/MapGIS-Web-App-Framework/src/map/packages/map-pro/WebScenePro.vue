@@ -41,6 +41,7 @@
         :baseUrl="layerProps.url"
         :layers="layerProps.layers"
         :srs="layerProps.srs"
+        :format="layerProps.format"
       />
       <mapgis-3d-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
@@ -319,7 +320,7 @@ export default {
             wmtsStyle: layer.activeLayer.styleId,
             format: layer.activeLayer.imageFormat,
             options: {
-              startLevel: parseInt(tileMatrixSet.tileInfo.lods[0].levelValue)
+              startLevel: tileMatrixSet.tileInfo.lods[0].levelValue
             }
           }
 
@@ -334,7 +335,8 @@ export default {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
-            layers: allLayerNames.join(',')
+            layers: allLayerNames.join(','),
+            format: layer.imageFormat
           }
 
           break

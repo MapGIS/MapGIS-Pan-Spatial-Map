@@ -511,7 +511,15 @@ export class OGCWMSLayer extends Layer {
             // 4.设置默认参数
             // 4.1
             if (this.imageFormats.length > 0) {
-              ;[this.imageFormat] = this.imageFormats
+              // 默认获取png格式的图片,不支持png格式图片的话，取第0个。
+              const pngFormat = this.imageFormats.find(item =>
+                item.includes('png')
+              )
+              if (pngFormat) {
+                this.imageFormat = pngFormat
+              } else {
+                ;[this.imageFormat] = this.imageFormats
+              }
             }
 
             // 4.2
