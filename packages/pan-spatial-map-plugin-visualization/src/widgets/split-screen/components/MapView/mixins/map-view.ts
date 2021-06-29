@@ -37,10 +37,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     return this.activeMapViewState.initView
   }
 
-  set initView(rect: Rect) {
-    this.activeMapViewState.initView = rect
-  }
-
   // 当前激活的地图视图的范围
   get activeView(): Rect {
     return this.activeMapViewState.activeView
@@ -50,12 +46,13 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     this.activeMapViewState.activeView = rect
   }
 
+  // 判断是否是当前活动地图
   get isCurrentView() {
     return this.activeMapViewId === this.mapViewId
   }
 
   /**
-   * 监听: 更新地图视图范围
+   * 监听: 更新活动地图视图范围
    */
   @Watch('activeView', { immediate: true, deep: true })
   watchActiveView(nV: Rect) {
@@ -65,36 +62,28 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 更新地图视图范围
+   * 设置活动地图视图范围
    */
   setActiveView(rect: Rect) {
-    if (this.isCurrentView) {
+    if (this.isMapLoaded && this.isCurrentView) {
       this.activeView = rect
     }
   }
 
   /**
-   * 查询
-   * @param {Rect} rect 指定区域
+   * 查询要素
+   * @param {Rect} rect 经纬度范围
    */
   query(rect: Rect) {
     this.$emit('on-query', rect)
   }
 
   /**
-   * 判断矩形范围是否可用
-   * @param {Rect} rect
-   */
-  isValidRect(rect: Rect) {
-    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
-  }
-
-  /**
    * 放大地图到指定区域的中心
-   * @param {Rect} rect 指定区域
+   * @param {Rect} rect 经纬度范围
    */
   zoomIn(rect: Rect) {
-    if (this.isValidRect(rect)) {
+    if (this.activeMapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomToRect(rect)
       } else {
@@ -106,11 +95,11 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 缩小地图到指定区域的中心
-   * @param {Rect} rect 指定区域
+   * 缩小地图到指定经纬度范围的中心
+   * @param {Rect} rect 经纬度范围
    */
   zoomOut(rect: Rect) {
-    if (this.isValidRect(rect)) {
+    if (this.activeMapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomToRect(rect, 'zoomOut')
       } else {
@@ -123,7 +112,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   /**
    * 复位
-   * @param view 视图范围
+   * @param view 经纬度范围
    */
   resort(view: Rect) {
     const _view = view || this.initView

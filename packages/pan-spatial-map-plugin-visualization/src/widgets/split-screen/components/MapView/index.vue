@@ -55,7 +55,7 @@ import {
   MpQueryResultTree,
   MpMarkersHighlightPopup
 } from '../../../../components'
-import MapViewMixin, { Rect } from '../../mixins/map-view'
+import MapViewMixin, { Rect } from './mixins/map-view'
 import MapboxView from './components/MapboxView'
 import CesiumView from './components/CesiumView'
 import Tools, { OperationType, OperationFn } from './components/Tools'

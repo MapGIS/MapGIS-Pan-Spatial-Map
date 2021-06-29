@@ -26,7 +26,7 @@
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import { MapMixin, Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
-import mapViewStateInstance, { Rect } from '../../mixins/map-view-state'
+import mapViewStateInstance, { Rect } from '../MapView/mixins/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -72,16 +72,15 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
     const layer = this.layers[0]
     const { fullExtent, scenes } = layer
     if (layer instanceof Layer3D) {
-      const controller = Objects.SceneController.getInstance(
-        this.Cesium,
-        this.CesiumZondy,
-        this.webGlobe
-      )
-      const sceneController = controller.sceneController || controller
-      const subLayer = scenes[0].sublayers[0]
-      const bound = sceneController.layerLocalExtentToGlobelExtent(subLayer)
-      if (bound) {
-        return bound
+      if (scenes) {
+        const controller = Objects.SceneController.getInstance(
+          this.Cesium,
+          this.CesiumZondy,
+          this.webGlobe
+        )
+        const sceneController = controller.sceneController || controller
+        const subLayer = scenes[0].sublayers[0]
+        return sceneController.layerLocalExtentToGlobelExtent(subLayer)
       }
     }
     return fullExtent

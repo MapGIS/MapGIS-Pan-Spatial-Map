@@ -19,17 +19,18 @@ export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
     this.sceneController = controller.sceneController || controller
   }
 
-  // /**
-  //  * todo三维地图move
-  //  */
-  // setCesiumMove({ west, east, north, south }) {
-  //   this.setActiveView({
-  //     xmin: west,
-  //     xmax: east,
-  //     ymax: north,
-  //     ymin: south
-  //   })
-  // }
+  /**
+   * 三维地图move
+   * @param 经纬度范围
+   */
+  setCesiumMove({ west, east, north, south }) {
+    this.setActiveView({
+      xmin: west,
+      xmax: east,
+      ymax: north,
+      ymin: south
+    })
+  }
 
   /**
    * 清除三维地图上的实体
@@ -42,9 +43,12 @@ export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
 
   /**
    * 三维放大/缩小至指定范围
+   * @param bound 经纬度范围
+   * @param type zoomIn|zoomOut
    */
   zoomToRect3d(bound: Rect, type: 'zoomIn' | 'zoomOut' = 'zoomIn') {
     let destination: any
+    console.log('zoomToRect3d', bound)
     if (type === 'zoomIn') {
       destination = this.sceneController.getRectangleFromDegrees(bound)
     } else {

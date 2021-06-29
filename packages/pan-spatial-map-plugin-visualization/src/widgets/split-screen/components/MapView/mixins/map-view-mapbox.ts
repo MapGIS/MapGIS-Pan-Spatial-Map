@@ -13,7 +13,7 @@ export default class MapboxMixin extends Mixins<Record<string, any>>(Vue) {
   /**
    * 二维地图move
    */
-  setMapboxMove(rect: Rect) {
+  setMapboxMove() {
     const { _sw, _ne } = this.ssMap.getBounds()
     this.setActiveView({
       xmin: _sw.lng,
@@ -25,11 +25,14 @@ export default class MapboxMixin extends Mixins<Record<string, any>>(Vue) {
 
   /**
    *  二维放大至指定范围
+   * @param 经纬度范围
+   * @param type zoomIn|zoomOut
    */
   zoomToRect(
     { xmin, xmax, ymin, ymax }: Rect,
     type: 'zoomIn' | 'zoomOut' = 'zoomIn'
   ) {
+    console.log('zoomToRect', { xmin, xmax, ymin, ymax })
     if (type === 'zoomIn') {
       this.ssMap.fitBounds([
         [xmax, ymin],
