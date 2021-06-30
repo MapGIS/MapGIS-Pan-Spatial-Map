@@ -153,7 +153,7 @@ export default class Mp3dMarkerPlotting extends Vue {
   }
 
   private zoomTo(bound) {
-    const destination = new this.sceneController.getRectangleFromDegrees(bound)
+    const destination = this.sceneController.getRectangleFromDegrees(bound)
     this.sceneController.cameraFlyTo({ destination })
   }
 

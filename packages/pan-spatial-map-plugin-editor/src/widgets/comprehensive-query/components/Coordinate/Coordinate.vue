@@ -327,11 +327,11 @@ export default class MpCoordinate extends Mixins(AppMixin) {
     const x = this.coordDecimal[0]
     const y = this.coordDecimal[1]
 
-    const xx = Objects.AngleConvert.dToDMS(x)
+    const xx = Objects.AngleConvert.dToDms(x)
     this.coordDMS[0][0] = xx.d?.toString()
     this.coordDMS[0][1] = xx.m?.toString()
     this.coordDMS[0][2] = xx.s?.toString()
-    const yy = Objects.AngleConvert.dToDMS(y)
+    const yy = Objects.AngleConvert.dToDms(y)
     this.coordDMS[1][0] = yy.d.toString()
     this.coordDMS[1][1] = yy.m?.toString()
     this.coordDMS[1][2] = yy.s?.toString()
@@ -380,11 +380,11 @@ export default class MpCoordinate extends Mixins(AppMixin) {
     }
     this.coordDecimal = [Number(x), Number(y)]
 
-    const xx = Objects.AngleConvert.dToDMS(x)
+    const xx = Objects.AngleConvert.dToDms(x)
     this.coordDMS[0][0] = xx.d.toString()
     this.coordDMS[0][1] = xx.m?.toString()
     this.coordDMS[0][2] = xx.s?.toString()
-    const yy = Objects.AngleConvert.dToDMS(y)
+    const yy = Objects.AngleConvert.dToDms(y)
     this.coordDMS[1][0] = yy.d.toString()
     this.coordDMS[1][1] = yy.m?.toString()
     this.coordDMS[1][2] = yy.s?.toString()

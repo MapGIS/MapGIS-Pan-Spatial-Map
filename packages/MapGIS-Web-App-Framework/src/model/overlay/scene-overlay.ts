@@ -107,7 +107,7 @@ export class SceneOverlays {
       name,
       pointsArr,
       fcolor,
-      olcolor,
+      options && options.outlineWidth === 0 ? '' : olcolor,
       options
     )
     this.entityArray.push(polygonEntity)

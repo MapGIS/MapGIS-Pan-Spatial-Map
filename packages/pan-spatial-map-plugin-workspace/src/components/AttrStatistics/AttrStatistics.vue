@@ -210,7 +210,6 @@
           :locale="{ emptyText: '暂无数据' }"
           :columns="columnsTable"
           :data-source="tableData"
-          :pagination="false"
           bordered
           size="small"
           :scroll="{ y: 240, x: 10 }"
@@ -531,12 +530,12 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         serverType === LayerType.IGSScene
       )
       const {
-        AttStruct: { FldName, FldType, FldNumber }
+        AttStruct: { FldName, FldType, FldNumber, FldAlias }
       } = info
 
       for (let index = 0; index < FldNumber; index += 1) {
         options.push({
-          label: FldName[index],
+          label: FldAlias[index] || FldName[index],
           value: FldName[index],
           type: FldType[index]
         })
