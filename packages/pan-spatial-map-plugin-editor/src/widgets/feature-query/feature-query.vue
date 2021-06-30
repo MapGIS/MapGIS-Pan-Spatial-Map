@@ -266,13 +266,13 @@ export default class MpFeatureQuery extends Mixins(
     const {
       activeScene: { sublayers }
     } = layer
-    sublayers.forEach(layer => {
-      if (!layer.visible) {
+    sublayers.forEach(item => {
+      if (!item.visible) {
         return
       }
       exhibition.options.push({
-        id: layer.id,
-        name: layer.title || layer.name,
+        id: item.id,
+        name: item.title || item.name,
         ip: ip || baseConfigInstance.config.ip,
         port: Number(port || baseConfigInstance.config.port),
         serverType: layer.type,

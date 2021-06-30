@@ -602,12 +602,14 @@ export default class MpAttributeTable extends Mixins(
         'default',
         this.optionVal.id
       )
+
       const { gdbp } = this.optionVal
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry
         ? this.getGeometry3D(source)
         : this.optionVal.geometry
       const { current, pageSize } = this.pagination
+
       const json = await FeatureQuery.query(
         {
           ip,
