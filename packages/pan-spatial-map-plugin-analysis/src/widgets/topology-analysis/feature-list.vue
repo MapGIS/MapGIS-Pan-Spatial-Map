@@ -7,12 +7,12 @@
           slot-scope="item"
           style="padding-left:15px"
         >
-          <a-checkbox
+          <a-radio
             @click="selectFeature(item)"
             :checked="selectItem && selectItem.FID === item.FID"
           >
             {{ item.FID }}
-          </a-checkbox>
+          </a-radio>
         </a-list-item>
       </a-list>
       <div v-if="list.length > 0" class="feature-list-pagination-container">

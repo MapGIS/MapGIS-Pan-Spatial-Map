@@ -212,6 +212,8 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
     this.aDataIndex = null
     this.tDataIndex = null
     this.layerArrOption = []
+    this.changeTarget()
+    this.changeAnalysis()
     const arr = []
     val.layers().forEach(data => {
       if (

@@ -51,16 +51,19 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
     let geoJSON
     let layerId
     let sourceId
+    let color
     if (val === 'Target') {
       this.clearDataTargetArr()
       geoJSON = this.geoJSONTarget
       layerId = this.layerTargetId
       sourceId = this.sourceTargetId
+      color = '#FFA500'
     } else {
       this.clearDataAnalysisArr()
       geoJSON = this.geoJSONAnalysis
       layerId = this.layerAnalysisId
       sourceId = this.sourceAnalysisId
+      color = '#ff9c6e'
     }
 
     if (!geoJSON) {
@@ -82,7 +85,7 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
         source: sourceId,
         paint: {
           'circle-radius': 5, // 半径
-          'circle-color': '#FFA500', // 颜色
+          'circle-color': color, // 颜色
           'circle-opacity': 1 // 透明度
         }
       })
@@ -94,7 +97,7 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
         source: sourceId,
         paint: {
           // 设置填充颜色
-          'line-color': '#FFA500',
+          'line-color': color,
           'line-opacity': 1,
           'line-width': 3
         }
@@ -109,8 +112,8 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
         source: sourceId,
         paint: {
           // 设置填充颜色
-          'fill-color': '#FFA500',
-          'fill-outline-color': 'grey'
+          'fill-color': color,
+          'fill-outline-color': 'white'
         }
       })
       this.map.fitBounds(bound, {
