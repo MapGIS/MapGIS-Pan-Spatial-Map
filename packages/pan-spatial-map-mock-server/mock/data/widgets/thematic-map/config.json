@@ -693,23 +693,20 @@
                 "time": "2008",
                 "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
                 "docName": "",
+                "weight": "30",
                 "layerIndex": null,
-                "field": "面积",
-                "hexBinStyle": {
-                  "style": "gradient",
-                  "size": "5",
-                  "showLayerImage": "true",
-                  "showSourceFeature": "true",
-                  "polygonSideNum": "6",
-                  "opacity": "0.6"
-                },
                 "table": {
                   "showFields": ["NAME", "AREA"],
-                  "showFieldsTitle": {}
+                  "showFieldsTitle": {
+                    "NAME": "名称",
+                    "AREA": "面积"
+                  }
                 },
                 "graph": {
                   "showFields": ["AREA"],
-                  "showFieldsTitle": {},
+                  "showFieldsTitle": {
+                    "AREA": "面积"
+                  },
                   "field": "NAME",
                   "target": []
                 }
@@ -732,7 +729,6 @@
                 "port": "",
                 "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
                 "weight": "8",
-                "field": "面积",
                 "docName": "",
                 "layerIndex": null,
                 "hexBinStyle": {
@@ -745,12 +741,17 @@
                 },
                 "table": {
                   "showFields": ["NAME", "AREA"],
-                  "showFieldsTitle": {}
+                  "showFieldsTitle": {
+                    "NAME": "名称",
+                    "AREA": "面积"
+                  }
                 },
                 "graph": {
-                  "showFields": ["NAME"],
-                  "showFieldsTitle": {},
-                  "field": "AREA",
+                  "showFields": ["AREA"],
+                  "showFieldsTitle": {
+                    "AREA": "面积"
+                  },
+                  "field": "NAME",
                   "target": []
                 }
               }
@@ -774,7 +775,7 @@
                     "maxZoom": 10,
                     "ip": "",
                     "port": "",
-                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/县城驻地",
+                    "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
                     "weight": "30",
                     "docName": "",
                     "layerIndex": null,
@@ -794,19 +795,24 @@
                       "type": "att"
                     },
                     "table": {
-                      "showFields": ["name"],
-                      "showFieldsTitle": {}
+                      "showFields": ["NAME", "AREA"],
+                      "showFieldsTitle": {
+                        "NAME": "名称",
+                        "AREA": "面积"
+                      }
                     },
                     "graph": {
-                      "showFields": ["name"],
-                      "showFieldsTitle": {},
-                      "field": "name",
+                      "showFields": ["AREA"],
+                      "showFieldsTitle": {
+                        "AREA": "面积"
+                      },
+                      "field": "NAME",
                       "target": []
                     },
                     "popup": {
-                      "showFields": ["name"],
+                      "showFields": ["NAME"],
                       "showFieldsTitle": {},
-                      "title": "name"
+                      "title": "NAME"
                     }
                   }
                 ]

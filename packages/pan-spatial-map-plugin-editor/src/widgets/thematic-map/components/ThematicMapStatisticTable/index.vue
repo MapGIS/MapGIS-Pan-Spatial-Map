@@ -173,18 +173,17 @@ export default class ThematicMapStatisticTable extends Vue {
   getTargetList() {
     if (!this.graph) return
     const { showFields, showFieldsTitle } = this.graph
-    const targetList = showFields.reduce((results, v) => {
-      const value =
-        showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
-      results.push({
-        label: v,
-        value
-      })
-      return results
-    }, [])
+    const targetList = showFields.map(value => {
+      const label =
+        showFieldsTitle && showFieldsTitle[value]
+          ? showFieldsTitle[value]
+          : value
+      return { label, value }
+    })
+    const [firstTarget] = targetList
     this.targetList = targetList
-    this.target = targetList[0]?.value
-    this.chartOption.title = this.target
+    this.target = firstTarget?.value
+    this.chartOption.title = firstTarget?.label
   }
 
   /**

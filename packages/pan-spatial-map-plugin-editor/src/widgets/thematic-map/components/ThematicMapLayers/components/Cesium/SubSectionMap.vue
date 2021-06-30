@@ -4,7 +4,6 @@
     v-model="showPopup"
     :position="popupPosition"
     :forceRender="true"
-    :destroyOnClose="true"
   >
     <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
     <div v-else>

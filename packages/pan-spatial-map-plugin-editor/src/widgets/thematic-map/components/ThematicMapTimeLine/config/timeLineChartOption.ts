@@ -17,32 +17,7 @@ export const chartOption = (params: IParams) => {
         left: 0,
         right: 0,
         controlStyle: {
-          itemSize: 15,
-          itemGap: 5,
-          normal: {
-            color: txtColor
-          },
-          emphasis: {
-            color: '#1e90ff'
-          },
           showPlayBtn: false
-        },
-        lineStyle: {
-          color: txtColor,
-          width: 1,
-          type: 'dotted'
-        },
-        checkpointStyle: {
-          symbol: 'diamond',
-          symbolSize: 14,
-          borderColor: txtColor,
-          borderWidth: 'auto',
-          label: {
-            show: false,
-            textStyle: {
-              color: 'auto'
-            }
-          }
         },
         trigger: 'axis',
         axisPointer: {
