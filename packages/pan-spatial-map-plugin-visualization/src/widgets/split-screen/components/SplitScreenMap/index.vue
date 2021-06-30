@@ -66,15 +66,17 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
     mapViewStateInstance.initBound = bound
   }
 
+  // 图层
   get mapViewLayer() {
     return s => this.layers.find(({ id }) => this.layerIds[s] === id)
   }
 
+  // todo 三维暂不支持查询和清除查询,直接隐藏查询和清除按钮
   get excludesTools() {
     return s => {
       const _layer = this.mapViewLayer(s)
       if (_layer instanceof Layer3D) {
-        return 'query'
+        return ['query', 'clear']
       }
     }
   }
