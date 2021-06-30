@@ -5,7 +5,7 @@
     </mp-toolbar-title>
     <mp-toolbar-command-group>
       <mp-toolbar-command
-        v-for="item in tools"
+        v-for="item in resTools"
         :key="item.label"
         :title="item.label"
         :icon="item.icon"
@@ -18,29 +18,13 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import _upperFirst from 'lodash/upperFirst'
 
-export type OperationType =
-  | 'UNKNOW'
-  | 'QUERY'
-  | 'ZOOMIN'
-  | 'ZOOMOUT'
-  | 'RESORT'
-  | 'PAN'
-  | 'CLEAR'
-
-export type OperationFn =
-  | 'onQuery'
-  | 'onZoomIn'
-  | 'onZoomOut'
-  | 'onResort'
-  | 'onPan'
-  | 'onClear'
+export type ToolType = 'query' | 'zoomIn' | 'zoomOut' | 'resort' | 'clear'
 
 interface ITool {
   label: string
   icon: string
-  operationType: OperationType
+  type: ToolType
 }
 
 @Component({
@@ -49,44 +33,49 @@ interface ITool {
 export default class Tools extends Vue {
   @Prop() readonly title!: string
 
-  tools: ITool[] = [
+  @Prop() readonly excludes!: ToolType | Array<ToolType>
+
+  @Prop() readonly tools!: ITool[]
+
+  defaultTools: ITool[] = [
     {
       label: '查询',
       icon: 'search',
-      operationType: 'query'
+      type: 'query'
     },
     {
       label: '放大',
       icon: 'zoom-in',
-      operationType: 'zoomIn'
+      type: 'zoomIn'
     },
     {
       label: '缩小',
       icon: 'zoom-out',
-      operationType: 'zoomOut'
+      type: 'zoomOut'
     },
 
     {
       label: '复位',
       icon: 'redo',
-      operationType: 'resort'
-    },
-    {
-      label: '移动',
-      icon: 'drag',
-      operationType: 'pan'
+      type: 'resort'
     },
     {
       label: '清除',
       icon: 'delete',
-      operationType: 'clear'
+      type: 'clear'
     }
   ]
 
-  onIconClick({ operationType }: ITool) {
-    const fnName: OperationFn = `on${_upperFirst(operationType)}`
-    const _operationType: OperationType = operationType.toUpperCase()
-    this.$emit('on-icon-click', _operationType, fnName)
+  get resTools() {
+    const _tools =
+      this.tools && this.tools.length ? this.tools : this.defaultTools
+    return _tools.filter(
+      ({ type }) => !this.excludes || !this.excludes.includes(type)
+    )
+  }
+
+  onIconClick({ type }: ITool) {
+    this.$emit('on-click', type)
   }
 }
 </script>

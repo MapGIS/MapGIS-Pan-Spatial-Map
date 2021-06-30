@@ -9,10 +9,19 @@
     />
     <template v-if="isMapLoaded">
       <!-- 多屏联动组件 -->
-      <mapgis-3d-link :vue-key="vueKey" :enable="isMapLoaded" />
+      <mapgis-3d-link
+        @change="onLinkChange"
+        :vue-key="vueKey"
+        :enable="isMapLoaded"
+        :interval="20"
+        :excludes="['default']"
+      />
       <!-- 绘制组件 -->
-      <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" :vue-key="vueKey">
-      </mp-3d-draw-pro>
+      <mp-3d-draw-pro
+        ref="draw3d"
+        @finished="onDrawFinished"
+        :vue-key="vueKey"
+      />
     </template>
   </div>
 </template>
@@ -61,10 +70,20 @@ export default class CesiumView extends Vue {
     this.$emit('load', payload)
   }
 
+  /**
+   * 绘制完成的回调
+   */
   onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
       this.$emit('draw-finished', { mode, feature, shape, center })
     }
+  }
+
+  /**
+   * 联动组件change
+   */
+  onLinkChange({ '3d': view3d, '2d': rect2d }) {
+    this.$emit('link-changed', rect2d)
   }
 }
 </script>

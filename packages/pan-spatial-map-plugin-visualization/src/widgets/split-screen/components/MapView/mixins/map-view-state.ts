@@ -29,11 +29,11 @@ export class MapViewState {
   // 地图视图的ID
   private _mapViewId = ''
 
-  // 二三维维地图复位时的视图范围
-  private _initView = initRectangle
+  // 二三维维地图复位时的经纬度范围
+  private _initBound = initRectangle
 
-  // 二维地图当前的显示视图范围
-  private _activeView: Rect = initRectangle
+  // 二三维当前活动的地图经纬度范围
+  private _activeBound: Rect = initRectangle
 
   get mapViewId(): string {
     return this._mapViewId
@@ -43,20 +43,32 @@ export class MapViewState {
     this._mapViewId = id
   }
 
-  get activeView(): Rect {
-    return this._activeView
+  get activeBound(): Rect {
+    return this._activeBound
   }
 
-  set activeView(rect: Rect) {
-    this._activeView = rect
+  set activeBound(rect: Rect) {
+    if (this.isValidRect(rect)) {
+      this._activeBound = rect
+    }
   }
 
-  get initView() {
-    return this._initView
+  get initBound() {
+    return this._initBound
   }
 
-  set initView(view) {
-    this._initView = view
+  set initBound(rect: Rect) {
+    if (this.isValidRect(rect)) {
+      this._initBound = rect
+    }
+  }
+
+  /**
+   * 判断矩形范围是否可用
+   * @param {Rect} rect
+   */
+  isValidRect(rect: Rect) {
+    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
   }
 }
 
