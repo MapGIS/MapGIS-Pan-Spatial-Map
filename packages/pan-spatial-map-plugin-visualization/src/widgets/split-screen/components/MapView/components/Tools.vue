@@ -18,15 +18,8 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import _upperFirst from 'lodash/upperFirst'
 
-export type ToolType =
-  | 'query'
-  | 'zoomIn'
-  | 'zoomOut'
-  | 'resort'
-  | 'pan'
-  | 'clear'
+export type ToolType = 'query' | 'zoomIn' | 'zoomOut' | 'resort' | 'clear'
 
 interface ITool {
   label: string
@@ -67,11 +60,6 @@ export default class Tools extends Vue {
       type: 'resort'
     },
     {
-      label: '移动',
-      icon: 'drag',
-      type: 'pan'
-    },
-    {
       label: '清除',
       icon: 'delete',
       type: 'clear'
@@ -87,7 +75,7 @@ export default class Tools extends Vue {
   }
 
   onIconClick({ type }: ITool) {
-    this.$emit('on-icon-click', type.toUpperCase(), type)
+    this.$emit('on-click', type)
   }
 }
 </script>

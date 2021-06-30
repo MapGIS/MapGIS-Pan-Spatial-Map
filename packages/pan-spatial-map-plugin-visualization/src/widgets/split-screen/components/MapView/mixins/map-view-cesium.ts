@@ -1,20 +1,28 @@
-import { Mixins, Component } from 'vue-property-decorator'
-import { MapMixin, Objects } from '@mapgis/web-app-framework'
+import { Mixins, Vue, Component, Inject } from 'vue-property-decorator'
+import { Objects } from '@mapgis/web-app-framework'
 import { Rect } from './map-view-state'
 
 @Component
-export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
+export default class MapViewCesiumMixin extends Mixins<Record<string, any>>(
+  Vue
+) {
+  @Inject('Cesium') Cesium: any
+
+  @Inject('CesiumZondy') CesiumZondy: any
+
+  @Inject('webGlobe') webGlobe: any
+
   /**
    * 清除三维地图上的实体
    */
   clearWebGlobeEntities() {
-    if (!this.is2dLayer && this._webGlobe) {
+    if (this._webGlobe) {
       this._webGlobe.viewer.entities.removeAll()
     }
   }
 
   /**
-   * 注册webGlobe
+   * 设置webGlobe
    */
   setWebGlobe() {
     const webGlobe =
@@ -29,12 +37,12 @@ export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
   }
 
   /**
-   * 地图change
+   * 地图link change
    * @param 经纬度范围
    */
-  onCesiumChanged({ west, east, north, south }) {
+  link3dChanged({ west, east, north, south }) {
     this.setActiveMapView()
-    this.updateActiveMapViewBound({
+    this.updateActiveBound({
       xmin: west,
       xmax: east,
       ymax: north,
@@ -46,7 +54,7 @@ export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
    * flyTo
    * @param destination
    */
-  flyTo(destination: any) {
+  flyTo3d(destination: any) {
     this.sceneController.cameraFlyTo({ destination })
   }
 
@@ -55,7 +63,7 @@ export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
    * @param bound 经纬度范围
    */
   zoomInToRect3d(bound: Rect) {
-    this.flyTo(this.sceneController.getRectangleFromDegrees(bound))
+    this.flyTo3d(this.sceneController.getRectangleFromDegrees(bound))
   }
 
   /**
@@ -63,20 +71,12 @@ export default class CesiumMixin extends Mixins<Record<string, any>>(MapMixin) {
    * @param bound 经纬度范围
    */
   zoomOutToRect3d({ xmin, ymin, xmax, ymax }: Rect) {
-    this.flyTo(
+    this.flyTo3d(
       this.sceneController.getCartesian3FromDegrees(
         (xmin + xmax) / 2,
         (ymin + ymax) / 2,
-        this.sceneController.getPsitionCartographicHeight * 2
+        this.sceneController.getPsitionCartographicHeight() * 2
       )
     )
-  }
-
-  /**
-   * 拖拽
-   * @param enable
-   */
-  togglePan3d(enable = true) {
-    this._webGlobe.viewer.scene.screenSpaceCameraController.enableZoom = enable
   }
 }

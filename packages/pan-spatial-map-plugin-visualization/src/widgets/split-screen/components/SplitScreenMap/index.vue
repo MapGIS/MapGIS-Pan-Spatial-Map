@@ -16,7 +16,8 @@
           :queryVisible.sync="queryVisible"
           :query-rect="queryRect"
           :map-view-id="`split-screen-map-${s}`"
-          :map-view-layer="layers.find(({ id }) => layerIds[s] === id)"
+          :map-view-layer="mapViewLayer(s)"
+          :excludes-tools="excludesTools(s)"
           :resize="resize"
         />
       </a-col>
@@ -63,6 +64,19 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
   // 设置初始地图视图的复位范围
   set initBound(bound: Rect) {
     mapViewStateInstance.initBound = bound
+  }
+
+  get mapViewLayer() {
+    return s => this.layers.find(({ id }) => this.layerIds[s] === id)
+  }
+
+  get excludesTools() {
+    return s => {
+      const _layer = this.mapViewLayer(s)
+      if (_layer instanceof Layer3D) {
+        return 'query'
+      }
+    }
   }
 
   /**

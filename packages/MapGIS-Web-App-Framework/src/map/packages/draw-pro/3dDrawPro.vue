@@ -14,7 +14,7 @@ import DrawMixin from './mixins/draw'
 export default {
   name: 'Mp3dDrawPro',
   mixins: [DrawMixin],
-  inject: ['webGlobe'],
+  // inject: ['CesiumZondy', 'webGlobe'],
   props: {
     vueKey: {
       type: String

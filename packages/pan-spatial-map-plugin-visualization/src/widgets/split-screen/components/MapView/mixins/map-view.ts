@@ -1,15 +1,15 @@
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { AppMixin, Layer3D, Objects } from '@mapgis/web-app-framework'
 import mapViewStateInstance, { MapViewState, Rect } from './map-view-state'
-import MapboxMixin from './map-view-mapbox'
-import CesiumMixin from './map-view-cesium'
+import MapViewMapboxMixin from './map-view-mapbox'
+import MapViewCesiumMixin from './map-view-cesium'
 
 export { Rect }
 
 @Component
 export default class MapViewMixin extends Mixins<Record<string, any>>(
-  MapboxMixin,
-  CesiumMixin,
+  MapViewMapboxMixin,
+  MapViewCesiumMixin,
   AppMixin
 ) {
   @Prop() mapViewId!: string
@@ -37,13 +37,13 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     return this.activeMapViewState.initBound
   }
 
-  // 当前激活的地图视图的范围
-  get activeMapViewBound(): Rect {
-    return this.activeMapViewState.activeMapViewBound
+  // 活动视图的范围
+  get activeBound(): Rect {
+    return this.activeMapViewState.activeBound
   }
 
-  set activeMapViewBound(rect: Rect) {
-    this.activeMapViewState.activeMapViewBound = rect
+  set activeBound(rect: Rect) {
+    this.activeMapViewState.activeBound = rect
   }
 
   // 是否为当前活动的地图
@@ -54,10 +54,10 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   /**
    * 监听: 更新活动地图经纬度范围
    */
-  @Watch('activeMapViewBound', { immediate: true, deep: true })
+  @Watch('activeBound', { immediate: true, deep: true })
   watchActiveView(nV: Rect) {
     if (this.isMapLoaded && !this.isActiveMapView) {
-      this.resort(nV)
+      this.zoomIn(nV)
     }
   }
 
@@ -65,16 +65,18 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * 设置活动地图
    */
   setActiveMapView() {
-    this.activeMapViewId = this.mapViewId
+    if (!this.isActiveMapView) {
+      this.activeMapViewId = this.mapViewId
+    }
   }
 
   /**
-   * 更新活动地图视图经纬度范围
+   * 更新动态变化的经纬度范围
    * @param rect 经纬度范围
    */
-  updateActiveMapViewBound(rect: Rect) {
+  updateActiveBound(rect: Rect) {
     if (this.isMapLoaded && this.isActiveMapView) {
-      this.activeMapViewBound = rect
+      this.activeBound = rect
     }
   }
 
@@ -84,6 +86,18 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    */
   query(rect: Rect) {
     this.$emit('on-query', rect)
+  }
+
+  /**
+   * 复位
+   * @param  resortOtherViews 是否同步复位其他图层
+   */
+  resort(resortOtherViews = false) {
+    const { initBound } = this
+    this.zoomIn({ ...initBound })
+    if (resortOtherViews) {
+      this.updateActiveBound({ ...initBound })
+    }
   }
 
   /**
@@ -115,30 +129,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
       }
     } else {
       this.ssMap.zoomOut()
-    }
-  }
-
-  /**
-   * 复位
-   * @param bound 经纬度范围
-   */
-  resort(bound: Rect = this.initBound) {
-    if (this.is2dLayer) {
-      this.zoomInToRect(bound)
-    } else {
-      this.zoomInToRect3d(bound)
-    }
-  }
-
-  /**
-   * 拖拽
-   * @param enable
-   */
-  pan(enable?: boolean) {
-    if (this.is2dLayer) {
-      this.togglePan(enable)
-    } else {
-      this.togglePan3d(enable)
     }
   }
 }
