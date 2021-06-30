@@ -115,7 +115,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     'fill-outline-color': '#dd5c5c',
     'fill-pattern': '',
     'fill-opacity': 1,
-    'fill-antialias': false
+    'fill-antialias': true
   }
 
   // 监听矢量瓦片下拉项变化，实时构造该矢量瓦片对应的样式文件下拉项,以及区填充图案下拉项数据
@@ -155,6 +155,19 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       this.layers.forEach(item => {
         this.checkedLayerIDs.push(item.id)
       })
+
+      this.layers = this.layers.reduce((result, item) => {
+        if (item.type === 'fill') {
+          item.paint = {
+            ...item.paint,
+            'fill-outline-color': '#dd5c5c',
+            'fill-opacity': 1,
+            'fill-antialias': true
+          }
+        }
+        result.push(item)
+        return result
+      }, [])
     }
   }
 
@@ -164,7 +177,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     const multiSettingKeys = Object.keys(newVal)
     if (this.multiChecked) {
       this.layers = this.layers.reduce((result, item) => {
-        if (this.checkedLayerIDs.includes(item.id)) {
+        if (this.checkedLayerIDs.includes(item.id) && item.type === 'fill') {
           // 只修改该子图层样式属性集paint中含有的样式
           const layerPaintKeys = Object.keys(item.paint)
           layerPaintKeys.forEach(key => {
@@ -172,6 +185,9 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
               item.paint[key] = newVal[key]
             }
           })
+
+          // 区填充图案样式特殊些，所以子图层的该样式也要改变
+          item.paint['fill-pattern'] = newVal['fill-pattern']
         }
         result.push(item)
         return result

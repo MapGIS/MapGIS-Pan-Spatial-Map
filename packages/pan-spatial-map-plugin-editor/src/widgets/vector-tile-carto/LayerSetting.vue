@@ -147,12 +147,13 @@
         </div>
       </div>
 
+      <!-- 区填充图案样式特殊些，包括渲染条件、+按钮、占位元素 -->
       <div class="style-item">
-        <div class="style-single-item" v-if="hasStyleKey('fill-pattern')">
+        <div class="style-single-item">
           <div class="item-title">区填充图案:</div>
           <div class="item-panel">
             <a-select
-              v-if="!paint['fill-pattern'].stops"
+              v-if="!paint['fill-pattern'] || !paint['fill-pattern'].stops"
               v-model="paint['fill-pattern']"
             >
               <a-select-option v-for="item in spriteData" :key="item">
@@ -160,10 +161,15 @@
               </a-select-option>
             </a-select>
             <a-icon
+              v-if="paint['fill-pattern']"
               type="plus"
               style="margin-left:0.5em"
               @click="onClickAddBtn('fill-pattern')"
             />
+            <div
+              v-if="!paint['fill-pattern']"
+              style="width: 14px; height: 14px; margin-left:0.5em"
+            ></div>
           </div>
         </div>
         <div
