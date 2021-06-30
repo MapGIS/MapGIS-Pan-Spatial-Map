@@ -339,7 +339,6 @@ export default class FilterItem extends Vue {
           IncludeAttribute: false,
           IncludeGeometry: false,
           IncludeWebGraphic: false,
-          cursorType: 'cursorType',
           gdbp
         },
         false,
@@ -474,7 +473,6 @@ export default class FilterItem extends Vue {
         ip,
         port: port.toString(),
         f: 'json',
-        cursorType: 'cursorType',
         page: 0,
         pageCount: 10000,
         docName: serverName,

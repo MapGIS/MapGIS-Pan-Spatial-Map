@@ -87,7 +87,6 @@ const mutations = {
       port: _port,
       IncludeGeometry: true,
       f: 'json',
-      cursorType: 'backward',
       fields: showFields.join(','),
       ...pageParam,
       ...otherParams

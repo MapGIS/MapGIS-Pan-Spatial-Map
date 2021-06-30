@@ -746,7 +746,6 @@ export default class MpAttributeTable extends Mixins(
       ip,
       port: port.toString(),
       f: 'json',
-      cursorType: 'cursorType',
       IncludeAttribute: false,
       IncludeGeometry: false,
       IncludeWebGraphic: false,

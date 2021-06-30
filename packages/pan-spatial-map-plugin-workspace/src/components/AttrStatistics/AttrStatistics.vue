@@ -523,8 +523,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
           layerIdxs: layerIndex,
           IncludeAttribute: false,
           IncludeGeometry: false,
-          IncludeWebGraphic: false,
-          cursorType: 'cursorType'
+          IncludeWebGraphic: false
         },
         false,
         serverType === LayerType.IGSScene
