@@ -54,14 +54,17 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   geoJSONChange(val) {
     let geoJSON
     let sourceArr
+    let color
     if (val === 'Target') {
       this.clearDataTargetArr()
       geoJSON = this.geoJSONTarget
       sourceArr = this.sourceTargetArr
+      color = '#FFA500'
     } else {
       this.clearDataAnalysisArr()
       geoJSON = this.geoJSONAnalysis
       sourceArr = this.sourceAnalysisArr
+      color = '#ff9c6e'
     }
 
     if (!geoJSON) {
@@ -74,7 +77,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
       geometry: { type, coordinates }
     } = features[0]
     if (type === 'Point') {
-      const fillColor = this.Cesium.Color.fromCssColorString('#FFA500')
+      const fillColor = this.Cesium.Color.fromCssColorString(color)
       const outLineColor = this.Cesium.Color.WHITE
       const entity = this.sceneOverlays.addPoint({
         lon: coordinates[0],
@@ -96,7 +99,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         item.forEach(lines => {
           lineArr = lineArr.concat(lines)
         })
-        const fillColor = this.Cesium.Color.fromCssColorString('#FFA500')
+        const fillColor = this.Cesium.Color.fromCssColorString(color)
         const entity = this.sceneOverlays.addLine({
           name: `sourceArr-${index}`,
           pointsArray: lineArr,
@@ -119,7 +122,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         item.forEach(lines => {
           lineArr = lineArr.concat(lines)
         })
-        const fillColor = this.Cesium.Color.fromCssColorString('#FFA500')
+        const fillColor = this.Cesium.Color.fromCssColorString(color)
         const outlineColor = this.Cesium.Color.WHITE
         const entity = this.sceneOverlays.addPolygon(
           `sourceArr-${index}`,
