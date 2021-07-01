@@ -1,6 +1,5 @@
 {
   "version": 8,
   "sources": {},
-  "layers": [],
-  "glyphs": "http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf"
+  "layers": []
 }

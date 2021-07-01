@@ -6,16 +6,8 @@
     </div>
     <!-- 卷帘组件 -->
     <mapgis-compare v-else :orientation="direction">
-      <mp-web-map-pro
-        slot="beforeMap"
-        :document="aboveDocument"
-        :mapStyle="mapStyle"
-      />
-      <mp-web-map-pro
-        slot="afterMap"
-        :document="belowDocument"
-        :mapStyle="mapStyle"
-      />
+      <mp-web-map-pro slot="beforeMap" :document="aboveDocument" />
+      <mp-web-map-pro slot="afterMap" :document="belowDocument" />
     </mapgis-compare>
     <!-- 图层设置 -->
     <a-drawer
@@ -63,15 +55,6 @@ export default class MapboxCompare extends Vue {
 
   // 弹框开关
   settingPanelVisible = true
-
-  // 图层样式
-  mapStyle: any = {
-    version: 8,
-    sources: {},
-    layers: [],
-    glyphs:
-      'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf'
-  }
 
   // 卷帘方向
   get direction() {

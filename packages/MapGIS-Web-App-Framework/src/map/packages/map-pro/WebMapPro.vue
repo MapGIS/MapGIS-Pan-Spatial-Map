@@ -113,13 +113,17 @@
 <script>
 import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
 import { Layer, LayerType, LoadStatus } from '../../../model/document/layer'
+import DefaultStyle from '../../../builder/assets/style/default-style.json'
 
 export default {
   name: 'MpWebMapPro',
   props: {
     mapStyle: {
       type: Object,
-      required: true
+      required: false,
+      default: () => {
+        return DefaultStyle
+      }
     },
     document: {
       type: Object,
