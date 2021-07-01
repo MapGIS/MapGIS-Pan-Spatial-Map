@@ -546,10 +546,18 @@ export class DataCatalogManager {
           const searchName = node[this.config.paramConfig.SEARCHNAME]
 
           if (searchName && searchName !== '') {
-            const bindData: any = serverLayerInfo
-
-            bindData.serverName = searchName
-            bindData.serverType = LayerType.IGSMapImage
+            const bindData: any = { ...serverLayerInfo }
+            if (searchName.includes('gdbp')) {
+              bindData.gdbps = searchName
+              bindData.serverType = LayerType.IGSVector
+            } else {
+              bindData.serverName = searchName
+              if (serverType === LayerType.IGSScene) {
+                bindData.serverType = LayerType.IGSScene
+              } else {
+                bindData.serverType = LayerType.IGSMapImage
+              }
+            }
 
             serverLayerInfo.bindData = bindData
           }

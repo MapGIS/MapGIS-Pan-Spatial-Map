@@ -50,7 +50,8 @@ import {
   baseConfigInstance,
   ExhibitionControllerMixin,
   IAttributeTableListExhibition,
-  AttributeTableListExhibition
+  AttributeTableListExhibition,
+  dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-store'
 import {
   WidgetMixin,
@@ -266,23 +267,26 @@ export default class MpFeatureQuery extends Mixins(
     const {
       activeScene: { sublayers }
     } = layer
-    sublayers.forEach(item => {
-      if (!item.visible) {
-        return
-      }
-      exhibition.options.push({
-        id: item.id,
-        name: item.title || item.name,
-        ip: ip || baseConfigInstance.config.ip,
-        port: Number(port || baseConfigInstance.config.port),
-        serverType: layer.type,
-        gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型',
-        geometry: geometry
+    const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(layer.id)
+    if (layerConfig && layerConfig.bindData) {
+      sublayers.forEach(item => {
+        if (!item.visible) {
+          return
+        }
+        exhibition.options.push({
+          id: item.id,
+          name: item.title || item.name,
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          serverType: layer.type,
+          gdbp: layerConfig.bindData.gdbps,
+          geometry: geometry
+        })
       })
-    })
 
-    this.addExhibition(new AttributeTableListExhibition(exhibition))
-    this.openExhibitionPanel()
+      this.addExhibition(new AttributeTableListExhibition(exhibition))
+      this.openExhibitionPanel()
+    }
   }
 
   private queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
@@ -550,11 +554,12 @@ export default class MpFeatureQuery extends Mixins(
     }
 
     if (visibleSublayerId !== '') {
-      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+      const res = this.CesiumZondy.M3DIgsManager.findSource(
         'default',
         visibleSublayerId
       )
-      if (source.length > 0) {
+      if (res && res.source && res.source.length > 0) {
+        const { source } = res
         tranform = source[0].root.transform
       }
     }
