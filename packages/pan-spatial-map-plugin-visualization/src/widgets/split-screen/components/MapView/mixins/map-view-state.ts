@@ -1,3 +1,4 @@
+import { CommonUtil } from '@mapgis/web-app-framework'
 import { Common } from '@mapgis/webclient-es6-service'
 
 export class Rect {
@@ -68,7 +69,12 @@ export class MapViewState {
    * @param {Rect} rect
    */
   isValidRect(rect: Rect) {
-    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
+    if (!CommonUtil.isEmpty(rect)) {
+      const boundKeys = ['xmin', 'xmax', 'ymin', 'ymax']
+      const hasBoundKeys = boundKeys.every(v => v in rect)
+      return hasBoundKeys && rect.xmin < rect.xmax && rect.ymin < rect.ymax
+    }
+    return !0
   }
 }
 

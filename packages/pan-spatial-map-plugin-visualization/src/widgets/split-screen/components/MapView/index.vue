@@ -25,13 +25,13 @@
       :height="mapViewHeight"
       :document="mapViewDocument"
     />
-    <!-- 标注 -->
-    <mp-markers-highlight-popup
+    <!-- 高亮查询的要素 -->
+    <mp-feature-highlight
       v-if="isMapLoaded && queryWindowVisible"
-      :is-2d="is2dLayer"
+      :is-2d-layer="is2dLayer"
       :vue-key="mapViewId"
       :features="queryFeatures"
-      :highlight-ids="querySelection"
+      :highlight-features="querySelection"
       :normalize="({ key }) => ({ uid: key })"
     />
     <!-- 结果树 -->
@@ -56,11 +56,7 @@
 <script lang="ts">
 import { Mixins, Component, Prop, Watch, Inject } from 'vue-property-decorator'
 import { Document, Layer } from '@mapgis/web-app-framework'
-import _upperFirst from 'lodash/upperFirst'
-import {
-  MpQueryResultTree,
-  MpMarkersHighlightPopup
-} from '../../../../components'
+import { MpQueryResultTree, MpFeatureHighlight } from '../../../../components'
 import MapViewMixin, { Rect } from './mixins/map-view'
 import MapboxView from './components/MapboxView'
 import CesiumView from './components/CesiumView'
@@ -72,7 +68,7 @@ import Tools, { ToolType } from './components/Tools'
     MapboxView,
     CesiumView,
     MpQueryResultTree,
-    MpMarkersHighlightPopup
+    MpFeatureHighlight
   },
   provide() {
     const self = this

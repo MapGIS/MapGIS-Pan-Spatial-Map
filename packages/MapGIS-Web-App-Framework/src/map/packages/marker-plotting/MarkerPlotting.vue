@@ -19,22 +19,28 @@ import {
   Watch,
   Inject,
   Emit,
-  Vue
+  Mixins
 } from 'vue-property-decorator'
+import { Feature, CommonUtil } from '@mapgis/web-app-framework'
 import MpMarkerSetPro from '../marker-pro/MarkerSetPro.vue'
+import HighlightEventsMixin from './mixins/highlight-events'
 
 @Component({
   name: 'MpMarkerPlotting',
   components: { MpMarkerSetPro }
 })
-export default class MpMarkerPlotting extends Vue {
+export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   @Inject('map') map
+
+  @Prop() readonly vueKey!: string
 
   @Prop({
     type: Boolean,
     default: false
   })
   readonly filterWithMap!: boolean
+
+  @Prop({ default: () => [] }) readonly selectedMarkers!: string[]
 
   @Prop({
     type: Array,
@@ -95,20 +101,23 @@ export default class MpMarkerPlotting extends Vue {
     }
   }
 
-  @Watch('fitBound')
-  changeMapBound() {
-    if (this.fitBound) {
-      const { xmin, ymin, xmax, ymax } = this.fitBound
-      this.map.fitBounds([
-        [xmin, ymin],
-        [xmax, ymax]
-      ])
-    }
+  @Watch('selectedMarkers')
+  changeSelectedMarkers(nV) {
+    nV.forEach(id => {
+      const marker = this.getMarker(id)
+      this.addHighlight(marker)
+      this.emitHighlight(marker, this.vueKey)
+    })
   }
 
-  @Watch('selectionBound')
-  changeSelectionBound() {
-    this.zoomOrPanTo(this.selectionBound)
+  @Watch('fitBound', { deep: true })
+  changeMapBound(nV) {
+    this.zoomTo(nV)
+  }
+
+  @Watch('selectionBound', { immediate: true, deep: true })
+  changeSelectionBound(nV) {
+    this.zoomOrPanTo(nV)
   }
 
   @Watch('filterWithMap')
@@ -120,7 +129,7 @@ export default class MpMarkerPlotting extends Vue {
     }
   }
 
-  @Watch('center')
+  @Watch('center', { deep: true })
   changeCenter() {
     this.map.panTo(this.center)
   }
@@ -128,7 +137,38 @@ export default class MpMarkerPlotting extends Vue {
   @Emit('map-bound-change')
   emitMapBoundChange(bound: Record<string, any>) {}
 
+  private getMarker(markerId: string) {
+    return this.markers.find(marker => marker.markerId === markerId)
+  }
+
+  private isValidBound(bound) {
+    if (!CommonUtil.isEmpty(bound)) {
+      const boundKeys = ['xmin', 'xmax', 'ymin', 'ymax']
+      const hasBoundKeys = boundKeys.every(v => v in bound)
+      return hasBoundKeys && bound.xmin < bound.xmax && bound.ymin < bound.ymax
+    }
+    return !0
+  }
+
+  private getFitBound({ feature }: any) {
+    // fixme feature.bound = feature.properties.specialLayerBound
+    const bound = feature.bound || Feature.getGeoJsonFeatureBound(feature)
+    if (!this.isValidBound(bound)) return
+    const { xmin, xmax, ymin, ymax } = bound
+    const _xmin = (3 * xmin - xmax) / 2
+    const _ymin = (3 * ymin - ymax) / 2
+    const _xmax = (3 * xmax - xmin) / 2
+    const _ymax = (3 * ymax - ymin) / 2
+    return {
+      xmin: _xmin,
+      ymin: _ymin,
+      xmax: _xmax,
+      ymax: _ymax
+    }
+  }
+
   private zoomTo(bound) {
+    if (!this.isValidBound(bound)) return
     this.map.fitBounds([
       [bound.xmin, bound.ymin],
       [bound.xmax, bound.ymax]
@@ -136,6 +176,7 @@ export default class MpMarkerPlotting extends Vue {
   }
 
   private zoomOrPanTo(bound) {
+    if (!this.isValidBound(bound)) return
     const mapBoundArray = this.map.getBounds().toArray()
     const mapBound = {
       xmin: mapBoundArray[0][0],
@@ -157,10 +198,7 @@ export default class MpMarkerPlotting extends Vue {
       bound.xmax - bound.xmin > mapBound.xmax - mapBound.xmin ||
       bound.ymax - bound.ymin > mapBound.ymax - mapBound.ymin
     ) {
-      this.map.fitBounds([
-        [bound.xmin, bound.ymin],
-        [bound.xmax, bound.ymax]
-      ])
+      this.zoomTo(bound)
     } else {
       this.map.panTo([
         (bound.xmin + bound.xmax) / 2,
@@ -170,58 +208,84 @@ export default class MpMarkerPlotting extends Vue {
   }
 
   private mouseEnterEvent(e: any, id) {
-    // 高亮要素
-    const marker = this.markers.find(marker => marker.markerId == id)
-
-    if (marker) {
-      this.highlightFeature({
-        features: [marker.feature],
-        type: 'FeatureCollection'
-      })
+    const marker = this.getMarker(id)
+    if (marker && !this.selectedMarkers.includes(id)) {
+      this.highlightFeature(marker)
     }
   }
 
   private mouseLeaveEvent(e: any, id) {
-    this.clearHighlight()
+    const marker = this.getMarker(id)
+    if (marker && !this.selectedMarkers.includes(id)) {
+      this.clearHighlight(marker)
+    }
   }
 
-  private highlightFeature(featureGeoJSON) {
-    this.map.addSource('highlight', {
-      type: 'geojson',
-      data: featureGeoJSON
-    })
-    // 需要根据要素类型来使用不同的type
-    if (featureGeoJSON.features[0].geometry.type === 'Point') {
-      // 点要素的高亮符号怎么处理?
-    } else if (featureGeoJSON.features[0].geometry.type === 'LineString') {
-      this.map.addLayer({
-        id: 'highlight-layer',
-        type: 'line',
-        source: 'highlight',
-        paint: {
-          'line-color': this.highlightStyle.feature.line.color,
-          'line-width': parseInt(this.highlightStyle.feature.line.size)
+  private highlightFeature({ markerId, feature }) {
+    const layerId = `highlight-layer-${markerId}`
+    const sourceId = `highlight-${markerId}`
+    if (!this.map.getSource(sourceId)) {
+      this.map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          features: [feature],
+          type: 'FeatureCollection'
         }
       })
-    } else if (featureGeoJSON.features[0].geometry.type === 'Polygon') {
-      this.map.addLayer({
-        id: 'highlight-layer',
-        type: 'fill',
-        source: 'highlight',
-        paint: {
-          'fill-color': this.highlightStyle.feature.reg.color,
-          'fill-outline-color': this.highlightStyle.feature.line.color
+    }
+    let options: any = {}
+    switch (feature.geometry.type) {
+      case 'Point':
+        // 点要素的高亮符号怎么处理?
+        break
+      case 'LineString':
+        options = {
+          type: 'line',
+          paint: {
+            'line-color': this.highlightStyle.feature.line.color,
+            'line-width': parseInt(this.highlightStyle.feature.line.size)
+          }
         }
+        break
+      case 'Polygon':
+        options = {
+          type: 'fill',
+          paint: {
+            'fill-color': this.highlightStyle.feature.reg.color,
+            'fill-outline-color': this.highlightStyle.feature.line.color
+          }
+        }
+        break
+      default:
+        break
+    }
+    if (!this.map.getLayer(layerId)) {
+      this.map.addLayer({
+        id: layerId,
+        source: sourceId,
+        ...options
       })
     }
   }
 
-  private clearHighlight() {
-    if (this.map.getLayer('highlight-layer')) {
-      this.map.removeLayer('highlight-layer')
+  private clearAllHighlight() {
+    this.markers.forEach(marker => this.clearHighlight(marker))
+  }
+
+  private addHighlight(marker) {
+    this.clearAllHighlight()
+    this.zoomTo(this.getFitBound(marker))
+    this.highlightFeature(marker)
+  }
+
+  private clearHighlight({ markerId }) {
+    const layerId = `highlight-layer-${markerId}`
+    const sourceId = `highlight-${markerId}`
+    if (this.map.getLayer(layerId)) {
+      this.map.removeLayer(layerId)
     }
-    if (this.map.getSource('highlight')) {
-      this.map.removeSource('highlight')
+    if (this.map.getSource(sourceId)) {
+      this.map.removeSource(sourceId)
     }
   }
 }
