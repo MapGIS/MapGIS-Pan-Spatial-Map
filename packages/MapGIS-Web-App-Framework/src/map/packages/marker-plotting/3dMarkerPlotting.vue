@@ -243,7 +243,7 @@ export default class Mp3dMarkerPlotting extends Vue {
     } else if (featureGeoJSON.features[0].geometry.type === '3DPolygon') {
       const { source } = this.CesiumZondy.M3DIgsManager.findSource(
         'default',
-        featureGeoJSON.features[0].id
+        featureGeoJSON.features[0].properties.specialLayerId
       )
       if (source && source.length > 0) {
         this.stopDisplay()

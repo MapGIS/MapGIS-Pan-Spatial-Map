@@ -613,12 +613,7 @@ export default class TreeLayer extends Mixins(
       const { id } = item.layer
       const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(id)
       if (layerConfig && layerConfig.bindData) {
-        const { serverType } = layerConfig.bindData
-        if (serverType === LayerType.IGSScene) {
-          return true
-        } else {
-          return false
-        }
+        return true
       } else {
         return false
       }
@@ -628,6 +623,7 @@ export default class TreeLayer extends Mixins(
 
   isMetaData(item) {
     const bool =
+      (this.isParentLayer(item) && this.isIGSScene(item)) ||
       (this.isSubLayer(item) && this.isIgsDocLayer(item)) ||
       (this.isParentLayer(item) && this.isIgsDocLayer(item)) ||
       this.isIgsVectorLayer(item) ||
@@ -990,8 +986,13 @@ export default class TreeLayer extends Mixins(
 
   metaDataInfo(node) {
     const layer = node.dataRef
-    this.showMetadataInfo = true
-    this.currentLayerInfo = layer
+    if (this.isWMTSLayer(layer) || this.isWMSLayer(layer)) {
+      window.open(layer.url)
+    } else {
+      this.showMetadataInfo = true
+      this.currentLayerInfo = layer
+    }
+
     this.clickPopover(node, false)
   }
 
