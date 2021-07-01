@@ -7,7 +7,7 @@
             服务类型:
           </a-col>
           <a-col :span="20">
-            <a-select v-model="selectGroupIndex" @change="changeGroup">
+            <a-select v-model="selectGroupIndex">
               <a-select-option v-for="item in group" :key="item.index">{{
                 item.groupName
               }}</a-select-option>
@@ -15,6 +15,10 @@
           </a-col>
         </a-row>
         <a-table
+          v-if="
+            group[this.selectGroupIndex] &&
+              group[this.selectGroupIndex].children
+          "
           :columns="columns"
           :data-source="group[this.selectGroupIndex].children"
           :pagination="pagination"
@@ -50,21 +54,11 @@
           v-bind="slotProps"
         >
           <template>
-            <mp-handler-window />
+            <mp-handler-window ref="handlerWindow" :data="handlerSelect" />
           </template>
         </mp-window>
       </template>
     </mp-window-wrapper>
-    <!-- <a-modal
-      v-model="openHandlerWindow"
-      :title="handlerSelect.FlowName"
-      :width="500"
-      :footer="null"
-      :mask="false"
-      @ok="openHandlerWindow = false"
-    >
-      <mp-handler-window />
-    </a-modal> -->
   </div>
 </template>
 
@@ -187,10 +181,6 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
     }
     this.group = data
     this.selectGroupIndex = 0
-  }
-
-  changeGroup(val, option) {
-    console.log(val, option)
   }
 }
 </script>
