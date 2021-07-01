@@ -24,7 +24,7 @@ export class LOD {
    * @date 22/03/2021
    * @memberof LOD
    */
-  levelValue = ''
+  levelValue = 0
 
   /**
    * 每级的分变率:每像素多少地图单位

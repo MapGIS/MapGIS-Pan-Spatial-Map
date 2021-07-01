@@ -295,15 +295,27 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 初始化各项数据
   private initData() {
     this.selectType = this.typeOptions[0].value
+
+    this.$message.config({
+      top: '100px',
+      duration: 2,
+      maxCount: 1
+    })
   }
 
   // 通过发送请求获取对应服务数据
   private getUrlData(url) {
+    const this_ = this
     return new Promise((resolve, reject) => {
       const request = new XMLHttpRequest()
+      request.ontimeout = function(e) {
+        this_.$message.error('请求超时，数据加载失败')
+        this_.loading = false
+      }
       request.responseType = 'json'
       request.open('GET', url)
       request.withCredentials = true
+      request.timeout = 5000
       request.onreadystatechange = () => {
         if (request.readyState === 4) {
           if (request.status >= 200 && request.status <= 304) {
@@ -430,31 +442,37 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 点击文件项进行预览回调
   private onView(record) {
     const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=ftp://192.168.21.191:21`
-    this.getUrlData(downLoadUrl).then(res => {
-      this.fileUrl = this.baseUrl + res.path
 
-      switch (record.type) {
-        // 目前iframe只支持pdf文件的预览
-        case 'pdf':
-          this.showFileType = 'text'
-          break
-        // 目前video标签只支持mp4、ogg格式视频文件的预览
-        case 'mp4':
-        case 'ogg':
-          this.showFileType = 'video'
-          this.videoUrl = this.fileUrl
-          break
-        case 'jpg':
-        case 'png':
-          this.showFileType = 'img'
-          this.imgUrl = this.fileUrl
-          break
-        default:
-          break
-      }
+    if (!'pdf,mp4,ogg,jpg,png'.includes(record.type)) {
+      this.$message.warning('该类型文件暂不支持预览')
+      return false
+    } else {
+      this.getUrlData(downLoadUrl).then(res => {
+        this.fileUrl = this.baseUrl + res.path
 
-      this.showModal = true
-    })
+        switch (record.type) {
+          // 目前iframe只支持pdf文件的预览
+          case 'pdf':
+            this.showFileType = 'text'
+            break
+          // 目前video标签只支持mp4、ogg格式视频文件的预览
+          case 'mp4':
+          case 'ogg':
+            this.showFileType = 'video'
+            this.videoUrl = this.fileUrl
+            break
+          case 'jpg':
+          case 'png':
+            this.showFileType = 'img'
+            this.imgUrl = this.fileUrl
+            break
+          default:
+            break
+        }
+
+        this.showModal = true
+      })
+    }
   }
 }
 </script>

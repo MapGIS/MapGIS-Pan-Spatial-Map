@@ -80,6 +80,8 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
         this.highlightStyle.feature.line.color
       )
 
+      const width = parseInt(this.highlightStyle.feature.line.size)
+
       // const coords = this.feature.geometry.coordinates[0]
       let arr
       if (this.center && this.center.length === 2) {
@@ -101,7 +103,8 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
             .split(',')
             .map(Number),
           fillColor,
-          fillOutlineColor
+          fillOutlineColor,
+          { drawOutLine: true, outlineWidth: width }
         )
         if (this.center && this.center.length === 2) {
           const rgba = ColorUtil.getColorObject('#FD6A6F', 1)

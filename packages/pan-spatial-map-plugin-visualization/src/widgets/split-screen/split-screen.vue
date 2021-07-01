@@ -147,7 +147,6 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
    */
   onOpen() {
     this.isOpen = true
-    this.setResize()
     this.initLayers()
   }
 

@@ -60,6 +60,9 @@ export default class MapboxView extends Vue {
     this.$emit('load', payload)
   }
 
+  /**
+   * 绘制完成的回调
+   */
   onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
       this.$emit('draw-finished', { mode, feature, shape, center })

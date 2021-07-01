@@ -764,10 +764,10 @@
             "serverUrl": ""
           },
           {
-            "label": "全国地形_unavailable",
+            "label": "全国地形",
             "describe": "全国地形",
-            "ip": "",
-            "port": "",
+            "ip": "develop.smaryun.com",
+            "port": "6163",
             "layerServiceType": "DOC3D",
             "name": "DEM250_3D",
             "searchName": "",
@@ -788,12 +788,12 @@
             "serverUrl": ""
           },
           {
-            "label": "倾斜摄影数据_unavailable",
+            "label": "倾斜摄影数据",
             "describe": "倾斜摄影数据",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
-            "name": "DaYanTa",
+            "name": "DaYanTa-M3D",
             "searchName": "",
             "model": "surface",
             "guid": "7b8e8e60-09a4-45c3-92e0-195e98a2c13a",
@@ -812,8 +812,8 @@
             "serverUrl": ""
           },
           {
-            "label": "景观模型_unavailable",
-            "describe": "景观模型",
+            "label": "中地景观模型",
+            "describe": "中地景观模型",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -824,8 +824,8 @@
             "serverUrl": ""
           },
           {
-            "label": "BIM模型_unavailable",
-            "describe": "BIM模型",
+            "label": "学校BIM模型",
+            "describe": "学校BIM模型",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
@@ -836,7 +836,7 @@
             "serverUrl": ""
           },
           {
-            "label": "地质体_福田_unavailable",
+            "label": "地质体_福田",
             "describe": "地质体_福田",
             "ip": "",
             "port": "",
@@ -848,7 +848,7 @@
             "serverUrl": ""
           },
           {
-            "label": "钻孔模型_福田_unavailable",
+            "label": "钻孔模型_福田",
             "describe": "钻孔模型_福田",
             "ip": "",
             "port": "",
@@ -860,7 +860,7 @@
             "serverUrl": ""
           },
           {
-            "label": "地质体网格_unavailable",
+            "label": "地质体网格",
             "describe": "地质体网格",
             "ip": "",
             "port": "",

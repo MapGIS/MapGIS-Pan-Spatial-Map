@@ -24,14 +24,11 @@ import {
   Feature,
   Catalog
 } from '@mapgis/web-app-framework'
-import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
-
-interface IRect {
-  xmin: number
-  ymin: number
-  xmax: number
-  ymax: number
-}
+import { Common } from '@mapgis/webclient-es6-service'
+import {
+  baseConfigInstance,
+  dataCatalogManagerInstance
+} from '@mapgis/pan-spatial-map-store'
 
 interface IQueryParams extends Catalog.DocInfoQueryParam {
   id: string
@@ -64,9 +61,9 @@ export default class MpQueryResultTree extends Vue {
   @Prop({ type: Object, required: true, default: () => ({}) })
   readonly layer!: Record<string, any>
 
-  // 待查询的图层：支持查询的类型图层如下：1.在线地图服务图层。2.在线矢量图层。3.关联了在线地图服务的在线瓦片图层
+  // 待查询的图层的查询范围
   @Prop({ type: Object, required: true, default: () => ({}) })
-  readonly queryRect!: IRect | {}
+  readonly queryRect!: Common.Rectangle | {}
 
   // 参与查询的地图索引,可选属性,仅对1、3两种类型的图层有效。
   @Prop({ type: Number, default: 0 })
@@ -82,16 +79,13 @@ export default class MpQueryResultTree extends Vue {
 
   // 分页显示的条目数
   @Prop({ type: Number, default: 20 })
-  readonly countPerPage!: number
+  readonly pageCount!: number
 
   // 分页显示时的当前页码，从1开始。
   @Prop({ type: Number, default: 1 })
-  readonly curPageNumber!: number
+  readonly page!: number
 
   loading = false
-
-  // 默认展开的节点, 第一个节点
-  defaultExpandedKeys: string[] = []
 
   // 图层信息
   layerInfos: IQueryLayerInfo[] = []
@@ -99,13 +93,40 @@ export default class MpQueryResultTree extends Vue {
   // 结果树数据
   treeData: ITreeNode[] = []
 
+  // 默认展开的节点, 第一个节点
+  defaultExpandedKeys: string[] = []
+
   // 展开的节点
   expandedKeys: string[] = []
+
+  // 获取uuid
+  get uuid() {
+    return () => UUID.uuid()
+  }
 
   // 获取范围
   get goemetry() {
     const { xmin, ymin, xmax, ymax } = this.queryRect
     return Objects.GeometryExp.creatRectByMinMax(xmin, ymin, xmax, ymax)
+  }
+
+  /**
+   * 根据图层url格式化图层的ip,port,serverName等信息
+   */
+  get queryParams(): IQueryParams {
+    const { url, ...others } = this.layer
+    const { ip: baseIp, port: basePort } = baseConfigInstance.config
+
+    return typeof this.layer._parseUrl === 'function'
+      ? {
+          ...this.layer._parseUrl(url),
+          ...others
+        }
+      : {
+          ip: baseIp,
+          port: basePort,
+          ...others
+        }
   }
 
   @Watch('layer', { deep: true })
@@ -119,33 +140,8 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
-   * 根据图层url格式化图层的ip,port,serverName等信息
-   */
-  getQueryParams(): IQueryParams {
-    const { id, url, type, gdbps } = this.layer
-    const base = {
-      id,
-      type,
-      gdbps
-    }
-    return typeof this.layer._parseUrl === 'function'
-      ? {
-          ...this.layer._parseUrl(url),
-          ...base
-        }
-      : base
-  }
-
-  /**
-   * 获取uuid
-   */
-  getUuid() {
-    return UUID.uuid()
-  }
-
-  /**
    * 获取IGSMapImage图层信息
-   * @param queryParam
+   * @param queryParams
    */
   async getIGSMapImageLayerInfo({ ip, port, docName }: IQueryParams) {
     const docInfo = await Catalog.DocumentCatalog.getDocInfo({
@@ -181,10 +177,10 @@ export default class MpQueryResultTree extends Vue {
 
   /**
    * 获取IGSTile图层信息
-   * @param queryParam
+   * @param queryParams
    */
   async getIGSTileLayerInfo({ ip, port, serverName, id }: IQueryParams) {
-    const layerConfig: any = dataCatalogManagerInstance.getLayerConfigByID(id)
+    const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(id)
     const docName =
       layerConfig && layerConfig.bindData
         ? layerConfig.bindData.serverName
@@ -199,7 +195,7 @@ export default class MpQueryResultTree extends Vue {
 
   /**
    * 获取IGSVector图层信息
-   * @param queryParam
+   * @param queryParams
    */
   getIGSVectorLayerInfo({ gdbps }: IQueryParams) {
     const res: IQueryLayerInfo[] = []
@@ -228,10 +224,13 @@ export default class MpQueryResultTree extends Vue {
       this.loading = true
       this.layerInfos = []
       this.treeData = []
-      const queryParams = this.getQueryParams()
-      if (queryParams.id) {
+      const {
+        queryParams,
+        queryParams: { id, type }
+      } = this
+      if (id) {
         let layerInfos = []
-        switch (queryParams.type) {
+        switch (type) {
           case LayerType.IGSMapImage:
             layerInfos = await this.getIGSMapImageLayerInfo(queryParams)
             break
@@ -241,6 +240,7 @@ export default class MpQueryResultTree extends Vue {
           case LayerType.IGSVector:
             layerInfos = this.getIGSVectorLayerInfo(queryParams)
             break
+
           default:
             break
         }
@@ -248,12 +248,11 @@ export default class MpQueryResultTree extends Vue {
         this.treeData = layerInfos.map<ITreeNode>(({ layerName }, index) => ({
           index,
           title: layerName,
-          key: this.getUuid()
+          key: this.uuid()
         }))
         if (this.treeData.length) {
           this.expandedKeys.push(this.treeData[0].key)
         }
-
         this.loading = false
       }
     } catch (e) {
@@ -281,46 +280,38 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
-   * 图层类型
-   * 1.在线地图服务图层
-   * 2.在线矢量图层
-   * 3.关联了在线地图服务的在线瓦片图层
-   * 4.要求同一次查询的图层类型是一样的。
+   * 图层要素查询
+   * 要求同一次查询的图层类型是一样的。
    */
   async queryFeature(treeNodeIndexs: number[]) {
     const queryLayerInfos = treeNodeIndexs.map(i => this.layerInfos[i])
     if (queryLayerInfos.length) {
       const _type = !queryLayerInfos[0].layerIndex ? 'IGSVector' : 'IGSMapImage'
-      const { ip, port, docName, gdbps } = this.getQueryParams()
-      let queryParams = {
-        ip,
-        port,
-        geometry: this.goemetry,
-        page: this.curPageNumber - 1,
-        pageCount: this.countPerPage,
-        f: 'json'
-      }
+      const { ip, port, docName, gdbps } = this.queryParams
+      let otherParams = {}
       switch (LayerType[_type]) {
-        case LayerType.IGSMapImage: {
-          const layerIdxs = this.getLayerIdxs(queryLayerInfos)
-          queryParams = {
-            ...queryParams,
-            layerIdxs,
+        case LayerType.IGSMapImage:
+          otherParams = {
             docName,
+            layerIdxs: this.getLayerIdxs(queryLayerInfos),
             mapIndex: this.mapIndex
           }
           break
-        }
         case LayerType.IGSVector:
-          queryParams = {
-            ...queryParams,
-            gdbp: gdbps
-          }
+          otherParams = { gdbp: gdbps }
           break
         default:
           break
       }
-      const result = await Feature.FeatureQuery.query(queryParams)
+      const result = await Feature.FeatureQuery.query({
+        ip,
+        port,
+        geometry: this.goemetry,
+        page: this.page - 1,
+        pageCount: this.pageCount,
+        f: 'json',
+        ...otherParams
+      })
       if (result) {
         const resultArray = Array.isArray(result) ? result : [result]
         return resultArray.map<ITreeNode>((featureSet, index) => {
@@ -333,7 +324,7 @@ export default class MpQueryResultTree extends Vue {
             const { features } = geoJson
             if (features && features.length) {
               resultForPerLayer = features.map(item => ({
-                key: this.getUuid(),
+                key: this.uuid(),
                 title: item.properties.fid,
                 feature: item,
                 isLeaf: true
@@ -341,7 +332,7 @@ export default class MpQueryResultTree extends Vue {
             }
           }
           return {
-            key: this.getUuid(),
+            key: this.uuid(),
             title: layerName,
             children: resultForPerLayer
           }

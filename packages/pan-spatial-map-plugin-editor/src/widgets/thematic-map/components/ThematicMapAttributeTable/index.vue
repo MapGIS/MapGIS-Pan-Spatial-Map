@@ -153,7 +153,7 @@ export default class ThematicMapAttributeTable extends Vue {
         showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
       return {
         title,
-        dataIndex: title,
+        dataIndex: v,
         align: 'center'
       }
     })

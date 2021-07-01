@@ -14,7 +14,7 @@ import DrawMixin from './mixins/draw'
 export default {
   name: 'Mp3dDrawPro',
   mixins: [DrawMixin],
-  inject: ['webGlobe'],
+  // inject: ['CesiumZondy', 'webGlobe'],
   props: {
     vueKey: {
       type: String
@@ -45,8 +45,7 @@ export default {
     },
     // 关闭绘制工具
     closeDraw() {
-      this.drawer?.getDrawElement(this.webGlobe).stopDrawing()
-      this.drawer?.removeEntities()
+      this.drawer?.removeEntities(true)
     },
     // 绘制工具已经准备好
     onAdded(drawer) {
