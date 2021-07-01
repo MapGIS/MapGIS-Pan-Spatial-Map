@@ -394,7 +394,7 @@ export default class MpAttributeTable extends Mixins(
   // 双击行
   private onRowDblclick(row: unknown) {
     const feature = row as GFeature
-    let { bound } = feature
+    let bound = feature.properties.specialLayerBound
     if (bound === undefined) {
       bound = Feature.getGeoJSONFeatureBound(feature)
     }
@@ -639,7 +639,11 @@ export default class MpAttributeTable extends Mixins(
               tranform
             )
           }
-          const properties = { FID }
+          const properties = {
+            FID,
+            specialLayerId: this.optionVal.id,
+            specialLayerBound: boundObj
+          }
           for (let index = 0; index < FldNumber; index++) {
             const name = FldName[index]
             const value = AttValue[index]
@@ -650,8 +654,6 @@ export default class MpAttributeTable extends Mixins(
               coordinates: [],
               type: '3DPolygon'
             },
-            id: this.optionVal.id,
-            bound: boundObj,
             properties
           }
         }
@@ -807,7 +809,7 @@ export default class MpAttributeTable extends Mixins(
     this.selectionBound = this.selection.reduce(
       (prev, cur) => {
         const feature = cur as GFeature
-        let { bound } = feature
+        let bound = feature.properties.specialLayerBound
         if (bound === undefined) {
           bound = Feature.getGeoJSONFeatureBound(feature)
         }
@@ -842,7 +844,7 @@ export default class MpAttributeTable extends Mixins(
       const feature = this.tableData[i]
       let center = []
       if (this.isIGSScence) {
-        const { xmin, xmax, ymin, ymax } = feature.bound
+        const { xmin, xmax, ymin, ymax } = feature.properties.specialLayerBound
         const longitude = (xmin + xmax) / 2
         const latitude = (ymin + ymax) / 2
         // const height = await this.getModelHeight(longitude, latitude)

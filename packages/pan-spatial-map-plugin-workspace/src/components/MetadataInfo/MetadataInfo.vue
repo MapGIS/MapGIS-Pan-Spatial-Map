@@ -1,7 +1,12 @@
 <template>
   <div class="metadata-info-container">
     <a-spin :spinning="spinning" size="small">
-      <div v-if="isIGSMapImage(currentLayer || currentConfig)">
+      <div
+        v-if="
+          isIGSMapImage(currentLayer || currentConfig) ||
+            isIGSScene(currentLayer || currentConfig)
+        "
+      >
         <mp-metadata-info-doc :metadata="metadata"></mp-metadata-info-doc>
       </div>
       <div v-if="isIGSTile(currentLayer || currentConfig)">
@@ -53,13 +58,24 @@ export default class MpMetadataInfo extends Vue {
       }
       let option: Metadata.MetadataQueryParam = {}
       switch (type) {
+        case LayerType.IGSScene: {
+          let res
+          if (this.currentLayer.layer) {
+            res = this.currentLayer.layer._parseUrl(this.currentLayer.layer.url)
+          } else {
+            res = this.currentLayer._parseUrl(this.currentLayer.url)
+          }
+          const { ip, port, docName } = res
+          option = { ip, port, docName, globe: true }
+          break
+        }
         case LayerType.IGSMapImage: {
           if (this.currentLayer.layer) {
             const { id } = this.currentLayer
             const { ip, port, docName } = this.currentLayer.layer._parseUrl(
               this.currentLayer.layer.url
             )
-            option = { ip, port, docName, layerIdxs: id }
+            option = { ip, port, docName, layerIdxs: id || '' }
           } else {
             const { ip, port, docName } = this.currentLayer._parseUrl(
               this.currentLayer.url
@@ -137,6 +153,14 @@ export default class MpMetadataInfo extends Vue {
 
   isIGSMapImage(item) {
     return item.type === LayerType.IGSMapImage
+  }
+
+  isIGSScene({ type, layer }) {
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+    }
+    return layerType === LayerType.IGSScene
   }
 }
 </script>
