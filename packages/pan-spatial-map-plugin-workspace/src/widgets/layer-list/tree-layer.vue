@@ -242,13 +242,15 @@ import {
   WMTSSublayer,
   CoordinateTransformation,
   CoordinateSystemType,
-  Objects
+  Objects,
+  IGSSceneSublayerRenderType
 } from '@mapgis/web-app-framework'
 import {
   ExhibitionControllerMixin,
   IAttributeTableExhibition,
   AttributeTableExhibition,
-  baseConfigInstance
+  baseConfigInstance,
+  dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-store'
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
@@ -597,11 +599,31 @@ export default class TreeLayer extends Mixins(
   private isAttributes(item) {
     const bool =
       (this.isSubLayer(item) && this.isIgsDocLayer(item)) ||
-      (this.isSubLayer(item) && this.isIGSScene(item)) ||
+      (this.isSubLayer(item) &&
+        this.isIGSScene(item) &&
+        this.includeBindData(item)) ||
       (this.isSubLayer(item) && this.isIgsArcgisLayer(item)) ||
       this.isIgsVectorLayer(item)
 
     return bool
+  }
+
+  includeBindData(item) {
+    if (item.layer) {
+      const { id } = item.layer
+      const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(id)
+      if (layerConfig && layerConfig.bindData) {
+        const { serverType } = layerConfig.bindData
+        if (serverType === LayerType.IGSScene) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    }
+    return false
   }
 
   isMetaData(item) {
@@ -692,26 +714,40 @@ export default class TreeLayer extends Mixins(
         fullExtent: { zmin, zmax }
       } = item.dataRef
       let id = ''
+      let range = null
       sublayers.forEach(item => {
         if (item.visible) {
           id = item.id
+          if (item.renderType === IGSSceneSublayerRenderType.elevation) {
+            range = item.range
+          }
         }
       })
-      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
-        'default',
-        id
-      )
-      if (source.length > 0) {
-        const tranform = source[0].root.transform
-        const bound = this.sceneController.localExtentToGlobelExtent(
-          { xmin, xmax, ymin, ymax, zmin, zmax },
-          tranform
-        )
+      if (!range) {
+        const res = this.CesiumZondy.M3DIgsManager.findSource('default', id)
+        if (res && res.source && res.source.length > 0) {
+          const { source } = res
+          const tranform = source[0].root.transform
+          const bound = this.sceneController.localExtentToGlobelExtent(
+            { xmin, xmax, ymin, ymax, zmin, zmax },
+            tranform
+          )
+          const rectangle = new this.Cesium.Rectangle.fromDegrees(
+            bound.xmin,
+            bound.ymin,
+            bound.xmax,
+            bound.ymax
+          )
+          this.webGlobe.viewer.camera.flyTo({
+            destination: rectangle
+          })
+        }
+      } else {
         const rectangle = new this.Cesium.Rectangle.fromDegrees(
-          bound.xmin,
-          bound.ymin,
-          bound.xmax,
-          bound.ymax
+          range.xmin,
+          range.ymin,
+          range.xmax,
+          range.ymax
         )
         this.webGlobe.viewer.camera.flyTo({
           destination: rectangle
@@ -845,15 +881,20 @@ export default class TreeLayer extends Mixins(
       const { ip, port, docName } = sceneLayer.layer._parseUrl(
         sceneLayer.layer.url
       )
-      this.queryParams = {
-        id: `${sceneLayer.title} ${sceneLayer.id} 自定义查询`,
-        name: `${sceneLayer.title} 自定义查询`,
-        option: {
-          id: `${sceneLayer.id}`,
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: sceneLayer.layer.type,
-          gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型'
+      const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(
+        sceneLayer.layer.id
+      )
+      if (layerConfig && layerConfig.bindData) {
+        this.queryParams = {
+          id: `${sceneLayer.title} ${sceneLayer.id} 自定义查询`,
+          name: `${sceneLayer.title} 自定义查询`,
+          option: {
+            id: `${sceneLayer.id}`,
+            ip: ip || baseConfigInstance.config.ip,
+            port: Number(port || baseConfigInstance.config.port),
+            serverType: sceneLayer.layer.type,
+            gdbp: layerConfig.bindData.gdbps
+          }
         }
       }
     } else if (this.isIgsArcgisLayer(layer)) {
@@ -926,20 +967,25 @@ export default class TreeLayer extends Mixins(
       const sceneLayer = layer.dataRef
       const { ip, port, docName } = parent._parseUrl(parent.url)
       const { id, name, title } = sceneLayer
-      exhibition = {
-        id: `${title} ${id}`,
-        name: `${title} 属性表`,
-        option: {
-          id: `${id}`,
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: parent.type,
-          gdbp: 'gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_模型'
+      const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(
+        parent.id
+      )
+      if (layerConfig && layerConfig.bindData) {
+        exhibition = {
+          id: `${title} ${id}`,
+          name: `${title} 属性表`,
+          option: {
+            id: `${id}`,
+            ip: ip || baseConfigInstance.config.ip,
+            port: Number(port || baseConfigInstance.config.port),
+            serverType: parent.type,
+            gdbp: layerConfig.bindData.gdbps
+          }
         }
       }
+      this.addExhibition(new AttributeTableExhibition(exhibition))
+      this.openExhibitionPanel()
     }
-    this.addExhibition(new AttributeTableExhibition(exhibition))
-    this.openExhibitionPanel()
   }
 
   metaDataInfo(node) {

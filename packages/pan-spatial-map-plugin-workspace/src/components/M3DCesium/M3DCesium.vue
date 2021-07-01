@@ -47,11 +47,12 @@ export default class M3DCesium extends Mixins(MapMixin) {
   @Watch('fitBound')
   changeMapBound() {
     if (this.fitBound) {
-      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
+      const res = this.CesiumZondy.M3DIgsManager.findSource(
         'default',
         this.vueIndex
       )
-      if (source.length > 0) {
+      if (res && res.source && res.source.length > 0) {
+        const { source } = res
         const tranform = source[0].root.transform
         // const { xmin, ymin, xmax, ymax, zmin, zmax } = this.fitBound
         // const center = {
