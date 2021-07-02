@@ -39,22 +39,22 @@ export enum LayerType {
   /**
    * 未知
    */
-  unknown,
+  Unknown,
 
   /**
    * 组图层
    */
-  group,
+  Group,
 
   /**
    * 瓦片服务图层
    */
-  tile,
+  Tile,
 
   /**
    * 地图服务图层
    */
-  mapImage,
+  MapImage,
 
   /**
    * IGServer瓦片服务图层
@@ -82,54 +82,54 @@ export enum LayerType {
   OGCWMS,
 
   /**
-   * arcGIS瓦片服务图层
+   * ArcGIS瓦片服务图层
    */
-  arcGISTile,
+  ArcGISTile,
 
   /**
-   * arcGIS地图服务图层
+   * ArcGIS地图服务图层
    */
-  arcGISMapImage,
+  ArcGISMapImage,
 
   /**
    * 矢量瓦片图层
    */
-  vectorTile,
+  VectorTile,
 
   /**
    * 互联网服务图层
    */
-  webTile,
+  WebTile,
 
   /**
    * 自定义瓦片服务图层
    */
-  customTile,
+  CustomTile,
 
   /**
    * 自定义地图服务图层
    */
-  customMapImageLayer,
+  CustomMapImageLayer,
 
   /**
    * 高德电子地图
    */
-  aMapMercatorEMap,
+  AMapMercatorEMap,
 
   /**
    * 高德卫星影像图层
    */
-  aMapMercatorSatelliteMap,
+  AMapMercatorSatelliteMap,
 
   /**
    * 高德卫星影像图注记图层
    */
-  aMapMercatorSatelliteAnnMap,
+  AMapMercatorSatelliteAnnMap,
 
   /**
    * 三维模型缓存图层,用于显示三维模型缓存。如：m3d(中地定义的模型缓存格式)，osgb(osgb格式的倾斜摄影模型)、3dTileset(cesium标准的模型缓存)
    */
-  modelCache,
+  ModelCache,
 
   /**
    * IGS三维模型缓存图层,用于显示IGS发布的m3d格式的三维模型缓存。
@@ -139,7 +139,7 @@ export enum LayerType {
   /**
    * 高程图层，用于接入地形服务
    */
-  elevation,
+  Elevation,
 
   /**
    * IGS高程图层，用于接入IGS三维服务中的地形服务
@@ -149,7 +149,7 @@ export enum LayerType {
   /**
    *IGS场景图层,用于对接IGS的三维场景服务
    */
-  scene,
+  Scene,
 
   /**
    *IGS场景图层,用于对接IGS的三维场景服务
@@ -160,7 +160,7 @@ export enum LayerType {
    * 覆盖物(临时绘制)图层
    *
    */
-  graphics
+  Graphics
 }
 
 /**
@@ -269,7 +269,7 @@ export abstract class Layer {
    * @type {LayerType}
    * @memberof Layer
    */
-  type: LayerType = LayerType.unknown
+  type: LayerType = LayerType.Unknown
 
   /**
    * 是否可见

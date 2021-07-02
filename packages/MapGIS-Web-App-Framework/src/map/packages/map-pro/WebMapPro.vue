@@ -276,7 +276,7 @@ export default {
           }
 
           break
-        case LayerType.arcGISTile:
+        case LayerType.ArcGISTile:
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -285,7 +285,7 @@ export default {
           }
 
           break
-        case LayerType.arcGISMapImage:
+        case LayerType.ArcGISMapImage:
           showLayers = 'show:'
 
           visibleSubLayers = layer.allSublayers.filter(sublayer => {
@@ -309,9 +309,9 @@ export default {
             sourceId: layer.id
           }
           break
-        case LayerType.aMapMercatorEMap:
-        case LayerType.aMapMercatorSatelliteMap:
-        case LayerType.aMapMercatorSatelliteAnnMap:
+        case LayerType.AMapMercatorEMap:
+        case LayerType.AMapMercatorSatelliteMap:
+        case LayerType.AMapMercatorSatelliteAnnMap:
           tempStr = this.generateWebTileLayerUrl(layer)
           mapboxLayerComponentProps = {
             type: layer.type,
@@ -320,7 +320,7 @@ export default {
             sourceId: layer.id
           }
           break
-        case LayerType.vectorTile:
+        case LayerType.VectorTile:
           mapboxLayerComponentProps = {
             type: layer.type,
             mvtStyle: layer.currentStyle
@@ -337,7 +337,7 @@ export default {
         ...commonProps
       }
 
-      if (layer.type !== LayerType.vectorTile)
+      if (layer.type !== LayerType.VectorTile)
         mapboxLayerComponentProps.layer = layerStyle
 
       return mapboxLayerComponentProps
@@ -393,20 +393,20 @@ export default {
       return false
     },
     isArcgisMapLayer(type) {
-      return type === LayerType.arcGISMapImage
+      return type === LayerType.ArcGISMapImage
     },
     isArcgisTileLayer(type) {
-      return type === LayerType.arcGISTile
+      return type === LayerType.ArcGISTile
     },
     isRasterLayer(type) {
       return (
-        type === LayerType.aMapMercatorEMap ||
-        type === LayerType.aMapMercatorSatelliteMap ||
-        type === LayerType.aMapMercatorSatelliteAnnMap
+        type === LayerType.AMapMercatorEMap ||
+        type === LayerType.AMapMercatorSatelliteMap ||
+        type === LayerType.AMapMercatorSatelliteAnnMap
       )
     },
     isVectorTileLayer(type) {
-      return type === LayerType.vectorTile
+      return type === LayerType.VectorTile
     },
     generateWebTileLayerUrl(layer) {
       let url = ''
