@@ -113,7 +113,6 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   private multiSetting = {
     'fill-color': '#bedcaf',
     'fill-outline-color': '#dd5c5c',
-    'fill-pattern': '',
     'fill-opacity': 1,
     'fill-antialias': true
   }
@@ -131,10 +130,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       const requestUrl = `${this.currentLayer.currentStyle.sprite}.json`
       this.styleOptions = this.currentLayer.styleList.map(item => item.name)
       this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
-      // 获取到区填充图案数据后，将批量设置类型中的区填充属性值设为数据的第0项
+      // 获取到区填充图案数据
       this.getSpriteData(requestUrl).then(res => {
         this.spriteData = res
-        this.multiSetting['fill-pattern'] = this.spriteData[0]
+        // console.log(res)
       })
     }
   }
@@ -186,8 +185,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
             }
           })
 
-          // 区填充图案样式特殊些，所以子图层的该样式也要改变
-          item.paint['fill-pattern'] = newVal['fill-pattern']
+          if (Object.keys(newVal).includes('fill-pattern')) {
+            // 区填充图案样式特殊些，所以子图层的该样式也要改变
+            this.$set(item.paint, 'fill-pattern', newVal['fill-pattern'])
+          }
         }
         result.push(item)
         return result

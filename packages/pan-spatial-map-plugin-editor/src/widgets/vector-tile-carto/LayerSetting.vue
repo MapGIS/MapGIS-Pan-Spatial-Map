@@ -155,6 +155,7 @@
             <a-select
               v-if="!paint['fill-pattern'] || !paint['fill-pattern'].stops"
               v-model="paint['fill-pattern']"
+              @change="patternChange"
             >
               <a-select-option v-for="item in spriteData" :key="item">
                 {{ item }}
@@ -284,6 +285,10 @@ export default class LayerSetting extends Vue {
   // 选中颜色拾取器对应事件
   private getLineColor(val, type) {
     this.paint[type] = val.hex
+  }
+
+  private patternChange(value) {
+    console.log(value)
   }
 
   // 点击+按钮响应事件
