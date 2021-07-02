@@ -119,15 +119,15 @@ export class DataCatalogManager {
         url = layerConfig.serverURL
         layer = new OGCWMSLayer({ url })
         break
-      case LayerType.arcGISTile:
+      case LayerType.ArcGISTile:
         url = layerConfig.serverURL
         layer = new ArcGISTileLayer({ url })
         break
-      case LayerType.arcGISMapImage:
+      case LayerType.ArcGISMapImage:
         url = layerConfig.serverURL
         layer = new ArcGISMapImageLayer({ url })
         break
-      case LayerType.vectorTile:
+      case LayerType.VectorTile:
         url = layerConfig.serverURL
         layer = new VectorTileLayer({ url })
         break
@@ -579,7 +579,7 @@ export class DataCatalogManager {
 
   // 根据layerServiceType计算serverType和serverSubType
   private convertLayerServiceType(layerServiceType: string) {
-    let serverType = LayerType.unknown
+    let serverType = LayerType.Unknown
 
     switch (layerServiceType) {
       case this.layerServiceType.IGSDOC:
@@ -598,10 +598,10 @@ export class DataCatalogManager {
         serverType = LayerType.OGCWMTS
         break
       case this.layerServiceType.TILEARCGIS:
-        serverType = LayerType.arcGISTile
+        serverType = LayerType.ArcGISTile
         break
       case this.layerServiceType.IMAGEARCGIS:
-        serverType = LayerType.arcGISMapImage
+        serverType = LayerType.ArcGISMapImage
         break
       case this.layerServiceType.IGSDOC3D:
       case this.layerServiceType.IGSIMAGE3D:
@@ -612,7 +612,7 @@ export class DataCatalogManager {
       case this.layerServiceType.POINTCLOUD:
         break
       case this.layerServiceType.VECTORTILE:
-        serverType = LayerType.vectorTile
+        serverType = LayerType.VectorTile
         break
       case this.layerServiceType.TERRAIN:
         break
