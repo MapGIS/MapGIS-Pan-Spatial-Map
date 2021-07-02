@@ -9,7 +9,7 @@
     @load="handleLoad"
     style="height: 100%; width: 100%"
   >
-    <div v-for="(layerProps, index) in layers" :key="layerProps.layerId">
+    <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :layer="layerProps.layer"
@@ -17,7 +17,7 @@
         :sourceId="layerProps.sourceId"
         :baseUrl="layerProps.url"
         :serverName="layerProps.serverName"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
@@ -27,7 +27,7 @@
         :baseUrl="layerProps.url"
         :layers="layerProps.layers"
         :serverName="layerProps.serverName"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-igs-vector-layer
         v-if="isIgsVectorLayer(layerProps.type)"
@@ -36,7 +36,7 @@
         :sourceId="layerProps.sourceId"
         :baseUrl="layerProps.url"
         :gdbps="layerProps.gdbps"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-ogc-wmts-layer
         v-if="isWMTSLayer(layerProps.type)"
@@ -50,7 +50,7 @@
         :wmtsStyle="layerProps.wmtsStyle"
         :format="layerProps.format"
         :token="layerProps.token"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-ogc-wms-layer
         v-if="isWMSLayer(layerProps.type)"
@@ -62,7 +62,7 @@
         :version="layerProps.version"
         :token="layerProps.token"
         :reversebbox="layerProps.reversebbox"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-arcgis-map-layer
         v-if="isArcgisMapLayer(layerProps.type)"
@@ -71,7 +71,7 @@
         :sourceId="layerProps.sourceId"
         :baseUrl="layerProps.baseUrl"
         :layers="layerProps.layers"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-arcgis-tile-layer
         v-if="isArcgisTileLayer(layerProps.type)"
@@ -79,7 +79,7 @@
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
         :baseUrl="layerProps.baseUrl"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-rastertile-layer
         v-if="isRasterLayer(layerProps.type)"
@@ -87,7 +87,7 @@
         :layerId="layerProps.layerId"
         :sourceId="layerProps.sourceId"
         :url="layerProps.url"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-igs-tdt-layer
         v-if="isIgsTdtLayer(layerProps.type)"
@@ -97,12 +97,12 @@
         :baseURL="layerProps.baseURL"
         :token="layerProps.token"
         :crs="crs"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-mvt-style-layer
         v-if="isVectorTileLayer(layerProps.type)"
         :mvtStyle="layerProps.mvtStyle"
-        :before="getBeforeLayerId(index)"
+        :before="getBeforeLayerId(layerProps.beforeId)"
       />
     </div>
     <mapgis-scale :position="'left-bottom'" />
@@ -142,7 +142,8 @@ export default {
         'pk.eyJ1IjoicGFybmRlZWRsaXQiLCJhIjoiY2o1MjBtYTRuMDhpaTMzbXhpdjd3YzhjdCJ9.sCoubaHF9-nhGTA-sgz0sA',
       crs: 'EPSG:4326',
       sources: {},
-      layers: []
+      layers: [],
+      map: null
     }
   },
   watch: {
@@ -157,15 +158,40 @@ export default {
     this.parseDocument()
   },
   methods: {
-    getBeforeLayerId(index) {
-      if (index + 1 >= this.layers.length) {
-        return undefined
+    getBeforeLayerId(beforeId) {
+      //TODO 此段屏蔽代码请勿删除，防止以后做拖动排序的时候，可以作为参考
+      // if (beforeId === 'defaultMap') {
+      //   return undefined
+      // } else if (beforeId) {
+      //   if (this.map.getLayer(beforeId)) {
+      //     return beforeId
+      //   } else {
+      //     return undefined
+      //   }
+      // } else if (index + 1 >= this.layers.length) {
+      //   return undefined
+      // } else if (this.map.getLayer(this.layers[index + 1].layerId)) {
+      //   return this.layers[index + 1].layerId
+      // } else {
+      //   return undefined
+      // }
+
+      /**
+       * 修改说明：这里对构造layers的时候，对地图进行了标识，传入beforeId字段
+       *          当beforeId==='defaultMap'标识咱未添加图层树图层，当添加了
+       *          图层树图层时，beforeId等于defaultMap.layers()的第一个图层ID
+       * @修改人 龚瑞强
+       * @时间 2021/7/2
+       */
+      if (beforeId && this.map.getLayer(beforeId)) {
+        return beforeId
       } else {
-        return this.layers[index + 1].layerId
+        return undefined
       }
     },
     handleLoad(payload) {
       // const { map, mapbox } = payload
+      this.map = payload.map
       const listeners = this.$listeners
       const webMapgisListeners = this.$refs.mapgisWebMap.$listeners
       // 将mapgis-web-map的事件抛出
@@ -178,7 +204,7 @@ export default {
         this.$root.$emit('mapbox-load', payload)
       }
     },
-    genMapboxLayerComponentPropsByLayer(layer) {
+    genMapboxLayerComponentPropsByLayer(layer, beforeId) {
       // mapbox图层组件所需要的属性
       let mapboxLayerComponentProps = {}
 
@@ -334,7 +360,8 @@ export default {
       // 共有属性
       mapboxLayerComponentProps = {
         ...mapboxLayerComponentProps,
-        ...commonProps
+        ...commonProps,
+        beforeId
       }
 
       if (layer.type !== LayerType.VectorTile)
@@ -353,8 +380,13 @@ export default {
         .getFlatLayers()
         .forEach(layer => {
           if (layer.loadStatus === LoadStatus.loaded) {
+            let beforeId = 'defaultMap'
+            if (this.document.defaultMap.layers().length > 0) {
+              beforeId = this.document.defaultMap.layers()[0].id
+            }
             const mapboxLayerComponentProps = this.genMapboxLayerComponentPropsByLayer(
-              layer
+              layer,
+              beforeId
             )
             layers.push(mapboxLayerComponentProps)
           }

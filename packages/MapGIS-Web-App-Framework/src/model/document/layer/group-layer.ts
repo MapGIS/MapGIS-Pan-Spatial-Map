@@ -80,7 +80,7 @@ export class GroupLayer extends Layer {
   add(layer: Layer, index?: number): GroupLayer {
     let indexTemp = this.layers.length
 
-    if (index) {
+    if (index || index === 0) {
       if (index >= 0 && index <= this.layers.length) {
         indexTemp = index
       }
