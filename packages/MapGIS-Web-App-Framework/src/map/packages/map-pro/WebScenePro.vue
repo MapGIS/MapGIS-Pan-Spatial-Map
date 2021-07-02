@@ -340,7 +340,7 @@ export default {
           }
 
           break
-        case LayerType.arcGISTile:
+        case LayerType.ArcGISTile:
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -348,7 +348,7 @@ export default {
           }
 
           break
-        case LayerType.arcGISMapImage:
+        case LayerType.ArcGISMapImage:
           showLayers = 'show:'
 
           visibleSubLayers = layer.allSublayers.filter(sublayer => {
@@ -371,9 +371,9 @@ export default {
             layers: showLayers
           }
           break
-        case LayerType.aMapMercatorEMap:
-        case LayerType.aMapMercatorSatelliteMap:
-        case LayerType.aMapMercatorSatelliteAnnMap:
+        case LayerType.AMapMercatorEMap:
+        case LayerType.AMapMercatorSatelliteMap:
+        case LayerType.AMapMercatorSatelliteAnnMap:
           tempStr = this.generateWebTileLayerUrl(layer)
           layerComponentProps = {
             type: layer.type,
@@ -382,7 +382,7 @@ export default {
             sourceId: layer.id
           }
           break
-        case LayerType.vectorTile:
+        case LayerType.VectorTile:
           // 修改说明：当前mapgis-3d-vectortile-layer图层的切片方式设置方式和其它图层还不一致。
           // 修改人：马原野 2021年6月8日
           layerComponentProps = {
@@ -436,20 +436,20 @@ export default {
       return false
     },
     isArcgisMapLayer(type) {
-      return type === LayerType.arcGISMapImage
+      return type === LayerType.ArcGISMapImage
     },
     isArcgisTileLayer(type) {
-      return type === LayerType.arcGISTile
+      return type === LayerType.ArcGISTile
     },
     isRasterLayer(type) {
       return (
-        type === LayerType.aMapMercatorEMap ||
-        type === LayerType.aMapMercatorSatelliteMap ||
-        type === LayerType.aMapMercatorSatelliteAnnMap
+        type === LayerType.AMapMercatorEMap ||
+        type === LayerType.AMapMercatorSatelliteMap ||
+        type === LayerType.AMapMercatorSatelliteAnnMap
       )
     },
     isVectorTileLayer(type) {
-      return type === LayerType.vectorTile
+      return type === LayerType.VectorTile
     },
     isDoc3dLayer(type) {
       return false

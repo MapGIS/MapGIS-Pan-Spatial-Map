@@ -21,7 +21,7 @@ export class WebTileLayer extends TileLayer {
   constructor(properties?: Record<string, any>) {
     super(properties)
 
-    this.type = LayerType.webTile
+    this.type = LayerType.WebTile
     this.fullExtent = new Zondy.Common.Rectangle(
       -20037508.3427892,
       -20037508.3427892,

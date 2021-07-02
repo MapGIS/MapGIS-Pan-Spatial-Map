@@ -28,7 +28,7 @@ export class AMapMercatorEMapLayer extends WebTileLayer {
     }
     super(options)
 
-    this.type = LayerType.aMapMercatorEMap
+    this.type = LayerType.AMapMercatorEMap
   }
 }
 
@@ -58,7 +58,7 @@ export class AMapMercatorSatelliteMapLayer extends WebTileLayer {
     }
     super(options)
 
-    this.type = LayerType.aMapMercatorSatelliteMap
+    this.type = LayerType.AMapMercatorSatelliteMap
   }
 }
 
@@ -87,6 +87,6 @@ export class AMapMercatorSatelliteAnnMapLayer extends WebTileLayer {
     }
     super(options)
 
-    this.type = LayerType.aMapMercatorSatelliteAnnMap
+    this.type = LayerType.AMapMercatorSatelliteAnnMap
   }
 }

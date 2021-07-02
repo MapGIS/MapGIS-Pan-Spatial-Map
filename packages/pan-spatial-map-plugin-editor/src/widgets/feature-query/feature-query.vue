@@ -242,7 +242,7 @@ export default class MpFeatureQuery extends Mixins(
         case LayerType.IGSScene:
           this.queryFeaturesByIGSScene(layer, geometry)
           break
-        case LayerType.arcGISMapImage:
+        case LayerType.ArcGISMapImage:
           this.queryFeaturesByArcgis(layer, geometry)
           break
         default:

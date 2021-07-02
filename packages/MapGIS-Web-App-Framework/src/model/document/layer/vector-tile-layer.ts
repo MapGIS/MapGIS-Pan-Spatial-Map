@@ -13,7 +13,7 @@ export class VectorTileLayer extends Layer {
   constructor(properties?: Record<string, any>) {
     super(properties)
 
-    this.type = LayerType.vectorTile
+    this.type = LayerType.VectorTile
 
     if (!properties) return
 

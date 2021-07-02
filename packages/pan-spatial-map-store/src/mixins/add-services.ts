@@ -141,7 +141,7 @@ export default class AddServicesMixin extends Mixins(WidgetMixin) {
           guid: dealService.id,
           serverURL: url,
           name,
-          serverType: LayerType.arcGISMapImage
+          serverType: LayerType.ArcGISMapImage
         }
         break
       default:

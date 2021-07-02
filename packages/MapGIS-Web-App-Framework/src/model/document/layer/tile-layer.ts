@@ -192,7 +192,7 @@ export abstract class TileLayer extends Layer {
   constructor(properties?: Record<string, any>) {
     super(properties)
 
-    this.type = LayerType.tile
+    this.type = LayerType.Tile
 
     if (!properties) return
 

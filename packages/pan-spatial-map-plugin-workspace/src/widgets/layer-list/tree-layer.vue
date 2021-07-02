@@ -1010,12 +1010,12 @@ export default class TreeLayer extends Mixins(
     let layerType = type
     if (layer) {
       layerType = layer.type
-      return layerType === LayerType.arcGISMapImage
+      return layerType === LayerType.ArcGISMapImage
     }
     return (
-      layerType === LayerType.arcGISMapImage
+      layerType === LayerType.ArcGISMapImage
       //  ||
-      // layerType === LayerType.arcGISTile
+      // layerType === LayerType.ArcGISTile
     )
   }
 }
