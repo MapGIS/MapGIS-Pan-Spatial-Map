@@ -54,7 +54,12 @@
           v-bind="slotProps"
         >
           <template>
-            <mp-handler-window ref="handlerWindow" :data="handlerSelect" />
+            <mp-handler-window
+              ref="handlerWindow"
+              :ip="ip"
+              :port="port"
+              :funcParam="handlerSelect"
+            />
           </template>
         </mp-window>
       </template>
@@ -65,7 +70,26 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin, Analysis } from '@mapgis/web-app-framework'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import MpHandlerWindow from './handler-window.vue'
+
+// {
+//     "CreateDate": "2011/6/21 0:00:00", // 工作流创建时间
+//     "Creator": "", // 创建者
+//     "Description": "", // 描述
+//     "FlowName": "根据srID投影(sfcls/acls)", // 工作流名称
+//     "FlowNo": 600234, // 工作流流程ID号
+//     "Group": "web工作流目录", // 工作流所属组名
+//     "Parameters": [ // 工作流所包含参数信息
+//         { // 参数1包含的所有信息
+//             "DataType": 1, // 参数类型，1为string，0为Int、2为Float、3为Bool、4为Date、5为DateTime、6为Unknow
+//             "DefaultValue": "GDBP://MapGISLocal/Sample/sfcls/wh_中心线new", // 参数默认值
+//             "Direction": 0, // 工作流参数方向0为输入（IN）、1为输出（OOUT）、2为输入输出（INOUT）
+//             "Index": 1, // 参数对应索引号，默认从1开始编号
+//             "Name": "clsName" // 参数名称
+//         }],
+//     "Version": ""
+// }
 
 @Component({ name: 'MpFuncWarehouse', components: { MpHandlerWindow } })
 export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
@@ -73,11 +97,13 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
 
   private group = []
 
-  // 打开处理界面
+  // 是否打开功能执行界面
   private openHandlerWindow = false
 
+  // 要执行功能的参数集合
   private handlerSelect = {}
 
+  // 表头
   private columns = [
     {
       title: '流程号',
@@ -128,6 +154,16 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
   }
 
+  // ip
+  get ip() {
+    return this.widgetInfo.config.ip || baseConfigInstance.config.ip
+  }
+
+  // port
+  get port() {
+    return this.widgetInfo.config.port || baseConfigInstance.config.ip
+  }
+
   // 面板打开时候触发函数
   onOpen() {
     this.init()
@@ -138,27 +174,29 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
     this.reset()
   }
 
+  // 初始化的时候获取服务上功能仓库列表信息
   init() {
-    const { ip, port } = this.widgetInfo.config
+    const { ip, port } = this
     Analysis.WorkflowAnalysis.getWorkflowList({ ip, port }).then(res => {
       this.constructData(res)
     })
   }
 
+  // 重置
   reset() {
     this.selectGroupIndex = 0
     this.group = []
     this.openHandlerWindow = false
     this.handlerSelect = {}
-    this.$refs.handlerWindow.resetView()
   }
 
+  // 打开功能执行界面
   openHandle(row) {
     this.handlerSelect = row
     this.openHandlerWindow = true
   }
 
-  // 拼接方法
+  // 分类列表数据
   constructData(res) {
     const groups = []
     for (let i = 0; i < res.length; i++) {
@@ -190,28 +228,8 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  .title {
-    .space {
-      width: 4px;
-      height: 25px;
-      background: @primary-color;
-      margin-right: 8px;
-      float: left;
-    }
-    .label {
-      line-height: 25px;
-      font-weight: bold;
-    }
-  }
   .space {
     width: 100%;
-  }
-  .btn {
-    text-align: right;
-    margin: 12px 0;
-    button {
-      margin-left: 8px;
-    }
   }
   .col {
     text-align: center;
@@ -220,14 +238,6 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
   .setting-panel {
     display: flex;
     flex-direction: column;
-    .ant-divider-horizontal {
-      margin: 8px 0;
-    }
-    .color {
-      height: 30px;
-      box-shadow: @shadow-1-down;
-      border-radius: 3px;
-    }
   }
   .ant-table-wrapper {
     width: 500px;
