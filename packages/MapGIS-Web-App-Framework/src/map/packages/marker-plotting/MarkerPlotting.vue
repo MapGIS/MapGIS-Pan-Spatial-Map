@@ -108,15 +108,10 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   }
 
   @Watch('selectedMarkers', { immediate: true })
-  changeSelectedMarkers(markers, prevMarkers) {
-    // const _markers = prevMarkers.length ? prevMarkers : this.markers
-    this.markers.forEach(marker => {
-      this.clearHighlight(marker)
-      this.emitClearHighlight(marker, this.vueKey)
-      MarkerStateInstance.removeSelectedIds(marker.markerId)
-    })
-    if (markers.length) {
-      markers.forEach(id => {
+  changeSelectedMarkers(markerIds) {
+    this.clearAllHighlight()
+    if (markerIds.length) {
+      markerIds.forEach(id => {
         const marker = this.getMarker(id)
         this.addHighlight(marker)
         this.emitHighlight(marker, this.vueKey)
@@ -296,9 +291,21 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     }
   }
 
+  private clearAllHighlight() {
+    this.markers.forEach(marker => {
+      this.clearHighlight(marker)
+      this.emitClearHighlight(marker, this.vueKey)
+      MarkerStateInstance.removeSelectedIds(marker.markerId)
+    })
+  }
+
   private addHighlight(marker) {
     this.zoomTo(this.getFitBound(marker))
     this.highlightFeature(marker)
+  }
+
+  beforeDestroy() {
+    this.clearAllHighlight()
   }
 }
 </script>
