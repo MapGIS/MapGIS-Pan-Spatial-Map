@@ -44,9 +44,9 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   // 所有的标注点信息
   @Prop({ required: true, default: () => [] }) readonly features!: IFeature[]
 
-  // 需要高亮的标注点
+  // 选中的的标注点
   @Prop({ required: true, default: () => [] })
-  readonly highlightFeatures!: string[]
+  readonly selectedFeatures!: string[]
 
   // 是否随地图范围过滤
   @Prop({ default: false }) readonly filterWithMap!: boolean
@@ -91,7 +91,7 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
       filterWithMap,
       selectionBound,
       colorConfig,
-      highlightFeatures: selectedMarkers
+      selectedFeatures: selectedMarkers
     } = this
     return {
       vueKey,
@@ -151,6 +151,7 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
    * 移除标注
    */
   removeMarkers() {
+    this.selectionBound = {}
     this.markers = []
   }
 
@@ -181,17 +182,25 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   }
 
   /**
+   * 取消高亮
+   */
+  clearHightlight() {
+    this.markers.forEach(marker => {
+      this.$set(marker, 'img', this.defaultIcon)
+    })
+  }
+
+  /**
    * 高亮选择集对应的标注图标
    */
-  hightlightMarkers(selection: sting) {
+  hightlightMarkers(selections: sting[]) {
     this.getSelectIcon(() => {
       this.markers.forEach(marker => {
-        const imgType = selection.includes(marker.markerId)
+        const imgType = selections.includes(marker.markerId)
           ? this.selectedIcon
           : this.defaultIcon
         this.$set(marker, 'img', imgType)
       })
-      if (!selection) return
       const { MIN_VALUE, MAX_VALUE } = Number
       this.selectionBound = this.normalizedFeatures.reduce(
         ({ xmin, xmax, ymin, ymax }, { feature }: GFeature) => {
@@ -224,13 +233,16 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
     }
   }
 
-  @Watch('highlightFeatures', { immediate: true })
-  watchHighlightIds(nV) {
-    nV.forEach(uid => this.hightlightMarkers(uid))
+  @Watch('selectedFeatures', { immediate: true })
+  watchSelectedFeatures(nV) {
+    if (nV.length) {
+      this.hightlightMarkers(nV)
+    } else {
+      this.clearHightlight()
+    }
   }
 
-  beforeDestroyed() {
-    this.selectionBound = {}
+  beforeDestroy() {
     this.removeMarkers()
   }
 }

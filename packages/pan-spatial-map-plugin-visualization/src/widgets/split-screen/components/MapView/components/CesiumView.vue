@@ -43,7 +43,7 @@ export default class CesiumView extends Vue {
     return this.$refs.draw3d
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
     this.isMapLoaded = false
   }
 

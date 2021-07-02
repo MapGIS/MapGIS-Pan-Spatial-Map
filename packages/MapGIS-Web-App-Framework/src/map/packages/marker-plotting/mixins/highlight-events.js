@@ -101,7 +101,7 @@ export default {
     this.onClearHighlight()
     this.onHighlight()
   },
-  beforeDestoyed() {
+  destroyed() {
     this.offClearHighlight()
     this.offHighlight()
   }

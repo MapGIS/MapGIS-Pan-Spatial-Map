@@ -33,7 +33,7 @@ export default class MapboxView extends Vue {
     return this.$refs.draw
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
     this.isMapLoaded = false
   }
 

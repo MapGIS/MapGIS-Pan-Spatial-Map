@@ -27,7 +27,10 @@
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
 import { MapMixin, Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
-import mapViewStateInstance, { Rect } from '../MapView/mixins/map-view-state'
+import mapViewStateInstance, {
+  initRectangle,
+  Rect
+} from '../MapView/store/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -117,7 +120,8 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
     }
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
+    this.initBound = initRectangle
     this.queryVisible = false
     this.queryRect = {}
   }

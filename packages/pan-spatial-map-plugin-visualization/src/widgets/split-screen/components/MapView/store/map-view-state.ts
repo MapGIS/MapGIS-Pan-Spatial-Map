@@ -22,7 +22,7 @@ export class Rect {
   }
 }
 
-const initRectangle = new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
+export const initRectangle = new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
 /**
  * 地图视图状态类.记录地图的ID、显示范围信息
  */
@@ -35,6 +35,9 @@ export class MapViewState {
 
   // 二三维当前活动的地图经纬度范围
   private _activeBound: Rect = initRectangle
+
+  // 是否移动地图
+  private _isMove = false
 
   get mapViewId(): string {
     return this._mapViewId
@@ -64,6 +67,14 @@ export class MapViewState {
     }
   }
 
+  get isMove() {
+    return this._isMove
+  }
+
+  set isMove(isMove: boolean) {
+    this._isMove = isMove
+  }
+
   /**
    * 判断矩形范围是否可用
    * @param {Rect} rect
@@ -72,7 +83,7 @@ export class MapViewState {
     if (!CommonUtil.isEmpty(rect)) {
       const boundKeys = ['xmin', 'xmax', 'ymin', 'ymax']
       const hasBoundKeys = boundKeys.every(v => v in rect)
-      return hasBoundKeys && rect.xmin < rect.xmax && rect.ymin < rect.ymax
+      return hasBoundKeys && rect.xmin <= rect.xmax && rect.ymin <= rect.ymax
     }
     return !0
   }
