@@ -12,7 +12,7 @@
     :height="height"
     style="width: 100%; height: 100%;"
   >
-    <div v-for="layerProps in layers" :key="layerProps.layerId">
+    <div v-for="(layerProps, index) in reverseLayers" :key="getTimeID(index)">
       <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :layerStyle="layerProps.layerStyle"
@@ -74,6 +74,7 @@
         v-if="isVectorTileLayer(layerProps.type)"
         :vectortilejson="layerProps.mvtStyle"
         :tilingScheme="layerProps.srs"
+        :layerStyle="layerProps.layerStyle"
       />
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type)"
@@ -81,12 +82,14 @@
         :id="layerProps.id"
         :show="layerProps.show"
         :url="layerProps.url"
+        :layerStyle="layerProps.layerStyle"
       />
       <mapgis-3d-igs-terrain
         v-if="isIgsTerrainLayer(layerProps.type)"
         :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
+        :layerStyle="layerProps.layerStyle"
       />
       <div class="statebardiv">
         <mapgis-3d-statebar class="statebar" />
@@ -131,6 +134,11 @@ export default {
       layers: []
     }
   },
+  computed: {
+    reverseLayers() {
+      return [...this.layers].reverse()
+    }
+  },
   watch: {
     document: {
       deep: true,
@@ -143,6 +151,17 @@ export default {
     this.parseDocument()
   },
   methods: {
+    /**
+     * 修改说明：这里给图层key加上时间戳的原因，主要是因为zIndex属性更新不及时，导致部分zIndex冲突
+     *          加上时间戳后，每次v-for图层，所有图层会按顺序重新加载，这样遍不会有zIndex冲突的问
+     *          题，目前只找到这种解决办法，如后面有更好的解决办法，可以一起讨论
+     *
+     * @修改人 龚瑞强
+     * @时间 2021/7/2
+     */
+    getTimeID(index) {
+      return `${index}-${new Date().getTime()}`
+    },
     parseDocument() {
       if (!this.document) return
 
@@ -157,7 +176,8 @@ export default {
             if (layer.type === LayerType.IGSScene) {
               layer.activeScene.sublayers.forEach(igsSceneSublayer => {
                 const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
-                  igsSceneSublayer
+                  igsSceneSublayer,
+                  index
                 )
                 layers.push(layerComponentProps)
               })
@@ -179,7 +199,9 @@ export default {
             if (layer.type === LayerType.IGSScene) {
               layer.activeScene.sublayers.forEach(igsSceneSublayer => {
                 const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
-                  igsSceneSublayer
+                  igsSceneSublayer,
+                  this.document.baseLayerMap.clone().getFlatLayers().length +
+                    index
                 )
                 layers.push(layerComponentProps)
               })
@@ -197,13 +219,14 @@ export default {
       this.layers = layers
     },
 
-    genLayerComponentPropsByIGSSceneSublayer(igsSceneSublayer) {
+    genLayerComponentPropsByIGSSceneSublayer(igsSceneSublayer, index) {
       // 图层组件所需要的属性
       let layerComponentProps = {}
 
       // 图层显示样式
       const layerStyle = {
-        show: igsSceneSublayer.isVisible
+        show: igsSceneSublayer.isVisible,
+        zIndex: index + 1
       }
 
       switch (igsSceneSublayer.renderType) {

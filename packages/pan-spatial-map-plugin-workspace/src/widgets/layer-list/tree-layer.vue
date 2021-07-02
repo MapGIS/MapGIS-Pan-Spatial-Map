@@ -113,6 +113,12 @@
               >
                 切换图层
               </a-list-item>
+              <a-list-item
+                v-if="isParentLayer(item) && !isIGSScene(item)"
+                @click="toTop(item)"
+              >
+                置顶
+              </a-list-item>
             </a-list>
             <a-button @click.stop size="small" type="link">
               <a-icon type="ellipsis" class="more"> </a-icon>
@@ -763,6 +769,18 @@ export default class TreeLayer extends Mixins(
     this.showChangeActiveLayer = true
     this.currentWmtsActiveLayer = item.dataRef
     this.clickPopover(item, false)
+  }
+
+  toTop(item) {
+    if (this.document && this.document.defaultMap) {
+      const map = this.document.defaultMap
+      const layer = map.findLayerById(item.id)
+      map.remove(layer)
+      map.add(layer)
+      if (this.map.getLayer(item.id)) {
+        this.map.moveLayer(item.id)
+      }
+    }
   }
 
   updateActiveLayer(val: OGCWMTSLayer) {
