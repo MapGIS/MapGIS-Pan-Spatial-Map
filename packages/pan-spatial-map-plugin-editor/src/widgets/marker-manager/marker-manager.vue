@@ -521,6 +521,9 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
   .marker-table {
     .ant-table-pagination.ant-pagination {
       margin: 8px 0 0 0;
+      .ant-pagination-options-size-changer.ant-select {
+        margin-right: 0;
+      }
     }
   }
 }

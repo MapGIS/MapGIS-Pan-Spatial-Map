@@ -16,7 +16,8 @@ import {
   VectorTileLayer,
   IGSSceneLayer,
   UUID,
-  Catalog
+  Catalog,
+  UrlUtil
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
 
@@ -69,6 +70,7 @@ export class DataCatalogManager {
     let port = ''
     let serverName = ''
     let url = ''
+    let gdbps = ''
     const layerID = layerConfig.guid
     const layerTitle = layerConfig.name
     const tokenKey = layerConfig.tokenKey ? layerConfig.tokenKey : ''
@@ -104,12 +106,21 @@ export class DataCatalogManager {
         break
       case LayerType.IGSVector:
         // 在老的图层配置中serverURL存的是gdbps。
-        ip = layerConfig.ip || defaultIp
-        port = layerConfig.port || defaultPort
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = UrlUtil.getQueryPath(layerConfig.serverURL)
+          const queryParams = UrlUtil.getQueryParams(layerConfig.serverURL)
 
-        url = `http://${ip}:${port}/igs/rest/mrms/layers`
+          if (queryParams.gdbps) gdbps = queryParams.gdbps
+        } else {
+          ip = layerConfig.ip || defaultIp
+          port = layerConfig.port || defaultPort
 
-        layer = new IGSVectorLayer({ url, gdbps: layerConfig.gdbps })
+          url = `http://${ip}:${port}/igs/rest/mrms/layers`
+
+          gdbps = layerConfig.gdbps
+        }
+
+        layer = new IGSVectorLayer({ url, gdbps })
         break
       case LayerType.OGCWMTS:
         url = layerConfig.serverURL

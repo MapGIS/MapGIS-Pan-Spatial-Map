@@ -5,6 +5,7 @@ import * as StringUtil from './string-util'
 import * as TimeUtil from './time-util'
 import * as ColorUtil from './color-util'
 import * as DomUtil from './dom-util'
+import * as UrlUtil from './url-util'
 
 export {
   CommonUtil,
@@ -13,5 +14,6 @@ export {
   StringUtil,
   TimeUtil,
   ColorUtil,
-  DomUtil
+  DomUtil,
+  UrlUtil
 }
