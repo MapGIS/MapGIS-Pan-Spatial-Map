@@ -485,7 +485,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         label: layer.LayerName,
         value: layer.layerIndex
       }))
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       const result = await Metadata.ArcGISMetadataQuery.getServiceInfo(
         serverUrl
       )
@@ -540,7 +540,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
           type: FldType[index]
         })
       }
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,
@@ -626,7 +626,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         ]
       })
       dataset.push(...items)
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       const { count: totalCount } = await Feature.ArcGISFeatureQuery.getTotal({
         f: 'json',
         serverUrl,

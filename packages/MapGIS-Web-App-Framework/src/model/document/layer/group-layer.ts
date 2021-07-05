@@ -136,7 +136,7 @@ export class GroupLayer extends Layer {
    */
   getFlatLayers(): Layer[] {
     const flatLayers = this.allLayers.filter(layer => {
-      if (layer.type !== LayerType.group) {
+      if (layer.type !== LayerType.Group) {
         return true
       }
       return false

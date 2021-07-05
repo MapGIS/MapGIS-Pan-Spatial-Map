@@ -289,7 +289,7 @@ export default class MpAttributeTable extends Mixins(
       serverType === LayerType.IGSVector
     ) {
       return 'fid'
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       return 'ID'
     } else if (this.isIGSScence) {
       return 'FID'
@@ -534,7 +534,7 @@ export default class MpAttributeTable extends Mixins(
       if (this.isExhibitionActive) {
         await this.addMarkers()
       }
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       const { layerIndex, gdbp } = this.optionVal
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry || this.optionVal.geometry
@@ -927,7 +927,7 @@ export default class MpAttributeTable extends Mixins(
         serverType,
         gdbp
       }
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       this.statisticAndFilterParamas = {
         serverName: this.optionVal.serverName,
         layerIndex: this.currentTableParams.layerIndex,

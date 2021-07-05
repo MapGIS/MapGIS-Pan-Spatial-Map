@@ -20,7 +20,7 @@ export abstract class SceneLayer extends Layer3D {
   constructor(properties?: Record<string, any>) {
     super(properties)
 
-    this.type = LayerType.scene
+    this.type = LayerType.Scene
 
     if (!properties) return
 

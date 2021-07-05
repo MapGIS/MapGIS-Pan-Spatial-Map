@@ -161,7 +161,8 @@
           },
           {
             "id": "widget_0967bc93-d737-41c2-9344-3c93540cad45",
-            "uri": "widgets/marker-manager"
+            "uri": "widgets/marker-manager",
+            "config": "configs/marker-manager/config.json"
           },
           {
             "id": "widget_144B68C3-F095-B053-9B47-0B6DB9B7F6FE",
@@ -173,7 +174,8 @@
           },
           {
             "id": "widget_8c5d3d2e-b05b-49be-a109-8e3254a9e428",
-            "uri": "widgets/add-data"
+            "uri": "widgets/add-data",
+            "config": "configs/add-data/config.json"
           },
           {
             "id": "widget_bfe8faf2-4568-466b-98fd-877e856ccbd9",

@@ -20,7 +20,7 @@ export abstract class MapImageLayer extends Layer {
   constructor(properties?: Record<string, any>) {
     super(properties)
 
-    this.type = LayerType.mapImage
+    this.type = LayerType.MapImage
 
     if (!properties) return
 

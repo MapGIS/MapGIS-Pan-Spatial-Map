@@ -357,7 +357,7 @@ export default class FilterItem extends Vue {
           type: FldType[index]
         })
       }
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,
@@ -489,7 +489,7 @@ export default class FilterItem extends Vue {
       ).map(value => {
         return value
       })
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,

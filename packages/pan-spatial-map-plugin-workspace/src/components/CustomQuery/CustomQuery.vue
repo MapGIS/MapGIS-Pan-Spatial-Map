@@ -256,7 +256,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
           ? this.fieldTypeCN[type.toUpperCase()]
           : type.toUpperCase()
       }))
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       // arcgis图层
       const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
@@ -335,7 +335,7 @@ export default class MpCustomQuery extends Mixins(ExhibitionControllerMixin) {
         new Set(features.map(({ AttValue }) => AttValue[index]))
       ).map(value => ({ value }))
       this.valueTableData = values
-    } else if (serverType === LayerType.arcGISMapImage) {
+    } else if (serverType === LayerType.ArcGISMapImage) {
       const result = await Feature.ArcGISFeatureQuery.getLayerFileds({
         f: 'json',
         serverUrl,

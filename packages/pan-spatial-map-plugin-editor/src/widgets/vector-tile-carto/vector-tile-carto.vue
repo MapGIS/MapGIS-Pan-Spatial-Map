@@ -195,7 +195,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     if (doc.defaultMap && doc.defaultMap.allLayers.length > 0) {
       this.vectorTileOptions = doc.defaultMap.allLayers.reduce(
         (result, item) => {
-          if (item.type === LayerType.vectorTile) {
+          if (item.type === LayerType.VectorTile) {
             result.push(item.title)
           }
           return result

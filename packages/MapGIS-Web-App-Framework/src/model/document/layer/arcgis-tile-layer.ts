@@ -22,7 +22,7 @@ export class ArcGISTileLayer extends TileLayer {
   constructor(properties?: Record<string, any>) {
     super(properties)
 
-    this.type = LayerType.arcGISTile
+    this.type = LayerType.ArcGISTile
 
     if (!properties) return
 

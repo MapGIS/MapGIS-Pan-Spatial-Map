@@ -11,7 +11,6 @@ export { default as baseLayerManagerInstance } from './map/base-layers'
 export {
   ExhibitionMixin,
   ExhibitionControllerMixin,
-  AddServicesMixin,
   BaseLayersMixin
 } from './mixins'
 

@@ -178,7 +178,7 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
         }
         const type = map[layerType] || layerType
         layer.serverURL = `http://services.arcgisonline.com/ArcGIS/rest/services/${type}/MapServer`
-        layer.serverType = LayerType.arcGISTile
+        layer.serverType = LayerType.ArcGISTile
         break
       case 'baidu':
         // TODO:

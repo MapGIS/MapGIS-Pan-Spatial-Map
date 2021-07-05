@@ -13,7 +13,8 @@ export {
   StringUtil,
   TimeUtil,
   ColorUtil,
-  DomUtil
+  DomUtil,
+  UrlUtil
 } from './utils'
 
 export {

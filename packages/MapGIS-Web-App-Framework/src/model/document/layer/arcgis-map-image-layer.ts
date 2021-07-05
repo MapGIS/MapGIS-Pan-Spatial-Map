@@ -22,7 +22,7 @@ export class ArcGISMapImageLayer extends MapImageLayer {
   constructor(properties?: Record<string, any>) {
     super(properties)
 
-    this.type = LayerType.arcGISMapImage
+    this.type = LayerType.ArcGISMapImage
 
     if (!properties) return
 
