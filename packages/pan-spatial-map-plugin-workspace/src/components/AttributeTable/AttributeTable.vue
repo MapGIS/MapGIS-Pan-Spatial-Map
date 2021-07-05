@@ -332,14 +332,11 @@ export default class MpAttributeTable extends Mixins(
 
   created() {
     DomUtil.addFullScreenListener(this.fullScreenListener)
-  }
-
-  mounted() {
-    this.sceneController = Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
-    )
+    // this.sceneController = Objects.SceneController.getInstance(
+    //   this.Cesium,
+    //   this.CesiumZondy,
+    //   this.webGlobe
+    // )
   }
 
   beforeDestroy() {
@@ -478,6 +475,11 @@ export default class MpAttributeTable extends Mixins(
 
   private async query(where?: string) {
     this.loading = true
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
     try {
       this.clearSelection()
       await this.queryGeoJSON(
@@ -598,11 +600,7 @@ export default class MpAttributeTable extends Mixins(
       }
     } else if (serverType === LayerType.IGSScene) {
       // 查找矩阵集
-      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
-        'default',
-        this.optionVal.id
-      )
-
+      const { source } = this.sceneController.findSource(this.optionVal.id)
       const { gdbp } = this.optionVal
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry

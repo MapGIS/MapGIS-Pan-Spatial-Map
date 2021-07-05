@@ -193,15 +193,31 @@ export class SceneController {
    * @param vueKey 对应WebGlobe的key
    * @retu rns 经纬度坐标
    */
-  layerLocalExtentToGlobelExtent(igsSceneSubLayer, vueKey = 'default') {
+  layerLocalExtentToGlobelExtent(igsSceneSubLayer) {
+    /**
+     * @修改说明 现在新版webGlobe已经携带了vueKey，再不需要传入vueKey了
+     * @修改人 龚瑞强
+     * @修改时间 2021/7/5
+     */
     const { id, range } = igsSceneSubLayer
-    const { source } = this.CesiumZondy.M3DIgsManager.findSource(vueKey, id)
+    const { source } = this.findSource(id)
     let bound: any = null
     if (source.length > 0) {
       const tranform = source[0].root.transform
       bound = this.localExtentToGlobelExtent(range, tranform)
     }
     return bound
+  }
+
+  /**
+   * 查找模型对象
+   * @param id 查找模型的id
+   * @returns 模型对象
+   */
+  findSource(id: string) {
+    const { vueKey } = this.webGlobe
+    const res = this.CesiumZondy.M3DIgsManager.findSource(vueKey, id) || {}
+    return res || { source: [] }
   }
 
   /**

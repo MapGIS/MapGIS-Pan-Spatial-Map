@@ -164,7 +164,7 @@ export default class MpFeatureQuery extends Mixins(
     })
   }
 
-  mounted() {
+  created() {
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
       this.CesiumZondy,
@@ -554,12 +554,8 @@ export default class MpFeatureQuery extends Mixins(
     }
 
     if (visibleSublayerId !== '') {
-      const res = this.CesiumZondy.M3DIgsManager.findSource(
-        'default',
-        visibleSublayerId
-      )
-      if (res && res.source && res.source.length > 0) {
-        const { source } = res
+      const { source } = this.sceneController.findSource(visibleSublayerId)
+      if (source.length > 0) {
         tranform = source[0].root.transform
       }
     }

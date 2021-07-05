@@ -407,7 +407,11 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    */
   landscapeLayerFuc() {
     const { id } = this.model.activeScene.sublayers[0]
-    const { source } = this.CesiumZondy.M3DIgsManager.findSource('default', id)
+    const { source } = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    ).findSource(id)
     return source
   }
 
