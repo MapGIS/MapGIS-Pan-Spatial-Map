@@ -89,6 +89,36 @@
         </div>
       </div>
     </div>
+    <div v-show="!is2DMapMode">
+      <div
+        v-show="showLengthSelect && isMeasureFinished"
+        class="measure-result"
+      >
+        <div class="result-item">
+          <span class="name">直线距离: </span>
+          <span class="value">{{ results.cesiumLength }}千米</span>
+        </div>
+      </div>
+      <div v-show="showAreaSelect && isMeasureFinished" class="measure-result">
+        <div class="result-item">
+          <span class="name">空间面积: </span>
+          <span class="value">{{ results.cesiumArea }}平方公里</span>
+        </div>
+      </div>
+      <div
+        v-show="showTriangleSelect && isMeasureFinished"
+        class="measure-result"
+      >
+        <div class="result-item">
+          <span class="name">高差: </span>
+          <span class="value">{{ results.verticalDiatance }}米</span>
+        </div>
+        <div class="result-item">
+          <span class="name">水平距离: </span>
+          <span class="value">{{ results.horizontalDiatance }}米</span>
+        </div>
+      </div>
+    </div>
     <div v-show="showSettingPanel && is2DMapMode" class="setting-panel">
       <a-divider></a-divider>
       <a-space direction="vertical" style="width: 100%;">
@@ -200,6 +230,8 @@
       ref="cesiumMeasure"
       v-show="!is2DMapMode"
       :measureStyle="measureStyle"
+      @start="onMeasureStart"
+      @finished="onMeasureFinished"
     ></CesiumMeasure>
   </div>
 </template>
@@ -276,7 +308,11 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     planePerimeter: '',
     planeArea: '',
     ellipsoidPerimeter: '',
-    ellipsoidArea: ''
+    ellipsoidArea: '',
+    cesiumLength: '',
+    cesiumArea: '',
+    verticalDiatance: '',
+    horizontalDiatance: ''
   }
 
   // 样式表单数据对象
@@ -325,6 +361,11 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   // 当前激活项是否为面积测量
   get showAreaSelect() {
     return this.activeMode === 'measure-area'
+  }
+
+  // 当前激活项是否为三角测量
+  get showTriangleSelect() {
+    return this.activeMode === 'measure-triangulation'
   }
 
   get measureComponent() {
