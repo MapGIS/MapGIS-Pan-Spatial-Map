@@ -106,7 +106,11 @@ export class DataCatalogManager {
         break
       case LayerType.IGSVector:
         // 在老的图层配置中serverURL存的是gdbps。
-        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+        if (
+          layerConfig.serverURL &&
+          layerConfig.serverURL !== '' &&
+          UrlUtil.isUrlValid(layerConfig.serverURL)
+        ) {
           url = UrlUtil.getQueryPath(layerConfig.serverURL)
           const queryParams = UrlUtil.getQueryParams(layerConfig.serverURL)
 
