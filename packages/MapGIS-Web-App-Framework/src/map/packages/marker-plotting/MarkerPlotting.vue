@@ -304,6 +304,10 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     this.highlightFeature(marker)
   }
 
+  created() {
+    this.subscribeHighlight()
+  }
+
   beforeDestroy() {
     this.clearAllHighlight()
   }

@@ -4,7 +4,7 @@ export { api }
 
 export { getRequest, ProjectionTransformationUtil } from './utils'
 
-export { default as eventBus } from './event-bus'
+export { events, default as eventBus } from './event-bus'
 
 export { default as baseLayerManagerInstance } from './map/base-layers'
 

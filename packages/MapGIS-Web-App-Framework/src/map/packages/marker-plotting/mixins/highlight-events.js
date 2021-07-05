@@ -1,10 +1,10 @@
-import { eventBus } from '@mapgis/pan-spatial-map-store'
+import { eventBus, events } from '@mapgis/pan-spatial-map-store'
 
 export default {
   data() {
     return {
-      highlightEventName: 'highlight-feature',
-      clearHightlightEventName: 'clear-highlight-feature'
+      highlightEventName: events.FEATURE_HIGHLIGHT,
+      clearHightlightEventName: events.CLEAR_FEATURE_HIGHLIGHT
     }
   },
   methods: {
@@ -95,14 +95,18 @@ export default {
      * 添加高亮要素,由主组件实现
      * @param {object} marker 标注信息
      */
-    addHighlight(marker) {}
-  },
-  created() {
-    this.onClearHighlight()
-    this.onHighlight()
-  },
-  destroyed() {
-    this.offClearHighlight()
-    this.offHighlight()
+    addHighlight(marker) {},
+    /**
+     * 订阅高亮事件
+     * @return {Funtion} 事件销毁回调
+     */
+    subscribeHighlight() {
+      this.onClearHighlight()
+      this.onHighlight()
+      return () => {
+        this.offClearHighlight()
+        this.offHighlight()
+      }
+    }
   }
 }
