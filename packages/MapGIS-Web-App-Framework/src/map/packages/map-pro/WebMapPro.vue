@@ -159,7 +159,7 @@ export default {
   },
   methods: {
     getBeforeLayerId(beforeId) {
-      //TODO 此段屏蔽代码请勿删除，防止以后做拖动排序的时候，可以作为参考
+      // TODO 此段屏蔽代码请勿删除，防止以后做拖动排序的时候，可以作为参考
       // if (beforeId === 'defaultMap') {
       //   return undefined
       // } else if (beforeId) {
@@ -177,8 +177,8 @@ export default {
       // }
 
       /**
-       * 修改说明：这里对构造layers的时候，对地图进行了标识，传入beforeId字段
-       *          当beforeId==='defaultMap'标识咱未添加图层树图层，当添加了
+       * 修改说明：这里对构造layers的时候，对底图进行了标识，传入beforeId字段
+       *          当beforeId==='defaultMap'表示暂未添加图层树图层。当添加了
        *          图层树图层时，beforeId等于defaultMap.layers()的第一个图层ID
        * @修改人 龚瑞强
        * @时间 2021/7/2

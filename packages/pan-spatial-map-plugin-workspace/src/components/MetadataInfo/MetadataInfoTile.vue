@@ -37,8 +37,11 @@
                 <a-table
                   bordered
                   size="small"
+                  :scroll="{
+                    x: '100%'
+                  }"
                   :pagination="false"
-                  :data-source="tileStorageInfo[storageInfoItem]"
+                  :data-source="getDataSource(tileStorageInfo[storageInfoItem])"
                   :columns="
                     getTableColumns(tileStorageInfo[storageInfoItem][0])
                   "
@@ -88,6 +91,7 @@ export default class MpMetadataInfoTile extends Mixins(MetadataInfoMixin) {
   .levels {
     display: flex;
     flex-direction: column;
+    max-width: 100%;
     .levels-title {
       padding-bottom: 8px;
     }

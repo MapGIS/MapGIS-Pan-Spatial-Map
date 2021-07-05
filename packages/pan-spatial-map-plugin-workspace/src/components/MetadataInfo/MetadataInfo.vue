@@ -1,12 +1,7 @@
 <template>
   <div class="metadata-info-container">
     <a-spin :spinning="spinning" size="small">
-      <div
-        v-if="
-          isIGSMapImage(currentLayer || currentConfig) ||
-            isIGSScene(currentLayer || currentConfig)
-        "
-      >
+      <div v-if="isIGSMapImage(currentLayer || currentConfig)">
         <mp-metadata-info-doc :metadata="metadata"></mp-metadata-info-doc>
       </div>
       <div v-if="isIGSTile(currentLayer || currentConfig)">
@@ -14,6 +9,11 @@
       </div>
       <div v-if="isIGSVector(currentLayer || currentConfig)">
         <mp-metadata-info-vector :metadata="metadata"></mp-metadata-info-vector>
+      </div>
+      <div v-if="isIGSScene(currentLayer || currentConfig)">
+        <mp-metadata-info-doc-3-d
+          :metadata="metadata"
+        ></mp-metadata-info-doc-3-d>
       </div>
     </a-spin>
   </div>
@@ -33,10 +33,16 @@ import {
 import MpMetadataInfoDoc from './MetadataInfoDoc'
 import MpMetadataInfoTile from './MetadataInfoTile'
 import MpMetadataInfoVector from './MetadataInfoVector'
+import MpMetadataInfoDoc3D from './MetadataInfoDoc3D'
 
 @Component({
   name: 'MpMetadataInfo',
-  components: { MpMetadataInfoDoc, MpMetadataInfoTile, MpMetadataInfoVector }
+  components: {
+    MpMetadataInfoDoc,
+    MpMetadataInfoTile,
+    MpMetadataInfoVector,
+    MpMetadataInfoDoc3D
+  }
 })
 export default class MpMetadataInfo extends Vue {
   @Prop(Object) readonly currentLayer?: Record<string, any>

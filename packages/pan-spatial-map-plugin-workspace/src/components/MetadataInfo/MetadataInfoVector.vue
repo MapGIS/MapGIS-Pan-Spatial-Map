@@ -126,9 +126,12 @@
                 bordered
                 size="small"
                 :pagination="false"
-                :data-source="arrtibutes"
+                :data-source="getDataSource(arrtibutes)"
                 :columns="getTableColumns(arrtibutes[0])"
                 class="table"
+                :scroll="{
+                  x: '100%'
+                }"
                 :rowKey="
                   (record, index) => {
                     return index
@@ -206,6 +209,7 @@ export default class MpMetadataInfoVector extends Mixins(MetadataInfoMixin) {
   .attributes {
     display: flex;
     flex-direction: column;
+    max-width: 100%;
     .attributes-title {
       padding-bottom: 8px;
       width: unset !important;
