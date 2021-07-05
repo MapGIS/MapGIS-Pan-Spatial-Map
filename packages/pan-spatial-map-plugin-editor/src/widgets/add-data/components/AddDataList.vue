@@ -112,7 +112,12 @@
           </template>
           <template slot="expandedRowRender" slot-scope="record">
             <div class="data-content">
-              <div class="data-url">{{ record.url }}</div>
+              <a-textarea
+                class="data-url"
+                disabled
+                :value="record.url"
+                auto-size
+              ></a-textarea>
               <mp-toolbar class="data-content-toolbar">
                 <mp-toolbar-command-group>
                   <a-popconfirm
@@ -383,18 +388,23 @@ export default class AddDataList extends Vue {
       display: flex;
       flex-direction: column;
       .data-url {
-        width: 300px;
         padding: 3px 0;
         color: @text-color-secondary;
         word-break: break-all;
         white-space: break-spaces;
+        font-size: 12px;
+        &.ant-input {
+          border: none;
+          background-color: transparent;
+          resize: none;
+        }
       }
       .data-content-toolbar {
         flex-direction: row-reverse;
       }
     }
-    .ant-table-expand-icon-th,
-    .ant-table-row-expand-icon-cell {
+    /deep/.ant-table-expand-icon-th,
+    /deep/.ant-table-row-expand-icon-cell {
       width: 20px;
       min-width: 20px;
     }

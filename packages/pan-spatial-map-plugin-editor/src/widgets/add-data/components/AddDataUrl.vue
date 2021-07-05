@@ -30,9 +30,12 @@
         <a-textarea v-model="url" auto-size> </a-textarea>
       </a-row>
       <a-row>
-        <div class="url-example">
-          {{ `示例 : ${this.urlDataType.example}` }}
-        </div>
+        <a-textarea
+          class="url-example"
+          disabled
+          :value="`示例 : ${this.urlDataType.example}`"
+          auto-size
+        ></a-textarea>
       </a-row>
       <a-row>
         <label>名称</label>
@@ -132,11 +135,17 @@ export default class AddDataUrl extends Vue {
     width: 100%;
   }
   .url-example {
-    width: 300px;
+    padding: 3px 0;
+    color: @text-color-secondary;
     word-break: break-all;
     white-space: break-spaces;
     font-size: 12px;
-    color: @text-color-secondary;
+    &.ant-input {
+      border: none;
+      background-color: transparent;
+      resize: none;
+      min-height: 24px;
+    }
   }
 }
 </style>
