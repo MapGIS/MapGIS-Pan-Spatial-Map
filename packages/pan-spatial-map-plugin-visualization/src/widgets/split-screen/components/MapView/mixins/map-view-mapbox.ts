@@ -11,23 +11,8 @@ export default class MapViewMapboxMixin extends Mixins<Record<string, any>>(
   registerMapboxEvent() {
     this.ssMap.on('mousemove', this.setActiveMapView)
     this.ssMap.on('move', this.setMapBounds)
-    this.ssMap.on('dragstart', this.startDragMap)
-    this.ssMap.on('drag', this.setMapBounds)
-    this.ssMap.on('dragend', this.endDragMap)
-  }
-
-  /**
-   * 开始移动地图
-   */
-  startDragMap() {
-    this.setIsMove(true)
-  }
-
-  /**
-   * 结束移动地图
-   */
-  endDragMap() {
-    this.setIsMove(false)
+    this.ssMap.on('dragstart', () => this.setIsMove(true))
+    this.ssMap.on('dragend', () => this.setIsMove(false))
   }
 
   /**

@@ -88,10 +88,10 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * @param  resortOtherViews 是否同步复位其他图层
    */
   resort(resortOtherViews = false) {
-    const { initBound } = this
-    this.zoomIn({ ...initBound })
+    const _bound = { ...this.initBound }
+    this.zoomIn(_bound)
     if (resortOtherViews) {
-      this.setActiveBound({ ...initBound })
+      this.setActiveBound(_bound)
     }
   }
 
