@@ -1,27 +1,29 @@
 <template>
   <div class="split-screen-map">
-    <a-empty
-      description="请在数据目录中选择需要分屏的数据"
-      v-if="!screenNums.length"
-    />
-    <a-row :gutter="[5, 5]" v-else>
-      <a-col
-        v-for="s in screenNums"
-        :key="s"
-        :span="mapSpan"
-        :style="mapSpanStyle"
-      >
-        <map-view
-          @on-query="onQuery"
-          :queryVisible.sync="queryVisible"
-          :query-rect="queryRect"
-          :map-view-id="`split-screen-map-${s}`"
-          :map-view-layer="mapViewLayer(s)"
-          :excludes-tools="excludesTools(s)"
-          :resize="resize"
-        />
-      </a-col>
-    </a-row>
+    <transition name="fade">
+      <a-empty
+        description="请在数据目录中选择需要分屏的数据"
+        v-if="!screenNums.length"
+      />
+      <a-row :gutter="[5, 5]" v-else>
+        <a-col
+          v-for="s in screenNums"
+          :key="s"
+          :span="mapSpan"
+          :style="mapSpanStyle"
+        >
+          <map-view
+            @on-query="onQuery"
+            :queryVisible.sync="queryVisible"
+            :query-rect="queryRect"
+            :map-view-id="`split-screen-map-${s}`"
+            :map-view-layer="mapViewLayer(s)"
+            :excludes-tools="excludesTools(s)"
+            :resize="resize"
+          />
+        </a-col>
+      </a-row>
+    </transition>
   </div>
 </template>
 <script lang="ts">
