@@ -173,8 +173,7 @@ export default class PlaceNamePanel extends Vue {
       rtnLabel: false,
       f: 'json',
       where,
-      geometry: this.geometry,
-      cursorType: 'backword'
+      geometry: this.geometry
     }
     const { queryWay } = this.config
     if (queryWay === 'doc') {

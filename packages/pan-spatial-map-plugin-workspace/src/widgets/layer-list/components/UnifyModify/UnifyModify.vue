@@ -191,7 +191,6 @@ export default class MpUnifyModify extends Mixins(AppMixin) {
         ip,
         port: port.toString(),
         f: 'json',
-        cursorType: 'cursorType',
         page: 0,
         pageCount,
         docName: serverName,
