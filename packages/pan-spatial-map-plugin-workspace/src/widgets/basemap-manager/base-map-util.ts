@@ -68,6 +68,7 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
     const tempDefaultBaseLayer = {
       image: defaultBaseLayer.image,
       name: defaultBaseLayer.title,
+      scene: '23D',
       visible: 'true',
       children: [
         {
@@ -123,7 +124,9 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
       serverip,
       serverport,
       layerName,
-      projection
+      projection,
+      tokenKey,
+      tokenValue
     } = item
     const layer: Record<string, string> = {
       ip: serverip,
@@ -173,10 +176,10 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
           'Zondy.Enum.Map.ArcGISLayerType.StreetMapWorld2D':
             'ESRI_StreetMap_World_2D',
           // ArcGIS晕渲图
-          'Zondy.Enum.Map.ArcGISLayerType.TopoUS2D': 'NatGeo_World_Map'
+          'Zondy.Enum.Map.ArcGISLayerType.TopoUS2D': 'NGS_Topo_US_2D'
         }
         const type = map[layerType] || layerType
-        layer.serverURL = `https://services.arcgisonline.com/ArcGIS/rest/services/${type}/MapServer`
+        layer.serverURL = `http://services.arcgisonline.com/ArcGIS/rest/services/${type}/MapServer`
         layer.serverType = LayerType.ArcGISTile
         break
       case 'tile':
@@ -186,6 +189,11 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
         layer.serverType = LayerType.IGSMapImage
         break
       default:
+        layer.serverType = LayerType[serverType]
+        if (tokenValue) {
+          layer.tokenKey = tokenKey
+          layer.tokenValue = tokenValue
+        }
         break
     }
     // const mapLayer = DataCatalogManager.generateLayerByConfig(layer)

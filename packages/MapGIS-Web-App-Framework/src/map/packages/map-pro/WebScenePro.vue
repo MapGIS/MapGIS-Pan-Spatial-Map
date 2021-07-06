@@ -12,7 +12,7 @@
     :height="height"
     style="width: 100%; height: 100%;"
   >
-    <div v-for="(layerProps, index) in reverseLayers" :key="getTimeID(index)">
+    <div v-for="layerProps in reverseLayers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :layerStyle="layerProps.layerStyle"
@@ -131,7 +131,9 @@ export default {
   },
   data() {
     return {
-      layers: []
+      layers: [],
+      recordZindex: 1000,
+      computedBaseLayerTotal: false
     }
   },
   computed: {
@@ -151,6 +153,9 @@ export default {
     this.parseDocument()
   },
   methods: {
+    getBaseLayerTotal() {
+      // TODO 在MapGIS-Web-App-Framework里面不能依赖其他包，这里暂时先把底图管理的初始值设置为1000
+    },
     /**
      * 修改说明：这里给图层key加上时间戳的原因，主要是因为zIndex属性更新不及时，导致部分zIndex冲突
      *          加上时间戳后，每次v-for图层，所有图层会按顺序重新加载，这样便不会有zIndex冲突的问
@@ -176,15 +181,13 @@ export default {
             if (layer.type === LayerType.IGSScene) {
               layer.activeScene.sublayers.forEach(igsSceneSublayer => {
                 const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
-                  igsSceneSublayer,
-                  index
+                  igsSceneSublayer
                 )
                 layers.push(layerComponentProps)
               })
             } else {
               const layerComponentProps = this.genLayerComponentPropsByLayer(
-                layer,
-                index
+                layer
               )
               layers.push(layerComponentProps)
             }
@@ -200,21 +203,21 @@ export default {
               layer.activeScene.sublayers.forEach(igsSceneSublayer => {
                 const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
                   igsSceneSublayer,
-                  this.document.baseLayerMap.clone().getFlatLayers().length +
-                    index
+                  this.recordZindex + index
                 )
                 layers.push(layerComponentProps)
               })
             } else {
               const layerComponentProps = this.genLayerComponentPropsByLayer(
                 layer,
-                this.document.baseLayerMap.clone().getFlatLayers().length +
-                  index
+                this.recordZindex + index
               )
               layers.push(layerComponentProps)
             }
           }
         })
+
+      this.recordZindex += this.document.defaultMap.getFlatLayers().length
 
       this.layers = layers
     },
@@ -226,7 +229,7 @@ export default {
       // 图层显示样式
       const layerStyle = {
         show: igsSceneSublayer.isVisible,
-        zIndex: index + 1
+        zIndex: index === undefined ? undefined : index + 1
       }
 
       switch (igsSceneSublayer.renderType) {
@@ -246,7 +249,6 @@ export default {
 
       return layerComponentProps
     },
-    // genLayerComponentPropsByLayer(layer) {
     // 图层组件所需要的属性
     genLayerComponentPropsByLayer(layer, index) {
       // mapbox图层组件所需要的属性
@@ -259,7 +261,7 @@ export default {
       const layerStyle = {
         visible: layer.isVisible,
         opacity: layer.opacity,
-        zIndex: index + 1
+        zIndex: index === undefined ? undefined : index + 1
       }
 
       // 图层空间参照系
