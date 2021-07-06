@@ -36,9 +36,6 @@ export class MapViewState {
   // 二三维当前活动的地图经纬度范围
   private _activeBound: Rect = initRectangle
 
-  // 是否移动地图
-  private _isMove = false
-
   get mapViewId(): string {
     return this._mapViewId
   }
@@ -65,14 +62,6 @@ export class MapViewState {
     if (this.isValidRect(rect)) {
       this._initBound = rect
     }
-  }
-
-  get isMove() {
-    return this._isMove
-  }
-
-  set isMove(isMove: boolean) {
-    this._isMove = isMove
   }
 
   /**

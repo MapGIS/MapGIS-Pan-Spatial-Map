@@ -33,11 +33,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     return this.activeMapViewState.mapViewId === this.mapViewId
   }
 
-  // 是否移动地图
-  get isMove() {
-    return this.activeMapViewState.isMove
-  }
-
   /**
    * 监听: 更新活动地图经纬度范围
    */
@@ -68,14 +63,6 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 是否是移动地图
-   * @param isMove
-   */
-  setIsMove(isMove: boolean) {
-    this.activeMapViewState.isMove = isMove
-  }
-
-  /**
    * 查询要素
    * @param {Rect} rect 经纬度范围
    */
@@ -89,7 +76,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    */
   resort(resortOtherViews = false) {
     const _bound = { ...this.initBound }
-    this.zoomIn(_bound)
+    this.zoomOut(_bound)
     if (resortOtherViews) {
       this.setActiveBound(_bound)
     }
