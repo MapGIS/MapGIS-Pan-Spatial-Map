@@ -44,7 +44,8 @@ import {
 } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
-  DataCatalogManager
+  DataCatalogManager,
+  eventBus
 } from '@mapgis/pan-spatial-map-store'
 
 // {
@@ -196,37 +197,26 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
   }
 
   /**
-   * 若工作流执行结果生成新图层，则将图层添加至地图容器中，并用图层树管理
+   * 若工作流执行结果生成新图层，则将图层添加至添加服务中，可在添加服务中进行管理，同时显示在地图容器中，并用图层树管理
    */
-  async addNewLayer(gdbp, name) {
+  addNewLayer(gdbp, name) {
     const nameStrs = name.split('/')
     const nameStr = nameStrs[nameStrs.length - 1]
-    this.clipLayer = {
-      ip: this.ip || baseConfigInstance.config.ip,
-      port: this.port || baseConfigInstance.config.port,
-      guid: UUID.uuid(),
-      gdbps: gdbp as string,
-      name: `${this.funcParam.FlowName}_${nameStr}`,
-      serverType: LayerType.IGSVector
-    }
-    const layer = DataCatalogManager.generateLayerByConfig(this.clipLayer)
-    if (layer) {
-      if (layer.loadStatus === LoadStatus.notLoaded) {
-        await layer.load()
-      }
-      this.document.defaultMap.add(layer)
-    }
-  }
+    const ip = this.ip || baseConfigInstance.config.ip
+    const port = this.port || baseConfigInstance.config.port
 
-  /**
-   * 删除图层
-   */
-  deleteLayer() {
-    if (this.clipLayer) {
-      const layer = this.document.defaultMap.findLayerById(this.clipLayer.guid)
-      this.document.defaultMap.remove(layer)
-      this.clipLayer = null
+    const url = `http://${ip}:${port}/igs/rest/mrms/layers?gdbps=${gdbp as string}`
+
+    const data = {
+      name: 'IGS图层',
+      data: {
+        type: 'IGSVector',
+        url,
+        description: '功能仓库_结果图层',
+        name: `${this.funcParam.FlowName}_${nameStr}`
+      }
     }
+    eventBus.$emit('add-data', data)
   }
 }
 </script>
