@@ -57,15 +57,10 @@ export class LOD {
    * 通过服务端返回的Json对象构造LOD对象的实例
    *
    * @date 22/03/2021
-   * @static
    * @param {Record<string, any>} json
-   * @return {*}  {LOD}
    * @memberof LOD
    */
-  static fromJSON(json: Record<string, any>): LOD {
-    const lod = new LOD()
-    return lod
-  }
+  fromJSON(json: Record<string, any>) {}
 }
 
 /**
@@ -162,18 +157,13 @@ export class TileInfo {
   }
 
   /**
-   * 通过服务端返回的Json对象构造LOD对象的实例
+   * 通过服务端返回的Json对象构造TileInfo对象的实例
    *
    * @date 22/03/2021
-   * @static
    * @param {Record<string, any>} json
-   * @return {*}  {LOD}
-   * @memberof LOD
+   * @memberof TileInfo
    */
-  fromJSON(json: Record<string, any>): TileInfo {
-    const tileInfo = new TileInfo()
-    return tileInfo
-  }
+  fromJSON(json: Record<string, any>) {}
 }
 
 /**

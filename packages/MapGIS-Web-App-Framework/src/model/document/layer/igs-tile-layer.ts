@@ -58,18 +58,8 @@ export class IGSTileLayer extends TileLayer {
       tileLayer.getTileInfo(
         res => {
           if (res && res.TileInfo2) {
-            // 2.1获取图层全图范围
-            const { fullExtent } = res.TileInfo2
-            if (fullExtent) {
-              this.fullExtent = new Zondy.Common.Rectangle(
-                fullExtent.xmin,
-                fullExtent.ymin,
-                fullExtent.xmax,
-                fullExtent.ymax
-              )
-            }
-
-            // 2.2获取TileInfo
+            // 2.解析瓦片元数据信息
+            this._praseTileInfo(res.TileInfo2)
           }
 
           this.loadStatus = LoadStatus.loaded
@@ -140,5 +130,19 @@ export class IGSTileLayer extends TileLayer {
     }
 
     return { ip, port, tileName }
+  }
+
+  protected _praseTileInfo(tileInfo: Record<string, object>) {
+    const fullExtent: any = tileInfo.fullExtent
+    if (fullExtent) {
+      this.fullExtent = new Zondy.Common.Rectangle(
+        fullExtent.xmin,
+        fullExtent.ymin,
+        fullExtent.xmax,
+        fullExtent.ymax
+      )
+    }
+
+    // 2.2获取TileInfo
   }
 }
