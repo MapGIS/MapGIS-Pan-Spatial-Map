@@ -59,6 +59,10 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
     return this.is2DMapMode ? 'Mapbox' : 'Cesium'
   }
 
+  get prefix() {
+    return this.is2DMapMode ? 'Mapbox' : 'Cesium'
+  }
+
   // 获取专题类别
   get subjectType() {
     return this.subDataConfig
