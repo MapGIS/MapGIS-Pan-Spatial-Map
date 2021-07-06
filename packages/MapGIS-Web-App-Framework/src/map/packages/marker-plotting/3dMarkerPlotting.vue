@@ -23,6 +23,7 @@ import {
   Vue,
   Emit
 } from 'vue-property-decorator'
+import { Objects } from '@mapgis/web-app-framework'
 import Mp3dMarkerSetPro from '../marker-pro/3dMarkerSetPro.vue'
 import { SceneOverlays } from '../../../model/overlay'
 import { SceneController } from '../../../model/objects'
@@ -241,9 +242,8 @@ export default class Mp3dMarkerPlotting extends Vue {
         )
       }
     } else if (featureGeoJSON.features[0].geometry.type === '3DPolygon') {
-      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
-        'default',
-        featureGeoJSON.features[0].id
+      const { source } = this.sceneController.findSource(
+        featureGeoJSON.features[0].properties.specialLayerId
       )
       if (source && source.length > 0) {
         this.stopDisplay()

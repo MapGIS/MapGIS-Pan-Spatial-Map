@@ -13,17 +13,17 @@
           </div>
         </div>
       </a-tab-pane>
-      <a-tab-pane key="maplist" tab="地图列表">
+      <a-tab-pane key="maplist" tab="三维场景">
         <a-tabs type="card" size="small">
           <a-tab-pane
-            v-for="(mapInfo, m) in metadata['地图列表']"
-            :key="'地图文档地图列表' + m"
-            :tab="mapInfo.MapName"
+            v-for="(mapInfo, m) in metadata['三维场景']"
+            :key="'三维场景' + m"
+            :tab="mapInfo['场景名称']"
           >
             <div class="info-body">
               <div
                 v-for="(mapInfoItem, mi) in Object.keys(mapInfo)"
-                :key="'地图文档地图列表图层列表' + mapInfoItem + mi"
+                :key="'三维场景图层列表' + mapInfoItem + mi"
                 class="info-item"
               >
                 <template v-if="mapInfoItem !== '图层列表'">
@@ -33,9 +33,9 @@
                   <span>{{ mapInfo[mapInfoItem] }}</span>
                 </template>
                 <template v-else>
-                  <div class="layers">
+                  <div class="layers-3d">
                     <div
-                      class="info-item-title layers-title"
+                      class="info-item-title layers-3d-title"
                       :title="mapInfoItem"
                     >
                       {{ `${mapInfoItem}：` }}
@@ -44,11 +44,11 @@
                       bordered
                       size="small"
                       :pagination="false"
+                      :data-source="getDataSource(mapInfo[mapInfoItem])"
+                      :columns="getTableColumns(mapInfo[mapInfoItem][0])"
                       :scroll="{
                         x: '100%'
                       }"
-                      :data-source="getDataSource(mapInfo[mapInfoItem])"
-                      :columns="getTableColumns(mapInfo[mapInfoItem][0])"
                       :rowKey="
                         (record, index) => {
                           return index
@@ -78,11 +78,11 @@ import {
 } from '@mapgis/web-app-framework'
 import MetadataInfoMixin from './mixins/metadata-info'
 
-@Component({ name: 'MpMetadataInfoDoc', components: {} })
-export default class MpMetadataInfoDoc extends Mixins(MetadataInfoMixin) {
+@Component({ name: 'MpMetadataInfoDoc3D', components: {} })
+export default class MpMetadataInfoDoc3D extends Mixins(MetadataInfoMixin) {
   private get generalInfo() {
     return Object.keys(this.metadata).filter(item => {
-      return item !== '地图列表'
+      return item !== '三维场景'
     })
   }
 }
@@ -90,11 +90,11 @@ export default class MpMetadataInfoDoc extends Mixins(MetadataInfoMixin) {
 
 <style lang="less">
 .metadata-info-container {
-  .layers {
+  .layers-3d {
     display: flex;
     flex-direction: column;
     max-width: 100%;
-    .layers-title {
+    .layers-3d-title {
       padding-bottom: 8px;
     }
   }

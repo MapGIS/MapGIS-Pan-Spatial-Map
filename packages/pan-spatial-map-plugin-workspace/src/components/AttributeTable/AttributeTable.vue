@@ -332,14 +332,11 @@ export default class MpAttributeTable extends Mixins(
 
   created() {
     DomUtil.addFullScreenListener(this.fullScreenListener)
-  }
-
-  mounted() {
-    this.sceneController = Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
-    )
+    // this.sceneController = Objects.SceneController.getInstance(
+    //   this.Cesium,
+    //   this.CesiumZondy,
+    //   this.webGlobe
+    // )
   }
 
   beforeDestroy() {
@@ -394,7 +391,7 @@ export default class MpAttributeTable extends Mixins(
   // 双击行
   private onRowDblclick(row: unknown) {
     const feature = row as GFeature
-    let { bound } = feature
+    let bound = feature.properties.specialLayerBound
     if (bound === undefined) {
       bound = Feature.getGeoJSONFeatureBound(feature)
     }
@@ -478,6 +475,11 @@ export default class MpAttributeTable extends Mixins(
 
   private async query(where?: string) {
     this.loading = true
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
     try {
       this.clearSelection()
       await this.queryGeoJSON(
@@ -598,11 +600,7 @@ export default class MpAttributeTable extends Mixins(
       }
     } else if (serverType === LayerType.IGSScene) {
       // 查找矩阵集
-      const { source } = this.CesiumZondy.M3DIgsManager.findSource(
-        'default',
-        this.optionVal.id
-      )
-
+      const { source } = this.sceneController.findSource(this.optionVal.id)
       const { gdbp } = this.optionVal
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry
@@ -639,7 +637,11 @@ export default class MpAttributeTable extends Mixins(
               tranform
             )
           }
-          const properties = { FID }
+          const properties = {
+            FID,
+            specialLayerId: this.optionVal.id,
+            specialLayerBound: boundObj
+          }
           for (let index = 0; index < FldNumber; index++) {
             const name = FldName[index]
             const value = AttValue[index]
@@ -650,8 +652,6 @@ export default class MpAttributeTable extends Mixins(
               coordinates: [],
               type: '3DPolygon'
             },
-            id: this.optionVal.id,
-            bound: boundObj,
             properties
           }
         }
@@ -806,7 +806,7 @@ export default class MpAttributeTable extends Mixins(
     this.selectionBound = this.selection.reduce(
       (prev, cur) => {
         const feature = cur as GFeature
-        let { bound } = feature
+        let bound = feature.properties.specialLayerBound
         if (bound === undefined) {
           bound = Feature.getGeoJSONFeatureBound(feature)
         }
@@ -841,7 +841,7 @@ export default class MpAttributeTable extends Mixins(
       const feature = this.tableData[i]
       let center = []
       if (this.isIGSScence) {
-        const { xmin, xmax, ymin, ymax } = feature.bound
+        const { xmin, xmax, ymin, ymax } = feature.properties.specialLayerBound
         const longitude = (xmin + xmax) / 2
         const latitude = (ymin + ymax) / 2
         // const height = await this.getModelHeight(longitude, latitude)

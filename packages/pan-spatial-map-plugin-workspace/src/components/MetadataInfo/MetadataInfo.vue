@@ -10,6 +10,11 @@
       <div v-if="isIGSVector(currentLayer || currentConfig)">
         <mp-metadata-info-vector :metadata="metadata"></mp-metadata-info-vector>
       </div>
+      <div v-if="isIGSScene(currentLayer || currentConfig)">
+        <mp-metadata-info-doc-3-d
+          :metadata="metadata"
+        ></mp-metadata-info-doc-3-d>
+      </div>
     </a-spin>
   </div>
 </template>
@@ -28,10 +33,16 @@ import {
 import MpMetadataInfoDoc from './MetadataInfoDoc'
 import MpMetadataInfoTile from './MetadataInfoTile'
 import MpMetadataInfoVector from './MetadataInfoVector'
+import MpMetadataInfoDoc3D from './MetadataInfoDoc3D'
 
 @Component({
   name: 'MpMetadataInfo',
-  components: { MpMetadataInfoDoc, MpMetadataInfoTile, MpMetadataInfoVector }
+  components: {
+    MpMetadataInfoDoc,
+    MpMetadataInfoTile,
+    MpMetadataInfoVector,
+    MpMetadataInfoDoc3D
+  }
 })
 export default class MpMetadataInfo extends Vue {
   @Prop(Object) readonly currentLayer?: Record<string, any>
@@ -53,13 +64,24 @@ export default class MpMetadataInfo extends Vue {
       }
       let option: Metadata.MetadataQueryParam = {}
       switch (type) {
+        case LayerType.IGSScene: {
+          let res
+          if (this.currentLayer.layer) {
+            res = this.currentLayer.layer._parseUrl(this.currentLayer.layer.url)
+          } else {
+            res = this.currentLayer._parseUrl(this.currentLayer.url)
+          }
+          const { ip, port, docName } = res
+          option = { ip, port, docName, globe: true }
+          break
+        }
         case LayerType.IGSMapImage: {
           if (this.currentLayer.layer) {
             const { id } = this.currentLayer
             const { ip, port, docName } = this.currentLayer.layer._parseUrl(
               this.currentLayer.layer.url
             )
-            option = { ip, port, docName, layerIdxs: id }
+            option = { ip, port, docName, layerIdxs: id || '' }
           } else {
             const { ip, port, docName } = this.currentLayer._parseUrl(
               this.currentLayer.url
@@ -137,6 +159,14 @@ export default class MpMetadataInfo extends Vue {
 
   isIGSMapImage(item) {
     return item.type === LayerType.IGSMapImage
+  }
+
+  isIGSScene({ type, layer }) {
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+    }
+    return layerType === LayerType.IGSScene
   }
 }
 </script>
