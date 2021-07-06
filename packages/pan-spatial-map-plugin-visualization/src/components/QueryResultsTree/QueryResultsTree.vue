@@ -4,10 +4,12 @@
       <a-empty v-if="!treeData.length" />
       <a-tree
         showLine
+        :checkable="multiple"
         :expandedKeys.sync="expandedKeys"
         :load-data="loadTreeData"
         :tree-data="treeData"
         @load="onTreeLoad"
+        @check="onTreeSelect"
         @select="onTreeSelect"
         v-else
       />
@@ -29,6 +31,7 @@ import {
   baseConfigInstance,
   dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-store'
+import _uniq from 'lodash/uniq'
 
 interface IQueryParams extends Catalog.DocInfoQueryParam {
   id: string
@@ -54,7 +57,6 @@ interface ITreeNode {
 // 1.在线地图服务图层
 // 2.在线矢量图层
 // 3.关联了在线地图服务的在线瓦片图层
-// 暂时只支持单选
 @Component
 export default class MpQueryResultTree extends Vue {
   // 待查询的图层：支持查询的类型图层如下：1.在线地图服务图层。2.在线矢量图层。3.关联了在线地图服务的在线瓦片图层
@@ -77,6 +79,10 @@ export default class MpQueryResultTree extends Vue {
   @Prop({ type: String, default: '' })
   readonly queryDistrictCode!: string
 
+  // 是否多选
+  @Prop({ type: Boolean, default: false })
+  readonly multiple!: boolean
+
   // 分页显示的条目数
   @Prop({ type: Number, default: 20 })
   readonly pageCount!: number
@@ -92,6 +98,12 @@ export default class MpQueryResultTree extends Vue {
 
   // 结果树数据
   treeData: ITreeNode[] = []
+
+  // 已经加载的节点的子节点数据
+  loadedChildNodes: string[] = []
+
+  // 已经加载的节点
+  loadedKeys: string[] = []
 
   // 默认展开的节点, 第一个节点
   defaultExpandedKeys: string[] = []
@@ -344,6 +356,23 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
+   * 设置树节点的selectable
+   * @param treeData 数据
+   */
+  setTreeDataSelectable(treeData) {
+    return treeData.map(node => {
+      const _node = { ...node }
+      if (!_node.isLeaf) {
+        _node.selectable = false
+      }
+      if (_node.children && _node.children.length) {
+        this.setTreeDataSelectable(_node.children)
+      }
+      return _node
+    })
+  }
+
+  /**
    * 异步加载数据
    * @param treeNode
    */
@@ -354,9 +383,9 @@ export default class MpQueryResultTree extends Vue {
         return
       }
       this.queryFeature([treeNode.dataRef.index]).then(features => {
-        treeNode.dataRef.children =
-          features && features.length ? features[0].children : []
-        this.treeData = [...this.treeData]
+        const children = features && features.length ? features[0].children : []
+        treeNode.dataRef.children = children
+        this.treeData = this.setTreeDataSelectable(this.treeData)
         resolve()
       })
     })
@@ -368,7 +397,10 @@ export default class MpQueryResultTree extends Vue {
    * @param treeNode
    */
   onTreeLoad(loadedKeys, { node }) {
-    this.$emit('on-load-done', loadedKeys, node.dataRef)
+    const { children } = node.dataRef
+    this.loadedChildNodes = children
+    this.loadedChildNodes = _uniq([...this.loadedChildNodes, ...children])
+    this.$emit('on-node-loaded', loadedKeys, this.loadedChildNodes)
   }
 
   /**
@@ -376,16 +408,15 @@ export default class MpQueryResultTree extends Vue {
    * @param selectedKeys
    * @param treeNode
    */
-  onTreeSelect(selectedKeys, { selectedNodes, node }) {
-    const {
-      dataRef,
-      dataRef: { isLeaf }
-    }: {
-      dataRef: ITreeNode
-    } = node
-    if (isLeaf) {
-      this.$emit('on-select', [dataRef.key], [dataRef])
-    }
+  onTreeSelect(selectedKeys, { selectedNodes, checkedNodes, node }) {
+    const vnodes = this.multiple ? checkedNodes : selectedNodes
+    // 当前节点的数据
+    const nodeData = node.dataRef
+    // 选中节点的数据集合
+    const selectedDatas = vnodes.length
+      ? vnodes.map(({ data }) => data.props.dataRef)
+      : []
+    this.$emit('on-select', selectedKeys, selectedDatas, nodeData)
   }
 
   created() {

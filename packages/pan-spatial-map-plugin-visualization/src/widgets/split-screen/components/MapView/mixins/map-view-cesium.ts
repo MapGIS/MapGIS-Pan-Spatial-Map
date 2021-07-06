@@ -1,6 +1,6 @@
 import { Mixins, Vue, Component, Inject } from 'vue-property-decorator'
 import { Objects } from '@mapgis/web-app-framework'
-import { Rect } from './map-view-state'
+import { Rect } from '../store/map-view-state'
 
 @Component
 export default class MapViewCesiumMixin extends Mixins<Record<string, any>>(
@@ -42,7 +42,7 @@ export default class MapViewCesiumMixin extends Mixins<Record<string, any>>(
    */
   link3dChanged({ west, east, north, south }) {
     this.setActiveMapView()
-    this.updateActiveBound({
+    this.setActiveBound({
       xmin: west,
       xmax: east,
       ymax: north,

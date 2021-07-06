@@ -1,6 +1,6 @@
 <template>
-  <mp-marker-plotting v-if="is2dMode" v-bind="bindProps" />
-  <mp-3d-marker-plotting v-else v-bind="bindProps" :vue-key="vueKey" />
+  <mp-marker-plotting v-if="is2d" v-bind="bindProps" />
+  <mp-3d-marker-plotting v-else v-bind="bindProps" />
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
@@ -9,18 +9,17 @@ import {
   baseConfigInstance,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
-import _last from 'lodash/last'
 
 interface IFeature {
   key?: string // 图层UUID
   title?: string // 图层名称
-  feature?: Feature.GFeature
+  feature?: Feature.GFeature // 图层的查询的要素信息
 }
 
 interface INormalizedFeature {
   uid: string // 图层UUID
   title: string // 图层名称
-  feature: string
+  feature: string // 要素信息
 }
 
 interface IMarker {
@@ -33,20 +32,21 @@ interface IMarker {
 }
 
 @Component
-export default class MpMarkersHighlightPopup extends Mixins<
-  Record<string, any>
->(AppMixin) {
+export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
+  AppMixin
+) {
   // 三维地图vueKey
-  @Prop() readonly vueKey!: string
+  @Prop({ default: UUID.uuid() }) readonly vueKey!: string
 
-  // 是否二维地图
-  @Prop() readonly is2d!: boolean
+  // 是否二维图层
+  @Prop() readonly is2dLayer!: boolean
 
   // 所有的标注点信息
   @Prop({ required: true, default: () => [] }) readonly features!: IFeature[]
 
-  // 需要高亮的标注点
-  @Prop({ required: true, default: () => [] }) readonly highlightIds!: string[]
+  // 选中的的标注点
+  @Prop({ required: true, default: () => [] })
+  readonly selectedFeatures!: string[]
 
   // 是否随地图范围过滤
   @Prop({ default: false }) readonly filterWithMap!: boolean
@@ -54,24 +54,23 @@ export default class MpMarkersHighlightPopup extends Mixins<
   // 标注数据格式化函数, 组件内部使用的数据是INormalizeMarkData格式
   @Prop() readonly normalize!: (a: IFeature) => INormalizedFeature
 
-  // 标注点
+  // 标注点集合
   markers: IMarker[] = []
 
   // 选中的数据范围
   selectionBound: Record<string, any> = {}
 
-  // 当前数据范围
-  fitBound: Record<string, any> = {}
-
   // 标注选中的图标
-  selectIcon = ''
+  selectedIcon = ''
 
   // 标注默认的图标
   defaultIcon = ''
 
-  // 是否二维地图模式
-  get is2dMode() {
-    return typeof this.is2d !== 'undefined' ? this.is2d : this.is2DMapMode
+  // 是否二维地图图层
+  get is2d() {
+    return typeof this.is2dLayer !== 'undefined'
+      ? this.is2dLayer
+      : this.is2DMapMode
   }
 
   // 颜色配置
@@ -87,15 +86,17 @@ export default class MpMarkersHighlightPopup extends Mixins<
   // 二三维marker组件绑定的属性
   get bindProps() {
     const {
+      vueKey,
       markers,
-      fitBound,
       filterWithMap,
       selectionBound,
-      colorConfig
+      colorConfig,
+      selectedFeatures: selectedMarkers
     } = this
     return {
+      vueKey,
       markers,
-      fitBound,
+      selectedMarkers,
       filterWithMap,
       selectionBound,
       highlightStyle: colorConfig
@@ -114,30 +115,6 @@ export default class MpMarkersHighlightPopup extends Mixins<
           }
         : v
     )
-  }
-
-  /**
-   * 获取当前数据范围
-   */
-  getFitBound() {
-    if (!this.highlightIds.length) return
-    const lastId = _last(this.highlightIds)
-    const {
-      feature,
-      feature: { bound }
-    } = this.normalizedFeatures.find(({ uid }) => uid === lastId)
-    const { xmin, xmax, ymin, ymax } =
-      bound || Feature.getGeoJsonFeatureBound(feature)
-    const _xmin = (3 * xmin - xmax) / 2
-    const _ymin = (3 * ymin - ymax) / 2
-    const _xmax = (3 * xmax - xmin) / 2
-    const _ymax = (3 * ymax - ymin) / 2
-    this.fitBound = {
-      xmin: _xmin,
-      ymin: _ymin,
-      xmax: _xmax,
-      ymax: _ymax
-    }
   }
 
   /**
@@ -160,14 +137,22 @@ export default class MpMarkersHighlightPopup extends Mixins<
    * 请求失败的默认图片？
    */
   getSelectIcon(success: () => void) {
-    if (!this.selectIcon) {
-      markerIconInstance.selectIcon().then(selectIcon => {
-        this.selectIcon = selectIcon
+    if (!this.selectedIcon) {
+      markerIconInstance.selectIcon().then(selectedIcon => {
+        this.selectedIcon = selectedIcon
         success()
       })
     } else {
       success()
     }
+  }
+
+  /**
+   * 移除标注
+   */
+  removeMarkers() {
+    this.selectionBound = {}
+    this.markers = []
   }
 
   /**
@@ -197,27 +182,29 @@ export default class MpMarkersHighlightPopup extends Mixins<
   }
 
   /**
-   * 移除标注
+   * 取消高亮
    */
-  removeMarkers() {
-    this.markers = []
+  clearHightlight() {
+    this.markers.forEach(marker => {
+      this.$set(marker, 'img', this.defaultIcon)
+    })
   }
 
   /**
    * 高亮选择集对应的标注图标
    */
-  hightlightMarkers() {
+  hightlightMarkers(selections: sting[]) {
     this.getSelectIcon(() => {
       this.markers.forEach(marker => {
-        const imgType = this.highlightIds.includes(marker.markerId)
-          ? this.selectIcon
+        const imgType = selections.includes(marker.markerId)
+          ? this.selectedIcon
           : this.defaultIcon
         this.$set(marker, 'img', imgType)
       })
-      if (!this.highlightIds.length) return
       const { MIN_VALUE, MAX_VALUE } = Number
       this.selectionBound = this.normalizedFeatures.reduce(
         ({ xmin, xmax, ymin, ymax }, { feature }: GFeature) => {
+          // fixme feature.bound = feature.properties.specialLayerBound
           const _bound =
             feature.bound || Feature.getGeoJsonFeatureBound(feature)
           return {
@@ -246,15 +233,16 @@ export default class MpMarkersHighlightPopup extends Mixins<
     }
   }
 
-  @Watch('highlightIds', { immediate: true })
-  watchHighlightIds() {
-    this.getFitBound()
-    this.hightlightMarkers()
+  @Watch('selectedFeatures', { immediate: true })
+  watchSelectedFeatures(nV) {
+    if (nV.length) {
+      this.hightlightMarkers(nV)
+    } else {
+      this.clearHightlight()
+    }
   }
 
-  beforeDestroyed() {
-    this.fitBound = {}
-    this.selectionBound = {}
+  beforeDestroy() {
     this.removeMarkers()
   }
 }

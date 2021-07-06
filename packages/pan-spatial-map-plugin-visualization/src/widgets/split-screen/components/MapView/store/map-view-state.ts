@@ -1,3 +1,4 @@
+import { CommonUtil } from '@mapgis/web-app-framework'
 import { Common } from '@mapgis/webclient-es6-service'
 
 export class Rect {
@@ -21,7 +22,7 @@ export class Rect {
   }
 }
 
-const initRectangle = new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
+export const initRectangle = new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
 /**
  * 地图视图状态类.记录地图的ID、显示范围信息
  */
@@ -68,7 +69,12 @@ export class MapViewState {
    * @param {Rect} rect
    */
   isValidRect(rect: Rect) {
-    return rect && rect.xmin < rect.xmax && rect.ymin < rect.ymax
+    if (!CommonUtil.isEmpty(rect)) {
+      const boundKeys = ['xmin', 'xmax', 'ymin', 'ymax']
+      const hasBoundKeys = boundKeys.every(v => v in rect)
+      return hasBoundKeys && rect.xmin <= rect.xmax && rect.ymin <= rect.ymax
+    }
+    return !0
   }
 }
 

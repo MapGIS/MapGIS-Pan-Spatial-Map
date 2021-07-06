@@ -1,33 +1,38 @@
 <template>
   <div class="split-screen-map">
-    <a-empty
-      description="请在数据目录中选择需要分屏的数据"
-      v-if="!screenNums.length"
-    />
-    <a-row :gutter="[5, 5]" v-else>
-      <a-col
-        v-for="s in screenNums"
-        :key="s"
-        :span="mapSpan"
-        :style="mapSpanStyle"
-      >
-        <map-view
-          @on-query="onQuery"
-          :queryVisible.sync="queryVisible"
-          :query-rect="queryRect"
-          :map-view-id="`split-screen-map-${s}`"
-          :map-view-layer="mapViewLayer(s)"
-          :excludes-tools="excludesTools(s)"
-          :resize="resize"
-        />
-      </a-col>
-    </a-row>
+    <transition name="fade">
+      <a-empty
+        description="请在数据目录中选择需要分屏的数据"
+        v-if="!screenNums.length"
+      />
+      <a-row :gutter="[5, 5]" v-else>
+        <a-col
+          v-for="s in screenNums"
+          :key="s"
+          :span="mapSpan"
+          :style="mapSpanStyle"
+        >
+          <map-view
+            @on-query="onQuery"
+            :queryVisible.sync="queryVisible"
+            :query-rect="queryRect"
+            :map-view-id="`split-screen-map-${s}`"
+            :map-view-layer="mapViewLayer(s)"
+            :excludes-tools="excludesTools(s)"
+            :resize="resize"
+          />
+        </a-col>
+      </a-row>
+    </transition>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
 import { MapMixin, Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
-import mapViewStateInstance, { Rect } from '../MapView/mixins/map-view-state'
+import mapViewStateInstance, {
+  initRectangle,
+  Rect
+} from '../MapView/store/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -66,15 +71,17 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
     mapViewStateInstance.initBound = bound
   }
 
+  // 图层
   get mapViewLayer() {
     return s => this.layers.find(({ id }) => this.layerIds[s] === id)
   }
 
+  // todo 三维暂不支持查询和清除查询,直接隐藏查询和清除按钮
   get excludesTools() {
     return s => {
       const _layer = this.mapViewLayer(s)
       if (_layer instanceof Layer3D) {
-        return 'query'
+        return ['query', 'clear']
       }
     }
   }
@@ -115,7 +122,8 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
     }
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
+    this.initBound = initRectangle
     this.queryVisible = false
     this.queryRect = {}
   }

@@ -25,13 +25,13 @@
       :height="mapViewHeight"
       :document="mapViewDocument"
     />
-    <!-- 标注 -->
-    <mp-markers-highlight-popup
+    <!-- 高亮查询的要素 -->
+    <mp-feature-highlight
       v-if="isMapLoaded && queryWindowVisible"
-      :is-2d="is2dLayer"
       :vue-key="mapViewId"
+      :is-2d-layer="is2dLayer"
       :features="queryFeatures"
-      :highlight-ids="querySelection"
+      :selected-features="querySelection"
       :normalize="({ key }) => ({ uid: key })"
     />
     <!-- 结果树 -->
@@ -45,7 +45,7 @@
     >
       <mp-query-result-tree
         v-if="queryWindowVisible"
-        @on-load-done="queryLoadDone"
+        @on-node-loaded="queryNodeLoaded"
         @on-select="querySelected"
         :query-rect="queryRect"
         :layer="mapViewLayer"
@@ -56,11 +56,8 @@
 <script lang="ts">
 import { Mixins, Component, Prop, Watch, Inject } from 'vue-property-decorator'
 import { Document, Layer } from '@mapgis/web-app-framework'
-import _upperFirst from 'lodash/upperFirst'
-import {
-  MpQueryResultTree,
-  MpMarkersHighlightPopup
-} from '../../../../components'
+import { eventBus, events } from '@mapgis/pan-spatial-map-store'
+import { MpQueryResultTree, MpFeatureHighlight } from '../../../../components'
 import MapViewMixin, { Rect } from './mixins/map-view'
 import MapboxView from './components/MapboxView'
 import CesiumView from './components/CesiumView'
@@ -72,7 +69,7 @@ import Tools, { ToolType } from './components/Tools'
     MapboxView,
     CesiumView,
     MpQueryResultTree,
-    MpMarkersHighlightPopup
+    MpFeatureHighlight
   },
   provide() {
     const self = this
@@ -175,7 +172,9 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     const rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'query':
-        this.clearQueryResults(false)
+        // todo 三维暂不支持查询
+        this.is2dLayer && this.toggleQueryWindow(true)
+        this.clearQueryResults()
         this.query(rect)
         break
       case 'zoomIn':
@@ -215,7 +214,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
           this.resort(true)
           break
         case 'clear':
-          this.clearQueryResults()
+          this.toggleQueryWindow(false)
           break
         default:
           break
@@ -228,15 +227,19 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
    */
   toggleQueryWindow(visible: boolean) {
     this.queryWindowVisible = visible
+    if (!visible) {
+      this.clearQueryResults()
+      this.$emit('update:queryVisible', false)
+    }
   }
 
   /**
    * 结果树某一个节点加载完成
-   * @param loadKeys
-   * @param loadNode 选中的树节点
+   * @param loadedKeys 已经加载的父节点key
+   * @param loadedChildNodes 已经加载的所有子节点
    */
-  queryLoadDone(loadKeys, { children }) {
-    this.queryFeatures = children
+  queryNodeLoaded(loadedKeys, loadedChildNodes) {
+    this.queryFeatures = loadedChildNodes
   }
 
   /**
@@ -250,17 +253,11 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   /**
    * 清除查询结果
    */
-  clearQueryResults(closeWin = true) {
+  clearQueryResults() {
     this.queryFeatures = []
     this.querySelection = []
     if (!this.is2dLayer) {
       this.clearWebGlobeEntities()
-    }
-    if (closeWin) {
-      this.toggleQueryWindow(false)
-      this.$emit('update:queryVisible', false)
-    } else if (this.is2dLayer) {
-      this.toggleQueryWindow(true)
     }
   }
 
@@ -311,9 +308,11 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     window.onresize = this.onResize
   }
 
-  beforeDestroyed() {
+  beforeDestroy() {
     this.isMapLoaded = false
     this.mapHandleAttached('clear')
+    eventBus.$off(events.FEATURE_HIGHLIGHT)
+    eventBus.$off(events.CLEAR_FEATURE_HIGHLIGHT)
   }
 }
 </script>
