@@ -32,6 +32,9 @@ export default Vue.observable<IState>({
   // 所有选中的专题服务集合
   selectedList: [],
 
+  // 高亮的选项
+  highlightItem: null,
+
   // 专题服务配置
   subjectConfig: null,
 

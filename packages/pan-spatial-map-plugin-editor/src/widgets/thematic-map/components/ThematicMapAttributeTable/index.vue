@@ -10,37 +10,38 @@
     >
       <div class="thematic-map-attribute-table">
         <a-spin :spinning="loading">
-          <row-flex
+          <mp-row-flex
             :span="[13, 10]"
             justify="space-between"
             class="attribute-table-head"
           >
             <template #label>
-              <row-flex label="专题" :span="[4, 20]">
+              <mp-row-flex label="专题" :span="[4, 20]">
                 <a-select :value="subject" @change="onSubjectChange">
                   <a-select-option v-for="s in subjectList" :key="s.id">{{
                     s.title
                   }}</a-select-option>
                 </a-select>
-              </row-flex>
+              </mp-row-flex>
             </template>
-            <row-flex label="时间" :span="[5, 19]">
+            <mp-row-flex label="时间" :span="[5, 19]">
               <a-select :value="time" @change="onTimeChange">
                 <a-select-option v-for="y in selectedTimeList" :key="y">{{
                   y
                 }}</a-select-option>
               </a-select>
-            </row-flex>
-          </row-flex>
+            </mp-row-flex>
+          </mp-row-flex>
           <!-- 分页列表 -->
           <a-table
             bordered
             row-key="fid"
+            @change="onTableChange"
             :columns="tableColumns"
             :data-source="tableData"
             :pagination="tablePagination"
             :scroll="tableScroll"
-            @change="onTableChange"
+            :customRow="getCustomRow"
           />
         </a-spin>
       </div>
@@ -51,7 +52,6 @@
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
 import { mapGetters, mapMutations } from '../../store'
-import RowFlex from '../RowFlex'
 
 @Component({
   computed: {
@@ -62,7 +62,8 @@ import RowFlex from '../RowFlex'
       'selectedTime',
       'selectedList',
       'selectedSubConfig',
-      'selectedTimeList'
+      'selectedTimeList',
+      'highlightItem'
     ])
   },
   methods: {
@@ -71,14 +72,14 @@ import RowFlex from '../RowFlex'
       'setPage',
       'setSelected',
       'setSelectedTime',
-      'setFeaturesQuery'
+      'setFeaturesQuery',
+      'setHighlighItem'
     ])
-  },
-  components: {
-    RowFlex
   }
 })
 export default class ThematicMapAttributeTable extends Vue {
+  vuekey = 'table'
+
   // 专题
   subject = ''
 
@@ -140,6 +141,24 @@ export default class ThematicMapAttributeTable extends Vue {
       id,
       title
     }))
+  }
+
+  /**
+   * 自定义行数据和事件
+   */
+  getCustomRow(record, index) {
+    return {
+      props: {},
+      on: {
+        mouseenter: event => {
+          this.setHighlighItem({
+            from: this.vuekey,
+            itemIndex: index
+          })
+        },
+        mouseleave: event => {}
+      }
+    }
   }
 
   /**
@@ -246,6 +265,16 @@ export default class ThematicMapAttributeTable extends Vue {
   watchSelectedTime(nV: string) {
     if (this.time !== nV) {
       this.onTimeChange(nV)
+    }
+  }
+
+  /**
+   * 监听: 高亮
+   */
+  @Watch('highlightItem', { deep: true })
+  watchHighlightItem(nV) {
+    if (nV && nV.from !== this.vuekey && nV.marker) {
+      this.$set(this.tableData[nV.itemIndex], '_highlight', true)
     }
   }
 

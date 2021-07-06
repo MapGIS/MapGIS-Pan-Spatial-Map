@@ -1,15 +1,18 @@
 import Vue from 'vue'
 import _cloneDeep from 'lodash/cloneDeep'
 import _last from 'lodash/last'
-import { Feature } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
-import { ModuleType, IThematicMapSubjectConfig } from '../types'
+import { UUID, Feature } from '@mapgis/web-app-framework'
+import {
+  baseConfigInstance,
+  markerIconInstance
+} from '@mapgis/pan-spatial-map-store'
+import { ModuleType, IHighlighItem, IThematicMapSubjectConfig } from '../types'
 
 const mutations = {
   /**
    * 设置专题服务的基础和专题配置数据
    */
-  setThematicMapConfig({ state }, { baseConfig, subjectConfig }) {
+  setThematicMapConfig({ state }, { baseConfig, subjectConfig }: any) {
     state.baseConfig = baseConfig
     state.subjectConfig = subjectConfig
   },
@@ -135,11 +138,13 @@ const mutations = {
    */
   setSelectedTimeList({ state, commit }, id: string) {
     let selectedTimeList: string[] = []
-    const subject = state.selectedList.find(item => item.id === id)
+    const subject = state.selectedList.find(
+      (item: IThematicMapSubjectConfig) => item.id === id
+    )
     if (subject && subject.config) {
       const { data } = subject.config
       if (data && data.length) {
-        selectedTimeList = data.map(v => v.time)
+        selectedTimeList = data.map((v: any) => v.time)
       }
     }
     state.selectedTimeList = selectedTimeList
@@ -162,6 +167,34 @@ const mutations = {
   ) {
     state.selectedList = selectedList
     commit('setSelected', _last(selectedList)?.id)
+  },
+  /**
+   * 设置高亮项
+   */
+  setHighlightItem({ state }, { from, itemIndex }: IHighlighItem) {
+    markerIconInstance.unSelectIcon(img => {
+      const geoJson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
+        state.pageDataSet
+      )
+      const feature = geoJson.features[itemIndex]
+      if (feature) {
+        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
+        const centerItems = [coordinates[0], coordinates[1]]
+        const { properties } = feature
+        state.highlightItem = {
+          from,
+          itemIndex,
+          marker: {
+            img,
+            coordinates,
+            feature,
+            markerId: UUID.uuid(),
+            fid: properties.fid,
+            properties
+          }
+        }
+      }
+    })
   },
   /**
    * 重置专题服务展示弹框的开关

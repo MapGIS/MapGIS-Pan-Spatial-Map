@@ -75,8 +75,7 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   }
 
   /**
-   * fixme
-   * 强制刷新三维卷帘，解决切换二三维，不触发三维卷帘的更新的问题
+   * todo 强制刷新三维卷帘，解决切换二三维，不触发三维卷帘的更新的问题
    */
   onForceRefreshCesiumCompare() {
     if (!this.is2DMapMode) {

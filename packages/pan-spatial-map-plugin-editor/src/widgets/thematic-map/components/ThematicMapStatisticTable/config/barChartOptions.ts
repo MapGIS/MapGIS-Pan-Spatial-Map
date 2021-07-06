@@ -27,7 +27,10 @@ export const barChartOptions = ({ title, x, y }) => {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
-        type: 'shadow'
+        type: 'shadow',
+        shadowStyle: {
+          color: 'rgba(64,169,255,.2)'
+        }
       },
       textStyle: {
         fontSize: 10
@@ -62,7 +65,7 @@ export const barChartOptions = ({ title, x, y }) => {
     xAxis: {
       data: x,
       axisLabel: {
-        rotate: -60,
+        rotate: 60,
         interval: 0,
         fontSize: 10,
         fontFamily: '微软雅黑',

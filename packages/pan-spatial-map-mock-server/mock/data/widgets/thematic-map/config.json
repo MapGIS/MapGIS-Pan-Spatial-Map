@@ -465,7 +465,7 @@
                       "target": []
                     },
                     "popup": {
-                      "showFields": ["人口数"],
+                      "showFields": ["省名", "人口数"],
                       "showFieldsTitle": {},
                       "title": ""
                     }

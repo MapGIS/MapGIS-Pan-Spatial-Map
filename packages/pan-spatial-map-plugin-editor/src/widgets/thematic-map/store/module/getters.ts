@@ -22,7 +22,9 @@ const getters = {
   // 获取选中专题对应年度的subData的第一个数据
   selectedSubConfig: (state: IState) => state.selectedSubConfig,
   // 获取选中专题的年度列表
-  selectedTimeList: (state: IState) => state.selectedTimeList
+  selectedTimeList: (state: IState) => state.selectedTimeList,
+  // 高亮项
+  highlightItem: (state: IState) => state.highlightItem
 }
 
 export default Vue.observable(getters)

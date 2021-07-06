@@ -21,13 +21,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import RowFlex from '../../RowFlex'
 
-@Component({
-  components: {
-    RowFlex
-  }
-})
+@Component
 export default class TimeLineItems extends Vue {
   showTimeLine = false
 
