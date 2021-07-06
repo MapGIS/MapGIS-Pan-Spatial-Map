@@ -191,7 +191,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
    * 散点统计图层
    */
   createPointThematicMapLayer() {
-    this.createLineThematicMapLayer('#D8361B')
+    return this.createLineThematicMapLayer('#D8361B')
   }
 
   /**
