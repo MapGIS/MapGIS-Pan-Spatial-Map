@@ -209,10 +209,10 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
 
     const data = {
       name: 'IGS图层',
+      description: '功能仓库_结果图层',
       data: {
         type: 'IGSVector',
         url,
-        description: '功能仓库_结果图层',
         name: `${this.funcParam.FlowName}_${nameStr}`
       }
     }
