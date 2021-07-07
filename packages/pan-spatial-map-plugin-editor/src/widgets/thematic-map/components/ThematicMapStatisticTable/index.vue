@@ -257,7 +257,10 @@ export default class ThematicMapStatisticTable extends Vue {
   @Watch('highlightItem', { deep: true })
   watchHighlightItem(nV) {
     if (nV && nV.from !== this.vueKey && nV.marker) {
-      // todo 高亮图表选项
+      this.chart.dispatchAction({
+        type: 'highlight',
+        dataIndex: nV.itemIndex
+      })
     }
   }
 

@@ -35,6 +35,8 @@ import CesiumLayers from './components/Cesium'
 export default class ThematicMapLayers extends Mixins(AppMixin) {
   @Inject('map') map!: any
 
+  vueKey = 'map'
+
   // 高亮选项的标注点
   marker = null
 
@@ -71,6 +73,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   zoomTo(bound) {
     if (bound) {
       const { xmin, xmax, ymin, ymax } = bound
+      this.map.setZoom(this.map.getZoom() - 1)
       this.map.fitBounds([
         [xmax, ymin],
         [xmin, ymax]
@@ -83,7 +86,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    */
   @Watch('highlightItem', { deep: true })
   watchHighlightItem(nV) {
-    if (nV && nV.marker) {
+    if (nV && nV.from !== this.vueKey && nV.marker) {
       this.marker = nV.marker
       this.zoomTo(this.marker.feature.bound)
     }

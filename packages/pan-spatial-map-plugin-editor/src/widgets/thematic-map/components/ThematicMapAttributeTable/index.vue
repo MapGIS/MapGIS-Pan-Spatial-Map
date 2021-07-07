@@ -73,7 +73,7 @@ import { mapGetters, mapMutations } from '../../store'
       'setSelected',
       'setSelectedTime',
       'setFeaturesQuery',
-      'setHighlighItem'
+      'setHighlightItem'
     ])
   }
 })
@@ -149,9 +149,12 @@ export default class ThematicMapAttributeTable extends Vue {
   getCustomRow(record, index) {
     return {
       props: {},
+      class: {
+        highlight: record._highlight
+      },
       on: {
         mouseenter: event => {
-          this.setHighlighItem({
+          this.setHighlightItem({
             from: this.vuekey,
             itemIndex: index
           })
@@ -173,7 +176,8 @@ export default class ThematicMapAttributeTable extends Vue {
       return {
         title,
         dataIndex: v,
-        align: 'center'
+        align: 'center',
+        sorter: true
       }
     })
   }
@@ -274,6 +278,7 @@ export default class ThematicMapAttributeTable extends Vue {
   @Watch('highlightItem', { deep: true })
   watchHighlightItem(nV) {
     if (nV && nV.from !== this.vuekey && nV.marker) {
+      this.tableData.forEach(d => this.$set(d, '_highlight', false))
       this.$set(this.tableData[nV.itemIndex], '_highlight', true)
     }
   }

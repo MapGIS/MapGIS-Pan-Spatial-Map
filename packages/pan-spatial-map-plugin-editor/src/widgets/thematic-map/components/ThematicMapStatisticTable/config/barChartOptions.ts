@@ -29,7 +29,7 @@ export const barChartOptions = ({ title, x, y }) => {
       axisPointer: {
         type: 'shadow',
         shadowStyle: {
-          color: 'rgba(64,169,255,.2)'
+          color: 'rgba(43,129,255, 0.15)'
         }
       },
       textStyle: {
