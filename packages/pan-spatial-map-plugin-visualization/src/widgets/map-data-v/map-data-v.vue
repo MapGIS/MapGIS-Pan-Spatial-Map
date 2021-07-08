@@ -1,13 +1,16 @@
 <template>
   <div class="mp-widget-map-data-v">
-    <iframe
-      id="iframe_page"
-      :src="url"
-      frameborder="0"
-      width="100%"
-      height="100%"
-      :allowfullscreen="true"
-    ></iframe>
+    <div class="mask"></div>
+    <div>
+      <iframe
+        id="iframe_page"
+        :src="url"
+        frameborder="0"
+        width="100%"
+        height="100%"
+        :allowfullscreen="true"
+      ></iframe>
+    </div>
   </div>
 </template>
 
@@ -40,5 +43,20 @@ export default class MpMapDataV extends Mixins(WidgetMixin) {
 .mp-widget-map-data-v {
   width: 100%;
   height: 100%;
+  position: relative;
+  .mask {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background: transparent;
+    + div {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+  }
 }
 </style>
