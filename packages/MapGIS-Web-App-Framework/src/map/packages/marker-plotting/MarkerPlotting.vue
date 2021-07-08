@@ -21,7 +21,7 @@ import {
   Emit,
   Mixins
 } from 'vue-property-decorator'
-import { Feature, CommonUtil } from '@mapgis/web-app-framework'
+import { Feature } from '@mapgis/web-app-framework'
 import _last from 'lodash/last'
 import MpMarkerSetPro from '../marker-pro/MarkerSetPro.vue'
 import HighlightEventsMixin from './mixins/highlight-events'
@@ -113,19 +113,24 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
       prevMarkerIds.forEach(id => {
         const marker = this.getMarker(id)
         this.clearHighlight(marker)
-        this.emitClearHighlight(marker, this.vueKey)
+        if (this.vueKey) {
+          this.emitClearHighlight(marker, this.vueKey)
+        }
         MarkerStateInstance.removeSelectedIds(id)
       })
     }
     if (markerIds.length) {
-      this.emitClearQueryTreeSelected(this.vueKey)
+      if (this.vueKey) {
+        this.emitClearQueryTreeSelected(this.vueKey)
+      }
       const lastMarker = this.getMarker(_last(markerIds))
-      const bound = this.getFitBound(lastMarker)
-      this.zoomOrPanTo(bound)
+      this.zoomTo(lastMarker.feature.bound)
       markerIds.forEach(id => {
         const marker = this.getMarker(id)
-        this.addHighlight(marker)
-        this.emitHighlight(marker, this.vueKey)
+        this.highlightFeature(marker)
+        if (this.vueKey) {
+          this.emitHighlight(marker, this.vueKey)
+        }
         MarkerStateInstance.setSelectedIds(id)
       })
     }
@@ -136,7 +141,7 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     this.zoomTo(nV)
   }
 
-  @Watch('selectionBound', { immediate: true, deep: true })
+  @Watch('selectionBound', { deep: true })
   changeSelectionBound(nV) {
     this.zoomOrPanTo(nV)
   }
@@ -162,35 +167,8 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     return this.markers.find(marker => marker.markerId === markerId)
   }
 
-  private isValidBound(bound) {
-    if (!CommonUtil.isEmpty(bound)) {
-      const boundKeys = ['xmin', 'xmax', 'ymin', 'ymax']
-      const hasBoundKeys = boundKeys.every(v => v in bound)
-      return (
-        hasBoundKeys && bound.xmin <= bound.xmax && bound.ymin <= bound.ymax
-      )
-    }
-    return !0
-  }
-
-  private getFitBound({ feature }: any) {
-    const bound = feature.bound || Feature.getGeoJsonFeatureBound(feature)
-    if (!this.isValidBound(bound)) return
-    const { xmin, xmax, ymin, ymax } = bound
-    const _xmin = (3 * xmin - xmax) / 2
-    const _ymin = (3 * ymin - ymax) / 2
-    const _xmax = (3 * xmax - xmin) / 2
-    const _ymax = (3 * ymax - ymin) / 2
-    return {
-      xmin: _xmin,
-      ymin: _ymin,
-      xmax: _xmax,
-      ymax: _ymax
-    }
-  }
-
   private zoomTo(bound) {
-    if (!this.isValidBound(bound)) return
+    if (!bound) return
     this.map.fitBounds([
       [bound.xmin, bound.ymin],
       [bound.xmax, bound.ymax]
@@ -198,7 +176,7 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   }
 
   private zoomOrPanTo(bound) {
-    if (!this.isValidBound(bound)) return
+    if (!bound) return
     const mapBoundArray = this.map.getBounds().toArray()
     const mapBound = {
       xmin: mapBoundArray[0][0],
@@ -232,30 +210,32 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   private mouseEnterEvent(e: any, id) {
     const marker = this.getMarker(id)
     if (marker && !this.storeSelectedIds.has(id)) {
-      this.addHighlight(marker)
+      this.highlightFeature(marker)
     }
   }
 
   private mouseLeaveEvent(e: any, id) {
     const marker = this.getMarker(id)
     if (marker && !this.storeSelectedIds.has(id)) {
-      this.clearHighlight(marker)
+      this.clearHighlightFeature(marker)
     }
   }
 
-  private highlightFeature(layerId, sourceId, gFeature) {
+  private highlightFeature({ markerId, feature }) {
+    const layerId = `highlight-layer-${markerId}`
+    const sourceId = `highlight-${markerId}`
     if (!this.map.getSource(sourceId)) {
       this.map.addSource(sourceId, {
         type: 'geojson',
         data: {
-          features: [gFeature],
+          features: [feature],
           type: 'FeatureCollection'
         }
       })
     }
     let options: any = {}
     const { line, reg } = this.highlightStyle.feature
-    switch (gFeature.geometry.type) {
+    switch (feature.geometry.type) {
       case 'Point':
         // 点要素的高亮符号怎么处理?
         break
@@ -289,7 +269,9 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     }
   }
 
-  private clearHighlightFeature(layerId, sourceId) {
+  private clearHighlightFeature({ markerId }) {
+    const layerId = `highlight-layer-${markerId}`
+    const sourceId = `highlight-${markerId}`
     if (this.map.getLayer(layerId)) {
       this.map.removeLayer(layerId)
     }
@@ -298,24 +280,19 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     }
   }
 
-  private getLayerAndSourceId(markerId) {
-    const layerId = `highlight-layer-${markerId}`
-    const sourceId = `highlight-${markerId}`
-    return [layerId, sourceId]
-  }
-
   /**
    * 清除高亮
    */
-  private clearHighlight({ markerId }) {
-    this.clearHighlightFeature(...this.getLayerAndSourceId(markerId))
+  private clearHighlight(marker) {
+    this.clearHighlightFeature(marker)
   }
 
   /**
    * 添加高亮
    */
-  private addHighlight({ markerId, feature }) {
-    this.highlightFeature(...this.getLayerAndSourceId(markerId), feature)
+  private addHighlight(marker) {
+    this.zoomTo(marker.feature.bound)
+    this.highlightFeature(marker)
   }
 
   created() {
