@@ -11,12 +11,8 @@ class MarkerIcon {
     this._unselectIcon = ''
   }
 
-  /**
-   * 获取选中图标, 获取失败终止后续执行?劫持异常,处理并抛出错误?
-   * @param {Function} next 获取图标之后的操作
-   * @returns {Promise} 图标
-   */
-  public async selectIcon(next?: (icon: string) => void): Promise<string> {
+  public async selectIcon() {
+    // 获取未选中图标
     if (!this._selectIcon) {
       this._selectIcon = await this.setBase64(
         baseConfigInstance.config.colorConfig.label.image.selectedImg
@@ -25,12 +21,8 @@ class MarkerIcon {
     return this._selectIcon
   }
 
-  /**
-   * 获取未选中图标
-   * @param {Function} next 获取图标之后的操作
-   * @returns {Promise} 图标
-   */
-  public async unSelectIcon(next?: (icon: string) => void): Promise<string> {
+  public async unSelectIcon() {
+    // 获取未选中图标
     if (!this._unselectIcon) {
       this._unselectIcon = await this.setBase64(
         baseConfigInstance.config.colorConfig.label.image.defaultImg
