@@ -132,8 +132,8 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
       // 获取到区填充图案数据
       this.getSpriteData(requestUrl).then(res => {
+        res.unshift('清空区填充图案')
         this.spriteData = res
-        // console.log(res)
       })
     }
   }
@@ -188,6 +188,8 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
           if (Object.keys(newVal).includes('fill-pattern')) {
             // 区填充图案样式特殊些，所以子图层的该样式也要改变
             this.$set(item.paint, 'fill-pattern', newVal['fill-pattern'])
+          } else if (Object.keys(item.paint).includes('fill-pattern')) {
+            this.$delete(item.paint, 'fill-pattern')
           }
         }
         result.push(item)

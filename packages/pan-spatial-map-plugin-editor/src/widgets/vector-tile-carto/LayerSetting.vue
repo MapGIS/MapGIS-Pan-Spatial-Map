@@ -287,8 +287,11 @@ export default class LayerSetting extends Vue {
     this.paint[type] = val.hex
   }
 
+  // 区填充图案下拉项变化时回调事件
   private patternChange(value) {
-    console.log(value)
+    if (value === '清空区填充图案') {
+      this.$delete(this.paint, 'fill-pattern')
+    }
   }
 
   // 点击+按钮响应事件
