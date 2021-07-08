@@ -880,8 +880,8 @@
           {
             "label": "250DEM",
             "describe": "250DEM",
-            "ip": "localhost",
-            "port": "6163",
+            "ip": "",
+            "port": "",
             "layerServiceType": "IGSTILED",
             "name": "DEM250",
             "searchName": "",
