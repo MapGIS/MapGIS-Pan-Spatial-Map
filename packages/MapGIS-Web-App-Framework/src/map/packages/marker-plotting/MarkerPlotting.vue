@@ -108,9 +108,20 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   }
 
   @Watch('selectedMarkers', { immediate: true })
-  changeSelectedMarkers(markerIds) {
-    this.clearAllHighlight()
+  changeSelectedMarkers(markerIds, prevMarkerIds = []) {
+    if (prevMarkerIds.length) {
+      prevMarkerIds.forEach(id => {
+        const marker = this.getMarker(id)
+        this.clearHighlight(marker)
+        this.emitClearHighlight(marker, this.vueKey)
+        MarkerStateInstance.removeSelectedIds(id)
+      })
+    }
     if (markerIds.length) {
+      this.emitClearQueryTreeSelected(this.vueKey)
+      const lastMarker = this.getMarker(_last(markerIds))
+      const bound = this.getFitBound(lastMarker)
+      this.zoomOrPanTo(bound)
       markerIds.forEach(id => {
         const marker = this.getMarker(id)
         this.addHighlight(marker)
@@ -163,7 +174,6 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   }
 
   private getFitBound({ feature }: any) {
-    // fixme feature.bound = feature.properties.specialLayerBound
     const bound = feature.bound || Feature.getGeoJsonFeatureBound(feature)
     if (!this.isValidBound(bound)) return
     const { xmin, xmax, ymin, ymax } = bound
@@ -222,7 +232,7 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   private mouseEnterEvent(e: any, id) {
     const marker = this.getMarker(id)
     if (marker && !this.storeSelectedIds.has(id)) {
-      this.highlightFeature(marker)
+      this.addHighlight(marker)
     }
   }
 
@@ -233,20 +243,19 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     }
   }
 
-  private highlightFeature({ markerId, feature }) {
-    const layerId = `highlight-layer-${markerId}`
-    const sourceId = `highlight-${markerId}`
+  private highlightFeature(layerId, sourceId, gFeature) {
     if (!this.map.getSource(sourceId)) {
       this.map.addSource(sourceId, {
         type: 'geojson',
         data: {
-          features: [feature],
+          features: [gFeature],
           type: 'FeatureCollection'
         }
       })
     }
     let options: any = {}
-    switch (feature.geometry.type) {
+    const { line, reg } = this.highlightStyle.feature
+    switch (gFeature.geometry.type) {
       case 'Point':
         // 点要素的高亮符号怎么处理?
         break
@@ -254,8 +263,8 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
         options = {
           type: 'line',
           paint: {
-            'line-color': this.highlightStyle.feature.line.color,
-            'line-width': parseInt(this.highlightStyle.feature.line.size)
+            'line-color': line.color,
+            'line-width': parseInt(line.size)
           }
         }
         break
@@ -263,8 +272,8 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
         options = {
           type: 'fill',
           paint: {
-            'fill-color': this.highlightStyle.feature.reg.color,
-            'fill-outline-color': this.highlightStyle.feature.line.color
+            'fill-color': reg.color,
+            'fill-outline-color': line.color
           }
         }
         break
@@ -280,9 +289,7 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     }
   }
 
-  private clearHighlight({ markerId }) {
-    const layerId = `highlight-layer-${markerId}`
-    const sourceId = `highlight-${markerId}`
+  private clearHighlightFeature(layerId, sourceId) {
     if (this.map.getLayer(layerId)) {
       this.map.removeLayer(layerId)
     }
@@ -291,25 +298,28 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     }
   }
 
-  private clearAllHighlight() {
-    this.markers.forEach(marker => {
-      this.clearHighlight(marker)
-      this.emitClearHighlight(marker, this.vueKey)
-      MarkerStateInstance.removeSelectedIds(marker.markerId)
-    })
+  private getLayerAndSourceId(markerId) {
+    const layerId = `highlight-layer-${markerId}`
+    const sourceId = `highlight-${markerId}`
+    return [layerId, sourceId]
   }
 
-  private addHighlight(marker) {
-    this.zoomTo(this.getFitBound(marker))
-    this.highlightFeature(marker)
+  /**
+   * 清除高亮
+   */
+  private clearHighlight({ markerId }) {
+    this.clearHighlightFeature(...this.getLayerAndSourceId(markerId))
+  }
+
+  /**
+   * 添加高亮
+   */
+  private addHighlight({ markerId, feature }) {
+    this.highlightFeature(...this.getLayerAndSourceId(markerId), feature)
   }
 
   created() {
     this.subscribeHighlight()
-  }
-
-  beforeDestroy() {
-    this.clearAllHighlight()
   }
 }
 </script>

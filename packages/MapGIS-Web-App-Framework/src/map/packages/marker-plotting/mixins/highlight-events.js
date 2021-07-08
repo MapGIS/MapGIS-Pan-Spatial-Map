@@ -4,7 +4,8 @@ export default {
   data() {
     return {
       highlightEventName: events.FEATURE_HIGHLIGHT,
-      clearHightlightEventName: events.CLEAR_FEATURE_HIGHLIGHT
+      clearHightlightEventName: events.CLEAR_FEATURE_HIGHLIGHT,
+      clearQueryTreeSelectedEventName: events.CLEAR_QUERY_TREE_SELECTED
     }
   },
   methods: {
@@ -40,7 +41,7 @@ export default {
      * @param {string} vuekey 组件唯一标识
      */
     emitHighlight(marker, vueKey) {
-      if (!this.vueKey || this.vueKey === vueKey) {
+      if (this.vueKey === vueKey) {
         eventBus.$emit(this.highlightEventName, marker, vueKey)
       }
     },
@@ -82,17 +83,26 @@ export default {
      * @param {string} vuekey 组件唯一标识
      */
     emitClearHighlight(marker, vueKey) {
-      if (!this.vueKey || this.vueKey === vueKey) {
+      if (this.vueKey === vueKey) {
         eventBus.$emit(this.clearHightlightEventName, marker, vueKey)
       }
     },
     /**
-     * 清除高亮要素,由主组件实现
+     * 派发取消结果树选中
+     * @param {string} vuekey 组件唯一标识
+     */
+    emitClearQueryTreeSelected(vueKey) {
+      if (this.vueKey === vueKey) {
+        eventBus.$emit(this.clearQueryTreeSelectedEventName, vueKey)
+      }
+    },
+    /**
+     * 清除高亮,由主组件实现
      * @param {object} marker 标注信息
      */
     clearHighlight(marker) {},
     /**
-     * 添加高亮要素,由主组件实现
+     * 添加高亮,由主组件实现
      * @param {object} marker 标注信息
      */
     addHighlight(marker) {},
