@@ -696,9 +696,9 @@
                 "weight": "30",
                 "layerIndex": null,
                 "table": {
-                  "showFields": ["NAME", "AREA"],
+                  "showFields": ["name", "AREA"],
                   "showFieldsTitle": {
-                    "NAME": "名称",
+                    "name": "名称",
                     "AREA": "面积"
                   }
                 },
@@ -707,7 +707,7 @@
                   "showFieldsTitle": {
                     "AREA": "面积"
                   },
-                  "field": "NAME",
+                  "field": "name",
                   "target": []
                 }
               }
@@ -740,9 +740,9 @@
                   "style": "gradient"
                 },
                 "table": {
-                  "showFields": ["NAME", "AREA"],
+                  "showFields": ["name", "AREA"],
                   "showFieldsTitle": {
-                    "NAME": "名称",
+                    "name": "名称",
                     "AREA": "面积"
                   }
                 },
@@ -751,7 +751,7 @@
                   "showFieldsTitle": {
                     "AREA": "面积"
                   },
-                  "field": "NAME",
+                  "field": "name",
                   "target": []
                 }
               }
@@ -795,9 +795,9 @@
                       "type": "att"
                     },
                     "table": {
-                      "showFields": ["NAME", "AREA"],
+                      "showFields": ["name", "AREA"],
                       "showFieldsTitle": {
-                        "NAME": "名称",
+                        "name": "名称",
                         "AREA": "面积"
                       }
                     },
@@ -806,13 +806,13 @@
                       "showFieldsTitle": {
                         "AREA": "面积"
                       },
-                      "field": "NAME",
+                      "field": "name",
                       "target": []
                     },
                     "popup": {
-                      "showFields": ["NAME"],
+                      "showFields": ["name"],
                       "showFieldsTitle": {},
-                      "title": "NAME"
+                      "title": "name"
                     }
                   }
                 ]
