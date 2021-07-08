@@ -47,10 +47,14 @@ const mutations = {
   },
   /**
    * 查询要素
+   * @param isPage 是否分页
    * @param onSuccess
    * @param onError
    */
-  setFeaturesQuery({ state, commit }, { onSuccess, onError }: any = {}) {
+  setFeaturesQuery(
+    { state, commit },
+    { isPage = true, onSuccess, onError }: any = {}
+  ) {
     if (!state.selectedSubConfig) return
     const { pageParam, selectedSubConfig, baseConfig = {} } = state
     const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
@@ -67,6 +71,12 @@ const mutations = {
     } = selectedSubConfig
     const _ip = ip || baseIp || baseConfigIp
     const _port = port || basePort || baseConfigPort
+    const _pageParam = isPage
+      ? pageParam
+      : {
+          page: 0,
+          pageCount: 9999
+        }
     let otherParams: any = {}
     switch (configType.toLowerCase()) {
       case 'gdbp':
@@ -91,7 +101,7 @@ const mutations = {
       IncludeGeometry: true,
       f: 'json',
       fields: showFields.join(','),
-      ...pageParam,
+      ..._pageParam,
       ...otherParams
     })
     if (fn && fn.then) {

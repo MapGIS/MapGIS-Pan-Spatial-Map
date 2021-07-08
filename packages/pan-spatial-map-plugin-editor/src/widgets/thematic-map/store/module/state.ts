@@ -11,7 +11,7 @@ export default Vue.observable<IState>({
   // 页码
   pageParam: {
     page: 0,
-    pageCount: 100
+    pageCount: 10
   },
 
   // 当前页的查询的要素数据

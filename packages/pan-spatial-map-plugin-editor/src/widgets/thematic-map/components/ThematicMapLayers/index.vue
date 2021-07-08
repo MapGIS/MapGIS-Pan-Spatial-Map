@@ -1,14 +1,16 @@
 <template>
   <div class="mapbox-thematic-map-layers">
+    <!-- <keep-alive> -->
     <template v-for="t in subjectLayers">
       <component
-        :is="t"
-        :key="t"
-        :subDataConfig="subDataConfig"
-        :dataSet="dataSet"
         v-if="subjectType === t"
+        :key="t"
+        :is="t"
+        :dataSet="dataSet"
+        :subDataConfig="subDataConfig"
       />
     </template>
+    <!-- </keep-alive> -->
     <template v-if="marker">
       <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
       <mp-marker-pro :marker="marker" v-if="is2DMapMode" />
@@ -19,7 +21,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { Feature, AppMixin } from '@mapgis/web-app-framework'
-import { mapGetters, subjectTypes } from '../../store'
+import { mapGetters, subjectTypes, mapMutations } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
 
@@ -29,7 +31,10 @@ import CesiumLayers from './components/Cesium'
     ...CesiumLayers
   },
   computed: {
-    ...mapGetters(['selectedSubConfig', 'pageDataSet', 'highlightItem'])
+    ...mapGetters(['selectedSubConfig', 'highlightItem'])
+  },
+  methods: {
+    ...mapMutations(['setFeaturesQuery'])
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
@@ -40,14 +45,12 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   // 高亮选项的标注点
   marker = null
 
+  // 要素数据
+  dataSet: Feature.FeatureIGSSFELE | null = null
+
   // 专题配置
   get subDataConfig() {
     return this.selectedSubConfig
-  }
-
-  // 专题某年度的要素数据
-  get dataSet() {
-    return this.pageDataSet
   }
 
   get prefix() {
@@ -78,6 +81,23 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
         [xmax, ymin],
         [xmin, ymax]
       ])
+    }
+  }
+
+  /**
+   * 监听: 专题配置
+   */
+  @Watch('subDataConfig', { deep: true })
+  watchSubDataConfig(nV) {
+    if (nV) {
+      this.setFeaturesQuery({
+        isPage: false,
+        onSuccess: dataSet => {
+          this.dataSet = dataSet
+        }
+      })
+    } else {
+      this.dataSet = null
     }
   }
 
