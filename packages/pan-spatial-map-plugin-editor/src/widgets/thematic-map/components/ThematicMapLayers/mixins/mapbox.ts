@@ -59,6 +59,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
     const { showFields } = this.popupConfig
     if (!e.target || !showFields || !showFields.length) return
     this.showPopup = true
+    this.emitHighlight(e.target.refDataID - 1)
     this.getPopupInfos(e, this.popupConfig)
   }
 
@@ -69,5 +70,6 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
     this.showPopup = false
     this.properties = null
     this.coordinates = [0, 0]
+    this.emitClearHighlight()
   }
 }

@@ -691,7 +691,7 @@
             "data": [
               {
                 "time": "2008",
-                "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
+                "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
                 "docName": "",
                 "weight": "30",
                 "layerIndex": null,
@@ -727,7 +727,7 @@
                 "time": "2008",
                 "ip": "",
                 "port": "",
-                "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
+                "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
                 "weight": "8",
                 "docName": "",
                 "layerIndex": null,
@@ -775,7 +775,7 @@
                     "maxZoom": 10,
                     "ip": "",
                     "port": "",
-                    "gdbp": "gdbp://MapGisLocal/china/sfcls/cn_countyp_450_1993_WGS84_point1_度",
+                    "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
                     "weight": "30",
                     "docName": "",
                     "layerIndex": null,

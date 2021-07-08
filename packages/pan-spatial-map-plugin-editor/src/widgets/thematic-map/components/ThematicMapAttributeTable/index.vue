@@ -51,6 +51,7 @@
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
+import _debounce from 'lodash/debounce'
 import { mapGetters, mapMutations } from '../../store'
 
 @Component({
@@ -73,12 +74,13 @@ import { mapGetters, mapMutations } from '../../store'
       'setSelected',
       'setSelectedTime',
       'setFeaturesQuery',
-      'setHighlightItem'
+      'setHighlightItem',
+      'resetHighlight'
     ])
   }
 })
 export default class ThematicMapAttributeTable extends Vue {
-  vuekey = 'table'
+  vueKey = 'table'
 
   // 专题
   subject = ''
@@ -144,22 +146,38 @@ export default class ThematicMapAttributeTable extends Vue {
   }
 
   /**
+   * 清除所有高亮
+   */
+  clearHighlight() {
+    this.tableData.forEach(d => this.$set(d, '_highlight', false))
+  }
+
+  /**
+   * 设置高亮
+   */
+  setHighlight(itemIndex: number) {
+    const node = this.tableData[itemIndex]
+    if (node) {
+      this.$set(node, '_highlight', true)
+    }
+  }
+
+  /**
    * 自定义行数据和事件
    */
   getCustomRow(record, index) {
     return {
-      props: {},
       class: {
         highlight: record._highlight
       },
       on: {
-        mouseenter: event => {
+        mouseenter: _debounce(() => {
           this.setHighlightItem({
-            from: this.vuekey,
+            from: this.vueKey,
             itemIndex: index
           })
-        },
-        mouseleave: event => {}
+        }, 400),
+        mouseleave: this.resetHighlight
       }
     }
   }
@@ -277,9 +295,10 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   @Watch('highlightItem', { deep: true })
   watchHighlightItem(nV) {
-    if (nV && nV.from !== this.vuekey && nV.marker) {
-      this.tableData.forEach(d => this.$set(d, '_highlight', false))
-      this.$set(this.tableData[nV.itemIndex], '_highlight', true)
+    if (!nV) {
+      this.clearHighlight()
+    } else if (nV.from !== this.vueKey) {
+      this.setHighlight(nV.itemIndex)
     }
   }
 

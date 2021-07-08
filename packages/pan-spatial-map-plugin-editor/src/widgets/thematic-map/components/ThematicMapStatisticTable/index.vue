@@ -80,11 +80,11 @@ interface IChartOption {
     ])
   },
   methods: {
-    ...mapMutations(['setHighlightItem', 'resetVisible'])
+    ...mapMutations(['setHighlightItem', 'resetVisible', 'resetHighlight'])
   }
 })
 export default class ThematicMapStatisticTable extends Vue {
-  vuekey = 'gragh'
+  vueKey = 'gragh'
 
   // 默认标注图标
   defaultIcon = ''
@@ -243,6 +243,44 @@ export default class ThematicMapStatisticTable extends Vue {
   }
 
   /**
+   * 图标mouseout事件
+   */
+  onMouseout() {
+    this.resetHighlight()
+  }
+
+  /**
+   * 取消高亮图表图形
+   * @param {Number} 数据索引
+   */
+  onClearHighlight(dataIndex) {
+    this.chart.dispatchAction({
+      type: 'downplay',
+      dataIndex
+    })
+    this.chart.dispatchAction({
+      type: 'hideTip',
+      dataIndex
+    })
+  }
+
+  /**
+   * 高亮图表图形
+   * @param {Number} 数据索引
+   */
+  onHighlight(dataIndex) {
+    this.chart.dispatchAction({
+      type: 'showTip',
+      seriesIndex: 0,
+      dataIndex
+    })
+    this.chart.dispatchAction({
+      type: 'highlight',
+      dataIndex
+    })
+  }
+
+  /**
    * 监听: 分页数据变化
    */
   @Watch('pageDataSet', { deep: true })
@@ -256,11 +294,10 @@ export default class ThematicMapStatisticTable extends Vue {
    */
   @Watch('highlightItem', { deep: true })
   watchHighlightItem(nV) {
-    if (nV && nV.from !== this.vueKey && nV.marker) {
-      this.chart.dispatchAction({
-        type: 'highlight',
-        dataIndex: nV.itemIndex
-      })
+    if (!nV) {
+      this.onClearHighlight()
+    } else if (nV.from !== this.vueKey) {
+      this.onHighlight(nV.itemIndex)
     }
   }
 
@@ -270,6 +307,7 @@ export default class ThematicMapStatisticTable extends Vue {
     )
     this.chart = echarts.init(chartDom)
     this.chart.on('mouseover', this.onMouseover)
+    this.chart.on('mouseout', this.onMouseout)
   }
 }
 </script>

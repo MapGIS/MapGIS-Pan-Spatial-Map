@@ -1,16 +1,17 @@
 <template>
   <div class="mapbox-thematic-map-layers">
-    <!-- <keep-alive> -->
     <template v-for="t in subjectLayers">
       <component
         v-if="subjectType === t"
+        @highlight="setHighlightItem"
+        @clear-highlight="resetHighlight"
         :key="t"
         :is="t"
+        :vue-key="vueKey"
         :dataSet="dataSet"
         :subDataConfig="subDataConfig"
       />
     </template>
-    <!-- </keep-alive> -->
     <template v-if="marker">
       <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
       <mp-marker-pro :marker="marker" v-if="is2DMapMode" />
@@ -34,12 +35,13 @@ import CesiumLayers from './components/Cesium'
     ...mapGetters(['selectedSubConfig', 'highlightItem'])
   },
   methods: {
-    ...mapMutations(['setFeaturesQuery'])
+    ...mapMutations(['setFeaturesQuery', 'setHighlightItem', 'resetHighlight'])
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
   @Inject('map') map!: any
 
+  // 组件唯一值
   vueKey = 'map'
 
   // 高亮选项的标注点
@@ -73,15 +75,29 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * zoom到指定范围
    * @param {object} bound 经纬度范围
    */
-  zoomTo(bound) {
+  panTo(bound) {
     if (bound) {
       const { xmin, xmax, ymin, ymax } = bound
-      this.map.setZoom(this.map.getZoom() - 1)
-      this.map.fitBounds([
-        [xmax, ymin],
-        [xmin, ymax]
+      this.map.panTo([
+        (bound.xmin + bound.xmax) / 2,
+        (bound.ymin + bound.ymax) / 2
       ])
     }
+  }
+
+  /**
+   * 清除高亮
+   */
+  clearHighlight() {
+    this.marker = null
+  }
+
+  /**
+   * 设置高亮
+   */
+  setHighlight(marker) {
+    this.marker = marker
+    this.panTo(this.marker.feature.bound)
   }
 
   /**
@@ -89,15 +105,15 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    */
   @Watch('subDataConfig', { deep: true })
   watchSubDataConfig(nV) {
-    if (nV) {
+    if (!nV) {
+      this.dataSet = null
+    } else {
       this.setFeaturesQuery({
         isPage: false,
         onSuccess: dataSet => {
           this.dataSet = dataSet
         }
       })
-    } else {
-      this.dataSet = null
     }
   }
 
@@ -106,9 +122,10 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    */
   @Watch('highlightItem', { deep: true })
   watchHighlightItem(nV) {
-    if (nV && nV.from !== this.vueKey && nV.marker) {
-      this.marker = nV.marker
-      this.zoomTo(this.marker.feature.bound)
+    if (!nV) {
+      this.clearHighlight()
+    } else if (nV.from !== this.vueKey) {
+      this.setHighlight(nV.marker)
     }
   }
 }

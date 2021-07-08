@@ -29,7 +29,7 @@ export const barChartOptions = ({ title, x, y }) => {
       axisPointer: {
         type: 'shadow',
         shadowStyle: {
-          color: 'rgba(43,129,255, 0.15)'
+          color: 'rgba(65,174,255,0.2)'
         }
       },
       textStyle: {
@@ -56,6 +56,7 @@ export const barChartOptions = ({ title, x, y }) => {
     title: {
       text: title,
       left: 'right',
+      padding: 0,
       textStyle: {
         color: txtColor,
         fontSize: 14,
@@ -110,11 +111,11 @@ export const barChartOptions = ({ title, x, y }) => {
         type: 'bar',
         data: y,
         barWidth: 20,
-        label: {
-          show: true,
-          position: 'top',
-          formatter: '{c}'
-        },
+        // label: {
+        //   show: true,
+        //   position: 'top',
+        //   formatter: '{c}'
+        // },
         itemStyle: {
           color: '#40a9ff'
         }

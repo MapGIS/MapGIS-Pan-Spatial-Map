@@ -207,6 +207,13 @@ const mutations = {
     })
   },
   /**
+   * 重置高亮
+   * @param param0
+   */
+  resetHighlight({ state }) {
+    state.highlightItem = null
+  },
+  /**
    * 重置专题服务展示弹框的开关
    */
   resetVisible({ state }, type: ModuleType) {
