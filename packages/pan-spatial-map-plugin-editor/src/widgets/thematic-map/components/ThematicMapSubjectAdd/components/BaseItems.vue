@@ -1,32 +1,26 @@
 <template>
   <div class="base-items">
-    <!-- 专题服务名称 -->
-    <mp-row-flex label="专题服务名称">
-      <a-input v-model="subjectName" placeholder="请输入" />
-    </mp-row-flex>
-    <!-- 专题服务分类 -->
-    <mp-row-flex label="专题服务分类">
-      <a-tree
-        :tree-data="sujectServerTypeTreeData"
-        :replace-fields="{ key: 'id' }"
-        @select="onSujectServerTypeSelect"
+    <!-- 专题分类 -->
+    <mp-row-flex label="专题分类">
+      <a-select
+        :value="subjectClassify"
+        :options="subjectClassifyList"
+        @change="onSubjectClassifyChange"
       />
     </mp-row-flex>
+    <!-- 专题名称 -->
+    <mp-row-flex label="专题名称">
+      <a-select v-model="subjectName" :options="subjectNameList" />
+    </mp-row-flex>
     <!-- 专题类型 -->
-    <mp-row-flex label="专题类型" label-align="right">
-      <a-select v-model="sujectType" :options="sujectTypeList" />
-    </mp-row-flex>
-    <subject-types :type="sujectType" />
+    <subject-types />
     <!-- 数据来源 -->
-    <mp-row-flex label="数据来源" label-align="right">
-      <a-select v-model="sourceTarget" :options="sourceTargetList" />
-    </mp-row-flex>
-    <source-target :type="sourceTarget" />
+    <source-target />
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { subjectTypes } from '../../../store'
+import { mapGetters } from '../../../store'
 import SourceTarget from './SourceTarget'
 import SubjectTypes from './SubjectTypes'
 
@@ -34,40 +28,51 @@ import SubjectTypes from './SubjectTypes'
   components: {
     SourceTarget,
     SubjectTypes
+  },
+  computed: {
+    ...mapGetters(['subjectConfig'])
   }
 })
 export default class BaseItems extends Vue {
-  // 专题服务名称
+  // 专题分类
+  subjectClassify = ''
+
+  // 专题名称
   subjectName = ''
 
-  // 专题服务分类
-  sujectServerType = ''
+  // 专题名称列表
+  subjectNameList = []
 
-  // 专题服务分类树
-  sujectServerTypeTreeData: any[] = []
+  // 专题分类列表
+  get subjectClassifyList() {
+    return this.subjectConfig
+      ? this.subjectConfig.map(({ id, title }) => ({
+          label: title,
+          value: id
+        }))
+      : []
+  }
 
-  // 专题类型
-  sujectType = ''
+  /**
+   * 专题分类变化
+   */
+  onSubjectClassifyChange(id: string) {
+    this.subjectClassify = id
+    this.getSubjectNameList()
+  }
 
-  // 专题类型列表
-  sujectTypeList = subjectTypes
-
-  // 数据来源
-  sourceTarget = ''
-
-  // 数据来源列表
-  sourceTargetList = [
-    {
-      label: '线上数据',
-      value: 'onLineData'
-    },
-    {
-      label: '本地数据',
-      value: 'localData'
-    }
-  ]
-
-  onSujectServerTypeSelect() {}
+  /**
+   * 获取专题名称列表
+   */
+  getSubjectNameList() {
+    const nameList = this.subjectClassifyList.find(
+      ({ id }) => id === this.subjectClassify
+    )
+    this.subjectNameList = nameList.children.map(({ id, title }) => ({
+      label: title,
+      value: id
+    }))
+  }
 }
 </script>
 <style lang="less" scoped></style>

@@ -146,6 +146,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     } = this.widgetInfo
     this.setThematicMapConfig(config)
     this.treeData = this.normalizeTreeData(subjectConfig)
+    this.setVisible('mt')
     this.loading = false
   }
 

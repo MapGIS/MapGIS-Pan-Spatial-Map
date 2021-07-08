@@ -1,22 +1,20 @@
 <template>
   <div class="time-line-items">
-    <a-row type="flex" align="middle">
-      <a-checkbox @change="onTimeLineChange">
-        开启时间轴
-      </a-checkbox>
-    </a-row>
-    <a-row>
-      <a-col>
-        <a-input-group compact v-if="showTimeLine">
-          <a-select
-            v-model="timeType"
-            style="width: 20%"
-            :options="timeTypeList"
-          />
-          <a-input v-model="time" style="width: 80%" placeholder="请输入" />
-        </a-input-group>
-      </a-col>
-    </a-row>
+    <mp-row-flex>
+      <template #label>
+        <a-checkbox @change="onTimeLineChange">
+          开启时间轴
+        </a-checkbox>
+      </template>
+      <a-input-group compact v-if="showTimeLine">
+        <a-select
+          v-model="timeType"
+          style="width: 20%"
+          :options="timeTypeList"
+        />
+        <a-input v-model="time" style="width: 80%" placeholder="请输入" />
+      </a-input-group>
+    </mp-row-flex>
   </div>
 </template>
 <script lang="ts">

@@ -5,7 +5,7 @@
       title="新建专题图"
       :visible.sync="saVisible"
       anchor="top-center"
-      :verticalOffset="20"
+      :verticalOffset="60"
     >
       <div class="thematic-map-subject-add">
         <div class="subject-add-content">
@@ -14,15 +14,16 @@
           <!-- 时间轴模块 -->
           <time-line-items />
           <!-- 属性表模块 -->
-          <attribute-table-items />
+          <!-- <attribute-table-items /> -->
           <!-- 统计表模块 -->
-          <statistic-table-items />
+          <!--  <statistic-table-items /> -->
           <!-- 弹框模块 -->
-          <popup-items />
+          <!--  <popup-items /> -->
         </div>
         <!-- 保存按钮 -->
         <div class="subject-add-save-btn">
-          <a-button type="primary" @click="onSave">保存配置</a-button>
+          <a-button @click="onCancel">取消</a-button>
+          <a-button type="primary" @click="onSave">保存</a-button>
         </div>
       </div>
     </mp-window>
@@ -64,6 +65,8 @@ export default class ThematicMapSubjectAdd extends Vue {
   }
 
   onSave() {}
+
+  onCancel() {}
 }
 </script>
 <style lang="less" scoped>

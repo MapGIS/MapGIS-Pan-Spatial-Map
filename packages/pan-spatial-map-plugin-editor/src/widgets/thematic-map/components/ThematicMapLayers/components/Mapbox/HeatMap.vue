@@ -1,6 +1,6 @@
 <template>
   <!-- 热力图 -->
-  <mapgis-mapv-layer :geojson="geojsonPoint" :options="options" />
+  <mapgis-mapv-layer :geojson="geojsonPoint" :options="heatMapOptions" />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
@@ -12,24 +12,14 @@ export default class MapboxHeatMap extends Mixins(BaseMinxin) {
 
   options = {
     context: '2d',
-    draw: 'heatmap',
-    size: 13,
-    max: 60,
-    gradient: {
-      0.25: 'rgb(0,0,255)',
-      0.55: 'rgb(0,255,0)',
-      0.85: 'yellow',
-      1.0: 'rgb(255,0,0)'
-    } /* ,
-    animation: {
-      type: 'time',
-      stepsRange: {
-        start: 0,
-        end: 100
-      },
-      trails: 10,
-      duration: 4
-    } */
+    draw: 'heatmap'
+  }
+
+  get heatMapOptions() {
+    return {
+      ...this.options,
+      ...this.subDataConfig.style
+    }
   }
 
   /**

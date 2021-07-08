@@ -691,25 +691,39 @@
             "data": [
               {
                 "time": "2008",
-                "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
-                "docName": "",
-                "weight": "30",
-                "layerIndex": null,
-                "table": {
-                  "showFields": ["name", "AREA"],
-                  "showFieldsTitle": {
-                    "name": "名称",
-                    "AREA": "面积"
+                "subData": [
+                  {
+                    "ip": "",
+                    "port": "",
+                    "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
+                    "style": {
+                      "size": 13,
+                      "max": 60,
+                      "weight": "30",
+                      "gradient": {
+                        "0.25": "rgb(0,0,255)",
+                        "0.55": "rgb(0,255,0)",
+                        "0.85": "yellow",
+                        "1.0": "rgb(255,0,0)"
+                      }
+                    },
+                    "table": {
+                      "showFields": ["name", "AREA"],
+                      "showFieldsTitle": {
+                        "name": "名称",
+                        "AREA": "面积"
+                      }
+                    },
+                    "graph": {
+                      "showFields": ["AREA"],
+                      "showFieldsTitle": {
+                        "AREA": "面积"
+                      },
+                      "field": "name",
+                      "target": []
+                    }
                   }
-                },
-                "graph": {
-                  "showFields": ["AREA"],
-                  "showFieldsTitle": {
-                    "AREA": "面积"
-                  },
-                  "field": "name",
-                  "target": []
-                }
+                ]
               }
             ]
           },
@@ -728,16 +742,31 @@
                 "ip": "",
                 "port": "",
                 "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
-                "weight": "8",
                 "docName": "",
                 "layerIndex": null,
-                "hexBinStyle": {
-                  "opacity": "0.6",
-                  "polygonSideNum": "6",
-                  "showLayerImage": "true",
-                  "showSourceFeature": "true",
-                  "size": "5",
-                  "style": "gradient"
+                "style": {
+                  "weight": 8,
+                  "size": 30,
+                  "max": 100,
+                  "label": {
+                    "show": true,
+                    "fillStyle": "white",
+                    "shadowColor": "yellow",
+                    "font": "15px Arial",
+                    "shadowBlur": 10
+                  },
+                  "gradient": {
+                    "0": "rgba(49, 54, 149, 0)",
+                    "0.2": "rgba(69,117,180, 0.7)",
+                    "0.3": "rgba(116,173,209, 0.7)",
+                    "0.4": "rgba(171,217,233, 0.7)",
+                    "0.5": "rgba(224,243,248, 0.7)",
+                    "0.6": "rgba(254,224,144,0.7)",
+                    "0.7": "rgba(253,174,97,0.7)",
+                    "0.8": "rgba(244,109,67,0.8)",
+                    "0.9": "rgba(215,48,39,0.8)",
+                    "0.95": "rgba(165, 0, 38,0.8)"
+                  }
                 },
                 "table": {
                   "showFields": ["name", "AREA"],
