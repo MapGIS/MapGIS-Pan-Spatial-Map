@@ -12,7 +12,7 @@
     :height="height"
     style="width: 100%; height: 100%;"
   >
-    <div v-for="layerProps in reverseLayers" :key="layerProps.layerId">
+    <div v-for="layerProps in layers" :key="layerProps.layerId">
       <mapgis-3d-igs-tile-layer
         v-if="isIgsTileLayer(layerProps.type)"
         :layerStyle="layerProps.layerStyle"
@@ -137,9 +137,9 @@ export default {
     }
   },
   computed: {
-    reverseLayers() {
-      return [...this.layers].reverse()
-    }
+    // reverseLayers() {
+    //   return [...this.layers].reverse()
+    // }
   },
   watch: {
     document: {
@@ -155,17 +155,6 @@ export default {
   methods: {
     getBaseLayerTotal() {
       // TODO 在MapGIS-Web-App-Framework里面不能依赖其他包，这里暂时先把底图管理的初始值设置为1000
-    },
-    /**
-     * 修改说明：这里给图层key加上时间戳的原因，主要是因为zIndex属性更新不及时，导致部分zIndex冲突
-     *          加上时间戳后，每次v-for图层，所有图层会按顺序重新加载，这样便不会有zIndex冲突的问
-     *          题，目前只找到这种解决办法，如后面有更好的解决办法，可以一起讨论
-     *
-     * @修改人 龚瑞强
-     * @时间 2021/7/2
-     */
-    getTimeID(index) {
-      return `${index}-${new Date().getTime()}`
     },
     parseDocument() {
       if (!this.document) return
@@ -193,7 +182,7 @@ export default {
             }
           }
         })
-
+      let layerIndexRecord = this.recordZindex
       this.document.defaultMap
         .clone()
         .getFlatLayers()
@@ -203,21 +192,25 @@ export default {
               layer.activeScene.sublayers.forEach(igsSceneSublayer => {
                 const layerComponentProps = this.genLayerComponentPropsByIGSSceneSublayer(
                   igsSceneSublayer,
-                  this.recordZindex + index
+                  layerIndexRecord
                 )
                 layers.push(layerComponentProps)
               })
             } else {
               const layerComponentProps = this.genLayerComponentPropsByLayer(
                 layer,
-                this.recordZindex + index
+                layerIndexRecord
               )
               layers.push(layerComponentProps)
             }
+            layerIndexRecord += 1
           }
         })
-
-      this.recordZindex += this.document.defaultMap.getFlatLayers().length
+      /**
+       * 这里不能直接用this.recordZindex+defaultMap.layers的长度，会报无限循环的错误
+       */
+      this.recordZindex = layerIndexRecord + 1
+      // this.recordZindex += this.document.defaultMap.layers.length
 
       this.layers = layers
     },

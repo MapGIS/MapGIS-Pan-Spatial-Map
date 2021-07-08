@@ -353,6 +353,15 @@ export default class TreeLayer extends Mixins(
             ...row
           }))
         }
+
+        if (this.isVectorTile(item)) {
+          item.sublayers = item.currentStyle.layers.map(row => ({
+            ...row,
+            visible: row.layout.visibility === 'visible',
+            id: `${item.id}~${row.id}`,
+            title: row.description || row.id
+          }))
+        }
         if (this.isWMTSLayer(item)) {
           if (item.isVisible || item.visible) {
             arr.push(item.key)
@@ -584,6 +593,12 @@ export default class TreeLayer extends Mixins(
             if (this.isIGSScene(layerItem)) {
               layerItem.activeScene.sublayers[i].visible = !layerItem
                 .activeScene.sublayers[i].visible
+            } else if (this.isVectorTile(layers[parentIndex])) {
+              const visible =
+                layerItem.currentStyle.layers[i].layout.visibility === 'visible'
+              layerItem.currentStyle.layers[i].layout.visibility = visible
+                ? 'none'
+                : 'visible'
             } else {
               layerItem.sublayers[i].visible = !layerItem.sublayers[i].visible
             }
@@ -608,7 +623,7 @@ export default class TreeLayer extends Mixins(
       (this.isSubLayer(item) &&
         this.isIGSScene(item) &&
         this.includeBindData(item)) ||
-      (this.isSubLayer(item) && this.isIgsArcgisLayer(item)) ||
+      (this.isSubLayer(item) && this.isArcGISMapImage(item)) ||
       this.isIgsVectorLayer(item)
 
     return bool
@@ -630,12 +645,13 @@ export default class TreeLayer extends Mixins(
   isMetaData(item) {
     const bool =
       (this.isParentLayer(item) && this.isIGSScene(item)) ||
-      (this.isSubLayer(item) && this.isIgsDocLayer(item)) ||
       (this.isParentLayer(item) && this.isIgsDocLayer(item)) ||
-      this.isIgsVectorLayer(item) ||
-      this.isIgsTileLayer(item) ||
-      this.isWMTSLayer(item) ||
-      this.isWMSLayer(item)
+      (this.isParentLayer(item) && this.isIgsVectorLayer(item)) ||
+      (this.isParentLayer(item) && this.isIgsTileLayer(item)) ||
+      (this.isParentLayer(item) && this.isWMTSLayer(item)) ||
+      (this.isParentLayer(item) && this.isWMSLayer(item)) ||
+      (this.isParentLayer(item) && this.isArcGISMapImage(item)) ||
+      (this.isParentLayer(item) && this.isArcGISTile(item))
     return bool
   }
 
@@ -910,7 +926,7 @@ export default class TreeLayer extends Mixins(
           }
         }
       }
-    } else if (this.isIgsArcgisLayer(layer)) {
+    } else if (this.isArcGISMapImage(layer)) {
       this.queryParams = {
         id: `${parent.title} ${layer.title} ${layer.id}`,
         name: `${layer.title} 属性表`,
@@ -963,7 +979,7 @@ export default class TreeLayer extends Mixins(
           gdbp: igsVectorLayer.gdbps
         }
       }
-    } else if (this.isIgsArcgisLayer(layer)) {
+    } else if (this.isArcGISMapImage(layer)) {
       exhibition = {
         id: `${parent.title} ${layer.title} ${layer.id}`,
         name: `${layer.title} 属性表`,
@@ -996,6 +1012,8 @@ export default class TreeLayer extends Mixins(
           }
         }
       }
+    }
+    if (exhibition) {
       this.addExhibition(new AttributeTableExhibition(exhibition))
       this.openExhibitionPanel()
     }
@@ -1050,6 +1068,10 @@ export default class TreeLayer extends Mixins(
     return type === LayerType.IGSTile
   }
 
+  isVectorTile({ type }) {
+    return type === LayerType.VectorTile
+  }
+
   isIgsDocLayer({ type, layer }) {
     let layerType = type
     if (layer) {
@@ -1070,7 +1092,7 @@ export default class TreeLayer extends Mixins(
     return type === LayerType.OGCWMS
   }
 
-  isIgsArcgisLayer({ layer, type }) {
+  isArcGISMapImage({ layer, type }) {
     let layerType = type
     if (layer) {
       layerType = layer.type
@@ -1078,6 +1100,19 @@ export default class TreeLayer extends Mixins(
     }
     return (
       layerType === LayerType.ArcGISMapImage
+      //  ||
+      // layerType === LayerType.ArcGISTile
+    )
+  }
+
+  isArcGISTile({ layer, type }) {
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+      return layerType === LayerType.ArcGISTile
+    }
+    return (
+      layerType === LayerType.ArcGISTile
       //  ||
       // layerType === LayerType.ArcGISTile
     )
