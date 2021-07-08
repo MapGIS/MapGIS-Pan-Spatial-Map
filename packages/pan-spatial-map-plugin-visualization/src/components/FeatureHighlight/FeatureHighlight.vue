@@ -60,6 +60,9 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   // 选中的数据范围
   selectionBound: Record<string, any> = {}
 
+  // 选中的标注图标
+  selectedIcon = ''
+
   // 标注默认的图标
   defaultIcon = ''
 
