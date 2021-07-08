@@ -182,7 +182,7 @@ const mutations = {
    * 设置高亮项
    */
   setHighlightItem({ state }, { from, itemIndex }: IHighlighItem) {
-    markerIconInstance.unSelectIcon(img => {
+    markerIconInstance.unSelectIcon().then(img => {
       const geoJson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
         state.pageDataSet
       )
