@@ -1,37 +1,24 @@
 <template>
   <div class="mp-widget-slope-analysis">
-    <div class="setting-panel">
-      <a-space direction="vertical" class="space">
-        <a-row class="title">
-          <div class="space"></div>
-          <div class="label">坡度权重设置</div>
-        </a-row>
-        <a-row v-for="(color, index) in arrayColor" :key="index">
-          <a-col :span="3" class="col">
-            {{ (0.0 + index * 0.2).toFixed(1) }}
-          </a-col>
-          <a-col :span="21">
-            <a-popover trigger="click">
-              <template slot="content">
-                <sketch-picker
-                  :value="arrayColor[index]"
-                  @input="
-                    val => {
-                      onColorChange(val, index)
-                    }
-                  "
-                />
-              </template>
-              <div
-                :style="{ background: arrayColor[index] }"
-                class="color"
-              ></div>
-            </a-popover>
-          </a-col>
-        </a-row>
-      </a-space>
+    <div class="panel">
+      <a-row class="title">
+        <div class="space"></div>
+        <div class="label">坡度权重设置</div>
+      </a-row>
+      <a-form-model :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }">
+        <a-form-model-item
+          v-for="(color, index) in arrayColor"
+          :key="index"
+          :label="getLabel(index)"
+        >
+          <MpColorPicker
+            :color.sync="arrayColor[index]"
+            :disableAlpha="false"
+          ></MpColorPicker>
+        </a-form-model-item>
+      </a-form-model>
     </div>
-    <div class="btn">
+    <div class="footer">
       <a-button type="primary" @click="add">开始分析</a-button>
       <a-button type="primary" @click="remove">结束分析</a-button>
     </div>
@@ -54,6 +41,10 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     'rgb(76, 175, 80, 0.5)'
   ]
 
+  getLabel(index) {
+    return (0.0 + index * 0.2).toFixed(1)
+  }
+
   created() {
     window.SlopeAnalyzeManage = {
       drawElement: null,
@@ -75,16 +66,16 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     this.remove()
     /** 视点跳转仅用于测试用（拖动球体，再去绘制，很难找到坡度分析支持的视角，导致绘制后不显示分析结果） */
     // 初始化视图功能管理类
-    // const sceneManager = new CesiumZondy.Manager.SceneManager({
-    //   viewer: this.webGlobe.viewer
-    // })
-    // // 视点跳转（跳转到台湾）
-    // sceneManager.flyToEx(120.9819, 23.5307, {
-    //   height: 9161,
-    //   heading: 30,
-    //   pitch: -10,
-    //   roll: 0
-    // })
+    const sceneManager = new CesiumZondy.Manager.SceneManager({
+      viewer: this.webGlobe.viewer
+    })
+    // 视点跳转（跳转到台湾）
+    sceneManager.flyToEx(120.9819, 23.5307, {
+      height: 9161,
+      heading: 30,
+      pitch: -10,
+      roll: 0
+    })
     window.SlopeAnalyzeManage.advancedAnalysisManager =
       window.SlopeAnalyzeManage.advancedAnalysisManager ||
       new CesiumZondy.Manager.AdvancedAnalysisManager({
@@ -149,7 +140,20 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-slope-analysis {
+  .panel {
+    width: 100%;
+    .ant-form-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0;
+    }
+    .ant-input {
+      padding: 4px 11px;
+    }
+  }
+
   .title {
+    margin: 5px 0;
     .space {
       width: 4px;
       height: 25px;
@@ -162,30 +166,16 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
       font-weight: bold;
     }
   }
-  .space {
-    width: 100%;
-  }
-  .btn {
-    text-align: right;
-    margin: 12px 0;
-    button {
-      margin-left: 8px;
-    }
-  }
-  .col {
-    text-align: center;
-    line-height: 30px;
-  }
-  .setting-panel {
+
+  .footer {
     display: flex;
-    flex-direction: column;
-    .ant-divider-horizontal {
-      margin: 8px 0;
-    }
-    .color {
-      height: 30px;
-      box-shadow: @shadow-1-down;
-      border-radius: 3px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+
+    .ant-btn {
+      padding: 0 15px;
     }
   }
 }

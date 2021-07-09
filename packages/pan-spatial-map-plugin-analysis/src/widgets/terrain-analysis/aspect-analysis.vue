@@ -1,37 +1,24 @@
 <template>
   <div class="mp-widget-aspect-analysis">
-    <div class="setting-panel">
-      <a-space direction="vertical" class="space">
-        <a-row class="title">
-          <div class="space"></div>
-          <div class="label">坡向权重设置</div>
-        </a-row>
-        <a-row v-for="(color, index) in arrayColor" :key="index">
-          <a-col :span="3" class="col">
-            {{ (0.0 + index * 0.2).toFixed(1) }}
-          </a-col>
-          <a-col :span="21">
-            <a-popover trigger="click">
-              <template slot="content">
-                <sketch-picker
-                  :value="arrayColor[index]"
-                  @input="
-                    val => {
-                      onColorChange(val, index)
-                    }
-                  "
-                />
-              </template>
-              <div
-                :style="{ background: arrayColor[index] }"
-                class="color"
-              ></div>
-            </a-popover>
-          </a-col>
-        </a-row>
-      </a-space>
+    <div class="panel">
+      <a-row class="title">
+        <div class="space"></div>
+        <div class="label">坡向权重设置</div>
+      </a-row>
+      <a-form-model :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }">
+        <a-form-model-item
+          v-for="(color, index) in arrayColor"
+          :key="index"
+          :label="getLabel(index)"
+        >
+          <MpColorPicker
+            :color.sync="arrayColor[index]"
+            :disableAlpha="false"
+          ></MpColorPicker>
+        </a-form-model-item>
+      </a-form-model>
     </div>
-    <div class="btn">
+    <div class="footer">
       <a-button type="primary" @click="add">开始分析</a-button>
       <a-button type="primary" @click="remove">结束分析</a-button>
     </div>
@@ -55,6 +42,10 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
     'rgb(96, 125, 139, 0.5)',
     'rgb(76, 175, 80, 0.5)'
   ]
+
+  getLabel(index) {
+    return (0.0 + index * 0.2).toFixed(1)
+  }
 
   created() {
     window.AspectAnalyzeManage = {
@@ -151,7 +142,20 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-aspect-analysis {
+  .panel {
+    width: 100%;
+    .ant-form-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0;
+    }
+    .ant-input {
+      padding: 4px 11px;
+    }
+  }
+
   .title {
+    margin: 5px 0;
     .space {
       width: 4px;
       height: 25px;
@@ -164,30 +168,16 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
       font-weight: bold;
     }
   }
-  .space {
-    width: 100%;
-  }
-  .btn {
-    text-align: right;
-    margin: 12px 0;
-    button {
-      margin-left: 8px;
-    }
-  }
-  .col {
-    text-align: center;
-    line-height: 30px;
-  }
-  .setting-panel {
+
+  .footer {
     display: flex;
-    flex-direction: column;
-    .ant-divider-horizontal {
-      margin: 8px 0;
-    }
-    .color {
-      height: 30px;
-      box-shadow: @shadow-1-down;
-      border-radius: 3px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+
+    .ant-btn {
+      padding: 0 15px;
     }
   }
 }

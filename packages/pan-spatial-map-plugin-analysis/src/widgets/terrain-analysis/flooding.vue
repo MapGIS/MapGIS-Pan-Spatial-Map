@@ -1,114 +1,81 @@
 <template>
   <div class="mp-widget-flooding">
-    <div class="setting-panel">
-      <a-space direction="vertical" class="space">
-        <a-row>
-          <a-col :span="8" class="col">
-            淹没最低高度
-          </a-col>
-          <a-col :span="16">
-            <a-input
-              :value="form.minHeight"
-              type="number"
-              min="0"
-              suffix="(米)"
-            ></a-input>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            淹没最高高度
-          </a-col>
-          <a-col :span="16">
-            <a-input
-              :value="form.maxHeight"
-              type="number"
-              min="0"
-              suffix="(米)"
-            ></a-input>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            洪水上涨速度
-          </a-col>
-          <a-col :span="16">
-            <a-input
-              :value="form.speed"
-              type="number"
-              min="0"
-              suffix="(米/秒)"
-            ></a-input>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            波浪个数
-          </a-col>
-          <a-col :span="16">
-            <a-input
-              :value="form.frequency"
-              type="number"
-              min="0"
-              suffix="(个)"
-            ></a-input>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            波浪速度
-          </a-col>
-          <a-col :span="16">
-            <a-input :value="form.animationSpeed" min="0" step="0.01"></a-input>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            波浪高度
-          </a-col>
-          <a-col :span="16">
-            <a-input
-              :value="form.amplitude"
-              type="number"
-              min="0"
-              suffix="(米)"
-            ></a-input>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            颜色
-          </a-col>
-          <a-col :span="16">
-            <a-popover trigger="click">
-              <template slot="content">
-                <sketch-picker
-                  :disableAlpha="true"
-                  :value="form.floodColor"
-                  @input="onColorChange"
-                />
-              </template>
-              <div :style="{ background: form.floodColor }" class="color"></div>
-            </a-popover>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            透明度
-          </a-col>
-          <a-col :span="16">
-            <a-input
-              :value="form.opacity"
-              type="number"
-              min="0"
-              max="1"
-              step="0.1"
-            ></a-input>
-          </a-col>
-        </a-row>
-      </a-space>
+    <div class="panel">
+      <a-row class="title">
+        <div class="space"></div>
+        <div class="label">参数设置</div>
+      </a-row>
+      <a-form-model
+        :model="formData"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
+      >
+        <a-form-model-item label="淹没最低高度">
+          <a-input
+            v-model.number="formData.minHeight"
+            type="number"
+            min="0"
+            addon-after="(米)"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="淹没最高高度">
+          <a-input
+            v-model.number="formData.maxHeight"
+            type="number"
+            min="0"
+            addon-after="(米)"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="洪水上涨速度">
+          <a-input
+            v-model.number="formData.speed"
+            type="number"
+            min="0"
+            addon-after="(米/秒)"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="波浪个数">
+          <a-input
+            v-model.number="formData.frequency"
+            type="number"
+            min="0"
+            addon-after="(个)"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="波浪速度">
+          <a-input
+            v-model.number="formData.animationSpeed"
+            type="number"
+            min="0"
+            step="0.01"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="波浪高度">
+          <a-input
+            v-model.number="formData.amplitude"
+            type="number"
+            min="0"
+            addon-after="(米)"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="颜色">
+          <MpColorPicker
+            :color.sync="formData.floodColor"
+            :disableAlpha="true"
+          ></MpColorPicker>
+        </a-form-model-item>
+        <a-form-model-item label="透明度">
+          <a-input
+            v-model.number="formData.opacity"
+            type="number"
+            min="0"
+            max="1"
+            step="0.1"
+          />
+        </a-form-model-item>
+      </a-form-model>
     </div>
-    <div class="btn">
+    <div class="footer">
       <a-button type="primary" @click="add">开始分析</a-button>
       <a-button type="primary" @click="rise">升高</a-button>
       <a-button type="primary" @click="down">下降</a-button>
@@ -119,14 +86,12 @@
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
-import { Sketch } from 'vue-color'
 
 @Component({
-  name: 'MpFlooding',
-  components: { 'sketch-picker': Sketch }
+  name: 'MpFlooding'
 })
 export default class MpFlooding extends Mixins(WidgetMixin) {
-  private form = {
+  private formData = {
     minHeight: 0,
     maxHeight: 2000,
     speed: 500,
@@ -138,8 +103,8 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
   }
 
   get edgeColor() {
-    if (this.form.floodColor) {
-      const Color = this.form.floodColor.split(',')
+    if (this.formData.floodColor) {
+      const Color = this.formData.floodColor.split(',')
       const ColorRgb = {
         green: Number(Color[1] / 255),
         blue: Number(parseInt(Color[2]) / 255),
@@ -182,19 +147,19 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     // 初始化交互式绘制控件
     window.FloodingManage.drawElement =
       window.FloodingManage.drawElement || new this.Cesium.DrawElement(viewer)
+    const {
+      minHeight,
+      maxHeight,
+      speed,
+      frequency,
+      animationSpeed,
+      amplitude
+    } = this.formData
     // 激活交互式绘制工具
     window.FloodingManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
         this.remove()
-        const {
-          minHeight,
-          maxHeight,
-          speed,
-          frequency,
-          animationSpeed,
-          amplitude
-        } = this.form
         // 初始化高级分析功能管理类
         const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
           {
@@ -274,13 +239,26 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 
   // 颜色拾取器对应事件
   private onColorChange(val) {
-    this.form.floodColor = ColorUtil.colorObjectToRgba(val.rgba, false)
+    this.formData.floodColor = ColorUtil.colorObjectToRgba(val.rgba, false)
   }
 }
 </script>
 <style lang="less">
 .mp-widget-flooding {
+  .panel {
+    width: 100%;
+    .ant-form-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0;
+    }
+    .ant-input {
+      padding: 4px 11px;
+    }
+  }
+
   .title {
+    margin: 5px 0;
     .space {
       width: 4px;
       height: 25px;
@@ -293,30 +271,16 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
       font-weight: bold;
     }
   }
-  .space {
-    width: 100%;
-  }
-  .btn {
-    text-align: right;
-    margin: 12px 0;
-    button {
-      margin-left: 8px;
-    }
-  }
-  .col {
-    text-align: center;
-    line-height: 30px;
-  }
-  .setting-panel {
+
+  .footer {
     display: flex;
-    flex-direction: column;
-    .ant-divider-horizontal {
-      margin: 8px 0;
-    }
-    .color {
-      height: 30px;
-      box-shadow: @shadow-1-down;
-      border-radius: 3px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+
+    .ant-btn {
+      padding: 0 15px;
     }
   }
 }
