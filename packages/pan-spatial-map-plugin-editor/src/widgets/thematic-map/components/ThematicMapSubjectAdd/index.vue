@@ -11,8 +11,6 @@
         <div class="subject-add-content">
           <!-- 基础选项 -->
           <base-items />
-          <!-- 时间轴模块 -->
-          <time-line-items />
           <!-- 属性表模块 -->
           <!-- <attribute-table-items /> -->
           <!-- 统计表模块 -->
@@ -33,7 +31,6 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { mapGetters, mapMutations } from '../../store'
 import BaseItems from './components/BaseItems.vue'
-import TimeLineItems from './components/TimeLineItems.vue'
 import AttributeTableItems from './components/AttributeTableItems.vue'
 import StatisticTableItems from './components/StatisticTableItems.vue'
 import PopupItems from './components/PopupItems.vue'
@@ -41,7 +38,6 @@ import PopupItems from './components/PopupItems.vue'
 @Component({
   components: {
     BaseItems,
-    TimeLineItems,
     AttributeTableItems,
     StatisticTableItems,
     PopupItems
@@ -54,6 +50,8 @@ import PopupItems from './components/PopupItems.vue'
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
+  fields = []
+
   get saVisible() {
     return this.isVisible('sa')
   }
@@ -62,6 +60,10 @@ export default class ThematicMapSubjectAdd extends Vue {
     if (!nV) {
       this.resetVisible('sa')
     }
+  }
+
+  valid() {
+    return new Promise(() => {})
   }
 
   onSave() {}
