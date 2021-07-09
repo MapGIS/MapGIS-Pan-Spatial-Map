@@ -26,12 +26,10 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
-import { Sketch } from 'vue-color'
+import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
-  name: 'MpAspectAnalysis',
-  components: { 'sketch-picker': Sketch }
+  name: 'MpAspectAnalysis'
 })
 export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
   private arrayColor: string[] = [
@@ -132,11 +130,6 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
       window.AspectAnalyzeManage.AspectAnalysis.stop()
       window.AspectAnalyzeManage.AspectAnalysis = null
     }
-  }
-
-  // 颜色拾取器对应事件
-  private onColorChange(val, index) {
-    Vue.set(this.arrayColor, index, ColorUtil.colorObjectToRgba(val.rgba))
   }
 }
 </script>

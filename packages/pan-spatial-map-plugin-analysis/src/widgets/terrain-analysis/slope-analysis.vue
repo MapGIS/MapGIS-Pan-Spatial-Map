@@ -27,10 +27,9 @@
 <script lang="ts">
 declare const CesiumZondy
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
-import { Sketch } from 'vue-color'
+import { WidgetMixin } from '@mapgis/web-app-framework'
 
-@Component({ name: 'MpSlopeAnalysis', components: { 'sketch-picker': Sketch } })
+@Component({ name: 'MpSlopeAnalysis' })
 export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
   private arrayColor: string[] = [
     'rgb(244, 67, 54, 0.5)',
@@ -66,16 +65,16 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     this.remove()
     /** 视点跳转仅用于测试用（拖动球体，再去绘制，很难找到坡度分析支持的视角，导致绘制后不显示分析结果） */
     // 初始化视图功能管理类
-    const sceneManager = new CesiumZondy.Manager.SceneManager({
-      viewer: this.webGlobe.viewer
-    })
-    // 视点跳转（跳转到台湾）
-    sceneManager.flyToEx(120.9819, 23.5307, {
-      height: 9161,
-      heading: 30,
-      pitch: -10,
-      roll: 0
-    })
+    // const sceneManager = new CesiumZondy.Manager.SceneManager({
+    //   viewer: this.webGlobe.viewer
+    // })
+    // // 视点跳转（跳转到台湾）
+    // sceneManager.flyToEx(120.9819, 23.5307, {
+    //   height: 9161,
+    //   heading: 30,
+    //   pitch: -10,
+    //   roll: 0
+    // })
     window.SlopeAnalyzeManage.advancedAnalysisManager =
       window.SlopeAnalyzeManage.advancedAnalysisManager ||
       new CesiumZondy.Manager.AdvancedAnalysisManager({
@@ -130,11 +129,6 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
       window.SlopeAnalyzeManage.SlopeAnalysis.stop()
       window.SlopeAnalyzeManage.SlopeAnalysis = null
     }
-  }
-
-  // 颜色拾取器对应事件
-  private onColorChange(val, index) {
-    Vue.set(this.arrayColor, index, ColorUtil.colorObjectToRgba(val.rgba))
   }
 }
 </script>

@@ -85,7 +85,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
+import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpFlooding'
@@ -235,11 +235,6 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
       window.FloodingManage.drawElement.stopDrawing()
       window.FloodingManage.drawElement = null
     }
-  }
-
-  // 颜色拾取器对应事件
-  private onColorChange(val) {
-    this.formData.floodColor = ColorUtil.colorObjectToRgba(val.rgba, false)
   }
 }
 </script>
