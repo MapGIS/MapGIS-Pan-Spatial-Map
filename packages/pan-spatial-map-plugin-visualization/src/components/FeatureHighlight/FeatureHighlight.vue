@@ -118,36 +118,6 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 获取默认标注图片
-   * 请求失败的默认图片？
-   */
-  getDefaultIcon(success: (a: string) => void) {
-    if (!this.defaultIcon) {
-      markerIconInstance.unSelectIcon().then(defaultIcon => {
-        this.defaultIcon = defaultIcon
-        success(defaultIcon)
-      })
-    } else {
-      success(this.defaultIcon)
-    }
-  }
-
-  /**
-   * 获取标注图片
-   * 请求失败的默认图片？
-   */
-  getSelectIcon(success: () => void) {
-    if (!this.selectedIcon) {
-      markerIconInstance.selectIcon().then(selectedIcon => {
-        this.selectedIcon = selectedIcon
-        success()
-      })
-    } else {
-      success()
-    }
-  }
-
-  /**
    * 移除标注
    */
   removeMarkers() {
@@ -158,27 +128,26 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   /**
    * 添加标注
    */
-  addMarkers() {
-    this.getDefaultIcon(defaultIcon => {
-      this.markers = this.normalizedFeatures.reduce<IMarker[]>(
-        (result, { uid, feature }) => {
-          const coordinates = Feature.getGeoJSONFeatureCenter(feature)
-          const centerItems = [coordinates[0], coordinates[1]]
-          if (centerItems.every(v => !Number.isNaN(v))) {
-            result.push({
-              coordinates,
-              feature,
-              markerId: uid,
-              fid: feature.properties.fid,
-              img: defaultIcon,
-              properties: feature.properties
-            })
-          }
-          return result
-        },
-        []
-      )
-    })
+  async addMarkers() {
+    this.defaultIcon = await markerIconInstance.unSelectIcon()
+    this.markers = this.normalizedFeatures.reduce<IMarker[]>(
+      (result, { uid, feature }) => {
+        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
+        const centerItems = [coordinates[0], coordinates[1]]
+        if (centerItems.every(v => !Number.isNaN(v))) {
+          result.push({
+            coordinates,
+            feature,
+            markerId: uid,
+            fid: feature.properties.fid,
+            img: this.defaultIcon,
+            properties: feature.properties
+          })
+        }
+        return result
+      },
+      []
+    )
   }
 
   /**
@@ -193,35 +162,33 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   /**
    * 高亮选择集对应的标注图标
    */
-  hightlightMarkers(selections: sting[]) {
-    this.getSelectIcon(() => {
-      this.markers.forEach(marker => {
-        const imgType = selections.includes(marker.markerId)
-          ? this.selectedIcon
-          : this.defaultIcon
-        this.$set(marker, 'img', imgType)
-      })
-      const { MIN_VALUE, MAX_VALUE } = Number
-      this.selectionBound = this.normalizedFeatures.reduce(
-        ({ xmin, xmax, ymin, ymax }, { feature }: GFeature) => {
-          // fixme feature.bound = feature.properties.specialLayerBound
-          const _bound =
-            feature.bound || Feature.getGeoJsonFeatureBound(feature)
-          return {
-            xmin: _bound.xmin < xmin ? _bound.xmin : xmin,
-            ymin: _bound.ymin < ymin ? _bound.ymin : ymin,
-            xmax: _bound.xmax > xmax ? _bound.xmax : xmax,
-            ymax: _bound.ymax > ymax ? _bound.ymax : ymax
-          }
-        },
-        {
-          xmin: MAX_VALUE,
-          ymin: MAX_VALUE,
-          xmax: MIN_VALUE,
-          ymax: MIN_VALUE
-        }
-      )
+  async hightlightMarkers(selections: sting[]) {
+    this.selectedIcon = await markerIconInstance.selectIcon()
+    this.clearHightlight()
+    this.markers.forEach(marker => {
+      const imgType = selections.includes(marker.markerId)
+        ? this.selectedIcon
+        : this.defaultIcon
+      this.$set(marker, 'img', imgType)
     })
+    const { MIN_VALUE, MAX_VALUE } = Number
+    this.selectionBound = this.normalizedFeatures.reduce(
+      ({ xmin, xmax, ymin, ymax }, { feature }: GFeature) => {
+        const _bound = feature.bound || Feature.getGeoJsonFeatureBound(feature)
+        return {
+          xmin: _bound.xmin < xmin ? _bound.xmin : xmin,
+          ymin: _bound.ymin < ymin ? _bound.ymin : ymin,
+          xmax: _bound.xmax > xmax ? _bound.xmax : xmax,
+          ymax: _bound.ymax > ymax ? _bound.ymax : ymax
+        }
+      },
+      {
+        xmin: MAX_VALUE,
+        ymin: MAX_VALUE,
+        xmax: MIN_VALUE,
+        ymax: MIN_VALUE
+      }
+    )
   }
 
   @Watch('features', { immediate: true })
