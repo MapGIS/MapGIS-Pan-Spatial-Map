@@ -130,7 +130,6 @@ export class IGSTileLayer extends TileLayer {
 
     const matchIp = ips ? ips[0] : '://localhost'
     const matchPort = ports ? ports[0] : ':6163'
-
     let ip = ''
     let port = ''
     if (matchIp && matchIp.length > 3) {

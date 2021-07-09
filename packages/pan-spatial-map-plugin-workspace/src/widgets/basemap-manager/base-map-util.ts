@@ -124,7 +124,9 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
       serverip,
       serverport,
       layerName,
-      projection
+      projection,
+      tokenKey,
+      tokenValue
     } = item
     const layer: Record<string, string> = {
       ip: serverip,
@@ -180,15 +182,6 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
         layer.serverURL = `http://services.arcgisonline.com/ArcGIS/rest/services/${type}/MapServer`
         layer.serverType = LayerType.ArcGISTile
         break
-      case 'baidu':
-        // TODO:
-        break
-      case 'gaode':
-        // TODO:
-        break
-      case 'OpenWeather':
-        // TODO:
-        break
       case 'tile':
         layer.serverType = LayerType.IGSTile
         break
@@ -196,6 +189,11 @@ export default class BaseMapUtil extends Mixins(WidgetMixin) {
         layer.serverType = LayerType.IGSMapImage
         break
       default:
+        layer.serverType = LayerType[serverType]
+        if (tokenValue) {
+          layer.tokenKey = tokenKey
+          layer.tokenValue = tokenValue
+        }
         break
     }
     // const mapLayer = DataCatalogManager.generateLayerByConfig(layer)

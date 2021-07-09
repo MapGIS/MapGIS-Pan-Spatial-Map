@@ -36,11 +36,8 @@ import baseMapUtil from './base-map-util'
 export default class MpBasemapManager extends Mixins(WidgetMixin, baseMapUtil) {
   private get mapData() {
     return this.config.filter(config => {
-      const { scene, visible } = config
-      if (this.is2DMapMode) {
-        return (scene === '2D' || scene === '23D') && visible === 'true'
-      }
-      return (scene === '3D' || scene === '23D') && visible === 'true'
+      const { visible } = config
+      return visible === 'true'
     })
   }
 
