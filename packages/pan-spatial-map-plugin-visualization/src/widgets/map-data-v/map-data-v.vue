@@ -1,25 +1,40 @@
 <template>
   <div class="mp-widget-map-data-v">
-    <iframe
-      id="iframe_page"
-      src="http://datav.jiaminghi.com/demo/construction-data/index.html"
-      frameborder="0"
-      width="100%"
-      height="100%"
-      :allowfullscreen="true"
-    ></iframe>
+    <div class="mask"></div>
+    <div>
+      <iframe
+        id="iframe_page"
+        :src="url"
+        frameborder="0"
+        width="100%"
+        height="100%"
+        :allowfullscreen="true"
+      ></iframe>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, DomUtil } from '@mapgis/web-app-framework'
+import func from 'app/vue-temp/vue-editor-bridge'
 
 @Component({ name: 'MpMapDataV' })
 export default class MpMapDataV extends Mixins(WidgetMixin) {
+  get url() {
+    return this.widgetInfo.config.url
+  }
+
   onOpen() {
-    const page = document.getElementById('iframe_page')
-    page.requestFullscreen()
+    const page = document.getElementsByClassName('mp-widget-map-data-v')[0]
+    DomUtil.inFullScreen(page)
+    window.addEventListener('keydown', e => {
+      if (e && e.keyCode === 122) {
+        e.preventDefault()
+        e.stopPropagation()
+        DomUtil.inFullScreen(page)
+      }
+    })
   }
 }
 </script>
@@ -28,5 +43,20 @@ export default class MpMapDataV extends Mixins(WidgetMixin) {
 .mp-widget-map-data-v {
   width: 100%;
   height: 100%;
+  position: relative;
+  .mask {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background: transparent;
+    + div {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+  }
 }
 </style>
