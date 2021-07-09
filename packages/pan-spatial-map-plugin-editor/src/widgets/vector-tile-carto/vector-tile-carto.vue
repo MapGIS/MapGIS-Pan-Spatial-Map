@@ -113,9 +113,8 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   private multiSetting = {
     'fill-color': '#bedcaf',
     'fill-outline-color': '#dd5c5c',
-    'fill-pattern': '',
     'fill-opacity': 1,
-    'fill-antialias': false
+    'fill-antialias': true
   }
 
   // 监听矢量瓦片下拉项变化，实时构造该矢量瓦片对应的样式文件下拉项,以及区填充图案下拉项数据
@@ -131,10 +130,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       const requestUrl = `${this.currentLayer.currentStyle.sprite}.json`
       this.styleOptions = this.currentLayer.styleList.map(item => item.name)
       this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
-      // 获取到区填充图案数据后，将批量设置类型中的区填充属性值设为数据的第0项
+      // 获取到区填充图案数据
       this.getSpriteData(requestUrl).then(res => {
+        res.unshift('清空区填充图案')
         this.spriteData = res
-        this.multiSetting['fill-pattern'] = this.spriteData[0]
       })
     }
   }
@@ -155,6 +154,19 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       this.layers.forEach(item => {
         this.checkedLayerIDs.push(item.id)
       })
+
+      this.layers = this.layers.reduce((result, item) => {
+        if (item.type === 'fill') {
+          item.paint = {
+            ...item.paint,
+            'fill-outline-color': '#dd5c5c',
+            'fill-opacity': 1,
+            'fill-antialias': true
+          }
+        }
+        result.push(item)
+        return result
+      }, [])
     }
   }
 
@@ -164,7 +176,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     const multiSettingKeys = Object.keys(newVal)
     if (this.multiChecked) {
       this.layers = this.layers.reduce((result, item) => {
-        if (this.checkedLayerIDs.includes(item.id)) {
+        if (this.checkedLayerIDs.includes(item.id) && item.type === 'fill') {
           // 只修改该子图层样式属性集paint中含有的样式
           const layerPaintKeys = Object.keys(item.paint)
           layerPaintKeys.forEach(key => {
@@ -172,6 +184,13 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
               item.paint[key] = newVal[key]
             }
           })
+
+          if (Object.keys(newVal).includes('fill-pattern')) {
+            // 区填充图案样式特殊些，所以子图层的该样式也要改变
+            this.$set(item.paint, 'fill-pattern', newVal['fill-pattern'])
+          } else if (Object.keys(item.paint).includes('fill-pattern')) {
+            this.$delete(item.paint, 'fill-pattern')
+          }
         }
         result.push(item)
         return result
