@@ -7,6 +7,9 @@
       <a-tab-pane key="aspect" tab="坡向分析">
         <MpAspectAnalysis ref="aspectAnalysis" />
       </a-tab-pane>
+      <a-tab-pane key="contour" tab="等值线分析">
+        <MpContourAnalysis ref="contourAnalysis" />
+      </a-tab-pane>
       <a-tab-pane key="flooding" tab="洪水淹没">
         <MpFlooding ref="flooding" />
       </a-tab-pane>
@@ -24,6 +27,7 @@ import MpSlopeAnalysis from './slope-analysis.vue'
 import MpAspectAnalysis from './aspect-analysis.vue'
 import MpFlooding from './flooding.vue'
 import MpCutFillAnalysis from './cut-fill-analysis.vue'
+import MpContourAnalysis from './contour-analysis.vue'
 
 @Component({
   name: 'MpTerrainAnalysis',
@@ -31,7 +35,8 @@ import MpCutFillAnalysis from './cut-fill-analysis.vue'
     MpSlopeAnalysis,
     MpAspectAnalysis,
     MpFlooding,
-    MpCutFillAnalysis
+    MpCutFillAnalysis,
+    MpContourAnalysis
   }
 })
 export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
@@ -49,6 +54,8 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
       return this.$refs.slopeAnalysis
     } else if (tab == 'aspect') {
       return this.$refs.aspectAnalysis
+    } else if (tab == 'contour') {
+      return this.$refs.contourAnalysis
     } else if (tab == 'flooding') {
       return this.$refs.flooding
     } else if (tab == 'fillAndDig') {
