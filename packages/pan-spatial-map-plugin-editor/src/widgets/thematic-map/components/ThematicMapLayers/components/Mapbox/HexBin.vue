@@ -12,13 +12,14 @@ export default class MapboxHexBin extends Mixins(BaseMinxin) {
 
   options = {
     context: '2d',
-    draw: 'honeycomb'
+    draw: 'honeycomb',
+    max: 100
   }
 
   get hexBinOptions() {
     return {
       ...this.options,
-      ...this.subDataConfig.style
+      ...(this.subDataConfig.style || {})
     }
   }
 

@@ -12,13 +12,14 @@ export default class MapboxHeatMap extends Mixins(BaseMinxin) {
 
   options = {
     context: '2d',
-    draw: 'heatmap'
+    draw: 'heatmap',
+    max: 5
   }
 
   get heatMapOptions() {
     return {
       ...this.options,
-      ...this.subDataConfig.style
+      ...(this.subDataConfig.style || {})
     }
   }
 

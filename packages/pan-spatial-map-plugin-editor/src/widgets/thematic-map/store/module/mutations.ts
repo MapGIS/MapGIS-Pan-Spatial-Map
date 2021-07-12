@@ -7,6 +7,7 @@ import {
   markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
 import { ModuleType, IHighlighItem, IThematicMapSubjectConfig } from '../types'
+import state from './state'
 
 const mutations = {
   /**
@@ -205,6 +206,12 @@ const mutations = {
         }
       }
     })
+  },
+  /**
+   * 设置新增的专题图
+   */
+  setAddSubject({ state }, { rootId, parentId, node }: any) {
+    // todo 往subjectConfig里追加单个专题图节点
   },
   /**
    * 重置高亮

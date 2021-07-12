@@ -30,7 +30,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { mapGetters, mapMutations } from '../../store'
-import BaseItems from './components/BaseItems.vue'
+import BaseItems from './components/BaseItems'
 import AttributeTableItems from './components/AttributeTableItems.vue'
 import StatisticTableItems from './components/StatisticTableItems.vue'
 import PopupItems from './components/PopupItems.vue'
@@ -50,8 +50,6 @@ import PopupItems from './components/PopupItems.vue'
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
-  fields = []
-
   get saVisible() {
     return this.isVisible('sa')
   }
@@ -60,10 +58,6 @@ export default class ThematicMapSubjectAdd extends Vue {
     if (!nV) {
       this.resetVisible('sa')
     }
-  }
-
-  valid() {
-    return new Promise(() => {})
   }
 
   onSave() {}
