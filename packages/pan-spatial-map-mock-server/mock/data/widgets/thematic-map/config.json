@@ -727,6 +727,15 @@
                             "0.55": "rgb(0,255,0)",
                             "0.85": "yellow",
                             "1.0": "rgb(255,0,0)"
+                          },
+                          "animation": {
+                            "type": "time",
+                            "stepsRange": {
+                              "start": 0,
+                              "end": 100
+                            },
+                            "trails": 10,
+                            "duration": 4
                           }
                         },
                         "table": {

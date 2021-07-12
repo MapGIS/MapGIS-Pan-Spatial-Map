@@ -210,8 +210,18 @@ const mutations = {
   /**
    * 设置新增的专题图
    */
-  setAddSubject({ state }, { rootId, parentId, node }: any) {
-    // todo 往subjectConfig里追加单个专题图节点
+  setNodeToSubjectConfig({ state }, { parentId, node }: any) {
+    const _subjectConfig = state.subjectConfig
+    for (let i = 0; i < _subjectConfig.length; i++) {
+      const item = _subjectConfig[i]
+      if (item.id !== parentId) {
+        continue
+      } else if (item.children && item.children.length) {
+        item.chilren.push(node)
+      } else {
+        item.children = [node]
+      }
+    }
   },
   /**
    * 重置高亮
