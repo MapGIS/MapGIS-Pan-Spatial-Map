@@ -4,6 +4,8 @@
       <a-empty v-if="!treeData.length" />
       <a-tree
         showLine
+        :checkedKeys="selectedKeys"
+        :selectedKeys="selectedKeys"
         :checkable="multiple"
         :expandedKeys.sync="expandedKeys"
         :load-data="loadTreeData"
@@ -28,6 +30,8 @@ import {
 } from '@mapgis/web-app-framework'
 import { Common } from '@mapgis/webclient-es6-service'
 import {
+  eventBus,
+  events,
   baseConfigInstance,
   dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-store'
@@ -59,6 +63,9 @@ interface ITreeNode {
 // 3.关联了在线地图服务的在线瓦片图层
 @Component
 export default class MpQueryResultTree extends Vue {
+  // 组件唯一标识
+  @Prop() readonly vueKey!: string
+
   // 待查询的图层：支持查询的类型图层如下：1.在线地图服务图层。2.在线矢量图层。3.关联了在线地图服务的在线瓦片图层
   @Prop({ type: Object, required: true, default: () => ({}) })
   readonly layer!: Record<string, any>
@@ -110,6 +117,9 @@ export default class MpQueryResultTree extends Vue {
 
   // 展开的节点
   expandedKeys: string[] = []
+
+  // 选中的节点
+  selectedKeys: string[] = []
 
   // 获取uuid
   get uuid() {
@@ -404,11 +414,21 @@ export default class MpQueryResultTree extends Vue {
   }
 
   /**
+   * 取消选中
+   */
+  onCanceTreeSelect() {
+    const empty = []
+    this.selectedKeys = empty
+    this.$emit('on-select', empty, empty, null)
+  }
+
+  /**
    * 结果树选中
    * @param selectedKeys
    * @param treeNode
    */
   onTreeSelect(selectedKeys, { selectedNodes, checkedNodes, node }) {
+    this.selectedKeys = selectedKeys
     const vnodes = this.multiple ? checkedNodes : selectedNodes
     // 当前节点的数据
     const nodeData = node.dataRef
@@ -421,6 +441,11 @@ export default class MpQueryResultTree extends Vue {
 
   created() {
     this.getLayerInfos()
+    eventBus.$on(events.CLEAR_QUERY_TREE_SELECTED, vueKey => {
+      if (this.vueKey !== vueKey) {
+        this.onCanceTreeSelect()
+      }
+    })
   }
 }
 </script>

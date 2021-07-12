@@ -102,6 +102,7 @@
       <mapgis-mvt-style-layer
         v-if="isVectorTileLayer(layerProps.type)"
         :mvtStyle="layerProps.mvtStyle"
+        mode="add"
         :before="getBeforeLayerId(layerProps.beforeId)"
       />
     </div>
@@ -351,7 +352,6 @@ export default {
             type: layer.type,
             mvtStyle: layer.currentStyle
           }
-
           break
         default:
           break

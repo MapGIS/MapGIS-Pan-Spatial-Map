@@ -49,6 +49,7 @@
         @on-select="querySelected"
         :query-rect="queryRect"
         :layer="mapViewLayer"
+        :vue-key="mapViewId"
       />
     </mp-window>
   </div>
@@ -313,6 +314,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     this.mapHandleAttached('clear')
     eventBus.$off(events.FEATURE_HIGHLIGHT)
     eventBus.$off(events.CLEAR_FEATURE_HIGHLIGHT)
+    eventBus.$off(events.CLEAR_QUERY_TREE_SELECTED)
   }
 }
 </script>

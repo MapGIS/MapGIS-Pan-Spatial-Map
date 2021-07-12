@@ -15,6 +15,9 @@
           :metadata="metadata"
         ></mp-metadata-info-doc-3-d>
       </div>
+      <div v-if="isArcgis(currentLayer || currentConfig)">
+        <mp-metadata-info-arcgis :metadata="metadata"></mp-metadata-info-arcgis>
+      </div>
     </a-spin>
   </div>
 </template>
@@ -34,6 +37,7 @@ import MpMetadataInfoDoc from './MetadataInfoDoc'
 import MpMetadataInfoTile from './MetadataInfoTile'
 import MpMetadataInfoVector from './MetadataInfoVector'
 import MpMetadataInfoDoc3D from './MetadataInfoDoc3D'
+import MpMetadataInfoArcgis from './MetadataInfoArcgis.vue'
 
 @Component({
   name: 'MpMetadataInfo',
@@ -41,7 +45,8 @@ import MpMetadataInfoDoc3D from './MetadataInfoDoc3D'
     MpMetadataInfoDoc,
     MpMetadataInfoTile,
     MpMetadataInfoVector,
-    MpMetadataInfoDoc3D
+    MpMetadataInfoDoc3D,
+    MpMetadataInfoArcgis
   }
 })
 export default class MpMetadataInfo extends Vue {
@@ -106,11 +111,23 @@ export default class MpMetadataInfo extends Vue {
           option = { ip, port, gdbp: gdbps }
           break
         }
+        case LayerType.ArcGISMapImage:
+        case LayerType.ArcGISTile: {
+          const { url } = this.currentLayer
+          option = { url }
+          break
+        }
         default:
           break
       }
       this.spinning = true
-      this.metadata = await Metadata.MetaDataQuery.query(option)
+      if (type === LayerType.ArcGISMapImage || type === LayerType.ArcGISTile) {
+        this.metadata = await Metadata.ArcGISMetadataQuery.getServiceInfo(
+          option.url
+        )
+      } else {
+        this.metadata = await Metadata.MetaDataQuery.query(option)
+      }
       this.spinning = false
     }
   }
@@ -161,6 +178,13 @@ export default class MpMetadataInfo extends Vue {
     return item.type === LayerType.IGSMapImage
   }
 
+  isArcgis(item) {
+    return (
+      item.type === LayerType.ArcGISMapImage ||
+      item.type === LayerType.ArcGISTile
+    )
+  }
+
   isIGSScene({ type, layer }) {
     let layerType = type
     if (layer) {
@@ -197,8 +221,8 @@ export default class MpMetadataInfo extends Vue {
       }
       .info-item-title {
         display: block;
-        width: 100px;
-        min-width: 100px;
+        width: 150px;
+        min-width: 150px;
         margin-right: 20px;
         word-break: keep-all;
         white-space: nowrap;

@@ -31,7 +31,11 @@
           <a-icon type="edit" />
         </a-popover>
       </a-input>
-      <a-select v-if="type === 'option-select'" v-model="item[1]">
+      <a-select
+        v-if="type === 'option-select'"
+        v-model="item[1]"
+        @change="value => patternChange(value, item)"
+      >
         <a-select-option v-for="item2 in spriteData" :key="item2">
           {{ item2 }}
         </a-select-option>
@@ -88,10 +92,17 @@ export default class LayerItem extends Vue {
     const index = this.layerStyleItems.findIndex(item2 => item2 === item)
     this.emitDeleteBtn(index, this.type)
   }
+
+  // 区填充图案下拉项变化时回调事件
+  private patternChange(value, item) {
+    if (value === '清空区填充图案') {
+      this.onClickDelBtn(item)
+    }
+  }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .layer-item-container {
   display: flex;
   flex-direction: column;
