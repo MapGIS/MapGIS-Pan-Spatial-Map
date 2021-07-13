@@ -24,7 +24,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
 
   // 信息弹框字段配置
   get popupConfig() {
-    return this.subDataConfig.popup || {}
+    return this.subDataConfig?.popup || {}
   }
 
   /**

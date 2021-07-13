@@ -36,7 +36,7 @@ export default Vue.observable<IState>({
   highlightItem: null,
 
   // 专题服务配置
-  subjectConfig: null,
+  subjectConfig: JSON.parse(localStorage.getItem('subjectConfig') as string),
 
   // 基础配置
   baseConfig: null

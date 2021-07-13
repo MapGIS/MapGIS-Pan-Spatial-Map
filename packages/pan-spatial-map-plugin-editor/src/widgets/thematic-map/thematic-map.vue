@@ -48,7 +48,8 @@ import ThematicMapLayers from './components/ThematicMapLayers'
   },
   methods: {
     ...mapMutations([
-      'setThematicMapConfig',
+      'setBaseConfig',
+      'setSubjectConfig',
       'setSelectedList',
       'setVisible',
       'resetVisible',
@@ -143,16 +144,14 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    */
   onOpen() {
     this.loading = true
-    const {
-      config,
-      config: { subjectConfig }
-    } = this.widgetInfo
+    const { baseConfig, subjectConfig } = this.widgetInfo.config
     let _subjectConfig = subjectConfig
     if (this.subjectConfig) {
       _subjectConfig = this.subjectConfig
     } else {
-      this.setThematicMapConfig(config)
+      this.setSubjectConfig(_subjectConfig)
     }
+    this.setBaseConfig(baseConfig)
     this.treeData = this.normalizeTreeData(_subjectConfig)
     this.setVisible('mt')
     this.loading = false

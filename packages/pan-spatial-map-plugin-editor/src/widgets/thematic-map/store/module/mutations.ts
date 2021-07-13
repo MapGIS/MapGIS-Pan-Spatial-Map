@@ -11,11 +11,17 @@ import state from './state'
 
 const mutations = {
   /**
-   * 设置专题服务的基础和专题配置数据
+   * 设置专题服务的基础配置数据
    */
-  setThematicMapConfig({ state }, { baseConfig, subjectConfig }: any) {
+  setBaseConfig({ state }, baseConfig: any) {
     state.baseConfig = baseConfig
+  },
+  /**
+   * 设置专题服务专题配置数据
+   */
+  setSubjectConfig({ state }, subjectConfig: IThematicMapSubjectConfig[]) {
     state.subjectConfig = subjectConfig
+    localStorage.setItem('subjectConfig', JSON.stringify(subjectConfig))
   },
   /**
    * 保存专题服务展示弹框的开关
@@ -225,7 +231,7 @@ const mutations = {
   /**
    * 设置新增的专题图
    */
-  setNodeToSubjectConfig({ state }, { parentId, node }: any) {
+  setNodeToSubjectConfig({ state, commit }, { parentId, node }: any) {
     const loop = (tree: IThematicMapSubjectConfig[]) => {
       for (let i = 0; i < tree.length; i++) {
         const item = tree[i]
@@ -239,8 +245,9 @@ const mutations = {
           loop(item.children)
         }
       }
+      return tree
     }
-    loop(state.subjectConfig)
+    commit('setSubjectConfig', loop(state.subjectConfig))
   },
   /**
    * 重置高亮

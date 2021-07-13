@@ -70,18 +70,19 @@ export default class ThematicMapSubjectAdd extends Vue {
     }
   }
 
+  onCancel() {
+    this.saVisible = false
+  }
+
   onSave() {
     if (this.$refs.subjectTypes) {
       const selfConfig = this.$refs.subjectTypes.getConfig()
       const [parentId, node] = this.$refs.baseItems.getConfig(selfConfig)
       this.setNodeToSubjectConfig({ parentId, node })
+      this.onCancel()
     } else {
       this.$message.warning('请选择专题类型')
     }
-  }
-
-  onCancel() {
-    this.saVisible = false
   }
 }
 </script>
