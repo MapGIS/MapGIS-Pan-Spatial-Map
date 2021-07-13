@@ -22,7 +22,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { Feature, AppMixin } from '@mapgis/web-app-framework'
-import { mapGetters, subjectTypes, mapMutations } from '../../store'
+import { mapGetters, subjectTypeList, mapMutations } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
 
@@ -72,7 +72,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   // 获取渲染的子专题图层组件name集合
   get subjectLayers() {
-    return subjectTypes.map(({ value }) => `${this.prefix}${value}`)
+    return subjectTypeList.map(({ value }) => `${this.prefix}${value}`)
   }
 
   /**

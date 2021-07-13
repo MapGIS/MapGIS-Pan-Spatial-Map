@@ -5,7 +5,7 @@ import thematicMapStore, { mapGetters, mapMutations } from './module'
 const moduleTypes: ModuleType[] = ['at', 'st', 'tl', 'mt']
 
 // 专题图类型集合
-const subjectTypes: ISubjectType[] = [
+const subjectTypeList: ISubjectType[] = [
   { value: 'SubSectionMap', label: '分段专题图' },
   { value: 'BaseMapWithGraph', label: '统计专题图' },
   { value: 'StatisticLabel', label: '等级符号专题图' },
@@ -14,4 +14,10 @@ const subjectTypes: ISubjectType[] = [
   { value: 'HexBin', label: '蜂窝图' }
 ]
 
-export { subjectTypes, moduleTypes, thematicMapStore, mapGetters, mapMutations }
+export {
+  subjectTypeList,
+  moduleTypes,
+  thematicMapStore,
+  mapGetters,
+  mapMutations
+}

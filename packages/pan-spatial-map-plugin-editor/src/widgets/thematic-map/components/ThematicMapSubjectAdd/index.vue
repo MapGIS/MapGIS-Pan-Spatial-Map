@@ -4,25 +4,19 @@
     <mp-window
       title="新建专题图"
       :visible.sync="saVisible"
-      :verticalOffset="60"
+      :vertical-offset="60"
+      :has-padding="false"
       anchor="top-center"
     >
       <div class="thematic-map-subject-add" v-if="saVisible">
         <div class="subject-add-content">
-          <!-- 基础选项 -->
-          <base-items ref="baseItems" @type-change="subjectType = $event" />
-          <!-- 属性表模块 -->
-          <!-- <attribute-table-items /> -->
-          <!-- 统计表模块 -->
-          <!--  <statistic-table-items /> -->
-          <!-- 弹框模块 -->
-          <!--  <popup-items /> -->
-          <!-- 各专题图专有配置 -->
-          <component
-            ref="subjectTypes"
-            :is="subjectType"
-            v-show="subjectType"
+          <!-- 专题基础配置 -->
+          <base-items
+            ref="baseItems"
+            @subject-type-change="subjectType = $event"
           />
+          <!-- 专题个性配置 -->
+          <subject-items ref="subjectItems" :subject-type="subjectType" />
         </div>
         <!-- 保存按钮 -->
         <div class="subject-add-save-btn">
@@ -36,19 +30,13 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { mapGetters, mapMutations } from '../../store'
-import BaseItems from './components/BaseItems.vue'
-import AttributeTableItems from './components/AttributeTableItems.vue'
-import StatisticTableItems from './components/StatisticTableItems.vue'
-import PopupItems from './components/PopupItems.vue'
-import SubjectTypes from './components/SubjectTypes'
+import BaseItems from './components/BaseItems'
+import SubjectItems from './components/SubjectItems'
 
 @Component({
   components: {
     BaseItems,
-    AttributeTableItems,
-    StatisticTableItems,
-    PopupItems,
-    ...SubjectTypes
+    SubjectItems
   },
   computed: {
     ...mapGetters(['isVisible'])
@@ -75,13 +63,17 @@ export default class ThematicMapSubjectAdd extends Vue {
   }
 
   onSave() {
-    if (this.$refs.subjectTypes) {
-      const selfConfig = this.$refs.subjectTypes.getConfig()
-      const [parentId, node] = this.$refs.baseItems.getConfig(selfConfig)
-      this.setNodeToSubjectConfig({ parentId, node })
-      this.onCancel()
-    } else {
+    if (!this.subjectType) {
       this.$message.warning('请选择专题类型')
+    } else {
+      const subjectConfig = this.$refs.subjectItems.getConfig()
+      const [parentId, node] = this.$refs.baseItems.getConfig(subjectConfig)
+      if (!node.title) {
+        this.$message.warning('请填写专题图名称')
+      } else {
+        this.setNodeToSubjectConfig({ parentId, node })
+        // this.onCancel()
+      }
     }
   }
 }

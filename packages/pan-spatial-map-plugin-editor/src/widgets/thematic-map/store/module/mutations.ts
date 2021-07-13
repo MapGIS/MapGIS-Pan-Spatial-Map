@@ -69,12 +69,12 @@ const mutations = {
     const {
       ip,
       port,
+      configType,
       gdbp,
       docName,
       layerName,
-      configType = 'gdbp',
-      layerIndex: layerIdxs,
-      table: { showFields }
+      layerIndex,
+      table
     } = selectedSubConfig
     const _ip = ip || baseIp || baseConfigIp
     const _port = port || basePort || baseConfigPort
@@ -84,32 +84,37 @@ const mutations = {
           page: 0,
           pageCount: 9999
         }
-    let otherParams: any = {}
-    switch (configType.toLowerCase()) {
-      case 'gdbp':
-        otherParams = {
-          gdbp
-        }
-        break
-      case 'doc':
-        otherParams = {
-          docName,
-          layerName,
-          layerIdxs
-        }
-        break
-      default:
-        break
+    const fields = table ? table.showFields.join(',') : ''
+    let params = {}
+    if (
+      (configType && configType.toLowerCase() === 'gdbp') ||
+      (!configType && gdbp)
+    ) {
+      params = {
+        ...params,
+        gdbp
+      }
+    }
+    if (
+      (configType && configType.toLowerCase() === 'doc') ||
+      (!configType && docName)
+    ) {
+      params = {
+        ...params,
+        docName,
+        layerName,
+        layerIdxs: layerIndex
+      }
     }
     commit('setLoading', true)
     const fn = Feature.FeatureQuery.query({
       ip: _ip,
       port: _port,
+      fields,
       IncludeGeometry: true,
       f: 'json',
-      fields: showFields.join(','),
       ..._pageParam,
-      ...otherParams
+      ...params
     })
     if (fn && fn.then) {
       fn.then((dataSet: Feature.FeatureIGS | any) => {
@@ -124,31 +129,33 @@ const mutations = {
   },
   /**
    * 设置选中专题的年度列表
+   * 旧版: config:{type, data: [{time, subData:[{...}]}]}或者config: {type, data: [{time, ...}]}
+   * 新版: config:[{time...}]
    */
   setSelectedSubConfig({ state }, time: string) {
     const subject = state.selectedList.find(({ id }) => id === state.selected)
     let selectedSubConfig = null
     if (subject && subject.config) {
-      const {
-        type: subjectType,
-        config: { type: configType, data }
-      } = subject
-      if (Array.isArray(data)) {
-        if (data.length) {
-          const item = data.find(d => d.time === time)
+      const { type: subjectType, config } = subject
+      if (Array.isArray(config)) {
+        // 新版
+        const item = config.find((d: any) => d.time === time)
+        selectedSubConfig = {
+          ...item,
+          subjectType
+        }
+      } else {
+        // 旧版
+        const { type = 'gdbp', data } = config
+        if (data && data.length) {
+          const item = data.find((d: any) => d.time === time)
           const subData =
             item.subData && item.subData.length ? item.subData[0] : item || {}
           selectedSubConfig = {
             ...subData,
             subjectType,
-            configType
+            configType: type
           }
-        }
-      } else {
-        selectedSubConfig = {
-          ...data,
-          subjectType,
-          configType
         }
       }
     }
@@ -170,13 +177,13 @@ const mutations = {
       (item: IThematicMapSubjectConfig) => item.id === id
     )
     if (subject && subject.config) {
-      const { data } = subject.config
-      if (Array.isArray(data)) {
-        if (data.length) {
-          selectedTimeList = data.map((v: any) => v.time)
-        }
+      if (Array.isArray(subject.config)) {
+        // 新版
+        selectedTimeList = subject.config.map(({ time }: any) => time)
       } else {
-        selectedTimeList = [data.time]
+        // 旧版
+        const { data = [] } = subject.config
+        selectedTimeList = data.map(({ time }: any) => time)
       }
     }
     state.selectedTimeList = selectedTimeList
@@ -247,6 +254,7 @@ const mutations = {
       }
       return tree
     }
+    console.log('parentId, node', parentId, node, loop(state.subjectConfig))
     commit('setSubjectConfig', loop(state.subjectConfig))
   },
   /**

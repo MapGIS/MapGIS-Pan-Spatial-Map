@@ -94,8 +94,10 @@ export default {
 
 <style lang="less" scoped>
 .row-flex-col-left {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  // overflow: hidden;
+  // white-space: nowrap;
+  // text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1;
 }
 </style>
