@@ -1,0 +1,248 @@
+[
+  {
+    "name": "天地图影像",
+    "image": "/upload/tianditu_img.png",
+    "scene": "23D",
+    "children": [
+      {
+        "serverType": "tdt",
+        "serverUrl": "",
+        "layerType": "Zondy.Enum.Map.TiandituType.IMG",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "develop.smaryun.com",
+        "serverport": "6163",
+        "layerName": "TDTYX"
+      },
+      {
+        "serverType": "tdt",
+        "layerType": "Zondy.Enum.Map.TiandituType.CIA",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "develop.smaryun.com",
+        "serverport": "6163",
+        "serverUrl": "",
+        "layerName": "TDTYX2"
+      }
+    ],
+    "visible": "true",
+    "defaultVisible": "true"
+  },
+  {
+    "name": "天地图矢量",
+    "image": "/upload/tianditu_vec.png",
+    "scene": "23D",
+    "children": [
+      {
+        "serverType": "tdt",
+        "serverUrl": "",
+        "layerType": "Zondy.Enum.Map.TiandituType.VEC",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TDTSL"
+      },
+      {
+        "serverType": "tdt",
+        "layerType": "Zondy.Enum.Map.TiandituType.CVA",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "serverUrl": "",
+        "layerName": "TDTSL2"
+      }
+    ],
+    "visible": "true",
+    "sence": "2D"
+  },
+  {
+    "name": "ArcGIS影像图",
+    "scene": "23D",
+    "image": "/upload/imagemap.png",
+    "children": [
+      {
+        "serverType": "arcgis",
+        "serverUrl": "",
+        "layerType": "Zondy.Enum.Map.ArcGISLayerType.ImageryWorld2D",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "imageryworld"
+      }
+    ],
+    "visible": "true",
+    "sence": "2D"
+  },
+  {
+    "name": "ArcGIS街道图",
+    "scene": "23D",
+    "image": "/upload/streetmap.png",
+    "children": [
+      {
+        "serverType": "arcgis",
+        "serverUrl": "",
+        "layerType": "Zondy.Enum.Map.ArcGISLayerType.StreetMapWorld2D",
+        "projection": null,
+        "serverip": "",
+        "serverport": "",
+        "layerName": "STREETMAP"
+      }
+    ],
+    "visible": "true"
+  },
+  {
+    "name": "ArcGIS晕渲图",
+    "scene": "23D",
+    "image": "/upload/terrainmap.png",
+    "children": [
+      {
+        "serverType": "arcgis",
+        "serverUrl": "",
+        "layerType": "Zondy.Enum.Map.ArcGISLayerType.TopoUS2D",
+        "projection": null,
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TOPOUS2D"
+      }
+    ],
+    "visible": "true"
+  },
+  {
+    "name": "高德地图vec",
+    "image": "/upload/terrainmap.png",
+    "scene": "3D",
+    "children": [
+      {
+        "serverType": "gaode",
+        "serverUrl": "",
+        "layerType": "vec",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TestMap1"
+      }
+    ],
+    "visible": "true",
+    "defaultVisible": "true"
+  },
+  {
+    "name": "高德地图road",
+    "image": "/upload/terrainmap.png",
+    "scene": "3D",
+    "children": [
+      {
+        "serverType": "gaode",
+        "serverUrl": "",
+        "layerType": "road",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TestMap1"
+      }
+    ],
+    "visible": "true",
+    "defaultVisible": "true"
+  },
+  {
+    "name": "高德地图img",
+    "image": "/upload/terrainmap.png",
+    "scene": "3D",
+    "children": [
+      {
+        "serverType": "gaode",
+        "serverUrl": "",
+        "layerType": "img",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TestMap1"
+      }
+    ],
+    "visible": "true",
+    "defaultVisible": "true"
+  },
+  {
+    "name": "天地图",
+    "scene": "3D",
+    "image": "/upload/terrainmap.png",
+    "children": [
+      {
+        "serverType": "tianDi",
+        "serverUrl": "http://t0.tianditu.com/DataServer?T=vec_c&X={x}&Y={y}&L={l}",
+        "layerType": "sate",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TestMap4"
+      }
+    ],
+    "visible": "true"
+  },
+  {
+    "name": "天地图WMTS",
+    "scene": "3D",
+    "image": "/upload/terrainmap.png",
+    "children": [
+      {
+        "serverType": "tianDiWMTS",
+        "serverUrl": "",
+        "layerType": "img",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TestMap5"
+      }
+    ],
+    "visible": "true"
+  },
+  {
+    "name": "百度地图",
+    "scene": "3D",
+    "image": "/upload/terrainmap.png",
+    "children": [
+      {
+        "serverType": "baidu",
+        "serverUrl": "",
+        "layerType": "sate",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TestMap6"
+      }
+    ],
+    "visible": "true"
+  },
+  {
+    "name": "OpenWeather地图Label",
+    "scene": "3D",
+    "image": "/upload/terrainmap.png",
+    "children": [
+      {
+        "serverType": "OpenWeather",
+        "serverUrl": "",
+        "layerType": "Label",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "TestMap7",
+        "appid": "b1b15e88fa797225412429c150c122a1"
+      }
+    ],
+    "visible": "true"
+  },
+  {
+    "name": "手输天地图",
+    "image": "/upload/terrainmap.png",
+    "scene": "2D",
+    "visible": "true",
+    "children": [
+      {
+        "serverType": "tdt",
+        "serverUrl": "http://t0.tianditu.gov.cn/vec_c/wmts",
+        "layerType": "Zondy.Enum.Map.TiandituType.VEC",
+        "projection": "ol.proj.get('EPSG:4326')",
+        "serverip": "",
+        "serverport": "",
+        "layerName": "t0"
+      }
+    ]
+  }
+]

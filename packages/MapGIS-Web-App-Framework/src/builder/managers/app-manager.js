@@ -27,12 +27,13 @@ export default class AppManager {
   }
 
   // 加载应用
-  async loadConfig(baseAPI, appConfigPath, appAssetsPath) {
+  async loadConfig(baseAPI, appConfigPath, appAssetsPath, request) {
     // 创建配置服务
     this.configService = new ConfigService(
       baseAPI,
       appConfigPath,
-      appAssetsPath
+      appAssetsPath,
+      request
     )
 
     // 将资源配置添加到app上

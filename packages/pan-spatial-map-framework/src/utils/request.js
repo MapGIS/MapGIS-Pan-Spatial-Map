@@ -42,7 +42,7 @@ function request(url, method, params, config) {
     case METHOD.POST:
       return service.post(url, params, config)
     case METHOD.DELETE:
-      return service.delete(url, params, config)
+      return service.delete(url, config)
     default:
       return service.get(url, { params, ...config })
   }

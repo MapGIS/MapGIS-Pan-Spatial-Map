@@ -1,0 +1,15 @@
+{
+  "name": "底图管理",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpBasemapManager",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"><defs><style/></defs><path d=\"M64 64h384v384H64zm512 0h384v384H576zM64 576h384v384H64zm512 0h384v384H576z\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}
