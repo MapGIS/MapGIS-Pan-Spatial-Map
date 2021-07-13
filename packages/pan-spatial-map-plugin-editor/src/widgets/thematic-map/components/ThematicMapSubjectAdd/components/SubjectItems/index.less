@@ -1,0 +1,42 @@
+.subject-items {
+  min-height: 180px;
+  border: 1px solid @border-color-base;
+  border-radius: @border-radius-base;
+  /deep/ .anticon {
+    color: @text-color-secondary;
+  }
+
+  /deep/ .ant-collapse {
+    border: none;
+    .ant-collapse-item {
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+    .ant-collapse-header {
+      color: @text-color-secondary;
+      height: 26px;
+      line-height: 26px;
+      padding: 0 4px;
+      padding-left: 25px;
+    }
+    .ant-collapse-arrow {
+      left: 8px;
+    }
+  }
+}
+.subject-items-head {
+  line-height: 32px;
+  padding: 0 8px;
+  background: #e5e5e5;
+  margin-bottom: 0 !important;
+  /deep/ .anticon {
+    font-size: 18px;
+    margin-left: 12px;
+    cursor: pointer;
+
+    &:hover {
+      color: @primary-color;
+    }
+  }
+}
