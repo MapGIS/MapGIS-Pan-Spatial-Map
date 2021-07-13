@@ -123,15 +123,26 @@ const mutations = {
     const subject = state.selectedList.find(({ id }) => id === state.selected)
     let selectedSubConfig = null
     if (subject && subject.config) {
-      const { type, data } = subject.config
-      if (data && data.length) {
-        const item = data.find(d => d.time === time)
-        const subData =
-          item.subData && item.subData.length ? item.subData[0] : item || {}
+      const {
+        type: subjectType,
+        config: { type: configType, data }
+      } = subject
+      if (Array.isArray(data)) {
+        if (data.length) {
+          const item = data.find(d => d.time === time)
+          const subData =
+            item.subData && item.subData.length ? item.subData[0] : item || {}
+          selectedSubConfig = {
+            ...subData,
+            subjectType,
+            configType
+          }
+        }
+      } else {
         selectedSubConfig = {
-          ...subData,
-          subjectType: subject.type,
-          configType: type
+          ...data,
+          subjectType,
+          configType
         }
       }
     }
@@ -154,8 +165,12 @@ const mutations = {
     )
     if (subject && subject.config) {
       const { data } = subject.config
-      if (data && data.length) {
-        selectedTimeList = data.map((v: any) => v.time)
+      if (Array.isArray(data)) {
+        if (data.length) {
+          selectedTimeList = data.map((v: any) => v.time)
+        }
+      } else {
+        selectedTimeList = [data.time]
       }
     }
     state.selectedTimeList = selectedTimeList
@@ -211,17 +226,21 @@ const mutations = {
    * 设置新增的专题图
    */
   setNodeToSubjectConfig({ state }, { parentId, node }: any) {
-    const _subjectConfig = state.subjectConfig
-    for (let i = 0; i < _subjectConfig.length; i++) {
-      const item = _subjectConfig[i]
-      if (item.id !== parentId) {
-        continue
-      } else if (item.children && item.children.length) {
-        item.chilren.push(node)
-      } else {
-        item.children = [node]
+    const loop = (tree: IThematicMapSubjectConfig[]) => {
+      for (let i = 0; i < tree.length; i++) {
+        const item = tree[i]
+        if (item.id === parentId) {
+          if (item.children && item.children.length) {
+            item.children.push(node)
+          } else {
+            item.children = [node]
+          }
+        } else if (item.children && item.children.length) {
+          loop(item.children)
+        }
       }
     }
+    loop(state.subjectConfig)
   },
   /**
    * 重置高亮

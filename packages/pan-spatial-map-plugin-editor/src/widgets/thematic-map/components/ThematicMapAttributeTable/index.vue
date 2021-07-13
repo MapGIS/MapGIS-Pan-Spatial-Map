@@ -114,6 +114,11 @@ export default class ThematicMapAttributeTable extends Vue {
     }
   }
 
+  // 属性表字段配置
+  get table() {
+    return this.selectedSubConfig?.table
+  }
+
   // 列表滚动
   get tableScroll() {
     const { length } = this.tableColumns
@@ -186,8 +191,8 @@ export default class ThematicMapAttributeTable extends Vue {
    * 设置列表配置
    */
   getTableColumns() {
-    if (!this.selectedSubConfig) return
-    const { showFields, showFieldsTitle } = this.selectedSubConfig.table
+    if (!this.table) return
+    const { showFields, showFieldsTitle } = this.table
     this.tableColumns = showFields.map((v: string, i: number) => {
       const title =
         showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v

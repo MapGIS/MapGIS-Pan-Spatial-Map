@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { mapGetters, mapMutations, moduleTypes } from './store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
@@ -43,6 +43,9 @@ import ThematicMapLayers from './components/ThematicMapLayers'
 
 @Component({
   name: 'MpThematicMap',
+  computed: {
+    ...mapGetters(['subjectConfig'])
+  },
   methods: {
     ...mapMutations([
       'setThematicMapConfig',
@@ -144,8 +147,13 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       config,
       config: { subjectConfig }
     } = this.widgetInfo
-    this.setThematicMapConfig(config)
-    this.treeData = this.normalizeTreeData(subjectConfig)
+    let _subjectConfig = subjectConfig
+    if (this.subjectConfig) {
+      _subjectConfig = this.subjectConfig
+    } else {
+      this.setThematicMapConfig(config)
+    }
+    this.treeData = this.normalizeTreeData(_subjectConfig)
     this.setVisible('mt')
     this.loading = false
   }
@@ -158,6 +166,13 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     this.setSelectedList([])
     this.resetVisible()
     this.resetHighlight()
+  }
+
+  @Watch('subjectConfig', { deep: true })
+  subjectConfigChanged(nV) {
+    this.loading = true
+    this.treeData = this.normalizeTreeData(nV)
+    this.loading = false
   }
 }
 </script>

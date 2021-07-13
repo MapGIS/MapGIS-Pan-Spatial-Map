@@ -7,7 +7,7 @@
       :verticalOffset="60"
       anchor="top-center"
     >
-      <div class="thematic-map-subject-add">
+      <div class="thematic-map-subject-add" v-if="saVisible">
         <div class="subject-add-content">
           <!-- 基础选项 -->
           <base-items ref="baseItems" @type-change="subjectType = $event" />
@@ -54,7 +54,7 @@ import SubjectTypes from './components/SubjectTypes'
     ...mapGetters(['isVisible'])
   },
   methods: {
-    ...mapMutations(['setVisible', 'setNodeToSubjectConfig'])
+    ...mapMutations(['resetVisible', 'setNodeToSubjectConfig'])
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
@@ -71,15 +71,20 @@ export default class ThematicMapSubjectAdd extends Vue {
   }
 
   onSave() {
-    const selfConfig = this.$refs.subjectTypes.getConfig()
-    const [parentId, node] = this.$refs.baseItems.getConfig(selfConfig)
-    this.setNodeToSubjectConfig({ parentId, node })
-    console.log(parentId, node)
+    if (this.$refs.subjectTypes) {
+      const selfConfig = this.$refs.subjectTypes.getConfig()
+      const [parentId, node] = this.$refs.baseItems.getConfig(selfConfig)
+      this.setNodeToSubjectConfig({ parentId, node })
+    } else {
+      this.$message.warning('请选择专题类型')
+    }
   }
 
-  onCancel() {}
+  onCancel() {
+    this.saVisible = false
+  }
 }
 </script>
-<style lang="less" scoped>
+<style lang="less">
 @import './index.less';
 </style>
