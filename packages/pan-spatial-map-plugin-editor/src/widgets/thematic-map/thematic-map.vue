@@ -17,7 +17,7 @@
       <!-- 属性表 -->
       <thematic-map-attribute-table />
       <!-- 统计表 -->
-      <thematic-map-statistic-table />
+      <thematic-map-statistic-graph />
       <!-- 时间轴 -->
       <thematic-map-time-line />
       <!-- 新建专题图 -->
@@ -35,7 +35,7 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { mapGetters, mapMutations, moduleTypes } from './store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
-import ThematicMapStatisticTable from './components/ThematicMapStatisticTable'
+import ThematicMapStatisticGraph from './components/ThematicMapStatisticGraph'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
 import ThematicMapManageTools from './components/ThematicMapManageTools'
 import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
@@ -58,7 +58,7 @@ import ThematicMapLayers from './components/ThematicMapLayers'
   },
   components: {
     ThematicMapAttributeTable,
-    ThematicMapStatisticTable,
+    ThematicMapStatisticGraph,
     ThematicMapTimeLine,
     ThematicMapManageTools,
     ThematicMapSubjectAdd,

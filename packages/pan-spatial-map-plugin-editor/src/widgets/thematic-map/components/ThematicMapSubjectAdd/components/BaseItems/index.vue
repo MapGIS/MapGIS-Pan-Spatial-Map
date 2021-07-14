@@ -1,7 +1,7 @@
 <template>
   <div class="base-items">
     <!-- 专题分类 -->
-    <mp-row-flex label="专题分类" :span="[4, 20]">
+    <mp-row-flex label="专题分类">
       <a-select
         @change="subjectClassifyChange"
         :value="subjectClassify"
@@ -10,7 +10,7 @@
       />
     </mp-row-flex>
     <!-- 专题名称 -->
-    <mp-row-flex label="专题名称" :span="[4, 20]">
+    <mp-row-flex label="专题名称">
       <a-select
         v-model="subjectName"
         :options="subjectNameList"
@@ -18,7 +18,7 @@
       />
     </mp-row-flex>
     <!-- 专题图类型 -->
-    <mp-row-flex label="专题图类型" :span="[4, 20]">
+    <mp-row-flex label="专题图类型">
       <a-select
         @change="subjectMapTypeChange"
         :value="subjectMapType"
@@ -27,7 +27,7 @@
       />
     </mp-row-flex>
     <!-- 专题图名称 -->
-    <mp-row-flex label="专题图名称" :span="[4, 20]">
+    <mp-row-flex label="专题图名称">
       <a-input v-model="subjectMapTitle" placeholder="请输入专题图名称" />
     </mp-row-flex>
   </div>
@@ -120,7 +120,7 @@ export default class BaseItems extends Vue {
       subjectMapTitle
     } = this
     const subjectNode = {
-      id: `${subjectMapType}${UUID.uuid()}`,
+      id: `${subjectMapType}-${UUID.uuid()}`,
       visible: true,
       nodeType: 'subject',
       type: subjectMapType,

@@ -8,11 +8,11 @@
       :horizontalOffset="12"
       :verticalOffset="50"
     >
-      <div class="thematic-map-statistic-table">
+      <div class="thematic-map-statistic-graph">
         <a-spin :spinning="loading">
           <!-- 指标和图表切换 -->
           <mp-row-flex
-            class="statistic-table-head"
+            class="thematic-map-statistic-graph-head"
             :span="[16, 8]"
             content-align="right"
           >
@@ -83,7 +83,7 @@ interface IChartOption {
     ...mapMutations(['setHighlightItem', 'resetVisible', 'resetHighlight'])
   }
 })
-export default class ThematicMapStatisticTable extends Vue {
+export default class ThematicMapStatisticGraph extends Vue {
   vueKey = 'gragh'
 
   // 默认标注图标

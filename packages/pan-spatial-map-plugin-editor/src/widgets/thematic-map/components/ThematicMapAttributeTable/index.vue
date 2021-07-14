@@ -33,7 +33,9 @@
             </mp-row-flex>
           </mp-row-flex>
           <!-- 分页列表 -->
+          <a-empty v-if="!tableColumns.length" />
           <a-table
+            v-else
             bordered
             row-key="fid"
             @change="onTableChange"

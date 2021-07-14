@@ -1,17 +1,13 @@
 <template>
-  <div class="popup-items">
+  <div class="attribute-table">
     <a-row type="flex" align="middle">
-      <a-checkbox @change="onPopupChange">
-        弹出框设置
+      <a-checkbox @change="onAttributeTableChange">
+        开启表格展示
       </a-checkbox>
     </a-row>
-    <template v-if="showPopup">
-      <mp-row-flex label="显示字段" label-align="right">
-        <a-select
-          v-model="displayField"
-          mode="tags"
-          :options="displayFieldList"
-        />
+    <template v-if="showAttributeTable">
+      <mp-row-flex label="表格字段" label-align="right">
+        <a-select v-model="tableField" mode="tags" :options="tableFieldList" />
       </mp-row-flex>
       <a-table
         row-key="id"
@@ -27,12 +23,12 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component
-export default class PopupItems extends Vue {
-  showPopup = false
+export default class AttributeTable extends Vue {
+  showAttributeTable = false
 
-  displayField = []
+  tableField = []
 
-  displayFieldList = []
+  tableFieldList = []
 
   tableLoading = false
 
@@ -49,8 +45,8 @@ export default class PopupItems extends Vue {
 
   tableData = []
 
-  onPopupChange(e) {
-    this.showPopup = e.target.checked
+  onAttributeTableChange(e) {
+    this.showAttributeTable = e.target.checked
   }
 }
 </script>

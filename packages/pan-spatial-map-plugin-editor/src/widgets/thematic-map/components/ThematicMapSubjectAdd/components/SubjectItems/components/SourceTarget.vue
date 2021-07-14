@@ -225,9 +225,14 @@ export default class SourceTarget extends Vue {
    * 保存数据服务选择
    */
   drawerSave() {
-    const { ip, port, gdbp } = this.serverNode
-    this.emitServerParams({ ip, port, gdbp })
-    this.url = `http://${ip}:${port}/igs/rest/mrms/layers/?gdbp=${gdbp}`
+    const { ip, port, gdbp, gdbps } = this.serverNode
+    const _gdbp = gdbp || gdbps
+    this.emitServerParams({
+      ip,
+      port,
+      gdbp: _gdbp
+    })
+    this.url = `http://${ip}:${port}/igs/rest/mrms/layers/?gdbp=${_gdbp}`
     this.drawerVisible = false
   }
 
@@ -275,7 +280,7 @@ export default class SourceTarget extends Vue {
    */
   layerChange(value, option) {
     this.layer = value
-    this.serverNode = { ...option }
+    this.serverNode = { ...option.data.props }
   }
 
   /**

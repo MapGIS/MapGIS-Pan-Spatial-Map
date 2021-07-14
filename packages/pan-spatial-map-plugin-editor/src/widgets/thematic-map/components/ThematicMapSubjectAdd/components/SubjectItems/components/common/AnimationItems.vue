@@ -31,27 +31,26 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
 export default class AnimationItems extends Vue {
-  @Prop({
-    default: () => ({
-      type: 'time',
-      trails: 10,
-      duration: 4,
-      stepsRange: {
-        start: 0,
-        end: 100
-      }
-    })
-  })
-  readonly value!: any
+  @Prop() readonly value!: any
 
   isAnimation = false
 
+  defaultAnimation = {
+    type: 'time',
+    trails: 10,
+    duration: 4,
+    stepsRange: {
+      start: 0,
+      end: 100
+    }
+  }
+
   get animation() {
-    return this.value
+    return this.value || this.defaultAnimation
   }
 
   set animation(nV) {
-    this.$emit('input', this.isAnimation ? nV : null)
+    this.$emit('input', nV)
   }
 }
 </script>

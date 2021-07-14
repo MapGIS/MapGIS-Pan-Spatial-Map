@@ -254,8 +254,8 @@ const mutations = {
       }
       return tree
     }
-    console.log('parentId, node', parentId, node, loop(state.subjectConfig))
-    commit('setSubjectConfig', loop(state.subjectConfig))
+    const subjectConfig = loop(_cloneDeep(state.subjectConfig))
+    commit('setSubjectConfig', subjectConfig)
   },
   /**
    * 重置高亮

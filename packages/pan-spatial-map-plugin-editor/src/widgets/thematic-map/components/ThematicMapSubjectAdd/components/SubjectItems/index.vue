@@ -25,22 +25,25 @@
         <a-collapse-panel
           v-for="(sub, i) in subjectConfig"
           :key="`${i}`"
-          :header="sub.time"
+          :header="sub.time || defaultTime"
         >
           <!-- 年度或时间 -->
-          <mp-row-flex label="年度/时间" label-align="right" :span="[6, 18]">
-            <a-input v-model="sub.time" placeholder="请输入年度/时间" />
+          <mp-row-flex label="年度(或时间)" label-align="right" :span="[6, 18]">
+            <a-input v-model="sub.time" placeholder="请输入年度(或时间)" />
           </mp-row-flex>
           <!-- 服务设置 -->
           <source-target @change="sourceTargetChange($event, sub)" />
           <!-- 属性表模块 -->
-          <!-- <attribute-table-items /> -->
+          <!-- <attribute-table /> -->
           <!-- 统计表模块 -->
-          <!--  <statistic-table-items /> -->
+          <!--  <statistic-graph /> -->
           <!-- 弹框模块 -->
-          <!--  <popup-items /> -->
+          <!--  <popup /> -->
           <!-- 各专题图专有配置 -->
-          <component :is="subjectType" :subject="sub" />
+          <subject-styles
+            :subject-type="subjectType"
+            @change="subjectChange($event, sub)"
+          />
         </a-collapse-panel>
       </a-collapse>
     </div>
@@ -49,37 +52,51 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import SourceTarget from './components/SourceTarget'
-import SubjectStyles from './components/SubjectStyles'
+import SubjectStyles from './components/SubjectStyles/index.vue'
 
 @Component({
   components: {
     SourceTarget,
-    ...SubjectStyles
+    SubjectStyles
   }
 })
 export default class SubjectItems extends Vue {
   @Prop() readonly subjectType!: string
+
+  defaultTime = `${new Date().getFullYear()}`
 
   activePanel = ''
 
   subjectConfig = []
 
   /**
+   * 更新属性
+   */
+  setProperties(source, target) {
+    for (const key in source) {
+      this.$set(target, key, source[key])
+    }
+  }
+
+  /**
    * 面板change
    */
   panelChange(key) {
-    if (key) {
-      this.activePanel = key
-    }
+    this.activePanel = key
   }
 
   /**
    * 专题服务选择变化
    */
   sourceTargetChange(serverConfig, sub) {
-    for (const key in serverConfig) {
-      this.$set(sub, key, serverConfig[key])
-    }
+    this.setProperties(serverConfig, sub)
+  }
+
+  /**
+   * 专题个性配置选择变化
+   */
+  subjectChange(newSub, sub) {
+    this.setProperties(newSub, sub)
   }
 
   /**
@@ -87,7 +104,7 @@ export default class SubjectItems extends Vue {
    */
   addTime() {
     const node = {
-      time: ''
+      time: this.defaultTime
     }
     this.subjectConfig.push(node)
   }
@@ -96,7 +113,9 @@ export default class SubjectItems extends Vue {
    * 移除年度
    */
   removeTime() {
-    this.subjectConfig.splice(this.activePanel, 1)
+    if (this.activePanel) {
+      this.subjectConfig.splice(this.activePanel, 1)
+    }
   }
 
   /**

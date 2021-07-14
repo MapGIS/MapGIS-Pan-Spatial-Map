@@ -1,5 +1,5 @@
 <template>
-  <div class="statistic-table-items">
+  <div class="statistic-graph">
     <a-row type="flex" align="middle">
       <a-checkbox @change="onStatisticTableChange">
         开启统计图
@@ -30,7 +30,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component
-export default class StatisticTableItems extends Vue {
+export default class StatisticGraph extends Vue {
   showStatisticTable = false
 
   xAxisKey = ''

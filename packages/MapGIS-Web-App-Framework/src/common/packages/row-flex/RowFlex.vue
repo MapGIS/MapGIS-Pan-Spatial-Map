@@ -98,6 +98,5 @@ export default {
   // white-space: nowrap;
   // text-overflow: ellipsis;
   white-space: normal;
-  line-height: 1;
 }
 </style>
