@@ -37,7 +37,7 @@ export default class MpKibanaV extends Mixins(WidgetMixin) {
       return {
         title: item.title,
         link: item.link,
-        img: `${this.baseUrl}${item.img}`
+        image: `${this.baseUrl}${item.image}`
       }
     })
   }
