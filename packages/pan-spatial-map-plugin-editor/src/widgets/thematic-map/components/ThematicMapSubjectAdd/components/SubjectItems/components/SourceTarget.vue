@@ -269,7 +269,8 @@ export default class SourceTarget extends Vue {
           label: LayerName,
           value: LayerIndex
         }))
-        this.layerVisible = true
+        this.layer = this.layerList[0].value
+        this.layerVisible = !!this.layerList.length
       }
     }
   }
