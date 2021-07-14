@@ -72,8 +72,8 @@ export default class ThematicMapSubjectAdd extends Vue {
         this.$message.warning('请填写专题图名称')
       } else {
         this.setNodeToSubjectConfig({ parentId, node })
-        // this.$message.success('保存成功')
-        // this.onCancel()
+        this.$message.success('保存成功')
+        this.onCancel()
       }
     }
   }

@@ -46,11 +46,11 @@ export default class AnimationItems extends Vue {
   }
 
   get animation() {
-    return this.value || this.defaultAnimation
+    return this.value?.animation || this.defaultAnimation
   }
 
   set animation(nV) {
-    this.$emit('input', nV)
+    this.$emit('input', { animation: nV })
   }
 }
 </script>

@@ -56,7 +56,7 @@ export default class ColorPicker extends Vue {
   })
   readonly value!: string
 
-  defaultColor = 'rgb(255,0,0)'
+  defaultColor = 'rgb(0,0,255)'
 
   get color() {
     return this.value || this.defaultColor

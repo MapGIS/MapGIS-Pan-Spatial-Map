@@ -17,7 +17,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
     },
     context: '2d',
     draw: 'heatmap',
-    max: 5
+    max: 60
   }
 
   get heatMapOptions() {

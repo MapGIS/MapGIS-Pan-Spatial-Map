@@ -45,7 +45,7 @@
             class="drawer-select"
           />
         </mp-row-flex>
-        <mp-row-flex label="图层选择" :span="[24, 24]" v-show="layerVisible">
+        <mp-row-flex label="图层选择" :span="[24, 24]" v-if="layerVisible">
           <a-select
             @change="layerChange"
             :value="layer"

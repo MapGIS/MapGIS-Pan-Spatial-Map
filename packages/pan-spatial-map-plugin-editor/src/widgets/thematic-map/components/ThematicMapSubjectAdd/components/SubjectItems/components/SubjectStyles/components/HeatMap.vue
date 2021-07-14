@@ -11,12 +11,12 @@
     <!-- 颜色填充 -->
     <mp-row-flex label="填充颜色" label-align="right" :span="[6, 18]">
       <a-popover trigger="click" overlayClassName="heat-map-fill-color">
-        <gradient-view @click.stop :value="style.gradient" type="radial" />
+        <gradient-view @click.stop :value="style.gradient" direction="left" />
         <gradient-picker slot="content" v-model="style.gradient" />
       </a-popover>
     </mp-row-flex>
     <!-- 动画项设置 -->
-    <animation-items v-model="style.animation" />
+    <animation-items v-model="style" />
   </div>
 </template>
 <script lang="ts">
@@ -41,7 +41,7 @@ export default class HeatMap extends Vue {
     gradient: {
       '0.25': 'rgb(0,0,255)',
       '0.55': 'rgb(0,255,0)',
-      '0.85': 'yellow',
+      '0.85': 'rgb(241,241,15)',
       '1.0': 'rgb(255,0,0)'
     }
   }
@@ -63,8 +63,8 @@ export default class HeatMap extends Vue {
   }
 }
 </script>
-<style lang="less" scoped>
-.heat-map-fill-color /deep/ .ant-popover-inner-content {
+<style lang="less">
+.heat-map-fill-color .ant-popover-inner-content {
   padding: 0;
 }
 </style>
