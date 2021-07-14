@@ -124,11 +124,13 @@
           },
           {
             "id": "widget_10e5628f-35aa-49d3-9f1b-450edcb409fb",
-            "uri": "widgets/kibana-v"
+            "uri": "widgets/kibana-v",
+            "config": "configs/kibana-v/config.json"
           },
           {
             "id": "widget_219be6f7-034a-4f06-ba0f-1be9d3b093bd",
-            "uri": "widgets/map-data-v"
+            "uri": "widgets/map-data-v",
+            "config": "configs/map-data-v/config.json"
           }
         ],
         "widgetStructure": [],

@@ -1,17 +1,16 @@
 {
-    "name": "KibanaV",
-    "author": "MapGIS",
-    "description": "",
-    "component": "MpKibanaV",
-    "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"><defs><style/></defs><path d=\"M897.706667 1023.573333H178.346667l421.546666-506.026666c180.48 117.76 297.813333 300.373333 297.813334 506.026666z m0-1021.866666H131.413333v919.466666z\"/></svg>",
-    "properties": {
-      "2D": true,
-      "3D": true,
-      "inPanel": true,
-      "hasConfig": true,
-      "hasSettingPage": true,
-      "settingUiComponent": "",
-      "windowSize": "max"
-    }
+  "name": "KibanaV",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpKibanaV",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"><defs><style/></defs><path d=\"M897.706667 1023.573333H178.346667l421.546666-506.026666c180.48 117.76 297.813333 300.373333 297.813334 506.026666z m0-1021.866666H131.413333v919.466666z\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": "",
+    "windowSize": "max"
   }
-  
+}
