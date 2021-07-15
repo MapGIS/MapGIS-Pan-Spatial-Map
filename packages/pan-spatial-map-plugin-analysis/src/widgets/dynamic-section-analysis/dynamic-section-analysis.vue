@@ -1,89 +1,72 @@
 <template>
   <div class="mp-widget-dynamic-section-analysis">
-    <div class="setting-panel">
-      <a-space direction="vertical" class="space">
-        <a-row class="title">
-          <div class="space"></div>
-          <div class="label">模型</div>
-        </a-row>
-        <a-row>
-          <a-card bordered size="small" class="card">
-            <a-radio-group v-if="models.length > 0" v-model="model">
-              <a-radio
-                v-for="(node, index) in models"
-                :style="radioStyle"
-                :key="`model-${index}`"
-                :value="node"
-              >
-                {{ node.title }}
-              </a-radio>
-            </a-radio-group>
-            <div v-else>
-              暂无数据！
-            </div>
-          </a-card>
-        </a-row>
-        <a-row class="title">
-          <div class="space"></div>
-          <div class="label">坐标轴</div>
-        </a-row>
-        <a-row>
-          <a-card bordered size="small" class="card">
-            <a-radio-group v-model="axis">
-              <a-radio value="X">
-                X轴
-              </a-radio>
-              <a-radio value="Y">
-                Y轴
-              </a-radio>
-              <a-radio value="Z">
-                Z轴
-              </a-radio>
-            </a-radio-group>
-          </a-card>
-        </a-row>
-        <a-row class="title">
-          <div class="space"></div>
-          <div class="label">剖面分析</div>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            剖面颜色
-          </a-col>
-          <a-col :span="16">
-            <a-popover trigger="click">
-              <template slot="content">
-                <sketch-picker :value="color" @input="onColorChange" />
-              </template>
-              <div :style="{ background: color }" class="color"></div>
-            </a-popover>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            动画时间
-          </a-col>
-          <a-col :span="16">
-            <a-input :value="time" type="number" min="0"></a-input>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="8" class="col">
-            剖切距离
-          </a-col>
-          <a-col :span="16">
-            <a-slider
-              v-model="distance"
-              :min="min"
-              :max="max"
-              @change="setDistance"
-              :disabled="readonly"
-            />
-          </a-col>
-        </a-row>
-      </a-space>
+    <div class="panel">
+      <a-row class="title">
+        <div class="space"></div>
+        <div class="label">模型</div>
+      </a-row>
+      <a-row>
+        <a-card bordered size="small" class="card">
+          <a-radio-group v-if="models.length > 0" v-model="model">
+            <a-radio
+              v-for="(node, index) in models"
+              :style="radioStyle"
+              :key="`model-${index}`"
+              :value="node"
+            >
+              {{ node.title }}
+            </a-radio>
+          </a-radio-group>
+          <div v-else>
+            暂无数据！
+          </div>
+        </a-card>
+      </a-row>
+      <a-row class="title">
+        <div class="space"></div>
+        <div class="label">坐标轴</div>
+      </a-row>
+      <a-row>
+        <a-card bordered size="small" class="card">
+          <a-radio-group v-model="axis">
+            <a-radio value="X">
+              X轴
+            </a-radio>
+            <a-radio value="Y">
+              Y轴
+            </a-radio>
+            <a-radio value="Z">
+              Z轴
+            </a-radio>
+          </a-radio-group>
+        </a-card>
+      </a-row>
+      <a-row class="title">
+        <div class="space"></div>
+        <div class="label">剖面分析</div>
+      </a-row>
+      <a-form-model :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-form-model-item label="剖面颜色">
+          <MpColorPicker
+            :color.sync="color"
+            :disableAlpha="false"
+          ></MpColorPicker>
+        </a-form-model-item>
+        <a-form-model-item label="动画时间">
+          <a-input v-model.number="time" type="number" min="0" />
+        </a-form-model-item>
+        <a-form-model-item label="剖切距离">
+          <a-slider
+            v-model="distance"
+            :min="min"
+            :max="max"
+            @change="setDistance"
+            :disabled="readonly"
+          />
+        </a-form-model-item>
+      </a-form-model>
     </div>
-    <div class="btn">
+    <div class="footer">
       <a-button type="primary" @click="startClipping">开始</a-button>
       <a-button type="primary" @click="stopClipping">结束</a-button>
       <a-button type="primary" @click="animation">动画</a-button>
@@ -97,15 +80,12 @@ import {
   WidgetMixin,
   LayerType,
   LoadStatus,
-  ColorUtil,
   Objects,
   Query
 } from '@mapgis/web-app-framework'
-import { Sketch } from 'vue-color'
 
 @Component({
-  name: 'MpDynamicSectionAnalysis',
-  components: { 'sketch-picker': Sketch }
+  name: 'MpDynamicSectionAnalysis'
 })
 export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   // 模型集合
@@ -118,7 +98,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   private axis = 'X'
 
   // 默认裁剪边缘颜色
-  private color = 'rgb(255,255,255)'
+  private color = 'rgb(255,255,255,0.5)'
 
   // 默认动画时间
   private time = 10
@@ -264,11 +244,6 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  // 颜色拾取器对应事件
-  private onColorChange(val) {
-    this.color = ColorUtil.colorObjectToRgba(val.rgba)
-  }
-
   /**
    * 剖切方向
    */
@@ -301,16 +276,11 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    * 裁剪边缘颜色
    */
   edgeColor() {
-    if (this.color) {
-      const color = ColorUtil.getColorObject(this.color)
-      return new this.Cesium.Color(
-        color.r / 255,
-        color.g / 255,
-        color.b / 255,
-        color.a
-      )
-    }
-    return new this.Cesium.Color(1, 1, 1, 0.3)
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    ).colorToCesiumColor(this.color)
   }
 
   /**
@@ -448,7 +418,24 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
 
 <style lang="less">
 .mp-widget-dynamic-section-analysis {
+  .panel {
+    width: 100%;
+    .ant-form-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0;
+    }
+    .ant-input {
+      padding: 4px 11px;
+    }
+    .card {
+      max-height: 150px;
+      overflow: auto;
+    }
+  }
+
   .title {
+    margin: 5px 0;
     .space {
       width: 4px;
       height: 25px;
@@ -461,34 +448,16 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
       font-weight: bold;
     }
   }
-  .space {
-    width: 100%;
-    .card {
-      max-height: 150px;
-      overflow: auto;
-    }
-  }
-  .btn {
-    text-align: right;
-    margin: 12px 0;
-    button {
-      margin-left: 8px;
-    }
-  }
-  .col {
-    text-align: center;
-    line-height: 30px;
-  }
-  .setting-panel {
+
+  .footer {
     display: flex;
-    flex-direction: column;
-    .ant-divider-horizontal {
-      margin: 8px 0;
-    }
-    .color {
-      height: 30px;
-      box-shadow: @shadow-1-down;
-      border-radius: 3px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+
+    .ant-btn {
+      padding: 0 15px;
     }
   }
 }

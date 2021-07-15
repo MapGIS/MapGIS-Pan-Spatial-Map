@@ -13,6 +13,8 @@ import MpPlacement from './placement/Placement.vue'
 
 import MpWindow from './window/Window.vue'
 
+import MpColorPicker from './color-picker/ColorPicker.vue'
+
 const components = [
   MpIcon,
   MpButton,
@@ -23,7 +25,8 @@ const components = [
   MpToolbarCommand,
   MpToolbarCommandGroup,
   MpPlacement,
-  MpWindow
+  MpWindow,
+  MpColorPicker
 ]
 
 const install = Vue => {

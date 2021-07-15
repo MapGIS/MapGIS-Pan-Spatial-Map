@@ -6,3 +6,5 @@ export { default as MpVisualAnalysis } from './visual-analysis/visual-analysis.v
 export { default as MpVisibilityAnalysis } from './visibility-analysis/visibility-analysis.vue'
 export { default as MpDynamicSectionAnalysis } from './dynamic-section-analysis/dynamic-section-analysis.vue'
 export { default as MpTerrainAnalysis } from './terrain-analysis/terrain-analysis.vue'
+export { default as MpSkylineAnalysis } from './skyline-analysis/skyline-analysis.vue'
+export { default as MpShadowAnalysis } from './shadow-analysis/shadow-analysis.vue'
