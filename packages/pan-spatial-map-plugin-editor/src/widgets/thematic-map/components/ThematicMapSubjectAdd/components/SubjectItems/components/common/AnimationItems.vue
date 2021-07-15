@@ -31,7 +31,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 
 @Component
 export default class AnimationItems extends Vue {
-  @Prop() readonly value!: any
+  @Prop({ type: Object }) readonly value!: Record<string, any>
 
   isAnimation = false
 

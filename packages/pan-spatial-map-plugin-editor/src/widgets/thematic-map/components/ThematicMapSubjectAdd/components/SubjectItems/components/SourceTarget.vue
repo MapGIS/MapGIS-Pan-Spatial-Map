@@ -45,7 +45,7 @@
             class="drawer-select"
           />
         </mp-row-flex>
-        <mp-row-flex label="图层选择" :span="[24, 24]" v-if="layerVisible">
+        <mp-row-flex label="图层选择" :span="[24, 24]" v-show="layerVisible">
           <a-select
             @change="layerChange"
             :value="layer"
@@ -272,6 +272,10 @@ export default class SourceTarget extends Vue {
         this.layer = this.layerList[0].value
         this.layerVisible = !!this.layerList.length
       }
+    } else {
+      this.layer = ''
+      this.layerList = []
+      this.layerVisible = false
     }
   }
 

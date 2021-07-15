@@ -10,10 +10,16 @@
     </mp-row-flex>
     <!-- 颜色填充 -->
     <mp-row-flex label="填充颜色" label-align="right" :span="[6, 18]">
-      <a-popover trigger="click" overlayClassName="heat-map-fill-color">
-        <gradient-view @click.stop :value="style.gradient" direction="left" />
-        <gradient-picker slot="content" v-model="style.gradient" />
-      </a-popover>
+      <color-view
+        @click.native="toggleColorPicker(true)"
+        :value="style.gradient"
+      />
+      <color-picker-setting
+        @close="toggleColorPicker(false)"
+        @input="confirmColorPicker"
+        :visible="showColorPicker"
+        :value="style.gradient"
+      />
     </mp-row-flex>
     <!-- 动画项设置 -->
     <animation-items v-model="style" />
@@ -21,19 +27,21 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import GradientView from '../../common/GradientView.vue'
-import GradientPicker from '../../common/GradientPicker.vue'
+import ColorView from '../../common/ColorView.vue'
+import ColorPickerSetting from '../../common/ColorPickerSetting.vue'
 import AnimationItems from '../../common/AnimationItems.vue'
 
 @Component({
   components: {
-    GradientView,
-    GradientPicker,
+    ColorView,
+    ColorPickerSetting,
     AnimationItems
   }
 })
 export default class HeatMap extends Vue {
-  @Prop() readonly value!: any
+  @Prop({ type: Object }) readonly value!: Record<string, any>
+
+  showColorPicker = false
 
   defaultStyle = {
     size: 13,
@@ -54,6 +62,15 @@ export default class HeatMap extends Vue {
     this.emitChange(nV)
   }
 
+  toggleColorPicker(bool: boolean) {
+    this.showColorPicker = bool
+  }
+
+  confirmColorPicker(value) {
+    this.$set(this.style, 'gradient', value)
+    this.toggleColorPicker(false)
+  }
+
   emitChange(style) {
     this.$emit('change', { style })
   }
@@ -63,8 +80,3 @@ export default class HeatMap extends Vue {
   }
 }
 </script>
-<style lang="less">
-.heat-map-fill-color .ant-popover-inner-content {
-  padding: 0;
-}
-</style>

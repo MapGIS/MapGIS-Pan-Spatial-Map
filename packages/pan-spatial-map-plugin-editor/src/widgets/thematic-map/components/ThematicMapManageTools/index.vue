@@ -36,7 +36,7 @@ interface IIcon {
     ...mapGetters(['isVisible', 'selectedTimeList'])
   },
   methods: {
-    ...mapMutations(['setVisible', 'resetVisible'])
+    ...mapMutations(['setVisible'])
   }
 })
 export default class ThematicMapManageTools extends Vue {

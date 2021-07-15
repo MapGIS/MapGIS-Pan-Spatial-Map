@@ -18,15 +18,15 @@
       <a-empty description="暂无年度数据" v-if="!subjectConfig.length" />
       <a-collapse
         v-else
-        accordion
-        :activeKey="activePanel"
         @change="panelChange"
+        :activeKey="activePanel"
+        accordion
       >
-        <a-collapse-panel
-          v-for="(sub, i) in subjectConfig"
-          :key="`${i}`"
-          :header="sub.time || defaultTime"
-        >
+        <a-collapse-panel v-for="(sub, i) in subjectConfig" :key="i">
+          <template #header>
+            <a-checkbox @click.stop @change="checkedTime($event, i)" />
+            <span class="time">{{ sub.time || '年度' }}</span>
+          </template>
           <!-- 年度或时间 -->
           <mp-row-flex label="年度(或时间)" label-align="right" :span="[6, 18]">
             <a-input v-model="sub.time" placeholder="请输入年度(或时间)" />
@@ -61,13 +61,13 @@ import SubjectStyles from './components/SubjectStyles/index.vue'
   }
 })
 export default class SubjectItems extends Vue {
-  @Prop() readonly subjectType!: string
+  @Prop({ type: String }) readonly subjectType!: string
 
-  defaultTime = `${new Date().getFullYear()}`
-
-  activePanel = ''
+  activePanel = 0
 
   subjectConfig = []
+
+  chechedPanel = []
 
   /**
    * 更新属性
@@ -104,7 +104,7 @@ export default class SubjectItems extends Vue {
    */
   addTime() {
     const node = {
-      time: this.defaultTime
+      time: ''
     }
     this.subjectConfig.push(node)
   }
@@ -113,8 +113,19 @@ export default class SubjectItems extends Vue {
    * 移除年度
    */
   removeTime() {
-    if (this.activePanel) {
-      this.subjectConfig.splice(this.activePanel, 1)
+    this.chechedPanel.forEach(index => this.subjectConfig.splice(index, 1))
+  }
+
+  /**
+   * 选中年度
+   */
+  checkedTime(e, index: number) {
+    e.stopPropagation()
+    e.preventDefault()
+    if (e.target.checked) {
+      this.chechedPanel.push(index)
+    } else {
+      this.chechedPanel.splice(index, 1)
     }
   }
 

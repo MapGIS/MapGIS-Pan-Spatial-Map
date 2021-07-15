@@ -119,12 +119,22 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   }
 
   /**
+   * 清除选中
+   */
+  clearSelectedList() {
+    this.checkedKeys = []
+    this.setSelectedList([])
+    this.resetHighlight()
+  }
+
+  /**
    * 专题服务树选中
    * @param checkedKeys<array>
    */
   onTreeCheck(checkedKeys) {
     if (!checkedKeys.length) {
-      this.onClose()
+      this.clearSelectedList()
+      moduleTypes.forEach(v => v !== 'mt' && this.resetVisible(v))
     } else {
       const selectedList = checkedKeys.reduce((results, id) => {
         const node = this.getSujectNodeById(this.treeData, id, null)
@@ -152,8 +162,8 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       this.setSubjectConfig(_subjectConfig)
     }
     this.setBaseConfig(baseConfig)
-    this.treeData = this.normalizeTreeData(_subjectConfig)
     this.setVisible('mt')
+    this.treeData = this.normalizeTreeData(_subjectConfig)
     this.loading = false
   }
 
@@ -161,10 +171,8 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 专题服务面板关闭
    */
   onClose() {
-    this.checkedKeys = []
-    this.setSelectedList([])
+    this.clearSelectedList()
     this.resetVisible()
-    this.resetHighlight()
   }
 
   @Watch('subjectConfig', { deep: true })
