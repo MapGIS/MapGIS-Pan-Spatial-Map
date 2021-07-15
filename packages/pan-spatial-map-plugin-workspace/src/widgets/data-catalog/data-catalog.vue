@@ -295,6 +295,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     }
   }
 
+  get treeDataUrl() {
+    return this.widgetInfo.config.urlConfig.treeDataUrl
+  }
+
   created() {
     this.$message.config({
       top: '100px',
@@ -308,12 +312,14 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   async mounted() {
     this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
     this.dataCatalogManager.init(this.widgetInfo.config)
-
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
     this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
-    eventBus.$on('click-bookmark-item', this.bookMarkClick)
 
-    this.getServiceTree()
+    if (this.treeDataUrl !== '') {
+      this.getServiceTree()
+    }
+
+    eventBus.$on('click-bookmark-item', this.bookMarkClick)
   }
 
   // 获取云服务目录树配置
@@ -325,7 +331,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       request.ontimeout = e => {
         this_.$message.error('请求超时，数据加载失败')
       }
-      request.open('GET', 'http://192.168.176.1:6160/portal/api/maps/dir-tree')
+      request.open('GET', this.treeDataUrl)
       request.timeout = 5000
       request.onreadystatechange = () => {
         if (request.readyState === 4) {
