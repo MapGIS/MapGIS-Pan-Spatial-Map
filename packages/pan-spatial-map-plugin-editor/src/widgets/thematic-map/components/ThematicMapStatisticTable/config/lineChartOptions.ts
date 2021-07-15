@@ -8,7 +8,14 @@ export const lineChartOptions = ({ title, x, y }) => {
   const dataZoomEnd = Math.floor((barNum / x.length) * 100) // 柱状图能显示的比例
   return {
     tooltip: {
-      trigger: 'axis'
+      trigger: 'axis',
+      axisPointer: {
+        type: 'line',
+        lineStyle: {
+          color: 'rgba(65,174,255,1)',
+          type: 'dashed'
+        }
+      }
     },
     grid: {
       x: gridX,
@@ -30,6 +37,7 @@ export const lineChartOptions = ({ title, x, y }) => {
     title: {
       left: 'right',
       text: title,
+      padding: 0,
       textStyle: {
         color: txtColor,
         fontSize: 14,
@@ -39,7 +47,7 @@ export const lineChartOptions = ({ title, x, y }) => {
     xAxis: {
       data: x,
       axisLabel: {
-        rotate: -60,
+        rotate: 60,
         interval: 1,
         fontSize: 10,
         fontFamily: '微软雅黑',
@@ -82,6 +90,7 @@ export const lineChartOptions = ({ title, x, y }) => {
       {
         type: 'line',
         data: y,
+        smooth: true,
         itemStyle: {
           color: '#40a9ff'
         }

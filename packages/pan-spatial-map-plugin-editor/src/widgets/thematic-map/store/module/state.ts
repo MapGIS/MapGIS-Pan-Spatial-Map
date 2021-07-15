@@ -11,7 +11,7 @@ export default Vue.observable<IState>({
   // 页码
   pageParam: {
     page: 0,
-    pageCount: 100
+    pageCount: 10
   },
 
   // 当前页的查询的要素数据
@@ -31,6 +31,9 @@ export default Vue.observable<IState>({
 
   // 所有选中的专题服务集合
   selectedList: [],
+
+  // 高亮的选项
+  highlightItem: null,
 
   // 专题服务配置
   subjectConfig: null,

@@ -127,7 +127,7 @@ export default class MpQueryResultTree extends Vue {
   }
 
   // 获取范围
-  get goemetry() {
+  get geometry() {
     const { xmin, ymin, xmax, ymax } = this.queryRect
     return Objects.GeometryExp.creatRectByMinMax(xmin, ymin, xmax, ymax)
   }
@@ -328,7 +328,7 @@ export default class MpQueryResultTree extends Vue {
       const result = await Feature.FeatureQuery.query({
         ip,
         port,
-        geometry: this.goemetry,
+        geometry: this.geometry,
         page: this.page - 1,
         pageCount: this.pageCount,
         f: 'json',

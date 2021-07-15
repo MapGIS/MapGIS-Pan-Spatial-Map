@@ -1,6 +1,6 @@
 <template>
   <!-- 统计表 -->
-  <mp-window-wrapper class="thematic-map-statistic-table" :visible="stVisible">
+  <mp-window-wrapper :visible="stVisible">
     <mp-window
       title="统计表"
       :visible.sync="stVisible"
@@ -11,19 +11,19 @@
       <div class="thematic-map-statistic-table">
         <a-spin :spinning="loading">
           <!-- 指标和图表切换 -->
-          <row-flex
+          <mp-row-flex
             class="statistic-table-head"
             :span="[16, 8]"
             content-align="right"
           >
             <template #label>
-              <row-flex :span="[4, 20]" label="指标">
+              <mp-row-flex :span="[4, 20]" label="指标">
                 <a-select
                   :value="target"
                   :options="targetList"
                   @change="onTargetChange"
                 />
-              </row-flex>
+              </mp-row-flex>
             </template>
             <a-tooltip
               v-for="item in chartConfig"
@@ -37,9 +37,9 @@
                 @click="onChartTypeChange(item.type)"
               />
             </a-tooltip>
-          </row-flex>
+          </mp-row-flex>
           <!-- 图表 -->
-          <div id="thematic-map-statistic-table-chart" v-show="showChart" />
+          <div id="thematic-map-graph-chart" v-show="showChart" />
           <!-- 空数据友好提示 -->
           <a-empty v-show="!showChart" />
         </a-spin>
@@ -51,7 +51,6 @@
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import * as echarts from 'echarts'
 import { mapGetters, mapMutations } from '../../store'
-import RowFlex from '../RowFlex'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
@@ -71,17 +70,25 @@ interface IChartOption {
 }
 
 @Component({
-  components: {
-    RowFlex
-  },
   computed: {
-    ...mapGetters(['loading', 'isVisible', 'pageDataSet', 'selectedSubConfig'])
+    ...mapGetters([
+      'loading',
+      'isVisible',
+      'pageDataSet',
+      'selectedSubConfig',
+      'highlightItem'
+    ])
   },
   methods: {
-    ...mapMutations(['resetVisible'])
+    ...mapMutations(['setHighlightItem', 'resetVisible', 'resetHighlight'])
   }
 })
 export default class ThematicMapStatisticTable extends Vue {
+  vueKey = 'gragh'
+
+  // 默认标注图标
+  defaultIcon = ''
+
   // 当前活动的图标
   activeChart: TChartType = 'bar'
 
@@ -226,6 +233,54 @@ export default class ThematicMapStatisticTable extends Vue {
   }
 
   /**
+   * 图标mouseover事件
+   */
+  onMouseover({ dataIndex }) {
+    this.setHighlightItem({
+      from: this.vueKey,
+      itemIndex: dataIndex
+    })
+  }
+
+  /**
+   * 图标mouseout事件
+   */
+  onMouseout() {
+    this.resetHighlight()
+  }
+
+  /**
+   * 取消高亮图表图形
+   * @param {Number} 数据索引
+   */
+  onClearHighlight(dataIndex) {
+    this.chart.dispatchAction({
+      type: 'downplay',
+      dataIndex
+    })
+    this.chart.dispatchAction({
+      type: 'hideTip',
+      dataIndex
+    })
+  }
+
+  /**
+   * 高亮图表图形
+   * @param {Number} 数据索引
+   */
+  onHighlight(dataIndex) {
+    this.chart.dispatchAction({
+      type: 'showTip',
+      seriesIndex: 0,
+      dataIndex
+    })
+    this.chart.dispatchAction({
+      type: 'highlight',
+      dataIndex
+    })
+  }
+
+  /**
    * 监听: 分页数据变化
    */
   @Watch('pageDataSet', { deep: true })
@@ -234,10 +289,25 @@ export default class ThematicMapStatisticTable extends Vue {
     this.getChartOptions(nV)
   }
 
+  /**
+   * 监听: 高亮
+   */
+  @Watch('highlightItem', { deep: true })
+  watchHighlightItem(nV) {
+    if (!nV) {
+      this.onClearHighlight()
+    } else if (nV.from !== this.vueKey) {
+      this.onHighlight(nV.itemIndex)
+    }
+  }
+
   mounted() {
-    this.chart = echarts.init(
-      document.getElementById('thematic-map-statistic-table-chart')
+    const chartDom: HTMLDivElement = document.getElementById(
+      'thematic-map-graph-chart'
     )
+    this.chart = echarts.init(chartDom)
+    this.chart.on('mouseover', this.onMouseover)
+    this.chart.on('mouseout', this.onMouseout)
   }
 }
 </script>

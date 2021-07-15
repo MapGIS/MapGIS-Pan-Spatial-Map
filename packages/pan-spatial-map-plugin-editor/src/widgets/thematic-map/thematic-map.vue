@@ -48,7 +48,8 @@ import ThematicMapLayers from './components/ThematicMapLayers'
       'setThematicMapConfig',
       'setSelectedList',
       'setVisible',
-      'resetVisible'
+      'resetVisible',
+      'resetHighlight'
     ])
   },
   components: {
@@ -118,20 +119,20 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * @param checkedKeys<array>
    */
   onTreeCheck(checkedKeys) {
-    this.checkedKeys = checkedKeys
-    const selectedList = checkedKeys.reduce((results, id) => {
-      const node = this.getSujectNodeById(this.treeData, id, null)
-      if (node) {
-        results.push(node)
-      }
-      return results
-    }, [])
-    if (!selectedList.length) {
-      this.resetVisible()
+    if (!checkedKeys.length) {
+      this.onClose()
     } else {
+      const selectedList = checkedKeys.reduce((results, id) => {
+        const node = this.getSujectNodeById(this.treeData, id, null)
+        if (node) {
+          results.push(node)
+        }
+        return results
+      }, [])
+      this.checkedKeys = checkedKeys
+      this.setSelectedList(selectedList)
       moduleTypes.forEach(v => this.setVisible(v))
     }
-    this.setSelectedList(selectedList)
   }
 
   /**
@@ -155,6 +156,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     this.checkedKeys = []
     this.setSelectedList([])
     this.resetVisible()
+    this.resetHighlight()
   }
 }
 </script>

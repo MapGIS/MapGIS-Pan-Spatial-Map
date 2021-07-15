@@ -4,11 +4,14 @@ import _isNumber from 'lodash/isNumber'
 
 @Component
 export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
+  // 组件唯一值
+  @Prop({ default: 'map' }) readonly vueKey!: string
+
   // 专题的配置
-  @Prop({ default: () => ({}) }) subDataConfig!: any
+  @Prop({ default: () => ({}) }) readonly subDataConfig!: any
 
   // 专题某年度的要素数据
-  @Prop({ default: () => ({}) }) dataSet!: Feature.FeatureIGS
+  @Prop({ default: () => ({}) }) readonly dataSet!: Feature.FeatureIGS
 
   /**
    * 监听: 要素数据变化
@@ -50,6 +53,24 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
       ...geojson,
       features
     }
+  }
+
+  /**
+   * 专题图鼠标移入高亮
+   * @param 移入的要素数据索引
+   */
+  emitHighlight(itemIndex: number) {
+    this.$emit('highlight', {
+      from: this.vueKey,
+      itemIndex
+    })
+  }
+
+  /**
+   * 清除专题图高亮
+   */
+  emitClearHighlight() {
+    this.$emit('clear-highlight')
   }
 
   /**

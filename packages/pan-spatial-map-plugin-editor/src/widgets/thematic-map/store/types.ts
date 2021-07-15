@@ -65,6 +65,24 @@ interface IPageParam {
   pageCount: number
 }
 
+interface ISelectedSubConfig {
+  configType: ConfigType
+  subjectType: SubjectType
+  [k: string]: any
+}
+
+export interface IHighlighItem {
+  from: string
+  itemIndex: number
+  marker?: {
+    fid: string
+    markerId: string
+    img: string
+    coordinates: number[]
+    feature: Feature.GFeature
+    properties: Feature.GFeature['properties']
+  }
+}
 export interface IState {
   moduleTypes: ModuleType[]
   loading: boolean
@@ -72,13 +90,10 @@ export interface IState {
   pageDataSet: Feature.FeatureIGS | null
   selected: string
   selectedTime: string
-  selectedSubConfig: {
-    configType: ConfigType
-    subjectType: SubjectType
-    [k: string]: any
-  } | null
+  selectedSubConfig: ISelectedSubConfig | null
   selectedTimeList: string[]
   selectedList: IThematicMapSubjectConfig[]
+  highlightItem: IHighlighItem | null
   subjectConfig: IThematicMapSubjectConfig | null
   baseConfig?: IThematicMapBaseConfig | null
 }

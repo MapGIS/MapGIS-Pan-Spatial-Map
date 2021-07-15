@@ -18,7 +18,6 @@ class MarkerIcon {
         baseConfigInstance.config.colorConfig.label.image.selectedImg
       )
     }
-
     return this._selectIcon
   }
 
@@ -29,7 +28,6 @@ class MarkerIcon {
         baseConfigInstance.config.colorConfig.label.image.defaultImg
       )
     }
-
     return this._unselectIcon
   }
 

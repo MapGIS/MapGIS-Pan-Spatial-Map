@@ -1,15 +1,18 @@
 import Vue from 'vue'
 import _cloneDeep from 'lodash/cloneDeep'
 import _last from 'lodash/last'
-import { Feature } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
-import { ModuleType, IThematicMapSubjectConfig } from '../types'
+import { UUID, Feature } from '@mapgis/web-app-framework'
+import {
+  baseConfigInstance,
+  markerIconInstance
+} from '@mapgis/pan-spatial-map-store'
+import { ModuleType, IHighlighItem, IThematicMapSubjectConfig } from '../types'
 
 const mutations = {
   /**
    * 设置专题服务的基础和专题配置数据
    */
-  setThematicMapConfig({ state }, { baseConfig, subjectConfig }) {
+  setThematicMapConfig({ state }, { baseConfig, subjectConfig }: any) {
     state.baseConfig = baseConfig
     state.subjectConfig = subjectConfig
   },
@@ -44,10 +47,14 @@ const mutations = {
   },
   /**
    * 查询要素
+   * @param isPage 是否分页
    * @param onSuccess
    * @param onError
    */
-  setFeaturesQuery({ state, commit }, { onSuccess, onError }: any = {}) {
+  setFeaturesQuery(
+    { state, commit },
+    { isPage = true, onSuccess, onError }: any = {}
+  ) {
     if (!state.selectedSubConfig) return
     const { pageParam, selectedSubConfig, baseConfig = {} } = state
     const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
@@ -64,6 +71,12 @@ const mutations = {
     } = selectedSubConfig
     const _ip = ip || baseIp || baseConfigIp
     const _port = port || basePort || baseConfigPort
+    const _pageParam = isPage
+      ? pageParam
+      : {
+          page: 0,
+          pageCount: 9999
+        }
     let otherParams: any = {}
     switch (configType.toLowerCase()) {
       case 'gdbp':
@@ -88,7 +101,7 @@ const mutations = {
       IncludeGeometry: true,
       f: 'json',
       fields: showFields.join(','),
-      ...pageParam,
+      ..._pageParam,
       ...otherParams
     })
     if (fn && fn.then) {
@@ -135,11 +148,13 @@ const mutations = {
    */
   setSelectedTimeList({ state, commit }, id: string) {
     let selectedTimeList: string[] = []
-    const subject = state.selectedList.find(item => item.id === id)
+    const subject = state.selectedList.find(
+      (item: IThematicMapSubjectConfig) => item.id === id
+    )
     if (subject && subject.config) {
       const { data } = subject.config
       if (data && data.length) {
-        selectedTimeList = data.map(v => v.time)
+        selectedTimeList = data.map((v: any) => v.time)
       }
     }
     state.selectedTimeList = selectedTimeList
@@ -162,6 +177,41 @@ const mutations = {
   ) {
     state.selectedList = selectedList
     commit('setSelected', _last(selectedList)?.id)
+  },
+  /**
+   * 设置高亮项
+   */
+  setHighlightItem({ state }, { from, itemIndex }: IHighlighItem) {
+    markerIconInstance.unSelectIcon().then(img => {
+      const geoJson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
+        state.pageDataSet
+      )
+      const feature = geoJson.features[itemIndex]
+      if (feature) {
+        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
+        const centerItems = [coordinates[0], coordinates[1]]
+        const { properties } = feature
+        state.highlightItem = {
+          from,
+          itemIndex,
+          marker: {
+            img,
+            coordinates,
+            feature,
+            markerId: UUID.uuid(),
+            fid: properties.fid,
+            properties
+          }
+        }
+      }
+    })
+  },
+  /**
+   * 重置高亮
+   * @param param0
+   */
+  resetHighlight({ state }) {
+    state.highlightItem = null
   },
   /**
    * 重置专题服务展示弹框的开关

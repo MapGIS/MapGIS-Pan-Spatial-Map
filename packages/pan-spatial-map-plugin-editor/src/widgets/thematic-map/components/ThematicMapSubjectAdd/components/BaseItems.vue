@@ -1,39 +1,37 @@
 <template>
   <div class="base-items">
     <!-- 专题服务名称 -->
-    <row-flex label="专题服务名称">
+    <mp-row-flex label="专题服务名称">
       <a-input v-model="subjectName" placeholder="请输入" />
-    </row-flex>
+    </mp-row-flex>
     <!-- 专题服务分类 -->
-    <row-flex label="专题服务分类">
+    <mp-row-flex label="专题服务分类">
       <a-tree
         :tree-data="sujectServerTypeTreeData"
         :replace-fields="{ key: 'id' }"
         @select="onSujectServerTypeSelect"
       />
-    </row-flex>
+    </mp-row-flex>
     <!-- 专题类型 -->
-    <row-flex label="专题类型" label-align="right">
+    <mp-row-flex label="专题类型" label-align="right">
       <a-select v-model="sujectType" :options="sujectTypeList" />
-    </row-flex>
+    </mp-row-flex>
     <subject-types :type="sujectType" />
     <!-- 数据来源 -->
-    <row-flex label="数据来源" label-align="right">
+    <mp-row-flex label="数据来源" label-align="right">
       <a-select v-model="sourceTarget" :options="sourceTargetList" />
-    </row-flex>
+    </mp-row-flex>
     <source-target :type="sourceTarget" />
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { subjectTypes } from '../../../store'
-import RowFlex from '../../RowFlex'
 import SourceTarget from './SourceTarget'
 import SubjectTypes from './SubjectTypes'
 
 @Component({
   components: {
-    RowFlex,
     SourceTarget,
     SubjectTypes
   }

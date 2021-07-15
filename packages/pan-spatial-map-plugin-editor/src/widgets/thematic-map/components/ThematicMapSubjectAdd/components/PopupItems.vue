@@ -6,13 +6,13 @@
       </a-checkbox>
     </a-row>
     <template v-if="showPopup">
-      <row-flex label="显示字段" label-align="right">
+      <mp-row-flex label="显示字段" label-align="right">
         <a-select
           v-model="displayField"
           mode="tags"
           :options="displayFieldList"
         />
-      </row-flex>
+      </mp-row-flex>
       <a-table
         row-key="id"
         :loading="tableLoading"
@@ -25,13 +25,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import RowFlex from '../../RowFlex'
 
-@Component({
-  components: {
-    RowFlex
-  }
-})
+@Component
 export default class PopupItems extends Vue {
   showPopup = false
 

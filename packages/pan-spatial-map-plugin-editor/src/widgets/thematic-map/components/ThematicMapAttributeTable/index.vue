@@ -10,37 +10,38 @@
     >
       <div class="thematic-map-attribute-table">
         <a-spin :spinning="loading">
-          <row-flex
+          <mp-row-flex
             :span="[13, 10]"
             justify="space-between"
             class="attribute-table-head"
           >
             <template #label>
-              <row-flex label="专题" :span="[4, 20]">
+              <mp-row-flex label="专题" :span="[4, 20]">
                 <a-select :value="subject" @change="onSubjectChange">
                   <a-select-option v-for="s in subjectList" :key="s.id">{{
                     s.title
                   }}</a-select-option>
                 </a-select>
-              </row-flex>
+              </mp-row-flex>
             </template>
-            <row-flex label="时间" :span="[5, 19]">
+            <mp-row-flex label="时间" :span="[5, 19]">
               <a-select :value="time" @change="onTimeChange">
                 <a-select-option v-for="y in selectedTimeList" :key="y">{{
                   y
                 }}</a-select-option>
               </a-select>
-            </row-flex>
-          </row-flex>
+            </mp-row-flex>
+          </mp-row-flex>
           <!-- 分页列表 -->
           <a-table
             bordered
             row-key="fid"
+            @change="onTableChange"
             :columns="tableColumns"
             :data-source="tableData"
             :pagination="tablePagination"
             :scroll="tableScroll"
-            @change="onTableChange"
+            :customRow="getCustomRow"
           />
         </a-spin>
       </div>
@@ -50,8 +51,8 @@
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
+import _debounce from 'lodash/debounce'
 import { mapGetters, mapMutations } from '../../store'
-import RowFlex from '../RowFlex'
 
 @Component({
   computed: {
@@ -62,7 +63,8 @@ import RowFlex from '../RowFlex'
       'selectedTime',
       'selectedList',
       'selectedSubConfig',
-      'selectedTimeList'
+      'selectedTimeList',
+      'highlightItem'
     ])
   },
   methods: {
@@ -71,14 +73,15 @@ import RowFlex from '../RowFlex'
       'setPage',
       'setSelected',
       'setSelectedTime',
-      'setFeaturesQuery'
+      'setFeaturesQuery',
+      'setHighlightItem',
+      'resetHighlight'
     ])
-  },
-  components: {
-    RowFlex
   }
 })
 export default class ThematicMapAttributeTable extends Vue {
+  vueKey = 'table'
+
   // 专题
   subject = ''
 
@@ -89,7 +92,7 @@ export default class ThematicMapAttributeTable extends Vue {
   page = 0
 
   // 列表页容量
-  pageCount = 100
+  pageCount = 10
 
   // 列表总数
   total = 0
@@ -117,7 +120,7 @@ export default class ThematicMapAttributeTable extends Vue {
     const x = length > 3 ? length * 120 : 500
     return {
       x,
-      y: 360
+      y: 275
     }
   }
 
@@ -129,7 +132,7 @@ export default class ThematicMapAttributeTable extends Vue {
       pageSize: this.pageCount,
       total: this.total,
       showSizeChanger: true,
-      pageSizeOptions: ['100', '500', '1000', '1500', '2000'],
+      pageSizeOptions: ['10', '15', '20', '25', '30', '35', '40', '45', '50'],
       showTotal: total => `共${total}条`
     }
   }
@@ -140,6 +143,43 @@ export default class ThematicMapAttributeTable extends Vue {
       id,
       title
     }))
+  }
+
+  /**
+   * 清除所有高亮
+   */
+  clearHighlight() {
+    this.tableData.forEach(d => this.$set(d, '_highlight', false))
+  }
+
+  /**
+   * 设置高亮
+   */
+  setHighlight(itemIndex: number) {
+    const node = this.tableData[itemIndex]
+    if (node) {
+      this.$set(node, '_highlight', true)
+    }
+  }
+
+  /**
+   * 自定义行数据和事件
+   */
+  getCustomRow(record, index) {
+    return {
+      class: {
+        highlight: record._highlight
+      },
+      on: {
+        mouseenter: _debounce(() => {
+          this.setHighlightItem({
+            from: this.vueKey,
+            itemIndex: index
+          })
+        }, 400),
+        mouseleave: this.resetHighlight
+      }
+    }
   }
 
   /**
@@ -154,7 +194,8 @@ export default class ThematicMapAttributeTable extends Vue {
       return {
         title,
         dataIndex: v,
-        align: 'center'
+        align: 'center',
+        sorter: true
       }
     })
   }
@@ -246,6 +287,18 @@ export default class ThematicMapAttributeTable extends Vue {
   watchSelectedTime(nV: string) {
     if (this.time !== nV) {
       this.onTimeChange(nV)
+    }
+  }
+
+  /**
+   * 监听: 高亮
+   */
+  @Watch('highlightItem', { deep: true })
+  watchHighlightItem(nV) {
+    if (!nV) {
+      this.clearHighlight()
+    } else if (nV.from !== this.vueKey) {
+      this.setHighlight(nV.itemIndex)
     }
   }
 
