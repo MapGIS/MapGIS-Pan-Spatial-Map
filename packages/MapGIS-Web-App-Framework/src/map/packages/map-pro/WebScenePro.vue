@@ -221,7 +221,7 @@ export default {
 
       // 图层显示样式
       const layerStyle = {
-        show: igsSceneSublayer.visible
+        show: igsSceneSublayer.visible,
         zIndex: index === undefined ? undefined : index + 1
       }
 
