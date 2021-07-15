@@ -80,7 +80,6 @@ import {
   WidgetMixin,
   LayerType,
   LoadStatus,
-  ColorUtil,
   Objects,
   Query
 } from '@mapgis/web-app-framework'
@@ -277,16 +276,11 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    * 裁剪边缘颜色
    */
   edgeColor() {
-    if (this.color) {
-      const color = ColorUtil.getColorObject(this.color)
-      return new this.Cesium.Color(
-        color.r / 255,
-        color.g / 255,
-        color.b / 255,
-        color.a
-      )
-    }
-    return new this.Cesium.Color(1, 1, 1, 0.3)
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    ).colorToCesiumColor(this.color)
   }
 
   /**

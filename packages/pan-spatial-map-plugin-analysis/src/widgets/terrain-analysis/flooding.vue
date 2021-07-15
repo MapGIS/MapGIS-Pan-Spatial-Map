@@ -1,10 +1,6 @@
 <template>
   <div class="mp-widget-flooding">
     <div class="panel">
-      <a-row class="title">
-        <div class="space"></div>
-        <div class="label">参数设置</div>
-      </a-row>
       <a-form-model
         :model="formData"
         :label-col="{ span: 8 }"
@@ -85,7 +81,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpFlooding'
@@ -103,31 +99,11 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
   }
 
   get edgeColor() {
-    if (this.formData.floodColor) {
-      const Color = this.formData.floodColor.split(',')
-      const ColorRgb = {
-        green: Number(Color[1] / 255),
-        blue: Number(parseInt(Color[2]) / 255),
-        red: Number(Color[0].split('(')[1] / 255)
-      }
-      return new this.Cesium.Color(
-        ColorRgb.red,
-        ColorRgb.green,
-        ColorRgb.blue,
-        this.opacity || 0.5
-      )
-    }
-    const ColorRgb = {
-      green: 0.2,
-      blue: 0.5,
-      red: 0.4
-    }
-    return new this.Cesium.Color(
-      ColorRgb.red,
-      ColorRgb.green,
-      ColorRgb.blue,
-      this.opacity || 0.5
-    )
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    ).colorToCesiumColor(this.formData.floodColor)
   }
 
   created() {
@@ -155,13 +131,14 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
       animationSpeed,
       amplitude
     } = this.formData
+    const self = this
     // 激活交互式绘制工具
     window.FloodingManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
-        this.remove()
+        self.remove()
         // 初始化高级分析功能管理类
-        const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
+        const advancedAnalysisManager = new self.CesiumZondy.Manager.AdvancedAnalysisManager(
           {
             viewer: viewer
           }
@@ -185,11 +162,11 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
             // 指定光线强度
             specularIntensity: 3.0
           })
-        window.FloodingManage.flood.floodColor = this.edgeColor
+        window.FloodingManage.flood.floodColor = self.edgeColor
 
         viewer.scene.globe.depthTestAgainstTerrain = true
         // 添加洪水淹没结果显示
-        this.webGlobe.scene.VisualAnalysisManager.add(
+        self.webGlobe.scene.VisualAnalysisManager.add(
           window.FloodingManage.flood
         )
       }

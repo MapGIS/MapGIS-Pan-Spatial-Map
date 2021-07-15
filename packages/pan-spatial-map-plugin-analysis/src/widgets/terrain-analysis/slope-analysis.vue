@@ -27,7 +27,7 @@
 <script lang="ts">
 declare const CesiumZondy
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
 
 @Component({ name: 'MpSlopeAnalysis' })
 export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
@@ -98,19 +98,11 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     let isNull = false
     const arr = arrayColor.map(color => {
       if (color) {
-        const Color = color.split(',')
-        const ColorRgb = {
-          green: Number(Color[1] / 255),
-          blue: Number(parseInt(Color[2]) / 255),
-          red: Number(Color[0].split('(')[1] / 255),
-          alpha: Number(Color[3].split(')')[0])
-        }
-        return new this.Cesium.Color(
-          ColorRgb.red,
-          ColorRgb.green,
-          ColorRgb.blue,
-          ColorRgb.alpha
-        )
+        return Objects.SceneController.getInstance(
+          this.Cesium,
+          this.CesiumZondy,
+          this.webGlobe
+        ).colorToCesiumColor(color)
       }
       isNull = true
       return null

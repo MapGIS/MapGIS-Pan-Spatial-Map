@@ -1,10 +1,6 @@
 <template>
-  <div class="mp-widget-flooding">
+  <div class="mp-widget-contour-analysis">
     <div class="panel">
-      <a-row class="title">
-        <div class="space"></div>
-        <div class="label">参数设置</div>
-      </a-row>
       <a-form-model
         :model="formData"
         :label-col="{ span: 8 }"
@@ -41,7 +37,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpContourAnalysis'
@@ -50,39 +46,22 @@ export default class MpContourAnalysis extends Mixins(WidgetMixin) {
   private formData = {
     contourSpacing: 150,
     contourWidth: 2,
-    contourColor: 'rgb(255,255,102)'
+    contourColor: 'rgb(255,0,0)'
   }
 
   get edgeColor() {
-    if (this.formData.contourColor) {
-      const Color = this.formData.contourColor.split(',')
-      const ColorRgb = {
-        green: Number(Color[1] / 255),
-        blue: Number(parseInt(Color[2]) / 255),
-        red: Number(Color[0].split('(')[1] / 255)
-      }
-      return new this.Cesium.Color(
-        ColorRgb.red,
-        ColorRgb.green,
-        ColorRgb.blue,
-        this.opacity || 0.5
-      )
-    }
-    const ColorRgb = {
-      green: 0.2,
-      blue: 0.5,
-      red: 0.4
-    }
-    return new this.Cesium.Color(
-      ColorRgb.red,
-      ColorRgb.green,
-      ColorRgb.blue,
-      this.opacity || 0.5
-    )
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    ).colorToCesiumColor(this.formData.contourColor)
   }
 
   created() {
-    window.terrainAnalyse = null
+    window.ContourAnalysisManage = {
+      drawElement: null,
+      contourAnalysis: null
+    }
   }
 
   // 微件失活时
@@ -92,26 +71,58 @@ export default class MpContourAnalysis extends Mixins(WidgetMixin) {
 
   add() {
     const { viewer } = this.webGlobe
-    window.terrainAnalyse =
-      window.terrainAnalyse || new this.Cesium.TerrainAnalyse(viewer, {})
-    window.terrainAnalyse.enableContour(true)
-    window.terrainAnalyse.updateMaterial('none')
-    window.terrainAnalyse.changeContourWidth(this.formData.contourWidth)
-    window.terrainAnalyse.changeContourSpacing(this.formData.contourSpacing)
+    // 初始化交互式绘制控件
+    window.ContourAnalysisManage.drawElement =
+      window.ContourAnalysisManage.drawElement ||
+      new this.Cesium.DrawElement(viewer)
+    const { contourWidth, contourSpacing } = this.formData
+    const self = this
+
+    // 激活交互式绘制工具
+    window.ContourAnalysisManage.drawElement.startDrawingPolygon({
+      // 绘制完成回调函数
+      callback: positions => {
+        self.remove()
+        window.ContourAnalysisManage.contourAnalysis =
+          window.ContourAnalysisManage.contourAnalysis ||
+          new self.Cesium.TerrainAnalyse(viewer, {})
+        window.ContourAnalysisManage.contourAnalysis.enableContour(true)
+        window.ContourAnalysisManage.contourAnalysis.updateMaterial('none')
+        window.ContourAnalysisManage.contourAnalysis.changeContourWidth(
+          contourWidth
+        )
+        window.ContourAnalysisManage.contourAnalysis.changeContourSpacing(
+          contourSpacing
+        )
+        window.ContourAnalysisManage.contourAnalysis.changeContourColor(
+          self.edgeColor
+        )
+        window.ContourAnalysisManage.contourAnalysis.changeAnalyseArea(
+          positions
+        )
+      }
+    })
   }
 
   remove() {
     // 判断是否已有等值线分析结果
-    if (window.terrainAnalyse) {
+    if (window.ContourAnalysisManage.contourAnalysis) {
       // 移除等值线分析显示结果
-      window.terrainAnalyse.enableContour(false)
-      window.terrainAnalyse = null
+      window.ContourAnalysisManage.contourAnalysis.enableContour(false)
+      window.ContourAnalysisManage.contourAnalysis.updateMaterial('none')
+      window.ContourAnalysisManage.contourAnalysis = null
+    }
+
+    if (window.ContourAnalysisManage.drawElement) {
+      // 取消交互式绘制矩形事件激活状态
+      window.ContourAnalysisManage.drawElement.stopDrawing()
+      window.ContourAnalysisManage.drawElement = null
     }
   }
 }
 </script>
 <style lang="less">
-.mp-widget-flooding {
+.mp-widget-contour-analysis {
   .panel {
     width: 100%;
     .ant-form-item {
