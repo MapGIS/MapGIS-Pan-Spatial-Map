@@ -105,6 +105,7 @@ export default class BaseItems extends Vue {
    */
   subjectMapTypeChange(value) {
     this.subjectMapType = value
+    this.subjectMapTitle = ''
     this.$emit('subject-type-change', value)
   }
 

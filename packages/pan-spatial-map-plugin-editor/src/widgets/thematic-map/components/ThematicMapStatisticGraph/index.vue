@@ -128,7 +128,7 @@ export default class ThematicMapStatisticGraph extends Vue {
   ]
 
   get stVisible() {
-    return this.isVisible('st')
+    return this.graph && this.isVisible('st')
   }
 
   set stVisible(nV) {

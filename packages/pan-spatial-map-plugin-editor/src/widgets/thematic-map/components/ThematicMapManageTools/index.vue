@@ -40,9 +40,7 @@ interface IIcon {
   }
 })
 export default class ThematicMapManageTools extends Vue {
-  mtVisible = false
-
-  get visible() {
+  get mtVisible() {
     return this.isVisible('mt')
   }
 
@@ -79,15 +77,6 @@ export default class ThematicMapManageTools extends Vue {
    */
   onToolIconChange(visibleType: string) {
     this.setVisible(visibleType)
-  }
-
-  @Watch('visible')
-  watchVisible(nV) {
-    this.mtVisible = nV
-  }
-
-  created() {
-    this.mtVisible = this.visible
   }
 }
 </script>

@@ -202,10 +202,41 @@ const mutations = {
    */
   setSelectedList(
     { state, commit },
-    selectedList: IThematicMapSubjectConfig[]
+    selectedList: IThematicMapSubjectConfig[] = []
   ) {
     state.selectedList = selectedList
     commit('setSelected', _last(selectedList)?.id)
+  },
+  /**
+   * 设置新增的专题图
+   */
+  setSubjectConfigNode(
+    { state, commit },
+    {
+      parentId,
+      node
+    }: {
+      parentId: string
+      node: IThematicMapSubjectConfig
+    }
+  ) {
+    const loop = (tree: IThematicMapSubjectConfig[]) => {
+      for (let i = 0; i < tree.length; i++) {
+        const item = tree[i]
+        if (item.id === parentId) {
+          if (item.children && item.children.length) {
+            item.children.push(node)
+          } else {
+            item.children = [node]
+          }
+        } else if (item.children && item.children.length) {
+          loop(item.children)
+        }
+      }
+      return tree
+    }
+    const subjectConfig = loop(_cloneDeep(state.subjectConfig))
+    commit('setSubjectConfig', subjectConfig)
   },
   /**
    * 设置高亮项
@@ -235,21 +266,20 @@ const mutations = {
       }
     })
   },
-  /**
-   * 设置新增的专题图
+  /*
+   * 移除专题图
    */
-  setNodeToSubjectConfig({ state, commit }, { parentId, node }: any) {
+  removeSubjectConfigNode({ state, commit }, node: IThematicMapSubjectConfig) {
     const loop = (tree: IThematicMapSubjectConfig[]) => {
       for (let i = 0; i < tree.length; i++) {
         const item = tree[i]
-        if (item.id === parentId) {
-          if (item.children && item.children.length) {
-            item.children.push(node)
+        if (item.children && item.children.length) {
+          const index = item.children.findIndex(({ id }) => id === node.id)
+          if (index !== -1) {
+            item.children.splice(index, 1)
           } else {
-            item.children = [node]
+            loop(item.children)
           }
-        } else if (item.children && item.children.length) {
-          loop(item.children)
         }
       }
       return tree
@@ -265,13 +295,13 @@ const mutations = {
     state.highlightItem = null
   },
   /**
-   * 重置专题服务展示弹框的开关
+   * 重置专题服务所有的弹框的开关
    */
   resetVisible({ state }, type: ModuleType) {
-    if (type) {
-      state.moduleTypes.splice(state.moduleTypes.indexOf(type), 1)
-    } else {
+    if (!type) {
       state.moduleTypes = []
+    } else {
+      state.moduleTypes.splice(state.moduleTypes.indexOf(type), 1)
     }
   }
 }

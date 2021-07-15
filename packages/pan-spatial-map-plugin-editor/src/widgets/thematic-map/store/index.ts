@@ -1,9 +1,6 @@
 import { ModuleType, ISubjectType } from './types'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
-// 功能模块缩写
-const moduleTypes: ModuleType[] = ['at', 'st', 'tl', 'mt']
-
 // 专题图类型集合
 const subjectTypeList: ISubjectType[] = [
   { value: 'SubSectionMap', label: '分段专题图' },
@@ -15,8 +12,8 @@ const subjectTypeList: ISubjectType[] = [
 ]
 
 export {
+  ModuleType,
   subjectTypeList,
-  moduleTypes,
   thematicMapStore,
   mapGetters,
   mapMutations

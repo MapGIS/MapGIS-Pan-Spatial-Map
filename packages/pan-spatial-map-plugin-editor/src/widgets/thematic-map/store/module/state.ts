@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import { IState } from '../types'
 
+const localSubjectConfig = JSON.parse(localStorage.getItem('subjectConfig') as string)
+
 export default Vue.observable<IState>({
-  // 属性表|统计表|时间轴|专题添加|管理工具的开关集合
+  // 属性表(at)|统计表(st)|时间轴(tl)|专题添加(sa)|管理工具的开关集合(mt)
   moduleTypes: [],
 
   // 加载状态
@@ -36,7 +38,7 @@ export default Vue.observable<IState>({
   highlightItem: null,
 
   // 专题服务配置
-  subjectConfig: JSON.parse(localStorage.getItem('subjectConfig') as string),
+  subjectConfig: localSubjectConfig,
 
   // 基础配置
   baseConfig: null

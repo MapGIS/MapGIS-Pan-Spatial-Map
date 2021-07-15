@@ -41,7 +41,7 @@ import SubjectItems from './components/SubjectItems'
     ...mapGetters(['isVisible'])
   },
   methods: {
-    ...mapMutations(['resetVisible', 'setNodeToSubjectConfig'])
+    ...mapMutations(['resetVisible', 'setSubjectConfigNode'])
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
@@ -70,7 +70,7 @@ export default class ThematicMapSubjectAdd extends Vue {
       if (!node.title) {
         this.$message.warning('请填写专题图名称')
       } else {
-        this.setNodeToSubjectConfig({ parentId, node })
+        this.setSubjectConfigNode({ parentId, node })
         this.$message.success('保存成功')
         this.onCancel()
       }

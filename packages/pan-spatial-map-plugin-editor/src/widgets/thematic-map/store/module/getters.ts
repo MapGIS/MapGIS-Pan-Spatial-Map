@@ -3,8 +3,8 @@ import { ModuleType, IState } from '../types'
 
 const getters = {
   // 获取某个专题服务展示弹框的开关状态
-  isVisible: ({ moduleTypes }: IState) => (type: ModuleType) =>
-    moduleTypes.includes(type),
+  isVisible: ({ moduleTypes }: IState) => (t: ModuleType) =>
+    moduleTypes.includes(t),
   // 加载
   loading: (state: IState) => state.loading,
   // 获取属性表缓存的分页的数据

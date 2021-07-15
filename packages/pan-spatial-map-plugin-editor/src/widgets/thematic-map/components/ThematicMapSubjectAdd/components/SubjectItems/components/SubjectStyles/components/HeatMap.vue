@@ -10,19 +10,10 @@
     </mp-row-flex>
     <!-- 颜色填充 -->
     <mp-row-flex label="填充颜色" label-align="right" :span="[6, 18]">
-      <color-view
-        @click.native="toggleColorPicker(true)"
-        :value="style.gradient"
-      />
-      <color-picker-setting
-        @close="toggleColorPicker(false)"
-        @input="confirmColorPicker"
-        :visible="showColorPicker"
-        :value="style.gradient"
-      />
+      <color-picker-setting v-model="style.gradient" />
     </mp-row-flex>
     <!-- 动画项设置 -->
-    <animation-items v-model="style" />
+    <animation-items v-model="style.animation" />
   </div>
 </template>
 <script lang="ts">
@@ -41,8 +32,6 @@ import AnimationItems from '../../common/AnimationItems.vue'
 export default class HeatMap extends Vue {
   @Prop({ type: Object }) readonly value!: Record<string, any>
 
-  showColorPicker = false
-
   defaultStyle = {
     size: 13,
     weight: '30',
@@ -60,15 +49,6 @@ export default class HeatMap extends Vue {
 
   set style(nV) {
     this.emitChange(nV)
-  }
-
-  toggleColorPicker(bool: boolean) {
-    this.showColorPicker = bool
-  }
-
-  confirmColorPicker(value) {
-    this.$set(this.style, 'gradient', value)
-    this.toggleColorPicker(false)
   }
 
   emitChange(style) {

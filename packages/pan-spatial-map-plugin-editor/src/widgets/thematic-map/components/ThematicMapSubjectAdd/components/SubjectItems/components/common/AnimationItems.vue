@@ -12,9 +12,11 @@
       </mp-row-flex>
       <mp-row-flex label="动画起止时间" label-align="right" :span="[6, 18]">
         <div class="steps-range">
-          <a-input-number v-model="animation.stepsRange.start" :min="0" />
-          <span>~</span>
-          <a-input-number v-model="animation.stepsRange.end" :min="0" />
+          <a-space>
+            <a-input-number v-model="animation.stepsRange.start" :min="0" />
+            <span>至</span>
+            <a-input-number v-model="animation.stepsRange.end" :min="0" />
+          </a-space>
         </div>
       </mp-row-flex>
       <mp-row-flex label="动画拖尾大小" label-align="right" :span="[6, 18]">
@@ -27,7 +29,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 
 @Component
 export default class AnimationItems extends Vue {
@@ -45,12 +47,21 @@ export default class AnimationItems extends Vue {
     }
   }
 
+  @Watch('isAnimation')
+  isAnimationChanged(nV) {
+    this.emitValue(nV ? this.animation : null)
+  }
+
   get animation() {
     return this.value?.animation || this.defaultAnimation
   }
 
   set animation(nV) {
-    this.$emit('input', { animation: nV })
+    this.emitValue(nV)
+  }
+
+  emitValue(value) {
+    this.$emit('input', value)
   }
 }
 </script>

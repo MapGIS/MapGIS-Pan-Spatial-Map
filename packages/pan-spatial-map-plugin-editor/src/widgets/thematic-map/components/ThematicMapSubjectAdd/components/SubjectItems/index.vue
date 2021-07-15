@@ -50,7 +50,8 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import _cloneDeep from 'lodash/cloneDeep'
 import SourceTarget from './components/SourceTarget'
 import SubjectStyles from './components/SubjectStyles/index.vue'
 
@@ -65,9 +66,21 @@ export default class SubjectItems extends Vue {
 
   activePanel = 0
 
+  checkedPanel = []
+
   subjectConfig = []
 
-  chechedPanel = []
+  subjectTypeConfigMap = new Map()
+
+  @Watch('subjectType')
+  subjectTypeChanged(nV) {
+    this.subjectConfig = this.subjectTypeConfigMap.get(nV) || []
+  }
+
+  @Watch('subjectConfig', { deep: true })
+  subjectConfigChanged(nV) {
+    this.subjectTypeConfigMap.set(this.subjectType, _cloneDeep(nV))
+  }
 
   /**
    * 更新属性
@@ -113,7 +126,11 @@ export default class SubjectItems extends Vue {
    * 移除年度
    */
   removeTime() {
-    this.chechedPanel.forEach(index => this.subjectConfig.splice(index, 1))
+    if (!this.checkedPanel.length) {
+      this.$message.warning('请选择需要删除的年度')
+      return
+    }
+    this.checkedPanel.forEach(index => this.subjectConfig.splice(index, 1))
   }
 
   /**
@@ -123,9 +140,9 @@ export default class SubjectItems extends Vue {
     e.stopPropagation()
     e.preventDefault()
     if (e.target.checked) {
-      this.chechedPanel.push(index)
+      this.checkedPanel.push(index)
     } else {
-      this.chechedPanel.splice(index, 1)
+      this.checkedPanel.splice(index, 1)
     }
   }
 

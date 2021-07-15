@@ -71,13 +71,13 @@ import { mapGetters, mapMutations } from '../../store'
   },
   methods: {
     ...mapMutations([
-      'resetVisible',
       'setPage',
       'setSelected',
       'setSelectedTime',
       'setFeaturesQuery',
       'setHighlightItem',
-      'resetHighlight'
+      'resetHighlight',
+      'resetVisible'
     ])
   }
 })
@@ -107,7 +107,7 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 显示开关
   get atVisible() {
-    return this.isVisible('at')
+    return this.table && this.isVisible('at')
   }
 
   set atVisible(nV) {
