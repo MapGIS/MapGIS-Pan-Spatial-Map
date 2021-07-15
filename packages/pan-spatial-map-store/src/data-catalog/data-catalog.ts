@@ -463,7 +463,6 @@ export class DataCatalogManager {
       guid: this.config.paramConfig.GUID, // 图层唯一标识
       serverName: this.config.paramConfig.SERVERNAME, // 服务名(可选)
       serverType: 'serverType', // 服务类型
-      serverSubType: 'serverSubType', // 服务子类型
       serverURL: this.config.paramConfig.SERVERURL, // 服务URL(可选)
       tokenName: 'tokenName', // token名称(可选)
       tokenValue: this.config.paramConfig.TOKEN, // token值(可选)
@@ -600,7 +599,7 @@ export class DataCatalogManager {
     return nodeArrayConverted
   }
 
-  // 根据layerServiceType计算serverType和serverSubType
+  // 根据layerServiceType计算serverType
   private convertLayerServiceType(layerServiceType: string) {
     let serverType = LayerType.Unknown
 
