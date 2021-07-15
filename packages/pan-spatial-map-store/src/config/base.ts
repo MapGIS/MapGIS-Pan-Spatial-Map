@@ -1,4 +1,4 @@
-import { getConfig } from '../api/config'
+import api from '../api'
 
 export class BaseConfig {
   private static _instance: BaseConfig
@@ -24,7 +24,7 @@ export class BaseConfig {
   public static async load() {
     const instance = this.getInstance()
     if (!instance._config) {
-      const config = await getConfig('base')
+      const config = await api.getConfig('base')
       instance._config = config
     }
     return instance._config

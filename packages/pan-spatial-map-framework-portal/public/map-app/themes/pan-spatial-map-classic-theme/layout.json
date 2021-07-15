@@ -1,0 +1,97 @@
+{
+  "mapWidgets": {
+    "widgets": [
+      {
+        "uri": "widgets/map-mode-picker",
+        "position": {
+          "anchor": "bottom-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 36
+        }
+      },
+      {
+        "uri": "widgets/zoom",
+        "position": {
+          "anchor": "bottom-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 78
+        }
+      },
+      {
+        "uri": "widgets/legend",
+        "position": {
+          "anchor": "bottom-right",
+          "horizontalOffset": 10,
+          "verticalOffset": 0
+        }
+      },
+      {
+        "uri": "widgets/comprehensive-query",
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 10
+        }
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 10,
+          "verticalOffset": 52
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 52,
+          "verticalOffset": 52
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 94,
+          "verticalOffset": 52
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 136,
+          "verticalOffset": 52
+        },
+        "placeholder": true
+      },
+      {
+        "position": {
+          "anchor": "top-left",
+          "horizontalOffset": 178,
+          "verticalOffset": 52
+        },
+        "placeholder": true
+      }
+    ]
+  },
+  "contentWidgets": {
+    "groups": [
+      {
+        "content": "header",
+        "widgets": []
+      },
+      {
+        "content": "left",
+        "widgets": [],
+        "panel": {
+          "relativeTo": "content"
+        }
+      },
+      {
+        "content": "toolbar",
+        "widgets": []
+      }
+    ]
+  }
+}

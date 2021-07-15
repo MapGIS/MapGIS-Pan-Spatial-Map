@@ -1,0 +1,15 @@
+{
+  "name": "通视分析",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpVisibilityAnalysis",
+  "icon": "<svg t=\"1606880206637\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"1437\" width=\"200\" height=\"200\"><path d=\"M352 288 460.8 288 460.8 864 563.2 864 563.2 288 672 288 512 128Z\" p-id=\"1438\"></path><path d=\"M128 448l224 0 0 96-224 0 0-96Z\" p-id=\"1439\"></path><path d=\"M672 448l224 0 0 96-224 0 0-96Z\" p-id=\"1440\"></path></svg>",
+  "properties": {
+    "2D": false,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

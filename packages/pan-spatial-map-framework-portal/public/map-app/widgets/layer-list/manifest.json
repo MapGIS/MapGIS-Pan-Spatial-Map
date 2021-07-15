@@ -1,0 +1,15 @@
+{
+  "name": "图层列表",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpLayerList",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"><defs><style/></defs><path d=\"M512 800L185.6 659.2 0 736l512 224 512-224-185.6-76.8z\"/><path d=\"M512 576L185.6 435.2 0 512l512 224 512-224-185.6-76.8z\"/><path d=\"M1024 288L512 512 0 288 512 64z\"/></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

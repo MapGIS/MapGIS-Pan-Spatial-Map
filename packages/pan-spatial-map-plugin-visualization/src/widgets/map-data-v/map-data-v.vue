@@ -1,23 +1,19 @@
 <template>
-  <div class="mp-widget-map-data-v">
-    <div class="mask"></div>
-    <div>
-      <iframe
-        id="iframe_page"
-        :src="url"
-        frameborder="0"
-        width="100%"
-        height="100%"
-        :allowfullscreen="true"
-      ></iframe>
-    </div>
+  <div ref="mapDataV" class="mp-widget-map-data-v">
+    <iframe
+      v-if="url"
+      :src="url"
+      frameborder="0"
+      width="100%"
+      height="100%"
+    ></iframe>
+    <div class="empty-box" v-else><a-empty /></div>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin, DomUtil } from '@mapgis/web-app-framework'
-import func from 'app/vue-temp/vue-editor-bridge'
 
 @Component({ name: 'MpMapDataV' })
 export default class MpMapDataV extends Mixins(WidgetMixin) {
@@ -26,15 +22,10 @@ export default class MpMapDataV extends Mixins(WidgetMixin) {
   }
 
   onOpen() {
-    const page = document.getElementsByClassName('mp-widget-map-data-v')[0]
-    DomUtil.inFullScreen(page)
-    window.addEventListener('keydown', e => {
-      if (e && e.keyCode === 122) {
-        e.preventDefault()
-        e.stopPropagation()
-        DomUtil.inFullScreen(page)
-      }
-    })
+    const el = this.$refs.mapDataV
+    if (!DomUtil.inFullScreen(el)) {
+      this.$message.warn('对不起，您的浏览器不支持全屏模式')
+    }
   }
 }
 </script>
@@ -43,20 +34,12 @@ export default class MpMapDataV extends Mixins(WidgetMixin) {
 .mp-widget-map-data-v {
   width: 100%;
   height: 100%;
-  position: relative;
-  .mask {
+  .empty-box {
     width: 100%;
     height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    background: transparent;
-    + div {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

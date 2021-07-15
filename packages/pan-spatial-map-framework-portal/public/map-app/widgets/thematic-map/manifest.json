@@ -1,0 +1,15 @@
+{
+  "name": "专题服务",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpThematicMap",
+  "icon": "<svg t=\"1596006599335\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"2106\" width=\"16\" height=\"16\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><defs><style type=\"text/css\"></style></defs><path d=\"M128 128m64 0l224 0q64 0 64 64l0 224q0 64-64 64l-224 0q-64 0-64-64l0-224q0-64 64-64Z\" p-id=\"2107\"></path><path d=\"M128 544m64 0l224 0q64 0 64 64l0 224q0 64-64 64l-224 0q-64 0-64-64l0-224q0-64 64-64Z\" p-id=\"2108\"></path><path d=\"M864 224H576a32 32 0 0 1 0-64h288a32 32 0 0 1 0 64zM864 448H576a32 32 0 0 1 0-64h288a32 32 0 0 1 0 64zM864 640H576a32 32 0 0 1 0-64h288a32 32 0 0 1 0 64zM864 864H576a32 32 0 0 1 0-64h288a32 32 0 0 1 0 64z\" p-id=\"2109\"></path></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}

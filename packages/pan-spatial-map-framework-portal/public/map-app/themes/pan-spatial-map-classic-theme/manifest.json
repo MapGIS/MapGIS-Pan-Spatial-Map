@@ -1,0 +1,85 @@
+{
+  "name": "全空间一张图经典主题",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpPanSpatialMapClassicTheme",
+  "styles": [
+    {
+      "name": "dust-red",
+      "description": "薄暮",
+      "color": "#f5222d",
+      "theme": "dark"
+    },
+    {
+      "name": "volcano",
+      "description": "火山",
+      "color": "#fa541c",
+      "theme": "dark"
+    },
+    {
+      "name": "sunrise-yellow",
+      "description": "日出",
+      "color": "#fadb14",
+      "theme": "dark"
+    },
+    {
+      "name": "polar-green",
+      "description": "极光绿",
+      "color": "#3eaf7c",
+      "theme": "dark"
+    },
+    {
+      "name": "cyan",
+      "description": "明青",
+      "color": "#13c2c2",
+      "theme": "dark"
+    },
+    {
+      "name": "daybreak-blue",
+      "description": "拂晓蓝",
+      "color": "#1890ff",
+      "theme": "dark"
+    },
+    {
+      "name": "golden-purple",
+      "description": "酱紫",
+      "color": "#722ed1",
+      "theme": "dark"
+    },
+    {
+      "name": "magenta",
+      "description": "法式洋红",
+      "color": "#eb2f96",
+      "theme": "dark"
+    },
+    {
+      "name": "dark",
+      "description": "暗蓝",
+      "color": "#1890ff",
+      "theme": "night"
+    }
+  ],
+  "contents": [
+    {
+      "name": "header",
+      "description": "头部导航条",
+      "component": "MpPanSpatialMapClassicHeader"
+    },
+    {
+      "name": "toolbar",
+      "description": "工具条",
+      "component": "MpPanSpatialMapClassicToolbar",
+      "maxWidgets": 6
+    },
+    {
+      "name": "left",
+      "description": "左侧导航条",
+      "component": "MpPanSpatialMapClassicLeft"
+    },
+    {
+      "name": "footer",
+      "description": "底部展示区域",
+      "component": "MpPanSpatialMapFooter"
+    }
+  ]
+}
