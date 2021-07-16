@@ -1,23 +1,34 @@
 <template>
   <div class="metadata-info-container">
     <a-spin :spinning="spinning" size="small">
-      <div v-if="isIGSMapImage(currentLayer || currentConfig)">
-        <mp-metadata-info-doc :metadata="metadata"></mp-metadata-info-doc>
-      </div>
-      <div v-if="isIGSTile(currentLayer || currentConfig)">
-        <mp-metadata-info-tile :metadata="metadata"></mp-metadata-info-tile>
-      </div>
-      <div v-if="isIGSVector(currentLayer || currentConfig)">
-        <mp-metadata-info-vector :metadata="metadata"></mp-metadata-info-vector>
-      </div>
-      <div v-if="isIGSScene(currentLayer || currentConfig)">
-        <mp-metadata-info-doc-3-d
-          :metadata="metadata"
-        ></mp-metadata-info-doc-3-d>
-      </div>
-      <div v-if="isArcgis(currentLayer || currentConfig)">
-        <mp-metadata-info-arcgis :metadata="metadata"></mp-metadata-info-arcgis>
-      </div>
+      <template v-if="metadata">
+        <div v-if="isIGSMapImage(currentLayer || currentConfig)">
+          <mp-metadata-info-doc :metadata="metadata"></mp-metadata-info-doc>
+        </div>
+        <div v-if="isIGSTile(currentLayer || currentConfig)">
+          <mp-metadata-info-tile :metadata="metadata"></mp-metadata-info-tile>
+        </div>
+        <div v-if="isIGSVector(currentLayer || currentConfig)">
+          <mp-metadata-info-vector
+            :metadata="metadata"
+          ></mp-metadata-info-vector>
+        </div>
+        <div v-if="isIGSScene(currentLayer || currentConfig)">
+          <mp-metadata-info-doc-3-d
+            :metadata="metadata"
+          ></mp-metadata-info-doc-3-d>
+        </div>
+        <div v-if="isArcgis(currentLayer || currentConfig)">
+          <mp-metadata-info-arcgis
+            :metadata="metadata"
+          ></mp-metadata-info-arcgis>
+        </div>
+        <div v-if="isVectorTitle(currentLayer || currentConfig)">
+          <mp-metadata-info-vector-title
+            :metadata="metadata"
+          ></mp-metadata-info-vector-title>
+        </div>
+      </template>
     </a-spin>
   </div>
 </template>
@@ -38,6 +49,7 @@ import MpMetadataInfoTile from './MetadataInfoTile'
 import MpMetadataInfoVector from './MetadataInfoVector'
 import MpMetadataInfoDoc3D from './MetadataInfoDoc3D'
 import MpMetadataInfoArcgis from './MetadataInfoArcgis.vue'
+import MpMetadataInfoVectorTitle from './MetadataInfoVectorTitle.vue'
 
 @Component({
   name: 'MpMetadataInfo',
@@ -46,7 +58,8 @@ import MpMetadataInfoArcgis from './MetadataInfoArcgis.vue'
     MpMetadataInfoTile,
     MpMetadataInfoVector,
     MpMetadataInfoDoc3D,
-    MpMetadataInfoArcgis
+    MpMetadataInfoArcgis,
+    MpMetadataInfoVectorTitle
   }
 })
 export default class MpMetadataInfo extends Vue {
@@ -54,7 +67,7 @@ export default class MpMetadataInfo extends Vue {
 
   @Prop(Object) readonly currentConfig?: Record<string, any>
 
-  private metadata: Record<string, unknown> = {}
+  private metadata: Record<string, unknown> = null
 
   private tableColumns: Record<string, unknown>[] = []
 
@@ -117,12 +130,21 @@ export default class MpMetadataInfo extends Vue {
           option = { url }
           break
         }
+        case LayerType.VectorTile: {
+          const { url } = this.currentLayer
+          option = { url }
+          break
+        }
         default:
           break
       }
       this.spinning = true
       if (type === LayerType.ArcGISMapImage || type === LayerType.ArcGISTile) {
         this.metadata = await Metadata.ArcGISMetadataQuery.getServiceInfo(
+          option.url
+        )
+      } else if (type === LayerType.VectorTile) {
+        this.metadata = await Metadata.VectorTileMetadataQuery.getServiceInfo(
           option.url
         )
       } else {
@@ -191,6 +213,10 @@ export default class MpMetadataInfo extends Vue {
       layerType = layer.type
     }
     return layerType === LayerType.IGSScene
+  }
+
+  isVectorTitle(item) {
+    return item.type === LayerType.VectorTile
   }
 }
 </script>
