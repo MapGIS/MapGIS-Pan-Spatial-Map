@@ -9,3 +9,5 @@ export {
 export { default as OGCMetadataQuery } from './ogc-metadata-query'
 
 export { default as ArcGISMetadataQuery } from './arcgis-metadata-query'
+
+export { default as VectorTileMetadataQuery } from './vector-tile-metadata-query'
