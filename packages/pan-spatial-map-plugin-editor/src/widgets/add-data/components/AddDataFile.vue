@@ -27,7 +27,8 @@
         <label>地址</label>
       </a-row>
       <a-row>
-        <a-textarea v-model="file" auto-size :disabled="true"> </a-textarea>
+        <a-textarea v-model="file" auto-size :disabled="isDisabled">
+        </a-textarea>
       </a-row>
       <a-row>
         <label>名称</label>
@@ -66,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { UrlUtil } from '@mapgis/web-app-framework'
 import AddDataCategorySelect from './AddDataCategorySelect.vue'
 import AddDataTypeSelect from './AddDataTypeSelect.vue'
@@ -85,15 +86,13 @@ export default class AddDataFile extends Vue {
 
   @Prop({ type: Object }) config
 
+  private isDisabled = true
+
   private categoryName = this.categories.length ? this.categories[0].name : ''
 
-  private fileDataType = this.fileDataTypes.length
-    ? this.fileDataTypes[0]
-    : null
+  private fileDataType = {}
 
   private file = ''
-
-  private path = ''
 
   private name = ''
 
@@ -102,6 +101,36 @@ export default class AddDataFile extends Vue {
 
   // 接受的上传文件类型
   private accept = ''
+
+  @Watch('fileDataType')
+  onFileTypeChange(newVal) {
+    switch (newVal.value) {
+      case 'TIF':
+        this.accept = '.tif,.tfw,.tif.ovr,.tif.vat.dbf,.tif.aux.xml'
+        break
+      case 'SHP':
+        this.accept = ''
+        break
+      case '6X':
+        this.accept = '.wp,.wt,.wl'
+        break
+      case 'KML':
+        this.accept = '.kml'
+        break
+      case 'KMZ':
+        this.accept = '.kmz'
+        break
+      case 'CZML':
+        this.accept = '.czml'
+        break
+      default:
+        break
+    }
+  }
+
+  created() {
+    this.fileDataType = this.fileDataTypes.length ? this.fileDataTypes[0] : null
+  }
 
   onCategorySelect(val) {
     this.categoryName = val
@@ -116,20 +145,22 @@ export default class AddDataFile extends Vue {
       this.$message.warn('请上传正确的文件')
       return false
     }
+    const data = {
+      name: this.categoryName,
+      data: { type: 'IGSVector', url: this.file, name: this.name }
+    }
+    this.$emit('added', data)
   }
 
   private handleChange(info) {
     if (info.file.status === 'done') {
+      this.isDisabled = false
       console.log(info)
-      const url = info.file.response.data[0].url
       const path = info.file.response.data[0].path
 
-      this.file = `http://${this.config.igsIp}:${this.config.igsPort}${url}`
-      this.path = `http://192.168.21.191:6163/igs/rest/mrms/layers?gdbps=gdbp:${path}`
+      this.file = `http://localhost:${this.config.igsPort}/igs/rest/mrms/layers?gdbps=${path}`
 
       console.log(this.file)
-      console.log(path)
-      console.log(this.path)
     }
   }
 }

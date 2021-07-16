@@ -33,6 +33,7 @@
         :file-data-types="fileDataTypes"
         :categories="categories"
         :config="config"
+        @added="onAddData"
       >
       </add-data-file>
     </template>
@@ -116,6 +117,12 @@ export default class MpAddData extends Mixins(WidgetMixin) {
       text: 'MapGIS 图层 REST Service',
       value: 'IGSVector',
       example: 'http://<server>:<port>/igs/rest/mrms/layers?gdbps={gdbps}'
+    },
+    {
+      text: 'Vector Tile 服务',
+      value: 'VectorTile',
+      example:
+        'http://<server>:<port>/igs/rest/mrms/vtiles/styles/街道-墨卡托.json'
     }
   ]
 
