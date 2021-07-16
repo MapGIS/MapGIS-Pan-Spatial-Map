@@ -109,19 +109,16 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
       const { children } = basemap
       const layers = children.map(layer => {
         // 如果要兼容老版格式，可以在这里进行升级，转换成新的数据结构（数据与添加数据配置一致）
-        layer = this.updateLayerConfig(layer)
+        layer = this.updateLayer(layer)
         const layerConfig = {
           name: layer.name,
           guid: UUID.uuid(),
           serverURL: layer.url,
           serverType: this.parseIssueType(layer.type)
         }
-        if (layer.tokenKey) {
-          layerConfig.tokenKey = layer.tokenKey
-        }
-
-        if (layer.tokenValue) {
-          layerConfig.tokenValue = layer.tokenValue
+        if (layer.token) {
+          layerConfig.tokenValue = layer.token
+          layerConfig.tokenKey = layer.tokenKey ? layer.tokenKey : 'token'
         }
 
         return layerConfig
@@ -199,7 +196,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     return null
   }
 
-  private updateLayerConfig(layer) {
+  private updateLayer(layer) {
     if (!layer.serverType) {
       return layer
     } else {
@@ -212,14 +209,14 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
         layerName,
         projection,
         tokenKey,
-        tokenValue
+        token
       } = layer
-      const newLayerConfig = { name: layerName, url: serverUrl }
+      const newLayer = { name: layerName, url: serverUrl }
       // 类型映射表
       let map: Record<string, string>
       switch (serverType) {
         case 'tdt':
-          newLayerConfig.type = 'OGCWMTS'
+          newLayer.type = 'OGCWMTS'
           if (!serverUrl) {
             map = {
               // 天地图影像底图
@@ -233,16 +230,16 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
             }
             const type = map[layerType] || layerType
             const tilematrixSet = projection.includes('EPSG:4326') ? 'c' : 'w'
-            newLayerConfig.url = `http://t${Math.round(
+            newLayer.url = `http://t${Math.round(
               Math.random() * 7
             )}.tianditu.gov.cn/${type}_${tilematrixSet}/wmts`
           }
-          newLayerConfig.tokenKey = 'tk'
-          newLayerConfig.tokenValue = '2ddaabf906d4b5418aed0078e1657029'
+          newLayer.tokenKey = 'tk'
+          newLayer.token = '2ddaabf906d4b5418aed0078e1657029'
           break
         case 'arcgis':
           // 目前只支持ArcGISTile类型
-          newLayerConfig.type = 'ArcGISTile'
+          newLayer.type = 'ArcGISTile'
           if (!serverUrl) {
             map = {
               // ArcGIS影像图
@@ -255,43 +252,43 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
               'Zondy.Enum.Map.ArcGISLayerType.TopoUS2D': 'NGS_Topo_US_2D'
             }
             const type = map[layerType] || layerType
-            newLayerConfig.url = `http://services.arcgisonline.com/ArcGIS/rest/services/${type}/MapServer`
+            newLayer.url = `http://services.arcgisonline.com/ArcGIS/rest/services/${type}/MapServer`
           }
           break
         case 'WMS':
-          newLayerConfig.type = 'OGCWMS'
+          newLayer.type = 'OGCWMS'
           break
         case 'WMTS':
-          newLayerConfig.type = 'OGCWMTS'
+          newLayer.type = 'OGCWMTS'
           break
         case 'tile':
-          newLayerConfig.type = 'IGSTile'
+          newLayer.type = 'IGSTile'
           if (!serverUrl) {
-            newLayerConfig.url = `http://${serverip}:${serverport}/igs/rest/mrms/tile/${layerName}`
+            newLayer.url = `http://${serverip}:${serverport}/igs/rest/mrms/tile/${layerName}`
           }
           break
         case 'doc':
-          newLayerConfig.type = 'IGSMapImage'
+          newLayer.type = 'IGSMapImage'
           if (!serverUrl) {
-            newLayerConfig.url = `http://${serverip}:${serverport}/igs/rest/mrms/docs/${layerName}`
+            newLayer.url = `http://${serverip}:${serverport}/igs/rest/mrms/docs/${layerName}`
           }
           break
         case 'layer':
-          newLayerConfig.type = 'IGSVector'
+          newLayer.type = 'IGSVector'
           if (!serverUrl) {
-            newLayerConfig.url = `http://${serverip}:${serverport}/igs/rest/mrms/layers?gdbps=${layerName}`
+            newLayer.url = `http://${serverip}:${serverport}/igs/rest/mrms/layers?gdbps=${layerName}`
           }
           break
         default:
           break
       }
 
-      if (tokenValue) {
-        newLayerConfig.tokenKey = tokenKey
-        newLayerConfig.tokenValue = tokenValue
+      if (token) {
+        newLayer.tokenKey = tokenKey
+        newLayer.token = token
       }
 
-      return newLayerConfig
+      return newLayer
     }
   }
 

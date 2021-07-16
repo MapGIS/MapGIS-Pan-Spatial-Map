@@ -240,7 +240,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
       serverType: this.parseIssueType(data.type)
     }
     if (data.token) {
-      layerConfig.tokenKey = 'token'
+      layerConfig.tokenKey = data.tokenKey ? data.tokenKey : 'token'
       layerConfig.tokenValue = data.token
     }
 

@@ -8,14 +8,14 @@
         "url": "http://t0.tianditu.gov.cn/img_c/wmts",
         "name": "天地图影像底图",
         "tokenKey": "tk",
-        "tokenValue": "2ddaabf906d4b5418aed0078e1657029"
+        "token": "2ddaabf906d4b5418aed0078e1657029"
       },
       {
         "type": "OGCWMTS",
         "url": "http://t0.tianditu.gov.cn/cia_c/wmts",
         "name": "天地图影像注记",
         "tokenKey": "tk",
-        "tokenValue": "2ddaabf906d4b5418aed0078e1657029"
+        "token": "2ddaabf906d4b5418aed0078e1657029"
       }
     ]
   },
@@ -28,14 +28,14 @@
         "url": "http://t0.tianditu.gov.cn/vec_c/wmts",
         "name": "天地图矢量底图",
         "tokenKey": "tk",
-        "tokenValue": "2ddaabf906d4b5418aed0078e1657029"
+        "token": "2ddaabf906d4b5418aed0078e1657029"
       },
       {
         "type": "OGCWMTS",
         "url": "http://t0.tianditu.gov.cn/cva_c/wmts",
         "name": "天地图矢量注记",
         "tokenKey": "tk",
-        "tokenValue": "2ddaabf906d4b5418aed0078e1657029"
+        "token": "2ddaabf906d4b5418aed0078e1657029"
       }
     ]
   },
@@ -48,14 +48,14 @@
         "url": "http://t0.tianditu.gov.cn/ter_c/wmts",
         "name": "天地图地形晕渲",
         "tokenKey": "tk",
-        "tokenValue": "2ddaabf906d4b5418aed0078e1657029"
+        "token": "2ddaabf906d4b5418aed0078e1657029"
       },
       {
         "type": "OGCWMTS",
         "url": "http://t0.tianditu.gov.cn/cta_c/wmts",
         "name": "天地图地形注记",
         "tokenKey": "tk",
-        "tokenValue": "2ddaabf906d4b5418aed0078e1657029"
+        "token": "2ddaabf906d4b5418aed0078e1657029"
       }
     ]
   },
@@ -187,7 +187,7 @@
         "type": "OGCWMTS",
         "url": "http://t0.tianditu.gov.cn/vec_c/wmts",
         "tokenKey": "tk",
-        "tokenValue": "2ddaabf906d4b5418aed0078e1657029"
+        "token": "2ddaabf906d4b5418aed0078e1657029"
       }
     ]
   },
