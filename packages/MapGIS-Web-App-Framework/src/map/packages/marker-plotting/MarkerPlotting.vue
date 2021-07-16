@@ -24,14 +24,14 @@ import {
 import { Feature } from '@mapgis/web-app-framework'
 import _last from 'lodash/last'
 import MpMarkerSetPro from '../marker-pro/MarkerSetPro.vue'
-import HighlightEventsMixin from './mixins/highlight-events'
+import MarkerPlottingMixin from './mixins/marker-plotting'
 import MarkerStateInstance from './store/marker-state'
 
 @Component({
   name: 'MpMarkerPlotting',
   components: { MpMarkerSetPro }
 })
-export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
+export default class MpMarkerPlotting extends Mixins(MarkerPlottingMixin) {
   @Inject('map') map
 
   @Prop() readonly vueKey!: string
@@ -112,16 +112,16 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
     if (prevMarkerIds.length) {
       prevMarkerIds.forEach(id => {
         const marker = this.getMarker(id)
-        this.clearHighlight(marker)
+        this.onClearHighlightFeature(marker)
         if (this.vueKey) {
-          this.emitClearHighlight(marker, this.vueKey)
+          this.emitClearHighlightEvent(marker, this.vueKey)
         }
         MarkerStateInstance.removeSelectedIds(id)
       })
     }
     if (markerIds.length) {
       if (this.vueKey) {
-        this.emitClearQueryTreeSelected(this.vueKey)
+        this.emitClearSelectionEvent(this.vueKey)
       }
       const lastMarker = this.getMarker(_last(markerIds))
       this.zoomTo(lastMarker.feature.bound)
@@ -129,7 +129,7 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
         const marker = this.getMarker(id)
         this.highlightFeature(marker)
         if (this.vueKey) {
-          this.emitHighlight(marker, this.vueKey)
+          this.emitHighlightEvent(marker, this.vueKey)
         }
         MarkerStateInstance.setSelectedIds(id)
       })
@@ -283,14 +283,14 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   /**
    * 清除高亮
    */
-  private clearHighlight(marker) {
+  private onClearHighlightFeature(marker) {
     this.clearHighlightFeature(marker)
   }
 
   /**
    * 添加高亮
    */
-  private addHighlight(marker) {
+  private onHighlightFeature(marker) {
     this.zoomTo(marker.feature.bound)
     this.highlightFeature(marker)
   }

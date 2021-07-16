@@ -20,18 +20,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import {
   UUID,
   LayerType,
   Objects,
   Feature,
-  Catalog
+  Catalog,
+  MarkerPlottingMixin
 } from '@mapgis/web-app-framework'
 import { Common } from '@mapgis/webclient-es6-service'
 import {
-  eventBus,
-  events,
   baseConfigInstance,
   dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-store'
@@ -62,7 +61,7 @@ interface ITreeNode {
 // 2.在线矢量图层
 // 3.关联了在线地图服务的在线瓦片图层
 @Component
-export default class MpQueryResultTree extends Vue {
+export default class MpQueryResultTree extends Mixins(MarkerPlottingMixin) {
   // 组件唯一标识
   @Prop() readonly vueKey!: string
 
@@ -441,7 +440,7 @@ export default class MpQueryResultTree extends Vue {
 
   created() {
     this.getLayerInfos()
-    eventBus.$on(events.CLEAR_QUERY_TREE_SELECTED, vueKey => {
+    this.registerClearSelectionEvent(vueKey => {
       if (this.vueKey !== vueKey) {
         this.onCanceTreeSelect()
       }

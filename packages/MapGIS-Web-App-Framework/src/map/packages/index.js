@@ -9,6 +9,8 @@ import Mp3dMarkerSetPro from './marker-pro/3dMarkerSetPro.vue'
 import MpMarkerPlotting from './marker-plotting/MarkerPlotting.vue'
 import Mp3dMarkerPlotting from './marker-plotting/3dMarkerPlotting.vue'
 
+export { default as MarkerPlottingMixin } from './marker-plotting/mixins/marker-plotting'
+
 const components = [
   MpWebMapPro,
   MpWebScenePro,
