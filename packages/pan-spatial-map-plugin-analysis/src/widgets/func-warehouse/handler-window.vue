@@ -45,7 +45,8 @@ import {
 import {
   baseConfigInstance,
   DataCatalogManager,
-  eventBus
+  eventBus,
+  events
 } from '@mapgis/pan-spatial-map-store'
 
 // {
@@ -216,7 +217,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
         name: `${this.funcParam.FlowName}_${nameStr}`
       }
     }
-    eventBus.$emit('add-data', data)
+    eventBus.$emit(events.ADD_DATA_EVENT, data)
   }
 }
 </script>

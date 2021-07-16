@@ -208,6 +208,7 @@ import {
   dataCatalogManagerInstance,
   DataCatalogManager,
   eventBus,
+  events,
   api
 } from '@mapgis/pan-spatial-map-store'
 
@@ -311,14 +312,17 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
     this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
-    eventBus.$on('click-bookmark-item', this.bookMarkClick)
+    eventBus.$on(events.OPEN_DATA_BOOKMARK_EVENT, this.bookMarkClick)
   }
 
   @Watch('checkedNodeKeys', { deep: false })
   onCheckedNodeKeysChenged() {
     let newChecked = []
     let newUnChecked = []
-    eventBus.$emit('emitCheckedNodeKeys', this.checkedNodeKeys)
+    eventBus.$emit(
+      events.DATA_SELECTION_KEYS_CHANGE_EVENT,
+      this.checkedNodeKeys
+    )
 
     if (this.preCheckedNodeKeys.length === 0) {
       newChecked = this.checkedNodeKeys
@@ -438,7 +442,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
               doc.defaultMap.findLayerById(layerConfigNode.guid)
             )
           }
-          eventBus.$emit('emitSelectLayer')
+          eventBus.$emit(events.DATA_SELECTION_CHANGE_EVENT)
         }
       )
     }
@@ -545,7 +549,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 收藏按钮
   bookMarksCheck() {
     eventBus.$emit(
-      'check-to-mark',
+      events.ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT,
       this.checkedNodeKeys,
       this.dataCatalogTreeData
     )
@@ -648,13 +652,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 右键菜单收藏按钮响应事件
   addToMark(item) {
     eventBus.$emit(
-      'add-to-mark',
+      events.ADD_DATA_BOOKMARK_EVENT,
       { params: item, type: '基础数据' },
       this.dataCatalogTreeData
     )
   }
 
-  // 监听书签项点击事件('click-bookmark-item')
+  // 监听书签项点击事件
   bookMarkClick(node) {
     if (this.dataCatalogManager.checkedLayerConfigIDs.includes(node.guid)) {
       const index = this.dataCatalogManager.checkedLayerConfigIDs.findIndex(
@@ -697,7 +701,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
           name: 'legend',
           config: JSON.stringify(legendConfig)
         })
-        eventBus.$emit('uploader-success')
+        eventBus.$emit(events.UPLOAD_LEGEND_SUCCESS_EVENT)
         this.showUploader = false
       }
     }

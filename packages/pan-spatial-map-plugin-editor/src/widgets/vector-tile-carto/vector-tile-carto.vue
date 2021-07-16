@@ -66,7 +66,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, Document, LayerType } from '@mapgis/web-app-framework'
-import { eventBus } from '@mapgis/pan-spatial-map-store'
+import { eventBus, events } from '@mapgis/pan-spatial-map-store'
 import LayerSetting from './LayerSetting.vue'
 
 @Component({
@@ -200,12 +200,12 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
 
   // 监听目录树勾选图层节点变化后触发的事件
   created() {
-    eventBus.$on('emitSelectLayer', this.init)
+    eventBus.$on(events.DATA_SELECTION_CHANGE_EVENT, this.init)
   }
 
   // 销毁目录树勾选图层节点变化后触发的事件
   beforeDestroy() {
-    eventBus.$off('emitSelectLayer')
+    eventBus.$off(events.DATA_SELECTION_CHANGE_EVENT)
   }
 
   // 初始化数据

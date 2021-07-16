@@ -31,7 +31,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
-import { eventBus, api } from '@mapgis/pan-spatial-map-store'
+import { eventBus, events, api } from '@mapgis/pan-spatial-map-store'
 import { TreeConfig } from '@mapgis/pan-spatial-map-plugin-visualization/src/widgets/bookmark/tree-config'
 import base from 'app/packages/pan-spatial-map-store/src/config/base'
 
@@ -50,17 +50,17 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
 
   private mounted(): void {
     this.treeData = this.widgetInfo.config
-    eventBus.$on('add-to-mark', this.clickMark)
-    eventBus.$on('check-to-mark', this.checkMark)
+    eventBus.$on(events.ADD_DATA_BOOKMARK_EVENT, this.clickMark)
+    eventBus.$on(events.ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT, this.checkMark)
   }
 
-  // 'add-to-mark'响应事件(右键收藏)
+  // ADD_DATA_BOOKMARK_EVENT 响应事件(右键收藏)
   private clickMark(data, baseTreeData: Array<Record<string, any>>) {
     this.isClickCheck = false
     this.addToMark(data, baseTreeData)
   }
 
-  // 'check-to-mark'响应事件(勾选收藏)
+  // ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT 响应事件(勾选收藏)
   private checkMark(
     checkedKeys: string[],
     baseTreeData: Array<Record<string, any>>
@@ -208,7 +208,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
 
   // 单击选中该项响应事件
   onClickItem(node) {
-    eventBus.$emit('click-bookmark-item', node)
+    eventBus.$emit(events.OPEN_DATA_BOOKMARK_EVENT, node)
   }
 
   // 右键删除该项响应事件

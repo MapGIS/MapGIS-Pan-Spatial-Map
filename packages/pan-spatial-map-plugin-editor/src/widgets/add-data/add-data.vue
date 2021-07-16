@@ -44,7 +44,8 @@ import {
 import {
   api,
   DataCatalogManager,
-  eventBus
+  eventBus,
+  events
 } from '@mapgis/pan-spatial-map-store'
 
 import AddDataList from './components/AddDataList.vue'
@@ -176,7 +177,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     this.config = this.widgetInfo.config
     this.loaded = true
 
-    eventBus.$on('add-data', this.onAddData)
+    eventBus.$on(events.ADD_DATA_EVENT, this.onAddData)
   }
 
   onAddCategory({ name, description }) {
