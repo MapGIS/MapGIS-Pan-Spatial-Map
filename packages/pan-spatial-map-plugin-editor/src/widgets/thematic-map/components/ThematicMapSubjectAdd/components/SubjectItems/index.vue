@@ -25,7 +25,7 @@
         <a-collapse-panel v-for="(sub, i) in subjectConfig" :key="i">
           <template #header>
             <a-checkbox @click.stop @change="checkedTime($event, i)" />
-            <span class="time">{{ sub.time || '年度' }}</span>
+            <span class="time">{{ sub.time || '新增年度' }}</span>
           </template>
           <!-- 年度或时间 -->
           <mp-row-flex label="年度(或时间)" label-align="right" :span="[6, 18]">

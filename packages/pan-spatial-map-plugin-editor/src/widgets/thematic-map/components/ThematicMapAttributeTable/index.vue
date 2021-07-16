@@ -54,7 +54,8 @@
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
 import _debounce from 'lodash/debounce'
-import { mapGetters, mapMutations } from '../../store'
+import { mapGetters, mapMutations, highlightSubjectTypes } from '../../store'
+import base from '@mapgis/pan-spatial-map-store/src/config/base'
 
 @Component({
   computed: {
@@ -116,7 +117,12 @@ export default class ThematicMapAttributeTable extends Vue {
     }
   }
 
-  // 属性表字段配置
+  // 是否支持图属高亮
+  get hasHighlight() {
+    return highlightSubjectTypes.includes(this.selectedSubConfig?.subjectType)
+  }
+
+  // 列表配置
   get table() {
     return this.selectedSubConfig?.table
   }
@@ -177,15 +183,17 @@ export default class ThematicMapAttributeTable extends Vue {
       class: {
         highlight: record._highlight
       },
-      on: {
-        mouseenter: _debounce(() => {
-          this.setHighlightItem({
-            from: this.vueKey,
-            itemIndex: index
-          })
-        }, 400),
-        mouseleave: this.resetHighlight
-      }
+      on: this.hasHighlight
+        ? {
+            mouseenter: _debounce(() => {
+              this.setHighlightItem({
+                from: this.vueKey,
+                itemIndex: index
+              })
+            }, 400),
+            mouseleave: this.resetHighlight
+          }
+        : {}
     }
   }
 
@@ -202,7 +210,13 @@ export default class ThematicMapAttributeTable extends Vue {
         title,
         dataIndex: v,
         align: 'center',
-        sorter: true
+        sorter: (a, b) => {
+          if ([a[v], b[v]].every(v => !isNaN(Number(v)))) {
+            return a[v] - b[v]
+          } else {
+            return a[v].length - b[v].length
+          }
+        }
       }
     })
   }
@@ -267,14 +281,16 @@ export default class ThematicMapAttributeTable extends Vue {
    * 2.获取分页数据
    * @param 分页参数 current: 当前页; pageSize: 页容量
    */
-  onTableChange({ current, pageSize }) {
-    this.page = current
-    this.pageCount = pageSize
-    this.setPage({
-      page: current,
-      pageCount: pageSize
-    })
-    this.getTableData()
+  onTableChange({ current, pageSize }, filters, sorter) {
+    if (this.page !== current || this.pageCount !== pageSize) {
+      this.page = current
+      this.pageCount = pageSize
+      this.setPage({
+        page: current,
+        pageCount: pageSize
+      })
+      this.getTableData()
+    }
   }
 
   /**
@@ -307,10 +323,6 @@ export default class ThematicMapAttributeTable extends Vue {
     } else if (nV.from !== this.vueKey) {
       this.setHighlight(nV.itemIndex)
     }
-  }
-
-  created() {
-    this.onSubjectChange(this.selected)
   }
 }
 </script>

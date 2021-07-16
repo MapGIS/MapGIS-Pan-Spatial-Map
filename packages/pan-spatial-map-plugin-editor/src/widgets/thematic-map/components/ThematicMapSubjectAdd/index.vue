@@ -3,7 +3,7 @@
     <mp-window
       title="新建专题图"
       :visible.sync="saVisible"
-      :vertical-offset="60"
+      :vertical-offset="50"
       :has-padding="false"
       anchor="top-center"
     >

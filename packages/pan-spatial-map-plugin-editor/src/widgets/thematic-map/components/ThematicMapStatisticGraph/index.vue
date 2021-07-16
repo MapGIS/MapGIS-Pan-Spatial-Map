@@ -50,7 +50,7 @@
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import * as echarts from 'echarts'
-import { mapGetters, mapMutations } from '../../store'
+import { mapGetters, mapMutations, highlightSubjectTypes } from '../../store'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
@@ -137,6 +137,12 @@ export default class ThematicMapStatisticGraph extends Vue {
     }
   }
 
+  // 是否支持图属高亮
+  get hasHighlight() {
+    return highlightSubjectTypes.includes(this.selectedSubConfig?.subjectType)
+  }
+
+  // 图表配置
   get graph() {
     return this.selectedSubConfig?.graph
   }
@@ -216,8 +222,10 @@ export default class ThematicMapStatisticGraph extends Vue {
       this.activeChart = type
       if (this.chart) {
         this.chart.clear()
+        this.chart.showLoading()
         this.chart.setOption(options(this.chartOption))
         this.chart.resize()
+        this.chart.hideLoading()
       }
     })
   }
@@ -230,23 +238,6 @@ export default class ThematicMapStatisticGraph extends Vue {
     this.target = value
     this.chartOption.title = value
     this.getChartOptions(this.pageDataSet)
-  }
-
-  /**
-   * 图标mouseover事件
-   */
-  onMouseover({ dataIndex }) {
-    this.setHighlightItem({
-      from: this.vueKey,
-      itemIndex: dataIndex
-    })
-  }
-
-  /**
-   * 图标mouseout事件
-   */
-  onMouseout() {
-    this.resetHighlight()
   }
 
   /**
@@ -290,6 +281,22 @@ export default class ThematicMapStatisticGraph extends Vue {
   }
 
   /**
+   * 监听: 高亮配置
+   */
+  @Watch('hasHighlight')
+  watchHasHighlight(nV) {
+    if (nV) {
+      this.chart.on('mouseover', ({ dataIndex }) => {
+        this.setHighlightItem({
+          from: this.vueKey,
+          itemIndex: dataIndex
+        })
+      })
+      this.chart.on('mouseout', this.resetHighlight)
+    }
+  }
+
+  /**
    * 监听: 高亮
    */
   @Watch('highlightItem', { deep: true })
@@ -306,8 +313,6 @@ export default class ThematicMapStatisticGraph extends Vue {
       'thematic-map-graph-chart'
     )
     this.chart = echarts.init(chartDom)
-    this.chart.on('mouseover', this.onMouseover)
-    this.chart.on('mouseout', this.onMouseout)
   }
 }
 </script>

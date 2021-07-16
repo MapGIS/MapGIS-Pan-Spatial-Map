@@ -1,13 +1,14 @@
 import { Component, Prop, Watch, Vue, Mixins } from 'vue-property-decorator'
 import { MapMixin, Feature } from '@mapgis/web-app-framework'
 import _isNumber from 'lodash/isNumber'
+import { highlightSubjectTypes } from '../../../store'
 
 @Component
 export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
   // 组件唯一值
   @Prop({ default: 'map' }) readonly vueKey!: string
 
-  // 专题的配置
+  // 专题配置
   @Prop({ default: () => ({}) }) readonly subDataConfig!: any
 
   // 专题某年度的要素数据
@@ -25,9 +26,12 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
     }
   }
 
-  /**
-   * geojson
-   */
+  // 是否支持图属高亮
+  get hasHighlight() {
+    return highlightSubjectTypes.includes(this.subDataConfig.subjectType)
+  }
+
+  // 获取geojson数据
   get geojson(): Feature.FeatureGeoJSON | null {
     return this.dataSet
       ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(this.dataSet)
@@ -68,17 +72,21 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
    * @param 移入的要素数据索引
    */
   emitHighlight(itemIndex: number) {
-    this.$emit('highlight', {
-      from: this.vueKey,
-      itemIndex
-    })
+    if (this.hasHighlight) {
+      this.$emit('highlight', {
+        from: this.vueKey,
+        itemIndex
+      })
+    }
   }
 
   /**
    * 清除专题图高亮
    */
   emitClearHighlight() {
-    this.$emit('clear-highlight')
+    if (this.hasHighlight) {
+      this.$emit('clear-highlight')
+    }
   }
 
   /**
@@ -90,10 +98,6 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
    * 移除图层
    */
   removeLayer() {}
-
-  created() {
-    this.showLayer()
-  }
 
   beforeDestroy() {
     this.removeLayer()

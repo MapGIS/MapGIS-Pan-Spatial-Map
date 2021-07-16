@@ -1,5 +1,6 @@
 <template>
-  <div class="mapbox-thematic-map-layers">
+  <a-spin :spinning="loading">
+    <!-- 加载专题图层 -->
     <template v-for="t in subjectLayers">
       <component
         v-if="subjectType === t"
@@ -12,17 +13,17 @@
         :subDataConfig="subDataConfig"
       />
     </template>
+    <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
     <template v-if="marker">
-      <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
       <mp-marker-pro :marker="marker" v-if="is2DMapMode" />
       <mp-3d-marker-pro :marker="marker" v-else />
     </template>
-  </div>
+  </a-spin>
 </template>
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { Feature, AppMixin } from '@mapgis/web-app-framework'
-import { mapGetters, subjectTypeList, mapMutations } from '../../store'
+import { subjectTypeList, mapGetters, mapMutations } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
 
@@ -32,7 +33,7 @@ import CesiumLayers from './components/Cesium'
     ...CesiumLayers
   },
   computed: {
-    ...mapGetters(['selectedSubConfig', 'highlightItem'])
+    ...mapGetters(['loading', 'selectedSubConfig', 'highlightItem'])
   },
   methods: {
     ...mapMutations(['setFeaturesQuery', 'setHighlightItem', 'resetHighlight'])

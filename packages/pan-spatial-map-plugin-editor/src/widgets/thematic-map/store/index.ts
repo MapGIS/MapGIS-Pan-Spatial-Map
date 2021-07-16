@@ -1,6 +1,13 @@
 import { ModuleType, ISubjectType } from './types'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
+// 是否支持图属联动
+const highlightSubjectTypes = [
+  'SubSectionMap',
+  'BaseMapWithGraph',
+  'StatisticLabel'
+]
+
 // 专题图类型集合
 const subjectTypeList: ISubjectType[] = [
   { value: 'SubSectionMap', label: '分段专题图' },
@@ -14,6 +21,7 @@ const subjectTypeList: ISubjectType[] = [
 export {
   ModuleType,
   subjectTypeList,
+  highlightSubjectTypes,
   thematicMapStore,
   mapGetters,
   mapMutations
