@@ -151,7 +151,8 @@
           },
           {
             "id": "widget_b886364f-684a-4efb-98b7-7b98418f943a",
-            "uri": "widgets/basemap-manager"
+            "uri": "widgets/basemap-manager",
+            "config": "configs/basemap-manager/config.json"
           },
           {
             "id": "widget_b21e6ee1-d398-4824-a005-b9f50f7bafae",

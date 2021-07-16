@@ -4,13 +4,7 @@ export { getRequest, ProjectionTransformationUtil } from './utils'
 
 export { events, default as eventBus } from './event-bus'
 
-export { default as baseLayerManagerInstance } from './map/base-layers'
-
-export {
-  ExhibitionMixin,
-  ExhibitionControllerMixin,
-  BaseLayersMixin
-} from './mixins'
+export { ExhibitionMixin, ExhibitionControllerMixin } from './mixins'
 
 export { baseConfigInstance, loadConfigs } from './config'
 

@@ -4,7 +4,7 @@
   "igsUploadPort": "9999",
   "data": [
     {
-      "name": "IGS文档",
+      "name": "MapGIS文档",
       "description": "MapGIS IGServer 文档",
       "children": [
         {
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "name": "IGS瓦片",
+      "name": "MapGIS瓦片",
       "description": "MapGIS IGServer 瓦片",
       "children": [
         {
@@ -31,7 +31,7 @@
       ]
     },
     {
-      "name": "IGS图层",
+      "name": "MapGIS图层",
       "description": "MapGIS IGServer 图层",
       "children": [
         {

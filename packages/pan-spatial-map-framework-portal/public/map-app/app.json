@@ -151,7 +151,8 @@
           },
           {
             "id": "widget_b886364f-684a-4efb-98b7-7b98418f943a",
-            "uri": "widgets/basemap-manager"
+            "uri": "widgets/basemap-manager",
+            "config": "configs/basemap-manager/config.json"
           },
           {
             "id": "widget_b21e6ee1-d398-4824-a005-b9f50f7bafae",
@@ -218,6 +219,14 @@
           {
             "id": "widget_dd8e6669-d0c3-4460-9db6-41fc4682b51e",
             "uri": "widgets/terrain-analysis"
+          },
+          {
+            "id": "widget_f6a164fa-2ccc-439b-b493-1445fc1faba7",
+            "uri": "widgets/skyline-analysis"
+          },
+          {
+            "id": "widget_d89dd2b3-c9b0-4326-94a6-2ef1564866d9",
+            "uri": "widgets/shadow-analysis"
           }
         ],
         "widgetStructure": [
@@ -296,6 +305,12 @@
               },
               {
                 "id": "widget_dd8e6669-d0c3-4460-9db6-41fc4682b51e"
+              },
+              {
+                "id": "widget_f6a164fa-2ccc-439b-b493-1445fc1faba7"
+              },
+              {
+                "id": "widget_d89dd2b3-c9b0-4326-94a6-2ef1564866d9"
               }
             ]
           }

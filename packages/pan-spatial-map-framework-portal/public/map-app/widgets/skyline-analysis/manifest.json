@@ -1,0 +1,15 @@
+{
+  "name": "天际线分析",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpSkylineAnalysis",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><defs><style/></defs><path d=\"M137 782.055h750v60.657H137zm619.782-368.833v250.814H635.181V215.238h-55.774v-52.949H444.354v52.949h-43.183v345.701h-1.436v-98.526h-42.609V304.859H200.96v101.206h-44.332v56.348H137v64.415h80.668V470.48h44.284V369.273h34.182v157.555h42.561v98.573h123.564V279.653h43.086v-52.902h13.022v52.902h55.774v448.846h243.681V477.565H887v-64.343z\"/></svg>",
+  "properties": {
+    "2D": false,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": ""
+  }
+}
