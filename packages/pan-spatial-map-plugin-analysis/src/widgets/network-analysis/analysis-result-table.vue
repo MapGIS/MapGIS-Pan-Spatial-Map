@@ -7,7 +7,8 @@
       :pagination="{ size: 'small' }"
       :class="isFullScreen === true ? '' : 'fixed-table'"
       :scroll="{
-        y: 160
+        y: 160,
+        x: '100%'
       }"
       rowKey="id"
       bordered
