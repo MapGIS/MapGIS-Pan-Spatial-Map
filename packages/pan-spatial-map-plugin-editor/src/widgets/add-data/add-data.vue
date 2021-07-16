@@ -127,7 +127,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   }
 
   get urlDataTypes3D() {
-    return [...this.commonDataTypes]
+    return [...this.commonDataTypes, ...this.cesiumDataTypes3D]
   }
 
   get fileDataTypes3D() {
@@ -139,16 +139,26 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     ]
   }
 
+  get cesiumDataTypes3D() {
+    return [
+      {
+        text: 'MapGIS 3D REST Service',
+        value: 'IGSScene',
+        example: 'http://<server>:<port>/igs/rest/g3d/{modelName}'
+      }
+    ]
+  }
+
   get dataTypes3D() {
-    return [...this.commonDataTypes, ...this.fileDataTypes3D]
+    return [...this.commonDataTypes, ...this.cesiumDataTypes3D]
   }
 
   get dataTypes() {
-    return this.dataTypes2D
+    return this.is2DMapMode ? this.dataTypes2D : this.dataTypes3D
   }
 
   get urlDataTypes() {
-    return this.urlDataTypes2D
+    return this.is2DMapMode ? this.urlDataTypes2D : this.urlDataTypes3D
   }
 
   get dataList() {
