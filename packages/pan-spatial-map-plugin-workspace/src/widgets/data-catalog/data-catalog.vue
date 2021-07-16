@@ -295,10 +295,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     }
   }
 
-  get treeDataUrl() {
-    return this.widgetInfo.config.urlConfig.treeDataUrl
-  }
-
   created() {
     this.$message.config({
       top: '100px',
@@ -311,47 +307,12 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   async mounted() {
     this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
+
     this.dataCatalogManager.init(this.widgetInfo.config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
     this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
 
-    if (this.treeDataUrl !== '') {
-      this.getServiceTree()
-    }
-
     eventBus.$on('click-bookmark-item', this.bookMarkClick)
-  }
-
-  // 获取云服务目录树配置
-  private getServiceCatalog() {
-    const this_ = this
-    return new Promise((resolve, reject) => {
-      const request = new XMLHttpRequest()
-      request.responseType = 'json'
-      request.ontimeout = e => {
-        this_.$message.error('请求超时，数据加载失败')
-      }
-      request.open('GET', this.treeDataUrl)
-      request.timeout = 5000
-      request.onreadystatechange = () => {
-        if (request.readyState === 4) {
-          if (request.status >= 200 && request.status <= 304) {
-            resolve(request.response)
-          } else {
-            reject(request.response)
-          }
-        }
-      }
-      request.send()
-    })
-  }
-
-  // 目录树替换为云服务目录
-  private async getServiceTree() {
-    const res = await this.getServiceCatalog()
-    this.dataCatalogManager.init(res.data)
-    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
-    this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
   }
 
   @Watch('checkedNodeKeys', { deep: false })

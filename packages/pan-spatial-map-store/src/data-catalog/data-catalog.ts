@@ -262,6 +262,11 @@ export class DataCatalogManager {
       let tileServiceInfo: any = {}
       let docServiceInfo: any = {}
 
+      if (this.config.urlConfig.treeDataUrl !== '') {
+        const res: any = await this.getServiceTreeData()
+        this.serviceTreeData = res.data.treeData
+      }
+
       await Catalog.DocumentCatalog.getTiles({
         ip: defaultIp,
         port: defaultPort
@@ -287,6 +292,7 @@ export class DataCatalogManager {
       this.defaultServerList = { tileList, docList }
 
       // 2.格式转换、为节点添加级别信息、判断服务是否可用。
+
       this.convertConfigData()
     } else if (this.configConverted.treeConfig.treeData === undefined) {
       this.convertConfigData()
@@ -309,6 +315,9 @@ export class DataCatalogManager {
 
     return false
   }
+
+  // 云服务目录数据
+  private serviceTreeData: any
 
   // 数据目录管理采用单例模式，不允许外部构造
   private constructor() {}
@@ -451,6 +460,25 @@ export class DataCatalogManager {
     VIDEO: 'VIDEO'
   }
 
+  // 获取云服务目录树数据
+  private getServiceTreeData() {
+    return new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest()
+      request.responseType = 'json'
+      request.open('GET', this.config.urlConfig.treeDataUrl)
+      request.onreadystatechange = () => {
+        if (request.readyState === 4) {
+          if (request.status >= 200 && request.status <= 304) {
+            resolve(request.response)
+          } else {
+            reject(request.response)
+          }
+        }
+      }
+      request.send()
+    })
+  }
+
   // 将老版本的配置转换为新版本的配置
   private convertConfigData() {
     // 1.转换keyConfig
@@ -482,10 +510,17 @@ export class DataCatalogManager {
     // 3.转换treeConfig
     // 将缓存的图层节点置空
     this._allLayerConfigItems = []
-    const treeData: any = this.convertTreeData(
-      this.config.treeConfig.treeData,
-      0
-    )
+    let treeData: any
+
+    if (
+      this.config.treeConfig.treeData &&
+      this.config.treeConfig.treeData.length > 0
+    ) {
+      treeData = this.convertTreeData(this.config.treeConfig.treeData, 0)
+    } else {
+      treeData = this.convertTreeData(this.serviceTreeData, 0)
+    }
+
     const treeConfig: any = {
       isShowIcon: false, // 是否显示基础数据目录节点图标
       // isShowIcon: this.config.paramConfig.SHOWICON, // 是否显示基础数据目录节点图标
