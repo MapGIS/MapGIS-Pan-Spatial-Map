@@ -24,6 +24,8 @@
       </a-tree>
     </a-spin>
     <div v-show="checkedNodes.length">
+      <!-- 5类专题服务图层 -->
+      <thematic-map-layers />
       <!-- 属性表 -->
       <thematic-map-attribute-table />
       <!-- 统计表 -->
@@ -34,8 +36,6 @@
       <thematic-map-subject-add />
       <!-- 工具栏 -->
       <thematic-map-manage-tools />
-      <!-- 5类专题服务图层 -->
-      <thematic-map-layers />
     </div>
   </div>
 </template>

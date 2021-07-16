@@ -32,7 +32,7 @@
             <a-input v-model="sub.time" placeholder="请输入年度(或时间)" />
           </mp-row-flex>
           <!-- 服务设置 -->
-          <source-target @change="sourceTargetChange($event, sub)" />
+          <server-tree-select @change="serverChange($event, sub)" />
           <!-- 属性表模块 -->
           <!-- <attribute-table /> -->
           <!-- 统计表模块 -->
@@ -52,12 +52,12 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import _cloneDeep from 'lodash/cloneDeep'
-import SourceTarget from './components/SourceTarget'
-import SubjectStyles from './components/SubjectStyles/index.vue'
+import ServerTreeSelect from './components/ServerTreeSelect.vue'
+import SubjectStyles from './components/SubjectStyles'
 
 @Component({
   components: {
-    SourceTarget,
+    ServerTreeSelect,
     SubjectStyles
   }
 })
@@ -101,7 +101,7 @@ export default class SubjectItems extends Vue {
   /**
    * 专题服务选择变化
    */
-  sourceTargetChange(serverConfig, sub) {
+  serverChange(serverConfig, sub) {
     this.setProperties(serverConfig, sub)
   }
 

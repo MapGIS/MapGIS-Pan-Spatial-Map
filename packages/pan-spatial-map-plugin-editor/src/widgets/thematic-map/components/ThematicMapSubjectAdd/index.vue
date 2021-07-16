@@ -10,10 +10,7 @@
       <div class="thematic-map-subject-add" v-if="saVisible">
         <div class="subject-add-content">
           <!-- 专题基础配置 -->
-          <base-items
-            ref="baseItems"
-            @subject-type-change="subjectType = $event"
-          />
+          <base-items ref="baseItems" @type-change="subjectType = $event" />
           <!-- 专题个性配置 -->
           <subject-items ref="subjectItems" :subject-type="subjectType" />
         </div>

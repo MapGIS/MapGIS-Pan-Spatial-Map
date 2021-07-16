@@ -1,40 +1,54 @@
 <template>
   <div class="base-items">
-    <!-- 专题分类 -->
-    <mp-row-flex label="专题分类">
-      <a-select
-        @change="subjectClassifyChange"
-        :value="subjectClassify"
-        :options="subjectClassifyList"
-        placeholder="请选择"
-      />
-    </mp-row-flex>
     <!-- 专题名称 -->
     <mp-row-flex label="专题名称">
-      <a-select
-        v-model="subjectName"
-        :options="subjectNameList"
-        placeholder="请选择"
-      />
+      <a-dropdown v-model="dropdownVisible" :trigger="['click']">
+        <span
+          class="ant-input-affix-wrapper pointer"
+          @click.stop="showDropdown"
+        >
+          <span class="ant-input">
+            <span v-if="subjectNameNode.title">{{
+              subjectNameNode.title
+            }}</span>
+            <span v-else class="placeholder">请选择</span>
+          </span>
+          <span
+            class="ant-select-arrow"
+            :class="{ rotate180: dropdownVisible }"
+          >
+            <a-icon type="down" class="ant-select-arrow-icon" />
+          </span>
+        </span>
+        <div class="dropdown-content" slot="overlay">
+          <a-tree
+            @select="treeSelected"
+            :show-line="true"
+            :tree-data="thematicMapTree"
+            :replace-fields="{ key: 'id' }"
+          />
+        </div>
+      </a-dropdown>
     </mp-row-flex>
     <!-- 专题图类型 -->
     <mp-row-flex label="专题图类型">
       <a-select
-        @change="subjectMapTypeChange"
-        :value="subjectMapType"
-        :options="subjectMapTypeList"
+        @change="subjectTypeChange"
+        :value="subjectType"
+        :options="subjectTypeList"
         placeholder="请选择"
       />
     </mp-row-flex>
     <!-- 专题图名称 -->
     <mp-row-flex label="专题图名称">
-      <a-input v-model="subjectMapTitle" placeholder="请输入专题图名称" />
+      <a-input v-model="subjectTitle" placeholder="请输入专题图名称" />
     </mp-row-flex>
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
+import _cloneDeep from 'lodash/cloneDeep'
 import { mapGetters, subjectTypeList } from '../../../../store'
 
 @Component({
@@ -43,70 +57,82 @@ import { mapGetters, subjectTypeList } from '../../../../store'
   }
 })
 export default class BaseItems extends Vue {
-  // 专题分类
-  subjectClassify = ''
-
-  // 专题分类列表
-  subjectClassifyList = []
+  dropdownVisible = false
 
   // 专题名称
-  subjectName = ''
-
-  // 专题名称列表
-  subjectNameList = []
+  subjectNameNode = {
+    id: '',
+    title: ''
+  }
 
   // 专题图类型
-  subjectMapType = ''
+  subjectType = ''
 
   // 专题图类型列表
-  subjectMapTypeList = subjectTypeList
+  subjectTypeList = subjectTypeList
 
   // 专题图名称
-  subjectMapTitle = ''
+  subjectTitle = ''
+
+  // 专题服务树
+  thematicMapTree = []
 
   /**
    * 监听专题配置变化
    */
   @Watch('subjectConfig', { immediate: true, deep: true })
   subjectConfigChange(nV) {
-    this.subjectClassifyList =
-      nV && nV.length
-        ? nV
-            .filter(({ nodeType }) => nodeType === 'panel')
-            .map(({ id, title, children }) => ({
-              label: title,
-              value: id,
-              children
-            }))
-        : []
-    this.subjectClassifyChange(this.subjectClassifyList[0]?.value)
+    this.setSubjectMapTree(nV)
+  }
+
+  showDropdown() {
+    this.dropdownVisible = true
+  }
+
+  hideDropdown() {
+    this.dropdownVisible = false
+  }
+
+  /**
+   * 格式化专题服务树
+   * @param tree
+   */
+  normalizeTreeData(tree: any[]) {
+    return tree.map(node => {
+      this.$set(node, 'selectable', false)
+      if (node.nodeType === 'list') {
+        this.$set(node, 'selectable', true)
+        this.$set(node, 'children', [])
+      } else if (node.children && node.children.length) {
+        this.normalizeTreeData(node.children)
+      }
+      return node
+    })
+  }
+
+  /**
+   * 设置专题服务树
+   * @param tree
+   */
+  setSubjectMapTree(tree: any[]) {
+    this.thematicMapTree = this.normalizeTreeData(_cloneDeep(tree))
   }
 
   /**
    * 专题分类变化
    */
-  subjectClassifyChange(value) {
-    this.subjectClassify = value
-    const item = this.subjectClassifyList.find(v => v.value === value)
-    this.subjectNameList =
-      item.children && item.children.length
-        ? item.children
-            .filter(({ nodeType }) => nodeType === 'list')
-            .map(({ id, title }) => ({
-              label: title,
-              value: id
-            }))
-        : []
-    this.subjectName = this.subjectNameList[0]?.value
+  treeSelected(selectedKeys: string[], { node }: any) {
+    this.subjectNameNode = node.dataRef
+    this.hideDropdown()
   }
 
   /**
    * 专题图类型选择变化
    */
-  subjectMapTypeChange(value) {
-    this.subjectMapType = value
-    this.subjectMapTitle = ''
-    this.$emit('subject-type-change', value)
+  subjectTypeChange(value: string) {
+    this.subjectType = value
+    this.subjectTitle = ''
+    this.$emit('type-change', value)
   }
 
   /**
@@ -115,25 +141,46 @@ export default class BaseItems extends Vue {
    */
   getConfig(subjectConfig = []) {
     const {
-      subjectClassify: panelId,
-      subjectName: listId,
-      subjectMapType,
-      subjectMapTitle
+      subjectNameNode: { id: parentId },
+      subjectType,
+      subjectTitle
     } = this
     const subjectNode = {
-      id: `${subjectMapType}-${UUID.uuid()}`,
+      id: `${subjectType}-${UUID.uuid()}`,
       visible: true,
       nodeType: 'subject',
-      type: subjectMapType,
-      title: subjectMapTitle,
+      type: subjectType,
+      title: subjectTitle,
       config: subjectConfig
     }
-    return [listId || panelId, subjectNode]
+    return [parentId, subjectNode]
   }
 }
 </script>
 <style lang="less" scoped>
-/deep/ .ant-form-item-label {
-  color: @text-color-secondary;
+.placeholder {
+  color: #c4c4c4;
+}
+
+.ant-input-affix-wrapper {
+  cursor: pointer;
+  &:focus {
+    box-shadow: 0 0 0 2px rgb(24, 144, 255, 0.2);
+  }
+}
+
+.ant-select-arrow {
+  transition: transform 0.3s;
+  &.rotate180 {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdown-content {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 8px 12px;
+  background: @white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 </style>

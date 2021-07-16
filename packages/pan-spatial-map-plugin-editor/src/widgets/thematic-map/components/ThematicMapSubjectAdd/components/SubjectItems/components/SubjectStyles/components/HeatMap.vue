@@ -18,9 +18,9 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import ColorView from '../../common/ColorView.vue'
-import ColorPickerSetting from '../../common/ColorPickerSetting.vue'
-import AnimationItems from '../../common/AnimationItems.vue'
+import ColorView from '../common/ColorView.vue'
+import ColorPickerSetting from '../common/ColorPickerSetting.vue'
+import AnimationItems from '../common/AnimationItems.vue'
 
 @Component({
   components: {

@@ -1,5 +1,5 @@
 <template>
-  <a-spin :spinning="loading">
+  <div>
     <!-- 加载专题图层 -->
     <template v-for="t in subjectLayers">
       <component
@@ -18,7 +18,7 @@
       <mp-marker-pro :marker="marker" v-if="is2DMapMode" />
       <mp-3d-marker-pro :marker="marker" v-else />
     </template>
-  </a-spin>
+  </div>
 </template>
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
@@ -135,4 +135,3 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 }
 </script>
-<style lang="less" scoped></style>
