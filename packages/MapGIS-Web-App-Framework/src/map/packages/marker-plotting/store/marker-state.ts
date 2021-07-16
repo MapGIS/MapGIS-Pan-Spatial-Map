@@ -9,16 +9,24 @@ export class MarkerState {
     }
   }
 
+  private hasSelecteId(markerId: string) {
+    return this.selectedIds.has(markerId)
+  }
+
   public getSelectedIds() {
     return this.selectedIds
   }
 
   public setSelectedIds(markerId: string) {
-    this.selectedIds.add(markerId)
+    if (!this.hasSelecteId(markerId)) {
+      this.selectedIds.add(markerId)
+    }
   }
 
   public removeSelectedIds(markerId: string) {
-    this.selectedIds.delete(markerId)
+    if (this.hasSelecteId(markerId)) {
+      this.selectedIds.delete(markerId)
+    }
   }
 
   public clearSelectedIds() {

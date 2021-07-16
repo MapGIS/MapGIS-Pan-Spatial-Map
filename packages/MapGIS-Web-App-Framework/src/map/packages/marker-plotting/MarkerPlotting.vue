@@ -109,22 +109,13 @@ export default class MpMarkerPlotting extends Mixins(MarkerPlottingMixin) {
 
   @Watch('selectedMarkers', { immediate: true })
   changeSelectedMarkers(markerIds, prevMarkerIds = []) {
-    if (prevMarkerIds.length) {
-      prevMarkerIds.forEach(id => {
-        const marker = this.getMarker(id)
-        this.onClearHighlightFeature(marker)
-        if (this.vueKey) {
-          this.emitClearHighlightEvent(marker, this.vueKey)
-        }
-        MarkerStateInstance.removeSelectedIds(id)
-      })
-    }
+    this.clearAllHighlight()
     if (markerIds.length) {
       if (this.vueKey) {
         this.emitClearSelectionEvent(this.vueKey)
       }
       const lastMarker = this.getMarker(_last(markerIds))
-      this.zoomTo(lastMarker.feature.bound)
+      this.zoomOrPanTo(lastMarker.feature.bound)
       markerIds.forEach(id => {
         const marker = this.getMarker(id)
         this.highlightFeature(marker)
@@ -281,6 +272,19 @@ export default class MpMarkerPlotting extends Mixins(MarkerPlottingMixin) {
   }
 
   /**
+   * 清除所有高亮
+   */
+  private clearAllHighlight() {
+    this.markers.forEach(marker => {
+      this.onClearHighlightFeature(marker)
+      if (this.vueKey) {
+        this.emitClearHighlightEvent(marker, this.vueKey)
+      }
+      MarkerStateInstance.removeSelectedIds(marker.id)
+    })
+  }
+
+  /**
    * 清除高亮
    */
   private onClearHighlightFeature(marker) {
@@ -291,12 +295,16 @@ export default class MpMarkerPlotting extends Mixins(MarkerPlottingMixin) {
    * 添加高亮
    */
   private onHighlightFeature(marker) {
-    this.zoomTo(marker.feature.bound)
+    this.zoomOrPanTo(marker.feature.bound)
     this.highlightFeature(marker)
   }
 
   created() {
     this.subscribeHighlight()
+  }
+
+  beforeDestroy() {
+    this.clearAllHighlight()
   }
 }
 </script>
