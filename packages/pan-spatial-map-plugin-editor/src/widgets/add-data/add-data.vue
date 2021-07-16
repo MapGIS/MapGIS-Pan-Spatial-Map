@@ -28,6 +28,13 @@
         :categories="categories"
         @added="onAddData"
       ></add-data-url>
+      <add-data-file
+        v-show="tab === 'file'"
+        :file-data-types="fileDataTypes"
+        :categories="categories"
+        :config="config"
+      >
+      </add-data-file>
     </template>
   </div>
 </template>
@@ -49,12 +56,14 @@ import {
 
 import AddDataList from './components/AddDataList.vue'
 import AddDataUrl from './components/AddDataUrl.vue'
+import AddDataFile from './components/AddDataFile.vue'
 
 @Component({
   name: 'MpAddData',
   components: {
     AddDataList,
-    AddDataUrl
+    AddDataUrl,
+    AddDataFile
   }
 })
 export default class MpAddData extends Mixins(WidgetMixin) {
@@ -62,7 +71,8 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
   private tabs = [
     { key: 'list', label: '数据列表' },
-    { key: 'url', label: 'URL' }
+    { key: 'url', label: 'URL' },
+    { key: 'file', label: '文件' }
   ]
 
   private config
@@ -115,7 +125,6 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
   get fileDataTypes2D() {
     return [
-      { text: 'GeoJSON 数据', value: 'GEOJSON' },
       { text: 'GeoTIFF 数据', value: 'TIF' },
       { text: 'Esri Shapefile', value: 'SHP' },
       { text: 'MapGIS 6X 工作区文件', value: '6X' }
@@ -132,7 +141,6 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
   get fileDataTypes3D() {
     return [
-      { text: 'GeoJSON 数据', value: 'GEOJSON' },
       { text: 'KML', value: 'KML' },
       { text: 'KMZ', value: 'KMZ' },
       { text: 'CZML', value: 'CZML' }
@@ -159,6 +167,10 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
   get urlDataTypes() {
     return this.is2DMapMode ? this.urlDataTypes2D : this.urlDataTypes3D
+  }
+
+  get fileDataTypes() {
+    return this.is2DMapMode ? this.fileDataTypes2D : this.fileDataTypes3D
   }
 
   get dataList() {
