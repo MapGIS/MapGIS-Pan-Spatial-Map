@@ -822,6 +822,18 @@
             "serverUrl": ""
           },
           {
+            "label": "点云数据",
+            "describe": "点云数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "m3d_点云",
+            "searchName": "",
+            "model": "surface",
+            "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7480",
+            "serverUrl": ""
+          },
+          {
             "label": "地质体_福田",
             "describe": "地质体_福田",
             "ip": "",
