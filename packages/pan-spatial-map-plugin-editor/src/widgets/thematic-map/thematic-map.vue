@@ -16,16 +16,17 @@
           <a-dropdown :trigger="['contextmenu']">
             <span>{{ node.title }}</span>
             <a-menu slot="overlay" @click="onTreeNodeMenuClick($event, node)">
-              <!-- <a-menu-item key="add" v-show="!node.checkable">添加</a-menu-item> -->
-              <a-menu-item key="remove">删除</a-menu-item>
+              <!-- <template v-if="!node.checkable">
+                <a-menu-item :key="handleKeys.create">新建</a-menu-item>
+              </template> -->
+              <!-- <a-menu-item :key="handleKeys.edit">编辑</a-menu-item> -->
+              <a-menu-item :key="handleKeys.remove">删除</a-menu-item>
             </a-menu>
           </a-dropdown>
         </span>
       </a-tree>
     </a-spin>
     <div v-show="checkedNodes.length">
-      <!-- 5类专题服务图层 -->
-      <thematic-map-layers />
       <!-- 属性表 -->
       <thematic-map-attribute-table />
       <!-- 统计表 -->
@@ -36,6 +37,8 @@
       <thematic-map-subject-add />
       <!-- 工具栏 -->
       <thematic-map-manage-tools />
+      <!-- 5类专题服务图层 -->
+      <thematic-map-layers />
     </div>
   </div>
 </template>
@@ -52,6 +55,12 @@ import ThematicMapManageTools from './components/ThematicMapManageTools'
 import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
 import ThematicMapLayers from './components/ThematicMapLayers'
 
+enum HandleKeys {
+  create = 'create',
+  edit = 'edit',
+  remove = 'remove'
+}
+
 @Component({
   name: 'MpThematicMap',
   computed: {
@@ -59,13 +68,13 @@ import ThematicMapLayers from './components/ThematicMapLayers'
   },
   methods: {
     ...mapMutations([
+      'setVisible',
       'setBaseConfig',
       'setSubjectConfig',
-      'removeSubjectConfigNode',
       'setSelectedList',
-      'setVisible',
       'resetVisible',
-      'resetHighlight'
+      'resetLinkage',
+      'removeSubjectConfigNode'
     ])
   },
   components: {
@@ -82,7 +91,9 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 ) {
   loading = false
 
-  defaultOpenPanel = ['at', 'st', 'tl']
+  handleKeys = HandleKeys
+
+  defaultOpenPanel: Array<ModuleType> = ['at', 'st', 'tl']
 
   checkedNodes: Array<Record<string, any>> = []
 
@@ -125,7 +136,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 若无参数则隐藏所有默认配置的面板
    */
   setPanelsHide(type: ModuleType) {
-    this.resetHighlight()
+    this.resetLinkage()
     this.defaultOpenPanel.forEach(t => t !== type && this.resetVisible(t))
   }
 
@@ -154,19 +165,42 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   }
 
   /**
+   * todo 创建节点
+   */
+  onTreeNodeCreate(nodeData) {
+    this.setPanelsShow('mt')
+  }
+
+  /**
+   * todo 编辑节点
+   */
+  onTreeNodeEdit(nodeData) {
+    this.setPanelsShow('mt')
+  }
+
+  /**
+   * 移除节点
+   */
+  onTreeNodeRemove(nodeData) {
+    this.setSelectedList(this.checkedNodes.filter(s => s.id !== nodeData.id))
+    this.removeSubjectConfigNode(nodeData)
+  }
+
+  /**
    * 节点下拉菜单点击
-   * @param key:  add | remove
+   * @param key HandleKeys
    * @param dataRef 节点数据
    */
-  onTreeNodeMenuClick({ key }, { dataRef, dataRef: { id } }) {
+  onTreeNodeMenuClick({ key }, { dataRef }) {
     switch (key) {
-      case 'remove': {
-        this.setSelectedList(this.checkedNodes.filter(s => s.id !== id))
-        this.removeSubjectConfigNode(dataRef)
+      case HandleKeys.create:
+        this.onTreeNodeCreate(dataRef)
         break
-      }
-      case 'add':
-        this.setPanelsShow('mt')
+      case HandleKeys.edit:
+        this.onTreeNodeEdit(dataRef)
+        break
+      case HandleKeys.remove:
+        this.onTreeNodeRemove(dataRef)
         break
       default:
         break

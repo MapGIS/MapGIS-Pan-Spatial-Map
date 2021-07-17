@@ -145,7 +145,8 @@ export default class BaseItems extends Vue {
       subjectType,
       subjectTitle
     } = this
-    const subjectNode = {
+    return {
+      parentId,
       id: `${subjectType}-${UUID.uuid()}`,
       visible: true,
       nodeType: 'subject',
@@ -153,7 +154,6 @@ export default class BaseItems extends Vue {
       title: subjectTitle,
       config: subjectConfig
     }
-    return [parentId, subjectNode]
   }
 }
 </script>
@@ -165,7 +165,7 @@ export default class BaseItems extends Vue {
 .ant-input-affix-wrapper {
   cursor: pointer;
   &:focus {
-    box-shadow: 0 0 0 2px rgb(24, 144, 255, 0.2);
+    box-shadow: @box-shadow-base;
   }
 }
 
@@ -179,8 +179,8 @@ export default class BaseItems extends Vue {
 .dropdown-content {
   max-height: 320px;
   overflow-y: auto;
-  padding: 8px 12px;
+  padding: 2px 8px;
   background: @white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: @box-shadow-base;
 }
 </style>

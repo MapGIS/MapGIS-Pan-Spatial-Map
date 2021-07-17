@@ -1,7 +1,7 @@
 <template>
   <div class="server-tree-select">
     <mp-row-flex label="服务地址" label-align="right" :span="[6, 18]">
-      <a-dropdown :visible.sync="dropdownVisible" :trigger="['click']">
+      <a-dropdown :visible="dropdownVisible" :trigger="['click']">
         <a-input
           @click.stop
           @change="urlChange"
@@ -104,14 +104,25 @@ export default class ServerTreeSelect extends Vue {
   }
 
   /**
+   * 是否有gdbp
+   */
+  isGdbp(serverType) {
+    return LayerType.IGSVector === serverType
+  }
+
+  /**
+   * 是否doc
+   */
+  isDoc(serverType) {
+    return LayerType.IGSMapImage === serverType
+  }
+
+  /**
    * IGSMapImage地图文档(5)
    * IGSVector矢量(6)
    */
-  isGdbpDoc({ serverType }: any) {
-    return (
-      serverType &&
-      [LayerType.IGSMapImage, LayerType.IGSVector].includes(serverType)
-    )
+  isGdbpDoc(serverType: LayerType) {
+    return serverType && (this.isGdbp(serverType) || this.isDoc(serverType))
   }
 
   /**
@@ -120,6 +131,9 @@ export default class ServerTreeSelect extends Vue {
   handleDataCatalog(tree: Layer[]) {
     for (let i = 0; i < tree.length; i++) {
       const node = tree[i]
+      if (this.isGdbp(node.serverType)) {
+        this.$set(node, 'isLeaf', true)
+      }
       if (node.children && node.children.length > 0) {
         this.$set(node, 'selectable', false)
         this.handleDataCatalog(node.children)
@@ -127,7 +141,7 @@ export default class ServerTreeSelect extends Vue {
       if (node.children && node.children.length === 0) {
         node.children = null
       }
-      if (!this.isGdbpDoc(node) && !node.children) {
+      if (!this.isGdbpDoc(node.serverType) && !node.children) {
         tree.splice(i, 1)
         i--
       }
@@ -144,6 +158,7 @@ export default class ServerTreeSelect extends Vue {
       .getDataCatalogTreeData()
       .then(result => {
         this.treeData = this.handleDataCatalog(_cloneDeep(result))
+        console.log('this.treeData', this.treeData)
         this.loading = false
       })
       .catch(() => {
@@ -184,7 +199,8 @@ export default class ServerTreeSelect extends Vue {
                   port,
                   gdbp: URL,
                   name: LayerName,
-                  guid: LayerIndex
+                  guid: LayerIndex,
+                  isLeaf: true
                 })
               )
               this.treeData = [...this.treeData]
@@ -284,9 +300,9 @@ export default class ServerTreeSelect extends Vue {
   &-content {
     max-height: 320px;
     overflow-y: auto;
-    padding: 8px 12px;
+    padding: 2px 8px;
     background: @white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: @box-shadow-base;
   }
 }
 .arrow-icon {

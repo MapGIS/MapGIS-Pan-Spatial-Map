@@ -24,7 +24,11 @@
       >
         <a-collapse-panel v-for="(sub, i) in subjectConfig" :key="i">
           <template #header>
-            <a-checkbox @click.stop @change="checkedTime($event, i)" />
+            <a-checkbox
+              @click.stop
+              @change="checkedTime($event, sub, i)"
+              :checked="sub.checked"
+            />
             <span class="time">{{ sub.time || '新增年度' }}</span>
           </template>
           <!-- 年度或时间 -->
@@ -117,7 +121,8 @@ export default class SubjectItems extends Vue {
    */
   addTime() {
     const node = {
-      time: ''
+      time: '',
+      checked: false
     }
     this.subjectConfig.push(node)
   }
@@ -136,10 +141,12 @@ export default class SubjectItems extends Vue {
   /**
    * 选中年度
    */
-  checkedTime(e, index: number) {
+  checkedTime(e, sub, index: number) {
     e.stopPropagation()
     e.preventDefault()
-    if (e.target.checked) {
+    const checked = e.target.checked
+    this.$set(sub, 'checked', checked)
+    if (checked) {
       this.checkedPanel.push(index)
     } else {
       this.checkedPanel.splice(index, 1)

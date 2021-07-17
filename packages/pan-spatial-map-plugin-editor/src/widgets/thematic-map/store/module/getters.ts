@@ -24,7 +24,7 @@ const getters = {
   // 获取选中专题的年度列表
   selectedTimeList: (state: IState) => state.selectedTimeList,
   // 高亮项
-  highlightItem: (state: IState) => state.highlightItem
+  linkageItem: (state: IState) => state.linkageItem
 }
 
 export default Vue.observable(getters)

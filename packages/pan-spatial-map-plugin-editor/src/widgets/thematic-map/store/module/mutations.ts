@@ -6,29 +6,34 @@ import {
   baseConfigInstance,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
-import { ModuleType, IHighlighItem, IThematicMapSubjectConfig } from '../types'
+import {
+  ModuleType,
+  LinkageItem,
+  PageParam,
+  SelectedSubConfig,
+  SubjectBaseConfig,
+  OldSubjectConfig,
+  NewSubjectConfig
+} from '../types'
 import state from './state'
 
 const mutations = {
   /**
-   * 设置专题服务的基础配置数据
-   */
-  setBaseConfig({ state }, baseConfig: any) {
-    state.baseConfig = baseConfig
-  },
-  /**
-   * 设置专题服务专题配置数据
-   */
-  setSubjectConfig({ state }, subjectConfig: IThematicMapSubjectConfig[]) {
-    state.subjectConfig = subjectConfig
-    localStorage.setItem('subjectConfig', JSON.stringify(subjectConfig))
-  },
-  /**
-   * 保存专题服务展示弹框的开关
+   * 专题服务各子功能弹框的开关
    */
   setVisible({ state }, type: ModuleType) {
     if (state.moduleTypes.indexOf(type) < 0) {
       state.moduleTypes.push(type)
+    }
+  },
+  /**
+   * 重置专题服务各子功能弹框的开关
+   */
+  resetVisible({ state }, type: ModuleType) {
+    if (!type) {
+      state.moduleTypes = []
+    } else {
+      state.moduleTypes.splice(state.moduleTypes.indexOf(type), 1)
     }
   },
   /**
@@ -38,32 +43,33 @@ const mutations = {
     state.loading = loading
   },
   /**
-   * 设置分页
+   * 分页设置
    */
-  setPage({ state }, { page, pageCount }) {
+  setPage({ state }, { page, pageCount }: PageParam) {
     state.pageParam = {
       page: page - 1,
       pageCount
     }
   },
   /**
-   * 保存当前页的查询的要素数据
+   * 当前页的查询的要素数据
    */
   setDataSet({ state }, pageDataSet: Feature.FeatureIGS | null) {
     state.pageDataSet = _cloneDeep(pageDataSet)
   },
   /**
-   * 查询要素
+   * 要素查询
    * @param isPage 是否分页
    * @param onSuccess
    * @param onError
+   * 目前只支持查询格式为json, 主要因为webclient-vue的分段/统计/普通静态标注专题图暂不支持geojson的解析
    */
   setFeaturesQuery(
     { state, commit },
     { isPage = true, onSuccess, onError }: any = {}
   ) {
-    if (!state.selectedSubConfig) return
     const { pageParam, selectedSubConfig, baseConfig = {} } = state
+    if (!selectedSubConfig) return
     const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
     const { baseIp, basePort } = baseConfig
     const {
@@ -128,13 +134,20 @@ const mutations = {
     }
   },
   /**
-   * 设置选中专题的年度列表
-   * 旧版: config:{type, data: [{time, subData:[{...}]}]}或者config: {type, data: [{time, ...}]}
-   * 新版: config:[{time...}]
+   * 对应专题年度的配置子配置数据
+   * 旧版专题配置: OldSubjectConfig
+   * 新版专题配置: NewSubjectConfig
    */
-  setSelectedSubConfig({ state }, time: string) {
-    const subject = state.selectedList.find(({ id }) => id === state.selected)
-    let selectedSubConfig = null
+  setSelectedSubConfig({ state }, selectedSubConfig: SelectedSubConfig | null) {
+    state.selectedSubConfig = selectedSubConfig
+  },
+  /**
+   * 选中的年度
+   */
+  setSelectedTime({ state, commit }, time?: string) {
+    state.selectedTime = time
+    const subject = state.selected
+    let selectedSubConfig: SelectedSubConfig | null = null
     if (subject && subject.config) {
       const { type: subjectType, config } = subject
       if (Array.isArray(config)) {
@@ -159,71 +172,72 @@ const mutations = {
         }
       }
     }
-    state.selectedSubConfig = selectedSubConfig
+    commit('setSelectedSubConfig', selectedSubConfig)
   },
   /**
-   * 设置选中的年度
+   * 选中的单个专题服务的年度列表数据
    */
-  setSelectedTime({ state, commit }, time = '') {
-    state.selectedTime = time
-    commit('setSelectedSubConfig', time)
+  setSelectedTimeList({ state, commit }, selectedTimeList: Array<string>) {
+    state.selectedTimeList = selectedTimeList
+    commit('setSelectedTime', selectedTimeList[0])
   },
   /**
-   * 设置选中的单个专题服务的时间轴列表数据
+   * 选中的单个专题服务
    */
-  setSelectedTimeList({ state, commit }, id: string) {
-    let selectedTimeList: string[] = []
-    const subject = state.selectedList.find(
-      (item: IThematicMapSubjectConfig) => item.id === id
-    )
+  setSelected(
+    { state, commit },
+    subject?: OldSubjectConfig | NewSubjectConfig
+  ) {
+    state.selected = subject
+    let selectedTimeList: Array<string> = []
     if (subject && subject.config) {
-      if (Array.isArray(subject.config)) {
+      const { config } = subject
+      if (Array.isArray(config)) {
         // 新版
-        selectedTimeList = subject.config.map(({ time }: any) => time)
+        selectedTimeList = config.map(({ time }) => time)
       } else {
         // 旧版
-        const { data = [] } = subject.config
-        selectedTimeList = data.map(({ time }: any) => time)
+        const { data = [] } = config
+        selectedTimeList = data.map(({ time }) => time)
       }
     }
-    state.selectedTimeList = selectedTimeList
+    commit('setSelectedTimeList', selectedTimeList)
   },
   /**
-   * 设置选中的单个专题服务
-   */
-  setSelected({ state, commit }, id = '') {
-    if (state.selected !== id) {
-      state.selected = id
-      commit('setSelectedTimeList', id)
-    }
-  },
-  /**
-   * 设置选中的专题服务集合
+   * 选中的专题集合
    */
   setSelectedList(
     { state, commit },
-    selectedList: IThematicMapSubjectConfig[] = []
+    selectedList: Array<OldSubjectConfig | NewSubjectConfig> = []
   ) {
     state.selectedList = selectedList
-    commit('setSelected', _last(selectedList)?.id)
+    commit('setSelected', _last(selectedList))
   },
   /**
-   * 设置新增的专题图
+   * 专题服务的基础配置数据
    */
-  setSubjectConfigNode(
-    { state, commit },
-    {
-      parentId,
-      node
-    }: {
-      parentId: string
-      node: IThematicMapSubjectConfig
-    }
+  setBaseConfig({ state }, baseConfig: SubjectBaseConfig) {
+    state.baseConfig = baseConfig
+  },
+  /**
+   * 存储专题服务总专题配置数据
+   */
+  setSubjectConfig(
+    { state },
+    subjectConfig: Array<OldSubjectConfig | NewSubjectConfig>
   ) {
-    const loop = (tree: IThematicMapSubjectConfig[]) => {
+    state.subjectConfig = subjectConfig
+    localStorage.setItem('subjectConfig', JSON.stringify(subjectConfig))
+  },
+  /**
+   * 创建新增的专题图
+   */
+  createSubjectConfigNode({ state, commit }, node: NewSubjectConfig) {
+    state.newSubjectConfig = node
+    const loop = tree => {
       for (let i = 0; i < tree.length; i++) {
         const item = tree[i]
-        if (item.id === parentId) {
+        if (item.id === node.parentId) {
           if (item.children && item.children.length) {
             item.children.push(node)
           } else {
@@ -238,39 +252,14 @@ const mutations = {
     const subjectConfig = loop(_cloneDeep(state.subjectConfig))
     commit('setSubjectConfig', subjectConfig)
   },
-  /**
-   * 设置高亮项
-   */
-  setHighlightItem({ state }, { from, itemIndex }: IHighlighItem) {
-    markerIconInstance.unSelectIcon().then(img => {
-      const geoJson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
-        state.pageDataSet
-      )
-      const feature = geoJson.features[itemIndex]
-      if (feature) {
-        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
-        const centerItems = [coordinates[0], coordinates[1]]
-        const { properties } = feature
-        state.highlightItem = {
-          from,
-          itemIndex,
-          marker: {
-            img,
-            coordinates,
-            feature,
-            markerId: UUID.uuid(),
-            fid: properties.fid,
-            properties
-          }
-        }
-      }
-    })
-  },
   /*
-   * 移除专题图
+   * 移除专题服务树节点
    */
-  removeSubjectConfigNode({ state, commit }, node: IThematicMapSubjectConfig) {
-    const loop = (tree: IThematicMapSubjectConfig[]) => {
+  removeSubjectConfigNode(
+    { state, commit },
+    node: OldSubjectConfig | NewSubjectConfig
+  ) {
+    const loop = tree => {
       for (let i = 0; i < tree.length; i++) {
         const item = tree[i]
         if (item.children && item.children.length) {
@@ -288,21 +277,39 @@ const mutations = {
     commit('setSubjectConfig', subjectConfig)
   },
   /**
-   * 重置高亮
-   * @param param0
+   * 当前高亮的要素数据项(图属联动项)
+   * 高亮项使用的是geojson数据需对dataSet转换
    */
-  resetHighlight({ state }) {
-    state.highlightItem = null
+  setLinkageItem({ state }, { from, itemIndex }: LinkageItem) {
+    markerIconInstance.unSelectIcon().then(img => {
+      const geoJson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
+        state.pageDataSet
+      )
+      const feature = geoJson.features[itemIndex]
+      if (feature) {
+        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
+        const centerItems = [coordinates[0], coordinates[1]]
+        const { properties } = feature
+        state.linkageItem = {
+          from,
+          itemIndex,
+          marker: {
+            img,
+            coordinates,
+            feature,
+            markerId: UUID.uuid(),
+            fid: properties.fid,
+            properties
+          }
+        }
+      }
+    })
   },
   /**
-   * 重置专题服务所有的弹框的开关
+   * 重置高亮
    */
-  resetVisible({ state }, type: ModuleType) {
-    if (!type) {
-      state.moduleTypes = []
-    } else {
-      state.moduleTypes.splice(state.moduleTypes.indexOf(type), 1)
-    }
+  resetLinkage({ state }) {
+    state.linkageItem = null
   }
 }
 

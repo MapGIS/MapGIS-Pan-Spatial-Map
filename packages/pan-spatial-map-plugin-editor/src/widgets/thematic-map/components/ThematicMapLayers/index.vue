@@ -4,8 +4,8 @@
     <template v-for="t in subjectLayers">
       <component
         v-if="subjectType === t"
-        @highlight="setHighlightItem"
-        @clear-highlight="resetHighlight"
+        @highlight="setLinkageItem"
+        @clear-highlight="resetLinkage"
         :key="t"
         :is="t"
         :vue-key="vueKey"
@@ -33,10 +33,10 @@ import CesiumLayers from './components/Cesium'
     ...CesiumLayers
   },
   computed: {
-    ...mapGetters(['loading', 'selectedSubConfig', 'highlightItem'])
+    ...mapGetters(['loading', 'selectedSubConfig', 'linkageItem'])
   },
   methods: {
-    ...mapMutations(['setFeaturesQuery', 'setHighlightItem', 'resetHighlight'])
+    ...mapMutations(['setFeaturesQuery', 'setLinkageItem', 'resetLinkage'])
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
@@ -123,9 +123,9 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 
   /**
-   * 监听: 高亮
+   * 监听: 联动项变化
    */
-  @Watch('highlightItem', { deep: true })
+  @Watch('linkageItem', { deep: true })
   watchHighlightItem(nV) {
     if (!nV) {
       this.clearHighlight()

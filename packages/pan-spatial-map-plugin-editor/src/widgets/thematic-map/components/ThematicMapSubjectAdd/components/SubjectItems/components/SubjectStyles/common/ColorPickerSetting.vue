@@ -1,5 +1,5 @@
 <template>
-  <a-dropdown :visible.sync="dropdownVisible" :trigger="['click']">
+  <a-dropdown :visible="dropdownVisible" :trigger="['click']">
     <span
       class="color-view"
       :style="{ background }"
@@ -132,15 +132,8 @@ export default class ColorPickerSetting extends Vue {
   ]
 
   @Watch('value', { immediate: true, deep: true })
-  valueChange(nV) {
-    if (!nV || Object.keys(nV).some(n => isNaN(Number(n)))) {
-      return
-    }
-    this.tableData = Object.entries(nV).map(([percent, color]) => ({
-      color,
-      key: UUID.uuid(),
-      percent: percent * 100
-    }))
+  valueChange() {
+    this.initTableData()
   }
 
   get background() {
@@ -149,9 +142,23 @@ export default class ColorPickerSetting extends Vue {
         .sort((a, b) => a[0] - b[0])
         .map(([percent, color]) => `${color} ${percent * 100}%`)
         .join(',')
-      return `linear-gradient(to left,${gradientColors})`
+      return `linear-gradient(to right,${gradientColors})`
     }
     return this.defaultColor
+  }
+
+  /**
+   * 初始化列表数据
+   */
+  initTableData() {
+    if (!this.value || Object.keys(this.value).some(n => isNaN(Number(n)))) {
+      return
+    }
+    this.tableData = Object.entries(this.value).map(([percent, color]) => ({
+      color,
+      key: UUID.uuid(),
+      percent: percent * 100
+    }))
   }
 
   /**
@@ -159,6 +166,7 @@ export default class ColorPickerSetting extends Vue {
    */
   showDropdown() {
     this.dropdownVisible = true
+    this.initTableData()
   }
 
   /**
@@ -253,13 +261,12 @@ export default class ColorPickerSetting extends Vue {
 }
 
 .color-picker-setting {
-  max-height: 320px;
-  overflow-y: auto;
-  padding: 8px 12px;
   background: @white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   &-content {
+    max-height: 280px;
+    overflow-y: auto;
     padding: 10px 10px 12px 10px;
   }
 

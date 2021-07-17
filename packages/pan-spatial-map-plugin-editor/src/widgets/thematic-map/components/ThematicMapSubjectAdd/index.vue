@@ -14,7 +14,7 @@
           <!-- 专题个性配置 -->
           <subject-items ref="subjectItems" :subject-type="subjectType" />
         </div>
-        <!-- 保存按钮 -->
+        <!-- 取消\保存按钮 -->
         <div class="subject-add-save-btn">
           <a-button @click="onCancel">取消</a-button>
           <a-button type="primary" @click="onSave">保存</a-button>
@@ -35,10 +35,10 @@ import SubjectItems from './components/SubjectItems'
     SubjectItems
   },
   computed: {
-    ...mapGetters(['isVisible'])
+    ...mapGetters(['isVisible', 'subjectConfig'])
   },
   methods: {
-    ...mapMutations(['resetVisible', 'setSubjectConfigNode'])
+    ...mapMutations(['resetVisible', 'createSubjectConfigNode'])
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
@@ -59,15 +59,16 @@ export default class ThematicMapSubjectAdd extends Vue {
   }
 
   onSave() {
+    // todo 表单校验待优化
     if (!this.subjectType) {
       this.$message.warning('请选择专题类型')
     } else {
       const subjectConfig = this.$refs.subjectItems.getConfig()
-      const [parentId, node] = this.$refs.baseItems.getConfig(subjectConfig)
+      const node = this.$refs.baseItems.getConfig(subjectConfig)
       if (!node.title) {
         this.$message.warning('请填写专题图名称')
       } else {
-        this.setSubjectConfigNode({ parentId, node })
+        this.createSubjectConfigNode(node)
         this.$message.success('保存成功')
         this.onCancel()
       }

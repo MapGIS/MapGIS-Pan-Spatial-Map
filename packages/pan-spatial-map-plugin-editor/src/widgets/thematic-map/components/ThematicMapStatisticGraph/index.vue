@@ -49,6 +49,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
+import { Feature } from '@mapgis/web-app-framework'
 import * as echarts from 'echarts'
 import { mapGetters, mapMutations, highlightSubjectTypes } from '../../store'
 import { barChartOptions } from './config/barChartOptions'
@@ -76,11 +77,11 @@ interface IChartOption {
       'isVisible',
       'pageDataSet',
       'selectedSubConfig',
-      'highlightItem'
+      'linkageItem'
     ])
   },
   methods: {
-    ...mapMutations(['setHighlightItem', 'resetVisible', 'resetHighlight'])
+    ...mapMutations(['setLinkageItem', 'resetVisible', 'resetLinkage'])
   }
 })
 export default class ThematicMapStatisticGraph extends Vue {
@@ -157,7 +158,7 @@ export default class ThematicMapStatisticGraph extends Vue {
    * 将query的结果设置图表配置里
    * @param dataSet
    */
-  getChartOptions(dataSet) {
+  getChartOptions(dataSet: Feature.FeatureIGS | null) {
     const xArr = []
     const yArr = []
     if (dataSet && dataSet.AttStruct.FldName && this.graph) {
@@ -275,7 +276,7 @@ export default class ThematicMapStatisticGraph extends Vue {
    * 监听: 分页数据变化
    */
   @Watch('pageDataSet', { deep: true })
-  watchPageDataSet(nV) {
+  watchPageDataSet(nV: Feature.FeatureIGS | null) {
     this.getTargetList()
     this.getChartOptions(nV)
   }
@@ -287,19 +288,19 @@ export default class ThematicMapStatisticGraph extends Vue {
   watchHasHighlight(nV) {
     if (nV) {
       this.chart.on('mouseover', ({ dataIndex }) => {
-        this.setHighlightItem({
+        this.setLinkageItem({
           from: this.vueKey,
           itemIndex: dataIndex
         })
       })
-      this.chart.on('mouseout', this.resetHighlight)
+      this.chart.on('mouseout', this.resetLinkage)
     }
   }
 
   /**
-   * 监听: 高亮
+   * 监听: 联动项变化
    */
-  @Watch('highlightItem', { deep: true })
+  @Watch('linkageItem', { deep: true })
   watchHighlightItem(nV) {
     if (!nV) {
       this.onClearHighlight()

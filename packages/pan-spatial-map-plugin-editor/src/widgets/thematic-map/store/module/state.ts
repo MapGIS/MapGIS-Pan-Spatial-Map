@@ -36,12 +36,15 @@ export default Vue.observable<IState>({
   // 所有选中的专题服务集合
   selectedList: [],
 
-  // 高亮的选项
-  highlightItem: null,
+  // 基础配置
+  baseConfig: null,
 
   // 专题服务配置
   subjectConfig: localSubjectConfig,
 
-  // 基础配置
-  baseConfig: null
+  // 新建的专题节点数据
+  newSubjectConfig: null,
+
+  // 高亮的选项
+  linkageItem: null
 })

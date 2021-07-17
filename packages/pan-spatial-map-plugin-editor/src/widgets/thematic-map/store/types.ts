@@ -1,14 +1,9 @@
 import { Feature } from '@mapgis/web-app-framework'
 
-// 基础配置
-interface IThematicMapBaseConfig {
-  baseIp: string // 主题服务默认 ip
-  basePort: string // 主题服务默认 port
-  isLocation: boolean // 是否覆盖
-  isOverlay: boolean // 是否定位
-  startZindex: number // 初始 index 级别
-}
-
+// 节点类型
+type NodeType = 'panel' | 'list' | 'subjet'
+// 专题服务配置
+type ServerType = 'gdbp' | 'doc' | 'geojson' | 'excel'
 /**
  * 专题类型:
  * 分段专题图 : SubSectionMap
@@ -19,7 +14,7 @@ interface IThematicMapBaseConfig {
  * 标注专题图 : Label
  * 蜂窝图 : HexBin
  */
-type SubjectType =
+export type SubjectType =
   | 'SubSectionMap'
   | 'DataShowSubject'
   | 'HeatMap'
@@ -28,23 +23,48 @@ type SubjectType =
   | 'Label'
   | 'HexBin'
   | string
-
-// 专题服务配置
-type ConfigType = 'gdbp' | 'doc' | 'geojson' | 'excel'
-export interface IThematicMapSubjectConfig {
+export interface IConfigBase {
   id: string // 节点名
   title: string // 节点名
   visible: boolean // 是否可见
-  nodeType: string // 节点类型panel->list->subject
-  children?: IThematicMapSubjectConfig[] // 子节点数据,panel和list有,subject没有
-  type?: SubjectType // 专题类型(nodeType == subject)
+  nodeType: NodeType // 节点类型panel->list->subject
+}
+
+// 旧专题配置
+export interface OldSubjectConfig extends IConfigBase {
+  children?: OldSubjectConfig[] // 子节点数据,panel和list有,subject没有
+  type?: SubjectType // 专题类型
   config?: {
-    type?: ConfigType // 数据请求方式
-    data?: {
-      time: string // 年度
-      subData: any[] // 年度对应的配置数据
-    }[] // 专题配置集合(nodeType == subject)
+    type?: ServerType // 数据请求方式
+    data:
+      | Array<{
+          time: string
+          [k: string]: any
+        }>
+      | Array<{
+          time: string
+          subData: Array<Record<string, any>>
+        }>
   }
+}
+
+// 新专题配置
+export interface NewSubjectConfig extends IConfigBase {
+  parentId: string // 父节点名
+  type: SubjectType
+  config: Array<{
+    time: string
+    [k: string]: any
+  }>
+}
+
+// 基础配置
+export interface SubjectBaseConfig {
+  baseIp: string // 主题服务默认 ip
+  basePort: string // 主题服务默认 port
+  isLocation: boolean // 是否覆盖
+  isOverlay: boolean // 是否定位
+  startZindex: number // 初始 index 级别
 }
 
 // 点击单个专题的数据展示弹框类型
@@ -55,23 +75,7 @@ export type ModuleType =
   | 'sa' // 新建专题图
   | 'mt' // 管理工具栏
 
-export interface ISubjectType {
-  label: string
-  value: SubjectType
-}
-
-interface IPageParam {
-  page: number
-  pageCount: number
-}
-
-interface ISelectedSubConfig {
-  configType: ConfigType
-  subjectType: SubjectType
-  [k: string]: any
-}
-
-export interface IHighlighItem {
+export interface LinkageItem {
   from: string
   itemIndex: number
   marker?: {
@@ -83,17 +87,32 @@ export interface IHighlighItem {
     properties: Feature.GFeature['properties']
   }
 }
+
+// 分页配置
+export interface PageParam {
+  page: number
+  pageCount: number
+}
+
+// 旧版本的请求方式提取到了外层, 新版本直接根据配置项里的gdbp|docName判断
+export interface SelectedSubConfig {
+  configType?: ServerType
+  subjectType: SubjectType
+  [k: string]: any
+}
+
 export interface IState {
-  moduleTypes: ModuleType[]
   loading: boolean
-  pageParam: IPageParam
+  moduleTypes: Array<ModuleType>
+  pageParam: PageParam
   pageDataSet: Feature.FeatureIGS | null
   selected: string
   selectedTime: string
-  selectedSubConfig: ISelectedSubConfig | null
-  selectedTimeList: string[]
-  selectedList: IThematicMapSubjectConfig[]
-  highlightItem: IHighlighItem | null
-  subjectConfig: IThematicMapSubjectConfig | null
-  baseConfig?: IThematicMapBaseConfig | null
+  selectedSubConfig: SelectedSubConfig | null
+  selectedTimeList: Array<string>
+  selectedList: Array<OldSubjectConfig | NewSubjectConfig>
+  newSubjectConfig: NewSubjectConfig | null
+  subjectConfig: OldSubjectConfig | NewSubjectConfig | null
+  baseConfig: SubjectBaseConfig | null
+  linkageItem: LinkageItem | null
 }

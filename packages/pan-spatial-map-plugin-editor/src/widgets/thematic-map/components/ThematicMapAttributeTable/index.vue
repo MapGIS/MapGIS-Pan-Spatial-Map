@@ -2,11 +2,11 @@
   <!-- 属性表 -->
   <mp-window-wrapper :visible="atVisible">
     <mp-window
-      title="属性表"
       :visible.sync="atVisible"
-      anchor="top-right"
       :horizontalOffset="12"
       :verticalOffset="50"
+      anchor="top-right"
+      title="属性表"
     >
       <div class="thematic-map-attribute-table">
         <a-spin :spinning="loading">
@@ -17,11 +17,11 @@
           >
             <template #label>
               <mp-row-flex label="专题" :span="[4, 20]">
-                <a-select :value="subject" @change="onSubjectChange">
-                  <a-select-option v-for="s in subjectList" :key="s.id">{{
-                    s.title
-                  }}</a-select-option>
-                </a-select>
+                <a-select
+                  :value="subject"
+                  :options="subjectList"
+                  @change="onSubjectChange"
+                />
               </mp-row-flex>
             </template>
             <mp-row-flex label="时间" :span="[5, 19]">
@@ -67,7 +67,7 @@ import base from '@mapgis/pan-spatial-map-store/src/config/base'
       'selectedList',
       'selectedSubConfig',
       'selectedTimeList',
-      'highlightItem'
+      'linkageItem'
     ])
   },
   methods: {
@@ -76,8 +76,8 @@ import base from '@mapgis/pan-spatial-map-store/src/config/base'
       'setSelected',
       'setSelectedTime',
       'setFeaturesQuery',
-      'setHighlightItem',
-      'resetHighlight',
+      'setLinkageItem',
+      'resetLinkage',
       'resetVisible'
     ])
   }
@@ -152,9 +152,10 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 专题列表
   get subjectList() {
-    return this.selectedList.map(({ id, title }) => ({
-      id,
-      title
+    return this.selectedList.map(({ id, title, ...others }) => ({
+      value: id,
+      label: title,
+      ...others
     }))
   }
 
@@ -186,12 +187,12 @@ export default class ThematicMapAttributeTable extends Vue {
       on: this.hasHighlight
         ? {
             mouseenter: _debounce(() => {
-              this.setHighlightItem({
+              this.setLinkageItem({
                 from: this.vueKey,
                 itemIndex: index
               })
             }, 400),
-            mouseleave: this.resetHighlight
+            mouseleave: this.resetLinkage
           }
         : {}
     }
@@ -250,12 +251,10 @@ export default class ThematicMapAttributeTable extends Vue {
    * 1.重置列表页码
    * 2.获取并保存选择的专题的年度列表
    * 3.设置默认展示的年度
-   * @param value<string>
    */
-  onSubjectChange(value) {
+  onSubjectChange(value, option) {
     this.subject = value
-    this.setSelected(value)
-    this.onTimeChange(this.selectedTimeList[0])
+    this.setSelected(option.data.props)
   }
 
   /**
@@ -263,7 +262,6 @@ export default class ThematicMapAttributeTable extends Vue {
    * 1.重置列表页码
    * 2.保存当前选择的年度(同步更新时间轴)
    * 3.获取对应年度的列表配置和数据
-   * @param value<string>
    */
   onTimeChange(value) {
     this.time = value
@@ -294,12 +292,12 @@ export default class ThematicMapAttributeTable extends Vue {
   }
 
   /**
-   * 监听: 专题变化
+   * 监听: 当前选中的专题变化
    */
-  @Watch('selected')
-  watchSelected(nV: string) {
+  @Watch('selected.id')
+  watchSelectedId(nV: string) {
     if (this.subject !== nV) {
-      this.onSubjectChange(nV)
+      this.subject = nV
     }
   }
 
@@ -314,9 +312,9 @@ export default class ThematicMapAttributeTable extends Vue {
   }
 
   /**
-   * 监听: 高亮
+   * 监听: 联动项变化
    */
-  @Watch('highlightItem', { deep: true })
+  @Watch('linkageItem', { deep: true })
   watchHighlightItem(nV) {
     if (!nV) {
       this.clearHighlight()
