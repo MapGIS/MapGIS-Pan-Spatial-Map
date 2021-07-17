@@ -102,7 +102,7 @@
       <mapgis-mvt-style-layer
         v-if="isVectorTileLayer(layerProps.type)"
         :mvtStyle="layerProps.mvtStyle"
-        mode="add"
+        mode="merge"
         :before="getBeforeLayerId(layerProps.beforeId)"
       />
     </div>

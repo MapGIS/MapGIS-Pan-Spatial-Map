@@ -617,7 +617,8 @@ export default class MpAttributeTable extends Mixins(
           page: current - 1,
           pageCount: pageSize,
           gdbp,
-          coordPrecision: 8
+          coordPrecision: 8,
+          rtnLabel: false
         },
         false,
         serverType === LayerType.IGSScene
