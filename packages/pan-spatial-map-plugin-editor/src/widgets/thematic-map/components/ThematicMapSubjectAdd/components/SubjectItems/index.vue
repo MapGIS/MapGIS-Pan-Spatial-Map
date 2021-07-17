@@ -46,7 +46,7 @@
           <!-- 各专题图专有配置 -->
           <subject-styles
             :subject-type="subjectType"
-            @change="subjectChange($event, sub)"
+            @change="subjectStylesChange($event, sub)"
           />
         </a-collapse-panel>
       </a-collapse>
@@ -55,7 +55,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import _cloneDeep from 'lodash/cloneDeep'
+// import _cloneDeep from 'lodash/cloneDeep'
+import { NewSubjectConfig } from '../../../../store'
 import ServerTreeSelect from './components/ServerTreeSelect.vue'
 import SubjectStyles from './components/SubjectStyles'
 
@@ -66,25 +67,46 @@ import SubjectStyles from './components/SubjectStyles'
   }
 })
 export default class SubjectItems extends Vue {
-  @Prop({ type: String }) readonly subjectType!: string
+  @Prop({ default: () => ({}) }) readonly value!: NewSubjectConfig
 
   activePanel = 0
 
   checkedPanel = []
 
-  subjectConfig = []
+  // subjectConfig = []
 
-  subjectTypeConfigMap = new Map()
+  // subjectConfigMap = new Map()
 
-  @Watch('subjectType')
-  subjectTypeChanged(nV) {
-    this.subjectConfig = this.subjectTypeConfigMap.get(nV) || []
+  get subjectType() {
+    return this.value.type
   }
 
-  @Watch('subjectConfig', { deep: true })
-  subjectConfigChanged(nV) {
-    this.subjectTypeConfigMap.set(this.subjectType, _cloneDeep(nV))
+  get subjectConfig() {
+    return this.value.config || []
   }
+
+  set subjectConfig(config) {
+    this.$emit('input', {
+      ...this.value,
+      config
+    })
+  }
+
+  //   /**
+  //    * 监听: 专题类型变化
+  //    */
+  //   @Watch('subjectType', { immediate: true })
+  //   subjectTypeChanged(type) {
+  //      this.subjectConfig = this.subjectConfigMap.get(type) || []
+  //   }
+  //
+  //   /**
+  //    * 专题配置数据变化
+  //    */
+  //   @Watch('subjectConfig', { deep: true })
+  //   subjectConfigChanged(nV) {
+  //     this.subjectConfigMap.set(this.subjectType, config)
+  //   }
 
   /**
    * 更新属性
@@ -103,16 +125,16 @@ export default class SubjectItems extends Vue {
   }
 
   /**
-   * 专题服务选择变化
+   * 专题服务选择change
    */
   serverChange(serverConfig, sub) {
     this.setProperties(serverConfig, sub)
   }
 
   /**
-   * 专题个性配置选择变化
+   * 专题个性配置选择change
    */
-  subjectChange(newSub, sub) {
+  subjectStylesChange(newSub, sub) {
     this.setProperties(newSub, sub)
   }
 
@@ -124,7 +146,7 @@ export default class SubjectItems extends Vue {
       time: '',
       checked: false
     }
-    this.subjectConfig.push(node)
+    this.subjectConfig = this.subjectConfig.concat(node)
   }
 
   /**
@@ -151,13 +173,6 @@ export default class SubjectItems extends Vue {
     } else {
       this.checkedPanel.splice(index, 1)
     }
-  }
-
-  /**
-   * 获取专题图的年度配置集合
-   */
-  getConfig() {
-    return this.subjectConfig
   }
 }
 </script>

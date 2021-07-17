@@ -1,4 +1,9 @@
-import { ModuleType, SubjectType } from './types'
+import {
+  ModuleType,
+  SubjectType,
+  NewSubjectConfig,
+  ThematicMapTreeNode
+} from './types'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
 // 是否支持图属联动
@@ -21,6 +26,8 @@ const subjectTypeList: Array<{ label: string; value: SubjectType }> = [
 export {
   ModuleType,
   SubjectType,
+  NewSubjectConfig,
+  ThematicMapTreeNode,
   subjectTypeList,
   highlightSubjectTypes,
   thematicMapStore,

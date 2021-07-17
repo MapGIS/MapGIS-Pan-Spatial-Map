@@ -31,7 +31,7 @@ export interface IConfigBase {
 }
 
 // 旧专题配置
-export interface OldSubjectConfig extends IConfigBase {
+interface OldSubjectConfig extends IConfigBase {
   children?: OldSubjectConfig[] // 子节点数据,panel和list有,subject没有
   type?: SubjectType // 专题类型
   config?: {
@@ -50,7 +50,8 @@ export interface OldSubjectConfig extends IConfigBase {
 
 // 新专题配置
 export interface NewSubjectConfig extends IConfigBase {
-  parentId: string // 父节点名
+  parentId: string // 父节点ID
+  parentTitle: string // 父节点Title
   type: SubjectType
   config: Array<{
     time: string
@@ -66,6 +67,13 @@ export interface SubjectBaseConfig {
   isOverlay: boolean // 是否定位
   startZindex: number // 初始 index 级别
 }
+
+// 专题服务配置树的节点
+export type ThematicMapTreeNode =
+  | OldSubjectConfig
+  | NewSubjectConfig
+  | null
+  | undefined
 
 // 点击单个专题的数据展示弹框类型
 export type ModuleType =
@@ -106,13 +114,12 @@ export interface IState {
   moduleTypes: Array<ModuleType>
   pageParam: PageParam
   pageDataSet: Feature.FeatureIGS | null
-  selected: string
   selectedTime: string
-  selectedSubConfig: SelectedSubConfig | null
   selectedTimeList: Array<string>
-  selectedList: Array<OldSubjectConfig | NewSubjectConfig>
-  newSubjectConfig: NewSubjectConfig | null
-  subjectConfig: OldSubjectConfig | NewSubjectConfig | null
-  baseConfig: SubjectBaseConfig | null
+  selectedSubConfig: SelectedSubConfig | null
+  selected?: ThematicMapTreeNode
+  selectedList: Array<ThematicMapTreeNode>
+  subjectConfig: Array<ThematicMapTreeNode>
+  baseConfig?: SubjectBaseConfig | null
   linkageItem: LinkageItem | null
 }

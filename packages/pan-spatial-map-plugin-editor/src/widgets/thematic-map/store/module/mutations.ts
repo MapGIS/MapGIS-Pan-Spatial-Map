@@ -12,7 +12,7 @@ import {
   PageParam,
   SelectedSubConfig,
   SubjectBaseConfig,
-  OldSubjectConfig,
+  ThematicMapTreeNode,
   NewSubjectConfig
 } from '../types'
 import state from './state'
@@ -184,10 +184,7 @@ const mutations = {
   /**
    * 选中的单个专题服务
    */
-  setSelected(
-    { state, commit },
-    subject?: OldSubjectConfig | NewSubjectConfig
-  ) {
+  setSelected({ state, commit }, subject?: ThematicMapTreeNode) {
     state.selected = subject
     let selectedTimeList: Array<string> = []
     if (subject && subject.config) {
@@ -208,7 +205,7 @@ const mutations = {
    */
   setSelectedList(
     { state, commit },
-    selectedList: Array<OldSubjectConfig | NewSubjectConfig> = []
+    selectedList: Array<ThematicMapTreeNode> = []
   ) {
     state.selectedList = selectedList
     commit('setSelected', _last(selectedList))
@@ -216,16 +213,13 @@ const mutations = {
   /**
    * 专题服务的基础配置数据
    */
-  setBaseConfig({ state }, baseConfig: SubjectBaseConfig) {
+  setBaseConfig({ state }, baseConfig?: SubjectBaseConfig) {
     state.baseConfig = baseConfig
   },
   /**
    * 存储专题服务总专题配置数据
    */
-  setSubjectConfig(
-    { state },
-    subjectConfig: Array<OldSubjectConfig | NewSubjectConfig>
-  ) {
+  setSubjectConfig({ state }, subjectConfig: Array<ThematicMapTreeNode>) {
     state.subjectConfig = subjectConfig
     localStorage.setItem('subjectConfig', JSON.stringify(subjectConfig))
   },
@@ -233,13 +227,17 @@ const mutations = {
    * 创建新增的专题图
    */
   createSubjectConfigNode({ state, commit }, node: NewSubjectConfig) {
-    state.newSubjectConfig = node
     const loop = tree => {
       for (let i = 0; i < tree.length; i++) {
         const item = tree[i]
         if (item.id === node.parentId) {
           if (item.children && item.children.length) {
-            item.children.push(node)
+            const index = item.children.findIndex(({ id }) => id === node.id)
+            if (index !== -1) {
+              item.children.splice(index, 1, node)
+            } else {
+              item.children.push(node)
+            }
           } else {
             item.children = [node]
           }
@@ -255,10 +253,8 @@ const mutations = {
   /*
    * 移除专题服务树节点
    */
-  removeSubjectConfigNode(
-    { state, commit },
-    node: OldSubjectConfig | NewSubjectConfig
-  ) {
+  removeSubjectConfigNode({ state, commit }, node: ThematicMapTreeNode) {
+    if (!node) return
     const loop = tree => {
       for (let i = 0; i < tree.length; i++) {
         const item = tree[i]

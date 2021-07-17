@@ -2,12 +2,12 @@
   <div class="mp-widget-thematic-map">
     <!-- 专题服务树 -->
     <a-spin :spinning="loading">
-      <a-empty v-if="!treeData.length" />
+      <a-empty v-if="!thematicMapTree.length" />
       <a-tree
         v-else
         @check="onTreeCheck"
         :show-line="true"
-        :tree-data="treeData"
+        :tree-data="thematicMapTree"
         :replace-fields="{ key: 'id' }"
         :checkedKeys="checkedKeys"
         checkable
@@ -16,10 +16,12 @@
           <a-dropdown :trigger="['contextmenu']">
             <span>{{ node.title }}</span>
             <a-menu slot="overlay" @click="onTreeNodeMenuClick($event, node)">
-              <!-- <template v-if="!node.checkable">
-                <a-menu-item :key="handleKeys.create">新建</a-menu-item>
-              </template> -->
-              <!-- <a-menu-item :key="handleKeys.edit">编辑</a-menu-item> -->
+              <!-- <a-menu-item v-show="!node.checkable" :key="handleKeys.create"
+                >新建</a-menu-item
+              > -->
+              <a-menu-item v-show="node.checkable" :key="handleKeys.edit"
+                >编辑</a-menu-item
+              >
               <a-menu-item :key="handleKeys.remove">删除</a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -27,18 +29,18 @@
       </a-tree>
     </a-spin>
     <div v-show="checkedNodes.length">
+      <!-- 5类专题服务图层 -->
+      <thematic-map-layers />
       <!-- 属性表 -->
       <thematic-map-attribute-table />
       <!-- 统计表 -->
       <thematic-map-statistic-graph />
       <!-- 时间轴 -->
       <thematic-map-time-line />
-      <!-- 新建专题图 -->
-      <thematic-map-subject-add />
       <!-- 工具栏 -->
       <thematic-map-manage-tools />
-      <!-- 5类专题服务图层 -->
-      <thematic-map-layers />
+      <!-- 新建专题图 -->
+      <thematic-map-subject-add :subject-node="subjectNode" />
     </div>
   </div>
 </template>
@@ -47,7 +49,7 @@
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import _cloneDeep from 'lodash/cloneDeep'
-import { mapGetters, mapMutations, ModuleType } from './store'
+import { mapGetters, mapMutations, ModuleType, NewSubjectConfig } from './store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
 import ThematicMapStatisticGraph from './components/ThematicMapStatisticGraph'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
@@ -95,9 +97,11 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   defaultOpenPanel: Array<ModuleType> = ['at', 'st', 'tl']
 
-  checkedNodes: Array<Record<string, any>> = []
+  checkedNodes: Array<ThematicMapTreeNode> = []
 
-  treeData: any[] = []
+  thematicMapTree: Array<ThematicMapTreeNode> = []
+
+  subjectNode: NewSubjectConfig = {}
 
   get checkedKeys() {
     return this.checkedNodes.map(({ id }) => id)
@@ -142,10 +146,10 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   /**
    * 格式化专题服务树
-   * @param treeData
+   * @param tree
    */
-  normalizeTreeData(treeData) {
-    return treeData.map(node => {
+  normalizeTreeData(tree: Array<ThematicMapTreeNode>) {
+    return tree.map(node => {
       this.$set(node, 'checkable', node.nodeType === 'subject')
       this.$set(node, 'scopedSlots', { title: 'custom' })
       if (node.children && node.children.length) {
@@ -159,29 +163,35 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 设置树数据
    * @param tree
    */
-  setTreeData(tree) {
-    this.treeData = this.normalizeTreeData(_cloneDeep(tree))
+  setTreeData(tree: Array<ThematicMapTreeNode>) {
+    this.thematicMapTree = this.normalizeTreeData(_cloneDeep(tree))
     this.setLoadingHide()
   }
 
   /**
    * todo 创建节点
    */
-  onTreeNodeCreate(nodeData) {
-    this.setPanelsShow('mt')
+  onTreeNodeCreate(nodeData: ThematicMapTreeNode) {
+    this.setPanelsShow('sa')
   }
 
   /**
-   * todo 编辑节点
+   * todo 编辑节点, 需要兼容新旧配置
    */
-  onTreeNodeEdit(nodeData) {
-    this.setPanelsShow('mt')
+  onTreeNodeEdit(nodeData: ThematicMapTreeNode) {
+    if (nodeData.parentId) {
+      // 新的专题配置
+      this.subjectNode = nodeData
+    } else {
+      // 旧配置
+    }
+    this.setPanelsShow('sa')
   }
 
   /**
    * 移除节点
    */
-  onTreeNodeRemove(nodeData) {
+  onTreeNodeRemove(nodeData: ThematicMapTreeNode) {
     this.setSelectedList(this.checkedNodes.filter(s => s.id !== nodeData.id))
     this.removeSubjectConfigNode(nodeData)
   }

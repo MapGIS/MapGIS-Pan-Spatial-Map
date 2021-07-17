@@ -10,9 +10,9 @@
       <div class="thematic-map-subject-add" v-if="saVisible">
         <div class="subject-add-content">
           <!-- 专题基础配置 -->
-          <base-items ref="baseItems" @type-change="subjectType = $event" />
+          <base-items v-model="selfSubjectNode" />
           <!-- 专题个性配置 -->
-          <subject-items ref="subjectItems" :subject-type="subjectType" />
+          <subject-items v-model="selfSubjectNode" />
         </div>
         <!-- 取消\保存按钮 -->
         <div class="subject-add-save-btn">
@@ -24,8 +24,8 @@
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
-import { mapGetters, mapMutations } from '../../store'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { mapGetters, mapMutations, NewSubjectConfig } from '../../store'
 import BaseItems from './components/BaseItems'
 import SubjectItems from './components/SubjectItems'
 
@@ -35,14 +35,22 @@ import SubjectItems from './components/SubjectItems'
     SubjectItems
   },
   computed: {
-    ...mapGetters(['isVisible', 'subjectConfig'])
+    ...mapGetters(['isVisible'])
   },
   methods: {
     ...mapMutations(['resetVisible', 'createSubjectConfigNode'])
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
-  subjectType = ''
+  @Prop({ default: () => ({}) }) readonly subjectNode!: NewSubjectConfig
+
+  @Watch('subjectNode', { deep: true })
+  subjectNodeChanged(nV) {
+    this.selfSubjectNode = { ...nV }
+  }
+
+  // 专题节点
+  selfSubjectNode: NewSubjectConfig = {}
 
   get saVisible() {
     return this.isVisible('sa')
@@ -54,24 +62,28 @@ export default class ThematicMapSubjectAdd extends Vue {
     }
   }
 
+  /**
+   * 取消
+   */
   onCancel() {
     this.saVisible = false
   }
 
+  /**
+   * 保存
+   * todo 专题配置表单校验?是否使用a-form来实现, 业务组件如何触发校验?
+   */
   onSave() {
-    // todo 表单校验待优化
-    if (!this.subjectType) {
+    if (!this.selfSubjectNode.parentId) {
+      this.$message.warning('请选择专题图目录')
+    } else if (!this.selfSubjectNode.type) {
       this.$message.warning('请选择专题类型')
+    } else if (!this.selfSubjectNode.config.length) {
+      this.$message.warning('请填写专题配置')
     } else {
-      const subjectConfig = this.$refs.subjectItems.getConfig()
-      const node = this.$refs.baseItems.getConfig(subjectConfig)
-      if (!node.title) {
-        this.$message.warning('请填写专题图名称')
-      } else {
-        this.createSubjectConfigNode(node)
-        this.$message.success('保存成功')
-        this.onCancel()
-      }
+      this.createSubjectConfigNode(this.selfSubjectNode)
+      this.$message.success('保存成功')
+      this.onCancel()
     }
   }
 }

@@ -22,12 +22,12 @@
           slot="overlay"
         >
           <a-tree
-            @load="treeLoaded"
-            @select="treeSelected"
-            :load-data="loadData"
+            @load="catalogTreeLoaded"
+            @select="catalogTreeSelected"
+            :load-data="catalogTreeLoadData"
             :loaded-keys="loadedKeys"
             :show-line="true"
-            :tree-data="treeData"
+            :tree-data="catalogTreeData"
             :replace-fields="{
               key: 'guid',
               title: 'name'
@@ -66,10 +66,10 @@ export default class ServerTreeSelect extends Vue {
   // 数据地址
   url = ''
 
-  // 服务树
-  treeData: Layer[] = []
+  // 目录树
+  catalogTreeData: Layer[] = []
 
-  // 已加载的节点
+  // 已加载的树节点
   loadedKeys: string[] = []
 
   // 示例
@@ -128,7 +128,7 @@ export default class ServerTreeSelect extends Vue {
   /**
    * 处理目录树， 筛选出IGSVector和IGSMapImage数据
    */
-  handleDataCatalog(tree: Layer[]) {
+  handleCatalog(tree: Layer[]) {
     for (let i = 0; i < tree.length; i++) {
       const node = tree[i]
       if (this.isGdbp(node.serverType)) {
@@ -136,7 +136,7 @@ export default class ServerTreeSelect extends Vue {
       }
       if (node.children && node.children.length > 0) {
         this.$set(node, 'selectable', false)
-        this.handleDataCatalog(node.children)
+        this.handleCatalog(node.children)
       }
       if (node.children && node.children.length === 0) {
         node.children = null
@@ -152,13 +152,12 @@ export default class ServerTreeSelect extends Vue {
   /**
    * 获取目录树数据
    */
-  getTreeData() {
+  getCatalogTreeData() {
     this.loading = true
     dataCatalogManagerInstance
       .getDataCatalogTreeData()
       .then(result => {
-        this.treeData = this.handleDataCatalog(_cloneDeep(result))
-        console.log('this.treeData', this.treeData)
+        this.catalogTreeData = this.handleCatalog(_cloneDeep(result))
         this.loading = false
       })
       .catch(() => {
@@ -169,7 +168,7 @@ export default class ServerTreeSelect extends Vue {
   /**
    * 异步加载节点数据的回调
    */
-  loadData(treeNode: any) {
+  catalogTreeLoadData(treeNode: any) {
     return new Promise(resolve => {
       const {
         dataRef,
@@ -203,7 +202,7 @@ export default class ServerTreeSelect extends Vue {
                   isLeaf: true
                 })
               )
-              this.treeData = [...this.treeData]
+              this.catalogTreeData = [...this.catalogTreeData]
               resolve()
             }
           })
@@ -217,25 +216,14 @@ export default class ServerTreeSelect extends Vue {
   /**
    * 加载节点
    */
-  treeLoaded(loadedKeys: string[]) {
+  catalogTreeLoaded(loadedKeys: string[]) {
     this.loadedKeys = loadedKeys
-  }
-
-  /**
-   * 派发事件
-   */
-  emitChange(params: any) {
-    if (!params) {
-      this.$message.warn('请按照示例输入正确的数据服务地址')
-    } else {
-      this.$emit('change', params)
-    }
   }
 
   /**
    * 选择节点
    */
-  treeSelected(selectedKeys, { node }: any) {
+  catalogTreeSelected(selectedKeys: string[], { node }: any) {
     const { ip, port, gdbp, gdbps } = node.dataRef
     const _gdbp = gdbp || gdbps
     if (_gdbp) {
@@ -282,8 +270,19 @@ export default class ServerTreeSelect extends Vue {
     this.emitChange(params)
   }
 
+  /**
+   * 派发Change事件
+   */
+  emitChange(params: any) {
+    if (!params) {
+      this.$message.warn('请按照示例输入正确的数据服务地址')
+    } else {
+      this.$emit('change', params)
+    }
+  }
+
   created() {
-    this.getTreeData()
+    this.getCatalogTreeData()
   }
 }
 </script>

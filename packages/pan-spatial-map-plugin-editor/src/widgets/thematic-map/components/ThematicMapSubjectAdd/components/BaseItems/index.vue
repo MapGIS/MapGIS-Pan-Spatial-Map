@@ -8,8 +8,8 @@
           @click.stop="showDropdown"
         >
           <span class="ant-input">
-            <span v-if="subjectNameNode.title">{{
-              subjectNameNode.title
+            <span v-if="baseItemObj.parentTitle">{{
+              baseItemObj.parentTitle
             }}</span>
             <span v-else class="placeholder">请选择</span>
           </span>
@@ -22,7 +22,8 @@
         </span>
         <div class="dropdown-content" slot="overlay">
           <a-tree
-            @select="treeSelected"
+            @select="thematicMapTreeSelected"
+            :selected-keys="selectedKeys"
             :show-line="true"
             :tree-data="thematicMapTree"
             :replace-fields="{ key: 'id' }"
@@ -34,22 +35,31 @@
     <mp-row-flex label="专题图类型">
       <a-select
         @change="subjectTypeChange"
-        :value="subjectType"
         :options="subjectTypeList"
+        :value="baseItemObj.type"
         placeholder="请选择"
       />
     </mp-row-flex>
     <!-- 专题图名称 -->
     <mp-row-flex label="专题图名称">
-      <a-input v-model="subjectTitle" placeholder="请输入专题图名称" />
+      <a-input
+        @change="subjectTitleChange"
+        :value="baseItemObj.title"
+        placeholder="请输入专题图名称"
+      />
     </mp-row-flex>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component, Watch, Prop } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
 import _cloneDeep from 'lodash/cloneDeep'
-import { mapGetters, subjectTypeList } from '../../../../store'
+import {
+  mapGetters,
+  subjectTypeList,
+  NewSubjectConfig,
+  ThematicMapTreeNode
+} from '../../../../store'
 
 @Component({
   computed: {
@@ -57,47 +67,85 @@ import { mapGetters, subjectTypeList } from '../../../../store'
   }
 })
 export default class BaseItems extends Vue {
+  @Prop({ default: () => ({}) }) readonly value!: NewSubjectConfig
+
   dropdownVisible = false
-
-  // 专题名称
-  subjectNameNode = {
-    id: '',
-    title: ''
-  }
-
-  // 专题图类型
-  subjectType = ''
 
   // 专题图类型列表
   subjectTypeList = subjectTypeList
 
-  // 专题图名称
-  subjectTitle = ''
-
   // 专题服务树
-  thematicMapTree = []
+  thematicMapTree: Array<ThematicMapTreeNode> = []
 
-  /**
-   * 监听专题配置变化
-   */
-  @Watch('subjectConfig', { immediate: true, deep: true })
-  subjectConfigChange(nV) {
-    this.setSubjectMapTree(nV)
+  selectedKeys: string[] = []
+
+  // 专题节点
+  get baseItemObj() {
+    return { ...this.value }
   }
 
+  set baseItemObj(nV) {
+    this.$emit('input', {
+      id: `new-${UUID.uuid()}`,
+      visible: true,
+      nodeType: 'subject',
+      ...nV
+    })
+  }
+
+  /**
+   * 展示专题分类下拉框
+   */
   showDropdown() {
     this.dropdownVisible = true
   }
 
+  /**
+   * 隐藏专题分类下拉框
+   */
   hideDropdown() {
     this.dropdownVisible = false
+  }
+
+  /**
+   * 专题分类变化
+   */
+  thematicMapTreeSelected(selectedKeys: string[], { node: { dataRef } }: any) {
+    this.selectedKeys = selectedKeys
+    this.baseItemObj = {
+      ...this.baseItemObj,
+      parentId: dataRef.id,
+      parentTitle: dataRef.title
+    }
+    this.hideDropdown()
+  }
+
+  /**
+   * 专题图类型选择变化
+   */
+  subjectTypeChange(type: string) {
+    this.baseItemObj = {
+      ...this.baseItemObj,
+      type
+    }
+  }
+
+  /**
+   * 专题图名称变化
+   */
+  subjectTitleChange(e) {
+    this.baseItemObj = {
+      ...this.baseItemObj,
+      title: e.target.value
+    }
   }
 
   /**
    * 格式化专题服务树
    * @param tree
    */
-  normalizeTreeData(tree: any[]) {
+  normalizeTreeData(tree: Array<ThematicMapTreeNode>) {
+    if (!tree.length) return []
     return tree.map(node => {
       this.$set(node, 'selectable', false)
       if (node.nodeType === 'list') {
@@ -114,46 +162,28 @@ export default class BaseItems extends Vue {
    * 设置专题服务树
    * @param tree
    */
-  setSubjectMapTree(tree: any[]) {
+  setSubjectMapTree(tree: Array<ThematicMapTreeNode>) {
     this.thematicMapTree = this.normalizeTreeData(_cloneDeep(tree))
   }
 
   /**
-   * 专题分类变化
+   * 监听: 专题配置变化
    */
-  treeSelected(selectedKeys: string[], { node }: any) {
-    this.subjectNameNode = node.dataRef
-    this.hideDropdown()
+  @Watch('value.parentId', { immediate: true })
+  parentIdChanged(nV) {
+    this.selectedKeys = [nV]
   }
 
   /**
-   * 专题图类型选择变化
+   * 监听: 专题配置变化
    */
-  subjectTypeChange(value: string) {
-    this.subjectType = value
-    this.subjectTitle = ''
-    this.$emit('type-change', value)
+  @Watch('subjectConfig', { deep: true })
+  subjectConfigChanged(nV) {
+    this.setSubjectMapTree(nV)
   }
 
-  /**
-   * 获取专题图基础配置
-   * @param 专题图年度配置集合
-   */
-  getConfig(subjectConfig = []) {
-    const {
-      subjectNameNode: { id: parentId },
-      subjectType,
-      subjectTitle
-    } = this
-    return {
-      parentId,
-      id: `${subjectType}-${UUID.uuid()}`,
-      visible: true,
-      nodeType: 'subject',
-      type: subjectType,
-      title: subjectTitle,
-      config: subjectConfig
-    }
+  created() {
+    this.setSubjectMapTree(this.subjectConfig)
   }
 }
 </script>
