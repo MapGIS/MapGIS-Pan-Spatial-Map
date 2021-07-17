@@ -5,5 +5,5 @@ const BASE_URL = process.env.VUE_APP_API_BASE_URL
 module.exports = {
   BASE_URL: BASE_URL,
   CONFIG: '/map-app/configs',
-  WIDGET_CONFIG: '/map-app/configs'
+  WIDGET_CONFIG: '/map-app/widgets'
 }

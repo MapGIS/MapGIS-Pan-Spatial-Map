@@ -120,16 +120,17 @@
               item.name
             }}</span>
             <a-menu slot="overlay">
-              <a-menu-item key="1" @click="showMetaDataInfo(item)"
-                >元数据信息</a-menu-item
-              >
+              <a-menu-item key="1" @click="showMetaDataInfo(item)">
+                元数据信息
+              </a-menu-item>
               <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
               <a-menu-item
                 v-if="hasLegend(item)"
                 key="3"
                 @click="onUploadLegend(item)"
-                >上传图例</a-menu-item
               >
+                上传图例
+              </a-menu-item>
             </a-menu>
           </a-dropdown>
         </span>
@@ -139,8 +140,16 @@
       v-model="showUploader"
       :dialog-style="{ top: '150px' }"
       :width="300"
+      :mask="false"
+      title="上传图例"
       :footer="null"
     >
+      <a-alert
+        message="建议上传宽高比为1:1的图片"
+        type="info"
+        show-icon
+        style="margin-bottom: 16px"
+      />
       <a-upload
         name="file"
         accept=".jpg, image/*"
@@ -151,10 +160,10 @@
         :before-upload="beforeUpload"
         @change="onChangeFile"
       >
-        <div class="upload-content">
-          <span>图片上传</span>
-          <a-icon type="upload" :style="{ fontSize: '18px' }"></a-icon>
-        </div>
+        <a-button>
+          <a-icon type="upload" :style="{ fontSize: '18px' }" />
+          上传图片
+        </a-button>
       </a-upload>
     </a-modal>
 
@@ -675,7 +684,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   private onUploadLegend(item) {
     this.showUploader = true
     this.legendNode = item
-    this.$message.info('建议上传宽高比为1:1的图片')
   }
 
   // 上传文件之前的钩子
@@ -795,11 +803,5 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 }
 .filter-words {
   color: @primary-color !important;
-}
-
-.upload-content {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
 }
 </style>
