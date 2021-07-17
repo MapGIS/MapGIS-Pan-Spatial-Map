@@ -13,27 +13,25 @@
           {{ item.name }}
         </div>
         <a-dropdown v-else :trigger="['contextmenu']">
-          <div @click="onClickItem(item)">{{ item.name }}</div>
+          <div @click="onClickBookmark(item)">{{ item.name }}</div>
           <a-menu slot="overlay">
-            <a-menu-item key="1" @click="onDeleteItem(item)"
-              >删除该项</a-menu-item
-            >
+            <a-menu-item key="1" @click="onDeleteBookmark(item)">
+              删除该项
+            </a-menu-item>
           </a-menu>
         </a-dropdown>
       </template>
     </a-tree>
-    <div v-else>
-      <span>暂无数据</span>
-    </div>
+    <a-empty v-else :image="simpleImage" />
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
+import { Empty } from 'ant-design-vue'
 import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
 import { eventBus, events, api } from '@mapgis/pan-spatial-map-store'
-import { TreeConfig } from '@mapgis/pan-spatial-map-plugin-visualization/src/widgets/bookmark/tree-config'
-import base from 'app/packages/pan-spatial-map-store/src/config/base'
+import { TreeConfig } from './tree-config'
 
 @Component({ name: 'MpBookmark' })
 export default class MpBookmark extends Mixins(WidgetMixin) {
@@ -43,42 +41,64 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
 
   private baseTreeData: Array<Record<string, any>> = null
 
-  // 判断是否是通过勾选收藏添加到书签
-  private isClickCheck = false
+  // 判断是否是批量添加
+  private isBatAdd = false
 
   private nodeParentLevel: number[] = []
 
-  private mounted(): void {
-    this.treeData = this.widgetInfo.config
-    eventBus.$on(events.ADD_DATA_BOOKMARK_EVENT, this.clickMark)
-    eventBus.$on(events.ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT, this.checkMark)
+  beforeCreate() {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 
-  // ADD_DATA_BOOKMARK_EVENT 响应事件(右键收藏)
-  private clickMark(data, baseTreeData: Array<Record<string, any>>) {
-    this.isClickCheck = false
+  mounted() {
+    this.treeData = this.widgetInfo.config
+    eventBus.$on(events.ADD_DATA_BOOKMARK_EVENT, this.onAddDataBookmark)
+    eventBus.$on(
+      events.ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT,
+      this.onAddAllSelectdDataBookmark
+    )
+  }
+
+  private onAddDataBookmark(data, baseTreeData: Array<Record<string, any>>) {
+    this.isBatAdd = false
     this.addToMark(data, baseTreeData)
   }
 
-  // ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT 响应事件(勾选收藏)
-  private checkMark(
+  private onAddAllSelectdDataBookmark(
+    type: string,
     checkedKeys: string[],
     baseTreeData: Array<Record<string, any>>
   ) {
-    this.isClickCheck = true
+    this.isBatAdd = true
     this.baseTreeData = baseTreeData
-    this.handleCheckedNodes(checkedKeys, baseTreeData)
-    this.save()
+    this.addAllSelectedToMark(type, checkedKeys, baseTreeData)
+    this.saveBookmarks()
+  }
+
+  // 单击选中该项响应事件
+  onClickBookmark(node) {
+    eventBus.$emit(events.OPEN_DATA_BOOKMARK_EVENT, node)
+  }
+
+  // 右键删除该项响应事件
+  onDeleteBookmark(node) {
+    const index = this.treeData[0].children.findIndex(
+      item =>
+        item[TreeConfig.getInstance().config.GUID] ===
+        node[TreeConfig.getInstance().config.GUID]
+    )
+    this.treeData[0].children.splice(index, 1)
+    this.saveBookmarks()
   }
 
   // 遍历所勾选节点中所有的叶子节点
-  handleCheckedNodes(checkedKeys, treeData) {
+  private addAllSelectedToMark(type, checkedKeys, treeData) {
     treeData.forEach(item => {
       if (item.children && item.children.length > 0) {
-        this.handleCheckedNodes(checkedKeys, item.children)
+        this.addAllSelectedToMark(type, checkedKeys, item.children)
       } else {
         if (checkedKeys.includes(item[TreeConfig.getInstance().config.GUID])) {
-          this.addToMark({ params: item, type: '基础数据' }, this.baseTreeData)
+          this.addToMark({ params: item, type }, this.baseTreeData)
         }
       }
     })
@@ -142,13 +162,13 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
       })
       this.showMessage()
     }
-    if (!this.isClickCheck) {
-      this.save()
+    if (!this.isBatAdd) {
+      this.saveBookmarks()
     }
   }
 
   // 添加书签成功后提示信息
-  showMessage() {
+  private showMessage() {
     this.$message.config({
       top: '100px',
       duration: 1,
@@ -160,7 +180,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
   }
 
   // 串联该节点所在层级的label(去除首层节点的label)
-  getNodeLabel(node, index, labelArr) {
+  private getNodeLabel(node, index, labelArr) {
     if (index >= 1) {
       labelArr.push(node[this.nodeParentLevel[index]].name)
     }
@@ -178,7 +198,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
   }
 
   // 获取该节点在目录树中的层级(节点中有pos属性)
-  getParentLevel(node: Record<string, any>) {
+  private getParentLevel(node: Record<string, any>) {
     this.nodeParentLevel = node.pos
       .split('-')
       .slice(1)
@@ -186,7 +206,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
   }
 
   // 获取该节点在目录树中的层级(节点中无pos属性)
-  getParentLevel2(
+  private getParentLevel2(
     params: Record<string, any>,
     baseTreeData: Record<string, any>,
     arr: number[]
@@ -206,23 +226,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
     }
   }
 
-  // 单击选中该项响应事件
-  onClickItem(node) {
-    eventBus.$emit(events.OPEN_DATA_BOOKMARK_EVENT, node)
-  }
-
-  // 右键删除该项响应事件
-  onDeleteItem(node) {
-    const index = this.treeData[0].children.findIndex(
-      item =>
-        item[TreeConfig.getInstance().config.GUID] ===
-        node[TreeConfig.getInstance().config.GUID]
-    )
-    this.treeData[0].children.splice(index, 1)
-    this.save()
-  }
-
-  save() {
+  private saveBookmarks() {
     api
       .saveWidgetConfig({
         name: 'Bookmark',
@@ -240,4 +244,18 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.mp-widget-bookmark {
+  /deep/ .ant-tree > li {
+    &:last-child {
+      padding-bottom: 0;
+    }
+    &:first-child {
+      padding-top: 0;
+    }
+  }
+  /deep/ .ant-empty-normal {
+    margin: 8px 0;
+  }
+}
+</style>

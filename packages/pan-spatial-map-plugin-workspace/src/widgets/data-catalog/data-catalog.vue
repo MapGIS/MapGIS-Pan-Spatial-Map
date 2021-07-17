@@ -550,6 +550,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   bookMarksCheck() {
     eventBus.$emit(
       events.ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT,
+      this.widgetInfo.label,
       this.checkedNodeKeys,
       this.dataCatalogTreeData
     )
@@ -653,7 +654,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   addToMark(item) {
     eventBus.$emit(
       events.ADD_DATA_BOOKMARK_EVENT,
-      { params: item, type: '基础数据' },
+      { params: item, type: this.widgetInfo.label },
       this.dataCatalogTreeData
     )
   }
