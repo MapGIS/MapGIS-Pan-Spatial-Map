@@ -92,6 +92,12 @@ export default class MpAddData extends Mixins(WidgetMixin) {
       example: 'http://<server>:<port>/igs/rest/ogc/beijing/WMTSServer'
     },
     {
+      text: 'Vector Tile 服务',
+      value: 'VectorTile',
+      example:
+        'http://<server>:<port>/igs/rest/mrms/vtiles/styles/街道-墨卡托.json'
+    },
+    {
       text: 'ArcGIS IMAGE REST Service',
       value: 'ArcGISMapImage',
       example:
@@ -117,12 +123,6 @@ export default class MpAddData extends Mixins(WidgetMixin) {
       text: 'MapGIS 图层 REST Service',
       value: 'IGSVector',
       example: 'http://<server>:<port>/igs/rest/mrms/layers?gdbps={gdbps}'
-    },
-    {
-      text: 'Vector Tile 服务',
-      value: 'VectorTile',
-      example:
-        'http://<server>:<port>/igs/rest/mrms/vtiles/styles/街道-墨卡托.json'
     }
   ]
 

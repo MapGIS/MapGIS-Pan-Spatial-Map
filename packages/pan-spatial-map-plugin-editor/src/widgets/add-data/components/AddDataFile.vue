@@ -106,10 +106,10 @@ export default class AddDataFile extends Vue {
   onFileTypeChange(newVal) {
     switch (newVal.value) {
       case 'TIF':
-        this.accept = '.tif,.tfw,.tif.ovr,.tif.vat.dbf,.tif.aux.xml'
+        this.accept = '.tif,.tiff,.ovr'
         break
       case 'SHP':
-        this.accept = ''
+        this.accept = '.zip'
         break
       case '6X':
         this.accept = '.wp,.wt,.wl'
@@ -154,9 +154,18 @@ export default class AddDataFile extends Vue {
 
   private handleChange(info) {
     if (info.file.status === 'done') {
+      let path = ''
       this.isDisabled = false
       console.log(info)
-      const path = info.file.response.data[0].path
+      if (info.file.type.indexOf('zip-compressed') !== -1) {
+        // 上传的是zip压缩包(即shp类型文件)
+        const shpItem = info.file.response.data.find(item =>
+          item.url.includes('shp')
+        )
+        path = shpItem.path
+      } else {
+        path = info.file.response.data[0].path
+      }
 
       this.file = `http://localhost:${this.config.igsPort}/igs/rest/mrms/layers?gdbps=${path}`
 
