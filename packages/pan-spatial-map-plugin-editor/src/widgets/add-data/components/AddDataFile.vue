@@ -40,7 +40,7 @@
         <a-upload-dragger
           name="file"
           :action="
-            `http://localhost:${config.igsPort}/igs/rest/resource/upload`
+            `http://${config.igsIp}:${config.igsPort}/igs/rest/resource/upload`
           "
           :accept="accept"
           @change="handleChange"
@@ -167,7 +167,7 @@ export default class AddDataFile extends Vue {
         path = info.file.response.data[0].path
       }
 
-      this.file = `http://localhost:${this.config.igsPort}/igs/rest/mrms/layers?gdbps=${path}`
+      this.file = `http://${this.config.igsIp}:${this.config.igsPort}/igs/rest/mrms/layers?gdbps=${path}`
 
       console.log(this.file)
     }
