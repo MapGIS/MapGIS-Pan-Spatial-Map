@@ -154,7 +154,7 @@ export default class MapView extends Mixins<Record<string, any>>(
     this.ssMapbox = mapbox
     this.isMapLoaded = true
     this.registerMapboxEvent()
-    this.resort()
+    this.restore()
   }
 
   /**
@@ -163,7 +163,7 @@ export default class MapView extends Mixins<Record<string, any>>(
   cesiumLoaded() {
     this.isMapLoaded = true
     this.setWebGlobe()
-    this.resort()
+    this.restore()
   }
 
   /**
@@ -213,8 +213,8 @@ export default class MapView extends Mixins<Record<string, any>>(
         case 'zoomOut':
           this.openDraw()
           break
-        case 'resort':
-          this.resort(true)
+        case 'restore':
+          this.restore(true)
           break
         case 'clear':
           this.toggleQueryWindow(false)
