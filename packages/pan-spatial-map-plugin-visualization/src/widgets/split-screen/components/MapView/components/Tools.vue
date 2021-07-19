@@ -19,7 +19,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
-export type ToolType = 'query' | 'zoomIn' | 'zoomOut' | 'resort' | 'clear'
+export type ToolType = 'query' | 'zoomIn' | 'zoomOut' | 'restore' | 'clear'
 
 interface ITool {
   label: string
@@ -57,7 +57,7 @@ export default class Tools extends Vue {
     {
       label: '复位',
       icon: 'redo',
-      type: 'resort'
+      type: 'restore'
     },
     {
       label: '清除',
