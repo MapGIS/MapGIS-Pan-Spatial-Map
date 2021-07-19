@@ -42,7 +42,7 @@ export const barChartOptions = ({ title, x, y }) => {
       bottom: 50,
       height: 8,
       fillerColor: '#40a9ff',
-      startValue: 1,
+      startValue: 0,
       endValue: 14,
       showDetail: false,
       zoomLock: true

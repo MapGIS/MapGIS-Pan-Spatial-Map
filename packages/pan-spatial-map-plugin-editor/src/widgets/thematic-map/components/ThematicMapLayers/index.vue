@@ -1,10 +1,11 @@
 <template>
-  <div class="mapbox-thematic-map-layers">
+  <div>
+    <!-- 加载专题图层 -->
     <template v-for="t in subjectLayers">
       <component
         v-if="subjectType === t"
-        @highlight="setHighlightItem"
-        @clear-highlight="resetHighlight"
+        @highlight="setLinkageItem"
+        @clear-highlight="resetLinkage"
         :key="t"
         :is="t"
         :vue-key="vueKey"
@@ -12,8 +13,8 @@
         :subDataConfig="subDataConfig"
       />
     </template>
+    <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
     <template v-if="marker">
-      <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
       <mp-marker-pro :marker="marker" v-if="is2DMapMode" />
       <mp-3d-marker-pro :marker="marker" v-else />
     </template>
@@ -22,7 +23,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { Feature, AppMixin } from '@mapgis/web-app-framework'
-import { mapGetters, subjectTypes, mapMutations } from '../../store'
+import { subjectTypeList, mapGetters, mapMutations } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
 
@@ -32,10 +33,10 @@ import CesiumLayers from './components/Cesium'
     ...CesiumLayers
   },
   computed: {
-    ...mapGetters(['selectedSubConfig', 'highlightItem'])
+    ...mapGetters(['loading', 'selectedSubConfig', 'linkageItem'])
   },
   methods: {
-    ...mapMutations(['setFeaturesQuery', 'setHighlightItem', 'resetHighlight'])
+    ...mapMutations(['setFeaturesQuery', 'setLinkageItem', 'resetLinkage'])
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
@@ -59,6 +60,10 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
     return this.is2DMapMode ? 'Mapbox' : 'Cesium'
   }
 
+  get prefix() {
+    return this.is2DMapMode ? 'Mapbox' : 'Cesium'
+  }
+
   // 获取专题类别
   get subjectType() {
     return this.subDataConfig
@@ -68,7 +73,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   // 获取渲染的子专题图层组件name集合
   get subjectLayers() {
-    return subjectTypes.map(({ value }) => `${this.prefix}${value}`)
+    return subjectTypeList.map(({ value }) => `${this.prefix}${value}`)
   }
 
   /**
@@ -118,9 +123,9 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 
   /**
-   * 监听: 高亮
+   * 监听: 联动项变化
    */
-  @Watch('highlightItem', { deep: true })
+  @Watch('linkageItem', { deep: true })
   watchHighlightItem(nV) {
     if (!nV) {
       this.clearHighlight()
@@ -130,4 +135,3 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 }
 </script>
-<style lang="less" scoped></style>

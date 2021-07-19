@@ -1,11 +1,20 @@
-import { ModuleType, ISubjectType } from './types'
+import {
+  ModuleType,
+  SubjectType,
+  NewSubjectConfig,
+  ThematicMapTreeNode
+} from './types'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
-// 功能模块缩写
-const moduleTypes: ModuleType[] = ['at', 'st', 'tl', 'mt']
+// 是否支持图属联动
+const highlightSubjectTypes = [
+  'SubSectionMap',
+  'BaseMapWithGraph',
+  'StatisticLabel'
+]
 
 // 专题图类型集合
-const subjectTypes: ISubjectType[] = [
+const subjectTypeList: Array<{ label: string; value: SubjectType }> = [
   { value: 'SubSectionMap', label: '分段专题图' },
   { value: 'BaseMapWithGraph', label: '统计专题图' },
   { value: 'StatisticLabel', label: '等级符号专题图' },
@@ -14,4 +23,14 @@ const subjectTypes: ISubjectType[] = [
   { value: 'HexBin', label: '蜂窝图' }
 ]
 
-export { subjectTypes, moduleTypes, thematicMapStore, mapGetters, mapMutations }
+export {
+  ModuleType,
+  SubjectType,
+  NewSubjectConfig,
+  ThematicMapTreeNode,
+  subjectTypeList,
+  highlightSubjectTypes,
+  thematicMapStore,
+  mapGetters,
+  mapMutations
+}

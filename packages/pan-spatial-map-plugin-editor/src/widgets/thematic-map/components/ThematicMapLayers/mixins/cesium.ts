@@ -24,7 +24,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
 
   // 信息弹框字段配置
   get popupConfig() {
-    return this.subDataConfig.popup || {}
+    return this.subDataConfig?.popup || {}
   }
 
   /**
@@ -145,6 +145,8 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
         this.getCartographic(CommonFuncManager, position)
         this.getPopupInfos(pick.id.geojsonFeature)
         this.showPopup = true
+        // todo 图属高亮
+        // this.emitHighlight(dataIndex)
       }
     })
   }
@@ -156,6 +158,8 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
     this.showPopup = false
     this.popupPosition = {}
     this.popupProperties = null
+    // todo 取消图属高亮
+    // this.emitClearHighlight()
   }
 
   /**

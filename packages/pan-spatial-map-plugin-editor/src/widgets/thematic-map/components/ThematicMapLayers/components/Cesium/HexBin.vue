@@ -1,6 +1,6 @@
 <template>
   <!-- 蜂窝图 -->
-  <mapgis-3d-mapv-layer :geojson="geojsonPoint" :options="options" />
+  <mapgis-3d-mapv-layer :geojson="geojsonPoint" :options="hexbinOptions" />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
@@ -16,27 +16,14 @@ export default class CesiumHexBin extends Mixins(BaseMinxin) {
       postRenderFrame: 0
     },
     context: '2d',
-    size: 30, // 六边形圆的半径
-    max: 5, // 六边形数量上限
     draw: 'honeycomb',
-    label: {
-      show: true,
-      fillStyle: 'white',
-      shadowColor: 'yellow',
-      font: '15px Arial',
-      shadowBlur: 10
-    },
-    gradient: {
-      0: 'rgba(49, 54, 149, 0)',
-      0.2: 'rgba(69,117,180, 0.7)',
-      0.3: 'rgba(116,173,209, 0.7)',
-      0.4: 'rgba(171,217,233, 0.7)',
-      0.5: 'rgba(224,243,248, 0.7)',
-      0.6: 'rgba(254,224,144,0.7)',
-      0.7: 'rgba(253,174,97,0.7)',
-      0.8: 'rgba(244,109,67,0.8)',
-      0.9: 'rgba(215,48,39,0.8)',
-      0.95: 'rgba(165, 0, 38,0.8)'
+    max: 100
+  }
+
+  get hexbinOptions() {
+    return {
+      ...this.options,
+      ...(this.subDataConfig.style || {})
     }
   }
 

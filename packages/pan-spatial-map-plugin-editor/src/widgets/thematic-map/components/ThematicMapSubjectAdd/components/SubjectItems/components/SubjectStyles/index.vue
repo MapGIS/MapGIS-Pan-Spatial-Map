@@ -1,5 +1,5 @@
 <template>
-  <component :is="type" v-show="type" />
+  <component :is="subjectType" :value="subject" @change="subjectChange" />
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
@@ -20,8 +20,15 @@ import HexBin from './components/HexBin.vue' // 蜂窝图
     SubSectionMap
   }
 })
-export default class SubjectTypes extends Vue {
-  @Prop() type!: string
+export default class SubjectStyles extends Vue {
+  @Prop() readonly subjectType!: string
+
+  subject = null
+
+  subjectChange(sub) {
+    this.subject = sub
+    this.$emit('change', this.subject)
+  }
 }
 </script>
 <style lang="less" scoped></style>

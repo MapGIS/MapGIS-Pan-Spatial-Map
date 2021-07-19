@@ -176,7 +176,7 @@ export default class MpQueryResultTree extends Mixins(MarkerPlottingMixin) {
         const { CatalogLayer } = mapInfo
         const layerIndexes: string[] = Catalog.DocumentCatalog.getLayerIndexesByNamesOrCodes(
           CatalogLayer,
-          this.querySubLayerNames,
+          this.querySublayerNames,
           this.queryDistrictCode,
           [],
           []

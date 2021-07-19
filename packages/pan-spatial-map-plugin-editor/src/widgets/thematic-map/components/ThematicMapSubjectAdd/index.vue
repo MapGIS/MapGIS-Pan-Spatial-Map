@@ -1,58 +1,57 @@
 <template>
-  <!-- todo新建专题图 -->
   <mp-window-wrapper :visible="saVisible">
     <mp-window
       title="新建专题图"
       :visible.sync="saVisible"
+      :vertical-offset="50"
+      :has-padding="false"
       anchor="top-center"
-      :verticalOffset="20"
     >
-      <div class="thematic-map-subject-add">
+      <div class="thematic-map-subject-add" v-if="saVisible">
         <div class="subject-add-content">
-          <!-- 基础选项 -->
-          <base-items />
-          <!-- 时间轴模块 -->
-          <time-line-items />
-          <!-- 属性表模块 -->
-          <attribute-table-items />
-          <!-- 统计表模块 -->
-          <statistic-table-items />
-          <!-- 弹框模块 -->
-          <popup-items />
+          <!-- 专题基础配置 -->
+          <base-items v-model="selfSubjectNode" />
+          <!-- 专题个性配置 -->
+          <subject-items v-model="selfSubjectNode" />
         </div>
-        <!-- 保存按钮 -->
+        <!-- 取消\保存按钮 -->
         <div class="subject-add-save-btn">
-          <a-button type="primary" @click="onSave">保存配置</a-button>
+          <a-button @click="onCancel">取消</a-button>
+          <a-button type="primary" @click="onSave">保存</a-button>
         </div>
       </div>
     </mp-window>
   </mp-window-wrapper>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
-import { mapGetters, mapMutations } from '../../store'
-import BaseItems from './components/BaseItems.vue'
-import TimeLineItems from './components/TimeLineItems.vue'
-import AttributeTableItems from './components/AttributeTableItems.vue'
-import StatisticTableItems from './components/StatisticTableItems.vue'
-import PopupItems from './components/PopupItems.vue'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { mapGetters, mapMutations, NewSubjectConfig } from '../../store'
+import BaseItems from './components/BaseItems'
+import SubjectItems from './components/SubjectItems'
 
 @Component({
   components: {
     BaseItems,
-    TimeLineItems,
-    AttributeTableItems,
-    StatisticTableItems,
-    PopupItems
+    SubjectItems
   },
   computed: {
     ...mapGetters(['isVisible'])
   },
   methods: {
-    ...mapMutations(['setVisible'])
+    ...mapMutations(['resetVisible', 'createSubjectConfigNode'])
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
+  @Prop({ default: () => ({}) }) readonly subjectNode!: NewSubjectConfig
+
+  @Watch('subjectNode', { deep: true })
+  subjectNodeChanged(nV) {
+    this.selfSubjectNode = { ...nV }
+  }
+
+  // 专题节点
+  selfSubjectNode: NewSubjectConfig = {}
+
   get saVisible() {
     return this.isVisible('sa')
   }
@@ -63,9 +62,32 @@ export default class ThematicMapSubjectAdd extends Vue {
     }
   }
 
-  onSave() {}
+  /**
+   * 取消
+   */
+  onCancel() {
+    this.saVisible = false
+  }
+
+  /**
+   * 保存
+   * todo 专题配置表单校验?是否使用a-form来实现, 业务组件如何触发校验?
+   */
+  onSave() {
+    if (!this.selfSubjectNode.parentId) {
+      this.$message.warning('请选择专题图目录')
+    } else if (!this.selfSubjectNode.type) {
+      this.$message.warning('请选择专题类型')
+    } else if (!this.selfSubjectNode.config.length) {
+      this.$message.warning('请填写专题配置')
+    } else {
+      this.createSubjectConfigNode(this.selfSubjectNode)
+      this.$message.success('保存成功')
+      this.onCancel()
+    }
+  }
 }
 </script>
-<style lang="less" scoped>
+<style lang="less">
 @import './index.less';
 </style>
