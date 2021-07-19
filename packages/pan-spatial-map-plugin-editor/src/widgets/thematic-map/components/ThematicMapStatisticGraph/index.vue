@@ -1,9 +1,9 @@
 <template>
   <!-- 统计表 -->
-  <mp-window-wrapper :visible="stVisible">
+  <mp-window-wrapper :visible="visible">
     <mp-window
       title="统计表"
-      :visible.sync="stVisible"
+      :visible.sync="visible"
       anchor="top-left"
       :horizontalOffset="12"
       :verticalOffset="50"
@@ -128,13 +128,13 @@ export default class ThematicMapStatisticGraph extends Vue {
     }
   ]
 
-  get stVisible() {
-    return this.graph && this.isVisible('st')
+  get visible() {
+    return this.graph && this.isVisible('graph')
   }
 
-  set stVisible(nV) {
+  set visible(nV) {
     if (!nV) {
-      this.resetVisible('st')
+      this.resetVisible('graph')
     }
   }
 
@@ -273,15 +273,6 @@ export default class ThematicMapStatisticGraph extends Vue {
   }
 
   /**
-   * 监听: 分页数据变化
-   */
-  @Watch('pageDataSet', { deep: true })
-  watchPageDataSet(nV: Feature.FeatureIGS | null) {
-    this.getTargetList()
-    this.getChartOptions(nV)
-  }
-
-  /**
    * 监听: 高亮配置
    */
   @Watch('hasHighlight')
@@ -295,6 +286,15 @@ export default class ThematicMapStatisticGraph extends Vue {
       })
       this.chart.on('mouseout', this.resetLinkage)
     }
+  }
+
+  /**
+   * 监听: 分页数据变化
+   */
+  @Watch('pageDataSet', { deep: true })
+  watchPageDataSet(nV: Feature.FeatureIGS | null) {
+    this.getTargetList()
+    this.getChartOptions(nV)
   }
 
   /**

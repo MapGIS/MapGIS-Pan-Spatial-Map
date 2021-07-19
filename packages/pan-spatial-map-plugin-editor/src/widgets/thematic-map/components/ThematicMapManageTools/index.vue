@@ -1,20 +1,17 @@
 <template>
   <!-- 侧边工具栏 -->
-  <mp-window-wrapper :visible="mtVisible">
+  <mp-window-wrapper :visible="visible">
     <transition name="slide-fade">
       <mp-placement
         class="thematic-map-manage-tools"
         position="bottom-right"
         :offset="[0, 70]"
-        v-show="mtVisible"
+        v-show="visible"
       >
-        <a-row v-for="icon in iconList" :key="icon.type">
+        <a-row v-for="item in iconList" :key="item.icon">
           <a-col>
-            <a-tooltip placement="left" :title="icon.tooltip">
-              <a-icon
-                :type="icon.type"
-                @click.stop="onToolIconChange(icon.visibleType)"
-              />
+            <a-tooltip placement="left" :title="item.title">
+              <a-icon :type="item.icon" @click.stop="iconChange(item.type)" />
             </a-tooltip>
           </a-col>
         </a-row>
@@ -24,62 +21,78 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { mapGetters, mapMutations } from '../../store'
+import { mapGetters, mapMutations, ModuleType } from '../../store'
 
 interface IIcon {
-  type: string
-  tooltip: string
-  visibleType: string
+  icon: string
+  title: string
+  type: ModuleType
 }
+
 @Component({
   computed: {
-    ...mapGetters(['isVisible', 'selectedSubjectTimeList'])
+    ...mapGetters(['isVisible', 'subjectData', 'selectedSubjectTimeList'])
   },
   methods: {
     ...mapMutations(['setVisible'])
   }
 })
 export default class ThematicMapManageTools extends Vue {
-  get mtVisible() {
-    return this.isVisible('mt')
+  get visible() {
+    return this.isVisible('tools')
   }
 
+  // 按钮列表
   get iconList() {
-    const list = [
-      {
-        type: 'table',
-        tooltip: '属性表',
-        visibleType: 'at'
-      },
-      {
-        type: 'bar-chart',
-        tooltip: '统计表',
-        visibleType: 'st'
-      },
-      {
-        type: 'file-add',
-        tooltip: '新建专题图',
-        visibleType: 'sa'
-      }
-    ]
+    return this.getIconList()
+  }
+
+  /**
+   * 获取按钮列表
+   */
+  getIconList() {
+    const list: Array<IIcon> = []
+    const addConfig = {
+      icon: 'file-add',
+      title: '新建专题图',
+      type: 'create'
+    }
+    const tableConfig = {
+      icon: 'table',
+      title: '属性表',
+      type: 'table'
+    }
+    const graphConfig = {
+      icon: 'bar-chart',
+      title: '统计表',
+      type: 'graph'
+    }
+    const timelineConfig = {
+      icon: 'clock-circle',
+      title: '时间轴',
+      type: 'timeline'
+    }
+    if (this.subjectData?.table) {
+      list.push(tableConfig)
+    }
+    if (this.subjectData?.graph) {
+      list.push(graphConfig)
+    }
     if (
       this.selectedSubjectTimeList &&
       this.selectedSubjectTimeList.length > 1
     ) {
-      list.splice(2, 0, {
-        type: 'clock-circle',
-        tooltip: '时间轴',
-        visibleType: 'tl'
-      })
+      list.push(timelineConfig)
     }
+    list.push(addConfig)
     return list
   }
 
   /**
    * 按钮变化
    */
-  onToolIconChange(visibleType: string) {
-    this.setVisible(visibleType)
+  iconChange(type: ModuleType) {
+    this.setVisible(type)
   }
 }
 </script>

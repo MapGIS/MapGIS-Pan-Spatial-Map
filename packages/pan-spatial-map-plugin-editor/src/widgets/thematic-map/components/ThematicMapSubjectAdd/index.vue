@@ -1,13 +1,13 @@
 <template>
-  <mp-window-wrapper :visible="saVisible">
+  <mp-window-wrapper :visible="visible">
     <mp-window
       title="新建专题图"
-      :visible.sync="saVisible"
+      :visible.sync="visible"
       :vertical-offset="50"
       :has-padding="false"
       anchor="top-center"
     >
-      <div class="thematic-map-subject-add" v-if="saVisible">
+      <div class="thematic-map-subject-add" v-if="visible">
         <div class="subject-add-content">
           <!-- 基础配置 -->
           <base-items v-model="baseItemsObj" />
@@ -57,13 +57,19 @@ export default class ThematicMapSubjectAdd extends Vue {
 
   subjectConfig = []
 
-  get saVisible() {
-    return this.isVisible('sa')
+  @Watch('subjectNode', { deep: true })
+  subjectNodeChanged({ config, ...others }) {
+    this.baseItemsObj = { ...others }
+    this.subjectConfig = config
   }
 
-  set saVisible(nV) {
+  get visible() {
+    return this.isVisible('create')
+  }
+
+  set visible(nV) {
     if (!nV) {
-      this.resetVisible('sa')
+      this.resetVisible('create')
     }
   }
 
@@ -75,17 +81,11 @@ export default class ThematicMapSubjectAdd extends Vue {
     return this.baseItemsObj.type
   }
 
-  @Watch('subjectNode', { deep: true })
-  subjectNodeChanged({ config, ...others }) {
-    this.baseItemsObj = { ...others }
-    this.subjectConfig = config
-  }
-
   /**
    * 取消
    */
   onCancel() {
-    this.saVisible = false
+    this.visible = false
     this.baseItemsObj = {}
     this.subjectConfig = []
   }

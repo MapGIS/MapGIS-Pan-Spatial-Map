@@ -77,11 +77,11 @@ export type ThematicMapSubjectConfigNode =
 
 // 专题图专题功能模块
 export type ModuleType =
-  | 'at' // 属性表
-  | 'st' // 统计表
-  | 'tl' // 时间轴
-  | 'sa' // 新建专题图
-  | 'mt' // 管理工具栏
+  | 'table' // 属性表
+  | 'graph' // 统计表
+  | 'timeline' // 时间轴
+  | 'create' // 新建专题图
+  | 'tools' // 管理工具栏
 
 // 图属联动项
 export interface LinkageItem {

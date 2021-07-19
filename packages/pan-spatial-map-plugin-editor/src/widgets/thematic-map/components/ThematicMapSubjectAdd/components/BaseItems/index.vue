@@ -1,7 +1,7 @@
 <template>
   <div class="base-items">
     <!-- 专题名称 -->
-    <mp-row-flex label="专题名称">
+    <mp-row-flex label="专题分类">
       <a-dropdown v-model="thematicMapTreeVisible" :trigger="['click']">
         <span
           class="ant-input-affix-wrapper pointer"

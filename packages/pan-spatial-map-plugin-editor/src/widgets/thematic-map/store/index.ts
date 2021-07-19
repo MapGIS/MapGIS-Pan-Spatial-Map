@@ -7,7 +7,7 @@ import {
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
 // 是否支持图属联动
-const highlightSubjectTypes = [
+const highlightSubjectTypes: Array<SubjectType> = [
   'SubSectionMap',
   'BaseMapWithGraph',
   'StatisticLabel'

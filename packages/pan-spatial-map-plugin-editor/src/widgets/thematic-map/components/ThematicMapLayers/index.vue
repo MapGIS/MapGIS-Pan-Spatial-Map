@@ -10,7 +10,7 @@
         :is="t"
         :vue-key="vueKey"
         :dataSet="dataSet"
-        :subjectData="subjectData"
+        :subject-data="subjectData"
       />
     </template>
     <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
@@ -50,10 +50,6 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   // 要素数据
   dataSet: Feature.FeatureIGSSFELE | null = null
-
-  get prefix() {
-    return this.is2DMapMode ? 'Mapbox' : 'Cesium'
-  }
 
   get prefix() {
     return this.is2DMapMode ? 'Mapbox' : 'Cesium'
@@ -101,7 +97,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 
   /**
-   * 监听: 专题配置
+   * 监听: 专题数据变化
    */
   @Watch('subjectData', { deep: true })
   subjectDataChanged(nV) {

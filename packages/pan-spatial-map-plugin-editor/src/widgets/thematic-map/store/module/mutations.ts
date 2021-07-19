@@ -47,7 +47,8 @@ const mutations = {
    */
   setPage({ state }, { page, pageCount }: PageParam) {
     state.pageParam = {
-      page: page - 1,
+      ...state.pageParam,
+      page,
       pageCount
     }
   },

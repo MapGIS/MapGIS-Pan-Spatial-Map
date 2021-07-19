@@ -97,7 +97,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   handleKeys = HandleKeys
 
   // 默认打开的功能模块
-  defaultOpenModules: Array<ModuleType> = ['at', 'st', 'tl']
+  defaultOpenModules: Array<ModuleType> = ['table', 'graph', 'timeline']
 
   // 选中的专题图树节点
   checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
@@ -126,13 +126,13 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   /**
    * 设置面板显示
-   * @param type
+   * @param include
    * 如果有参数且符合ModuleType,则只打开参数对应的面板
    * 如果没有则打开全部默认配置的打开的面板
    */
-  setModulesShow(type: ModuleType) {
-    if (type) {
-      this.setVisible(type)
+  setModulesShow(include: ModuleType) {
+    if (include) {
+      this.setVisible(include)
     } else {
       this.defaultOpenModules.forEach(v => this.setVisible(v))
     }
@@ -140,13 +140,13 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   /**
    * 设置面板隐藏
-   * @param type
+   * @param exclude
    * 若有参数则关闭除参数以外的面板
    * 若无参数则隐藏所有默认配置的面板
    */
-  setModulesHide(type: ModuleType) {
+  setModulesHide(exclude: ModuleType) {
     this.resetLinkage()
-    this.defaultOpenModules.forEach(t => t !== type && this.resetVisible(t))
+    this.defaultOpenModules.forEach(t => t !== exclude && this.resetVisible(t))
   }
 
   /**
@@ -177,7 +177,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * todo 创建节点
    */
   onTreeNodeCreate(nodeData: ThematicMapSubjectConfigNode) {
-    this.setModulesShow('sa')
+    this.setModulesShow('create')
   }
 
   /**
@@ -190,7 +190,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     } else {
       // 旧配置
     }
-    this.setModulesShow('sa')
+    this.setModulesShow('create')
   }
 
   /**
@@ -233,7 +233,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     )
     this.setSelectedSubjectList(this.checkedThematicMapNodes)
     if (!this.checkedThematicMapNodes.length) {
-      this.setModulesHide('mt')
+      this.setModulesHide('tools')
     } else {
       this.setModulesShow()
     }
@@ -251,7 +251,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       this.setSubjectConfig(subjectConfig)
     }
     this.setBaseConfig(baseConfig)
-    this.setModulesShow('mt')
+    this.setModulesShow('tools')
   }
 
   /**
