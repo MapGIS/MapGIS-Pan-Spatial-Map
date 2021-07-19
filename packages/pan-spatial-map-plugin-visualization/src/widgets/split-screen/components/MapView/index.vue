@@ -56,8 +56,7 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Prop, Watch, Inject } from 'vue-property-decorator'
-import { Document, Layer } from '@mapgis/web-app-framework'
-import { eventBus, events } from '@mapgis/pan-spatial-map-store'
+import { Document, Layer, MarkerPlottingMixin } from '@mapgis/web-app-framework'
 import { MpQueryResultTree, MpFeatureHighlight } from '../../../../components'
 import MapViewMixin, { Rect } from './mixins/map-view'
 import MapboxView from './components/MapboxView'
@@ -84,7 +83,10 @@ import Tools, { ToolType } from './components/Tools'
     }
   }
 })
-export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
+export default class MapView extends Mixins<Record<string, any>>(
+  MapViewMixin,
+  MarkerPlottingMixin
+) {
   @Inject('map') map: any
 
   @Inject('mapbox') mapbox: any
@@ -152,7 +154,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
     this.ssMapbox = mapbox
     this.isMapLoaded = true
     this.registerMapboxEvent()
-    this.resort()
+    this.restore()
   }
 
   /**
@@ -161,7 +163,7 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   cesiumLoaded() {
     this.isMapLoaded = true
     this.setWebGlobe()
-    this.resort()
+    this.restore()
   }
 
   /**
@@ -211,8 +213,8 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
         case 'zoomOut':
           this.openDraw()
           break
-        case 'resort':
-          this.resort(true)
+        case 'restore':
+          this.restore(true)
           break
         case 'clear':
           this.toggleQueryWindow(false)
@@ -312,9 +314,9 @@ export default class MapView extends Mixins<Record<string, any>>(MapViewMixin) {
   beforeDestroy() {
     this.isMapLoaded = false
     this.mapHandleAttached('clear')
-    eventBus.$off(events.FEATURE_HIGHLIGHT)
-    eventBus.$off(events.CLEAR_FEATURE_HIGHLIGHT)
-    eventBus.$off(events.CLEAR_QUERY_TREE_SELECTED)
+    this.unregisterHighlightEvent()
+    this.unregisterClearHighlightEvent()
+    this.unregisterClearSelectionEvent()
   }
 }
 </script>

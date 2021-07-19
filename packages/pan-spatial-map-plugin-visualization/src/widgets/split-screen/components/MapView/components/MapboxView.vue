@@ -1,11 +1,7 @@
 <template>
   <div v-if="document" class="mapbox-view">
     <!-- 二维地图组件 -->
-    <mp-web-map-pro
-      @map-load="onMapLoad"
-      :document="document"
-      :map-style="mapStyle"
-    />
+    <mp-web-map-pro @map-load="onMapLoad" :document="document" />
     <!-- 二维地图绘制组件 -->
     <mp-draw-pro v-if="isMapLoaded" ref="draw" @finished="onDrawFinished" />
   </div>
@@ -19,15 +15,6 @@ export default class MapboxView extends Vue {
   @Prop() readonly document!: Document
 
   isMapLoaded = false
-
-  // 图层样式
-  mapStyle = {
-    version: 8,
-    sources: {},
-    layers: [],
-    glyphs:
-      'http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf'
-  }
 
   get drawComponent() {
     return this.$refs.draw

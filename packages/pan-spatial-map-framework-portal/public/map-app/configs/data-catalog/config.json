@@ -653,20 +653,6 @@
             "extent": ""
           },
           {
-            "label": "ArcGIS TILE REST 3857",
-            "describe": "ArcGIS TILE REST 3857",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "TILEARCGIS",
-            "name": "ChinaOnlineStreetPurplishBlue",
-            "searchName": "",
-            "token": "",
-            "guid": "6f35dab5-8f5f-43d7-82ad-12864751974d",
-            "serverUrl": "http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
-            "wfsUrl": "",
-            "extent": ""
-          },
-          {
             "label": "ArcGIS WMS",
             "describe": "ArcGIS WMS",
             "ip": "",
@@ -682,15 +668,15 @@
           },
           {
             "label": "ArcGIS WMTS",
-            "describe": "25wanHC WMTS",
+            "describe": "10wanZH WMTS",
             "ip": "",
             "port": "",
             "layerServiceType": "WMTS",
-            "name": "25wanHC",
+            "name": "10wanZH",
             "searchName": "",
             "token": "",
             "guid": "a7c70830-2347-4116-a9c9-861e3e594055",
-            "serverUrl": "http://219.142.81.85/arcgis/rest/services/25wanHC/MapServer/WMTS",
+            "serverUrl": "http://219.142.81.85/arcgis/rest/services/10wanZH/MapServer/WMTS",
             "wfsUrl": "",
             "extent": ""
           }
@@ -833,6 +819,18 @@
             "searchName": "",
             "model": "surface",
             "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7479",
+            "serverUrl": ""
+          },
+          {
+            "label": "点云数据",
+            "describe": "点云数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "m3d_点云",
+            "searchName": "",
+            "model": "surface",
+            "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7480",
             "serverUrl": ""
           },
           {
@@ -993,20 +991,6 @@
         "label": "矢量瓦片",
         "describe": "矢量瓦片",
         "children": [
-          {
-            "label": "OSM全中国",
-            "describe": "OSM全中国",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "VTTILES",
-            "name": "OSM全中国",
-            "searchName": "",
-            "token": "",
-            "guid": "8c74f367-191a-458c-946f-de1cd3778538",
-            "serverUrl": "http://192.168.21.191:6163/igs/rest/mrms/vtiles/styles/街道-墨卡托.json,http://192.168.21.191:6163/igs/rest/mrms/vtiles/styles/蓝色-墨卡托.json",
-            "wfsUrl": "",
-            "extent": ""
-          },
           {
             "label": "OSM全中国_经纬度",
             "describe": "OSM全中国_经纬度",

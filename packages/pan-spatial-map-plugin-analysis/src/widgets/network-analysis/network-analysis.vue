@@ -1,8 +1,8 @@
 <template>
   <div class="mp-widget-network-analysis">
     <a-spin :spinning="showLoading">
-      <a-form :label-col="{ style: 'width: atuo' }" :wrapper-col="{ flex: 1 }">
-        <a-form-item label="选择数据" style="display:flex">
+      <a-form>
+        <a-form-item label="选择数据" :colon="false">
           <a-select v-model="layerSelectIndex" @change="setNetWorkLayer">
             <a-select-option
               v-for="(item, index) in layerArrOption"
@@ -13,7 +13,7 @@
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="选择图层" style="display:flex">
+        <a-form-item label="选择图层" :colon="false">
           <a-select v-model="networkLayerIndex" @change="resetLayer">
             <a-select-option
               v-for="(item, index) in networkLayerOption"
@@ -24,7 +24,7 @@
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="选择方式" style="display:flex">
+        <a-form-item label="选择方式" :colon="false">
           <a-select v-model="wayIndex" @change="resetLayer">
             <a-select-option
               v-for="(item, index) in wayOptions"
@@ -83,7 +83,7 @@
           :wrapper-col="{ span: 24 }"
           size="small"
         >
-          <a-tabs type="card" v-model="tab">
+          <a-tabs type="card" v-model="tab" size="small">
             <a-tab-pane key="coordinateArr" tab="坐标点集">
               <mp-coordinate-table
                 :data="dataCoordinateArr.features"
@@ -321,6 +321,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
   }
 
   get columnsCoordinateArr() {
+    const itemWidth = this.isFullScreen ? {} : { width: '120px' }
     if (!this.showButton) {
       return [
         {
@@ -335,14 +336,16 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
           dataIndex: 'geometry.coordinates[0]',
           scopedSlots: { customRender: 'x' },
           ellipsis: true,
-          align: 'center'
+          align: 'center',
+          ...itemWidth
         },
         {
           title: 'Y坐标',
           dataIndex: 'geometry.coordinates[1]',
           scopedSlots: { customRender: 'y' },
           ellipsis: true,
-          align: 'center'
+          align: 'center',
+          ...itemWidth
         },
         {
           title: '类型',
@@ -374,14 +377,16 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
         dataIndex: 'geometry.coordinates[0]',
         scopedSlots: { customRender: 'x' },
         ellipsis: true,
-        align: 'center'
+        align: 'center',
+        ...itemWidth
       },
       {
         title: 'Y坐标',
         dataIndex: 'geometry.coordinates[1]',
         scopedSlots: { customRender: 'y' },
         ellipsis: true,
-        align: 'center'
+        align: 'center',
+        ...itemWidth
       },
       {
         title: '操作',
@@ -743,10 +748,13 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
   display: flex;
   flex-direction: column;
   .fixed-table {
-    width: 350px;
+    width: 250px;
   }
   .ant-form-item {
     margin-bottom: 10px;
+    .ant-form-item-label {
+      line-height: normal !important;
+    }
     .control-button-container {
       display: flex;
       justify-content: space-between;

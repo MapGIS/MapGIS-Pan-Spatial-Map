@@ -2,45 +2,48 @@
   <!-- 属性表 -->
   <mp-window-wrapper :visible="atVisible">
     <mp-window
-      title="属性表"
       :visible.sync="atVisible"
-      anchor="top-right"
       :horizontalOffset="12"
       :verticalOffset="50"
+      anchor="top-right"
+      title="属性表"
     >
       <div class="thematic-map-attribute-table">
         <a-spin :spinning="loading">
-          <row-flex
+          <mp-row-flex
             :span="[13, 10]"
             justify="space-between"
             class="attribute-table-head"
           >
             <template #label>
-              <row-flex label="专题" :span="[4, 20]">
-                <a-select :value="subject" @change="onSubjectChange">
-                  <a-select-option v-for="s in subjectList" :key="s.id">{{
-                    s.title
-                  }}</a-select-option>
-                </a-select>
-              </row-flex>
+              <mp-row-flex label="专题" :span="[4, 20]">
+                <a-select
+                  :value="subject"
+                  :options="subjectList"
+                  @change="onSubjectChange"
+                />
+              </mp-row-flex>
             </template>
-            <row-flex label="时间" :span="[5, 19]">
+            <mp-row-flex label="时间" :span="[5, 19]">
               <a-select :value="time" @change="onTimeChange">
                 <a-select-option v-for="y in selectedTimeList" :key="y">{{
                   y
                 }}</a-select-option>
               </a-select>
-            </row-flex>
-          </row-flex>
+            </mp-row-flex>
+          </mp-row-flex>
           <!-- 分页列表 -->
+          <a-empty v-if="!tableColumns.length" />
           <a-table
+            v-else
             bordered
             row-key="fid"
+            @change="onTableChange"
             :columns="tableColumns"
             :data-source="tableData"
             :pagination="tablePagination"
             :scroll="tableScroll"
-            @change="onTableChange"
+            :customRow="getCustomRow"
           />
         </a-spin>
       </div>
@@ -50,8 +53,9 @@
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
-import { mapGetters, mapMutations } from '../../store'
-import RowFlex from '../RowFlex'
+import _debounce from 'lodash/debounce'
+import { mapGetters, mapMutations, highlightSubjectTypes } from '../../store'
+import base from '@mapgis/pan-spatial-map-store/src/config/base'
 
 @Component({
   computed: {
@@ -62,23 +66,25 @@ import RowFlex from '../RowFlex'
       'selectedTime',
       'selectedList',
       'selectedSubConfig',
-      'selectedTimeList'
+      'selectedTimeList',
+      'linkageItem'
     ])
   },
   methods: {
     ...mapMutations([
-      'resetVisible',
       'setPage',
       'setSelected',
       'setSelectedTime',
-      'setFeaturesQuery'
+      'setFeaturesQuery',
+      'setLinkageItem',
+      'resetLinkage',
+      'resetVisible'
     ])
-  },
-  components: {
-    RowFlex
   }
 })
 export default class ThematicMapAttributeTable extends Vue {
+  vueKey = 'table'
+
   // 专题
   subject = ''
 
@@ -89,7 +95,7 @@ export default class ThematicMapAttributeTable extends Vue {
   page = 0
 
   // 列表页容量
-  pageCount = 100
+  pageCount = 10
 
   // 列表总数
   total = 0
@@ -102,7 +108,7 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 显示开关
   get atVisible() {
-    return this.isVisible('at')
+    return this.table && this.isVisible('at')
   }
 
   set atVisible(nV) {
@@ -111,13 +117,23 @@ export default class ThematicMapAttributeTable extends Vue {
     }
   }
 
+  // 是否支持图属高亮
+  get hasHighlight() {
+    return highlightSubjectTypes.includes(this.selectedSubConfig?.subjectType)
+  }
+
+  // 列表配置
+  get table() {
+    return this.selectedSubConfig?.table
+  }
+
   // 列表滚动
   get tableScroll() {
     const { length } = this.tableColumns
     const x = length > 3 ? length * 120 : 500
     return {
       x,
-      y: 360
+      y: 275
     }
   }
 
@@ -129,32 +145,79 @@ export default class ThematicMapAttributeTable extends Vue {
       pageSize: this.pageCount,
       total: this.total,
       showSizeChanger: true,
-      pageSizeOptions: ['100', '500', '1000', '1500', '2000'],
+      pageSizeOptions: ['10', '15', '20', '25', '30', '35', '40', '45', '50'],
       showTotal: total => `共${total}条`
     }
   }
 
   // 专题列表
   get subjectList() {
-    return this.selectedList.map(({ id, title }) => ({
-      id,
-      title
+    return this.selectedList.map(({ id, title, ...others }) => ({
+      value: id,
+      label: title,
+      ...others
     }))
+  }
+
+  /**
+   * 清除所有高亮
+   */
+  clearHighlight() {
+    this.tableData.forEach(d => this.$set(d, '_highlight', false))
+  }
+
+  /**
+   * 设置高亮
+   */
+  setHighlight(itemIndex: number) {
+    const node = this.tableData[itemIndex]
+    if (node) {
+      this.$set(node, '_highlight', true)
+    }
+  }
+
+  /**
+   * 自定义行数据和事件
+   */
+  getCustomRow(record, index) {
+    return {
+      class: {
+        highlight: record._highlight
+      },
+      on: this.hasHighlight
+        ? {
+            mouseenter: _debounce(() => {
+              this.setLinkageItem({
+                from: this.vueKey,
+                itemIndex: index
+              })
+            }, 400),
+            mouseleave: this.resetLinkage
+          }
+        : {}
+    }
   }
 
   /**
    * 设置列表配置
    */
   getTableColumns() {
-    if (!this.selectedSubConfig) return
-    const { showFields, showFieldsTitle } = this.selectedSubConfig.table
+    if (!this.table) return
+    const { showFields, showFieldsTitle } = this.table
     this.tableColumns = showFields.map((v: string, i: number) => {
       const title =
         showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
       return {
         title,
         dataIndex: v,
-        align: 'center'
+        align: 'center',
+        sorter: (a, b) => {
+          if ([a[v], b[v]].every(v => !isNaN(Number(v)))) {
+            return a[v] - b[v]
+          } else {
+            return a[v].length - b[v].length
+          }
+        }
       }
     })
   }
@@ -188,12 +251,10 @@ export default class ThematicMapAttributeTable extends Vue {
    * 1.重置列表页码
    * 2.获取并保存选择的专题的年度列表
    * 3.设置默认展示的年度
-   * @param value<string>
    */
-  onSubjectChange(value) {
+  onSubjectChange(value, option) {
     this.subject = value
-    this.setSelected(value)
-    this.onTimeChange(this.selectedTimeList[0])
+    this.setSelected(option.data.props)
   }
 
   /**
@@ -201,7 +262,6 @@ export default class ThematicMapAttributeTable extends Vue {
    * 1.重置列表页码
    * 2.保存当前选择的年度(同步更新时间轴)
    * 3.获取对应年度的列表配置和数据
-   * @param value<string>
    */
   onTimeChange(value) {
     this.time = value
@@ -219,23 +279,25 @@ export default class ThematicMapAttributeTable extends Vue {
    * 2.获取分页数据
    * @param 分页参数 current: 当前页; pageSize: 页容量
    */
-  onTableChange({ current, pageSize }) {
-    this.page = current
-    this.pageCount = pageSize
-    this.setPage({
-      page: current,
-      pageCount: pageSize
-    })
-    this.getTableData()
+  onTableChange({ current, pageSize }, filters, sorter) {
+    if (this.page !== current || this.pageCount !== pageSize) {
+      this.page = current
+      this.pageCount = pageSize
+      this.setPage({
+        page: current,
+        pageCount: pageSize
+      })
+      this.getTableData()
+    }
   }
 
   /**
-   * 监听: 专题变化
+   * 监听: 当前选中的专题变化
    */
-  @Watch('selected')
-  watchSelected(nV: string) {
+  @Watch('selected.id')
+  watchSelectedId(nV: string) {
     if (this.subject !== nV) {
-      this.onSubjectChange(nV)
+      this.subject = nV
     }
   }
 
@@ -249,8 +311,16 @@ export default class ThematicMapAttributeTable extends Vue {
     }
   }
 
-  created() {
-    this.onSubjectChange(this.selected)
+  /**
+   * 监听: 联动项变化
+   */
+  @Watch('linkageItem', { deep: true })
+  watchHighlightItem(nV) {
+    if (!nV) {
+      this.clearHighlight()
+    } else if (nV.from !== this.vueKey) {
+      this.setHighlight(nV.itemIndex)
+    }
   }
 }
 </script>

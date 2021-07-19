@@ -1,1 +1,1 @@
-export { default as MapComponents } from './packages'
+export { MarkerPlottingMixin, default as MapComponents } from './packages'

@@ -120,16 +120,17 @@
               item.name
             }}</span>
             <a-menu slot="overlay">
-              <a-menu-item key="1" @click="showMetaDataInfo(item)"
-                >元数据信息</a-menu-item
-              >
+              <a-menu-item key="1" @click="showMetaDataInfo(item)">
+                元数据信息
+              </a-menu-item>
               <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
               <a-menu-item
                 v-if="hasLegend(item)"
                 key="3"
                 @click="onUploadLegend(item)"
-                >上传图例</a-menu-item
               >
+                上传图例
+              </a-menu-item>
             </a-menu>
           </a-dropdown>
         </span>
@@ -139,8 +140,16 @@
       v-model="showUploader"
       :dialog-style="{ top: '150px' }"
       :width="300"
+      :mask="false"
+      title="上传图例"
       :footer="null"
     >
+      <a-alert
+        message="建议上传宽高比为1:1的图片"
+        type="info"
+        show-icon
+        style="margin-bottom: 16px"
+      />
       <a-upload
         name="file"
         accept=".jpg, image/*"
@@ -151,10 +160,10 @@
         :before-upload="beforeUpload"
         @change="onChangeFile"
       >
-        <div class="upload-content">
-          <span>图片上传</span>
-          <a-icon type="upload" :style="{ fontSize: '18px' }"></a-icon>
-        </div>
+        <a-button>
+          <a-icon type="upload" :style="{ fontSize: '18px' }" />
+          上传图片
+        </a-button>
       </a-upload>
     </a-modal>
 
@@ -208,6 +217,7 @@ import {
   dataCatalogManagerInstance,
   DataCatalogManager,
   eventBus,
+  events,
   api
 } from '@mapgis/pan-spatial-map-store'
 
@@ -311,15 +321,17 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     this.dataCatalogManager.init(this.widgetInfo.config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
     this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
-
-    eventBus.$on('click-bookmark-item', this.bookMarkClick)
+    eventBus.$on(events.OPEN_DATA_BOOKMARK_EVENT, this.bookMarkClick)
   }
 
   @Watch('checkedNodeKeys', { deep: false })
   onCheckedNodeKeysChenged() {
     let newChecked = []
     let newUnChecked = []
-    eventBus.$emit('emitCheckedNodeKeys', this.checkedNodeKeys)
+    eventBus.$emit(
+      events.DATA_SELECTION_KEYS_CHANGE_EVENT,
+      this.checkedNodeKeys
+    )
 
     if (this.preCheckedNodeKeys.length === 0) {
       newChecked = this.checkedNodeKeys
@@ -439,7 +451,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
               doc.defaultMap.findLayerById(layerConfigNode.guid)
             )
           }
-          eventBus.$emit('emitSelectLayer')
+          eventBus.$emit(events.DATA_SELECTION_CHANGE_EVENT)
         }
       )
     }
@@ -546,7 +558,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 收藏按钮
   bookMarksCheck() {
     eventBus.$emit(
-      'check-to-mark',
+      events.ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT,
+      this.widgetInfo.label,
       this.checkedNodeKeys,
       this.dataCatalogTreeData
     )
@@ -649,13 +662,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 右键菜单收藏按钮响应事件
   addToMark(item) {
     eventBus.$emit(
-      'add-to-mark',
-      { params: item, type: '基础数据' },
+      events.ADD_DATA_BOOKMARK_EVENT,
+      { params: item, type: this.widgetInfo.label },
       this.dataCatalogTreeData
     )
   }
 
-  // 监听书签项点击事件('click-bookmark-item')
+  // 监听书签项点击事件
   bookMarkClick(node) {
     if (this.dataCatalogManager.checkedLayerConfigIDs.includes(node.guid)) {
       const index = this.dataCatalogManager.checkedLayerConfigIDs.findIndex(
@@ -671,7 +684,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   private onUploadLegend(item) {
     this.showUploader = true
     this.legendNode = item
-    this.$message.info('建议上传宽高比为1:1的图片')
   }
 
   // 上传文件之前的钩子
@@ -698,7 +710,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
           name: 'legend',
           config: JSON.stringify(legendConfig)
         })
-        eventBus.$emit('uploader-success')
+        eventBus.$emit(events.UPLOAD_LEGEND_SUCCESS_EVENT)
         this.showUploader = false
       }
     }
@@ -791,11 +803,5 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 }
 .filter-words {
   color: @primary-color !important;
-}
-
-.upload-content {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
 }
 </style>

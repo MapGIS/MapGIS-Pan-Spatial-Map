@@ -1,0 +1,26 @@
+.thematic-map-statistic-graph {
+  min-width: 500px;
+  max-height: 400px;
+  &-head {
+    margin-bottom: 20px;
+    .ant-select {
+      width: 100%;
+    }
+    .anticon {
+      font-size: 22px;
+      margin-left: 20px;
+      color: #d9d9d9;
+      cursor: pointer;
+      transition: color 0.3s linear;
+      &.active {
+        color: @primary-color;
+      }
+    }
+    + div {
+      flex: 1;
+      width: 500px;
+      height: 355px;
+      overflow: auto;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 <template>
   <!-- 聚合标注专题图 -->
-  <mapgis-3d-mapv-layer :geojson="geojsonPoint" :options="options" />
+  <mapgis-3d-mapv-layer :geojson="geojsonPoint" :options="labelOptions" />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
@@ -11,6 +11,7 @@ export default class CesiumLabel extends Mixins(BaseMinxin) {
   geojsonPoint = {}
 
   options = {
+    draw: 'cluster',
     fillStyle: 'rgba(255, 50, 0, 1.0)',
     size: 50 / 3 / 2,
     minSize: 8,
@@ -29,8 +30,14 @@ export default class CesiumLabel extends Mixins(BaseMinxin) {
       '0': 'blue',
       '0.5': 'yellow',
       '1.0': 'rgb(255,0,0)'
-    },
-    draw: 'cluster'
+    }
+  }
+
+  get labelOptions() {
+    return {
+      ...this.options,
+      ...(this.subDataConfig.style || {})
+    }
   }
 
   /**

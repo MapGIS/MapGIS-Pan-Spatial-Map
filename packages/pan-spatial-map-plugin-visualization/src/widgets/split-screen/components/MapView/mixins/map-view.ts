@@ -28,17 +28,30 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     return this.activeMapViewState.initBound
   }
 
+  // 获取地图视图的活动范围
+  get activeBound() {
+    return this.activeMapViewState.activeBound
+  }
+
+  set activeBound(bound: Rect) {
+    this.activeMapViewState.activeBound = bound
+  }
+
   // 是否为当前活动的地图
-  get isActiveMapView() {
-    return this.activeMapViewState.mapViewId === this.mapViewId
+  get activeMapViewId() {
+    return this.activeMapViewState.mapViewId
+  }
+
+  set activeMapViewId(id: string) {
+    this.activeMapViewState.mapViewId = id
   }
 
   /**
    * 监听: 更新活动地图经纬度范围
    */
-  @Watch('activeMapViewState.activeBound', { immediate: true, deep: true })
+  @Watch('activeBound', { immediate: true, deep: true })
   watchActiveBound(nV: Rect) {
-    if (this.isMapLoaded && !this.isActiveMapView) {
+    if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
       this.zoomIn(nV)
     }
   }
@@ -47,8 +60,8 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * 设置当前的活动地图
    */
   setActiveMapView() {
-    if (!this.isActiveMapView) {
-      this.activeMapViewState.mapViewId = this.mapViewId
+    if (this.isMapLoaded) {
+      this.activeMapViewId = this.mapViewId
     }
   }
 
@@ -57,8 +70,8 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * @param rect 经纬度范围
    */
   setActiveBound(rect: Rect) {
-    if (this.isMapLoaded && this.isActiveMapView) {
-      this.activeMapViewState.activeBound = rect
+    if (this.isMapLoaded && this.activeMapViewId === this.mapViewId) {
+      this.activeBound = rect
     }
   }
 
@@ -72,12 +85,12 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   /**
    * 复位
-   * @param  resortOtherViews 是否同步复位其他图层
+   * @param  restoreOtherViews 是否同步复位其他图层
    */
-  resort(resortOtherViews = false) {
+  restore(restoreOtherViews = false) {
     const _bound = { ...this.initBound }
-    this.zoomOut(_bound)
-    if (resortOtherViews) {
+    this.zoomIn(_bound)
+    if (restoreOtherViews) {
       this.setActiveBound(_bound)
     }
   }

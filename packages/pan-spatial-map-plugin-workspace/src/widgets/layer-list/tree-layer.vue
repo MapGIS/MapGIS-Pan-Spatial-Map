@@ -357,7 +357,7 @@ export default class TreeLayer extends Mixins(
         if (this.isVectorTile(item)) {
           item.sublayers = item.currentStyle.layers.map(row => ({
             ...row,
-            visible: row.layout.visibility === 'visible',
+            visible: !!(row.layout && row.layout.visibility === 'visible'),
             id: `${item.id}~${row.id}`,
             title: row.description || row.id
           }))
@@ -595,10 +595,17 @@ export default class TreeLayer extends Mixins(
                 .activeScene.sublayers[i].visible
             } else if (this.isVectorTile(layers[parentIndex])) {
               const visible =
-                layerItem.currentStyle.layers[i].layout.visibility === 'visible'
-              layerItem.currentStyle.layers[i].layout.visibility = visible
-                ? 'none'
-                : 'visible'
+                (layerItem.currentStyle.layers[i].layout || {}).visibility ===
+                'visible'
+              if (layerItem.currentStyle.layers[i].layout) {
+                layerItem.currentStyle.layers[i].layout.visibility = visible
+                  ? 'none'
+                  : 'visible'
+              } else {
+                layerItem.currentStyle.layers[i].layout = {
+                  visibility: visible ? 'none' : 'visible'
+                }
+              }
             } else {
               layerItem.sublayers[i].visible = !layerItem.sublayers[i].visible
             }
@@ -644,14 +651,16 @@ export default class TreeLayer extends Mixins(
 
   isMetaData(item) {
     const bool =
-      (this.isParentLayer(item) && this.isIGSScene(item)) ||
-      (this.isParentLayer(item) && this.isIgsDocLayer(item)) ||
-      (this.isParentLayer(item) && this.isIgsVectorLayer(item)) ||
-      (this.isParentLayer(item) && this.isIgsTileLayer(item)) ||
-      (this.isParentLayer(item) && this.isWMTSLayer(item)) ||
-      (this.isParentLayer(item) && this.isWMSLayer(item)) ||
-      (this.isParentLayer(item) && this.isArcGISMapImage(item)) ||
-      (this.isParentLayer(item) && this.isArcGISTile(item))
+      this.isParentLayer(item) &&
+      (this.isIGSScene(item) ||
+        this.isIgsDocLayer(item) ||
+        this.isIgsVectorLayer(item) ||
+        this.isIgsTileLayer(item) ||
+        this.isWMTSLayer(item) ||
+        this.isWMSLayer(item) ||
+        this.isArcGISMapImage(item) ||
+        this.isArcGISTile(item) ||
+        this.isVectorTile(item))
     return bool
   }
 

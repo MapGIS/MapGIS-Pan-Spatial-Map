@@ -24,14 +24,14 @@ import {
 import { Feature } from '@mapgis/web-app-framework'
 import _last from 'lodash/last'
 import MpMarkerSetPro from '../marker-pro/MarkerSetPro.vue'
-import HighlightEventsMixin from './mixins/highlight-events'
+import MarkerPlottingMixin from './mixins/marker-plotting'
 import MarkerStateInstance from './store/marker-state'
 
 @Component({
   name: 'MpMarkerPlotting',
   components: { MpMarkerSetPro }
 })
-export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
+export default class MpMarkerPlotting extends Mixins(MarkerPlottingMixin) {
   @Inject('map') map
 
   @Prop() readonly vueKey!: string
@@ -109,27 +109,18 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
 
   @Watch('selectedMarkers', { immediate: true })
   changeSelectedMarkers(markerIds, prevMarkerIds = []) {
-    if (prevMarkerIds.length) {
-      prevMarkerIds.forEach(id => {
-        const marker = this.getMarker(id)
-        this.clearHighlight(marker)
-        if (this.vueKey) {
-          this.emitClearHighlight(marker, this.vueKey)
-        }
-        MarkerStateInstance.removeSelectedIds(id)
-      })
-    }
+    this.clearAllHighlight()
     if (markerIds.length) {
       if (this.vueKey) {
-        this.emitClearQueryTreeSelected(this.vueKey)
+        this.emitClearSelectionEvent(this.vueKey)
       }
       const lastMarker = this.getMarker(_last(markerIds))
-      this.zoomTo(lastMarker.feature.bound)
+      this.zoomOrPanTo(lastMarker.feature.bound)
       markerIds.forEach(id => {
         const marker = this.getMarker(id)
         this.highlightFeature(marker)
         if (this.vueKey) {
-          this.emitHighlight(marker, this.vueKey)
+          this.emitHighlightEvent(marker, this.vueKey)
         }
         MarkerStateInstance.setSelectedIds(id)
       })
@@ -281,22 +272,39 @@ export default class MpMarkerPlotting extends Mixins(HighlightEventsMixin) {
   }
 
   /**
+   * 清除所有高亮
+   */
+  private clearAllHighlight() {
+    this.markers.forEach(marker => {
+      this.onClearHighlightFeature(marker)
+      if (this.vueKey) {
+        this.emitClearHighlightEvent(marker, this.vueKey)
+      }
+      MarkerStateInstance.removeSelectedIds(marker.id)
+    })
+  }
+
+  /**
    * 清除高亮
    */
-  private clearHighlight(marker) {
+  private onClearHighlightFeature(marker) {
     this.clearHighlightFeature(marker)
   }
 
   /**
    * 添加高亮
    */
-  private addHighlight(marker) {
-    this.zoomTo(marker.feature.bound)
+  private onHighlightFeature(marker) {
+    this.zoomOrPanTo(marker.feature.bound)
     this.highlightFeature(marker)
   }
 
   created() {
     this.subscribeHighlight()
+  }
+
+  beforeDestroy() {
+    this.clearAllHighlight()
   }
 }
 </script>

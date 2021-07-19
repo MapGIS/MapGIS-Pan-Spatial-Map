@@ -46,7 +46,7 @@ export class SceneController {
     let cesiumColor
     if (color.includes('rgb')) {
       // 如果是rgb或者rgba
-      const a = color.substr(5, color.length - 6)
+      const a = color.split('(')[1].split(')')[0]
       const arr = a.split(',')
       const cesiumRed = Number((Number(arr[0]) / 255).toFixed(2))
       const cesiumGreen = Number((Number(arr[1]) / 255).toFixed(2))

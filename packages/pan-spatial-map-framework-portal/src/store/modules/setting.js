@@ -22,6 +22,9 @@ export default {
     },
     setWeekMode(state, weekMode) {
       state.weekMode = weekMode
+    },
+    setLang(state, lang) {
+      state.lang = lang
     }
   }
 }

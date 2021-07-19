@@ -10,7 +10,7 @@
       <div class="thematic-map-time-line">
         <a-spin :spinning="loading">
           <!-- 时间轴 -->
-          <row-flex :span="[2, 22]" v-show="timeList.length">
+          <mp-row-flex :span="[2, 22]" v-show="timeList.length">
             <template #label>
               <a-tooltip placement="bottom" :title="autoPlay.tooltip">
                 <a-icon
@@ -21,7 +21,7 @@
               </a-tooltip>
             </template>
             <div id="thematic-map-time-line-chart" />
-          </row-flex>
+          </mp-row-flex>
           <!-- 空数据友好提示 -->
           <a-empty v-show="!timeList.length" />
         </a-spin>
@@ -33,13 +33,9 @@
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import * as echarts from 'echarts'
 import { mapGetters, mapMutations } from '../../store'
-import RowFlex from '../RowFlex'
 import { chartOption } from './config/timeLineChartOption'
 
 @Component({
-  components: {
-    RowFlex
-  },
   computed: {
     ...mapGetters(['loading', 'isVisible', 'selectedTime', 'selectedTimeList'])
   },

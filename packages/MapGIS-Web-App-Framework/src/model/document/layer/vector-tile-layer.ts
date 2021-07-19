@@ -1,9 +1,10 @@
 import * as Zondy from '@mapgis/webclient-es6-service'
 import { LoadStatus, LayerType, Layer } from './layer'
+import { IGSTileLayer } from './igs-tile-layer'
 import axios from 'axios'
 import { SpatialReference } from '../spatial-reference'
 
-export class VectorTileLayer extends Layer {
+export class VectorTileLayer extends IGSTileLayer {
   /**
    * Creates an instance of VectorTileLayer.
    * @date 10/05/2021
@@ -22,8 +23,8 @@ export class VectorTileLayer extends Layer {
 
   /**
    * 服务基地址
-   * 约定URL格式如下：http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/街道-墨卡托.json,http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/蓝色-墨卡托.json"
-   * 指向矢量瓦片图层所对应的style的URL。可同时设置多个style，中间用','号分隔。
+   * 约定URL格式如下：http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/styles/街道-墨卡托.json
+   * 指向矢量瓦片图层所对应的style的URL。
    * @date 22/03/2021
    * @memberof VectorTileLayer
    */
@@ -71,6 +72,7 @@ export class VectorTileLayer extends Layer {
     const promise = new Promise((resolve, reject) => {
       this.loadStatus = LoadStatus.loading
       styleUrlList.forEach((styleUrl, index) => {
+        // 2.获取样式
         axios.get(styleUrl).then(
           res => {
             const { data } = res
@@ -80,9 +82,39 @@ export class VectorTileLayer extends Layer {
               if (this.styleList.length > 0)
                 this.currentStyle = this.styleList[0]
 
-              this.loadStatus = LoadStatus.loaded
+              // 3.获取样式的sources中的瓦片服务地址
+              if (this.currentStyle != undefined) {
+                const tileUrls: string[] = this.getTileUrls(
+                  this.currentStyle.sources
+                )
 
-              resolve(this)
+                // 4.获取瓦片信息,当前只支持获取第0个tile的信息
+                if (tileUrls && tileUrls.length > 0) {
+                  const tileUrl = tileUrls[0]
+
+                  // 4.1从URL中解析出ip、port、serverName参数
+                  const baseUrl = tileUrl.substring(0, tileUrl.indexOf('/{'))
+
+                  const parms = this._parseUrl(baseUrl)
+
+                  const tileLayer = new Zondy.MRCS.TileLayer(parms)
+                  this.loadStatus = LoadStatus.loading
+                  tileLayer.getTileInfo(
+                    res => {
+                      if (res && res.TileInfo2) {
+                        this._praseTileInfo(res.TileInfo2)
+                      }
+
+                      this.loadStatus = LoadStatus.loaded
+                      resolve(this)
+                    },
+                    failInfo => {
+                      this.loadStatus = LoadStatus.failed
+                      reject(failInfo)
+                    }
+                  )
+                }
+              }
             }
           },
           error => {
@@ -105,7 +137,7 @@ export class VectorTileLayer extends Layer {
    * @return {*}  {Layer}
    * @memberof VectorTileLayer
    */
-  clone(): Layer {
+  clone(): VectorTileLayer {
     const result = new VectorTileLayer()
 
     Object.entries(this).forEach(element => {
@@ -115,5 +147,19 @@ export class VectorTileLayer extends Layer {
     })
 
     return result
+  }
+
+  protected getTileUrls(sources: Record<string, object>): string[] {
+    const tileUrls: string[] = []
+
+    Object.entries(sources).forEach(element => {
+      const source: any = element[1]
+      const tilesArray: string[] = source.tiles
+      if (tilesArray != undefined && Array.isArray(tilesArray)) {
+        tileUrls.push(...tilesArray)
+      }
+    })
+
+    return tileUrls
   }
 }

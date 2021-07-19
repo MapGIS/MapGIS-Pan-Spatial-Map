@@ -74,6 +74,8 @@ export {
   CoordinateSystemType
 } from './model'
 
+export { MarkerPlottingMixin } from './map'
+
 import { CommonComponents } from './common'
 import { MapComponents } from './map'
 import { BuilderComponents } from './builder'

@@ -5,6 +5,7 @@ import './theme/index.less'
 import Antd from 'ant-design-vue'
 import store from './store'
 import bootstrap from '@/bootstrap'
+import 'moment/locale/zh-cn'
 import { configService } from '@/services'
 
 import About from '@/components/About'

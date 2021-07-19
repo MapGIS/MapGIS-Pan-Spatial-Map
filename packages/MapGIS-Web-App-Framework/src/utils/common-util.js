@@ -130,7 +130,7 @@ export function isEmpty(v) {
     return !v.length
   } else if (isPlainObject(v)) {
     for (const key in v) {
-      if (hasOwnProperty.call(v, key)) {
+      if (Object.hasOwnProperty.call(v, key)) {
         return false
       }
     }

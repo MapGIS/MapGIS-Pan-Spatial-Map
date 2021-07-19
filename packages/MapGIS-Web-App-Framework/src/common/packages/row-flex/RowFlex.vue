@@ -1,11 +1,16 @@
 <template>
   <a-row type="flex" :align="align" :justify="justify" :gutter="gutter">
-    <a-col :span="labelSpan" class="row-flex-col-left" :title="label">
+    <a-col
+      :span="labelSpan"
+      :title="label"
+      :style="labelStyle"
+      class="row-flex-col-left"
+    >
       <slot name="label" v-if="$slots.label || label">
         {{ label }}{{ colon ? '：' : '' }}</slot
       >
     </a-col>
-    <a-col :span="contentSpan">
+    <a-col :span="contentSpan" :style="contentStyle">
       <slot />
     </a-col>
   </a-row>
@@ -37,7 +42,7 @@ export default {
     },
     gutter: {
       type: [Array, Number],
-      default: () => 0
+      default: 0
     },
     span: {
       type: Array,
@@ -50,6 +55,20 @@ export default {
     label: {
       type: String,
       require: true
+    },
+    labelAlign: {
+      type: String,
+      default: 'left',
+      validator: function(value) {
+        return ['left', 'center', 'right'].includes(value)
+      }
+    },
+    contentAlign: {
+      type: String,
+      default: 'left',
+      validator: function(value) {
+        return ['left', 'center', 'right'].includes(value)
+      }
     }
   },
   computed: {
@@ -58,6 +77,16 @@ export default {
     },
     contentSpan() {
       return this.span[1]
+    },
+    labelStyle() {
+      return {
+        textAlign: this.labelAlign
+      }
+    },
+    contentStyle() {
+      return {
+        textAlign: this.contentAlign
+      }
     }
   }
 }
@@ -65,8 +94,9 @@ export default {
 
 <style lang="less" scoped>
 .row-flex-col-left {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  // overflow: hidden;
+  // white-space: nowrap;
+  // text-overflow: ellipsis;
+  white-space: normal;
 }
 </style>

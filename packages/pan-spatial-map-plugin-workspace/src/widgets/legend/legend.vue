@@ -33,6 +33,7 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
   eventBus,
+  events,
   api
 } from '@mapgis/pan-spatial-map-store'
 
@@ -57,8 +58,11 @@ export default class MpLegend extends Mixins(WidgetMixin) {
     const treeConfig = await api.getWidgetConfig('data-catalog')
     dataCatalogManagerInstance.init(treeConfig)
     this.treeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
-    eventBus.$on('uploader-success', this.onGetConfig)
-    eventBus.$on('emitCheckedNodeKeys', this.onCheckedKeysChange)
+    eventBus.$on(events.UPLOAD_LEGEND_SUCCESS_EVENT, this.onGetConfig)
+    eventBus.$on(
+      events.DATA_SELECTION_KEYS_CHANGE_EVENT,
+      this.onCheckedKeysChange
+    )
     this.$message.config({
       top: '100px',
       duration: 2,
@@ -67,8 +71,8 @@ export default class MpLegend extends Mixins(WidgetMixin) {
   }
 
   beforeDestroy() {
-    eventBus.$off('uploader-success')
-    eventBus.$off('emitCheckedNodeKeys')
+    eventBus.$off(events.UPLOAD_LEGEND_SUCCESS_EVENT)
+    eventBus.$off(events.DATA_SELECTION_KEYS_CHANGE_EVENT)
   }
 
   // 微件点击事件回调
