@@ -357,7 +357,7 @@ export default class TreeLayer extends Mixins(
         if (this.isVectorTile(item)) {
           item.sublayers = item.currentStyle.layers.map(row => ({
             ...row,
-            visible: row.layout && row.layout.visibility === 'visible',
+            visible: !!(row.layout && row.layout.visibility === 'visible'),
             id: `${item.id}~${row.id}`,
             title: row.description || row.id
           }))
