@@ -56,7 +56,6 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import _cloneDeep from 'lodash/cloneDeep'
 import { SubjectType, NewSubjectConfig } from '../../../../store'
 import ServerTreeSelect from './components/ServerTreeSelect.vue'
 import SubjectStyles from './components/SubjectStyles'
@@ -92,11 +91,10 @@ export default class SubjectItems extends Vue {
   configListMap = new Map()
 
   get configList() {
-    return _cloneDeep(this.configListMap.get(this.subjectType)) || this.value
+    return this.value
   }
 
   set configList(config: Array<NewSubjectConfig>) {
-    this.configListMap.set(this.subjectType, _cloneDeep(config))
     this.$emit('input', config)
   }
 

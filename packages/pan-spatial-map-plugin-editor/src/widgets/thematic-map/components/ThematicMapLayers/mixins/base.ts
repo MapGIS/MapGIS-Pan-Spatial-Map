@@ -44,11 +44,8 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
    * @returns
    */
   addCountToGeoJSON(geojson: Feature.FeatureGeoJSON) {
-    const {
-      weight: oldWeight,
-      style: { weight }
-    } = this.subjectData
-    const _weight = oldWeight || weight
+    const { weight, style } = this.subjectData
+    const _weight = weight || (style ? style.weight : 0)
     const count = _isNumber(_weight)
       ? _weight
       : _weight

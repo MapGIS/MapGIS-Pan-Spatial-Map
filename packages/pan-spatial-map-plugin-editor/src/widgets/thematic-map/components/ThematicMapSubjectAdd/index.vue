@@ -57,12 +57,6 @@ export default class ThematicMapSubjectAdd extends Vue {
 
   subjectConfig = []
 
-  @Watch('subjectNode', { deep: true })
-  subjectNodeChanged({ config, ...others }) {
-    this.baseItemsObj = { ...others }
-    this.subjectConfig = config
-  }
-
   get saVisible() {
     return this.isVisible('sa')
   }
@@ -79,6 +73,12 @@ export default class ThematicMapSubjectAdd extends Vue {
 
   get subjectType() {
     return this.baseItemsObj.type
+  }
+
+  @Watch('subjectNode', { deep: true })
+  subjectNodeChanged({ config, ...others }) {
+    this.baseItemsObj = { ...others }
+    this.subjectConfig = config
   }
 
   /**
