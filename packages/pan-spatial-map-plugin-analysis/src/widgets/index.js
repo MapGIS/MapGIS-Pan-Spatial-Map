@@ -8,3 +8,4 @@ export { default as MpDynamicSectionAnalysis } from './dynamic-section-analysis/
 export { default as MpTerrainAnalysis } from './terrain-analysis/terrain-analysis.vue'
 export { default as MpSkylineAnalysis } from './skyline-analysis/skyline-analysis.vue'
 export { default as MpShadowAnalysis } from './shadow-analysis/shadow-analysis.vue'
+export { default as MpParticleEffects } from './particle-effects/particle-effects.vue'
