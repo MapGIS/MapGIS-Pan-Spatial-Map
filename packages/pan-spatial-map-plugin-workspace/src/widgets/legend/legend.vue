@@ -54,7 +54,7 @@ export default class MpLegend extends Mixins(WidgetMixin) {
   // 图例数据
   private data = []
 
-  async created() {
+  async onOpen() {
     const treeConfig = await api.getWidgetConfig('data-catalog')
     dataCatalogManagerInstance.init(treeConfig)
     this.treeData = await dataCatalogManagerInstance.getDataCatalogTreeData()

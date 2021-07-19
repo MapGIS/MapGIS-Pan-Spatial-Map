@@ -317,8 +317,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   async mounted() {
     this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
-    this.dataCatalogManager.init(this.widgetInfo.config)
 
+    this.dataCatalogManager.init(this.widgetInfo.config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
     this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
     eventBus.$on(events.OPEN_DATA_BOOKMARK_EVENT, this.bookMarkClick)
