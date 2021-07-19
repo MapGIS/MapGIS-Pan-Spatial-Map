@@ -20,6 +20,7 @@ import {
   UrlUtil
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
+import axios from 'axios'
 
 /**
  * 数据目录管理类
@@ -262,9 +263,16 @@ export class DataCatalogManager {
       let tileServiceInfo: any = {}
       let docServiceInfo: any = {}
 
-      if (this.config.urlConfig.treeDataUrl !== '') {
-        const res: any = await this.getServiceTreeData()
-        this.serviceTreeData = res.data.treeData
+      if (
+        this.config.urlConfig.treeDataUrl &&
+        this.config.urlConfig.treeDataUrl !== ''
+      ) {
+        const res: any = await axios.get(this.config.urlConfig.treeDataUrl)
+        if (res.data.data && res.data.data.treeData) {
+          this.serviceTreeData = res.data.data.treeData
+        } else {
+          this.serviceTreeData = res.data.treeData
+        }
       }
 
       await Catalog.DocumentCatalog.getTiles({
@@ -458,25 +466,6 @@ export class DataCatalogManager {
      * @type {string}
      */
     VIDEO: 'VIDEO'
-  }
-
-  // 获取云服务目录树数据
-  private getServiceTreeData() {
-    return new Promise((resolve, reject) => {
-      const request = new XMLHttpRequest()
-      request.responseType = 'json'
-      request.open('GET', this.config.urlConfig.treeDataUrl)
-      request.onreadystatechange = () => {
-        if (request.readyState === 4) {
-          if (request.status >= 200 && request.status <= 304) {
-            resolve(request.response)
-          } else {
-            reject(request.response)
-          }
-        }
-      }
-      request.send()
-    })
   }
 
   // 将老版本的配置转换为新版本的配置
