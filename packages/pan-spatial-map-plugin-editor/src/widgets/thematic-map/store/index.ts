@@ -2,7 +2,7 @@ import {
   ModuleType,
   SubjectType,
   NewSubjectConfig,
-  ThematicMapTreeNode
+  ThematicMapSubjectConfigNode
 } from './types'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
@@ -27,7 +27,7 @@ export {
   ModuleType,
   SubjectType,
   NewSubjectConfig,
-  ThematicMapTreeNode,
+  ThematicMapSubjectConfigNode,
   subjectTypeList,
   highlightSubjectTypes,
   thematicMapStore,

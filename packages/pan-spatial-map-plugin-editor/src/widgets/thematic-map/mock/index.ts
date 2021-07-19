@@ -7,17 +7,17 @@ const baseConfig = {
   startZindex: 3000 // 图层叠加层级
 }
 
-// 专题服务配置数据
+// 专题图配置数据
 const subjectConfig = [
   {
     id: '115dc807-63d6-91e4-93a9-31cadb98af60',
-    title: '社会经济服务', // 专题服务分类标题
+    title: '社会经济服务', // 专题图分类标题
     visible: true, // 是否可见
     nodeType: 'panel', // 节点类型 ('panel' | 'list' | 'subject')
     children: [
       {
         id: '92fd7586-e248-c105-918d-843fb090e24a',
-        title: '人口', // 专题服务集合标题
+        title: '人口', // 专题图集合标题
         visible: true, // 是否可见
         nodeType: 'list', // 节点类型
         children: [

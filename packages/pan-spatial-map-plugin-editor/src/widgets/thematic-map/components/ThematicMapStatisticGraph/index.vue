@@ -76,7 +76,7 @@ interface IChartOption {
       'loading',
       'isVisible',
       'pageDataSet',
-      'selectedSubConfig',
+      'subjectData',
       'linkageItem'
     ])
   },
@@ -140,12 +140,12 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   // 是否支持图属高亮
   get hasHighlight() {
-    return highlightSubjectTypes.includes(this.selectedSubConfig?.subjectType)
+    return highlightSubjectTypes.includes(this.subjectData?.subjectType)
   }
 
   // 图表配置
   get graph() {
-    return this.selectedSubConfig?.graph
+    return this.subjectData?.graph
   }
 
   // 图表是否有数据,是否展示友好提示

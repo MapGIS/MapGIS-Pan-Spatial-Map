@@ -6,8 +6,8 @@
       @click.stop="showDropdown"
     />
     <div class="color-picker-setting" slot="overlay">
-      <mp-toolbar>
-        <mp-toolbar-title>
+      <mp-toolbar :bordered="false" class="color-picker-setting-head">
+        <mp-toolbar-title :has-padding="false">
           颜色设置
         </mp-toolbar-title>
         <mp-toolbar-command-group>
@@ -263,11 +263,14 @@ export default class ColorPickerSetting extends Vue {
 .color-picker-setting {
   background: @white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-
+  &-head {
+    padding: 0 10px;
+    border-bottom: 1px solid @border-color-base;
+  }
   &-content {
     max-height: 280px;
     overflow-y: auto;
-    padding: 10px 10px 12px 10px;
+    padding: 10px 10px 12px;
   }
 
   /deep/ .ant-input-number {

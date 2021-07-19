@@ -32,19 +32,19 @@ interface ISectionColor {
 @Component
 export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
   get isShow3D() {
-    return this.subDataConfig?.isShow3D
+    return this.subjectData?.isShow3D
   }
 
   get setting3D() {
-    return this.subDataConfig?.setting3D || {}
+    return this.subjectData?.setting3D || {}
   }
 
   get colors() {
-    return this.subDataConfig?.color
+    return this.subjectData?.color
   }
 
   get field() {
-    return this.subDataConfig.field
+    return this.subjectData.field
   }
 
   /**

@@ -19,7 +19,7 @@ export default class MapboxHexBin extends Mixins(BaseMinxin) {
   get hexBinOptions() {
     return {
       ...this.options,
-      ...(this.subDataConfig.style || {})
+      ...(this.subjectData.style || {})
     }
   }
 

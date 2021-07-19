@@ -2,20 +2,20 @@
   <div class="base-items">
     <!-- 专题名称 -->
     <mp-row-flex label="专题名称">
-      <a-dropdown v-model="dropdownVisible" :trigger="['click']">
+      <a-dropdown v-model="thematicMapTreeVisible" :trigger="['click']">
         <span
           class="ant-input-affix-wrapper pointer"
-          @click.stop="showDropdown"
+          @click.stop="thematicMapTreeShow"
         >
           <span class="ant-input">
-            <span v-if="baseItemObj.parentTitle">{{
-              baseItemObj.parentTitle
+            <span v-if="baseItemsObj.parentTitle">{{
+              baseItemsObj.parentTitle
             }}</span>
             <span v-else class="placeholder">请选择</span>
           </span>
           <span
             class="ant-select-arrow"
-            :class="{ rotate180: dropdownVisible }"
+            :class="{ rotate180: thematicMapTreeVisible }"
           >
             <a-icon type="down" class="ant-select-arrow-icon" />
           </span>
@@ -23,7 +23,7 @@
         <div class="dropdown-content" slot="overlay">
           <a-tree
             @select="thematicMapTreeSelected"
-            :selected-keys="selectedKeys"
+            :selected-keys="selectedThematicMapKeys"
             :show-line="true"
             :tree-data="thematicMapTree"
             :replace-fields="{ key: 'id' }"
@@ -31,21 +31,21 @@
         </div>
       </a-dropdown>
     </mp-row-flex>
+    <!-- 专题图名称 -->
+    <mp-row-flex label="专题图名称">
+      <a-input
+        @change="subjectTitleChange"
+        :value="baseItemsObj.title"
+        placeholder="请输入专题图名称"
+      />
+    </mp-row-flex>
     <!-- 专题图类型 -->
     <mp-row-flex label="专题图类型">
       <a-select
         @change="subjectTypeChange"
         :options="subjectTypeList"
-        :value="baseItemObj.type"
+        :value="baseItemsObj.type"
         placeholder="请选择"
-      />
-    </mp-row-flex>
-    <!-- 专题图名称 -->
-    <mp-row-flex label="专题图名称">
-      <a-input
-        @change="subjectTitleChange"
-        :value="baseItemObj.title"
-        placeholder="请输入专题图名称"
       />
     </mp-row-flex>
   </div>
@@ -57,8 +57,9 @@ import _cloneDeep from 'lodash/cloneDeep'
 import {
   mapGetters,
   subjectTypeList,
+  SubjectType,
   NewSubjectConfig,
-  ThematicMapTreeNode
+  ThematicMapSubjectConfigNode
 } from '../../../../store'
 
 @Component({
@@ -69,22 +70,24 @@ import {
 export default class BaseItems extends Vue {
   @Prop({ default: () => ({}) }) readonly value!: NewSubjectConfig
 
-  dropdownVisible = false
-
-  // 专题图类型列表
+  // 专题类型列表
   subjectTypeList = subjectTypeList
 
-  // 专题服务树
-  thematicMapTree: Array<ThematicMapTreeNode> = []
+  // 专题图树展示开关
+  thematicMapTreeVisible = false
 
-  selectedKeys: string[] = []
+  // 专题图树
+  thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
 
-  // 专题节点
-  get baseItemObj() {
+  // 选中的专题图树节点key
+  selectedThematicMapKeys: string[] = []
+
+  // 专题节点公共的基础数据
+  get baseItemsObj() {
     return { ...this.value }
   }
 
-  set baseItemObj(nV) {
+  set baseItemsObj(nV) {
     this.$emit('input', {
       id: `new-${UUID.uuid()}`,
       visible: true,
@@ -94,57 +97,57 @@ export default class BaseItems extends Vue {
   }
 
   /**
-   * 展示专题分类下拉框
+   * 展示专题目录树
    */
-  showDropdown() {
-    this.dropdownVisible = true
+  thematicMapTreeShow() {
+    this.thematicMapTreeVisible = true
   }
 
   /**
-   * 隐藏专题分类下拉框
+   * 隐藏专题目录树
    */
-  hideDropdown() {
-    this.dropdownVisible = false
+  thematicMapTreeHide() {
+    this.thematicMapTreeVisible = false
   }
 
   /**
-   * 专题分类变化
+   * 专题图节点选择变化
    */
   thematicMapTreeSelected(selectedKeys: string[], { node: { dataRef } }: any) {
-    this.selectedKeys = selectedKeys
-    this.baseItemObj = {
-      ...this.baseItemObj,
+    this.selectedThematicMapKeys = selectedKeys
+    this.baseItemsObj = {
+      ...this.baseItemsObj,
       parentId: dataRef.id,
       parentTitle: dataRef.title
     }
-    this.hideDropdown()
+    this.thematicMapTreeHide()
   }
 
   /**
-   * 专题图类型选择变化
+   * 专题类型选择变化
    */
-  subjectTypeChange(type: string) {
-    this.baseItemObj = {
-      ...this.baseItemObj,
+  subjectTypeChange(type: SubjectType) {
+    this.baseItemsObj = {
+      ...this.baseItemsObj,
       type
     }
   }
 
   /**
-   * 专题图名称变化
+   * 专题名称变化
    */
   subjectTitleChange(e) {
-    this.baseItemObj = {
-      ...this.baseItemObj,
+    this.baseItemsObj = {
+      ...this.baseItemsObj,
       title: e.target.value
     }
   }
 
   /**
-   * 格式化专题服务树
+   * 格式化专题图树
    * @param tree
    */
-  normalizeTreeData(tree: Array<ThematicMapTreeNode>) {
+  normalizeThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
     if (!tree.length) return []
     return tree.map(node => {
       this.$set(node, 'selectable', false)
@@ -152,26 +155,26 @@ export default class BaseItems extends Vue {
         this.$set(node, 'selectable', true)
         this.$set(node, 'children', [])
       } else if (node.children && node.children.length) {
-        this.normalizeTreeData(node.children)
+        this.normalizeThematicMapTree(node.children)
       }
       return node
     })
   }
 
   /**
-   * 设置专题服务树
+   * 设置专题图树
    * @param tree
    */
-  setSubjectMapTree(tree: Array<ThematicMapTreeNode>) {
-    this.thematicMapTree = this.normalizeTreeData(_cloneDeep(tree))
+  setThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
+    this.thematicMapTree = this.normalizeThematicMapTree(_cloneDeep(tree))
   }
 
   /**
    * 监听: 专题配置变化
    */
-  @Watch('value.parentId', { immediate: true })
+  @Watch('value.parentId')
   parentIdChanged(nV) {
-    this.selectedKeys = [nV]
+    this.selectedThematicMapKeys = [nV]
   }
 
   /**
@@ -179,11 +182,12 @@ export default class BaseItems extends Vue {
    */
   @Watch('subjectConfig', { deep: true })
   subjectConfigChanged(nV) {
-    this.setSubjectMapTree(nV)
+    this.setThematicMapTree(nV)
   }
 
   created() {
-    this.setSubjectMapTree(this.subjectConfig)
+    this.selectedThematicMapKeys = [this.value.parentId]
+    this.setThematicMapTree(this.subjectConfig)
   }
 }
 </script>

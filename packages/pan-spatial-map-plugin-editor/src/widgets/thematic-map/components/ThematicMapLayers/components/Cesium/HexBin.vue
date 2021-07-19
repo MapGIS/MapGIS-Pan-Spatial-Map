@@ -23,7 +23,7 @@ export default class CesiumHexBin extends Mixins(BaseMinxin) {
   get hexbinOptions() {
     return {
       ...this.options,
-      ...(this.subDataConfig.style || {})
+      ...(this.subjectData.style || {})
     }
   }
 

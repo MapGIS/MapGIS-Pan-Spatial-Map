@@ -2,7 +2,7 @@ import { Feature } from '@mapgis/web-app-framework'
 
 // 节点类型
 type NodeType = 'panel' | 'list' | 'subjet'
-// 专题服务配置
+// 专题图配置
 type ServerType = 'gdbp' | 'doc' | 'geojson' | 'excel'
 /**
  * 专题类型:
@@ -59,8 +59,8 @@ export interface NewSubjectConfig extends IConfigBase {
   }>
 }
 
-// 基础配置
-export interface SubjectBaseConfig {
+// 专题图基础配置
+export interface ThematicMapBaseConfig {
   baseIp: string // 主题服务默认 ip
   basePort: string // 主题服务默认 port
   isLocation: boolean // 是否覆盖
@@ -68,14 +68,14 @@ export interface SubjectBaseConfig {
   startZindex: number // 初始 index 级别
 }
 
-// 专题服务配置树的节点
-export type ThematicMapTreeNode =
+// 专题图专题配置树的节点
+export type ThematicMapSubjectConfigNode =
   | OldSubjectConfig
   | NewSubjectConfig
   | null
   | undefined
 
-// 点击单个专题的数据展示弹框类型
+// 专题图专题功能模块
 export type ModuleType =
   | 'at' // 属性表
   | 'st' // 统计表
@@ -83,6 +83,7 @@ export type ModuleType =
   | 'sa' // 新建专题图
   | 'mt' // 管理工具栏
 
+// 图属联动项
 export interface LinkageItem {
   from: string
   itemIndex: number
@@ -102,24 +103,24 @@ export interface PageParam {
   pageCount: number
 }
 
-// 旧版本的请求方式提取到了外层, 新版本直接根据配置项里的gdbp|docName判断
-export interface SelectedSubConfig {
+// 专题数据: 旧版本的请求方式提取到了外层, 新版本直接根据配置项里的gdbp|docName判断
+export interface SubjectData {
   configType?: ServerType
   subjectType: SubjectType
   [k: string]: any
 }
 
 export interface IState {
-  loading: boolean
   moduleTypes: Array<ModuleType>
+  loading: boolean
   pageParam: PageParam
   pageDataSet: Feature.FeatureIGS | null
-  selectedTime: string
-  selectedTimeList: Array<string>
-  selectedSubConfig: SelectedSubConfig | null
-  selected?: ThematicMapTreeNode
-  selectedList: Array<ThematicMapTreeNode>
-  subjectConfig: Array<ThematicMapTreeNode>
-  baseConfig?: SubjectBaseConfig | null
+  subjectData: SubjectData | null
+  selectedSubjectTime: string
+  selectedSubjectTimeList: Array<string>
+  selectedSubject?: ThematicMapSubjectConfigNode
+  selectedSubjectList: Array<ThematicMapSubjectConfigNode>
+  baseConfig?: ThematicMapBaseConfig | null
+  subjectConfig: Array<ThematicMapSubjectConfigNode>
   linkageItem: LinkageItem | null
 }

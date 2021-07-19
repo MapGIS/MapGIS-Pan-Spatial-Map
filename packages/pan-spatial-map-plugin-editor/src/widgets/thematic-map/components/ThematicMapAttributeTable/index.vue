@@ -26,9 +26,11 @@
             </template>
             <mp-row-flex label="时间" :span="[5, 19]">
               <a-select :value="time" @change="onTimeChange">
-                <a-select-option v-for="y in selectedTimeList" :key="y">{{
-                  y
-                }}</a-select-option>
+                <a-select-option
+                  v-for="y in selectedSubjectTimeList"
+                  :key="y"
+                  >{{ y }}</a-select-option
+                >
               </a-select>
             </mp-row-flex>
           </mp-row-flex>
@@ -62,20 +64,20 @@ import base from '@mapgis/pan-spatial-map-store/src/config/base'
     ...mapGetters([
       'loading',
       'isVisible',
-      'selected',
-      'selectedTime',
-      'selectedList',
-      'selectedSubConfig',
-      'selectedTimeList',
+      'subjectData',
+      'selectedSubject',
+      'selectedSubjectList',
+      'selectedSubjectTime',
+      'selectedSubjectTimeList',
       'linkageItem'
     ])
   },
   methods: {
     ...mapMutations([
       'setPage',
-      'setSelected',
-      'setSelectedTime',
       'setFeaturesQuery',
+      'setSelectedSubject',
+      'setSelectedSubjectTime',
       'setLinkageItem',
       'resetLinkage',
       'resetVisible'
@@ -119,12 +121,12 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 是否支持图属高亮
   get hasHighlight() {
-    return highlightSubjectTypes.includes(this.selectedSubConfig?.subjectType)
+    return highlightSubjectTypes.includes(this.subjectData?.subjectType)
   }
 
   // 列表配置
   get table() {
-    return this.selectedSubConfig?.table
+    return this.subjectData?.table
   }
 
   // 列表滚动
@@ -150,9 +152,9 @@ export default class ThematicMapAttributeTable extends Vue {
     }
   }
 
-  // 专题列表
+  // 专题节点列表
   get subjectList() {
-    return this.selectedList.map(({ id, title, ...others }) => ({
+    return this.selectedSubjectList.map(({ id, title, ...others }) => ({
       value: id,
       label: title,
       ...others
@@ -254,7 +256,7 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   onSubjectChange(value, option) {
     this.subject = value
-    this.setSelected(option.data.props)
+    this.setSelectedSubject(option.data.props)
   }
 
   /**
@@ -265,7 +267,7 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   onTimeChange(value) {
     this.time = value
-    this.setSelectedTime(value)
+    this.setSelectedSubjectTime(value)
     this.getTableColumns()
     this.onTableChange({
       current: 1,
@@ -294,7 +296,7 @@ export default class ThematicMapAttributeTable extends Vue {
   /**
    * 监听: 当前选中的专题变化
    */
-  @Watch('selected.id')
+  @Watch('selectedSubject.id')
   watchSelectedId(nV: string) {
     if (this.subject !== nV) {
       this.subject = nV
@@ -304,7 +306,7 @@ export default class ThematicMapAttributeTable extends Vue {
   /**
    * 监听: 年度时间轴数据切换,需要同步更新时间选项
    */
-  @Watch('selectedTime')
+  @Watch('selectedSubjectTime')
   watchSelectedTime(nV: string) {
     if (this.time !== nV) {
       this.onTimeChange(nV)

@@ -1,28 +1,29 @@
 <template>
-  <div class="subject-items" v-show="subjectType">
-    <mp-row-flex
-      class="subject-items-head"
-      label="专题图设置"
-      justify="space-between"
-      content-align="right"
-      :colon="false"
-    >
-      <a-tooltip title="新增年度">
-        <a-icon type="plus" @click="addTime" />
-      </a-tooltip>
-      <a-tooltip title="删除年度">
-        <a-icon type="delete" @click="removeTime" />
-      </a-tooltip>
-    </mp-row-flex>
+  <div class="subject-items">
+    <mp-toolbar :bordered="false" class="subject-items-head">
+      <mp-toolbar-title :has-padding="false">
+        专题设置
+      </mp-toolbar-title>
+      <mp-toolbar-command-group>
+        <mp-toolbar-command
+          v-for="item in configTools"
+          :key="item.title"
+          :title="item.title"
+          :icon="item.icon"
+          @click="item.method()"
+        >
+        </mp-toolbar-command>
+      </mp-toolbar-command-group>
+    </mp-toolbar>
     <div class="subject-items-content">
-      <a-empty description="暂无年度数据" v-if="!subjectConfig.length" />
+      <a-empty description="暂无年度数据" v-if="!configList.length" />
       <a-collapse
         v-else
         @change="panelChange"
         :activeKey="activePanel"
         accordion
       >
-        <a-collapse-panel v-for="(sub, i) in subjectConfig" :key="i">
+        <a-collapse-panel v-for="(sub, i) in configList" :key="i">
           <template #header>
             <a-checkbox
               @click.stop
@@ -55,8 +56,8 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-// import _cloneDeep from 'lodash/cloneDeep'
-import { NewSubjectConfig } from '../../../../store'
+import _cloneDeep from 'lodash/cloneDeep'
+import { SubjectType, NewSubjectConfig } from '../../../../store'
 import ServerTreeSelect from './components/ServerTreeSelect.vue'
 import SubjectStyles from './components/SubjectStyles'
 
@@ -67,46 +68,37 @@ import SubjectStyles from './components/SubjectStyles'
   }
 })
 export default class SubjectItems extends Vue {
-  @Prop({ default: () => ({}) }) readonly value!: NewSubjectConfig
+  @Prop() readonly subjectType!: SubjectType
+
+  @Prop({ default: () => [] }) readonly value!: Array<NewSubjectConfig>
 
   activePanel = 0
 
   checkedPanel = []
 
-  // subjectConfig = []
+  configTools = [
+    {
+      title: '新增年度',
+      icon: 'plus',
+      method: this.addTime
+    },
+    {
+      title: '删除年度',
+      icon: 'delete',
+      method: this.removeTime
+    }
+  ]
 
-  // subjectConfigMap = new Map()
+  configListMap = new Map()
 
-  get subjectType() {
-    return this.value.type
+  get configList() {
+    return _cloneDeep(this.configListMap.get(this.subjectType)) || this.value
   }
 
-  get subjectConfig() {
-    return this.value.config || []
+  set configList(config: Array<NewSubjectConfig>) {
+    this.configListMap.set(this.subjectType, _cloneDeep(config))
+    this.$emit('input', config)
   }
-
-  set subjectConfig(config) {
-    this.$emit('input', {
-      ...this.value,
-      config
-    })
-  }
-
-  //   /**
-  //    * 监听: 专题类型变化
-  //    */
-  //   @Watch('subjectType', { immediate: true })
-  //   subjectTypeChanged(type) {
-  //      this.subjectConfig = this.subjectConfigMap.get(type) || []
-  //   }
-  //
-  //   /**
-  //    * 专题配置数据变化
-  //    */
-  //   @Watch('subjectConfig', { deep: true })
-  //   subjectConfigChanged(nV) {
-  //     this.subjectConfigMap.set(this.subjectType, config)
-  //   }
 
   /**
    * 更新属性
@@ -125,7 +117,7 @@ export default class SubjectItems extends Vue {
   }
 
   /**
-   * 专题服务选择change
+   * 专题图选择change
    */
   serverChange(serverConfig, sub) {
     this.setProperties(serverConfig, sub)
@@ -146,7 +138,7 @@ export default class SubjectItems extends Vue {
       time: '',
       checked: false
     }
-    this.subjectConfig = this.subjectConfig.concat(node)
+    this.configList = this.configList.concat(node)
   }
 
   /**
@@ -157,7 +149,7 @@ export default class SubjectItems extends Vue {
       this.$message.warning('请选择需要删除的年度')
       return
     }
-    this.checkedPanel.forEach(index => this.subjectConfig.splice(index, 1))
+    this.checkedPanel.forEach(index => this.configList.splice(index, 1))
   }
 
   /**

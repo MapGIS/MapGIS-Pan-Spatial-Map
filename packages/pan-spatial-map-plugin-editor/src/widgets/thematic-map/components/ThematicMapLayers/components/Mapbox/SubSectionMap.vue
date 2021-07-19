@@ -40,12 +40,12 @@ interface ISectionColor {
 export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   // 样式
   get colors() {
-    return this.subDataConfig?.color
+    return this.subjectData?.color
   }
 
   // 图表title
   get field() {
-    return this.subDataConfig.field
+    return this.subjectData.field
   }
 
   /**
@@ -76,7 +76,7 @@ export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
   }
 
   /**
-   * 获取专题服务图层
+   * 获取专题图图层
    */
   getThematicMapLayer() {
     if (!this.colors) return

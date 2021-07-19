@@ -37,10 +37,15 @@ import { chartOption } from './config/timeLineChartOption'
 
 @Component({
   computed: {
-    ...mapGetters(['loading', 'isVisible', 'selectedTime', 'selectedTimeList'])
+    ...mapGetters([
+      'loading',
+      'isVisible',
+      'selectedSubjectTime',
+      'selectedSubjectTimeList'
+    ])
   },
   methods: {
-    ...mapMutations(['resetVisible', 'setSelectedTime'])
+    ...mapMutations(['resetVisible', 'setSelectedSubjectTime'])
   }
 })
 export default class ThematicMapTimeLine extends Vue {
@@ -55,7 +60,7 @@ export default class ThematicMapTimeLine extends Vue {
 
   // 时间轴的列表数据
   get timeList() {
-    return this.selectedTimeList || []
+    return this.selectedSubjectTimeList || []
   }
 
   // 显示开关
@@ -107,7 +112,7 @@ export default class ThematicMapTimeLine extends Vue {
    * currentIndex变化
    */
   onCurrentIndexChange(value) {
-    this.setSelectedTime(this.timeList[value])
+    this.setSelectedSubjectTime(this.timeList[value])
     this.onUpdateChart()
   }
 
@@ -146,7 +151,7 @@ export default class ThematicMapTimeLine extends Vue {
   /**
    * 监听:属性表时间选项的变化,同步更新时间轴当前选中的项
    */
-  @Watch('selectedTime')
+  @Watch('selectedSubjectTime')
   watchTimeList(nV) {
     this.onSelecteTimeChange(nV)
   }
@@ -159,7 +164,7 @@ export default class ThematicMapTimeLine extends Vue {
       'timelinechanged',
       ({ currentIndex }) => (this.currentIndex = currentIndex)
     )
-    this.onSelecteTimeChange(this.selectedTime)
+    this.onSelecteTimeChange(this.selectedSubjectTime)
   }
 
   beforeDestroy() {

@@ -91,11 +91,11 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
   }
 
   get graph() {
-    return this.subDataConfig.graph
+    return this.subjectData.graph
   }
 
   get graphType() {
-    return this.subDataConfig.graphType
+    return this.subjectData.graphType
   }
 
   get faceStyleByFields() {
@@ -210,7 +210,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
   }
 
   /**
-   * 获取专题服务图层
+   * 获取专题图图层
    */
   getThematicMapLayer() {
     if (!this.graph) return
