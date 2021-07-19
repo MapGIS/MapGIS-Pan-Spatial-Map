@@ -268,7 +268,11 @@ export class DataCatalogManager {
         this.config.urlConfig.treeDataUrl !== ''
       ) {
         const res: any = await axios.get(this.config.urlConfig.treeDataUrl)
-        this.serviceTreeData = res.data.data.treeData
+        if (res.data.data && res.data.data.treeData) {
+          this.serviceTreeData = res.data.data.treeData
+        } else {
+          this.serviceTreeData = res.data.treeData
+        }
       }
 
       await Catalog.DocumentCatalog.getTiles({
