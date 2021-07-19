@@ -89,7 +89,7 @@ export default class BaseItems extends Vue {
 
   set baseItemsObj(nV) {
     this.$emit('input', {
-      id: `new-${UUID.uuid()}`,
+      id: `thematic-map-${UUID.uuid()}`,
       visible: true,
       nodeType: 'subject',
       ...nV
