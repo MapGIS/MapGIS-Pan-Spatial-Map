@@ -1,81 +1,97 @@
 <template>
   <div class="mp-widget-flooding">
-    <div class="panel">
-      <a-form-model
-        :model="formData"
-        :label-col="{ span: 8 }"
-        :wrapper-col="{ span: 16 }"
+    <a-form-model :model="formData">
+      <a-form-model-item label="淹没最低高度">
+        <a-input
+          v-model.number="formData.minHeight"
+          size="small"
+          type="number"
+          min="0"
+          addon-after="(米)"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="淹没最高高度">
+        <a-input
+          v-model.number="formData.maxHeight"
+          size="small"
+          type="number"
+          min="0"
+          addon-after="(米)"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="洪水上涨速度">
+        <a-input
+          v-model.number="formData.speed"
+          size="small"
+          type="number"
+          min="0"
+          addon-after="(米/秒)"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="波浪个数">
+        <a-input
+          v-model.number="formData.frequency"
+          size="small"
+          type="number"
+          min="0"
+          addon-after="(个)"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="波浪速度">
+        <a-input
+          v-model.number="formData.animationSpeed"
+          size="small"
+          type="number"
+          min="0"
+          step="0.01"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="波浪高度">
+        <a-input
+          v-model.number="formData.amplitude"
+          size="small"
+          type="number"
+          min="0"
+          addon-after="(米)"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="颜色">
+        <MpColorPicker
+          :color.sync="formData.floodColor"
+          :disableAlpha="true"
+          class="color-picker"
+        ></MpColorPicker>
+      </a-form-model-item>
+      <a-form-model-item label="透明度">
+        <a-input
+          v-model.number="formData.opacity"
+          size="small"
+          type="number"
+          min="0"
+          max="1"
+          step="0.1"
+        />
+      </a-form-model-item>
+    </a-form-model>
+    <div class="control-button-container">
+      <a-button size="small" class="control-button" type="primary" @click="rise"
+        >升高</a-button
       >
-        <a-form-model-item label="淹没最低高度">
-          <a-input
-            v-model.number="formData.minHeight"
-            type="number"
-            min="0"
-            addon-after="(米)"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="淹没最高高度">
-          <a-input
-            v-model.number="formData.maxHeight"
-            type="number"
-            min="0"
-            addon-after="(米)"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="洪水上涨速度">
-          <a-input
-            v-model.number="formData.speed"
-            type="number"
-            min="0"
-            addon-after="(米/秒)"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="波浪个数">
-          <a-input
-            v-model.number="formData.frequency"
-            type="number"
-            min="0"
-            addon-after="(个)"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="波浪速度">
-          <a-input
-            v-model.number="formData.animationSpeed"
-            type="number"
-            min="0"
-            step="0.01"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="波浪高度">
-          <a-input
-            v-model.number="formData.amplitude"
-            type="number"
-            min="0"
-            addon-after="(米)"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="颜色">
-          <MpColorPicker
-            :color.sync="formData.floodColor"
-            :disableAlpha="true"
-          ></MpColorPicker>
-        </a-form-model-item>
-        <a-form-model-item label="透明度">
-          <a-input
-            v-model.number="formData.opacity"
-            type="number"
-            min="0"
-            max="1"
-            step="0.1"
-          />
-        </a-form-model-item>
-      </a-form-model>
+      <a-button size="small" class="control-button" type="primary" @click="down"
+        >下降</a-button
+      >
     </div>
-    <div class="footer">
-      <a-button type="primary" @click="add">开始分析</a-button>
-      <a-button type="primary" @click="rise">升高</a-button>
-      <a-button type="primary" @click="down">下降</a-button>
-      <a-button type="primary" @click="remove">结束分析</a-button>
+    <div class="control-button-container">
+      <a-button size="small" class="control-button" type="primary" @click="add"
+        >开始分析</a-button
+      >
+      <a-button
+        size="small"
+        class="control-button"
+        type="primary"
+        @click="remove"
+        >结束分析</a-button
+      >
     </div>
   </div>
 </template>
@@ -217,16 +233,24 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-flooding {
-  .panel {
-    width: 100%;
-    .ant-form-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0;
-    }
-    .ant-input {
-      padding: 4px 11px;
-    }
+  overflow-y: scroll;
+  max-height: 500px;
+  .ant-form-item {
+    align-items: center;
+    margin-bottom: 0;
+  }
+  .ant-form-item-label {
+    line-height: 20px;
+  }
+  .ant-form-item-label > label::after {
+    content: '';
+  }
+  .ant-input {
+    padding: 4px 11px;
+  }
+  .color-picker {
+    height: 40px;
+    padding: 8px 0px;
   }
 
   .title {
@@ -244,15 +268,15 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     }
   }
 
-  .footer {
+  .control-button-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 8px;
-
-    .ant-btn {
-      padding: 0 15px;
+    margin: 5px 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .control-button {
+      width: calc(~'50% - 2.5px');
     }
   }
 }

@@ -1,51 +1,64 @@
 <template>
   <div class="mp-widget-cut-fill-analysis">
-    <div class="panel">
-      <a-row class="title">
-        <div class="space"></div>
-        <div class="label">参数设置</div>
-      </a-row>
-      <a-form-model
-        :model="formData"
-        :label-col="{ span: 8 }"
-        :wrapper-col="{ span: 16 }"
+    <a-row class="title">
+      <div class="space"></div>
+      <div class="label">参数设置</div>
+    </a-row>
+    <a-form-model :model="formData">
+      <a-form-model-item label="x方向采样点个数">
+        <a-input
+          v-model.number="formData.x"
+          size="small"
+          type="number"
+          min="0"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="y方向采样点个数">
+        <a-input
+          v-model.number="formData.y"
+          size="small"
+          type="number"
+          min="0"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="填挖规整高度">
+        <a-input
+          v-model.number="formData.z"
+          size="small"
+          type="number"
+          min="0"
+        />
+      </a-form-model-item>
+    </a-form-model>
+    <a-row class="title">
+      <div class="space"></div>
+      <div class="label">填挖结果</div>
+    </a-row>
+    <a-form-model :model="result">
+      <a-form-model-item label="高程范围">
+        <a-input v-model.number="result.height" disabled size="small" />
+      </a-form-model-item>
+      <a-form-model-item label="表面积">
+        <a-input v-model.number="result.surfaceArea" disabled size="small" />
+      </a-form-model-item>
+      <a-form-model-item label="挖体积">
+        <a-input v-model.number="result.cutVolume" disabled size="small" />
+      </a-form-model-item>
+      <a-form-model-item label="填体积">
+        <a-input v-model.number="result.fillVolume" disabled size="small" />
+      </a-form-model-item>
+    </a-form-model>
+    <div class="control-button-container">
+      <a-button class="control-button" type="primary" @click="add" size="small"
+        >开始分析</a-button
       >
-        <a-form-model-item label="x方向采样点个数">
-          <a-input v-model.number="formData.x" type="number" min="0" />
-        </a-form-model-item>
-        <a-form-model-item label="y方向采样点个数">
-          <a-input v-model.number="formData.y" type="number" min="0" />
-        </a-form-model-item>
-        <a-form-model-item label="填挖规整高度">
-          <a-input v-model.number="formData.z" type="number" min="0" />
-        </a-form-model-item>
-      </a-form-model>
-      <a-row class="title">
-        <div class="space"></div>
-        <div class="label">填挖结果</div>
-      </a-row>
-      <a-form-model
-        :model="result"
-        :label-col="{ span: 8 }"
-        :wrapper-col="{ span: 16 }"
+      <a-button
+        class="control-button"
+        type="primary"
+        @click="remove"
+        size="small"
+        >结束分析</a-button
       >
-        <a-form-model-item label="高程范围">
-          <a-input v-model.number="result.height" disabled />
-        </a-form-model-item>
-        <a-form-model-item label="表面积">
-          <a-input v-model.number="result.surfaceArea" disabled />
-        </a-form-model-item>
-        <a-form-model-item label="挖体积">
-          <a-input v-model.number="result.cutVolume" disabled />
-        </a-form-model-item>
-        <a-form-model-item label="填体积">
-          <a-input v-model.number="result.fillVolume" disabled />
-        </a-form-model-item>
-      </a-form-model>
-    </div>
-    <div class="footer">
-      <a-button type="primary" @click="add">开始分析</a-button>
-      <a-button type="primary" @click="remove">结束分析</a-button>
     </div>
   </div>
 </template>
@@ -252,16 +265,20 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-cut-fill-analysis {
-  .panel {
-    width: 100%;
-    .ant-form-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0;
-    }
-    .ant-input {
-      padding: 4px 11px;
-    }
+  overflow-y: auto;
+  max-height: 500px;
+  .ant-form-item {
+    align-items: center;
+    margin-bottom: 0;
+  }
+  .ant-form-item-label {
+    line-height: 20px;
+  }
+  .ant-form-item-label > label::after {
+    content: '';
+  }
+  .ant-input {
+    padding: 4px 11px;
   }
 
   .title {
@@ -279,15 +296,15 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  .footer {
+  .control-button-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 8px;
-
-    .ant-btn {
-      padding: 0 15px;
+    margin: 5px 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .control-button {
+      width: calc(~'50% - 2.5px');
     }
   }
 }

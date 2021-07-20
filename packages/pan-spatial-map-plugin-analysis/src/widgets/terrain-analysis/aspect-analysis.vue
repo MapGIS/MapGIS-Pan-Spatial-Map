@@ -1,26 +1,32 @@
 <template>
   <div class="mp-widget-aspect-analysis">
-    <div class="panel">
-      <a-row class="title">
-        <div class="space"></div>
-        <div class="label">坡向权重设置</div>
-      </a-row>
-      <a-form-model :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }">
-        <a-form-model-item
-          v-for="(color, index) in arrayColor"
-          :key="index"
-          :label="getLabel(index)"
-        >
-          <MpColorPicker
-            :color.sync="arrayColor[index]"
-            :disableAlpha="false"
-          ></MpColorPicker>
-        </a-form-model-item>
-      </a-form-model>
-    </div>
-    <div class="footer">
-      <a-button type="primary" @click="add">开始分析</a-button>
-      <a-button type="primary" @click="remove">结束分析</a-button>
+    <a-row class="title">
+      <div class="space"></div>
+      <div class="label">坡向权重设置</div>
+    </a-row>
+    <a-form-model :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }">
+      <a-form-model-item
+        v-for="(color, index) in arrayColor"
+        :key="index"
+        :label="getLabel(index)"
+      >
+        <MpColorPicker
+          :color.sync="arrayColor[index]"
+          :disableAlpha="false"
+        ></MpColorPicker>
+      </a-form-model-item>
+    </a-form-model>
+    <div class="control-button-container">
+      <a-button class="control-button" type="primary" @click="add" size="small"
+        >开始分析</a-button
+      >
+      <a-button
+        class="control-button"
+        type="primary"
+        @click="remove"
+        size="small"
+        >结束分析</a-button
+      >
     </div>
   </div>
 </template>
@@ -115,16 +121,19 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-aspect-analysis {
-  .panel {
-    width: 100%;
-    .ant-form-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0;
-    }
-    .ant-input {
-      padding: 4px 11px;
-    }
+  .ant-form-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .ant-form-item-label {
+    line-height: 20px;
+  }
+  .ant-form-item-label > label::after {
+    content: '';
+  }
+  .ant-input {
+    padding: 4px 11px;
   }
 
   .title {
@@ -142,15 +151,15 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  .footer {
+  .control-button-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 8px;
-
-    .ant-btn {
-      padding: 0 15px;
+    margin: 5px 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .control-button {
+      width: calc(~'50% - 2.5px');
     }
   }
 }
