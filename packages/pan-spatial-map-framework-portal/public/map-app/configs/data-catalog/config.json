@@ -28,7 +28,7 @@
   },
   "urlConfig": {
     "nonSpatialUrl": "",
-    "treeDataUrl": "http://localhost:6160/portal/api/maps/dir-tree"
+    "treeDataUrl": "/portal/api/maps/dir-tree"
   },
   "otherConfig": {
     "nonSpatial": "非空间数据",

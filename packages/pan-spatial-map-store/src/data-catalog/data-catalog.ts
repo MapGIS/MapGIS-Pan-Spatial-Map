@@ -267,7 +267,20 @@ export class DataCatalogManager {
         this.config.urlConfig.treeDataUrl &&
         this.config.urlConfig.treeDataUrl !== ''
       ) {
-        const res: any = await axios.get(this.config.urlConfig.treeDataUrl)
+        let res: any
+        if (
+          this.config.urlConfig.treeDataUrl.includes('https') ||
+          this.config.urlConfig.treeDataUrl.includes('http')
+        ) {
+          res = await axios.get(this.config.urlConfig.treeDataUrl)
+        } else {
+          const protocol = window.location.protocol
+          const host = window.location.host
+          const url = `${protocol}//${host}${this.config.urlConfig.treeDataUrl}`
+
+          res = await axios.get(url)
+        }
+
         if (res.data.data && res.data.data.treeData) {
           this.serviceTreeData = res.data.data.treeData
         } else {
