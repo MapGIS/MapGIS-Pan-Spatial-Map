@@ -263,6 +263,7 @@ import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
 import MpUnifyModify from './components/UnifyModify/UnifyModify.vue'
 import MpSelectTilematrixSet from './components/SelectTilematrixSet/SelectTilematrixSet.vue'
 import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLayer.vue'
+import { fitBoundByLayer } from '../../util/fit-bound'
 
 @Component({
   components: {
@@ -701,85 +702,13 @@ export default class TreeLayer extends Mixins(
   }
 
   fitBounds(item) {
-    let {
-      fullExtent: { xmin, xmax, ymin, ymax }
-    } = item.dataRef
-    const { type } = item.dataRef
-    if (
-      item.dataRef.spatialReference &&
-      item.dataRef.spatialReference.wkid === CoordinateSystemType.webMercator
-    ) {
-      const xminYminConverted = CoordinateTransformation.mercatorToWGS84([
-        xmin,
-        ymin
-      ])
-      const xmaxYmaxConverted = CoordinateTransformation.mercatorToWGS84([
-        xmax,
-        ymax
-      ])
-
-      xmin = xminYminConverted[0]
-      ymin = xminYminConverted[1]
-
-      xmax = xmaxYmaxConverted[0]
-      ymax = xmaxYmaxConverted[1]
-    }
-    if (type !== LayerType.IGSScene) {
-      this.map.fitBounds([xmin, ymin, xmax, ymax])
-      const rectangle = new this.Cesium.Rectangle.fromDegrees(
-        xmin,
-        ymin,
-        xmax,
-        ymax
-      )
-      this.webGlobe.viewer.camera.flyTo({
-        destination: rectangle
-      })
-    } else {
-      const {
-        activeScene: { sublayers },
-        fullExtent: { zmin, zmax }
-      } = item.dataRef
-      let id = ''
-      let range = null
-      sublayers.forEach(item => {
-        if (item.visible) {
-          id = item.id
-          if (item.renderType === IGSSceneSublayerRenderType.elevation) {
-            range = item.range
-          }
-        }
-      })
-      if (!range) {
-        const { source } = this.sceneController.findSource(id)
-        if (source.length > 0) {
-          const tranform = source[0].root.transform
-          const bound = this.sceneController.localExtentToGlobelExtent(
-            { xmin, xmax, ymin, ymax, zmin, zmax },
-            tranform
-          )
-          const rectangle = new this.Cesium.Rectangle.fromDegrees(
-            bound.xmin,
-            bound.ymin,
-            bound.xmax,
-            bound.ymax
-          )
-          this.webGlobe.viewer.camera.flyTo({
-            destination: rectangle
-          })
-        }
-      } else {
-        const rectangle = new this.Cesium.Rectangle.fromDegrees(
-          range.xmin,
-          range.ymin,
-          range.xmax,
-          range.ymax
-        )
-        this.webGlobe.viewer.camera.flyTo({
-          destination: rectangle
-        })
-      }
-    }
+    const { Cesium, map, webGlobe, CesiumZondy } = this
+    fitBoundByLayer(item.dataRef, {
+      Cesium,
+      map,
+      webGlobe,
+      CesiumZondy
+    })
     this.clickPopover(item, false)
   }
 

@@ -748,7 +748,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
   display: flex;
   flex-direction: column;
   .fixed-table {
-    width: 250px;
+    width: 320px;
   }
   .ant-form-item {
     margin-bottom: 10px;
