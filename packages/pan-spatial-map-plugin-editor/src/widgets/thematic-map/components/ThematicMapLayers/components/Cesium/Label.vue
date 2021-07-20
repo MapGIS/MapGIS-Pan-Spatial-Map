@@ -36,7 +36,7 @@ export default class CesiumLabel extends Mixins(BaseMinxin) {
   get labelOptions() {
     return {
       ...this.options,
-      ...(this.subDataConfig.style || {})
+      ...(this.subjectData.style || {})
     }
   }
 

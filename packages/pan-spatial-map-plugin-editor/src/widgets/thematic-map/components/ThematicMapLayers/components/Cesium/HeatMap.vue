@@ -23,7 +23,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   get heatMapOptions() {
     return {
       ...this.options,
-      ...(this.subDataConfig.style || {})
+      ...(this.subjectData.style || {})
     }
   }
 

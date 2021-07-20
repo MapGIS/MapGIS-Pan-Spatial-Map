@@ -1,8 +1,8 @@
 <template>
   <!-- 属性表 -->
-  <mp-window-wrapper :visible="atVisible">
+  <mp-window-wrapper :visible="visible">
     <mp-window
-      :visible.sync="atVisible"
+      :visible.sync="visible"
       :horizontalOffset="12"
       :verticalOffset="50"
       anchor="top-right"
@@ -26,9 +26,11 @@
             </template>
             <mp-row-flex label="时间" :span="[5, 19]">
               <a-select :value="time" @change="onTimeChange">
-                <a-select-option v-for="y in selectedTimeList" :key="y">{{
-                  y
-                }}</a-select-option>
+                <a-select-option
+                  v-for="y in selectedSubjectTimeList"
+                  :key="y"
+                  >{{ y }}</a-select-option
+                >
               </a-select>
             </mp-row-flex>
           </mp-row-flex>
@@ -43,7 +45,7 @@
             :data-source="tableData"
             :pagination="tablePagination"
             :scroll="tableScroll"
-            :customRow="getCustomRow"
+            :customRow="setCustomRow"
           />
         </a-spin>
       </div>
@@ -62,20 +64,20 @@ import base from '@mapgis/pan-spatial-map-store/src/config/base'
     ...mapGetters([
       'loading',
       'isVisible',
-      'selected',
-      'selectedTime',
-      'selectedList',
-      'selectedSubConfig',
-      'selectedTimeList',
+      'subjectData',
+      'selectedSubject',
+      'selectedSubjectList',
+      'selectedSubjectTime',
+      'selectedSubjectTimeList',
       'linkageItem'
     ])
   },
   methods: {
     ...mapMutations([
       'setPage',
-      'setSelected',
-      'setSelectedTime',
       'setFeaturesQuery',
+      'setSelectedSubject',
+      'setSelectedSubjectTime',
       'setLinkageItem',
       'resetLinkage',
       'resetVisible'
@@ -92,7 +94,7 @@ export default class ThematicMapAttributeTable extends Vue {
   time = ''
 
   // 列表页码
-  page = 0
+  page = 1
 
   // 列表页容量
   pageCount = 10
@@ -107,24 +109,24 @@ export default class ThematicMapAttributeTable extends Vue {
   tableData: Record<string, any>[] = []
 
   // 显示开关
-  get atVisible() {
-    return this.table && this.isVisible('at')
+  get visible() {
+    return this.table && this.isVisible('table')
   }
 
-  set atVisible(nV) {
+  set visible(nV) {
     if (!nV) {
-      this.resetVisible('at')
+      this.resetVisible('table')
     }
   }
 
   // 是否支持图属高亮
   get hasHighlight() {
-    return highlightSubjectTypes.includes(this.selectedSubConfig?.subjectType)
+    return highlightSubjectTypes.includes(this.subjectData?.subjectType)
   }
 
   // 列表配置
   get table() {
-    return this.selectedSubConfig?.table
+    return this.subjectData?.table
   }
 
   // 列表滚动
@@ -150,9 +152,9 @@ export default class ThematicMapAttributeTable extends Vue {
     }
   }
 
-  // 专题列表
+  // 专题节点列表
   get subjectList() {
-    return this.selectedList.map(({ id, title, ...others }) => ({
+    return this.selectedSubjectList.map(({ id, title, ...others }) => ({
       value: id,
       label: title,
       ...others
@@ -179,7 +181,7 @@ export default class ThematicMapAttributeTable extends Vue {
   /**
    * 自定义行数据和事件
    */
-  getCustomRow(record, index) {
+  setCustomRow(record, index) {
     return {
       class: {
         highlight: record._highlight
@@ -201,7 +203,7 @@ export default class ThematicMapAttributeTable extends Vue {
   /**
    * 设置列表配置
    */
-  getTableColumns() {
+  setTableColumns() {
     if (!this.table) return
     const { showFields, showFieldsTitle } = this.table
     this.tableColumns = showFields.map((v: string, i: number) => {
@@ -225,7 +227,13 @@ export default class ThematicMapAttributeTable extends Vue {
   /**
    * 设置列表数据
    */
-  getTableData() {
+  setTableData(page = this.page, pageCount = this.pageCount) {
+    this.page = page
+    this.pageCount = pageCount
+    this.setPage({
+      page: page - 1,
+      pageCount
+    })
     this.setFeaturesQuery({
       onSuccess: (dataSet: Feature.FeatureIGS | null) => {
         if (dataSet) {
@@ -248,74 +256,64 @@ export default class ThematicMapAttributeTable extends Vue {
 
   /**
    * 专题切换
-   * 1.重置列表页码
-   * 2.获取并保存选择的专题的年度列表
-   * 3.设置默认展示的年度
    */
   onSubjectChange(value, option) {
     this.subject = value
-    this.setSelected(option.data.props)
+    this.setSelectedSubject(option.data.props)
   }
 
   /**
    * 年度时间切换
-   * 1.重置列表页码
-   * 2.保存当前选择的年度(同步更新时间轴)
-   * 3.获取对应年度的列表配置和数据
    */
   onTimeChange(value) {
     this.time = value
-    this.setSelectedTime(value)
-    this.getTableColumns()
-    this.onTableChange({
-      current: 1,
-      pageSize: this.pageCount
-    })
+    this.setSelectedSubjectTime(value)
   }
 
   /**
    * 列表分页变化
-   * 1.设置分页页码和页容量
-   * 2.获取分页数据
    * @param 分页参数 current: 当前页; pageSize: 页容量
    */
   onTableChange({ current, pageSize }, filters, sorter) {
     if (this.page !== current || this.pageCount !== pageSize) {
-      this.page = current
-      this.pageCount = pageSize
-      this.setPage({
-        page: current,
-        pageCount: pageSize
-      })
-      this.getTableData()
+      this.setTableData(current, pageSize)
     }
   }
 
   /**
-   * 监听: 当前选中的专题变化
+   * 监听: 选中的专题变化
    */
-  @Watch('selected.id')
-  watchSelectedId(nV: string) {
+  @Watch('selectedSubject.id')
+  selectedSubjectChanged(nV: string) {
     if (this.subject !== nV) {
       this.subject = nV
     }
   }
 
   /**
-   * 监听: 年度时间轴数据切换,需要同步更新时间选项
+   * 监听: 时间和时间轴变化
    */
-  @Watch('selectedTime')
-  watchSelectedTime(nV: string) {
+  @Watch('selectedSubjectTime')
+  selectedSubjectTimeChanged(nV: string) {
     if (this.time !== nV) {
-      this.onTimeChange(nV)
+      this.time = nV
     }
+  }
+
+  /**
+   * 监听: 专题数据变化
+   */
+  @Watch('subjectData', { deep: true })
+  subjectDataChanged() {
+    this.setTableColumns()
+    this.setTableData(1)
   }
 
   /**
    * 监听: 联动项变化
    */
   @Watch('linkageItem', { deep: true })
-  watchHighlightItem(nV) {
+  linkageItemChanged(nV) {
     if (!nV) {
       this.clearHighlight()
     } else if (nV.from !== this.vueKey) {

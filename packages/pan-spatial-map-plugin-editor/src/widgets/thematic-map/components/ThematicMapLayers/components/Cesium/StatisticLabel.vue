@@ -26,11 +26,11 @@ import CesiumMinxin from '../../mixins/cesium'
 @Component
 export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
   get labelStyle() {
-    return this.subDataConfig.labelStyle
+    return this.subjectData.labelStyle
   }
 
   get field() {
-    return this.subDataConfig.field
+    return this.subjectData.field
   }
 
   /**

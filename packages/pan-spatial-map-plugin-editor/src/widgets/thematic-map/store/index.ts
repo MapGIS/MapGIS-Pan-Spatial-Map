@@ -2,12 +2,12 @@ import {
   ModuleType,
   SubjectType,
   NewSubjectConfig,
-  ThematicMapTreeNode
+  ThematicMapSubjectConfigNode
 } from './types'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
 // 是否支持图属联动
-const highlightSubjectTypes = [
+const highlightSubjectTypes: Array<SubjectType> = [
   'SubSectionMap',
   'BaseMapWithGraph',
   'StatisticLabel'
@@ -27,7 +27,7 @@ export {
   ModuleType,
   SubjectType,
   NewSubjectConfig,
-  ThematicMapTreeNode,
+  ThematicMapSubjectConfigNode,
   subjectTypeList,
   highlightSubjectTypes,
   thematicMapStore,

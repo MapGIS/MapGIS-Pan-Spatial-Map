@@ -38,16 +38,16 @@ export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
 
   // 图表字段样式
   get labelStyle() {
-    return this.subDataConfig.labelStyle
+    return this.subjectData.labelStyle
   }
 
   // 图表title
   get field() {
-    return this.subDataConfig.field
+    return this.subjectData.field
   }
 
   /**
-   * 获取专题服务图层
+   * 获取专题图图层
    */
   getThematicMapLayer() {
     if (!this.labelStyle) return

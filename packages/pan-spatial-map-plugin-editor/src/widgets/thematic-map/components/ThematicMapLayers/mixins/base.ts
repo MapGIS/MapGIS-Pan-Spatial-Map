@@ -9,7 +9,7 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
   @Prop({ default: 'map' }) readonly vueKey!: string
 
   // 专题配置
-  @Prop({ default: () => ({}) }) readonly subDataConfig!: any
+  @Prop({ default: () => ({}) }) readonly subjectData!: any
 
   // 专题某年度的要素数据
   @Prop({ default: () => ({}) }) readonly dataSet!: Feature.FeatureIGS
@@ -28,7 +28,7 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
 
   // 是否支持图属高亮
   get hasHighlight() {
-    return highlightSubjectTypes.includes(this.subDataConfig.subjectType)
+    return highlightSubjectTypes.includes(this.subjectData.subjectType)
   }
 
   // 获取geojson数据
@@ -44,11 +44,8 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
    * @returns
    */
   addCountToGeoJSON(geojson: Feature.FeatureGeoJSON) {
-    const {
-      weight: oldWeight,
-      style: { weight }
-    } = this.subDataConfig
-    const _weight = oldWeight || weight
+    const { weight, style } = this.subjectData
+    const _weight = weight || (style ? style.weight : 0)
     const count = _isNumber(_weight)
       ? _weight
       : _weight
@@ -98,6 +95,10 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
    * 移除图层
    */
   removeLayer() {}
+
+  created() {
+    this.showLayer()
+  }
 
   beforeDestroy() {
     this.removeLayer()

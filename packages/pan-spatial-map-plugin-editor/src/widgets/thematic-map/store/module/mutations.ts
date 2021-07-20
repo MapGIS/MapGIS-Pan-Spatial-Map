@@ -10,16 +10,16 @@ import {
   ModuleType,
   LinkageItem,
   PageParam,
-  SelectedSubConfig,
-  SubjectBaseConfig,
-  ThematicMapTreeNode,
+  SubjectData,
+  ThematicMapBaseConfig,
+  ThematicMapSubjectConfigNode,
   NewSubjectConfig
 } from '../types'
 import state from './state'
 
 const mutations = {
   /**
-   * 专题服务各子功能弹框的开关
+   * 专题图各子功能弹框的开关
    */
   setVisible({ state }, type: ModuleType) {
     if (state.moduleTypes.indexOf(type) < 0) {
@@ -27,7 +27,7 @@ const mutations = {
     }
   },
   /**
-   * 重置专题服务各子功能弹框的开关
+   * 重置专题图各子功能弹框的开关
    */
   resetVisible({ state }, type: ModuleType) {
     if (!type) {
@@ -47,15 +47,16 @@ const mutations = {
    */
   setPage({ state }, { page, pageCount }: PageParam) {
     state.pageParam = {
-      page: page - 1,
+      ...state.pageParam,
+      page,
       pageCount
     }
   },
   /**
    * 当前页的查询的要素数据
    */
-  setDataSet({ state }, pageDataSet: Feature.FeatureIGS | null) {
-    state.pageDataSet = _cloneDeep(pageDataSet)
+  setPageDataSet({ state }, data: Feature.FeatureIGS | null) {
+    state.pageDataSet = _cloneDeep(data)
   },
   /**
    * 要素查询
@@ -68,8 +69,8 @@ const mutations = {
     { state, commit },
     { isPage = true, onSuccess, onError }: any = {}
   ) {
-    const { pageParam, selectedSubConfig, baseConfig = {} } = state
-    if (!selectedSubConfig) return
+    const { pageParam, subjectData, baseConfig = {} } = state
+    if (!subjectData) return
     const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
     const { baseIp, basePort } = baseConfig
     const {
@@ -81,7 +82,7 @@ const mutations = {
       layerName,
       layerIndex,
       table
-    } = selectedSubConfig
+    } = subjectData
     const _ip = ip || baseIp || baseConfigIp
     const _port = port || basePort || baseConfigPort
     const _pageParam = isPage
@@ -125,7 +126,7 @@ const mutations = {
     if (fn && fn.then) {
       fn.then((dataSet: Feature.FeatureIGS | any) => {
         commit('setLoading', false)
-        commit('setDataSet', dataSet)
+        commit('setPageDataSet', dataSet)
         onSuccess && onSuccess(dataSet)
       }).catch(e => {
         commit('setLoading', false)
@@ -138,22 +139,22 @@ const mutations = {
    * 旧版专题配置: OldSubjectConfig
    * 新版专题配置: NewSubjectConfig
    */
-  setSelectedSubConfig({ state }, selectedSubConfig: SelectedSubConfig | null) {
-    state.selectedSubConfig = selectedSubConfig
+  setSubjectData({ state }, data: SubjectData | null) {
+    state.subjectData = data
   },
   /**
    * 选中的年度
    */
-  setSelectedTime({ state, commit }, time?: string) {
-    state.selectedTime = time
-    const subject = state.selected
-    let selectedSubConfig: SelectedSubConfig | null = null
+  setSelectedSubjectTime({ state, commit }, time?: string) {
+    state.selectedSubjectTime = time
+    const subject = state.selectedSubject
+    let subjectData: SubjectData | null = null
     if (subject && subject.config) {
       const { type: subjectType, config } = subject
       if (Array.isArray(config)) {
         // 新版
         const item = config.find((d: any) => d.time === time)
-        selectedSubConfig = {
+        subjectData = {
           ...item,
           subjectType
         }
@@ -164,7 +165,7 @@ const mutations = {
           const item = data.find((d: any) => d.time === time)
           const subData =
             item.subData && item.subData.length ? item.subData[0] : item || {}
-          selectedSubConfig = {
+          subjectData = {
             ...subData,
             subjectType,
             configType: type
@@ -172,56 +173,59 @@ const mutations = {
         }
       }
     }
-    commit('setSelectedSubConfig', selectedSubConfig)
+    commit('setSubjectData', subjectData)
   },
   /**
-   * 选中的单个专题服务的年度列表数据
+   * 选中的单个专题图的年度列表数据
    */
-  setSelectedTimeList({ state, commit }, selectedTimeList: Array<string>) {
-    state.selectedTimeList = selectedTimeList
-    commit('setSelectedTime', selectedTimeList[0])
+  setSelectedSubjectTimeList({ state, commit }, list: Array<string>) {
+    state.selectedSubjectTimeList = list
+    commit('setSelectedSubjectTime', list[0])
   },
   /**
-   * 选中的单个专题服务
+   * 选中的单个专题图
    */
-  setSelected({ state, commit }, subject?: ThematicMapTreeNode) {
-    state.selected = subject
-    let selectedTimeList: Array<string> = []
+  setSelectedSubject(
+    { state, commit },
+    subject?: ThematicMapSubjectConfigNode
+  ) {
+    state.selectedSubject = subject
+    let selectedSubjectTimeList: Array<string> = []
     if (subject && subject.config) {
       const { config } = subject
       if (Array.isArray(config)) {
         // 新版
-        selectedTimeList = config.map(({ time }) => time)
+        selectedSubjectTimeList = config.map(({ time }) => time)
       } else {
         // 旧版
         const { data = [] } = config
-        selectedTimeList = data.map(({ time }) => time)
+        selectedSubjectTimeList = data.map(({ time }) => time)
       }
     }
-    commit('setSelectedTimeList', selectedTimeList)
+    commit('setSelectedSubjectTimeList', selectedSubjectTimeList)
   },
   /**
    * 选中的专题集合
    */
-  setSelectedList(
+  setSelectedSubjectList(
     { state, commit },
-    selectedList: Array<ThematicMapTreeNode> = []
+    list: Array<ThematicMapSubjectConfigNode> = []
   ) {
-    state.selectedList = selectedList
-    commit('setSelected', _last(selectedList))
+    state.selectedSubjectList = list
+    commit('setSelectedSubject', _last(list))
   },
   /**
-   * 专题服务的基础配置数据
+   * 专题图的基础配置数据
    */
-  setBaseConfig({ state }, baseConfig?: SubjectBaseConfig) {
-    state.baseConfig = baseConfig
+  setBaseConfig({ state }, config?: ThematicMapBaseConfig) {
+    state.baseConfig = config
   },
   /**
-   * 存储专题服务总专题配置数据
+   * 存储专题图总专题配置数据
    */
-  setSubjectConfig({ state }, subjectConfig: Array<ThematicMapTreeNode>) {
-    state.subjectConfig = subjectConfig
-    localStorage.setItem('subjectConfig', JSON.stringify(subjectConfig))
+  setSubjectConfig({ state }, config: Array<ThematicMapSubjectConfigNode>) {
+    state.subjectConfig = config
+    localStorage.setItem('subjectConfig', JSON.stringify(config))
   },
   /**
    * 创建新增的专题图
@@ -251,9 +255,12 @@ const mutations = {
     commit('setSubjectConfig', subjectConfig)
   },
   /*
-   * 移除专题服务树节点
+   * 移除专题图树节点
    */
-  removeSubjectConfigNode({ state, commit }, node: ThematicMapTreeNode) {
+  removeSubjectConfigNode(
+    { state, commit },
+    node: ThematicMapSubjectConfigNode
+  ) {
     if (!node) return
     const loop = tree => {
       for (let i = 0; i < tree.length; i++) {

@@ -1,9 +1,9 @@
 <template>
   <!-- 时间轴 -->
-  <mp-window-wrapper :visible="tlVisible">
+  <mp-window-wrapper :visible="visible">
     <mp-window
       title="时间轴"
-      :visible.sync="tlVisible"
+      :visible.sync="visible"
       anchor="bottom-center"
       :verticalOffset="30"
     >
@@ -37,10 +37,15 @@ import { chartOption } from './config/timeLineChartOption'
 
 @Component({
   computed: {
-    ...mapGetters(['loading', 'isVisible', 'selectedTime', 'selectedTimeList'])
+    ...mapGetters([
+      'loading',
+      'isVisible',
+      'selectedSubjectTime',
+      'selectedSubjectTimeList'
+    ])
   },
   methods: {
-    ...mapMutations(['resetVisible', 'setSelectedTime'])
+    ...mapMutations(['resetVisible', 'setSelectedSubjectTime'])
   }
 })
 export default class ThematicMapTimeLine extends Vue {
@@ -55,22 +60,22 @@ export default class ThematicMapTimeLine extends Vue {
 
   // 时间轴的列表数据
   get timeList() {
-    return this.selectedTimeList || []
+    return this.selectedSubjectTimeList || []
   }
 
   // 显示开关
-  get tlVisible() {
-    const visible = this.isVisible('tl')
-    const _visible = visible && this.timeList.length > 1
+  get visible() {
+    const isVisible = this.isVisible('timeline')
+    const _visible = isVisible && this.timeList.length > 1
     if (_visible) {
       this.onUpdateChart()
     }
     return _visible
   }
 
-  set tlVisible(nV) {
+  set visible(nV) {
     if (!nV) {
-      this.resetVisible('tl')
+      this.resetVisible('timeline')
     }
   }
 
@@ -83,6 +88,22 @@ export default class ThematicMapTimeLine extends Vue {
       tooltip = '暂停'
     }
     return { type, tooltip }
+  }
+
+  /**
+   * 播放或暂停
+   */
+  btnPlay() {
+    this.isPlay = this.timeList.length > 1 ? !this.isPlay : false
+    this.onUpdateChart()
+  }
+
+  /**
+   * 重置
+   */
+  reset() {
+    this.currentIndex = 0
+    this.isPlay = false
   }
 
   /**
@@ -104,49 +125,28 @@ export default class ThematicMapTimeLine extends Vue {
   }
 
   /**
-   * currentIndex变化
+   * 时间轴变化
    */
-  onCurrentIndexChange(value) {
-    this.setSelectedTime(this.timeList[value])
-    this.onUpdateChart()
+  onTimelinechanged({ currentIndex }) {
+    this.currentIndex = currentIndex
+    this.setSelectedSubjectTime(this.timeList[currentIndex])
   }
 
   /**
    * selecteTime变化
    */
   onSelecteTimeChange(value) {
-    this.currentIndex = value ? this.timeList.indexOf(value) : 0
-    this.onUpdateChart()
-  }
-
-  /**
-   * 播放或暂停
-   */
-  btnPlay() {
-    this.isPlay = this.timeList.length > 1 ? !this.isPlay : false
-    this.onUpdateChart()
-  }
-
-  /**
-   * 重置
-   */
-  reset() {
-    this.currentIndex = 0
-    this.isPlay = false
-  }
-
-  /**
-   * 监听:时间轴切换, 存储当前时间数据
-   */
-  @Watch('currentIndex')
-  watchCurrentIndex(nV) {
-    this.onCurrentIndexChange(nV)
+    const index = value ? this.timeList.indexOf(value) : 0
+    if (this.currentIndex !== index) {
+      this.currentIndex = index
+      this.onUpdateChart()
+    }
   }
 
   /**
    * 监听:属性表时间选项的变化,同步更新时间轴当前选中的项
    */
-  @Watch('selectedTime')
+  @Watch('selectedSubjectTime')
   watchTimeList(nV) {
     this.onSelecteTimeChange(nV)
   }
@@ -155,11 +155,8 @@ export default class ThematicMapTimeLine extends Vue {
     this.chart = echarts.init(
       document.getElementById('thematic-map-time-line-chart')
     )
-    this.chart.on(
-      'timelinechanged',
-      ({ currentIndex }) => (this.currentIndex = currentIndex)
-    )
-    this.onSelecteTimeChange(this.selectedTime)
+    this.chart.on('timelinechanged', this.onTimelinechanged)
+    this.onSelecteTimeChange(this.selectedSubjectTime)
   }
 
   beforeDestroy() {

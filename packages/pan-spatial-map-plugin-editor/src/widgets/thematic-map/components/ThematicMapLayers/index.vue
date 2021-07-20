@@ -10,7 +10,7 @@
         :is="t"
         :vue-key="vueKey"
         :dataSet="dataSet"
-        :subDataConfig="subDataConfig"
+        :subject-data="subjectData"
       />
     </template>
     <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
@@ -33,7 +33,7 @@ import CesiumLayers from './components/Cesium'
     ...CesiumLayers
   },
   computed: {
-    ...mapGetters(['loading', 'selectedSubConfig', 'linkageItem'])
+    ...mapGetters(['loading', 'subjectData', 'linkageItem'])
   },
   methods: {
     ...mapMutations(['setFeaturesQuery', 'setLinkageItem', 'resetLinkage'])
@@ -51,23 +51,14 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   // 要素数据
   dataSet: Feature.FeatureIGSSFELE | null = null
 
-  // 专题配置
-  get subDataConfig() {
-    return this.selectedSubConfig
-  }
-
-  get prefix() {
-    return this.is2DMapMode ? 'Mapbox' : 'Cesium'
-  }
-
   get prefix() {
     return this.is2DMapMode ? 'Mapbox' : 'Cesium'
   }
 
   // 获取专题类别
   get subjectType() {
-    return this.subDataConfig
-      ? `${this.prefix}${this.subDataConfig.subjectType}`
+    return this.subjectData
+      ? `${this.prefix}${this.subjectData.subjectType}`
       : ''
   }
 
@@ -106,10 +97,10 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 
   /**
-   * 监听: 专题配置
+   * 监听: 专题数据变化
    */
-  @Watch('subDataConfig', { deep: true })
-  watchSubDataConfig(nV) {
+  @Watch('subjectData', { deep: true })
+  subjectDataChanged(nV) {
     if (!nV) {
       this.dataSet = null
     } else {

@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-thematic-map">
-    <!-- 专题服务树 -->
+    <!-- 专题图树 -->
     <a-spin :spinning="loading">
       <a-empty v-if="!thematicMapTree.length" />
       <a-tree
@@ -8,8 +8,8 @@
         @check="onTreeCheck"
         :show-line="true"
         :tree-data="thematicMapTree"
+        :checkedKeys="checkedThematicMapKeys"
         :replace-fields="{ key: 'id' }"
-        :checkedKeys="checkedKeys"
         checkable
       >
         <span slot="custom" slot-scope="node" class="tree-node">
@@ -19,17 +19,17 @@
               <!-- <a-menu-item v-show="!node.checkable" :key="handleKeys.create"
                 >新建</a-menu-item
               > -->
-              <a-menu-item v-show="node.checkable" :key="handleKeys.edit"
+              <!-- <a-menu-item v-show="node.checkable" :key="handleKeys.edit"
                 >编辑</a-menu-item
-              >
+              > -->
               <a-menu-item :key="handleKeys.remove">删除</a-menu-item>
             </a-menu>
           </a-dropdown>
         </span>
       </a-tree>
     </a-spin>
-    <div v-show="checkedNodes.length">
-      <!-- 5类专题服务图层 -->
+    <div v-show="checkedThematicMapNodes.length">
+      <!-- 5类专题图图层 -->
       <thematic-map-layers />
       <!-- 属性表 -->
       <thematic-map-attribute-table />
@@ -73,7 +73,7 @@ enum HandleKeys {
       'setVisible',
       'setBaseConfig',
       'setSubjectConfig',
-      'setSelectedList',
+      'setSelectedSubjectList',
       'resetVisible',
       'resetLinkage',
       'removeSubjectConfigNode'
@@ -93,18 +93,23 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 ) {
   loading = false
 
+  // 节点处理操作
   handleKeys = HandleKeys
 
-  defaultOpenPanel: Array<ModuleType> = ['at', 'st', 'tl']
+  // 默认打开的功能模块
+  defaultOpenModules: Array<ModuleType> = ['table', 'graph', 'timeline']
 
-  checkedNodes: Array<ThematicMapTreeNode> = []
+  // 选中的专题图树节点
+  checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
 
-  thematicMapTree: Array<ThematicMapTreeNode> = []
+  // 专题图树
+  thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
 
+  // type == 'subject'的节点
   subjectNode: NewSubjectConfig = {}
 
-  get checkedKeys() {
-    return this.checkedNodes.map(({ id }) => id)
+  get checkedThematicMapKeys() {
+    return this.checkedThematicMapNodes.map(({ id }) => id)
   }
 
   setLoadingShow() {
@@ -121,39 +126,39 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   /**
    * 设置面板显示
-   * @param type
+   * @param include
    * 如果有参数且符合ModuleType,则只打开参数对应的面板
    * 如果没有则打开全部默认配置的打开的面板
    */
-  setPanelsShow(type: ModuleType) {
-    if (type) {
-      this.setVisible(type)
+  setModulesShow(include: ModuleType) {
+    if (include) {
+      this.setVisible(include)
     } else {
-      this.defaultOpenPanel.forEach(v => this.setVisible(v))
+      this.defaultOpenModules.forEach(v => this.setVisible(v))
     }
   }
 
   /**
    * 设置面板隐藏
-   * @param type
+   * @param exclude
    * 若有参数则关闭除参数以外的面板
    * 若无参数则隐藏所有默认配置的面板
    */
-  setPanelsHide(type: ModuleType) {
+  setModulesHide(exclude: ModuleType) {
     this.resetLinkage()
-    this.defaultOpenPanel.forEach(t => t !== type && this.resetVisible(t))
+    this.defaultOpenModules.forEach(t => t !== exclude && this.resetVisible(t))
   }
 
   /**
-   * 格式化专题服务树
+   * 格式化专题图树
    * @param tree
    */
-  normalizeTreeData(tree: Array<ThematicMapTreeNode>) {
+  normalizeThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
     return tree.map(node => {
       this.$set(node, 'checkable', node.nodeType === 'subject')
       this.$set(node, 'scopedSlots', { title: 'custom' })
       if (node.children && node.children.length) {
-        this.normalizeTreeData(node.children)
+        this.normalizeThematicMapTree(node.children)
       }
       return node
     })
@@ -163,36 +168,38 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 设置树数据
    * @param tree
    */
-  setTreeData(tree: Array<ThematicMapTreeNode>) {
-    this.thematicMapTree = this.normalizeTreeData(_cloneDeep(tree))
+  setThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
+    this.thematicMapTree = this.normalizeThematicMapTree(_cloneDeep(tree))
     this.setLoadingHide()
   }
 
   /**
    * todo 创建节点
    */
-  onTreeNodeCreate(nodeData: ThematicMapTreeNode) {
-    this.setPanelsShow('sa')
+  onTreeNodeCreate(nodeData: ThematicMapSubjectConfigNode) {
+    this.setModulesShow('create')
   }
 
   /**
    * todo 编辑节点, 需要兼容新旧配置
    */
-  onTreeNodeEdit(nodeData: ThematicMapTreeNode) {
+  onTreeNodeEdit(nodeData: ThematicMapSubjectConfigNode) {
     if (nodeData.parentId) {
       // 新的专题配置
       this.subjectNode = nodeData
     } else {
       // 旧配置
     }
-    this.setPanelsShow('sa')
+    this.setModulesShow('create')
   }
 
   /**
    * 移除节点
    */
-  onTreeNodeRemove(nodeData: ThematicMapTreeNode) {
-    this.setSelectedList(this.checkedNodes.filter(s => s.id !== nodeData.id))
+  onTreeNodeRemove(nodeData: ThematicMapSubjectConfigNode) {
+    this.setSelectedSubjectList(
+      this.checkedThematicMapNodes.filter(s => s.id !== nodeData.id)
+    )
     this.removeSubjectConfigNode(nodeData)
   }
 
@@ -218,46 +225,48 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   }
 
   /**
-   * 专题服务树选中
+   * 专题图树选中
    */
   onTreeCheck(checkedKeys, { checkedNodes, node, event }) {
-    this.checkedNodes = checkedNodes.map(({ data }) => data.props.dataRef)
-    this.setSelectedList(this.checkedNodes)
-    if (!this.checkedNodes.length) {
-      this.setPanelsHide('mt')
+    this.checkedThematicMapNodes = checkedNodes.map(
+      ({ data }) => data.props.dataRef
+    )
+    this.setSelectedSubjectList(this.checkedThematicMapNodes)
+    if (!this.checkedThematicMapNodes.length) {
+      this.setModulesHide('tools')
     } else {
-      this.setPanelsShow()
+      this.setModulesShow()
     }
   }
 
   /**
-   * 专题服务面板打开
+   * 专题图面板打开
    */
   onOpen() {
     this.setLoadingShow()
     const { baseConfig, subjectConfig } = this.widgetInfo.config
     if (this.subjectConfig) {
-      this.setTreeData(this.subjectConfig)
+      this.setThematicMapTree(this.subjectConfig)
     } else {
       this.setSubjectConfig(subjectConfig)
     }
     this.setBaseConfig(baseConfig)
-    this.setPanelsShow('mt')
+    this.setModulesShow('tools')
   }
 
   /**
-   * 专题服务面板关闭
+   * 专题图面板关闭
    */
   onClose() {
-    this.checkedNodes = []
-    this.setSelectedList()
-    this.setPanelsHide()
+    this.checkedThematicMapNodes = []
+    this.setSelectedSubjectList([])
+    this.setModulesHide()
   }
 
   @Watch('subjectConfig', { deep: true })
   subjectConfigChanged(nV) {
     this.setLoadingShow()
-    this.setTreeData(nV)
+    this.setThematicMapTree(nV)
   }
 }
 </script>

@@ -18,7 +18,7 @@ export default class MapboxMinxin extends Mixins<Record<string, any>>(
 
   // 信息弹框字段配置
   get popupConfig() {
-    return this.subDataConfig?.popup || {}
+    return this.subjectData?.popup || {}
   }
 
   /**

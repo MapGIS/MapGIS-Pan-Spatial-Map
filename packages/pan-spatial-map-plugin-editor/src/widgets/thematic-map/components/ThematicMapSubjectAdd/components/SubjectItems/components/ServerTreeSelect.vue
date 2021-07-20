@@ -83,7 +83,7 @@ export default class ServerTreeSelect extends Vue {
       label: '示例2',
       serverType: 'IGSMapImage',
       content:
-        'http://<server>:<port>/igs/rest/mrms/{docName}?layerName={layerName}&layerIdxs={layerIdxs}'
+        'http://<server>:<port>/igs/rest/mrms/docs/{docName}?layerName={layerName}&layerIdxs={layerIdxs}'
     }
   ]
 
@@ -227,7 +227,7 @@ export default class ServerTreeSelect extends Vue {
     const { ip, port, gdbp, gdbps } = node.dataRef
     const _gdbp = gdbp || gdbps
     if (_gdbp) {
-      this.url = `http://${ip}:${port}/igs/rest/mrms/layers/?gdbp=${_gdbp}`
+      this.url = `http://${ip}:${port}/igs/rest/mrms/layers?gdbp=${_gdbp}`
       this.emitChange({
         ip,
         port,
