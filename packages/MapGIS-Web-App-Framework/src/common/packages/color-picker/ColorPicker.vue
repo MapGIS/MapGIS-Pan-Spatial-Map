@@ -1,21 +1,17 @@
 <template>
   <div class="color-picker">
-    <a-input
-      class="color-input"
-      v-model="pickColor"
-      :style="{ background: pickColor }"
-    >
-      <a-popover slot="addonAfter" trigger="click">
-        <template slot="content">
-          <sketch-picker
-            :disableAlpha="disableAlpha"
-            :value="pickColor"
-            @input="val => getPickColor(val)"
-          />
-        </template>
-        <a-icon type="edit" />
-      </a-popover>
-    </a-input>
+    <a-popover trigger="click">
+      <template slot="content">
+        <sketch-picker
+          :disableAlpha="disableAlpha"
+          :value="pickColor"
+          @input="val => getPickColor(val)"
+        />
+      </template>
+      <div class="color-container">
+        <div :style="{ background: pickColor }" class="color color-div"></div>
+      </div>
+    </a-popover>
   </div>
 </template>
 
@@ -52,7 +48,6 @@ export default {
     // 颜色拾取器选中事件回调
     getPickColor(val) {
       this.pickColor = this.colorObjectToRgba(val.rgba, this.disableAlpha)
-      // this.$emit('update:color', this.pickColor)
     },
     colorObjectToRgba(rgba, disableAlpha) {
       let colorStr = ''
@@ -72,14 +67,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.color-input {
-  ::v-deep .ant-input-wrapper,
-  ::v-deep .ant-input {
-    background: inherit;
-  }
-  ::v-deep .ant-input-group-addon {
-    background: inherit;
-    cursor: pointer;
+.color-picker {
+  .color-container {
+    padding: 4px 11px;
+    height: 24px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    .color-div {
+      height: 100%;
+    }
   }
 }
 </style>
