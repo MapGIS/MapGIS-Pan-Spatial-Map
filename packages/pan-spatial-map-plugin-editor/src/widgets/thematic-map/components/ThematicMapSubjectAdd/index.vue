@@ -14,7 +14,7 @@
           <!-- 主题配置 -->
           <subject-items
             v-show="subjectType"
-            v-model="subjectConfig"
+            v-model="subjectItemsConfig"
             :subject-type="subjectType"
           />
         </div>
@@ -33,7 +33,8 @@ import {
   mapGetters,
   mapMutations,
   SubjectType,
-  NewSubjectConfig
+  NewSubjectConfig,
+  ThematicMapSubjectConfigNode
 } from '../../store'
 import BaseItems from './components/BaseItems'
 import SubjectItems from './components/SubjectItems'
@@ -44,10 +45,10 @@ import SubjectItems from './components/SubjectItems'
     SubjectItems
   },
   computed: {
-    ...mapGetters(['isVisible'])
+    ...mapGetters(['isVisible', 'subjectConfig'])
   },
   methods: {
-    ...mapMutations(['resetVisible', 'createSubjectConfigNode'])
+    ...mapMutations(['resetVisible', 'updateSubjectConfig'])
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
@@ -55,12 +56,12 @@ export default class ThematicMapSubjectAdd extends Vue {
 
   baseItemsObj = {}
 
-  subjectConfig = []
+  subjectItemsConfig = []
 
   @Watch('subjectNode', { deep: true })
   subjectNodeChanged({ config, ...others }) {
     this.baseItemsObj = { ...others }
-    this.subjectConfig = config
+    this.subjectItemsConfig = config
   }
 
   get visible() {
@@ -82,12 +83,45 @@ export default class ThematicMapSubjectAdd extends Vue {
   }
 
   /**
+   * 创建专题节点
+   */
+  createSubjectConfigNode(node) {
+    const resursion = (tree, node) => {
+      return tree.map(item => {
+        if (item.id === node.parentId) {
+          if (item.children && item.children.length) {
+            const index = item.children.findIndex(({ id }) => id === node.id)
+            if (index !== -1) {
+              item.children.splice(index, 1, node)
+            } else {
+              item.children.push(node)
+            }
+          } else {
+            item.children = [node]
+          }
+        } else if (item.children && item.children.length) {
+          resursion(item.children, node)
+        }
+        return item
+      })
+    }
+    this.updateSubjectConfig(resursion(this.subjectConfig, node))
+      .then(() => {
+        this.$message.success('保存成功')
+        this.onCancel()
+      })
+      .catch(err => {
+        this.$message.error('保存失败')
+      })
+  }
+
+  /**
    * 取消
    */
   onCancel() {
     this.visible = false
     this.baseItemsObj = {}
-    this.subjectConfig = []
+    this.subjectItemsConfig = []
   }
 
   /**
@@ -99,15 +133,13 @@ export default class ThematicMapSubjectAdd extends Vue {
       this.$message.warning('请选择专题图目录')
     } else if (!this.subjectType) {
       this.$message.warning('请选择专题图类型')
-    } else if (!this.subjectConfig.length) {
+    } else if (!this.subjectItemsConfig.length) {
       this.$message.warning('请填写专题图配置')
     } else {
       this.createSubjectConfigNode({
         ...this.baseItemsObj,
-        config: this.subjectConfig
+        config: this.subjectItemsConfig
       })
-      this.$message.success('保存成功')
-      this.onCancel()
     }
   }
 }

@@ -28,7 +28,7 @@
             <a-checkbox
               @click.stop
               @change="checkedTime($event, sub, i)"
-              :checked="sub.checked"
+              :checked="sub._checked"
             />
             <span class="time">{{ sub.time || '新增年度' }}</span>
           </template>
@@ -134,7 +134,7 @@ export default class SubjectItems extends Vue {
   addTime() {
     const node = {
       time: '',
-      checked: false
+      _checked: false
     }
     this.configList = this.configList.concat(node)
   }
@@ -156,8 +156,8 @@ export default class SubjectItems extends Vue {
   checkedTime(e, sub, index: number) {
     e.stopPropagation()
     e.preventDefault()
-    const checked = e.target.checked
-    this.$set(sub, 'checked', checked)
+    const { checked } = e.target
+    this.$set(sub, '_checked', checked)
     if (checked) {
       this.checkedPanel.push(index)
     } else {
