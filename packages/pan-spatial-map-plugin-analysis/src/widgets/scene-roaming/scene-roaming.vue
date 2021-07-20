@@ -488,7 +488,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     this.cacheTableData = this.tableData.map(item => ({ ...item }))
 
     //  默认勾选表格的第一项数据
-    this.onSelectChange([this.tableData[0].id])
+    if (this.tableData.length > 0) {
+      this.onSelectChange([this.tableData[0].id])
+    }
 
     window.SceneWanderManager = {
       animation: null
