@@ -134,13 +134,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   isPlay = false
 
   /**
-   * 微件弹框活动状态
-   */
-  get widgetActiveState() {
-    return [WidgetState.OPENED, WidgetState.ACTIVE].includes(this.widget.state)
-  }
-
-  /**
    * 树形选择控件下拉框样式
    */
   get dropdownStyle() {
@@ -244,18 +237,6 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   }
 
   /**
-   * 回溯专题变化
-   * @param value<string>
-   */
-  onSubjectChange(value: string) {
-    this.subject = value
-    this.isPlay = false
-    const checkedNode = this.getCheckedNode(this.dataCatalogTreeData, value, [])
-    this.timeLineList = this.getDataCatalogTimeList(checkedNode)
-    this.timeIndex = 0
-  }
-
-  /**
    * 处理目录树， 筛选出有年度的专题展示
    * @param tree<array>
    */
@@ -287,7 +268,7 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   }
 
   /**
-   * 获取回溯年度的图层服务
+   * 获取回溯年度的图层服务ID集合
    * @param <object>
    */
   getCheckedIds({ guid, children, serverURL }: IDataCatalog) {
@@ -315,6 +296,19 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
    */
   updateCheckedIds(ids: string[]) {
     dataCatalogManagerInstance.checkedLayerConfigIDs = ids
+  }
+
+  /**
+   * 回溯专题变化
+   * @param value<string>
+   */
+  onSubjectChange(value: string) {
+    this.subject = value
+    this.isPlay = false
+    const checkedNode = this.getCheckedNode(this.dataCatalogTreeData, value, [])
+    this.timeLineList = this.getDataCatalogTimeList(checkedNode)
+    this.timeIndex = 0
+    this.updateCheckedIds(this.getCheckedIds(this.timeLineList[0]))
   }
 
   /**
@@ -408,8 +402,7 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
   @Watch('timeIndex')
   watchTimeIndex(nV: number) {
     if (this.timeLineList.length) {
-      const ids = this.getCheckedIds(this.timeLineList[nV])
-      this.updateCheckedIds(ids)
+      this.updateCheckedIds(this.getCheckedIds(this.timeLineList[nV]))
     }
   }
 }
