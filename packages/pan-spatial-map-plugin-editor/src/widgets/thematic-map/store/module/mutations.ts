@@ -3,6 +3,7 @@ import _cloneDeep from 'lodash/cloneDeep'
 import _last from 'lodash/last'
 import { UUID, Feature } from '@mapgis/web-app-framework'
 import {
+  api,
   baseConfigInstance,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
@@ -70,7 +71,10 @@ const mutations = {
     { isPage = true, onSuccess, onError }: any = {}
   ) {
     const { pageParam, subjectData, baseConfig = {} } = state
-    if (!subjectData) return
+    if (!subjectData) {
+      commit('setPageDataSet', null)
+      return
+    }
     const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
     const { baseIp, basePort } = baseConfig
     const {
@@ -225,59 +229,32 @@ const mutations = {
    */
   setSubjectConfig({ state }, config: Array<ThematicMapSubjectConfigNode>) {
     state.subjectConfig = config
-    localStorage.setItem('subjectConfig', JSON.stringify(config))
   },
   /**
-   * 创建新增的专题图
+   * 更新专题配置
    */
-  createSubjectConfigNode({ state, commit }, node: NewSubjectConfig) {
-    const loop = tree => {
-      for (let i = 0; i < tree.length; i++) {
-        const item = tree[i]
-        if (item.id === node.parentId) {
-          if (item.children && item.children.length) {
-            const index = item.children.findIndex(({ id }) => id === node.id)
-            if (index !== -1) {
-              item.children.splice(index, 1, node)
-            } else {
-              item.children.push(node)
-            }
-          } else {
-            item.children = [node]
-          }
-        } else if (item.children && item.children.length) {
-          loop(item.children)
-        }
-      }
-      return tree
-    }
-    const subjectConfig = loop(_cloneDeep(state.subjectConfig))
-    commit('setSubjectConfig', subjectConfig)
-  },
-  /*
-   * 移除专题图树节点
-   */
-  removeSubjectConfigNode(
+  updateSubjectConfig(
     { state, commit },
-    node: ThematicMapSubjectConfigNode
+    subjectConfig: Array<ThematicMapSubjectConfigNode>
   ) {
-    if (!node) return
-    const loop = tree => {
-      for (let i = 0; i < tree.length; i++) {
-        const item = tree[i]
-        if (item.children && item.children.length) {
-          const index = item.children.findIndex(({ id }) => id === node.id)
-          if (index !== -1) {
-            item.children.splice(index, 1)
-          } else {
-            loop(item.children)
-          }
-        }
+    return new Promise((resolve, reject) => {
+      const config = {
+        baseConfig: state.baseConfig,
+        subjectConfig
       }
-      return tree
-    }
-    const subjectConfig = loop(_cloneDeep(state.subjectConfig))
-    commit('setSubjectConfig', subjectConfig)
+      api
+        .saveWidgetConfig({
+          name: 'thematic-map',
+          config: JSON.stringify(config)
+        })
+        .then(() => {
+          commit('setSubjectConfig', subjectConfig)
+          resolve(true)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   },
   /**
    * 当前高亮的要素数据项(图属联动项)

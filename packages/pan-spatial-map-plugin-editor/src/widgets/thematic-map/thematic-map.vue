@@ -48,6 +48,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
+import { api } from '@mapgis/pan-spatial-map-store'
 import _cloneDeep from 'lodash/cloneDeep'
 import { mapGetters, mapMutations, ModuleType, NewSubjectConfig } from './store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
@@ -73,10 +74,10 @@ enum HandleKeys {
       'setVisible',
       'setBaseConfig',
       'setSubjectConfig',
+      'updateSubjectConfig',
       'setSelectedSubjectList',
-      'resetVisible',
-      'resetLinkage',
-      'removeSubjectConfigNode'
+      'resetVisible'
+      // 'resetLinkage'
     ])
   },
   components: {
@@ -91,6 +92,8 @@ enum HandleKeys {
 export default class MpThematicMap extends Mixins<Record<string, any>>(
   WidgetMixin
 ) {
+  flag = true
+
   loading = false
 
   // 节点处理操作
@@ -145,7 +148,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 若无参数则隐藏所有默认配置的面板
    */
   setModulesHide(exclude: ModuleType) {
-    this.resetLinkage()
+    // this.resetLinkage()
     this.defaultOpenModules.forEach(t => t !== exclude && this.resetVisible(t))
   }
 
@@ -162,15 +165,6 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       }
       return node
     })
-  }
-
-  /**
-   * 设置树数据
-   * @param tree
-   */
-  setThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
-    this.thematicMapTree = this.normalizeThematicMapTree(_cloneDeep(tree))
-    this.setLoadingHide()
   }
 
   /**
@@ -200,7 +194,26 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     this.setSelectedSubjectList(
       this.checkedThematicMapNodes.filter(s => s.id !== nodeData.id)
     )
-    this.removeSubjectConfigNode(nodeData)
+    const recursion = (tree, node) => {
+      return tree.map(item => {
+        if (item.children && item.children.length) {
+          const index = item.children.findIndex(({ id }) => id === node.id)
+          if (index !== -1) {
+            item.children.splice(index, 1)
+          } else {
+            recursion(item.children, node)
+          }
+        }
+        return item
+      })
+    }
+    this.updateSubjectConfig(recursion(this.subjectConfig, nodeData))
+      .then(() => {
+        this.$message.success('删除成功')
+      })
+      .catch(err => {
+        this.$message.error('删除失败')
+      })
   }
 
   /**
@@ -243,35 +256,41 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 专题图面板打开
    */
   onOpen() {
-    this.setLoadingShow()
-    const { baseConfig, subjectConfig } = this.widgetInfo.config
-    if (this.subjectConfig) {
-      this.setThematicMapTree(this.subjectConfig)
-    } else {
+    if (this.flag) {
+      this.setLoadingShow()
+      const { baseConfig, subjectConfig = [] } = this.widgetInfo.config
+      this.setBaseConfig(baseConfig)
       this.setSubjectConfig(subjectConfig)
+      this.setModulesShow('tools')
+      this.flag = false
     }
-    this.setBaseConfig(baseConfig)
-    this.setModulesShow('tools')
   }
 
   /**
    * 专题图面板关闭
    */
   onClose() {
+    this.flag = true
     this.checkedThematicMapNodes = []
-    this.setSelectedSubjectList([])
     this.setModulesHide()
+    this.setSelectedSubjectList([])
+    this.setBaseConfig(null)
+    this.setSubjectConfig([])
   }
 
+  /**
+   * 保存后更新了store里的subjectConfig后需要更新专题配置树
+   */
   @Watch('subjectConfig', { deep: true })
   subjectConfigChanged(nV) {
     this.setLoadingShow()
-    this.setThematicMapTree(nV)
+    this.thematicMapTree = this.normalizeThematicMapTree(_cloneDeep(nV))
+    this.setLoadingHide()
   }
 }
 </script>
 <style lang="less" scoped>
 .tree-node-context-menue {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  box-shadow: @box-shadow-base;
 }
 </style>
