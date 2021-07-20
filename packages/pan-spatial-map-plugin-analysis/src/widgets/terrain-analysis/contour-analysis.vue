@@ -1,37 +1,42 @@
 <template>
   <div class="mp-widget-contour-analysis">
-    <div class="panel">
-      <a-form-model
-        :model="formData"
-        :label-col="{ span: 8 }"
-        :wrapper-col="{ span: 16 }"
+    <a-form-model :model="formData">
+      <a-form-model-item label="等值距">
+        <a-input
+          v-model.number="formData.contourSpacing"
+          size="small"
+          type="number"
+          min="0"
+          addon-after="(米)"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="线宽">
+        <a-input
+          v-model.number="formData.contourWidth"
+          size="small"
+          type="number"
+          min="0"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="线颜色">
+        <MpColorPicker
+          :color.sync="formData.contourColor"
+          :disableAlpha="true"
+          class="color-picker"
+        ></MpColorPicker>
+      </a-form-model-item>
+    </a-form-model>
+    <div class="control-button-container">
+      <a-button class="control-button" type="primary" @click="add" size="small"
+        >开始分析</a-button
       >
-        <a-form-model-item label="等值距">
-          <a-input
-            v-model.number="formData.contourSpacing"
-            type="number"
-            min="0"
-            addon-after="(米)"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="线宽">
-          <a-input
-            v-model.number="formData.contourWidth"
-            type="number"
-            min="0"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="线颜色">
-          <MpColorPicker
-            :color.sync="formData.contourColor"
-            :disableAlpha="true"
-          ></MpColorPicker>
-        </a-form-model-item>
-      </a-form-model>
-    </div>
-    <div class="footer">
-      <a-button type="primary" @click="add">开始分析</a-button>
-      <a-button type="primary" @click="remove">结束分析</a-button>
+      <a-button
+        class="control-button"
+        type="primary"
+        @click="remove"
+        size="small"
+        >结束分析</a-button
+      >
     </div>
   </div>
 </template>
@@ -123,16 +128,24 @@ export default class MpContourAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-contour-analysis {
-  .panel {
-    width: 100%;
-    .ant-form-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0;
-    }
-    .ant-input {
-      padding: 4px 11px;
-    }
+  overflow-y: auto;
+  max-height: 500px;
+  .ant-form-item {
+    align-items: center;
+    margin-bottom: 0;
+  }
+  .ant-form-item-label {
+    line-height: 20px;
+  }
+  .ant-form-item-label > label::after {
+    content: '';
+  }
+  .ant-input {
+    padding: 4px 11px;
+  }
+  .color-picker {
+    height: 40px;
+    padding: 8px 0px;
   }
 
   .title {
@@ -150,15 +163,15 @@ export default class MpContourAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  .footer {
+  .control-button-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 8px;
-
-    .ant-btn {
-      padding: 0 15px;
+    margin: 5px 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .control-button {
+      width: calc(~'50% - 2.5px');
     }
   }
 }

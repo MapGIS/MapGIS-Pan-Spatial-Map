@@ -1,75 +1,92 @@
 <template>
   <div class="mp-widget-dynamic-section-analysis">
-    <div class="panel">
-      <a-row class="title">
-        <div class="space"></div>
-        <div class="label">模型</div>
-      </a-row>
-      <a-row>
-        <a-card bordered size="small" class="card">
-          <a-radio-group v-if="models.length > 0" v-model="model">
-            <a-radio
-              v-for="(node, index) in models"
-              :style="radioStyle"
-              :key="`model-${index}`"
-              :value="node"
-            >
-              {{ node.title }}
-            </a-radio>
-          </a-radio-group>
-          <div v-else>
-            暂无数据！
-          </div>
-        </a-card>
-      </a-row>
-      <a-row class="title">
-        <div class="space"></div>
-        <div class="label">坐标轴</div>
-      </a-row>
-      <a-row>
-        <a-card bordered size="small" class="card">
-          <a-radio-group v-model="axis">
-            <a-radio value="X">
-              X轴
-            </a-radio>
-            <a-radio value="Y">
-              Y轴
-            </a-radio>
-            <a-radio value="Z">
-              Z轴
-            </a-radio>
-          </a-radio-group>
-        </a-card>
-      </a-row>
-      <a-row class="title">
-        <div class="space"></div>
-        <div class="label">剖面分析</div>
-      </a-row>
-      <a-form-model :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-        <a-form-model-item label="剖面颜色">
-          <MpColorPicker
-            :color.sync="color"
-            :disableAlpha="false"
-          ></MpColorPicker>
-        </a-form-model-item>
-        <a-form-model-item label="动画时间">
-          <a-input v-model.number="time" type="number" min="0" />
-        </a-form-model-item>
-        <a-form-model-item label="剖切距离">
-          <a-slider
-            v-model="distance"
-            :min="min"
-            :max="max"
-            @change="setDistance"
-            :disabled="readonly"
-          />
-        </a-form-model-item>
-      </a-form-model>
-    </div>
-    <div class="footer">
-      <a-button type="primary" @click="startClipping">开始</a-button>
-      <a-button type="primary" @click="stopClipping">结束</a-button>
-      <a-button type="primary" @click="animation">动画</a-button>
+    <a-row class="title">
+      <div class="space"></div>
+      <div class="label">模型</div>
+    </a-row>
+    <a-row>
+      <a-card bordered size="small" class="card">
+        <a-radio-group v-if="models.length > 0" v-model="model">
+          <a-radio
+            v-for="(node, index) in models"
+            :style="radioStyle"
+            :key="`model-${index}`"
+            :value="node"
+          >
+            {{ node.title }}
+          </a-radio>
+        </a-radio-group>
+        <div v-else>
+          暂无数据！
+        </div>
+      </a-card>
+    </a-row>
+    <a-row class="title">
+      <div class="space"></div>
+      <div class="label">坐标轴</div>
+    </a-row>
+    <a-row>
+      <a-card bordered size="small" class="card">
+        <a-radio-group v-model="axis">
+          <a-radio value="X">
+            X轴
+          </a-radio>
+          <a-radio value="Y">
+            Y轴
+          </a-radio>
+          <a-radio value="Z">
+            Z轴
+          </a-radio>
+        </a-radio-group>
+      </a-card>
+    </a-row>
+    <a-row class="title">
+      <div class="space"></div>
+      <div class="label">剖面分析</div>
+    </a-row>
+    <a-form-model>
+      <a-form-model-item label="剖面颜色">
+        <MpColorPicker
+          :color.sync="color"
+          :disableAlpha="false"
+          class="color-picker"
+        ></MpColorPicker>
+      </a-form-model-item>
+      <a-form-model-item label="动画时间">
+        <a-input v-model.number="time" type="number" min="0" size="small" />
+      </a-form-model-item>
+      <a-form-model-item label="剖切距离">
+        <a-slider
+          v-model="distance"
+          :min="min"
+          :max="max"
+          @change="setDistance"
+          :disabled="readonly"
+        />
+      </a-form-model-item>
+    </a-form-model>
+    <div class="control-button-container">
+      <a-button
+        class="control-button"
+        type="primary"
+        @click="startClipping"
+        size="small"
+        >开始</a-button
+      >
+      <a-button
+        class="control-button"
+        type="primary"
+        @click="stopClipping"
+        size="small"
+        >结束</a-button
+      >
+      <a-button
+        class="control-button"
+        type="primary"
+        @click="animation"
+        size="small"
+        >动画</a-button
+      >
     </div>
   </div>
 </template>
@@ -98,7 +115,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   private axis = 'X'
 
   // 默认裁剪边缘颜色
-  private color = 'rgb(255,255,255,0.5)'
+  private color = 'rgb(200,200,200,0.5)'
 
   // 默认动画时间
   private time = 10
@@ -418,20 +435,28 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
 
 <style lang="less">
 .mp-widget-dynamic-section-analysis {
-  .panel {
-    width: 100%;
-    .ant-form-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0;
-    }
-    .ant-input {
-      padding: 4px 11px;
-    }
-    .card {
-      max-height: 150px;
-      overflow: auto;
-    }
+  display: flex;
+  flex-direction: column;
+  .ant-form-item {
+    align-items: center;
+    margin-bottom: 0;
+  }
+  .ant-form-item-label {
+    line-height: 20px;
+  }
+  .ant-form-item-label > label::after {
+    content: '';
+  }
+  .ant-input {
+    padding: 4px 11px;
+  }
+  .card {
+    max-height: 150px;
+    overflow: auto;
+  }
+  .color-picker {
+    height: 40px;
+    padding: 8px 0px;
   }
 
   .title {
@@ -449,15 +474,15 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  .footer {
+  .control-button-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 8px;
-
-    .ant-btn {
-      padding: 0 15px;
+    margin: 5px 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .control-button {
+      width: calc(~'34% - 2.5px');
     }
   }
 }

@@ -88,9 +88,7 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
 
 <style lang="less">
 .mp-widget-terrain-analysis {
-  flex: 1 1 0%;
-  max-width: 350px;
-  overflow: hidden;
+  max-width: 220px;
   display: flex;
   flex-direction: column;
 }

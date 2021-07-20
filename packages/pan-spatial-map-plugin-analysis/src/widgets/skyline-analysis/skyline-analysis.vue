@@ -1,29 +1,33 @@
 <template>
   <div class="mp-widget-skyline-analysis">
-    <div class="panel">
-      <a-form-model
-        :model="formData"
-        :label-col="{ span: 8 }"
-        :wrapper-col="{ span: 16 }"
+    <a-form-model :model="formData">
+      <a-form-model-item label="线宽">
+        <a-input
+          v-model.number="formData.skylineWidth"
+          size="small"
+          type="number"
+          min="0"
+        />
+      </a-form-model-item>
+      <a-form-model-item label="线颜色">
+        <MpColorPicker
+          :color.sync="formData.skylineColor"
+          :disableAlpha="true"
+          class="color-picker"
+        ></MpColorPicker>
+      </a-form-model-item>
+    </a-form-model>
+    <div class="control-button-container">
+      <a-button class="control-button" type="primary" @click="add" size="small"
+        >开始分析</a-button
       >
-        <a-form-model-item label="线宽">
-          <a-input
-            v-model.number="formData.skylineWidth"
-            type="number"
-            min="0"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="线颜色">
-          <MpColorPicker
-            :color.sync="formData.skylineColor"
-            :disableAlpha="true"
-          ></MpColorPicker>
-        </a-form-model-item>
-      </a-form-model>
-    </div>
-    <div class="footer">
-      <a-button type="primary" @click="add">开始分析</a-button>
-      <a-button type="primary" @click="remove">结束分析</a-button>
+      <a-button
+        class="control-button"
+        type="primary"
+        @click="remove"
+        size="small"
+        >结束分析</a-button
+      >
     </div>
   </div>
 </template>
@@ -89,42 +93,35 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-skyline-analysis {
-  .panel {
-    width: 100%;
-    .ant-form-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0;
-    }
-    .ant-input {
-      padding: 4px 11px;
-    }
+  display: flex;
+  flex-direction: column;
+  .ant-form-item {
+    align-items: center;
+    margin-bottom: 0;
+  }
+  .ant-form-item-label {
+    line-height: 20px;
+  }
+  .ant-form-item-label > label::after {
+    content: '';
+  }
+  .ant-input {
+    padding: 4px 11px;
+  }
+  .color-picker {
+    height: 40px;
+    padding: 8px 0px;
   }
 
-  .title {
-    margin: 5px 0;
-    .space {
-      width: 4px;
-      height: 25px;
-      background: @primary-color;
-      margin-right: 8px;
-      float: left;
-    }
-    .label {
-      line-height: 25px;
-      font-weight: bold;
-    }
-  }
-
-  .footer {
+  .control-button-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 8px;
-
-    .ant-btn {
-      padding: 0 15px;
+    margin: 5px 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .control-button {
+      width: calc(~'50% - 2.5px');
     }
   }
 }
