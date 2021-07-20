@@ -227,6 +227,10 @@
           {
             "id": "widget_d89dd2b3-c9b0-4326-94a6-2ef1564866d9",
             "uri": "widgets/shadow-analysis"
+          },
+          {
+            "id": "widget_5592ccaf-7357-4d9d-863c-de6de7bc129f",
+            "uri": "widgets/particle-effects"
           }
         ],
         "widgetStructure": [
@@ -311,6 +315,9 @@
               },
               {
                 "id": "widget_d89dd2b3-c9b0-4326-94a6-2ef1564866d9"
+              },
+              {
+                "id": "widget_5592ccaf-7357-4d9d-863c-de6de7bc129f"
               }
             ]
           }

@@ -27,7 +27,8 @@
     "8": "/upload/8.png"
   },
   "urlConfig": {
-    "nonSpatialUrl": ""
+    "nonSpatialUrl": "",
+    "treeDataUrl": "http://192.168.176.1:6160/portal/api/maps/dir-tree"
   },
   "otherConfig": {
     "nonSpatial": "非空间数据",
@@ -740,8 +741,8 @@
           {
             "label": "台湾省地形",
             "describe": "台湾省地形",
-            "ip": "develop.smaryun.com",
-            "port": "6163",
+            "ip": "",
+            "port": "",
             "layerServiceType": "DOC3D",
             "name": "terrain",
             "searchName": "",
@@ -752,8 +753,8 @@
           {
             "label": "全国地形",
             "describe": "全国地形",
-            "ip": "develop.smaryun.com",
-            "port": "6163",
+            "ip": "",
+            "port": "",
             "layerServiceType": "DOC3D",
             "name": "DEM250_3D",
             "searchName": "",
