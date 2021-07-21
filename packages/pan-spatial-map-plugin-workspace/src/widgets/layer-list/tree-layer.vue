@@ -332,14 +332,12 @@ export default class TreeLayer extends Mixins(
   }
 
   @Watch('document.defaultMap', { deep: true, immediate: true })
-  documentChange(newValue, oldValue) {
+  documentChange() {
     this.parentKeys = []
     if (
       this.document &&
       this.document.defaultMap &&
-      this.document.defaultMap.layers() &&
-      newValue &&
-      oldValue
+      this.document.defaultMap.layers()
     ) {
       this.setDocument()
       const layers: Array<unknown> = this.document.clone().defaultMap.layers()
@@ -557,17 +555,6 @@ export default class TreeLayer extends Mixins(
         this.changeSublayersVisible(item.sublayers, subParentVisible)
       }
     }
-  }
-
-  // 这里是判断document的layer与之前是否相等，不相等则清除记录的半勾选数组，防止影响新的document图层可见状态
-  isArrayEquals(newValue, oldValue) {
-    const newArr = newValue.map(item => {
-      return item.id
-    })
-    const oldArr = oldValue.map(item => {
-      return item.id
-    })
-    return newArr.toString() === oldArr.toString()
   }
 
   tickedChange(val: Array<string>, e) {

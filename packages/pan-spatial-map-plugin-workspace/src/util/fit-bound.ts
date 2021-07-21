@@ -78,7 +78,7 @@ export const fitBoundByLayer = (layer: Layer, mapParams: MapParams) => {
     let extent: Bound | null = null
     if (!range) {
       const { source } = sceneController.findSource(id)
-      if (source.length > 0) {
+      if (source && source.length > 0) {
         const tranform = source[0].root.transform
         const bound: Bound = sceneController.localExtentToGlobelExtent(
           { xmin, xmax, ymin, ymax, zmin, zmax },
