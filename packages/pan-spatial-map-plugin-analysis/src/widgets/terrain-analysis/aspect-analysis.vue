@@ -68,8 +68,10 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
   }
 
   onActive() {
+    // 开启光照，不然放大地图，分析结果显示异常
     const { viewer } = this.webGlobe
     viewer.scene.globe.enableLighting = true
+    // 调高亮度
     const stages = viewer.scene.postProcessStages
     viewer.scene.brightness =
       viewer.scene.brightness ||
