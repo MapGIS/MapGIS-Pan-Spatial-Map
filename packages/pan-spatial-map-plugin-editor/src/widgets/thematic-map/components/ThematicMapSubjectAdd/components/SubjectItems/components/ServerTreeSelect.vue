@@ -2,8 +2,8 @@
   <div class="server-tree-select">
     <mp-row-flex label="服务地址" label-align="right" :span="[6, 18]">
       <mp-tree-select
-        @blur="urlBlur"
-        v-model="url"
+        @change="uriChange"
+        :value="uri"
         :load-data="catalogTreeLoadData"
         :tree-data="catalogTreeData"
         :loading="loading"
@@ -38,8 +38,8 @@ import _last from 'lodash/last'
 
 @Component
 export default class ServerTreeSelect extends Vue {
-  // 数据地址
-  url = ''
+  // 服务地址
+  uri = ''
 
   // 目录树
   catalogTreeData: Layer[] = []
@@ -55,7 +55,7 @@ export default class ServerTreeSelect extends Vue {
       label: '示例2',
       serverType: 'IGSMapImage',
       content:
-        'http://<server>:<port>/igs/rest/mrms/docs/{docName}?layerName={layerName}&layerIdxs={layerIdxs}'
+        'http://<server>:<port>/igs/rest/mrms/docs/{docName}?layerName={layerName}&layerIndex={layerIndex}'
     }
   ]
 
@@ -132,56 +132,45 @@ export default class ServerTreeSelect extends Vue {
   /**
    * 异步加载节点数据的回调
    */
-  catalogTreeLoadData(treeNode: any) {
-    return new Promise(resolve => {
-      const {
-        dataRef,
-        dataRef: { ip, port, serverName, serverType, children }
-      } = treeNode
-
-      if (!children && serverType === LayerType.IGSMapImage) {
-        const fn = Catalog.DocumentCatalog.getDocInfo({
-          ip,
-          port,
-          serverName
-        })
-        if (fn && fn.then) {
-          fn.then(docInfo => {
-            if (docInfo && docInfo.MapInfos.length) {
-              const { CatalogLayer } = docInfo.MapInfos[0]
-              const layerIndex = Catalog.DocumentCatalog.getLayerIndexesByNamesOrCodes(
-                CatalogLayer
-              )
-              const layers = Catalog.DocumentCatalog.getLayersByIndexes(
-                layerIndex.join(','),
-                CatalogLayer
-              )
-              treeNode.dataRef.children = layers.map(
-                ({ LayerName, LayerIndex, URL }) => ({
-                  ip,
-                  port,
-                  gdbp: URL,
-                  name: LayerName,
-                  guid: LayerIndex,
-                  isLeaf: true
-                })
-              )
-              this.catalogTreeData = [...this.catalogTreeData]
-              resolve()
-            }
+  async catalogTreeLoadData(treeNode: any) {
+    const {
+      dataRef,
+      dataRef: { ip, port, serverName, serverType, children }
+    } = treeNode
+    if (!children && serverType === LayerType.IGSMapImage) {
+      const docInfo = await Catalog.DocumentCatalog.getDocInfo({
+        ip,
+        port,
+        serverName
+      })
+      if (docInfo && docInfo.MapInfos.length) {
+        const { CatalogLayer } = docInfo.MapInfos[0]
+        const layerIndex = Catalog.DocumentCatalog.getLayerIndexesByNamesOrCodes(
+          CatalogLayer
+        )
+        const layers = Catalog.DocumentCatalog.getLayersByIndexes(
+          layerIndex.join(','),
+          CatalogLayer
+        )
+        treeNode.dataRef.children = layers.map(
+          ({ LayerName, LayerIndex, URL }) => ({
+            name: LayerName,
+            guid: LayerIndex,
+            gdbpUri: this.getGdbpUri({ ip, port, gdbp: URL }),
+            isLeaf: true
           })
-        }
-      } else {
-        resolve()
+        )
+        this.catalogTreeData = [...this.catalogTreeData]
       }
-    })
+    }
   }
 
   /**
-   * 失焦
+   * 服务地址变化
    */
-  urlBlur() {
-    if (!/^(https|http)?:\/\//.test(this.url)) {
+  uriChange(value: string) {
+    this.uri = value.trim()
+    if (!/^(https|http)?:\/\//.test(this.uri)) {
       this.$message.warn('请按照示例输入正确的数据服务地址')
       return
     }
@@ -189,8 +178,8 @@ export default class ServerTreeSelect extends Vue {
       hostname: ip,
       port,
       pathname,
-      query: { gdbp, layerName, layerIdxs }
-    } = url.parse(this.url, true)
+      query: { gdbp, layerName, layerIndex }
+    } = url.parse(this.uri, true)
     const docName = _last(pathname.split('/'))
     let params: Record<string, string | number>
     if (gdbp) {
@@ -205,14 +194,10 @@ export default class ServerTreeSelect extends Vue {
         port,
         docName,
         layerName,
-        layerIndex: layerIdxs
+        layerIndex
       }
     }
-    if (!params) {
-      this.$message.warn('请按照示例输入正确的数据服务地址')
-    } else {
-      this.$emit('change', params)
-    }
+    this.$emit('change', params)
   }
 
   created() {

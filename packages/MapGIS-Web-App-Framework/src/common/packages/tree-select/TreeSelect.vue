@@ -5,7 +5,6 @@
     class="mp-tree-select"
   >
     <a-input
-      @blur="onBlur"
       @change="onValueChange"
       :value="selectedValue"
       :placeholder="placeholder"
@@ -130,10 +129,7 @@ export default class MpTreeSelect extends Vue {
    * 输入的值变化
    */
   onValueChange(e) {
-    this.selectedValue = e.target.value.trim()
-    if (!this.selectedValue) {
-      this.selectedKeys = []
-    }
+    this.selectedValue = e.target.value
     this.dispatchChange(this.selectedValue)
   }
 
@@ -143,6 +139,7 @@ export default class MpTreeSelect extends Vue {
   onTreeSelect(selectedKeys: Array<string>, { node: { dataRef } }) {
     this.selectedKeys = selectedKeys
     this.selectedValue = dataRef[this.selfLabelProp]
+    this.dropdownVisible = false
     this.dispatchChange(this.selectedValue, this.selectedKeys[0])
   }
 
@@ -151,15 +148,6 @@ export default class MpTreeSelect extends Vue {
    */
   onTreeLoad(loadedKeys) {
     this.loadedKeys = loadedKeys
-  }
-
-  /**
-   * 失焦事件
-   */
-  onBlur(e) {
-    if (!this.dropdownVisible) {
-      this.$emit('blur', e)
-    }
   }
 
   /**
