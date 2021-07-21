@@ -2,34 +2,13 @@
   <div class="base-items">
     <!-- 专题名称 -->
     <mp-row-flex label="专题分类">
-      <a-dropdown v-model="thematicMapTreeVisible" :trigger="['click']">
-        <span
-          class="ant-input-affix-wrapper pointer"
-          @click.stop="thematicMapTreeShow"
-        >
-          <span class="ant-input">
-            <span v-if="baseItemsObj.parentTitle">{{
-              baseItemsObj.parentTitle
-            }}</span>
-            <span v-else class="placeholder">请选择</span>
-          </span>
-          <span
-            class="ant-select-arrow"
-            :class="{ rotate180: thematicMapTreeVisible }"
-          >
-            <a-icon type="down" class="ant-select-arrow-icon" />
-          </span>
-        </span>
-        <div class="dropdown-content" slot="overlay">
-          <a-tree
-            @select="thematicMapTreeSelected"
-            :selected-keys="selectedThematicMapKeys"
-            :show-line="true"
-            :tree-data="thematicMapTree"
-            :replace-fields="{ key: 'id' }"
-          />
-        </div>
-      </a-dropdown>
+      <mp-tree-select
+        @change="subjectClassifyChange"
+        :value="subjectClassify"
+        :tree-data="thematicMapTree"
+        :replace-fields="{ key: 'id' }"
+        :default-expand-all="true"
+      />
     </mp-row-flex>
     <!-- 专题图名称 -->
     <mp-row-flex label="专题图名称">
@@ -73,14 +52,11 @@ export default class BaseItems extends Vue {
   // 专题类型列表
   subjectTypeList = subjectTypeList
 
-  // 专题图树展示开关
-  thematicMapTreeVisible = false
+  // 专题分类
+  subjectClassify = ''
 
   // 专题图树
   thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
-
-  // 选中的专题图树节点key
-  selectedThematicMapKeys: string[] = []
 
   // 专题节点公共的基础数据
   get baseItemsObj() {
@@ -89,7 +65,7 @@ export default class BaseItems extends Vue {
 
   set baseItemsObj(nV) {
     this.$emit('input', {
-      id: `thematic-map-${UUID.uuid()}`,
+      id: `subject-${UUID.uuid()}`,
       visible: true,
       nodeType: 'subject',
       ...nV
@@ -97,30 +73,15 @@ export default class BaseItems extends Vue {
   }
 
   /**
-   * 展示专题目录树
-   */
-  thematicMapTreeShow() {
-    this.thematicMapTreeVisible = true
-  }
-
-  /**
-   * 隐藏专题目录树
-   */
-  thematicMapTreeHide() {
-    this.thematicMapTreeVisible = false
-  }
-
-  /**
    * 专题图节点选择变化
    */
-  thematicMapTreeSelected(selectedKeys: string[], { node: { dataRef } }: any) {
-    this.selectedThematicMapKeys = selectedKeys
+  subjectClassifyChange(value: stirng, key?: string) {
+    this.subjectClassify = value
     this.baseItemsObj = {
       ...this.baseItemsObj,
-      parentId: dataRef.id,
-      parentTitle: dataRef.title
+      parentId: key,
+      parentTitle: value
     }
-    this.thematicMapTreeHide()
   }
 
   /**
@@ -150,9 +111,8 @@ export default class BaseItems extends Vue {
   normalizeThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
     if (!tree.length) return []
     return tree.map(node => {
-      this.$set(node, 'selectable', false)
+      this.$set(node, 'selectable', node.nodeType !== 'subject')
       if (node.nodeType === 'list') {
-        this.$set(node, 'selectable', true)
         this.$set(node, 'children', [])
       } else if (node.children && node.children.length) {
         this.normalizeThematicMapTree(node.children)
@@ -172,9 +132,9 @@ export default class BaseItems extends Vue {
   /**
    * 监听: 专题配置变化
    */
-  @Watch('value.parentId')
-  parentIdChanged(nV) {
-    this.selectedThematicMapKeys = [nV]
+  @Watch('value.parentTitle')
+  parentTitleChanged(nV) {
+    this.subjectClassify = nV
   }
 
   /**
@@ -186,35 +146,8 @@ export default class BaseItems extends Vue {
   }
 
   created() {
-    this.selectedThematicMapKeys = [this.value.parentId]
+    this.subjectClassify = this.value.parentTitle
     this.setThematicMapTree(this.subjectConfig)
   }
 }
 </script>
-<style lang="less" scoped>
-.placeholder {
-  color: #c4c4c4;
-}
-
-.ant-input-affix-wrapper {
-  cursor: pointer;
-  &:focus {
-    box-shadow: @box-shadow-base;
-  }
-}
-
-.ant-select-arrow {
-  transition: transform 0.3s;
-  &.rotate180 {
-    transform: rotate(180deg);
-  }
-}
-
-.dropdown-content {
-  max-height: 320px;
-  overflow-y: auto;
-  padding: 2px 8px;
-  background: @white;
-  box-shadow: @box-shadow-base;
-}
-</style>
