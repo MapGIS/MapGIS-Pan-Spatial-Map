@@ -19,15 +19,5 @@
     "video": "video"
   },
   "showModel": { "img": "img", "table": "table" },
-  "fileViewerId": "fileViewer",
-  "fileViewerConfig": {
-    "id": "fileViewer",
-    "title": "查看文件",
-    "widget": "./widgets/FileViewer/fileViewer",
-    "config": "./widgets/FileViewer/fileViewer.json",
-    "template": "./widgets/FileViewer/fileViewer.html",
-    "style": "./widgets/FileViewer/fileViewer.css"
-  },
-  "videoTypes": ["mp4"],
-  "transFileServer": { "ip": "172.168.232.208", "port": "63421" }
+  "videoTypes": ["mp4"]
 }
