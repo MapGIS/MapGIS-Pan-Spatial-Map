@@ -220,6 +220,7 @@ import {
   events,
   api
 } from '@mapgis/pan-spatial-map-store'
+import { fitBoundByLayer } from '../../util/fit-bound'
 
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import NonSpatial from './non-spatial.vue'
@@ -291,6 +292,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 目录树配置
   private widgetConfig = {}
 
+  private imposeNode = {}
+
   // 设置选中的树节点
   get selectedKeys() {
     if (this.hasKeywordArr.length > 0 && this.searchIndex !== -1) {
@@ -321,7 +324,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     this.dataCatalogManager.init(this.widgetInfo.config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
     this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
+
     eventBus.$on(events.OPEN_DATA_BOOKMARK_EVENT, this.bookMarkClick)
+    eventBus.$on('emitImposeService', this.imposeService)
   }
 
   @Watch('checkedNodeKeys', { deep: false })
@@ -714,6 +719,63 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         this.showUploader = false
       }
     }
+  }
+
+  // 监听服务叠加事件
+  imposeService(params) {
+    this.imposeNode = {}
+    const node = this.getServiceNode(
+      params.name,
+      params.type,
+      this.dataCatalogTreeData
+    )
+    const { Cesium, map, webGlobe, CesiumZondy } = this
+
+    if (Object.keys(node).length > 0) {
+      if (this.dataCatalogManager.checkedLayerConfigIDs.includes(node.guid)) {
+        return false
+      } else {
+        eventBus.$on(events.DATA_SELECTION_CHANGE_EVENT, () => {
+          eventBus.$off(events.DATA_SELECTION_CHANGE_EVENT)
+          const doc: Document = this.document
+
+          if (doc.defaultMap && doc.defaultMap.allLayers.length > 0) {
+            const imposeLayer =
+              doc.defaultMap.allLayers[doc.defaultMap.allLayers.length - 1]
+            console.log(imposeLayer)
+
+            if (imposeLayer.type !== LayerType.IGSScene) {
+              fitBoundByLayer(imposeLayer, {
+                Cesium,
+                map,
+                webGlobe,
+                CesiumZondy
+              })
+            } else {
+              this.switchMapMode()
+            }
+          }
+        })
+        this.dataCatalogManager.checkedLayerConfigIDs.push(node.guid)
+      }
+    } else {
+      return false
+    }
+  }
+
+  // 获取该叠加服务对应的节点
+  private getServiceNode(name, type, tree) {
+    tree.forEach(item => {
+      if (item.name === name && item.serverType === +type) {
+        this.imposeNode = item
+      } else {
+        if (item.children && item.children.length > 0) {
+          this.getServiceNode(name, type, item.children)
+        }
+      }
+    })
+
+    return this.imposeNode
   }
 }
 </script>
