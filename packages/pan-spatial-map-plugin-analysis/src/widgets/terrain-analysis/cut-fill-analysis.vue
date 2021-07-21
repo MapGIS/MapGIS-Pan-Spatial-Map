@@ -63,7 +63,6 @@
   </div>
 </template>
 <script lang="ts">
-declare const CesiumZondy
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
@@ -91,6 +90,8 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       cutFill: null
     }
   }
+
+  onActive() {}
 
   // 微件失活时
   onDeActive() {
@@ -157,7 +158,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
           }
         })
         // 初始化高级分析功能管理类
-        const advancedAnalysisManager = new CesiumZondy.Manager.AdvancedAnalysisManager(
+        const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
           {
             viewer
           }

@@ -16,6 +16,14 @@
         ></MpColorPicker>
       </a-form-model-item>
     </a-form-model>
+    <a-row>
+      <a-textarea
+        class="note"
+        disabled
+        :value="`坡向分析需要带法线地形`"
+        auto-size
+      ></a-textarea>
+    </a-row>
     <div class="control-button-container">
       <a-button class="control-button" type="primary" @click="add" size="small"
         >开始分析</a-button
@@ -32,19 +40,19 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
+import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpAspectAnalysis'
 })
 export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
   private arrayColor: string[] = [
-    'rgb(244, 67, 54, 0.5)',
-    'rgb(233, 30, 99, 0.5)',
-    'rgb(156, 39, 176, 0.5)',
-    'rgb(255, 235, 59, 0.5)',
-    'rgb(96, 125, 139, 0.5)',
-    'rgb(76, 175, 80, 0.5)'
+    'rgba(244, 67, 54, 0.5)',
+    'rgba(233, 30, 99, 0.5)',
+    'rgba(156, 39, 176, 0.5)',
+    'rgba(255, 235, 59, 0.5)',
+    'rgba(96, 125, 139, 0.5)',
+    'rgba(76, 175, 80, 0.5)'
   ]
 
   getLabel(index) {
@@ -54,50 +62,61 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
   created() {
     window.AspectAnalyzeManage = {
       drawElement: null,
-      cutFill: null,
-      advancedAnalysisManager: null,
-      AspectAnalysis: null
+      aspectAnalysis: null
     }
+    this.onActive()
   }
 
-  mounted() {}
+  onActive() {
+    const { viewer } = this.webGlobe
+    viewer.scene.globe.enableLighting = true
+    const stages = viewer.scene.postProcessStages
+    viewer.scene.brightness =
+      viewer.scene.brightness ||
+      stages.add(this.Cesium.PostProcessStageLibrary.createBrightnessStage())
+    viewer.scene.brightness.enabled = true
+    viewer.scene.brightness.uniforms.brightness = 1.2
+  }
 
   // 微件失活时
   onDeActive() {
     this.remove()
-    window.AspectAnalyzeManage.advancedAnalysisManager = null
+    const { viewer } = this.webGlobe
+    viewer.scene.globe.enableLighting = false
+    viewer.scene.brightness.enabled = false
   }
 
   add() {
-    this.remove()
-    window.AspectAnalyzeManage.advancedAnalysisManager =
-      window.AspectAnalyzeManage.advancedAnalysisManager ||
-      new this.CesiumZondy.Manager.AdvancedAnalysisManager({
-        viewer: this.webGlobe.viewer
-      })
-    this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+    const { viewer } = this.webGlobe
+    // 初始化交互式绘制控件
+    window.AspectAnalyzeManage.drawElement =
+      window.AspectAnalyzeManage.drawElement ||
+      new this.Cesium.DrawElement(viewer)
+
     const arr = this.transformColor(this.arrayColor)
-    if (arr.length > 0) {
-      window.AspectAnalyzeManage.AspectAnalysis = window.AspectAnalyzeManage.advancedAnalysisManager.createAspectAnalysis(
-        arr
-      )
-    } else {
-      this.$q.notify({
-        message: '颜色格式不正确',
-        position: 'center'
-      })
-    }
+
+    const self = this
+
+    // 激活交互式绘制工具
+    window.AspectAnalyzeManage.drawElement.startDrawingPolygon({
+      // 绘制完成回调函数
+      callback: positions => {
+        this.remove()
+        window.AspectAnalyzeManage.aspectAnalysis =
+          window.AspectAnalyzeManage.aspectAnalysis ||
+          new this.Cesium.TerrainAnalyse(viewer, { aspectRampColor: arr })
+        window.AspectAnalyzeManage.aspectAnalysis.enableContour(false)
+        window.AspectAnalyzeManage.aspectAnalysis.updateMaterial('aspect')
+        window.AspectAnalyzeManage.aspectAnalysis.changeAnalyseArea(positions)
+      }
+    })
   }
 
   transformColor(arrayColor) {
     let isNull = false
     const arr = arrayColor.map(color => {
       if (color) {
-        return Objects.SceneController.getInstance(
-          this.Cesium,
-          this.CesiumZondy,
-          this.webGlobe
-        ).colorToCesiumColor(color)
+        return ColorUtil.rgbaToHex(color)
       }
       isNull = true
       return null
@@ -109,12 +128,17 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
   }
 
   remove() {
-    if (window.AspectAnalyzeManage.AspectAnalysis) {
-      this.webGlobe.scene.VisualAnalysisManager.remove(
-        window.AspectAnalyzeManage.AspectAnalysis
-      )
-      window.AspectAnalyzeManage.AspectAnalysis.stop()
-      window.AspectAnalyzeManage.AspectAnalysis = null
+    // 判断是否已有坡向分析结果
+    if (window.AspectAnalyzeManage.aspectAnalysis) {
+      // 移除坡向分析显示结果
+      window.AspectAnalyzeManage.aspectAnalysis.updateMaterial('none')
+      window.AspectAnalyzeManage.aspectAnalysis = null
+    }
+
+    if (window.AspectAnalyzeManage.drawElement) {
+      // 取消交互式绘制矩形事件激活状态
+      window.AspectAnalyzeManage.drawElement.stopDrawing()
+      window.AspectAnalyzeManage.drawElement = null
     }
   }
 }
@@ -148,6 +172,20 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
     .label {
       line-height: 25px;
       font-weight: bold;
+    }
+  }
+
+  .note {
+    padding: 3px 0;
+    color: @text-color-secondary;
+    word-break: break-all;
+    white-space: break-spaces;
+    font-size: 12px;
+    &.ant-input {
+      border: none;
+      background-color: transparent;
+      resize: none;
+      min-height: 24px;
     }
   }
 

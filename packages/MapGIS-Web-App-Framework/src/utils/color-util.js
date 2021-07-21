@@ -78,25 +78,76 @@ export function rgbToHex(color) {
   if (!color.includes('rgb')) {
     return color
   }
-  const rgb = color.split(',')
-  const r = parseInt(rgb[0].split('(')[1])
-  const g = parseInt(rgb[1])
-  const b = parseInt(rgb[2].split(')')[0])
+  const colorStr = color.split('(')[1].split(')')[0]
+  const arr = colorStr.split(',')
+  const r = parseInt(arr[0])
+  const g = parseInt(arr[1])
+  const b = parseInt(arr[2])
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`
   return hex.toLocaleUpperCase()
 }
 
 /**
+ * rgba转16进制
+ * @param color rgba
+ * @param disableAlpha 禁用透明度
+ */
+export function rgbaToHex(color, disableAlpha) {
+  if (!color.includes('rgb')) {
+    return color
+  }
+  if (!color.includes('a') || disableAlpha) {
+    // 如果是rgb或者rgba
+    return this.rgbToHex(color)
+  }
+  const colorStr = color.split('(')[1].split(')')[0]
+  const arr = colorStr.split(',')
+  const a = Number(arr[3] ? arr[3] : 1)
+  // 十六进制透明度枚举
+  const alpha = new Map()
+  alpha.set('00', 0)
+  alpha.set('0C', 0.05)
+  alpha.set('19', 0.1)
+  alpha.set('26', 0.15)
+  alpha.set('33', 0.2)
+  alpha.set('3F', 0.25)
+  alpha.set('4C', 0.3)
+  alpha.set('59', 0.35)
+  alpha.set('66', 0.4)
+  alpha.set('72', 0.45)
+  alpha.set('7F', 0.5)
+  alpha.set('8C', 0.55)
+  alpha.set('99', 0.6)
+  alpha.set('A5', 0.65)
+  alpha.set('B2', 0.7)
+  alpha.set('BF', 0.75)
+  alpha.set('CC', 0.8)
+  alpha.set('D8', 0.85)
+  alpha.set('E5', 0.9)
+  alpha.set('F2', 0.95)
+  alpha.set('FF', 1)
+  let alphaHex = 'FF'
+  for (const item of alpha) {
+    if (item[1] == a) {
+      alphaHex = item[0]
+      break
+    }
+  }
+  const rgbHex = this.rgbToHex(color)
+  return `${rgbHex}${alphaHex}`
+}
+
+/**
  * rgba转字符串
  * @param rgba rgba对象
- * @param needOpacity 是否使用透明度
+ * @param disableAlpha 禁用透明度
  */
-export function colorObjectToRgba(rgba, needOpacity) {
+export function colorObjectToRgba(rgba, disableAlpha) {
   let colorStr = ''
   if (rgba.a !== undefined) {
     colorStr = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
-    // 已传入needOpacity，并且为false
-    if (needOpacity !== undefined && !needOpacity) {
+    // 已传入disableAlpha，并且为true
+    if (disableAlpha) {
       colorStr = `rgb(${rgba.r}, ${rgba.g}, ${rgba.b})`
     }
   } else {

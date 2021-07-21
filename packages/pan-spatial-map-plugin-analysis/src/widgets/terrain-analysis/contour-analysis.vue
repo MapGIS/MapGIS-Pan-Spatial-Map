@@ -69,28 +69,33 @@ export default class MpContourAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  onActive() {}
+
   // 微件失活时
   onDeActive() {
     this.remove()
   }
 
   add() {
+    const { areaType } = this.formData
     const { viewer } = this.webGlobe
     // 初始化交互式绘制控件
     window.ContourAnalysisManage.drawElement =
       window.ContourAnalysisManage.drawElement ||
       new this.Cesium.DrawElement(viewer)
+
     const { contourWidth, contourSpacing } = this.formData
+
     const self = this
 
     // 激活交互式绘制工具
     window.ContourAnalysisManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
-        self.remove()
+        this.remove()
         window.ContourAnalysisManage.contourAnalysis =
           window.ContourAnalysisManage.contourAnalysis ||
-          new self.Cesium.TerrainAnalyse(viewer, {})
+          new this.Cesium.TerrainAnalyse(viewer, {})
         window.ContourAnalysisManage.contourAnalysis.enableContour(true)
         window.ContourAnalysisManage.contourAnalysis.updateMaterial('none')
         window.ContourAnalysisManage.contourAnalysis.changeContourWidth(
@@ -100,7 +105,7 @@ export default class MpContourAnalysis extends Mixins(WidgetMixin) {
           contourSpacing
         )
         window.ContourAnalysisManage.contourAnalysis.changeContourColor(
-          self.edgeColor
+          this.edgeColor
         )
         window.ContourAnalysisManage.contourAnalysis.changeAnalyseArea(
           positions
