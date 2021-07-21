@@ -446,10 +446,10 @@ export default class TreeLayer extends Mixins(
     dataCatalog.forEach(item => {
       let copy = parentName
       if (item.guid === id) {
-        parentName += item.label
+        parentName += item.name
         arr.push(parentName)
       } else if (item.children) {
-        copy += `${item.label}-`
+        copy += `${item.name}-`
         this.findParentName(id, copy, item.children, arr)
       }
     })

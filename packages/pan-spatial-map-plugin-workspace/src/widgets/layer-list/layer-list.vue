@@ -30,7 +30,7 @@ import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
 import treeLayer from './tree-layer'
 import layerOpacity from './layer-opacity'
-import { api } from '@mapgis/pan-spatial-map-store'
+import { api, dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
 
 @Component({
   name: 'MpLayerList',
@@ -48,10 +48,11 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
 
   async mounted() {
     try {
-      const { treeConfig } = await api.getWidgetConfig('data-catalog')
-      if (treeConfig) {
-        this.dataCatalog = treeConfig.treeData
-      }
+      this.dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData()
+      // const { treeConfig } = await api.getWidgetConfig('data-catalog')
+      // if (treeConfig) {
+      //   this.dataCatalog = treeConfig.treeData
+      // }
     } catch (error) {
       console.log(error)
     }
