@@ -717,6 +717,21 @@
             "gdbTypeList": "Local,Local"
           },
           {
+            "label": "驻地数据",
+            "describe": "驻地数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSIMAGE",
+            "name": "驻地数据",
+            "searchName": "",
+            "token": "",
+            "guid": "3049a1df-e633-4df2-a0a1-317ec3dd271b",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": ""
+          },
+          {
             "label": "北京市",
             "describe": "北京市",
             "ip": "",

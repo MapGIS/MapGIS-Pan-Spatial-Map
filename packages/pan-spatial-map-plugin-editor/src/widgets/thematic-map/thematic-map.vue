@@ -77,7 +77,6 @@ enum HandleKeys {
       'updateSubjectConfig',
       'setSelectedSubjectList',
       'resetVisible'
-      // 'resetLinkage'
     ])
   },
   components: {
@@ -100,7 +99,12 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   handleKeys = HandleKeys
 
   // 默认打开的功能模块
-  defaultOpenModules: Array<ModuleType> = ['table', 'graph', 'timeline']
+  defaultOpenModules: Array<ModuleType> = [
+    'table',
+    'graph',
+    'timeline',
+    'create'
+  ]
 
   // 选中的专题图树节点
   checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
@@ -108,7 +112,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   // 专题图树
   thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
 
-  // type == 'subject'的节点
+  // 专题节点
   subjectNode: NewSubjectConfig = {}
 
   get checkedThematicMapKeys() {
@@ -129,15 +133,14 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   /**
    * 设置面板显示
-   * @param include
-   * 如果有参数且符合ModuleType,则只打开参数对应的面板
-   * 如果没有则打开全部默认配置的打开的面板
+   * @param type 打开参数对应的面板
+   * @param exclude 打开除参数外的面板
    */
-  setModulesShow(include: ModuleType) {
-    if (include) {
-      this.setVisible(include)
+  setModulesShow(type: ModuleType, exclude: ModuleType = 'create') {
+    if (type) {
+      this.setVisible(type)
     } else {
-      this.defaultOpenModules.forEach(v => this.setVisible(v))
+      this.defaultOpenModules.forEach(v => v !== exclude && this.setVisible(v))
     }
   }
 
@@ -148,7 +151,6 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 若无参数则隐藏所有默认配置的面板
    */
   setModulesHide(exclude: ModuleType) {
-    // this.resetLinkage()
     this.defaultOpenModules.forEach(t => t !== exclude && this.resetVisible(t))
   }
 
@@ -182,7 +184,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
       // 新的专题配置
       this.subjectNode = nodeData
     } else {
-      // 旧配置
+      // 旧配置, 需要转换为新配置回显编辑
     }
     this.setModulesShow('create')
   }
@@ -194,18 +196,23 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     this.setSelectedSubjectList(
       this.checkedThematicMapNodes.filter(s => s.id !== nodeData.id)
     )
-    const recursion = (tree, node) => {
-      return tree.map(item => {
-        if (item.children && item.children.length) {
-          const index = item.children.findIndex(({ id }) => id === node.id)
-          if (index !== -1) {
-            item.children.splice(index, 1)
-          } else {
-            recursion(item.children, node)
-          }
+    const recursion = (
+      tree: Array<ThematicMapSubjectConfigNode>,
+      node: ThematicMapSubjectConfigNode
+    ) => {
+      for (let i = 0; i < tree.length; i++) {
+        const n = tree[i]
+        if (n.id === node.id) {
+          tree.splice(
+            tree.findIndex(({ id }) => id === node.id),
+            1
+          )
+          i--
+        } else if (n.children && n.children.length) {
+          recursion(n.children, node)
         }
-        return item
-      })
+      }
+      return tree
     }
     this.updateSubjectConfig(recursion(this.subjectConfig, nodeData))
       .then(() => {

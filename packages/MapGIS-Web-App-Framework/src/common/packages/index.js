@@ -15,6 +15,8 @@ import MpWindow from './window/Window.vue'
 
 import MpColorPicker from './color-picker/ColorPicker.vue'
 
+import MpTreeSelect from './tree-select/TreeSelect.vue'
+
 const components = [
   MpIcon,
   MpButton,
@@ -26,7 +28,8 @@ const components = [
   MpToolbarCommandGroup,
   MpPlacement,
   MpWindow,
-  MpColorPicker
+  MpColorPicker,
+  MpTreeSelect
 ]
 
 const install = Vue => {

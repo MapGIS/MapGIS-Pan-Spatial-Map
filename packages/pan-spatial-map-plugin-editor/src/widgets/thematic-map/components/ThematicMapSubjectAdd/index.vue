@@ -10,11 +10,11 @@
       <div class="thematic-map-subject-add" v-if="visible">
         <div class="subject-add-content">
           <!-- 基础配置 -->
-          <base-items v-model="baseItemsObj" />
+          <base-items v-model="subjectNodeBase" />
           <!-- 主题配置 -->
           <subject-items
             v-show="subjectType"
-            v-model="subjectItemsConfig"
+            v-model="subjectNodeConfig"
             :subject-type="subjectType"
           />
         </div>
@@ -29,6 +29,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { UUID } from '@mapgis/web-app-framework'
 import {
   mapGetters,
   mapMutations,
@@ -54,14 +55,16 @@ import SubjectItems from './components/SubjectItems'
 export default class ThematicMapSubjectAdd extends Vue {
   @Prop({ default: () => ({}) }) readonly subjectNode!: NewSubjectConfig
 
-  baseItemsObj = {}
+  // 专题配置的id， 名称等
+  subjectNodeBase = {}
 
-  subjectItemsConfig = []
+  // 专题配置的年度配置集合
+  subjectNodeConfig = []
 
   @Watch('subjectNode', { deep: true })
   subjectNodeChanged({ config, ...others }) {
-    this.baseItemsObj = { ...others }
-    this.subjectItemsConfig = config
+    this.subjectNodeBase = others
+    this.subjectNodeConfig = config
   }
 
   get visible() {
@@ -74,38 +77,73 @@ export default class ThematicMapSubjectAdd extends Vue {
     }
   }
 
-  get parentId() {
-    return this.baseItemsObj.parentId
+  // 专题节点的父节点title
+  get parentTitle() {
+    return this.subjectNodeBase.parentTitle
   }
 
+  // 专题节点的专题类型
   get subjectType() {
-    return this.baseItemsObj.type
+    return this.subjectNodeBase.type
+  }
+
+  /**
+   * 添加节点
+   */
+  addNodeToTreeNode(
+    tree: Array<ThematicMapSubjectConfigNode>,
+    node: NewSubjectConfig
+  ) {
+    return tree.map(item => {
+      if (item.id === node.parentId) {
+        if (item.children && item.children.length) {
+          const index = item.children.findIndex(({ id }) => id === node.id)
+          if (index !== -1) {
+            item.children.splice(index, 1, node)
+          } else {
+            item.children.push(node)
+          }
+        } else {
+          item.children = [node]
+        }
+      } else if (item.children && item.children.length) {
+        this.addNodeToTreeNode(item.children, node)
+      }
+      return item
+    })
+  }
+
+  /**
+   * 添加根级节点
+   */
+  addNodeToTreeRoot(
+    tree: Array<ThematicMapSubjectConfigNode>,
+    node: NewSubjectConfig
+  ) {
+    const parentId = `root-${UUID.uuid()}`
+    const rootNode = {
+      id: parentId,
+      title: node.parentTitle,
+      nodeType: 'panel',
+      visible: true,
+      children: [{ ...node, parentId }]
+    }
+    return [...tree, rootNode]
   }
 
   /**
    * 创建专题节点
+   * 如果没有指定的parentId，则自创建一个分类节点并挂载新建的专题图;
+   * 如果指点parentId， 则直接挂载至指定的节点
    */
-  createSubjectConfigNode(node) {
-    const resursion = (tree, node) => {
-      return tree.map(item => {
-        if (item.id === node.parentId) {
-          if (item.children && item.children.length) {
-            const index = item.children.findIndex(({ id }) => id === node.id)
-            if (index !== -1) {
-              item.children.splice(index, 1, node)
-            } else {
-              item.children.push(node)
-            }
-          } else {
-            item.children = [node]
-          }
-        } else if (item.children && item.children.length) {
-          resursion(item.children, node)
-        }
-        return item
-      })
+  createSubjectConfigNode(node: NewSubjectConfig) {
+    let config = this.subjectConfig
+    if (!node.parentId) {
+      config = this.addNodeToTreeRoot(config, node)
+    } else {
+      config = this.addNodeToTreeNode(config, node)
     }
-    this.updateSubjectConfig(resursion(this.subjectConfig, node))
+    this.updateSubjectConfig(config)
       .then(() => {
         this.$message.success('保存成功')
         this.onCancel()
@@ -120,8 +158,8 @@ export default class ThematicMapSubjectAdd extends Vue {
    */
   onCancel() {
     this.visible = false
-    this.baseItemsObj = {}
-    this.subjectItemsConfig = []
+    this.subjectNodeBase = {}
+    this.subjectNodeConfig = []
   }
 
   /**
@@ -129,16 +167,16 @@ export default class ThematicMapSubjectAdd extends Vue {
    * todo 专题配置表单校验?是否使用a-form来实现, 业务组件如何触发校验?
    */
   onSave() {
-    if (!this.parentId) {
-      this.$message.warning('请选择专题图目录')
+    if (!this.parentTitle) {
+      this.$message.warning('请填写或选择专题分类')
     } else if (!this.subjectType) {
-      this.$message.warning('请选择专题图类型')
-    } else if (!this.subjectItemsConfig.length) {
-      this.$message.warning('请填写专题图配置')
+      this.$message.warning('请选择专题类型')
+    } else if (!this.subjectNodeConfig.length) {
+      this.$message.warning('请填写专题配置')
     } else {
       this.createSubjectConfigNode({
-        ...this.baseItemsObj,
-        config: this.subjectItemsConfig
+        ...this.subjectNodeBase,
+        config: this.subjectNodeConfig
       })
     }
   }
