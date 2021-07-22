@@ -5,13 +5,17 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { AppManager } from '@mapgis/web-app-framework'
+import { eventBus } from '@mapgis/pan-spatial-map-store'
+
 import { BASE_URL } from '@/services/api'
 import { request } from '@/utils/request'
 
 export default {
   data() {
     return {
-      application: {}
+      application: {},
+      url:
+        'http://192.168.17.59:9039/portal/public/map/index.html#/map?ip=xx&port=xx&type=5&name=portal_Hubei4326'
     }
   },
   computed: {
@@ -30,6 +34,10 @@ export default {
     const style = this.themeStyle()
 
     this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
+  },
+
+  mounted() {
+    window.setTimeout(this.emitEvent, 3000)
   },
   methods: {
     ...mapMutations('setting', ['setTheme']),
@@ -53,6 +61,22 @@ export default {
         }
       }
       return { theme: 'dark', color: '#1890ff' }
+    },
+    emitEvent() {
+      const name = this.getQueryString('name')
+
+      const type = this.getQueryString('type')
+
+      eventBus.$emit('emitImposeService', { name: name, type: type })
+    },
+    getQueryString(name) {
+      const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
+      const searchString = this.url.split('?')[1]
+      const r = searchString.match(reg)
+      if (r !== null) {
+        return decodeURIComponent(r[2])
+      }
+      return null
     }
   }
 }
