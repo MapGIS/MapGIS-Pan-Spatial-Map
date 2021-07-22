@@ -50,6 +50,7 @@
         :wmtsStyle="layerProps.wmtsStyle"
         :format="layerProps.format"
         :token="layerProps.token"
+        :zoomOffset="layerProps.zoomOffset"
         :before="getBeforeLayerId(layerProps.beforeId)"
       />
       <mapgis-ogc-wms-layer
@@ -216,6 +217,7 @@ export default {
       let allLayerNames = []
       let showLayers = ''
       let visibleSubLayers = []
+      let zoomOffset = 0
       // 图层显示样式
       const layerStyle = {
         layout: { visibility: layer.isVisible ? 'visible' : 'none' },
@@ -276,6 +278,14 @@ export default {
           }
           break
         case LayerType.OGCWMTS:
+          // 修改说明：修订arcGIS wmts服务在mapbox下显示不了的问题。
+          // 原因：服务初始级别与webClient要求的初始级别不一致。对于ArcGIS 全球经纬度裁图方式,须将zoomOffset设为-1,才能显示。
+          // zoomOffset计算方式不明确，已录入缺陷列表。
+          // 修改人：马原野 2021年7月22日
+
+          if (layer.url.search('arcgis') > -1) {
+            zoomOffset = -1
+          }
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -285,7 +295,8 @@ export default {
             tileMatrixSet: layer.activeLayer.tileMatrixSetId,
             version: layer.version,
             wmtsStyle: layer.activeLayer.styleId,
-            format: layer.activeLayer.imageFormat
+            format: layer.activeLayer.imageFormat,
+            zoomOffset: zoomOffset
           }
 
           break
