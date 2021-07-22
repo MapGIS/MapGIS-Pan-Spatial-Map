@@ -38,153 +38,169 @@
     </div>
   </a-dropdown>
 </template>
-<script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+<script>
 import _cloneDeep from 'lodash/cloneDeep'
 
-type Size = 'large' | 'default' | 'small'
-
-@Component
-export default class MpTreeSelect extends Vue {
-  @Prop({ default: '' }) readonly value!: string
-
-  @Prop({ default: 'default' }) readonly size!: Size
-
-  @Prop({ default: '请输入或选择' }) readonly placeholder!: string
-
-  @Prop({ default: () => [] }) readonly treeData!: Array<unknown>
-
-  @Prop({ type: Function }) readonly loadData!: (node: unknown) => void
-
-  @Prop({ default: () => ({}) }) readonly replaceFields!: object
-
-  @Prop({ default: 'title' }) readonly filterProp!: string
-
-  @Prop({ default: 'title' }) readonly labelProp!: string
-
-  @Prop({ default: false }) readonly loading!: boolean
-
-  @Prop({ default: true }) readonly showLine!: boolean
-
-  @Prop({ default: false }) readonly defaultExpandAll!: boolean
-
-  dropdownVisible = false
-
-  selectedValue = ''
-
-  selectedKeys: Array<string> = []
-
-  loadedKeys: Array<string> = []
-
-  get formatReplaceFields() {
-    return {
-      children: 'children',
-      title: 'title',
-      key: 'key',
-      ...this.replaceFields
+export default {
+  name: 'MpTreeSelect',
+  props: {
+    value: {
+      type: String,
+      default: ''
+    },
+    treeData: {
+      type: Array,
+      default: () => []
+    },
+    loadData: {
+      type: Function
+    },
+    replaceFields: {
+      type: Object,
+      default: () => ({})
+    },
+    filterProp: {
+      type: String,
+      default: 'title'
+    },
+    labelProp: {
+      type: String,
+      default: 'title'
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    size: {
+      type: String,
+      default: 'default',
+      validator(v) {
+        return ['large', 'default', 'small'].includes(v)
+      }
+    },
+    placeholder: {
+      type: String,
+      default: '请输入或选择'
+    },
+    showLine: {
+      type: Boolean,
+      default: true
+    },
+    defaultExpandAll: {
+      type: Boolean,
+      default: false
     }
-  }
+  },
+  data() {
+    return {
+      dropdownVisible: false,
+      selectedValue: '',
+      selectedKeys: [],
+      loadedKeys: []
+    }
+  },
+  computed: {
+    formatReplaceFields({ replaceFields }) {
+      return {
+        children: 'children',
+        title: 'title',
+        key: 'key',
+        ...replaceFields
+      }
+    },
+    nodeKey({ formatReplaceFields }) {
+      return formatReplaceFields.key
+    },
+    nodeTitle({ formatReplaceFields }) {
+      return formatReplaceFields.title
+    },
+    nodeChildren({ formatReplaceFields }) {
+      return formatReplaceFields.children
+    },
+    selfLabelProp({ labelProp, nodeTitle }) {
+      return labelProp || nodeTitle
+    },
+    selfFilterProp({ filterProp, nodeTitle }) {
+      return filterProp || nodeTitle
+    }
+  },
+  watch: {
+    value(nV) {
+      this.initSelected(nV)
+    }
+  },
+  methods: {
+    /**
+     * 按需高亮节点
+     */
+    filterTreeNode({ dataRef }) {
+      return (
+        this.selectedValue &&
+        dataRef[this.selfFilterProp] &&
+        dataRef[this.selfFilterProp].includes(this.selectedValue)
+      )
+    },
+    /**
+     * 派发事件
+     */
+    dispatchChange(title, key) {
+      this.$emit('update:value', title, key)
+      this.$emit('change', title, key)
+      this.$emit('input', title, key)
+    },
 
-  get nodeKey() {
-    return this.formatReplaceFields.key
-  }
+    /**
+     * 输入的值变化
+     */
+    onValueChange(e) {
+      this.selectedValue = e.target.value
+      this.dispatchChange(this.selectedValue)
+    },
 
-  get nodeTitle() {
-    return this.formatReplaceFields.title
-  }
+    /**
+     * 节点选中
+     */
+    onTreeSelect(selectedKeys, { node: { dataRef } }) {
+      this.selectedKeys = selectedKeys
+      this.selectedValue = dataRef[this.selfLabelProp]
+      this.dropdownVisible = false
+      this.dispatchChange(this.selectedValue, this.selectedKeys[0])
+    },
 
-  get nodeChildren() {
-    return this.formatReplaceFields.children
-  }
+    /**
+     * 节点加载完毕
+     */
+    onTreeLoad(loadedKeys) {
+      this.loadedKeys = loadedKeys
+    },
 
-  get selfLabelProp() {
-    return this.labelProp || this.nodeTitle
-  }
+    /**
+     * 根据输入的值回显选中的节点
+     */
+    getSelectedKeysByValue(tree, value) {
+      for (let i = 0; i < tree.length; i++) {
+        const node = tree[i]
+        const prop = node[this.selfLabelProp]
+        const children = node[this.nodeChildren]
+        if (prop && prop.includes(value)) {
+          this.selectedKeys.push(node[this.nodeKey])
+          break
+        } else if (children && children.length) {
+          this.getSelectedKeysByValue(children, value)
+        }
+      }
+    },
 
-  get selfFilterProp() {
-    return this.filterProp || this.nodeTitle
-  }
-
-  /**
-   * 按需高亮节点
-   */
-  filterTreeNode({ dataRef }) {
-    return (
-      this.selectedValue &&
-      dataRef[this.selfFilterProp] &&
-      dataRef[this.selfFilterProp].includes(this.selectedValue)
-    )
-  }
-
-  /**
-   * 派发事件
-   */
-  dispatchChange(title, key) {
-    this.$emit('update:value', title, key)
-    this.$emit('change', title, key)
-    this.$emit('input', title, key)
-  }
-
-  /**
-   * 输入的值变化
-   */
-  onValueChange(e) {
-    this.selectedValue = e.target.value
-    this.dispatchChange(this.selectedValue)
-  }
-
-  /**
-   * 节点选中
-   */
-  onTreeSelect(selectedKeys: Array<string>, { node: { dataRef } }) {
-    this.selectedKeys = selectedKeys
-    this.selectedValue = dataRef[this.selfLabelProp]
-    this.dropdownVisible = false
-    this.dispatchChange(this.selectedValue, this.selectedKeys[0])
-  }
-
-  /**
-   * 节点加载完毕
-   */
-  onTreeLoad(loadedKeys) {
-    this.loadedKeys = loadedKeys
-  }
-
-  /**
-   * 根据输入的值回显选中的节点
-   */
-  getSelectedKeysByValue(tree: Array<unknown>, value: string) {
-    for (let i = 0; i < tree.length; i++) {
-      const node = tree[i]
-      const prop = node[this.selfLabelProp]
-      const children = node[this.nodeChildren]
-      if (prop && prop.includes(value)) {
-        this.selectedKeys.push(node[this.nodeKey])
-        break
-      } else if (children && children.length) {
-        this.getSelectedKeysByValue(children, value)
+    /**
+     * 回显输入框值和选中的key
+     */
+    initSelected(value) {
+      if (this.selectedValue !== value) {
+        this.selectedValue = value
+        this.getSelectedKeysByValue(this.treeData, value)
       }
     }
-  }
-
-  /**
-   * 回显输入框值和选中的key
-   */
-  initSelected(value) {
-    if (this.selectedValue !== value) {
-      this.selectedValue = value
-      this.getSelectedKeysByValue(this.treeData, value)
-    }
-  }
-
-  /**
-   * 监听： 值变化
-   */
-  @Watch('value')
-  valueChanged(nV) {
-    this.initSelected(nV)
-  }
-
+  },
   created() {
     this.initSelected(this.value)
   }
