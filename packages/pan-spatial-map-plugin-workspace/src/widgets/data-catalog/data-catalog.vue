@@ -648,10 +648,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       window.open(getCapabilitiesURL)
     } else {
       const layer = {
-        ip: item.ip,
-        port: item.port,
-        gdbps: item.gdbps,
-        serverName: item.serverName,
+        ...item,
         type: item.serverType
       }
       this.showMetaData = true
