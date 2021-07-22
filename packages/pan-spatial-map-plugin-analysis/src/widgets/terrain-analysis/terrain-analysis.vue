@@ -72,6 +72,19 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
       preAnalysisComponent.onDeActive()
       this.preTab = this.tab
     }
+    if (this.currentAnalysisComponent) {
+      this.currentAnalysisComponent.onActive()
+    }
+  }
+
+  // 微件打开时
+  onOpen() {
+    this.currentAnalysisComponent.onActive()
+  }
+
+  // 微件激活时
+  onActive() {
+    this.currentAnalysisComponent.onActive()
   }
 
   // 微件关闭时

@@ -90,6 +90,7 @@
         :show="layerProps.show"
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
+        :requestVertexNormals="true"
       />
       <div class="statebardiv">
         <mapgis-3d-statebar class="statebar" />
