@@ -259,6 +259,7 @@ export class DataCatalogManager {
 
       let tileList: any[] = []
       let docList: any[] = []
+      let sceneList: any[] = []
 
       let tileServiceInfo: any = {}
       let docServiceInfo: any = {}
@@ -306,11 +307,15 @@ export class DataCatalogManager {
         })
         .catch(err => {})
 
+      const url = `http://${defaultIp}:${defaultPort}/igs/rest/g3d/GetDocList`
+      const res = await axios.get(url)
+      sceneList = res.data
+
       // 对请求回来的结果进行处理:考虑有嵌套的服务列表,应该全部展开后放到一个数组中。
       tileList = this.processServiceInfo(tileServiceInfo, 'HDFNames', 'DirHDFs')
       docList = this.processServiceInfo(docServiceInfo, 'DOCNames', 'DirDOCs')
 
-      this.defaultServerList = { tileList, docList }
+      this.defaultServerList = { tileList, docList, sceneList }
 
       // 2.格式转换、为节点添加级别信息、判断服务是否可用。
 
@@ -704,6 +709,14 @@ export class DataCatalogManager {
           }
         }
 
+        break
+      case LayerType.IGSScene:
+        serverList = this.defaultServerList.sceneList
+        if (ip === '' && port === '') {
+          if (!serverList.includes(serverName)) {
+            isServiceVaild = false
+          }
+        }
         break
       default:
         break
