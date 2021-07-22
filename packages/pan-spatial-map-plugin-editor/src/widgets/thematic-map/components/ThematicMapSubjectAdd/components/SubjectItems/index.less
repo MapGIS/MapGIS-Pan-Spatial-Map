@@ -1,36 +1,38 @@
 .subject-items {
-  min-height: 180px;
+  min-height: 200px;
+  max-height: 380px;
+  display: flex;
+  flex-flow: column nowrap;
   border: 1px solid @border-color-base;
   border-radius: @border-radius-base;
   &-head {
-    border-bottom: 1px solid #d9d9d9;
-    padding: 0 8px;
+    border-bottom: 1px solid @border-color-base;
+    padding: 0 2px 0 8px;
   }
   &-content {
-    .time {
-      margin-left: 10px;
+    flex: 1;
+    overflow-y: auto;
+    ::v-deep .ant-empty {
+      padding: 12px 0;
     }
-
-    /deep/ .ant-empty {
-      margin: 12px 0;
-    }
-
-    /deep/ .ant-collapse {
+    ::v-deep .ant-collapse {
       border: none;
       background-color: transparent;
-
+      .ant-collapse-header,
+      .ant-collapse > .ant-collapse-item:last-child,
+      .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
+        border-radius: 0;
+      }
       .ant-collapse-header {
         color: @text-color-secondary;
-        height: 26px;
-        line-height: 26px;
+        height: 25px;
+        line-height: 25px;
         padding: 0 4px;
-        padding-left: 30px;
+        padding-left: 25px;
       }
-
       .ant-collapse-content > .ant-collapse-content-box {
         padding: 8px;
       }
-
       .ant-collapse-arrow {
         left: 8px;
       }

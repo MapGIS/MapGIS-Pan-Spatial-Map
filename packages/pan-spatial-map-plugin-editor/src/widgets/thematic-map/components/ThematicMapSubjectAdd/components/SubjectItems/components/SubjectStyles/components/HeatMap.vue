@@ -1,15 +1,15 @@
 <template>
   <div class="heat-map">
     <!-- 实体大小 -->
-    <mp-row-flex label="实体大小" label-align="right" :span="[6, 18]">
+    <mp-row-flex label="实体大小" label-align="right" >
       <a-input-number v-model="style.size" :min="0" />
     </mp-row-flex>
     <!-- 最大权重 -->
-    <mp-row-flex label="最大权重" label-align="right" :span="[6, 18]">
+    <mp-row-flex label="最大权重" label-align="right" >
       <a-input-number v-model="style.weight" :min="0" />
     </mp-row-flex>
     <!-- 颜色填充 -->
-    <mp-row-flex label="填充颜色" label-align="right" :span="[6, 18]">
+    <mp-row-flex label="填充颜色" label-align="right" >
       <color-picker-setting v-model="style.gradient" />
     </mp-row-flex>
     <!-- 动画项设置 -->

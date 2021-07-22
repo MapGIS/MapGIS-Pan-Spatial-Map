@@ -5,14 +5,14 @@
         专题设置
       </mp-toolbar-title>
       <mp-toolbar-command-group>
-        <mp-toolbar-command
-          v-for="item in configTools"
-          :key="item.title"
-          :title="item.title"
-          :icon="item.icon"
-          @click="item.method()"
-        >
-        </mp-toolbar-command>
+        <mp-toolbar-command @click="add" title="新增" icon="plus" />
+        <template v-if="!showCheckbox">
+          <mp-toolbar-command @click="edit" title="编辑" icon="form" />
+        </template>
+        <template v-else>
+          <mp-toolbar-command @click="remove" title="删除" icon="delete" />
+          <mp-toolbar-command @click="cancel" title="取消" icon="close" />
+        </template>
       </mp-toolbar-command-group>
     </mp-toolbar>
     <div class="subject-items-content">
@@ -21,34 +21,42 @@
         v-else
         @change="panelChange"
         :activeKey="activePanel"
-        accordion
+        :accordion="true"
       >
         <a-collapse-panel v-for="(sub, i) in configList" :key="i">
-          <template #header>
-            <a-checkbox
-              @click.stop
-              @change="checkedTime($event, sub, i)"
-              :checked="sub._checked"
-            />
-            <span class="time">{{ sub.time || '新增年度' }}</span>
-          </template>
-          <!-- 年度或时间 -->
-          <mp-row-flex label="年度(或时间)" label-align="right" :span="[6, 18]">
-            <a-input v-model="sub.time" placeholder="请输入年度(或时间)" />
+          <!-- 设置头 -->
+          <mp-row-flex
+            slot="header"
+            justify="space-between"
+            :label="sub.time || '新增年度'"
+            :span="[23, 1]"
+            :colon="false"
+          >
+            <transition name="fade">
+              <a-checkbox
+                v-show="showCheckbox"
+                @click.stop
+                @change="checked($event, sub, i)"
+                :checked="sub._checked"
+              />
+            </transition>
           </mp-row-flex>
-          <!-- 服务设置 -->
-          <server-tree-select @change="serverChange($event, sub)" />
-          <!-- 属性表模块 -->
-          <!-- <attribute-table /> -->
-          <!-- 统计表模块 -->
-          <!--  <statistic-graph /> -->
-          <!-- 弹框模块 -->
-          <!--  <popup /> -->
-          <!-- 各专题图专有配置 -->
+          <!-- 年度或时间、服务设置等公共设置项 -->
+          <common
+            @time-change="timeChange($event, sub)"
+            @server-change="serverChange($event, sub)"
+          />
+          <!-- 各专题图样式、动画等配置 -->
           <subject-styles
             :subject-type="subjectType"
             @change="subjectStylesChange($event, sub)"
           />
+          <!-- 属性表配置 -->
+          <attribute-table />
+          <!-- 统计表配置 -->
+          <!--  <statistic-graph /> -->
+          <!-- 弹框配置 -->
+          <!--  <popup /> -->
         </a-collapse-panel>
       </a-collapse>
     </div>
@@ -57,13 +65,15 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { SubjectType, NewSubjectConfig } from '../../../../store'
-import ServerTreeSelect from './components/ServerTreeSelect.vue'
+import Common from './components/Common.vue'
 import SubjectStyles from './components/SubjectStyles'
+import AttributeTable from './components/AttributeTable.vue'
 
 @Component({
   components: {
-    ServerTreeSelect,
-    SubjectStyles
+    Common,
+    SubjectStyles,
+    AttributeTable
   }
 })
 export default class SubjectItems extends Vue {
@@ -73,20 +83,9 @@ export default class SubjectItems extends Vue {
 
   activePanel = 0
 
-  checkedPanel = []
+  showCheckbox = false
 
-  configTools = [
-    {
-      title: '新增年度',
-      icon: 'plus',
-      method: this.addTime
-    },
-    {
-      title: '删除年度',
-      icon: 'delete',
-      method: this.removeTime
-    }
-  ]
+  checkedPanel = []
 
   configListMap = new Map()
 
@@ -117,6 +116,13 @@ export default class SubjectItems extends Vue {
   /**
    * 专题图选择change
    */
+  timeChange(time, sub) {
+    this.$set(sub, 'time', time)
+  }
+
+  /**
+   * 专题图选择change
+   */
   serverChange(serverConfig, sub) {
     this.setProperties(serverConfig, sub)
   }
@@ -131,7 +137,7 @@ export default class SubjectItems extends Vue {
   /**
    * 新增年度
    */
-  addTime() {
+  add() {
     const node = {
       time: '',
       _checked: false
@@ -140,9 +146,16 @@ export default class SubjectItems extends Vue {
   }
 
   /**
+   * 编辑
+   */
+  edit() {
+    this.showCheckbox = !this.showCheckbox
+  }
+
+  /**
    * 移除年度
    */
-  removeTime() {
+  remove() {
     if (!this.checkedPanel.length) {
       this.$message.warning('请选择需要删除的年度')
       return
@@ -153,9 +166,8 @@ export default class SubjectItems extends Vue {
   /**
    * 选中年度
    */
-  checkedTime(e, sub, index: number) {
+  checked(e: Event, sub: Record<string, unknown>, index: number) {
     e.stopPropagation()
-    e.preventDefault()
     const { checked } = e.target
     this.$set(sub, '_checked', checked)
     if (checked) {
@@ -163,6 +175,15 @@ export default class SubjectItems extends Vue {
     } else {
       this.checkedPanel.splice(index, 1)
     }
+  }
+
+  /**
+   * 取消选中年度
+   */
+  cancel() {
+    this.showCheckbox = false
+    this.checkedPanel = []
+    this.configList.forEach(v => this.$set(v, '_checked', false))
   }
 }
 </script>

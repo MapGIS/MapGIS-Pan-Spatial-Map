@@ -1,35 +1,41 @@
 <template>
-  <div class="server-tree-select">
-    <mp-row-flex label="服务地址" label-align="right" :span="[6, 18]">
-      <mp-tree-select
-        @change="uriChange"
-        :value="uri"
-        :load-data="catalogTreeLoadData"
-        :tree-data="catalogTreeData"
-        :loading="loading"
-        :replace-fields="{
-          key: 'guid',
-          title: 'name'
-        }"
-        filter-prop="gdbpUri"
-        label-prop="gdbpUri"
-      />
+  <div class="common">
+    <!-- 年度或时间 -->
+    <mp-row-flex label="年度/时间" label-align="right">
+      <a-input v-model="time" placeholder="请输入年度/时间" />
     </mp-row-flex>
-    <mp-row-flex
-      v-for="{ label, content } in examples"
-      :key="label"
-      :label="label"
-      :span="[6, 18]"
-      align="top"
-      label-align="right"
-      class="server-tree-select-example"
-    >
-      {{ content }}
-    </mp-row-flex>
+    <!-- 服务设置 -->
+    <div class="server-tree-select">
+      <mp-row-flex label="服务地址" label-align="right">
+        <mp-tree-select
+          @change="selfUriChange"
+          :value="selfUri"
+          :load-data="catalogTreeLoadData"
+          :tree-data="catalogTreeData"
+          :loading="loading"
+          :replace-fields="{
+            key: 'guid',
+            title: 'name'
+          }"
+          filter-prop="gdbpUri"
+          label-prop="gdbpUri"
+        />
+      </mp-row-flex>
+      <mp-row-flex
+        v-for="{ label, content } in examples"
+        :key="label"
+        :label="label"
+        label-align="right"
+        align="top"
+        class="server-tree-select-example"
+      >
+        {{ content }}
+      </mp-row-flex>
+    </div>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
 import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
 import url from 'url'
@@ -37,9 +43,10 @@ import _cloneDeep from 'lodash/cloneDeep'
 import _last from 'lodash/last'
 
 @Component
-export default class ServerTreeSelect extends Vue {
-  // 服务地址
-  uri = ''
+export default class Common extends Vue {
+  @Prop({ default: '' }) readonly selfTime!: string
+
+  @Prop({ default: '' }) readonly uri!: string
 
   // 目录树
   catalogTreeData: Layer[] = []
@@ -58,6 +65,51 @@ export default class ServerTreeSelect extends Vue {
         'http://<server>:<port>/igs/rest/mrms/docs/{docName}?layerName={layerName}&layerIndex={layerIndex}'
     }
   ]
+
+  // 年度
+  get selfTime() {
+    return this.time
+  }
+
+  set selfTime(value) {
+    this.$set('time-change', value)
+  }
+
+  // 服务地址
+  get selfUri() {
+    return this.uri
+  }
+
+  set selfUri(value) {
+    if (!/^(https|http)?:\/\//.test(value)) {
+      this.$message.warn('请按照示例输入正确的数据服务地址')
+      return
+    }
+    const {
+      hostname: ip,
+      port,
+      pathname,
+      query: { gdbp, layerName, layerIndex }
+    } = url.parse(value, true)
+    const docName = _last(pathname.split('/'))
+    let params: Record<string, string | number>
+    if (gdbp) {
+      params = {
+        ip,
+        port,
+        gdbp
+      }
+    } else if (docName) {
+      params = {
+        ip,
+        port,
+        docName,
+        layerName,
+        layerIndex
+      }
+    }
+    this.$emit('server-change', params)
+  }
 
   /**
    * 是否有gdbp
@@ -168,36 +220,8 @@ export default class ServerTreeSelect extends Vue {
   /**
    * 服务地址变化
    */
-  uriChange(value: string) {
-    this.uri = value.trim()
-    if (!/^(https|http)?:\/\//.test(this.uri)) {
-      this.$message.warn('请按照示例输入正确的数据服务地址')
-      return
-    }
-    const {
-      hostname: ip,
-      port,
-      pathname,
-      query: { gdbp, layerName, layerIndex }
-    } = url.parse(this.uri, true)
-    const docName = _last(pathname.split('/'))
-    let params: Record<string, string | number>
-    if (gdbp) {
-      params = {
-        ip,
-        port,
-        gdbp
-      }
-    } else if (docName) {
-      params = {
-        ip,
-        port,
-        docName,
-        layerName,
-        layerIndex
-      }
-    }
-    this.$emit('change', params)
+  selfUriChange(value: string) {
+    this.selfUri = value.trim()
   }
 
   created() {
