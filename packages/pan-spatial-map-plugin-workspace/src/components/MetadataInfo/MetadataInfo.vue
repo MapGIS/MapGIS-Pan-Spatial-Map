@@ -43,6 +43,7 @@ import {
   Layer,
   Metadata
 } from '@mapgis/web-app-framework'
+import baseConfigInstance from '../../../../pan-spatial-map-store/src/config/base'
 
 import MpMetadataInfoDoc from './MetadataInfoDoc'
 import MpMetadataInfoTile from './MetadataInfoTile'
@@ -162,25 +163,66 @@ export default class MpMetadataInfo extends Vue {
         return
       }
       let option: Metadata.MetadataQueryParam = {}
-      const { ip, port, serverName, gdbps } = this.currentConfig
+      const defaultIp = baseConfigInstance.config.ip
+      const defaultPort = baseConfigInstance.config.port
+
       switch (type) {
+        case LayerType.IGSScene: {
+          const serverName = this.currentConfig.serverName
+          const ip = this.currentConfig.ip || defaultIp
+          const port = this.currentConfig.port || defaultPort
+
+          option = { ip, port, docName: serverName, globe: true }
+          break
+        }
         case LayerType.IGSMapImage: {
+          const serverName = this.currentConfig.serverName
+          const ip = this.currentConfig.ip || defaultIp
+          const port = this.currentConfig.port || defaultPort
           option = { ip, port, docName: serverName }
+
           break
         }
         case LayerType.IGSTile: {
+          const serverName = this.currentConfig.serverName
+          const ip = this.currentConfig.ip || defaultIp
+          const port = this.currentConfig.port || defaultPort
           option = { ip, port, tileName: serverName }
           break
         }
         case LayerType.IGSVector: {
+          const gdbps = this.currentConfig.gdbps
+          const ip = this.currentConfig.ip || defaultIp
+          const port = this.currentConfig.port || defaultPort
           option = { ip, port, gdbp: gdbps }
+          break
+        }
+        case LayerType.ArcGISMapImage:
+        case LayerType.ArcGISTile: {
+          const serverURL = this.currentConfig.serverURL
+          option = { url: serverURL }
+          break
+        }
+        case LayerType.VectorTile: {
+          const serverURL = this.currentConfig.serverURL
+          option = { url: serverURL }
           break
         }
         default:
           break
       }
       this.spinning = true
-      this.metadata = await Metadata.MetaDataQuery.query(option)
+      if (type === LayerType.ArcGISMapImage || type === LayerType.ArcGISTile) {
+        this.metadata = await Metadata.ArcGISMetadataQuery.getServiceInfo(
+          option.url
+        )
+      } else if (type === LayerType.VectorTile) {
+        this.metadata = await Metadata.VectorTileMetadataQuery.getServiceInfo(
+          option.url
+        )
+      } else {
+        this.metadata = await Metadata.MetaDataQuery.query(option)
+      }
       this.spinning = false
     }
   }
