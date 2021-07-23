@@ -579,117 +579,123 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   }
 
   private async getResult() {
-    const {
-      serverType,
-      serverName,
-      serverUrl,
-      ip,
-      port,
-      gdbp
-    } = this.queryParams
-    let dataset: unknown[][] = []
-    let data: any
-    if (
-      serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector ||
-      serverType === LayerType.IGSScene
-    ) {
-      let url
-      if (serverType === LayerType.IGSMapImage) {
-        url = `http://${ip}:${port}/onemap/docs/${serverName}/0/*/statisticalField`
-      } else {
-        url = `http://${ip}:${port}/onemap/layer/statisticalField`
-      }
-      const params = {
-        layerIdxs: this.layer,
-        where: '',
-        field: this.statisticsField.join(','),
-        type: this.statisticsType.value,
-        guid: '__readonly_user__',
-        f: 'json',
-        groupFields: this.groupField,
-        precision: '2',
-        gdbp
-      }
-
-      data = await this.setDataParams(url, params)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      dataset.push([`${this.groupField}(分组)`, ...this.statisticsField])
-      const keys = Object.keys(data[0])
-      const items = keys.map(key => {
-        return [
-          key,
-          ...data.map(x => {
-            return x[key]
-          })
-        ]
-      })
-      dataset.push(...items)
-    } else if (serverType === LayerType.ArcGISMapImage) {
-      const { count: totalCount } = await Feature.ArcGISFeatureQuery.getTotal({
-        f: 'json',
+    try {
+      const {
+        serverType,
+        serverName,
         serverUrl,
-        layerIndex: this.layer
-      })
-
-      const outStatistics = this.statisticsField.map(x => {
-        return {
-          statisticType: this.statisticsType.type,
-          onStatisticField: x,
-          outStatisticFieldName: x
+        ip,
+        port,
+        gdbp
+      } = this.queryParams
+      let dataset: unknown[][] = []
+      let data: any
+      if (
+        serverType === LayerType.IGSMapImage ||
+        serverType === LayerType.IGSVector ||
+        serverType === LayerType.IGSScene
+      ) {
+        let url
+        if (serverType === LayerType.IGSMapImage) {
+          url = `http://${ip}:${port}/onemap/docs/${serverName}/0/*/statisticalField`
+        } else {
+          url = `http://${ip}:${port}/onemap/layer/statisticalField`
         }
-      })
-      let obj = {}
-      if (this.groupType === 'single') {
-        const geojson = await Feature.ArcGISFeatureQuery.query({
+        const params = {
+          layerIdxs: this.layer,
+          where: '',
+          field: this.statisticsField.join(','),
+          type: this.statisticsType.value,
+          guid: '__readonly_user__',
           f: 'json',
-          page: 0,
-          pageCount: totalCount,
-          serverUrl,
-          outStatistics: JSON.stringify(outStatistics),
-          groupByFieldsForStatistics: this.groupField,
-          layerIndex: this.layer,
-          totalCount
-        })
-        obj = this.setArcgisSingleData(geojson)
-      } else {
-        const { features } = await Feature.ArcGISFeatureQuery.query({
-          f: 'json',
-          page: 0,
-          pageCount: totalCount,
-          serverUrl,
-          outStatistics: JSON.stringify([
-            {
-              statisticType: 'max',
-              onStatisticField: this.groupField,
-              outStatisticFieldName: 'max'
-            },
-            {
-              statisticType: 'min',
-              onStatisticField: this.groupField,
-              outStatisticFieldName: 'min'
-            }
-          ]),
-          layerIndex: this.layer,
-          totalCount
-        })
-        const {
-          properties: { max, min }
-        } = features[0]
-        obj = await this.setArcgisRangeData({
-          max,
-          min,
-          outStatistics,
-          totalCount,
-          serverUrl
-        })
-      }
-      data = obj.data
-      dataset = obj.dataSet
-    }
-    this.setEchart(data)
+          groupFields: this.groupField,
+          precision: '2',
+          gdbp
+        }
 
-    this.setTableView(dataset)
+        data = await this.setDataParams(url, params)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dataset.push([`${this.groupField}(分组)`, ...this.statisticsField])
+        const keys = Object.keys(data[0])
+        const items = keys.map(key => {
+          return [
+            key,
+            ...data.map(x => {
+              return x[key]
+            })
+          ]
+        })
+        dataset.push(...items)
+      } else if (serverType === LayerType.ArcGISMapImage) {
+        const { count: totalCount } = await Feature.ArcGISFeatureQuery.getTotal(
+          {
+            f: 'json',
+            serverUrl,
+            layerIndex: this.layer
+          }
+        )
+
+        const outStatistics = this.statisticsField.map(x => {
+          return {
+            statisticType: this.statisticsType.type,
+            onStatisticField: x,
+            outStatisticFieldName: x
+          }
+        })
+        let obj = {}
+        if (this.groupType === 'single') {
+          const geojson = await Feature.ArcGISFeatureQuery.query({
+            f: 'json',
+            page: 0,
+            pageCount: totalCount,
+            serverUrl,
+            outStatistics: JSON.stringify(outStatistics),
+            groupByFieldsForStatistics: this.groupField,
+            layerIndex: this.layer,
+            totalCount
+          })
+          obj = this.setArcgisSingleData(geojson)
+        } else {
+          const { features } = await Feature.ArcGISFeatureQuery.query({
+            f: 'json',
+            page: 0,
+            pageCount: totalCount,
+            serverUrl,
+            outStatistics: JSON.stringify([
+              {
+                statisticType: 'max',
+                onStatisticField: this.groupField,
+                outStatisticFieldName: 'max'
+              },
+              {
+                statisticType: 'min',
+                onStatisticField: this.groupField,
+                outStatisticFieldName: 'min'
+              }
+            ]),
+            layerIndex: this.layer,
+            totalCount
+          })
+          const {
+            properties: { max, min }
+          } = features[0]
+          obj = await this.setArcgisRangeData({
+            max,
+            min,
+            outStatistics,
+            totalCount,
+            serverUrl
+          })
+        }
+        data = obj.data
+        dataset = obj.dataSet
+      }
+      this.setEchart(data)
+
+      this.setTableView(dataset)
+    } catch (error) {
+      this.$message.warning('统计失败！')
+    }
   }
 
   async setArcgisRangeData({ max, min, outStatistics, totalCount, serverUrl }) {
