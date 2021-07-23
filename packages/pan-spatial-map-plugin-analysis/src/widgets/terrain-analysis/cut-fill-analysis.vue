@@ -1,62 +1,37 @@
 <template>
   <div class="mp-widget-cut-fill-analysis">
-    <a-row class="title">
-      <div class="space"></div>
-      <div class="label">参数设置</div>
-    </a-row>
-    <a-form-model :model="formData">
-      <a-form-model-item label="x方向采样点个数">
-        <a-input
-          v-model.number="formData.x"
-          size="small"
-          type="number"
-          min="0"
-        />
-      </a-form-model-item>
-      <a-form-model-item label="y方向采样点个数">
-        <a-input
-          v-model.number="formData.y"
-          size="small"
-          type="number"
-          min="0"
-        />
-      </a-form-model-item>
-      <a-form-model-item label="填挖规整高度">
-        <a-input
-          v-model.number="formData.z"
-          size="small"
-          type="number"
-          min="0"
-        />
-      </a-form-model-item>
-    </a-form-model>
-    <a-row class="title">
-      <div class="space"></div>
-      <div class="label">填挖结果</div>
-    </a-row>
-    <a-form-model :model="result">
-      <a-form-model-item label="高程范围">
-        <a-input v-model.number="result.height" disabled size="small" />
-      </a-form-model-item>
-      <a-form-model-item label="表面积">
-        <a-input v-model.number="result.surfaceArea" disabled size="small" />
-      </a-form-model-item>
-      <a-form-model-item label="挖体积">
-        <a-input v-model.number="result.cutVolume" disabled size="small" />
-      </a-form-model-item>
-      <a-form-model-item label="填体积">
-        <a-input v-model.number="result.fillVolume" disabled size="small" />
-      </a-form-model-item>
-    </a-form-model>
+    <mp-group-tab title="参数设置"></mp-group-tab>
+    <mp-setting-form :form="paramForm">
+      <a-form-item label="x方向采样点个数">
+        <a-input v-model.number="formData.x" type="number" min="0" />
+      </a-form-item>
+      <a-form-item label="y方向采样点个数">
+        <a-input v-model.number="formData.y" type="number" min="0" />
+      </a-form-item>
+      <a-form-item label="填挖规整高度">
+        <a-input v-model.number="formData.z" type="number" min="0" />
+      </a-form-item>
+    </mp-setting-form>
+    <mp-group-tab title="填挖结果"></mp-group-tab>
+    <mp-setting-form :form="resultForm">
+      <a-form-item label="高程范围">
+        <a-input v-model.number="result.height" disabled />
+      </a-form-item>
+      <a-form-item label="表面积">
+        <a-input v-model.number="result.surfaceArea" disabled />
+      </a-form-item>
+      <a-form-item label="挖体积">
+        <a-input v-model.number="result.cutVolume" disabled />
+      </a-form-item>
+      <a-form-item label="填体积">
+        <a-input v-model.number="result.fillVolume" disabled />
+      </a-form-item>
+    </mp-setting-form>
     <div class="control-button-container">
-      <a-button class="control-button" type="primary" @click="add" size="small"
+      <a-button class="control-button" type="primary" @click="add"
         >开始分析</a-button
       >
-      <a-button
-        class="control-button"
-        type="primary"
-        @click="remove"
-        size="small"
+      <a-button class="control-button" type="primary" @click="remove"
         >结束分析</a-button
       >
     </div>
@@ -71,6 +46,10 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
   components: {}
 })
 export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
+  private paramForm = this.$form.createForm(this)
+
+  private resultForm = this.$form.createForm(this)
+
   private formData = {
     x: 16,
     y: 16,
@@ -266,37 +245,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-cut-fill-analysis {
-  overflow-y: auto;
-  max-height: 500px;
-  .ant-form-item {
-    align-items: center;
-    margin-bottom: 0;
-  }
-  .ant-form-item-label {
-    line-height: 20px;
-  }
-  .ant-form-item-label > label::after {
-    content: '';
-  }
-  .ant-input {
-    padding: 4px 11px;
-  }
-
-  .title {
-    margin: 5px 0;
-    .space {
-      width: 4px;
-      height: 25px;
-      background: @primary-color;
-      margin-right: 8px;
-      float: left;
-    }
-    .label {
-      line-height: 25px;
-      font-weight: bold;
-    }
-  }
-
+  padding-top: 8px;
   .control-button-container {
     display: flex;
     justify-content: space-between;

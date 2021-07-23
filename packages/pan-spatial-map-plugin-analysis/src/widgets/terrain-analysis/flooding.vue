@@ -1,95 +1,84 @@
 <template>
   <div class="mp-widget-flooding">
-    <a-form-model :model="formData">
-      <a-form-model-item label="淹没最低高度">
+    <mp-setting-form :form="form">
+      <a-form-item label="淹没最低高度">
         <a-input
           v-model.number="formData.minHeight"
-          size="small"
           type="number"
           min="0"
           addon-after="(米)"
         />
-      </a-form-model-item>
-      <a-form-model-item label="淹没最高高度">
+      </a-form-item>
+      <a-form-item label="淹没最高高度">
         <a-input
           v-model.number="formData.maxHeight"
-          size="small"
           type="number"
           min="0"
           addon-after="(米)"
         />
-      </a-form-model-item>
-      <a-form-model-item label="洪水上涨速度">
+      </a-form-item>
+      <a-form-item label="洪水上涨速度">
         <a-input
           v-model.number="formData.speed"
-          size="small"
           type="number"
           min="0"
           addon-after="(米/秒)"
         />
-      </a-form-model-item>
-      <a-form-model-item label="波浪个数">
+      </a-form-item>
+      <a-form-item label="波浪个数">
         <a-input
           v-model.number="formData.frequency"
-          size="small"
           type="number"
           min="0"
           addon-after="(个)"
         />
-      </a-form-model-item>
-      <a-form-model-item label="波浪速度">
+      </a-form-item>
+      <a-form-item label="波浪速度">
         <a-input
           v-model.number="formData.animationSpeed"
-          size="small"
           type="number"
           min="0"
           step="0.01"
         />
-      </a-form-model-item>
-      <a-form-model-item label="波浪高度">
+      </a-form-item>
+      <a-form-item label="波浪高度">
         <a-input
           v-model.number="formData.amplitude"
-          size="small"
           type="number"
           min="0"
           addon-after="(米)"
         />
-      </a-form-model-item>
-      <a-form-model-item label="颜色">
+      </a-form-item>
+      <a-form-item label="颜色">
         <MpColorPicker
           :color.sync="formData.floodColor"
           :disableAlpha="true"
           class="color-picker"
         ></MpColorPicker>
-      </a-form-model-item>
-      <a-form-model-item label="透明度">
+      </a-form-item>
+      <a-form-item label="透明度">
         <a-input
           v-model.number="formData.opacity"
-          size="small"
           type="number"
           min="0"
           max="1"
           step="0.1"
         />
-      </a-form-model-item>
-    </a-form-model>
+      </a-form-item>
+    </mp-setting-form>
     <div class="control-button-container">
-      <a-button size="small" class="control-button" type="primary" @click="rise"
+      <a-button class="control-button" type="primary" @click="rise"
         >升高</a-button
       >
-      <a-button size="small" class="control-button" type="primary" @click="down"
+      <a-button class="control-button" type="primary" @click="down"
         >下降</a-button
       >
     </div>
     <div class="control-button-container">
-      <a-button size="small" class="control-button" type="primary" @click="add"
+      <a-button class="control-button" type="primary" @click="add"
         >开始分析</a-button
       >
-      <a-button
-        size="small"
-        class="control-button"
-        type="primary"
-        @click="remove"
+      <a-button class="control-button" type="primary" @click="remove"
         >结束分析</a-button
       >
     </div>
@@ -103,6 +92,8 @@ import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
   name: 'MpFlooding'
 })
 export default class MpFlooding extends Mixins(WidgetMixin) {
+  private form = this.$form.createForm(this)
+
   private formData = {
     minHeight: 0,
     maxHeight: 2000,
@@ -235,41 +226,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-flooding {
-  overflow-y: scroll;
-  max-height: 500px;
-  .ant-form-item {
-    align-items: center;
-    margin-bottom: 0;
-  }
-  .ant-form-item-label {
-    line-height: 20px;
-  }
-  .ant-form-item-label > label::after {
-    content: '';
-  }
-  .ant-input {
-    padding: 4px 11px;
-  }
-  .color-picker {
-    height: 40px;
-    padding: 8px 0px;
-  }
-
-  .title {
-    margin: 5px 0;
-    .space {
-      width: 4px;
-      height: 25px;
-      background: @primary-color;
-      margin-right: 8px;
-      float: left;
-    }
-    .label {
-      line-height: 25px;
-      font-weight: bold;
-    }
-  }
-
+  padding-top: 8px;
   .control-button-container {
     display: flex;
     justify-content: space-between;

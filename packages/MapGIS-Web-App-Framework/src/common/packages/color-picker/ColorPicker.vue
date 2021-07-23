@@ -69,9 +69,9 @@ export default {
 <style lang="less" scoped>
 .color-picker {
   .color-container {
-    padding: 4px 11px;
-    height: 24px;
-    border: 1px solid #d9d9d9;
+    padding: 9px 8px;
+    height: 32px;
+    border: 1px solid @border-color;
     border-radius: 4px;
     .color-div {
       height: 100%;

@@ -1,11 +1,8 @@
 <template>
   <div class="mp-widget-slope-analysis">
-    <a-row class="title">
-      <div class="space"></div>
-      <div class="label">坡度权重设置</div>
-    </a-row>
-    <a-form-model :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }">
-      <a-form-model-item
+    <mp-group-tab title="坡度权重设置"></mp-group-tab>
+    <mp-setting-form :form="form">
+      <a-form-item
         v-for="(color, index) in arrayColor"
         :key="index"
         :label="getLabel(index)"
@@ -14,8 +11,8 @@
           :color.sync="arrayColor[index]"
           :disableAlpha="false"
         ></MpColorPicker>
-      </a-form-model-item>
-    </a-form-model>
+      </a-form-item>
+    </mp-setting-form>
     <a-row>
       <a-textarea
         class="note"
@@ -25,14 +22,10 @@
       ></a-textarea>
     </a-row>
     <div class="control-button-container">
-      <a-button class="control-button" type="primary" @click="add" size="small"
+      <a-button class="control-button" type="primary" @click="add"
         >开始分析</a-button
       >
-      <a-button
-        class="control-button"
-        type="primary"
-        @click="remove"
-        size="small"
+      <a-button class="control-button" type="primary" @click="remove"
         >结束分析</a-button
       >
     </div>
@@ -44,6 +37,8 @@ import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
 
 @Component({ name: 'MpSlopeAnalysis' })
 export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
+  private form = this.$form.createForm(this)
+
   private arrayColor: string[] = [
     'rgba(244, 67, 54, 0.5)',
     'rgba(233, 30, 99, 0.5)',
@@ -146,36 +141,6 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-slope-analysis {
-  .ant-form-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-  .ant-form-item-label {
-    line-height: 20px;
-  }
-  .ant-form-item-label > label::after {
-    content: '';
-  }
-  .ant-input {
-    padding: 4px 11px;
-  }
-
-  .title {
-    margin: 5px 0;
-    .space {
-      width: 4px;
-      height: 25px;
-      background: @primary-color;
-      margin-right: 8px;
-      float: left;
-    }
-    .label {
-      line-height: 25px;
-      font-weight: bold;
-    }
-  }
-
   .note {
     padding: 3px 0;
     color: @text-color-secondary;

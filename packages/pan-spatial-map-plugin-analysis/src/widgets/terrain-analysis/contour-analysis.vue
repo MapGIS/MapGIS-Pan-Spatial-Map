@@ -1,40 +1,30 @@
 <template>
   <div class="mp-widget-contour-analysis">
-    <a-form-model :model="formData">
-      <a-form-model-item label="等值距">
+    <mp-setting-form :form="form">
+      <a-form-item label="等值距">
         <a-input
           v-model.number="formData.contourSpacing"
-          size="small"
           type="number"
           min="0"
           addon-after="(米)"
         />
-      </a-form-model-item>
-      <a-form-model-item label="线宽">
-        <a-input
-          v-model.number="formData.contourWidth"
-          size="small"
-          type="number"
-          min="0"
-        />
-      </a-form-model-item>
-      <a-form-model-item label="线颜色">
+      </a-form-item>
+      <a-form-item label="线宽">
+        <a-input v-model.number="formData.contourWidth" type="number" min="0" />
+      </a-form-item>
+      <a-form-item label="线颜色">
         <MpColorPicker
           :color.sync="formData.contourColor"
           :disableAlpha="true"
           class="color-picker"
         ></MpColorPicker>
-      </a-form-model-item>
-    </a-form-model>
+      </a-form-item>
+    </mp-setting-form>
     <div class="control-button-container">
-      <a-button class="control-button" type="primary" @click="add" size="small"
+      <a-button class="control-button" type="primary" @click="add"
         >开始分析</a-button
       >
-      <a-button
-        class="control-button"
-        type="primary"
-        @click="remove"
-        size="small"
+      <a-button class="control-button" type="primary" @click="remove"
         >结束分析</a-button
       >
     </div>
@@ -48,6 +38,8 @@ import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
   name: 'MpContourAnalysis'
 })
 export default class MpContourAnalysis extends Mixins(WidgetMixin) {
+  private form = this.$form.createForm(this)
+
   private formData = {
     contourSpacing: 150,
     contourWidth: 2,
@@ -133,41 +125,7 @@ export default class MpContourAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less">
 .mp-widget-contour-analysis {
-  overflow-y: auto;
-  max-height: 500px;
-  .ant-form-item {
-    align-items: center;
-    margin-bottom: 0;
-  }
-  .ant-form-item-label {
-    line-height: 20px;
-  }
-  .ant-form-item-label > label::after {
-    content: '';
-  }
-  .ant-input {
-    padding: 4px 11px;
-  }
-  .color-picker {
-    height: 40px;
-    padding: 8px 0px;
-  }
-
-  .title {
-    margin: 5px 0;
-    .space {
-      width: 4px;
-      height: 25px;
-      background: @primary-color;
-      margin-right: 8px;
-      float: left;
-    }
-    .label {
-      line-height: 25px;
-      font-weight: bold;
-    }
-  }
-
+  padding-top: 8px;
   .control-button-container {
     display: flex;
     justify-content: space-between;

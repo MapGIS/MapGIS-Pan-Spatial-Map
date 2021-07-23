@@ -1,22 +1,20 @@
 <template>
   <div class="mp-widget-terrain-analysis">
-    <a-tabs size="small" :default-active-key="tab" @change="changeTab">
-      <a-tab-pane key="slope" tab="坡度分析">
-        <MpSlopeAnalysis ref="slopeAnalysis" />
-      </a-tab-pane>
-      <a-tab-pane key="aspect" tab="坡向分析">
-        <MpAspectAnalysis ref="aspectAnalysis" />
-      </a-tab-pane>
-      <a-tab-pane key="contour" tab="等值线分析">
-        <MpContourAnalysis ref="contourAnalysis" />
-      </a-tab-pane>
-      <a-tab-pane key="flooding" tab="洪水淹没">
-        <MpFlooding ref="flooding" />
-      </a-tab-pane>
-      <a-tab-pane key="fillAndDig" tab="填挖方分析">
-        <MpCutFillAnalysis ref="cutFillAnalysis" />
-      </a-tab-pane>
-    </a-tabs>
+    <div class="terrain-analysis-types">
+      <div v-for="type in analysis" :key="type.key" class="analysis-type">
+        <img
+          :src="typeImage(type.image)"
+          :class="['analysis-type-img', type.key === tab ? 'active-type' : '']"
+          @click="changeTab(type.key)"
+        />
+        <div class="analysis-type-text">{{ type.title }}</div>
+      </div>
+    </div>
+    <MpSlopeAnalysis v-show="tab === 'slope'" ref="slopeAnalysis" />
+    <MpAspectAnalysis v-show="tab === 'aspect'" ref="aspectAnalysis" />
+    <MpContourAnalysis v-show="tab === 'contour'" ref="contourAnalysis" />
+    <MpFlooding v-show="tab === 'flooding'" ref="floodingAnalysis" />
+    <MpCutFillAnalysis v-show="tab === 'cut-fill'" ref="cutFillAnalysis" />
   </div>
 </template>
 
@@ -44,9 +42,43 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
 
   private preTab = 'slope'
 
+  private analysis = [
+    {
+      title: '坡度',
+      key: 'slope',
+      image: 'slope.png'
+    },
+    {
+      title: '坡向',
+      key: 'aspect',
+      image: 'aspect.png'
+    },
+    {
+      title: '等值线',
+      key: 'contour',
+      image: 'contour.png'
+    },
+    {
+      title: '淹没',
+      key: 'flooding',
+      image: 'flooding.png'
+    },
+    {
+      title: '填挖方',
+      key: 'cut-fill',
+      image: 'cut-fill.png'
+    }
+  ]
+
   // 获取当前面板对应的组件
   get currentAnalysisComponent() {
     return this.getAnalysisComponent(this.tab)
+  }
+
+  get typeImage() {
+    return function(image) {
+      return `${this.appAssetsUrl}${this.widgetInfo.uri}/images/${image}`
+    }
   }
 
   getAnalysisComponent(tab: string) {
@@ -57,8 +89,8 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
     } else if (tab == 'contour') {
       return this.$refs.contourAnalysis
     } else if (tab == 'flooding') {
-      return this.$refs.flooding
-    } else if (tab == 'fillAndDig') {
+      return this.$refs.floodingAnalysis
+    } else if (tab == 'cut-fill') {
       return this.$refs.cutFillAnalysis
     }
     return null
@@ -101,8 +133,31 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
 
 <style lang="less">
 .mp-widget-terrain-analysis {
-  max-width: 220px;
-  display: flex;
-  flex-direction: column;
+  .terrain-analysis-types {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .analysis-type {
+      .analysis-type-img {
+        height: 48px;
+        width: 48px;
+        border-radius: 4px;
+        padding: 6px;
+        cursor: pointer;
+        &.active-type,
+        &:hover {
+          box-shadow: 0 0 0 2px @primary-color;
+        }
+      }
+      .analysis-type-text {
+        width: 100%;
+        margin-top: 4px;
+        font-size: 12px;
+        line-height: 18px;
+        color: @text-color;
+        text-align: center;
+      }
+    }
+  }
 }
 </style>

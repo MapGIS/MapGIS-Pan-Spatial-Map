@@ -17,6 +17,10 @@ import MpColorPicker from './color-picker/ColorPicker.vue'
 
 import MpTreeSelect from './tree-select/TreeSelect.vue'
 
+import MpSettingForm from './setting-form/SettingForm.vue'
+
+import MpGroupTab from './group/GroupTab.vue'
+
 const components = [
   MpIcon,
   MpButton,
@@ -29,7 +33,9 @@ const components = [
   MpPlacement,
   MpWindow,
   MpColorPicker,
-  MpTreeSelect
+  MpTreeSelect,
+  MpSettingForm,
+  MpGroupTab
 ]
 
 const install = Vue => {
