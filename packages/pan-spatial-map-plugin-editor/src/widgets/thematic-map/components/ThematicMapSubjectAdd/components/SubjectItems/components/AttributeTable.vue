@@ -1,22 +1,28 @@
 <template>
   <div class="attribute-table">
-    <a-row type="flex" align="middle">
-      <a-checkbox @change="onAttributeTableChange">
-        开启表格展示
-      </a-checkbox>
-    </a-row>
-    <template v-if="showAttributeTable">
-      <mp-row-flex label="表格字段" label-align="right">
-        <a-select v-model="tableField" mode="tags" :options="tableFieldList" />
-      </mp-row-flex>
-      <a-table
-        row-key="id"
-        :loading="tableLoading"
-        :columns="tableColumns"
-        :data-source="tableData"
-        :scroll="{ y: 250 }"
-      />
-    </template>
+    <mp-row-flex label="开启表格展示" label-align="right" :span="[6, 18]">
+      <a-radio-group v-model="isShow">
+        <a-radio :value="true">是</a-radio>
+        <a-radio :value="false">否</a-radio>
+      </a-radio-group>
+    </mp-row-flex>
+    <transition name="fade">
+      <template v-if="isShow">
+        <a-table
+          row-key="id"
+          :columns="tableColumns"
+          :data-source="tableData"
+          :scroll="{ y: 250 }"
+          bordered
+        >
+          <template slot="field" slot-scope="text, record">
+            <a-select v-model="record.field" :options="fieldList" />
+          </template>
+          <template slot="alias" slot-scope="text, record">
+            <a-input v-model="record.alias" /> </template
+        ></a-table>
+      </template>
+    </transition>
   </div>
 </template>
 <script lang="ts">
@@ -24,30 +30,24 @@ import { Vue, Component } from 'vue-property-decorator'
 
 @Component
 export default class AttributeTable extends Vue {
-  showAttributeTable = false
+  isShow = false
 
-  tableField = []
-
-  tableFieldList = []
-
-  tableLoading = false
+  fieldList = []
 
   tableColumns = [
     {
-      title: '字段名',
-      dataIndex: 'key'
+      title: '字段',
+      dataIndex: 'field',
+      scopedSlots: { customRender: 'field' }
     },
     {
       title: '别名',
-      dataIndex: 'val'
+      dataIndex: 'alias',
+      scopedSlots: { customRender: 'alias' }
     }
   ]
 
   tableData = []
-
-  onAttributeTableChange(e) {
-    this.showAttributeTable = e.target.checked
-  }
 }
 </script>
 <style lang="less" scoped></style>

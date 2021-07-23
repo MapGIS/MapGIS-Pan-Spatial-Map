@@ -28,20 +28,18 @@
         </span>
       </a-tree>
     </a-spin>
-    <div v-show="checkedThematicMapNodes.length">
-      <!-- 5类专题图图层 -->
-      <thematic-map-layers />
-      <!-- 属性表 -->
-      <thematic-map-attribute-table />
-      <!-- 统计表 -->
-      <thematic-map-statistic-graph />
-      <!-- 时间轴 -->
-      <thematic-map-time-line />
-      <!-- 工具栏 -->
-      <thematic-map-manage-tools />
-      <!-- 新建专题图 -->
-      <thematic-map-subject-add :subject-node="subjectNode" />
-    </div>
+    <!-- 5类专题图图层 -->
+    <thematic-map-layers />
+    <!-- 属性表 -->
+    <thematic-map-attribute-table />
+    <!-- 统计表 -->
+    <thematic-map-statistic-graph />
+    <!-- 时间轴 -->
+    <thematic-map-time-line />
+    <!-- 工具栏 -->
+    <thematic-map-manage-tools />
+    <!-- 新建专题图 -->
+    <thematic-map-subject-add :subject-node="subjectNode" />
   </div>
 </template>
 
@@ -50,7 +48,13 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import { api } from '@mapgis/pan-spatial-map-store'
 import _cloneDeep from 'lodash/cloneDeep'
-import { mapGetters, mapMutations, ModuleType, NewSubjectConfig } from './store'
+import {
+  mapGetters,
+  mapMutations,
+  NewSubjectConfig,
+  ModuleType,
+  moduleTypeList
+} from './store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
 import ThematicMapStatisticGraph from './components/ThematicMapStatisticGraph'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
@@ -98,14 +102,6 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   // 节点处理操作
   handleKeys = HandleKeys
 
-  // 默认打开的功能模块
-  defaultOpenModules: Array<ModuleType> = [
-    'table',
-    'graph',
-    'timeline',
-    'create'
-  ]
-
   // 选中的专题图树节点
   checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
 
@@ -140,7 +136,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     if (type) {
       this.setVisible(type)
     } else {
-      this.defaultOpenModules.forEach(v => v !== exclude && this.setVisible(v))
+      moduleTypeList.forEach(v => v !== exclude && this.setVisible(v))
     }
   }
 
@@ -151,7 +147,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * 若无参数则隐藏所有默认配置的面板
    */
   setModulesHide(exclude: ModuleType) {
-    this.defaultOpenModules.forEach(t => t !== exclude && this.resetVisible(t))
+    moduleTypeList.forEach(t => t !== exclude && this.resetVisible(t))
   }
 
   /**
