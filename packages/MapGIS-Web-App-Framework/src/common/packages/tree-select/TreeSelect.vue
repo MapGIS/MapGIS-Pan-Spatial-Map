@@ -4,20 +4,23 @@
     :trigger="['click']"
     class="mp-tree-select"
   >
-    <a-input
-      @change="onValueChange"
-      :value="selectedValue"
-      :placeholder="placeholder"
-      :size="size"
-      :allow-clear="true"
-    >
-      <a-icon
-        slot="suffix"
-        :class="{ rotate180: dropdownVisible }"
-        class="mp-tree-select-arrow"
-        type="down"
-      />
-    </a-input>
+    <slot>
+      <a-input
+        @change="onValueChange"
+        :value="selectedValue"
+        :placeholder="placeholder"
+        :size="size"
+        :allow-clear="true"
+        :title="selectedValue"
+      >
+        <a-icon
+          slot="suffix"
+          :class="{ rotate180: dropdownVisible }"
+          class="mp-tree-select-arrow"
+          type="down"
+        />
+      </a-input>
+    </slot>
     <div slot="overlay" class="mp-tree-select-dropdown">
       <a-spin :spinning="loading">
         <a-empty class="mp-tree-select-empty" v-if="!treeData.length" />

@@ -1,4 +1,5 @@
 import {
+  tuple,
   ModuleType,
   SubjectType,
   NewSubjectConfig,
@@ -6,12 +7,21 @@ import {
 } from './types'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
+// 模块列表
+const moduleTypeList = tuple<Array<ModuleType>>(
+  'table',
+  'graph',
+  'timeline',
+  'create',
+  'tools'
+)
+
 // 是否支持图属联动
-const highlightSubjectTypes: Array<SubjectType> = [
+const highlightSubjectTypes = tuple<Array<SubjectType>>(
   'SubSectionMap',
   'BaseMapWithGraph',
   'StatisticLabel'
-]
+)
 
 // 专题图类型集合
 const subjectTypeList: Array<{ label: string; value: SubjectType }> = [
@@ -28,6 +38,7 @@ export {
   SubjectType,
   NewSubjectConfig,
   ThematicMapSubjectConfigNode,
+  moduleTypeList,
   subjectTypeList,
   highlightSubjectTypes,
   thematicMapStore,

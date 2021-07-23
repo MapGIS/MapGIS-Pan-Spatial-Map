@@ -43,6 +43,7 @@
           </mp-row-flex>
           <!-- 年度或时间、服务设置等公共设置项 -->
           <common
+            :time="sub.time"
             @time-change="timeChange($event, sub)"
             @server-change="serverChange($event, sub)"
           />
@@ -52,7 +53,7 @@
             @change="subjectStylesChange($event, sub)"
           />
           <!-- 属性表配置 -->
-          <attribute-table />
+          <!-- <attribute-table /> -->
           <!-- 统计表配置 -->
           <!--  <statistic-graph /> -->
           <!-- 弹框配置 -->
@@ -67,13 +68,13 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { SubjectType, NewSubjectConfig } from '../../../../store'
 import Common from './components/Common.vue'
 import SubjectStyles from './components/SubjectStyles'
-import AttributeTable from './components/AttributeTable.vue'
+// import AttributeTable from './components/AttributeTable.vue'
 
 @Component({
   components: {
     Common,
-    SubjectStyles,
-    AttributeTable
+    SubjectStyles
+    // AttributeTable
   }
 })
 export default class SubjectItems extends Vue {

@@ -1,12 +1,12 @@
 <template>
   <div class="common">
     <!-- 年度或时间 -->
-    <mp-row-flex label="年度/时间" label-align="right">
-      <a-input v-model="time" placeholder="请输入年度/时间" />
+    <mp-row-flex label="年度/时间" label-align="right" :span="[6, 18]">
+      <a-input v-model="selfTime" placeholder="请输入年度/时间" />
     </mp-row-flex>
     <!-- 服务设置 -->
     <div class="server-tree-select">
-      <mp-row-flex label="服务地址" label-align="right">
+      <mp-row-flex label="服务地址" label-align="right" :span="[6, 18]">
         <mp-tree-select
           @change="selfUriChange"
           :value="selfUri"
@@ -17,14 +17,15 @@
             key: 'guid',
             title: 'name'
           }"
-          filter-prop="gdbpUri"
-          label-prop="gdbpUri"
+          filter-prop="serverUri"
+          label-prop="serverUri"
         />
       </mp-row-flex>
       <mp-row-flex
         v-for="{ label, content } in examples"
         :key="label"
         :label="label"
+        :span="[6, 18]"
         label-align="right"
         align="top"
         class="server-tree-select-example"
@@ -44,7 +45,7 @@ import _last from 'lodash/last'
 
 @Component
 export default class Common extends Vue {
-  @Prop({ default: '' }) readonly selfTime!: string
+  @Prop({ default: '' }) readonly time!: string
 
   @Prop({ default: '' }) readonly uri!: string
 
@@ -72,7 +73,7 @@ export default class Common extends Vue {
   }
 
   set selfTime(value) {
-    this.$set('time-change', value)
+    this.$emit('time-change', value)
   }
 
   // 服务地址
@@ -134,10 +135,31 @@ export default class Common extends Vue {
   }
 
   /**
-   * gdbp全地址
+   * server全地址
    */
-  getGdbpUri({ ip, port, gdbp, gdbps }) {
-    return `http://${ip}:${port}/igs/rest/mrms/layers?gdbp=${gdbp || gdbps}`
+  getServerUri(node) {
+    const {
+      ip,
+      port,
+      gdbp,
+      gdbps,
+      serverType,
+      layerIndex,
+      layerName,
+      docName
+    } = node
+    let serverUri = `http://${ip}:${port}/igs/rest/mrms/`
+    switch (serverType) {
+      case LayerType.IGSMapImage:
+        serverUri += `docs/${docName}?layerName=${layerName}&layerIndex=${layerIndex}`
+        break
+      case LayerType.IGSVector:
+        serverUri += `layers?gdbp=${gdbp || gdbps}`
+        break
+      default:
+        break
+    }
+    return serverUri
   }
 
   /**
@@ -146,12 +168,11 @@ export default class Common extends Vue {
   handleCatalog(tree: Layer[]) {
     for (let i = 0; i < tree.length; i++) {
       const node = tree[i]
-      if (this.isGdbp(node.serverType)) {
-        this.$set(node, 'isLeaf', true)
-        this.$set(node, 'gdbpUri', this.getGdbpUri(node))
-      }
+      const isGdbp = this.isGdbp(node.serverType)
+      this.$set(node, 'isLeaf', isGdbp)
+      this.$set(node, 'selectable', isGdbp)
+      this.$set(node, 'serverUri', this.getServerUri(node))
       if (node.children && node.children.length > 0) {
-        this.$set(node, 'selectable', false)
         this.handleCatalog(node.children)
       }
       if (node.children && node.children.length === 0) {
@@ -190,28 +211,35 @@ export default class Common extends Vue {
       dataRef: { ip, port, serverName, serverType, children }
     } = treeNode
     if (!children && serverType === LayerType.IGSMapImage) {
-      const docInfo = await Catalog.DocumentCatalog.getDocInfo({
+      const { DocumentCatalog } = Catalog
+      const docInfo = await DocumentCatalog.getDocInfo({
         ip,
         port,
         serverName
       })
       if (docInfo && docInfo.MapInfos.length) {
         const { CatalogLayer } = docInfo.MapInfos[0]
-        const layerIndex = Catalog.DocumentCatalog.getLayerIndexesByNamesOrCodes(
+        const layerIndex = DocumentCatalog.getLayerIndexesByNamesOrCodes(
           CatalogLayer
         )
-        const layers = Catalog.DocumentCatalog.getLayersByIndexes(
+        const layers = DocumentCatalog.getLayersByIndexes(
           layerIndex.join(','),
           CatalogLayer
         )
-        treeNode.dataRef.children = layers.map(
-          ({ LayerName, LayerIndex, URL }) => ({
-            name: LayerName,
-            guid: LayerIndex,
-            gdbpUri: this.getGdbpUri({ ip, port, gdbp: URL }),
-            isLeaf: true
+        treeNode.dataRef.children = layers.map(({ LayerName, LayerIndex }) => ({
+          name: LayerName,
+          guid: LayerIndex,
+          isLeaf: true,
+          selectable: true,
+          serverUri: this.getServerUri({
+            ip,
+            port,
+            serverType,
+            docName: serverName,
+            layerName: LayerName,
+            layerIndex: LayerIndex
           })
-        )
+        }))
         this.catalogTreeData = [...this.catalogTreeData]
       }
     }
@@ -221,7 +249,7 @@ export default class Common extends Vue {
    * 服务地址变化
    */
   selfUriChange(value: string) {
-    this.selfUri = value.trim()
+    this.selfUri = value ? value.trim() : ''
   }
 
   created() {

@@ -1,5 +1,7 @@
 import { Feature } from '@mapgis/web-app-framework'
 
+export const tuple = <T extends string[]>(...args: T) => args
+
 // 节点类型
 type NodeType = 'panel' | 'list' | 'subjet'
 // 专题图配置
@@ -111,7 +113,7 @@ export interface SubjectData {
 }
 
 export interface IState {
-  moduleTypes: Array<ModuleType>
+  modules: Array<ModuleType>
   loading: boolean
   pageParam: PageParam
   pageDataSet: Feature.FeatureIGS | null

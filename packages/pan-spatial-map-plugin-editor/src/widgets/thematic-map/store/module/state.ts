@@ -1,9 +1,9 @@
 import Vue from 'vue'
-import { IState } from '../types'
+import { IState, ModuleType } from '../types'
 
 export default Vue.observable<IState>({
-  // 属性表(at)|统计表(st)|时间轴(tl)|专题添加(sa)|管理工具的开关集合(mt)
-  moduleTypes: [],
+  // 属性表|统计表|时间轴|专题新建|工具栏
+  modules: [],
 
   // 数据加载状态
   loading: false,

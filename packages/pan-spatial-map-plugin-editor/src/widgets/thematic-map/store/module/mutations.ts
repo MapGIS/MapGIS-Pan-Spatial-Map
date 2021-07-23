@@ -23,19 +23,17 @@ const mutations = {
    * 专题图各子功能弹框的开关
    */
   setVisible({ state }, type: ModuleType) {
-    if (state.moduleTypes.indexOf(type) < 0) {
-      state.moduleTypes.push(type)
+    if (!state.modules.includes(type)) {
+      state.modules = [...state.modules, type]
     }
   },
   /**
    * 重置专题图各子功能弹框的开关
    */
   resetVisible({ state }, type: ModuleType) {
-    if (!type) {
-      state.moduleTypes = []
-    } else {
-      state.moduleTypes.splice(state.moduleTypes.indexOf(type), 1)
-    }
+    state.modules = type
+      ? state.modules.filter((t: ModuleType) => t !== type)
+      : []
   },
   /**
    * 加载

@@ -3,8 +3,7 @@ import { ModuleType, IState } from '../types'
 
 const getters = {
   // 获取某个功能模块的开关状态
-  isVisible: ({ moduleTypes }: IState) => (t: ModuleType) =>
-    moduleTypes.includes(t),
+  isVisible: ({ modules }: IState) => (t: ModuleType) => modules.includes(t),
   // 加载
   loading: (state: IState) => state.loading,
   // 获取要素查询当前页数据
