@@ -13,9 +13,7 @@ import { request } from '@/utils/request'
 export default {
   data() {
     return {
-      application: {},
-      url:
-        'http://192.168.17.59:9039/portal/public/map/index.html#/map?ip=xx&port=xx&type=5&name=portal_Hubei4326'
+      application: {}
     }
   },
   computed: {
@@ -64,19 +62,22 @@ export default {
     },
     emitEvent() {
       const name = this.getQueryString('name')
-
       const type = this.getQueryString('type')
 
       eventBus.$emit('emitImposeService', { name: name, type: type })
     },
     getQueryString(name) {
+      const url = window.location.href
       const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
-      const searchString = this.url.split('?')[1]
-      const r = searchString.match(reg)
-      if (r !== null) {
-        return decodeURIComponent(r[2])
+      const searchString = url.split('?')[1]
+      if (searchString) {
+        // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+        const r = searchString.match(reg)
+        if (r !== null) {
+          return decodeURIComponent(r[2])
+        }
+        return null
       }
-      return null
     }
   }
 }

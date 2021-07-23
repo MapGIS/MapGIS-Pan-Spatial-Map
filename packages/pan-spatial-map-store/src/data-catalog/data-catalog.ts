@@ -252,6 +252,14 @@ export class DataCatalogManager {
    */
   public async getDataCatalogTreeData(isFilterInvalidLayer = true) {
     if (isFilterInvalidLayer) {
+      if (
+        this.config.treeConfig.treeData &&
+        this.config.treeConfig.treeData.length > 0
+      ) {
+        isFilterInvalidLayer = true
+      } else {
+        isFilterInvalidLayer = false
+      }
       this.isFilterInvalidLayerConfig = isFilterInvalidLayer
       // 1.获取基本配置中指定的服务器上发布的IGS服务列表。
       const defaultIp = baseConfigInstance.config.ip
@@ -692,6 +700,7 @@ export class DataCatalogManager {
     let isServiceVaild = true
     const { ip, port, serverName, serverType } = layerConfig
     let serverList: string[] = []
+
     switch (serverType) {
       case LayerType.IGSMapImage:
         serverList = this.defaultServerList.docList
