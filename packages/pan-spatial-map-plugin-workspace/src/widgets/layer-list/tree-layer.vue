@@ -66,6 +66,7 @@
             item.title
           }}</span>
           <a-popover
+            v-if="showPopover(item)"
             placement="bottomLeft"
             arrow-point-at-center
             :visible="item.visiblePopover"
@@ -416,6 +417,20 @@ export default class TreeLayer extends Mixins(
         }, 700)
       }
     }
+  }
+
+  // 判断是否展示列表右侧操作菜单
+  showPopover(item) {
+    if (
+      this.isMetaData(item) ||
+      this.isAttributes(item) ||
+      this.isParentLayer(item) ||
+      (this.isParentLayer(item) && this.isWMTSLayer(item)) ||
+      (this.isParentLayer(item) && !this.isIGSScene(item))
+    ) {
+      return true
+    }
+    return false
   }
 
   created() {

@@ -527,8 +527,10 @@ export default class MpAttributeTable extends Mixins(
         queryGeometry,
         queryWhere
       )
-      const columns = this.setTableScroll(AttStruct)
-      this.tableColumns = columns
+      if (!(this.tableColumns && this.tableColumns.length > 0)) {
+        const columns = this.setTableScroll(AttStruct)
+        this.tableColumns = columns
+      }
       this.pagination.total = TotalCount
       this.tableData = geojson.features
       this.removeMarkers()
@@ -568,29 +570,31 @@ export default class MpAttributeTable extends Mixins(
         // 10个以上，每个设固定宽度180，且启用水平滚动条
         this.useScrollX = true
       }
-      for (let index = 0; index < tags.length; index++) {
-        const name = tags[index]
-        const alias = tags[index] ? `${tags[index]}` : ''
-        const type = 'string'
-        const obj = {
-          title: alias.length ? alias : name,
-          key: name,
-          dataIndex: `properties.${name}`,
-          align: 'left',
-          ellipsis: true
+      if (!(this.tableColumns && this.tableColumns.length > 0)) {
+        for (let index = 0; index < tags.length; index++) {
+          const name = tags[index]
+          const alias = tags[index] ? `${tags[index]}` : ''
+          const type = 'string'
+          const obj = {
+            title: alias.length ? alias : name,
+            key: name,
+            dataIndex: `properties.${name}`,
+            align: 'left',
+            ellipsis: true
+          }
+          if (this.useScrollX) {
+            obj.width = 180
+          }
+          // var str = '37'
+          const num = Number(properties[name])
+          if (!isNaN(num)) {
+            obj.sorter = (a, b) =>
+              Number(a.properties[name]) - Number(b.properties[name])
+          }
+          columns.push(obj)
         }
-        if (this.useScrollX) {
-          obj.width = 180
-        }
-        // var str = '37'
-        const num = Number(properties[name])
-        if (!isNaN(num)) {
-          obj.sorter = (a, b) =>
-            Number(a.properties[name]) - Number(b.properties[name])
-        }
-        columns.push(obj)
+        this.tableColumns = columns
       }
-      this.tableColumns = columns
       this.pagination.total = totalCount
       this.tableData = geojson.features
       this.removeMarkers()
@@ -625,8 +629,10 @@ export default class MpAttributeTable extends Mixins(
       )
       const { AttStruct, SFEleArray = [], TotalCount } = json
       const { FldNumber = 0, FldName = [] } = AttStruct
-      const columns = this.setTableScroll(AttStruct)
-      this.tableColumns = columns
+      if (!(this.tableColumns && this.tableColumns.length > 0)) {
+        const columns = this.setTableScroll(AttStruct)
+        this.tableColumns = columns
+      }
       this.pagination.total = TotalCount
       this.tableData = (SFEleArray || []).map(
         ({ AttValue = [], bound = {}, FID }) => {
