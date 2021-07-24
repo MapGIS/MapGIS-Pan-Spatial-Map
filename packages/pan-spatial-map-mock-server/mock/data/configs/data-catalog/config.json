@@ -662,7 +662,7 @@
             "searchName": "",
             "token": "",
             "guid": "08fd1305-b48b-47a4-bca4-e1c4e5251631",
-            "serverUrl": "http://219.142.81.85/arcgis/services/10wanZH/MapServer/WMSServer?request=GetCapabilities&service=WMS",
+            "serverUrl": "http://219.142.81.85/arcgis/services/10wanZH/MapServer/WMSServer",
             "wfsUrl": "",
             "extent": ""
           },

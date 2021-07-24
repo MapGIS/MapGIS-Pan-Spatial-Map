@@ -27,7 +27,7 @@ export default {
   white-space: normal;
   .ant-form-item {
     .ant-form-item-label label {
-      color: text-color;
+      color: @text-color;
     }
   }
   &.ant-form-horizontal {
@@ -52,6 +52,11 @@ export default {
           line-height: 32px;
         }
       }
+    }
+  }
+  &.ant-form-vertical.compact {
+    .ant-form-item {
+      padding-bottom: 0;
     }
   }
   &.compact {

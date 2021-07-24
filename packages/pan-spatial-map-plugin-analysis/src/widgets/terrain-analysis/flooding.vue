@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-flooding">
-    <mp-setting-form :form="form">
+    <mp-setting-form>
       <a-form-item label="淹没最低高度">
         <a-input
           v-model.number="formData.minHeight"
@@ -92,8 +92,6 @@ import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
   name: 'MpFlooding'
 })
 export default class MpFlooding extends Mixins(WidgetMixin) {
-  private form = this.$form.createForm(this)
-
   private formData = {
     minHeight: 0,
     maxHeight: 2000,
