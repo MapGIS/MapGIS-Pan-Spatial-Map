@@ -5,7 +5,7 @@
         <sketch-picker
           :disableAlpha="disableAlpha"
           :value="pickColor"
-          @input="val => getPickColor(val)"
+          @input="onColorChange"
         />
       </template>
       <div class="color-container">
@@ -45,6 +45,10 @@ export default {
     }
   },
   methods: {
+    onColorChange(val) {
+      this.getPickColor(val)
+      this.$emit('input', val)
+    },
     // 颜色拾取器选中事件回调
     getPickColor(val) {
       this.pickColor = this.colorObjectToRgba(val.rgba, this.disableAlpha)

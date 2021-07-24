@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-contour-analysis">
-    <mp-setting-form :form="form">
+    <mp-setting-form>
       <a-form-item label="等值距">
         <a-input
           v-model.number="formData.contourSpacing"
@@ -38,8 +38,6 @@ import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
   name: 'MpContourAnalysis'
 })
 export default class MpContourAnalysis extends Mixins(WidgetMixin) {
-  private form = this.$form.createForm(this)
-
   private formData = {
     contourSpacing: 150,
     contourWidth: 2,

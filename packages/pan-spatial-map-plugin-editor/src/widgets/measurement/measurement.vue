@@ -121,101 +121,59 @@
     </div>
     <div v-show="showSettingPanel && is2DMapMode" class="setting-panel">
       <a-divider></a-divider>
-      <a-space direction="vertical" style="width: 100%;">
-        <a-row>
-          <label>字体名称</label>
-        </a-row>
-        <a-row>
-          <a-select v-model="measureStyle.textType" style="width: 100%;">
+      <mp-setting-form layout="vertical">
+        <a-form-item label="字体名称">
+          <a-select v-model="measureStyle.textType">
             <a-select-option v-for="item in textTypes" :key="item">
               {{ item }}
             </a-select-option>
           </a-select>
-        </a-row>
-        <a-row>
-          <label>字体颜色</label>
-        </a-row>
-        <a-row>
-          <a-popover trigger="click">
-            <template slot="content">
-              <sketch-picker
-                :value="measureStyle.textColor"
-                @input="onTextColorChange"
-              />
-            </template>
-            <div
-              :style="{ background: measureStyle.textColor }"
-              class="color"
-            ></div>
-          </a-popover>
-        </a-row>
-        <a-row>
-          <label>字体大小</label>
-        </a-row>
-        <a-row>
+        </a-form-item>
+        <a-form-item label="字体颜色">
+          <mp-color-picker
+            :color="measureStyle.textColor"
+            :disable-alpha="false"
+            @input="onTextColorChange"
+          ></mp-color-picker>
+        </a-form-item>
+        <a-form-item label="字体大小">
           <a-input
             v-model.number="measureStyle.textSize"
             type="number"
             :min="12"
           >
           </a-input>
-        </a-row>
-        <a-row>
-          <label>线样式</label>
-        </a-row>
-        <a-row>
-          <a-select v-model="measureStyle.lineType" style="width: 100%;">
+        </a-form-item>
+        <a-form-item label="线样式">
+          <a-select v-model="measureStyle.lineType">
             <a-select-option v-for="item in lineTypes" :key="item">
               {{ item }}
             </a-select-option>
           </a-select>
-        </a-row>
-        <a-row>
-          <label>线颜色</label>
-        </a-row>
-        <a-row>
-          <a-popover trigger="click">
-            <template slot="content">
-              <sketch-picker :value="lineColor" @input="onLineColorChange" />
-            </template>
-            <div
-              :style="{
-                background: measureStyle.lineColor,
-                opacity: measureStyle.lineOpacity
-              }"
-              class="color"
-            ></div>
-          </a-popover>
-        </a-row>
-        <a-row>
-          <label>线宽度</label>
-        </a-row>
-        <a-row>
+        </a-form-item>
+        <a-form-item label="线颜色">
+          <mp-color-picker
+            :color="lineColor"
+            :disable-alpha="false"
+            @input="onLineColorChange"
+          ></mp-color-picker>
+        </a-form-item>
+        <a-form-item label="线宽度">
           <a-input
             v-model.number="measureStyle.lineWidth"
             type="number"
             :min="1"
           >
           </a-input>
-        </a-row>
-        <a-row>
-          <label>填充颜色</label>
-        </a-row>
-        <a-row>
-          <a-popover trigger="click">
-            <template slot="content">
-              <sketch-picker :value="fillColor" @input="onFillColorChange" />
-            </template>
-            <div
-              :style="{
-                background: measureStyle.fillColor,
-                opacity: measureStyle.fillOpacity
-              }"
-              class="color"
-            ></div>
-          </a-popover>
-        </a-row>
-      </a-space>
+        </a-form-item>
+        <a-form-item label="填充颜色">
+          <mp-color-picker
+            :color="fillColor"
+            :disable-alpha="false"
+            @input="onFillColorChange"
+          ></mp-color-picker>
+        </a-form-item>
+      </mp-setting-form>
     </div>
     <mapbox-measure
       ref="mapboxMeasure"
@@ -226,26 +184,25 @@
       @finished="onMeasureFinished"
       @start="onMeasureStart"
     />
-    <CesiumMeasure
+    <cesium-measure
       ref="cesiumMeasure"
       v-show="!is2DMapMode"
       :measureStyle="measureStyle"
       @start="onMeasureStart"
       @finished="onMeasureFinished"
-    ></CesiumMeasure>
+    ></cesium-measure>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import { Sketch } from 'vue-color'
+import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
 import MapboxMeasure from './components/MapboxMeasure.vue'
 import CesiumMeasure from './components/CesiumMeasure.vue'
 
 @Component({
   name: 'MpMeasurement',
-  components: { 'sketch-picker': Sketch, MapboxMeasure, CesiumMeasure }
+  components: { MapboxMeasure, CesiumMeasure }
 })
 export default class MpMeasurement extends Mixins(WidgetMixin) {
   private planeMeasureModes = [
@@ -335,17 +292,17 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   private lineTypes = ['实线', '虚线']
 
   get lineColor() {
-    return {
-      hex: this.measureStyle.lineColor,
-      a: this.measureStyle.lineOpacity
-    }
+    return ColorUtil.hexToRgba(
+      this.measureStyle.lineColor,
+      this.measureStyle.lineOpacity
+    )
   }
 
   get fillColor() {
-    return {
-      hex: this.measureStyle.fillColor,
-      a: this.measureStyle.fillOpacity
-    }
+    return ColorUtil.hexToRgba(
+      this.measureStyle.fillColor,
+      this.measureStyle.fillOpacity
+    )
   }
 
   // 下拉框配置
@@ -457,11 +414,6 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
     flex-direction: column;
     .ant-divider-horizontal {
       margin: 8px 0;
-    }
-    .color {
-      height: 30px;
-      box-shadow: @shadow-1-down;
-      border-radius: 3px;
     }
   }
 }

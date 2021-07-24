@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-slope-analysis">
     <mp-group-tab title="坡度权重设置"></mp-group-tab>
-    <mp-setting-form :form="form">
+    <mp-setting-form>
       <a-form-item
         v-for="(color, index) in arrayColor"
         :key="index"
@@ -37,8 +37,6 @@ import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
 
 @Component({ name: 'MpSlopeAnalysis' })
 export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
-  private form = this.$form.createForm(this)
-
   private arrayColor: string[] = [
     'rgba(244, 67, 54, 0.5)',
     'rgba(233, 30, 99, 0.5)',

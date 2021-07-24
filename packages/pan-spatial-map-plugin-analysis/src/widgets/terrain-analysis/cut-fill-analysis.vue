@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-cut-fill-analysis">
     <mp-group-tab title="参数设置"></mp-group-tab>
-    <mp-setting-form :form="paramForm">
+    <mp-setting-form>
       <a-form-item label="x方向采样点个数">
         <a-input v-model.number="formData.x" type="number" min="0" />
       </a-form-item>
@@ -13,7 +13,7 @@
       </a-form-item>
     </mp-setting-form>
     <mp-group-tab title="填挖结果"></mp-group-tab>
-    <mp-setting-form :form="resultForm">
+    <mp-setting-form>
       <a-form-item label="高程范围">
         <a-input v-model.number="result.height" disabled />
       </a-form-item>
@@ -46,10 +46,6 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
   components: {}
 })
 export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
-  private paramForm = this.$form.createForm(this)
-
-  private resultForm = this.$form.createForm(this)
-
   private formData = {
     x: 16,
     y: 16,
