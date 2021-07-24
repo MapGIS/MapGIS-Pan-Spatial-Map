@@ -7,6 +7,16 @@ import { TileInfo, LOD } from './tile-layer'
 import { ObjectTool } from '../../utils/object-tool'
 import { SpatialReference, CoordinateSystemType } from '../spatial-reference'
 
+// 发布WMTS的厂商名称
+enum WMTSCorporation {
+  corporationZD = 1, // 中地
+  corporationArcGIS = 2, // ArcGIS
+  corporationSuperMap = 3, // 超图 (暂未使用 2016.1.25)
+  corporationGeoServer = 4, // GeoServer
+  corporationTianDiTu = 5, // 天地图
+  corporationOther = 6 // 其它
+}
+
 /**
  * OGCWMTS服务瓦片矩阵集
  *
@@ -96,7 +106,6 @@ export class TileMatrixSet {
         jsonObject.SupportedCRS
       )
     }
-
 
     if (
       jsonObject.TileMatrix &&
@@ -368,12 +377,21 @@ export class WMTSSublayer {
    */
   fromJSON(jsonObject: Record<string, any>) {
     if (jsonObject.BoundingBox) {
-      this.fullExtent = new Rectangle(
-        jsonObject.BoundingBox[0],
-        jsonObject.BoundingBox[1],
-        jsonObject.BoundingBox[2],
-        jsonObject.BoundingBox[3]
-      )
+      if (this.layer?.corporationType == WMTSCorporation.corporationArcGIS)
+        this.fullExtent = new Rectangle(
+          jsonObject.BoundingBox[1],
+          jsonObject.BoundingBox[0],
+          jsonObject.BoundingBox[3],
+          jsonObject.BoundingBox[2]
+        )
+      else {
+        this.fullExtent = new Rectangle(
+          jsonObject.BoundingBox[0],
+          jsonObject.BoundingBox[1],
+          jsonObject.BoundingBox[2],
+          jsonObject.BoundingBox[3]
+        )
+      }
     }
 
     if (jsonObject.Format) this.imageFormats = jsonObject.Format
@@ -487,70 +505,6 @@ export class WMTSSublayer {
  */
 export class OGCWMTSLayer extends Layer {
   /**
-   * 创建一个深度克隆的OGCWMTSLayer
-   *
-   * @date 08/04/2021
-   * @return {*}  {Layer}
-   * @memberof OGCWMTSLayer
-   */
-  clone(): Layer {
-    const result = new OGCWMTSLayer()
-
-    Object.entries(this).forEach(element => {
-      const key = element[0]
-      const valueIndex = 1
-
-      if (key === '_allSublayers') {
-      } else if (key === 'activeLayer') {
-      } else if (key === 'sublayers') {
-        const sublayers = element[valueIndex]
-        const sublayersCopy: WMTSSublayer[] = []
-        let sublayerCopy: WMTSSublayer | undefined
-
-        sublayers.forEach(sublayer => {
-          sublayerCopy = sublayer.clone()
-
-          if (sublayerCopy) {
-            sublayerCopy.layer = result
-            sublayersCopy.push(sublayerCopy)
-          }
-        })
-
-        result[key] = sublayersCopy
-
-        // 给activeLayer赋值
-        if (this.activeLayer)
-          result.activeLayer = result.findSublayerById(this.activeLayer.id)
-      } else {
-        result[key] = this._deepClone(element[valueIndex])
-      }
-    })
-
-    return result
-  }
-
-  /**
-   * Creates an instance of OGCWMTSLayer.
-   *
-   * @date 22/03/2021
-   * @param {Record<string, any>} properties
-   * @memberof OGCWMTSLayer
-   */
-  constructor(properties?: Record<string, any>) {
-    super(properties)
-
-    this.type = LayerType.OGCWMTS
-
-    if (!properties) return
-
-    if (properties.url) this.url = properties.url
-    if (properties.maxScale) this.maxScale = properties.maxScale
-    if (properties.minScale) this.minScale = properties.minScale
-    if (properties.tokenKey) this.tokenKey = properties.tokenKey
-    if (properties.tokenValue) this.tokenValue = properties.tokenValue
-  }
-
-  /**
    * 当前激活的子图层
    *
    * @date 30/03/2021
@@ -627,7 +581,14 @@ export class OGCWMTSLayer extends Layer {
    * @date 30/03/2021
    * @memberof OGCWMTSLayer
    */
-  url = ''
+  get url(): string {
+    return this._url
+  }
+
+  set url(url: string) {
+    this.initCorporationType(url)
+    this._url = url
+  }
 
   /**
    * wmts标准的版本
@@ -636,6 +597,78 @@ export class OGCWMTSLayer extends Layer {
    * @memberof OGCWMTSLayer
    */
   version = ''
+
+  /**
+   * WMTS发布的厂商,现在根据URL判断
+   *
+   * @date 24/07/2021
+   * @memberof OGCWMTSLayer
+   */
+  corporationType = WMTSCorporation.corporationZD
+
+  /**
+   * 创建一个深度克隆的OGCWMTSLayer
+   *
+   * @date 08/04/2021
+   * @return {*}  {Layer}
+   * @memberof OGCWMTSLayer
+   */
+  clone(): Layer {
+    const result = new OGCWMTSLayer()
+
+    Object.entries(this).forEach(element => {
+      const key = element[0]
+      const valueIndex = 1
+
+      if (key === '_allSublayers') {
+      } else if (key === 'activeLayer') {
+      } else if (key === 'sublayers') {
+        const sublayers = element[valueIndex]
+        const sublayersCopy: WMTSSublayer[] = []
+        let sublayerCopy: WMTSSublayer | undefined
+
+        sublayers.forEach(sublayer => {
+          sublayerCopy = sublayer.clone()
+
+          if (sublayerCopy) {
+            sublayerCopy.layer = result
+            sublayersCopy.push(sublayerCopy)
+          }
+        })
+
+        result[key] = sublayersCopy
+
+        // 给activeLayer赋值
+        if (this.activeLayer)
+          result.activeLayer = result.findSublayerById(this.activeLayer.id)
+      } else {
+        result[key] = this._deepClone(element[valueIndex])
+      }
+    })
+
+    return result
+  }
+
+  /**
+   * Creates an instance of OGCWMTSLayer.
+   *
+   * @date 22/03/2021
+   * @param {Record<string, any>} properties
+   * @memberof OGCWMTSLayer
+   */
+  constructor(properties?: Record<string, any>) {
+    super(properties)
+
+    this.type = LayerType.OGCWMTS
+
+    if (!properties) return
+
+    if (properties.url) this.url = properties.url
+    if (properties.maxScale) this.maxScale = properties.maxScale
+    if (properties.minScale) this.minScale = properties.minScale
+    if (properties.tokenKey) this.tokenKey = properties.tokenKey
+    if (properties.tokenValue) this.tokenValue = properties.tokenValue
+  }
 
   /**
    * 根据id获取对应的子图层
@@ -735,6 +768,34 @@ export class OGCWMTSLayer extends Layer {
     return promise.then(data => {
       return this
     })
+  }
+
+  private _url = ''
+
+  private initCorporationType(strURL: string): number {
+    if (strURL == undefined) {
+      this.corporationType = WMTSCorporation.corporationZD
+      return 0
+    }
+
+    // 对于MapGIS发布的WMTS,基地址有两种写法,故只用WMTSServer来判断
+    // http://192.168.10.44:6163/igs/rest/ogc/WMTSServer(IGserver发布的)
+    // http://219.142.81.86/igserver/ogc/kvp/TAS10E52H50E002021/WMTSServer (中国地调局国家地质资料馆里面有用)
+    // 修改说明：<天地图服务升级，服务域名变化>
+    // 修改人：ldf 2018-12-26
+    if (strURL.search('WMTSServer') > 0)
+      this.corporationType = WMTSCorporation.corporationZD
+    else if (strURL.search('arcgis/rest/services') > 0)
+      this.corporationType = WMTSCorporation.corporationArcGIS
+    else if (strURL.search('geoserver') > 0)
+      this.corporationType = WMTSCorporation.corporationGeoServer
+    else if (
+      strURL.search('tianditu.com') > 0 ||
+      strURL.search('tianditu.gov.cn') > 0
+    )
+      this.corporationType = WMTSCorporation.corporationTianDiTu
+    else this.corporationType = WMTSCorporation.corporationOther
+    return 1
   }
 
   /**
