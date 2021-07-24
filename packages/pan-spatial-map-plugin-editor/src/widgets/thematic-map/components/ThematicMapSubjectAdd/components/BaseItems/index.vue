@@ -15,6 +15,7 @@
       <a-input
         @change="subjectTitleChange"
         :value="baseItemsObj.title"
+        :allow-clear="true"
         placeholder="请输入专题图名称"
       />
     </mp-row-flex>
