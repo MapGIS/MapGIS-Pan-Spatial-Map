@@ -47,14 +47,17 @@ import {
   UUID,
   ObjectUtil,
   LayerType,
-  LoadStatus
+  LoadStatus,
+  Document
 } from '@mapgis/web-app-framework'
 import {
   api,
+  dataCatalogManagerInstance,
   DataCatalogManager,
   eventBus,
   events
 } from '@mapgis/pan-spatial-map-store'
+import { fitBoundByLayer } from '../../../../pan-spatial-map-plugin-workspace/src/util/fit-bound'
 
 import AddDataList from './components/AddDataList.vue'
 import AddDataUrl from './components/AddDataUrl.vue'
@@ -207,6 +210,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     this.loaded = true
 
     eventBus.$on(events.ADD_DATA_EVENT, this.onAddData)
+    eventBus.$on('emitImposeServiceByAddData', this.onImposeServiceByAddData)
   }
 
   onAddCategory({ name, description }) {
@@ -296,6 +300,40 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     }
 
     return type
+  }
+
+  // 监听服务叠加事件
+  async onImposeServiceByAddData(params) {
+    const { Cesium, map, webGlobe, CesiumZondy } = this
+    const layerConfig = {
+      guid: UUID.uuid(),
+      ip: params.ip,
+      port: params.port,
+      name: params.name,
+      serverName: params.name,
+      serverType: dataCatalogManagerInstance.convertLayerServiceType(
+        params.type
+      )
+    }
+    const layer = DataCatalogManager.generateLayerByConfig(layerConfig)
+
+    if (layer) {
+      if (layer.loadStatus === LoadStatus.notLoaded) {
+        await layer.load()
+      }
+      this.document.defaultMap.add(layer)
+
+      if (layer.type !== LayerType.IGSScene) {
+        fitBoundByLayer(layer, {
+          Cesium,
+          map,
+          webGlobe,
+          CesiumZondy
+        })
+      } else {
+        this.switchMapMode()
+      }
+    }
   }
 }
 </script>
