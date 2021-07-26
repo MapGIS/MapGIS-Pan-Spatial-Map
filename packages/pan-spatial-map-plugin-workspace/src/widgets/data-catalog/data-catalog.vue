@@ -756,14 +756,15 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         this.dataCatalogManager.checkedLayerConfigIDs.push(node.guid)
       }
     } else {
-      return false
+      eventBus.$emit('emitImposeServiceByAddData', params)
     }
   }
 
   // 获取该叠加服务对应的节点
   private getServiceNode(name, type, tree) {
+    const serviceType = this.dataCatalogManager.convertLayerServiceType(type)
     tree.forEach(item => {
-      if (item.name === name && item.serverType === +type) {
+      if (item.serverName === name && item.serverType === +serviceType) {
         this.imposeNode = item
       } else {
         if (item.children && item.children.length > 0) {

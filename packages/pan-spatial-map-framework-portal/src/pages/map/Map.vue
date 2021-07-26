@@ -61,10 +61,17 @@ export default {
       return { theme: 'dark', color: '#1890ff' }
     },
     emitEvent() {
+      const ip = this.getQueryString('ip')
+      const port = this.getQueryString('port')
       const name = this.getQueryString('name')
       const type = this.getQueryString('type')
 
-      eventBus.$emit('emitImposeService', { name: name, type: type })
+      eventBus.$emit('emitImposeService', {
+        ip: ip,
+        port: port,
+        name: name,
+        type: type
+      })
     },
     getQueryString(name) {
       const url = window.location.href
