@@ -58,6 +58,9 @@ export default {
     .ant-form-item {
       padding-bottom: 0;
     }
+    .ant-slider-with-marks {
+      margin-top: 0;
+    }
   }
   &.compact {
     .ant-form-item {
@@ -81,6 +84,9 @@ export default {
     }
     .ant-upload.ant-upload-drag p.ant-upload-text {
       font-size: 14px;
+    }
+    .ant-slider-with-marks {
+      margin-bottom: 14px;
     }
   }
 }

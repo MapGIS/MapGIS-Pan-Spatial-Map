@@ -3,22 +3,20 @@
     class="mp-widget-scene-roaming"
     :class="isFullScreen ? '' : 'window-size'"
   >
-    <div class="scene-title">
-      <mp-toolbar>
-        <mp-toolbar-command
-          title="交互选点"
-          icon="pull-request"
-          :disabled="isShowPointTable || isShowEditTable"
-          @click="onClickCreatPath"
-        />
-        <mp-toolbar-command
-          title="取消选点"
-          icon="close"
-          :disabled="!isCreatePath"
-          @click="onClickCancelPath"
-        />
-      </mp-toolbar>
-    </div>
+    <mp-toolbar class="scene-roaming-toolbar">
+      <mp-toolbar-command
+        title="交互选点"
+        icon="environment"
+        :disabled="isShowPointTable || isShowEditTable"
+        @click="onClickCreatPath"
+      />
+      <mp-toolbar-command
+        title="取消选点"
+        icon="close"
+        :disabled="!isCreatePath"
+        @click="onClickCancelPath"
+      />
+    </mp-toolbar>
     <div class="scene-panel-table">
       <a-table
         v-show="!isShowPointTable && !isShowEditTable"
@@ -151,40 +149,35 @@
       </a-table>
     </div>
     <div v-show="!isShowEditTable" class="scene-panel-form">
-      <a-form-model
-        :model="formData"
-        :label-col="{ span: 8 }"
-        :wrapper-col="{ span: 16 }"
-        labelAlign="left"
-      >
-        <a-form-model-item label="移动速度:">
+      <mp-setting-form :model="formData">
+        <a-form-item label="移动速度">
           <a-input
             v-model.number="formData.speed"
             type="number"
             min="1"
             addon-after="公里/小时"
           />
-        </a-form-model-item>
-        <a-form-model-item label="附加高程:">
+        </a-form-item>
+        <a-form-item label="附加高程">
           <a-input v-model.number="formData.exHeight" type="number" min="0" />
-        </a-form-model-item>
-        <a-form-model-item label="方位角:">
+        </a-form-item>
+        <a-form-item label="方位角">
           <a-input
             v-model.number="formData.azimuth"
             type="number"
             min="-180"
             max="180"
           />
-        </a-form-model-item>
-        <a-form-model-item label="俯仰角:">
+        </a-form-item>
+        <a-form-item label="俯仰角">
           <a-input
             v-model.number="formData.pitch"
             type="number"
             min="-180"
             max="180"
           />
-        </a-form-model-item>
-        <a-form-model-item label="视角:">
+        </a-form-item>
+        <a-form-item label="视角">
           <a-select v-model="formData.perspective">
             <a-select-option
               v-for="item in perspectiveOptions"
@@ -193,8 +186,8 @@
               {{ item.label }}
             </a-select-option>
           </a-select>
-        </a-form-model-item>
-        <a-form-model-item label="插值:">
+        </a-form-item>
+        <a-form-item label="插值">
           <a-select v-model="formData.interpolation">
             <a-select-option
               v-for="item in interpolationOptions"
@@ -203,8 +196,8 @@
               {{ item.label }}
             </a-select-option>
           </a-select>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </mp-setting-form>
     </div>
     <div v-show="!isShowEditTable" class="scene-footer">
       <div class="footer-checkbox">
@@ -214,24 +207,25 @@
         ></a-checkbox-group>
       </div>
       <div class="footer-btn">
-        <a-button v-show="!isStart" type="primary" @click="onClickStart"
-          >开始</a-button
-        >
-        <a-button v-show="isStart" type="primary" @click="onClickStop"
-          >停止</a-button
-        >
-        <a-button v-show="isPause" type="primary" @click="onClickGoOn"
-          >继续</a-button
-        >
-        <a-button v-show="!isPause" type="primary" @click="onClickPause"
-          >暂停</a-button
-        >
+        <a-button v-show="!isStart" type="primary" @click="onClickStart">
+          开始
+        </a-button>
+        <a-button v-show="isStart" type="primary" @click="onClickStop">
+          停止
+        </a-button>
+        <a-button v-show="isPause" type="primary" @click="onClickGoOn">
+          继续
+        </a-button>
+        <a-button v-show="!isPause" type="primary" @click="onClickPause">
+          暂停
+        </a-button>
         <a-button
           :disabled="editingKey !== ''"
           type="primary"
           @click="onClickSave"
-          >保存</a-button
         >
+          保存
+        </a-button>
       </div>
     </div>
     <div v-show="isShowEditTable" class="edit-footer">
@@ -926,95 +920,70 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 .mp-widget-scene-roaming {
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-.window-size {
-  width: 344px;
-}
-
-.scene-title {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0 0 8px 0;
-
-  .ant-btn {
-    margin-right: 16px;
-    padding: 0 15px;
+  &.window-size {
+    width: 300px;
   }
-}
-
-.scene-panel-table {
-  width: 100%;
-
-  ::v-deep .anticon-edit {
-    margin-left: 8px;
-  }
-
-  ::v-deep .anticon-close {
-    margin-left: 8px;
-  }
-
-  ::v-deep .ant-btn-circle {
-    border: none;
-    background: transparent;
-  }
-}
-
-.scene-panel-form {
-  width: 100%;
-  .ant-form-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0;
-  }
-  .ant-input {
-    padding: 4px 11px;
-  }
-}
-
-.scene-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin-top: 8px;
-
-  .footer-checkbox {
+  .scene-roaming-toolbar {
     width: 100%;
+  }
+  .scene-panel-table {
+    width: 100%;
+    padding-top: 8px;
+    ::v-deep .anticon-edit {
+      margin-left: 8px;
+    }
+    ::v-deep .anticon-close {
+      margin-left: 8px;
+    }
+    ::v-deep .ant-btn-circle {
+      border: none;
+      background: transparent;
+    }
+  }
 
-    .ant-checkbox-group {
+  .scene-panel-form {
+    width: 100%;
+    padding-top: 8px;
+  }
+  .scene-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+    .footer-checkbox {
+      width: 100%;
+      .ant-checkbox-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+    }
+    .footer-btn {
       display: flex;
       justify-content: space-between;
       align-items: center;
       width: 100%;
+      margin-top: 8px;
+
+      .ant-btn {
+        padding: 0 15px;
+      }
     }
   }
 
-  .footer-btn {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .edit-footer {
     width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
     margin-top: 8px;
 
     .ant-btn {
+      margin-left: 16px;
       padding: 0 15px;
     }
-  }
-}
-
-.edit-footer {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 8px;
-
-  .ant-btn {
-    margin-left: 16px;
-    padding: 0 15px;
   }
 }
 </style>

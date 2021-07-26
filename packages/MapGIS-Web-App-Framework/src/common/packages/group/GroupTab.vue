@@ -22,6 +22,10 @@ export default {
       validator(val) {
         return ['default', 'large', 'small'].includes(val)
       }
+    },
+    hasTopMargin: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
@@ -29,7 +33,8 @@ export default {
       return [
         {
           'is-background': this.background,
-          [`is-${this.size}`]: !!this.size
+          [`is-${this.size}`]: !!this.size,
+          'has-top-margin': this.hasTopMargin
         }
       ]
     }
@@ -42,8 +47,11 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  margin: 8px 0;
+  margin: 0 0 8px 0;
   font-weight: 700;
+  &.has-top-margin {
+    margin-top: 8px;
+  }
   &.is-small {
     font-size: 12px;
   }
@@ -54,7 +62,7 @@ export default {
     font-size: 16px;
   }
   hr {
-    width: 2px;
+    width: 3px;
     height: 1em;
     margin-right: 8px;
     border: 0;

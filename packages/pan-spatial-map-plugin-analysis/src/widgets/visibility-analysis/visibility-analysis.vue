@@ -1,26 +1,25 @@
 <template>
   <div class="mp-widget-visibility-analysis">
-    <div class="visibility-title">
-      <span>图例</span>
-    </div>
     <div class="visibility-panel">
-      <a-form-model v-model="formData">
-        <a-form-model-item label="不可视区域颜色:">
-          <div class="red-item"></div>
-        </a-form-model-item>
-        <a-form-model-item label="可视区域颜色:">
-          <div class="green-item"></div>
-        </a-form-model-item>
-      </a-form-model>
+      <mp-setting-form v-model="formData">
+        <a-form-item label="不可视区域颜色">
+          <div class="color-container">
+            <div class="red-item"></div>
+          </div>
+        </a-form-item>
+        <a-form-item label="可视区域颜色">
+          <div class="color-container">
+            <div class="green-item"></div>
+          </div>
+        </a-form-item>
+      </mp-setting-form>
     </div>
     <div class="visibility-footer">
-      <a-button type="primary" size="small" @click="onClickView">视点</a-button>
-      <a-button type="primary" size="small" @click="onClickTarget"
-        >目标点</a-button
-      >
-      <a-button type="primary" size="small" @click="onClickStop"
-        >结束分析</a-button
-      >
+      <a-button type="primary" @click="onClickView">视点</a-button>
+      <a-button type="primary" @click="onClickTarget">
+        目标点
+      </a-button>
+      <a-button type="primary" @click="onClickStop">结束分析</a-button>
     </div>
   </div>
 </template>
@@ -202,40 +201,22 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
 </script>
 
 <style lang="less" scoped>
-.visibility-title {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 8px;
-
-  span {
-    font-size: 24px;
-    font-weight: bold;
-  }
-}
-
 .visibility-panel {
-  .ant-form-item {
-    margin-bottom: 8px;
-  }
-
-  ::v-deep .ant-form-item-label {
-    line-height: 28px;
-  }
-
-  .red-item {
-    background: red;
-    height: 28px;
+  .color-container {
+    padding: 9px 8px;
+    height: 32px;
+    border: 1px solid @border-color-base;
     border-radius: 4px;
-  }
-
-  .green-item {
-    background: green;
-    height: 28px;
-    border-radius: 4px;
+    .red-item {
+      background: red;
+      height: 100%;
+    }
+    .green-item {
+      background: green;
+      height: 100%;
+    }
   }
 }
-
 .visibility-footer {
   display: flex;
   justify-content: space-between;

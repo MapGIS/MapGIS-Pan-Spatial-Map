@@ -1,33 +1,23 @@
 <template>
   <div class="mp-widget-skyline-analysis">
-    <a-form-model :model="formData">
-      <a-form-model-item label="线宽">
-        <a-input
-          v-model.number="formData.skylineWidth"
-          size="small"
-          type="number"
-          min="0"
-        />
-      </a-form-model-item>
-      <a-form-model-item label="线颜色">
+    <mp-setting-form>
+      <a-form-item label="线宽">
+        <a-input v-model.number="formData.skylineWidth" type="number" min="0" />
+      </a-form-item>
+      <a-form-item label="线颜色">
         <MpColorPicker
           :color.sync="formData.skylineColor"
           :disableAlpha="true"
-          class="color-picker"
         ></MpColorPicker>
-      </a-form-model-item>
-    </a-form-model>
+      </a-form-item>
+    </mp-setting-form>
     <div class="control-button-container">
-      <a-button class="control-button" type="primary" @click="add" size="small"
-        >开始分析</a-button
-      >
-      <a-button
-        class="control-button"
-        type="primary"
-        @click="remove"
-        size="small"
-        >结束分析</a-button
-      >
+      <a-button class="control-button" type="primary" @click="add">
+        开始分析
+      </a-button>
+      <a-button class="control-button" type="primary" @click="remove">
+        结束分析
+      </a-button>
     </div>
   </div>
 </template>
@@ -91,28 +81,11 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
   }
 }
 </script>
+
 <style lang="less">
 .mp-widget-skyline-analysis {
   display: flex;
   flex-direction: column;
-  .ant-form-item {
-    align-items: center;
-    margin-bottom: 0;
-  }
-  .ant-form-item-label {
-    line-height: 20px;
-  }
-  .ant-form-item-label > label::after {
-    content: '';
-  }
-  .ant-input {
-    padding: 4px 11px;
-  }
-  .color-picker {
-    height: 40px;
-    padding: 8px 0px;
-  }
-
   .control-button-container {
     display: flex;
     justify-content: space-between;

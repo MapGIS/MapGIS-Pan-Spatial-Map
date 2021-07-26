@@ -1,14 +1,13 @@
 <template>
   <div class="mp-widget-shadow-analysis">
-    <a-form-model :model="formData">
-      <a-form-model-item label="日期">
+    <mp-setting-form>
+      <a-form-item label="日期">
         <a-date-picker
           :default-value="shadowMoment(formData.date, 'YYYY-MM-DD')"
-          size="small"
           @change="changeDate"
         />
-      </a-form-model-item>
-      <a-form-model-item label="分析类型">
+      </a-form-item>
+      <a-form-item label="分析类型">
         <a-row>
           <a-radio-group v-model="formData.timeType">
             <a-radio value="timeRange">
@@ -19,100 +18,82 @@
             </a-radio>
           </a-radio-group>
         </a-row>
-      </a-form-model-item>
-      <a-form-model-item label="时间" v-if="formData.timeType === 'time'">
+      </a-form-item>
+      <a-form-item label="时间" v-if="formData.timeType === 'time'">
         <a-time-picker
           :default-value="shadowMoment(formData.time, 'HH:mm:ss')"
-          size="small"
           @change="
             val => {
               changeTime(val, 'time')
             }
           "
         />
-      </a-form-model-item>
+      </a-form-item>
       <div v-else-if="formData.timeType === 'timeRange'">
-        <a-form-model-item label="开始时间">
+        <a-form-item label="开始时间">
           <a-time-picker
             :default-value="shadowMoment(formData.startTime, 'HH:mm:ss')"
-            size="small"
             @change="
               val => {
                 changeTime(val, 'startTime')
               }
             "
           />
-        </a-form-model-item>
-        <a-form-model-item label="结束时间">
+        </a-form-item>
+        <a-form-item label="结束时间">
           <a-time-picker
             :default-value="shadowMoment(formData.endTime, 'HH:mm:ss')"
-            size="small"
             @change="
               val => {
                 changeTime(val, 'endTime')
               }
             "
           />
-        </a-form-model-item>
+        </a-form-item>
       </div>
-      <a-form-model-item label="底部高程">
+      <a-form-item label="底部高程">
         <a-input
           v-model.number="formData.min"
           type="number"
           addon-after="(米)"
-          size="small"
         />
-      </a-form-model-item>
-      <a-form-model-item label="拉伸高度">
+      </a-form-item>
+      <a-form-item label="拉伸高度">
         <a-input
           v-model.number="formData.max"
           type="number"
           min="0"
           addon-after="(米)"
-          size="small"
         />
-      </a-form-model-item>
-      <a-form-model-item label="阴影颜色">
+      </a-form-item>
+      <a-form-item label="阴影颜色">
         <MpColorPicker
           :color.sync="formData.shadowColor"
           :disableAlpha="true"
           class="color-picker"
         ></MpColorPicker>
-      </a-form-model-item>
-      <a-form-model-item label="非阴影颜色">
+      </a-form-item>
+      <a-form-item label="非阴影颜色">
         <MpColorPicker
           :color.sync="formData.sunColor"
           :disableAlpha="true"
           class="color-picker"
         ></MpColorPicker>
-      </a-form-model-item>
-      <a-form-model-item label="阴影率" v-show="formData.timeType === 'time'">
-        <a-input
-          v-model.number="formData.ratio"
-          type="number"
-          disabled
-          size="small"
-        />
-      </a-form-model-item>
-    </a-form-model>
+      </a-form-item>
+      <a-form-item label="阴影率" v-show="formData.timeType === 'time'">
+        <a-input v-model.number="formData.ratio" type="number" disabled />
+      </a-form-item>
+    </mp-setting-form>
     <div class="control-button-container">
-      <a-button
-        class="control-button"
-        type="primary"
-        @click="shadow"
-        size="small"
-        >阴影分析</a-button
-      >
-      <a-button class="control-button" type="primary" @click="sun" size="small"
-        >日照分析</a-button
-      >
-      <a-button
-        class="control-button"
-        type="primary"
-        @click="remove"
-        size="small"
-        >结束分析</a-button
-      >
+      <a-button class="control-button" type="primary" @click="shadow">
+        阴影分析
+      </a-button>
+      <a-button class="control-button" type="primary" @click="sun">
+        日照分析
+      </a-button>
+      <a-button class="control-button" type="primary" @click="remove">
+        结束分析
+      </a-button>
     </div>
   </div>
 </template>
@@ -353,28 +334,6 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 .mp-widget-shadow-analysis {
   display: flex;
   flex-direction: column;
-  .fixed-table {
-    width: 250px;
-  }
-
-  .ant-form-item {
-    align-items: center;
-    margin-bottom: 0;
-  }
-  .ant-form-item-label {
-    line-height: 20px;
-  }
-  .ant-form-item-label > label::after {
-    content: '';
-  }
-  .ant-input {
-    padding: 4px 11px;
-  }
-  .color-picker {
-    height: 40px;
-    padding: 8px 0px;
-  }
-
   .control-button-container {
     display: flex;
     justify-content: space-between;

@@ -18,6 +18,9 @@
           @click="onOpenDraw(type.id)"
         >
         </mp-toolbar-command>
+      </mp-toolbar-command-group>
+      <mp-toolbar-space />
+      <mp-toolbar-command-group>
         <a-divider type="vertical" />
         <mp-toolbar-command
           title="设置"
@@ -28,18 +31,17 @@
       </mp-toolbar-command-group>
     </mp-toolbar>
     <div v-show="showSettingPanel">
-      <div class="buffer-container">
-        缓冲半径(km)
-      </div>
-      <div>
-        <a-slider
-          v-model="sliderIndex"
-          :marks="marks"
-          :min="0"
-          :max="limitsArray.length - 1"
-          :tipFormatter="() => `${limits}km`"
-        />
-      </div>
+      <mp-setting-form layout="vertical" style="padding-top: 8px">
+        <a-form-item label="缓冲半径(km)">
+          <a-slider
+            v-model="sliderIndex"
+            :marks="marks"
+            :min="0"
+            :max="limitsArray.length - 1"
+            :tipFormatter="() => `${limits}km`"
+          />
+        </a-form-item>
+      </mp-setting-form>
     </div>
   </div>
 </template>
@@ -636,9 +638,5 @@ export default class MpFeatureQuery extends Mixins(
 .mp-widget-feature-query {
   display: flex;
   flex-direction: column;
-  .buffer-container {
-    margin-top: 12px;
-    color: @title-color;
-  }
 }
 </style>

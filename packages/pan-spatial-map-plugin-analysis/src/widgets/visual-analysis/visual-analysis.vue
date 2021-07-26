@@ -1,23 +1,32 @@
 <template>
   <div class="mp-widget-visual-analysis">
     <div class="visual-panel">
-      <a-form-model v-model="formData">
-        <a-form-model-item label="水平视角">
+      <mp-setting-form v-model="formData">
+        <a-form-item label="水平视角">
           <a-input v-model.number="formData.horizontAngle" type="number" />
-        </a-form-model-item>
-        <a-form-model-item label="垂直视角">
+        </a-form-item>
+        <a-form-item label="垂直视角">
           <a-input v-model.number="formData.verticalAngle" type="number" />
-        </a-form-model-item>
-        <a-form-model-item label="不可视区域颜色">
-          <ColorPicker :color.sync="formData.unVisibleColor"></ColorPicker>
-        </a-form-model-item>
-        <a-form-model-item label="可视区域颜色">
-          <ColorPicker :color.sync="formData.visibleColor"></ColorPicker>
-        </a-form-model-item>
-        <a-form-model-item label="可视遮罩颜色">
-          <ColorPicker :color.sync="formData.maskColor"></ColorPicker>
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+        <a-form-item label="不可视区域颜色">
+          <mp-color-picker
+            :color="formData.unVisibleColor"
+            @input="val => (formData.unVisibleColor = val.hex)"
+          ></mp-color-picker>
+        </a-form-item>
+        <a-form-item label="可视区域颜色">
+          <mp-color-picker
+            :color="formData.visibleColor"
+            @input="val => (formData.visibleColor = val.hex)"
+          ></mp-color-picker>
+        </a-form-item>
+        <a-form-item label="可视遮罩颜色">
+          <mp-color-picker
+            :color="formData.maskColor"
+            @input="val => (formData.maskColor = val.hex)"
+          ></mp-color-picker>
+        </a-form-item>
+      </mp-setting-form>
     </div>
     <div class="visual-footer">
       <a-button type="primary" @click="onClickStart">开始分析</a-button>
@@ -29,11 +38,9 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import ColorPicker from './color-picker'
 
 @Component({
-  name: 'MpVisualAnalysis',
-  components: { ColorPicker }
+  name: 'MpVisualAnalysis'
 })
 export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   // 表单数据
@@ -207,19 +214,10 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 </script>
 
 <style lang="less" scoped>
-.visual-panel {
-  .ant-form-item {
-    margin-bottom: 8px;
-  }
-
-  ::v-deep .ant-form-item-label {
-    line-height: 28px;
-  }
-}
-
 .visual-footer {
-  margin-top: 32px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
 }
 </style>

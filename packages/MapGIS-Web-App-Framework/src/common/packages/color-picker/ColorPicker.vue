@@ -9,7 +9,7 @@
         />
       </template>
       <div class="color-container">
-        <div :style="{ background: pickColor }" class="color color-div"></div>
+        <div :style="{ background: pickColor }" class="color-div"></div>
       </div>
     </a-popover>
   </div>
@@ -75,7 +75,7 @@ export default {
   .color-container {
     padding: 9px 8px;
     height: 32px;
-    border: 1px solid @border-color;
+    border: 1px solid @border-color-base;
     border-radius: 4px;
     .color-div {
       height: 100%;

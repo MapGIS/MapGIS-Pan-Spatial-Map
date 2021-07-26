@@ -132,7 +132,7 @@
         <a-form-item label="字体颜色">
           <mp-color-picker
             :color="measureStyle.textColor"
-            :disable-alpha="false"
+            :disable-alpha="true"
             @input="onTextColorChange"
           ></mp-color-picker>
         </a-form-item>
