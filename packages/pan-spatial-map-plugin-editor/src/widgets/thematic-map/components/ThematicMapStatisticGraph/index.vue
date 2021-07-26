@@ -2,14 +2,17 @@
   <!-- 统计表 -->
   <mp-window-wrapper :visible="visible">
     <mp-window
-      title="统计表"
+      @window-size="onWindowSize"
       :visible.sync="visible"
-      anchor="top-left"
       :horizontalOffset="12"
       :verticalOffset="50"
+      :min-width="500"
+      :max-height="400"
+      title="统计表"
+      anchor="top-left"
     >
-      <div class="thematic-map-statistic-graph">
-        <a-spin :spinning="loading">
+      <a-spin :spinning="loading">
+        <div ref="statisticGraph" class="thematic-map-statistic-graph">
           <!-- 指标和图表切换 -->
           <mp-row-flex
             class="thematic-map-statistic-graph-head"
@@ -42,8 +45,8 @@
           <div id="thematic-map-graph-chart" v-show="showChart" />
           <!-- 空数据友好提示 -->
           <a-empty v-show="!showChart" />
-        </a-spin>
-      </div>
+        </div>
+      </a-spin>
     </mp-window>
   </mp-window-wrapper>
 </template>
@@ -152,6 +155,19 @@ export default class ThematicMapStatisticGraph extends Vue {
   get showChart() {
     const { x, y } = this.chartOption
     return x.length && y.length
+  }
+
+  /**
+   * 窗口变化
+   */
+  onWindowSize(mode?: 'max' | 'normal') {
+    this.$nextTick(() => {
+      if (this.chart) {
+        const width =
+          mode === 'max' ? this.$refs.statisticGraph.clientWidth : 500
+        this.chart.resize({ width })
+      }
+    })
   }
 
   /**

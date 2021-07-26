@@ -5,6 +5,9 @@
       :visible.sync="visible"
       :horizontalOffset="12"
       :verticalOffset="50"
+      :min-width="500"
+      :max-height="400"
+      :has-padding="false"
       anchor="top-right"
       title="属性表"
     >
@@ -135,7 +138,7 @@ export default class ThematicMapAttributeTable extends Vue {
     const x = length > 3 ? length * 120 : 500
     return {
       x,
-      y: 275
+      y: 216
     }
   }
 
