@@ -8,6 +8,7 @@
         :tree-data="thematicMapTree"
         :replace-fields="{ key: 'id' }"
         :default-expand-all="true"
+        description="输入内容可自动创建专题分类"
       />
     </mp-row-flex>
     <!-- 专题图名称 -->

@@ -23,7 +23,11 @@
     </slot>
     <div slot="overlay" class="mp-tree-select-dropdown">
       <a-spin :spinning="loading">
-        <a-empty class="mp-tree-select-empty" v-if="!treeData.length" />
+        <a-empty
+          class="mp-tree-select-empty"
+          :description="description"
+          v-if="!treeData.length"
+        />
         <a-tree
           v-else
           @load="onTreeLoad"
@@ -81,9 +85,13 @@ export default {
         return ['large', 'default', 'small'].includes(v)
       }
     },
+    description: {
+      type: String,
+      default: '暂无数据'
+    },
     placeholder: {
       type: String,
-      default: '请输入或选择'
+      default: '请选择或输入数据'
     },
     showLine: {
       type: Boolean,
