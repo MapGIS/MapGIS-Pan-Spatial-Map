@@ -1,20 +1,24 @@
 <template>
   <div class="subject-items">
+    <!-- 设置面板头部 -->
     <mp-toolbar :bordered="false" class="subject-items-head">
       <mp-toolbar-title :has-padding="false">
         专题设置
       </mp-toolbar-title>
       <mp-toolbar-command-group>
         <mp-toolbar-command @click="add" title="新增" icon="plus" />
-        <template v-if="!showCheckbox">
-          <mp-toolbar-command @click="edit" title="编辑" icon="form" />
-        </template>
-        <template v-else>
-          <mp-toolbar-command @click="remove" title="删除" icon="delete" />
-          <mp-toolbar-command @click="cancel" title="取消" icon="close" />
+        <template v-if="configList.length">
+          <template v-if="!showCheckbox">
+            <mp-toolbar-command @click="edit" title="编辑" icon="form" />
+          </template>
+          <template v-else>
+            <mp-toolbar-command @click="remove" title="删除" icon="delete" />
+            <mp-toolbar-command @click="cancel" title="取消" icon="close" />
+          </template>
         </template>
       </mp-toolbar-command-group>
     </mp-toolbar>
+    <!-- 设置面板内容 -->
     <div class="subject-items-content">
       <a-empty description="暂无年度数据" v-if="!configList.length" />
       <a-collapse
@@ -144,6 +148,7 @@ export default class SubjectItems extends Vue {
       _checked: false
     }
     this.configList = this.configList.concat(node)
+    this.showCheckbox = false
   }
 
   /**

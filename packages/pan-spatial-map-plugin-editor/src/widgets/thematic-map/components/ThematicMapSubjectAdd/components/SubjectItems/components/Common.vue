@@ -2,7 +2,11 @@
   <div class="common">
     <!-- 年度或时间 -->
     <mp-row-flex label="年度/时间" label-align="right" :span="[6, 18]">
-      <a-input v-model="selfTime" placeholder="请输入年度/时间" />
+      <a-input
+        v-model="selfTime"
+        :allow-clear="true"
+        placeholder="请输入年度/时间"
+      />
     </mp-row-flex>
     <!-- 服务设置 -->
     <div class="server-tree-select">
