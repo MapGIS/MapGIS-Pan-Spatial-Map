@@ -49,7 +49,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   marker = null
 
   // 要素数据
-  dataSet: Feature.FeatureIGSSFELE | null = null
+  dataSet: Feature.FeatureIGS | null = null
 
   get prefix() {
     return this.is2DMapMode ? 'Mapbox' : 'Cesium'
