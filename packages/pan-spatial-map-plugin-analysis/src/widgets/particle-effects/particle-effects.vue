@@ -27,15 +27,16 @@
     <mp-setting-form class="particle-effects-setting">
       <a-form-item label="发射速率(个/秒)">
         <a-row>
-          <a-col :span="14">
+          <a-col :span="15">
             <a-slider
+              class="slider-body"
               v-model="emissionRate"
               :min="0"
               :max="100"
               @change="val => onChangeEffect(val, 'emissionRate')"
             />
           </a-col>
-          <a-col :span="10">
+          <a-col :span="9">
             <a-input-number
               class="slider-number"
               v-model="emissionRate"
@@ -47,15 +48,16 @@
       </a-form-item>
       <a-form-item label="尺寸(像素)">
         <a-row>
-          <a-col :span="14">
+          <a-col :span="15">
             <a-slider
+              class="slider-body"
               v-model="imageSize"
               :min="2"
               :max="60"
               @change="val => onChangeEffect(val, 'imageSize')"
             />
           </a-col>
-          <a-col :span="10">
+          <a-col :span="9">
             <a-input-number
               class="slider-number"
               v-model="imageSize"
@@ -67,8 +69,9 @@
       </a-form-item>
       <a-form-item label="最小存在时间">
         <a-row>
-          <a-col :span="14">
+          <a-col :span="15">
             <a-slider
+              class="slider-body"
               v-model="minimumParticleLife"
               :min="0.1"
               :max="30.0"
@@ -76,7 +79,7 @@
               @change="val => onChangeEffect(val, 'minimumParticleLife')"
             />
           </a-col>
-          <a-col :span="10">
+          <a-col :span="9">
             <a-input-number
               class="slider-number"
               v-model="minimumParticleLife"
@@ -89,8 +92,9 @@
       </a-form-item>
       <a-form-item label="最大存在时间">
         <a-row>
-          <a-col :span="14">
+          <a-col :span="15">
             <a-slider
+              class="slider-body"
               v-model="maximumParticleLife"
               :min="0.1"
               :max="30.0"
@@ -98,7 +102,7 @@
               @change="val => onChangeEffect(val, 'maximumParticleLife')"
             />
           </a-col>
-          <a-col :span="10">
+          <a-col :span="9">
             <a-input-number
               class="slider-number"
               v-model="maximumParticleLife"
@@ -111,15 +115,16 @@
       </a-form-item>
       <a-form-item label="最小速度">
         <a-row>
-          <a-col :span="14">
+          <a-col :span="15">
             <a-slider
+              class="slider-body"
               v-model="minimumSpeed"
               :min="0"
               :max="30"
               @change="val => onChangeEffect(val, 'minimumSpeed')"
             />
           </a-col>
-          <a-col :span="10">
+          <a-col :span="9">
             <a-input-number
               class="slider-number"
               v-model="minimumSpeed"
@@ -131,15 +136,16 @@
       </a-form-item>
       <a-form-item label="最大速度">
         <a-row>
-          <a-col :span="14">
+          <a-col :span="15">
             <a-slider
+              class="slider-body"
               v-model="maximumSpeed"
               :min="0"
               :max="30"
               @change="val => onChangeEffect(val, 'maximumSpeed')"
             />
           </a-col>
-          <a-col :span="10">
+          <a-col :span="9">
             <a-input-number
               class="slider-number"
               v-model="maximumSpeed"
@@ -151,15 +157,16 @@
       </a-form-item>
       <a-form-item label="初始比例">
         <a-row>
-          <a-col :span="14">
+          <a-col :span="15">
             <a-slider
+              class="slider-body"
               v-model="startScale"
               :min="0.0"
               :max="10.0"
               @change="val => onChangeEffect(val, 'startScale')"
             />
           </a-col>
-          <a-col :span="10">
+          <a-col :span="9">
             <a-input-number
               class="slider-number"
               v-model="startScale"
@@ -171,15 +178,16 @@
       </a-form-item>
       <a-form-item label="结束比例">
         <a-row>
-          <a-col :span="14">
+          <a-col :span="15">
             <a-slider
+              class="slider-body"
               v-model="endScale"
               :min="0.0"
               :max="10.0"
               @change="val => onChangeEffect(val, 'endScale')"
             />
           </a-col>
-          <a-col :span="10">
+          <a-col :span="9">
             <a-input-number
               class="slider-number"
               v-model="endScale"
@@ -329,6 +337,9 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
 .mp-widget-particle-effects {
   .particle-effects-setting {
     padding-top: 8px;
+    .slider-body {
+      margin-right: 10px;
+    }
     .slider-number {
       width: 100%;
     }

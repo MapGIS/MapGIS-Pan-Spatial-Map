@@ -15,19 +15,15 @@
     </mp-setting-form>
     <a-row>
       <a-textarea
-        class="note"
+        class="mp-note-info"
         disabled
         :value="`坡向分析需要带法线地形`"
         auto-size
       ></a-textarea>
     </a-row>
-    <div class="control-button-container">
-      <a-button class="control-button" type="primary" @click="add"
-        >开始分析</a-button
-      >
-      <a-button class="control-button" type="primary" @click="remove"
-        >结束分析</a-button
-      >
+    <div class="mp-footer-actions">
+      <a-button type="primary" @click="add">分析</a-button>
+      <a-button @click="remove">清除</a-button>
     </div>
   </div>
 </template>
@@ -138,32 +134,6 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
   }
 }
 </script>
-<style lang="less">
-.mp-widget-aspect-analysis {
-  .note {
-    padding: 3px 0;
-    color: @text-color-secondary;
-    word-break: break-all;
-    white-space: break-spaces;
-    font-size: 12px;
-    &.ant-input {
-      border: none;
-      background-color: transparent;
-      resize: none;
-      min-height: 24px;
-    }
-  }
-
-  .control-button-container {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
-    &:last-child {
-      margin-bottom: 0;
-    }
-    .control-button {
-      width: calc(~'50% - 2.5px');
-    }
-  }
-}
+<style lang="less" scoped>
+@import '../index.less';
 </style>

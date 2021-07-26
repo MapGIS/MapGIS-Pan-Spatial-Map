@@ -11,12 +11,12 @@
         ></MpColorPicker>
       </a-form-item>
     </mp-setting-form>
-    <div class="control-button-container">
-      <a-button class="control-button" type="primary" @click="add">
-        开始分析
+    <div class="mp-footer-actions">
+      <a-button type="primary" @click="add">
+        分析
       </a-button>
-      <a-button class="control-button" type="primary" @click="remove">
-        结束分析
+      <a-button @click="remove">
+        清除
       </a-button>
     </div>
   </div>
@@ -82,20 +82,11 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+@import '../index.less';
+
 .mp-widget-skyline-analysis {
   display: flex;
   flex-direction: column;
-  .control-button-container {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
-    &:last-child {
-      margin-bottom: 0;
-    }
-    .control-button {
-      width: calc(~'50% - 2.5px');
-    }
-  }
 }
 </style>

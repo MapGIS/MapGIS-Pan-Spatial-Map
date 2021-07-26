@@ -52,15 +52,15 @@
         />
       </a-form-item>
     </mp-setting-form>
-    <div class="control-button-container">
-      <a-button class="control-button" type="primary" @click="startClipping">
-        开始分析
+    <div class="mp-footer-actions">
+      <a-button type="primary" @click="startClipping">
+        分析
       </a-button>
-      <a-button class="control-button" type="primary" @click="stopClipping">
-        开始分析
+      <a-button type="primary" @click="animation">
+        动态效果
       </a-button>
-      <a-button class="control-button" type="primary" @click="animation">
-        动画
+      <a-button @click="stopClipping">
+        清除
       </a-button>
     </div>
   </div>
@@ -408,7 +408,9 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+@import '../index.less';
+
 .mp-widget-dynamic-section-analysis {
   display: flex;
   flex-direction: column;
@@ -417,17 +419,6 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     font-size: 12px;
     .ant-radio-wrapper {
       font-size: 12px;
-    }
-  }
-  .control-button-container {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
-    &:last-child {
-      margin-bottom: 0;
-    }
-    .control-button {
-      width: calc(~'34% - 2.5px');
     }
   }
 }

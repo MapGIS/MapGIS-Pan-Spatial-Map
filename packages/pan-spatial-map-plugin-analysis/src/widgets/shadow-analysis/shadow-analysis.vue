@@ -84,15 +84,15 @@
         <a-input v-model.number="formData.ratio" type="number" disabled />
       </a-form-item>
     </mp-setting-form>
-    <div class="control-button-container">
-      <a-button class="control-button" type="primary" @click="shadow">
-        阴影分析
+    <div class="mp-footer-actions">
+      <a-button type="primary" @click="shadow">
+        分析
       </a-button>
-      <a-button class="control-button" type="primary" @click="sun">
-        日照分析
+      <a-button type="primary" @click="sun">
+        日照效果
       </a-button>
-      <a-button class="control-button" type="primary" @click="remove">
-        结束分析
+      <a-button @click="remove">
+        清除
       </a-button>
     </div>
   </div>
@@ -108,7 +108,7 @@ import moment from 'moment'
 })
 export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   private formData = {
-    date: '2021-7-1', // 日期
+    date: moment().format('YYYY-MM-DD'), // 日期
     startTime: '10:00:00', // 开始时间
     endTime: '14:00:00', // 结束时间
     min: 0, // 最低高程(米)
@@ -330,20 +330,11 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+@import '../index.less';
+
 .mp-widget-shadow-analysis {
   display: flex;
   flex-direction: column;
-  .control-button-container {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
-    &:last-child {
-      margin-bottom: 0;
-    }
-    .control-button {
-      width: calc(~'34% - 2.5px');
-    }
-  }
 }
 </style>

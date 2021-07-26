@@ -3,34 +3,39 @@
     <div class="visibility-panel">
       <mp-setting-form v-model="formData">
         <a-form-item label="不可视区域颜色">
-          <div class="color-container">
-            <div class="red-item"></div>
-          </div>
+          <mp-color-picker
+            :color="formData.unVisibleColor"
+            @input="val => (formData.unVisibleColor = val.hex)"
+          ></mp-color-picker>
         </a-form-item>
         <a-form-item label="可视区域颜色">
-          <div class="color-container">
-            <div class="green-item"></div>
-          </div>
+          <mp-color-picker
+            :color="formData.visibleColor"
+            @input="val => (formData.visibleColor = val.hex)"
+          ></mp-color-picker>
         </a-form-item>
       </mp-setting-form>
     </div>
-    <div class="visibility-footer">
+    <div class="mp-footer-actions">
       <a-button type="primary" @click="onClickView">视点</a-button>
       <a-button type="primary" @click="onClickTarget">
         目标点
       </a-button>
-      <a-button type="primary" @click="onClickStop">结束分析</a-button>
+      <a-button @click="onClickStop">清除</a-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({ name: 'MpVisibilityAnalysis' })
 export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
-  private formData = {}
+  private formData = {
+    visibleColor: '#008000',
+    unVisibleColor: '#ff0000'
+  }
 
   // 是否为鼠标注册了监听事件
   private isAddEventListener = false
@@ -43,6 +48,20 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
 
   // 目标点
   private targetPoint
+
+  @Watch('formData', { deep: true })
+  onColorChange(newVal) {
+    const unVisibleColor = new this.Cesium.Color.fromCssColorString(
+      newVal.unVisibleColor
+    )
+    const visibleColor = new this.Cesium.Color.fromCssColorString(
+      newVal.visibleColor
+    )
+    if (window.VisibilityAnalysisManage.visibility) {
+      window.VisibilityAnalysisManage.visibility._unvisibleColor = unVisibleColor
+      window.VisibilityAnalysisManage.visibility._visibleColor = visibleColor
+    }
+  }
 
   created() {
     this.initData()
@@ -63,6 +82,13 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
   private onClickView() {
     this.hasViewPosition = false
 
+    const unVisibleColor = new this.Cesium.Color.fromCssColorString(
+      this.formData.unVisibleColor
+    )
+    const visibleColor = new this.Cesium.Color.fromCssColorString(
+      this.formData.visibleColor
+    )
+
     if (window.VisibilityAnalysisManage.visibility) {
       // 移除通视分析结果
       this.webGlobe.viewer.scene.VisualAnalysisManager.remove(
@@ -82,8 +108,11 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
         viewer: this.webGlobe.viewer
       }
     )
+
     // 初始化通视分析类
     window.VisibilityAnalysisManage.visibility = advancedAnalysisManager.createVisibilityAnalysis()
+    window.VisibilityAnalysisManage.visibility._unvisibleColor = unVisibleColor
+    window.VisibilityAnalysisManage.visibility._visibleColor = visibleColor
 
     this.addEventListener()
   }
@@ -101,13 +130,15 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
 
     this.webGlobe.viewer.entities.removeAll()
 
-    // 移除通视分析结果
-    this.webGlobe.viewer.scene.VisualAnalysisManager.remove(
-      window.VisibilityAnalysisManage.visibility
-    )
+    if (window.VisibilityAnalysisManage.visibility) {
+      // 移除通视分析结果
+      this.webGlobe.viewer.scene.VisualAnalysisManager.remove(
+        window.VisibilityAnalysisManage.visibility
+      )
 
-    // 销毁通视分析类
-    window.VisibilityAnalysisManage.visibility.destroy()
+      // 销毁通视分析类
+      window.VisibilityAnalysisManage.visibility.destroy()
+    }
 
     this.isAddEventListener = false
   }
@@ -201,26 +232,5 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
 </script>
 
 <style lang="less" scoped>
-.visibility-panel {
-  .color-container {
-    padding: 9px 8px;
-    height: 32px;
-    border: 1px solid @border-color-base;
-    border-radius: 4px;
-    .red-item {
-      background: red;
-      height: 100%;
-    }
-    .green-item {
-      background: green;
-      height: 100%;
-    }
-  }
-}
-.visibility-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-}
+@import '../index.less';
 </style>

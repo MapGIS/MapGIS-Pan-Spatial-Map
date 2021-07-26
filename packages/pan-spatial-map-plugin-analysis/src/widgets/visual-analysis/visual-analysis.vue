@@ -28,9 +28,9 @@
         </a-form-item>
       </mp-setting-form>
     </div>
-    <div class="visual-footer">
-      <a-button type="primary" @click="onClickStart">开始分析</a-button>
-      <a-button type="primary" @click="onClickStop">结束分析</a-button>
+    <div class="mp-footer-actions">
+      <a-button type="primary" @click="onClickStart">分析</a-button>
+      <a-button @click="onClickStop">清除</a-button>
     </div>
   </div>
 </template>
@@ -214,10 +214,5 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 </script>
 
 <style lang="less" scoped>
-.visual-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-}
+@import '../index.less';
 </style>
