@@ -10,18 +10,21 @@
         {{ label }}
       </li>
     </ul>
-    <template v-if="dataCatalog">
-      <tree-layer
-        v-show="tab === 'tree'"
-        :data-catalog="dataCatalog"
-        :widgetInfo="widgetInfo"
-      />
-      <layer-opacity
-        v-show="tab === 'opacity'"
-        :data-catalog="dataCatalog"
-        :layers="document.defaultMap.layers()"
-      />
-    </template>
+    <div ref="layerListEl" class="mp-widget-layer-list-content">
+      <template v-if="showWidget && dataCatalog">
+        <tree-layer
+          v-show="tab === 'tree'"
+          :data-catalog="dataCatalog"
+          :widgetInfo="widgetInfo"
+        />
+        <layer-opacity
+          v-show="tab === 'opacity'"
+          :data-catalog="dataCatalog"
+          :layers="document.defaultMap.layers()"
+        />
+      </template>
+      <a-empty v-else description="暂无选中图层" />
+    </div>
   </div>
 </template>
 
@@ -46,6 +49,29 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     { key: 'opacity', label: '透明度' }
   ]
 
+  /**
+   * 视图窗口变化
+   */
+  private onWindowSize(mode: 'max' | 'normal') {
+    this.$nextTick(() => {
+      const { layerListEl } = this.$refs
+      if (layerListEl) {
+        layerListEl.style.width = `${
+          mode === 'max' ? this.$el.clientWidth : 330
+        }px`
+      }
+    })
+  }
+
+  get showWidget() {
+    return (
+      this.document &&
+      this.document.defaultMap &&
+      this.document.defaultMap.layers() &&
+      this.document.defaultMap.layers().length > 0
+    )
+  }
+
   async mounted() {
     try {
       this.dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData()
@@ -63,7 +89,7 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
 <style lang="less">
 .mp-widget-layer-list {
   flex: 1 1 0%;
-  min-height: 76px;
+  // min-height: 76px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -89,6 +115,10 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     .active-color {
       border-bottom-color: @primary-color;
     }
+  }
+  &-content {
+    width: 330px;
+    max-width: 100%;
   }
 }
 .layer-list-popover {

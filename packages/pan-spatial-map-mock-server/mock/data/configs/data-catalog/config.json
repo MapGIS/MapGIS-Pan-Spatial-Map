@@ -1016,7 +1016,7 @@
             "searchName": "",
             "token": "",
             "guid": "8c74f367-191a-458c-946f-de1cd3778537",
-            "serverUrl": "http://192.168.21.191:6163/igs/rest/mrms/vtiles/styles/OSM全中国经纬度.json",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/mrcs/vtiles/styles/OSM全中国经纬度.json",
             "wfsUrl": "",
             "extent": ""
           }
