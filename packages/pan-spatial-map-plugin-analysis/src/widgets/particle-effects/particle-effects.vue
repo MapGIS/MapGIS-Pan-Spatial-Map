@@ -3,13 +3,13 @@
     <mp-toolbar>
       <mp-toolbar-command-group>
         <mp-toolbar-command
-          title="粒子火焰"
+          title="火焰"
           icon="fire"
           :active="particleMode === 'fire'"
           @click="onCreateParticle('fire')"
         />
         <mp-toolbar-command
-          title="粒子烟雾"
+          title="烟雾"
           icon="cloud"
           :active="particleMode === 'smoke'"
           @click="onCreateParticle('smoke')"
