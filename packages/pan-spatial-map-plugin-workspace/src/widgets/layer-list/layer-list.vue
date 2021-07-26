@@ -1,27 +1,30 @@
 <template>
   <div class="mp-widget-layer-list">
-    <ul class="top-tab-nav">
-      <li
-        v-for="{ key, label } in tabs"
-        :key="key"
-        :class="[key === tab ? 'active-color' : '']"
-        @click="tab = key"
-      >
-        {{ label }}
-      </li>
-    </ul>
-    <template v-if="dataCatalog">
-      <tree-layer
-        v-show="tab === 'tree'"
-        :data-catalog="dataCatalog"
-        :widgetInfo="widgetInfo"
-      />
-      <layer-opacity
-        v-show="tab === 'opacity'"
-        :data-catalog="dataCatalog"
-        :layers="document.defaultMap.layers()"
-      />
+    <template v-if="showWidget">
+      <ul class="top-tab-nav">
+        <li
+          v-for="{ key, label } in tabs"
+          :key="key"
+          :class="[key === tab ? 'active-color' : '']"
+          @click="tab = key"
+        >
+          {{ label }}
+        </li>
+      </ul>
+      <template v-if="dataCatalog">
+        <tree-layer
+          v-show="tab === 'tree'"
+          :data-catalog="dataCatalog"
+          :widgetInfo="widgetInfo"
+        />
+        <layer-opacity
+          v-show="tab === 'opacity'"
+          :data-catalog="dataCatalog"
+          :layers="document.defaultMap.layers()"
+        />
+      </template>
     </template>
+    <a-empty v-else />
   </div>
 </template>
 
@@ -45,6 +48,15 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     { key: 'tree', label: '图层树' },
     { key: 'opacity', label: '透明度' }
   ]
+
+  get showWidget() {
+    return (
+      this.document &&
+      this.document.defaultMap &&
+      this.document.defaultMap.layers() &&
+      this.document.defaultMap.layers().length > 0
+    )
+  }
 
   async mounted() {
     try {
