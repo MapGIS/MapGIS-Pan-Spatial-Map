@@ -156,6 +156,7 @@
               v-model="startScale"
               :min="0.0"
               :max="10.0"
+              :step="0.5"
               @change="val => onChangeEffect(val, 'startScale')"
             />
           </a-col>
@@ -165,6 +166,7 @@
               v-model="startScale"
               :min="0.0"
               :max="10.0"
+              :step="0.5"
             />
           </a-col>
         </a-row>
@@ -176,6 +178,7 @@
               v-model="endScale"
               :min="0.0"
               :max="10.0"
+              :step="0.5"
               @change="val => onChangeEffect(val, 'endScale')"
             />
           </a-col>
@@ -185,7 +188,19 @@
               v-model="endScale"
               :min="0.0"
               :max="10.0"
+              :step="0.5"
             />
+          </a-col>
+        </a-row>
+      </a-form-item>
+      <a-form-item label="发射类型">
+        <a-row>
+          <a-col :span="14">
+            <a-select v-model="emitterValue" @change="onEmitterChange">
+              <a-select-option v-for="item in emitterOptions" :key="item">
+                {{ item }}
+              </a-select-option>
+            </a-select>
           </a-col>
         </a-row>
       </a-form-item>
@@ -205,28 +220,44 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
   private particleMode = ''
 
   // 发射速率
-  private emissionRate = 20
+  private emissionRate = 20.0
 
   // 尺寸
-  private imageSize = 30
+  private imageSize = 5.0
 
   // 粒子最小存在时间
-  private minimumParticleLife = 1.2
+  private minimumParticleLife = 2.0
 
   // 粒子最大存在时间
-  private maximumParticleLife = 2.2
+  private maximumParticleLife = 3.0
 
   // 最小速度
-  private minimumSpeed = 1
+  private minimumSpeed = 9.0
 
   // 最大速度
-  private maximumSpeed = 4
+  private maximumSpeed = 9.5
 
   // 初始比例
-  private startScale = 1.0
+  private startScale = 1.5
 
   // 结束比例
-  private endScale = 5.0
+  private endScale = 1.0
+
+  // 发射类型
+  private emitterType
+
+  // 发射类型下拉值
+  private emitterValue = ''
+
+  // 发射类型下拉项
+  private emitterOptions = ['盒状放射', '圆形放射', '锥形放射', '球形放射']
+
+  // 粒子特效集
+  private particleArr = []
+
+  onOpen() {
+    this.emitterValue = '圆形放射'
+  }
 
   onClose() {
     this.onClearParticle()
@@ -234,17 +265,18 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
 
   // 点击删除图标按钮回调
   private onClearParticle() {
-    if (window.particle) {
-      window.particle.remove()
+    if (this.particleArr.length > 0) {
+      this.particleArr.forEach(item => {
+        item.remove()
+      })
     }
     this.webGlobe.unRegisterMouseEvent('LEFT_CLICK')
     this.particleMode = ''
+    this.particleArr = []
   }
 
   // 点击对应粒子特效图标按钮回调
   private onCreateParticle(type) {
-    this.onClearParticle()
-
     this.particleMode = type
     this.addEventListener()
   }
@@ -280,11 +312,32 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
       }
     )
 
+    const options = {
+      startColor: new this.Cesium.Color(1, 1, 1, 1),
+      endColor: new this.Cesium.Color(1, 1, 1, 1),
+      emissionRate: this.emissionRate,
+      imageSize: new this.Cesium.Cartesian2(this.imageSize, this.imageSize),
+      minimumParticleLife: this.minimumParticleLife,
+      maximumParticleLife: this.maximumParticleLife,
+      minimumSpeed: this.minimumSpeed,
+      maximumSpeed: this.maximumSpeed,
+      emitter: this.emitterType,
+      gravity: 0.5,
+      heading: 45.0,
+      pitch: 45.0,
+      roll: 45.0
+    }
+
     // 创建粒子特效
-    window.particle = advancedAnalysisManager.createStableParticle(
+    const particle = advancedAnalysisManager.createStableParticle(
       this.particleMode === 'fire' ? fireImg : smokeImg,
-      [centerLon, centerLat, cartographic.height]
+      [centerLon, centerLat, cartographic.height],
+      options
     )
+
+    console.log(particle)
+
+    this.particleArr.push(particle)
 
     // 开启计时
     this.webGlobe.viewer.clock.shouldAnimate = true
@@ -311,15 +364,47 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
     this.particleMode = ''
   }
 
+  // 粒子特效发射类型变化回调
+  private onEmitterChange(value) {
+    let emitter
+    switch (value) {
+      case '盒状放射':
+        emitter = new this.Cesium.BoxEmitter(
+          new this.Cesium.Cartesian3(5.0, 5.0, 5.0)
+        )
+        break
+      case '圆形放射':
+        emitter = new this.Cesium.CircleEmitter(5.0)
+        break
+      case '锥形放射':
+        emitter = new this.Cesium.ConeEmitter(this.Cesium.Math.toRadians(30.0))
+        break
+      case '球形放射':
+        emitter = new this.Cesium.SphereEmitter(5.0)
+        break
+
+      default:
+        break
+    }
+
+    this.particleArr.forEach(item => {
+      item.emitter = emitter
+    })
+
+    this.emitterType = emitter
+  }
+
   // 粒子特效属性改变回调
   private onChangeEffect(val, key) {
-    if (window.particle) {
-      if (key === 'imageSize') {
-        window.particle.maximumImageSize = new this.Cesium.Cartesian2(val, val)
-        window.particle.minimumImageSize = new this.Cesium.Cartesian2(val, val)
-      } else {
-        window.particle[key] = val
-      }
+    if (this.particleArr.length > 0) {
+      this.particleArr.forEach(item => {
+        if (key === 'imageSize') {
+          item.maximumImageSize = new this.Cesium.Cartesian2(val, val)
+          item.minimumImageSize = new this.Cesium.Cartesian2(val, val)
+        } else {
+          item[key] = val
+        }
+      })
     }
   }
 }
