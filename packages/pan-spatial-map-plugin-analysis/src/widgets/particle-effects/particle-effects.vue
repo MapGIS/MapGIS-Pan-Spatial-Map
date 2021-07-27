@@ -314,7 +314,6 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
 
     const options = {
       startColor: new this.Cesium.Color(1, 1, 1, 1),
-      endColor: new this.Cesium.Color(1, 1, 1, 1),
       emissionRate: this.emissionRate,
       imageSize: new this.Cesium.Cartesian2(this.imageSize, this.imageSize),
       minimumParticleLife: this.minimumParticleLife,
