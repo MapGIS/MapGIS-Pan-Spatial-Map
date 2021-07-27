@@ -692,7 +692,12 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   private onClickStart() {
     const pathCoords = this.selectedRow.path.split(',')
 
-    this.onClickCancelPath()
+    if (this.draw) {
+      this.draw.stopDrawing()
+    }
+
+    this.isShowPointTable = false
+    this.isCreatePath = false
 
     // 设置播放动画的各项属性
     if (pathCoords.length > 0) {
