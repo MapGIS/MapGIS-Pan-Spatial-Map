@@ -503,16 +503,15 @@ export default {
 </script>
 <style lang="less" scoped>
 .statebardiv {
-  background-color: rgba(120, 120, 120, 0.5);
+  background-color: rgba(71, 71, 71, 0.8);
   width: 100%;
   position: absolute;
   height: 30px;
   bottom: 0px;
+  display: flex;
+  justify-content: center;
   .statebar {
     margin-left: 0%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
 }
 </style>

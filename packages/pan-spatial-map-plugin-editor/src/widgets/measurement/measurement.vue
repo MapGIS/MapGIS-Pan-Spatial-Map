@@ -7,6 +7,7 @@
           :key="item.title"
           :title="item.title"
           :icon="item.icon"
+          :active="activeUIMode === item.mode"
           @click="onOpenMeasure(item.mode)"
         />
       </mp-toolbar-command-group>
@@ -17,12 +18,14 @@
           :key="item.mode"
           :title="item.title"
           :icon="item.icon"
+          :active="activeUIMode === item.mode"
           @click="onOpenMeasure(item.mode)"
         />
       </mp-toolbar-command-group>
       <div v-show="is2DMapMode" class="unit">
         <a-select
           size="small"
+          style="width: 100%"
           v-show="showLengthSelect"
           v-model="activeDistanceSelect"
         >
@@ -32,6 +35,7 @@
         </a-select>
         <a-select
           size="small"
+          style="width: 100%"
           v-show="showAreaSelect"
           v-model="activeAreaSelect"
         >
@@ -120,7 +124,7 @@
       </div>
     </div>
     <div v-show="showSettingPanel && is2DMapMode" class="setting-panel">
-      <a-divider></a-divider>
+      <mp-group-tab title="设置"></mp-group-tab>
       <mp-setting-form layout="vertical">
         <a-form-item label="字体名称">
           <a-select v-model="measureStyle.textType">
@@ -240,6 +244,8 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   // 当前激活项
   private activeMode = ''
 
+  private activeUIMode = ''
+
   // 编辑面板的显隐
   private showSettingPanel = false
 
@@ -350,6 +356,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   // 打开测量，点击图标激活对应类型的测量功能
   private onOpenMeasure(mode) {
     this.activeMode = mode
+    this.activeUIMode = mode
     this.measureComponent && this.measureComponent.openMeasure(mode)
   }
 
@@ -359,6 +366,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 
     this.isMeasureFinished = false
     this.activeMode = ''
+    this.activeUIMode = ''
   }
 
   // 'start'响应事件(开始测量)
@@ -370,6 +378,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
   private onMeasureFinished(results: Record<string, any>) {
     this.isMeasureFinished = true
     this.results = { ...results }
+    this.activeUIMode = ''
   }
 
   // 文字颜色拾取器对应事件
@@ -395,6 +404,7 @@ export default class MpMeasurement extends Mixins(WidgetMixin) {
 .mp-widget-measurement {
   .unit {
     margin: 0 6px;
+    width: 100px;
   }
   .measure-result {
     font-size: 13px;

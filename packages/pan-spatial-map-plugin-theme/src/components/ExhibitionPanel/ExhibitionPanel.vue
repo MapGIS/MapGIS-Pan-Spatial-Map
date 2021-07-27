@@ -1,6 +1,6 @@
 <template>
   <div ref="exhibitionPanel" class="mp-exhibition-panel">
-    <template v-if="closeable">
+    <template v-if="closeable && exhibitions.length">
       <span class="switch-button" @click="onSwitchExhibitionPanel">
         <a-icon :type="iconType" />
       </span>
