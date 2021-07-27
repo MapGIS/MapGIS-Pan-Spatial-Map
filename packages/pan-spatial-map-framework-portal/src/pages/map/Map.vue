@@ -74,9 +74,11 @@ export default {
       })
     },
     getQueryString(name) {
-      const url = window.location.href
       const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
-      const searchString = url.split('?')[1]
+      const searchString =
+        window.location.search.substring(1) ||
+        window.location.hash.split('?')[1]
+
       if (searchString) {
         // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
         const r = searchString.match(reg)
