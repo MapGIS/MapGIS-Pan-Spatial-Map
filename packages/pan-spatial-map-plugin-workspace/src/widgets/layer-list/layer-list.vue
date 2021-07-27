@@ -92,6 +92,9 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
   #layerListEl {
     width: 330px;
     max-width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   .top-tab-nav {
     border-bottom: 1px @border-color solid;
