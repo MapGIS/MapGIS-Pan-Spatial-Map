@@ -238,10 +238,10 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
   private maximumSpeed = 9.5
 
   // 初始比例
-  private startScale = 1.5
+  private startScale = 1.0
 
   // 结束比例
-  private endScale = 1.0
+  private endScale = 4.0
 
   // 发射类型
   private emitterType
@@ -320,11 +320,13 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
       maximumParticleLife: this.maximumParticleLife,
       minimumSpeed: this.minimumSpeed,
       maximumSpeed: this.maximumSpeed,
+      startScale: this.startScale,
+      endScale: this.endScale,
       emitter: this.emitterType,
       gravity: 0.5,
-      heading: 45.0,
-      pitch: 45.0,
-      roll: 45.0
+      heading: 30.0,
+      pitch: 30.0,
+      roll: 30.0
     }
 
     // 创建粒子特效
@@ -333,8 +335,6 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
       [centerLon, centerLat, cartographic.height],
       options
     )
-
-    console.log(particle)
 
     this.particleArr.push(particle)
 
