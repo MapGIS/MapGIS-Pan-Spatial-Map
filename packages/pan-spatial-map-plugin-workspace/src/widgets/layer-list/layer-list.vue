@@ -1,17 +1,17 @@
 <template>
   <div class="mp-widget-layer-list">
-    <ul class="top-tab-nav">
-      <li
-        v-for="{ key, label } in tabs"
-        :key="key"
-        :class="[key === tab ? 'active-color' : '']"
-        @click="tab = key"
-      >
-        {{ label }}
-      </li>
-    </ul>
-    <div ref="layerListEl" class="mp-widget-layer-list-content">
-      <template v-if="showWidget && dataCatalog">
+    <div id="layerListEl">
+      <template v-if="showWidget">
+        <ul class="top-tab-nav">
+          <li
+            v-for="{ key, label } in tabs"
+            :key="key"
+            :class="[key === tab ? 'active-color' : '']"
+            @click="tab = key"
+          >
+            {{ label }}
+          </li>
+        </ul>
         <tree-layer
           v-show="tab === 'tree'"
           :data-catalog="dataCatalog"
@@ -23,7 +23,7 @@
           :layers="document.defaultMap.layers()"
         />
       </template>
-      <a-empty v-else description="暂无选中图层" />
+      <a-empty v-else />
     </div>
   </div>
 </template>
@@ -54,7 +54,7 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
    */
   private onWindowSize(mode: 'max' | 'normal') {
     this.$nextTick(() => {
-      const { layerListEl } = this.$refs
+      const layerListEl = document.getElementById('layerListEl')
       if (layerListEl) {
         layerListEl.style.width = `${
           mode === 'max' ? this.$el.clientWidth : 330
@@ -75,10 +75,6 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
   async mounted() {
     try {
       this.dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData()
-      // const { treeConfig } = await api.getWidgetConfig('data-catalog')
-      // if (treeConfig) {
-      //   this.dataCatalog = treeConfig.treeData
-      // }
     } catch (error) {
       console.log(error)
     }
@@ -93,6 +89,13 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  #layerListEl {
+    width: 330px;
+    max-width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
   .top-tab-nav {
     border-bottom: 1px @border-color solid;
     flex-shrink: 0;
@@ -115,10 +118,6 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     .active-color {
       border-bottom-color: @primary-color;
     }
-  }
-  &-content {
-    width: 330px;
-    max-width: 100%;
   }
 }
 .layer-list-popover {

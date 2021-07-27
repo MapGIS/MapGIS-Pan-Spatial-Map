@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul class=" beauty-scroll">
     <li v-for="item in layers" :key="item.id">
       <label :title="setTooltip(item)">{{ item.title }}</label>
       <a-slider
@@ -41,10 +41,10 @@ export default class LayerOpacity extends Mixins(AppMixin) {
     dataCatalog.forEach(item => {
       let copy = parentName
       if (item.guid === id) {
-        parentName += item.label
+        parentName += item.name
         arr.push(parentName)
       } else if (item.children) {
-        copy += `${item.label}-`
+        copy += `${item.name}-`
         this.findParentName(id, copy, item.children, arr)
       }
     })
@@ -54,6 +54,8 @@ export default class LayerOpacity extends Mixins(AppMixin) {
 
 <style lang="less" scoped>
 ul {
+  flex: 1 1 0%;
+  overflow: auto;
   list-style: none;
   margin: 0;
   padding: 0 10px;
