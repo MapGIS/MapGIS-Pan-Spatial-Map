@@ -92,9 +92,9 @@
         :layerStyle="layerProps.layerStyle"
         :requestVertexNormals="true"
       />
-      <div class="statebardiv">
-        <mapgis-3d-statebar class="statebar" />
-      </div>
+    </div>
+    <div class="statebardiv">
+      <mapgis-3d-statebar class="statebar" />
     </div>
   </mapgis-web-scene>
 </template>
@@ -503,7 +503,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .statebardiv {
-  background-color: rgba(71, 71, 71, 0.8);
+  background-color: rgba(31, 31, 31, 0.6);
   width: 100%;
   position: absolute;
   height: 30px;

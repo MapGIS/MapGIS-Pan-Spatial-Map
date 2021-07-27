@@ -23,7 +23,7 @@
           :layers="document.defaultMap.layers()"
         />
       </template>
-      <a-empty v-else />
+      <a-empty v-else :image="simpleImage" />
     </div>
   </div>
 </template>
@@ -31,6 +31,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
+import { Empty } from 'ant-design-vue'
 import treeLayer from './tree-layer'
 import layerOpacity from './layer-opacity'
 import { api, dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
@@ -49,20 +50,6 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     { key: 'opacity', label: '透明度' }
   ]
 
-  /**
-   * 视图窗口变化
-   */
-  private onWindowSize(mode: 'max' | 'normal') {
-    this.$nextTick(() => {
-      const layerListEl = document.getElementById('layerListEl')
-      if (layerListEl) {
-        layerListEl.style.width = `${
-          mode === 'max' ? this.$el.clientWidth : 330
-        }px`
-      }
-    })
-  }
-
   get showWidget() {
     return (
       this.document &&
@@ -72,6 +59,10 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     )
   }
 
+  beforeCreate() {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
+  }
+
   async mounted() {
     try {
       this.dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData()
@@ -79,18 +70,31 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
       console.log(error)
     }
   }
+
+  /**
+   * 视图窗口变化
+   */
+  private onWindowSize(mode: 'max' | 'normal') {
+    this.$nextTick(() => {
+      const layerListEl = document.getElementById('layerListEl')
+      if (layerListEl) {
+        layerListEl.style.width = `${
+          mode === 'max' ? this.$el.clientWidth : 300
+        }px`
+      }
+    })
+  }
 }
 </script>
 
 <style lang="less">
 .mp-widget-layer-list {
   flex: 1 1 0%;
-  // min-height: 76px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   #layerListEl {
-    width: 330px;
+    width: 300px;
     max-width: 100%;
     overflow: hidden;
     display: flex;
@@ -118,6 +122,9 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     .active-color {
       border-bottom-color: @primary-color;
     }
+  }
+  .ant-empty-normal {
+    margin: 8px 0;
   }
 }
 .layer-list-popover {

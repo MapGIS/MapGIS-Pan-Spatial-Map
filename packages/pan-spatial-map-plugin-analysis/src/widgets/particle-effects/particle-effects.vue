@@ -202,15 +202,11 @@
         </a-row>
       </a-form-item>
       <a-form-item label="发射类型">
-        <a-row>
-          <a-col :span="14">
-            <a-select v-model="emitterValue" @change="onEmitterChange">
-              <a-select-option v-for="item in emitterOptions" :key="item">
-                {{ item }}
-              </a-select-option>
-            </a-select>
-          </a-col>
-        </a-row>
+        <a-select v-model="emitterValue" @change="onEmitterChange">
+          <a-select-option v-for="item in emitterOptions" :key="item">
+            {{ item }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
     </mp-setting-form>
   </div>

@@ -121,9 +121,7 @@
                 置顶
               </a-list-item>
             </a-list>
-            <a-button @click.stop size="small" type="link">
-              <a-icon type="ellipsis" class="more"> </a-icon>
-            </a-button>
+            <a-icon type="more" class="more"></a-icon>
           </a-popover>
         </div>
       </a-tree>
@@ -1078,8 +1076,12 @@ export default class TreeLayer extends Mixins(
         color: @primary-color;
       }
       .more {
-        font-size: 18px;
+        font-size: 16px;
         color: @text-color;
+        margin-right: 0;
+        &:hover {
+          color: @primary-color;
+        }
       }
       i {
         margin-right: 6px;
