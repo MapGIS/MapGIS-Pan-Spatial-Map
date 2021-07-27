@@ -41,7 +41,7 @@ export default {
     // 是否显示
     visible: { type: Boolean, default: false },
     // 内容宽度
-    width: { type: Number, default: 240 },
+    width: { type: Number, default: 280 },
     // 是否全屏
     isFullScreen: { type: Boolean, default: false },
     // 是否有边距

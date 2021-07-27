@@ -205,8 +205,13 @@ export default {
           left: 10px;
         }
       }
-      &:last-child > .ant-collapse-header {
-        border-radius: 0;
+      &:last-child {
+        > .ant-collapse-header {
+          border-radius: 0;
+        }
+        > .ant-collapse-content {
+          padding-bottom: 10px;
+        }
       }
       &.ant-collapse-item-active {
         > .ant-collapse-header {

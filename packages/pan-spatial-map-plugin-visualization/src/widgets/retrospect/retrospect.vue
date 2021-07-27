@@ -320,13 +320,17 @@ export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
     this.dataCatalogTreeCheckedIds = [
       ...dataCatalogManagerInstance.checkedLayerConfigIDs
     ]
-    const dataCatalogTreeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
-    if (dataCatalogTreeData.length) {
-      this.treeData = this.handleDataCatalog(_cloneDeep(dataCatalogTreeData))
-      this.dataCatalogTreeData = dataCatalogTreeData
-      this.onSubjectChange(dataCatalogTreeData[0].guid)
+    try {
+      const dataCatalogTreeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
+      if (dataCatalogTreeData.length) {
+        this.treeData = this.handleDataCatalog(_cloneDeep(dataCatalogTreeData))
+        this.dataCatalogTreeData = dataCatalogTreeData
+        this.onSubjectChange(dataCatalogTreeData[0].guid)
+        this.loading = false
+      }
+    } catch {
+      this.loading = false
     }
-    this.loading = false
   }
 
   /**
