@@ -187,39 +187,42 @@
           </a-col>
         </a-row>
       </a-col>
+
       <a-col :span="14">
-        <a-row justify="center" type="flex" class="a-row-space">
-          <a-col>
-            <a-radio-group v-model="showEchartTable" button-style="solid">
-              <a-radio-button :value="false" class="chart-radio-button">
-                统计图
-              </a-radio-button>
-              <a-radio-button :value="true" class="chart-radio-button">
-                数据视图
-              </a-radio-button>
-            </a-radio-group>
-          </a-col>
-        </a-row>
-        <div
-          ref="chart"
-          style="height:280px;width:100%"
-          v-show="!showEchartTable"
-        ></div>
-        <a-table
-          v-if="showEchartTable && tableData.length > 0"
-          :locale="{ emptyText: '暂无数据' }"
-          :columns="columnsTable"
-          :data-source="tableData"
-          bordered
-          size="small"
-          :scroll="{ y: 240, x: 10 }"
-          :rowKey="
-            (record, index) => {
-              return index
-            }
-          "
-        >
-        </a-table>
+        <a-spin :spinning="resultLoading">
+          <a-row justify="center" type="flex" class="a-row-space">
+            <a-col>
+              <a-radio-group v-model="showEchartTable" button-style="solid">
+                <a-radio-button :value="false" class="chart-radio-button">
+                  统计图
+                </a-radio-button>
+                <a-radio-button :value="true" class="chart-radio-button">
+                  数据视图
+                </a-radio-button>
+              </a-radio-group>
+            </a-col>
+          </a-row>
+          <div
+            ref="chart"
+            style="height:280px;width:100%"
+            v-show="!showEchartTable"
+          ></div>
+          <a-table
+            v-if="showEchartTable && tableData.length > 0"
+            :locale="{ emptyText: '暂无数据' }"
+            :columns="columnsTable"
+            :data-source="tableData"
+            bordered
+            size="small"
+            :scroll="{ y: 240, x: 10 }"
+            :rowKey="
+              (record, index) => {
+                return index
+              }
+            "
+          >
+          </a-table>
+        </a-spin>
       </a-col>
     </a-row>
   </div>
@@ -260,6 +263,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     default: '#0000ff'
   })
   readonly endColor!: string
+
+  private resultLoading = false
 
   private layerOptions: OptionItem[] = []
 
@@ -579,6 +584,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   }
 
   private async getResult() {
+    this.resultLoading = true
     try {
       const {
         serverType,
@@ -695,6 +701,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       this.setTableView(dataset)
     } catch (error) {
       this.$message.warning('统计失败！')
+    } finally {
+      this.resultLoading = false
     }
   }
 
