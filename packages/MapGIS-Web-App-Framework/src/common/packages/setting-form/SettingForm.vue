@@ -30,6 +30,31 @@ export default {
       color: @text-color;
     }
   }
+  &.mini {
+    label,
+    .ant-form-item,
+    .ant-input,
+    .ant-select,
+    .ant-input-number,
+    .ant-btn,
+    .ant-slider-mark,
+    .ant-form-explain,
+    .ant-form-extra,
+    .ant-time-picker-input,
+    .ant-input-group-addon,
+    .ant-upload.ant-upload-drag p.ant-upload-hint {
+      font-size: 12px;
+    }
+    .ant-upload.ant-upload-drag p.ant-upload-text {
+      font-size: 14px;
+    }
+    .ant-slider {
+      margin: 10px 6px;
+      &.ant-slider-with-marks {
+        margin: 14px 6px;
+      }
+    }
+  }
   &.ant-form-horizontal {
     .ant-form-item {
       display: flex;
@@ -58,38 +83,16 @@ export default {
     .ant-form-item {
       padding-bottom: 0;
     }
-    .ant-slider-with-marks {
+    .ant-slider {
       margin-top: 0;
+      &.ant-slider-with-marks {
+        margin-top: 0;
+      }
     }
   }
   &.compact {
     .ant-form-item {
       margin-bottom: 12px;
-    }
-  }
-  &.mini {
-    label,
-    .ant-form-item,
-    .ant-input,
-    .ant-select,
-    .ant-input-number,
-    .ant-btn,
-    .ant-slider-mark,
-    .ant-form-explain,
-    .ant-form-extra,
-    .ant-time-picker-input,
-    .ant-input-group-addon,
-    .ant-upload.ant-upload-drag p.ant-upload-hint {
-      font-size: 12px;
-    }
-    .ant-upload.ant-upload-drag p.ant-upload-text {
-      font-size: 14px;
-    }
-    .ant-slider {
-      margin: 10px 6px;
-      &.ant-slider-with-marks {
-        margin: 14px 6px;
-      }
     }
   }
 }
