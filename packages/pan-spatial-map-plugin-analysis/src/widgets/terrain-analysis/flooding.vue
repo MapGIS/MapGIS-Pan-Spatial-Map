@@ -52,18 +52,9 @@
       <a-form-item label="颜色">
         <MpColorPicker
           :color.sync="formData.floodColor"
-          :disableAlpha="true"
+          :disableAlpha="false"
           class="color-picker"
         ></MpColorPicker>
-      </a-form-item>
-      <a-form-item label="透明度">
-        <a-input
-          v-model.number="formData.opacity"
-          type="number"
-          min="0"
-          max="1"
-          step="0.1"
-        />
       </a-form-item>
     </mp-setting-form>
     <div class="mp-footer-actions">
@@ -89,8 +80,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     frequency: 1000,
     animationSpeed: 0.01,
     amplitude: 10,
-    floodColor: 'rgb(255,255,102)',
-    opacity: 0.7
+    floodColor: 'rgb(255,255,102,0.7)'
   }
 
   get edgeColor() {
