@@ -10,20 +10,32 @@
         </a-form-item>
         <a-form-item label="不可视区域颜色">
           <mp-color-picker
+            :disableAlpha="false"
             :color="formData.unVisibleColor"
-            @input="val => (formData.unVisibleColor = val.hex)"
+            @input="
+              val =>
+                (formData.unVisibleColor = `rgba(${val.rgba.r}, ${val.rgba.g}, ${val.rgba.b}, ${val.rgba.a})`)
+            "
           ></mp-color-picker>
         </a-form-item>
         <a-form-item label="可视区域颜色">
           <mp-color-picker
+            :disableAlpha="false"
             :color="formData.visibleColor"
-            @input="val => (formData.visibleColor = val.hex)"
+            @input="
+              val =>
+                (formData.visibleColor = `rgba(${val.rgba.r}, ${val.rgba.g}, ${val.rgba.b}, ${val.rgba.a})`)
+            "
           ></mp-color-picker>
         </a-form-item>
         <a-form-item label="可视遮罩颜色">
           <mp-color-picker
+            :disableAlpha="false"
             :color="formData.maskColor"
-            @input="val => (formData.maskColor = val.hex)"
+            @input="
+              val =>
+                (formData.maskColor = `rgba(${val.rgba.r}, ${val.rgba.g}, ${val.rgba.b}, ${val.rgba.a})`)
+            "
           ></mp-color-picker>
         </a-form-item>
       </mp-setting-form>
@@ -36,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
@@ -60,6 +72,22 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
   // 是否可以进行可视域分析
   private isAnalyze = false
+
+  @Watch('formData', { deep: true })
+  onColorChange(newVal) {
+    const unVisibleColor = new this.Cesium.Color.fromCssColorString(
+      newVal.unVisibleColor
+    )
+    const visibleColor = new this.Cesium.Color.fromCssColorString(
+      newVal.visibleColor
+    )
+    const maskColor = new this.Cesium.Color.fromCssColorString(newVal.maskColor)
+    if (window.VisualAnalysisManage.visualAnalysis) {
+      window.VisualAnalysisManage.visualAnalysis._unVisibleColor = unVisibleColor
+      window.VisualAnalysisManage.visualAnalysis._visibleColor = visibleColor
+      window.VisualAnalysisManage.visualAnalysis._fanColor = maskColor
+    }
+  }
 
   created() {
     this.initData()

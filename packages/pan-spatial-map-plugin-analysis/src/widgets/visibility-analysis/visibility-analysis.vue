@@ -4,14 +4,22 @@
       <mp-setting-form v-model="formData">
         <a-form-item label="不可视区域颜色">
           <mp-color-picker
+            :disableAlpha="false"
             :color="formData.unVisibleColor"
-            @input="val => (formData.unVisibleColor = val.hex)"
+            @input="
+              val =>
+                (formData.unVisibleColor = `rgba(${val.rgba.r}, ${val.rgba.g}, ${val.rgba.b}, ${val.rgba.a})`)
+            "
           ></mp-color-picker>
         </a-form-item>
         <a-form-item label="可视区域颜色">
           <mp-color-picker
+            :disableAlpha="false"
             :color="formData.visibleColor"
-            @input="val => (formData.visibleColor = val.hex)"
+            @input="
+              val =>
+                (formData.visibleColor = `rgba(${val.rgba.r}, ${val.rgba.g}, ${val.rgba.b}, ${val.rgba.a})`)
+            "
           ></mp-color-picker>
         </a-form-item>
       </mp-setting-form>
