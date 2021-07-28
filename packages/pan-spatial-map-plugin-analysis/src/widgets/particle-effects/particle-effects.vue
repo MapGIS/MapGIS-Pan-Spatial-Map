@@ -328,9 +328,9 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
       endScale: this.endScale,
       emitter: this.emitterType,
       gravity: 0.5,
-      heading: 30.0,
-      pitch: 30.0,
-      roll: 30.0
+      heading: 0.0,
+      pitch: 0.0,
+      roll: 0.0
     }
 
     // 创建粒子特效

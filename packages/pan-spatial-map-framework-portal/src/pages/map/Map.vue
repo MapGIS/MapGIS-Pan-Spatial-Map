@@ -61,10 +61,13 @@ export default {
       return { theme: 'dark', color: '#1890ff' }
     },
     emitEvent() {
-      const ip = this.getQueryString('ip')
-      const port = this.getQueryString('port')
-      const name = this.getQueryString('name')
-      const type = this.getQueryString('type')
+      const searchString =
+        window.location.search.substring(1) ||
+        window.location.hash.split('?')[1]
+      const ip = this.getQueryString('ip', searchString)
+      const port = this.getQueryString('port', searchString)
+      const name = this.getQueryString('name', searchString)
+      const type = this.getQueryString('type', searchString)
 
       eventBus.$emit('emitImposeService', {
         ip: ip,
@@ -73,11 +76,8 @@ export default {
         type: type
       })
     },
-    getQueryString(name) {
+    getQueryString(name, searchString) {
       const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
-      const searchString =
-        window.location.search.substring(1) ||
-        window.location.hash.split('?')[1]
 
       if (searchString) {
         // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
