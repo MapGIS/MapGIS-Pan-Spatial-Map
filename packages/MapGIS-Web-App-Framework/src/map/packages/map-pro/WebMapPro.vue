@@ -196,7 +196,6 @@ export default {
       }
     },
     handleLoad(payload) {
-      // const { map, mapbox } = payload
       this.map = payload.map
       const listeners = this.$listeners
       const webMapgisListeners = this.$refs.mapgisWebMap.$listeners
@@ -283,7 +282,10 @@ export default {
           // zoomOffset计算方式不明确，已录入缺陷列表。
           // 修改人：马原野 2021年7月22日
 
-          if (layer.url.search('arcgis') > -1) {
+          if (
+            layer.spatialReference.isWGS84() &&
+            layer.url.search('arcgis') > -1
+          ) {
             zoomOffset = -1
           }
           mapboxLayerComponentProps = {

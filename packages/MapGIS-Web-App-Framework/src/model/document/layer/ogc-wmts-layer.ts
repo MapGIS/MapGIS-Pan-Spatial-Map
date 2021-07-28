@@ -8,7 +8,7 @@ import { ObjectTool } from '../../utils/object-tool'
 import { SpatialReference, CoordinateSystemType } from '../spatial-reference'
 
 // 发布WMTS的厂商名称
-enum WMTSCorporation {
+export enum WMTSCorporation {
   corporationZD = 1, // 中地
   corporationArcGIS = 2, // ArcGIS
   corporationSuperMap = 3, // 超图 (暂未使用 2016.1.25)

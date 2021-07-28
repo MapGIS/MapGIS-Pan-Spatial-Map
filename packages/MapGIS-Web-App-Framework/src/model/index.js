@@ -16,6 +16,7 @@ export {
   WMTSSublayer,
   TileMatrixSet,
   WMTSStyle,
+  WMTSCorporation,
   OGCWMSLayer,
   WMSSublayer,
   ArcGISTileLayer,

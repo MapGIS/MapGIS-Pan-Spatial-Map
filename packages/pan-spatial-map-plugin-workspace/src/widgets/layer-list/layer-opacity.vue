@@ -30,7 +30,9 @@ export default class LayerOpacity extends Mixins(AppMixin) {
   setTooltip(item) {
     const parentName = ''
     const arr = []
-    this.findParentName(item.id, parentName, this.dataCatalog, arr)
+    if (this.dataCatalog)
+      this.findParentName(item.id, parentName, this.dataCatalog, arr)
+
     if (arr.length > 0) {
       return arr[0]
     }

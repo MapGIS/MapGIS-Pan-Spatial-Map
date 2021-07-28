@@ -8,7 +8,8 @@ import {
   OGCWMTSLayer,
   WMTSSublayer,
   TileMatrixSet,
-  WMTSStyle
+  WMTSStyle,
+  WMTSCorporation
 } from './ogc-wmts-layer'
 import { OGCWMSLayer, WMSSublayer } from './ogc-wms-layer'
 import { ArcGISTileLayer } from './arcgis-tile-layer'
@@ -42,6 +43,7 @@ export {
   WMTSSublayer,
   TileMatrixSet,
   WMTSStyle,
+  WMTSCorporation,
   OGCWMSLayer,
   WMSSublayer,
   ArcGISTileLayer,

@@ -251,31 +251,22 @@ export class DataCatalogManager {
    * @memberof DataCatalogManager
    */
   public async getDataCatalogTreeData(isFilterInvalidLayer = true) {
-    if (isFilterInvalidLayer) {
-      if (
-        this.config.treeConfig.treeData &&
-        this.config.treeConfig.treeData.length > 0
-      ) {
-        isFilterInvalidLayer = true
-      } else {
-        isFilterInvalidLayer = false
-      }
-      this.isFilterInvalidLayerConfig = isFilterInvalidLayer
-      // 1.获取基本配置中指定的服务器上发布的IGS服务列表。
-      const defaultIp = baseConfigInstance.config.ip
-      const defaultPort = baseConfigInstance.config.port
-
-      let tileList: any[] = []
-      let docList: any[] = []
-      let sceneList: any[] = []
-
-      let tileServiceInfo: any = {}
-      let docServiceInfo: any = {}
-
+    this.isFilterInvalidLayerConfig = isFilterInvalidLayer
+    // 修改说明：优先采用this.config.treeConfig.treeData中的数据目录。如果this.config.treeConfig.treeData不可用,
+    // 则看是否配置了treeDataUrl。如果配置了，则从服务请求数据目录。
+    // 修改人：马原野 2021年7月28日
+    if (
+      this.config.treeConfig.treeData == undefined ||
+      this.config.treeConfig.treeData.length === 0
+    ) {
       if (
         this.config.urlConfig.treeDataUrl &&
         this.config.urlConfig.treeDataUrl !== ''
       ) {
+        // 通过服务获取配置
+        // 通过服务获取配置,不开启过滤功能。
+        this.isFilterInvalidLayerConfig = false
+
         let res: any
         if (
           this.config.urlConfig.treeDataUrl.includes('https') ||
@@ -296,6 +287,19 @@ export class DataCatalogManager {
           this.serviceTreeData = res.data.treeData
         }
       }
+    }
+
+    if (this.isFilterInvalidLayerConfig) {
+      // 1.获取基本配置中指定的服务器上发布的IGS服务列表。
+      const defaultIp = baseConfigInstance.config.ip
+      const defaultPort = baseConfigInstance.config.port
+
+      let tileList: any[] = []
+      let docList: any[] = []
+      let sceneList: any[] = []
+
+      let tileServiceInfo: any = {}
+      let docServiceInfo: any = {}
 
       await Catalog.DocumentCatalog.getTiles({
         ip: defaultIp,
@@ -326,9 +330,11 @@ export class DataCatalogManager {
       this.defaultServerList = { tileList, docList, sceneList }
 
       // 2.格式转换、为节点添加级别信息、判断服务是否可用。
-
       this.convertConfigData()
-    } else if (this.configConverted.treeConfig.treeData === undefined) {
+    } else if (
+      this.configConverted.treeConfig === undefined ||
+      this.configConverted.treeConfig.treeData === undefined
+    ) {
       this.convertConfigData()
     }
 
@@ -526,6 +532,8 @@ export class DataCatalogManager {
     this._allLayerConfigItems = []
     let treeData: any
 
+    // 修改说明：优先采用this.config.treeConfig.treeData中的配置。
+    // 修改人：马原野 2021年7月28日
     if (
       this.config.treeConfig.treeData &&
       this.config.treeConfig.treeData.length > 0
