@@ -87,7 +87,7 @@ export default class Common extends Vue {
 
   set selfUri(value) {
     if (!/^(https|http)?:\/\//.test(value)) {
-      this.$message.warn('请按照示例输入正确的数据服务地址')
+      this.$message.warn('请输入正确的数据服务地址')
       return
     }
     const {
@@ -263,7 +263,10 @@ export default class Common extends Vue {
 </script>
 <style lang="less" scoped>
 .server-tree-select {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  ::v-deep .ant-row-flex {
+    margin-bottom: 4px;
+  }
   &-example {
     word-break: break-all;
     white-space: normal;
