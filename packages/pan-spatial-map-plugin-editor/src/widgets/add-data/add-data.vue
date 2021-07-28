@@ -283,6 +283,10 @@ export default class MpAddData extends Mixins(WidgetMixin) {
       if (layer.loadStatus === LoadStatus.notLoaded) {
         await layer.load()
       }
+
+      if (layer.type === LayerType.IGSScene && this.is2DMapMode === true) {
+        this.switchMapMode()
+      }
       this.document.defaultMap.add(layer)
     }
   }
