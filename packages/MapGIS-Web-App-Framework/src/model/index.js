@@ -28,6 +28,8 @@ export {
   VectorTileLayer,
   IGSSceneLayer,
   IGSSceneSublayerRenderType,
+  Scene,
+  IGSSceneSublayer,
   Rectangle3D,
   Point3D
 } from './document/layer'

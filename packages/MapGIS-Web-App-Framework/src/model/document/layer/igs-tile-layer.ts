@@ -1,5 +1,5 @@
 import * as Zondy from '@mapgis/webclient-es6-service'
-import { TileLayer } from './tile-layer'
+import { TileLayer, LOD, TileInfo } from './tile-layer'
 import { LoadStatus, LayerType, Layer } from './layer'
 /**
  * IGServer 瓦片服务图层
@@ -144,5 +144,33 @@ export class IGSTileLayer extends TileLayer {
     }
 
     // 2.2获取TileInfo
+    if (tileInfo.tileInfo) {
+      const tileInfoJsonObject: any = tileInfo.tileInfo
+      let startLevel = 0
+      let endLevel = 0
+      let i = 0
+
+      if (tileInfoJsonObject.startLevel)
+        startLevel = tileInfoJsonObject.startLevel
+
+      if (tileInfoJsonObject.endLevel) endLevel = tileInfoJsonObject.endLevel
+
+      if (tileInfoJsonObject.lods) {
+        const lods: any[] = tileInfoJsonObject.lods
+
+        if (lods.length > 0) {
+          for (i = startLevel; i < endLevel; i++) {
+            const lod = new LOD()
+
+            lod.level = lods[i].level
+            lod.levelValue = lods[i].level
+            lod.resolution = lods[i].resolution
+            lod.scale = lods[i].scale
+
+            this.titleInfo.lods.push(lod)
+          }
+        }
+      }
+    }
   }
 }
