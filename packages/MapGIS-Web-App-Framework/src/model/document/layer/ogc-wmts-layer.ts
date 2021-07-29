@@ -93,6 +93,30 @@ export class TileMatrixSet {
   tileInfo: TileInfo = new TileInfo()
 
   /**
+   * 创建一个深度克隆的TileMatrixSet
+   *
+   * @date 06/04/2021
+   * @return {*}  {TileMatrixSet}
+   * @memberof TileMatrixSet
+   */
+  clone(): TileMatrixSet {
+    const result = new TileMatrixSet()
+
+    Object.entries(this).forEach(element => {
+      const key = element[0]
+      const valueIndex = 1
+
+      if (key === 'tileInfo') {
+        result[key] = element[valueIndex].clone()
+      } else {
+        result[key] = ObjectTool.deepClone(element[valueIndex])
+      }
+    })
+
+    return result
+  }
+
+  /**
    * 通过json对象初始化该对象
    *
    * @date 30/03/2021
@@ -487,6 +511,20 @@ export class WMTSSublayer {
         })
 
         result[key] = sublayersCopy
+      } else if (key === 'tileMatrixSets') {
+        const tileMatrixSets = element[valueIndex]
+        const tileMatrixSetsCopy: TileMatrixSet[] = []
+        let tileMatrixSetCopy: TileMatrixSet | undefined
+
+        tileMatrixSets.forEach(tileMatrixSet => {
+          tileMatrixSetCopy = tileMatrixSet.clone()
+
+          if (tileMatrixSetCopy) {
+            tileMatrixSetsCopy.push(tileMatrixSetCopy)
+          }
+        })
+
+        result[key] = tileMatrixSetsCopy
       } else {
         result[key] = ObjectTool.deepClone(element[valueIndex])
       }

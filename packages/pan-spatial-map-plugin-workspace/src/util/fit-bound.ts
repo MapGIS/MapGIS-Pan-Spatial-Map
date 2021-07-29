@@ -26,138 +26,94 @@ export const fitBoundByLayer = (layer: Layer, mapParams: MapParams) => {
   )
 
   const { type } = layer
-
-  let id = ''
   let fullExtent: Bound | null = null
+  let fullExtentJWD: Bound = { xmin: 0.0, ymin: 0.0, xmax: 0.0, ymax: 0.0 }
 
-  // 1.获取图层全图范围 
-  if (type !== LayerType.IGSScene)
-  {
+  // 1.获取图层全图范围
+
+  if (type !== LayerType.IGSScene) {
     // 1.1 非三维图层直接从图层上取范围
-
     fullExtent = layer.fullExtent
-
-  }
-  else{
+  } else {
     // 1.2 三维图层的范围需要单独计算范围
     // 1.2.1 三维模型缓存子图层中记录的是模型在局部坐标系下的范围,需要转换为经纬度下的范围。
     // 1.2.2 三维地形子图层直接采用子图层中记录的范围。
-    let activeScene:Scene
-      const {
-        activeScene: { sublayers },
-        fullExtent: { zmin, zmax }
-      } = layer
+    const activeScene: Scene = layer.activeScene
+    let range: Bound = null
 
-      sublayers.forEach(item => {
-        if (item.visible) {
-          id = item.id
-          if (item.renderType === IGSSceneSublayerRenderType.elevation) {
-            range = item.range
-          }
-        }
-      })
-    
-      let extent: Bound | null = null
-    
-      if (!range) {
-        const { source } = sceneController.findSource(id)
-        if (source && source.length > 0) {
-          const tranform = source[0].root.transform
-          const bound: Bound = sceneController.localExtentToGlobelExtent(
-            { xmin, xmax, ymin, ymax, zmin, zmax },
-            tranform
-          )
-    
-          extent = {
-            xmin: bound.xmin,
-            ymin: bound.ymin,
-            xmax: bound.xmax,
-            ymax: bound.ymax
-          }
-        }
+    activeScene.sublayers.forEach(item => {
+      switch (item.renderType) {
+        case IGSSceneSublayerRenderType.elevation:
+          range = item.range
+          break
+        case IGSSceneSublayerRenderType.modelCache:
+          range = sceneController.layerLocalExtentToGlobelExtent(item)
+          break
+        default:
+          break
+      }
+    })
+
+    fullExtent = range
   }
-  
+
   // 2.将全图范围统一转换为经纬度
   if (
     layer.spatialReference &&
     layer.spatialReference.wkid === CoordinateSystemType.webMercator
   ) {
     const xminYminConverted = CoordinateTransformation.mercatorToWGS84([
-      xmin,
-      ymin
+      fullExtent.xmin,
+      fullExtent.ymin
     ])
     const xmaxYmaxConverted = CoordinateTransformation.mercatorToWGS84([
-      xmax,
-      ymax
+      fullExtent.xmax,
+      fullExtent.ymax
     ])
 
-    xmin = xminYminConverted[0]
-    ymin = xminYminConverted[1]
+    fullExtentJWD.xmin = xminYminConverted[0]
+    fullExtentJWD.ymin = xminYminConverted[1]
 
-    xmax = xmaxYmaxConverted[0]
-    ymax = xmaxYmaxConverted[1]
+    fullExtentJWD.xmax = xmaxYmaxConverted[0]
+    fullExtentJWD.ymax = xmaxYmaxConverted[1]
+  } else {
+    fullExtentJWD = fullExtent
   }
 
   // 3.根据图层类型的不同,进行不同的复位操作。
   // a.瓦片图层(IGSTile、ArcGISTile、OGCWMTS)将视图跳转到以图层全图范围为中心，以瓦片支持的最小级别为级别的视图下。
   // b.其它图层，将当前视图跳转到以图层全图范围为范围的视图下。
+  switch (type) {
+    case LayerType.IGSTile:
+      // case LayerType.ArcGISTile:
+      // case LayerType.OGCWMTS:
+      let startLevel = layer.titleInfo.lods[0].level
 
-  if (type !== LayerType.IGSScene) {
-    const extent: Bound = {
-      xmin,
-      ymin,
-      xmax,
-      ymax
-    }
-    fitBound2D(extent, mapParams)
-    fitBound3D(extent, mapParams)
-  } else {
-    const {
-      activeScene: { sublayers },
-      fullExtent: { zmin, zmax }
-    } = layer
-
-    let id = ''
-    let range: Bound | null = null
-
-    sublayers.forEach(item => {
-      if (item.visible) {
-        id = item.id
-        if (item.renderType === IGSSceneSublayerRenderType.elevation) {
-          range = item.range
-        }
+      // 修改说明：对于经纬度的IGSTile图层,WebClient-vue的mapgis-igs-tile-layer组件在显示时,会默认将zoomOffset设为-1.
+      // 故这里为了保证刚好缩放到IGSTile的起始级别，需要将startLevel+1.
+      // 修改人：马原野 2021年7月29日
+      // 修改说明：这里spatialReference克隆的有问题,不是一个真正的对象,故无法调用其上面的方法,需要优化。
+      // 修改人：马原野 2021年7月29日
+      // if (layer.spatialReference.isWGS84()) {
+      if (layer.spatialReference.wkid === CoordinateSystemType.wgs84) {
+        startLevel++
       }
-    })
 
-    let extent: Bound | null = null
+      map.flyTo({
+        center: [
+          (fullExtentJWD.xmin + fullExtentJWD.xmax) / 2,
+          (fullExtentJWD.ymin + fullExtentJWD.ymax) / 2
+        ],
+        zoom: startLevel
+      })
 
-    if (!range) {
-      const { source } = sceneController.findSource(id)
-      if (source && source.length > 0) {
-        const tranform = source[0].root.transform
-        const bound: Bound = sceneController.localExtentToGlobelExtent(
-          { xmin, xmax, ymin, ymax, zmin, zmax },
-          tranform
-        )
+      fitBound3D(fullExtentJWD, mapParams)
 
-        extent = {
-          xmin: bound.xmin,
-          ymin: bound.ymin,
-          xmax: bound.xmax,
-          ymax: bound.ymax
-        }
-      }
-    } else {
-      extent = {
-        xmin: range.xmin,
-        ymin: range.ymin,
-        xmax: range.xmax,
-        ymax: range.ymax
-      }
-    }
-    if (extent) {
-      fitBound3D(extent, mapParams)
-    }
+      break
+    default:
+      fitBound2D(fullExtentJWD, mapParams)
+      fitBound3D(fullExtentJWD, mapParams)
+      break
   }
 }
 

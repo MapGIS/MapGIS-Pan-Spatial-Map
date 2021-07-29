@@ -1,6 +1,7 @@
 import { Point2D } from '@mapgis/webclient-es6-service/common/Point2D'
 import { LoadStatus, LayerType, Layer } from './layer'
 import { SpatialReference } from '../spatial-reference'
+import { ObjectTool } from '../../utils/object-tool'
 
 /**
  * 瓦片级别信息
@@ -121,6 +122,29 @@ export class TileInfo {
    * @memberof TileInfo
    */
   spatialReference: SpatialReference = new SpatialReference()
+
+  /**
+   * 创建一个深度克隆的TileInfo
+   *
+   * @date 06/04/2021
+   * @return {*}  {TileInfo}
+   * @memberof TileInfo
+   */
+  clone(): TileInfo {
+    const result = new TileInfo()
+
+    Object.entries(this).forEach(element => {
+      const key = element[0]
+      const valueIndex = 1
+      if (key === 'spatialReference') {
+        result[key] = element[valueIndex].clone()
+      } else {
+        result[key] = ObjectTool.deepClone(element[valueIndex])
+      }
+    })
+
+    return result
+  }
 
   /**
    * 将该对象的实例转换为JSON对象。

@@ -1,3 +1,4 @@
+import { ObjectTool } from '../utils/object-tool'
 /**
  * 常用的空间参照系的枚举
  *
@@ -45,6 +46,25 @@ export class SpatialReference {
   wkid = CoordinateSystemType.wgs84
 
   /**
+   * 创建一个深度克隆的SpatialReference
+   *
+   * @date 06/04/2021
+   * @return {*}  {SpatialReference}
+   * @memberof SpatialReference
+   */
+  clone(): SpatialReference {
+    const result = new SpatialReference()
+
+    Object.entries(this).forEach(element => {
+      const key = element[0]
+      const valueIndex = 1
+      result[key] = ObjectTool.deepClone(element[valueIndex])
+    })
+
+    return result
+  }
+
+  /**
    * 是否为Web墨卡托投影空间参照系
    *
    * @date 28/04/2021
@@ -63,6 +83,6 @@ export class SpatialReference {
    * @memberof SpatialReference
    */
   isWGS84(): boolean {
-    return this.wkid === 4326
+    return this.wkid === 4326 || this.wkid === 4490
   }
 }

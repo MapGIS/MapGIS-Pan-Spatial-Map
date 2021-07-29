@@ -159,7 +159,7 @@ export class IGSTileLayer extends TileLayer {
         const lods: any[] = tileInfoJsonObject.lods
 
         if (lods.length > 0) {
-          for (i = startLevel; i < endLevel; i++) {
+          for (i = startLevel; i <= endLevel; i++) {
             const lod = new LOD()
 
             lod.level = lods[i].level
