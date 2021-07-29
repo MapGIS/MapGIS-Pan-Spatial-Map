@@ -974,7 +974,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       }
       queryChartOption.series[n] = option
     }
-    queryChartOption.legend.data = this.statisticsField.label
+    queryChartOption.legend.data = this.statisticsField.map(x=>x.label)
     if (keys.length > 10) {
       queryChartOption.dataZoom = [
         {
