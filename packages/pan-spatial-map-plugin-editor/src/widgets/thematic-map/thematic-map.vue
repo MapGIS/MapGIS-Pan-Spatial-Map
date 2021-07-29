@@ -46,7 +46,6 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { api } from '@mapgis/pan-spatial-map-store'
 import _cloneDeep from 'lodash/cloneDeep'
 import {
   mapGetters,
@@ -257,13 +256,11 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   /**
    * 专题图面板打开
+   * fixme 未对接服务，取store里缓存的配置
    */
   onOpen() {
     if (this.flag) {
-      this.setLoadingShow()
-      const { baseConfig, subjectConfig = [] } = this.widgetInfo.config
-      this.setBaseConfig(baseConfig)
-      this.setSubjectConfig(subjectConfig)
+      this.setSubjectConfig(this.subjectConfig)
       this.setModulesShow('tools')
       this.flag = false
     }
@@ -276,9 +273,10 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     this.flag = true
     this.checkedThematicMapNodes = []
     this.setModulesHide()
+    this.setLoadingHide()
     this.setSelectedSubjectList([])
-    this.setBaseConfig(null)
-    this.setSubjectConfig([])
+    // this.setBaseConfig(null)
+    // this.setSubjectConfig([])
   }
 
   /**
@@ -289,6 +287,12 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     this.setLoadingShow()
     this.thematicMapTree = this.normalizeThematicMapTree(_cloneDeep(nV))
     this.setLoadingHide()
+  }
+
+  created() {
+    const { baseConfig, subjectConfig = [] } = this.widgetInfo.config
+    this.setBaseConfig(baseConfig)
+    this.setSubjectConfig(subjectConfig)
   }
 }
 </script>
