@@ -114,14 +114,14 @@
             <a-select
               class="multiple-select-container"
               mode="multiple"
-              v-model="statisticsField"
+              v-model="statisticsFieldIndex"
               style="width:100%"
               placeholder="请选择"
             >
               <a-select-option
-                v-for="{ label, value } in fieldOptions"
+                v-for="({ label, value }, index) in fieldOptions"
                 :key="value"
-                :value="value"
+                :value="index"
               >
                 {{ label }}
               </a-select-option>
@@ -189,10 +189,14 @@
       </a-col>
 
       <a-col :span="14">
-        <a-spin :spinning="resultLoading">
+        <a-spin :spinning="resultLoading" style="width:100%">
           <a-row justify="center" type="flex" class="a-row-space">
             <a-col>
-              <a-radio-group v-model="showEchartTable" button-style="solid">
+              <a-radio-group
+                v-model="showEchartTable"
+                button-style="solid"
+                @change="radioChange"
+              >
                 <a-radio-button :value="false" class="chart-radio-button">
                   统计图
                 </a-radio-button>
@@ -202,26 +206,29 @@
               </a-radio-group>
             </a-col>
           </a-row>
-          <div
-            ref="chart"
-            style="height:280px;width:100%"
-            v-show="!showEchartTable"
-          ></div>
-          <a-table
-            v-if="showEchartTable && tableData.length > 0"
-            :locale="{ emptyText: '暂无数据' }"
-            :columns="columnsTable"
-            :data-source="tableData"
-            bordered
-            size="small"
-            :scroll="{ y: 240, x: 10 }"
-            :rowKey="
-              (record, index) => {
-                return index
-              }
-            "
-          >
-          </a-table>
+          <div class="panel-container">
+            <div
+              id="statisticsChart"
+              class="chart-container"
+              :class="[!showEchartTable ? '' : 'hidden-panel']"
+            ></div>
+            <a-table
+              :class="[showEchartTable ? '' : 'hidden-panel']"
+              v-if="tableData.length > 0"
+              :locale="{ emptyText: '暂无数据' }"
+              :columns="columnsTable"
+              :data-source="tableData"
+              bordered
+              size="small"
+              :scroll="{ y: 240, x: 10 }"
+              :rowKey="
+                (record, index) => {
+                  return index
+                }
+              "
+            >
+            </a-table>
+          </div>
         </a-spin>
       </a-col>
     </a-row>
@@ -248,8 +255,6 @@ import { Sketch } from 'vue-color'
   components: { 'sketch-picker': Sketch }
 })
 export default class MpAttrStatistics extends Mixins(AppMixin) {
-  @Ref() readonly chart!: Element
-
   @Prop(Object) readonly queryParams!: Record<string, any>
 
   @Prop({
@@ -294,6 +299,12 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     ) {
       this.groupType = this.groupTypeOptions[0].value
     }
+  }
+
+  private radioChange() {
+    // if (!this.showEchartTable && this.chartObj) {
+    //   this.chartObj.resize()
+    // }
   }
 
   private groupTypeOptions: OptionItem[] = [
@@ -350,7 +361,20 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     return this.statisticsTypeOptions[this.statisticsTypeIndex]
   }
 
-  private statisticsField = []
+  private statisticsFieldIndex =
+    this.fieldOptions && this.fieldOptions.length > 0 ? [0] : []
+
+  private get statisticsField() {
+    if (this.fieldOptions && this.fieldOptions.length > 0) {
+      return this.statisticsFieldIndex.map(index => {
+        return this.fieldOptions[index]
+      })
+    }
+
+    return []
+  }
+
+  // private statisticsField = []
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private chartObj: any
@@ -409,7 +433,6 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   private async mounted() {
     // await this.getLayerOptions()
     await this.changeQueryParamas(this.queryParams)
-    this.chartObj = echarts.init(this.chart)
   }
 
   async getLayerOptions() {
@@ -437,12 +460,14 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   private changeFieldOptions(val: OptionItem[]) {
     // ;[this.groupField] = val
     this.groupFieldIndex = 0
-    this.statisticsField = [val[0].value]
+    // this.statisticsField = [val[0].value]
+    this.statisticsFieldIndex =
+      this.fieldOptions && this.fieldOptions.length > 0 ? [0] : []
   }
 
   @Watch('statisticsField')
   private changeStatisticsField(val: OptionItem[]) {
-    const fields = val.filter(x => !!x)
+    const fields = val.filter(x => !!x.value)
     const colors = this.gradientColor(
       this.beginColor,
       this.endColor,
@@ -450,7 +475,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     )
     const data: { field: string; color: string }[] = []
     for (let i = 0; i < fields.length; i += 1) {
-      data.push({ field: fields[i], color: colors[i] })
+      data.push({ field: fields[i].label, color: colors[i] })
     }
     this.data = data
   }
@@ -610,7 +635,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         const params = {
           layerIdxs: this.layer,
           where: '',
-          field: this.statisticsField.join(','),
+          field: this.statisticsField.map(item => item.value).join(','),
           type: this.statisticsType.value,
           guid: '__readonly_user__',
           f: 'json',
@@ -621,7 +646,10 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
 
         data = await this.setDataParams(url, params)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        dataset.push([`${this.groupField}(分组)`, ...this.statisticsField])
+        dataset.push([
+          `${this.groupField}(分组)`,
+          ...this.statisticsField.map(item => item.label)
+        ])
         const keys = Object.keys(data[0])
         const items = keys.map(key => {
           return [
@@ -641,11 +669,11 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
           }
         )
 
-        const outStatistics = this.statisticsField.map(x => {
+        const outStatistics = this.statisticsField.map(item => {
           return {
             statisticType: this.statisticsType.type,
-            onStatisticField: x,
-            outStatisticFieldName: x
+            onStatisticField: item.value,
+            outStatisticFieldName: item.value
           }
         })
         let obj = {}
@@ -696,9 +724,11 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         data = obj.data
         dataset = obj.dataSet
       }
-      this.setEchart(data)
+      this.$nextTick(() => {
+        this.setEchart(data)
 
-      this.setTableView(dataset)
+        this.setTableView(dataset)
+      })
     } catch (error) {
       this.$message.warning('统计失败！')
     } finally {
@@ -712,7 +742,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     const templete = [this.groupField]
     this.statisticsField.forEach(val => {
       arr.push({})
-      templete.push(val)
+      templete.push(val.value)
     })
     const num = (max - min) / this.rangeNum
     const limistArr = []
@@ -739,7 +769,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       const { properties } = features[0]
       this.statisticsField.forEach((val, i) => {
         // arr[i].push({ [JSON.stringify(limits)]: properties[val] })
-        arr[i][JSON.stringify(limits)] = properties[val]
+        arr[i][JSON.stringify(limits)] = properties[val.value]
       })
       const tableArr = [JSON.stringify(limits)]
       templete.forEach((val, id) => {
@@ -769,13 +799,13 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     const templete = [this.groupField]
     this.statisticsField.forEach(item => {
       arr.push({})
-      templete.push(item)
+      templete.push(item.value)
     })
     features.forEach(({ properties }) => {
       dataSet.push(templete.map(item => properties[item]))
 
-      this.statisticsField.forEach((name, index) => {
-        arr[index][properties[this.groupField]] = properties[name]
+      this.statisticsField.forEach((item, index) => {
+        arr[index][properties[this.groupField]] = properties[item.value]
       })
     })
     dataSet.unshift(
@@ -870,6 +900,9 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   }
 
   setEchart(data) {
+    if (!this.chartObj) {
+      this.chartObj = echarts.init(document.getElementById('statisticsChart'))
+    }
     const self = this
     const keys = Object.keys(data[0])
     // 指定图表的配置项和数据
@@ -937,11 +970,11 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         data: keys.map(key => {
           return data[n][key]
         }),
-        name: this.statisticsField[n]
+        name: this.statisticsField[n].label
       }
       queryChartOption.series[n] = option
     }
-    queryChartOption.legend.data = this.statisticsField
+    queryChartOption.legend.data = this.statisticsField.map(x=>x.label)
     if (keys.length > 10) {
       queryChartOption.dataZoom = [
         {
@@ -949,7 +982,6 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
           show: true,
           xAxisIndex: [0],
           left: '9%',
-          bottom: -5,
           start: 30,
           end: 70 // 初始化滚动条
         }
@@ -1003,6 +1035,21 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   .chart-radio-button {
     width: 110px;
     text-align: center;
+  }
+  .panel-container {
+    position: relative;
+    .chart-container {
+      position: absolute;
+      height: 280px;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+    .hidden-panel {
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 }
 </style>
