@@ -4,6 +4,7 @@
     <slot>
       <span class="title">{{ title }}</span>
     </slot>
+    <slot name="handle"></slot>
   </div>
 </template>
 
