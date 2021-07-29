@@ -3,7 +3,9 @@ import MpIcon from './icon/Icon.vue'
 import MpButton from './button/Button.vue'
 
 import MpRowFlex from './row-flex/RowFlex.vue'
+import MpLayoutColumn from './layout-column/LayoutColumn.vue'
 
+import MpToolbarHeader from './toolbar-header/ToolbarHeader.vue'
 import MpToolbar from './toolbar/Toolbar.vue'
 
 import MpToolbarSpace from './toolbar/ToolbarSpace.vue'
@@ -39,7 +41,9 @@ import MpPortal from './portal'
 const components = [
   MpIcon,
   MpButton,
+  MpLayoutColumn,
   MpRowFlex,
+  MpToolbarHeader,
   MpToolbar,
   MpToolbarSpace,
   MpToolbarTitle,

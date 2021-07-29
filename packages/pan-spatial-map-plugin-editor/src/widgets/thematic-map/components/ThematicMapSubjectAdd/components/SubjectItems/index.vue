@@ -20,7 +20,7 @@
     </mp-toolbar>
     <!-- 设置面板内容 -->
     <div class="subject-items-content">
-      <a-empty description="暂无数据" v-if="!configList.length" />
+      <a-empty v-if="!configList.length" />
       <a-collapse
         v-else
         @change="panelChange"
@@ -52,17 +52,24 @@
             @field-change="fieldChange($event, sub)"
             @server-change="serverChange($event, sub)"
           />
-          <!-- 各专题图样式、动画等配置 -->
-          <subject-styles
-            :subject-type="subjectType"
-            @change="subjectStylesChange($event, sub)"
-          />
-          <!-- 属性表配置 -->
-          <!-- <attribute-table /> -->
-          <!-- 统计表配置 -->
-          <!--  <statistic-graph /> -->
-          <!-- 弹框配置 -->
-          <!--  <popup /> -->
+          <!-- 其他配置 -->
+          <a-tabs type="card" size="small">
+            <a-tab-pane key="style" tab="样式配置">
+              <subject-styles
+                :subject-type="subjectType"
+                @change="subjectStylesChange($event, sub)"
+              />
+            </a-tab-pane>
+            <a-tab-pane key="attr" tab="表格配置">
+              <attribute-table :subject-config="sub" />
+            </a-tab-pane>
+            <a-tab-pane key="graph" tab="统计图配置">
+              <!--  <statistic-graph /> -->
+            </a-tab-pane>
+            <a-tab-pane key="popup" tab="弹框配置">
+              <!--  <popup /> -->
+            </a-tab-pane>
+          </a-tabs>
         </a-collapse-panel>
       </a-collapse>
     </div>
@@ -73,13 +80,13 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { SubjectType, NewSubjectConfig } from '../../../../store'
 import Common from './components/Common.vue'
 import SubjectStyles from './components/SubjectStyles'
-// import AttributeTable from './components/AttributeTable.vue'
+import AttributeTable from './components/AttributeTable.vue'
 
 @Component({
   components: {
     Common,
-    SubjectStyles
-    // AttributeTable
+    SubjectStyles,
+    AttributeTable
   }
 })
 export default class SubjectItems extends Vue {

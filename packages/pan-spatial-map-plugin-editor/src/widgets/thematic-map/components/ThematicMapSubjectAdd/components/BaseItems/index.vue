@@ -153,3 +153,8 @@ export default class BaseItems extends Vue {
   }
 }
 </script>
+<style lang="less" scoped>
+::v-deep .ant-row-flex {
+  margin-bottom: 12px;
+}
+</style>

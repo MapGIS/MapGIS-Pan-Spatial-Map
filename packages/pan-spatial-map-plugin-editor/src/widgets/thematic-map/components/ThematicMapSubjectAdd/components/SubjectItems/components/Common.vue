@@ -1,7 +1,7 @@
 <template>
   <div class="common">
     <!-- 年度或时间 -->
-    <mp-row-flex label="年度/时间" label-align="right" :label-width="76">
+    <mp-row-flex label="年度/时间" label-align="right">
       <a-input
         v-model="selfTime"
         :allow-clear="true"
@@ -10,7 +10,7 @@
     </mp-row-flex>
     <!-- 服务设置 -->
     <div class="server-tree-select">
-      <mp-row-flex label="服务地址" label-align="right" :label-width="76">
+      <mp-row-flex label="服务地址" label-align="right">
         <mp-tree-select
           @change="selfUriChange"
           :value="selfUri"
@@ -28,7 +28,7 @@
       <mp-row-flex
         v-for="{ label, content } in examples"
         :key="label"
-        :label-width="76"
+        :label="label"
         label-align="right"
         class="server-tree-select-example"
       >
@@ -340,17 +340,22 @@ export default class Common extends Vue {
 }
 </script>
 <style lang="less" scoped>
-.server-tree-select {
-  margin-bottom: 10px;
-  ::v-deep .ant-row-flex {
-    margin-bottom: 4px;
+.common {
+  ::v-deep > .ant-row-flex {
+    margin-bottom: 12px;
   }
-  &-example {
-    word-break: break-all;
-    white-space: normal;
-    font-size: 12px;
-    color: @text-color-secondary;
-    margin-bottom: 4px !important;
+  .server-tree-select {
+    margin-bottom: 10px;
+    ::v-deep .ant-row-flex {
+      margin-bottom: 4px;
+    }
+    &-example {
+      word-break: break-all;
+      white-space: normal;
+      font-size: 12px;
+      color: @text-color-secondary;
+      margin-bottom: 4px;
+    }
   }
 }
 </style>

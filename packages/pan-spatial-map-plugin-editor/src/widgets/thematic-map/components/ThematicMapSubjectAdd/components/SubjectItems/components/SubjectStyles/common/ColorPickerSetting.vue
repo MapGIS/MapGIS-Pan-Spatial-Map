@@ -5,61 +5,42 @@
       :style="{ background }"
       @click.stop="showDropdown"
     />
-    <div class="color-picker-setting" slot="overlay">
-      <mp-toolbar :bordered="false" class="color-picker-setting-head">
-        <mp-toolbar-title :has-padding="false">
-          颜色设置
-        </mp-toolbar-title>
-        <mp-toolbar-command-group>
-          <mp-toolbar-command
-            v-for="item in tools"
-            :key="item.title"
-            :title="item.title"
-            :icon="item.icon"
-            @click="item.method()"
-          >
-          </mp-toolbar-command>
-        </mp-toolbar-command-group>
-      </mp-toolbar>
-      <div class="color-picker-setting-content">
-        <a-table
-          bordered
-          :pagination="false"
-          :columns="tableColumns"
-          :data-source="tableData"
-          :row-selection="{
-            columnWidth: 32,
-            selectedRowKeys,
-            onChange: selectChange
-          }"
-        >
-          <template slot="color" slot-scope="text, record">
-            <color-picker
-              v-model="record.color"
-              :border-radius="false"
-              type="rgb"
-            />
-          </template>
-          <template slot="percent" slot-scope="text, record">
-            <a-input-number
-              v-model="record.percent"
-              :min="0"
-              :max="100"
-              :precision="0"
-              :formatter="value => `${value}%`"
-              :parser="value => value.replace('%', '')"
-            />
-          </template>
-          <template slot="operation" slot-scope="text, record, index">
-            <a-icon
-              type="delete"
-              class="pointer"
-              @click="remove(index)"
-            ></a-icon>
-          </template>
-        </a-table>
-      </div>
-    </div>
+    <mp-layout-column slot="overlay" :box-shadow="true" size="small">
+      <mp-toolbar-header slot="header" title="颜色设置" :tools="tools" />
+      <a-table
+        bordered
+        :pagination="false"
+        :columns="tableColumns"
+        :data-source="tableData"
+        :row-selection="{
+          columnWidth: 32,
+          selectedRowKeys,
+          onChange: selectChange
+        }"
+        class="color-setting-table"
+      >
+        <template slot="color" slot-scope="text, record">
+          <color-picker
+            v-model="record.color"
+            :border-radius="false"
+            type="rgb"
+          />
+        </template>
+        <template slot="percent" slot-scope="text, record">
+          <a-input-number
+            v-model="record.percent"
+            :min="0"
+            :max="100"
+            :precision="0"
+            :formatter="value => `${value}%`"
+            :parser="value => value.replace('%', '')"
+          />
+        </template>
+        <template slot="operation" slot-scope="text, record, index">
+          <a-icon type="delete" class="pointer" @click="remove(index)" />
+        </template>
+      </a-table>
+    </mp-layout-column>
   </a-dropdown>
 </template>
 <script lang="ts">
@@ -259,39 +240,26 @@ export default class ColorPickerSetting extends Vue {
   border: 1px solid transparent;
   cursor: pointer;
 }
-
-.color-picker-setting {
-  background: @white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  &-head {
-    padding: 0 10px;
-    border-bottom: 1px solid @border-color-base;
-  }
-  &-content {
-    max-height: 280px;
-    overflow-y: auto;
-    padding: 10px 10px 12px;
-  }
-
-  /deep/ .ant-input-number {
-    border: none;
-    border-radius: 0;
-    &-focused {
-      box-shadow: none;
+.color-setting-table {
+  /deep/ .ant-table {
+    .ant-input-number {
+      border: none;
+      border-radius: 0;
+      &-focused {
+        box-shadow: none;
+      }
+      &-focused,
+      &:hover,
+      &:focus {
+        border-color: @border-color-base;
+      }
     }
-    &-focused,
-    &:hover,
-    &:focus {
-      border-color: @border-color-base;
+    th {
+      padding: 6px 8px;
     }
-  }
-
-  /deep/ th {
-    padding: 6px 8px !important;
-  }
-
-  /deep/ td {
-    padding: 0 !important;
+    td {
+      padding: 0;
+    }
   }
 }
 </style>
