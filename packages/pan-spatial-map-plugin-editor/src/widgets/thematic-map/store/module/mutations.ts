@@ -230,6 +230,7 @@ const mutations = {
   },
   /**
    * 更新专题配置
+   * fixme 未实现真实的保存，不能保存在server的config中去
    */
   updateSubjectConfig(
     { state, commit },
