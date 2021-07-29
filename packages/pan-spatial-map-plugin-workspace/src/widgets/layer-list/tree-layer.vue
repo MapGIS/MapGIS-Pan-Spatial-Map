@@ -574,7 +574,6 @@ export default class TreeLayer extends Mixins(
   }
 
   tickedChange(val: Array<string>, e) {
-    debugger
     const includeHanlfCheckArrNew = val.concat(e.halfCheckedKeys)
     const includeHanlfCheckArrOld = this.ticked.concat(this.parentKeys)
     const doc = this.document.clone()
@@ -590,7 +589,6 @@ export default class TreeLayer extends Mixins(
         const parentIndex: string = item.split('-')[0]
         const childrenArr: Array<string> = item.split('-')
         let layerItem = layers[parentIndex]
-        debugger
         childrenArr.forEach((i, index) => {
           if (index === 0) {
             return
