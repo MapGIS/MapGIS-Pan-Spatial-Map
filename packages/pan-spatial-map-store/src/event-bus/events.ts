@@ -13,3 +13,8 @@ export const ADD_ALL_SELECTED_DATA_BOOKMARK_EVENT =
   'add-all-selected-data-bookmark'
 // 打开数据书签
 export const OPEN_DATA_BOOKMARK_EVENT = 'open-data-bookmark'
+// 服务叠加预览
+export const IMPOSE_SERVICE_PREVIEW_EVENT = 'impose-service-preview'
+// 目录树注册了服务叠加事件
+export const DATA_CATALOG_ON_IMPOSE_SERVICE_EVENT =
+  'data-catalog-on-impose-service'

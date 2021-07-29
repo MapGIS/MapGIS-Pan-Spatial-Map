@@ -130,6 +130,8 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     }
   ]
 
+  private isZoomLayer = false
+
   get urlDataTypes2D() {
     return [...this.commonDataTypes]
   }
@@ -210,14 +212,14 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     this.loaded = true
 
     eventBus.$on(events.ADD_DATA_EVENT, this.onAddData)
-    eventBus.$on('emitImposeServiceByAddData', this.onImposeServiceByAddData)
   }
 
   onAddCategory({ name, description }) {
     this.dataList.push({ name, description, children: [] })
   }
 
-  onAddData({ name, description, data }) {
+  onAddData({ name, description, data, isZoom = false }) {
+    this.isZoomLayer = isZoom
     let categoryDataList = this.dataList.find(
       category => category.name === name
     )
@@ -267,6 +269,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   }
 
   async onAddLayer(data) {
+    const { Cesium, map, webGlobe, CesiumZondy } = this
     const layerConfig = {
       name: data.name,
       guid: data.id,
@@ -288,6 +291,18 @@ export default class MpAddData extends Mixins(WidgetMixin) {
         this.switchMapMode()
       }
       this.document.defaultMap.add(layer)
+
+      if (this.isZoomLayer) {
+        if (layer.type !== LayerType.IGSScene) {
+          fitBoundByLayer(layer, {
+            Cesium,
+            map,
+            webGlobe,
+            CesiumZondy
+          })
+        }
+        this.isZoomLayer = false
+      }
     }
   }
 
@@ -304,40 +319,6 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     }
 
     return type
-  }
-
-  // 监听服务叠加事件
-  async onImposeServiceByAddData(params) {
-    const { Cesium, map, webGlobe, CesiumZondy } = this
-    const layerConfig = {
-      guid: UUID.uuid(),
-      ip: params.ip,
-      port: params.port,
-      name: params.name,
-      serverName: params.name,
-      serverType: dataCatalogManagerInstance.convertLayerServiceType(
-        params.type
-      )
-    }
-    const layer = DataCatalogManager.generateLayerByConfig(layerConfig)
-
-    if (layer) {
-      if (layer.loadStatus === LoadStatus.notLoaded) {
-        await layer.load()
-      }
-      this.document.defaultMap.add(layer)
-
-      if (layer.type !== LayerType.IGSScene) {
-        fitBoundByLayer(layer, {
-          Cesium,
-          map,
-          webGlobe,
-          CesiumZondy
-        })
-      } else {
-        this.switchMapMode()
-      }
-    }
   }
 }
 </script>

@@ -356,6 +356,7 @@ export default class AddDataList extends Vue {
 
   private selectData(name, data) {
     this.categoryName = name
+    this.queryData()
     this.selectedRowKeys.push(data.id)
     this.onSelectChange(this.selectedRowKeys)
   }

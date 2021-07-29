@@ -326,7 +326,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
 
     eventBus.$on(events.OPEN_DATA_BOOKMARK_EVENT, this.bookMarkClick)
-    eventBus.$on('emitImposeService', this.imposeService)
+    eventBus.$on(events.IMPOSE_SERVICE_PREVIEW_EVENT, this.imposeService)
+    eventBus.$emit(events.DATA_CATALOG_ON_IMPOSE_SERVICE_EVENT)
   }
 
   @Watch('checkedNodeKeys', { deep: false })
@@ -445,6 +446,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             if (layer) {
               if (layer.loadStatus === LoadStatus.notLoaded) {
                 await layer.load()
+              }
+
+              if (
+                layer.type === LayerType.IGSScene &&
+                this.is2DMapMode === true
+              ) {
+                this.switchMapMode()
               }
 
               doc.defaultMap.add(layer)
@@ -756,7 +764,41 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         this.dataCatalogManager.checkedLayerConfigIDs.push(node.guid)
       }
     } else {
-      eventBus.$emit('emitImposeServiceByAddData', params)
+      const serviceType = this.dataCatalogManager.convertLayerServiceType(
+        params.type
+      )
+      let url = ''
+      let type = ''
+
+      switch (serviceType) {
+        case LayerType.IGSTile:
+          url = `http://${params.ip}:${params.port}/igs/rest/mrms/tile/${params.name}`
+          type = 'IGSTile'
+          break
+        case LayerType.IGSMapImage:
+          url = `http://${params.ip}:${params.port}/igs/rest/mrms/docs/${params.name}`
+          type = 'IGSMapImage'
+          break
+        case LayerType.IGSScene:
+          url = `http://${params.ip}:${params.port}/igs/rest/g3d/${params.name}`
+          type = 'IGSScene'
+          break
+        default:
+          break
+      }
+
+      const data = {
+        name: '服务叠加',
+        description: '',
+        data: {
+          type: type,
+          url: url,
+          name: params.name
+        },
+        isZoom: true
+      }
+
+      eventBus.$emit(events.ADD_DATA_EVENT, data)
     }
   }
 

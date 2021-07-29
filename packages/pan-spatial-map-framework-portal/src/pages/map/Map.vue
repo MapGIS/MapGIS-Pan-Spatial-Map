@@ -5,7 +5,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { AppManager } from '@mapgis/web-app-framework'
-import { eventBus } from '@mapgis/pan-spatial-map-store'
+import { eventBus, events } from '@mapgis/pan-spatial-map-store'
 
 import { BASE_URL } from '@/services/api'
 import { request } from '@/utils/request'
@@ -35,7 +35,7 @@ export default {
   },
 
   mounted() {
-    window.setTimeout(this.emitEvent, 3000)
+    eventBus.$on(events.DATA_CATALOG_ON_IMPOSE_SERVICE_EVENT, this.emitEvent)
   },
   methods: {
     ...mapMutations('setting', ['setTheme']),
@@ -69,12 +69,14 @@ export default {
       const name = this.getQueryString('name', searchString)
       const type = this.getQueryString('type', searchString)
 
-      eventBus.$emit('emitImposeService', {
-        ip: ip,
-        port: port,
-        name: name,
-        type: type
-      })
+      if (ip && port && name && type) {
+        eventBus.$emit(events.IMPOSE_SERVICE_PREVIEW_EVENT, {
+          ip: ip,
+          port: port,
+          name: name,
+          type: type
+        })
+      }
     },
     getQueryString(name, searchString) {
       const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
