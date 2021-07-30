@@ -442,6 +442,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             const layer = DataCatalogManager.generateLayerByConfig(
               layerConfigNode
             )
+
+            layer.description = this.setDescription(layer)
             // 2.将图层添加到全局的document中。
             if (layer) {
               if (layer.loadStatus === LoadStatus.notLoaded) {
@@ -468,6 +470,31 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         }
       )
     }
+  }
+
+  setDescription(item) {
+    const parentName = ''
+    const arr = []
+    if (this.dataCatalogTreeData)
+      this.findParentName(item.id, parentName, this.dataCatalogTreeData, arr)
+
+    if (arr.length > 0) {
+      return arr[0]
+    }
+    return ''
+  }
+
+  findParentName(id, parentName, dataCatalog, arr) {
+    dataCatalog.forEach(item => {
+      let copy = parentName
+      if (item.guid === id) {
+        parentName += item.name
+        arr.push(parentName)
+      } else if (item.children) {
+        copy += `${item.name}-`
+        this.findParentName(id, copy, item.children, arr)
+      }
+    })
   }
 
   // 按需筛选树节点高亮显示（搜索内容不为空时筛选条件）
