@@ -35,36 +35,42 @@
               item.layer && isWMTSLayer(item.layer) && !isActiveWMTSLayer(item)
             "
           />
-          <span
+          <a-tooltip
             v-if="
               filter !== '' &&
                 item.title.toUpperCase().indexOf(filter.toUpperCase()) > -1
             "
-            :id="`tree_${item.key}`"
-            :title="setTooltip(item)"
           >
-            <span>{{
-              item.title.substr(
-                0,
-                item.title.toUpperCase().indexOf(filter.toUpperCase())
-              )
-            }}</span>
-            <span class="filter-words">{{
-              item.title.substr(
-                item.title.toUpperCase().indexOf(filter.toUpperCase()),
-                filter.length
-              )
-            }}</span>
-            <span>{{
-              item.title.substr(
-                item.title.toUpperCase().indexOf(filter.toUpperCase()) +
+            <template v-if="item.description" slot="title">
+              {{ item.description }}
+            </template>
+            <span :id="`tree_${item.key}`">
+              <span>{{
+                item.title.substr(
+                  0,
+                  item.title.toUpperCase().indexOf(filter.toUpperCase())
+                )
+              }}</span>
+              <span class="filter-words">{{
+                item.title.substr(
+                  item.title.toUpperCase().indexOf(filter.toUpperCase()),
                   filter.length
-              )
-            }}</span>
-          </span>
-          <span v-else :id="`tree_${item.key}`" :title="setTooltip(item)">{{
-            item.title
-          }}</span>
+                )
+              }}</span>
+              <span>{{
+                item.title.substr(
+                  item.title.toUpperCase().indexOf(filter.toUpperCase()) +
+                    filter.length
+                )
+              }}</span>
+            </span>
+          </a-tooltip>
+          <a-tooltip v-else>
+            <template v-if="item.description" slot="title">
+              {{ item.description }}
+            </template>
+            <span :id="`tree_${item.key}`">{{ item.title }}</span>
+          </a-tooltip>
           <a-popover
             v-if="showPopover(item)"
             placement="bottomLeft"
@@ -282,8 +288,6 @@ export default class TreeLayer extends Mixins(
 
   @Prop() widgetInfo: Record<string, any>
 
-  @Prop() dataCatalog: Array<Record<string, any>>
-
   private filter = ''
 
   private ticked: Array<string> = []
@@ -338,8 +342,8 @@ export default class TreeLayer extends Mixins(
       this.document.defaultMap &&
       this.document.defaultMap.layers()
     ) {
-      this.setDocument()
       const layers: Array<unknown> = this.document.clone().defaultMap.layers()
+      this.setDocument(layers)
       const arr = []
       for (let index = 0; index < layers.length; index++) {
         const item = layers[index]
@@ -439,36 +443,6 @@ export default class TreeLayer extends Mixins(
     )
   }
 
-  setTooltip(item) {
-    if (this.isParentLayer(item)) {
-      const parentName = ''
-      const arr = []
-      if (this.dataCatalog) {
-        this.findParentName(item.id, parentName, this.dataCatalog, arr)
-      }
-
-      if (arr.length > 0) {
-        return arr[0]
-      }
-      return ''
-    } else {
-      return null
-    }
-  }
-
-  findParentName(id, parentName, dataCatalog, arr) {
-    dataCatalog.forEach(item => {
-      let copy = parentName
-      if (item.guid === id) {
-        parentName += item.name
-        arr.push(parentName)
-      } else if (item.children) {
-        copy += `${item.name}-`
-        this.findParentName(id, copy, item.children, arr)
-      }
-    })
-  }
-
   onSearch(val) {
     const time = this.filter === val
     if (time) {
@@ -533,8 +507,8 @@ export default class TreeLayer extends Mixins(
    * 该函数，是为了处理，当父节点为visible可见性false，子节点visible为true，
    * 这边递归讲父节点visible为false的子节点visible全部修改为false
    */
-  setDocument() {
-    const layers = this.document.defaultMap.layers()
+  setDocument(layers) {
+    // const layers = this.document.defaultMap.layers()
     for (let index = 0; index < layers.length; index++) {
       const item = layers[index]
       let parentVisible
@@ -706,6 +680,7 @@ export default class TreeLayer extends Mixins(
 
   fitBounds(item) {
     const { Cesium, map, webGlobe, CesiumZondy } = this
+    console.log(this.document)
     fitBoundByLayer(item.dataRef, {
       Cesium,
       map,

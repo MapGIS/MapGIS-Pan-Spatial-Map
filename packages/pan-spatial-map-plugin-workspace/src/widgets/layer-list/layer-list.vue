@@ -63,14 +63,6 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 
-  async mounted() {
-    try {
-      this.dataCatalog = await dataCatalogManagerInstance.getDataCatalogTreeData()
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   /**
    * 视图窗口变化
    */
@@ -121,6 +113,7 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
     }
     .active-color {
       border-bottom-color: @primary-color;
+      transition: background, linear 0.5s;
     }
   }
   .ant-empty-normal {

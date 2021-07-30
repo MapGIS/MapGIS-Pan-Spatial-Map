@@ -94,8 +94,7 @@ export const fitBoundByLayer = (layer: Layer, mapParams: MapParams) => {
       // 修改人：马原野 2021年7月29日
       // 修改说明：这里spatialReference克隆的有问题,不是一个真正的对象,故无法调用其上面的方法,需要优化。
       // 修改人：马原野 2021年7月29日
-      // if (layer.spatialReference.isWGS84()) {
-      if (layer.spatialReference.wkid === CoordinateSystemType.wgs84) {
+      if (layer.spatialReference.isWGS84()) {
         startLevel++
       }
 

@@ -20,6 +20,9 @@ export class ObjectTool {
         // 判断如果当前的值是一个RegExp对象的话，直接赋值
       } else if (target.constructor === RegExp) {
         result = target
+      } else if (typeof target.clone === 'function') {
+        // 如果该对象有克隆方法，则直接调用该类克隆方法
+        result = target.clone()
       } else {
         // 否则是普通对象，直接for in循环，递归赋值对象的所有值
         result = {}
