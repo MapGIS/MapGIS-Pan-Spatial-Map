@@ -77,7 +77,7 @@
         :layerStyle="layerProps.layerStyle"
       />
       <mapgis-3d-igs-m3d
-        v-if="isIgsM3dLayer(layerProps.type)"
+        v-if="isIgsM3dLayer(layerProps.type, layerProps.renderType)"
         :vueIndex="layerProps.id"
         :id="layerProps.id"
         :show="layerProps.show"
@@ -85,7 +85,7 @@
         :layerStyle="layerProps.layerStyle"
       />
       <mapgis-3d-igs-terrain
-        v-if="isIgsTerrainLayer(layerProps.type)"
+        v-if="isIgsTerrainLayer(layerProps.type, layerProps.renderType)"
         :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
@@ -230,7 +230,8 @@ export default {
         case IGSSceneSublayerRenderType.modelCache:
         case IGSSceneSublayerRenderType.elevation:
           layerComponentProps = {
-            type: igsSceneSublayer.renderType,
+            type: igsSceneSublayer.layer.type,
+            renderType: igsSceneSublayer.renderType,
             id: igsSceneSublayer.id,
             url: igsSceneSublayer.layer.url
           }
@@ -473,11 +474,17 @@ export default {
     isDoc3dLayer(type) {
       return false
     },
-    isIgsM3dLayer(type) {
-      return type === IGSSceneSublayerRenderType.modelCache
+    isIgsM3dLayer(type, renderType) {
+      return (
+        type === LayerType.IGSScene &&
+        renderType === IGSSceneSublayerRenderType.modelCache
+      )
     },
-    isIgsTerrainLayer(type) {
-      return type === IGSSceneSublayerRenderType.elevation
+    isIgsTerrainLayer(type, renderType) {
+      return (
+        type === LayerType.IGSScene &&
+        renderType === IGSSceneSublayerRenderType.elevation
+      )
     },
     getTilingSchemeBySrs(srs) {
       let tilingScheme = null
