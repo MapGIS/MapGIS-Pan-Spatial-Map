@@ -34,8 +34,8 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
+import { WidgetMixin, CommonUtil } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpCutFillAnalysis',
@@ -53,6 +53,22 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     surfaceArea: '',
     cutVolume: '',
     fillVolume: ''
+  }
+
+  private positions = null
+
+  // get z() {
+  //   return this.formData.z
+  // }
+
+  @Watch('formData.z', { deep: true })
+  changeZ() {
+    if (!this.positions) {
+      return
+    }
+    const self = this
+    // self.startFill
+    CommonUtil.debounce(self.startFill, 200, true)
   }
 
   created() {
@@ -82,128 +98,74 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       // 绘制完成回调函数
       callback: positions => {
         this.stopDraw()
-        const { viewer } = this.webGlobe
-        const { x, y, z } = this.formData
-        // 移除视图中所有的实体对象
-        viewer.entities.removeAll()
-        // 添加填挖方分析显示实体
-        // 构造闭合区点数组
-        // eslint-disable-next-line prefer-destructuring
-        positions[positions.length - 1] = positions[0]
-        const transform = this.transformEdit()
-        const array = []
-        for (let i = 0; i < positions.length; i++) {
-          const point = positions[i]
-          const resPoint = new this.Cesium.Cartesian3()
-          const invserTran = new this.Cesium.Matrix4()
-          this.Cesium.Matrix4.inverse(transform, invserTran)
-          this.Cesium.Matrix4.multiplyByPoint(invserTran, point, resPoint)
-          array.push(
-            new this.Cesium.Cartesian3(resPoint.x, resPoint.y, resPoint.z)
-          )
-        }
-        const newArray = []
-        for (let arraylength = 0; arraylength < array.length; arraylength++) {
-          array[arraylength].z = Number(z)
-          const point = array[arraylength]
-          const resPoint = new this.Cesium.Cartesian3()
-          const invserTran = new this.Cesium.Matrix4()
-          this.Cesium.Matrix4.multiplyByPoint(transform, point, resPoint)
-          newArray.push(
-            new this.Cesium.Cartesian3(resPoint.x, resPoint.y, resPoint.z)
-          )
-        }
-        // 在视图中添加围栏实体
-        viewer.entities.add({
-          id: 'cutfill',
-          // 实体名称
-          name: '围栏',
-          // 示例类型
-          wall: {
-            // 实体点数组
-            positions: newArray,
-            // 实体材质
-            material: new this.Cesium.Color(0.2, 0.5, 0.4, 0.7),
-            // 实体轮廓
-            outline: true
-          }
-        })
-        // 初始化高级分析功能管理类
-        const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
-          {
-            viewer
-          }
-        )
-        // 创建填挖方实例
-        window.CutFillAnalyzeManage.cutFill = advancedAnalysisManager.createCutFill(
-          0.0,
-          {
-            // 设置x方向采样点个数
-            xPaneNum: x <= 0 ? 16 : x,
-            // 设置y方向采样点个数参数
-            yPaneNum: y <= 0 ? 16 : y,
-            // 设置填挖规整高度
-            height: z <= 0 ? 2000 : z,
-            // 返回结果的回调函数
-            callback: result => {
-              this.result = {
-                height: `${result.minHeight.toFixed(
-                  2
-                )}~${result.maxHeight.toFixed(2)}`,
-                surfaceArea: result.surfaceArea,
-                cutVolume: result.cutVolume,
-                fillVolume: result.fillVolume
-              }
-            }
-          }
-        )
-        // 开始执行填挖方分析
-        advancedAnalysisManager.startCutFill(
-          window.CutFillAnalyzeManage.cutFill,
-          positions
-        )
+        this.positions = positions
+        this.startFill()
       }
     })
   }
 
-  transformEdit() {
-    // 经纬度定位
-    const lo = 120.9819
-    const la = 23.5307
-    // 修改模型高度
-    const height = 50.0
-    // 定位方法
-    let hpr = new this.Cesium.Matrix3()
-    // new this.Cesium.HeadingPitchRoll(heading, pitch, roll)
-    // heading围绕负z轴的旋转。pitch是围绕负y轴的旋转。Roll是围绕正x轴的旋转
-    const hprObj = new this.Cesium.HeadingPitchRoll(
-      this.Cesium.Math.PI,
-      this.Cesium.Math.PI,
-      this.Cesium.Math.PI
+  // 开始分析
+  startFill() {
+    const { positions } = this
+    // console.log('startFill')
+    const { viewer } = this.webGlobe
+    const { x, y, z } = this.formData
+    // 移除视图中所有的实体对象
+    viewer.entities.removeAll()
+
+    // 在视图中添加围栏实体
+    viewer.entities.add({
+      id: 'cutfill',
+      // 实体名称
+      name: '围栏',
+      // 示例类型
+      wall: {
+        // 实体点数组
+        positions,
+        // 实体材质
+        material: new this.Cesium.Color(0.2, 0.5, 0.4, 0.7),
+        // 实体轮廓
+        outline: true
+      }
+    })
+    // 初始化高级分析功能管理类
+    const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
+      {
+        viewer
+      }
     )
-    hpr = this.Cesium.Matrix3.fromHeadingPitchRoll(hprObj, hpr)
-    // 2、平移
-    // 2.3储存平移的结果
-    const modelMatrix = this.Cesium.Matrix4.multiplyByTranslation(
-      // 2.1从以度为单位的经度和纬度值返回Cartesian3位置
-      // 2.2计算4x4变换矩阵
-      this.Cesium.Transforms.eastNorthUpToFixedFrame(
-        this.Cesium.Cartesian3.fromDegrees(lo, la, height)
-      ),
-      new this.Cesium.Cartesian3(),
-      new this.Cesium.Matrix4()
+    // 创建填挖方实例
+    window.CutFillAnalyzeManage.cutFill = advancedAnalysisManager.createCutFill(
+      2.0,
+      {
+        // 设置x方向采样点个数
+        xPaneNum: x <= 0 ? 16 : x,
+        // 设置y方向采样点个数参数
+        yPaneNum: y <= 0 ? 16 : y,
+        // 设置填挖规整高度
+        height: z <= 0 ? 2000 : z,
+        // 返回结果的回调函数
+        callback: result => {
+          this.result = {
+            height: `${result.minHeight.toFixed(2)}~${result.maxHeight.toFixed(
+              2
+            )}`,
+            surfaceArea: result.surfaceArea,
+            cutVolume: result.cutVolume,
+            fillVolume: result.fillVolume
+          }
+        }
+      }
     )
-    /// 3、应用旋转
-    // this.Cesium.Matrix4.multiplyByMatrix3 （矩阵，旋转，结果）
-    this.Cesium.Matrix4.multiplyByMatrix3(modelMatrix, hpr, modelMatrix)
-    return modelMatrix
+    // 开始执行填挖方分析
+    advancedAnalysisManager.startCutFill(
+      window.CutFillAnalyzeManage.cutFill,
+      positions
+    )
   }
 
   // 移除填挖方计算
   stopCutFillM() {
-    // const { viewer } = this.webGlobe
-    // // 移除视图中所有的实体对象
-    // viewer.entities.removeAll()
     this.stopDraw()
     this.reset()
     this.remove()
