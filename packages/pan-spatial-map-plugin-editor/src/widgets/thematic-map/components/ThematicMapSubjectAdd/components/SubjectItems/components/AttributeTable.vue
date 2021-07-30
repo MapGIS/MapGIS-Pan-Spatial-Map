@@ -27,12 +27,18 @@
           <a-select
             v-model="record.field"
             :options="fieldList"
+            :disabled="currentRowIndex === index"
             size="small"
             placeholder="请选择"
           />
         </template>
         <template slot="alias" slot-scope="text, record">
-          <a-input v-model="record.alias" size="small" placeholder="请输入" />
+          <a-input
+            v-model="record.alias"
+            :disabled="currentRowIndex === index"
+            size="small"
+            placeholder="请输入"
+          />
         </template>
         <template slot="action" slot-scope="text, record, index">
           <a-icon type="edit" class="pointer" @click="editRow(record, index)" />
@@ -55,6 +61,8 @@ export default class AttributeTable extends Vue {
   visible = false
 
   fieldList = []
+
+  currentRowIndex = null
 
   selectedRowKeys = []
 
@@ -138,7 +146,9 @@ export default class AttributeTable extends Vue {
   /**
    * 编辑某项配置
    */
-  editRow(record: Record<string, any>, index: number) {}
+  editRow(index: number) {
+    this.currentRowIndex = index
+  }
 
   /**
    * 添加配置
@@ -162,7 +172,16 @@ export default class AttributeTable extends Vue {
   /**
    * 批量删除已选配置
    */
-  batchRemove() {}
+  batchRemove() {
+    if (!this.selectedRowKeys.length) {
+      this.$message.warning('请勾选需要删除的数据项')
+      return
+    }
+    this.selectedRowKeys.forEach(v => {
+      this.removeRow(this.tableData.findIndex(t => t.id === v))
+    })
+    this.selectedRowKeys = []
+  }
 
   /**
    * 取消配置
@@ -181,7 +200,13 @@ export default class AttributeTable extends Vue {
     td {
       padding: 0;
     }
-
+    .anticon {
+      margin: 0 10px;
+      cursor: pointer;
+      &:hover {
+        color: @primary-color;
+      }
+    }
     .ant-input,
     .ant-select-selection {
       border: none;
@@ -192,11 +217,10 @@ export default class AttributeTable extends Vue {
       box-shadow: none;
     }
   }
-
   &-description {
     color: @primary-color;
     cursor: pointer;
-    font-size: 12px;
+    font-size: @font-size-sm;
     &:hover {
       text-decoration: underline;
     }

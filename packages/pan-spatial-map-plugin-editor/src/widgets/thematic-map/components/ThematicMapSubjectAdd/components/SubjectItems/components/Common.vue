@@ -325,7 +325,7 @@ export default class Common extends Vue {
   .server-tree-select {
     margin-bottom: 12px;
     ::v-deep .ant-input {
-      border: none;
+      border-color: transparent;
       &:focus {
         box-shadow: none;
       }
@@ -333,8 +333,8 @@ export default class Common extends Vue {
     &-example {
       word-break: break-all;
       white-space: normal;
-      font-size: 12px;
-      color: @text-color-secondary;
+      font-size: @font-size-sm;
+      color: #a7a4a4;
       margin: 4px 0;
     }
   }

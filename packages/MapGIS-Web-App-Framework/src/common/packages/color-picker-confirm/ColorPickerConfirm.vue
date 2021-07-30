@@ -159,7 +159,7 @@ export default {
 <style lang="less" scoped>
 .color-picker-btn {
   min-width: 100px;
-  max-width: 100%;
+  width: 100%;
   height: 32px;
   line-height: 32px;
   padding: 0 4px;

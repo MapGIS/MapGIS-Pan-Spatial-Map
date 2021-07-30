@@ -8,15 +8,14 @@
     <mp-card slot="overlay" :box-shadow="true" title="颜色设置" :tools="tools">
       <a-table
         bordered
-        :pagination="false"
-        :columns="tableColumns"
-        :data-source="tableData"
         :row-selection="{
           columnWidth: 32,
           selectedRowKeys,
           onChange: selectChange
         }"
-        class="color-setting"
+        :pagination="false"
+        :columns="tableColumns"
+        :data-source="tableData"
       >
         <template slot="color" slot-scope="text, record">
           <mp-color-picker-confirm
@@ -35,7 +34,7 @@
           />
         </template>
         <template slot="operation" slot-scope="text, record, index">
-          <a-icon type="delete" class="pointer" @click="remove(index)" />
+          <a-icon type="delete" @click="removeRow(index)" />
         </template>
       </a-table>
     </mp-card>
@@ -66,7 +65,6 @@ export default class ColorPickerSetting extends Vue {
       title: '颜色',
       dataIndex: 'color',
       align: 'center',
-      width: 120,
       scopedSlots: { customRender: 'color' }
     },
     {
@@ -152,32 +150,17 @@ export default class ColorPickerSetting extends Vue {
   }
 
   /**
-   * 关闭
+   * 选择
    */
-  close() {
-    this.hideDropdown()
-    this.selectChange([])
+  selectChange(selectedRowKeys) {
+    this.selectedRowKeys = selectedRowKeys
   }
 
   /**
    * 删除
    */
-  remove(index: number) {
+  removeRow(index: number) {
     this.tableData.splice(index, 1)
-  }
-
-  /**
-   * 批量删除
-   */
-  batchRemove() {
-    if (!this.selectedRowKeys.length) {
-      this.$message.warning('请勾选数据')
-    } else {
-      this.selectedRowKeys.forEach(k =>
-        this.remove(this.tableData.findIndex(({ key }) => key === k))
-      )
-      this.selectedRowKeys = []
-    }
   }
 
   /**
@@ -190,6 +173,20 @@ export default class ColorPickerSetting extends Vue {
       percent: 0
     }
     this.tableData.push(node)
+  }
+
+  /**
+   * 批量删除
+   */
+  batchRemove() {
+    if (!this.selectedRowKeys.length) {
+      this.$message.warning('请勾选数据')
+    } else {
+      this.selectedRowKeys.forEach(k =>
+        this.removeRow(this.tableData.findIndex(({ key }) => key === k))
+      )
+      this.selectedRowKeys = []
+    }
   }
 
   /**
@@ -210,20 +207,15 @@ export default class ColorPickerSetting extends Vue {
   }
 
   /**
-   * 选择
+   * 关闭
    */
-  selectChange(selectedRowKeys) {
-    this.selectedRowKeys = selectedRowKeys
+  close() {
+    this.hideDropdown()
+    this.selectChange([])
   }
 }
 </script>
 <style lang="less" scoped>
-.pointer {
-  cursor: pointer;
-  &:hover {
-    color: @primary-color;
-  }
-}
 .color-view {
   width: 88px;
   height: 32px;
@@ -234,7 +226,20 @@ export default class ColorPickerSetting extends Vue {
   border: 1px solid transparent;
   cursor: pointer;
 }
-.color-setting ::v-deep .ant-table {
+
+::v-deep .ant-table {
+  th {
+    padding: 4px 8px;
+  }
+  td {
+    padding: 0;
+  }
+  .anticon {
+    cursor: pointer;
+    &:hover {
+      color: @primary-color;
+    }
+  }
   .ant-input-number {
     border: none;
     border-radius: 0;
@@ -242,12 +247,6 @@ export default class ColorPickerSetting extends Vue {
       box-shadow: none;
       border-color: @border-color-base;
     }
-  }
-  th {
-    padding: 6px 8px;
-  }
-  td {
-    padding: 0;
   }
 }
 </style>

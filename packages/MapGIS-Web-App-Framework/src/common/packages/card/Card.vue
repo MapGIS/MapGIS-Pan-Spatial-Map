@@ -76,6 +76,7 @@ export default {
     .ant-card-head-title,
     .ant-card-extra {
       padding: 0;
+      color: @text-color;
     }
   }
   .ant-card-body {

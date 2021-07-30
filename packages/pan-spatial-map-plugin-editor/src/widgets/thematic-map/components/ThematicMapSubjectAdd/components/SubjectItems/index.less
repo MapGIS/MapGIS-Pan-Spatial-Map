@@ -1,11 +1,15 @@
 .subject-items {
-  min-height: 200px;
-  max-height: 380px;
   display: flex;
   flex-flow: column nowrap;
   border: 1px solid @border-color-base;
   border-radius: @border-radius-base;
-  .time-input {
+  .scrollbar {
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+  }
+
+  &-time {
     border: none;
     &:hover,
     &:focus {
@@ -13,13 +17,18 @@
       border-color: @border-color-base;
     }
   }
+
   &-head {
     border-bottom: 1px solid @border-color-base;
     padding: 0 2px 0 8px;
   }
+
   &-content {
     flex: 1;
+    min-height: 200px;
+    max-height: 400px;
     overflow-y: auto;
+    .scrollbar();
   }
 
   &-empty {
@@ -41,8 +50,11 @@
       padding-left: 25px;
     }
     .ant-collapse-content-box {
+      max-height: 360px;
+      overflow-y: auto;
       padding: 8px;
       background: #f0f2f5;
+      .scrollbar();
     }
     .ant-collapse-arrow {
       left: 8px !important;
@@ -72,8 +84,8 @@
     .ant-tabs-nav-container,
     .ant-tabs-tab,
     .ant-tabs-tab-active {
-      height: 28px;
-      line-height: 28px;
+      height: 30px;
+      line-height: 30px;
     }
 
     .ant-tabs-tab,

@@ -32,17 +32,17 @@
           <!-- 年度/时间 -->
           <mp-row-flex
             slot="header"
-            justify="space-between"
             :span="panelHeaderSpan"
+            justify="space-between"
           >
             <a-input
+              slot="label"
               @click.stop
               @blur="timeBlur(config.time)"
-              slot="label"
               v-model="config.time"
               size="small"
               placeholder="请输入年度/时间"
-              class="time-input"
+              class="subject-items-time"
             />
             <a-checkbox
               @click.stop
@@ -55,20 +55,17 @@
           <common @server-change="serverChange($event, config)" />
           <!-- 其他配置 -->
           <a-tabs type="card" size="small" class="subject-items-card">
-            <a-tab-pane key="styles" tab="样式配置">
-              <subject-styles
+            <a-tab-pane
+              v-for="{ key, tab } in configTabList"
+              :key="key"
+              :tab="tab"
+            >
+              <component
+                @change="tabChange($event, config, key)"
                 :subject-type="subjectType"
-                @change="stylesChange($event, config)"
+                :subject-config="config"
+                :is="key"
               />
-            </a-tab-pane>
-            <a-tab-pane key="table" tab="表格配置">
-              <attribute-table :subject-config="config" />
-            </a-tab-pane>
-            <a-tab-pane key="graph" tab="统计图配置">
-              <statistic-gragh :subject-config="config" />
-            </a-tab-pane>
-            <a-tab-pane key="popup" tab="弹框配置">
-              <popup :subject-config="config" />
             </a-tab-pane>
           </a-tabs>
         </a-collapse-panel>
@@ -84,6 +81,13 @@ import SubjectStyles from './components/SubjectStyles'
 import AttributeTable from './components/AttributeTable.vue'
 import StatisticGragh from './components/StatisticGragh.vue'
 import Popup from './components/Popup.vue'
+
+enum TabKey {
+  'SubjectStyles' = 'SubjectStyles',
+  'AttributeTable' = 'AttributeTable',
+  'StatisticGragh' = 'StatisticGragh',
+  'Popup' = 'Popup"'
+}
 
 @Component({
   components: {
@@ -103,9 +107,31 @@ export default class SubjectItems extends Vue {
 
   showCheckbox = false
 
-  checkedPanel = []
+  checkedPanels = []
 
   configListMap = new Map()
+
+  configTabList: Array<{
+    key: keyof TabKey
+    tab: string
+  }> = [
+    {
+      key: 'SubjectStyles',
+      tab: '样式配置'
+    },
+    {
+      key: 'AttributeTable',
+      tab: '表格配置'
+    },
+    {
+      key: 'StatisticGragh',
+      tab: '统计图配置'
+    },
+    {
+      key: 'Popup',
+      tab: '弹框配置'
+    }
+  ]
 
   get panelHeaderSpan() {
     return this.showCheckbox ? [23, 1] : [24, 0]
@@ -145,8 +171,18 @@ export default class SubjectItems extends Vue {
   /**
    * 专题个性配置选择change
    */
-  stylesChange(styleConfig: Record<string, any>, config: NewSubjectConfig) {
-    this.setProperties(styleConfig, config)
+  tabChange(
+    styleConfig: Record<string, any>,
+    config: NewSubjectConfig,
+    tab: keyof TabKey
+  ) {
+    switch (tab) {
+      case TabKey.SubjectStyles:
+        this.setProperties(styleConfig, config)
+        break
+      default:
+        break
+    }
   }
 
   /**
@@ -183,11 +219,11 @@ export default class SubjectItems extends Vue {
    * 移除年度
    */
   remove() {
-    if (!this.checkedPanel.length) {
+    if (!this.checkedPanels.length) {
       this.$message.warning('请选择需要删除的年度')
       return
     }
-    this.checkedPanel.forEach(index => this.configList.splice(index, 1))
+    this.checkedPanels.forEach(index => this.configList.splice(index, 1))
   }
 
   /**
@@ -198,9 +234,9 @@ export default class SubjectItems extends Vue {
     const { checked } = e.target
     this.$set(config, '_checked', checked)
     if (checked) {
-      this.checkedPanel.push(index)
+      this.checkedPanels.push(index)
     } else {
-      this.checkedPanel.splice(index, 1)
+      this.checkedPanels.splice(index, 1)
     }
   }
 
@@ -209,7 +245,7 @@ export default class SubjectItems extends Vue {
    */
   cancel() {
     this.showCheckbox = false
-    this.checkedPanel = []
+    this.checkedPanels = []
     this.configList.forEach(v => this.$set(v, '_checked', false))
   }
 }

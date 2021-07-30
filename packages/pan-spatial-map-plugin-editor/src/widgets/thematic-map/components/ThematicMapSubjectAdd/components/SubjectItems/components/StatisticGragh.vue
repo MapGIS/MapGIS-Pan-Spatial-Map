@@ -9,54 +9,52 @@
         点击开始配置
       </span>
     </a-empty>
-    <template v-else>
+    <mp-card v-else title="图表配置" :tools="tools" :loading="tableLoading">
       <mp-row-flex label="分组字段" :label-width="72">
-        <a-select
-          v-model="showFields"
-          :options="fieldList"
-          size="small"
-          placeholder="请选择"
-        />
+        <a-select v-model="field" :options="fieldList" placeholder="请选择" />
       </mp-row-flex>
-      <mp-row-flex label="字段别名" :label-width="72">
-        <a-input v-model="showFieldsTitle" size="small" placeholder="请输入" />
-      </mp-row-flex>
-      <mp-card title="图表配置" :tools="tools" :loading="tableLoading">
-        <a-table
-          row-key="id"
-          bordered
-          :columns="tableColumns"
-          :data-source="tableData"
-          :scroll="{ y: 160 }"
-          :pagination="false"
-          :row-selection="{
-            columnWidth: 32,
-            selectedRowKeys,
-            onChange: selectChange
-          }"
-        >
-          <template slot="field" slot-scope="text, record">
-            <a-select
-              v-model="record.field"
-              :options="fieldList"
-              size="small"
-              placeholder="请选择"
-            />
-          </template>
-          <template slot="color" slot-scope="text, record">
-            <mp-color-picker-confirm
-              v-model="record.color"
-              :border-radius="false"
-              :disabled="true"
-            />
-          </template>
-          <template slot="action" slot-scope="text, record, index">
-            <a-icon type="edit" class="pointer" @click="editRow(index)" />
-            <a-icon type="delete" class="pointer" @click="removeRow(index)" />
-          </template>
-        </a-table>
-      </mp-card>
-    </template>
+      <a-table
+        row-key="id"
+        bordered
+        :columns="tableColumns"
+        :data-source="tableData"
+        :scroll="{ y: 160 }"
+        :pagination="false"
+        :row-selection="{
+          columnWidth: 32,
+          selectedRowKeys,
+          onChange: selectChange
+        }"
+      >
+        <template slot="field" slot-scope="text, record, index">
+          <a-select
+            v-model="record.field"
+            :options="fieldList"
+            :disabled="currentRowIndex === index"
+            placeholder="请选择"
+          />
+        </template>
+        <template slot="alias" slot-scope="text, record, index">
+          <a-input
+            v-model="record.alias"
+            :disabled="currentRowIndex === index"
+            size="small"
+            placeholder="请输入"
+          />
+        </template>
+        <template slot="color" slot-scope="text, record, index">
+          <mp-color-picker-confirm
+            v-model="record.color"
+            :border-radius="false"
+            :disabled="currentRowIndex === index"
+          />
+        </template>
+        <template slot="action" slot-scope="text, record, index">
+          <a-icon type="edit" class="pointer" @click="editRow(index)" />
+          <a-icon type="delete" class="pointer" @click="removeRow(index)" />
+        </template>
+      </a-table>
+    </mp-card>
   </div>
 </template>
 <script lang="ts">
@@ -71,13 +69,13 @@ export default class StatisticGragh extends Vue {
 
   visible = false
 
-  showFields = ''
-
-  showFieldsTitle = ''
+  field = null
 
   fieldList = []
 
   selectedRowKeys = []
+
+  currentRowIndex = null
 
   tableLoading = false
 
@@ -90,9 +88,14 @@ export default class StatisticGragh extends Vue {
       scopedSlots: { customRender: 'field' }
     },
     {
+      title: '别名',
+      dataIndex: 'alias',
+      scopedSlots: { customRender: 'alias' }
+    },
+    {
       title: '颜色设置',
       dataIndex: 'color',
-      width: 110,
+      align: 'center',
       scopedSlots: { customRender: 'color' }
     },
     {
@@ -126,6 +129,13 @@ export default class StatisticGragh extends Vue {
   ]
 
   /**
+   * 派发结果
+   */
+  emitValue(value) {
+    this.$emit('input', value)
+  }
+
+  /**
    * 隐藏配置面板
    */
   hideConfigPanel() {
@@ -153,7 +163,9 @@ export default class StatisticGragh extends Vue {
   /**
    * 编辑某项配置
    */
-  editRow(record: Record<string, any>, index: number) {}
+  editRow(index: number) {
+    this.currentRowIndex = index
+  }
 
   /**
    * 移除某项配置
@@ -184,18 +196,31 @@ export default class StatisticGragh extends Vue {
   /**
    * 批量删除已选配置
    */
-  batchRemove() {}
+  batchRemove() {
+    if (!this.selectedRowKeys.length) {
+      this.$message.warning('请勾选需要删除的数据项')
+      return
+    }
+    this.selectedRowKeys.forEach(v => {
+      this.removeRow(this.tableData.findIndex(t => t.id === v))
+    })
+    this.selectedRowKeys = []
+  }
 
   /**
    * 取消配置
    */
   close() {
     this.visible = false
+    this.emitValue()
   }
 }
 </script>
 <style lang="less" scoped>
 .statistic-graph {
+  .ant-row-flex {
+    margin-bottom: 8px;
+  }
   ::v-deep .ant-table {
     th {
       padding: 4px 8px;
@@ -203,9 +228,19 @@ export default class StatisticGragh extends Vue {
     td {
       padding: 0;
     }
+    .anticon {
+      margin: 0 10px;
+      cursor: pointer;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+    .ant-input,
     .ant-select-selection {
       border: none;
     }
+
+    .ant-input:focus,
     .ant-select-focused .ant-select-selection {
       box-shadow: none;
     }
@@ -213,7 +248,7 @@ export default class StatisticGragh extends Vue {
   &-description {
     color: @primary-color;
     cursor: pointer;
-    font-size: 12px;
+    font-size: @font-size-sm;
     &:hover {
       text-decoration: underline;
     }
