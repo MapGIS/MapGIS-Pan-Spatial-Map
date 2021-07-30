@@ -9,8 +9,7 @@
         点击开始配置
       </span>
     </a-empty>
-    <mp-layout-column v-else size="small">
-      <mp-toolbar-header slot="header" title="表格配置" :tools="tools" />
+    <mp-card v-else title="表格配置" :tools="tools">
       <a-table
         row-key="id"
         bordered
@@ -34,7 +33,7 @@
           <a-icon type="delete" class="pointer" @click="remove(index)" />
         </template>
       </a-table>
-    </mp-layout-column>
+    </mp-card>
   </div>
 </template>
 <script lang="ts">

@@ -5,13 +5,13 @@
     :trigger="['click']"
   >
     <a-button @click="showDropdown">点击设置</a-button>
-    <mp-layout-column
+    <mp-card
       slot="overlay"
       :box-shadow="true"
-      size="small"
-      class=".animation-items-dropdown"
+      title="动画设置"
+      :tools="tools"
+      class="animation-items-dropdown"
     >
-      <mp-toolbar-header slot="header" title="动画设置" :tools="tools" />
       <mp-row-flex :span="[6, 18]" label="展示方式" label-align="right">
         {{ animation.type }}
       </mp-row-flex>
@@ -30,7 +30,7 @@
           </a-space>
         </div>
       </mp-row-flex>
-    </mp-layout-column>
+    </mp-card>
   </a-dropdown>
 </template>
 <script lang="ts">

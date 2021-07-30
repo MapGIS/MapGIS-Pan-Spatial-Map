@@ -5,8 +5,7 @@
       :style="{ background }"
       @click.stop="showDropdown"
     />
-    <mp-layout-column slot="overlay" :box-shadow="true" size="small">
-      <mp-toolbar-header slot="header" title="颜色设置" :tools="tools" />
+    <mp-card slot="overlay" :box-shadow="true" title="颜色设置" :tools="tools">
       <a-table
         bordered
         :pagination="false"
@@ -40,7 +39,7 @@
           <a-icon type="delete" class="pointer" @click="remove(index)" />
         </template>
       </a-table>
-    </mp-layout-column>
+    </mp-card>
   </a-dropdown>
 </template>
 <script lang="ts">
