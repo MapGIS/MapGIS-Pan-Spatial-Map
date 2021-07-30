@@ -27,19 +27,19 @@
     <div class="roaming-options">
       <a-checkbox
         :checked="path.para.isLoop"
-        @change="e => (path.para.isLoop = e.target.checked)"
+        @change="e => onCheckBoxChange(e, 'isLoop')"
       >
         循环
       </a-checkbox>
       <a-checkbox
         :checked="path.para.showPath"
-        @change="e => (path.para.showPath = e.target.checked)"
+        @change="e => onCheckBoxChange(e, 'showPath')"
       >
         显示路径
       </a-checkbox>
       <a-checkbox
         :checked="path.para.showInfo"
-        @change="e => (path.para.showInfo = e.target.checked)"
+        @change="e => onCheckBoxChange(e, 'showInfo')"
       >
         显示提示信息
       </a-checkbox>
@@ -51,10 +51,16 @@
           type="number"
           min="1"
           addon-after="公里/小时"
+          @change="onSpeedChange"
         />
       </a-form-item>
       <a-form-item label="附加高程">
-        <a-input v-model.number="path.para.exHeight" type="number" min="0" />
+        <a-input
+          v-model.number="path.para.exHeight"
+          type="number"
+          min="0"
+          :disabled="isStart ? true : false"
+        />
       </a-form-item>
       <a-form-item label="方位角">
         <a-input
@@ -62,6 +68,8 @@
           type="number"
           min="-180"
           max="180"
+          :disabled="path.para.animationType !== 2 ? true : false"
+          @change="e => onEffectsChange(e, 'heading')"
         />
       </a-form-item>
       <a-form-item label="俯仰角">
@@ -70,17 +78,22 @@
           type="number"
           min="-180"
           max="180"
+          :disabled="path.para.animationType !== 2 ? true : false"
+          @change="e => onEffectsChange(e, 'pitch')"
         />
       </a-form-item>
       <a-form-item label="视角">
-        <a-select v-model="path.para.animationType">
+        <a-select v-model="path.para.animationType" @change="onTypeChange">
           <a-select-option v-for="item in perspectiveOptions" :key="item.value">
             {{ item.label }}
           </a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label="插值">
-        <a-select v-model="path.para.interpolationAlgorithm">
+        <a-select
+          v-model="path.para.interpolationAlgorithm"
+          :disabled="isStart ? true : false"
+        >
           <a-select-option
             v-for="item in interpolationOptions"
             :key="item.value"
@@ -179,7 +192,10 @@ export default class PathRoaming extends Vue {
         this.setAnimationAttr()
 
         window.SceneWanderManager.animation.start()
+        window.SceneWanderManager.animation.pause = false
+
         this.isStart = true
+        this.isPause = false
       }
     } else {
       if (!this.isPause) window.SceneWanderManager.animation.pause = true
@@ -223,6 +239,46 @@ export default class PathRoaming extends Vue {
         break
     }
 
+    // 若是上帝视角，设置动画的视角高度为4000
+    if (window.SceneWanderManager.animation.animationType === 3) {
+      window.SceneWanderManager.animation.range = 4000
+    }
+  }
+
+  // 多选项变化时回调(循环、显示路径、显示提示信息)
+  private onCheckBoxChange(e, key) {
+    this.path.para[key] = e.target.checked
+
+    if (key === 'showPath') {
+      if (
+        window.SceneWanderManager.animation &&
+        window.SceneWanderManager.animation.animationModel
+      ) {
+        window.SceneWanderManager.animation.animationModel.path.show._value =
+          e.target.checked
+      }
+    } else {
+      window.SceneWanderManager.animation[key] = e.target.checked
+    }
+  }
+
+  // 漫游速度变化时回调
+  private onSpeedChange(e) {
+    window.SceneWanderManager.animation.speed = parseFloat(
+      e.target.value * 0.28
+    ).toFixed(2)
+  }
+
+  // 漫游方位角、俯仰角变化时回调
+  private onEffectsChange(e, key) {
+    window.SceneWanderManager.animation[key] = this.Cesium.Math.toRadians(
+      parseInt(e.target.value)
+    )
+  }
+
+  // 漫游视角变化时回调
+  private onTypeChange(value) {
+    window.SceneWanderManager.animation.animationType = value
     // 若是上帝视角，设置动画的视角高度为4000
     if (window.SceneWanderManager.animation.animationType === 3) {
       window.SceneWanderManager.animation.range = 4000
