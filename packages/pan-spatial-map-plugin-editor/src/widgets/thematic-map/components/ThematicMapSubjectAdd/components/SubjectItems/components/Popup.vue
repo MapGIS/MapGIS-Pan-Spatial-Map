@@ -1,11 +1,15 @@
 <template>
   <div class="popup">
-    <a-row type="flex" align="middle">
-      <a-checkbox @change="onPopupChange">
-        弹出框设置
-      </a-checkbox>
-    </a-row>
-    <template v-if="showPopup">
+    <a-empty :image-style="{ height: '50px' }" v-if="!visible">
+      <span
+        slot="description"
+        @click="showConfigPanel"
+        class="popup-description"
+      >
+        点击开始配置
+      </span>
+    </a-empty>
+    <template v-else>
       <mp-row-flex label="显示字段" label-align="right">
         <a-select
           v-model="displayField"
@@ -24,11 +28,14 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import { NewSubjectConfig } from '../../../../../store'
 
 @Component
 export default class Popup extends Vue {
-  showPopup = false
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
+
+  visible = false
 
   displayField = []
 
@@ -49,9 +56,20 @@ export default class Popup extends Vue {
 
   tableData = []
 
-  onPopupChange(e) {
-    this.showPopup = e.target.checked
+  showConfigPanel() {
+    this.visible = true
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.popup {
+  &-description {
+    color: @primary-color;
+    cursor: pointer;
+    font-size: 12px;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+</style>

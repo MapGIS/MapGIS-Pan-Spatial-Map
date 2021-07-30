@@ -20,54 +20,55 @@
     </mp-toolbar>
     <!-- 设置面板内容 -->
     <div class="subject-items-content">
-      <a-empty v-if="!configList.length" />
+      <a-empty class="subject-items-empty" v-if="!configList.length" />
       <a-collapse
         v-else
         @change="panelChange"
         :activeKey="activePanel"
         :accordion="true"
+        class="subject-items-collapse"
       >
-        <a-collapse-panel v-for="(sub, i) in configList" :key="i">
-          <!-- 设置头 -->
+        <a-collapse-panel v-for="(config, i) in configList" :key="i">
+          <!-- 年度/时间 -->
           <mp-row-flex
             slot="header"
             justify="space-between"
-            :label="sub.time || '年度/时间'"
-            :span="[23, 1]"
-            :colon="false"
+            :span="panelHeaderSpan"
           >
-            <transition name="fade">
-              <a-checkbox
-                v-show="showCheckbox"
-                @click.stop
-                @change="checked($event, sub, i)"
-                :checked="sub._checked"
-              />
-            </transition>
+            <a-input
+              @click.stop
+              @blur="timeBlur(config.time)"
+              slot="label"
+              v-model="config.time"
+              size="small"
+              placeholder="请输入年度/时间"
+              class="time-input"
+            />
+            <a-checkbox
+              @click.stop
+              @change="checked($event, config, i)"
+              v-show="showCheckbox"
+              :checked="config._checked"
+            />
           </mp-row-flex>
-          <!-- 年度或时间、服务设置等公共设置项 -->
-          <common
-            :subject-config="sub"
-            @time-change="timeChange($event, sub)"
-            @field-change="fieldChange($event, sub)"
-            @server-change="serverChange($event, sub)"
-          />
+          <!-- 服务设置等公共设置项 -->
+          <common @server-change="serverChange($event, config)" />
           <!-- 其他配置 -->
-          <a-tabs type="card" size="small">
-            <a-tab-pane key="style" tab="样式配置">
+          <a-tabs type="card" size="small" class="subject-items-card">
+            <a-tab-pane key="styles" tab="样式配置">
               <subject-styles
                 :subject-type="subjectType"
-                @change="subjectStylesChange($event, sub)"
+                @change="stylesChange($event, config)"
               />
             </a-tab-pane>
-            <a-tab-pane key="attr" tab="表格配置">
-              <attribute-table :subject-config="sub" />
+            <a-tab-pane key="table" tab="表格配置">
+              <attribute-table :subject-config="config" />
             </a-tab-pane>
             <a-tab-pane key="graph" tab="统计图配置">
-              <!--  <statistic-graph /> -->
+              <statistic-gragh :subject-config="config" />
             </a-tab-pane>
             <a-tab-pane key="popup" tab="弹框配置">
-              <!--  <popup /> -->
+              <popup :subject-config="config" />
             </a-tab-pane>
           </a-tabs>
         </a-collapse-panel>
@@ -81,12 +82,16 @@ import { SubjectType, NewSubjectConfig } from '../../../../store'
 import Common from './components/Common.vue'
 import SubjectStyles from './components/SubjectStyles'
 import AttributeTable from './components/AttributeTable.vue'
+import StatisticGragh from './components/StatisticGragh.vue'
+import Popup from './components/Popup.vue'
 
 @Component({
   components: {
     Common,
     SubjectStyles,
-    AttributeTable
+    AttributeTable,
+    StatisticGragh,
+    Popup
   }
 })
 export default class SubjectItems extends Vue {
@@ -101,6 +106,10 @@ export default class SubjectItems extends Vue {
   checkedPanel = []
 
   configListMap = new Map()
+
+  get panelHeaderSpan() {
+    return this.showCheckbox ? [23, 1] : [24, 0]
+  }
 
   get configList() {
     return this.value
@@ -122,36 +131,33 @@ export default class SubjectItems extends Vue {
   /**
    * 面板change
    */
-  panelChange(key) {
+  panelChange(key: string | number) {
     this.activePanel = key
   }
 
   /**
    * 专题图选择change
    */
-  timeChange(time, sub) {
-    this.$set(sub, 'time', time)
-  }
-
-  /**
-   * 专题图选择change
-   */
-  fieldChange(field, sub) {
-    this.$set(sub, 'field', field)
-  }
-
-  /**
-   * 专题图选择change
-   */
-  serverChange(serverConfig, sub) {
-    this.setProperties(serverConfig, sub)
+  serverChange(serverConfig: Record<string, any>, config: NewSubjectConfig) {
+    this.setProperties(serverConfig, config)
   }
 
   /**
    * 专题个性配置选择change
    */
-  subjectStylesChange(newSub, sub) {
-    this.setProperties(newSub, sub)
+  stylesChange(styleConfig: Record<string, any>, config: NewSubjectConfig) {
+    this.setProperties(styleConfig, config)
+  }
+
+  /**
+   * 专题图年度输入失焦
+   */
+  timeBlur(time: string) {
+    if (this.configList.filter(c => time && c.time === time).length > 1) {
+      this.$message.warning(
+        `存在相同的年度"${time}"， 若继续保存，将会保存最新配置的年度`
+      )
+    }
   }
 
   /**
@@ -187,10 +193,10 @@ export default class SubjectItems extends Vue {
   /**
    * 选中年度
    */
-  checked(e: Event, sub: Record<string, unknown>, index: number) {
+  checked(e: Event, config: Record<string, unknown>, index: number) {
     e.stopPropagation()
     const { checked } = e.target
-    this.$set(sub, '_checked', checked)
+    this.$set(config, '_checked', checked)
     if (checked) {
       this.checkedPanel.push(index)
     } else {
@@ -208,6 +214,6 @@ export default class SubjectItems extends Vue {
   }
 }
 </script>
-<style lang="less" scoped>
+<style lang="less">
 @import './index.less';
 </style>

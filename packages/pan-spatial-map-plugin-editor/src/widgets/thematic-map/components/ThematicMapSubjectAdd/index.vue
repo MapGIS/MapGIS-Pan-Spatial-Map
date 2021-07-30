@@ -30,6 +30,7 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
+import _uniqBy from 'lodash/uniqBy'
 import {
   mapGetters,
   mapMutations,
@@ -143,14 +144,15 @@ export default class ThematicMapSubjectAdd extends Vue {
     } else {
       config = this.addNodeToTreeNode(config, node)
     }
-    this.updateSubjectConfig(config)
-      .then(() => {
-        this.$message.success('保存成功')
-        this.onCancel()
-      })
-      .catch(err => {
-        this.$message.error('保存失败')
-      })
+    console.log('保存的专题图配置', config)
+    // this.updateSubjectConfig(config)
+    //   .then(() => {
+    //     this.$message.success('保存成功')
+    //     this.onCancel()
+    //   })
+    //   .catch(err => {
+    //     this.$message.error('保存失败')
+    //   })
   }
 
   /**
@@ -174,9 +176,11 @@ export default class ThematicMapSubjectAdd extends Vue {
     } else if (!this.subjectNodeConfig.length) {
       this.$message.warning('请填写专题配置')
     } else {
+      // 年度去重
+      const config = _uniqBy(this.subjectNodeConfig, ({ time }) => time)
       this.createSubjectConfigNode({
         ...this.subjectNodeBase,
-        config: this.subjectNodeConfig
+        config
       })
     }
   }

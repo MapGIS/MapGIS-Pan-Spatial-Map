@@ -3,13 +3,13 @@
     <a-empty :image-style="{ height: '50px' }" v-if="!visible">
       <span
         slot="description"
-        @click="showTable"
+        @click="showConfigPanel"
         class="attribute-table-description"
       >
         点击开始配置
       </span>
     </a-empty>
-    <mp-card v-else title="表格配置" :tools="tools">
+    <mp-card v-else title="配置列表" :tools="tools" :loading="tableLoading">
       <a-table
         row-key="id"
         bordered
@@ -24,13 +24,19 @@
         }"
       >
         <template slot="field" slot-scope="text, record">
-          <a-select v-model="record.field" :options="fieldList" />
+          <a-select
+            v-model="record.field"
+            :options="fieldList"
+            size="small"
+            placeholder="请选择"
+          />
         </template>
         <template slot="alias" slot-scope="text, record">
-          <a-input v-model="record.alias" />
+          <a-input v-model="record.alias" size="small" placeholder="请输入" />
         </template>
         <template slot="action" slot-scope="text, record, index">
-          <a-icon type="delete" class="pointer" @click="remove(index)" />
+          <a-icon type="edit" class="pointer" @click="editRow(record, index)" />
+          <a-icon type="delete" class="pointer" @click="removeRow(index)" />
         </template>
       </a-table>
     </mp-card>
@@ -52,6 +58,8 @@ export default class AttributeTable extends Vue {
 
   selectedRowKeys = []
 
+  tableLoading = false
+
   tableData = []
 
   tableColumns = [
@@ -63,12 +71,11 @@ export default class AttributeTable extends Vue {
     {
       title: '别名',
       dataIndex: 'alias',
-      width: 200,
       scopedSlots: { customRender: 'alias' }
     },
     {
       title: '操作',
-      width: 50,
+      align: 'center',
       scopedSlots: { customRender: 'action' }
     }
   ]
@@ -80,22 +87,33 @@ export default class AttributeTable extends Vue {
       method: this.add
     },
     {
+      title: '预览',
+      icon: 'eye',
+      method: this.view
+    },
+    {
       title: '批量删除',
       icon: 'delete',
       method: this.batchRemove
     },
     {
-      title: '删除配置',
+      title: '取消配置',
       icon: 'close',
       method: this.close
     }
   ]
 
-  hideTable() {
+  /**
+   * 隐藏配置面板
+   */
+  hideConfigPanel() {
     this.visible = false
   }
 
-  showTable() {
+  /**
+   * 显示配置面板
+   */
+  showConfigPanel() {
     if (!this.subjectConfig.ip || !this.subjectConfig.port) {
       this.$message.warning('未配置服务地址')
       return
@@ -103,16 +121,28 @@ export default class AttributeTable extends Vue {
     this.visible = true
   }
 
+  /**
+   * 配置列表选择变化
+   */
   selectChange(selectedRowKeys: string[]) {
     this.selectedRowKeys = selectedRowKeys
   }
 
-  remove(index: number) {
+  /**
+   * 移除某项配置
+   */
+  removeRow(index: number) {
     this.tableData.splice(index, 1)
   }
 
-  batchRemove() {}
+  /**
+   * 编辑某项配置
+   */
+  editRow(record: Record<string, any>, index: number) {}
 
+  /**
+   * 添加配置
+   */
   add() {
     FieldInstance.getFields(this.subjectConfig).then(list => {
       this.fieldList = list
@@ -124,25 +154,49 @@ export default class AttributeTable extends Vue {
     })
   }
 
-  close() {}
+  /**
+   * 预览
+   */
+  view() {}
+
+  /**
+   * 批量删除已选配置
+   */
+  batchRemove() {}
+
+  /**
+   * 取消配置
+   */
+  close() {
+    this.visible = false
+  }
 }
 </script>
 <style lang="less" scoped>
 .attribute-table {
   ::v-deep .ant-table {
-    line-height: 1.1;
-    margin-bottom: 12px;
-    .ant-table-thead > tr > th,
-    .ant-table-tbody > tr > td {
-      padding: 8px;
+    th {
+      padding: 4px 8px;
     }
-    .ant-table-body {
-      overflow: auto !important;
+    td {
+      padding: 0;
+    }
+
+    .ant-input,
+    .ant-select-selection {
+      border: none;
+    }
+
+    .ant-input:focus,
+    .ant-select-focused .ant-select-selection {
+      box-shadow: none;
     }
   }
+
   &-description {
     color: @primary-color;
     cursor: pointer;
+    font-size: 12px;
     &:hover {
       text-decoration: underline;
     }

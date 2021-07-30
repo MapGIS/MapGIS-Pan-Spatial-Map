@@ -6,7 +6,8 @@
         'mp-toolbar-command': true,
         active: active,
         disabled: disabled,
-        'hover-bordered': hoverBordered
+        'hover-bordered': hoverBordered,
+        [size]: true
       }"
       class="mp-toolbar-command"
       @click="onClick"
@@ -19,7 +20,8 @@
         'mp-toolbar-command': true,
         active: active,
         disabled: disabled,
-        'hover-bordered': hoverBordered
+        'hover-bordered': hoverBordered,
+        [size]: true
       }"
       @click="onClick"
       :type="icon"
@@ -50,6 +52,13 @@ export default {
     hoverBordered: {
       type: Boolean,
       default: true
+    },
+    size: {
+      type: String,
+      default: 'default',
+      validator(v) {
+        return ['large', 'default', 'small'].includes(v)
+      }
     }
   },
   methods: {
@@ -66,11 +75,26 @@ export default {
   color: @text-color;
   width: 27px;
   margin: 0 6px;
+  padding-top: 2px;
   text-align: center;
   cursor: pointer;
   &.anticon {
     height: 27px;
-    padding-top: 6px;
+    line-height: 27px;
+  }
+  &.large {
+    width: 34px;
+  }
+  &.large.anticon {
+    height: 34px;
+    line-height: 34px;
+  }
+  &.small {
+    width: 20px;
+  }
+  &.small.anticon {
+    height: 20px;
+    line-height: 20px;
   }
   &:hover {
     color: @primary-color;

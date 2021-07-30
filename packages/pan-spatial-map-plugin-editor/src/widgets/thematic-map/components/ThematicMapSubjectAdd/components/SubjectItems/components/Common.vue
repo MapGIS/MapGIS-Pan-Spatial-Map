@@ -1,16 +1,8 @@
 <template>
   <div class="common">
-    <!-- 年度或时间 -->
-    <mp-row-flex label="年度/时间" label-align="right">
-      <a-input
-        v-model="selfTime"
-        :allow-clear="true"
-        placeholder="请输入年度/时间"
-      />
-    </mp-row-flex>
-    <!-- 服务设置 -->
+    <!-- 服务地址设置 -->
     <div class="server-tree-select">
-      <mp-row-flex label="服务地址" label-align="right">
+      <mp-row-flex type="vertical" label="服务地址">
         <mp-tree-select
           @change="selfUriChange"
           :value="selfUri"
@@ -29,7 +21,8 @@
         v-for="{ label, content } in examples"
         :key="label"
         :label="label"
-        label-align="right"
+        :label-width="44"
+        align="top"
         class="server-tree-select-example"
       >
         {{ label }}：{{ content }}
@@ -65,10 +58,7 @@ interface IField {
 
 @Component
 export default class Common extends Vue {
-  @Prop({ default: () => ({}) }) readonly subjectConfig!: Record<string, any>
-
-  // 属性列表
-  fields: Array<IField> = []
+  @Prop({ default: '' }) readonly uri!: string
 
   // 目录树
   catalogTreeData: Layer[] = []
@@ -87,15 +77,6 @@ export default class Common extends Vue {
         'http://<server>:<port>/igs/rest/mrms/docs/{docName}?layerName={layerName}&layerIndex={layerIndex}'
     }
   ]
-
-  // 年度
-  get selfTime() {
-    return this.subjectConfig.time || ''
-  }
-
-  set selfTime(value) {
-    this.$emit('time-change', value)
-  }
 
   // 服务地址
   get selfUri() {
@@ -116,7 +97,7 @@ export default class Common extends Vue {
   }
 
   /**
-   * 是否有gdbp
+   * 是否gdbp
    */
   isGdbp(serverType) {
     return LayerType.IGSVector === serverType
@@ -240,7 +221,7 @@ export default class Common extends Vue {
   }
 
   /**
-   * 异步加载节点数据的回调
+   * 异步加载目录树节点数据的回调
    */
   async catalogTreeLoadData(treeNode: any) {
     const {
@@ -341,20 +322,20 @@ export default class Common extends Vue {
 </script>
 <style lang="less" scoped>
 .common {
-  ::v-deep > .ant-row-flex {
-    margin-bottom: 12px;
-  }
   .server-tree-select {
-    margin-bottom: 10px;
-    ::v-deep .ant-row-flex {
-      margin-bottom: 4px;
+    margin-bottom: 12px;
+    ::v-deep .ant-input {
+      border: none;
+      &:focus {
+        box-shadow: none;
+      }
     }
     &-example {
       word-break: break-all;
       white-space: normal;
       font-size: 12px;
       color: @text-color-secondary;
-      margin-bottom: 4px;
+      margin: 4px 0;
     }
   }
 }

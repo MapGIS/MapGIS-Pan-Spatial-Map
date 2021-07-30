@@ -14,6 +14,7 @@
             :key="item.title"
             :title="item.title"
             :icon="item.icon"
+            :size="size"
             @click="item.method()"
           />
         </mp-toolbar-command-group>
@@ -65,10 +66,11 @@ export default {
 }
 </script>
 <style lang="less">
-.mp-card {
+.mp-card.ant-card {
   .ant-card-head {
     padding: 0 8px;
     min-height: 30px;
+    line-height: 30px;
     font-size: 14px;
 
     .ant-card-head-title,
@@ -76,7 +78,6 @@ export default {
       padding: 0;
     }
   }
-
   .ant-card-body {
     padding: 8px;
   }
@@ -89,6 +90,7 @@ export default {
     .ant-card-head {
       padding: 0 4px;
       min-height: 24px;
+      line-height: 24px;
     }
     .ant-card-body {
       padding: 4px;
@@ -99,6 +101,7 @@ export default {
     .ant-card-head {
       padding: 0 12px;
       min-height: 36px;
+      line-height: 36px;
     }
     .ant-card-body {
       padding: 12px;

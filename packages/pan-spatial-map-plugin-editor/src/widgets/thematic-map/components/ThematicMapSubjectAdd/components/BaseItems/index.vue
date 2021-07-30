@@ -1,7 +1,7 @@
 <template>
   <div class="base-items">
     <!-- 专题名称 -->
-    <mp-row-flex label="专题分类" :label-width="85">
+    <mp-row-flex :label-width="84" label="专题分类">
       <mp-tree-select
         @change="subjectClassifyChange"
         :value="subjectClassify"
@@ -12,7 +12,7 @@
       />
     </mp-row-flex>
     <!-- 专题图名称 -->
-    <mp-row-flex label="专题图名称" :label-width="85">
+    <mp-row-flex :label-width="84" label="专题图名称">
       <a-input
         @change="subjectTitleChange"
         :value="baseItemsObj.title"
@@ -21,7 +21,7 @@
       />
     </mp-row-flex>
     <!-- 专题图类型 -->
-    <mp-row-flex label="专题图类型" :label-width="85">
+    <mp-row-flex :label-width="84" label="专题图类型">
       <a-select
         @change="subjectTypeChange"
         :options="subjectTypeList"
@@ -154,7 +154,9 @@ export default class BaseItems extends Vue {
 }
 </script>
 <style lang="less" scoped>
-::v-deep .ant-row-flex {
-  margin-bottom: 12px;
+.base-items {
+  .ant-row-flex {
+    margin-bottom: 12px;
+  }
 }
 </style>

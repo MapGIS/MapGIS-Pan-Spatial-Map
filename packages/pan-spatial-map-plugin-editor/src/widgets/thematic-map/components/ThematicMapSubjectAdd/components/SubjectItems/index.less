@@ -5,6 +5,14 @@
   flex-flow: column nowrap;
   border: 1px solid @border-color-base;
   border-radius: @border-radius-base;
+  .time-input {
+    border: none;
+    &:hover,
+    &:focus {
+      box-shadow: none;
+      border-color: @border-color-base;
+    }
+  }
   &-head {
     border-bottom: 1px solid @border-color-base;
     padding: 0 2px 0 8px;
@@ -12,38 +20,65 @@
   &-content {
     flex: 1;
     overflow-y: auto;
+  }
 
-    &::-webkit-scrollbar {
-      width: 2px;
-    }
+  &-empty {
+    padding: 12px 0;
+  }
 
-    ::v-deep .ant-empty {
-      padding: 12px 0;
+  &-collapse.ant-collapse {
+    border: none;
+    background-color: transparent;
+    .ant-collapse-header,
+    .ant-collapse-item {
+      border-radius: 0;
     }
-    ::v-deep .ant-collapse {
-      border: none;
-      background-color: transparent;
-      .ant-collapse-header,
-      .ant-collapse > .ant-collapse-item:last-child,
-      .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
-        border-radius: 0;
-      }
-      .ant-collapse-header {
-        color: @text-color-secondary;
-        height: 25px;
-        line-height: 25px;
-        padding: 0 4px;
-        padding-left: 25px;
-      }
-      .ant-collapse-content > .ant-collapse-content-box {
-        padding: 8px;
-      }
-      .ant-collapse-arrow {
-        left: 8px;
-      }
+    .ant-collapse-header {
+      color: @text-color-secondary;
+      height: 25px;
+      line-height: 25px;
+      padding: 0 4px;
+      padding-left: 25px;
     }
-    ::v-deep .ant-tabs-bar {
+    .ant-collapse-content-box {
+      padding: 8px;
+      background: #f0f2f5;
+    }
+    .ant-collapse-arrow {
+      left: 8px !important;
+    }
+  }
+
+  &-card.ant-tabs.ant-tabs-card {
+    .ant-tabs-bar {
       margin-bottom: 0;
+      border-color: @white;
+    }
+
+    .ant-tabs-content {
+      padding: 8px;
+      background: @white;
+    }
+
+    .ant-tabs-tab {
+      border-color: transparent;
+      background: transparent;
+      &-active {
+        border-color: @white;
+        background: @white;
+      }
+    }
+
+    .ant-tabs-nav-container,
+    .ant-tabs-tab,
+    .ant-tabs-tab-active {
+      height: 28px;
+      line-height: 28px;
+    }
+
+    .ant-tabs-tab,
+    .ant-tabs-tab-active {
+      padding: 0 8px;
     }
   }
 }

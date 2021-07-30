@@ -16,13 +16,12 @@
           selectedRowKeys,
           onChange: selectChange
         }"
-        class="color-setting-table"
+        class="color-setting"
       >
         <template slot="color" slot-scope="text, record">
-          <color-picker
+          <mp-color-picker-confirm
             v-model="record.color"
             :border-radius="false"
-            type="rgb"
           />
         </template>
         <template slot="percent" slot-scope="text, record">
@@ -45,18 +44,13 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
-import ColorPicker from './ColorPicker.vue'
 
 interface ITableDataItem {
   color: string
   percent: number
 }
 
-@Component({
-  components: {
-    ColorPicker
-  }
-})
+@Component
 export default class ColorPickerSetting extends Vue {
   // {0.25: rgb(0,0,255), 0.55: rgb(0,0,255)}
   @Prop() readonly value!: Record<string, string>
@@ -72,6 +66,7 @@ export default class ColorPickerSetting extends Vue {
       title: '颜色',
       dataIndex: 'color',
       align: 'center',
+      width: 120,
       scopedSlots: { customRender: 'color' }
     },
     {
@@ -239,26 +234,20 @@ export default class ColorPickerSetting extends Vue {
   border: 1px solid transparent;
   cursor: pointer;
 }
-.color-setting-table {
-  /deep/ .ant-table {
-    .ant-input-number {
-      border: none;
-      border-radius: 0;
-      &-focused {
-        box-shadow: none;
-      }
-      &-focused,
-      &:hover,
-      &:focus {
-        border-color: @border-color-base;
-      }
+.color-setting ::v-deep .ant-table {
+  .ant-input-number {
+    border: none;
+    border-radius: 0;
+    &-focused {
+      box-shadow: none;
+      border-color: @border-color-base;
     }
-    th {
-      padding: 6px 8px;
-    }
-    td {
-      padding: 0;
-    }
+  }
+  th {
+    padding: 6px 8px;
+  }
+  td {
+    padding: 0;
   }
 }
 </style>
