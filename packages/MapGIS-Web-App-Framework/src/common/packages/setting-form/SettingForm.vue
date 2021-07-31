@@ -54,6 +54,13 @@ export default {
         margin: 14px 6px;
       }
     }
+    .ant-table {
+      font-size: 12px;
+    }
+    .ant-table-pagination.ant-pagination {
+      font-size: 12px;
+      margin: 8px 0;
+    }
   }
   &.ant-form-horizontal {
     .ant-form-item {

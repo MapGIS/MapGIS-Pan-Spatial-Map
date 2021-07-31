@@ -32,7 +32,7 @@ export class AngleConvert {
 }
 
 export class ProjectionTransformation {
-  async projectPoints(
+  static async projectPoints(
     points: number[][],
     srcSref: string,
     desSref,

@@ -1,108 +1,107 @@
 <template>
   <div class="coordinate-container">
-    <a-space direction="vertical" style="flex: 1">
-      <a-row>
-        <label>坐标系</label>
-      </a-row>
-      <a-row>
-        <a-select v-model="crs" style="width: 100%;">
+    <mp-setting-form layout="vertical">
+      <a-form-item label="坐标系">
+        <a-select v-model="crs">
           <a-select-option v-for="item in crsOptions" :key="item" :value="item">
             {{ item }}
           </a-select-option>
         </a-select>
-      </a-row>
-      <a-row>
-        <label>单位</label>
-      </a-row>
-      <a-row>
-        <a-select :options="typeOptions" v-model="type" style="width: 100%;" />
-      </a-row>
-      <a-row type="flex" :gutter="[10, 0]" align="middle">
-        <a-col flex="auto"><label>X坐标</label></a-col>
-        <a-col style="display: flex; align-items: center;">
-          <a-switch size="small" v-model="pickable" />
-          <span style="padding-left: 8px;">鼠标拾取</span>
-        </a-col>
-      </a-row>
-      <a-row v-if="type === 'd'">
+      </a-form-item>
+      <a-form-item label="单位">
+        <a-select :options="typeOptions" v-model="type" />
+      </a-form-item>
+      <a-form-item>
+        <div slot="label">
+          <a-row type="flex" :gutter="[10, 0]" align="middle">
+            <a-col flex="auto"><label>X坐标</label></a-col>
+            <a-col style="display: flex; align-items: center;">
+              <a-switch size="small" v-model="pickable" />
+              <span style="padding-left: 8px;">鼠标拾取</span>
+            </a-col>
+          </a-row>
+        </div>
         <a-input
+          v-if="type === 'd'"
           type="number"
           v-model="coordDecimal[0]"
           @change="onDecimalCoordChanged"
         />
-      </a-row>
-      <a-row v-else type="flex" :gutter="[10, 0]" align="middle">
-        <a-col :span="6">
-          <a-input
-            type="number"
-            v-model="coordDMS[0][0]"
-            @change="onDMSCoordChanged"
-          />
-        </a-col>
-        <a-col :span="2">度</a-col>
-        <a-col :span="6">
-          <a-input
-            type="number"
-            v-model="coordDMS[0][1]"
-            @change="onDMSCoordChanged"
-          />
-        </a-col>
-        <a-col :span="2">分</a-col>
-        <a-col :span="6">
-          <a-input
-            type="number"
-            v-model="coordDMS[0][2]"
-            @change="onDMSCoordChanged"
-          />
-        </a-col>
-        <a-col :span="2">秒</a-col>
-      </a-row>
-      <a-row>
-        <a-col><label>Y坐标</label></a-col>
-      </a-row>
-      <a-row v-if="type === 'd'">
+        <a-row v-else type="flex" :gutter="[10, 0]" align="middle">
+          <a-col :span="6">
+            <a-input
+              type="number"
+              v-model="coordDMS[0][0]"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">度</a-col>
+          <a-col :span="6">
+            <a-input
+              type="number"
+              v-model="coordDMS[0][1]"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">分</a-col>
+          <a-col :span="6">
+            <a-input
+              type="number"
+              v-model="coordDMS[0][2]"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">秒</a-col>
+        </a-row>
+      </a-form-item>
+      <a-form-item label="Y坐标">
         <a-input
+          v-if="type === 'd'"
           type="number"
           v-model="coordDecimal[1]"
           @change="onDecimalCoordChanged"
         />
-      </a-row>
-      <a-row v-else type="flex" :gutter="[10, 0]" align="middle">
-        <a-col :span="6">
-          <a-input
-            type="number"
-            v-model="coordDMS[1][0]"
-            @change="onDMSCoordChanged"
-          />
-        </a-col>
-        <a-col :span="2">度</a-col>
-        <a-col :span="6">
-          <a-input
-            type="number"
-            v-model="coordDMS[1][1]"
-            @change="onDMSCoordChanged"
-          />
-        </a-col>
-        <a-col :span="2">分</a-col>
-        <a-col :span="6">
-          <a-input
-            type="number"
-            v-model="coordDMS[1][2]"
-            @change="onDMSCoordChanged"
-          />
-        </a-col>
-        <a-col :span="2">秒</a-col>
-      </a-row>
-      <a-row type="flex" :gutter="[10, 0]" align="middle">
-        <a-col flex="auto"><label>比例尺</label></a-col>
-        <a-col style="display: flex; align-items: center;">
-          <a-switch size="small" v-model="frameable" />
-          <span style="padding-left: 8px;">计算图幅</span>
-        </a-col>
-      </a-row>
-      <a-row>
-        <a-select :options="scaleArray" v-model="scale" style="width: 100%;" />
-      </a-row>
+        <a-row v-else type="flex" :gutter="[10, 0]" align="middle">
+          <a-col :span="6">
+            <a-input
+              type="number"
+              v-model="coordDMS[1][0]"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">度</a-col>
+          <a-col :span="6">
+            <a-input
+              type="number"
+              v-model="coordDMS[1][1]"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">分</a-col>
+          <a-col :span="6">
+            <a-input
+              type="number"
+              v-model="coordDMS[1][2]"
+              @change="onDMSCoordChanged"
+            />
+          </a-col>
+          <a-col :span="2">秒</a-col>
+        </a-row>
+      </a-form-item>
+      <a-form-item>
+        <div slot="label">
+          <a-row type="flex" :gutter="[10, 0]" align="middle">
+            <a-col flex="auto"><label>比例尺</label></a-col>
+            <a-col style="display: flex; align-items: center;">
+              <a-switch size="small" v-model="frameable" />
+              <span style="padding-left: 8px;">计算图幅</span>
+            </a-col>
+          </a-row>
+        </div>
+        <a-select :options="scaleArray" v-model="scale" />
+      </a-form-item>
+    </mp-setting-form>
+    <a-space direction="vertical" style="flex: 1">
       <a-row>
         <label v-show="frameNo" class="frame-text">图幅号：{{ frameNo }}</label>
       </a-row>
@@ -368,7 +367,7 @@ export default class MpCoordinate extends Mixins(AppMixin) {
     let y = lat.toString()
     if (this.crs !== this.defaultCrs) {
       // 底图和用户选择的坐标系不一样
-      const { data } = await ProjectionTransformationUtil.transPoint(
+      const { data } = await ProjectionTransformationUtil.projectPoints(
         [[lng, lat]],
         this.defaultCrs,
         this.crs
@@ -422,11 +421,9 @@ export default class MpCoordinate extends Mixins(AppMixin) {
 .coordinate-container {
   display: flex;
   padding: 10px 3px 0 3px;
+  flex-direction: column;
   .frame-text {
     color: @primary-color;
-  }
-  .ant-input {
-    padding: 4px 2px;
   }
 }
 </style>

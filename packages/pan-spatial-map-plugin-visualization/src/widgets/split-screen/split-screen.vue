@@ -122,7 +122,7 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
   get drawerBodyStyle() {
     return {
       display: 'flex',
-      padding: '12px'
+      padding: '0 12px 12px 12px'
     }
   }
 

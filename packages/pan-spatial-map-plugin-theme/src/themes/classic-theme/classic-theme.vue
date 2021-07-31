@@ -90,7 +90,10 @@ export default {
       const lnglat = baseConfigInstance.config.center.split(',')
       return {
         center: { lng: Number(lnglat[0]), lat: Number(lnglat[1]) },
-        zoom: baseConfigInstance.config.initZoom
+        zoom: baseConfigInstance.config.initZoom,
+        mapStyle: {
+          glyphs: `http://${baseConfigInstance.config.ip}:${baseConfigInstance.config.port}/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf`
+        }
       }
     }
   },

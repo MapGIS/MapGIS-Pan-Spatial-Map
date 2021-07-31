@@ -1,46 +1,36 @@
 <template>
-  <a-space class="swipe-setting" direction="vertical" style="flex: 1;">
-    <!-- 上图层 -->
-    <a-row>
-      <a-col> {{ directionLayerTitle.aboveTitle }}图层</a-col>
-    </a-row>
-    <a-row>
-      <a-col>
-        <a-select :value="aboveLayer.id" @change="onAboveChange">
-          <a-select-option
-            v-for="p in aboveLayers"
-            :key="p.id"
-            :value="p.id"
-            :title="p.title"
-            >{{ p.title }}</a-select-option
-          ></a-select
+  <mp-setting-form class="swipe-setting" layout="vertical" size="small">
+    <a-form-item :label="`${directionLayerTitle.aboveTitle}图层`">
+      <a-select :value="aboveLayer.id" @change="onAboveChange">
+        <a-select-option
+          v-for="p in aboveLayers"
+          :key="p.id"
+          :value="p.id"
+          :title="p.title"
+          >{{ p.title }}</a-select-option
         >
-      </a-col>
-    </a-row>
-    <!-- 下图层 -->
-    <a-row>
-      <a-col> {{ directionLayerTitle.belowTitle }}图层</a-col>
-    </a-row>
-    <a-row>
-      <a-col>
-        <a-select :value="belowLayer.id" @change="onBelowChange">
-          <a-select-option
-            v-for="p in belowLayers"
-            :key="p.id"
-            :value="p.id"
-            :title="p.title"
-            >{{ p.title }}</a-select-option
-          >
-        </a-select>
-      </a-col>
-    </a-row>
-    <!-- 方向 -->
-    <a-radio-group :value="direction" @change="onDirectionChange">
-      <a-radio value="vertical"> 垂直 </a-radio>
-      <a-radio value="horizontal" v-show="swipe.is2DMapMode"> 水平 </a-radio>
-    </a-radio-group>
-  </a-space>
+      </a-select>
+    </a-form-item>
+    <a-form-item :label="`${directionLayerTitle.belowTitle}图层`">
+      <a-select :value="belowLayer.id" @change="onBelowChange">
+        <a-select-option
+          v-for="p in belowLayers"
+          :key="p.id"
+          :value="p.id"
+          :title="p.title"
+          >{{ p.title }}</a-select-option
+        >
+      </a-select>
+    </a-form-item>
+    <a-form-item label="类型">
+      <a-radio-group :value="direction" @change="onDirectionChange">
+        <a-radio value="vertical"> 垂直 </a-radio>
+        <a-radio value="horizontal" v-show="swipe.is2DMapMode"> 水平 </a-radio>
+      </a-radio-group>
+    </a-form-item>
+  </mp-setting-form>
 </template>
+
 <script lang="ts">
 import { Vue, Watch, Component, InjectReactive } from 'vue-property-decorator'
 
@@ -65,8 +55,8 @@ export default class SwipeSetting extends Vue {
     let aboveTitle = '左侧'
     let belowTitle = '右侧'
     if (this.direction !== 'vertical') {
-      aboveTitle = '上级'
-      belowTitle = '下级'
+      aboveTitle = '上层'
+      belowTitle = '下层'
     }
     return {
       aboveTitle,
@@ -120,8 +110,5 @@ export default class SwipeSetting extends Vue {
 .swipe-setting {
   width: 100%;
   height: 100%;
-  /deep/ .ant-select {
-    width: 100%;
-  }
 }
 </style>

@@ -128,7 +128,7 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
           features: [this.geoJson]
         }
       }
-      const result = Feature.FeatureConvert.toTangram(geojson)
+      const result = Feature.FeatureConvert.featureGeoJSONToTangram(geojson)
       if (Array.isArray(result)) return result[0]
       return result
     }

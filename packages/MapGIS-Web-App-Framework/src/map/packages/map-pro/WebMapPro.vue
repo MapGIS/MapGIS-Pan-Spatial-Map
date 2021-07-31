@@ -4,7 +4,7 @@
     :center="center"
     :zoom="zoom"
     :access-token="accessToken"
-    :map-style="mapStyle"
+    :map-style="mergedMapStyle"
     :crs="crs"
     @load="handleLoad"
     style="height: 100%; width: 100%"
@@ -114,17 +114,15 @@
 <script>
 import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
 import { Layer, LayerType, LoadStatus } from '../../../model/document/layer'
-import DefaultStyle from '../../../builder/assets/style/default-style.json'
+import { ObjectUtil } from '../../../utils'
+import DefaultMapStyle from '../../styles/map-style.json'
 
 export default {
   name: 'MpWebMapPro',
   props: {
     mapStyle: {
       type: Object,
-      required: false,
-      default: () => {
-        return DefaultStyle
-      }
+      required: false
     },
     document: {
       type: Object,
@@ -147,9 +145,15 @@ export default {
       accessToken:
         'pk.eyJ1IjoicGFybmRlZWRsaXQiLCJhIjoiY2o1MjBtYTRuMDhpaTMzbXhpdjd3YzhjdCJ9.sCoubaHF9-nhGTA-sgz0sA',
       crs: 'EPSG:4326',
-      sources: {},
       layers: [],
       map: null
+    }
+  },
+  computed: {
+    mergedMapStyle() {
+      return this.mapStyle
+        ? ObjectUtil.objectMerge(DefaultMapStyle, this.mapStyle)
+        : DefaultMapStyle
     }
   },
   watch: {

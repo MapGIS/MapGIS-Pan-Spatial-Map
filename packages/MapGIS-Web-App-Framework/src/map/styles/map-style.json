@@ -1,0 +1,7 @@
+{
+  "version": 8,
+  "sprite": "http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/sprite",
+  "glyphs": "http://develop.smaryun.com:6163/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf",
+  "sources": {},
+  "layers": []
+}

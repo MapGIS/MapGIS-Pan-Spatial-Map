@@ -1,16 +1,10 @@
 <template>
   <div class="frame-container">
-    <a-space direction="vertical" style="flex: 1">
-      <a-row>
-        <label>比例尺</label>
-      </a-row>
-      <a-row>
-        <a-select :options="scaleArray" v-model="scale" style="width:100%" />
-      </a-row>
-      <a-row>
-        <label>图幅号</label>
-      </a-row>
-      <a-row>
+    <mp-setting-form layout="vertical">
+      <a-form-item label="比例尺">
+        <a-select :options="scaleArray" v-model="scale" />
+      </a-form-item>
+      <a-form-item label="图幅号">
         <a-input-search
           placeholder="请输入关键字"
           allowClear
@@ -18,7 +12,9 @@
           enter-button
           @search="onSearch"
         />
-      </a-row>
+      </a-form-item>
+    </mp-setting-form>
+    <a-space direction="vertical" style="flex: 1">
       <a-spin :spinning="loading">
         <a-list :data-source="list" size="small" :pagination="pagination">
           <div slot="header">
@@ -264,9 +260,11 @@ export default class Frame extends Mixins(AppMixin) {
 .frame-container {
   display: flex;
   padding: 10px 3px 0 3px;
+  flex-direction: column;
   .ant-space {
     .ant-space-item {
       .ant-list {
+        font-size: 12px;
         .ant-list-header {
           padding: 0 0 8px 0;
         }
@@ -278,7 +276,7 @@ export default class Frame extends Mixins(AppMixin) {
           }
           .ant-list-item {
             justify-content: flex-start;
-            padding: 5px 0 5px 10px;
+            padding: 5px 0 5px 5px;
             &:hover {
               background-color: @hover-bg-color;
             }
@@ -287,8 +285,14 @@ export default class Frame extends Mixins(AppMixin) {
             }
           }
         }
-        .ant-list-pagination {
-          margin-top: 8px;
+        .ant-empty-normal {
+          margin: 8px 0;
+        }
+        .ant-pagination {
+          font-size: 12px;
+          .ant-list-pagination {
+            margin-top: 8px;
+          }
         }
       }
     }

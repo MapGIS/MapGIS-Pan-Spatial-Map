@@ -1,46 +1,47 @@
 <template>
   <div class="mp-widget-func-warehouse">
-    <div class="setting-panel">
-      <a-space direction="vertical" class="space">
-        <a-row>
-          <a-col :span="4" class="col">
-            服务类型:
-          </a-col>
-          <a-col :span="20">
-            <a-select v-model="selectGroupIndex">
-              <a-select-option v-for="item in group" :key="item.index">{{
-                item.groupName
-              }}</a-select-option>
-            </a-select>
-          </a-col>
-        </a-row>
-        <a-table
-          v-if="
-            group[this.selectGroupIndex] &&
-              group[this.selectGroupIndex].children
-          "
-          :columns="columns"
-          :data-source="group[this.selectGroupIndex].children"
-          :pagination="pagination"
-          :scroll="{ x: 'calc(100% + 50%)' }"
-          size="small"
-          :rowKey="
-            (record, index) => {
-              return record.FlowNo
-            }
-          "
-        >
-          <template slot="operate" slot-scope="text, record">
-            <a-tooltip placement="bottom">
-              <template slot="title">
-                <span>执行</span>
-              </template>
-              <a-icon type="swap" @click="openHandle(record)"></a-icon>
-            </a-tooltip>
-          </template>
-        </a-table>
-      </a-space>
-    </div>
+    <a-spin :spinning="showLoading">
+      <mp-setting-form layout="vertical">
+        <a-form-item label="功能类型">
+          <a-select v-model="selectGroupIndex">
+            <a-select-option v-for="item in group" :key="item.index">
+              {{ item.groupName }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="功能列表">
+          <a-table
+            v-if="
+              group[this.selectGroupIndex] &&
+                group[this.selectGroupIndex].children
+            "
+            :columns="columns"
+            :data-source="group[this.selectGroupIndex].children"
+            :pagination="pagination"
+            :scroll="{ x: 'calc(100% + 50%)' }"
+            size="small"
+            :rowKey="
+              (record, index) => {
+                return record.FlowNo
+              }
+            "
+          >
+            <template slot="operate" slot-scope="text, record">
+              <a-tooltip placement="bottom">
+                <template slot="title">
+                  <span>执行</span>
+                </template>
+                <a-icon
+                  type="swap"
+                  class="func-execute"
+                  @click="openHandle(record)"
+                ></a-icon>
+              </a-tooltip>
+            </template>
+          </a-table>
+        </a-form-item>
+      </mp-setting-form>
+    </a-spin>
     <mp-window-wrapper :visible="openHandlerWindow">
       <template v-slot:default="slotProps">
         <mp-window
@@ -154,6 +155,8 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
   }
 
+  private showLoading = false
+
   // ip
   get ip() {
     return this.widgetInfo.config.ip || baseConfigInstance.config.ip
@@ -177,9 +180,15 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
   // 初始化的时候获取服务上功能仓库列表信息
   init() {
     const { ip, port } = this
-    Analysis.WorkflowAnalysis.getWorkflowList({ ip, port }).then(res => {
-      this.constructData(res)
-    })
+    this.showLoading = true
+    Analysis.WorkflowAnalysis.getWorkflowList({ ip, port })
+      .then(res => {
+        this.showLoading = false
+        this.constructData(res)
+      })
+      .catch(err => {
+        this.showLoading = false
+      })
   }
 
   // 重置
@@ -228,19 +237,13 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  .space {
-    width: 100%;
-  }
-  .col {
-    text-align: center;
-    line-height: 30px;
-  }
-  .setting-panel {
-    display: flex;
-    flex-direction: column;
-  }
   .ant-table-wrapper {
     width: 500px;
+    .func-execute {
+      &:hover {
+        color: @primary-color;
+      }
+    }
   }
 }
 </style>

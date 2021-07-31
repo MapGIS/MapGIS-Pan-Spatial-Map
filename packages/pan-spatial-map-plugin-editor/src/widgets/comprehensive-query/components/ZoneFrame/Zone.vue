@@ -41,37 +41,24 @@
       </div>
     </a-spin>
     <div v-show="showSettingPanel" class="setting-panel">
-      <a-divider></a-divider>
-      <a-space direction="vertical" style="width: 100%;">
-        <a-row>
-          <label>填充颜色</label>
-        </a-row>
-        <a-row>
-          <a-popover trigger="click">
-            <template slot="content">
-              <sketch-picker :value="fillColor" @input="onFillColorChange" />
-            </template>
-            <div :style="{ background: fillColor }" class="color"></div>
-          </a-popover>
-        </a-row>
-        <a-row>
-          <label>轮廓线颜色</label>
-        </a-row>
-        <a-row>
-          <a-popover trigger="click">
-            <template slot="content">
-              <sketch-picker :value="lineColor" @input="onLineColorChange" />
-            </template>
-            <div :style="{ background: lineColor }" class="color"></div>
-          </a-popover>
-        </a-row>
-        <a-row>
-          <label>轮廓线宽度</label>
-        </a-row>
-        <a-row>
+      <mp-group-tab title="设置"></mp-group-tab>
+      <mp-setting-form layout="vertical">
+        <a-form-item label="填充颜色">
+          <mp-color-picker
+            :color.sync="fillColor"
+            :disable-alpha="false"
+          ></mp-color-picker>
+        </a-form-item>
+        <a-form-item label="轮廓线颜色">
+          <mp-color-picker
+            :color.sync="lineColor"
+            :disable-alpha="false"
+          ></mp-color-picker>
+        </a-form-item>
+        <a-form-item label="轮廓线宽度">
           <a-input type="number" v-model="lineWidth" />
-        </a-row>
-      </a-space>
+        </a-form-item>
+      </mp-setting-form>
     </div>
     <template v-if="active">
       <zone-frame-mapbox
@@ -102,15 +89,13 @@ import {
 import { AppMixin, MapMixin, Feature } from '@mapgis/web-app-framework'
 import { api, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import { bboxPolygon, lineString, bbox } from '@turf/turf'
-import { Sketch } from 'vue-color'
 import ZoneFrameMapbox from './ZoneFrameMapbox.vue'
 import ZoneFrameCesium from './ZoneFrameCesium.vue'
 
 @Component({
   components: {
     ZoneFrameMapbox,
-    ZoneFrameCesium,
-    'sketch-picker': Sketch
+    ZoneFrameCesium
   }
 })
 export default class Zone extends Mixins(AppMixin, MapMixin) {
@@ -239,14 +224,6 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
 
   mounted() {
     this.init()
-  }
-
-  private onFillColorChange(val) {
-    this.fillColor = `rgba(${val.rgba.r},${val.rgba.g},${val.rgba.b},${val.rgba.a})`
-  }
-
-  private onLineColorChange(val) {
-    this.lineColor = `rgba(${val.rgba.r},${val.rgba.g},${val.rgba.b},${val.rgba.a})`
   }
 
   private onZoneBreadcrumbClick(index) {
@@ -435,7 +412,7 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
   }
   .select-name {
     font-size: 13px;
-    padding-bottom: 8px;
+    padding-top: 4px;
     display: flex;
     flex-wrap: wrap;
     color: @text-color;
@@ -453,14 +430,6 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
   .setting-panel {
     display: flex;
     flex-direction: column;
-    .ant-divider-horizontal {
-      margin: 8px 0;
-    }
-    .color {
-      height: 30px;
-      box-shadow: @shadow-1-down;
-      border-radius: 3px;
-    }
   }
   .active {
     color: @primary-color !important;

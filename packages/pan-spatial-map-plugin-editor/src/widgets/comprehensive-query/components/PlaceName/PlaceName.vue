@@ -194,7 +194,7 @@ export default class PlaceName extends Mixins(
         { name: 'bounds' }
       )
     }
-    const result = Feature.FeatureConvert.toTangram(polygon)
+    const result = Feature.FeatureConvert.featureGeoJSONToTangram(polygon)
     if (Array.isArray(result)) return result[0]
     return result
   }

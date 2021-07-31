@@ -1,44 +1,39 @@
 <template>
-  <a-space class="split-screen-setting" direction="vertical" style="flex: 1;">
-    <a-row>
-      <mp-toolbar>
-        <mp-toolbar-title :has-padding="false">设置</mp-toolbar-title>
-        <mp-toolbar-command-group>
-          <mp-toolbar-command
-            title="全屏"
-            :icon="fullScreen ? 'fullscreen-exit' : 'fullscreen'"
-            @click="onToggleScreen"
-          />
-        </mp-toolbar-command-group>
+  <div class="split-screen-setting">
+    <mp-group-tab size="small" title="设置" :has-top-margin="false">
+      <mp-toolbar slot="handle" :bordered="false">
+        <mp-toolbar-command
+          title="全屏"
+          :icon="fullScreen ? 'fullscreen-exit' : 'fullscreen'"
+          @click="onToggleScreen"
+        />
       </mp-toolbar>
-    </a-row>
-    <a-row>
-      <a-col>屏数</a-col>
-    </a-row>
-    <a-row>
-      <a-select :value="screenCount" @change="onScreenCountChange">
-        <a-select-option v-for="(s, i) in layers" :key="i" :value="i + 1">
-          {{ i + 1 }}
-        </a-select-option>
-      </a-select>
-    </a-row>
-    <a-row v-show="screenNums.length">
-      <a-col>图示</a-col>
-    </a-row>
-    <a-row class="diagram-grid" v-show="screenNums.length">
-      <a-col
+    </mp-group-tab>
+    <mp-setting-form layout="vertical" size="small">
+      <a-form-item label="屏数">
+        <a-select :value="screenCount" @change="onScreenCountChange">
+          <a-select-option v-for="(s, i) in layers" :key="i" :value="i + 1">
+            {{ i + 1 }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item v-show="screenNums.length" label="图示">
+        <a-row class="diagram-grid">
+          <a-col
+            v-for="s in screenNums"
+            :key="s"
+            :span="mapSpan"
+            class="diagram-col"
+          >
+            {{ s + 1 }}
+          </a-col>
+        </a-row>
+      </a-form-item>
+      <a-form-item
         v-for="s in screenNums"
         :key="s"
-        :span="mapSpan"
-        class="diagram-col"
-        >{{ s + 1 }}</a-col
+        :label="`第${screenLabel[s]}屏`"
       >
-    </a-row>
-    <template v-for="s in screenNums">
-      <a-row :key="s">
-        <a-col>{{ `第${screenLabel[s]}屏` }}</a-col>
-      </a-row>
-      <a-row :key="s">
         <a-select :value="layerIds[s]" @change="onLayerChange($event, s)">
           <a-select-option
             v-for="{ id, title } in layers"
@@ -49,9 +44,9 @@
             {{ title }}
           </a-select-option>
         </a-select>
-      </a-row>
-    </template>
-  </a-space>
+      </a-form-item>
+    </mp-setting-form>
+  </div>
 </template>
 
 <script lang="ts">

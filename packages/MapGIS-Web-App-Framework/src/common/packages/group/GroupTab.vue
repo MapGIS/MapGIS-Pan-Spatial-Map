@@ -19,9 +19,9 @@ export default {
     },
     size: {
       type: String,
-      default: 'small',
+      default: 'mini',
       validator(val) {
-        return ['default', 'large', 'small'].includes(val)
+        return ['default', 'large', 'small', 'mini'].includes(val)
       }
     },
     hasTopMargin: {
@@ -53,8 +53,11 @@ export default {
   &.has-top-margin {
     margin-top: 8px;
   }
-  &.is-small {
+  &.is-mini {
     font-size: 12px;
+  }
+  &.is-small {
+    font-size: 14px;
   }
   &.is-default {
     font-size: 14px;
