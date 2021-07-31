@@ -12,6 +12,11 @@
         <a-input v-model.number="formData.z" type="number" min="0" />
       </a-form-item>
     </mp-setting-form>
+    <div class="btn">
+      <a-button type="primary" @click="startFill" :disabled="!recalculate"
+        >重新计算</a-button
+      >
+    </div>
     <mp-group-tab title="填挖结果"></mp-group-tab>
     <mp-setting-form>
       <a-form-item label="高程范围">
@@ -28,14 +33,14 @@
       </a-form-item>
     </mp-setting-form>
     <div class="mp-footer-actions">
-      <a-button type="primary" @click="add">分析</a-button>
-      <a-button @click="remove">清除</a-button>
+      <a-button type="primary" @click="analysis">分析</a-button>
+      <a-button @click="stopCutFillM">清除</a-button>
     </div>
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { WidgetMixin, CommonUtil } from '@mapgis/web-app-framework'
+import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpCutFillAnalysis',
@@ -57,18 +62,13 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
   private positions = null
 
-  // get z() {
-  //   return this.formData.z
-  // }
+  private recalculate = false
 
-  @Watch('formData.z', { deep: true })
-  changeZ() {
-    if (!this.positions) {
-      return
+  @Watch('formData', { deep: true, immediate: true })
+  changeFormData() {
+    if (this.positions) {
+      this.recalculate = true
     }
-    const self = this
-    // self.startFill
-    CommonUtil.debounce(self.startFill, 200, true)
   }
 
   created() {
@@ -85,10 +85,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     this.stopCutFillM()
   }
 
-  add() {
-    this.reset()
-    this.remove()
-
+  analysis() {
     // 初始化交互式绘制控件
     window.CutFillAnalyzeManage.drawElement =
       window.CutFillAnalyzeManage.drawElement ||
@@ -99,6 +96,26 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       callback: positions => {
         this.stopDraw()
         this.positions = positions
+
+        const { viewer } = this.webGlobe
+        // 移除视图中所有的实体对象
+        viewer.entities.removeAll()
+
+        // 在视图中添加围栏实体
+        viewer.entities.add({
+          id: 'cutfill',
+          // 实体名称
+          name: '围栏',
+          // 示例类型
+          wall: {
+            // 实体点数组
+            positions,
+            // 实体材质
+            material: new this.Cesium.Color(0.2, 0.5, 0.4, 0.7),
+            // 实体轮廓
+            outline: true
+          }
+        })
         this.startFill()
       }
     })
@@ -106,30 +123,18 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
   // 开始分析
   startFill() {
-    const { positions } = this
-    // console.log('startFill')
-    const { viewer } = this.webGlobe
-    const { x, y, z } = this.formData
-    // 移除视图中所有的实体对象
-    viewer.entities.removeAll()
+    const self = this
+    const { positions } = self
+    if (!positions) {
+      self.$message.warning('请绘制分析区域')
+      return
+    }
+    self.reset()
+    const { viewer } = self.webGlobe
+    const { x, y, z } = self.formData
 
-    // 在视图中添加围栏实体
-    viewer.entities.add({
-      id: 'cutfill',
-      // 实体名称
-      name: '围栏',
-      // 示例类型
-      wall: {
-        // 实体点数组
-        positions,
-        // 实体材质
-        material: new this.Cesium.Color(0.2, 0.5, 0.4, 0.7),
-        // 实体轮廓
-        outline: true
-      }
-    })
     // 初始化高级分析功能管理类
-    const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
+    const advancedAnalysisManager = new self.CesiumZondy.Manager.AdvancedAnalysisManager(
       {
         viewer
       }
@@ -143,10 +148,10 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
         // 设置y方向采样点个数参数
         yPaneNum: y <= 0 ? 16 : y,
         // 设置填挖规整高度
-        height: z <= 0 ? 2000 : z,
+        height: z,
         // 返回结果的回调函数
         callback: result => {
-          this.result = {
+          self.result = {
             height: `${result.minHeight.toFixed(2)}~${result.maxHeight.toFixed(
               2
             )}`,
@@ -194,6 +199,8 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       viewer.entities.removeById('cutfill')
       window.CutFillAnalyzeManage.cutFill = null
     }
+    this.positions = null
+    this.recalculate = false
   }
 }
 </script>
@@ -202,5 +209,10 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
 .mp-widget-cut-fill-analysis {
   padding-top: 8px;
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
 }
 </style>
