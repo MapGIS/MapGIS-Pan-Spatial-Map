@@ -3,6 +3,7 @@
     <a-popover trigger="click">
       <template slot="content">
         <sketch-picker
+          class="sketch-color"
           :disableAlpha="disableAlpha"
           :value="pickColor"
           @input="onColorChange"
@@ -81,5 +82,8 @@ export default {
       height: 100%;
     }
   }
+}
+.sketch-color {
+  color: #000000a6;
 }
 </style>
