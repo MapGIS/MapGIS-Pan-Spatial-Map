@@ -71,6 +71,7 @@ export default {
     padding: 0 8px;
     min-height: 30px;
     line-height: 30px;
+    margin-bottom: 4px;
     font-size: 14px;
 
     .ant-card-head-title,

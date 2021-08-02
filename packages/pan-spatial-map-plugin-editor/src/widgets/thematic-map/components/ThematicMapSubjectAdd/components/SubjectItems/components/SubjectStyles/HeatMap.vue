@@ -106,7 +106,7 @@ export default class HeatMap extends Vue {
 </script>
 <style lang="less" scoped>
 .heat-map {
-  padding-top: 8px;
+  padding: 12px 8px 8px;
   > .ant-row-flex {
     margin-bottom: 12px;
   }
