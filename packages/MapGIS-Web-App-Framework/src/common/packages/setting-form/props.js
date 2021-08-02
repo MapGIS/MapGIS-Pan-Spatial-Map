@@ -1,47 +1,51 @@
 export const formProps = {
   form: {
-    type: Object,
+    type: Object
   },
   compact: {
     type: Boolean,
-    default: true,
+    default: true
   },
   size: {
     type: String,
-    default: "mini",
+    default: 'mini'
   },
   hideRequiredMark: {
     type: Boolean,
-    default: false,
+    default: false
   },
   labelAlign: {
     type: String,
-    default: "left",
-    validator: (v) => ["left", "right"].includes(v),
+    default: 'left',
+    validator: v => ['left', 'right'].includes(v)
   },
   layout: {
     type: String,
-    default: "horizontal",
-    validator: (v) => ["horizontal", "vertical", "inline"].includes(v),
+    default: 'horizontal',
+    validator: v => ['horizontal', 'vertical', 'inline'].includes(v)
   },
   labelCol: {
     type: Object,
     default() {
-      return { span: 8 };
-    },
+      return { span: 8 }
+    }
   },
   wrapperCol: {
     type: Object,
     default() {
-      return { span: 16 };
-    },
+      return { span: 16 }
+    }
   },
   selfUpdate: {
     type: Boolean,
-    default: false,
+    default: false
   },
   colon: {
     type: Boolean,
-    default: false,
+    default: false
   },
-};
+  noLastMarginBottom: {
+    type: Boolean,
+    default: false
+  }
+}

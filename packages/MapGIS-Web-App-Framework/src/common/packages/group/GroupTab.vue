@@ -27,6 +27,10 @@ export default {
     hasTopMargin: {
       type: Boolean,
       default: true
+    },
+    hasBottomMargin: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
@@ -35,7 +39,8 @@ export default {
         {
           'is-background': this.background,
           [`is-${this.size}`]: !!this.size,
-          'has-top-margin': this.hasTopMargin
+          'has-top-margin': this.hasTopMargin,
+          'has-bottom-margin': this.hasBottomMargin
         }
       ]
     }
@@ -48,10 +53,12 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  margin: 0 0 8px 0;
   font-weight: 700;
   &.has-top-margin {
     margin-top: 8px;
+  }
+  &.has-bottom-margin {
+    margin-bottom: 8px;
   }
   &.is-mini {
     font-size: 12px;

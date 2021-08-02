@@ -1,29 +1,43 @@
 <template>
   <a-spin :spinning="loading">
     <div class="mp-widget-topology-analysis">
-      <a-form
+      <mp-group-tab
+        slot="label"
+        title="选择参照要素(区要素)"
+        :has-top-margin="false"
+      >
+        <div slot="handle" class="layer-select-container">
+          <a-select v-model="tDataIndex" @change="changeTarget">
+            <a-select-option
+              v-for="(item, index) in layerArrOption"
+              :key="index"
+              :value="index"
+            >
+              {{ item.title }}
+            </a-select-option>
+          </a-select>
+          <mp-toolbar :bordered="false">
+            <mp-toolbar-command
+              icon="search"
+              title="查询要素"
+              @click="draw('target')"
+            ></mp-toolbar-command>
+          </mp-toolbar>
+        </div>
+      </mp-group-tab>
+      <mp-setting-form
         layout="vertical"
         :class="[isFullScreen === true ? '' : 'fixed-table']"
       >
-        <a-form-item label="选择参照要素(区要素)">
-          <div class="layer-select-container">
-            <a-select v-model="tDataIndex" @change="changeTarget">
-              <a-select-option
-                v-for="(item, index) in layerArrOption"
-                :key="index"
-                :value="index"
-              >
-                {{ item.title }}
-              </a-select-option>
-            </a-select>
-            <a-button @click="draw('target')">
-              查询要素
-            </a-button>
-          </div>
-        </a-form-item>
         <a-form-item>
           <div class="tab-list-container">
-            <a-tabs size="small" v-model="tDataTab" v-if="tDataArr.length > 0">
+            <a-tabs
+              size="small"
+              :style="{ height: '100%' }"
+              tab-position="left"
+              v-model="tDataTab"
+              v-if="tDataArr.length > 0"
+            >
               <a-tab-pane
                 v-for="item in tDataArr"
                 :key="item.id"
@@ -38,31 +52,40 @@
             </a-tabs>
           </div>
         </a-form-item>
-      </a-form>
-      <a-divider />
-      <a-form
+      </mp-setting-form>
+      <mp-group-tab slot="label" title="选择分区要素" :has-top-margin="false">
+        <div slot="handle" class="layer-select-container">
+          <a-select v-model="aDataIndex" @change="changeAnalysis">
+            <a-select-option
+              v-for="(item, index) in layerArrOption"
+              :key="index"
+              :value="index"
+            >
+              {{ item.title }}
+            </a-select-option>
+          </a-select>
+          <mp-toolbar :bordered="false">
+            <mp-toolbar-command
+              icon="search"
+              title="查询要素"
+              @click="draw('analysis')"
+            ></mp-toolbar-command>
+          </mp-toolbar>
+        </div>
+      </mp-group-tab>
+      <mp-setting-form
         layout="vertical"
         :class="[isFullScreen === true ? '' : 'fixed-table']"
       >
-        <a-form-item label="选择分区要素">
-          <div class="layer-select-container">
-            <a-select v-model="aDataIndex" @change="changeAnalysis">
-              <a-select-option
-                v-for="(item, index) in layerArrOption"
-                :key="index"
-                :value="index"
-              >
-                {{ item.title }}
-              </a-select-option>
-            </a-select>
-            <a-button @click="draw('analysis')">
-              查询要素
-            </a-button>
-          </div>
-        </a-form-item>
         <a-form-item>
           <div class="tab-list-container">
-            <a-tabs size="small" v-model="aDataTab" v-if="aDataArr.length > 0">
+            <a-tabs
+              size="small"
+              :style="{ height: '100%' }"
+              tab-position="left"
+              v-model="aDataTab"
+              v-if="aDataArr.length > 0"
+            >
               <a-tab-pane
                 v-for="item in aDataArr"
                 :key="item.id"
@@ -77,17 +100,15 @@
             </a-tabs>
           </div>
         </a-form-item>
-        <a-form-item>
-          <a-space>
-            <a-button type="primary" @click="analysis">
-              分析
-            </a-button>
-            <a-tag color="#87d068" v-if="massage">
-              {{ massage }}
-            </a-tag>
-          </a-space>
-        </a-form-item>
-      </a-form>
+      </mp-setting-form>
+      <div class="analysis-actions">
+        <a-tag color="#87d068" v-if="massage">
+          {{ massage }}
+        </a-tag>
+        <a-button type="primary" @click="analysis">
+          分析
+        </a-button>
+      </div>
       <mapbox-layer
         v-if="is2DMapMode"
         ref="mapboxLayer"
@@ -414,24 +435,42 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
 <style lang="less">
 .mp-widget-topology-analysis {
   .fixed-table {
-    width: 250px;
+    width: 360px;
   }
-  .ant-form-item {
-    margin-bottom: 0;
-    .tab-list-container {
-      border-radius: 4px;
-      height: 250px;
-      border: 1px solid @border-color;
-    }
-    .layer-select-container {
-      display: flex;
-      .ant-btn {
-        margin-left: 10px;
+  .tab-list-container {
+    border-radius: 4px;
+    height: 180px;
+    border: 1px solid @border-color;
+    .ant-tabs {
+      .ant-tabs-left-content {
+        padding-left: 8px;
+      }
+      .ant-tabs-left-bar .ant-tabs-tab {
+        text-align: center;
+        margin: 0;
+        padding: 6px 8px;
+        width: 120px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 12px;
       }
     }
-    .ant-tabs-bar {
-      margin: 0;
+  }
+  .layer-select-container {
+    display: flex;
+    .ant-select {
+      width: 160px;
     }
+    .ant-btn {
+      margin-left: 10px;
+    }
+  }
+  .ant-select {
+    font-size: 12px;
+  }
+  .analysis-actions {
+    float: right;
   }
 }
 </style>

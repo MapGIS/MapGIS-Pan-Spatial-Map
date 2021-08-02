@@ -1,6 +1,11 @@
 <template>
   <a-form
-    :class="['mp-setting-form', compact ? 'compact' : '', size]"
+    :class="[
+      'mp-setting-form',
+      compact ? 'compact' : '',
+      size,
+      noLastMarginBottom ? 'no-last-margin-bottom' : ''
+    ]"
     :form="form"
     :hideRequiredMark="hideRequiredMark"
     :labelAlign="labelAlign"
@@ -100,6 +105,13 @@ export default {
   &.compact {
     .ant-form-item {
       margin-bottom: 12px;
+    }
+  }
+  &.no-last-margin-bottom {
+    .ant-form-item {
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 }

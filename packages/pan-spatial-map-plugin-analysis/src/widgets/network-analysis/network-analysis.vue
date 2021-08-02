@@ -2,8 +2,8 @@
   <div class="mp-widget-network-analysis">
     <div id="network-analysis-el">
       <a-spin :spinning="showLoading">
-        <a-form>
-          <a-form-item label="选择数据" :colon="false">
+        <mp-setting-form>
+          <a-form-item label="选择数据">
             <a-select v-model="layerSelectIndex" @change="setNetWorkLayer">
               <a-select-option
                 v-for="(item, index) in layerArrOption"
@@ -14,7 +14,7 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="选择图层" :colon="false">
+          <a-form-item label="选择图层">
             <a-select v-model="networkLayerIndex" @change="resetLayer">
               <a-select-option
                 v-for="(item, index) in networkLayerOption"
@@ -25,7 +25,7 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="选择方式" :colon="false">
+          <a-form-item label="选择方式">
             <a-select v-model="wayIndex" @change="resetLayer">
               <a-select-option
                 v-for="(item, index) in wayOptions"
@@ -36,105 +36,81 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item
-            v-if="showButton"
-            label="选择类型"
-            style="display:flex;align-items: center;"
-          >
-            <div class="control-button-container">
-              <a-radio-group v-model="groupRadio" :options="optionsRadio">
-              </a-radio-group>
-            </div>
+          <a-form-item v-if="showButton" label="选择类型">
+            <a-radio-group v-model="groupRadio" :options="optionsRadio">
+            </a-radio-group>
           </a-form-item>
-          <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
-            <div v-if="showButton" class="control-button-container">
-              <a-button
-                class="control-button"
-                @click="createMarker(null, 'dots')"
-              >
-                绘制目标
-              </a-button>
-              <a-button
-                class="control-button"
-                @click="createMarker(null, 'barrier')"
-              >
-                绘制障碍
-              </a-button>
-            </div>
+        </mp-setting-form>
+        <div v-if="showButton" class="control-button-container">
+          <a-button class="control-button" @click="createMarker(null, 'dots')">
+            绘制目标
+          </a-button>
+          <a-button
+            class="control-button"
+            @click="createMarker(null, 'barrier')"
+          >
+            绘制障碍
+          </a-button>
+        </div>
 
-            <div v-if="!showButton" class="control-button-container">
-              <a-button
-                class="control-button"
-                @click="createMarker('1', 'dots')"
-              >
-                点上网标
-              </a-button>
-              <a-button
-                class="control-button"
-                @click="createMarker('2', 'dots')"
-              >
-                线上网标
-              </a-button>
-            </div>
-            <div class="control-button-container">
-              <a-button class="control-button" @click="clearClick">
-                结束绘制
-              </a-button>
-              <a-button class="control-button" @click="resetLayer">
-                清空
-              </a-button>
-            </div>
-          </a-form-item>
-          <a-form-item
-            :label-col="{ span: 0 }"
-            :wrapper-col="{ span: 24 }"
-            size="small"
-          >
-            <a-tabs type="card" v-model="tab" size="small">
-              <a-tab-pane key="coordinateArr" tab="坐标点集">
-                <mp-coordinate-table
-                  :data="dataCoordinateArr.features"
-                  :columns="columnsCoordinateArr"
-                  :isFullScreen="isFullScreen"
-                  @deleteRow="deleteRow"
-                  @rowClick="rowClick"
-                  :showButton="!showButton"
-                ></mp-coordinate-table>
-              </a-tab-pane>
-              <a-tab-pane v-if="showButton" key="hinderArr" tab="障碍点集">
-                <mp-hinder-table
-                  :data="dataBarrierArr.features"
-                  :columns="columnsCoordinateArr"
-                  :isFullScreen="isFullScreen"
-                  @deleteRow="deleteRow"
-                  @rowClick="rowClick"
-                ></mp-hinder-table>
-              </a-tab-pane>
-              <a-tab-pane key="analysisRes" tab="分析结果">
-                <mp-anakysis-result-table
-                  :isFullScreen="isFullScreen"
-                  ref="MpNetworkAnalysis"
-                  @draw-high-result="drawHighResult"
-                  @draw-result="drawResult"
-                  @fly-to-high="flyToHigh"
-                />
-              </a-tab-pane>
-            </a-tabs>
-          </a-form-item>
-          <a-form-item style="text-align: left;">
-            <a-space>
-              <!-- <a-button @click="showSetting" :disable="showLoading"
+        <div v-if="!showButton" class="control-button-container">
+          <a-button class="control-button" @click="createMarker('1', 'dots')">
+            点上网标
+          </a-button>
+          <a-button class="control-button" @click="createMarker('2', 'dots')">
+            线上网标
+          </a-button>
+        </div>
+        <div class="control-button-container">
+          <a-button class="control-button" @click="clearClick">
+            结束绘制
+          </a-button>
+          <a-button class="control-button" @click="resetLayer">
+            清空
+          </a-button>
+        </div>
+        <a-tabs type="card" v-model="tab" size="small">
+          <a-tab-pane key="coordinateArr" tab="坐标点集">
+            <mp-coordinate-table
+              :data="dataCoordinateArr.features"
+              :columns="columnsCoordinateArr"
+              :isFullScreen="isFullScreen"
+              @deleteRow="deleteRow"
+              @rowClick="rowClick"
+              :showButton="!showButton"
+            ></mp-coordinate-table>
+          </a-tab-pane>
+          <a-tab-pane v-if="showButton" key="hinderArr" tab="障碍点集">
+            <mp-hinder-table
+              :data="dataBarrierArr.features"
+              :columns="columnsCoordinateArr"
+              :isFullScreen="isFullScreen"
+              @deleteRow="deleteRow"
+              @rowClick="rowClick"
+            ></mp-hinder-table>
+          </a-tab-pane>
+          <a-tab-pane key="analysisRes" tab="分析结果">
+            <mp-anakysis-result-table
+              :isFullScreen="isFullScreen"
+              ref="MpNetworkAnalysis"
+              @draw-high-result="drawHighResult"
+              @draw-result="drawResult"
+              @fly-to-high="flyToHigh"
+            />
+          </a-tab-pane>
+        </a-tabs>
+        <div class="analysis-actions">
+          <!-- <a-button @click="showSetting" :disable="showLoading"
               >设置参数</a-button
             > -->
-              <a-button
-                type="primary"
-                @click="startAnalysis"
-                :disable="showLoading"
-                >开始分析</a-button
-              >
-            </a-space>
-          </a-form-item>
-        </a-form>
+          <a-button
+            type="primary"
+            @click="startAnalysis"
+            :disable="showLoading"
+          >
+            分析
+          </a-button>
+        </div>
       </a-spin>
     </div>
     <mapbox-layer
@@ -414,7 +390,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     this.$nextTick(() => {
       const el = document.getElementById('network-analysis-el')
       if (el) {
-        el.style.width = `${mode === 'max' ? this.$el.clientWidth : 330}px`
+        el.style.width = `${mode === 'max' ? this.$el.clientWidth : 300}px`
       }
     })
   }
@@ -762,25 +738,29 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
   display: flex;
   flex-direction: column;
   #network-analysis-el {
-    width: 330px;
+    width: 300px;
     max-width: 100%;
   }
-  .ant-form-item {
-    margin-bottom: 10px;
-    .ant-form-item-label {
-      line-height: normal !important;
+  .mp-setting-form.ant-form-horizontal
+    .ant-form-item
+    .ant-form-item-control-wrapper
+    .ant-form-item-control {
+    width: 180px;
+  }
+  .control-button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    &:last-child {
+      margin-bottom: 0;
     }
-    .control-button-container {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      &:last-child {
-        margin-bottom: 0;
-      }
-      .control-button {
-        width: calc(~'50% - 2.5px');
-      }
+    .control-button {
+      width: calc(~'50% - 2.5px');
     }
+  }
+  .analysis-actions {
+    float: right;
+    padding-top: 8px;
   }
 }
 </style>

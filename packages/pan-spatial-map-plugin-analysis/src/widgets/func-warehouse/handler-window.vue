@@ -1,35 +1,27 @@
 <template>
   <div class="mp-handler-window">
-    <div class="panel">
-      <template v-if="funcParamCopy.Parameters">
-        <div class="setting-panel">
-          <a-space direction="vertical" class="space">
-            <a-row
-              v-for="(item, index) in funcParamCopy.Parameters"
-              :key="index"
-            >
-              <a-col :span="4" class="col">{{ item.Name }}</a-col>
-              <a-col :span="18">
-                <a-input
-                  :disabled="item.Direction == 1"
-                  v-model="item.DefaultValue"
-                >
-                </a-input>
-              </a-col>
-            </a-row>
-            <a-row class="btn">
-              <a-button
-                type="primary"
-                :loading="showLoading"
-                @click="doExecuteWorkflow"
-              >
-                执行
-              </a-button>
-            </a-row>
-          </a-space>
-        </div>
-      </template>
-    </div>
+    <template v-if="funcParamCopy.Parameters">
+      <mp-group-tab title="参数" :has-top-margin="false"></mp-group-tab>
+      <mp-setting-form :no-last-margin-bottom="true">
+        <a-form-item
+          v-for="(item, index) in funcParamCopy.Parameters"
+          :key="index"
+          :label="item.Name"
+        >
+          <a-input :disabled="item.Direction == 1" v-model="item.DefaultValue">
+          </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-button
+            type="primary"
+            :loading="showLoading"
+            @click="doExecuteWorkflow"
+          >
+            执行
+          </a-button>
+        </a-form-item>
+      </mp-setting-form>
+    </template>
   </div>
 </template>
 
@@ -227,28 +219,13 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  .panel {
-    width: 100%;
-    overflow-y: auto;
-  }
-  .space {
-    width: 100%;
-  }
-  .btn {
-    text-align: center;
-    margin: 12px 0;
-    button {
-      margin-left: 8px;
-    }
-  }
-  .col {
-    text-align: right;
-    line-height: 30px;
-    margin-right: 8px;
-  }
-  .setting-panel {
-    display: flex;
-    flex-direction: column;
+
+  /deep/
+    .mp-setting-form.ant-form-horizontal
+    .ant-form-item
+    .ant-form-item-control-wrapper
+    .ant-form-item-control {
+    width: 300px;
   }
 }
 </style>

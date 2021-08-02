@@ -18,6 +18,7 @@
       <div v-if="list.length > 0" class="feature-list-pagination-container">
         <a-pagination
           size="small"
+          showLessItems
           :total="totalCount"
           :current="page"
           @change="changePage"
@@ -229,7 +230,8 @@ export default class FeatureList extends Vue {
 
 <style lang="less">
 .feature-list-container {
-  height: 214px;
+  width: 230px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   .ant-list {

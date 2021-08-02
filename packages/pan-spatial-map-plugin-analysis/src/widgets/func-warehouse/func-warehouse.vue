@@ -1,15 +1,31 @@
 <template>
   <div class="mp-widget-func-warehouse">
     <a-spin :spinning="showLoading">
-      <mp-setting-form layout="vertical">
-        <a-form-item label="功能类型">
+      <mp-setting-form
+        v-if="group.length"
+        layout="vertical"
+        :no-last-margin-bottom="true"
+      >
+        <a-form-item>
+          <mp-group-tab
+            slot="label"
+            title="功能类型"
+            :has-top-margin="false"
+            :has-bottom-margin="false"
+          ></mp-group-tab>
           <a-select v-model="selectGroupIndex">
             <a-select-option v-for="item in group" :key="item.index">
               {{ item.groupName }}
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="功能列表">
+        <a-form-item>
+          <mp-group-tab
+            slot="label"
+            title="功能列表"
+            :has-top-margin="false"
+            :has-bottom-margin="false"
+          ></mp-group-tab>
           <a-table
             v-if="
               group[this.selectGroupIndex] &&
@@ -18,7 +34,7 @@
             :columns="columns"
             :data-source="group[this.selectGroupIndex].children"
             :pagination="pagination"
-            :scroll="{ x: 'calc(100% + 50%)' }"
+            :scroll="{ x: 'calc(240%)' }"
             size="small"
             :rowKey="
               (record, index) => {
@@ -41,14 +57,13 @@
           </a-table>
         </a-form-item>
       </mp-setting-form>
+      <a-empty v-else :image="simpleImage" />
     </a-spin>
     <mp-window-wrapper :visible="openHandlerWindow">
       <template v-slot:default="slotProps">
         <mp-window
           id="handlerSelectId"
           :title="handlerSelect.FlowName"
-          :width="720"
-          :bottom="10"
           :verticalOffset="10"
           :visible.sync="openHandlerWindow"
           anchor="top-center"
@@ -70,6 +85,7 @@
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
+import { Empty } from 'ant-design-vue'
 import { WidgetMixin, Analysis } from '@mapgis/web-app-framework'
 import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import MpHandlerWindow from './handler-window.vue'
@@ -110,7 +126,7 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
       title: '流程号',
       dataIndex: 'FlowNo',
       align: 'center',
-      width: 100,
+      width: 80,
       ellipsis: true
     },
     {
@@ -141,7 +157,7 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
       title: '执行',
       dataIndex: 'Handle',
       align: 'center',
-      width: 100,
+      width: 60,
       fixed: 'right',
       scopedSlots: { customRender: 'operate' }
     }
@@ -165,6 +181,10 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
   // port
   get port() {
     return this.widgetInfo.config.port || baseConfigInstance.config.ip
+  }
+
+  beforeCreate() {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 
   // 面板打开时候触发函数
@@ -238,7 +258,7 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
   flex-direction: column;
   align-items: center;
   .ant-table-wrapper {
-    width: 500px;
+    width: 300px;
     .func-execute {
       &:hover {
         color: @primary-color;
