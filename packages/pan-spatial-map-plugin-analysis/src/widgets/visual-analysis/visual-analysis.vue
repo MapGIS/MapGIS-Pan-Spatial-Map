@@ -208,7 +208,7 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
       if (!this.hasViewPosition && cartesian !== undefined) {
         // 若还未选择观察点
         // 先抬高观察点0.5m
-        cartesian.z += 0.5
+        cartesian.z += 2
 
         // 设置可视域观察点坐标
         window.VisualAnalysisManage.visualAnalysis.viewPosition = cartesian
