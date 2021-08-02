@@ -1,6 +1,15 @@
 <template>
   <div class="mp-widget-cut-fill-analysis">
-    <mp-group-tab title="参数设置"></mp-group-tab>
+    <mp-group-tab title="参数设置">
+      <mp-toolbar slot="handle" :bordered="false">
+        <mp-toolbar-command
+          icon="reload"
+          title="重新计算"
+          @click="startFill"
+          :disabled="!recalculate"
+        ></mp-toolbar-command>
+      </mp-toolbar>
+    </mp-group-tab>
     <mp-setting-form>
       <a-form-item label="x方向采样点个数">
         <a-input v-model.number="formData.x" type="number" min="0" />
@@ -12,11 +21,6 @@
         <a-input v-model.number="formData.z" type="number" min="0" />
       </a-form-item>
     </mp-setting-form>
-    <div class="btn">
-      <a-button type="primary" @click="startFill" :disabled="!recalculate"
-        >重新计算</a-button
-      >
-    </div>
     <mp-group-tab title="填挖结果"></mp-group-tab>
     <mp-setting-form>
       <a-form-item label="高程范围">
