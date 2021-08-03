@@ -340,59 +340,11 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+@import '../index.less';
+
 .mp-widget-shadow-analysis {
   display: flex;
   flex-direction: column;
-  .mp-footer-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid @border-color;
-    .ant-btn {
-      margin-left: 8px;
-    }
-  }
-
-  .mp-note-info {
-    padding: 3px 0;
-    color: @text-color-secondary;
-    word-break: break-all;
-    white-space: break-spaces;
-    font-size: 12px;
-    &.ant-input {
-      border: none;
-      background-color: transparent;
-      resize: none;
-      min-height: 24px;
-    }
-  }
-  .progress-div {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(100, 100, 100, 0.3);
-    filter: alpha(opacity=50);
-    .ant-progress {
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      position: absolute;
-      margin: auto;
-    }
-    .ant-progress-inner {
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      position: absolute;
-      margin: auto;
-    }
-  }
 }
 </style>
