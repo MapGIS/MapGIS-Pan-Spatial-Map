@@ -210,14 +210,23 @@ export class SceneController {
   }
 
   /**
-   * 跳转到模型范围，视角不变。基于source
-   * @param source
+   * 获取M3DLayer对象
+   * @returns M3DLayer对象
    */
-  zoomToM3dLayerBySource(source: object) {
+  getM3D() {
     const { CesiumZondy, webGlobe } = this
     const m3d = new CesiumZondy.Layer.M3DLayer({
       viewer: webGlobe.viewer
     })
+    return m3d
+  }
+
+  /**
+   * 跳转到模型范围，视角不变。基于source
+   * @param source
+   */
+  zoomToM3dLayerBySource(source: object) {
+    const m3d = this.getM3D()
     m3d.zoomToM3dLayer(source)
   }
 
@@ -226,10 +235,7 @@ export class SceneController {
    * @param id
    */
   zoomToM3dLayerById(id: string) {
-    const { CesiumZondy, webGlobe } = this
-    const m3d = new CesiumZondy.Layer.M3DLayer({
-      viewer: webGlobe.viewer
-    })
+    const m3d = this.getM3D()
     const { source } = this.findSource(id)
     m3d.zoomToM3dLayer(source[0])
   }

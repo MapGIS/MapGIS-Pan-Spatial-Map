@@ -155,6 +155,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   @Watch('model', { deep: true, immediate: true })
   changeModel() {
     if (!this.isActive || !this.model) return
+    // 如果模型在当前视图范围内，不跳转
     const source = this.landscapeLayerFuc()
     Objects.SceneController.getInstance(
       this.Cesium,
