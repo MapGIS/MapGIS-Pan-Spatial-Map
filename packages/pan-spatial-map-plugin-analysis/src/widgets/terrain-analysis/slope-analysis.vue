@@ -42,6 +42,8 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     'rgba(76, 175, 80, 0.5)'
   ]
 
+  private brightnessEnabled = false // 光照是否已开启
+
   getLabel(index) {
     return (0.0 + index * 0.2).toFixed(1)
   }
@@ -51,10 +53,27 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
       drawElement: null,
       slopeAnalysis: null
     }
-    // this.onActive()
   }
 
   onActive() {
+    const { viewer } = this.webGlobe
+    if (viewer.scene.globe.enableLighting && viewer.scene.brightness) {
+      this.brightnessEnabled = true
+    }
+  }
+
+  // 微件失活时
+  onDeActive() {
+    this.remove()
+  }
+
+  /**
+   * 开启光照
+   */
+  enableBrightness() {
+    if (this.brightnessEnabled) {
+      return
+    }
     // 开启光照，不然放大地图，分析结果显示异常
     const { viewer } = this.webGlobe
     viewer.scene.globe.enableLighting = true
@@ -65,14 +84,6 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
       stages.add(this.Cesium.PostProcessStageLibrary.createBrightnessStage())
     viewer.scene.brightness.enabled = true
     viewer.scene.brightness.uniforms.brightness = 1.2
-  }
-
-  // 微件失活时
-  onDeActive() {
-    this.remove()
-    const { viewer } = this.webGlobe
-    viewer.scene.globe.enableLighting = false
-    viewer.scene.brightness.enabled = false
   }
 
   add() {
@@ -91,7 +102,7 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
       // 绘制完成回调函数
       callback: positions => {
         this.remove()
-        viewer.scene.globe.enableLighting = true
+        this.enableBrightness()
         window.SlopeAnalyzeManage.slopeAnalysis =
           window.SlopeAnalyzeManage.slopeAnalysis ||
           new this.Cesium.TerrainAnalyse(viewer, { slopeRampColor: arr })
@@ -129,6 +140,13 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
       // 取消交互式绘制矩形事件激活状态
       window.SlopeAnalyzeManage.drawElement.stopDrawing()
       window.SlopeAnalyzeManage.drawElement = null
+    }
+
+    // 关闭光照
+    const { viewer } = this.webGlobe
+    if (viewer.scene.brightness && !this.brightnessEnabled) {
+      viewer.scene.globe.enableLighting = false
+      viewer.scene.brightness.enabled = false
     }
   }
 }

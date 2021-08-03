@@ -83,12 +83,15 @@
       <a-form-item label="阴影率" v-show="formData.timeType === 'time'">
         <a-input v-model.number="formData.ratio" type="number" disabled />
       </a-form-item>
+      <div class="progress-div" v-if="percent != 0">
+        <a-progress type="circle" :percent="percent" />
+      </div>
     </mp-setting-form>
     <div class="mp-footer-actions">
-      <a-button type="primary" @click="shadow">
+      <a-button type="primary" @click="shadow" :disabled="percent != 0">
         分析
       </a-button>
-      <a-button type="primary" @click="sun">
+      <a-button type="primary" @click="sun" :disabled="percent != 0">
         日照效果
       </a-button>
       <a-button @click="remove">
@@ -129,6 +132,8 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   }
 
   private shadowMoment = moment // moment插件
+
+  private percent = 0
 
   /**
    * 日期组件值变化
@@ -206,6 +211,15 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  getPercent(result) {
+    console.log(`时间段百分比${result}`)
+    console.log(new Date().getTime())
+    this.percent = Number((result * 100).toFixed(2))
+    if (result === 1) {
+      this.percent = 0
+    }
+  }
+
   /**
    * 范围时间点阴影分析/范围时间段阴影分析
    */
@@ -231,13 +245,16 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     window.ShadowManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
+        console.log('绘制结束')
+        console.log(new Date().getTime())
         self.remove()
-
+        console.log('remove')
+        console.log(new Date().getTime())
+        self.percent = 0.01
         let xmin
         let ymin
         let xmax
         let ymax
-
         positions.forEach(point => {
           const { x, y } = point
           if (xmin === undefined || x < xmin) {
@@ -253,31 +270,31 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
             ymax = y
           }
         })
-
         // 多边形x方向长度
         const recXLength = self.Cesium.Cartesian3.distance(
           new this.Cesium.Cartesian3(xmin, ymin, 0),
           new this.Cesium.Cartesian3(xmax, ymin, 0)
         )
-
         // 多边形y方向长度
         const recYLength = self.Cesium.Cartesian3.distance(
           new this.Cesium.Cartesian3(xmin, ymin, 0),
           new this.Cesium.Cartesian3(xmin, ymax, 0)
         )
-
         const xPaneNum = Math.ceil(recXLength / 4) // X轴方向插值点个数
         const yPaneNum = Math.ceil(recYLength / 4) // Y轴方向插值点个数
         const zPaneNum = Math.ceil((max - min) / 4) // Z轴方向插值点个数
         window.ShadowManage.shadowAnalysis =
           window.ShadowManage.shadowAnalysis ||
           new self.Cesium.ShadowAnalysis(viewer, {
+            callback: this.getPercent,
             xPaneNum,
             yPaneNum,
             zPaneNum,
             shadowColor: self.getCesiumColor(shadowColor),
             sunColor: self.getCesiumColor(sunColor)
           })
+        console.log('分析前')
+        console.log(new Date().getTime())
         if (timeType === 'time') {
           // 固定时间点范围阴影分析
           const shadowRatio = window.ShadowManage.shadowAnalysis.pointsArrayInShadow(
@@ -287,6 +304,8 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
             time
           )
           self.$set(self.formData, 'ratio', shadowRatio)
+          console.log('时间点分析后')
+          console.log(new Date().getTime())
         } else if (timeType === 'timeRange') {
           // 时间段范围阴影分析
           const result = window.ShadowManage.shadowAnalysis.calcPointsArrayInShadowTime(
@@ -296,6 +315,8 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
             startTime,
             endTime
           )
+          console.log('时间段分析后')
+          console.log(new Date().getTime())
         }
       }
     })
@@ -325,16 +346,65 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     viewer.scene.globe.enableLighting = false
     viewer.shadows = false
     viewer.clock.multiplier = 1
-    viewer.clock.shouldAnimate = false // 关闭计时
+    viewer.clock.shouldAnimate = false // 关闭计时'
+    this.percent = 0
   }
 }
 </script>
 
-<style lang="less" scoped>
-@import '../index.less';
-
+<style lang="less">
 .mp-widget-shadow-analysis {
   display: flex;
   flex-direction: column;
+  .mp-footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid @border-color;
+    .ant-btn {
+      margin-left: 8px;
+    }
+  }
+
+  .mp-note-info {
+    padding: 3px 0;
+    color: @text-color-secondary;
+    word-break: break-all;
+    white-space: break-spaces;
+    font-size: 12px;
+    &.ant-input {
+      border: none;
+      background-color: transparent;
+      resize: none;
+      min-height: 24px;
+    }
+  }
+  .progress-div {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(100, 100, 100, 0.3);
+    filter: alpha(opacity=50);
+    .ant-progress {
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      position: absolute;
+      margin: auto;
+    }
+    .ant-progress-inner {
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      position: absolute;
+      margin: auto;
+    }
+  }
 }
 </style>

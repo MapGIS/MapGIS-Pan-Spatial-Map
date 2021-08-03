@@ -155,22 +155,15 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   @Watch('model', { deep: true, immediate: true })
   changeModel() {
     if (!this.isActive || !this.model) return
-    const bound = Objects.SceneController.getInstance(
+    // 如果模型在当前视图范围内，不跳转
+    const source = this.landscapeLayerFuc()
+    Objects.SceneController.getInstance(
       this.Cesium,
       this.CesiumZondy,
       this.webGlobe
-    ).layerLocalExtentToGlobelExtent(this.model.activeScene.sublayers[0])
-    if (bound) {
-      this.webGlobe.viewer.camera.flyTo({
-        destination: this.Cesium.Rectangle.fromDegrees(
-          bound.xmin,
-          bound.ymin,
-          bound.xmax,
-          bound.ymax
-        )
-      })
-    }
+    ).zoomToM3dLayerBySource(source[0])
     this.getMaxMin()
+    this.startClipping()
   }
 
   /**
@@ -179,6 +172,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   @Watch('axis', { deep: true, immediate: true })
   changeAxis() {
     this.getMaxMin()
+    this.startClipping()
   }
 
   /**
