@@ -434,6 +434,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     if (layerConfigNodeList.length > 0) {
       // 选中节点中保含有图层节点
       const doc: Document = this.document
+      const checkedNodeKeys: string[] = this.checkedNodeKeys
       layerConfigNodeList.forEach(
         async (layerConfigNode): Layer => {
           if (isChecked) {
@@ -446,18 +447,25 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             layer.description = this.setDescription(layer)
             // 2.将图层添加到全局的document中。
             if (layer) {
+              // 2.1加载图层
               if (layer.loadStatus === LoadStatus.notLoaded) {
                 await layer.load()
               }
 
-              if (
-                layer.type === LayerType.IGSScene &&
-                this.is2DMapMode === true
-              ) {
-                this.switchMapMode()
-              }
+              // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
+              if (layer.LoadStatus === LoadStatus.loaded) {
+                if (
+                  layer.type === LayerType.IGSScene &&
+                  this.is2DMapMode === true
+                ) {
+                  this.switchMapMode()
+                }
 
-              doc.defaultMap.add(layer)
+                doc.defaultMap.add(layer)
+              } else {
+                this.$message.error(`图层:${layer.title}加载失败`)
+                checkedNodeKeys.splice(layer.id)
+              }
             }
           } else {
             // 如果是取消选中了节点
