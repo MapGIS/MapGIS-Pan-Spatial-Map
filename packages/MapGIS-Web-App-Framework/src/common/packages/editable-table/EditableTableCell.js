@@ -1,6 +1,13 @@
 export default {
-  name: 'EditableTableCell',
+  name: 'MpEditableTableCell',
   props: {
+    /**
+     * {
+     *  ...(typeof ColumnProps),
+     * type: 'Select|Input|InputNumber|ColorPicker...可扩展',
+     * props: ant组件的绑定属性对象
+     * }
+     */
     column: {
       type: Object,
       default: () => ({})
@@ -8,40 +15,26 @@ export default {
     record: {
       type: Object,
       default: () => ({})
-    },
-    disabled: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data() {
-    return {
-      currentRowIndex: null
     }
   },
   methods: {
-    emitValue(value) {
-      this.$emit('change', value)
-    },
-    onSelectChange(value) {
-      this.emitValue(value[0])
+    onChange(value) {
+      console.log('onChange', value)
+      this.$emit('change', value, this.column, this.record)
     },
     onInputChange(e) {
-      this.emitValue(e.target.value)
-    },
-    onValueChange(value) {
-      this.emitValue(value)
+      this.onChange(e.target.value)
     }
   },
   render(h, ctx) {
     const value = this.record[this.column.dataIndex]
+    console.log('render', value)
     switch (this.column.type) {
       case 'Select':
         return (
           <a-select
-            onChange={this.onSelectChange}
+            onChange={this.onChange}
             options={this.column.options}
-            disabled={this.disabled}
             value={value}
             size={'small'}
             placeholder={'请选择'}
@@ -51,21 +44,28 @@ export default {
         return (
           <a-input
             onChange={this.onInputChange}
-            disabled={this.disabled}
             value={value}
             size={'small'}
             placeholder={'请输入'}
           />
         )
+      case 'InputNumber':
+        return (
+          <a-input-number
+            onChange={this.onChange}
+            value={value}
+            {...{ ...this.column.props }}
+          />
+        )
       case 'ColorPicker':
         return (
           <mp-color-picker-confirm
-            onChange={this.onValueChange}
-            disabled={this.disabled}
+            onChange={this.onChange}
             value={value}
             border-radius={false}
           />
         )
+
       default:
         break
     }

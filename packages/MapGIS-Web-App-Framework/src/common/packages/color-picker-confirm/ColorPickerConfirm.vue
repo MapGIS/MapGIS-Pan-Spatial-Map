@@ -11,8 +11,8 @@
       >
     </slot>
     <div class="color-picker-content" slot="overlay">
-      <chrome-picker v-if="isChrome" :value="color" @input="colorChange" />
-      <sketch-picker v-else :value="color" @input="colorChange" />
+      <chrome-picker v-if="isChrome" @input="colorChange" :value="color" />
+      <sketch-picker v-else @input="colorChange" :value="color" />
       <div class="color-picker-content-btns">
         <a-button size="small" @click="cancel">取消</a-button>
         <a-button type="primary" size="small" @click="confirm">确定</a-button>
@@ -199,6 +199,7 @@ export default {
 }
 
 .color-picker-content {
+  color: #333;
   border: 1px solid @border-color-base;
   border-radius: @border-radius-base;
   > div {

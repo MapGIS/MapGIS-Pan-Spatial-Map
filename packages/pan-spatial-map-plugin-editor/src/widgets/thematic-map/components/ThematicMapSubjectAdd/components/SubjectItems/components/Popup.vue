@@ -1,75 +1,59 @@
 <template>
-  <div class="popup">
-    <a-empty :image-style="{ height: '50px' }" v-if="!visible">
-      <span
-        slot="description"
-        @click="showConfigPanel"
-        class="popup-description"
-      >
-        点击开始配置
-      </span>
-    </a-empty>
-    <template v-else>
-      <mp-row-flex label="显示字段" label-align="right">
-        <a-select
-          v-model="displayField"
-          mode="tags"
-          :options="displayFieldList"
-        />
-      </mp-row-flex>
-      <a-table
-        row-key="id"
-        :loading="tableLoading"
-        :columns="tableColumns"
-        :data-source="tableData"
-        :scroll="{ y: 250 }"
-      />
-    </template>
-  </div>
+  <editable-field-table
+    @view="onView"
+    :field-config="subjectConfig"
+    :columns="tableColumns"
+    :data.sync="tableData"
+  />
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { NewSubjectConfig } from '../../../../../store'
+import EditableFieldTable from '../../../common/EditableFieldTable.vue'
 
-@Component
+@Component({
+  components: {
+    EditableFieldTable
+  }
+})
 export default class Popup extends Vue {
   @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
 
-  visible = false
-
-  displayField = []
-
-  displayFieldList = []
-
-  tableLoading = false
-
-  tableColumns = [
-    {
-      title: '字段名',
-      dataIndex: 'key'
-    },
-    {
-      title: '别名',
-      dataIndex: 'val'
-    }
-  ]
-
-  tableData = []
-
-  showConfigPanel() {
-    this.visible = true
+  get tableColumns() {
+    return [
+      {
+        type: 'Select',
+        title: '字段',
+        dataIndex: 'field',
+        width: 160
+      },
+      {
+        type: 'Input',
+        title: '别名',
+        dataIndex: 'alias'
+      }
+    ]
   }
+
+  get tableData() {
+    return []
+  }
+
+  /**
+ *   popup: {
+              showFields: [], // 悬浮框的显示字段
+              showFieldsTitle: {}, // 悬浮框的内容主体的别名字段  key value 形式
+              title: 'fid' // 悬浮框的头部字段
+            }
+ */
+  set tableData(nV) {
+    // todo
+    console.log('tableData', nV)
+  }
+
+  /**
+   * 预览
+   */
+  onView() {}
 }
 </script>
-<style lang="less" scoped>
-.popup {
-  &-description {
-    color: @primary-color;
-    cursor: pointer;
-    font-size: 12px;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-</style>
