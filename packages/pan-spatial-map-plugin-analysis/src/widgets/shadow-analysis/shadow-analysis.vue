@@ -10,11 +10,11 @@
       <a-form-item label="分析类型">
         <a-row>
           <a-radio-group v-model="formData.timeType">
-            <a-radio value="timeRange">
-              时间段
-            </a-radio>
             <a-radio value="time">
               时间点
+            </a-radio>
+            <a-radio value="timeRange">
+              时间段
             </a-radio>
           </a-radio-group>
         </a-row>
@@ -83,15 +83,16 @@
       <a-form-item label="阴影率" v-show="formData.timeType === 'time'">
         <a-input v-model.number="formData.ratio" type="number" disabled />
       </a-form-item>
-      <div class="progress-div" v-if="percent != 0">
-        <a-progress type="circle" :percent="percent" />
-      </div>
     </mp-setting-form>
     <div class="mp-footer-actions">
-      <a-button type="primary" @click="shadow" :disabled="percent != 0">
+      <a-button
+        type="primary"
+        @click="shadow"
+        v-show="formData.timeType === 'time'"
+      >
         分析
       </a-button>
-      <a-button type="primary" @click="sun" :disabled="percent != 0">
+      <a-button type="primary" @click="sun">
         日照效果
       </a-button>
       <a-button @click="remove">
@@ -119,7 +120,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     shadowColor: 'rgb(0,255,0)', // 阴影颜色
     sunColor: 'rgb(255,0,0)', // 非阴影颜色
     ratio: 0, // 阴影率(时间点范围阴影分析输出结果)
-    timeType: 'timeRange', // 分析类型(time：时间点；timeRange:时间段)
+    timeType: 'time', // 分析类型(time：时间点；timeRange:时间段)
     time: '10:00:00' // 时间点
   }
 
@@ -133,7 +134,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 
   private shadowMoment = moment // moment插件
 
-  private percent = 0
+  private percent = 0 // 时间段阴影分析进度（时间段阴影分析，暂时未对外开放）
 
   /**
    * 日期组件值变化
@@ -212,8 +213,6 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   }
 
   getPercent(result) {
-    console.log(`时间段百分比${result}`)
-    console.log(new Date().getTime())
     this.percent = Number((result * 100).toFixed(2))
     if (result === 1) {
       this.percent = 0
@@ -245,12 +244,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     window.ShadowManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
-        console.log('绘制结束')
-        console.log(new Date().getTime())
         self.remove()
-        console.log('remove')
-        console.log(new Date().getTime())
-        self.percent = 0.01
         let xmin
         let ymin
         let xmax
@@ -293,8 +287,6 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
             shadowColor: self.getCesiumColor(shadowColor),
             sunColor: self.getCesiumColor(sunColor)
           })
-        console.log('分析前')
-        console.log(new Date().getTime())
         if (timeType === 'time') {
           // 固定时间点范围阴影分析
           const shadowRatio = window.ShadowManage.shadowAnalysis.pointsArrayInShadow(
@@ -304,8 +296,6 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
             time
           )
           self.$set(self.formData, 'ratio', shadowRatio)
-          console.log('时间点分析后')
-          console.log(new Date().getTime())
         } else if (timeType === 'timeRange') {
           // 时间段范围阴影分析
           const result = window.ShadowManage.shadowAnalysis.calcPointsArrayInShadowTime(
@@ -315,8 +305,6 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
             startTime,
             endTime
           )
-          console.log('时间段分析后')
-          console.log(new Date().getTime())
         }
       }
     })
