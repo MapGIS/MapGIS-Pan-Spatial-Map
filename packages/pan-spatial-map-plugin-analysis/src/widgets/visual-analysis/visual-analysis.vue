@@ -1,12 +1,121 @@
 <template>
   <div class="mp-widget-visual-analysis">
     <div class="visual-panel">
-      <mp-setting-form v-model="formData">
+      <mp-setting-form v-model="formData" class="visual-form">
         <a-form-item label="水平视角">
           <a-input v-model.number="formData.horizontAngle" type="number" />
         </a-form-item>
         <a-form-item label="垂直视角">
           <a-input v-model.number="formData.verticalAngle" type="number" />
+        </a-form-item>
+        <a-form-item label="附加高度(米)">
+          <a-input
+            v-model.number="formData.exHeight"
+            type="number"
+            :min="0"
+            :step="0.1"
+          />
+        </a-form-item>
+        <a-form-item label="观察点坐标">
+          <a-row>
+            <a-col v-if="formData.viewPositionX !== ''" :span="8">
+              <a-popover>
+                <template slot="content">
+                  <p>{{ formData.viewPositionX }}</p>
+                </template>
+                <a-input
+                  v-model.number="formData.viewPositionX"
+                  type="number"
+                />
+              </a-popover>
+            </a-col>
+            <a-col v-else :span="8">
+              <a-input v-model.number="formData.viewPositionX" type="number" />
+            </a-col>
+            <a-col v-if="formData.viewPositionY !== ''" :span="8">
+              <a-popover>
+                <template slot="content">
+                  <p>{{ formData.viewPositionY }}</p>
+                </template>
+                <a-input
+                  v-model.number="formData.viewPositionY"
+                  type="number"
+                />
+              </a-popover>
+            </a-col>
+            <a-col v-else :span="8">
+              <a-input v-model.number="formData.viewPositionY" type="number" />
+            </a-col>
+            <a-col v-if="formData.viewPositionZ !== ''" :span="8">
+              <a-popover>
+                <template slot="content">
+                  <p>{{ formData.viewPositionZ }}</p>
+                </template>
+                <a-input
+                  v-model.number="formData.viewPositionZ"
+                  type="number"
+                />
+              </a-popover>
+            </a-col>
+            <a-col v-else :span="8">
+              <a-input v-model.number="formData.viewPositionZ" type="number" />
+            </a-col>
+          </a-row>
+        </a-form-item>
+        <a-form-item label="目标点坐标">
+          <a-row>
+            <a-col v-if="formData.targetPositionX !== ''" :span="8">
+              <a-popover>
+                <template slot="content">
+                  <p>{{ formData.targetPositionX }}</p>
+                </template>
+                <a-input
+                  v-model.number="formData.targetPositionX"
+                  type="number"
+                />
+              </a-popover>
+            </a-col>
+            <a-col v-else :span="8">
+              <a-input
+                v-model.number="formData.targetPositionX"
+                type="number"
+              />
+            </a-col>
+            <a-col v-if="formData.targetPositionY !== ''" :span="8">
+              <a-popover>
+                <template slot="content">
+                  <p>{{ formData.targetPositionY }}</p>
+                </template>
+                <a-input
+                  v-model.number="formData.targetPositionY"
+                  type="number"
+                />
+              </a-popover>
+            </a-col>
+            <a-col v-else :span="8">
+              <a-input
+                v-model.number="formData.targetPositionY"
+                type="number"
+              />
+            </a-col>
+            <a-col v-if="formData.targetPositionZ !== ''" :span="8">
+              <a-popover>
+                <template slot="content">
+                  <p>{{ formData.targetPositionZ }}</p>
+                </template>
+                <a-input
+                  v-model.number="formData.targetPositionZ"
+                  type="number"
+                />
+              </a-popover>
+            </a-col>
+            <a-col v-else :span="8">
+              <a-input
+                v-model.number="formData.targetPositionZ"
+                type="number"
+              />
+            </a-col>
+          </a-row>
         </a-form-item>
         <a-form-item label="不可视区域颜色">
           <mp-color-picker
@@ -61,7 +170,14 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     verticalAngle: 60,
     unVisibleColor: '#ff0000',
     visibleColor: '#00ff00',
-    maskColor: '#4feed7'
+    maskColor: 'rgba(37, 218, 169, 0.2)',
+    exHeight: 1.85,
+    viewPositionX: '',
+    viewPositionY: '',
+    viewPositionZ: '',
+    targetPositionX: '',
+    targetPositionY: '',
+    targetPositionZ: ''
   }
 
   // 是否为鼠标注册了监听事件
@@ -73,8 +189,15 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   // 是否可以进行可视域分析
   private isAnalyze = false
 
-  @Watch('formData', { deep: true })
-  onColorChange(newVal) {
+  // 是否具有初始目标点
+  private isHasTargetPos = false
+
+  get formDataClone() {
+    return JSON.parse(JSON.stringify(this.formData))
+  }
+
+  @Watch('formDataClone', { deep: true })
+  onColorChange(newVal, oldVal) {
     const unVisibleColor = new this.Cesium.Color.fromCssColorString(
       newVal.unVisibleColor
     )
@@ -86,6 +209,16 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
       window.VisualAnalysisManage.visualAnalysis._unVisibleColor = unVisibleColor
       window.VisualAnalysisManage.visualAnalysis._visibleColor = visibleColor
       window.VisualAnalysisManage.visualAnalysis._fanColor = maskColor
+      window.VisualAnalysisManage.visualAnalysis.horizontAngle =
+        newVal.horizontAngle
+      window.VisualAnalysisManage.visualAnalysis.verticalAngle =
+        newVal.verticalAngle
+      if (newVal.exHeight !== oldVal.exHeight) {
+        const cartesian =
+          window.VisualAnalysisManage.visualAnalysis.viewPosition
+        cartesian.z += newVal.exHeight - oldVal.exHeight
+        window.VisualAnalysisManage.visualAnalysis.viewPosition = cartesian
+      }
     }
   }
 
@@ -104,16 +237,100 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  // 通过输入坐标开始分析按钮回调
+  private onInputStart() {
+    const viewCartesian = this.Cesium.Cartesian3.fromDegrees(
+      this.formData.viewPositionX,
+      this.formData.viewPositionY,
+      this.formData.viewPositionZ
+    )
+    viewCartesian.z += this.formData.exHeight
+
+    const targetCartesian = this.Cesium.Cartesian3.fromDegrees(
+      this.formData.targetPositionX,
+      this.formData.targetPositionY,
+      this.formData.targetPositionZ
+    )
+
+    window.VisualAnalysisManage.visualAnalysis.viewPosition = viewCartesian
+    window.VisualAnalysisManage.visualAnalysis.targetPosition = targetCartesian
+  }
+
   // 点击开始分析按钮回调
   private onClickStart() {
+    this.startVisualAnalysis()
+
+    if (
+      this.formData.viewPositionX !== '' &&
+      this.formData.viewPositionY !== '' &&
+      this.formData.viewPositionZ !== '' &&
+      this.formData.targetPositionX !== '' &&
+      this.formData.targetPositionY !== '' &&
+      this.formData.targetPositionZ !== ''
+    ) {
+      this.isHasTargetPos = false
+      // 注销鼠标的各项监听事件
+      this.webGlobe.unRegisterMouseEvent('MOUSE_MOVE')
+      this.webGlobe.unRegisterMouseEvent('LEFT_CLICK')
+      this.webGlobe.unRegisterMouseEvent('RIGHT_CLICK')
+      this.isAddEventListener = false
+
+      this.onInputStart()
+    } else if (
+      this.formData.viewPositionX === '' &&
+      this.formData.viewPositionY === '' &&
+      this.formData.viewPositionZ === '' &&
+      this.formData.targetPositionX === '' &&
+      this.formData.targetPositionY === '' &&
+      this.formData.targetPositionZ === ''
+    ) {
+      this.isHasTargetPos = false
+      this.addEventListener()
+    } else if (
+      this.formData.viewPositionX !== '' &&
+      this.formData.viewPositionY !== '' &&
+      this.formData.viewPositionZ !== '' &&
+      this.formData.targetPositionX === '' &&
+      this.formData.targetPositionY === '' &&
+      this.formData.targetPositionZ === ''
+    ) {
+      this.isHasTargetPos = false
+      const viewCartesian = this.Cesium.Cartesian3.fromDegrees(
+        this.formData.viewPositionX,
+        this.formData.viewPositionY,
+        this.formData.viewPositionZ
+      )
+      viewCartesian.z += this.formData.exHeight
+
+      window.VisualAnalysisManage.visualAnalysis.viewPosition = viewCartesian
+      this.convertPosition(viewCartesian, 'view')
+      this.hasViewPosition = true
+
+      this.addEventListener()
+    } else if (
+      this.formData.viewPositionX === '' &&
+      this.formData.viewPositionY === '' &&
+      this.formData.viewPositionZ === '' &&
+      this.formData.targetPositionX !== '' &&
+      this.formData.targetPositionY !== '' &&
+      this.formData.targetPositionZ !== ''
+    ) {
+      this.isHasTargetPos = true
+      this.addEventListener()
+    } else {
+      this.isHasTargetPos = false
+      this.addEventListener()
+    }
+  }
+
+  // 开启可视域分析工具
+  private startVisualAnalysis() {
     this.isAnalyze = true
     // 开启地形深度测试
     this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
     this.tilesetArray = this.webGlobe._m3dServerLayer
     // 初始化分析工具
     window.VisualAnalysisManage.visualAnalysis = new this.Cesium.ViewshedAnalysis()
-
-    this.addEventListener()
 
     // 锁定图层帧数,只显示一个可视域结果
     for (let i = 0; i < this.tilesetArray.length; i++) {
@@ -139,8 +356,6 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     window.VisualAnalysisManage.visualAnalysis._unVisibleColor = unVisibleColor
     window.VisualAnalysisManage.visualAnalysis._visibleColor = visibleColor
     window.VisualAnalysisManage.visualAnalysis._fanColor = maskColor
-    // 遮罩层透明度特殊些，单独设置为0.2
-    window.VisualAnalysisManage.visualAnalysis._fanColor.alpha = 0.2
 
     // 添加可视域分析结果显示
     this.webGlobe.viewer.scene.VisualAnalysisManager.add(
@@ -154,6 +369,14 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.webGlobe.unRegisterMouseEvent('MOUSE_MOVE')
     this.webGlobe.unRegisterMouseEvent('LEFT_CLICK')
     this.webGlobe.unRegisterMouseEvent('RIGHT_CLICK')
+
+    // 清空观察点与目标点坐标
+    this.formData.viewPositionX = ''
+    this.formData.viewPositionY = ''
+    this.formData.viewPositionZ = ''
+    this.formData.targetPositionX = ''
+    this.formData.targetPositionY = ''
+    this.formData.targetPositionZ = ''
 
     for (let i = 0; i < (this.tilesetArray || []).length; i++) {
       this.tilesetArray[i][0].debugFreezeFrame = false
@@ -207,18 +430,35 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     if (this.isAnalyze) {
       if (!this.hasViewPosition && cartesian !== undefined) {
         // 若还未选择观察点
-        // 先抬高观察点0.5m
-        cartesian.z += 2
+        // 先抬高观察点2m
+        cartesian.z += this.formData.exHeight
 
         // 设置可视域观察点坐标
         window.VisualAnalysisManage.visualAnalysis.viewPosition = cartesian
+        this.convertPosition(cartesian, 'view')
 
         this.hasViewPosition = true
+
+        // 如果拥有初始目标点，则相当于在选择观察点后，又自动点击了鼠标左键一次来选择目标点
+        if (this.isHasTargetPos) {
+          const targetCartesian = this.Cesium.Cartesian3.fromDegrees(
+            this.formData.targetPositionX,
+            this.formData.targetPositionY,
+            this.formData.targetPositionZ
+          )
+          window.VisualAnalysisManage.visualAnalysis.targetPosition = targetCartesian
+
+          this.convertPosition(targetCartesian, 'target')
+
+          this.hasViewPosition = false
+          this.isAnalyze = false
+        }
       } else {
         // 已经选择了观察点，则这次是选择结束点
 
         // 设置可视域结束点坐标
         window.VisualAnalysisManage.visualAnalysis.targetPosition = cartesian
+        this.convertPosition(cartesian, 'target')
 
         this.hasViewPosition = false
         this.isAnalyze = false
@@ -233,14 +473,50 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     if (this.hasViewPosition) {
       // 设置可视域结束点坐标
       window.VisualAnalysisManage.visualAnalysis.targetPosition = cartesian
+      this.convertPosition(cartesian, 'target')
     }
 
     this.hasViewPosition = false
     this.isAnalyze = false
+  }
+
+  // 将三维笛卡尔坐标转换为经纬度坐标
+  private convertPosition(position, type) {
+    // 获取当前坐标系标准
+    const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+    // 根据坐标系标准，将笛卡尔坐标转换为地理坐标
+    const cartographic = ellipsoid.cartesianToCartographic(position)
+    // 获取高度
+    const height = cartographic.height.toFixed(8)
+
+    // 获取该位置的经纬度坐标
+    const centerLon = parseFloat(
+      this.Cesium.Math.toDegrees(cartographic.longitude).toFixed(8)
+    )
+    const centerLat = parseFloat(
+      this.Cesium.Math.toDegrees(cartographic.latitude).toFixed(8)
+    )
+
+    if (type === 'view') {
+      this.formData.viewPositionX = centerLon
+      this.formData.viewPositionY = centerLat
+      this.formData.viewPositionZ = height
+    } else {
+      this.formData.targetPositionX = centerLon
+      this.formData.targetPositionY = centerLat
+      this.formData.targetPositionZ = height
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
 @import '../index.less';
+</style>
+<style lang="less">
+.visual-form {
+  .ant-form-item-control {
+    width: 240px !important;
+  }
+}
 </style>
