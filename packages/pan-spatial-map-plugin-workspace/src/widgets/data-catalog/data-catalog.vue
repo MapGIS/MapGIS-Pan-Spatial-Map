@@ -453,7 +453,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
               }
 
               // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
-              if (layer.LoadStatus === LoadStatus.loaded) {
+              if (layer.loadStatus === LoadStatus.loaded) {
                 if (
                   layer.type === LayerType.IGSScene &&
                   this.is2DMapMode === true
