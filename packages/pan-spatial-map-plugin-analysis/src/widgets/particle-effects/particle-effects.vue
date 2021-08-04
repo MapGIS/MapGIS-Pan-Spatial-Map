@@ -259,12 +259,36 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
   // 粒子特效集
   private particleArr = []
 
+  // 记录对数深度缓冲区状态
+  private isOpenLogarithmicDepthBuffer = false
+
   onOpen() {
     this.emitterValue = '圆形放射'
+    this.recordLogarithmicDepthBuffer()
   }
 
   onClose() {
     this.onClearParticle()
+    this.resetLogarithmicDepthBuffer()
+  }
+
+  recordLogarithmicDepthBuffer() {
+    // 记录对数深度缓冲区初始状态
+    this.isOpenLogarithmicDepthBuffer = this.webGlobe.viewer.scene.logarithmicDepthBuffer
+    // 如果开启在改面板里面将对数深度缓冲区关闭
+    if (this.webGlobe.viewer.scene.logarithmicDepthBuffer === true) {
+      this.webGlobe.viewer.scene.logarithmicDepthBuffer = false
+    }
+  }
+
+  // 复位对数深度缓冲区初始状态
+  resetLogarithmicDepthBuffer() {
+    if (
+      this.webGlobe.viewer.scene.logarithmicDepthBuffer !==
+      this.isOpenLogarithmicDepthBuffer
+    ) {
+      this.webGlobe.viewer.scene.logarithmicDepthBuffer = this.isOpenLogarithmicDepthBuffer
+    }
   }
 
   // 点击删除图标按钮回调
@@ -344,9 +368,6 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
 
     // 开启计时
     this.webGlobe.viewer.clock.shouldAnimate = true
-    // 开启对数深度缓冲区
-    this.webGlobe.viewer.scene.logarithmicDepthBuffer = true
-
     // 粒子特效初始参数
     const viewModel = {
       emissionRate: this.emissionRate,
