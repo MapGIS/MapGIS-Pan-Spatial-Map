@@ -49,6 +49,16 @@ import url from 'url'
 import _cloneDeep from 'lodash/cloneDeep'
 import _debounce from 'lodash/debounce'
 import _last from 'lodash/last'
+import { NewSubjectConfig } from '../../../../../store'
+
+interface IServerParams {
+  ip: string
+  port: string
+  gdbp?: string
+  docName?: string
+  layerName?: string
+  layerIndex?: string
+}
 
 interface IField {
   type: string
@@ -58,7 +68,7 @@ interface IField {
 
 @Component
 export default class Common extends Vue {
-  @Prop({ default: '' }) readonly uri!: string
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
 
   // 目录树
   catalogTreeData: Layer[] = []
@@ -80,11 +90,22 @@ export default class Common extends Vue {
 
   // 服务地址
   get selfUri() {
-    return ''
+    const { gdbp, docName, ...others } = this.subjectConfig
+    const serverType = docName
+      ? LayerType.IGSMapImage
+      : gdbp
+      ? LayerType.IGSVector
+      : null
+    return this.getServerUri({
+      ...others,
+      gdbp,
+      docName,
+      serverType
+    })
   }
 
   set selfUri(value) {
-    this.$emit('server-change', this.getServerParams(value))
+    this.$emit('change', this.getServerParams(value))
   }
 
   // 统计属性
@@ -93,7 +114,10 @@ export default class Common extends Vue {
   }
 
   set field(nV) {
-    this.$emit('field-change', nV)
+    this.$emit('change', {
+      ...this.subjectConfig,
+      field: nV
+    })
   }
 
   /**
@@ -121,7 +145,7 @@ export default class Common extends Vue {
   /**
    * server全地址
    */
-  getServerUri(node) {
+  getServerUri(node: Layer) {
     const {
       ip,
       port,
@@ -141,6 +165,7 @@ export default class Common extends Vue {
         serverUri += `layers?gdbp=${gdbp || gdbps}`
         break
       default:
+        serverUri = ''
         break
     }
     return serverUri

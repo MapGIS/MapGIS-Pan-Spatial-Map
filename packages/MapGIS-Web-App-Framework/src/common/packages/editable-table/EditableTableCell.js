@@ -17,24 +17,18 @@ export default {
       default: () => ({})
     }
   },
-  methods: {
-    onChange(value) {
-      console.log('onChange', value)
-      this.$emit('change', value, this.column, this.record)
-    },
-    onInputChange(e) {
-      this.onChange(e.target.value)
-    }
-  },
   render(h, ctx) {
-    const value = this.record[this.column.dataIndex]
-    console.log('render', value)
-    switch (this.column.type) {
+    const { column, record } = this
+    const onChange = value => {
+      this.$emit('change', value)
+    }
+    const value = record[column.dataIndex]
+    switch (column.type) {
       case 'Select':
         return (
           <a-select
-            onChange={this.onChange}
-            options={this.column.options}
+            onChange={onChange}
+            options={column.options}
             value={value}
             size={'small'}
             placeholder={'请选择'}
@@ -43,7 +37,7 @@ export default {
       case 'Input':
         return (
           <a-input
-            onChange={this.onInputChange}
+            onChange={e => onChange(e.target.value)}
             value={value}
             size={'small'}
             placeholder={'请输入'}
@@ -52,15 +46,15 @@ export default {
       case 'InputNumber':
         return (
           <a-input-number
-            onChange={this.onChange}
+            onChange={onChange}
             value={value}
-            {...{ ...this.column.props }}
+            {...{ ...column.props }}
           />
         )
       case 'ColorPicker':
         return (
           <mp-color-picker-confirm
-            onChange={this.onChange}
+            onChange={onChange}
             value={value}
             border-radius={false}
           />

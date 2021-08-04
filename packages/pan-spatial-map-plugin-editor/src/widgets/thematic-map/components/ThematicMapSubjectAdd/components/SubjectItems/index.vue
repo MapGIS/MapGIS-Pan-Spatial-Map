@@ -52,8 +52,11 @@
             />
           </mp-row-flex>
           <!-- 服务设置等公共设置项 -->
-          <common @server-change="serverChange($event, config)" />
-          <!-- 其他配置 -->
+          <common
+            @change="configChange($event, config)"
+            :subject-config="config"
+          />
+          <!-- 样式、属性表、统计表、弹框配置 -->
           <a-tabs type="card" size="small" class="subject-items-card">
             <a-tab-pane
               v-for="{ key, tab } in configTabList"
@@ -61,9 +64,9 @@
               :tab="tab"
             >
               <component
-                @change="tabChange($event, config, key)"
-                :subject-type="subjectType"
+                @change="configChange($event, config)"
                 :subject-config="config"
+                :subject-type="subjectType"
                 :is="key"
               />
             </a-tab-pane>
@@ -81,13 +84,6 @@ import SubjectStyles from './components/SubjectStyles'
 import AttributeTable from './components/AttributeTable.vue'
 import StatisticGragh from './components/StatisticGragh.vue'
 import Popup from './components/Popup.vue'
-
-enum TabKey {
-  'SubjectStyles' = 'SubjectStyles',
-  'AttributeTable' = 'AttributeTable',
-  'StatisticGragh' = 'StatisticGragh',
-  'Popup' = 'Popup"'
-}
 
 @Component({
   components: {
@@ -109,10 +105,8 @@ export default class SubjectItems extends Vue {
 
   checkedPanels = []
 
-  configListMap = new Map()
-
   configTabList: Array<{
-    key: keyof TabKey
+    key: string
     tab: string
   }> = [
     {
@@ -162,27 +156,11 @@ export default class SubjectItems extends Vue {
   }
 
   /**
-   * 专题图选择change
+   * 专题配置change
    */
-  serverChange(serverConfig: Record<string, any>, config: NewSubjectConfig) {
-    this.setProperties(serverConfig, config)
-  }
-
-  /**
-   * 专题个性配置选择change
-   */
-  tabChange(
-    styleConfig: Record<string, any>,
-    config: NewSubjectConfig,
-    tab: keyof TabKey
-  ) {
-    switch (tab) {
-      case TabKey.SubjectStyles:
-        this.setProperties(styleConfig, config)
-        break
-      default:
-        break
-    }
+  configChange(newConfig: Record<string, any>, config: NewSubjectConfig) {
+    this.setProperties(newConfig, config)
+    console.log('4', newConfig, config)
   }
 
   /**

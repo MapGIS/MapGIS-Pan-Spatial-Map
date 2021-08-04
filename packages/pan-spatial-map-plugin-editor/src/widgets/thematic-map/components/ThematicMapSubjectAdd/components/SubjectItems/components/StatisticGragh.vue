@@ -2,9 +2,9 @@
   <editable-field-table
     @view="onView"
     @fields-loaded="onFieldsLoaded"
-    :field-config="subjectConfig"
-    :columns="tableColumns"
-    :data.sync="tableData"
+    :subject-config="subjectConfig"
+    :data.sync="fieldConfig"
+    :columns="columns"
     title="图表配置"
   >
     <mp-row-flex slot="top" label="分组字段" :label-width="72">
@@ -15,7 +15,9 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { NewSubjectConfig } from '../../../../../store'
-import EditableFieldTable from '../../../common/EditableFieldTable.vue'
+import EditableFieldTable, {
+  IFieldConfig
+} from '../../../common/EditableFieldTable.vue'
 
 @Component({
   components: {
@@ -29,13 +31,12 @@ export default class StatisticGragh extends Vue {
 
   fieldList = []
 
-  get tableColumns() {
+  get columns() {
     return [
       {
         type: 'Select',
         title: '统计字段',
-        dataIndex: 'field',
-        width: 160
+        dataIndex: 'field'
       },
       {
         type: 'Input',
@@ -51,8 +52,8 @@ export default class StatisticGragh extends Vue {
     ]
   }
 
-  get tableData() {
-    return []
+  get fieldConfig() {
+    return this.subjectConfig.graph
   }
 
   /**
@@ -65,9 +66,9 @@ export default class StatisticGragh extends Vue {
               field: 'COUNTRY',
             },
  */
-  set tableData(nV) {
-    // todo
-    console.log('tableData', nV)
+
+  set fieldConfig(graph: IFieldConfig) {
+    // this.$emit('change', { graph })
   }
 
   /**

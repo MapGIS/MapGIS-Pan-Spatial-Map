@@ -1,15 +1,17 @@
 <template>
   <editable-field-table
     @view="onView"
-    :field-config="subjectConfig"
-    :columns="tableColumns"
-    :data.sync="tableData"
+    :subject-config="subjectConfig"
+    :data.sync="fieldConfig"
+    :columns="columns"
   />
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { NewSubjectConfig } from '../../../../../store'
-import EditableFieldTable from '../../../common/EditableFieldTable.vue'
+import EditableFieldTable, {
+  IFieldConfig
+} from '../../../common/EditableFieldTable.vue'
 
 @Component({
   components: {
@@ -19,7 +21,7 @@ import EditableFieldTable from '../../../common/EditableFieldTable.vue'
 export default class AttributeTable extends Vue {
   @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
 
-  get tableColumns() {
+  get columns() {
     return [
       {
         type: 'Select',
@@ -35,23 +37,13 @@ export default class AttributeTable extends Vue {
     ]
   }
 
-  get tableData() {
-    return []
+  get fieldConfig() {
+    return this.subjectConfig.table
   }
 
-  /**
- * table: {
-              showFields: [ // 表格显示字段 （数组形式）
-                '权属代码',
-                '权属名称',
-                'GDP万元'
-              ],
-              showFieldsTitle: {} // 表格的显示字段别名,key,value形式
-            },
- */
-  set tableData(nV) {
-    // todo
-    console.log('tableData', nV)
+  set fieldConfig(table: IFieldConfig) {
+    console.log('3', table)
+    this.$emit('change', { table })
   }
 
   /**

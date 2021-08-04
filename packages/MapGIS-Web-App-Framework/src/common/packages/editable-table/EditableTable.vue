@@ -24,7 +24,7 @@
       >
         <mp-editable-table-cell
           v-if="column.dataIndex"
-          @change="cellChange"
+          @change="cellChange($event, column, record)"
           :column="column"
           :record="record"
           :key="column.dataIndex"
@@ -91,7 +91,8 @@ export default {
     }
   },
   data: vm => ({
-    selectedRowKeys: []
+    selectedRowKeys: [],
+    tableData: []
   }),
   computed: {
     // 新增按钮
@@ -161,16 +162,18 @@ export default {
         _columns.push(this.tableAction)
       }
       return _columns
-    },
-    // 列表数据
-    tableData: {
-      get() {
-        return this.data
-      },
-      set(nV) {
-        this.$emit('change', nV)
-        this.$emit('update:data', nV)
+    }
+  },
+  watch: {
+    data(nV) {
+      if (JSON.stringify(this.tableData) !== JSON.stringify(nV)) {
+        this.tableData = nV
       }
+    },
+    tableData(nV) {
+      console.log('1', nV)
+      this.$emit('change', nV)
+      this.$emit('update:data', nV)
     }
   },
   methods: {
@@ -184,8 +187,11 @@ export default {
      * 表格单元组件变化
      */
     cellChange(value, column, record) {
-      this.$nextTick(() => {
-        this.$set(record, column.dataIndex, value)
+      this.tableData = this.tableData.map(item => {
+        if (item.id === record.id) {
+          this.$set(item, column.dataIndex, value)
+        }
+        return item
       })
     },
     /**
@@ -202,7 +208,7 @@ export default {
         this.columns.reduce(
           (obj, { dataIndex }) => {
             if (dataIndex) {
-              obj[dataIndex] = null
+              this.$set(obj, dataIndex, null)
             }
             return obj
           },

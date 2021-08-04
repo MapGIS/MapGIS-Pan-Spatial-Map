@@ -22,17 +22,35 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
+import { NewSubjectConfig } from '../../../store'
 import FieldInstance from '../store/fields'
+
+interface ITableDataItem {
+  id: string
+  field: string
+  alias: string
+}
+
+export interface IColumn extends ColumnProps {
+  type?: 'Select' | 'Input' | 'InputNumber' | 'ColorPicker' | string
+  props?: Record<string, any>
+}
+
+export interface IFieldConfig {
+  showFields: string[]
+  showFieldsTitle: Record<string, string>
+}
 
 @Component
 export default class EditableFieldTable extends Vue {
   @Prop({ default: '配置列表' }) readonly title!: string
 
-  @Prop({ type: Object, default: () => ({}) }) readonly fieldConfig!: object
+  @Prop({ type: Array, default: () => [] }) readonly columns!: Array<IColumn>
 
-  @Prop({ type: Array, default: () => [] }) readonly columns!: Array<any>
+  @Prop({ type: Object }) readonly data!: IFieldConfig
 
-  @Prop({ type: Array, default: () => [] }) readonly data!: Array<any>
+  @Prop({ type: Object, default: () => ({}) })
+  readonly subjectConfig!: NewSubjectConfig
 
   visible = false
 
@@ -80,18 +98,47 @@ export default class EditableFieldTable extends Vue {
 
   get tableData() {
     return this.data
+      ? this.data.showFields.map(v => ({
+          field: v,
+          alias: this.data.showFieldsTitle[v]
+        }))
+      : []
   }
 
   set tableData(nV) {
-    this.$emit('change', nV)
-    this.$emit('update:data', nV)
+    const fieldConfig = this.setFieldConfig(nV)
+    console.log('2', fieldConfig)
+    this.$emit('change', fieldConfig)
+    this.$emit('update:data', fieldConfig)
+  }
+
+  /**
+   * 设置属性和别名配置
+   */
+  setFieldConfig(data?: ITableDataItem[]) {
+    return data && data.length
+      ? data.reduce<IFieldConfig>(
+          (obj, { field, alias }: ITableDataItem) => {
+            const { showFields, showFieldsTitle } = obj
+            if (!showFields.includes(field)) {
+              showFields.push(field)
+            }
+            showFieldsTitle[field] = alias
+            return obj
+          },
+          {
+            showFields: [],
+            showFieldsTitle: {}
+          }
+        )
+      : undefined
   }
 
   /**
    * 隐藏配置面板
    */
   hideTable() {
-    if (!this.visible) {
+    if (this.visible) {
       this.visible = false
     }
   }
@@ -100,7 +147,8 @@ export default class EditableFieldTable extends Vue {
    * 显示配置面板
    */
   showTable() {
-    if (!this.fieldConfig.ip || !this.fieldConfig.port) {
+    const { ip, port } = this.subjectConfig
+    if (!ip || !port) {
       this.$message.warning('未配置服务地址')
       return
     }
@@ -108,10 +156,10 @@ export default class EditableFieldTable extends Vue {
   }
 
   /**
-   * 添加之前操作
+   * 添加配置项之前操作
    */
   beforeAdd(addFn: () => void) {
-    FieldInstance.getFields(this.fieldConfig).then(list => {
+    FieldInstance.getFields(this.subjectConfig).then(list => {
       this.fieldList = list
       this.$emit('fields-loaded', list)
       addFn()
@@ -121,7 +169,7 @@ export default class EditableFieldTable extends Vue {
   /**
    * 列表数据变化
    */
-  onTableChange(data) {
+  onTableChange(data?: ITableDataItem[]) {
     this.tableData = data
   }
 

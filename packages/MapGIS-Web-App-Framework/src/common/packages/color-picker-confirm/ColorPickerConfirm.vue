@@ -92,9 +92,9 @@ export default {
         disabled
       }
     },
-    colorPickerBtnStyle({ defaultValue, value = defaultValue, border }) {
+    colorPickerBtnStyle({ defaultValue, value, border }) {
       return {
-        background: value,
+        background: value || defaultValue,
         borderColor: border ? value : 'transparent'
       }
     }

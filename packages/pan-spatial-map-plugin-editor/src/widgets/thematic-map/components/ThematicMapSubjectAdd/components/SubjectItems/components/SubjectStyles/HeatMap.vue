@@ -100,7 +100,7 @@ export default class HeatMap extends Vue {
   }
 
   created() {
-    this.emitChange(this.style)
+    this.emitChange(this.defaultStyle)
   }
 }
 </script>

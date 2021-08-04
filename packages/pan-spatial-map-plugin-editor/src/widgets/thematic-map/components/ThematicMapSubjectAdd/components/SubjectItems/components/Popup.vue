@@ -1,15 +1,22 @@
 <template>
-  <editable-field-table
-    @view="onView"
-    :field-config="subjectConfig"
-    :columns="tableColumns"
-    :data.sync="tableData"
-  />
+  <div class="popup">
+    <mp-row-flex label="弹框标题" :label-width="72">
+      <a-input v-model="title" placeholder="请选择" />
+    </mp-row-flex>
+    <editable-field-table
+      @view="onView"
+      :subject-config="subjectConfig"
+      :data.sync="fieldConfig"
+      :columns="columns"
+    />
+  </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { NewSubjectConfig } from '../../../../../store'
-import EditableFieldTable from '../../../common/EditableFieldTable.vue'
+import EditableFieldTable, {
+  IFieldConfig
+} from '../../../common/EditableFieldTable.vue'
 
 @Component({
   components: {
@@ -19,7 +26,9 @@ import EditableFieldTable from '../../../common/EditableFieldTable.vue'
 export default class Popup extends Vue {
   @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
 
-  get tableColumns() {
+  title = ''
+
+  get columns() {
     return [
       {
         type: 'Select',
@@ -35,20 +44,12 @@ export default class Popup extends Vue {
     ]
   }
 
-  get tableData() {
-    return []
+  get fieldConfig() {
+    return this.subjectConfig.popup
   }
 
-  /**
- *   popup: {
-              showFields: [], // 悬浮框的显示字段
-              showFieldsTitle: {}, // 悬浮框的内容主体的别名字段  key value 形式
-              title: 'fid' // 悬浮框的头部字段
-            }
- */
-  set tableData(nV) {
-    // todo
-    console.log('tableData', nV)
+  set fieldConfig(popup: IFieldConfig) {
+    // this.$emit('change', { popup })
   }
 
   /**
