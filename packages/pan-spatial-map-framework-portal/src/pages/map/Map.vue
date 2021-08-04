@@ -68,12 +68,19 @@ export default {
       const port = this.getQueryString('port', searchString)
       const name = this.getQueryString('name', searchString)
       const type = this.getQueryString('type', searchString)
+      const url = this.getQueryString('url', searchString)
 
       if (ip && port && name && type) {
         eventBus.$emit(events.IMPOSE_SERVICE_PREVIEW_EVENT, {
           ip: ip,
           port: port,
           name: name,
+          type: type
+        })
+      }
+      if (url && type) {
+        eventBus.$emit(events.IMPOSE_SERVICE_PREVIEW_EVENT, {
+          url: url,
           type: type
         })
       }

@@ -205,7 +205,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
 
   // 销毁目录树勾选图层节点变化后触发的事件
   beforeDestroy() {
-    eventBus.$off(events.DATA_SELECTION_CHANGE_EVENT)
+    eventBus.$off(events.DATA_SELECTION_CHANGE_EVENT, this.init)
   }
 
   // 初始化数据

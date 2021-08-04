@@ -764,24 +764,34 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 监听服务叠加事件
   imposeService(params) {
     this.imposeNode = {}
-    const node = this.getServiceNode(
-      params.name,
-      params.type,
-      this.dataCatalogTreeData
-    )
     const { Cesium, map, webGlobe, CesiumZondy } = this
+    let node = {}
+
+    if (params.type === 'WMS' || params.type === 'WMTS') {
+      // 若服务类型是WMS/WMTS，则通过serverURL和serverType来查找符合条件的节点
+      node = this.dataCatalogManager.getLayerConfigByServerUrlAndType(
+        params.url,
+        params.type
+      )
+    } else {
+      // 否则，则通过serverName和serverType来查找符合条件的节点
+      node = this.dataCatalogManager.getLayerConfigByServerNameAndType(
+        params.name,
+        params.type
+      )
+    }
 
     if (Object.keys(node).length > 0) {
       if (this.dataCatalogManager.checkedLayerConfigIDs.includes(node.guid)) {
         return false
       } else {
-        eventBus.$on(events.DATA_SELECTION_CHANGE_EVENT, () => {
-          eventBus.$off(events.DATA_SELECTION_CHANGE_EVENT)
+        eventBus.$once(events.DATA_SELECTION_CHANGE_EVENT, () => {
           const doc: Document = this.document
 
           if (doc.defaultMap && doc.defaultMap.allLayers.length > 0) {
-            const imposeLayer =
-              doc.defaultMap.allLayers[doc.defaultMap.allLayers.length - 1]
+            const imposeLayer = doc.defaultMap.allLayers.find(
+              item => item.id === node.guid
+            )
             console.log(imposeLayer)
 
             if (imposeLayer.type !== LayerType.IGSScene) {
@@ -818,6 +828,14 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
           url = `http://${params.ip}:${params.port}/igs/rest/g3d/${params.name}`
           type = 'IGSScene'
           break
+        case LayerType.OGCWMTS:
+          url = params.url
+          type = 'OGCWMTS'
+          break
+        case LayerType.OGCWMS:
+          url = params.url
+          type = 'OGCWMS'
+          break
         default:
           break
       }
@@ -828,29 +846,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         data: {
           type: type,
           url: url,
-          name: params.name
+          name: params.name || 'OGCWMTS/OGCWMS'
         },
         isZoom: true
       }
 
       eventBus.$emit(events.ADD_DATA_EVENT, data)
     }
-  }
-
-  // 获取该叠加服务对应的节点
-  private getServiceNode(name, type, tree) {
-    const serviceType = this.dataCatalogManager.convertLayerServiceType(type)
-    tree.forEach(item => {
-      if (item.serverName === name && item.serverType === +serviceType) {
-        this.imposeNode = item
-      } else {
-        if (item.children && item.children.length > 0) {
-          this.getServiceNode(name, type, item.children)
-        }
-      }
-    })
-
-    return this.imposeNode
   }
 }
 </script>

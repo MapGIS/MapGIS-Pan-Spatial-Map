@@ -240,6 +240,53 @@ export class DataCatalogManager {
   }
 
   /**
+   * 根据节点的serverUrl和serverType获取对应的服务图层配置信息
+   * @author HeLong
+   * @date 04/08/2021
+   * @param {string} url 数据目录配置项中的serverURL
+   * @param {string} type 数据目录配置项中的serverType(需转化)
+   * @return {*}  {(Record<string, any> | undefined)}
+   * @memberof DataCatalogManager
+   */
+  public getLayerConfigByServerUrlAndType(
+    url: string,
+    type: string
+  ): Record<string, any> | undefined {
+    let ret: Record<string, any> | undefined
+    const serverType = this.convertLayerServiceType(type)
+    this._allLayerConfigItems.forEach(element => {
+      if (element.serverURL === url && element.serverType === serverType)
+        ret = element
+    })
+    return ret
+  }
+
+  /**
+   * 根据节点的serverName和serverType获取对应的服务图层配置信息
+   * @author HeLong
+   * @date 04/08/2021
+   * @param {string} serverName 数据目录配置项中的serverName
+   * @param {string} type 数据目录配置项中的serverType(需转化)
+   * @return {*}  {(Record<string, any> | undefined)}
+   * @memberof DataCatalogManager
+   */
+  public getLayerConfigByServerNameAndType(
+    serverName: string,
+    type: string
+  ): Record<string, any> | undefined {
+    let ret: Record<string, any> | undefined
+    const serverType = this.convertLayerServiceType(type)
+    this._allLayerConfigItems.forEach(element => {
+      if (
+        element.serverName === serverName &&
+        element.serverType === serverType
+      )
+        ret = element
+    })
+    return ret
+  }
+
+  /**
    * 获取处理过的数据目录信息
    * 处理包括：
    * 1.格式转换：从一张图vue ant design版本之前的配置转换为新的配置。
