@@ -368,8 +368,6 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
 
     // 开启计时
     this.webGlobe.viewer.clock.shouldAnimate = true
-    // 开启对数深度缓冲区
-    // this.webGlobe.viewer.scene.logarithmicDepthBuffer = false
     // 粒子特效初始参数
     const viewModel = {
       emissionRate: this.emissionRate,
