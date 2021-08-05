@@ -40,6 +40,11 @@
       <a-button type="primary" @click="analysis">分析</a-button>
       <a-button @click="stopCutFillM">清除</a-button>
     </div>
+    <MpMask
+      ref="mask"
+      :parentDivClass="'mp-map-container'"
+      :loading="loading"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -67,6 +72,8 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
   private positions = null
 
   private recalculate = false
+
+  private loading = false
 
   @Watch('formData', { deep: true, immediate: true })
   changeFormData() {
@@ -99,6 +106,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       // 绘制完成回调函数
       callback: positions => {
         this.stopDraw()
+        this.loading = true
         this.positions = positions
 
         const { viewer } = this.webGlobe
@@ -163,6 +171,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
             cutVolume: result.cutVolume,
             fillVolume: result.fillVolume
           }
+          self.loading = false
         }
       }
     )
@@ -205,6 +214,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     }
     this.positions = null
     this.recalculate = false
+    this.loading = false
   }
 }
 </script>

@@ -21,6 +21,8 @@ import MpSettingForm from './setting-form/SettingForm.vue'
 
 import MpGroupTab from './group/GroupTab.vue'
 
+import MpMask from './mask/Mask.vue'
+
 const components = [
   MpIcon,
   MpButton,
@@ -35,7 +37,8 @@ const components = [
   MpColorPicker,
   MpTreeSelect,
   MpSettingForm,
-  MpGroupTab
+  MpGroupTab,
+  MpMask
 ]
 
 const install = Vue => {

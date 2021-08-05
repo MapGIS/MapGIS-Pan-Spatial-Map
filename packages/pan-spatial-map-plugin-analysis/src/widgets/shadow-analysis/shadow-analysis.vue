@@ -95,7 +95,7 @@
         清除
       </a-button>
     </div>
-    <mp-mask
+    <MpMask
       ref="mask"
       :parentDivClass="'mp-map-container'"
       :loading="percent !== 0"
@@ -109,11 +109,9 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
 import moment from 'moment'
-import mpMask from './mask.vue'
 
 @Component({
-  name: 'MpShadowAnalysis',
-  components: { mpMask }
+  name: 'MpShadowAnalysis'
 })
 export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   private formData = {
@@ -306,6 +304,9 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
           })
         if (timeType === 'time') {
           this.maskText = '分析中...'
+          viewer.clockViewModel.currentTime = this.getJulianDate(
+            `${date} ${this.formData.time}`
+          )
           // console.log(`时间点分析开始~时间:${new Date().getTime()}`)
           // 固定时间点范围阴影分析
           window.ShadowManage.shadowAnalysis.pointsArrayInShadow(
@@ -317,6 +318,9 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
           // console.log(`时间点分析结束~时间:${new Date().getTime()}`)
         } else if (timeType === 'timeRange') {
           this.maskText = '分析中{percent}...'
+          viewer.clockViewModel.currentTime = this.getJulianDate(
+            `${date} ${this.formData.startTime}`
+          )
           // console.log(`时间段分析开始~时间:${new Date().getTime()}`)
           // 时间段范围阴影分析
           window.ShadowManage.shadowAnalysis.calcPointsArrayInShadowTime(
