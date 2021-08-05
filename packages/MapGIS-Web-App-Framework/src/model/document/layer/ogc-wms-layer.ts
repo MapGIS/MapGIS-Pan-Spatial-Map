@@ -392,8 +392,8 @@ export class OGCWMSLayer extends Layer {
   /**
    * 服务基地址
    * 约定URL格式如下：
-   * MapGIS:http://develop.smaryun.com:6163/igs/rest/ogc/doc/北京市/WMSServer
-   * ArcGIS:http://219.142.81.85/arcgis/services/10wanZH/MapServer/WMSServer
+   * MapGIS:http://[ip]:[port]/igs/rest/ogc/doc/北京市/WMSServer
+   * ArcGIS:http://[ip]/arcgis/services/10wanZH/MapServer/WMSServer
    * 吉威：
    * @date 30/03/2021
    * @memberof OGCWMSLayer
