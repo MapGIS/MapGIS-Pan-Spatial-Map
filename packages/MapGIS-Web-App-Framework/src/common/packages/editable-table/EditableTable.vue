@@ -14,7 +14,7 @@
       :data-source="tableData"
       :loading="loading"
       :pagination="false"
-      row-key="id"
+      :row-key="rowKey"
       class="editable-table-table"
     >
       <template
@@ -41,7 +41,6 @@
   </mp-card>
 </template>
 <script>
-import { UUID } from '@mapgis/web-app-framework'
 import MpEditableTableCell from './EditableTableCell.js'
 
 export default {
@@ -85,12 +84,13 @@ export default {
       type: Array,
       default: () => []
     },
-    beforeAdd: {
-      type: Function,
-      default() {}
+    rowKey: {
+      type: String,
+      default: 'index'
     }
   },
   data: vm => ({
+    index: 0,
     selectedRowKeys: [],
     tableData: []
   }),
@@ -171,7 +171,6 @@ export default {
       }
     },
     tableData(nV) {
-      console.log('1', nV)
       this.$emit('change', nV)
       this.$emit('update:data', nV)
     }
@@ -185,49 +184,34 @@ export default {
     },
     /**
      * 表格单元组件变化
+     * 优化: 此处$set某行数据并未触发视图的更新, 因为tableData有可能为非响应式数据,
+     * 因此需要手动对tableData赋值
      */
     cellChange(value, column, record) {
-      this.tableData = this.tableData.map(item => {
-        if (item.id === record.id) {
-          this.$set(item, column.dataIndex, value)
-        }
-        return item
-      })
+      this.$set(record, column.dataIndex, value)
+      this.tableData = [...this.tableData]
     },
     /**
      * 移除行
      */
     deleteRow(index) {
       this.tableData.splice(index, 1)
-    },
-    /**
-     * 添加行
-     */
-    addRow() {
-      this.tableData.push(
-        this.columns.reduce(
-          (obj, { dataIndex }) => {
-            if (dataIndex) {
-              this.$set(obj, dataIndex, null)
-            }
-            return obj
-          },
-          {
-            id: UUID.uuid()
-          }
-        )
-      )
-      this.$emit('added', this.tableData)
+      this.index -= 1
     },
     /**
      * 添加
      */
     add() {
-      if (typeof this.beforeAdd === 'function') {
-        this.beforeAdd(this.addRow)
-      } else {
-        this.addRow()
-      }
+      this.tableData.push(
+        this.columns.reduce((obj, { dataIndex }) => {
+          if (dataIndex) {
+            this.$set(obj, dataIndex, undefined)
+            this.$set(obj, 'index', this.index)
+          }
+          return obj
+        }, {})
+      )
+      this.index += 1
     },
     /**
      * 批量删除
@@ -238,7 +222,7 @@ export default {
         return
       }
       this.selectedRowKeys.forEach(v => {
-        this.deleteRow(this.tableData.findIndex(t => t.id === v))
+        this.deleteRow(this.tableData.findIndex(({ index }) => index === v))
       })
       this.selectedRowKeys = []
     }
@@ -254,9 +238,12 @@ export default {
     td {
       padding: 0 !important;
     }
-    .ant-empty {
+
+    .ant-empty,
+    .ant-empty-image {
       margin: 0;
     }
+
     .anticon {
       cursor: pointer;
       &:hover {

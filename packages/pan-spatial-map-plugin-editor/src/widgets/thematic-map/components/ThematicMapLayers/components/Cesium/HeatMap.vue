@@ -69,6 +69,10 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
     }
   }
 
+  get countField() {
+    return 'count'
+  }
+
   /**
    * 获取范围
    * Point | Polygon

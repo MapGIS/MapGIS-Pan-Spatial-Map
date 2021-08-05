@@ -1,23 +1,44 @@
 <template>
   <editable-field-table
     @view="onView"
+    @change="onChange"
     @fields-loaded="onFieldsLoaded"
     :subject-config="subjectConfig"
-    :data.sync="fieldConfig"
-    :columns="columns"
+    :columns="tableColumns"
+    :data="tableData"
     title="图表配置"
   >
-    <mp-row-flex slot="top" label="分组字段" :label-width="72">
-      <a-select v-model="field" :options="fieldList" placeholder="请选择" />
+    <mp-row-flex slot="top" :span="[10, 10]" justify="space-between">
+      <mp-row-flex slot="label" label="分组字段" :label-width="72">
+        <a-select v-model="field" :options="fieldList" placeholder="请选择" />
+      </mp-row-flex>
+      <mp-row-flex label="统计方式" :label-width="72">
+        <a-select
+          v-model="field"
+          :options="statisticWays"
+          placeholder="请选择"
+        />
+      </mp-row-flex>
     </mp-row-flex>
   </editable-field-table>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { NewSubjectConfig } from '../../../../../store'
-import EditableFieldTable, {
-  IFieldConfig
-} from '../../../common/EditableFieldTable.vue'
+import EditableFieldTable from '../../../common/EditableFieldTable.vue'
+
+interface ITableDataItem {
+  index: number
+  field: string
+  alias: string
+  color: string
+}
+
+interface IGragh{
+  fieldColors: string[]
+  showFields: string[]
+  showFieldsTitle: Record<string, string>
+}
 
 @Component({
   components: {
@@ -27,16 +48,31 @@ import EditableFieldTable, {
 export default class StatisticGragh extends Vue {
   @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
 
+  @Watch('subjectConfig.graph', { deep: true })
+  tableDataChange({ fieldColors, showFields = [], showFieldsTitle } = {}) {
+    if (showFields.length === this.tableData.length) {
+      this.tableData = showFields.map((f, i) => ({
+        index: i,
+        field: f,
+        color: fieldColors[i],
+        alias: showFieldsTitle[f]
+      }))
+    }
+  }
+
   field = null
 
   fieldList = []
 
-  get columns() {
+  tableData: ITableDataItem[] = []
+
+  get tableColumns() {
     return [
       {
         type: 'Select',
         title: '统计字段',
-        dataIndex: 'field'
+        dataIndex: 'field',
+        width: 130
       },
       {
         type: 'Input',
@@ -52,12 +88,38 @@ export default class StatisticGragh extends Vue {
     ]
   }
 
-  get fieldConfig() {
-    return this.subjectConfig.graph
+  get statisticWays() {
+    return [
+      {
+        label: '求和',
+        value: 'sum'
+      },
+      {
+        label: '求平均值',
+        value: 'average'
+      },
+      {
+        label: '最大值',
+        value: 'max'
+      },
+      {
+        label: '最小值',
+        value: 'min'
+      },
+      {
+        label: '计数',
+        value: 'count'
+      },
+      {
+        label: '去重',
+        value: 'removeDuplicates'
+      },
+    ]
   }
 
   /**
- *   graph: {
+   * 属性配置变化
+   * graph: {
                // 右侧的显示字段（y轴字段）
               showFields: ['WRLD30_ID', 'mpLayer', 'POP_1994', 'SQMI'],
                // 右侧统计图的显示字段别名,key,value形式
@@ -65,10 +127,33 @@ export default class StatisticGragh extends Vue {
                // 右侧统计图的x轴字段
               field: 'COUNTRY',
             },
- */
-
-  set fieldConfig(graph: IFieldConfig) {
-    // this.$emit('change', { graph })
+   */
+  onChange(data: ITableDataItem[] = []) {
+    const gragh: ?IGragh =
+      data.length && data.some(({ field }) => !!field)
+        ? data.reduce(
+            (
+              { fieldColors, showFields, showFieldsTitle },
+              { field, alias, color }
+            ) => {
+              if (field) {
+                if (!showFields.includes(field)) {
+                  showFields.push(field)
+                  fieldColors.push(color)
+                }
+                showFieldsTitle[field] = alias
+              }
+              return { showFields, showFieldsTitle }
+            },
+            {
+              fieldColors: [],
+              showFields: [],
+              showFieldsTitle: {}
+            }
+          )
+        : undefined
+    this.tableData = data
+    this.$emit('change', { gragh })
   }
 
   /**

@@ -96,7 +96,7 @@ export default class HeatMap extends Vue {
   }
 
   emitChange(style) {
-    this.$emit('change', { style })
+    this.$emit('input', { style })
   }
 
   created() {

@@ -66,7 +66,9 @@ export default {
     },
     defaultValue: {
       type: String,
-      default: 'rgb(64,169,255)'
+      default: 'rgb(64,169,255)',
+      validator: v =>
+        ColorUtil.isHex(v) || ColorUtil.isRgb(v) || ColorUtil.isRgba(v)
     },
     value: {
       type: String,
@@ -76,7 +78,7 @@ export default {
   },
   data() {
     return {
-      color: this.defaultValue,
+      color: '',
       visible: false
     }
   },
@@ -135,6 +137,13 @@ export default {
       this.color = _color
     },
     /**
+     * 往上更新
+     */
+    dispatchColor() {
+      this.$emit('input', this.color)
+      this.$emit('change', this.color)
+    },
+    /**
      * 取消
      */
     cancel() {
@@ -145,13 +154,16 @@ export default {
      * 确认
      */
     confirm() {
-      this.$emit('input', this.color)
+      this.dispatchColor()
       this.visible = false
     }
   },
   created() {
     if (this.value) {
       this.color = this.value
+    } else {
+      this.color = this.defaultValue
+      this.$emit('input', this.color)
     }
   }
 }

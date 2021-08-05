@@ -7,10 +7,8 @@
     </a-empty>
     <mp-editable-table
       v-else
-      @change="onTableChange"
-      :before-add="beforeAdd"
       :columns="tableColumns"
-      :data="tableData"
+      :data.sync="tableData"
       :tools="tools"
       :title="title"
     >
@@ -21,24 +19,14 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { NewSubjectConfig } from '../../../store'
 import FieldInstance from '../store/fields'
 
-interface ITableDataItem {
-  id: string
-  field: string
-  alias: string
-}
-
-export interface IColumn extends ColumnProps {
+interface IColumn extends ColumnProps {
   type?: 'Select' | 'Input' | 'InputNumber' | 'ColorPicker' | string
+  options?: Array<any>
   props?: Record<string, any>
-}
-
-export interface IFieldConfig {
-  showFields: string[]
-  showFieldsTitle: Record<string, string>
 }
 
 @Component
@@ -47,7 +35,9 @@ export default class EditableFieldTable extends Vue {
 
   @Prop({ type: Array, default: () => [] }) readonly columns!: Array<IColumn>
 
-  @Prop({ type: Object }) readonly data!: IFieldConfig
+  @Prop({ type: Array, default: () => [] }) readonly data!: Array<
+    Record<string, any>
+  >
 
   @Prop({ type: Object, default: () => ({}) })
   readonly subjectConfig!: NewSubjectConfig
@@ -86,52 +76,25 @@ export default class EditableFieldTable extends Vue {
 
   get tableColumns() {
     return [
-      ...this.columns.map(v => ({
-        ...v,
-        options: v.dataIndex === 'field' ? this.fieldList : undefined,
-        scopedSlots: {
-          customRender: v.dataIndex
+      ...this.columns.map(v => {
+        const options = v.dataIndex === 'field' ? this.fieldList : undefined
+        return {
+          ...v,
+          options,
+          scopedSlots: {
+            customRender: v.dataIndex
+          }
         }
-      }))
+      })
     ]
   }
 
   get tableData() {
     return this.data
-      ? this.data.showFields.map(v => ({
-          field: v,
-          alias: this.data.showFieldsTitle[v]
-        }))
-      : []
   }
 
-  set tableData(nV) {
-    const fieldConfig = this.setFieldConfig(nV)
-    console.log('2', fieldConfig)
-    this.$emit('change', fieldConfig)
-    this.$emit('update:data', fieldConfig)
-  }
-
-  /**
-   * 设置属性和别名配置
-   */
-  setFieldConfig(data?: ITableDataItem[]) {
-    return data && data.length
-      ? data.reduce<IFieldConfig>(
-          (obj, { field, alias }: ITableDataItem) => {
-            const { showFields, showFieldsTitle } = obj
-            if (!showFields.includes(field)) {
-              showFields.push(field)
-            }
-            showFieldsTitle[field] = alias
-            return obj
-          },
-          {
-            showFields: [],
-            showFieldsTitle: {}
-          }
-        )
-      : undefined
+  set tableData(data: Array<Record<string, any>>) {
+    this.$emit('change', data)
   }
 
   /**
@@ -156,24 +119,6 @@ export default class EditableFieldTable extends Vue {
   }
 
   /**
-   * 添加配置项之前操作
-   */
-  beforeAdd(addFn: () => void) {
-    FieldInstance.getFields(this.subjectConfig).then(list => {
-      this.fieldList = list
-      this.$emit('fields-loaded', list)
-      addFn()
-    })
-  }
-
-  /**
-   * 列表数据变化
-   */
-  onTableChange(data?: ITableDataItem[]) {
-    this.tableData = data
-  }
-
-  /**
    * 预览
    */
   onView() {
@@ -184,8 +129,15 @@ export default class EditableFieldTable extends Vue {
    * 取消
    */
   onClose() {
-    this.onTableChange(undefined)
+    this.tableData = undefined
     this.hideTable()
+  }
+
+  created() {
+    FieldInstance.getFields(this.subjectConfig).then(list => {
+      this.fieldList = list
+      this.$emit('fields-loaded', list)
+    })
   }
 }
 </script>

@@ -1,3 +1,5 @@
+import _debounce from 'lodash/debounce'
+
 export default {
   name: 'MpEditableTableCell',
   props: {
@@ -19,9 +21,9 @@ export default {
   },
   render(h, ctx) {
     const { column, record } = this
-    const onChange = value => {
+    const onChange = _debounce(value => {
       this.$emit('change', value)
-    }
+    }, 200)
     const value = record[column.dataIndex]
     switch (column.type) {
       case 'Select':

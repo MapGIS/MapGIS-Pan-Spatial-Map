@@ -160,7 +160,7 @@ export default class SubjectItems extends Vue {
    */
   configChange(newConfig: Record<string, any>, config: NewSubjectConfig) {
     this.setProperties(newConfig, config)
-    console.log('4', newConfig, config)
+    console.log('配置数据', { ...config })
   }
 
   /**
