@@ -8,7 +8,7 @@
     :data="tableData"
     title="图表配置"
   >
-    <mp-row-flex slot="top" :span="[10, 10]" justify="space-between">
+    <mp-row-flex slot="top" :span="[11, 11]" justify="space-between">
       <mp-row-flex slot="label" label="分组字段" :label-width="72">
         <a-select v-model="field" :options="fieldList" placeholder="请选择" />
       </mp-row-flex>
