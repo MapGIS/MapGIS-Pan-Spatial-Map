@@ -85,11 +85,7 @@
       </a-form-item>
     </mp-setting-form>
     <div class="mp-footer-actions">
-      <a-button
-        type="primary"
-        @click="shadow"
-        v-show="formData.timeType === 'time'"
-      >
+      <a-button type="primary" @click="shadow">
         分析
       </a-button>
       <a-button type="primary" @click="sun">
@@ -99,6 +95,13 @@
         清除
       </a-button>
     </div>
+    <mp-mask
+      ref="mask"
+      :parentDivClass="'mp-map-container'"
+      :loading="percent !== 0"
+      :percent="percent"
+      :text="maskText"
+    />
   </div>
 </template>
 
@@ -106,9 +109,11 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
 import moment from 'moment'
+import mpMask from './mask.vue'
 
 @Component({
-  name: 'MpShadowAnalysis'
+  name: 'MpShadowAnalysis',
+  components: { mpMask }
 })
 export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   private formData = {
@@ -135,6 +140,8 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   private shadowMoment = moment // moment插件
 
   private percent = 0 // 时间段阴影分析进度（时间段阴影分析，暂时未对外开放）
+
+  private maskText = '分析中...'
 
   /**
    * 日期组件值变化
@@ -212,11 +219,22 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  /**
+   * 时间段阴影分析回调函数，获取分析进度值
+   */
   getPercent(result) {
     this.percent = Number((result * 100).toFixed(2))
     if (result === 1) {
       this.percent = 0
     }
+    // console.log(`分析中~时间:${new Date().getTime()},进度：${result}`)
+  }
+
+  /**
+   * 时间点阴影分析回调函数，获取阴影率
+   */
+  getShadowRatio(result) {
+    this.$set(this.formData, 'ratio', result)
   }
 
   /**
@@ -235,16 +253,14 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     const startTime = new Date(`${date} ${this.formData.startTime}`)
     const endTime = new Date(`${date} ${this.formData.endTime}`)
 
-    viewer.scene.globe.depthTestAgainstTerrain = false // 关闭深度检测
-
-    const self = this
-
     // 1.绘制分析区域(矩形)
     // 激活交互式绘制工具
     window.ShadowManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
-        self.remove()
+        // console.log(`绘制结束~时间:${new Date().getTime()}`)
+        this.remove()
+        this.percent = 0.01
         let xmin
         let ymin
         let xmax
@@ -265,12 +281,12 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
           }
         })
         // 多边形x方向长度
-        const recXLength = self.Cesium.Cartesian3.distance(
+        const recXLength = this.Cesium.Cartesian3.distance(
           new this.Cesium.Cartesian3(xmin, ymin, 0),
           new this.Cesium.Cartesian3(xmax, ymin, 0)
         )
         // 多边形y方向长度
-        const recYLength = self.Cesium.Cartesian3.distance(
+        const recYLength = this.Cesium.Cartesian3.distance(
           new this.Cesium.Cartesian3(xmin, ymin, 0),
           new this.Cesium.Cartesian3(xmin, ymax, 0)
         )
@@ -279,32 +295,38 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
         const zPaneNum = Math.ceil((max - min) / 4) // Z轴方向插值点个数
         window.ShadowManage.shadowAnalysis =
           window.ShadowManage.shadowAnalysis ||
-          new self.Cesium.ShadowAnalysis(viewer, {
-            callback: this.getPercent,
+          new this.Cesium.ShadowAnalysis(viewer, {
+            percentCallback: this.getPercent,
+            shadowRatioCallBack: this.getShadowRatio,
             xPaneNum,
             yPaneNum,
             zPaneNum,
-            shadowColor: self.getCesiumColor(shadowColor),
-            sunColor: self.getCesiumColor(sunColor)
+            shadowColor: this.getCesiumColor(shadowColor),
+            sunColor: this.getCesiumColor(sunColor)
           })
         if (timeType === 'time') {
+          this.maskText = '分析中...'
+          // console.log(`时间点分析开始~时间:${new Date().getTime()}`)
           // 固定时间点范围阴影分析
-          const shadowRatio = window.ShadowManage.shadowAnalysis.pointsArrayInShadow(
+          window.ShadowManage.shadowAnalysis.pointsArrayInShadow(
             positions,
             min,
             max,
             time
           )
-          self.$set(self.formData, 'ratio', shadowRatio)
+          // console.log(`时间点分析结束~时间:${new Date().getTime()}`)
         } else if (timeType === 'timeRange') {
+          this.maskText = '分析中{percent}...'
+          // console.log(`时间段分析开始~时间:${new Date().getTime()}`)
           // 时间段范围阴影分析
-          const result = window.ShadowManage.shadowAnalysis.calcPointsArrayInShadowTime(
+          window.ShadowManage.shadowAnalysis.calcPointsArrayInShadowTime(
             positions,
             min,
             max,
             startTime,
             endTime
           )
+          // console.log(`时间段分析结束~时间:${new Date().getTime()}`)
         }
       }
     })

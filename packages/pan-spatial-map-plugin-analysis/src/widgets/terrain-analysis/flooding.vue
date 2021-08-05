@@ -39,6 +39,7 @@
           type="number"
           min="0"
           step="0.01"
+          addon-after="(米/秒)"
         />
       </a-form-item>
       <a-form-item label="波浪高度">
@@ -164,7 +165,9 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
    * 洪水涨高
    */
   rise() {
-    window.FloodingManage.flood.maxHeight += 1000
+    const maxHeight = this.formData.maxHeight + 1000
+    this.$set(this.formData, 'maxHeight', maxHeight)
+    window.FloodingManage.flood.maxHeight = maxHeight
     window.FloodingManage.flood.isDownFlood = false
     this.webGlobe.scene.requestRender()
   }
@@ -173,7 +176,9 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
    * 洪水下降
    */
   down() {
-    window.FloodingManage.flood.maxHeight -= 1000
+    const maxHeight = this.formData.maxHeight - 1000
+    this.$set(this.formData, 'maxHeight', maxHeight)
+    window.FloodingManage.flood.maxHeight = maxHeight
     window.FloodingManage.flood.isDownFlood = true
     this.webGlobe.scene.requestRender()
   }
