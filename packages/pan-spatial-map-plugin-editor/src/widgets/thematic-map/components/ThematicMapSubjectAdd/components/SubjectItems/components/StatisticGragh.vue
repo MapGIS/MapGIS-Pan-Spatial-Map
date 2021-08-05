@@ -13,11 +13,7 @@
         <a-select v-model="field" :options="fieldList" placeholder="请选择" />
       </mp-row-flex>
       <mp-row-flex label="统计方式" :label-width="72">
-        <a-select
-          v-model="field"
-          :options="statisticWays"
-          placeholder="请选择"
-        />
+        <a-select v-model="way" :options="statisticWays" placeholder="请选择" />
       </mp-row-flex>
     </mp-row-flex>
   </editable-field-table>
@@ -35,6 +31,7 @@ interface ITableDataItem {
 }
 
 interface IGragh{
+  field: string
   fieldColors: string[]
   showFields: string[]
   showFieldsTitle: Record<string, string>
@@ -61,6 +58,8 @@ export default class StatisticGragh extends Vue {
   }
 
   field = null
+
+  way = null
 
   fieldList = []
 
@@ -119,23 +118,14 @@ export default class StatisticGragh extends Vue {
 
   /**
    * 属性配置变化
-   * graph: {
-               // 右侧的显示字段（y轴字段）
-              showFields: ['WRLD30_ID', 'mpLayer', 'POP_1994', 'SQMI'],
-               // 右侧统计图的显示字段别名,key,value形式
-              showFieldsTitle: {},
-               // 右侧统计图的x轴字段
-              field: 'COUNTRY',
-            },
    */
   onChange(data: ITableDataItem[] = []) {
     const gragh: ?IGragh =
       data.length && data.some(({ field }) => !!field)
-        ? data.reduce(
-            (
-              { fieldColors, showFields, showFieldsTitle },
-              { field, alias, color }
-            ) => {
+        ? {
+          field: this.field,
+          ...data.reduce((obj,{ field, alias, color }) => {
+              const  { fieldColors, showFields, showFieldsTitle } = obj
               if (field) {
                 if (!showFields.includes(field)) {
                   showFields.push(field)
@@ -143,7 +133,7 @@ export default class StatisticGragh extends Vue {
                 }
                 showFieldsTitle[field] = alias
               }
-              return { showFields, showFieldsTitle }
+              return obj
             },
             {
               fieldColors: [],
@@ -151,6 +141,7 @@ export default class StatisticGragh extends Vue {
               showFieldsTitle: {}
             }
           )
+        }
         : undefined
     this.tableData = data
     this.$emit('change', { gragh })
@@ -161,6 +152,7 @@ export default class StatisticGragh extends Vue {
    */
   onFieldsLoaded(list) {
     this.fieldList = list
+    this.field = this.fieldList[0]?.value
   }
 
   /**
@@ -170,7 +162,7 @@ export default class StatisticGragh extends Vue {
 }
 </script>
 <style lang="less" scoped>
-::v-deep .ant-row-flex {
-  margin-bottom: 8px;
+::v-deep > .ant-row-flex {
+  padding: 0 4px 8px;
 }
 </style>

@@ -44,10 +44,6 @@ export default class MapboxLabel extends Mixins(BaseMinxin) {
     }
   }
 
-  get countField() {
-    return 'count'
-  }
-
   /**
    * 展示图层
    */

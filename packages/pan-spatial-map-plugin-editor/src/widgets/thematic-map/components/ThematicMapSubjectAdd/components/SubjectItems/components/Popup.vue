@@ -1,16 +1,15 @@
 <template>
-  <div class="popup">
-    <mp-row-flex label="弹框标题" :label-width="72">
+  <editable-field-table
+    @view="onView"
+    @change="onChange"
+    :data="tableData"
+    :columns="tableColumns"
+    :subject-config="subjectConfig"
+  >
+    <mp-row-flex slot="top" label="弹框标题" :label-width="72">
       <a-input v-model="title" placeholder="请选择" />
     </mp-row-flex>
-    <editable-field-table
-      @view="onView"
-      @change="onChange"
-      :data="tableData"
-      :columns="tableColumns"
-      :subject-config="subjectConfig"
-    />
-  </div>
+  </editable-field-table>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
@@ -99,3 +98,8 @@ export default class Popup extends Vue {
   onView() {}
 }
 </script>
+<style lang="less" scoped>
+::v-deep .ant-row-flex {
+  padding: 0 4px 8px;
+}
+</style>

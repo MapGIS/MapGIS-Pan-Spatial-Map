@@ -5,17 +5,15 @@
         点击开始配置
       </span>
     </a-empty>
-    <mp-editable-table
-      v-else
-      :columns="tableColumns"
-      :data.sync="tableData"
-      :tools="tools"
-      :title="title"
-    >
-      <template #top>
-        <slot name="top" />
-      </template>
-    </mp-editable-table>
+    <template v-else>
+      <slot name="top" />
+      <mp-editable-table
+        :columns="tableColumns"
+        :data.sync="tableData"
+        :tools="tools"
+        :title="title"
+      />
+    </template>
   </div>
 </template>
 <script lang="ts">
@@ -143,7 +141,7 @@ export default class EditableFieldTable extends Vue {
 </script>
 <style lang="less" scoped>
 .editable-field-table {
-  padding: 4px 8px 8px;
+  padding: 8px;
   .description {
     color: @primary-color;
     cursor: pointer;

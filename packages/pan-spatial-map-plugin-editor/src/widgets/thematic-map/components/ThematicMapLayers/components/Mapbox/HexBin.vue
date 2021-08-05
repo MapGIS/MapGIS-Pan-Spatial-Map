@@ -27,10 +27,6 @@ export default class MapboxHexBin extends Mixins(BaseMinxin) {
     }
   }
 
-  get countField() {
-    return 'count'
-  }
-
   /**
    * 展示图层
    */

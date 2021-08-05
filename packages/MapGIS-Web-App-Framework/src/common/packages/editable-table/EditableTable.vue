@@ -6,7 +6,6 @@
     :loading="loading"
     class="mp-editable-table"
   >
-    <slot name="top" />
     <a-table
       bordered
       :row-selection="tableRowSelection"
