@@ -335,7 +335,6 @@ export class DataCatalogManager {
         }
       }
     }
-
     if (this.isFilterInvalidLayerConfig) {
       // 1.获取基本配置中指定的服务器上发布的IGS服务列表。
       const defaultIp = baseConfigInstance.config.ip
@@ -375,7 +374,6 @@ export class DataCatalogManager {
       docList = this.processServiceInfo(docServiceInfo, 'DOCNames', 'DirDOCs')
 
       this.defaultServerList = { tileList, docList, sceneList }
-
       // 2.格式转换、为节点添加级别信息、判断服务是否可用。
       this.convertConfigData()
     } else if (

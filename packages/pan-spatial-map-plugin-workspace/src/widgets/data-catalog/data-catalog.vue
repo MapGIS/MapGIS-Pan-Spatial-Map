@@ -251,6 +251,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 数据目录树树据
   private dataCatalogTreeData: [] = []
 
+  // 将数据目录转换为一维数组
+  private allLayerItems: [] = []
+
   // 替换treeNode中的title、key字段为treeData中对应的字段
   private replaceFields: object = {
     title: 'name',
@@ -323,7 +326,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
     this.dataCatalogManager.init(this.widgetInfo.config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
-    this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
+    const _allLayerItems = []
+    const { treeData, arr } = this.handleTreeData(
+      this.dataCatalogTreeData,
+      _allLayerItems
+    )
+    this.dataCatalogTreeData = treeData
+    this.allLayerItems = arr
 
     eventBus.$on(events.OPEN_DATA_BOOKMARK_EVENT, this.bookMarkClick)
     eventBus.$on(events.IMPOSE_SERVICE_PREVIEW_EVENT, this.imposeService)
@@ -447,24 +456,31 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             layer.description = this.setDescription(layer)
             // 2.将图层添加到全局的document中。
             if (layer) {
+              const recordCheckLayer = this.setCheckBoxEnable(layer.id)
               // 2.1加载图层
-              if (layer.loadStatus === LoadStatus.notLoaded) {
-                await layer.load()
-              }
-
-              // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
-              if (layer.loadStatus === LoadStatus.loaded) {
-                if (
-                  layer.type === LayerType.IGSScene &&
-                  this.is2DMapMode === true
-                ) {
-                  this.switchMapMode()
+              try {
+                if (layer.loadStatus === LoadStatus.notLoaded) {
+                  await layer.load()
                 }
+              } catch (error) {
+                console.log(error)
+              } finally {
+                // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
+                if (layer.loadStatus === LoadStatus.loaded) {
+                  if (
+                    layer.type === LayerType.IGSScene &&
+                    this.is2DMapMode === true
+                  ) {
+                    this.switchMapMode()
+                  }
 
-                doc.defaultMap.add(layer)
-              } else {
-                this.$message.error(`图层:${layer.title}加载失败`)
-                checkedNodeKeys.splice(layer.id)
+                  doc.defaultMap.add(layer)
+                } else {
+                  this.$message.error(`图层:${layer.title}加载失败`)
+                  checkedNodeKeys.splice(layer.id)
+                }
+                // 图层加载完毕，恢复checkbox可选状态
+                this.$set(recordCheckLayer, 'disableCheckbox', false)
               }
             }
           } else {
@@ -478,6 +494,24 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         }
       )
     }
+  }
+
+  /**
+   * 当加载图层时，图层还在请求，禁用数据目录的checkbox
+   * @id 勾选图层的id
+   */
+  setCheckBoxEnable(id: string) {
+    let layer = null
+    for (let index = 0; index < this.allLayerItems.length; index++) {
+      const element = this.allLayerItems[index]
+      if (id === element.guid) {
+        this.$set(element, 'disableCheckbox', true)
+        layer = element
+        break
+      }
+    }
+    // 这里直接返回查找到node，避免恢复checkbox状态时再去查找
+    return layer
   }
 
   setDescription(item) {
@@ -600,7 +634,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const config = await api.getWidgetConfig('data-catalog')
     this.dataCatalogManager.init(config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
-    this.dataCatalogTreeData = this.handleTreeData(this.dataCatalogTreeData)
+    const _allLayerItems = []
+    const { treeData, arr } = this.handleTreeData(
+      this.dataCatalogTreeData,
+      _allLayerItems
+    )
+    this.dataCatalogTreeData = treeData
+    this.allLayerItems = arr
   }
 
   // 收藏按钮
@@ -629,16 +669,26 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     }
   }
 
-  // 对目录树数据进行处理
-  handleTreeData(data: object[]) {
+  /**
+   * 对目录树数据进行处理
+   * @data 目录树原始数据
+   * @arr 将多维数组转换为一维数组，通过arr来记录
+   */
+  handleTreeData(data: object[], arr: []) {
     const this_ = this
-    return data.map((item: any) => {
+    const treeData = data.map((item: any) => {
       this_.$set(item, 'scopedSlots', { title: 'custom' })
+      this_.$set(item, 'disableCheckbox', false)
+      arr.push(item)
       if (item.children) {
-        this_.handleTreeData(item.children)
+        this_.handleTreeData(item.children, arr)
       }
       return item
     })
+    return {
+      treeData,
+      arr
+    }
   }
 
   // 是否显示上传图例

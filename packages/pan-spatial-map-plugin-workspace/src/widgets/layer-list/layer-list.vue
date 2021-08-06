@@ -12,14 +12,9 @@
             {{ label }}
           </li>
         </ul>
-        <tree-layer
-          v-show="tab === 'tree'"
-          :data-catalog="dataCatalog"
-          :widgetInfo="widgetInfo"
-        />
+        <tree-layer v-show="tab === 'tree'" :widgetInfo="widgetInfo" />
         <layer-opacity
           v-show="tab === 'opacity'"
-          :data-catalog="dataCatalog"
           :layers="document.defaultMap.layers()"
         />
       </template>
