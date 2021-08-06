@@ -297,7 +297,7 @@ export class DataCatalogManager {
    * @date 05/03/2021
    * @memberof DataCatalogManager
    */
-  public async getDataCatalogTreeData(isFilterInvalidLayer = false) {
+  public async getDataCatalogTreeData(isFilterInvalidLayer = true) {
     this.isFilterInvalidLayerConfig = isFilterInvalidLayer
     // 修改说明：优先采用this.config.treeConfig.treeData中的数据目录。如果this.config.treeConfig.treeData不可用,
     // 则看是否配置了treeDataUrl。如果配置了，则从服务请求数据目录。
