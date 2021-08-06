@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-visual-analysis">
     <div class="visual-panel">
-      <mp-setting-form v-model="formData" class="visual-form">
+      <mp-setting-form v-model="formData" :wrapper-width="240">
         <a-form-item label="水平视角">
           <a-input v-model.number="formData.horizontAngle" type="number" />
         </a-form-item>
@@ -192,6 +192,9 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   // 是否具有初始目标点
   private isHasTargetPos = false
 
+  // 观察点
+  private viewPoint
+
   get formDataClone() {
     return JSON.parse(JSON.stringify(this.formData))
   }
@@ -224,6 +227,8 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
         cartesian = this.Cesium.Cartographic.toCartesian(cartographic)
         window.VisualAnalysisManage.visualAnalysis.viewPosition = cartesian
+        // 改变观察点坐标
+        this.viewPoint.position._value = cartesian
       }
     }
   }
@@ -262,6 +267,9 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
     window.VisualAnalysisManage.visualAnalysis.viewPosition = viewCartesian
     window.VisualAnalysisManage.visualAnalysis.targetPosition = targetCartesian
+
+    // 添加观察点到地图
+    this.addViewPoint(viewCartesian)
   }
 
   // 点击开始分析按钮回调
@@ -314,6 +322,8 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
       window.VisualAnalysisManage.visualAnalysis.viewPosition = viewCartesian
       this.convertPosition(viewCartesian, 'view')
+      // 添加观察点到地图
+      this.addViewPoint(viewCartesian)
       this.hasViewPosition = true
 
       this.addEventListener()
@@ -349,6 +359,9 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
     // 移除可视域分析结果
     this.webGlobe.viewer.scene.VisualAnalysisManager._visualAnalysisList = []
+
+    // 移除所有观察点
+    this.webGlobe.viewer.entities.removeAll()
 
     // 设置可视域分析工具的配置
     const unVisibleColor = new this.Cesium.Color.fromCssColorString(
@@ -387,6 +400,9 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.formData.targetPositionX = ''
     this.formData.targetPositionY = ''
     this.formData.targetPositionZ = ''
+
+    // 移除所有观察点
+    this.webGlobe.viewer.entities.removeAll()
 
     for (let i = 0; i < (this.tilesetArray || []).length; i++) {
       this.tilesetArray[i][0].debugFreezeFrame = false
@@ -447,6 +463,8 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
         window.VisualAnalysisManage.visualAnalysis.viewPosition = cartesian
         this.convertPosition(cartesian, 'view')
 
+        // 添加观察点到地图
+        this.addViewPoint(cartesian)
         this.hasViewPosition = true
 
         // 如果拥有初始目标点，则相当于在选择观察点后，又自动点击了鼠标左键一次来选择目标点
@@ -488,6 +506,24 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
     this.hasViewPosition = false
     this.isAnalyze = false
+  }
+
+  // 添加观察点到地图上
+  private addViewPoint(cartesian) {
+    this.removeViewPoint()
+
+    this.viewPoint = this.webGlobe.viewer.entities.add({
+      position: cartesian,
+      point: {
+        color: this.Cesium.Color.BLUE,
+        pixelSize: 10
+      }
+    })
+  }
+
+  // 从地图上移除观察点
+  private removeViewPoint() {
+    if (this.viewPoint) this.webGlobe.viewer.entities.remove(this.viewPoint)
   }
 
   // 将三维笛卡尔坐标转换为经纬度坐标
@@ -534,11 +570,4 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
 <style lang="less" scoped>
 @import '../index.less';
-</style>
-<style lang="less">
-.visual-form {
-  .ant-form-item-control {
-    width: 240px !important;
-  }
-}
 </style>
