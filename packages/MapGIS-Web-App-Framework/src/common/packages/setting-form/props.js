@@ -19,10 +19,20 @@ export const formProps = {
     default: 'left',
     validator: v => ['left', 'right'].includes(v)
   },
+  wrapperAlign: {
+    type: String,
+    default: 'right',
+    validator: v => ['left', 'right'].includes(v)
+  },
   layout: {
     type: String,
     default: 'horizontal',
     validator: v => ['horizontal', 'vertical', 'inline'].includes(v)
+  },
+  itemLayout: {
+    type: String,
+    default: 'fixed',
+    validator: v => ['grid', 'fixed'].includes(v)
   },
   labelCol: {
     type: Object,
@@ -35,6 +45,14 @@ export const formProps = {
     default() {
       return { span: 16 }
     }
+  },
+  labelWidth: {
+    type: Number,
+    default: 90
+  },
+  wrapperWidth: {
+    type: Number | String,
+    default: 170
   },
   selfUpdate: {
     type: Boolean,

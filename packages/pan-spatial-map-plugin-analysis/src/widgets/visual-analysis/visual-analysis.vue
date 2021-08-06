@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-visual-analysis">
     <div class="visual-panel">
-      <mp-setting-form v-model="formData" class="visual-form">
+      <mp-setting-form class="visual-form" :wrapper-width="240">
         <a-form-item label="水平视角">
           <a-input v-model.number="formData.horizontAngle" type="number" />
         </a-form-item>
@@ -512,11 +512,4 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
 <style lang="less" scoped>
 @import '../index.less';
-</style>
-<style lang="less">
-.visual-form {
-  .ant-form-item-control {
-    width: 240px !important;
-  }
-}
 </style>

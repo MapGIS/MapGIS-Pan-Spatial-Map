@@ -2,7 +2,7 @@
   <div class="mp-widget-network-analysis">
     <div id="network-analysis-el">
       <a-spin :spinning="showLoading">
-        <mp-setting-form>
+        <mp-setting-form :wrapper-width="180">
           <a-form-item label="选择数据">
             <a-select v-model="layerSelectIndex" @change="setNetWorkLayer">
               <a-select-option
@@ -740,12 +740,6 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
   #network-analysis-el {
     width: 300px;
     max-width: 100%;
-  }
-  .mp-setting-form.ant-form-horizontal
-    .ant-form-item
-    .ant-form-item-control-wrapper
-    .ant-form-item-control {
-    width: 180px;
   }
   .control-button-container {
     display: flex;

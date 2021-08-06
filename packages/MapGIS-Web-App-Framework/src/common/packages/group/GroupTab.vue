@@ -1,9 +1,9 @@
 <template>
   <div class="mp-group-tab" :class="classes">
     <hr />
-    <slot>
-      <span class="title">{{ title }}</span>
-    </slot>
+    <span class="title">
+      <slot name="title">{{ title }}</slot>
+    </span>
     <slot name="handle"></slot>
   </div>
 </template>
@@ -54,23 +54,42 @@ export default {
   align-items: center;
   width: 100%;
   font-weight: 700;
-  &.has-top-margin {
-    margin-top: 8px;
-  }
-  &.has-bottom-margin {
-    margin-bottom: 8px;
-  }
+
   &.is-mini {
     font-size: 12px;
+    &.has-top-margin {
+      margin-top: 4px;
+    }
+    &.has-bottom-margin {
+      margin-bottom: 4px;
+    }
   }
   &.is-small {
     font-size: 14px;
+    &.has-top-margin {
+      margin-top: 6px;
+    }
+    &.has-bottom-margin {
+      margin-bottom: 6px;
+    }
   }
   &.is-default {
     font-size: 14px;
+    &.has-top-margin {
+      margin-top: 7px;
+    }
+    &.has-bottom-margin {
+      margin-bottom: 7px;
+    }
   }
   &.is-large {
     font-size: 16px;
+    &.has-top-margin {
+      margin-top: 8px;
+    }
+    &.has-bottom-margin {
+      margin-bottom: 8px;
+    }
   }
   hr {
     width: 3px;

@@ -11,10 +11,10 @@
       </mp-toolbar>
     </mp-group-tab>
     <mp-setting-form>
-      <a-form-item label="x方向采样点个数">
+      <a-form-item label="x方向采样点数">
         <a-input v-model.number="formData.x" type="number" min="0" />
       </a-form-item>
-      <a-form-item label="y方向采样点个数">
+      <a-form-item label="y方向采样点数">
         <a-input v-model.number="formData.y" type="number" min="0" />
       </a-form-item>
       <a-form-item label="填挖规整高度">

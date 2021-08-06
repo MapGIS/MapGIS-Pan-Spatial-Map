@@ -2,7 +2,7 @@
   <div class="mp-handler-window">
     <template v-if="funcParamCopy.Parameters">
       <mp-group-tab title="参数" :has-top-margin="false"></mp-group-tab>
-      <mp-setting-form :no-last-margin-bottom="true">
+      <mp-setting-form :no-last-margin-bottom="true" :wrapper-width="300">
         <a-form-item
           v-for="(item, index) in funcParamCopy.Parameters"
           :key="index"
@@ -219,13 +219,5 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  /deep/
-    .mp-setting-form.ant-form-horizontal
-    .ant-form-item
-    .ant-form-item-control-wrapper
-    .ant-form-item-control {
-    width: 300px;
-  }
 }
 </style>

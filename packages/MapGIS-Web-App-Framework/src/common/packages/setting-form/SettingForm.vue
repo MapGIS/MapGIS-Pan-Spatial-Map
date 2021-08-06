@@ -2,11 +2,15 @@
   <a-form
     :class="[
       'mp-setting-form',
-      compact ? 'compact' : '',
+      { compact },
       size,
-      noLastMarginBottom ? 'no-last-margin-bottom' : ''
+      { 'no-last-margin-bottom': noLastMarginBottom },
+      { 'wrapper-align-left': wrapperAlign === 'left' },
+      { 'wrapper-align-right': wrapperAlign === 'right' },
+      { 'fixed-wrapper': isFiexedWrapper }
     ]"
     :form="form"
+    v-bind="formItemLayout"
     :hideRequiredMark="hideRequiredMark"
     :labelAlign="labelAlign"
     :layout="layout"
@@ -23,7 +27,34 @@ import { formProps } from './props'
 
 export default {
   name: 'MpSettingForm',
-  props: formProps
+  props: formProps,
+  computed: {
+    formItemLayout() {
+      return this.layout === 'horizontal'
+        ? {
+            labelCol:
+              this.itemLayout === 'grid'
+                ? this.labelCol
+                : { style: `width:${this.labelWidth}px` },
+            wrapperCol:
+              this.itemLayout === 'grid'
+                ? this.wrapperCol
+                : this.wrapperWidth === 'auto'
+                ? { style: 'width:auto; flex:1' }
+                : {
+                    style: `width:${this.wrapperWidth}px; flex:1; display: flex; justify-content: flex-end`
+                  }
+          }
+        : {}
+    },
+    isFiexedWrapper() {
+      return (
+        this.layout === 'horizontal' &&
+        this.itemLayout !== 'grid' &&
+        this.wrapperWidth !== 'auto'
+      )
+    }
+  }
 }
 </script>
 
@@ -72,21 +103,40 @@ export default {
       display: flex;
       align-items: center;
       .ant-form-item-label {
-        text-align: start;
-        margin-right: 12px;
         line-height: normal;
         white-space: normal;
         word-break: break-all;
-        width: 90px;
       }
       .ant-form-item-control-wrapper {
-        flex: 1;
-        display: flex;
-        justify-content: flex-end;
         .ant-form-item-control {
-          text-align: end;
-          width: 170px;
           line-height: 32px;
+        }
+      }
+    }
+    &.wrapper-align-left {
+      .ant-form-item {
+        .ant-form-item-control-wrapper {
+          .ant-form-item-control {
+            text-align: start;
+          }
+        }
+      }
+    }
+    &.wrapper-align-right {
+      .ant-form-item {
+        .ant-form-item-control-wrapper {
+          .ant-form-item-control {
+            text-align: end;
+          }
+        }
+      }
+    }
+    &.fixed-wrapper {
+      .ant-form-item {
+        .ant-form-item-control-wrapper {
+          .ant-form-item-control {
+            width: inherit;
+          }
         }
       }
     }
