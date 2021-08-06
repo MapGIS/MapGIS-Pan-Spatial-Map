@@ -153,7 +153,6 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   // 微件失活时
   onDeActive() {
     this.stopAdded()
-    this.stopRoaming()
   }
 
   private onAddPathStart() {
@@ -301,6 +300,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+      }
+      /deep/.ant-table-pagination.ant-pagination {
+        margin: 8px 0 0 0;
       }
     }
   }
