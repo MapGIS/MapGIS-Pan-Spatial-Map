@@ -2,6 +2,14 @@
   <div class="mp-widget-visibility-analysis">
     <div class="visibility-panel">
       <mp-setting-form v-model="formData">
+        <a-form-item label="附加高度(米)">
+          <a-input
+            v-model.number="formData.exHeight"
+            type="number"
+            :min="0"
+            :step="0.1"
+          />
+        </a-form-item>
         <a-form-item label="不可视区域颜色">
           <mp-color-picker
             :disableAlpha="false"
@@ -25,10 +33,7 @@
       </mp-setting-form>
     </div>
     <div class="mp-footer-actions">
-      <a-button type="primary" @click="onClickView">视点</a-button>
-      <a-button type="primary" @click="onClickTarget">
-        目标点
-      </a-button>
+      <a-button type="primary" @click="onClickStart">分析</a-button>
       <a-button @click="onClickStop">清除</a-button>
     </div>
   </div>
@@ -41,6 +46,7 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 @Component({ name: 'MpVisibilityAnalysis' })
 export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
   private formData = {
+    exHeight: 1.85,
     visibleColor: '#008000',
     unVisibleColor: '#ff0000'
   }
@@ -57,17 +63,38 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
   // 目标点
   private targetPoint
 
-  @Watch('formData', { deep: true })
-  onColorChange(newVal) {
+  // 观察点坐标
+  private viewPosition
+
+  // 通视分析结果集
+  private visibilityArr = []
+
+  get formDataClone() {
+    return JSON.parse(JSON.stringify(this.formData))
+  }
+
+  @Watch('formDataClone', { deep: true })
+  onColorChange(newVal, oldVal) {
     const unVisibleColor = new this.Cesium.Color.fromCssColorString(
       newVal.unVisibleColor
     )
     const visibleColor = new this.Cesium.Color.fromCssColorString(
       newVal.visibleColor
     )
-    if (window.VisibilityAnalysisManage.visibility) {
-      window.VisibilityAnalysisManage.visibility._unvisibleColor = unVisibleColor
-      window.VisibilityAnalysisManage.visibility._visibleColor = visibleColor
+    if (this.visibilityArr.length > 0) {
+      this.visibilityArr.forEach(item => {
+        item._unvisibleColor = unVisibleColor
+        item._visibleColor = visibleColor
+        if (newVal.exHeight !== oldVal.exHeight) {
+          // 改变通视分析工具的附加高度(分析工具的观察点坐标也会同时更新)
+          item.exHeight = newVal.exHeight - oldVal.exHeight
+
+          // 改变观察点坐标
+          this.viewPoint.position._value = item.viewPosition
+          // 记录新的观察点坐标
+          this.viewPosition = item.viewPosition
+        }
+      })
     }
   }
 
@@ -86,29 +113,14 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  // 点击“视点”按钮回调
-  private onClickView() {
-    this.hasViewPosition = false
-
+  // 创建通视分析工具
+  private createVisibility() {
     const unVisibleColor = new this.Cesium.Color.fromCssColorString(
       this.formData.unVisibleColor
     )
     const visibleColor = new this.Cesium.Color.fromCssColorString(
       this.formData.visibleColor
     )
-
-    if (window.VisibilityAnalysisManage.visibility) {
-      // 移除通视分析结果
-      this.webGlobe.viewer.scene.VisualAnalysisManager.remove(
-        window.VisibilityAnalysisManage.visibility
-      )
-
-      // 销毁通视分析类
-      window.VisibilityAnalysisManage.visibility.destroy()
-    }
-
-    // 移除所有添加的观察点或目标点
-    this.webGlobe.viewer.entities.removeAll()
 
     // 初始化高级分析功能管理类
     const advancedAnalysisManager = new window.CesiumZondy.Manager.AdvancedAnalysisManager(
@@ -118,16 +130,23 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
     )
 
     // 初始化通视分析类
-    window.VisibilityAnalysisManage.visibility = advancedAnalysisManager.createVisibilityAnalysis()
-    window.VisibilityAnalysisManage.visibility._unvisibleColor = unVisibleColor
-    window.VisibilityAnalysisManage.visibility._visibleColor = visibleColor
+    const visibility = advancedAnalysisManager.createVisibilityAnalysis()
+    visibility._unvisibleColor = unVisibleColor
+    visibility._visibleColor = visibleColor
 
-    this.addEventListener()
+    this.visibilityArr.push(visibility)
+
+    return visibility
   }
 
-  // 点击“目标点”按钮回调
-  private onClickTarget() {
-    this.hasViewPosition = true
+  // 点击“分析”按钮回调
+  private onClickStart() {
+    this.onClickStop()
+
+    // 开启地形深度测试
+    this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+
+    this.addEventListener()
   }
 
   // 点击“结束分析”按钮回调
@@ -138,17 +157,19 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
 
     this.webGlobe.viewer.entities.removeAll()
 
-    if (window.VisibilityAnalysisManage.visibility) {
-      // 移除通视分析结果
-      this.webGlobe.viewer.scene.VisualAnalysisManager.remove(
-        window.VisibilityAnalysisManage.visibility
-      )
-
-      // 销毁通视分析类
-      window.VisibilityAnalysisManage.visibility.destroy()
+    if (this.visibilityArr.length > 0) {
+      this.visibilityArr.forEach(item => {
+        // 移除通视分析结果
+        this.webGlobe.viewer.scene.VisualAnalysisManager.remove(item)
+        // 销毁通视分析类
+        item.destroy()
+      })
     }
 
+    this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
+    this.hasViewPosition = false
     this.isAddEventListener = false
+    this.visibilityArr = []
   }
 
   // 为鼠标的各种行为注册监听事件
@@ -167,21 +188,32 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
 
   // 注册通视分析鼠标左键点击事件
   private registerMouseLClickEvent(event) {
-    const cartesian = this.webGlobe.viewer.getCartesian3Position(event.position)
+    let cartesian = this.webGlobe.viewer.getCartesian3Position(event.position)
 
     if (!this.hasViewPosition && cartesian !== undefined) {
-      // 若还未选择观察点
+      // 若还未选择观察点,则记录下观察点坐标
 
-      // 设置通视分析观察点坐标
-      window.VisibilityAnalysisManage.visibility.viewPosition = cartesian
+      // 获取当前坐标系标准
+      const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+      // 根据坐标系标准，将笛卡尔坐标转换为地理坐标
+      const cartographic = ellipsoid.cartesianToCartographic(cartesian)
+      // 抬高观察点
+      cartographic.height += this.formData.exHeight
+
+      cartesian = this.Cesium.Cartographic.toCartesian(cartographic)
+      this.viewPosition = cartesian
 
       // 添加观察点到地图
       this.addViewPoint(cartesian)
+      this.hasViewPosition = true
     } else {
-      // 已经选择了观察点，则这次是选择结束点
+      const visibility = this.createVisibility()
+
+      // 设置通视分析观察点坐标
+      visibility.viewPosition = this.viewPosition
 
       // 设置通视分析结束点坐标
-      window.VisibilityAnalysisManage.visibility.targetPosition = cartesian
+      visibility.targetPosition = cartesian
 
       // 添加目标点到地图
       this.addTargetPoint(cartesian)
@@ -190,15 +222,10 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
 
   // 注册通视分析鼠标右键点击事件
   private registerMouseRClickEvent(event) {
-    const cartesian = this.webGlobe.viewer.getCartesian3Position(event.position)
-
-    if (this.hasViewPosition) {
-      // 设置通视分析结束点坐标
-      window.VisibilityAnalysisManage.visibility.targetPosition = cartesian
-
-      // 添加目标点到地图
-      this.addTargetPoint(cartesian)
-    }
+    // 注销鼠标的各项监听事件
+    this.webGlobe.unRegisterMouseEvent('LEFT_CLICK')
+    this.webGlobe.unRegisterMouseEvent('RIGHT_CLICK')
+    this.isAddEventListener = false
   }
 
   // 添加观察点到地图上

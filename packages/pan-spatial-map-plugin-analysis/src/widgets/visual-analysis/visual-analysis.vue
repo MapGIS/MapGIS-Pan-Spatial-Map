@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-visual-analysis">
     <div class="visual-panel">
-      <mp-setting-form class="visual-form" :wrapper-width="240">
+      <mp-setting-form v-model="formData" class="visual-form">
         <a-form-item label="水平视角">
           <a-input v-model.number="formData.horizontAngle" type="number" />
         </a-form-item>
@@ -213,10 +213,16 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
         newVal.horizontAngle
       window.VisualAnalysisManage.visualAnalysis.verticalAngle =
         newVal.verticalAngle
+
       if (newVal.exHeight !== oldVal.exHeight) {
-        const cartesian =
-          window.VisualAnalysisManage.visualAnalysis.viewPosition
-        cartesian.z += newVal.exHeight - oldVal.exHeight
+        let cartesian = window.VisualAnalysisManage.visualAnalysis.viewPosition
+        // 获取当前坐标系标准
+        const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+        // 根据坐标系标准，将笛卡尔坐标转换为地理坐标
+        const cartographic = ellipsoid.cartesianToCartographic(cartesian)
+        cartographic.height += newVal.exHeight - oldVal.exHeight
+
+        cartesian = this.Cesium.Cartographic.toCartesian(cartographic)
         window.VisualAnalysisManage.visualAnalysis.viewPosition = cartesian
       }
     }
@@ -239,12 +245,14 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
   // 通过输入坐标开始分析按钮回调
   private onInputStart() {
-    const viewCartesian = this.Cesium.Cartesian3.fromDegrees(
+    let viewCartesian = this.Cesium.Cartesian3.fromDegrees(
       this.formData.viewPositionX,
       this.formData.viewPositionY,
       this.formData.viewPositionZ
     )
-    viewCartesian.z += this.formData.exHeight
+
+    const cartographic = this.updateExheight(viewCartesian)
+    viewCartesian = this.Cesium.Cartographic.toCartesian(cartographic)
 
     const targetCartesian = this.Cesium.Cartesian3.fromDegrees(
       this.formData.targetPositionX,
@@ -295,12 +303,14 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
       this.formData.targetPositionZ === ''
     ) {
       this.isHasTargetPos = false
-      const viewCartesian = this.Cesium.Cartesian3.fromDegrees(
+      let viewCartesian = this.Cesium.Cartesian3.fromDegrees(
         this.formData.viewPositionX,
         this.formData.viewPositionY,
         this.formData.viewPositionZ
       )
-      viewCartesian.z += this.formData.exHeight
+
+      const cartographic = this.updateExheight(viewCartesian)
+      viewCartesian = this.Cesium.Cartographic.toCartesian(cartographic)
 
       window.VisualAnalysisManage.visualAnalysis.viewPosition = viewCartesian
       this.convertPosition(viewCartesian, 'view')
@@ -425,13 +435,13 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
   // 注册可视域分析鼠标左键点击事件
   private registerMouseLClickEvent(event) {
-    const cartesian = this.webGlobe.viewer.getCartesian3Position(event.position)
+    let cartesian = this.webGlobe.viewer.getCartesian3Position(event.position)
 
     if (this.isAnalyze) {
       if (!this.hasViewPosition && cartesian !== undefined) {
         // 若还未选择观察点
-        // 先抬高观察点2m
-        cartesian.z += this.formData.exHeight
+        const cartographic = this.updateExheight(cartesian)
+        cartesian = this.Cesium.Cartographic.toCartesian(cartographic)
 
         // 设置可视域观察点坐标
         window.VisualAnalysisManage.visualAnalysis.viewPosition = cartesian
@@ -507,9 +517,28 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
       this.formData.targetPositionZ = height
     }
   }
+
+  // 获取更新附加高度后的地理坐标
+  private updateExheight(cartesian) {
+    // 获取当前坐标系标准
+    const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+    // 根据坐标系标准，将笛卡尔坐标转换为地理坐标
+    const cartographic = ellipsoid.cartesianToCartographic(cartesian)
+    // 抬高观察点
+    cartographic.height += this.formData.exHeight
+
+    return cartographic
+  }
 }
 </script>
 
 <style lang="less" scoped>
 @import '../index.less';
+</style>
+<style lang="less">
+.visual-form {
+  .ant-form-item-control {
+    width: 240px !important;
+  }
+}
 </style>
