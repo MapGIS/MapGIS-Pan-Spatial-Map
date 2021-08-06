@@ -781,7 +781,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       )
     }
 
-    if (Object.keys(node).length > 0) {
+    if (node !== undefined) {
       if (this.dataCatalogManager.checkedLayerConfigIDs.includes(node.guid)) {
         return false
       } else {
@@ -801,7 +801,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                 webGlobe,
                 CesiumZondy
               })
-            } else {
+            } else if (this.is2DMapMode === true) {
               this.switchMapMode()
             }
           }
