@@ -13,7 +13,12 @@
         <a-select v-model="field" :options="fieldList" placeholder="请选择" />
       </mp-row-flex>
       <mp-row-flex label="统计方式" :label-width="72">
-        <a-select v-model="way" :options="statisticWays" placeholder="请选择" />
+        <a-select
+          v-model="way"
+          :options="statisticWays"
+          :disabled="true"
+          placeholder="请选择"
+        />
       </mp-row-flex>
     </mp-row-flex>
   </editable-field-table>
@@ -59,7 +64,7 @@ export default class StatisticGragh extends Vue {
 
   field = null
 
-  way = null
+  way = 3
 
   fieldList = []
 
@@ -89,30 +94,36 @@ export default class StatisticGragh extends Vue {
 
   get statisticWays() {
     return [
-      {
-        label: '求和',
-        value: 'sum'
-      },
-      {
-        label: '求平均值',
-        value: 'average'
-      },
-      {
-        label: '最大值',
-        value: 'max'
-      },
-      {
-        label: '最小值',
-        value: 'min'
-      },
-      {
-        label: '计数',
-        value: 'count'
-      },
-      {
-        label: '去重',
-        value: 'removeDuplicates'
-      },
+       {
+      label: '求和',
+      value: '3',
+      type: 'sum'
+    },
+    {
+      label: '求平均值',
+      value: '4',
+      type: 'avg'
+    },
+    {
+      label: '最大值',
+      value: '1',
+      type: 'max'
+    },
+    {
+      label: '最小值',
+      value: '2',
+      type: 'min'
+    },
+    {
+      label: '计数',
+      value: '6',
+      type: 'count'
+    },
+    {
+      label: '去重',
+      value: '7',
+      type: 'var'
+    }
     ]
   }
 
@@ -120,7 +131,7 @@ export default class StatisticGragh extends Vue {
    * 属性配置变化
    */
   onChange(data: ITableDataItem[] = []) {
-    const gragh: ?IGragh =
+    const graph: ?IGragh =
       data.length && data.some(({ field }) => !!field)
         ? {
           field: this.field,
@@ -144,7 +155,7 @@ export default class StatisticGragh extends Vue {
         }
         : undefined
     this.tableData = data
-    this.$emit('change', { gragh })
+    this.$emit('change', { graph })
   }
 
   /**

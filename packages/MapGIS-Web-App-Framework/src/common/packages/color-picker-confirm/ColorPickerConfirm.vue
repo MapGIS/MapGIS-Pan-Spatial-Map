@@ -94,9 +94,9 @@ export default {
         disabled
       }
     },
-    colorPickerBtnStyle({ defaultValue, value, border }) {
+    colorPickerBtnStyle({ defaultValue, value = defaultValue, border }) {
       return {
-        background: value || defaultValue,
+        background: value,
         borderColor: border ? value : 'transparent'
       }
     }
@@ -147,8 +147,8 @@ export default {
      * 取消
      */
     cancel() {
+      this.color = this.value || this.defaultValue
       this.hidePicker()
-      this.color = this.value
     },
     /**
      * 确认

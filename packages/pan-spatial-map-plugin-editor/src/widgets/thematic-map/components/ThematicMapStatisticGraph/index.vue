@@ -110,6 +110,7 @@ export default class ThematicMapStatisticGraph extends Vue {
   // 图表配置
   chartOption: IChartOption = {
     title: '',
+    color: '',
     x: [],
     y: []
   }
@@ -203,19 +204,23 @@ export default class ThematicMapStatisticGraph extends Vue {
    * @param <object>
    */
   getTargetList() {
-    if (!this.graph) return
-    const { showFields, showFieldsTitle } = this.graph
-    const targetList = showFields.map(value => {
-      const label =
+    if (!this.graph || !this.graph.showFields.length) {
+      return
+    }
+    const { fieldColors, showFields, showFieldsTitle } = this.graph
+    this.targetList = showFields.map(value => ({
+      label:
         showFieldsTitle && showFieldsTitle[value]
           ? showFieldsTitle[value]
-          : value
-      return { label, value }
-    })
-    const [firstTarget] = targetList
-    this.targetList = targetList
-    this.target = firstTarget?.value
-    this.chartOption.title = firstTarget?.label
+          : value,
+      value
+    }))
+    if (this.targetList.length) {
+      const { label, value } = this.targetList[0]
+      this.target = value
+      this.chartOption.title = label
+      this.chartOption.color = fieldColors[showFields.indexOf(this.target)]
+    }
   }
 
   /**

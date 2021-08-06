@@ -144,15 +144,14 @@ export default class ThematicMapSubjectAdd extends Vue {
     } else {
       config = this.addNodeToTreeNode(config, node)
     }
-    console.log('保存的专题图配置', config)
-    // this.updateSubjectConfig(config)
-    //   .then(() => {
-    //     this.$message.success('保存成功')
-    //     this.onCancel()
-    //   })
-    //   .catch(err => {
-    //     this.$message.error('保存失败')
-    //   })
+    this.updateSubjectConfig(config)
+      .then(() => {
+        this.$message.success('保存成功')
+        this.onCancel()
+      })
+      .catch(err => {
+        this.$message.error('保存失败')
+      })
   }
 
   /**

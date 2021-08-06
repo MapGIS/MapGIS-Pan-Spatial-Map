@@ -20,7 +20,7 @@ export const getGridX = (y: number[]) => {
 }
 
 // 柱状图配置
-export const barChartOptions = ({ title, x, y }) => {
+export const barChartOptions = ({ color = 'rgb(64,169,255)', title, x, y }) => {
   const gridX = getGridX(y)
 
   return {
@@ -65,6 +65,7 @@ export const barChartOptions = ({ title, x, y }) => {
     },
     xAxis: {
       data: x,
+      type: 'category',
       axisLabel: {
         rotate: 60,
         interval: 0,
@@ -84,6 +85,7 @@ export const barChartOptions = ({ title, x, y }) => {
       }
     },
     yAxis: {
+      type: 'value',
       axisLabel: {
         fontFamily: '微软雅黑',
         color: txtColor
@@ -111,13 +113,8 @@ export const barChartOptions = ({ title, x, y }) => {
         type: 'bar',
         data: y,
         barWidth: 20,
-        // label: {
-        //   show: true,
-        //   position: 'top',
-        //   formatter: '{c}'
-        // },
         itemStyle: {
-          color: '#40a9ff'
+          color
         }
       }
     ]
