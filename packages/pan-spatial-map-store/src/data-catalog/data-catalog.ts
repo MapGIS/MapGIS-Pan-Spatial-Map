@@ -297,7 +297,7 @@ export class DataCatalogManager {
    * @date 05/03/2021
    * @memberof DataCatalogManager
    */
-  public async getDataCatalogTreeData(isFilterInvalidLayer = true) {
+  public async getDataCatalogTreeData(isFilterInvalidLayer = false) {
     this.isFilterInvalidLayerConfig = isFilterInvalidLayer
     // 修改说明：优先采用this.config.treeConfig.treeData中的数据目录。如果this.config.treeConfig.treeData不可用,
     // 则看是否配置了treeDataUrl。如果配置了，则从服务请求数据目录。
@@ -335,7 +335,6 @@ export class DataCatalogManager {
         }
       }
     }
-
     if (this.isFilterInvalidLayerConfig) {
       // 1.获取基本配置中指定的服务器上发布的IGS服务列表。
       const defaultIp = baseConfigInstance.config.ip
@@ -375,7 +374,6 @@ export class DataCatalogManager {
       docList = this.processServiceInfo(docServiceInfo, 'DOCNames', 'DirDOCs')
 
       this.defaultServerList = { tileList, docList, sceneList }
-
       // 2.格式转换、为节点添加级别信息、判断服务是否可用。
       this.convertConfigData()
     } else if (
