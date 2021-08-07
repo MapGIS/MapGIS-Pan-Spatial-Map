@@ -76,9 +76,11 @@ export {
 
 export { MarkerPlottingMixin } from './map'
 
-import { CommonComponents } from './common'
 import { MapComponents } from './map'
 import { BuilderComponents } from './builder'
+import { CommonComponents, Portal } from './common'
+
+Vue.prototype.$portal = Portal
 
 const install = Vue => {
   Vue.use(CommonComponents)

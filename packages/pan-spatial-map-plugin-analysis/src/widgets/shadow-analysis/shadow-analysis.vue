@@ -86,7 +86,7 @@
     </mp-setting-form>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="shadow">
-        分析
+        分析({{ `${percent}%` }})
       </a-button>
       <a-button type="primary" @click="sun">
         日照效果
@@ -139,7 +139,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 
   private percent = 0 // 时间段阴影分析进度（时间段阴影分析，暂时未对外开放）
 
-  private maskText = '分析中...'
+  private maskText = ''
 
   /**
    * 日期组件值变化
@@ -220,12 +220,16 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   /**
    * 时间段阴影分析回调函数，获取分析进度值
    */
-  getPercent(result) {
-    this.percent = Number((result * 100).toFixed(2))
-    if (result === 1) {
-      this.percent = 0
-    }
-    // console.log(`分析中~时间:${new Date().getTime()},进度：${result}`)
+  getPercent(result, vm) {
+    vm.$nextTick(() => {
+      let percent = Number((result * 100).toFixed(2))
+
+      if (result === 1) {
+        percent = 0
+      }
+      vm.maskText = `正在分析中, 请稍等...${percent}%`
+      vm.percent = percent
+    })
   }
 
   /**
@@ -256,9 +260,8 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     window.ShadowManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
-        // console.log(`绘制结束~时间:${new Date().getTime()}`)
         this.remove()
-        this.percent = 0.01
+        // this.percent = 0.01
         let xmin
         let ymin
         let xmax
@@ -291,23 +294,24 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
         const xPaneNum = Math.ceil(recXLength / 4) // X轴方向插值点个数
         const yPaneNum = Math.ceil(recYLength / 4) // Y轴方向插值点个数
         const zPaneNum = Math.ceil((max - min) / 4) // Z轴方向插值点个数
-        window.ShadowManage.shadowAnalysis =
-          window.ShadowManage.shadowAnalysis ||
-          new this.Cesium.ShadowAnalysis(viewer, {
-            percentCallback: this.getPercent,
+
+        window.ShadowManage.shadowAnalysis = new this.Cesium.ShadowAnalysis(
+          viewer,
+          {
+            percentCallback: result => this.getPercent(result, this),
             shadowRatioCallBack: this.getShadowRatio,
             xPaneNum,
             yPaneNum,
             zPaneNum,
             shadowColor: this.getCesiumColor(shadowColor),
             sunColor: this.getCesiumColor(sunColor)
-          })
+          }
+        )
+
         if (timeType === 'time') {
-          this.maskText = '分析中...'
           viewer.clockViewModel.currentTime = this.getJulianDate(
             `${date} ${this.formData.time}`
           )
-          // console.log(`时间点分析开始~时间:${new Date().getTime()}`)
           // 固定时间点范围阴影分析
           window.ShadowManage.shadowAnalysis.pointsArrayInShadow(
             positions,
@@ -315,13 +319,10 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
             max,
             time
           )
-          // console.log(`时间点分析结束~时间:${new Date().getTime()}`)
         } else if (timeType === 'timeRange') {
-          this.maskText = '分析中{percent}...'
           viewer.clockViewModel.currentTime = this.getJulianDate(
             `${date} ${this.formData.startTime}`
           )
-          // console.log(`时间段分析开始~时间:${new Date().getTime()}`)
           // 时间段范围阴影分析
           window.ShadowManage.shadowAnalysis.calcPointsArrayInShadowTime(
             positions,
@@ -330,7 +331,6 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
             startTime,
             endTime
           )
-          // console.log(`时间段分析结束~时间:${new Date().getTime()}`)
         }
       }
     })

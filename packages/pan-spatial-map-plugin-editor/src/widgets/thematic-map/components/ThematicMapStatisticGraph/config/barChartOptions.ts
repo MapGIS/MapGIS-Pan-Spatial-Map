@@ -1,4 +1,4 @@
-export const txtColor = 'rgba(0, 0, 0, 0.5)'
+export const txtColor = '#000000a6'
 /**
  * 调整y轴宽度
  * @param y<array> y轴数据
@@ -29,7 +29,7 @@ export const barChartOptions = ({ title, x, y }) => {
       axisPointer: {
         type: 'shadow',
         shadowStyle: {
-          color: 'rgba(65,174,255,0.2)'
+          color: '#41aeff'
         }
       },
       textStyle: {

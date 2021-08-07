@@ -302,10 +302,70 @@ export class SceneController {
   }
 
   /**
-   * 获取三维球的当前视角
-   * @returns
+   * 获取三维场景画布高宽
+   * @returns {x:number; y: number}
    */
-  getCameraView() {
-    return this.webGlobe.viewer.camera.getView()
+  getWebGlobeCanvasSize() {
+    const { canvas } = this.webGlobe.viewer
+    return {
+      x: canvas.clientWidth,
+      y: canvas.clientHeight
+    }
+  }
+
+  /**
+   * 获取椭球坐标
+   * @returns height
+   */
+  getPickEllipsoid() {
+    const { x, y } = this.getWebGlobeCanvasSize()
+    return this.webGlobe.viewer.camera.pickEllipsoid(
+      new this.Cesium.Cartesian2(x / 2, y / 2)
+    )
+  }
+
+  /**
+   * 获取地理坐标
+   * @returns 地理坐标
+   */
+  getCartographic(): { longitude: number; latitude: number } {
+    const pickEllipsoid = this.getPickEllipsoid()
+    return pickEllipsoid
+      ? this.Cesium.Ellipsoid.WGS84.cartesianToCartographic(pickEllipsoid)
+      : null
+  }
+
+  /**
+   * 获取camera高度
+   * @returns height
+   */
+  getCameraHeight() {
+    const { viewer } = this.webGlobe
+    return viewer
+      ? viewer.scene.globe.ellipsoid.cartesianToCartographic(
+          viewer.camera.position
+        ).height
+      : 0
+  }
+
+  /**
+   * 获取当前摄像机的位置
+   * @returns {lng, lat, height}
+   */
+  getCenterPosition() {
+    const lnglat = this.getCartographic()
+    if (lnglat) {
+      const { longitude, latitude } = lnglat
+      const pi = Math.PI
+      const lng = (longitude * 180) / pi
+      const lat = (latitude * 180) / pi
+      const height = this.getCameraHeight()
+      return {
+        lng,
+        lat,
+        height
+      }
+    }
+    return null
   }
 }

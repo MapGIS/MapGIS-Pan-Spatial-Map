@@ -1,11 +1,6 @@
-// 折线图配置
-import { txtColor, getGridX } from './barChartOptions'
+const txtColor = '#000000a6'
 
-export const lineChartOptions = ({ title, x, y }) => {
-  const gridX = getGridX(y)
-  const barGraphWidth = 400 - gridX // 柱状图能够显示数据的宽度
-  const barNum = Math.floor(barGraphWidth / 24) // 柱状图中能显示柱状图的个数
-  const dataZoomEnd = Math.floor((barNum / x.length) * 100) // 柱状图能显示的比例
+const chartOptions = ({ x, y }) => {
   return {
     tooltip: {
       trigger: 'axis',
@@ -17,12 +12,6 @@ export const lineChartOptions = ({ title, x, y }) => {
         }
       }
     },
-    grid: {
-      x: gridX,
-      x2: 10,
-      y: 20,
-      y2: 50
-    },
     dataZoom: {
       show: true,
       realtime: true,
@@ -30,19 +19,12 @@ export const lineChartOptions = ({ title, x, y }) => {
       height: 8,
       fillerColor: '#40a9ff',
       start: 0,
-      end: dataZoomEnd,
+      end: 80,
       showDetail: false,
       zoomLock: true
     },
     title: {
-      left: 'right',
-      text: title,
-      padding: 0,
-      textStyle: {
-        color: txtColor,
-        fontSize: 14,
-        fontFamily: '微软雅黑'
-      }
+      show: false
     },
     xAxis: {
       data: x,
@@ -52,16 +34,6 @@ export const lineChartOptions = ({ title, x, y }) => {
         fontSize: 10,
         fontFamily: '微软雅黑',
         color: txtColor
-      },
-      axisTick: {
-        lineStyle: {
-          color: txtColor
-        }
-      },
-      axisLine: {
-        lineStyle: {
-          color: txtColor
-        }
       }
     },
     yAxis: {
@@ -98,3 +70,5 @@ export const lineChartOptions = ({ title, x, y }) => {
     ]
   }
 }
+
+export default chartOptions

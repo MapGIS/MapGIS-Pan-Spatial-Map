@@ -31,7 +31,7 @@
       </a-radio-group>
     </a-row>
     <mp-group-tab title="参数设置"></mp-group-tab>
-    <mp-setting-form>
+    <mp-setting-form :label-width="72">
       <a-form-item label="剖面颜色">
         <MpColorPicker
           :color.sync="color"
@@ -40,7 +40,7 @@
         ></MpColorPicker>
       </a-form-item>
       <a-form-item label="动画时间">
-        <a-input v-model.number="time" type="number" min="0" />
+        <a-input-number v-model="time" :min="0" />
       </a-form-item>
       <a-form-item label="剖切距离">
         <a-slider
@@ -52,7 +52,7 @@
         />
       </a-form-item>
     </mp-setting-form>
-    <div class="mp-footer-actions">
+    <div class="mp-footer-actions center">
       <a-button type="primary" @click="startClipping">
         分析
       </a-button>
@@ -404,6 +404,12 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
 
 <style lang="less" scoped>
 @import '../index.less';
+
+::v-deep {
+  .ant-input-number {
+    width: 100%;
+  }
+}
 
 .mp-widget-dynamic-section-analysis {
   display: flex;
