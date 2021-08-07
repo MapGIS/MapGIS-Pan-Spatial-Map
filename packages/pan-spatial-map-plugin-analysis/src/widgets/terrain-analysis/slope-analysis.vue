@@ -1,18 +1,7 @@
 <template>
   <div class="mp-widget-slope-analysis">
     <mp-group-tab title="坡度权重设置"></mp-group-tab>
-    <mp-setting-form>
-      <a-form-item
-        v-for="(color, index) in arrayColor"
-        :key="index"
-        :label="getLabel(index)"
-      >
-        <MpColorPicker
-          :color.sync="arrayColor[index]"
-          :disableAlpha="false"
-        ></MpColorPicker>
-      </a-form-item>
-    </mp-setting-form>
+    <MpColorsSetting v-model="params"></MpColorsSetting>
     <a-row>
       <a-textarea
         class="mp-note-info"
@@ -30,16 +19,22 @@
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
+import MpColorsSetting from './color-wheel/colors-setting.vue'
 
-@Component({ name: 'MpSlopeAnalysis' })
+@Component({
+  name: 'MpSlopeAnalysis',
+  components: {
+    MpColorsSetting
+  }
+})
 export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
-  private arrayColor: string[] = [
-    'rgba(244, 67, 54, 0.5)',
-    'rgba(233, 30, 99, 0.5)',
-    'rgba(156, 39, 176, 0.5)',
-    'rgba(255, 235, 59, 0.5)',
-    'rgba(96, 125, 139, 0.5)',
-    'rgba(76, 175, 80, 0.5)'
+  private params = [
+    { min: 0, max: 15, color: 'rgba(244, 67, 54, 0.5)' },
+    { min: 15, max: 30, color: 'rgba(233, 30, 99, 0.5)' },
+    { min: 30, max: 45, color: 'rgba(156, 39, 176, 0.5)' },
+    { min: 45, max: 60, color: 'rgba(255, 235, 59, 0.5)' },
+    { min: 60, max: 75, color: 'rgba(96, 125, 139, 0.5)' },
+    { min: 75, max: 90, color: 'rgba(76, 175, 80, 0.5)' }
   ]
 
   private brightnessEnabled = false // 光照是否已开启
@@ -87,13 +82,22 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
   }
 
   add() {
+    console.log(this.params)
     const { viewer } = this.webGlobe
     // 初始化交互式绘制控件
     window.SlopeAnalyzeManage.drawElement =
       window.SlopeAnalyzeManage.drawElement ||
       new this.Cesium.DrawElement(viewer)
 
-    const arr = this.transformColor(this.arrayColor)
+    const { params } = this
+
+    const colors = []
+    const ramp = []
+    params.forEach(({ max, color }) => {
+      ramp.push((max / 90).toFixed(2))
+      colors.push(color)
+    })
+    const rampColor = this.transformColor(colors)
 
     const self = this
 
@@ -105,7 +109,10 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
         this.enableBrightness()
         window.SlopeAnalyzeManage.slopeAnalysis =
           window.SlopeAnalyzeManage.slopeAnalysis ||
-          new this.Cesium.TerrainAnalyse(viewer, { slopeRampColor: arr })
+          new this.Cesium.TerrainAnalyse(viewer, {
+            slopeRampColor: rampColor,
+            slopeRamp: ramp
+          })
         window.SlopeAnalyzeManage.slopeAnalysis.enableContour(false)
         window.SlopeAnalyzeManage.slopeAnalysis.updateMaterial('slope')
         window.SlopeAnalyzeManage.slopeAnalysis.changeAnalyseArea(positions)

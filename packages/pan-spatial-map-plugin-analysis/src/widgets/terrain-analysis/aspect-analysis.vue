@@ -1,18 +1,7 @@
 <template>
   <div class="mp-widget-aspect-analysis">
     <mp-group-tab title="坡向权重设置"></mp-group-tab>
-    <mp-setting-form>
-      <a-form-item
-        v-for="(color, index) in arrayColor"
-        :key="index"
-        :label="getLabel(index)"
-      >
-        <MpColorPicker
-          :color.sync="arrayColor[index]"
-          :disableAlpha="false"
-        ></MpColorPicker>
-      </a-form-item>
-    </mp-setting-form>
+    <MpColorsSetting v-model="params"></MpColorsSetting>
     <a-row>
       <a-textarea
         class="mp-note-info"
@@ -30,18 +19,22 @@
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
+import MpColorsSetting from './color-wheel/colors-setting.vue'
 
 @Component({
-  name: 'MpAspectAnalysis'
+  name: 'MpAspectAnalysis',
+  components: {
+    MpColorsSetting
+  }
 })
 export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
-  private arrayColor: string[] = [
-    'rgba(244, 67, 54, 0.5)',
-    'rgba(233, 30, 99, 0.5)',
-    'rgba(156, 39, 176, 0.5)',
-    'rgba(255, 235, 59, 0.5)',
-    'rgba(96, 125, 139, 0.5)',
-    'rgba(76, 175, 80, 0.5)'
+  private params = [
+    { min: 0, max: 60, color: 'rgba(244, 67, 54, 0.5)' },
+    { min: 60, max: 120, color: 'rgba(233, 30, 99, 0.5)' },
+    { min: 120, max: 180, color: 'rgba(156, 39, 176, 0.5)' },
+    { min: 180, max: 240, color: 'rgba(255, 235, 59, 0.5)' },
+    { min: 240, max: 300, color: 'rgba(96, 125, 139, 0.5)' },
+    { min: 300, max: 360, color: 'rgba(76, 175, 80, 0.5)' }
   ]
 
   private brightnessEnabled = false // 光照是否已开启
@@ -95,7 +88,15 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
       window.AspectAnalyzeManage.drawElement ||
       new this.Cesium.DrawElement(viewer)
 
-    const arr = this.transformColor(this.arrayColor)
+    const { params } = this
+
+    const colors = []
+    const ramp = []
+    params.forEach(({ max, color }) => {
+      ramp.push((max / 360).toFixed(2))
+      colors.push(color)
+    })
+    const rampColor = this.transformColor(colors)
 
     const self = this
 
@@ -107,7 +108,10 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
         this.enableBrightness() // 开启光照
         window.AspectAnalyzeManage.aspectAnalysis =
           window.AspectAnalyzeManage.aspectAnalysis ||
-          new this.Cesium.TerrainAnalyse(viewer, { aspectRampColor: arr })
+          new this.Cesium.TerrainAnalyse(viewer, {
+            aspectRampColor: rampColor,
+            aspectRamp: ramp
+          })
         window.AspectAnalyzeManage.aspectAnalysis.enableContour(false)
         window.AspectAnalyzeManage.aspectAnalysis.updateMaterial('aspect')
         window.AspectAnalyzeManage.aspectAnalysis.changeAnalyseArea(positions)
