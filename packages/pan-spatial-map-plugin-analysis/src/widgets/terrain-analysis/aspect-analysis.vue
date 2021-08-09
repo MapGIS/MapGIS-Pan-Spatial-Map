@@ -6,7 +6,9 @@
       <a-textarea
         class="mp-note-info"
         disabled
-        :value="`坡向分析需要带法线地形`"
+        :value="
+          `坡向分析需要带法线地形。\n坡向按照东北西南的顺序表示方向,即0°表示坡向指向正东方向。`
+        "
         auto-size
       ></a-textarea>
     </a-row>
