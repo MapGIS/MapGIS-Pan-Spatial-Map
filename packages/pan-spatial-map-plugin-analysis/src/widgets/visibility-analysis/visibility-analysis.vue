@@ -41,7 +41,11 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import {
+  WidgetMixin,
+  LayerType,
+  IGSSceneSublayerRenderType
+} from '@mapgis/web-app-framework'
 
 @Component({ name: 'MpVisibilityAnalysis' })
 export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
@@ -139,12 +143,40 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
     return visibility
   }
 
+  // 是否开启地形深度检测
+  private isOpenDepthTest() {
+    // 若分析的模型是三维地形，则开启地形深度检测,否则关闭深度检测。若未选择任何模型，则默认开启深度检测
+    const doc: Document = this.document
+    if (doc.defaultMap && doc.defaultMap.allLayers.length > 0) {
+      const analysisLry =
+        doc.defaultMap.allLayers[doc.defaultMap.allLayers.length - 1]
+
+      // 首先判断勾选的是否是三维图层
+      if (analysisLry.type === LayerType.IGSScene) {
+        // 然后判断是否是三维地形
+        if (
+          analysisLry.activeScene.sublayers.some(item => {
+            return item.renderType === IGSSceneSublayerRenderType.elevation
+          })
+        ) {
+          // 开启地形深度测试
+          this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+        } else {
+          this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
+        }
+      } else {
+        this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+      }
+    } else {
+      this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+    }
+  }
+
   // 点击“分析”按钮回调
   private onClickStart() {
     this.onClickStop()
 
-    // 开启地形深度测试
-    this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+    this.isOpenDepthTest()
 
     this.addEventListener()
   }
