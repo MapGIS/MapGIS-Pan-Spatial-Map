@@ -1,15 +1,11 @@
 <template>
   <div class="mp-widget-slope-analysis">
-    <mp-group-tab title="坡度权重设置"></mp-group-tab>
+    <mp-group-tab title="坡度权重设置">
+      <a-tooltip slot="handle" placement="bottomRight" :title="info">
+        <a-icon type="info-circle" class="info-icon"></a-icon>
+      </a-tooltip>
+    </mp-group-tab>
     <MpColorsSetting v-model="params"></MpColorsSetting>
-    <a-row>
-      <a-textarea
-        class="mp-note-info"
-        disabled
-        :value="`坡度分析需要带法线地形`"
-        auto-size
-      ></a-textarea>
-    </a-row>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="add">分析</a-button>
       <a-button @click="remove">清除</a-button>
@@ -38,6 +34,8 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
   ]
 
   private brightnessEnabled = false // 光照是否已开启
+
+  private info = `坡度分析需要带法线地形`
 
   getLabel(index) {
     return (0.0 + index * 0.2).toFixed(1)
@@ -160,4 +158,11 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less" scoped>
 @import '../index.less';
+.info-icon {
+  color: rgba(0, 0, 0, 0.65);
+  width: 27px;
+  margin: 0 6px;
+  text-align: center;
+  cursor: pointer;
+}
 </style>
