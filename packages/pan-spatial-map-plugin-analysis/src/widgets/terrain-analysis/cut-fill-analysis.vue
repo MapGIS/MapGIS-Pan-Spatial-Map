@@ -18,22 +18,39 @@
         <a-input v-model.number="formData.y" type="number" min="0" />
       </a-form-item>
       <a-form-item label="填挖规整高度">
-        <a-input v-model.number="formData.z" type="number" min="0" />
+        <a-input
+          v-model.number="formData.z"
+          type="number"
+          min="0"
+          addon-after="(米)"
+        />
       </a-form-item>
     </mp-setting-form>
     <mp-group-tab title="填挖结果"></mp-group-tab>
     <mp-setting-form>
       <a-form-item label="高程范围">
-        <a-input v-model.number="result.height" disabled />
+        <a-input v-model.number="result.height" disabled addon-after="(米)" />
       </a-form-item>
       <a-form-item label="表面积">
-        <a-input v-model.number="result.surfaceArea" disabled />
+        <a-input
+          v-model.number="result.surfaceArea"
+          disabled
+          addon-after="(平方米)"
+        />
       </a-form-item>
       <a-form-item label="挖体积">
-        <a-input v-model.number="result.cutVolume" disabled />
+        <a-input
+          v-model.number="result.cutVolume"
+          disabled
+          addon-after="(立方米)"
+        />
       </a-form-item>
       <a-form-item label="填体积">
-        <a-input v-model.number="result.fillVolume" disabled />
+        <a-input
+          v-model.number="result.fillVolume"
+          disabled
+          addon-after="(立方米)"
+        />
       </a-form-item>
     </mp-setting-form>
     <div class="mp-footer-actions">
@@ -106,7 +123,6 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       // 绘制完成回调函数
       callback: positions => {
         this.stopDraw()
-        this.loading = true
         this.positions = positions
 
         const { viewer } = this.webGlobe
@@ -135,6 +151,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
   // 开始分析
   startFill() {
+    this.loading = true
     const self = this
     const { positions } = self
     if (!positions) {

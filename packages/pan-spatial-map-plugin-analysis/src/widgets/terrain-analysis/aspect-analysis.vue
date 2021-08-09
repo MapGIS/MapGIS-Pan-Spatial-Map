@@ -1,26 +1,11 @@
 <template>
   <div class="mp-widget-aspect-analysis">
-    <mp-group-tab title="坡向权重设置"></mp-group-tab>
-    <mp-setting-form>
-      <a-form-item
-        v-for="(color, index) in arrayColor"
-        :key="index"
-        :label="getLabel(index)"
-      >
-        <MpColorPicker
-          :color.sync="arrayColor[index]"
-          :disableAlpha="false"
-        ></MpColorPicker>
-      </a-form-item>
-    </mp-setting-form>
-    <a-row>
-      <a-textarea
-        class="mp-note-info"
-        disabled
-        :value="`坡向分析需要带法线地形`"
-        auto-size
-      ></a-textarea>
-    </a-row>
+    <mp-group-tab title="坡向权重设置">
+      <a-tooltip slot="handle" placement="bottomRight" :title="info">
+        <a-icon type="info-circle" class="info-icon"></a-icon>
+      </a-tooltip>
+    </mp-group-tab>
+    <MpColorsSetting v-model="params"></MpColorsSetting>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="add">分析</a-button>
       <a-button @click="remove">清除</a-button>
@@ -30,21 +15,27 @@
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
+import MpColorsSetting from './color-wheel/colors-setting.vue'
 
 @Component({
-  name: 'MpAspectAnalysis'
+  name: 'MpAspectAnalysis',
+  components: {
+    MpColorsSetting
+  }
 })
 export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
-  private arrayColor: string[] = [
-    'rgba(244, 67, 54, 0.5)',
-    'rgba(233, 30, 99, 0.5)',
-    'rgba(156, 39, 176, 0.5)',
-    'rgba(255, 235, 59, 0.5)',
-    'rgba(96, 125, 139, 0.5)',
-    'rgba(76, 175, 80, 0.5)'
+  private params = [
+    { min: 0, max: 60, color: 'rgba(244, 67, 54, 0.5)' },
+    { min: 60, max: 120, color: 'rgba(233, 30, 99, 0.5)' },
+    { min: 120, max: 180, color: 'rgba(156, 39, 176, 0.5)' },
+    { min: 180, max: 240, color: 'rgba(255, 235, 59, 0.5)' },
+    { min: 240, max: 300, color: 'rgba(96, 125, 139, 0.5)' },
+    { min: 300, max: 360, color: 'rgba(76, 175, 80, 0.5)' }
   ]
 
   private brightnessEnabled = false // 光照是否已开启
+
+  private info = `坡向分析需要带法线地形。\n坡向按照东北西南的顺序表示方向,即0°表示坡向指向正东方向。`
 
   getLabel(index) {
     return (0.0 + index * 0.2).toFixed(1)
@@ -95,7 +86,15 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
       window.AspectAnalyzeManage.drawElement ||
       new this.Cesium.DrawElement(viewer)
 
-    const arr = this.transformColor(this.arrayColor)
+    const { params } = this
+
+    const colors = []
+    const ramp = []
+    params.forEach(({ max, color }) => {
+      ramp.push((max / 360).toFixed(2))
+      colors.push(color)
+    })
+    const rampColor = this.transformColor(colors)
 
     const self = this
 
@@ -107,7 +106,10 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
         this.enableBrightness() // 开启光照
         window.AspectAnalyzeManage.aspectAnalysis =
           window.AspectAnalyzeManage.aspectAnalysis ||
-          new this.Cesium.TerrainAnalyse(viewer, { aspectRampColor: arr })
+          new this.Cesium.TerrainAnalyse(viewer, {
+            aspectRampColor: rampColor,
+            aspectRamp: ramp
+          })
         window.AspectAnalyzeManage.aspectAnalysis.enableContour(false)
         window.AspectAnalyzeManage.aspectAnalysis.updateMaterial('aspect')
         window.AspectAnalyzeManage.aspectAnalysis.changeAnalyseArea(positions)
@@ -155,4 +157,12 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
 </script>
 <style lang="less" scoped>
 @import '../index.less';
+
+.info-icon {
+  color: rgba(0, 0, 0, 0.65);
+  width: 27px;
+  margin: 0 6px;
+  text-align: center;
+  cursor: pointer;
+}
 </style>

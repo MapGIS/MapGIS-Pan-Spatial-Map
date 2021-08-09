@@ -84,6 +84,8 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     floodColor: 'rgb(255,255,102,0.7)'
   }
 
+  private depthTestAgainstTerrain = false // 深度检测是否已开启
+
   get edgeColor() {
     return Objects.SceneController.getInstance(
       this.Cesium,
@@ -99,7 +101,12 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     }
   }
 
-  onActive() {}
+  onActive() {
+    const { viewer } = this.webGlobe
+    if (viewer.scene.globe.depthTestAgainstTerrain) {
+      this.depthTestAgainstTerrain = true
+    }
+  }
 
   // 微件失活时
   onDeActive() {
@@ -152,7 +159,9 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
           })
         window.FloodingManage.flood.floodColor = self.edgeColor
 
-        viewer.scene.globe.depthTestAgainstTerrain = true
+        if (!self.depthTestAgainstTerrain) {
+          viewer.scene.globe.depthTestAgainstTerrain = true
+        }
         // 添加洪水淹没结果显示
         self.webGlobe.scene.VisualAnalysisManager.add(
           window.FloodingManage.flood
@@ -203,6 +212,10 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
       // 取消交互式绘制矩形事件激活状态
       window.FloodingManage.drawElement.stopDrawing()
       window.FloodingManage.drawElement = null
+    }
+
+    if (!this.depthTestAgainstTerrain) {
+      this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
     }
   }
 }
