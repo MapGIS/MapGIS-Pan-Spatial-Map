@@ -44,7 +44,7 @@
           <!-- 图表 -->
           <div id="thematic-map-graph-chart" v-show="showChart" />
           <!-- 空数据友好提示 -->
-          <div class="thematic-map-statistic-graph-empty" v-show="!showChart">
+          <div class="empty-tip" v-show="!showChart">
             <a-empty />
           </div>
         </div>
@@ -219,7 +219,9 @@ export default class ThematicMapStatisticGraph extends Vue {
       const { label, value } = this.targetList[0]
       this.target = value
       this.chartOption.title = label
-      this.chartOption.color = fieldColors[showFields.indexOf(this.target)]
+      if (fieldColors) {
+        this.chartOption.color = fieldColors[showFields.indexOf(this.target)]
+      }
     }
   }
 

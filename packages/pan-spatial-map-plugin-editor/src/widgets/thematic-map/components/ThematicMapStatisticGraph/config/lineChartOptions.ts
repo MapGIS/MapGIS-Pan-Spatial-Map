@@ -1,12 +1,7 @@
 // 折线图配置
 import { txtColor, getGridX } from './barChartOptions'
 
-export const lineChartOptions = ({
-  color = 'rgb(64,169,255)',
-  title,
-  x,
-  y
-}) => {
+export const lineChartOptions = ({ color = '#40A9FF', title, x, y }) => {
   const gridX = getGridX(y)
   const barGraphWidth = 400 - gridX // 柱状图能够显示数据的宽度
   const barNum = Math.floor(barGraphWidth / 24) // 柱状图中能显示柱状图的个数
@@ -17,7 +12,7 @@ export const lineChartOptions = ({
       axisPointer: {
         type: 'line',
         lineStyle: {
-          color: '#41aeff',
+          color: '#40A9FF',
           type: 'dashed'
         }
       }

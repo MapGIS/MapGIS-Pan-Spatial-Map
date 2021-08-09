@@ -1,4 +1,4 @@
-export const txtColor = '#000000a6'
+export const txtColor = '#00000080'
 /**
  * 调整y轴宽度
  * @param y<array> y轴数据
@@ -20,7 +20,7 @@ export const getGridX = (y: number[]) => {
 }
 
 // 柱状图配置
-export const barChartOptions = ({ color = 'rgb(64,169,255)', title, x, y }) => {
+export const barChartOptions = ({ color = '#40A9FF', title, x, y }) => {
   const gridX = getGridX(y)
 
   return {
@@ -29,7 +29,7 @@ export const barChartOptions = ({ color = 'rgb(64,169,255)', title, x, y }) => {
       axisPointer: {
         type: 'shadow',
         shadowStyle: {
-          color: '#41aeff'
+          color: '#40A9FF'
         }
       },
       textStyle: {
