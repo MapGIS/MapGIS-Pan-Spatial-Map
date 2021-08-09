@@ -59,12 +59,6 @@ export default class MpZoom extends Mixins(WidgetMixin) {
       this.webGlobe
     )
     this.cameraView = this.sceneController.getCameraView()
-
-    console.log(
-      'this.webGlobe.viewer.camera',
-      this.webGlobe.viewer.camera,
-      this.webGlobe.viewer.camera.getView()
-    )
   }
 
   onRestore() {
