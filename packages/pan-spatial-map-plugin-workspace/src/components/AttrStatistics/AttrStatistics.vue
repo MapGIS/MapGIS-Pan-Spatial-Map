@@ -284,15 +284,21 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   private groupFieldIndex = -1
 
   private get groupField() {
-    if (this.groupFieldIndex > -1) {
-      return this.fieldOptions[this.groupFieldIndex].value
+    if (
+      this.groupFieldIndex > -1 &&
+      this.fieldOptions &&
+      this.fieldOptions.length >= this.groupFieldIndex
+    ) {
+      return this.fieldOptions[this.groupFieldIndex]
     }
-    return ''
+    return {}
   }
 
   @Watch('groupField')
   groupFieldChange() {
     if (
+      this.fieldOptions &&
+      this.fieldOptions.length >= this.groupFieldIndex &&
       !this.numberArr.includes(
         this.fieldOptions[this.groupFieldIndex].type.toUpperCase()
       )
@@ -458,7 +464,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
 
   @Watch('fieldOptions')
   private changeFieldOptions(val: OptionItem[]) {
-    // ;[this.groupField] = val
+    // ;[this.groupField.value] = val
     this.groupFieldIndex = 0
     // this.statisticsField = [val[0].value]
     this.statisticsFieldIndex =
@@ -639,7 +645,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
           type: this.statisticsType.value,
           guid: '__readonly_user__',
           f: 'json',
-          groupFields: this.groupField,
+          groupFields: this.groupField.value,
           precision: '2',
           gdbp
         }
@@ -647,7 +653,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         data = await this.setDataParams(url, params)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         dataset.push([
-          `${this.groupField}(分组)`,
+          `${this.groupField.label}(分组)`,
           ...this.statisticsField.map(item => item.label)
         ])
         const keys = Object.keys(data[0])
@@ -684,7 +690,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
             pageCount: totalCount,
             serverUrl,
             outStatistics: JSON.stringify(outStatistics),
-            groupByFieldsForStatistics: this.groupField,
+            groupByFieldsForStatistics: this.groupField.value,
             layerIndex: this.layer,
             totalCount
           })
@@ -698,12 +704,12 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
             outStatistics: JSON.stringify([
               {
                 statisticType: 'max',
-                onStatisticField: this.groupField,
+                onStatisticField: this.groupField.value,
                 outStatisticFieldName: 'max'
               },
               {
                 statisticType: 'min',
-                onStatisticField: this.groupField,
+                onStatisticField: this.groupField.value,
                 outStatisticFieldName: 'min'
               }
             ]),
@@ -739,7 +745,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   async setArcgisRangeData({ max, min, outStatistics, totalCount, serverUrl }) {
     const arr = []
     const dataSet = []
-    const templete = [this.groupField]
+    const templete = [this.groupField.value]
     this.statisticsField.forEach(val => {
       arr.push({})
       templete.push(val.value)
@@ -759,12 +765,12 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         pageCount: totalCount,
         serverUrl,
         outStatistics: JSON.stringify(outStatistics),
-        // groupByFieldsForStatistics: this.groupField,
+        // groupByFieldsForStatistics: this.groupField.value,
         layerIndex: this.layer,
         totalCount,
-        where: `( ${this.groupField} >= ${limits[0]} AND ${this.groupField} ${
-          index === limistArr.length - 1 ? '<=' : '<'
-        } ${limits[1]} )`
+        where: `( ${this.groupField.value} >= ${limits[0]} AND ${
+          this.groupField.value
+        } ${index === limistArr.length - 1 ? '<=' : '<'} ${limits[1]} )`
       })
       const { properties } = features[0]
       this.statisticsField.forEach((val, i) => {
@@ -796,7 +802,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   setArcgisSingleData({ features }) {
     const arr = []
     const dataSet = []
-    const templete = [this.groupField]
+    const templete = [this.groupField.value]
     this.statisticsField.forEach(item => {
       arr.push({})
       templete.push(item.value)
@@ -805,7 +811,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       dataSet.push(templete.map(item => properties[item]))
 
       this.statisticsField.forEach((item, index) => {
-        arr[index][properties[this.groupField]] = properties[item.value]
+        arr[index][properties[this.groupField.value]] = properties[item.value]
       })
     })
     dataSet.unshift(
@@ -832,8 +838,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         const where = this.numberArr.includes(
           this.fieldOptions[this.groupFieldIndex].type.toUpperCase()
         )
-          ? `${this.groupField} = ${key}`
-          : `${this.groupField} = '${key}'`
+          ? `${this.groupField.value} = ${key}`
+          : `${this.groupField.value} = '${key}'`
         const arr = (
           await axios.get<any[]>(url, {
             params: {
@@ -874,8 +880,8 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
         await axios.get<any[]>(url, {
           params: {
             ...params,
-            where: `( ${this.groupField} >= ${limits[0]} AND ${
-              this.groupField
+            where: `( ${this.groupField.value} >= ${limits[0]} AND ${
+              this.groupField.value
             } ${index === limistArr.length - 1 ? '<=' : '<'} ${limits[1]} )`,
             groupFields: ''
           }
@@ -962,7 +968,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       series: []
     }
     queryChartOption.xAxis.data = Object.keys(data[0])
-    queryChartOption.xAxis.title = this.groupField
+    queryChartOption.xAxis.title = this.groupField.value
     for (let n = 0; n < this.statisticsField.length; n++) {
       const option = {
         type: 'bar',
@@ -974,7 +980,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
       }
       queryChartOption.series[n] = option
     }
-    queryChartOption.legend.data = this.statisticsField.map(x=>x.label)
+    queryChartOption.legend.data = this.statisticsField.map(x => x.label)
     if (keys.length > 10) {
       queryChartOption.dataZoom = [
         {

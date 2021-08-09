@@ -83,6 +83,7 @@
         :show="layerProps.show"
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
+        @loaded="() => M3Dloaded(layerProps.id)"
       />
       <mapgis-3d-igs-terrain
         v-if="isIgsTerrainLayer(layerProps.type, layerProps.renderType)"
@@ -154,6 +155,10 @@ export default {
     this.parseDocument()
   },
   methods: {
+    M3Dloaded(id) {
+      const guid = id.split(':')[0]
+      this.$root.$emit(guid, 'M3D加载了')
+    },
     getBaseLayerTotal() {
       // TODO 在MapGIS-Web-App-Framework里面不能依赖其他包，这里暂时先把底图管理的初始值设置为1000
     },
