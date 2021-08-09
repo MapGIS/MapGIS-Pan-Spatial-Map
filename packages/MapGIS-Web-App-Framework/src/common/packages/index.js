@@ -4,8 +4,6 @@ import MpButton from './button/Button.vue'
 
 import MpRowFlex from './row-flex/RowFlex.vue'
 
-import MpPortal from './portal/Portal.vue'
-
 import MpToolbar from './toolbar/Toolbar.vue'
 
 import MpToolbarSpace from './toolbar/ToolbarSpace.vue'
@@ -34,7 +32,6 @@ const components = [
   MpIcon,
   MpButton,
   MpRowFlex,
-  MpPortal,
   MpToolbar,
   MpToolbarSpace,
   MpToolbarTitle,

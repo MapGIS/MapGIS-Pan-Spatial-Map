@@ -61,13 +61,13 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
     skylineColor: 'rgb(255,0,0)'
   }
 
-  private loadingPortal = null
-
   private centerPosition = ''
 
   private skyline2dVisible = false
 
   private skyline2dChart = null
+
+  private positions2D: Array<{ x: number; y: number }> = []
 
   get sceneControllerInstance() {
     return Objects.SceneController.getInstance(
@@ -81,10 +81,6 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
     return this.sceneControllerInstance.colorToCesiumColor(
       this.formData.skylineColor
     )
-  }
-
-  get positions2D(): Array<{ x: number; y: number }> {
-    return window.skylineAnalysis?.positions2D || []
   }
 
   created() {
@@ -133,10 +129,11 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
    * 获取二维天际线图表的xy轴信息
    */
   getChartOptions() {
+    const { w, h } = this.sceneControllerInstance.getWebGlobeCanvasSize()
     return this.positions2D.reduce(
       ({ x, y }, v) => {
-        x.push(v.x)
-        y.push(v.y)
+        x.push((v.x / w).toFixed(8))
+        y.push((v.y / h).toFixed(8))
         return {
           x,
           y
@@ -151,6 +148,7 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
 
   /**
    * 展示二维天际线
+   * todo 绘制完成回调添加二维坐标点 #143
    */
   showAnalysis2d() {
     if (!this.positions2D.length) {
@@ -170,36 +168,12 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
    */
   hideAnalysis2d() {
     this.skyline2dVisible = false
-  }
-
-  /**
-   * 展示加载遮罩层
-   */
-  showLoadingPortal() {
-    if (!this.loadingPortal) {
-      this.loadingPortal = this.$portal.show(
-        {
-          tip: '正在分析中，请稍等'
-        },
-        document.querySelector('.mp-map-container')
-      )
-    }
-  }
-
-  /**
-   * 隐藏加载遮罩层
-   */
-  hideLoadingPortal() {
-    if (this.loadingPortal) {
-      this.loadingPortal.remove()
-      this.loadingPortal = null
-    }
+    this.positions2D = []
   }
 
   add() {
     try {
       this.remove()
-      // this.showLoadingPortal()
       // 初始化高级分析功能管理类
       const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
         {
@@ -214,8 +188,6 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
       this.setCenterPosition()
     } catch (e) {
       console.error(e)
-    } finally {
-      // this.hideLoadingPortal()
     }
   }
 
@@ -227,7 +199,6 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
       window.skylineAnalysis = null
       this.centerPosition = ''
       this.hideAnalysis2d()
-      // this.hideLoadingPortal()
     }
   }
 

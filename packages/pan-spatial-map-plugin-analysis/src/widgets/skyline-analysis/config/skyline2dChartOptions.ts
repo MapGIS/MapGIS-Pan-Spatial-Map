@@ -27,10 +27,11 @@ const chartOptions = ({ x, y }) => {
       show: false
     },
     xAxis: {
+      show: false,
       data: x,
       axisLabel: {
         rotate: 60,
-        interval: 1,
+        // interval: 1,
         fontSize: 10,
         fontFamily: '微软雅黑',
         color: txtColor

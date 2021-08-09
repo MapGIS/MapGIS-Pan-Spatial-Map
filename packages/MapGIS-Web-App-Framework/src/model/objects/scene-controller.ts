@@ -303,13 +303,13 @@ export class SceneController {
 
   /**
    * 获取三维场景画布高宽
-   * @returns {x:number; y: number}
+   * @returns {w:number; h: number}
    */
   getWebGlobeCanvasSize() {
     const { canvas } = this.webGlobe.viewer
     return {
-      x: canvas.clientWidth,
-      y: canvas.clientHeight
+      w: canvas.clientWidth,
+      h: canvas.clientHeight
     }
   }
 
@@ -318,9 +318,9 @@ export class SceneController {
    * @returns height
    */
   getPickEllipsoid() {
-    const { x, y } = this.getWebGlobeCanvasSize()
+    const { w, h } = this.getWebGlobeCanvasSize()
     return this.webGlobe.viewer.camera.pickEllipsoid(
-      new this.Cesium.Cartesian2(x / 2, y / 2)
+      new this.Cesium.Cartesian2(w / 2, h / 2)
     )
   }
 
