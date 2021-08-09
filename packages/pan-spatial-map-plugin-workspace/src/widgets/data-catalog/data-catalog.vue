@@ -211,7 +211,8 @@ import {
   Map,
   LayerType,
   LoadStatus,
-  Metadata
+  Metadata,
+  IGSSceneSublayerRenderType
 } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
@@ -479,8 +480,18 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                   this.$message.error(`图层:${layer.title}加载失败`)
                   checkedNodeKeys.splice(layer.id)
                 }
-                // 图层加载完毕，恢复checkbox可选状态
-                this.$set(recordCheckLayer, 'disableCheckbox', false)
+                if (this.isModelCache(layer)) {
+                  /**
+                   * 三维图层需要判定图层是否加载到地图上，才能恢复checkbox可选状态，
+                   * 因为M3D加载到地图上需要时间，当用户快速点击会多次加载而产生bug
+                   */
+                  this.$root.$once(layer.id, () => {
+                    this.$set(recordCheckLayer, 'disableCheckbox', false)
+                  })
+                } else {
+                  // 图层加载完毕，恢复checkbox可选状态
+                  this.$set(recordCheckLayer, 'disableCheckbox', false)
+                }
               }
             }
           } else {
@@ -494,6 +505,22 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         }
       )
     }
+  }
+
+  // 判断是不是三维模型类型
+  isModelCache(layer) {
+    if (layer.type === LayerType.IGSScene) {
+      const activeScene: Scene = layer.activeScene
+      let isModel = true
+
+      activeScene.sublayers.forEach(item => {
+        if (item.renderType === IGSSceneSublayerRenderType.elevation) {
+          isModel = false
+        }
+      })
+      return isModel
+    }
+    return false
   }
 
   /**
