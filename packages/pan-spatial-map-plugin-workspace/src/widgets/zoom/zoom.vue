@@ -10,12 +10,7 @@
         <a-icon type="minus" />
       </div>
     </a-tooltip>
-    <a-tooltip
-      title="重置"
-      placement="right"
-      :overlay-style="{ zIndex: 1000 }"
-      v-show="!is2DMapMode"
-    >
+    <a-tooltip title="重置" placement="right" :overlay-style="{ zIndex: 1000 }">
       <div class="restore button" @click="onRestore">
         <a-icon type="home" />
       </div>
@@ -34,19 +29,30 @@ export default class MpZoom extends Mixins(WidgetMixin) {
 
   private defaultCameraView = {
     destination: {
-      x: -9493444.725083161,
-      y: 23508312.28420107,
-      z: 16571795.7621768
+      x: -11497134.029909685,
+      y: 31691287.057739086,
+      z: 23000012.279109716
     },
     orientation: {
-      heading: 0.05922720445528906,
-      pitch: -1.5700474615898092,
+      heading: 0.09497969065312528,
+      pitch: -1.5659838368719945,
       roll: 0
     },
     positionWC: {
-      x: -9493444.72508316,
-      y: 23508312.28420107,
-      z: 16571795.762176799
+      x: -11497134.029909685,
+      y: 31691287.057739094,
+      z: 23000012.279109713
+    }
+  }
+
+  private defaultMapBounds = {
+    _ne: {
+      lat: 41.29839790254586,
+      lng: 118.22836140945924
+    },
+    _sw: {
+      lat: 38.85668647676454,
+      lng: 114.64132527664754
     }
   }
 
@@ -58,14 +64,13 @@ export default class MpZoom extends Mixins(WidgetMixin) {
       this.CesiumZondy,
       this.webGlobe
     )
-    this.cameraView = this.sceneController.getCameraView()
   }
 
   onRestore() {
     if (!this.is2DMapMode) {
-      if (this.cameraView) {
-        this.sceneController.cameraFlyTo(this.cameraView)
-      }
+      this.sceneController.cameraFlyTo(this.cameraView)
+    } else {
+      this.map.setBounds(this.defaultMapBounds)
     }
   }
 
