@@ -300,4 +300,12 @@ export class SceneController {
   public removeCameraChangedEvent(callback: () => void) {
     this.webGlobe.viewer.camera.changed.removeEventListener(callback)
   }
+
+  /**
+   * 获取三维球的当前视角
+   * @returns
+   */
+  getCameraView() {
+    return this.webGlobe.viewer.camera.getView()
+  }
 }

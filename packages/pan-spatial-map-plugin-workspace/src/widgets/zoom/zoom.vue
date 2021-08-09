@@ -10,15 +10,71 @@
         <a-icon type="minus" />
       </div>
     </a-tooltip>
+    <a-tooltip
+      title="重置"
+      placement="right"
+      :overlay-style="{ zIndex: 1000 }"
+      v-show="!is2DMapMode"
+    >
+      <div class="restore button" @click="onRestore">
+        <a-icon type="home" />
+      </div>
+    </a-tooltip>
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { Objects, WidgetMixin } from '@mapgis/web-app-framework'
+import _last from 'lodash/last'
 
 @Component({ name: 'MpZoom' })
 export default class MpZoom extends Mixins(WidgetMixin) {
+  private sceneController = null
+
+  private defaultCameraView = {
+    destination: {
+      x: -9493444.725083161,
+      y: 23508312.28420107,
+      z: 16571795.7621768
+    },
+    orientation: {
+      heading: 0.05922720445528906,
+      pitch: -1.5700474615898092,
+      roll: 0
+    },
+    positionWC: {
+      x: -9493444.72508316,
+      y: 23508312.28420107,
+      z: 16571795.762176799
+    }
+  }
+
+  private cameraView = this.defaultCameraView
+
+  created() {
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+    this.cameraView = this.sceneController.getCameraView()
+
+    console.log(
+      'this.webGlobe.viewer.camera',
+      this.webGlobe.viewer.camera,
+      this.webGlobe.viewer.camera.getView()
+    )
+  }
+
+  onRestore() {
+    if (!this.is2DMapMode) {
+      if (this.cameraView) {
+        this.sceneController.cameraFlyTo(this.cameraView)
+      }
+    }
+  }
+
   onZoomIn() {
     if (this.is2DMapMode) {
       if (this.map) {
