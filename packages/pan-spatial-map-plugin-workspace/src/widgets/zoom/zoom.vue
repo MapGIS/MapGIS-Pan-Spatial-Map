@@ -69,8 +69,12 @@ export default class MpZoom extends Mixins(WidgetMixin) {
   onRestore() {
     if (!this.is2DMapMode) {
       this.sceneController.cameraFlyTo(this.cameraView)
-    } else {
-      this.map.setBounds(this.defaultMapBounds)
+    } else if (this.map) {
+      const { _ne, _sw } = this.defaultMapBounds
+      this.map.fitBounds([
+        [_ne.lng, _sw.lat],
+        [_sw.lng, _ne.lat]
+      ])
     }
   }
 
