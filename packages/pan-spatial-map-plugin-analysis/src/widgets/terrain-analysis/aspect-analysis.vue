@@ -15,7 +15,7 @@
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
-import MpColorsSetting from './color-wheel/colors-setting.vue'
+import MpColorsSetting from './components/colors-setting.vue'
 
 @Component({
   name: 'MpAspectAnalysis',
