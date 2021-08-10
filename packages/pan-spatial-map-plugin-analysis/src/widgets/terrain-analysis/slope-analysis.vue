@@ -1,11 +1,14 @@
 <template>
   <div class="mp-widget-slope-analysis">
-    <mp-group-tab title="坡度权重设置">
+    <mp-group-tab title="坡度图例设置">
       <a-tooltip slot="handle" placement="bottomRight" :title="info">
         <a-icon type="info-circle" class="info-icon"></a-icon>
       </a-tooltip>
     </mp-group-tab>
-    <MpColorsSetting v-model="params"></MpColorsSetting>
+    <MpColorsSetting
+      v-model="params"
+      :rangeFiled="'坡度范围'"
+    ></MpColorsSetting>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="add">分析</a-button>
       <a-button @click="remove">清除</a-button>
@@ -35,7 +38,7 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
 
   private brightnessEnabled = false // 光照是否已开启
 
-  private info = `坡度分析需要带法线地形`
+  private info = '坡度分析需要带法线地形'
 
   getLabel(index) {
     return (0.0 + index * 0.2).toFixed(1)

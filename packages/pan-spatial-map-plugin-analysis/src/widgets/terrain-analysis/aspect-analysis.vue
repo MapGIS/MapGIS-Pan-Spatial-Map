@@ -1,11 +1,14 @@
 <template>
   <div class="mp-widget-aspect-analysis">
-    <mp-group-tab title="坡向权重设置">
+    <mp-group-tab title="坡向图例设置">
       <a-tooltip slot="handle" placement="bottomRight" :title="info">
         <a-icon type="info-circle" class="info-icon"></a-icon>
       </a-tooltip>
     </mp-group-tab>
-    <MpColorsSetting v-model="params"></MpColorsSetting>
+    <MpColorsSetting
+      v-model="params"
+      :rangeFiled="'坡向范围'"
+    ></MpColorsSetting>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="add">分析</a-button>
       <a-button @click="remove">清除</a-button>
@@ -35,7 +38,8 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
 
   private brightnessEnabled = false // 光照是否已开启
 
-  private info = `坡向分析需要带法线地形。\n坡向按照东北西南的顺序表示方向,即0°表示坡向指向正东方向。`
+  private info =
+    '坡向分析需要带法线地形。\n坡向按照东北西南的顺序表示方向,即0°表示坡向指向正东方向。'
 
   getLabel(index) {
     return (0.0 + index * 0.2).toFixed(1)

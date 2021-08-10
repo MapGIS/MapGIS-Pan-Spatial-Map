@@ -25,6 +25,20 @@
           addon-after="(米)"
         />
       </a-form-item>
+      <a-form-item label="边线">
+        <MpColorPicker
+          :color.sync="formData.lineColor"
+          :disableAlpha="false"
+          class="color-picker"
+        ></MpColorPicker>
+      </a-form-item>
+      <a-form-item label="填充">
+        <MpColorPicker
+          :color.sync="formData.fillColor"
+          :disableAlpha="false"
+          class="color-picker"
+        ></MpColorPicker>
+      </a-form-item>
     </mp-setting-form>
     <mp-group-tab title="填挖结果"></mp-group-tab>
     <mp-setting-form>
@@ -66,7 +80,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpCutFillAnalysis',
@@ -76,7 +90,9 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
   private formData = {
     x: 16,
     y: 16,
-    z: 2000
+    z: 2000,
+    lineColor: 'rgba(0,255,0,1)',
+    fillColor: 'rgba(0,0,255,0.3)'
   }
 
   private result = {
@@ -91,6 +107,12 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
   private recalculate = false
 
   private loading = false
+
+  private entityController = null
+
+  private terrainLine = null
+
+  private terrainPolygon = null
 
   @Watch('formData', { deep: true, immediate: true })
   changeFormData() {
@@ -113,57 +135,113 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     this.stopCutFillM()
   }
 
+  getColor(rgba) {
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    ).colorToCesiumColor(rgba)
+  }
+
   analysis() {
+    const lineColor = this.getColor(this.formData.lineColor)
+    const fillColor = this.getColor(this.formData.fillColor)
+    const self = this
     // 初始化交互式绘制控件
     window.CutFillAnalyzeManage.drawElement =
       window.CutFillAnalyzeManage.drawElement ||
-      new this.Cesium.DrawElement(this.webGlobe.viewer)
+      new self.Cesium.DrawElement(self.webGlobe.viewer)
     // 激活交互式绘制工具
     window.CutFillAnalyzeManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
-        this.stopDraw()
-        this.positions = positions
+        self.stopDraw()
+        self.positions = positions
 
-        const { viewer } = this.webGlobe
-        // 移除视图中所有的实体对象
-        viewer.entities.removeAll()
+        self.remove()
 
-        // 在视图中添加围栏实体
-        viewer.entities.add({
-          id: 'cutfill',
-          // 实体名称
-          name: '围栏',
-          // 示例类型
-          wall: {
-            // 实体点数组
-            positions,
-            // 实体材质
-            material: new this.Cesium.Color(0.2, 0.5, 0.4, 0.7),
-            // 实体轮廓
-            outline: true
-          }
+        const { viewer } = self.webGlobe
+
+        const linePointArr = []
+        const polygonPointArr = []
+        positions.forEach(element => {
+          const { lon, lat, height } = self.cartesianToDegrees(element)
+          linePointArr.push(lon)
+          linePointArr.push(lat)
+          polygonPointArr.push(lon)
+          polygonPointArr.push(lat)
+          polygonPointArr.push(height)
         })
-        this.startFill()
+
+        // 构造几何绘制控制对象
+        self.entityController = new self.CesiumZondy.Manager.EntityController({
+          viewer
+        })
+
+        // 绘制贴地形线
+        self.terrainLine = self.entityController.appendLine(
+          // 名称
+          '贴地形线',
+          // 点数组
+          linePointArr,
+          // 线宽
+          3,
+          // 线颜色
+          lineColor,
+          // 是否识别带高度的坐标
+          false,
+          // 是否贴地形
+          true,
+          // 附加属性
+          {}
+        )
+
+        // 构造区对象
+        const polygon = {
+          // 区
+          polygon: {
+            // 坐标
+            hierarchy: self.Cesium.Cartesian3.fromDegreesArrayHeights(
+              polygonPointArr
+            ),
+            // 颜色
+            material: fillColor,
+            // 分类类型：地形类型
+            classificationType: self.Cesium.ClassificationType.TERRAIN
+          }
+        }
+        // 绘制图形通用方法：对接Cesium原生特性
+        self.terrainPolygon = self.entityController.appendGraphics(polygon)
+
+        self.startFill(positions)
       }
     })
   }
 
+  cartesianToDegrees(cartesian) {
+    const { ellipsoid } = this.webGlobe.scene.globe
+    // 将笛卡尔坐标转换为地理坐标
+    const cartographic = ellipsoid.cartesianToCartographic(cartesian)
+    // 将弧度转为度的十进制度表示
+    const longitude = this.Cesium.Math.toDegrees(cartographic.longitude) // 转换后的经度
+    const latitude = this.Cesium.Math.toDegrees(cartographic.latitude) // 转换后的纬度
+    const coor = { lon: longitude, lat: latitude, height: cartographic.height }
+    return coor
+  }
+
   // 开始分析
-  startFill() {
+  startFill(positions) {
     this.loading = true
-    const self = this
-    const { positions } = self
     if (!positions) {
-      self.$message.warning('请绘制分析区域')
+      this.$message.warning('请绘制分析区域')
       return
     }
-    self.reset()
-    const { viewer } = self.webGlobe
-    const { x, y, z } = self.formData
+    this.reset()
+    const { viewer } = this.webGlobe
+    const { x, y, z } = this.formData
 
     // 初始化高级分析功能管理类
-    const advancedAnalysisManager = new self.CesiumZondy.Manager.AdvancedAnalysisManager(
+    const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
       {
         viewer
       }
@@ -180,7 +258,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
         height: z,
         // 返回结果的回调函数
         callback: result => {
-          self.result = {
+          this.result = {
             height: `${result.minHeight.toFixed(2)}~${result.maxHeight.toFixed(
               2
             )}`,
@@ -188,7 +266,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
             cutVolume: result.cutVolume,
             fillVolume: result.fillVolume
           }
-          self.loading = false
+          this.loading = false
         }
       }
     )
@@ -224,14 +302,19 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
   remove() {
     if (window.CutFillAnalyzeManage.cutFill) {
-      const { viewer } = this.webGlobe
-      // 移除视图中所有的实体对象
-      viewer.entities.removeById('cutfill')
       window.CutFillAnalyzeManage.cutFill = null
     }
     this.positions = null
     this.recalculate = false
     this.loading = false
+
+    if (this.terrainLine) {
+      this.entityController.removeEntity(this.terrainLine)
+      this.entityController.removeEntity(this.terrainPolygon)
+      this.terrainLine = null
+      this.terrainPolygon = null
+      this.entityController = null
+    }
   }
 }
 </script>

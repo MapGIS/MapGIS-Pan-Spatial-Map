@@ -147,17 +147,23 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
             // 设置洪水淹没区域最高高度
             maxHeight: Number(maxHeight <= 0 ? 2000 : maxHeight),
             // 设置洪水上涨速度
-            floodSpeed: Number(speed <= 0 ? 1 : speed),
-            // 水纹频率 指波浪的个数
-            frequency: Number(frequency <= 0 ? 1000 : frequency),
-            // 水纹速度
-            animationSpeed: Number(animationSpeed <= 0 ? 0.01 : animationSpeed),
-            // 水波的高度
-            amplitude: Number(amplitude <= 0 ? 10 : amplitude),
-            // 指定光线强度
-            specularIntensity: 3.0
+            floodSpeed: Number(speed <= 0 ? 1 : speed)
           })
         window.FloodingManage.flood.floodColor = self.edgeColor
+        // 水纹频率 指波浪的个数
+        window.FloodingManage.flood.frequency = Number(
+          frequency <= 0 ? 1000 : frequency
+        )
+        // 水纹速度
+        window.FloodingManage.flood.animationSpeed = Number(
+          animationSpeed <= 0 ? 0.01 : animationSpeed
+        )
+        // 水波的高度
+        window.FloodingManage.flood.amplitude = Number(
+          amplitude <= 0 ? 10 : amplitude
+        )
+        // 指定光线强度
+        window.FloodingManage.flood.specularIntensity = 3.0
 
         if (!self.depthTestAgainstTerrain) {
           viewer.scene.globe.depthTestAgainstTerrain = true
