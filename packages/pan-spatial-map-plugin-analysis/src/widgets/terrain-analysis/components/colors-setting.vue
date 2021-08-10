@@ -55,6 +55,12 @@ interface ITableDataItem {
 export default class MpColorsSetting extends Vue {
   @Prop() readonly value!: Record<string, string>
 
+  @Prop({
+    type: String,
+    default: '角度范围'
+  })
+  readonly rangeFiled?: string
+
   defaultColor = 'rgb(64,169,255,0.5)'
 
   dropdownVisible = false
@@ -67,7 +73,7 @@ export default class MpColorsSetting extends Vue {
       scopedSlots: { customRender: 'color' }
     },
     {
-      title: '角度范围',
+      title: this.rangeFiled,
       dataIndex: 'max',
       width: 100,
       scopedSlots: { customRender: 'max' }
