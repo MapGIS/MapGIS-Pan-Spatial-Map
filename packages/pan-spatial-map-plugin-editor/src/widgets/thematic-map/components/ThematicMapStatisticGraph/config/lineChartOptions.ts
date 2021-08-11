@@ -12,7 +12,7 @@ export const lineChartOptions = ({ title, x, y }) => {
       axisPointer: {
         type: 'line',
         lineStyle: {
-          color: 'rgba(65,174,255,1)',
+          color: '#41aeff',
           type: 'dashed'
         }
       }
