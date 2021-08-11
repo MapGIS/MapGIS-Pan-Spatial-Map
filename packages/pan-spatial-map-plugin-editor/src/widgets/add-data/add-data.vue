@@ -132,6 +132,8 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
   private isZoomLayer = false
 
+  private dataCatalogManager = dataCatalogManagerInstance
+
   get urlDataTypes2D() {
     return [...this.commonDataTypes]
   }
@@ -220,6 +222,14 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
   onAddData({ name, description, data, isZoom = false }) {
     this.isZoomLayer = isZoom
+
+    const isRepeat = this.isRepeatedService(data)
+
+    if (isRepeat) {
+      this.$message.warn('目录树中已存在相同地址的数据')
+      return
+    }
+
     let categoryDataList = this.dataList.find(
       category => category.name === name
     )
@@ -319,6 +329,11 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     }
 
     return type
+  }
+
+  // 判断添加的数据在目录树中是否已存在
+  private isRepeatedService(data) {
+    return this.dataCatalogManager.isRepeatedToAddData(data)
   }
 }
 </script>
