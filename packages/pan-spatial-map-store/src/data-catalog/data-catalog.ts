@@ -287,6 +287,73 @@ export class DataCatalogManager {
   }
 
   /**
+   * 判断添加的数据是否在目录树中已存在
+   * @author HeLong
+   * @date 11/08/2021
+   * @param {object} data 服务添加微件中添加的数据
+   * @return {boolean}  {true | false)}
+   * @memberof DataCatalogManager
+   */
+  public isRepeatedToAddData(data) {
+    const type = data.type
+    let isRepeated = false
+
+    switch (type) {
+      case 'IGSTile':
+      case 'IGSMapImage':
+      case 'IGSScene':
+        if (
+          this._allLayerConfigItems.some(item => {
+            return (
+              data.url.indexOf(item.ip) !== -1 &&
+              data.url.indexOf(item.port) !== -1 &&
+              data.url.indexOf(item.serverName) !== -1
+            )
+          }) ||
+          this._allLayerConfigItems.some(item => {
+            return item.serverURL === data.url
+          })
+        ) {
+          isRepeated = true
+        }
+        break
+      case 'IGSVector':
+        if (
+          this._allLayerConfigItems.some(item => {
+            return (
+              data.url.indexOf(item.ip) !== -1 &&
+              data.url.indexOf(item.port) !== -1 &&
+              data.url.indexOf(item.gdbps) !== -1
+            )
+          }) ||
+          this._allLayerConfigItems.some(item => {
+            return item.serverURL === data.url
+          })
+        ) {
+          isRepeated = true
+        }
+        break
+      case 'OGCWMTS':
+      case 'OGCWMS':
+      case 'ArcGISTile':
+      case 'ArcGISMapImage':
+      case 'VectorTile':
+        if (
+          this._allLayerConfigItems.some(item => {
+            return item.serverURL === data.url
+          })
+        ) {
+          isRepeated = true
+        }
+        break
+      default:
+        break
+    }
+
+    return isRepeated
+  }
+
+  /**
    * 获取处理过的数据目录信息
    * 处理包括：
    * 1.格式转换：从一张图vue ant design版本之前的配置转换为新的配置。
