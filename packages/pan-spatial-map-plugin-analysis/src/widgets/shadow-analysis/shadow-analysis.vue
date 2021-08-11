@@ -86,7 +86,7 @@
     </mp-setting-form>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="shadow">
-        分析({{ `${percent}%` }})
+        分析
       </a-button>
       <a-button type="primary" @click="sun">
         日照效果
@@ -261,7 +261,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
       // 绘制完成回调函数
       callback: positions => {
         this.remove()
-        // this.percent = 0.01
+        this.percent = 0.01
         let xmin
         let ymin
         let xmax
@@ -369,6 +369,11 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 <style lang="less" scoped>
 @import '../index.less';
 
+::v-deep {
+  .ant-time-picker {
+    width: 100%;
+  }
+}
 .mp-widget-shadow-analysis {
   display: flex;
   flex-direction: column;
