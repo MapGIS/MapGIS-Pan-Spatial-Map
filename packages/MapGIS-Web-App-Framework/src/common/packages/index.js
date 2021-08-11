@@ -28,6 +28,10 @@ import MpGroupTab from './group/GroupTab.vue'
 
 import MpMask from './mask/Mask.vue'
 
+import MpSpin from './spin/Spin.vue'
+
+import MpPortal from './portal'
+
 const components = [
   MpIcon,
   MpButton,
@@ -43,10 +47,12 @@ const components = [
   MpTreeSelect,
   MpSettingForm,
   MpGroupTab,
-  MpMask
+  MpMask,
+  MpSpin
 ]
 
 const install = Vue => {
+  Vue.prototype.$portal = MpPortal
   components.forEach(component => {
     Vue.component(
       (component.options && component.options.name) || component.name,

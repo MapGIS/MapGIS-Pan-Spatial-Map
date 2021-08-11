@@ -8,36 +8,36 @@ const chartOptions = ({ x, y }) => {
         type: 'line',
         lineStyle: {
           color: '#41aeff',
-          type: 'dashed'
+          type: 'solid'
         }
+      },
+      textStyle: {
+        fontSize: 10
       }
-    },
-    dataZoom: {
-      show: true,
-      realtime: true,
-      bottom: 50,
-      height: 8,
-      fillerColor: '#40a9ff',
-      start: 0,
-      end: 80,
-      showDetail: false,
-      zoomLock: true
     },
     title: {
       show: false
+    },
+    grid: {
+      top: 20,
+      left: 25,
+      right: 0,
+      bottom: 20,
+      contentLabel: false
     },
     xAxis: {
       show: false,
       data: x,
       axisLabel: {
         rotate: 60,
-        // interval: 1,
         fontSize: 10,
         fontFamily: '微软雅黑',
         color: txtColor
       }
     },
     yAxis: {
+      min: 0,
+      max: 1,
       axisLabel: {
         fontFamily: '微软雅黑',
         color: txtColor
