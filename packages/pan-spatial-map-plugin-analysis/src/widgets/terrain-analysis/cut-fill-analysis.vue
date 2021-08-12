@@ -25,16 +25,19 @@
           addon-after="(米)"
         />
       </a-form-item>
+    </mp-setting-form>
+    <mp-group-tab title="样式设置"></mp-group-tab>
+    <mp-setting-form>
       <a-form-item label="边线">
         <MpColorPicker
-          :color.sync="formData.lineColor"
+          :color.sync="style.lineColor"
           :disableAlpha="false"
           class="color-picker"
         ></MpColorPicker>
       </a-form-item>
       <a-form-item label="填充">
         <MpColorPicker
-          :color.sync="formData.fillColor"
+          :color.sync="style.fillColor"
           :disableAlpha="false"
           class="color-picker"
         ></MpColorPicker>
@@ -90,7 +93,10 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
   private formData = {
     x: 16,
     y: 16,
-    z: 2000,
+    z: 2000
+  }
+
+  private style = {
     lineColor: 'rgba(0,255,0,1)',
     fillColor: 'rgba(0,0,255,0.3)'
   }
@@ -114,6 +120,8 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
   private terrainPolygon = null
 
+  private depthTestAgainstTerrain = false // 深度检测是否已开启
+
   @Watch('formData', { deep: true, immediate: true })
   changeFormData() {
     if (this.positions) {
@@ -128,7 +136,12 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  onActive() {}
+  onActive() {
+    const { viewer } = this.webGlobe
+    if (viewer.scene.globe.depthTestAgainstTerrain) {
+      this.depthTestAgainstTerrain = true
+    }
+  }
 
   // 微件失活时
   onDeActive() {
@@ -144,28 +157,27 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
   }
 
   analysis() {
-    const lineColor = this.getColor(this.formData.lineColor)
-    const fillColor = this.getColor(this.formData.fillColor)
-    const self = this
+    const lineColor = this.getColor(this.style.lineColor)
+    const fillColor = this.getColor(this.style.fillColor)
+
+    const { viewer } = this.webGlobe
     // 初始化交互式绘制控件
     window.CutFillAnalyzeManage.drawElement =
       window.CutFillAnalyzeManage.drawElement ||
-      new self.Cesium.DrawElement(self.webGlobe.viewer)
+      new this.Cesium.DrawElement(viewer)
     // 激活交互式绘制工具
     window.CutFillAnalyzeManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
-        self.stopDraw()
-        self.positions = positions
+        this.stopDraw()
+        this.remove()
 
-        self.remove()
-
-        const { viewer } = self.webGlobe
+        this.positions = positions
 
         const linePointArr = []
         const polygonPointArr = []
         positions.forEach(element => {
-          const { lon, lat, height } = self.cartesianToDegrees(element)
+          const { lon, lat, height } = this.cartesianToDegrees(element)
           linePointArr.push(lon)
           linePointArr.push(lat)
           polygonPointArr.push(lon)
@@ -174,12 +186,12 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
         })
 
         // 构造几何绘制控制对象
-        self.entityController = new self.CesiumZondy.Manager.EntityController({
+        this.entityController = new this.CesiumZondy.Manager.EntityController({
           viewer
         })
 
         // 绘制贴地形线
-        self.terrainLine = self.entityController.appendLine(
+        this.terrainLine = this.entityController.appendLine(
           // 名称
           '贴地形线',
           // 点数组
@@ -201,19 +213,19 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
           // 区
           polygon: {
             // 坐标
-            hierarchy: self.Cesium.Cartesian3.fromDegreesArrayHeights(
+            hierarchy: this.Cesium.Cartesian3.fromDegreesArrayHeights(
               polygonPointArr
             ),
             // 颜色
             material: fillColor,
             // 分类类型：地形类型
-            classificationType: self.Cesium.ClassificationType.TERRAIN
+            classificationType: this.Cesium.ClassificationType.TERRAIN
           }
         }
         // 绘制图形通用方法：对接Cesium原生特性
-        self.terrainPolygon = self.entityController.appendGraphics(polygon)
+        this.terrainPolygon = this.entityController.appendGraphics(polygon)
 
-        self.startFill(positions)
+        this.startFill()
       }
     })
   }
@@ -230,7 +242,8 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
   }
 
   // 开始分析
-  startFill(positions) {
+  startFill() {
+    const { positions } = this
     this.loading = true
     if (!positions) {
       this.$message.warning('请绘制分析区域')
@@ -239,6 +252,10 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     this.reset()
     const { viewer } = this.webGlobe
     const { x, y, z } = this.formData
+
+    if (!this.depthTestAgainstTerrain) {
+      viewer.scene.globe.depthTestAgainstTerrain = true
+    }
 
     // 初始化高级分析功能管理类
     const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
@@ -307,6 +324,10 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     this.positions = null
     this.recalculate = false
     this.loading = false
+
+    if (!this.depthTestAgainstTerrain) {
+      this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
+    }
 
     if (this.terrainLine) {
       this.entityController.removeEntity(this.terrainLine)
