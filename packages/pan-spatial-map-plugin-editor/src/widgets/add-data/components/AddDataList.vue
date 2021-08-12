@@ -361,6 +361,13 @@ export default class AddDataList extends Vue {
     this.onSelectChange(this.selectedRowKeys)
   }
 
+  private unSelectData(id) {
+    const index = this.selectedRowKeys.findIndex(item => item === id)
+
+    this.selectedRowKeys.splice(index, 1)
+    this.onSelectChange(this.selectedRowKeys)
+  }
+
   private addLayer(dataItem) {
     this.$emit('add-layer', dataItem)
   }

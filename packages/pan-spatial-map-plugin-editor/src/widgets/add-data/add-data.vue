@@ -293,25 +293,35 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
     const layer = DataCatalogManager.generateLayerByConfig(layerConfig)
     if (layer) {
-      if (layer.loadStatus === LoadStatus.notLoaded) {
-        await layer.load()
-      }
-
-      if (layer.type === LayerType.IGSScene && this.is2DMapMode === true) {
-        this.switchMapMode()
-      }
-      this.document.defaultMap.add(layer)
-
-      if (this.isZoomLayer) {
-        if (layer.type !== LayerType.IGSScene) {
-          fitBoundByLayer(layer, {
-            Cesium,
-            map,
-            webGlobe,
-            CesiumZondy
-          })
+      try {
+        if (layer.loadStatus === LoadStatus.notLoaded) {
+          await layer.load()
         }
-        this.isZoomLayer = false
+      } catch (error) {
+        console.log(error)
+      } finally {
+        if (layer.loadStatus === LoadStatus.loaded) {
+          if (layer.type === LayerType.IGSScene && this.is2DMapMode === true) {
+            this.switchMapMode()
+          }
+          this.document.defaultMap.add(layer)
+
+          if (this.isZoomLayer) {
+            if (layer.type !== LayerType.IGSScene) {
+              fitBoundByLayer(layer, {
+                Cesium,
+                map,
+                webGlobe,
+                CesiumZondy
+              })
+            }
+
+            this.isZoomLayer = false
+          }
+        } else {
+          this.$message.error(`图层:${layer.title}加载失败`)
+          this.$refs.refAddDataList.unSelectData(layer.id)
+        }
       }
     }
   }
