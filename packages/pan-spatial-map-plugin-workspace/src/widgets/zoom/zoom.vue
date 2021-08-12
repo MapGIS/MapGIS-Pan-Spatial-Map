@@ -11,7 +11,7 @@
       </div>
     </a-tooltip>
     <a-tooltip title="重置" placement="right" :overlay-style="{ zIndex: 1000 }">
-      <div class="restore button" @click="onRestore">
+      <div class="button" @click="onRestore">
         <a-icon type="home" />
       </div>
     </a-tooltip>
@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { Objects, WidgetMixin } from '@mapgis/web-app-framework'
 import _last from 'lodash/last'
 
@@ -29,34 +29,38 @@ export default class MpZoom extends Mixins(WidgetMixin) {
 
   private defaultCameraView = {
     destination: {
-      x: -11497134.029909685,
-      y: 31691287.057739086,
-      z: 23000012.279109716
+      x: -8579846.669255955,
+      y: 20871852.812287178,
+      z: 16141755.871903004
     },
     orientation: {
-      heading: 0.09497969065312528,
-      pitch: -1.5659838368719945,
+      heading: 0.03209985611581789,
+      pitch: -1.5635848496585378,
       roll: 0
     },
     positionWC: {
-      x: -11497134.029909685,
-      y: 31691287.057739094,
-      z: 23000012.279109713
+      x: -8579846.66925595,
+      y: 20871852.812287178,
+      z: 16141755.871903006
     }
   }
 
-  private defaultMapBounds = {
-    _ne: {
-      lat: 41.29839790254586,
-      lng: 118.22836140945924
-    },
-    _sw: {
-      lat: 38.85668647676454,
-      lng: 114.64132527664754
+  private cameraView = null
+
+  private mapBounds = null
+
+  @Watch('is2DMapMode', { immediate: true })
+  is2DMapModeChange(mode2D) {
+    if (!mode2D) {
+      if (this.webGlobe && !this.cameraView) {
+        // fixme 目前的首次加载的初始视角效果不好，先使用defaultCameraView视角做重置视角
+        // this.cameraView = this.webGlobe.viewer.camera.getView()
+        this.cameraView = this.defaultCameraView
+      }
+    } else if (this.map && !this.mapBounds) {
+      this.mapBounds = this.map.getBounds()
     }
   }
-
-  private cameraView = this.defaultCameraView
 
   created() {
     this.sceneController = Objects.SceneController.getInstance(
@@ -70,10 +74,11 @@ export default class MpZoom extends Mixins(WidgetMixin) {
     if (!this.is2DMapMode) {
       this.sceneController.cameraFlyTo(this.cameraView)
     } else if (this.map) {
-      const { _ne, _sw } = this.defaultMapBounds
+      const { _ne, _sw } = this.mapBounds
+      this.map.setPitch(0)
       this.map.fitBounds([
-        [_ne.lng, _sw.lat],
-        [_sw.lng, _ne.lat]
+        [_sw.lng, _sw.lat],
+        [_ne.lng, _ne.lat]
       ])
     }
   }
@@ -155,9 +160,9 @@ export default class MpZoom extends Mixins(WidgetMixin) {
     &:hover {
       color: @primary-color;
     }
-  }
-  .zoom-in {
-    border-bottom: 1px solid @border-color;
+    &:not(:last-of-type) {
+      border-bottom: 1px solid @border-color;
+    }
   }
 }
 </style>
