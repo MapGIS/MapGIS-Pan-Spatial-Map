@@ -92,6 +92,7 @@
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
         :requestVertexNormals="true"
+        @terrain-loaded="() => M3Dloaded(layerProps.id)"
       />
     </div>
     <div class="statebardiv">
