@@ -9,7 +9,8 @@ import {
   MpTerrainAnalysis,
   MpSkylineAnalysis,
   MpShadowAnalysis,
-  MpParticleEffects
+  MpParticleEffects,
+  MpProfileAnalysis
 } from './widgets'
 
 const components = [
@@ -23,7 +24,8 @@ const components = [
   MpTerrainAnalysis,
   MpSkylineAnalysis,
   MpShadowAnalysis,
-  MpParticleEffects
+  MpParticleEffects,
+  MpProfileAnalysis
 ]
 
 const install = Vue => {

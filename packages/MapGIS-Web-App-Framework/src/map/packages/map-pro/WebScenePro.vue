@@ -87,7 +87,8 @@
       />
       <mapgis-3d-igs-terrain
         v-if="isIgsTerrainLayer(layerProps.type, layerProps.renderType)"
-        :id="layerProps.layerId"
+        :vueIndex="layerProps.id"
+        :id="layerProps.id"
         :show="layerProps.show"
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
