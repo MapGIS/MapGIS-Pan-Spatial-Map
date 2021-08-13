@@ -9,3 +9,4 @@ export { default as MpTerrainAnalysis } from './terrain-analysis/terrain-analysi
 export { default as MpSkylineAnalysis } from './skyline-analysis/skyline-analysis.vue'
 export { default as MpShadowAnalysis } from './shadow-analysis/shadow-analysis.vue'
 export { default as MpParticleEffects } from './particle-effects/particle-effects.vue'
+export { default as MpProfileAnalysis } from './profile-analysis/profile-analysis.vue'

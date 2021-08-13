@@ -71,9 +71,9 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import {
   WidgetMixin,
   LayerType,
+  IGSSceneSublayerRenderType,
   LoadStatus,
-  Objects,
-  Query
+  Objects
 } from '@mapgis/web-app-framework'
 
 @Component({
@@ -136,7 +136,11 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
       .forEach((layer, index) => {
         if (layer.loadStatus === LoadStatus.loaded) {
           if (layer.type === LayerType.IGSScene) {
-            layers.push(layer)
+            const { renderType } = layer.activeScene.sublayers[0]
+            if (renderType === IGSSceneSublayerRenderType.modelCache) {
+              // 剖切分析暂时只支持模型
+              layers.push(layer)
+            }
           }
         }
       })
@@ -155,7 +159,6 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   @Watch('model', { deep: true, immediate: true })
   changeModel() {
     if (!this.isActive || !this.model) return
-    // 如果模型在当前视图范围内，不跳转
     const source = this.landscapeLayerFuc()
     Objects.SceneController.getInstance(
       this.Cesium,
