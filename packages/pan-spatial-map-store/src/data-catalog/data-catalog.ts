@@ -286,6 +286,19 @@ export class DataCatalogManager {
     return ret
   }
 
+  private getQueryString(name, searchString) {
+    const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
+
+    if (searchString) {
+      // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+      const r = searchString.match(reg)
+      if (r !== null) {
+        return decodeURIComponent(r[2])
+      }
+      return null
+    }
+  }
+
   /**
    * 判断添加的数据是否在目录树中已存在
    * @author HeLong
@@ -294,20 +307,25 @@ export class DataCatalogManager {
    * @return {boolean}  {true | false)}
    * @memberof DataCatalogManager
    */
-  public isRepeatedToAddData(data) {
+  public hasRepeatedService(data) {
     const type = data.type
+    const url = new URL(data.url)
+    const ip = url.hostname
+    const port = url.port
     let isRepeated = false
 
     switch (type) {
       case 'IGSTile':
       case 'IGSMapImage':
       case 'IGSScene':
+        const pathNameArr = url.pathname.split('/')
+        const serverName = pathNameArr[pathNameArr.length - 1]
         if (
           this._allLayerConfigItems.some(item => {
             return (
-              data.url.indexOf(item.ip) !== -1 &&
-              data.url.indexOf(item.port) !== -1 &&
-              data.url.indexOf(item.serverName) !== -1
+              item.ip === ip &&
+              item.port === port &&
+              item.serverName === serverName
             )
           }) ||
           this._allLayerConfigItems.some(item => {
@@ -318,13 +336,10 @@ export class DataCatalogManager {
         }
         break
       case 'IGSVector':
+        const gdbps = this.getQueryString('gdbps', url.search.substring(1))
         if (
           this._allLayerConfigItems.some(item => {
-            return (
-              data.url.indexOf(item.ip) !== -1 &&
-              data.url.indexOf(item.port) !== -1 &&
-              data.url.indexOf(item.gdbps) !== -1
-            )
+            return item.ip === ip && item.port === port && item.gdbps === gdbps
           }) ||
           this._allLayerConfigItems.some(item => {
             return item.serverURL === data.url
