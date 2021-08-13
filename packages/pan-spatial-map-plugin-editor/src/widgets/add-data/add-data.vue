@@ -343,7 +343,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
   // 判断添加的数据在目录树中是否已存在
   private isRepeatedService(data) {
-    return this.dataCatalogManager.isRepeatedToAddData(data)
+    return this.dataCatalogManager.hasRepeatedService(data)
   }
 }
 </script>
