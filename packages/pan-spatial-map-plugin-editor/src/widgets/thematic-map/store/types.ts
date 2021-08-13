@@ -1,11 +1,13 @@
-import { Feature } from '@mapgis/web-app-framework'
+import { LayerType, Feature } from '@mapgis/web-app-framework'
 
 export const tuple = <T extends string[]>(...args: T) => args
 
 // 节点类型
 type NodeType = 'panel' | 'list' | 'subjet'
+
 // 专题图配置
-type ServerType = 'gdbp' | 'doc' | 'geojson' | 'excel'
+type ConfigType = 'gdbp' | 'doc' | 'geojson' | 'excel'
+
 /**
  * 专题类型:
  * 分段专题图 : SubSectionMap
@@ -25,6 +27,35 @@ export type SubjectType =
   | 'Label'
   | 'HexBin'
   | string
+
+// 专题图配置
+export interface ISubjectConfigItem {
+  subjectType?: SubjectType
+  configType?: ConfigType
+  time?: string
+  ip?: string
+  port?: string
+  gdbp?: string
+  docName?: string
+  layerName?: string
+  layerIndex?: string
+  serverType?: LayerType
+  table?: {
+    showFields: string[]
+    showFieldsTitle?: Record<string, string>
+  }
+  graph?: {
+    showFields: string[]
+    showFieldsTitle?: Record<string, string>
+    field: string
+  }
+  popup?: {
+    showFields: string[]
+    showFieldsTitle?: Record<string, string>
+    title: string
+  }
+}
+
 export interface IConfigBase {
   id: string // 节点名
   title: string // 节点名
@@ -37,15 +68,12 @@ interface OldSubjectConfig extends IConfigBase {
   children?: OldSubjectConfig[] // 子节点数据,panel和list有,subject没有
   type?: SubjectType // 专题类型
   config?: {
-    type?: ServerType // 数据请求方式
+    type?: ConfigType // 数据请求方式
     data:
+      | Array<ISubjectConfigItem>
       | Array<{
           time: string
-          [k: string]: any
-        }>
-      | Array<{
-          time: string
-          subData: Array<Record<string, any>>
+          subData: Array<ISubjectConfigItem>
         }>
   }
 }
@@ -55,10 +83,7 @@ export interface NewSubjectConfig extends IConfigBase {
   parentId: string // 父节点ID
   parentTitle: string // 父节点Title
   type: SubjectType
-  config: Array<{
-    time: string
-    [k: string]: any
-  }>
+  config: Array<ISubjectConfigItem>
 }
 
 // 专题图基础配置
@@ -107,7 +132,7 @@ export interface PageParam {
 
 // 专题数据: 旧版本的请求方式提取到了外层, 新版本直接根据配置项里的gdbp|docName判断
 export interface SubjectData {
-  configType?: ServerType
+  configType?: ConfigType
   subjectType: SubjectType
   [k: string]: any
 }

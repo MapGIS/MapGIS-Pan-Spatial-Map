@@ -1,6 +1,10 @@
 <template>
   <!-- 蜂窝图 -->
-  <mapgis-3d-mapv-layer :geojson="geojsonPoint" :options="hexbinOptions" />
+  <mapgis-3d-mapv-layer
+    :geojson="geojsonPoint"
+    :options="options"
+    :count-field="countField"
+  />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
@@ -10,19 +14,19 @@ import BaseMinxin from '../../mixins/base'
 export default class CesiumHexBin extends Mixins(BaseMinxin) {
   geojsonPoint = {}
 
-  options = {
-    cesium: {
-      postRender: true,
-      postRenderFrame: 0
-    },
-    context: '2d',
-    draw: 'honeycomb',
-    max: 100
+  get countField() {
+    return 'count'
   }
 
-  get hexbinOptions() {
+  get options() {
     return {
-      ...this.options,
+      cesium: {
+        postRender: true,
+        postRenderFrame: 0
+      },
+      context: '2d',
+      draw: 'honeycomb',
+      max: 100,
       ...(this.subjectData.style || {})
     }
   }
@@ -32,7 +36,7 @@ export default class CesiumHexBin extends Mixins(BaseMinxin) {
    */
   showLayer() {
     if (this.geojson) {
-      this.geojsonPoint = this.addCountToGeoJSON(this.geojson)
+      this.geojsonPoint = this.geojson
     }
   }
 

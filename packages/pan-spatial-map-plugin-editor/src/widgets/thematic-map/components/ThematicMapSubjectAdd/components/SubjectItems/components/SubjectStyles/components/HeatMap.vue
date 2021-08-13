@@ -1,12 +1,13 @@
 <template>
   <div class="heat-map">
-    <!-- 实体大小 -->
-    <mp-row-flex label="实体大小" label-align="right" :span="[6, 18]">
-      <a-input-number v-model="style.size" :min="5" />
-    </mp-row-flex>
     <!-- 最大权重 -->
-    <mp-row-flex label="最大权重" label-align="right" :span="[6, 18]">
-      <a-input-number v-model="style.weight" :min="8" />
+    <!-- <mp-row-flex label="最大权重" label-align="right" :span="[6, 18]">
+      <a-input-number v-model="style.max" :min="8" />
+    </mp-row-flex> -->
+    <!-- 实体大小 -->
+    <mp-row-flex label="半径大小" label-align="right" :span="[6, 18]">
+      <!-- <a-input-number v-model="style.size" :min="10" /> -->
+      <a-input-number v-model="style.radius" :min="50" />
     </mp-row-flex>
     <!-- 颜色填充 -->
     <mp-row-flex label="填充颜色" label-align="right" :span="[6, 18]">
@@ -31,8 +32,9 @@ export default class HeatMap extends Vue {
   @Prop({ type: Object }) readonly value!: Record<string, any>
 
   defaultStyle = {
-    size: 13,
-    weight: '30',
+    // size: 13,
+    // max: '30',
+    radius: 120,
     gradient: {
       '0.25': 'rgb(0,0,255)',
       '0.55': 'rgb(0,255,0)',

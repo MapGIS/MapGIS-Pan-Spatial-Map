@@ -18,6 +18,13 @@ import {
 } from '../types'
 import state from './state'
 
+enum IConfigType {
+  doc = 'doc',
+  gdbp = 'gdbp',
+  geojson = 'geojson',
+  excel = 'excel'
+}
+
 const mutations = {
   /**
    * 专题图各子功能弹框的开关
@@ -64,76 +71,80 @@ const mutations = {
    * @param onError
    * 目前只支持查询格式为json, 主要因为webclient-vue的分段/统计/普通静态标注专题图暂不支持geojson的解析
    */
-  setFeaturesQuery(
+  async setFeaturesQuery(
     { state, commit },
     { isPage = true, onSuccess, onError }: any = {}
   ) {
-    const { pageParam, subjectData, baseConfig = {} } = state
-    if (!subjectData) {
-      commit('setPageDataSet', null)
-      return
-    }
-    const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
-    const { baseIp, basePort } = baseConfig
-    const {
-      ip,
-      port,
-      configType,
-      gdbp,
-      docName,
-      layerName,
-      layerIndex,
-      table
-    } = subjectData
-    const _ip = ip || baseIp || baseConfigIp
-    const _port = port || basePort || baseConfigPort
-    const _pageParam = isPage
-      ? pageParam
-      : {
-          page: 0,
-          pageCount: 9999
-        }
-    const fields = table ? table.showFields.join(',') : ''
-    let params = {}
-    if (
-      (configType && configType.toLowerCase() === 'gdbp') ||
-      (!configType && gdbp)
-    ) {
-      params = {
-        ...params,
-        gdbp
+    try {
+      if (!state.subjectData) {
+        commit('setPageDataSet', null)
+        return
       }
-    }
-    if (
-      (configType && configType.toLowerCase() === 'doc') ||
-      (!configType && docName)
-    ) {
-      params = {
-        ...params,
+      const {
+        ip,
+        port,
+        gdbp,
         docName,
         layerName,
-        layerIdxs: layerIndex
+        layerIndex,
+        table,
+        configType
+      } = state.subjectData
+      const { baseIp, basePort } = state.baseConfig
+      const {
+        ip: baseConfigIp,
+        port: baseConfigPort
+      } = baseConfigInstance.config
+      const _ip = ip || baseIp || baseConfigIp
+      const _port = port || basePort || baseConfigPort
+      const fields = table ? table.showFields.join(',') : ''
+      const pageParam = isPage
+        ? state.pageParam
+        : {
+            page: 0,
+            pageCount: 9999
+          }
+      let params: Feature.FeatureQueryParam
+      switch (configType.toLowerCase()) {
+        case IConfigType.doc:
+          params = {
+            ...params,
+            docName,
+            layerName,
+            layerIdxs: layerIndex
+          }
+          break
+        case IConfigType.gdbp:
+          params = {
+            ...params,
+            gdbp
+          }
+          break
+        default:
+          break
       }
-    }
-    commit('setLoading', true)
-    const fn = Feature.FeatureQuery.query({
-      ip: _ip,
-      port: _port,
-      fields,
-      IncludeGeometry: true,
-      f: 'json',
-      ..._pageParam,
-      ...params
-    })
-    if (fn && fn.then) {
-      fn.then((dataSet: Feature.FeatureIGS | any) => {
-        commit('setLoading', false)
-        commit('setPageDataSet', dataSet)
-        onSuccess && onSuccess(dataSet)
-      }).catch(e => {
-        commit('setLoading', false)
-        onError && onError(e)
+      if (!params) {
+        console.error('查询参数为undefined')
+        return
+      }
+      commit('setLoading', true)
+      const dataSet:
+        | Feature.FeatureIGS
+        | any = await Feature.FeatureQuery.query({
+        ip: _ip,
+        port: _port,
+        IncludeGeometry: true,
+        f: 'json',
+        fields,
+        ...pageParam,
+        ...params
       })
+      commit('setLoading', false)
+      commit('setPageDataSet', dataSet)
+      onSuccess && onSuccess(dataSet)
+    } catch (e) {
+      commit('setLoading', false)
+      onError && onError(e)
     }
   },
   /**
@@ -156,13 +167,19 @@ const mutations = {
       if (Array.isArray(config)) {
         // 新版
         const item = config.find((d: any) => d.time === time)
+        const configType = item.docName
+          ? IConfigType.doc
+          : item.gdbp
+          ? IConfigType.gdbp
+          : ''
         subjectData = {
           ...item,
-          subjectType
+          subjectType,
+          configType
         }
       } else {
         // 旧版
-        const { type = 'gdbp', data } = config
+        const { type: configType = IConfigType.gdbp, data } = config
         if (data && data.length) {
           const item = data.find((d: any) => d.time === time)
           const subData =
@@ -170,7 +187,7 @@ const mutations = {
           subjectData = {
             ...subData,
             subjectType,
-            configType: type
+            configType
           }
         }
       }
