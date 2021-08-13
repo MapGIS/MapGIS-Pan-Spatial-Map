@@ -286,19 +286,6 @@ export class DataCatalogManager {
     return ret
   }
 
-  private getQueryString(name, searchString) {
-    const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
-
-    if (searchString) {
-      // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
-      const r = searchString.match(reg)
-      if (r !== null) {
-        return decodeURIComponent(r[2])
-      }
-      return null
-    }
-  }
-
   /**
    * 判断添加的数据是否在目录树中已存在
    * @author HeLong
@@ -916,6 +903,19 @@ export class DataCatalogManager {
         break
       default:
         break
+    }
+  }
+
+  private getQueryString(name, searchString) {
+    const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
+
+    if (searchString) {
+      // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+      const r = searchString.match(reg)
+      if (r !== null) {
+        return decodeURIComponent(r[2])
+      }
+      return null
     }
   }
 
