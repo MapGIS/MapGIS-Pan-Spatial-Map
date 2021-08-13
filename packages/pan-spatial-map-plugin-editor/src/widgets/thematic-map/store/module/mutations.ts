@@ -19,10 +19,10 @@ import {
 import state from './state'
 
 enum IConfigType {
-  doc = 'doc',
-  gdbp = 'gdbp',
-  geojson = 'geojson',
-  excel = 'excel'
+  DOC = 'doc',
+  GDBP = 'gdbp',
+  GEOJSON = 'geojson',
+  EXCEL = 'excel'
 }
 
 const mutations = {
@@ -106,7 +106,7 @@ const mutations = {
           }
       let params: Feature.FeatureQueryParam
       switch (configType.toLowerCase()) {
-        case IConfigType.doc:
+        case IConfigType.DOC:
           params = {
             ...params,
             docName,
@@ -114,7 +114,7 @@ const mutations = {
             layerIdxs: layerIndex
           }
           break
-        case IConfigType.gdbp:
+        case IConfigType.GDBP:
           params = {
             ...params,
             gdbp
@@ -167,11 +167,7 @@ const mutations = {
       if (Array.isArray(config)) {
         // 新版
         const item = config.find((d: any) => d.time === time)
-        const configType = item.docName
-          ? IConfigType.doc
-          : item.gdbp
-          ? IConfigType.gdbp
-          : ''
+        const configType = item.docName ? IConfigType.DOC : IConfigType.GDBP
         subjectData = {
           ...item,
           subjectType,
@@ -179,7 +175,7 @@ const mutations = {
         }
       } else {
         // 旧版
-        const { type: configType = IConfigType.gdbp, data } = config
+        const { type: configType = IConfigType.GDBP, data } = config
         if (data && data.length) {
           const item = data.find((d: any) => d.time === time)
           const subData =

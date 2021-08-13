@@ -720,9 +720,9 @@
                         "port": "",
                         "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
                         "weight": "30",
+                        "field": "AREA",
                         "style": {
                           "size": 13,
-
                           "gradient": {
                             "0.25": "rgb(0,0,255)",
                             "0.55": "rgb(0,255,0)",
@@ -757,7 +757,6 @@
               "visible": true,
               "nodeType": "subject",
               "type": "HeatMap",
-              "field": "人口数",
               "config": {
                 "type": "gdbp",
                 "data": [
@@ -769,9 +768,9 @@
                         "port": "",
                         "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                         "weight": "30",
+                        "field": "人口数",
                         "style": {
                           "size": 13,
-
                           "gradient": {
                             "0.25": "rgb(0,0,255)",
                             "0.55": "rgb(0,255,0)",
@@ -815,6 +814,7 @@
                         "layerName": "地级城市驻地",
                         "layerIndex": "1",
                         "weight": "30",
+                        "field": "AREA",
                         "style": {
                           "size": 13,
 
@@ -871,6 +871,7 @@
                     "docName": "",
                     "layerIndex": null,
                     "weight": 8,
+                    "field": "AREA",
                     "style": {
                       "size": 30,
                       "max": 100,
@@ -942,6 +943,7 @@
                         "weight": "30",
                         "docName": "",
                         "layerIndex": null,
+                        "field": "AREA",
                         "dataBase": {
                           "code": "",
                           "codeYear": "",

@@ -91,7 +91,7 @@ export default {
     },
     placeholder: {
       type: String,
-      default: '请选择或输入数据'
+      default: '请选择或输入内容'
     },
     showLine: {
       type: Boolean,

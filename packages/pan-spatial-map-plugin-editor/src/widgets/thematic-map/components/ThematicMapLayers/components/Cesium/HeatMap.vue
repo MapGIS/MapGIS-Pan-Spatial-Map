@@ -5,7 +5,12 @@
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { Feature, LayerType, LoadStatus } from '@mapgis/web-app-framework'
+import {
+  Feature,
+  LayerType,
+  LoadStatus,
+  CommonUtil
+} from '@mapgis/web-app-framework'
 import { DataCatalogManager } from '@mapgis/pan-spatial-map-store'
 import BaseMinxin from '../../mixins/base'
 
@@ -16,7 +21,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   // geojsonPoint = {}
 
   get countField() {
-    return '人口数'
+    return this.subjectData.field || 'count'
   }
 
   get options() {
@@ -90,9 +95,10 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   getData(): Array<{ x: number; y: number; value: number }> {
     return this.geojson.features.map(
       ({ geometry: { coordinates }, properties }: Feature.GFeature) => {
-        const value =
-          properties[this.countField] ||
-          Number((Math.random() * 100).toFixed(2))
+        const countValue = properties[this.countField]
+        const value = CommonUtil.isDef(countValue)
+          ? countValue
+          : Number((Math.random() * 100).toFixed(2))
         const [x, y] = Array.isArray(coordinates[0])
           ? coordinates[0][0]
           : coordinates
@@ -120,6 +126,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
     if (this.geojson) {
       // this.geojsonPoin = this.geojson
       this.getBounds().then(bounds => {
+        this.removeLayer()
         const { viewer } = this.webGlobe
         const analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
           viewer

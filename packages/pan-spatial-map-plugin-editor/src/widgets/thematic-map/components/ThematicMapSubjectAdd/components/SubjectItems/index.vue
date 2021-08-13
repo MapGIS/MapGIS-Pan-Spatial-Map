@@ -47,8 +47,9 @@
           </mp-row-flex>
           <!-- 年度或时间、服务设置等公共设置项 -->
           <common
-            :time="sub.time"
+            :subject-config="sub"
             @time-change="timeChange($event, sub)"
+            @field-change="fieldChange($event, sub)"
             @server-change="serverChange($event, sub)"
           />
           <!-- 各专题图样式、动画等配置 -->
@@ -123,6 +124,13 @@ export default class SubjectItems extends Vue {
    */
   timeChange(time, sub) {
     this.$set(sub, 'time', time)
+  }
+
+  /**
+   * 专题图选择change
+   */
+  fieldChange(field, sub) {
+    this.$set(sub, 'field', field)
   }
 
   /**
