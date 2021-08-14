@@ -70,6 +70,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
 
   analysis() {
     const { viewer } = this.webGlobe
+    this.profile2dVisible = true
     if (!this.depthTestAgainstTerrain) {
       viewer.scene.globe.depthTestAgainstTerrain = true
     }
@@ -80,13 +81,20 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   }
 
   profileSuccess() {
-    this.expand = true
+    this.profile2dVisible = true
   }
 
   remove() {
     if (!this.depthTestAgainstTerrain) {
       this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
     }
+
+    if (this.terrainProfile) {
+      this.terrainProfile.destroy()
+      this.terrainProfile = null
+    }
+
+    this.profile2dVisible = false
   }
 }
 </script>
