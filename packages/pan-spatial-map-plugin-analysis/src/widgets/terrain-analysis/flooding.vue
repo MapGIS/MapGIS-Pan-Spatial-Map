@@ -86,6 +86,9 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 
   private depthTestAgainstTerrain = false // 深度检测是否已开启
 
+  /**
+   * rgba转cesium内部颜色
+   */
   get edgeColor() {
     return Objects.SceneController.getInstance(
       this.Cesium,

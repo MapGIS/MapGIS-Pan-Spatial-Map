@@ -7,7 +7,7 @@
     </mp-group-tab>
     <MpColorsSetting
       v-model="params"
-      :rangeFiled="'坡度范围'"
+      :rangeField="'坡度范围'"
     ></MpColorsSetting>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="add">分析</a-button>

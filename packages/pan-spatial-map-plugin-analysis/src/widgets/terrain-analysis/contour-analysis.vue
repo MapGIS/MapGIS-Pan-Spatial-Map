@@ -72,8 +72,6 @@ export default class MpContourAnalysis extends Mixins(WidgetMixin) {
 
     const { contourWidth, contourSpacing } = this.formData
 
-    const self = this
-
     // 激活交互式绘制工具
     window.ContourAnalysisManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
