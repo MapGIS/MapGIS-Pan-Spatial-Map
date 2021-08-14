@@ -3,7 +3,7 @@
     <!-- 设置面板头部 -->
     <mp-toolbar :bordered="false" class="subject-items-head">
       <mp-toolbar-title :has-padding="false">
-        专题设置
+        专题图设置
       </mp-toolbar-title>
       <mp-toolbar-command-group>
         <mp-toolbar-command @click="add" title="新增" icon="plus" />
