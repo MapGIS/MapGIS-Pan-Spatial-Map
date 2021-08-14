@@ -148,6 +148,9 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     this.stopCutFillM()
   }
 
+  /**
+   * rgba转cesium内部颜色
+   */
   getColor(rgba) {
     return Objects.SceneController.getInstance(
       this.Cesium,
@@ -156,6 +159,9 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     ).colorToCesiumColor(rgba)
   }
 
+  /**
+   * 分析
+   */
   analysis() {
     const lineColor = this.getColor(this.style.lineColor)
     const fillColor = this.getColor(this.style.fillColor)

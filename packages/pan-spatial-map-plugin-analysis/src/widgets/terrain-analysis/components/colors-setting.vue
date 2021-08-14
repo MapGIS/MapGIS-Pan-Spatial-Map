@@ -53,13 +53,14 @@ interface ITableDataItem {
 
 @Component({ name: 'MpColorsSetting' })
 export default class MpColorsSetting extends Vue {
+  // [{ min: 0, max: 60, color: 'rgba(244, 67, 54, 0.5)' }...]
   @Prop() readonly value!: Record<string, string>
 
   @Prop({
     type: String,
     default: '角度范围'
   })
-  readonly rangeFiled?: string
+  readonly rangeField?: string
 
   defaultColor = 'rgb(64,169,255,0.5)'
 
@@ -73,7 +74,7 @@ export default class MpColorsSetting extends Vue {
       scopedSlots: { customRender: 'color' }
     },
     {
-      title: this.rangeFiled,
+      title: this.rangeField,
       dataIndex: 'max',
       width: 100,
       scopedSlots: { customRender: 'max' }
@@ -106,6 +107,9 @@ export default class MpColorsSetting extends Vue {
     this.$emit('input', this.emitValue)
   }
 
+  /**
+   * 修改选中行的最大值，后面一行的最小值同步变化
+   */
   changeMax(record, index) {
     // console.log(record, index)
     if (record.max > this.tableData[index + 1].max) {
@@ -116,6 +120,9 @@ export default class MpColorsSetting extends Vue {
     }
   }
 
+  /**
+   * 获取每行的可输入最大值（就是后一行的最大值）
+   */
   getMax(index) {
     return index < this.tableData.length - 1
       ? this.tableData[index + 1].max
@@ -138,7 +145,7 @@ export default class MpColorsSetting extends Vue {
   }
 
   /**
-   * 删除
+   * 删除，删除后，前一行和后一行要衔接上
    */
   remove(index: number) {
     const length = this.tableData.length
@@ -154,7 +161,7 @@ export default class MpColorsSetting extends Vue {
   }
 
   /**
-   * 添加
+   * 添加，向下插入一行，把该行的最大最小值的间隔一分为二
    */
   add(index) {
     const length = this.tableData.length

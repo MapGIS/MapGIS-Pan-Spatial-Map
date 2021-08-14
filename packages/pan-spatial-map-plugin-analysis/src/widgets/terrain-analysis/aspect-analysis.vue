@@ -7,7 +7,7 @@
     </mp-group-tab>
     <MpColorsSetting
       v-model="params"
-      :rangeFiled="'坡向范围'"
+      :rangeField="'坡向范围'"
     ></MpColorsSetting>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="add">分析</a-button>
@@ -39,11 +39,7 @@ export default class MpAspectAnalysis extends Mixins(WidgetMixin) {
   private brightnessEnabled = false // 光照是否已开启
 
   private info =
-    '坡向分析需要带法线地形。\n坡向按照东北西南的顺序表示方向,即0°表示坡向指向正东方向。'
-
-  getLabel(index) {
-    return (0.0 + index * 0.2).toFixed(1)
-  }
+    '坡向分析需要带法线地形。\r\n坡向按照东北西南的顺序表示方向,即0°表示坡向指向正东方向。'
 
   created() {
     window.AspectAnalyzeManage = {
