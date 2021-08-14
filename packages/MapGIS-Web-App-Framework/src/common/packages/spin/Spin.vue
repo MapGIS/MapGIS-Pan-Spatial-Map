@@ -73,13 +73,10 @@ export default {
   },
   watch: {
     spinning(nV) {
+      this.wrapperVisible = !this.$slots.default ? nV : true
       this.visible = nV
-    }
-  },
-  created() {
-    if (this.visible !== this.spinning) {
-      this.visible = this.spinning
-    }
+    },
+    immediate: true
   }
 }
 </script>
