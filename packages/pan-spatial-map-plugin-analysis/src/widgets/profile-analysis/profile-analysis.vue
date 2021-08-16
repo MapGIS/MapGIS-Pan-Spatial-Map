@@ -5,10 +5,9 @@
       <mp-window
         :visible.sync="profile2dVisible"
         :min-width="620"
-        :max-height="350"
+        :max-height="370"
         anchor="top-center"
         title="二维剖面"
-        :expand="expand"
       >
         <div
           id="profileChart"
@@ -40,8 +39,6 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
 
   private profile2dVisible = false
 
-  private expand = false
-
   private depthTestAgainstTerrain = false // 深度检测是否已开启
 
   /**
@@ -60,7 +57,6 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     if (viewer.scene.globe.depthTestAgainstTerrain) {
       this.depthTestAgainstTerrain = true
     }
-    this.profile2dVisible = true
   }
 
   // 微件失活时
@@ -70,14 +66,14 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
 
   analysis() {
     const { viewer } = this.webGlobe
-    this.profile2dVisible = true
+    this.profile2dVisible = false
     if (!this.depthTestAgainstTerrain) {
       viewer.scene.globe.depthTestAgainstTerrain = true
     }
     if (!this.Cesium.defined(this.terrainProfile)) {
       this.terrainProfile = new this.Cesium.TerrainProfile(viewer, echarts)
     }
-    this.terrainProfile.profile(this.success)
+    this.terrainProfile.profile(this.profileSuccess)
   }
 
   profileSuccess() {
