@@ -864,12 +864,16 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             console.log(imposeLayer)
 
             if (imposeLayer.type !== LayerType.IGSScene) {
-              fitBoundByLayer(imposeLayer, {
-                Cesium,
-                map,
-                webGlobe,
-                CesiumZondy
-              })
+              fitBoundByLayer(
+                imposeLayer,
+                {
+                  Cesium,
+                  map,
+                  webGlobe,
+                  CesiumZondy
+                },
+                this.is2DMapMode === true
+              )
             } else if (this.is2DMapMode === true) {
               this.switchMapMode()
             }

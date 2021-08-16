@@ -681,12 +681,16 @@ export default class TreeLayer extends Mixins(
   fitBounds(item) {
     const { Cesium, map, webGlobe, CesiumZondy } = this
     console.log(this.document)
-    fitBoundByLayer(item.dataRef, {
-      Cesium,
-      map,
-      webGlobe,
-      CesiumZondy
-    })
+    fitBoundByLayer(
+      item.dataRef,
+      {
+        Cesium,
+        map,
+        webGlobe,
+        CesiumZondy
+      },
+      this.is2DMapMode === true
+    )
     this.clickPopover(item, false)
   }
 

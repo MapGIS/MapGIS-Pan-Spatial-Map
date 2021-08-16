@@ -16,21 +16,107 @@ export interface MapParams {
   CesiumZondy?: unknown
 }
 
-// 将zoom转换为相机高度（该处算法是近似计算）
-function zoomToHeight(zoom: number) {
-  // 最小层级从2开始
-  const level = zoom <= 0 ? 2 : zoom + 2
-  const A = 40487.57
-  const B = 0.00007096758
-  const C = 91610.74
-  const D = -40467.74
-  const x = (A - D) / (level - D) - 1
-  // eslint-disable-next-line no-restricted-properties
-  const height = Math.round(Math.pow(x, 1 / B) * C)
-  return height
+interface HeightToLevel {
+  level: number
+  height: number
 }
 
-export const fitBoundByLayer = (layer: Layer, mapParams: MapParams) => {
+/**
+ * 计算该真是距离的层级
+ * @param distance 相机距离该Tile的真实距离
+ * @param viewer cesium对象
+ * @returns
+ */
+function detectZoomLevel(distance: number, viewer: unknown) {
+  const scene = viewer.scene
+  const tileProvider = scene.globe._surface.tileProvider
+  const quadtree = tileProvider._quadtree
+  // 整个屏幕像素高
+  const drawingBufferHeight = viewer.canvas.height
+  // sseDenominator是相机fovy角度的tan值的2倍
+  const sseDenominator = viewer.camera.frustum.sseDenominator
+
+  for (let level = 0; level <= 19; level++) {
+    // maxGeometricError是地球赤道的周长/像素数，一个像素代表多少米(该层级下最大的几何误差)
+    const maxGeometricError = tileProvider.getLevelMaximumGeometricError(level)
+
+    /** =========以下是公式(maxGeometricError * drawingBufferHeight) / (distance * sseDenominator) 的分解=============== */
+
+    // 根据三角函数的公式可以算得相机距离屏幕中心的像素距离
+    const far = drawingBufferHeight / sseDenominator
+    // 相机距离屏幕中心的米单位距离（垂直距离）
+    const L = maxGeometricError * far
+    //  sse 屏幕空间误差
+    const error = L / distance
+    // 如果屏幕空间误差小于maximumScreenSpaceError最大屏幕空间误差，则返回当前层级
+    if (error < quadtree.maximumScreenSpaceError) {
+      return level
+    }
+  }
+
+  return null
+}
+
+/**
+ * 获取level与相机高度关系数组
+ * @param startLevel 起始层级（层级小于2时，球会卡死，所以这里球）
+ * @param viewer
+ * @returns
+ */
+function getZoomLevelHeights(startLevel: number, viewer: unknown) {
+  startLevel = startLevel <= 2 ? 2 : startLevel
+
+  const precision = 1
+
+  let step = 100000.0
+
+  const result: Array<HeightToLevel> = []
+  let currentZoomLevel = 0
+  for (let height = 100000000.0; height > step; height -= step) {
+    const level = detectZoomLevel(height, viewer)
+    if (level === null) {
+      break
+    }
+
+    if (level !== currentZoomLevel) {
+      let minHeight = height
+      let maxHeight = height + step
+      while (maxHeight - minHeight > precision) {
+        height = minHeight + (maxHeight - minHeight) / 2
+        if (detectZoomLevel(height, viewer) === level) {
+          minHeight = height
+        } else {
+          maxHeight = height
+        }
+      }
+
+      result.push({
+        level: level,
+        height: Math.round(height)
+      })
+
+      currentZoomLevel = level
+
+      if (result.length >= 2) {
+        step = (result[result.length - 2].height - height) / 1000.0
+      }
+    }
+  }
+
+  return result.find(x => x.level === startLevel)?.height
+}
+
+/**
+ * 跳转
+ * @param layer 图层对象
+ * @param mapParams 地图对象
+ * @param is2DMap 当前地图模式
+ */
+export const fitBoundByLayer = (
+  layer: Layer,
+  mapParams: MapParams,
+  is2DMap: boolean
+) => {
   const { webGlobe, map, Cesium, CesiumZondy } = mapParams
 
   const sceneController = Objects.SceneController.getInstance(
@@ -113,10 +199,11 @@ export const fitBoundByLayer = (layer: Layer, mapParams: MapParams) => {
       if (layer.spatialReference.isWGS84()) {
         startLevel++
       }
-
-      fitBound2D(fullExtentJWD, mapParams, startLevel)
-      fitBound3D(fullExtentJWD, mapParams, startLevel)
-
+      if (is2DMap) {
+        fitBound2D(fullExtentJWD, mapParams, startLevel)
+      } else {
+        fitBound3D(fullExtentJWD, mapParams, startLevel)
+      }
       break
     case LayerType.OGCWMTS:
       const tileMatrixSet = layer.activeLayer.tileMatrixSet
@@ -124,13 +211,18 @@ export const fitBoundByLayer = (layer: Layer, mapParams: MapParams) => {
       if (layer.spatialReference.isWGS84()) {
         startLevel++
       }
-
-      fitBound2D(fullExtentJWD, mapParams, startLevel)
-      fitBound3D(fullExtentJWD, mapParams, startLevel)
+      if (is2DMap) {
+        fitBound2D(fullExtentJWD, mapParams, startLevel)
+      } else {
+        fitBound3D(fullExtentJWD, mapParams, startLevel)
+      }
       break
     default:
-      fitBound2D(fullExtentJWD, mapParams)
-      fitBound3D(fullExtentJWD, mapParams)
+      if (is2DMap) {
+        fitBound2D(fullExtentJWD, mapParams)
+      } else {
+        fitBound3D(fullExtentJWD, mapParams)
+      }
       break
   }
 }
@@ -169,11 +261,15 @@ export const fitBound3D = (
 ) => {
   const { xmin, ymin, xmax, ymax } = bound
   const { webGlobe, Cesium } = mapParams
-  if (level !== undefined) {
+  // 如果获取不到对应层级的高度则还是用范围缩放
+  if (
+    level !== undefined &&
+    getZoomLevelHeights(level, webGlobe.viewer) !== undefined
+  ) {
     const center = new Cesium.Cartesian3.fromDegrees(
       (xmin + xmax) / 2,
       (ymin + ymax) / 2,
-      zoomToHeight(level)
+      getZoomLevelHeights(level, webGlobe.viewer)
     )
     webGlobe.viewer.camera.flyTo({
       destination: center

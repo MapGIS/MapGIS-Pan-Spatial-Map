@@ -308,12 +308,16 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
           if (this.isZoomLayer) {
             if (layer.type !== LayerType.IGSScene) {
-              fitBoundByLayer(layer, {
-                Cesium,
-                map,
-                webGlobe,
-                CesiumZondy
-              })
+              fitBoundByLayer(
+                layer,
+                {
+                  Cesium,
+                  map,
+                  webGlobe,
+                  CesiumZondy
+                },
+                this.is2DMapMode === true
+              )
             }
 
             this.isZoomLayer = false
