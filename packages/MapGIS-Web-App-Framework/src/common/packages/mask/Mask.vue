@@ -49,6 +49,12 @@ export default {
         const content = this.text.replace(/\{percent\}/g, `${this.percent}%`)
         mpMaskContentDiv[0].innerHTML = content
       }
+    },
+    text(nV) {
+      if (!this.loading) {
+        return
+      }
+      document.querySelector('.mp-mask-content').innerHTML = nV
     }
   },
   data() {
