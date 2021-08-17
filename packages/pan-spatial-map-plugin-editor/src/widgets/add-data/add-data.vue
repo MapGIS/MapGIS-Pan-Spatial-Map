@@ -48,7 +48,8 @@ import {
   ObjectUtil,
   LayerType,
   LoadStatus,
-  Document
+  Document,
+  FitBound
 } from '@mapgis/web-app-framework'
 import {
   api,
@@ -57,7 +58,6 @@ import {
   eventBus,
   events
 } from '@mapgis/pan-spatial-map-store'
-import { fitBoundByLayer } from '../../../../pan-spatial-map-plugin-workspace/src/util/fit-bound'
 
 import AddDataList from './components/AddDataList.vue'
 import AddDataUrl from './components/AddDataUrl.vue'
@@ -308,7 +308,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
           if (this.isZoomLayer) {
             if (layer.type !== LayerType.IGSScene) {
-              fitBoundByLayer(
+              FitBound.fitBoundByLayer(
                 layer,
                 {
                   Cesium,
