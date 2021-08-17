@@ -1,7 +1,7 @@
 <template>
   <div class="common">
     <!-- 年度或时间 -->
-    <mp-row-flex label="年度/时间" label-align="right">
+    <mp-row-flex label="年度/时间" :label-width="76">
       <a-input
         v-model="selfTime"
         :allow-clear="true"
@@ -10,7 +10,7 @@
     </mp-row-flex>
     <!-- 服务设置 -->
     <div class="server-tree-select">
-      <mp-row-flex label="服务地址" label-align="right">
+      <mp-row-flex label="服务地址" :label-width="76">
         <mp-tree-select
           @change="selfUriChange"
           :value="selfUri"
@@ -28,16 +28,14 @@
       <mp-row-flex
         v-for="{ label, content } in examples"
         :key="label"
-        :label="label"
-        label-align="right"
-        align="top"
+        :label-width="76"
         class="server-tree-select-example"
       >
-        {{ content }}
+        {{ label }}：{{ content }}
       </mp-row-flex>
     </div>
     <!-- 统计属性 -->
-    <mp-row-flex label="统计属性" label-align="right">
+    <mp-row-flex label="统计属性" :label-width="76">
       <a-select v-model="field" :options="fields" />
     </mp-row-flex>
   </div>
@@ -105,7 +103,7 @@ export default class Common extends Vue {
 
   // 统计属性
   get field() {
-    return this.subjectConfig.field || this.fields[0]?.value
+    return this.subjectConfig.field || this.fields[0]?.value || undefined
   }
 
   set field(nV) {

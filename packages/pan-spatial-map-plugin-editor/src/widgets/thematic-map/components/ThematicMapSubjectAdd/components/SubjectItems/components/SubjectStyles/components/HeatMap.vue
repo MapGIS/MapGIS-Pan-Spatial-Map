@@ -1,16 +1,30 @@
 <template>
   <div class="heat-map">
     <!-- 最大权重 -->
-    <!-- <mp-row-flex label="最大权重" label-align="right">
+    <!-- <mp-row-flex label="最大权重" :label-width="72">
       <a-input-number v-model="style.max" :min="8" />
     </mp-row-flex> -->
-    <!-- 实体大小 -->
-    <mp-row-flex label="半径大小" label-align="right">
-      <!-- <a-input-number v-model="style.size" :min="10" /> -->
-      <a-input-number v-model="style.radius" :min="50" />
+    <!-- 半径大小 -->
+    <!-- <mp-row-flex label="半径大小" :label-width="72">
+      <a-input-number v-model="style.size" :min="10" />
+    </mp-row-flex> -->
+    <!-- 是否聚合 -->
+    <mp-row-flex label="是否聚合" :label-width="76">
+      <a-radio-group v-model="style.useClustering">
+        <a-radio :value="true">是</a-radio>
+        <a-radio :value="false">否</a-radio>
+      </a-radio-group>
+    </mp-row-flex>
+    <!-- 半径大小 -->
+    <mp-row-flex label="半径大小" :label-width="76">
+      <a-input-number v-model="style.radius" :min="8" />
+    </mp-row-flex>
+    <!-- 模糊值 -->
+    <mp-row-flex label="模糊值" :label-width="76">
+      <a-input-number v-model="style.blur" :min="0.1" :max="1" />
     </mp-row-flex>
     <!-- 颜色填充 -->
-    <mp-row-flex label="填充颜色" label-align="right">
+    <mp-row-flex label="填充颜色" :label-width="76">
       <color-picker-setting v-model="style.gradient" />
     </mp-row-flex>
     <!-- 动画项设置 -->
@@ -24,8 +38,8 @@ import ColorPickerSetting from '../common/ColorPickerSetting.vue'
 
 @Component({
   components: {
+    // AnimationItems,
     ColorPickerSetting
-    // AnimationItems
   }
 })
 export default class HeatMap extends Vue {
@@ -33,8 +47,10 @@ export default class HeatMap extends Vue {
 
   defaultStyle = {
     // size: 13,
-    // max: '30',
-    radius: 120,
+    // max: 30,
+    blur: 0.75,
+    radius: 60,
+    useClustering: true,
     gradient: {
       '0.25': 'rgb(0,0,255)',
       '0.55': 'rgb(0,255,0)',

@@ -24,35 +24,43 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
     return this.subjectData.field || 'count'
   }
 
+  // get options() {
+  //   return {
+  //     cesium: {
+  //       postRender: true,
+  //       postRenderFrame: 10
+  //     },
+  //     context: '2d',
+  //     draw: 'heatmap',
+  //     max: 60, // 最大权重值
+  //     size: 13, // 每个热力点半径大小
+  //     gradient: {
+  //       // 热力图渐变色
+  //       '0.25': 'rgb(0,0,255)',
+  //       '0.55': 'rgb(0,255,0)',
+  //       '0.85': 'yellow',
+  //       '1.0': 'rgb(255,0,0)'
+  //     },
+  //     animation: { // 动画
+  //       type: 'time',
+  //       stepsRange: {
+  //         start: 0,
+  //         end: 100
+  //       },
+  //       trails: 10,
+  //       duration: 4
+  //     },
+  //     ...(this.subjectData.style || {})
+  //   }
+  // }
+
   get options() {
     return {
-      // cesium: {
-      //   postRender: true,
-      //   postRenderFrame: 10
-      // },
-      // context: '2d',
-      // draw: 'heatmap',
-      // max: 60, // 最大权重值
-      // size: 13, // 每个热力点半径大小
-      // gradient: { // 热力图渐变色
-      //   '0.25': 'rgb(0,0,255)',
-      //   '0.55': 'rgb(0,255,0)',
-      //   '0.85': 'yellow',
-      //   '1.0': 'rgb(255,0,0)'
-      // },
-      // animation: {
-      //   type: 'time',
-      //   stepsRange: {
-      //     start: 0,
-      //     end: 100
-      //   },
-      //   trails: 10,
-      //   duration: 4
-      // },
-      maxOpacity: 1, // 最大透明度
-      minOpacity: 0, // 最小透明度
       blur: 0.5, // 模糊值
-      radius: 120, // 每个热力点半径大小
+      radius: 8, // 每个热力点半径大小
+      useClustering: true, // 是否聚合
+      radiusArray: [2, 5, 10, 20, 40, 80], // 聚合使用的半径值数组
+      radiusRange: [0, 20, 100, 200, 300, 500, 1000], // 聚合使用的半径区间
       gradient: {
         // 热力图渐变色
         '0.9': 'red',
@@ -96,9 +104,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
     return this.geojson.features.map(
       ({ geometry: { coordinates }, properties }: Feature.GFeature) => {
         const countValue = properties[this.countField]
-        const value = CommonUtil.isDef(countValue)
-          ? countValue
-          : Number((Math.random() * 100).toFixed(2))
+        const value = CommonUtil.isDef(countValue) ? countValue : 1
         const [x, y] = Array.isArray(coordinates[0])
           ? coordinates[0][0]
           : coordinates
@@ -112,7 +118,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   }
 
   /**
-   * 获取数据范围
+   * 获取数据范围min->max
    */
   getRange() {
     const values = this.getData().map(({ value }) => value)

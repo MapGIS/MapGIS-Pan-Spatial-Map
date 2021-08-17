@@ -1,5 +1,12 @@
 <template>
-  <a-row type="flex" :align="align" :justify="justify" :gutter="gutter">
+  <a-row
+    type="flex"
+    :align="align"
+    :justify="justify"
+    :gutter="gutter"
+    :class="type"
+    class="row-flex"
+  >
     <a-col
       :span="labelSpan"
       :title="label"
@@ -7,7 +14,7 @@
       class="row-flex-col-left"
     >
       <slot name="label" v-if="$slots.label || label">
-        {{ label }}{{ colon ? '：' : '' }}</slot
+        {{ label }}{{ isColon }}</slot
       >
     </a-col>
     <a-col :span="contentSpan" :style="contentStyle">
@@ -20,6 +27,13 @@
 export default {
   name: 'MpRowFlex',
   props: {
+    type: {
+      type: String,
+      default: 'horizontal',
+      validator: function(value) {
+        return ['horizontal', 'vertical'].includes(value)
+      }
+    },
     align: {
       type: String,
       default: 'middle',
@@ -53,8 +67,10 @@ export default {
       default: true
     },
     label: {
-      type: String,
-      require: true
+      type: String
+    },
+    labelWidth: {
+      type: Number
     },
     labelAlign: {
       type: String,
@@ -72,31 +88,61 @@ export default {
     }
   },
   computed: {
-    labelSpan() {
-      return this.span[0]
+    isVertical({ type }) {
+      return type === 'vertical'
     },
-    contentSpan() {
-      return this.span[1]
+    isColon({ isVertical, colon }) {
+      return (isVertical ? false : colon) ? '：' : ''
     },
-    labelStyle() {
-      return {
-        textAlign: this.labelAlign
+    labelSpan({ isVertical, span }) {
+      return isVertical ? 24 : span[0]
+    },
+    contentSpan({ isVertical, span }) {
+      return isVertical ? 24 : span[1]
+    },
+    labelStyle({ labelWidth, labelSpan, labelAlign }) {
+      let style = {
+        textAlign: labelAlign
       }
-    },
-    contentStyle() {
-      return {
-        textAlign: this.contentAlign
+      if (labelWidth) {
+        style = {
+          ...style,
+          width: `${labelWidth}px`
+        }
       }
+      return style
+    },
+    contentStyle({ labelWidth, contentAlign }) {
+      let style = {
+        textAlign: contentAlign
+      }
+      if (labelWidth) {
+        style = {
+          ...style,
+          flex: 1
+        }
+      }
+      return style
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.ellipse {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.row-flex {
+  &.vertical {
+    .row-flex-col-left {
+      margin-bottom: 2px;
+    }
+  }
+}
 .row-flex-col-left {
-  // overflow: hidden;
-  // white-space: nowrap;
-  // text-overflow: ellipsis;
+  // .ellipse();
   white-space: normal;
 }
 </style>
