@@ -94,7 +94,7 @@ export default class MarkerShowWindow extends Mixins(AppMixin) {
   flex-direction: column;
   .title {
     line-height: 33px;
-    font-size: 16px;
+    font-size: 14px;
     color: @title-color;
     white-space: nowrap;
     overflow: hidden;
@@ -107,7 +107,7 @@ export default class MarkerShowWindow extends Mixins(AppMixin) {
       padding: 5px 0;
       min-height: 20px;
       line-height: 20px;
-      font-size: 14px;
+      font-size: 12px;
       color: @text-color;
       word-break: break-all;
     }
