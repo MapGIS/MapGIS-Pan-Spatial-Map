@@ -20,7 +20,7 @@
     </mp-toolbar>
     <!-- 设置面板内容 -->
     <div class="subject-items-content">
-      <a-empty description="暂无年度数据" v-if="!configList.length" />
+      <a-empty description="暂无数据" v-if="!configList.length" />
       <a-collapse
         v-else
         @change="panelChange"
@@ -32,7 +32,7 @@
           <mp-row-flex
             slot="header"
             justify="space-between"
-            :label="sub.time || '新增年度'"
+            :label="sub.time || '年度/时间'"
             :span="[23, 1]"
             :colon="false"
           >

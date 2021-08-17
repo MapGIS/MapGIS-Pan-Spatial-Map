@@ -1,16 +1,16 @@
 <template>
   <div>
-    <mp-row-flex label="是否显示动画" :label-width="100">
+    <mp-row-flex label="是否显示动画" label-align="right" :label-width="100">
       <a-radio-group v-model="isAnimation">
         <a-radio :value="true">是</a-radio>
         <a-radio :value="false">否</a-radio>
       </a-radio-group>
     </mp-row-flex>
     <template v-if="isAnimation">
-      <mp-row-flex label="动画展示方式" :label-width="100">
+      <mp-row-flex label="动画展示方式" label-align="right" :label-width="100">
         {{ animation.type }}
       </mp-row-flex>
-      <mp-row-flex label="动画起止时间" :label-width="100">
+      <mp-row-flex label="动画起止时间" label-align="right" :label-width="100">
         <div class="steps-range">
           <a-space>
             <a-input-number v-model="animation.stepsRange.start" :min="0" />
@@ -19,10 +19,10 @@
           </a-space>
         </div>
       </mp-row-flex>
-      <mp-row-flex label="动画拖尾大小" :label-width="100">
+      <mp-row-flex label="动画拖尾大小" label-align="right" :label-width="100">
         <a-input-number v-model="animation.trails" :min="1" />
       </mp-row-flex>
-      <mp-row-flex label="单个动画时间" :label-width="100">
+      <mp-row-flex label="单个动画时间" label-align="right" :label-width="100">
         <a-input-number v-model="animation.duration" :min="1" />
       </mp-row-flex>
     </template>

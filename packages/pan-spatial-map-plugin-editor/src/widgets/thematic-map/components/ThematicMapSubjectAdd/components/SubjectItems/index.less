@@ -12,6 +12,11 @@
   &-content {
     flex: 1;
     overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 2px;
+    }
+
     ::v-deep .ant-empty {
       padding: 12px 0;
     }
