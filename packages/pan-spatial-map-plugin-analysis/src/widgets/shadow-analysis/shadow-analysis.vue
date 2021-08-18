@@ -138,7 +138,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 
   private loading = false // 时间段阴影分析进度（时间段阴影分析，暂时未对外开放）
 
-  private maskText = ''
+  private maskText = '正在分析中, 请稍等...'
 
   /**
    * 日期组件值变化
