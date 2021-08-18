@@ -146,7 +146,8 @@ export default {
         'pk.eyJ1IjoicGFybmRlZWRsaXQiLCJhIjoiY2o1MjBtYTRuMDhpaTMzbXhpdjd3YzhjdCJ9.sCoubaHF9-nhGTA-sgz0sA',
       crs: 'EPSG:4326',
       layers: [],
-      map: null
+      map: null,
+      mapboxLevelResolutions: [] // 记录mapbox中各个层级对应的分辨率
     }
   },
   computed: {
@@ -212,7 +213,9 @@ export default {
       } else {
         this.$root.$emit('mapbox-load', payload)
       }
+      this.getMapboxLevelResolution(payload.mapr)
     },
+    getMapboxLevelResolution(map) {},
     genMapboxLayerComponentPropsByLayer(layer, beforeId) {
       // mapbox图层组件所需要的属性
       let mapboxLayerComponentProps = {}

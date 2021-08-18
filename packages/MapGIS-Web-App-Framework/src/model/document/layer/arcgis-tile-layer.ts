@@ -95,7 +95,10 @@ export class ArcGISTileLayer extends TileLayer {
 
                     lod.level = lods[i].level
                     lod.levelValue = lods[i].level
-                    lod.resolution = lods[i].resolution
+                    // 如果空间参考系为经纬度，需要吧分辨率由度转换为米
+                    lod.resolution = this.spatialReference.isWGS84()
+                      ? lods[i].resolution * 111194.872221777
+                      : lods[i].resolution
                     lod.scale = lods[i].scale
 
                     this.titleInfo.lods.push(lod)
