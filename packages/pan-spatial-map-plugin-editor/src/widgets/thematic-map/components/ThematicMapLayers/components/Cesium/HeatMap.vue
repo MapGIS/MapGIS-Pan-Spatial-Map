@@ -14,6 +14,8 @@ import {
 import { DataCatalogManager } from '@mapgis/pan-spatial-map-store'
 import BaseMinxin from '../../mixins/base'
 
+type HeatMapData = Array<{ x: number; y: number; value: number }>
+
 @Component({
   inject: ['webGlobe', 'CesiumZondy']
 })
@@ -56,11 +58,9 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
 
   get options() {
     return {
-      blur: 0.5, // 模糊值
-      radius: 8, // 每个热力点半径大小
+      blur: 0.75, // 模糊值
+      radius: 60, // 每个热力点半径大小
       useClustering: true, // 是否聚合
-      radiusArray: [2, 5, 10, 20, 40, 80], // 聚合使用的半径值数组
-      radiusRange: [0, 20, 100, 200, 300, 500, 1000], // 聚合使用的半径区间
       gradient: {
         // 热力图渐变色
         '0.9': 'red',
@@ -89,6 +89,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
     const _layer =
       layer?.loadStatus === LoadStatus.notLoaded ? await layer.load() : layer
     const { xmin, xmax, ymax, ymin } = _layer.fullExtent
+
     return {
       west: xmin,
       east: xmax,
@@ -100,8 +101,8 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   /**
    * 获取数据
    */
-  getData(): Array<{ x: number; y: number; value: number }> {
-    return this.geojson.features.map(
+  getData(geojson: Feature.FeatureGeoJSON): HeatMapData {
+    return geojson.features.map(
       ({ geometry: { coordinates }, properties }: Feature.GFeature) => {
         const countValue = properties[this.countField]
         const value = CommonUtil.isDef(countValue) ? countValue : 1
@@ -120,10 +121,96 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   /**
    * 获取数据范围min->max
    */
-  getRange() {
-    const values = this.getData().map(({ value }) => value)
+  getRange(data: HeatMapData) {
+    const values = data.map(({ value }) => value)
     return [Math.min(...values) || 0, Math.max(...values) || 0]
   }
+
+  /**
+   * 创建热力图
+   * @param 专题图层范围
+   * @param geojson数据
+   */
+  createHeatMap(bounds, geojson) {
+    const { viewer } = this.webGlobe
+    const analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
+      viewer
+    })
+    if (!this.heatMapInstance) {
+      const data = this.getData(geojson)
+      const range = this.getRange(data)
+      this.heatMapInstance = analysisManager.createHeatMap(
+        bounds,
+        ...range,
+        data,
+        this.options
+      )
+    }
+  }
+
+  /**
+   * 测试贴膜型
+   */
+  //   showLayer() {
+  //     const drawElement = new this.Cesium.DrawElement(this.webGlobe.viewer)
+  //
+  //     drawElement.startDrawingExtent({
+  //       callback: positions => {
+  //         try {
+  //           const east = (positions.east * 180) / Math.PI
+  //           const west = (positions.west * 180) / Math.PI
+  //           const north = (positions.north * 180) / Math.PI
+  //           const south = (positions.south * 180) / Math.PI
+  //           const bounds = {
+  //             west,
+  //             east,
+  //             north,
+  //             south
+  //           }
+  //           const [pointX, pointY] = this.Cesium.Cartesian3.fromDegreesArray([
+  //             west,
+  //             north,
+  //             west,
+  //             south,
+  //             east,
+  //             south,
+  //             east,
+  //             north
+  //           ])
+  //           const boundsHeight = this.Cesium.Cartesian3.distance(pointX, pointY)
+  //           const boundsWidth = this.Cesium.Cartesian3.distance(pointX, pointY)
+  //           const step = Math.ceil((boundsHeight / 20) * (boundsWidth / 20))
+  //           const count = step > 10000 ? 10000 : step
+  //           const pointArr = this.Cesium.CommonFunction.getRandomPointByRect(
+  //             west,
+  //             south,
+  //             east,
+  //             north,
+  //             count
+  //           )
+  //           const features = pointArr.map(({ x, y }) => ({
+  //             type: 'Feature',
+  //             properties: {
+  //               [this.countField]: (Math.random() * 100).toFixed(2)
+  //             },
+  //             geometry: {
+  //               coordinates: [x, y]
+  //             }
+  //           }))
+  //           const geojson = {
+  //             type: 'FeatureCollection',
+  //             dataCount: features.length,
+  //             features
+  //           }
+  //           this.removeLayer()
+  //           this.createHeatMap(bounds, geojson)
+  //         } catch (e) {
+  //         } finally {
+  //           drawElement.stopDrawing()
+  //         }
+  //       }
+  //     })
+  //   }
 
   /**
    * 展示图层
@@ -133,18 +220,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
       // this.geojsonPoin = this.geojson
       this.getBounds().then(bounds => {
         this.removeLayer()
-        const { viewer } = this.webGlobe
-        const analysisManager = new this.CesiumZondy.Manager.AnalysisManager({
-          viewer
-        })
-        if (!window.heatMapInstance) {
-          window.heatMapInstance = analysisManager.createHeatMap(
-            bounds,
-            ...this.getRange(),
-            this.getData(),
-            this.options
-          )
-        }
+        this.createHeatMap(bounds, this.geojson)
       })
     }
   }
@@ -156,9 +232,9 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
     // if (this.geojsonPoint) {
     //   this.geojsonPoint.features = []
     // }
-    if (window.heatMapInstance) {
-      window.heatMapInstance.removeLayer()
-      window.heatMapInstance = null
+    if (this.heatMapInstance) {
+      this.heatMapInstance.removeLayer()
+      this.heatMapInstance = null
     }
   }
 }
