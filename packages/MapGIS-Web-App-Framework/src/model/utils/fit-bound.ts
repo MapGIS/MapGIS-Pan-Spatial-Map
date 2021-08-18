@@ -60,7 +60,7 @@ class FitBound {
       const error = L / distance
       // 如果屏幕空间误差小于maximumScreenSpaceError最大屏幕空间误差，则返回当前层级
       if (error < quadtree.maximumScreenSpaceError) {
-        return { level, resolution: maxGeometricError / 111194.872221777 }
+        return { level, resolution: maxGeometricError }
       }
     }
 
@@ -77,7 +77,7 @@ class FitBound {
     startLevel: number,
     viewer: unknown
   ): number | undefined {
-    startLevel = startLevel <= 2 ? 2 : startLevel
+    // startLevel = startLevel <= 2 ? 2 : startLevel
 
     if (this._cesiumLevelToHeights.length <= 0) {
       // 计算层级高度是最小误差

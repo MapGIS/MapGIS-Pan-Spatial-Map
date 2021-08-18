@@ -139,6 +139,8 @@ export class TileMatrixSet {
       jsonObject.TileMatrix.forEach((element, index) => {
         const lod = new LOD()
         lod.level = index
+        lod.scale = 1 / element.ScaleDenominator
+        lod.resolution = this.getResolutionByScale(lod.scale)
 
         if (element.Identifier) {
           // 存在两种情况，其一是参照系:级数,其二是只为级数
@@ -166,6 +168,20 @@ export class TileMatrixSet {
         }
       })
     }
+  }
+
+  /**
+   * 通过比例计算该层级对应的分辨率（单位为米）
+   * @param {number} Scale 比例尺
+   * @returns 分辨率（单位为米）
+   */
+  getResolutionByScale(Scale: number): number {
+    // TODO 需要根据厂商来确定dpi，这里为了暂时写死
+    const dMMPerPix = 0.00028
+
+    const resolution = dMMPerPix / Scale
+
+    return resolution
   }
 
   /**

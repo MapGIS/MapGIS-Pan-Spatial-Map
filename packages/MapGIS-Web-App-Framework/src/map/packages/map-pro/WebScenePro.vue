@@ -109,6 +109,7 @@ import {
   LoadStatus,
   IGSSceneSublayerRenderType
 } from '../../../model/document/layer'
+import { getLevelInMap } from './util/map-resolution-util.js'
 
 export default {
   name: 'MpWebScenePro',
@@ -136,8 +137,9 @@ export default {
   data() {
     return {
       layers: [],
-      recordZindex: 1000,
-      computedBaseLayerTotal: false
+      recordZindex: 1000, // TODO 在MapGIS-Web-App-Framework里面不能依赖其他包，这里暂时先把底图管理的初始值设置为1000
+      computedBaseLayerTotal: false,
+      cesiumLevelResolutions: [] // 记录cesium中各个层级对应的分辨率
     }
   },
   computed: {
@@ -160,9 +162,6 @@ export default {
     M3Dloaded(id) {
       const guid = id.split(':')[0]
       this.$root.$emit(guid, 'M3D加载了')
-    },
-    getBaseLayerTotal() {
-      // TODO 在MapGIS-Web-App-Framework里面不能依赖其他包，这里暂时先把底图管理的初始值设置为1000
     },
     parseDocument() {
       if (!this.document) return
@@ -337,7 +336,12 @@ export default {
           // 修改人：马原野 2021年6月7日
 
           tileMatrixSet = layer.activeLayer.tileMatrixSet
-
+          const { resolution, levelValue } = tileMatrixSet.tileInfo.lods[0]
+          const level = getLevelInMap(resolution, this.cesiumLevelResolutions)
+          let startLevel = null
+          if (level !== null) {
+            startLevel = levelValue - level
+          }
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -347,7 +351,7 @@ export default {
             wmtsStyle: layer.activeLayer.styleId,
             format: layer.activeLayer.imageFormat,
             options: {
-              startLevel: tileMatrixSet.tileInfo.lods[0].levelValue
+              startLevel: startLevel || 0
             }
           }
 
@@ -443,6 +447,24 @@ export default {
       } else {
         this.$root.$emit('cesium-load', { webGlobe, Cesium, CesiumZondy })
       }
+      this.getCesiumLevelResolution(webGlobe.viewer)
+    },
+    // 获取cesium各个层级对应的分辨率
+    getCesiumLevelResolution(viewer) {
+      const arr = []
+      for (let level = 0; level < 20; level++) {
+        const { scene } = viewer
+        const { tileProvider } = scene.globe._surface
+        // maxGeometricError是地球赤道的周长/像素数，一个像素代表多少米(该层级下最大的几何误差)
+        const maxGeometricError = tileProvider.getLevelMaximumGeometricError(
+          level
+        )
+        arr.push({
+          level,
+          resolution: maxGeometricError
+        })
+      }
+      this.cesiumLevelResolutions = arr
     },
     isIgsDocLayer(type) {
       return type === LayerType.IGSMapImage
