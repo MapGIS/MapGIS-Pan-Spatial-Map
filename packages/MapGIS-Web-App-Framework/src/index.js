@@ -33,6 +33,7 @@ export {
 export {
   UUID,
   CoordinateTransformation,
+  FitBound,
   Document,
   Map,
   Layer,

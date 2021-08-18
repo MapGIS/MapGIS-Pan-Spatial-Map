@@ -41,7 +41,7 @@ export {
   SpatialReference
 } from './document/spatial-reference'
 
-export { UUID, CoordinateTransformation } from './utils'
+export { UUID, CoordinateTransformation, FitBound } from './utils'
 
 import * as Objects from './objects'
 import * as Catalog from './catalog'

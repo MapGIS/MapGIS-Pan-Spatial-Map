@@ -401,7 +401,10 @@ export class WMTSSublayer {
    */
   fromJSON(jsonObject: Record<string, any>) {
     if (jsonObject.BoundingBox) {
-      if (this.layer?.corporationType == WMTSCorporation.corporationArcGIS)
+      if (
+        this.layer?.corporationType == WMTSCorporation.corporationArcGIS ||
+        this.layer?.corporationType == WMTSCorporation.corporationZD
+      )
         this.fullExtent = new Rectangle(
           jsonObject.BoundingBox[1],
           jsonObject.BoundingBox[0],
