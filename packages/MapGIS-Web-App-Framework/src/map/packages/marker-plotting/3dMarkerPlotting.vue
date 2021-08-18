@@ -101,8 +101,6 @@ export default class Mp3dMarkerPlotting extends Vue {
 
   currentLayer = null
 
-  analysisManager = null
-
   changeFilterWithMap() {
     if (!this.filterWithMap) {
       return
