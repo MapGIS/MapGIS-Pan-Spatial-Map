@@ -252,11 +252,35 @@ export class SceneController {
   }
 
   /**
+   * 获取三维经纬度范围
+   * @returns
+   */
+  getComputeViewRectangle() {
+    const {
+      west,
+      north,
+      east,
+      south
+    } = this.webGlobe.viewer.camera.computeViewRectangle()
+    const xmin = (west / Math.PI) * 180
+    const ymax = (north / Math.PI) * 180
+    const xmax = (east / Math.PI) * 180
+    const ymin = (south / Math.PI) * 180
+
+    return {
+      xmin,
+      ymin,
+      xmax,
+      ymax
+    }
+  }
+
+  /**
    * 根据经纬度范围获取经纬度
    * @param bound  经纬度范围
    * @returns Rectangle bound
    */
-  public getRectangleFromDegrees({ xmin, ymin, xmax, ymax }) {
+  getRectangleFromDegrees({ xmin, ymin, xmax, ymax }) {
     return new this.Cesium.Rectangle.fromDegrees(xmin, ymin, xmax, ymax)
   }
 
@@ -264,7 +288,7 @@ export class SceneController {
    * 获取positionCartographic.height
    * @returns positionCartographic.height
    */
-  public getPsitionCartographicHeight() {
+  getPositionCartographicHeight() {
     return this.webGlobe.viewer.camera.positionCartographic.height
   }
 
@@ -273,7 +297,7 @@ export class SceneController {
    * @param x,y,z
    * @returns Cartesian3坐标
    */
-  public getCartesian3FromDegrees(x: number, y: number, z: number) {
+  getCartesian3FromDegrees(x: number, y: number, z: number) {
     return this.Cesium.Cartesian3.fromDegrees(x, y, z)
   }
 
@@ -281,15 +305,23 @@ export class SceneController {
    * 相机视角跳转
    * @param params
    */
-  public cameraFlyTo(params: any) {
+  cameraFlyTo(params: any) {
     this.webGlobe.viewer.camera.flyTo(params)
+  }
+
+  /**
+   * 相机视角跳转
+   * @param params
+   */
+  CameraSetView(params: any) {
+    this.webGlobe.viewer.camera.setView(params)
   }
 
   /**
    * 监听相机变化的事件
    * @param callback
    */
-  public addCameraChangedEvent(callback: () => void) {
+  addCameraChangedEvent(callback: () => void) {
     this.webGlobe.viewer.camera.changed.addEventListener(callback)
   }
 
@@ -297,7 +329,7 @@ export class SceneController {
    * 监听相机变化的事件
    * @param callback
    */
-  public removeCameraChangedEvent(callback: () => void) {
+  removeCameraChangedEvent(callback: () => void) {
     this.webGlobe.viewer.camera.changed.removeEventListener(callback)
   }
 
