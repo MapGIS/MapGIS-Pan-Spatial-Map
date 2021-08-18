@@ -252,6 +252,17 @@ export class SceneController {
   }
 
   /**
+   * 查找地形对象
+   * @param id 查找地形的id
+   * @returns 模型对象
+   */
+  findTerrainSource(id: string) {
+    const { vueKey } = this.webGlobe
+    const res = this.CesiumZondy.IgsTerrainManager.findSource(vueKey, id) || {}
+    return res || { source: [] }
+  }
+
+  /**
    * 获取三维经纬度范围
    * @returns
    */
