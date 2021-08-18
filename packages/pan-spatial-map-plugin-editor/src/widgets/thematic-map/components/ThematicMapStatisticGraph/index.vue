@@ -44,7 +44,9 @@
           <!-- 图表 -->
           <div id="thematic-map-graph-chart" v-show="showChart" />
           <!-- 空数据友好提示 -->
-          <a-empty v-show="!showChart" />
+          <div class="thematic-map-statistic-graph-empty" v-show="!showChart">
+            <a-empty />
+          </div>
         </div>
       </a-spin>
     </mp-window>

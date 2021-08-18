@@ -1,7 +1,7 @@
 <template>
   <div class="common">
     <!-- 年度或时间 -->
-    <mp-row-flex label="年度/时间" label-align="right" :span="[6, 18]">
+    <mp-row-flex label="年度/时间" label-align="right" :label-width="76">
       <a-input
         v-model="selfTime"
         :allow-clear="true"
@@ -10,7 +10,7 @@
     </mp-row-flex>
     <!-- 服务设置 -->
     <div class="server-tree-select">
-      <mp-row-flex label="服务地址" label-align="right" :span="[6, 18]">
+      <mp-row-flex label="服务地址" label-align="right" :label-width="76">
         <mp-tree-select
           @change="selfUriChange"
           :value="selfUri"
@@ -28,30 +28,47 @@
       <mp-row-flex
         v-for="{ label, content } in examples"
         :key="label"
-        :label="label"
-        :span="[6, 18]"
+        :label-width="76"
         label-align="right"
-        align="top"
         class="server-tree-select-example"
       >
-        {{ content }}
+        {{ label }}：{{ content }}
       </mp-row-flex>
     </div>
+    <!-- 统计属性 -->
+    <mp-row-flex label="统计属性" label-align="right" :label-width="76">
+      <a-select
+        v-model="field"
+        :options="fields"
+        placeholder="请选择统计属性"
+      />
+    </mp-row-flex>
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
-import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
+import { Feature, Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
+import {
+  dataCatalogManagerInstance,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-store'
 import url from 'url'
 import _cloneDeep from 'lodash/cloneDeep'
+import _debounce from 'lodash/debounce'
 import _last from 'lodash/last'
+
+interface IField {
+  type: string
+  label: string
+  value: string
+}
 
 @Component
 export default class Common extends Vue {
-  @Prop({ default: '' }) readonly time!: string
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: Record<string, any>
 
-  @Prop({ default: '' }) readonly uri!: string
+  // 属性列表
+  fields: Array<IField> = []
 
   // 目录树
   catalogTreeData: Layer[] = []
@@ -73,7 +90,7 @@ export default class Common extends Vue {
 
   // 年度
   get selfTime() {
-    return this.time
+    return this.subjectConfig.time || ''
   }
 
   set selfTime(value) {
@@ -82,38 +99,20 @@ export default class Common extends Vue {
 
   // 服务地址
   get selfUri() {
-    return this.uri
+    return ''
   }
 
   set selfUri(value) {
-    if (!/^(https|http)?:\/\//.test(value)) {
-      this.$message.warn('请输入正确的数据服务地址')
-      return
-    }
-    const {
-      hostname: ip,
-      port,
-      pathname,
-      query: { gdbp, layerName, layerIndex }
-    } = url.parse(value, true)
-    const docName = _last(pathname.split('/'))
-    let params: Record<string, string | number>
-    if (gdbp) {
-      params = {
-        ip,
-        port,
-        gdbp
-      }
-    } else if (docName) {
-      params = {
-        ip,
-        port,
-        docName,
-        layerName,
-        layerIndex
-      }
-    }
-    this.$emit('server-change', params)
+    this.$emit('server-change', this.getServerParams(value))
+  }
+
+  // 统计属性
+  get field() {
+    return this.subjectConfig.field || this.fields[0]?.value
+  }
+
+  set field(nV) {
+    this.$emit('field-change', nV)
   }
 
   /**
@@ -164,6 +163,40 @@ export default class Common extends Vue {
         break
     }
     return serverUri
+  }
+
+  /**
+   * 根据uri获取服务参数
+   */
+  getServerParams(uri) {
+    let params: Record<string, any>
+    if (uri) {
+      const {
+        hostname: ip,
+        port,
+        pathname,
+        query: { gdbp, layerName, layerIndex }
+      } = url.parse(uri, true)
+      const docName = _last(pathname.split('/'))
+
+      if (gdbp) {
+        params = {
+          ip,
+          port,
+          gdbp
+        }
+      } else if (docName) {
+        params = {
+          ip,
+          port,
+          docName,
+          layerName,
+          layerIndex
+        }
+      }
+    }
+
+    return params
   }
 
   /**
@@ -250,10 +283,55 @@ export default class Common extends Vue {
   }
 
   /**
+   * 查询的属性列表
+   */
+  async getFields(serverParams) {
+    let fields = []
+    if (serverParams) {
+      const { ip: baseIp, port: basePort } = baseConfigInstance.config
+      const {
+        ip = baseIp,
+        port = basePort,
+        gdbp,
+        docName,
+        layerIndex
+      } = serverParams
+      const result = await Feature.FeatureQuery.query({
+        ip,
+        port,
+        gdbp,
+        docName,
+        layerIdxs: layerIndex,
+        IncludeAttribute: false,
+        IncludeGeometry: false,
+        IncludeWebGraphic: false,
+        f: 'json'
+      })
+
+      if (result) {
+        const { FldName, FldType, FldAlias } = result.AttStruct
+        fields = FldName.map((v: string, i: number) => ({
+          type: FldType[i],
+          label: FldAlias[i] || v,
+          value: FldAlias[i] || v
+        }))
+      }
+    }
+
+    this.fields = fields
+    this.field = this.fields[0]?.value
+  }
+
+  /**
    * 服务地址变化
    */
   selfUriChange(value: string) {
-    this.selfUri = value ? value.trim() : ''
+    if (!/^(https|http)?:\/\//.test(value)) {
+      this.$message.warn('请输入正确的数据服务地址')
+      return
+    }
+    this.getFields(this.getServerParams(value))
+    this.selfUri = value
   }
 
   created() {

@@ -75,7 +75,7 @@ export default class MapViewCesiumMixin extends Mixins<Record<string, any>>(
       this.sceneController.getCartesian3FromDegrees(
         (xmin + xmax) / 2,
         (ymin + ymax) / 2,
-        this.sceneController.getPsitionCartographicHeight() * 2
+        this.sceneController.getPositionCartographicHeight() * 2
       )
     )
   }

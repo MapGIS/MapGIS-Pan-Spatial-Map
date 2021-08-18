@@ -27,12 +27,6 @@ export default {
   mixins: [AppMixin],
   data() {
     return {
-      map: {},
-      mapbox: {},
-      webGlobe: {},
-      Cesium: {},
-      CesiumZondy: {},
-      actions: {},
       mapboxInitialized: false,
       cesiumInitialized: false,
       mapInitialized: false,

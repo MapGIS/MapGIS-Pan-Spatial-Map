@@ -299,7 +299,10 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
       this.landscapeLayer,
       [window.WebClippingPlaneManage.plane],
       {
-        color: this.edgeColor()
+        color: this.edgeColor(),
+        // 剖切辅助面的宽高缩放比(基于模型球的半径)
+        scaleHeight: 2.0,
+        scaleWidth: 2.0
       }
     )
     this.setDistance(this.distance)

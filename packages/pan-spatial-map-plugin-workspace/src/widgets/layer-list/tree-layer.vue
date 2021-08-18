@@ -254,7 +254,8 @@ import {
   CoordinateTransformation,
   CoordinateSystemType,
   Objects,
-  IGSSceneSublayerRenderType
+  IGSSceneSublayerRenderType,
+  FitBound
 } from '@mapgis/web-app-framework'
 import {
   ExhibitionControllerMixin,
@@ -268,7 +269,6 @@ import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
 import MpUnifyModify from './components/UnifyModify/UnifyModify.vue'
 import MpSelectTilematrixSet from './components/SelectTilematrixSet/SelectTilematrixSet.vue'
 import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLayer.vue'
-import { fitBoundByLayer } from '../../util/fit-bound'
 
 @Component({
   components: {
@@ -680,13 +680,16 @@ export default class TreeLayer extends Mixins(
 
   fitBounds(item) {
     const { Cesium, map, webGlobe, CesiumZondy } = this
-    console.log(this.document)
-    fitBoundByLayer(item.dataRef, {
-      Cesium,
-      map,
-      webGlobe,
-      CesiumZondy
-    })
+    FitBound.fitBoundByLayer(
+      item.dataRef,
+      {
+        Cesium,
+        map,
+        webGlobe,
+        CesiumZondy
+      },
+      this.is2DMapMode === true
+    )
     this.clickPopover(item, false)
   }
 

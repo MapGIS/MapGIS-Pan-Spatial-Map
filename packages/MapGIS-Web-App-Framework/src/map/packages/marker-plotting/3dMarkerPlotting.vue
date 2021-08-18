@@ -101,8 +101,6 @@ export default class Mp3dMarkerPlotting extends Vue {
 
   currentLayer = null
 
-  analysisManager = null
-
   changeFilterWithMap() {
     if (!this.filterWithMap) {
       return
@@ -148,7 +146,7 @@ export default class Mp3dMarkerPlotting extends Vue {
     const destination = this.sceneController.getCartesian3FromDegrees(
       x,
       y,
-      this.sceneController.getPsitionCartographicHeight
+      this.sceneController.getPositionCartographicHeight
     )
     this.sceneController.cameraFlyTo({ destination })
   }

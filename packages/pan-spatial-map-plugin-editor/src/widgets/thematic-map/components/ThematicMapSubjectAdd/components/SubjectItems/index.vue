@@ -3,7 +3,7 @@
     <!-- 设置面板头部 -->
     <mp-toolbar :bordered="false" class="subject-items-head">
       <mp-toolbar-title :has-padding="false">
-        专题设置
+        专题图设置
       </mp-toolbar-title>
       <mp-toolbar-command-group>
         <mp-toolbar-command @click="add" title="新增" icon="plus" />
@@ -20,7 +20,7 @@
     </mp-toolbar>
     <!-- 设置面板内容 -->
     <div class="subject-items-content">
-      <a-empty description="暂无年度数据" v-if="!configList.length" />
+      <a-empty description="暂无数据" v-if="!configList.length" />
       <a-collapse
         v-else
         @change="panelChange"
@@ -32,7 +32,7 @@
           <mp-row-flex
             slot="header"
             justify="space-between"
-            :label="sub.time || '新增年度'"
+            :label="sub.time || '年度/时间'"
             :span="[23, 1]"
             :colon="false"
           >
@@ -47,8 +47,9 @@
           </mp-row-flex>
           <!-- 年度或时间、服务设置等公共设置项 -->
           <common
-            :time="sub.time"
+            :subject-config="sub"
             @time-change="timeChange($event, sub)"
+            @field-change="fieldChange($event, sub)"
             @server-change="serverChange($event, sub)"
           />
           <!-- 各专题图样式、动画等配置 -->
@@ -123,6 +124,13 @@ export default class SubjectItems extends Vue {
    */
   timeChange(time, sub) {
     this.$set(sub, 'time', time)
+  }
+
+  /**
+   * 专题图选择change
+   */
+  fieldChange(field, sub) {
+    this.$set(sub, 'field', field)
   }
 
   /**

@@ -212,7 +212,8 @@ import {
   LayerType,
   LoadStatus,
   Metadata,
-  IGSSceneSublayerRenderType
+  IGSSceneSublayerRenderType,
+  FitBound
 } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
@@ -221,7 +222,6 @@ import {
   events,
   api
 } from '@mapgis/pan-spatial-map-store'
-import { fitBoundByLayer } from '../../util/fit-bound'
 
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import NonSpatial from './non-spatial.vue'
@@ -864,12 +864,16 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             console.log(imposeLayer)
 
             if (imposeLayer.type !== LayerType.IGSScene) {
-              fitBoundByLayer(imposeLayer, {
-                Cesium,
-                map,
-                webGlobe,
-                CesiumZondy
-              })
+              FitBound.fitBoundByLayer(
+                imposeLayer,
+                {
+                  Cesium,
+                  map,
+                  webGlobe,
+                  CesiumZondy
+                },
+                this.is2DMapMode === true
+              )
             } else if (this.is2DMapMode === true) {
               this.switchMapMode()
             }
