@@ -1,7 +1,7 @@
 <template>
   <div class="base-items">
     <!-- 专题名称 -->
-    <mp-row-flex label="专题分类">
+    <mp-row-flex label="专题分类" :label-width="85">
       <mp-tree-select
         @change="subjectClassifyChange"
         :value="subjectClassify"
@@ -12,7 +12,7 @@
       />
     </mp-row-flex>
     <!-- 专题图名称 -->
-    <mp-row-flex label="专题图名称">
+    <mp-row-flex label="专题图名称" :label-width="85">
       <a-input
         @change="subjectTitleChange"
         :value="baseItemsObj.title"
@@ -21,12 +21,12 @@
       />
     </mp-row-flex>
     <!-- 专题图类型 -->
-    <mp-row-flex label="专题图类型">
+    <mp-row-flex label="专题图类型" :label-width="85">
       <a-select
         @change="subjectTypeChange"
         :options="subjectTypeList"
         :value="baseItemsObj.type"
-        placeholder="请选择"
+        placeholder="请选择专题图类型"
       />
     </mp-row-flex>
   </div>

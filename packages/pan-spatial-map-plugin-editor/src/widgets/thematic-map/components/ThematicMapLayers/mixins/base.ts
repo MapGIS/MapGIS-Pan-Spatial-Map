@@ -39,32 +39,6 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
   }
 
   /**
-   * 给geojson数据添加权重
-   * @param geojson
-   * @returns
-   */
-  addCountToGeoJSON(geojson: Feature.FeatureGeoJSON) {
-    const { weight, style } = this.subjectData
-    const _weight = weight || (style ? style.weight : 0)
-    const count = _isNumber(_weight)
-      ? _weight
-      : _weight
-      ? Number(_weight)
-      : null
-    const features = geojson.features.map((feature: Feature.GFeature) => ({
-      ...feature,
-      properties: {
-        ...feature.properties,
-        count
-      }
-    }))
-    return {
-      ...geojson,
-      features
-    }
-  }
-
-  /**
    * 专题图鼠标移入高亮
    * @param 移入的要素数据索引
    */

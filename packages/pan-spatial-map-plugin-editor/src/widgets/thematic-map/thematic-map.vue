@@ -79,7 +79,8 @@ enum HandleKeys {
       'setSubjectConfig',
       'updateSubjectConfig',
       'setSelectedSubjectList',
-      'resetVisible'
+      'resetVisible',
+      'resetLinkage'
     ])
   },
   components: {
@@ -147,6 +148,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    */
   setModulesHide(exclude: ModuleType) {
     moduleTypeList.forEach(t => t !== exclude && this.resetVisible(t))
+    this.resetLinkage()
   }
 
   /**
@@ -272,9 +274,9 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   onClose() {
     this.flag = true
     this.checkedThematicMapNodes = []
+    this.setSelectedSubjectList([])
     this.setModulesHide()
     this.setLoadingHide()
-    this.setSelectedSubjectList([])
     // this.setBaseConfig(null)
     // this.setSubjectConfig([])
   }
