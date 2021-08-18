@@ -25,8 +25,6 @@ import _last from 'lodash/last'
 
 @Component({ name: 'MpZoom' })
 export default class MpZoom extends Mixins(WidgetMixin) {
-  private sceneController = null
-
   private defaultCameraView = {
     destination: {
       x: -8579846.669255955,
