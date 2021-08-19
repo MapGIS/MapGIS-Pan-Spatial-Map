@@ -227,7 +227,6 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
         (result * 100).toFixed(2)
       )}%`
     }
-    // console.log('进度结果', this.maskText)
   }
 
   /**
@@ -292,7 +291,6 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
         const xPaneNum = Math.ceil(recXLength / 4) // X轴方向插值点个数
         const yPaneNum = Math.ceil(recYLength / 4) // Y轴方向插值点个数
         const zPaneNum = Math.ceil((max - min) / 4) // Z轴方向插值点个数
-        // console.log('个数', xPaneNum, yPaneNum, zPaneNum)
         window.ShadowManage.shadowAnalysis = new this.Cesium.ShadowAnalysis(
           viewer,
           {
@@ -368,6 +366,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 @import '../index.less';
 
 ::v-deep {
+  .ant-calendar-picker,
   .ant-time-picker {
     width: 100%;
   }

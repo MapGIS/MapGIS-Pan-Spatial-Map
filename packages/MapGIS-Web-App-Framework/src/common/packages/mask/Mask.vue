@@ -108,7 +108,8 @@ export default {
   }
   .loading .loading-indicator {
     background: transparent;
-    color: #444;
+    // color: #444;
+    color: @primary-color;
     font: bold 20px tahoma, arial, helvetica;
     padding: 10px;
     margin: 0;
