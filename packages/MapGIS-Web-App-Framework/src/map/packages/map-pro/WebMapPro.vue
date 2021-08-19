@@ -102,6 +102,7 @@
       />
       <mapgis-mvt-style-layer
         v-if="isVectorTileLayer(layerProps.type)"
+        :layerId="layerProps.layerId"
         :mvtStyle="layerProps.mvtStyle"
         mode="merge"
         :before="getBeforeLayerId(layerProps.beforeId)"
@@ -370,6 +371,7 @@ export default {
           break
         case LayerType.VectorTile:
           mapboxLayerComponentProps = {
+            layerId: layer.id,
             type: layer.type,
             mvtStyle: layer.currentStyle
           }
