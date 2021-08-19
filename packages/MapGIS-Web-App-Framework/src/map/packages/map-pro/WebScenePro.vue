@@ -72,28 +72,29 @@
       />
       <mapgis-3d-vectortile-layer
         v-if="isVectorTileLayer(layerProps.type)"
+        :id="layerProps.layerId"
         :vectortilejson="layerProps.mvtStyle"
         :tilingScheme="layerProps.srs"
         :layerStyle="layerProps.layerStyle"
       />
       <mapgis-3d-igs-m3d
         v-if="isIgsM3dLayer(layerProps.type, layerProps.renderType)"
-        :vueIndex="layerProps.id"
-        :id="layerProps.id"
+        :vueIndex="layerProps.layerId"
+        :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
-        @loaded="() => M3Dloaded(layerProps.id)"
+        @loaded="() => M3Dloaded(layerProps.layerId)"
       />
       <mapgis-3d-igs-terrain
         v-if="isIgsTerrainLayer(layerProps.type, layerProps.renderType)"
-        :vueIndex="layerProps.id"
-        :id="layerProps.id"
+        :vueIndex="layerProps.layerId"
+        :id="layerProps.layerId"
         :show="layerProps.show"
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
         :requestVertexNormals="true"
-        @terrain-loaded="() => M3Dloaded(layerProps.id)"
+        @terrain-loaded="() => M3Dloaded(layerProps.layerId)"
       />
     </div>
     <div class="statebardiv">
@@ -239,7 +240,7 @@ export default {
           layerComponentProps = {
             type: igsSceneSublayer.layer.type,
             renderType: igsSceneSublayer.renderType,
-            id: igsSceneSublayer.id,
+            layerId: igsSceneSublayer.id,
             url: igsSceneSublayer.layer.url
           }
           break
@@ -249,8 +250,7 @@ export default {
 
       layerComponentProps = {
         ...layerComponentProps,
-        ...layerStyle,
-        layerId: igsSceneSublayer.id
+        ...layerStyle
       }
 
       return layerComponentProps
