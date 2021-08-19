@@ -98,8 +98,7 @@
     <MpMask
       ref="mask"
       :parentDivClass="'mp-map-container'"
-      :loading="percent !== 0"
-      :percent="percent"
+      :loading="loading"
       :text="maskText"
     />
   </div>
@@ -137,9 +136,9 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 
   private shadowMoment = moment // moment插件
 
-  private percent = 0 // 时间段阴影分析进度（时间段阴影分析，暂时未对外开放）
+  private loading = false // 时间段阴影分析进度（时间段阴影分析，暂时未对外开放）
 
-  private maskText = ''
+  private maskText = '正在分析中, 请稍等...'
 
   /**
    * 日期组件值变化
@@ -220,16 +219,14 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   /**
    * 时间段阴影分析回调函数，获取分析进度值
    */
-  getPercent(result, vm) {
-    vm.$nextTick(() => {
-      let percent = Number((result * 100).toFixed(2))
-
-      if (result === 1) {
-        percent = 0
-      }
-      vm.maskText = `正在分析中, 请稍等...${percent}%`
-      vm.percent = percent
-    })
+  getPercent(result) {
+    if (result === 1) {
+      this.loading = false
+    } else {
+      this.maskText = `正在分析中, 请稍等...${Number(
+        (result * 100).toFixed(2)
+      )}%`
+    }
   }
 
   /**
@@ -261,7 +258,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
       // 绘制完成回调函数
       callback: positions => {
         this.remove()
-        this.percent = 0.01
+        this.loading = true
         let xmin
         let ymin
         let xmax
@@ -294,11 +291,10 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
         const xPaneNum = Math.ceil(recXLength / 4) // X轴方向插值点个数
         const yPaneNum = Math.ceil(recYLength / 4) // Y轴方向插值点个数
         const zPaneNum = Math.ceil((max - min) / 4) // Z轴方向插值点个数
-
         window.ShadowManage.shadowAnalysis = new this.Cesium.ShadowAnalysis(
           viewer,
           {
-            percentCallback: result => this.getPercent(result, this),
+            percentCallback: this.getPercent,
             shadowRatioCallBack: this.getShadowRatio,
             xPaneNum,
             yPaneNum,
@@ -361,7 +357,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     viewer.shadows = false
     viewer.clock.multiplier = 1
     viewer.clock.shouldAnimate = false // 关闭计时'
-    this.percent = 0
+    this.loading = false
   }
 }
 </script>
@@ -370,6 +366,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 @import '../index.less';
 
 ::v-deep {
+  .ant-calendar-picker,
   .ant-time-picker {
     width: 100%;
   }

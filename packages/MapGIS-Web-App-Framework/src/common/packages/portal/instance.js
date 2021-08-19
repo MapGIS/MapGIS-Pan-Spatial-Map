@@ -53,6 +53,7 @@ const newInstance = ({ scopedSlots, ...props } = {}, container, component) => {
 
   const childComponent = instance.$children[0]
 
+  // todo 更新内容forceUpdate待开发
   return {
     show(props) {
       childComponent.visible = true
