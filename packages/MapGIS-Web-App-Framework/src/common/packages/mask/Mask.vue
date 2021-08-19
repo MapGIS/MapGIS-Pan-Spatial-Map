@@ -96,7 +96,7 @@ export default {
     width: 100%;
     height: 100%;
     z-index: 20000;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.7);
   }
   .loading {
     position: absolute;
@@ -109,8 +109,10 @@ export default {
   .loading .loading-indicator {
     background: transparent;
     // color: #444;
+    // font: bold 20px tahoma, arial, helvetica;
     color: @primary-color;
-    font: bold 20px tahoma, arial, helvetica;
+    font-size: 18px;
+    font-weight: 600;
     padding: 10px;
     margin: 0;
     height: auto;
