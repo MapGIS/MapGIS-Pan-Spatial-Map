@@ -977,6 +977,20 @@
             "serverUrl": "gdbp://MapGISLocal/sample/ncls/道路交通网",
             "wfsUrl": "",
             "extent": ""
+          },
+          {
+            "label": "信创BIM图层热力图测试数据",
+            "describe": "信创BIM图层热力图测试数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSVECTOR",
+            "name": "信创BIM图层热力图测试数据",
+            "searchName": "",
+            "token": "",
+            "guid": "e76f9c13-0fcb-8537-96ab-daa533bf5de9",
+            "serverUrl": "gdbp://MapGISLocalPlus/示例数据/sfcls/信创BIM图层热力图测试数据.json_Pnt",
+            "wfsUrl": "",
+            "extent": ""
           }
         ]
       },
