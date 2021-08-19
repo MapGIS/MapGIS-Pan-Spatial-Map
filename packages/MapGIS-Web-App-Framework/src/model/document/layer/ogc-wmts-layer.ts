@@ -139,7 +139,7 @@ export class TileMatrixSet {
       jsonObject.TileMatrix.forEach((element, index) => {
         const lod = new LOD()
         lod.level = index
-        lod.scale = 1 / element.ScaleDenominator
+        lod.scale = element.ScaleDenominator
         lod.resolution = this.getResolutionByScale(lod.scale)
 
         if (element.Identifier) {
@@ -177,9 +177,9 @@ export class TileMatrixSet {
    */
   getResolutionByScale(Scale: number): number {
     // TODO 需要根据厂商来确定dpi，这里为了暂时写死
-    const dMMPerPix = 0.00028
+    const dMMPerPix = 25.4 / 96 / 1000
 
-    const resolution = dMMPerPix / Scale
+    const resolution = dMMPerPix / (1 / Scale)
 
     return resolution
   }

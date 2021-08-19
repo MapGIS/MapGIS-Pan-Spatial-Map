@@ -116,6 +116,7 @@ import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
 import { Layer, LayerType, LoadStatus } from '../../../model/document/layer'
 import { ObjectUtil } from '../../../utils'
 import DefaultMapStyle from '../../styles/map-style.json'
+import { getLevelInMap } from '../../../utils/map-resolution-util.js'
 
 export default {
   name: 'MpWebMapPro',
@@ -215,7 +216,19 @@ export default {
       }
       this.getMapboxLevelResolution(payload.mapr)
     },
-    getMapboxLevelResolution(map) {},
+    // 获取各个层级在maobox上最大分辨率
+    getMapboxLevelResolution(map) {
+      const arr = []
+      for (let level = 0; level <= 19; level++) {
+        const r = 6378137 // 赤道半径
+        const resolutionOnTheEquator = (2 * Math.PI * r) / (256 * 2 ** level)
+        arr.push({
+          level,
+          resolution: resolutionOnTheEquator
+        })
+      }
+      this.mapboxLevelResolutions = arr
+    },
     genMapboxLayerComponentPropsByLayer(layer, beforeId) {
       // mapbox图层组件所需要的属性
       let mapboxLayerComponentProps = {}
@@ -289,12 +302,11 @@ export default {
           // zoomOffset计算方式不明确，已录入缺陷列表。
           // 修改人：马原野 2021年7月22日
 
-          if (
-            layer.spatialReference.isWGS84() &&
-            layer.url.search('arcgis') > -1
-          ) {
-            zoomOffset = -1
-          }
+          const { tileMatrixSet } = layer.activeLayer
+          const { resolution, levelValue } = tileMatrixSet.tileInfo.lods[0]
+          // 获取当前分辨率对应cesium里面的层级，计算偏移量
+          const level = getLevelInMap(resolution, this.mapboxLevelResolutions)
+          zoomOffset = levelValue - level
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
