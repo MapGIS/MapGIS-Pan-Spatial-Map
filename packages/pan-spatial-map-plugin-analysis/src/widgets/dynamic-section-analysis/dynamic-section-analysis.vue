@@ -146,7 +146,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
       })
     this.models = layers
     if (layers.length > 0) {
-      this.model = layers[0]
+      this.model = layers[layers.length - 1]
     } else {
       this.models = layers
       this.model = null

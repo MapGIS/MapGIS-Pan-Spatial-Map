@@ -162,6 +162,10 @@
             "uri": "widgets/dynamic-section-analysis"
           },
           {
+            "id": "widget_13877c46-f36f-6864-585c-64b2ec38d369",
+            "uri": "widgets/profile-analysis"
+          },
+          {
             "id": "widget_dd8e6669-d0c3-4460-9db6-41fc4682b51e",
             "uri": "widgets/terrain-analysis"
           },
@@ -226,6 +230,9 @@
               },
               {
                 "id": "widget_b446da3a-4d4d-465c-8d41-0f6822924265"
+              },
+              {
+                "id": "widget_13877c46-f36f-6864-585c-64b2ec38d369"
               },
               {
                 "id": "widget_dd8e6669-d0c3-4460-9db6-41fc4682b51e"
