@@ -25,14 +25,21 @@
           class="color-picker"
         ></MpColorPicker>
       </a-form-item>
-      <!-- <a-form-item label="采样精度">
+      <a-form-item label="交互线颜色">
+        <MpColorPicker
+          :color.sync="formData.lineColor"
+          :disableAlpha="false"
+          class="color-picker"
+        ></MpColorPicker>
+      </a-form-item>
+      <a-form-item label="采样精度">
         <a-input
           v-model.number="formData.samplePrecision"
           type="number"
           min="0"
           addon-after="(米)"
         />
-      </a-form-item> -->
+      </a-form-item>
       <a-form-item label="显示剖面">
         <a-switch size="small" v-model="formData.showPolygon" />
       </a-form-item>
@@ -47,13 +54,6 @@
       <a-form-item label="剖面颜色" v-show="formData.showPolygon">
         <MpColorPicker
           :color.sync="formData.polygonColor"
-          :disableAlpha="false"
-          class="color-picker"
-        ></MpColorPicker>
-      </a-form-item>
-      <a-form-item label="交互线颜色" v-show="formData.showPolygon">
-        <MpColorPicker
-          :color.sync="formData.lineColor"
           :disableAlpha="false"
           class="color-picker"
         ></MpColorPicker>
@@ -107,7 +107,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     lineColor: 'rgba(0,255,0,1)', // 交互线颜色
     groundLineColor: 'rgba(255,0,0,1)', // 贴地线颜色
     showPolygon: false, // 是否显示剖面
-    samplePrecision: 2
+    samplePrecision: 2 // 采样精度(采样间隔，平面距离，单位米，模型默认为0.2，地形为2)
   }
 
   // radio样式
@@ -123,16 +123,23 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   // 选中图层
   private layer = null
 
+  // 剖面分析对象
   private terrainProfile = null
 
+  // 是否显示二维剖面
   private profile2dVisible = false
 
-  private depthTestAgainstTerrain = false // 深度检测是否已开启
+  // 深度检测是否已开启
+  private depthTestAgainstTerrain = false
 
+  // 进度条对象
   private loading = null
 
   private txtColor = '#000000a6'
 
+  /**
+   * 获取二维剖面设置参数
+   */
   getEchartOptions(smooth: boolean) {
     const echartsOptions = {
       tooltip: {
@@ -257,6 +264,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     const { renderType } = layer.activeScene.sublayers[0]
     const source = this.landscapeLayerFuc()
     if (renderType === IGSSceneSublayerRenderType.modelCache) {
+      // 模型只要把模型移到当前视图范围下即可进行分析
       Objects.SceneController.getInstance(
         this.Cesium,
         this.CesiumZondy,
@@ -264,7 +272,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       ).zoomToM3dLayerBySource(source[0])
       this.$set(this.formData, 'samplePrecision', 0.2)
     } else if (renderType === IGSSceneSublayerRenderType.elevation) {
-      console.log(layer)
+      // 地形
       const bound = layer.fullExtent
       if (bound) {
         this.webGlobe.viewer.camera.flyTo({
@@ -277,6 +285,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         })
       }
       this.$set(this.formData, 'samplePrecision', 2)
+      // 设置当前地形对象
       this.webGlobe.viewer.terrainProvider = source[0]
     }
   }
@@ -345,6 +354,9 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     return res.source
   }
 
+  /**
+   * 开始分析
+   */
   analysis() {
     const { viewer } = this.webGlobe
     this.profile2dVisible = false
@@ -362,6 +374,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     const pColor = this.getColor(polygonColor)
     const lColor = this.getColor(lineColor)
     const glColor = this.getColor(groundLineColor)
+    // 地形平滑显示二维剖面，模型取消平滑
     let smooth = true
     const { renderType } = this.layer.activeScene.sublayers[0]
     if (renderType === IGSSceneSublayerRenderType.modelCache) {
@@ -408,26 +421,37 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  /**
+   * 开始分析，显示进度条
+   */
   profileStart() {
     this.showLoading()
   }
 
+  /**
+   * 分析结束，移除进度条，并显示二维剖面
+   */
   profileSuccess() {
     this.profile2dVisible = true
     this.removeLoading()
   }
 
   remove() {
+    // 恢复深度检测设置
     if (!this.depthTestAgainstTerrain) {
       this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
     }
 
+    // 移除分析结果
     if (this.terrainProfile) {
       this.terrainProfile.destroy()
       this.terrainProfile = null
     }
 
+    // 关闭二维剖面显示
     this.profile2dVisible = false
+
+    // 移除进度条
     this.removeLoading()
   }
 }
