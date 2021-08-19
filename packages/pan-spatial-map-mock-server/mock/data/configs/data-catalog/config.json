@@ -725,7 +725,7 @@
             "name": "驻地数据",
             "searchName": "",
             "token": "",
-            "guid": "3049a1df-e633-4df2-a0a1-317ec3dd271b",
+            "guid": "3049a1df-e633-4df2-a0a1-317ec3dd271c",
             "serverUrl": "",
             "wfsUrl": "",
             "extent": "",
@@ -834,6 +834,18 @@
             "searchName": "",
             "model": "surface",
             "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7479",
+            "serverUrl": ""
+          },
+          {
+            "label": "信创BIM数据",
+            "describe": "信创BIM数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "m3d_bim",
+            "searchName": "",
+            "model": "surface",
+            "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7489",
             "serverUrl": ""
           },
           {
