@@ -370,6 +370,7 @@ export default {
           break
         case LayerType.VectorTile:
           mapboxLayerComponentProps = {
+            layerId: layer.id,
             type: layer.type,
             mvtStyle: layer.currentStyle
           }

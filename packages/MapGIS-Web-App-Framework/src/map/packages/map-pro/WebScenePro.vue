@@ -247,7 +247,11 @@ export default {
           break
       }
 
-      layerComponentProps = { ...layerComponentProps, ...layerStyle }
+      layerComponentProps = {
+        ...layerComponentProps,
+        ...layerStyle,
+        layerId: igsSceneSublayer.id
+      }
 
       return layerComponentProps
     },
@@ -415,6 +419,7 @@ export default {
           layerComponentProps = {
             type: layer.type,
             mvtStyle: layer.currentStyle,
+            layerId: layer.id,
             tilingScheme: this.getTilingSchemeBySrs(srs)
           }
           break
