@@ -396,7 +396,7 @@
           "children": [
             {
               "id": "098d7343-f2e6-26c1-e07b-ccbf604fa308",
-              "title": "人口",
+              "title": "省级行政区",
               "visible": true,
               "nodeType": "subject",
               "type": "SubSectionMap",
@@ -626,7 +626,7 @@
           "children": [
             {
               "id": "a55a2eca-e16e-5aeb-20b7-fbf906f685c0",
-              "title": "产业生产总值",
+              "title": "省级行政区",
               "visible": true,
               "nodeType": "subject",
               "type": "StatisticLabel",
@@ -699,13 +699,48 @@
       "children": [
         {
           "id": "92fd7586-e248-c105-918d-843fb090ef64",
-          "title": "县城驻地",
+          "title": "热力图",
           "visible": true,
           "nodeType": "list",
           "children": [
             {
               "id": "951289e5-89c5-6ab2-9e5f-e6793146034b",
-              "title": "热力图",
+              "title": "信创BIM_原生",
+              "visible": true,
+              "nodeType": "subject",
+              "type": "HeatMap",
+              "config": [
+                {
+                  "time": "2008",
+                  "ip": "",
+                  "port": "",
+                  "gdbp": "gdbp://MapGISLocalPlus/示例数据/sfcls/信创BIM图层热力图测试数据.json_Pnt",
+                  "field": "count"
+                }
+              ]
+            },
+            {
+              "id": "951289e5-89c5-6ab2-9e5f-e6793146034f",
+              "title": "信创BIM_mapv",
+              "visible": true,
+              "nodeType": "subject",
+              "type": "HeatMap",
+              "config": [
+                {
+                  "time": "2007",
+                  "ip": "",
+                  "port": "",
+                  "gdbp": "gdbp://MapGISLocalPlus/示例数据/sfcls/信创BIM图层热力图测试数据.json_Pnt",
+                  "field": "count",
+                  "style": {
+                    "type": "MAPV"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "951289e5-89c5-6ab2-9e5f-e6793146034u",
+              "title": "县城驻地",
               "visible": true,
               "nodeType": "subject",
               "type": "HeatMap",
@@ -713,30 +748,18 @@
                 "type": "gdbp",
                 "data": [
                   {
-                    "time": "2008",
+                    "time": "2000",
                     "subData": [
                       {
                         "ip": "",
                         "port": "",
                         "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
+                        "weight": "30",
+                        "field": "AREA",
                         "style": {
+                          "type": "MAPV",
                           "size": 13,
-                          "weight": "30",
-                          "gradient": {
-                            "0.25": "rgb(0,0,255)",
-                            "0.55": "rgb(0,255,0)",
-                            "0.85": "yellow",
-                            "1.0": "rgb(255,0,0)"
-                          },
-                          "animation": {
-                            "type": "time",
-                            "stepsRange": {
-                              "start": 0,
-                              "end": 100
-                            },
-                            "trails": 10,
-                            "duration": 4
-                          }
+                          "max": 100
                         },
                         "table": {
                           "showFields": ["name", "AREA"],
@@ -750,8 +773,53 @@
                           "showFieldsTitle": {
                             "AREA": "面积"
                           },
-                          "field": "name",
-                          "target": []
+                          "field": "name"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "951289e5-89c5-6ab2-9e5f-e6793146036c",
+              "title": "驻地数据_1",
+              "visible": true,
+              "nodeType": "subject",
+              "type": "HeatMap",
+              "config": {
+                "type": "doc",
+                "data": [
+                  {
+                    "time": "2009",
+                    "subData": [
+                      {
+                        "ip": "",
+                        "port": "",
+                        "gdbp": "",
+                        "docName": "驻地数据",
+                        "layerName": "地级城市驻地",
+                        "layerIndex": "1",
+                        "weight": "30",
+                        "field": "AREA",
+                        "style": {
+                          "type": "MAPV",
+                          "size": 13,
+                          "max": 100
+                        },
+                        "table": {
+                          "showFields": ["name", "AREA"],
+                          "showFieldsTitle": {
+                            "name": "名称",
+                            "AREA": "面积"
+                          }
+                        },
+                        "graph": {
+                          "showFields": ["AREA"],
+                          "showFieldsTitle": {
+                            "AREA": "面积"
+                          },
+                          "field": "name"
                         }
                       }
                     ]
@@ -769,7 +837,7 @@
           "children": [
             {
               "id": "48887937-5f03-af07-f03f-a18df148fd67",
-              "title": "蜂窝图",
+              "title": "县城驻地",
               "visible": true,
               "nodeType": "subject",
               "type": "HexBin",
@@ -783,8 +851,9 @@
                     "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
                     "docName": "",
                     "layerIndex": null,
+                    "weight": 8,
+                    "field": "AREA",
                     "style": {
-                      "weight": 8,
                       "size": 30,
                       "max": 100,
                       "label": {
@@ -836,7 +905,7 @@
           "children": [
             {
               "id": "760aeafc-6c60-a406-30fd-b466b7b3643c",
-              "title": "聚合标注",
+              "title": "县城驻地",
               "visible": true,
               "nodeType": "subject",
               "type": "Label",
@@ -855,6 +924,7 @@
                         "weight": "30",
                         "docName": "",
                         "layerIndex": null,
+                        "field": "AREA",
                         "dataBase": {
                           "code": "",
                           "codeYear": "",
