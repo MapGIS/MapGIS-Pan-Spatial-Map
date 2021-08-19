@@ -182,6 +182,21 @@ export function random(lower, upper) {
 }
 
 /**
+ * 参数是否是其中之一
+ * @param {*} value
+ * @param {*} validList
+ * @returns
+ */
+export function oneOf(value, validList) {
+  for (let i = 0; i < validList.length; i++) {
+    if (value === validList[i]) {
+      return true
+    }
+  }
+  return false
+}
+
+/**
  * @desc 函数防抖
  * @param func 目标函数
  * @param wait 延迟执行毫秒数

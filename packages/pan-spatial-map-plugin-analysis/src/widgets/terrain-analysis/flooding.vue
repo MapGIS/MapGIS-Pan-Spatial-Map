@@ -81,7 +81,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     frequency: 1000,
     animationSpeed: 0.01,
     amplitude: 10,
-    floodColor: 'rgb(255,255,102,0.7)'
+    floodColor: 'rgba(255,255,102,0.7)'
   }
 
   private depthTestAgainstTerrain = false // 深度检测是否已开启

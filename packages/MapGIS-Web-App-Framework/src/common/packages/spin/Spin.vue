@@ -1,9 +1,9 @@
 <template>
-  <div class="mp-spin-wrapper">
+  <div v-show="wrapperVisible" :class="`${prefixCls}-wrapper`">
     <slot />
-    <div class="mp-spin" :style="spinStyle" v-show="visible">
+    <div :class="spinCls" :style="spinStyle" v-show="visible">
       <slot name="spin">
-        <div class="mp-spin-dots">
+        <div :class="`${prefixCls}-dots`">
           <span>{{ tip }}</span>
           <span class="dots">
             <span class="dot dot-1">.</span>
@@ -17,7 +17,7 @@
   </div>
 </template>
 <script>
-import { ColorUtil } from '@mapgis/web-app-framework'
+import { ColorUtil, CommonUtil } from '@mapgis/web-app-framework'
 
 export default {
   name: 'MpSpin',
@@ -29,6 +29,12 @@ export default {
     tip: {
       type: String,
       default: '正在加载, 请稍等'
+    },
+    size: {
+      type: String,
+      validator(v) {
+        return CommonUtil.oneOf(v, ['large', 'small'])
+      }
     },
     background: {
       type: String,
@@ -42,11 +48,22 @@ export default {
     }
   },
   data() {
+    const prefixCls = 'mp-spin'
     return {
-      visible: false
+      wrapperVisible: false,
+      visible: false,
+      prefixCls
     }
   },
   computed: {
+    spinCls({ prefixCls, size }) {
+      return [
+        `${prefixCls}-spin`,
+        {
+          [`${prefixCls}-${size}`]: !!size
+        }
+      ]
+    },
     spinStyle({ background, zIndex }) {
       return {
         background,
@@ -74,10 +91,12 @@ export default {
   left: 0;
   top: 0;
 }
-.mp-spin-wrapper {
-  .position-absolute;
-  .mp-spin {
+.mp-spin {
+  &-wrapper,
+  &-spin {
     .position-absolute;
+  }
+  &-spin {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -88,8 +107,7 @@ export default {
       vertical-align: middle;
     }
   }
-
-  .mp-spin-dots {
+  &-dots {
     font-size: 16px;
     font-weight: 600;
     color: @primary-color;
@@ -130,6 +148,12 @@ export default {
         animation: loading 0.8s 0.35s ease infinite;
       }
     }
+  }
+  &-large {
+    font-size: 18px;
+  }
+  &-small {
+    font-size: 14px;
   }
 }
 </style>

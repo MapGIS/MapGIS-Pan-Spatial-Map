@@ -2,7 +2,7 @@
   <!-- 热力图 -->
   <mapgis-3d-mapv-layer
     :geojson="mapvData"
-    :options="heatMapOptions"
+    :options="options"
     :count-field="countField"
     v-if="isMapv"
   />

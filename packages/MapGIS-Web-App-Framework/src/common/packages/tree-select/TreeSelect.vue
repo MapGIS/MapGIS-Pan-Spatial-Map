@@ -1,9 +1,5 @@
 <template>
-  <a-dropdown
-    v-model="dropdownVisible"
-    :trigger="['click']"
-    class="mp-tree-select"
-  >
+  <a-dropdown v-model="dropdownVisible" :trigger="['click']" :class="prefixCls">
     <slot>
       <a-input
         @change="onValueChange"
@@ -13,18 +9,13 @@
         :allow-clear="true"
         :title="selectedValue"
       >
-        <a-icon
-          slot="suffix"
-          :class="{ rotate180: dropdownVisible }"
-          class="mp-tree-select-arrow"
-          type="down"
-        />
+        <a-icon slot="suffix" :class="arrowCls" type="down" />
       </a-input>
     </slot>
-    <div slot="overlay" class="mp-tree-select-dropdown">
+    <div slot="overlay" :class="`${prefixCls}-dropdown`">
       <a-spin :spinning="loading">
         <a-empty
-          class="mp-tree-select-empty"
+          :class="`${prefixCls}-empty`"
           :description="description"
           v-if="!treeData.length"
         />
@@ -46,6 +37,7 @@
   </a-dropdown>
 </template>
 <script>
+import { CommonUtil } from '@mapgis/web-app-framework'
 import _cloneDeep from 'lodash/cloneDeep'
 
 export default {
@@ -80,9 +72,8 @@ export default {
     },
     size: {
       type: String,
-      default: 'default',
       validator(v) {
-        return ['large', 'default', 'small'].includes(v)
+        return CommonUtil.oneOf(v, ['large', 'small'])
       }
     },
     description: {
@@ -103,7 +94,9 @@ export default {
     }
   },
   data() {
+    const prefixCls = 'mp-tree-select'
     return {
+      prefixCls,
       dropdownVisible: false,
       selectedValue: '',
       selectedKeys: [],
@@ -111,6 +104,14 @@ export default {
     }
   },
   computed: {
+    arrowCls({ prefixCls, rotate180, dropdownVisible }) {
+      return [
+        `${prefixCls}-arrow`,
+        {
+          [`${prefixCls}-rotate180`]: dropdownVisible
+        }
+      ]
+    },
     formatReplaceFields({ replaceFields }) {
       return {
         children: 'children',
@@ -224,9 +225,9 @@ export default {
     font-size: 12px;
     transition: transform 0.3s;
     cursor: pointer;
-    &.rotate180 {
-      transform: rotate(180deg);
-    }
+  }
+  &-rotate180 {
+    transform: rotate(180deg);
   }
   &-empty {
     padding: 12px 0;
