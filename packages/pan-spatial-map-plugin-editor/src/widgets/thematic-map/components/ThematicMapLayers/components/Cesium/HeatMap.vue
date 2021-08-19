@@ -59,6 +59,8 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
             size: 60 // 每个热力点半径大小
           }
         : {
+            spacing: 1, // 边界周围的额外空间
+            alpha: 1, // 透明度
             blur: 0.85, // 模糊值
             radius: 60, // 每个热力点半径大小
             useClustering: true // 是否聚合
@@ -121,7 +123,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   }
 
   /**
-   * 创建热力图
+   * 创建原生热力图
    * @param 专题图层范围
    * @param geojson数据
    */
@@ -143,14 +145,24 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   }
 
   /**
+   * 移除原生热力图
+   */
+  removeHeatMap() {
+    if (this.heatMapInstance) {
+      this.heatMapInstance.removeLayer()
+      this.heatMapInstance = null
+    }
+  }
+
+  /**
    * 展示图层
    */
   showLayer() {
     if (this.geojson) {
-      this.removeLayer()
       if (this.isMapv) {
         this.mapvData = { ...this.geojson }
       } else {
+        this.removeHeatMap()
         this.getBounds().then(bounds =>
           this.createHeatMap(bounds, this.geojson)
         )
@@ -162,13 +174,10 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
    * 移除图层
    */
   removeLayer() {
-    if (this.isMapv) {
-      if (this.mapvData) {
-        this.mapvData = {}
-      }
-    } else if (this.heatMapInstance) {
-      this.heatMapInstance.removeLayer()
-      this.heatMapInstance = null
+    if (!this.isMapv) {
+      this.removeHeatMap()
+    } else if (this.mapvData) {
+      this.mapvData = {}
     }
   }
 }
