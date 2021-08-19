@@ -837,6 +837,18 @@
             "serverUrl": ""
           },
           {
+            "label": "信创BIM数据",
+            "describe": "信创BIM数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "m3d_bim",
+            "searchName": "",
+            "model": "surface",
+            "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7489",
+            "serverUrl": ""
+          },
+          {
             "label": "点云数据",
             "describe": "点云数据",
             "ip": "",

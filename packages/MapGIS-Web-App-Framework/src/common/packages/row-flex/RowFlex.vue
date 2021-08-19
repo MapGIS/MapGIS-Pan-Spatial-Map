@@ -4,14 +4,13 @@
     :align="align"
     :justify="justify"
     :gutter="gutter"
-    :class="type"
-    class="row-flex"
+    :class="rowFlexCls"
   >
     <a-col
       :span="labelSpan"
       :title="label"
       :style="labelStyle"
-      class="row-flex-col-left"
+      :class="`${prefixCls}-col-left`"
     >
       <slot name="label" v-if="$slots.label || label">
         {{ label }}{{ isColon }}</slot
@@ -24,6 +23,8 @@
 </template>
 
 <script>
+import { CommonUtil } from '@mapgis/web-app-framework'
+
 export default {
   name: 'MpRowFlex',
   props: {
@@ -31,27 +32,27 @@ export default {
       type: String,
       default: 'horizontal',
       validator: function(value) {
-        return ['horizontal', 'vertical'].includes(value)
+        return CommonUtil.oneOf(value, ['horizontal', 'vertical'])
       }
     },
     align: {
       type: String,
       default: 'middle',
       validator: function(value) {
-        return ['top', 'middle', 'bottom'].includes(value)
+        return CommonUtil.oneOf(value, ['top', 'middle', 'bottom'])
       }
     },
     justify: {
       type: String,
       default: 'start',
       validator: function(value) {
-        return [
+        return CommonUtil.oneOf(value, [
           'start',
           'end',
           'center',
           'space-between',
           'space-around'
-        ].includes(value)
+        ])
       }
     },
     gutter: {
@@ -76,18 +77,32 @@ export default {
       type: String,
       default: 'left',
       validator: function(value) {
-        return ['left', 'center', 'right'].includes(value)
+        return CommonUtil.oneOf(value, ['left', 'center', 'right'])
       }
     },
     contentAlign: {
       type: String,
       default: 'left',
       validator: function(value) {
-        return ['left', 'center', 'right'].includes(value)
+        return CommonUtil.oneOf(value, ['left', 'center', 'right'])
       }
     }
   },
+  data() {
+    const prefixCls = 'mp-row-flex'
+    return {
+      prefixCls
+    }
+  },
   computed: {
+    rowFlexCls({ prefixCls, type }) {
+      return [
+        `${prefixCls}`,
+        {
+          [`${prefixCls}-${type}`]: !!type
+        }
+      ]
+    },
     isVertical({ type }) {
       return type === 'vertical'
     },
@@ -134,15 +149,15 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.row-flex {
-  &.vertical {
+.mp-row-flex {
+  &-vertical {
     .row-flex-col-left {
       margin-bottom: 2px;
     }
   }
-}
-.row-flex-col-left {
-  // .ellipse();
-  white-space: normal;
+  &-col-left {
+    // .ellipse();
+    white-space: normal;
+  }
 }
 </style>
