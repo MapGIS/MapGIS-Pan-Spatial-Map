@@ -109,7 +109,7 @@ import {
   LoadStatus,
   IGSSceneSublayerRenderType
 } from '../../../model/document/layer'
-import { getLevelInMap } from './util/map-resolution-util.js'
+import { getLevelInMap } from '../../../utils/map-resolution-util.js'
 
 export default {
   name: 'MpWebScenePro',
@@ -337,6 +337,7 @@ export default {
 
           tileMatrixSet = layer.activeLayer.tileMatrixSet
           const { resolution, levelValue } = tileMatrixSet.tileInfo.lods[0]
+          // 获取当前分辨率对应cesium里面的层级，计算偏移量
           const level = getLevelInMap(resolution, this.cesiumLevelResolutions)
           let startLevel = null
           if (level !== null) {
