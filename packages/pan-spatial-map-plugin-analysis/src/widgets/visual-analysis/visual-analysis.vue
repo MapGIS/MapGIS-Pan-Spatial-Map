@@ -16,104 +16,95 @@
             :step="0.1"
           />
         </a-form-item>
+        <a-form-item label="方向角">
+          <a-input v-model.number="heading" :min="0" :max="360" type="number" />
+        </a-form-item>
+        <a-form-item label="俯仰角">
+          <a-input v-model.number="pitch" :min="-90" :max="90" type="number" />
+        </a-form-item>
+        <a-form-item label="可视距离(米)">
+          <a-input v-model.number="viewRadius" :min="0" type="number" />
+        </a-form-item>
         <a-form-item label="观察点坐标">
           <a-row>
-            <a-col v-if="formData.viewPositionX !== ''" :span="8">
+            <a-col v-if="posData.viewPositionX !== ''" :span="8">
               <a-popover>
                 <template slot="content">
-                  <p>{{ formData.viewPositionX }}</p>
+                  <p>{{ posData.viewPositionX }}</p>
                 </template>
-                <a-input
-                  v-model.number="formData.viewPositionX"
-                  type="number"
-                />
+                <a-input v-model.number="posData.viewPositionX" type="number" />
               </a-popover>
             </a-col>
             <a-col v-else :span="8">
-              <a-input v-model.number="formData.viewPositionX" type="number" />
+              <a-input v-model.number="posData.viewPositionX" type="number" />
             </a-col>
-            <a-col v-if="formData.viewPositionY !== ''" :span="8">
+            <a-col v-if="posData.viewPositionY !== ''" :span="8">
               <a-popover>
                 <template slot="content">
-                  <p>{{ formData.viewPositionY }}</p>
+                  <p>{{ posData.viewPositionY }}</p>
                 </template>
-                <a-input
-                  v-model.number="formData.viewPositionY"
-                  type="number"
-                />
+                <a-input v-model.number="posData.viewPositionY" type="number" />
               </a-popover>
             </a-col>
             <a-col v-else :span="8">
-              <a-input v-model.number="formData.viewPositionY" type="number" />
+              <a-input v-model.number="posData.viewPositionY" type="number" />
             </a-col>
-            <a-col v-if="formData.viewPositionZ !== ''" :span="8">
+            <a-col v-if="posData.viewPositionZ !== ''" :span="8">
               <a-popover>
                 <template slot="content">
-                  <p>{{ formData.viewPositionZ }}</p>
+                  <p>{{ posData.viewPositionZ }}</p>
                 </template>
-                <a-input
-                  v-model.number="formData.viewPositionZ"
-                  type="number"
-                />
+                <a-input v-model.number="posData.viewPositionZ" type="number" />
               </a-popover>
             </a-col>
             <a-col v-else :span="8">
-              <a-input v-model.number="formData.viewPositionZ" type="number" />
+              <a-input v-model.number="posData.viewPositionZ" type="number" />
             </a-col>
           </a-row>
         </a-form-item>
         <a-form-item label="目标点坐标">
           <a-row>
-            <a-col v-if="formData.targetPositionX !== ''" :span="8">
+            <a-col v-if="posData.targetPositionX !== ''" :span="8">
               <a-popover>
                 <template slot="content">
-                  <p>{{ formData.targetPositionX }}</p>
+                  <p>{{ posData.targetPositionX }}</p>
                 </template>
                 <a-input
-                  v-model.number="formData.targetPositionX"
+                  v-model.number="posData.targetPositionX"
                   type="number"
                 />
               </a-popover>
             </a-col>
             <a-col v-else :span="8">
-              <a-input
-                v-model.number="formData.targetPositionX"
-                type="number"
-              />
+              <a-input v-model.number="posData.targetPositionX" type="number" />
             </a-col>
-            <a-col v-if="formData.targetPositionY !== ''" :span="8">
+            <a-col v-if="posData.targetPositionY !== ''" :span="8">
               <a-popover>
                 <template slot="content">
-                  <p>{{ formData.targetPositionY }}</p>
+                  <p>{{ posData.targetPositionY }}</p>
                 </template>
                 <a-input
-                  v-model.number="formData.targetPositionY"
+                  v-model.number="posData.targetPositionY"
                   type="number"
                 />
               </a-popover>
             </a-col>
             <a-col v-else :span="8">
-              <a-input
-                v-model.number="formData.targetPositionY"
-                type="number"
-              />
+              <a-input v-model.number="posData.targetPositionY" type="number" />
             </a-col>
-            <a-col v-if="formData.targetPositionZ !== ''" :span="8">
+            <a-col v-if="posData.targetPositionZ !== ''" :span="8">
               <a-popover>
                 <template slot="content">
-                  <p>{{ formData.targetPositionZ }}</p>
+                  <p>{{ posData.targetPositionZ }}</p>
                 </template>
                 <a-input
-                  v-model.number="formData.targetPositionZ"
+                  v-model.number="posData.targetPositionZ"
                   type="number"
                 />
               </a-popover>
             </a-col>
             <a-col v-else :span="8">
-              <a-input
-                v-model.number="formData.targetPositionZ"
-                type="number"
-              />
+              <a-input v-model.number="posData.targetPositionZ" type="number" />
             </a-col>
           </a-row>
         </a-form-item>
@@ -175,7 +166,20 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     unVisibleColor: '#ff0000',
     visibleColor: '#00ff00',
     maskColor: 'rgba(37, 218, 169, 0.2)',
-    exHeight: 1.85,
+    exHeight: 1.85
+  }
+
+  // 方向角
+  private heading = 0
+
+  // 俯仰角
+  private pitch = 0
+
+  // 可视距离
+  private viewRadius = 0
+
+  // 坐标数据
+  private posData = {
     viewPositionX: '',
     viewPositionY: '',
     viewPositionZ: '',
@@ -212,9 +216,10 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
       newVal.visibleColor
     )
     const maskColor = new this.Cesium.Color.fromCssColorString(newVal.maskColor)
+
     if (window.VisualAnalysisManage.visualAnalysis) {
-      window.VisualAnalysisManage.visualAnalysis._unVisibleColor = unVisibleColor
-      window.VisualAnalysisManage.visualAnalysis._visibleColor = visibleColor
+      window.VisualAnalysisManage.visualAnalysis.unVisibleColor = unVisibleColor
+      window.VisualAnalysisManage.visualAnalysis.visibleColor = visibleColor
       window.VisualAnalysisManage.visualAnalysis._fanColor = maskColor
       window.VisualAnalysisManage.visualAnalysis.horizontAngle =
         newVal.horizontAngle
@@ -237,6 +242,27 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  @Watch('heading')
+  onHeadingChange(newVal) {
+    if (window.VisualAnalysisManage.visualAnalysis) {
+      window.VisualAnalysisManage.visualAnalysis.heading = newVal
+    }
+  }
+
+  @Watch('pitch')
+  onPitchChange(newVal) {
+    if (window.VisualAnalysisManage.visualAnalysis) {
+      window.VisualAnalysisManage.visualAnalysis.pitch = newVal
+    }
+  }
+
+  @Watch('viewRadius')
+  onViewRadiusChange(newVal) {
+    if (window.VisualAnalysisManage.visualAnalysis) {
+      window.VisualAnalysisManage.visualAnalysis.viewRadius = newVal
+    }
+  }
+
   created() {
     this.initData()
   }
@@ -255,18 +281,18 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   // 通过输入坐标开始分析按钮回调
   private onInputStart() {
     let viewCartesian = this.Cesium.Cartesian3.fromDegrees(
-      this.formData.viewPositionX,
-      this.formData.viewPositionY,
-      this.formData.viewPositionZ
+      this.posData.viewPositionX,
+      this.posData.viewPositionY,
+      this.posData.viewPositionZ
     )
 
     const cartographic = this.updateExheight(viewCartesian)
     viewCartesian = this.Cesium.Cartographic.toCartesian(cartographic)
 
     const targetCartesian = this.Cesium.Cartesian3.fromDegrees(
-      this.formData.targetPositionX,
-      this.formData.targetPositionY,
-      this.formData.targetPositionZ
+      this.posData.targetPositionX,
+      this.posData.targetPositionY,
+      this.posData.targetPositionZ
     )
 
     window.VisualAnalysisManage.visualAnalysis.viewPosition = viewCartesian
@@ -281,12 +307,12 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.startVisualAnalysis()
 
     if (
-      this.formData.viewPositionX !== '' &&
-      this.formData.viewPositionY !== '' &&
-      this.formData.viewPositionZ !== '' &&
-      this.formData.targetPositionX !== '' &&
-      this.formData.targetPositionY !== '' &&
-      this.formData.targetPositionZ !== ''
+      this.posData.viewPositionX !== '' &&
+      this.posData.viewPositionY !== '' &&
+      this.posData.viewPositionZ !== '' &&
+      this.posData.targetPositionX !== '' &&
+      this.posData.targetPositionY !== '' &&
+      this.posData.targetPositionZ !== ''
     ) {
       this.isHasTargetPos = false
       // 注销鼠标的各项监听事件
@@ -297,28 +323,28 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
       this.onInputStart()
     } else if (
-      this.formData.viewPositionX === '' &&
-      this.formData.viewPositionY === '' &&
-      this.formData.viewPositionZ === '' &&
-      this.formData.targetPositionX === '' &&
-      this.formData.targetPositionY === '' &&
-      this.formData.targetPositionZ === ''
+      this.posData.viewPositionX === '' &&
+      this.posData.viewPositionY === '' &&
+      this.posData.viewPositionZ === '' &&
+      this.posData.targetPositionX === '' &&
+      this.posData.targetPositionY === '' &&
+      this.posData.targetPositionZ === ''
     ) {
       this.isHasTargetPos = false
       this.addEventListener()
     } else if (
-      this.formData.viewPositionX !== '' &&
-      this.formData.viewPositionY !== '' &&
-      this.formData.viewPositionZ !== '' &&
-      this.formData.targetPositionX === '' &&
-      this.formData.targetPositionY === '' &&
-      this.formData.targetPositionZ === ''
+      this.posData.viewPositionX !== '' &&
+      this.posData.viewPositionY !== '' &&
+      this.posData.viewPositionZ !== '' &&
+      this.posData.targetPositionX === '' &&
+      this.posData.targetPositionY === '' &&
+      this.posData.targetPositionZ === ''
     ) {
       this.isHasTargetPos = false
       let viewCartesian = this.Cesium.Cartesian3.fromDegrees(
-        this.formData.viewPositionX,
-        this.formData.viewPositionY,
-        this.formData.viewPositionZ
+        this.posData.viewPositionX,
+        this.posData.viewPositionY,
+        this.posData.viewPositionZ
       )
 
       const cartographic = this.updateExheight(viewCartesian)
@@ -332,12 +358,12 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
       this.addEventListener()
     } else if (
-      this.formData.viewPositionX === '' &&
-      this.formData.viewPositionY === '' &&
-      this.formData.viewPositionZ === '' &&
-      this.formData.targetPositionX !== '' &&
-      this.formData.targetPositionY !== '' &&
-      this.formData.targetPositionZ !== ''
+      this.posData.viewPositionX === '' &&
+      this.posData.viewPositionY === '' &&
+      this.posData.viewPositionZ === '' &&
+      this.posData.targetPositionX !== '' &&
+      this.posData.targetPositionY !== '' &&
+      this.posData.targetPositionZ !== ''
     ) {
       this.isHasTargetPos = true
       this.addEventListener()
@@ -427,12 +453,17 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.webGlobe.unRegisterMouseEvent('RIGHT_CLICK')
 
     // 清空观察点与目标点坐标
-    this.formData.viewPositionX = ''
-    this.formData.viewPositionY = ''
-    this.formData.viewPositionZ = ''
-    this.formData.targetPositionX = ''
-    this.formData.targetPositionY = ''
-    this.formData.targetPositionZ = ''
+    this.posData.viewPositionX = ''
+    this.posData.viewPositionY = ''
+    this.posData.viewPositionZ = ''
+    this.posData.targetPositionX = ''
+    this.posData.targetPositionY = ''
+    this.posData.targetPositionZ = ''
+
+    // 清空方向角、俯仰角、可视距离
+    this.heading = 0
+    this.pitch = 0
+    this.viewRadius = 0
 
     // 移除所有观察点
     this.webGlobe.viewer.entities.removeAll()
@@ -503,12 +534,13 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
         // 如果拥有初始目标点，则相当于在选择观察点后，又自动点击了鼠标左键一次来选择目标点
         if (this.isHasTargetPos) {
           const targetCartesian = this.Cesium.Cartesian3.fromDegrees(
-            this.formData.targetPositionX,
-            this.formData.targetPositionY,
-            this.formData.targetPositionZ
+            this.posData.targetPositionX,
+            this.posData.targetPositionY,
+            this.posData.targetPositionZ
           )
           window.VisualAnalysisManage.visualAnalysis.targetPosition = targetCartesian
 
+          this.setVisualAttrs()
           this.convertPosition(targetCartesian, 'target')
 
           this.hasViewPosition = false
@@ -519,6 +551,8 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
         // 设置可视域结束点坐标
         window.VisualAnalysisManage.visualAnalysis.targetPosition = cartesian
+
+        this.setVisualAttrs()
         this.convertPosition(cartesian, 'target')
 
         this.hasViewPosition = false
@@ -534,6 +568,8 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     if (this.hasViewPosition) {
       // 设置可视域结束点坐标
       window.VisualAnalysisManage.visualAnalysis.targetPosition = cartesian
+
+      this.setVisualAttrs()
       this.convertPosition(cartesian, 'target')
     }
 
@@ -577,13 +613,13 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     )
 
     if (type === 'view') {
-      this.formData.viewPositionX = centerLon
-      this.formData.viewPositionY = centerLat
-      this.formData.viewPositionZ = height
+      this.posData.viewPositionX = centerLon
+      this.posData.viewPositionY = centerLat
+      this.posData.viewPositionZ = height
     } else {
-      this.formData.targetPositionX = centerLon
-      this.formData.targetPositionY = centerLat
-      this.formData.targetPositionZ = height
+      this.posData.targetPositionX = centerLon
+      this.posData.targetPositionY = centerLat
+      this.posData.targetPositionZ = height
     }
   }
 
@@ -597,6 +633,19 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     cartographic.height += this.formData.exHeight
 
     return cartographic
+  }
+
+  // 分析完成时显示方向角、俯仰角、可视距离三种属性
+  private setVisualAttrs() {
+    const {
+      heading,
+      pitch,
+      viewRadius
+    } = window.VisualAnalysisManage.visualAnalysis
+
+    this.heading = heading.toFixed(2)
+    this.pitch = pitch.toFixed(2)
+    this.viewRadius = parseInt(viewRadius)
   }
 }
 </script>
