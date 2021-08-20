@@ -144,7 +144,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   // 进度条对象
   private loading = null
 
-  private txtColor = '#000000a6'
+  // private txtColor = '#000000a6'
 
   /**
    * 获取二维剖面设置参数
@@ -160,17 +160,13 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
             type: 'solid'
           }
         },
-        textStyle: {
-          fontSize: 10
-        },
         confine: true, // 是否将 tooltip 框限制在图表的区域内。
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         position: function(pos, params, el, elRect, size) {
           const obj = { top: 10 }
           obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30
           return obj
-        },
-        extraCssText: 'width: 170px'
+        }
       },
       title: {
         show: false
@@ -185,23 +181,27 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       calculable: true,
       xAxis: [
         {
+          show: false,
           type: 'value',
-          max: 'dataMax',
-          scale: true,
-          axisLabel: {
-            fontSize: 10,
-            fontFamily: '微软雅黑',
-            color: this.txtColor
-          }
+          max: 'dataMax'
         }
       ],
       yAxis: [
         {
           type: 'value',
-          scale: true,
+          splitLine: {
+            lineStyle: {
+              color: '#d9d9d9',
+              type: 'dotted'
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          },
           axisLabel: {
-            fontFamily: '微软雅黑',
-            color: this.txtColor,
             formatter(value) {
               const texts = []
               if (value > 99999) {
@@ -211,22 +211,6 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
                 texts.push(parseInt(value))
               }
               return texts
-            }
-          },
-          axisTick: {
-            lineStyle: {
-              color: this.txtColor
-            }
-          },
-          axisLine: {
-            lineStyle: {
-              color: this.txtColor
-            }
-          },
-          splitLine: {
-            lineStyle: {
-              color: '#d9d9d9',
-              type: 'dotted'
             }
           }
         }
