@@ -513,16 +513,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
    * @id 勾选图层的id
    */
   disableTreeNodeCheckBox(id: string) {
-    // let layer = null
-    // for (let index = 0; index < this.allTreeDataConfigs.length; index++) {
-    //   const element = this.allTreeDataConfigs[index]
-    //   if (id === element.guid) {
-    //     // this.$set(element, 'disableCheckbox', true)
-    //     this.setCheckBoxEnable(element, true)
-    //     layer = element
-    //     break
-    //   }
-    // }
     const layer = this.findTreeNodeConfigById(id)
     if (layer) {
       this.setCheckBoxEnable(layer, true)
