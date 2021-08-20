@@ -74,11 +74,6 @@
       <a-button type="primary" @click="analysis">分析</a-button>
       <a-button @click="stopCutFillM">清除</a-button>
     </div>
-    <MpMask
-      ref="mask"
-      :parentDivClass="'mp-map-container'"
-      :loading="loading"
-    />
   </div>
 </template>
 <script lang="ts">
@@ -112,7 +107,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
   private recalculate = false
 
-  private loading = false
+  private loading = null
 
   private entityController = null
 
@@ -157,6 +152,30 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       this.CesiumZondy,
       this.webGlobe
     ).colorToCesiumColor(rgba)
+  }
+
+  /**
+   * 打开分析提示遮罩层
+   */
+  showLoading() {
+    if (!this.loading) {
+      this.loading = this.$portal.show(
+        {
+          tip: '正在分析中，请稍等'
+        },
+        document.querySelector('.mp-map-container')
+      )
+    }
+  }
+
+  /**
+   * 移除分析提示遮罩层
+   */
+  removeLoading() {
+    if (this.loading) {
+      this.loading = null
+      this.$portal.remove()
+    }
   }
 
   /**
@@ -250,7 +269,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
   // 开始分析
   startFill() {
     const { positions } = this
-    this.loading = true
+    this.showLoading()
     if (!positions) {
       this.$message.warning('请绘制分析区域')
       return
@@ -280,17 +299,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
         // 设置填挖规整高度
         height: z,
         // 返回结果的回调函数
-        callback: result => {
-          this.result = {
-            height: `${result.minHeight.toFixed(2)}~${result.maxHeight.toFixed(
-              2
-            )}`,
-            surfaceArea: result.surfaceArea,
-            cutVolume: result.cutVolume,
-            fillVolume: result.fillVolume
-          }
-          this.loading = false
-        }
+        callback: this.analysisSuccess
       }
     )
     // 开始执行填挖方分析
@@ -298,6 +307,16 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       window.CutFillAnalyzeManage.cutFill,
       positions
     )
+  }
+
+  analysisSuccess(result) {
+    this.result = {
+      height: `${result.minHeight.toFixed(2)}~${result.maxHeight.toFixed(2)}`,
+      surfaceArea: result.surfaceArea,
+      cutVolume: result.cutVolume,
+      fillVolume: result.fillVolume
+    }
+    this.removeLoading()
   }
 
   // 移除填挖方计算
@@ -329,7 +348,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     }
     this.positions = null
     this.recalculate = false
-    this.loading = false
+    this.removeLoading()
 
     if (!this.depthTestAgainstTerrain) {
       this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false

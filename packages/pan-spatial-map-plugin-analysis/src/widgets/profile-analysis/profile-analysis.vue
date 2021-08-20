@@ -64,14 +64,14 @@
     <mp-window-wrapper :visible="profile2dVisible">
       <mp-window
         :visible.sync="profile2dVisible"
-        :min-width="620"
-        :max-height="370"
-        anchor="top-center"
+        :min-width="400"
+        :max-height="250"
+        anchor="bottom-left"
         title="二维剖面"
       >
         <div
           id="profileChart"
-          style="width: 600px; height: 300px; float: right"
+          style="width: 380px; height: 180px; float: right"
         ></div>
       </mp-window>
     </mp-window-wrapper>
@@ -153,15 +153,18 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         },
         textStyle: {
           fontSize: 10
-        }
+        },
+        confine: true // 是否将 tooltip 框限制在图表的区域内。
       },
       title: {
         show: false
       },
       grid: {
-        x: 40,
-        x2: 40,
-        y2: 24
+        top: 25,
+        left: 40,
+        right: 20,
+        bottom: 20,
+        contentLabel: false
       },
       calculable: true,
       xAxis: [
@@ -182,7 +185,17 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
           scale: true,
           axisLabel: {
             fontFamily: '微软雅黑',
-            color: this.txtColor
+            color: this.txtColor,
+            formatter(value) {
+              const texts = []
+              if (value > 99999) {
+                const text = Number(value).toExponential(1)
+                texts.push(text)
+              } else {
+                texts.push(parseInt(value))
+              }
+              return texts
+            }
           },
           axisTick: {
             lineStyle: {
@@ -210,6 +223,9 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
             color: '#40a9ff'
           },
           markPoint: {
+            symbol: 'circle',
+            symbolSize: 15,
+            label: { position: 'top' },
             data: [
               { type: 'max', name: '最高点' },
               { type: 'min', name: '最低点' }
