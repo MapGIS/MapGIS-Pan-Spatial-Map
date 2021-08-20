@@ -208,7 +208,7 @@
           </a-row>
           <div class="panel-container">
             <div
-              id="statisticsChart"
+              ref="statisticsChart"
               class="chart-container"
               :class="[!showEchartTable ? '' : 'hidden-panel']"
             ></div>
@@ -906,9 +906,14 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
   }
 
   setEchart(data) {
-    if (!this.chartObj) {
-      this.chartObj = echarts.init(document.getElementById('statisticsChart'))
+    if (
+      this.chartObj !== null &&
+      this.chartObj != '' &&
+      this.chartObj != undefined
+    ) {
+      echarts.dispose(this.$refs.statisticsChart)
     }
+    this.chartObj = echarts.init(this.$refs.statisticsChart)
     const self = this
     const keys = Object.keys(data[0])
     // 指定图表的配置项和数据
@@ -995,6 +1000,7 @@ export default class MpAttrStatistics extends Mixins(AppMixin) {
     } else {
       queryChartOption.dataZoom = []
     }
+    debugger
     this.chartObj.setOption(queryChartOption, true)
     this.chartObj.resize()
   }

@@ -56,13 +56,13 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
             context: '2d',
             draw: 'heatmap',
             max: 100, // 最大权重值
-            size: 60 // 每个热力点半径大小
+            size: 20 // 每个热力点半径大小
           }
         : {
             spacing: 1, // 边界周围的额外空间
             alpha: 1, // 透明度
             blur: 0.85, // 模糊值
-            radius: 60, // 每个热力点半径大小
+            radius: 20, // 每个热力点半径大小
             useClustering: true // 是否聚合
           }),
       ...(this.subjectData.style || {})
