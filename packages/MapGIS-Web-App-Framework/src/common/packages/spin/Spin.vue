@@ -121,6 +121,7 @@ export default {
 
     .dots {
       height: 18px;
+      margin-left: 2px;
       overflow: hidden;
     }
     .dot {
