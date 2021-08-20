@@ -3,67 +3,31 @@
     <mp-setting-form>
       <a-form-item label="日期">
         <a-date-picker
-          :default-value="shadowMoment(formData.date, 'YYYY-MM-DD')"
+          :default-value="formData.date | formatToMoment('YYYY-MM-DD')"
           @change="changeDate"
         />
       </a-form-item>
-      <a-form-item label="分析类型">
-        <a-row>
-          <a-radio-group v-model="formData.timeType">
-            <a-radio value="time">
-              时间点
-            </a-radio>
-            <a-radio value="timeRange">
-              时间段
-            </a-radio>
-          </a-radio-group>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="时间" v-if="formData.timeType === 'time'">
+      <a-form-item label="开始时间">
         <a-time-picker
-          :default-value="shadowMoment(formData.time, 'HH:mm:ss')"
-          @change="
-            val => {
-              changeTime(val, 'time')
-            }
-          "
+          :default-value="formData.startTime | formatToMoment"
+          @change="changeTime($event, 'startTime')"
         />
       </a-form-item>
-      <div v-else-if="formData.timeType === 'timeRange'">
-        <a-form-item label="开始时间">
-          <a-time-picker
-            :default-value="shadowMoment(formData.startTime, 'HH:mm:ss')"
-            @change="
-              val => {
-                changeTime(val, 'startTime')
-              }
-            "
-          />
-        </a-form-item>
-        <a-form-item label="结束时间">
-          <a-time-picker
-            :default-value="shadowMoment(formData.endTime, 'HH:mm:ss')"
-            @change="
-              val => {
-                changeTime(val, 'endTime')
-              }
-            "
-          />
-        </a-form-item>
-      </div>
-      <a-form-item label="底部高程">
-        <a-input
-          v-model.number="formData.min"
-          type="number"
-          addon-after="(米)"
+      <a-form-item label="结束时间">
+        <a-time-picker
+          :default-value="formData.endTime | formatToMoment"
+          @change="changeTime($event, 'endTime')"
         />
+      </a-form-item>
+      <a-form-item label="底部高程">
+        <a-input v-model.number="formData.min" type="number" addon-after="米" />
       </a-form-item>
       <a-form-item label="拉伸高度">
         <a-input
           v-model.number="formData.max"
           type="number"
           min="0"
-          addon-after="(米)"
+          addon-after="米"
         />
       </a-form-item>
       <a-form-item label="阴影颜色">
@@ -80,26 +44,24 @@
           class="color-picker"
         ></MpColorPicker>
       </a-form-item>
-      <a-form-item label="阴影率" v-show="formData.timeType === 'time'">
+      <!-- <a-form-item label="阴影率">
         <a-input v-model.number="formData.ratio" type="number" disabled />
-      </a-form-item>
+      </a-form-item> -->
     </mp-setting-form>
     <div class="mp-footer-actions">
-      <a-button type="primary" @click="shadow">
+      <a-button @click="shadow" :disabled="maskShow" type="primary">
         分析
       </a-button>
-      <a-button type="primary" @click="sun">
+      <a-button @click="sun" :disabled="maskShow" type="primary">
         日照效果
       </a-button>
       <a-button @click="remove">
         清除
       </a-button>
     </div>
-    <MpMask
-      ref="mask"
+    <mp-mask
       :parentDivClass="'mp-map-container'"
-      :loading="percent !== 0"
-      :percent="percent"
+      :loading="maskShow"
       :text="maskText"
     />
   </div>
@@ -111,7 +73,12 @@ import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
 import moment from 'moment'
 
 @Component({
-  name: 'MpShadowAnalysis'
+  name: 'MpShadowAnalysis',
+  filters: {
+    formatToMoment(value, format = 'HH:mm:ss') {
+      return moment(value, format)
+    }
+  }
 })
 export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   private formData = {
@@ -121,61 +88,94 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     min: 0, // 最低高程(米)
     max: 20, // 拉伸高度(米)
     shadowColor: 'rgb(0,255,0)', // 阴影颜色
-    sunColor: 'rgb(255,0,0)', // 非阴影颜色
-    ratio: 0, // 阴影率(时间点范围阴影分析输出结果)
-    timeType: 'time', // 分析类型(time：时间点；timeRange:时间段)
-    time: '10:00:00' // 时间点
+    sunColor: 'rgb(255,0,0)' // 非阴影颜色
+    // ratio: 0 // 阴影率(时间点范围阴影分析输出结果)
+  }
+
+  private percent = 0
+
+  private maskShow = false
+
+  private maskText = '正在分析中, 请稍等...0%'
+
+  get julianStartDate() {
+    return this.getJulianDate(
+      `${this.formData.date} ${this.formData.startTime}`
+    )
+  }
+
+  get julianEndDate() {
+    return this.getJulianDate(`${this.formData.date} ${this.formData.endTime}`)
   }
 
   created() {
-    // 初始化
-    window.ShadowManage = {
-      drawElement: null,
-      shadowAnalysis: null
+    this.initShadowManage()
+  }
+
+  beforeDestroy() {
+    this.removeShadowManage()
+  }
+
+  /**
+   * 初始化阴影
+   */
+  initShadowManage() {
+    if (!window.ShadowManage) {
+      window.ShadowManage = {
+        drawElement: null,
+        shadowAnalysis: null
+      }
     }
   }
 
-  private shadowMoment = moment // moment插件
+  /**
+   * 移除所有
+   */
+  removeShadowManage() {
+    this.remove()
+    window.ShadowManage = undefined
+  }
 
-  private percent = 0 // 时间段阴影分析进度（时间段阴影分析，暂时未对外开放）
+  /**
+   * 微件打开时
+   */
+  onOpen() {
+    this.initShadowManage()
+  }
 
-  private maskText = ''
+  /**
+   * 微件关闭时
+   */
+  onClose() {
+    this.removeShadowManage()
+  }
+
+  /**
+   * 微件失活时
+   */
+  // onDeActive() {
+  //   this.removeShadowManage()
+  // }
+
+  /**
+   * 时间格式化
+   */
+  formatDateTime(value, type = 'date') {
+    return moment(value).format(type === 'date' ? 'YYYY-MM-DD' : 'HH:mm:ss')
+  }
 
   /**
    * 日期组件值变化
    */
   changeDate(val) {
-    const date = this.shadowMoment(val).format('YYYY-MM-DD')
-    this.$set(this.formData, 'date', date)
+    this.$set(this.formData, 'date', this.formatDateTime(val))
   }
 
   /**
    * 时间组件值变化
    */
   changeTime(val, tag) {
-    const time = this.shadowMoment(val).format('HH:mm:ss')
-    this.$set(this.formData, tag, time)
-  }
-
-  // 微件关闭时
-  onClose() {
-    this.remove()
-  }
-
-  // 微件失活时
-  onDeActive() {
-    this.remove()
-  }
-
-  /**
-   * rgb转cesium的颜色
-   */
-  getCesiumColor(colorStr) {
-    return Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
-    ).colorToCesiumColor(colorStr)
+    this.$set(this.formData, tag, this.formatDateTime(val, 'time'))
   }
 
   /**
@@ -187,181 +187,203 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   }
 
   /**
-   * 原生日照分析
+   * 获取经纬度范围
    */
-  sun() {
-    this.remove()
-    const { viewer } = this.webGlobe
-    viewer.scene.globe.enableLighting = true // 开启日照
-    viewer.shadows = true // 开启阴影
-    const { date, startTime, endTime, time, timeType } = this.formData
-    if (timeType === 'timeRange') {
-      // 时间段日照分析
-      viewer.clock.shouldAnimate = true // 开启计时
-      viewer.clock.startTime = this.getJulianDate(
-        `${date} ${this.formData.startTime}`
-      )
-      viewer.clock.stopTime = this.getJulianDate(
-        `${date} ${this.formData.endTime}`
-      )
-      viewer.clock.currentTime = this.getJulianDate(
-        `${date} ${this.formData.startTime}`
-      )
-      viewer.clock.multiplier = 3600 // cesium中1秒表示现实中1个小时
-      viewer.clock.clockRange = this.Cesium.ClockRange.LOOP_STOP // 循环动画
-    } else if (timeType === 'time') {
-      // 时间点日照分析
-      viewer.clockViewModel.currentTime = this.getJulianDate(
-        `${date} ${this.formData.time}`
-      )
+  getRectBounds(positions) {
+    let xmin
+    let ymin
+    let xmax
+    let ymax
+    positions.forEach(point => {
+      const { x, y } = point
+      if (xmin === undefined || x < xmin) {
+        xmin = x
+      }
+      if (xmax === undefined || x > xmax) {
+        xmax = x
+      }
+      if (ymin === undefined || y < ymin) {
+        ymin = y
+      }
+      if (ymax === undefined || y > ymax) {
+        ymax = y
+      }
+    })
+
+    return {
+      xmin,
+      ymin,
+      xmax,
+      ymax
     }
+  }
+
+  /**
+   * 获取xyz轴阴影三维点的数量
+   */
+  getPaneNums(positions) {
+    const { min, max } = this.formData
+    const { xmin, ymin, xmax, ymax } = this.getRectBounds(positions)
+    // 多边形x方向长度
+    const recXLength = this.Cesium.Cartesian3.distance(
+      new this.Cesium.Cartesian3(xmin, ymin, 0),
+      new this.Cesium.Cartesian3(xmax, ymin, 0)
+    )
+    // 多边形y方向长度
+    const recYLength = this.Cesium.Cartesian3.distance(
+      new this.Cesium.Cartesian3(xmin, ymin, 0),
+      new this.Cesium.Cartesian3(xmin, ymax, 0)
+    )
+    const xPaneNum = Math.ceil(recXLength / 4) // X轴方向插值点个数
+    const yPaneNum = Math.ceil(recYLength / 4) // Y轴方向插值点个数
+    const zPaneNum = Math.ceil((max - min) / 4) // Z轴方向插值点个数
+
+    return {
+      xPaneNum,
+      yPaneNum,
+      zPaneNum
+    }
+  }
+
+  /**
+   * 阴影分析遮罩层
+   */
+  toggleMask(status: boolean) {
+    this.maskShow = status
   }
 
   /**
    * 时间段阴影分析回调函数，获取分析进度值
    */
-  getPercent(result, vm) {
-    vm.$nextTick(() => {
-      let percent = Number((result * 100).toFixed(2))
-
-      if (result === 1) {
-        percent = 0
+  setPercent(result) {
+    this.percent = result
+    this.maskText = `正在分析中, 请稍等...${Number((result * 100).toFixed(2))}%`
+    const timer = setInterval(() => {
+      if (this.percent === result) {
+        this.toggleMask(false)
       }
-      vm.maskText = `正在分析中, 请稍等...${percent}%`
-      vm.percent = percent
-    })
+      clearInterval(timer)
+    }, 200)
   }
 
   /**
    * 时间点阴影分析回调函数，获取阴影率
    */
-  getShadowRatio(result) {
-    this.$set(this.formData, 'ratio', result)
-  }
+  // setShadowRatio(result) {
+  //   this.$set(this.formData, 'ratio', result)
+  // }
 
   /**
    * 范围时间点阴影分析/范围时间段阴影分析
    */
   shadow() {
-    this.remove()
+    this.removeSun()
+    this.removeShadow()
     const { viewer } = this.webGlobe
-
     // 初始化交互式绘制控件
-    window.ShadowManage.drawElement =
-      window.ShadowManage.drawElement || new this.Cesium.DrawElement(viewer)
-
-    const { date, min, max, timeType, shadowColor, sunColor } = this.formData
-    const time = new Date(`${date} ${this.formData.time}`)
-    const startTime = new Date(`${date} ${this.formData.startTime}`)
-    const endTime = new Date(`${date} ${this.formData.endTime}`)
-
-    // 1.绘制分析区域(矩形)
+    if (!window.ShadowManage.drawElement) {
+      window.ShadowManage.drawElement = new this.Cesium.DrawElement(viewer)
+    }
     // 激活交互式绘制工具
     window.ShadowManage.drawElement.startDrawingPolygon({
       // 绘制完成回调函数
       callback: positions => {
-        this.remove()
-        this.percent = 0.01
-        let xmin
-        let ymin
-        let xmax
-        let ymax
-        positions.forEach(point => {
-          const { x, y } = point
-          if (xmin === undefined || x < xmin) {
-            xmin = x
-          }
-          if (xmax === undefined || x > xmax) {
-            xmax = x
-          }
-          if (ymin === undefined || y < ymin) {
-            ymin = y
-          }
-          if (ymax === undefined || y > ymax) {
-            ymax = y
-          }
-        })
-        // 多边形x方向长度
-        const recXLength = this.Cesium.Cartesian3.distance(
-          new this.Cesium.Cartesian3(xmin, ymin, 0),
-          new this.Cesium.Cartesian3(xmax, ymin, 0)
-        )
-        // 多边形y方向长度
-        const recYLength = this.Cesium.Cartesian3.distance(
-          new this.Cesium.Cartesian3(xmin, ymin, 0),
-          new this.Cesium.Cartesian3(xmin, ymax, 0)
-        )
-        const xPaneNum = Math.ceil(recXLength / 4) // X轴方向插值点个数
-        const yPaneNum = Math.ceil(recYLength / 4) // Y轴方向插值点个数
-        const zPaneNum = Math.ceil((max - min) / 4) // Z轴方向插值点个数
-
-        window.ShadowManage.shadowAnalysis = new this.Cesium.ShadowAnalysis(
-          viewer,
-          {
-            percentCallback: result => this.getPercent(result, this),
-            shadowRatioCallBack: this.getShadowRatio,
-            xPaneNum,
-            yPaneNum,
-            zPaneNum,
-            shadowColor: this.getCesiumColor(shadowColor),
-            sunColor: this.getCesiumColor(sunColor)
-          }
-        )
-
-        if (timeType === 'time') {
-          viewer.clockViewModel.currentTime = this.getJulianDate(
-            `${date} ${this.formData.time}`
-          )
-          // 固定时间点范围阴影分析
-          window.ShadowManage.shadowAnalysis.pointsArrayInShadow(
-            positions,
-            min,
-            max,
-            time
-          )
-        } else if (timeType === 'timeRange') {
-          viewer.clockViewModel.currentTime = this.getJulianDate(
-            `${date} ${this.formData.startTime}`
-          )
-          // 时间段范围阴影分析
-          window.ShadowManage.shadowAnalysis.calcPointsArrayInShadowTime(
-            positions,
-            min,
-            max,
-            startTime,
-            endTime
+        this.removeDraw()
+        this.toggleMask(true)
+        const {
+          date,
+          min,
+          max,
+          shadowColor,
+          sunColor,
+          startTime,
+          endTime
+        } = this.formData
+        if (!window.ShadowManage.shadowAnalysis) {
+          // 初始化取阴影分析类
+          window.ShadowManage.shadowAnalysis = new this.Cesium.ShadowAnalysis(
+            viewer,
+            {
+              ...this.getPaneNums(positions),
+              shadowColor,
+              sunColor,
+              percentCallback: this.setPercent
+              // shadowRatioCallBack: this.setShadowRatio,
+            }
           )
         }
+        viewer.clockViewModel.currentTime = this.julianStartDate
+        // 阴影分析
+        window.ShadowManage.shadowAnalysis.calcPointsArrayInShadowTime(
+          positions,
+          min,
+          max,
+          new Date(`${date} ${startTime}`),
+          new Date(`${date} ${endTime}`)
+        )
       }
     })
   }
 
   /**
-   * 移除绘制插件和阴影分析结果
+   * 原生日照分析
    */
-  remove() {
-    // 判断是否已有阴影分析结果
-    if (window.ShadowManage.shadowAnalysis) {
-      // 移除阴影分析显示结果
-      window.ShadowManage.shadowAnalysis.remove()
-      window.ShadowManage.shadowAnalysis = null
-    }
+  sun() {
+    this.removeSun()
+    const { viewer } = this.webGlobe
+    viewer.scene.globe.enableLighting = true // 开启日照
+    viewer.shadows = true // 开启阴影
+    viewer.clock.shouldAnimate = true // 开启计时
+    viewer.clock.currentTime = this.julianStartDate
+    viewer.clock.startTime = this.julianStartDate
+    viewer.clock.stopTime = this.julianEndDate
+    viewer.clock.multiplier = 3600 // cesium中1秒表示现实中1个小时
+    viewer.clock.clockRange = this.Cesium.ClockRange.LOOP_STOP // 循环动画
+  }
 
-    if (window.ShadowManage.drawElement) {
+  /**
+   * 移除绘制分析结果
+   */
+  removeDraw() {
+    if (window.ShadowManage?.drawElement) {
       // 取消交互式绘制矩形事件激活状态
       window.ShadowManage.drawElement.stopDrawing()
       window.ShadowManage.drawElement = null
     }
+  }
 
-    this.$set(this.formData, 'ratio', 0)
-
-    // 关闭原生日照分析
+  /**
+   * 移除日照分析结果
+   */
+  removeSun() {
     const { viewer } = this.webGlobe
     viewer.scene.globe.enableLighting = false
     viewer.shadows = false
     viewer.clock.multiplier = 1
-    viewer.clock.shouldAnimate = false // 关闭计时'
-    this.percent = 0
+    viewer.clock.shouldAnimate = false // 关闭计时
+  }
+
+  /**
+   * 移除阴影分析结果
+   */
+  removeShadow() {
+    // 判断是否已有阴影分析结果
+    if (window.ShadowManage?.shadowAnalysis) {
+      // 移除阴影分析显示结果
+      window.ShadowManage.shadowAnalysis.remove()
+      window.ShadowManage.shadowAnalysis = null
+    }
+  }
+
+  /**
+   * 清除
+   */
+  remove() {
+    this.removeDraw()
+    this.removeShadow()
+    this.removeSun()
+    this.toggleMask(false)
+    // this.setShadowRatio(0)
   }
 }
 </script>
@@ -370,6 +392,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
 @import '../index.less';
 
 ::v-deep {
+  .ant-calendar-picker,
   .ant-time-picker {
     width: 100%;
   }

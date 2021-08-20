@@ -39,10 +39,12 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   // 热力图配置项
   get options() {
     return {
+      minOpacity: 0,
+      maxOpacity: 1,
       gradient: {
         '0.25': 'rgb(0,0,255)',
         '0.55': 'rgb(0,255,0)',
-        '0.85': 'yellow',
+        '0.85': 'rgb(241,241,15)',
         '1.0': 'rgb(255,0,0)'
       },
       ...(this.isMapv
@@ -53,11 +55,13 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
             },
             context: '2d',
             draw: 'heatmap',
-            max: 60, // 最大权重值
-            size: 13 // 每个热力点半径大小
+            max: 100, // 最大权重值
+            size: 60 // 每个热力点半径大小
           }
         : {
-            blur: 0.75, // 模糊值
+            spacing: 1, // 边界周围的额外空间
+            alpha: 1, // 透明度
+            blur: 0.85, // 模糊值
             radius: 60, // 每个热力点半径大小
             useClustering: true // 是否聚合
           }),
@@ -119,7 +123,7 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   }
 
   /**
-   * 创建热力图
+   * 创建原生热力图
    * @param 专题图层范围
    * @param geojson数据
    */
@@ -141,14 +145,24 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
   }
 
   /**
+   * 移除原生热力图
+   */
+  removeHeatMap() {
+    if (this.heatMapInstance) {
+      this.heatMapInstance.removeLayer()
+      this.heatMapInstance = null
+    }
+  }
+
+  /**
    * 展示图层
    */
   showLayer() {
     if (this.geojson) {
-      this.removeLayer()
       if (this.isMapv) {
-        this.mapvData = this.geojson
+        this.mapvData = { ...this.geojson }
       } else {
+        this.removeHeatMap()
         this.getBounds().then(bounds =>
           this.createHeatMap(bounds, this.geojson)
         )
@@ -160,13 +174,10 @@ export default class CesiumHeatMap extends Mixins(BaseMinxin) {
    * 移除图层
    */
   removeLayer() {
-    if (this.isMapv) {
-      if (this.mapvData) {
-        this.$set(this.mapvData, 'features', [])
-      }
-    } else if (this.heatMapInstance) {
-      this.heatMapInstance.removeLayer()
-      this.heatMapInstance = null
+    if (!this.isMapv) {
+      this.removeHeatMap()
+    } else if (this.mapvData) {
+      this.mapvData = {}
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div v-show="wrapperVisible" :class="`${prefixCls}-wrapper`">
+  <div transition="fade" :class="prefixCls">
     <slot />
     <div :class="spinCls" :style="spinStyle" v-show="visible">
       <slot name="spin">
@@ -50,7 +50,6 @@ export default {
   data() {
     const prefixCls = 'mp-spin'
     return {
-      wrapperVisible: false,
       visible: false,
       prefixCls
     }
@@ -74,29 +73,22 @@ export default {
   watch: {
     spinning(nV) {
       this.visible = nV
-    }
-  },
-  created() {
-    if (this.visible !== this.spinning) {
-      this.visible = this.spinning
-    }
+    },
+    immediate: true
   }
 }
 </script>
 <style lang="less" scoped>
-.position-absolute() {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-}
 .mp-spin {
-  &-wrapper,
   &-spin {
-    .position-absolute;
-  }
-  &-spin {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -129,12 +121,13 @@ export default {
 
     .dots {
       height: 18px;
+      margin-left: 2px;
       overflow: hidden;
     }
     .dot {
-      width: 4px;
-      height: 4px;
-      margin: 0 4px;
+      width: 3px;
+      height: 3px;
+      margin: 0 2px;
       border-radius: 50%;
       background: @primary-color;
 

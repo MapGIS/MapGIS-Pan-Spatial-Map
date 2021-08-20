@@ -31,7 +31,7 @@
         :visible.sync="skyline2dVisible"
         :min-width="300"
         :max-height="300"
-        anchor="center-center"
+        anchor="bottom-left"
         title="二维天际线"
       >
         <div ref="skyline2dChart">

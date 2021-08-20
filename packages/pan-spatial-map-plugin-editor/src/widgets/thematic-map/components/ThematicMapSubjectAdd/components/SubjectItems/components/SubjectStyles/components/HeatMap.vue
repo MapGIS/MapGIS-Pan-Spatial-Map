@@ -14,18 +14,18 @@
         </a-radio-group>
       </mp-row-flex>
       <mp-row-flex label="半径大小" label-align="right" :label-width="76">
-        <a-input-number v-model="style.radius" :min="8" />
+        <a-input-number v-model="style.radius" :min="13" />
       </mp-row-flex>
       <mp-row-flex label="模糊值" label-align="right" :label-width="76">
         <a-input-number v-model="style.blur" :min="0.1" :max="1" />
       </mp-row-flex>
     </template>
     <template v-else>
-      <mp-row-flex label="最大权重" label-align="right" :label-width="72">
-        <a-input-number v-model="style.max" :min="8" />
-      </mp-row-flex>
       <mp-row-flex label="半径大小" label-align="right" :label-width="72">
-        <a-input-number v-model="style.size" :min="10" />
+        <a-input-number v-model="style.size" :min="13" />
+      </mp-row-flex>
+      <mp-row-flex label="最大权重" label-align="right" :label-width="72">
+        <a-input-number v-model="style.max" :min="0" />
       </mp-row-flex>
       <!-- 动画项设置(缺陷列表#108) -->
       <!-- <animation-items v-model="style.animation" /> -->
@@ -84,13 +84,13 @@ export default class HeatMap extends Vue {
       },
       ...(type === HeatMapType.CESIUM
         ? {
-            blur: 0.75,
+            blur: 0.85,
             radius: 60,
             useClustering: true
           }
         : {
-            size: 13,
-            max: 30
+            size: 60,
+            max: 100
           })
     }
   }
