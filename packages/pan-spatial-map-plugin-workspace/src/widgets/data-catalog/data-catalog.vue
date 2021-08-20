@@ -253,7 +253,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   private dataCatalogTreeData: [] = []
 
   // 将数据目录转换为一维数组
-  private allLayerItems: [] = []
+  private allTreeDataConfigs: [] = []
 
   // 替换treeNode中的title、key字段为treeData中对应的字段
   private replaceFields: object = {
@@ -327,16 +327,17 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
     this.dataCatalogManager.init(this.widgetInfo.config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
-    const _allLayerItems = []
-    const { treeData, arr } = this.handleTreeData(
+    const _allTreeDataConfigs = []
+    const { treeData, allTreeDataConfigs } = this.handleTreeData(
       this.dataCatalogTreeData,
-      _allLayerItems
+      _allTreeDataConfigs
     )
     this.dataCatalogTreeData = treeData
-    this.allLayerItems = arr
+    this.allTreeDataConfigs = allTreeDataConfigs
 
     eventBus.$on(events.OPEN_DATA_BOOKMARK_EVENT, this.bookMarkClick)
     eventBus.$on(events.IMPOSE_SERVICE_PREVIEW_EVENT, this.imposeService)
+    this.$root.$on(events.SCENE_LOADEN_ON_MAP, this.sceneLoadedCallback)
     eventBus.$emit(events.DATA_CATALOG_ON_IMPOSE_SERVICE_EVENT)
   }
 
@@ -457,7 +458,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             layer.description = this.setDescription(layer)
             // 2.将图层添加到全局的document中。
             if (layer) {
-              const recordCheckLayer = this.setCheckBoxEnable(layer.id)
+              const recordCheckLayer = this.disableTreeNodeCheckBox(layer.id)
               // 2.1加载图层
               try {
                 if (layer.loadStatus === LoadStatus.notLoaded) {
@@ -480,17 +481,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                   this.$message.error(`图层:${layer.title}加载失败`)
                   checkedNodeKeys.splice(layer.id)
                 }
-                if (this.isM3D(layer)) {
-                  /**
-                   * 三维图层需要判定图层是否加载到地图上，才能恢复checkbox可选状态，
-                   * 因为M3D加载到地图上需要时间，当用户快速点击会多次加载而产生bug
-                   */
-                  this.$root.$once(layer.id, () => {
-                    this.$set(recordCheckLayer, 'disableCheckbox', false)
-                  })
-                } else {
+                if (!this.isM3D(layer)) {
                   // 图层加载完毕，恢复checkbox可选状态
-                  this.$set(recordCheckLayer, 'disableCheckbox', false)
+                  this.setCheckBoxEnable(recordCheckLayer, false)
                 }
               }
             }
@@ -519,18 +512,53 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
    * 当加载图层时，图层还在请求，禁用数据目录的checkbox
    * @id 勾选图层的id
    */
-  setCheckBoxEnable(id: string) {
+  disableTreeNodeCheckBox(id: string) {
+    // let layer = null
+    // for (let index = 0; index < this.allTreeDataConfigs.length; index++) {
+    //   const element = this.allTreeDataConfigs[index]
+    //   if (id === element.guid) {
+    //     // this.$set(element, 'disableCheckbox', true)
+    //     this.setCheckBoxEnable(element, true)
+    //     layer = element
+    //     break
+    //   }
+    // }
+    const layer = this.findTreeNodeConfigById(id)
+    if (layer) {
+      this.setCheckBoxEnable(layer, true)
+    }
+    // 这里直接返回查找到node，避免恢复checkbox状态时再去查找
+    return layer
+  }
+
+  // 通过id去查找treeData对应配置项
+  findTreeNodeConfigById(id: string) {
     let layer = null
-    for (let index = 0; index < this.allLayerItems.length; index++) {
-      const element = this.allLayerItems[index]
+    for (let index = 0; index < this.allTreeDataConfigs.length; index++) {
+      const element = this.allTreeDataConfigs[index]
       if (id === element.guid) {
-        this.$set(element, 'disableCheckbox', true)
         layer = element
         break
       }
     }
     // 这里直接返回查找到node，避免恢复checkbox状态时再去查找
     return layer
+  }
+
+  /**
+   * 三维图层需要判定图层是否加载到地图上，才能恢复checkbox可选状态，
+   * 因为M3D加载到地图上需要时间，当用户快速点击会多次加载而产生bug
+   */
+  sceneLoadedCallback(id) {
+    const layer = this.findTreeNodeConfigById(id)
+    if (layer) {
+      this.setCheckBoxEnable(layer, false)
+    }
+  }
+
+  // 设置tree的checkbox是否可以点击
+  setCheckBoxEnable(treeDataConfig, disable) {
+    this.$set(treeDataConfig, 'disableCheckbox', disable)
   }
 
   setDescription(item) {
@@ -653,13 +681,13 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const config = await api.getWidgetConfig('data-catalog')
     this.dataCatalogManager.init(config)
     this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
-    const _allLayerItems = []
-    const { treeData, arr } = this.handleTreeData(
+    const _allTreeDataConfigs = []
+    const { treeData, allTreeDataConfigs } = this.handleTreeData(
       this.dataCatalogTreeData,
-      _allLayerItems
+      _allTreeDataConfigs
     )
     this.dataCatalogTreeData = treeData
-    this.allLayerItems = arr
+    this.allTreeDataConfigs = allTreeDataConfigs
   }
 
   // 收藏按钮
@@ -693,20 +721,20 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
    * @data 目录树原始数据
    * @arr 将多维数组转换为一维数组，通过arr来记录
    */
-  handleTreeData(data: object[], arr: []) {
+  handleTreeData(data: object[], allTreeDataConfigs: []) {
     const this_ = this
     const treeData = data.map((item: any) => {
       this_.$set(item, 'scopedSlots', { title: 'custom' })
       this_.$set(item, 'disableCheckbox', false)
-      arr.push(item)
+      allTreeDataConfigs.push(item)
       if (item.children) {
-        this_.handleTreeData(item.children, arr)
+        this_.handleTreeData(item.children, allTreeDataConfigs)
       }
       return item
     })
     return {
       treeData,
-      arr
+      allTreeDataConfigs
     }
   }
 

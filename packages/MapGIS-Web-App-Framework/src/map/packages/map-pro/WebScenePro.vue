@@ -84,7 +84,7 @@
         :show="layerProps.show"
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
-        @loaded="() => M3Dloaded(layerProps.layerId)"
+        @loaded="() => SceneLoaded(layerProps.layerId)"
       />
       <mapgis-3d-igs-terrain
         v-if="isIgsTerrainLayer(layerProps.type, layerProps.renderType)"
@@ -94,7 +94,7 @@
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
         :requestVertexNormals="true"
-        @terrain-loaded="() => M3Dloaded(layerProps.layerId)"
+        @terrain-loaded="() => SceneLoaded(layerProps.layerId)"
       />
     </div>
     <div class="statebardiv">
@@ -160,9 +160,10 @@ export default {
     this.parseDocument()
   },
   methods: {
-    M3Dloaded(id) {
+    SceneLoaded(id) {
       const guid = id.split(':')[0]
-      this.$root.$emit(guid, 'M3D加载了')
+      // 由于framework不能依赖其他组件，这里不能把监听函数名定义在store里面
+      this.$root.$emit('scene-loaded-on-map', guid)
     },
     parseDocument() {
       if (!this.document) return

@@ -18,3 +18,5 @@ export const IMPOSE_SERVICE_PREVIEW_EVENT = 'impose-service-preview'
 // 目录树注册了服务叠加事件
 export const DATA_CATALOG_ON_IMPOSE_SERVICE_EVENT =
   'data-catalog-on-impose-service'
+// 监听三维图层是否加载到地图上
+export const SCENE_LOADEN_ON_MAP = 'scene-loaded-on-map'
