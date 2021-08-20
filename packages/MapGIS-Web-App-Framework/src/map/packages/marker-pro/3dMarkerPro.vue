@@ -52,17 +52,13 @@ import {
   Watch,
   Emit
 } from 'vue-property-decorator'
-import { CesiumPopup } from '@mapgis/webclient-vue-cesium'
 import { SceneOverlays } from '../../../model/overlay'
 
 /**
  * cesium标注，弹出框使用@mapgis/webclient-vue-cesium里的popup
  */
 @Component({
-  name: 'Mp3dMarkerPro',
-  components: {
-    CesiumPopup
-  }
+  name: 'Mp3dMarkerPro'
 })
 export default class Mp3dMarkerPro extends Vue {
   @Inject('Cesium') Cesium: any

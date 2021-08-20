@@ -146,7 +146,7 @@ export default class Mp3dMarkerPlotting extends Vue {
     const destination = this.sceneController.getCartesian3FromDegrees(
       x,
       y,
-      this.sceneController.getPositionCartographicHeight
+      this.sceneController.getPositionCartographicHeight()
     )
     this.sceneController.cameraFlyTo({ destination })
   }
