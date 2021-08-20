@@ -25,7 +25,7 @@
         <a-input-number v-model="style.size" :min="13" />
       </mp-row-flex>
       <mp-row-flex label="最大权重" label-align="right" :label-width="72">
-        <a-input-number v-model="style.max" :min="0" />
+        <a-input-number v-model="style.max" :min="1" />
       </mp-row-flex>
       <!-- 动画项设置(缺陷列表#108) -->
       <!-- <animation-items v-model="style.animation" /> -->
@@ -85,11 +85,11 @@ export default class HeatMap extends Vue {
       ...(type === HeatMapType.CESIUM
         ? {
             blur: 0.85,
-            radius: 60,
+            radius: 20,
             useClustering: true
           }
         : {
-            size: 60,
+            size: 20,
             max: 100
           })
     }
