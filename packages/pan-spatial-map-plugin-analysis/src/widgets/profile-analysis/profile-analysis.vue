@@ -18,20 +18,14 @@
     </a-row>
     <mp-group-tab title="参数设置"></mp-group-tab>
     <mp-setting-form :label-width="72">
-      <a-form-item label="贴地线颜色">
+      <a-form-item label="剖切线颜色">
         <MpColorPicker
           :color.sync="formData.groundLineColor"
-          :disableAlpha="false"
+          :disableAlpha="true"
           class="color-picker"
         ></MpColorPicker>
       </a-form-item>
-      <a-form-item label="交互线颜色">
-        <MpColorPicker
-          :color.sync="formData.lineColor"
-          :disableAlpha="false"
-          class="color-picker"
-        ></MpColorPicker>
-      </a-form-item>
+
       <a-form-item label="采样精度">
         <a-input
           v-model.number="formData.samplePrecision"
@@ -39,6 +33,13 @@
           min="0"
           addon-after="(米)"
         />
+      </a-form-item>
+      <a-form-item label="交互点颜色" v-show="!formData.showPolygon">
+        <MpColorPicker
+          :color.sync="formData.pointColor"
+          :disableAlpha="true"
+          class="color-picker"
+        ></MpColorPicker>
       </a-form-item>
       <a-form-item label="显示剖面">
         <a-switch size="small" v-model="formData.showPolygon" />
@@ -54,7 +55,14 @@
       <a-form-item label="剖面颜色" v-show="formData.showPolygon">
         <MpColorPicker
           :color.sync="formData.polygonColor"
-          :disableAlpha="false"
+          :disableAlpha="true"
+          class="color-picker"
+        ></MpColorPicker>
+      </a-form-item>
+      <a-form-item label="交互线颜色" v-show="formData.showPolygon">
+        <MpColorPicker
+          :color.sync="formData.lineColor"
+          :disableAlpha="true"
           class="color-picker"
         ></MpColorPicker>
       </a-form-item>
@@ -104,8 +112,9 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   private formData = {
     height: 100, // 剖面高度
     polygonColor: 'rgb(0,0,255)', // 剖面颜色
-    lineColor: 'rgba(0,255,0,1)', // 交互线颜色
-    groundLineColor: 'rgba(255,0,0,1)', // 贴地线颜色
+    lineColor: 'rgb(0,255,0)', // 交互线颜色(开启剖面的时候生效)
+    pointColor: 'rgb(0,255,0)', // 交互点颜色(关闭剖面的时候生效)
+    groundLineColor: 'rgb(255,0,0)', // 剖切线颜色
     showPolygon: false, // 是否显示剖面
     samplePrecision: 2 // 采样精度(采样间隔，平面距离，单位米，模型默认为0.2，地形为2)
   }
@@ -154,7 +163,14 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         textStyle: {
           fontSize: 10
         },
-        confine: true // 是否将 tooltip 框限制在图表的区域内。
+        confine: true, // 是否将 tooltip 框限制在图表的区域内。
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        position: function(pos, params, el, elRect, size) {
+          const obj = { top: 10 }
+          obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30
+          return obj
+        },
+        extraCssText: 'width: 170px'
       },
       title: {
         show: false
@@ -287,6 +303,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         this.webGlobe
       ).zoomToM3dLayerBySource(source[0])
       this.$set(this.formData, 'samplePrecision', 0.2)
+      this.$set(this.formData, 'height', 2)
     } else if (renderType === IGSSceneSublayerRenderType.elevation) {
       // 地形
       const bound = layer.fullExtent
@@ -301,6 +318,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         })
       }
       this.$set(this.formData, 'samplePrecision', 2)
+      this.$set(this.formData, 'height', 100)
       // 设置当前地形对象
       this.webGlobe.viewer.terrainProvider = source[0]
     }
@@ -319,6 +337,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
    */
   onClose() {
     this.isActive = false
+    this.remove()
   }
 
   // 微件激活时
@@ -383,11 +402,13 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       polygonColor,
       height,
       lineColor,
+      pointColor,
       groundLineColor,
       showPolygon,
       samplePrecision
     } = this.formData
     const pColor = this.getColor(polygonColor)
+    const ptColor = this.getColor(pointColor)
     const lColor = this.getColor(lineColor)
     const glColor = this.getColor(groundLineColor)
     // 地形平滑显示二维剖面，模型取消平滑
@@ -405,6 +426,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         polygonColor: pColor,
         polygonHeight: height,
         polyLineColor: lColor,
+        pointColor: ptColor,
         showPolygon: showPolygon,
         polylineGroundColor: glColor,
         samplePrecision
