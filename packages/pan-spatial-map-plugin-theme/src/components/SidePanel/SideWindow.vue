@@ -93,7 +93,7 @@ export default {
       const type = typeof this.maxWidth
       if (type === 'function') {
         return this.maxWidth()
-      } else if (this.maxWidth instanceof Number) {
+      } else if (type === 'number') {
         return this.maxWidth
       }
       return null

@@ -12,10 +12,10 @@
         v-bind="parseContentProps('left')"
       />
       <mp-pan-spatial-map-side-panel
-        v-if="getMaxWidthFunc && mapInitialized"
+        v-if="maxSidePanelWidth && mapInitialized"
         v-bind="left.panel"
         :widgets="left.widgets"
-        :max-width="getMaxWidthFunc"
+        :max-width="maxSidePanelWidth"
         @update-widget-state="onUpdateWidgetState('left', $event)"
       />
       <a-layout class="main-wrapper">
@@ -67,8 +67,8 @@ export default {
     return {
       publicPath: process.env.BASE_URL,
       maxFooterHeight: 0,
+      maxSidePanelWidth: 0,
       showSetting: false,
-      getMaxWidthFunc: null,
       configInitialized: false
     }
   },
@@ -99,8 +99,8 @@ export default {
   },
   mounted() {
     this.calcMaxFooterHeight()
+    this.calcMaxSidePanelWidth()
     this.watchWindowSize()
-    this.getMaxWidthFunc = this.getSidePanelMaxWidth
   },
   async created() {
     await loadConfigs()
@@ -110,19 +110,19 @@ export default {
     window.onresize = null
   },
   methods: {
-    getSidePanelMaxWidth() {
-      return (
-        this.$refs.bodyContent.$el.clientWidth -
-        this.$refs.leftContent.$el.clientWidth
-      )
-    },
     calcMaxFooterHeight() {
       this.maxFooterHeight =
         window.innerHeight - this.$refs.headerContent.$el.offsetHeight
     },
+    calcMaxSidePanelWidth() {
+      this.maxSidePanelWidth =
+        this.$refs.bodyContent.$el.clientWidth -
+        this.$refs.leftContent.$el.clientWidth
+    },
     watchWindowSize() {
       window.onresize = () => {
         this.calcMaxFooterHeight()
+        this.calcMaxSidePanelWidth()
       }
     }
   }
