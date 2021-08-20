@@ -375,7 +375,7 @@ export default class PlaceName extends Mixins(
         color: @primary-color;
       }
       .ant-switch {
-        margin: 0 10px;
+        margin: 0 10px 0 0;
       }
       .action {
         cursor: pointer;

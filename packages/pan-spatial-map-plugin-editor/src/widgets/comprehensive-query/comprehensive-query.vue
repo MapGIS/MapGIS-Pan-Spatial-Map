@@ -8,22 +8,30 @@
         >
       </div>
       <a-divider type="vertical" />
-      <a-input
-        class="search-input"
-        placeholder="请输入关键字"
-        v-model="keyword"
-        allow-clear
-        @focus="onSearchFocus"
-        @pressEnter="onSearch"
-      />
-      <a-divider type="vertical" />
-      <a-button class="close-button" icon="close" @click="onClose" />
       <a-button
-        class="search-button"
-        type="primary"
+        v-if="!searchInputExapnd"
+        class="start-search-button"
         icon="search"
-        @click="onSearch"
+        @click="onStartSearch"
       />
+      <template v-else>
+        <a-input
+          class="search-input"
+          placeholder="请输入关键字"
+          v-model="keyword"
+          allow-clear
+          @focus="onSearchFocus"
+          @pressEnter="onSearch"
+        />
+        <a-divider type="vertical" />
+        <a-button class="close-button" icon="close" @click="onClose" />
+        <a-button
+          class="search-button"
+          type="primary"
+          icon="search"
+          @click="onSearch"
+        />
+      </template>
     </div>
     <div
       :class="[
@@ -107,6 +115,8 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
 
   private locationPanelExpand = false
 
+  private searchInputExapnd = false
+
   private geoJson: Featrue.FeatureGeoJSON | null = null
 
   get logoType() {
@@ -159,18 +169,27 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
       .getElementById('measure-max-height')
       .getBoundingClientRect().top
     const bottom = document.documentElement.clientHeight - top
-    this.maxHeight = bottom - 10
+    this.maxHeight = bottom - 10 - 3
   }
 
   onLocate() {
-    this.locationPanelExpand = true
+    this.locationPanelExpand = !this.locationPanelExpand
     this.searchPanelExpand = false
     if (!this.locationType) {
       this.locationType = 'district'
     }
   }
 
+  onStartSearch() {
+    this.searchInputExapnd = true
+  }
+
   onClose() {
+    if (!this.locationPanelExpand && !this.searchPanelExpand) {
+      this.searchInputExapnd = false
+      return
+    }
+
     this.locationPanelExpand = false
     this.searchPanelExpand = false
     this.$refs.placeName.removeResult()
@@ -253,7 +272,6 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   flex-direction: column;
   width: 300px;
   color: @text-color;
-  background: @base-bg-color;
   border-radius: 2px;
   max-height: calc(~'100% - 20px');
   .query-section {
@@ -263,6 +281,8 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
   .search-box {
     display: flex;
     align-items: center;
+    background: @base-bg-color;
+    width: fit-content;
     height: 32px;
     .logo {
       display: flex;
@@ -274,6 +294,10 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
         margin-left: 3px;
         color: @text-color;
       }
+    }
+    .start-search-button {
+      font-size: 16px;
+      width: 32px;
     }
     .search-input {
       flex: 1;
@@ -290,7 +314,9 @@ export default class MpComprehensiveQuery extends Mixins(WidgetMixin) {
     top: 0;
   }
   .panel-container {
+    background: @base-bg-color;
     padding: 10px;
+    margin-top: 3px;
     &.unvisible {
       display: none;
     }
