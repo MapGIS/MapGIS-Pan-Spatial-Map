@@ -100,7 +100,7 @@ export default {
     }
   }
   &-dots {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: @primary-color;
 
@@ -143,7 +143,7 @@ export default {
     }
   }
   &-large {
-    font-size: 18px;
+    font-size: 20px;
   }
   &-small {
     font-size: 14px;
