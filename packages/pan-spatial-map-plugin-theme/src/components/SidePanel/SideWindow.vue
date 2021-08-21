@@ -17,7 +17,7 @@
         <slot />
       </div>
     </a-card>
-    <mp-pan-spatial-map-adjust-line
+    <mp-adjust-line
       v-if="!isFullScreen"
       direction="right"
       :resize-button="false"
@@ -28,11 +28,9 @@
 
 <script>
 import { mapState } from 'vuex'
-import MpPanSpatialMapAdjustLine from '../AdjustLine/AdjustLine.vue'
 
 export default {
   name: 'MpPanSpatialMapSideWindow',
-  components: { MpPanSpatialMapAdjustLine },
   props: {
     // 显示标题
     title: { type: String, default: 'Title' },
