@@ -32,15 +32,15 @@
 </template>
 
 <script lang="ts">
-import { Vue, Watch, Component, InjectReactive } from 'vue-property-decorator'
+import { Vue, Watch, Component, Inject } from 'vue-property-decorator'
 
 @Component
 export default class SwipeSetting extends Vue {
-  @InjectReactive({
+  @Inject({
     from: 'swipe',
     default: () => ({})
   })
-  swipe: any
+  readonly swipe!: any
 
   // 卷帘方向
   get direction() {

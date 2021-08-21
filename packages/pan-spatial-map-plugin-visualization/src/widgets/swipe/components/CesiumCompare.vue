@@ -16,7 +16,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, InjectReactive } from 'vue-property-decorator'
+import { Component, Vue, Inject } from 'vue-property-decorator'
 import { Layer } from '@mapgis/web-app-framework'
 import SwipeSetting from './SwipeSetting'
 
@@ -26,11 +26,11 @@ import SwipeSetting from './SwipeSetting'
   }
 })
 export default class CesiumCompare extends Vue {
-  @InjectReactive({
+  @Inject({
     from: 'swipe',
     default: () => ({})
   })
-  swipe: any
+  readonly swipe!: any
 
   // 上级(左侧)图层列表
   get beforeLayers() {
