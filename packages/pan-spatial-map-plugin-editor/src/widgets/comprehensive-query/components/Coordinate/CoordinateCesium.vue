@@ -69,10 +69,12 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
 
   private entityTextNames: string[] = []
 
+  private timer = null
+
   @Emit('picked-coordinate')
   emitPickedCoordinate(pickedCoordinate: number[]) {}
 
-  @Watch('pickable', { immediate: true })
+  @Watch('pickable', { immediate: false })
   private pickableChange() {
     // 定义当前场景的画布元素的事件处理
     const handler = new this.Cesium.ScreenSpaceEventHandler(
@@ -98,7 +100,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
     }, this.Cesium.ScreenSpaceEventType.LEFT_CLICK)
   }
 
-  @Watch('center', { deep: true, immediate: true })
+  @Watch('center', { deep: true, immediate: false })
   centerChange() {
     if (this.center && this.center.length > 0) {
       this.webGlobe.viewer.camera.flyTo({
@@ -111,7 +113,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
     }
   }
 
-  @Watch('frameFeature', { deep: true, immediate: true })
+  @Watch('frameFeature', { deep: true, immediate: false })
   private frameFeatureChange(val: Feature.FeatureGeoJSON | null) {
     this.clearFrame()
     if (val && Object.keys(val).length > 0) {
@@ -179,8 +181,9 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
     }
   }
 
-  @Watch('coordinate', { immediate: true })
+  @Watch('coordinate', { immediate: false })
   async coordinateChange() {
+    this.clearMarker()
     const defaultImg = await markerIconInstance.unSelectIcon()
     const marker = {
       name: 'coordinate-marker',
@@ -196,11 +199,27 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
       this.CesiumZondy,
       this.webGlobe
     )
+
+    this.pickableChange()
+    this.coordinateChange()
+    this.frameFeatureChange()
+    this.timer = window.setTimeout(() => {
+      this.clearTimer()
+      this.centerChange()
+    }, 500)
+  }
+
+  clearTimer() {
+    if (this.timer !== null) {
+      window.clearTimeout(this.timer)
+      this.timer = null
+    }
   }
 
   private beforeDestroy() {
     this.clearMarker()
     this.clearFrame()
+    this.clearTimer()
   }
 
   // 清除
