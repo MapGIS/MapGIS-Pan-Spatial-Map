@@ -31,7 +31,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Watch, InjectReactive } from 'vue-property-decorator'
+import { Vue, Component, Watch, Inject } from 'vue-property-decorator'
 import { Document, Layer } from '@mapgis/web-app-framework'
 import SwipeSetting from './SwipeSetting'
 
@@ -41,11 +41,11 @@ import SwipeSetting from './SwipeSetting'
   }
 })
 export default class MapboxCompare extends Vue {
-  @InjectReactive({
+  @Inject({
     from: 'swipe',
     default: () => ({})
   })
-  swipe: any
+  readonly swipe!: any
 
   // 上级(左侧)地图Document
   aboveDocument: Document = new Document()
