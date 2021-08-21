@@ -71,14 +71,9 @@ class FitBound {
    * 获取level与相机高度关系数组
    * @param startLevel 起始层级（层级小于2时，球会卡死）
    * @param viewer
-   * @returns
+   * @returns level与相机高度关系数组
    */
-  private getZoomLevelHeights(
-    startLevel: number,
-    viewer: unknown
-  ): number | undefined {
-    startLevel = startLevel <= 2 ? 2 : startLevel
-
+  public getLevelDetails(viewer: unknown): Array<LevelDetail> {
     if (this._cesiumLevelToHeights.length <= 0) {
       // 计算层级高度是最小误差
       const precision = 1
@@ -125,7 +120,21 @@ class FitBound {
       }
       this._cesiumLevelToHeights = result
     }
+    return this._cesiumLevelToHeights
+  }
 
+  /**
+   * 通过层级获取相机高度
+   * @param startLevel 初始层级
+   * @param viewer
+   * @returns
+   */
+  private getCameraHeightByLevel(
+    startLevel: number,
+    viewer: unknown
+  ): number | undefined {
+    startLevel = startLevel <= 2 ? 2 : startLevel
+    this.getLevelDetails(viewer)
     return this._cesiumLevelToHeights.find(x => x.level === startLevel)?.height
   }
 
@@ -166,12 +175,12 @@ class FitBound {
     // 如果获取不到对应层级的高度则还是用范围缩放
     if (
       level !== undefined &&
-      this.getZoomLevelHeights(level, webGlobe.viewer) !== undefined
+      this.getCameraHeightByLevel(level, webGlobe.viewer) !== undefined
     ) {
       const center = new Cesium.Cartesian3.fromDegrees(
         (xmin + xmax) / 2,
         (ymin + ymax) / 2,
-        this.getZoomLevelHeights(level, webGlobe.viewer)
+        this.getCameraHeightByLevel(level, webGlobe.viewer)
       )
       webGlobe.viewer.camera.flyTo({
         destination: center

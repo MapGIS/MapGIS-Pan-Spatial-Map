@@ -304,7 +304,12 @@ export default {
           // 修改人：马原野 2021年7月22日
 
           const { tileMatrixSet } = layer.activeLayer
-          const { resolution, levelValue } = tileMatrixSet.tileInfo.lods[0]
+          let { resolution } = tileMatrixSet.tileInfo.lods[0]
+          const { levelValue } = tileMatrixSet.tileInfo.lods[0]
+          // 如果分辨率单位为（度/像素）需要转换为（米/像素）
+          resolution = layer.spatialReference.isWGS84()
+            ? resolution * 111194.872221777
+            : resolution
           // 获取当前分辨率对应cesium里面的层级，计算偏移量
           const level = getLevelInMap(resolution, this.mapboxLevelResolutions)
           zoomOffset = levelValue - level
