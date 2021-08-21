@@ -63,7 +63,9 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
 
   private markerImg = `${baseConfigInstance.config.colorConfig.label.image.defaultImg}`
 
-  @Watch('pickable', { immediate: true })
+  private timer = null
+
+  @Watch('pickable', { immediate: false })
   private pickableChange() {
     const canvas = this.map.getCanvasContainer()
 
@@ -76,14 +78,14 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
     }
   }
 
-  @Watch('center', { deep: true, immediate: true })
+  @Watch('center', { deep: true, immediate: false })
   centerChange() {
     if (this.center && this.center.length > 0) {
       this.map.panTo([this.center[0], this.center[1]])
     }
   }
 
-  @Watch('frameFeature', { deep: true, immediate: true })
+  @Watch('frameFeature', { deep: true, immediate: false })
   private frameFeatureChange(val: Feature.FeatureGeoJSON | null) {
     this.clear()
     if (val && Object.keys(val).length > 0) {
@@ -121,9 +123,26 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
   @Emit('picked-coordinate')
   emitPickedCoordinate(pickedCoordinate: number[]) {}
 
+  mounted() {
+    this.pickableChange()
+    this.frameFeatureChange()
+    this.timer = window.setTimeout(() => {
+      this.clearTimer()
+      this.centerChange()
+    }, 500)
+  }
+
+  clearTimer() {
+    if (this.timer !== null) {
+      window.clearTimeout(this.timer)
+      this.timer = null
+    }
+  }
+
   beforeDestroy() {
     this.clear()
     this.removeClickEvent()
+    this.clearTimer()
   }
 
   private onClick({

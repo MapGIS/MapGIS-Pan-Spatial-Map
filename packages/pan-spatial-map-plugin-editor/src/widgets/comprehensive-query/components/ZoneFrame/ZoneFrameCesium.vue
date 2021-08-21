@@ -50,6 +50,8 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
 
   private entityTextNames: string[] = []
 
+  timer = null
+
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
@@ -57,8 +59,18 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
       this.webGlobe
     )
     this.featureChange()
-    this.centerChange()
-    this.fitBoundChange()
+    this.timer = window.setTimeout(() => {
+      this.clearTimer()
+      this.centerChange()
+      this.fitBoundChange()
+    }, 500)
+  }
+
+  clearTimer() {
+    if (this.timer !== null) {
+      window.clearTimeout(this.timer)
+      this.timer = null
+    }
   }
 
   @Watch('feature', { deep: true })
@@ -175,6 +187,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
 
   beforeDestroy() {
     this.clear()
+    this.clearTimer()
   }
 
   private clear() {

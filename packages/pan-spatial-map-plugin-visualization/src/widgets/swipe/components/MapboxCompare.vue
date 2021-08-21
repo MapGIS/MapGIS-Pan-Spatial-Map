@@ -6,8 +6,16 @@
     </div>
     <!-- 卷帘组件 -->
     <mapgis-compare v-else :orientation="direction">
-      <mp-web-map-pro slot="beforeMap" :document="aboveDocument" />
-      <mp-web-map-pro slot="afterMap" :document="belowDocument" />
+      <mp-web-map-pro
+        slot="beforeMap"
+        @map-load="handleLoad"
+        :document="aboveDocument"
+      />
+      <mp-web-map-pro
+        slot="afterMap"
+        @map-load="handleLoad"
+        :document="belowDocument"
+      />
     </mapgis-compare>
     <!-- 图层设置 -->
     <a-drawer
@@ -148,6 +156,8 @@ export default class MapboxCompare extends Vue {
       defaultMap.add(layer)
     }
   }
+
+  private handleLoad() {}
 }
 </script>
 <style lang="less" scoped>

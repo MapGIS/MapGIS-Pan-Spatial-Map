@@ -113,28 +113,30 @@
         </div>
       </a-spin>
     </div>
-    <mapbox-layer
-      v-if="is2DMapMode"
-      ref="mapboxLayer"
-      :dataBarrierArr="dataBarrierArr"
-      :dataCoordinateArr="dataCoordinateArr"
-      :marker="centerMarker"
-      :result="result"
-      :highResultSource="highResultSource"
-      :color="color"
-      @finish-draw="clickFunciton"
-    />
-    <cesium-layer
-      v-else
-      ref="cesiumLayer"
-      :dataBarrierArr="dataBarrierArr"
-      :dataCoordinateArr="dataCoordinateArr"
-      :marker="centerMarker"
-      :result="result"
-      :highResultSource="highResultSource"
-      :color="color"
-      @finish-draw="clickFunciton"
-    ></cesium-layer>
+    <template v-if="isWidgetOpen">
+      <mapbox-layer
+        v-if="is2DMapMode"
+        ref="mapboxLayer"
+        :dataBarrierArr="dataBarrierArr"
+        :dataCoordinateArr="dataCoordinateArr"
+        :marker="centerMarker"
+        :result="result"
+        :highResultSource="highResultSource"
+        :color="color"
+        @finish-draw="clickFunciton"
+      />
+      <cesium-layer
+        v-else
+        ref="cesiumLayer"
+        :dataBarrierArr="dataBarrierArr"
+        :dataCoordinateArr="dataCoordinateArr"
+        :marker="centerMarker"
+        :result="result"
+        :highResultSource="highResultSource"
+        :color="color"
+        @finish-draw="clickFunciton"
+      ></cesium-layer>
+    </template>
     <a-modal v-model="settingDialog" title="设置参数" centered :footer="null">
       <setting v-model="settingForm" />
     </a-modal>
@@ -243,6 +245,8 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     features: []
   }
 
+  isWidgetOpen = false
+
   highResultSource = { type: 'FeatureCollection', features: [] }
 
   result = {
@@ -254,8 +258,13 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     return this.is2DMapMode ? this.$refs.mapboxLayer : this.$refs.cesiumLayer
   }
 
+  onOpen() {
+    this.isWidgetOpen = true
+  }
+
   // 面板关闭时候触发函数
   onClose() {
+    this.isWidgetOpen = false
     this.resetLayer()
   }
 
