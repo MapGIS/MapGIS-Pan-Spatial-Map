@@ -96,35 +96,35 @@ export default class MpAddData extends Mixins(WidgetMixin) {
       example: 'http://<server>:<port>/igs/rest/ogc/beijing/WMTSServer'
     },
     {
-      text: 'Vector Tile 服务',
+      text: '矢量瓦片地图服务',
       value: 'VectorTile',
       example:
         'http://<server>:<port>/igs/rest/mrms/vtiles/styles/街道-墨卡托.json'
     },
     {
-      text: 'ArcGIS IMAGE REST Service',
+      text: 'ArcGIS REST 动态地图服务',
       value: 'ArcGISMapImage',
       example:
         'http://<server>:<port>/arcgis/rest/services/ServiceRequest/MapServer'
     },
     {
-      text: 'ArcGIS TILE REST Service',
+      text: 'ArcGIS REST 瓦片地图服务',
       value: 'ArcGISTile',
       example:
         'http://<server>:<port>/arcgis/rest/services/ServiceRequest/MapServer'
     },
     {
-      text: 'MapGIS 瓦片 REST Service',
+      text: 'MapGIS REST 瓦片地图服务',
       value: 'IGSTile',
       example: 'http://<server>:<port>/igs/rest/mrms/tile/{tileName}'
     },
     {
-      text: 'MapGIS 文档 REST Service',
+      text: 'MapGIS REST 动态地图服务',
       value: 'IGSMapImage',
       example: 'http://<server>:<port>/igs/rest/mrms/docs/{docName}'
     },
     {
-      text: 'MapGIS 图层 REST Service',
+      text: 'MapGIS REST 图层地图服务',
       value: 'IGSVector',
       example: 'http://<server>:<port>/igs/rest/mrms/layers?gdbps={gdbps}'
     }
@@ -165,7 +165,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   get cesiumDataTypes3D() {
     return [
       {
-        text: 'MapGIS 3D REST Service',
+        text: 'MapGIS REST 三维服务',
         value: 'IGSScene',
         example: 'http://<server>:<port>/igs/rest/g3d/{modelName}'
       }
