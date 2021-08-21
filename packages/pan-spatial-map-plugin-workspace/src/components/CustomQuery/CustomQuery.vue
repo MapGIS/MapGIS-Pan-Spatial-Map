@@ -116,12 +116,14 @@
 
 <script lang="ts">
 import { Component, Mixins, Watch, Prop } from 'vue-property-decorator'
-import { LayerType, Feature } from '@mapgis/web-app-framework'
 import {
-  IAttributeTableExhibition,
-  AttributeTableExhibition,
-  ExhibitionControllerMixin
-} from '@mapgis/pan-spatial-map-store'
+  ExhibitionControllerMixin,
+  LayerType,
+  Feature,
+  Exhibition
+} from '@mapgis/web-app-framework'
+
+const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
 @Component({
   name: 'MpCustomQuery',

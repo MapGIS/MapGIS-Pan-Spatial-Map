@@ -49,37 +49,35 @@ export default class MpMapModePicker extends Mixins(WidgetMixin) {
    * 切换模式之前的操作
    */
   beforeSwitchMapMode() {
-    this.getCurrentViewRectBounds()
+    // this.getCurrentViewRectBounds()
     this.switchMapMode()
   }
 
   /**
    * 二三维切换变化后
    */
-  onMapModeChanged() {
-    try {
-      const { xmin, ymin, xmax, ymax } = this.rectBounds
-      if (!this.is2DMapMode) {
-        this.sceneController.CameraSetView({
-          destination: this.sceneController.getCartesian3FromDegrees(
-            (xmin + xmax) / 2,
-            (ymin + ymax) / 2,
-            this.sceneController.getPositionCartographicHeight() * 2
-          )
-        })
-      } else {
-        this.map.fitBounds(
-          [
-            [xmax, ymin],
-            [xmin, ymax]
-          ],
-          {
-            animate: false
-          }
-        )
-      }
-    } catch (e) {}
-  }
+  // onMapModeChanged() {
+  //   const { xmin, ymin, xmax, ymax } = this.rectBounds
+  //   if (!this.is2DMapMode) {
+  //     this.sceneController.CameraSetView({
+  //       destination: this.sceneController.getCartesian3FromDegrees(
+  //         (xmin + xmax) / 2,
+  //         (ymin + ymax) / 2,
+  //         this.sceneController.getPositionCartographicHeight() * 2
+  //       )
+  //     })
+  //   } else {
+  //     this.map.fitBounds(
+  //       [
+  //         [xmax, ymin],
+  //         [xmin, ymax]
+  //       ],
+  //       {
+  //         animate: false
+  //       }
+  //     )
+  //   }
+  // }
 
   created() {
     this.sceneController = Objects.SceneController.getInstance(

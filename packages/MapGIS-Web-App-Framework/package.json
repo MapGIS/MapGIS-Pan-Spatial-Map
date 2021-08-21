@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@mapgis/mapbox-gl": "^1.9.3",
+    "element-resize-detector": "^1.2.1",
     "@mapgis/webclient-es6-service": "^10.5.3-beta",
     "@mapgis/webclient-vue-cesium": "link:../../../WebClient-Vue/cesium",
     "@mapgis/webclient-vue-mapboxgl": "link:../../../WebClient-Vue/mapboxgl"

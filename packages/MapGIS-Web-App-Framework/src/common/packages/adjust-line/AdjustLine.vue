@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  name: 'MpPanSpatialMapAdjustLine',
+  name: 'MpAdjustLine',
   props: {
     direction: {
       validator(value) {

@@ -20,8 +20,7 @@
     "yarn": ">= 1.6.0"
   },
   "dependencies": {
-    "@mapgis/web-app-framework": "^0.2.0",
-    "element-resize-detector": "^1.2.1"
+    "@mapgis/web-app-framework": "^0.2.0"
   },
   "devDependencies": {}
 }

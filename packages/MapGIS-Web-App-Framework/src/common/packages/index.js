@@ -26,6 +26,10 @@ import MpSettingForm from './setting-form/SettingForm.vue'
 
 import MpGroupTab from './group/GroupTab.vue'
 
+import MpAdjustLine from './adjust-line/AdjustLine.vue'
+
+import MpCollapseButton from './collapse-button/CollapseButton.vue'
+
 import MpMask from './mask/Mask.vue'
 
 import MpSpin from './spin/Spin.vue'
@@ -47,6 +51,8 @@ const components = [
   MpTreeSelect,
   MpSettingForm,
   MpGroupTab,
+  MpAdjustLine,
+  MpCollapseButton,
   MpMask,
   MpSpin
 ]

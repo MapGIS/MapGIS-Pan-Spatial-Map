@@ -76,7 +76,6 @@ export default class MpColorsSetting extends Vue {
     {
       title: this.rangeField,
       dataIndex: 'max',
-      width: 100,
       scopedSlots: { customRender: 'max' }
     },
     {
@@ -188,7 +187,7 @@ export default class MpColorsSetting extends Vue {
   }
   /deep/ .ant-table {
     font-size: 12px;
-    max-width: 250px;
+    width: 260px;
   }
 
   /deep/ .ant-input-affix-wrapper .ant-input-prefix {
@@ -223,7 +222,7 @@ export default class MpColorsSetting extends Vue {
   }
 
   .icon {
-    margin: 0 3px;
+    margin: 0 8px;
     &:hover {
       color: @primary-color;
     }

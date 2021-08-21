@@ -162,21 +162,20 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import {
-  ExhibitionMixin,
-  IAttributeTableOption,
-  IAttributeTableExhibition,
   baseConfigInstance,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-store'
 import {
   DomUtil,
   AppMixin,
+  ExhibitionMixin,
   LayerType,
   UUID,
   MapMixin,
   Rectangle3D,
   Feature,
-  Objects
+  Objects,
+  Exhibition
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
@@ -186,6 +185,8 @@ import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
 import axios from 'axios'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
+
+const { IAttributeTableOption, IAttributeTableExhibition } = Exhibition
 
 @Component({
   name: 'MpAttributeTable',

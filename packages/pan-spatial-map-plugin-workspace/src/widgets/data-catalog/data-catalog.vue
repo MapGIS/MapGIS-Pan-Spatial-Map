@@ -5,7 +5,6 @@
         v-model="searchValue"
         placeholder="搜索数据"
         allow-clear
-        enterButton
         @search="onSearch"
       ></a-input-search>
       <a-dropdown :trigger="['click']" class="action-more">
@@ -979,31 +978,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   justify-content: center;
   align-content: center;
   cursor: pointer;
-}
-.ant-input-affix-wrapper {
-  width: 320px;
-  height: 36px;
-  padding: 0 12px;
-
-  ::v-deep .ant-input {
-    height: 100%;
-    border-radius: 0;
-    padding: 6px 12px;
-  }
-
-  ::v-deep .ant-input-suffix {
-    svg {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      outline: 0 !important;
-      border: 0;
-      color: inherit;
-      background: transparent;
-      padding: 0;
-      margin-right: 12px;
-    }
-  }
 }
 
 .filter-dropdown {
