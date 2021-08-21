@@ -1,29 +1,18 @@
 <template>
-  <a-checkbox-group v-model="basemapNames" style="width:100%">
-    <ul class="mp-widget-basemap-manager">
-      <li
-        v-for="(basemap, index) in basemaps"
-        class="image-container"
+  <div class="mp-widget-basemap-manager">
+    <div class="basemap-wrapper">
+      <mp-basemap-item
+        v-for="basemap in basemaps"
         :key="basemap.name"
-        :style="getBasemapMarginStyle(index)"
+        :name="basemap.name"
+        :image="imageUrl(basemap.image)"
+        :active="basemapNames.includes(basemap.name)"
+        @select="onSelect"
+        @un-select="onUnSelect"
       >
-        <div class="image-header">
-          <img :src="imageUrl(basemap.image)" />
-          <a-popover>
-            <template slot="content">
-              <span>
-                {{ basemap.name }}
-              </span>
-            </template>
-            <p class="img-description">
-              <a-checkbox :value="basemap.name"> </a-checkbox>
-              <span class="img-title">{{ basemap.name }}</span>
-            </p>
-          </a-popover>
-        </div>
-      </li>
-    </ul>
-  </a-checkbox-group>
+      </mp-basemap-item>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -38,14 +27,11 @@ import {
   baseConfigInstance,
   DataCatalogManager
 } from '@mapgis/pan-spatial-map-store'
+import MpBasemapItem from './components/BasemapItem/BasemapItem.vue'
 
-@Component({ name: 'MpBasemapManager' })
+@Component({ name: 'MpBasemapManager', components: { MpBasemapItem } })
 export default class MpBasemapManager extends Mixins(WidgetMixin) {
-  private basemaps: Array<Record<string, unknown>> = []
-
   private basemapNames: Array<string> = []
-
-  private defaultBasemap = null
 
   get imageUrl() {
     return function(image) {
@@ -56,89 +42,84 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     }
   }
 
-  @Watch('basemapNames', { immediate: true })
-  async basemapNamesChange(newValue: Array<string>, oldValue: Array<string>) {
-    if (oldValue && oldValue.length >= 0 && newValue && newValue.length >= 0) {
-      // 取消勾选的时候删除图层
-      for (let index = 0; index < oldValue.length; index++) {
-        const name = oldValue[index]
-        if (!newValue.includes(name)) {
-          const info: any = this.basemaps.find(item => item.name === name)
-          for (let i = 0; i < info.children.length; i++) {
-            const layer = info.children[i]
-            const maplayer = this.document.baseLayerMap.findLayerById(
-              layer.guid
-            )
-            this.document.baseLayerMap.remove(maplayer)
-          }
-        }
-      }
-
-      // 勾选的时候添加图层，这里使用for是为了 异步await
-      for (let index = 0; index < newValue.length; index++) {
-        const name = newValue[index]
-        if (!oldValue.includes(name)) {
-          const info: any = this.basemaps.find(item => item.name === name)
-          for (let i = 0; i < info.children.length; i++) {
-            const layer = info.children[i]
-            const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
-            if (mapLayer.loadStatus === LoadStatus.notLoaded) {
-              await mapLayer.load()
-              this.document.baseLayerMap.add(mapLayer)
-            } else {
-              this.document.baseLayerMap.add(mapLayer)
-            }
-          }
-        }
-      }
-    }
-  }
-
-  mounted() {
-    let config = [...this.widgetInfo.config]
+  get basemaps() {
+    const basemapList = [...this.widgetInfo.config]
 
     // 获取默认底图
-    this.defaultBasemap = this.getDefaultBasemap()
+    const defaultBasemap = this.getDefaultBasemap()
 
-    if (this.defaultBasemap) {
-      config.push(this.defaultBasemap)
+    if (defaultBasemap) {
+      basemapList.push(defaultBasemap)
     }
 
     // 将配置转换成可用于添加到map中的配置
-    config = config.map(basemap => {
-      const { children } = basemap
-      const layers = children.map(layer => {
-        // 如果要兼容老版格式，可以在这里进行升级，转换成新的数据结构（数据与添加数据配置一致）
-        layer = this.updateLayer(layer)
-        const layerConfig = {
-          name: layer.name,
-          guid: UUID.uuid(),
-          serverURL: layer.url,
-          serverType: this.parseIssueType(layer.type)
-        }
-        if (layer.token) {
-          layerConfig.tokenValue = layer.token
-          layerConfig.tokenKey = layer.tokenKey ? layer.tokenKey : 'token'
-        }
+    return basemapList
+      .map(basemap => {
+        const { children } = basemap
+        const layers = children.map(layer => {
+          // 如果要兼容老版格式，可以在这里进行升级，转换成新的数据结构（数据与添加数据配置一致）
+          layer = this.updateLayer(layer)
+          const layerConfig = {
+            name: layer.name,
+            guid: UUID.uuid(),
+            serverURL: layer.url,
+            serverType: this.parseLayerType(layer.type)
+          }
+          if (layer.token) {
+            layerConfig.tokenValue = layer.token
+            layerConfig.tokenKey = layer.tokenKey ? layer.tokenKey : 'token'
+          }
 
-        return layerConfig
+          return layerConfig
+        })
+        return {
+          ...basemap,
+          children: layers
+        }
       })
-      return {
-        ...basemap,
-        children: layers
-      }
-    })
+      .filter(basemap => {
+        const { visible = 'true' } = basemap
+        return visible === 'true'
+      })
+  }
 
-    this.basemaps = config.filter(basemap => {
-      const { visible = 'true' } = basemap
-      return visible === 'true'
-    })
+  mounted() {
+    const defaultBasemap = this.getDefaultBasemap()
 
-    // 默认底图加载
-    if (this.defaultBasemap) {
-      this.basemapNames = [this.defaultBasemap.name]
-    } else {
-      this.basemapNames = []
+    if (defaultBasemap) {
+      this.onSelect(defaultBasemap.name)
+    }
+  }
+
+  onSelect(name) {
+    this.basemapNames.push(name)
+
+    const info = this.basemaps.find(basemap => basemap.name === name)
+    if (info) {
+      info.children.forEach(async layer => {
+        const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
+        if (mapLayer.loadStatus === LoadStatus.notLoaded) {
+          await mapLayer.load()
+          this.document.baseLayerMap.add(mapLayer)
+        } else {
+          this.document.baseLayerMap.add(mapLayer)
+        }
+      })
+    }
+  }
+
+  onUnSelect(name) {
+    this.basemapNames.splice(
+      this.basemapNames.findIndex(basemapName => basemapName === name),
+      1
+    )
+
+    const info = this.basemaps.find(basemap => basemap.name === name)
+    if (info) {
+      info.children.forEach(layer => {
+        const maplayer = this.document.baseLayerMap.findLayerById(layer.guid)
+        this.document.baseLayerMap.remove(maplayer)
+      })
     }
   }
 
@@ -292,7 +273,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     }
   }
 
-  private parseIssueType(typeString: string): LayerType {
+  private parseLayerType(typeString: string): LayerType {
     const type = LayerType[typeString]
     if (type === undefined) {
       return LayerType.Unknown
@@ -321,45 +302,12 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
 
 <style lang="less" scoped>
 .mp-widget-basemap-manager {
-  width: 100%;
   display: flex;
-  flex-wrap: wrap;
-  &,
-  li {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    .image-header {
-      position: relative;
-      width: 100%;
-      height: 0;
-      padding-top: 66.5%; /*相对于这个盒子的宽度设置的，为保证图片比例，其值=width * 80%*/
-      img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .img-description {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        padding: 0 6px;
-        height: 35px;
-        line-height: 35px;
-        text-align: center;
-        margin-bottom: 0px;
-        background-color: rgba(0, 0, 0, 0.3);
-        color: white;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        .img-title {
-          margin-left: 5px;
-        }
-      }
-    }
+  justify-content: center;
+  .basemap-wrapper {
+    width: 220px;
+    display: flex;
+    flex-wrap: wrap;
   }
 }
 </style>
