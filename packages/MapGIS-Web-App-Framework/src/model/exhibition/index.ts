@@ -1,8 +1,8 @@
 export { default as exhibitionListInstance } from './exhibition'
 export {
+  IExhibition,
   IFields,
   IAttributeTableOption,
-  IExhibition,
   IAttributeTableExhibition,
   IAttributeTableListExhibition,
   AttributeTableExhibition,

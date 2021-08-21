@@ -66,19 +66,18 @@ import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import PlaceNamePanel from './PlaceNamePanel'
 import PlaceNameMapbox from './PlaceNameMapbox'
 import PlaceNameCesium from './PlaceNameCesium'
-import {
-  ExhibitionControllerMixin,
-  IAttributeTableExhibition,
-  AttributeTableExhibition,
-  baseConfigInstance
-} from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import {
   LayerType,
   AppMixin,
   MapMixin,
-  Feature
+  ExhibitionControllerMixin,
+  Feature,
+  Exhibition
 } from '@mapgis/web-app-framework'
 import * as turf from '@turf/turf'
+
+const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
 @Component({ components: { PlaceNamePanel, PlaceNameMapbox, PlaceNameCesium } })
 export default class PlaceName extends Mixins(

@@ -6,11 +6,9 @@
 
 <script>
 import { ThemeContentMixin } from '@mapgis/web-app-framework'
-import MpExhibitionPanel from '../ExhibitionPanel/ExhibitionPanel.vue'
 
 export default {
   name: 'MpPanSpatialMapFooter',
-  components: { MpExhibitionPanel },
   mixins: [ThemeContentMixin],
   props: { maxViewHeight: Number }
 }

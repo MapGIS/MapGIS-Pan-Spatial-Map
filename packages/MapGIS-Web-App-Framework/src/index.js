@@ -27,7 +27,9 @@ export {
   ThemeMixin,
   ThemeContentMixin,
   PanelMixin,
-  MapMixin
+  MapMixin,
+  ExhibitionMixin,
+  ExhibitionControllerMixin
 } from './builder'
 
 export {
@@ -66,13 +68,14 @@ export {
   IGSSceneSublayerRenderType,
   Rectangle3D,
   Point3D,
+  CoordinateSystemType,
   Objects,
   Catalog,
   Feature,
   Metadata,
   Overlay,
   Analysis,
-  CoordinateSystemType
+  Exhibition
 } from './model'
 
 export { MarkerPlottingMixin } from './map'

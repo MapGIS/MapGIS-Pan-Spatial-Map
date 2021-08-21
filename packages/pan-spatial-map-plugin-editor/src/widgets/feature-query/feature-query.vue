@@ -50,13 +50,11 @@
 import { Component, Vue, Mixins, Watch, Inject } from 'vue-property-decorator'
 import {
   baseConfigInstance,
-  ExhibitionControllerMixin,
-  IAttributeTableListExhibition,
-  AttributeTableListExhibition,
   dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-store'
 import {
   WidgetMixin,
+  ExhibitionControllerMixin,
   LayerType,
   IGSMapImageLayer,
   IGSVectorLayer,
@@ -64,7 +62,8 @@ import {
   Sublayer,
   Rectangle3D,
   Point3D,
-  Objects
+  Objects,
+  Exhibition
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import {
@@ -76,6 +75,11 @@ import {
   booleanDisjoint,
   booleanContains
 } from '@turf/turf'
+
+const {
+  IAttributeTableListExhibition,
+  AttributeTableListExhibition
+} = Exhibition
 
 enum QueryType {
   Point = 'Point',

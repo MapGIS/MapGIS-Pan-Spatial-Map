@@ -9,7 +9,9 @@ export {
   ThemeMixin,
   ThemeContentMixin,
   PanelMixin,
-  MapMixin
+  MapMixin,
+  ExhibitionMixin,
+  ExhibitionControllerMixin
 } from './mixins'
 
 export { default as BuilderComponents } from './packages'

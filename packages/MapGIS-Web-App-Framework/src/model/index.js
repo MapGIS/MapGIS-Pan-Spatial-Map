@@ -49,5 +49,6 @@ import * as Feature from './feature'
 import * as Metadata from './metadata'
 import * as Overlay from './overlay'
 import * as Analysis from './anslysis'
+import * as Exhibition from './exhibition'
 
-export { Objects, Catalog, Feature, Metadata, Overlay, Analysis }
+export { Objects, Catalog, Feature, Metadata, Overlay, Analysis, Exhibition }

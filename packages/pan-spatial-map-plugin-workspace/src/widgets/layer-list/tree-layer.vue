@@ -243,13 +243,15 @@ import {
   Mixins
 } from 'vue-property-decorator'
 import {
+  MapMixin,
+  AppMixin,
+  ExhibitionControllerMixin,
+  Exhibition,
   LayerType,
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
   Sublayer,
-  MapMixin,
-  AppMixin,
   WMTSSublayer,
   CoordinateTransformation,
   CoordinateSystemType,
@@ -258,9 +260,6 @@ import {
   FitBound
 } from '@mapgis/web-app-framework'
 import {
-  ExhibitionControllerMixin,
-  IAttributeTableExhibition,
-  AttributeTableExhibition,
   baseConfigInstance,
   dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-store'
@@ -269,6 +268,8 @@ import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
 import MpUnifyModify from './components/UnifyModify/UnifyModify.vue'
 import MpSelectTilematrixSet from './components/SelectTilematrixSet/SelectTilematrixSet.vue'
 import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLayer.vue'
+
+const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
 @Component({
   components: {

@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import { ExhibitionControllerMixin } from '@mapgis/pan-spatial-map-store'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import { ExhibitionControllerMixin } from '../../mixins'
 
 export default {
   name: 'MpExhibitionPanel',
