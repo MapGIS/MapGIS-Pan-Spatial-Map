@@ -6,12 +6,7 @@
 </template>
 
 <script lang="ts">
-import {
-  Mixins,
-  Component,
-  Watch,
-  ProvideReactive
-} from 'vue-property-decorator'
+import { Mixins, Component, Watch, Provide } from 'vue-property-decorator'
 import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
 import MapboxCompare from './components/MapboxCompare'
 import CesiumCompare from './components/CesiumCompare'
@@ -27,7 +22,7 @@ type Direction = 'vertical' | 'horizontal'
   }
 })
 export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
-  @ProvideReactive()
+  @Provide()
   get swipe() {
     return this
   }
