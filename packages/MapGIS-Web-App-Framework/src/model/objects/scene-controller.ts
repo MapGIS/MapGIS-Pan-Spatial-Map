@@ -411,4 +411,26 @@ export class SceneController {
     }
     return null
   }
+
+  /**
+   * 判断当前是否开启了对数深度缓存区
+   *
+   * @date 21/08/2021
+   * @memberof SceneController
+   * @returns true:开启,false:关闭
+   */
+  isLogarithmicDepthBufferEnable() {
+    return this.webGlobe.viewer.scene.logarithmicDepthBuffer
+  }
+
+  /**
+   * 设置是否开启对数深度缓存区
+   *
+   * @date 21/08/2021
+   * @param {*} isEnable true:开启，false:关闭
+   * @memberof SceneController
+   */
+  setLogarithmicDepthBufferEnable(isEnable) {
+    this.webGlobe.viewer.scene.logarithmicDepthBuffer = isEnable
+  }
 }

@@ -214,7 +214,7 @@
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
 import fireImg from './images/fire.png'
 import smokeImg from './images/smoke.png'
 
@@ -260,34 +260,35 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
   private particleArr = []
 
   // 记录对数深度缓冲区状态
-  private isOpenLogarithmicDepthBuffer = false
+  private isLogarithmicDepthBufferEnable = false
+
+  get sceneControllerInstance() {
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+  }
 
   onOpen() {
     this.emitterValue = '圆形放射'
-    this.recordLogarithmicDepthBuffer()
+
+    this.isLogarithmicDepthBufferEnable = this.sceneControllerInstance.isLogarithmicDepthBufferEnable()
+    if (this.isLogarithmicDepthBufferEnable === true) {
+      this.sceneControllerInstance.setLogarithmicDepthBufferEnable(false)
+    }
   }
 
   onClose() {
     this.onClearParticle()
-    this.resetLogarithmicDepthBuffer()
-  }
 
-  recordLogarithmicDepthBuffer() {
-    // 记录对数深度缓冲区初始状态
-    this.isOpenLogarithmicDepthBuffer = this.webGlobe.viewer.scene.logarithmicDepthBuffer
-    // 如果开启在改面板里面将对数深度缓冲区关闭
-    if (this.webGlobe.viewer.scene.logarithmicDepthBuffer === true) {
-      this.webGlobe.viewer.scene.logarithmicDepthBuffer = false
-    }
-  }
-
-  // 复位对数深度缓冲区初始状态
-  resetLogarithmicDepthBuffer() {
     if (
-      this.webGlobe.viewer.scene.logarithmicDepthBuffer !==
-      this.isOpenLogarithmicDepthBuffer
+      this.isLogarithmicDepthBufferEnable !==
+      this.sceneControllerInstance.isLogarithmicDepthBufferEnable()
     ) {
-      this.webGlobe.viewer.scene.logarithmicDepthBuffer = this.isOpenLogarithmicDepthBuffer
+      this.sceneControllerInstance.setLogarithmicDepthBufferEnable(
+        this.isLogarithmicDepthBufferEnable
+      )
     }
   }
 
