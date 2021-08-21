@@ -1,5 +1,3 @@
-const txtColor = '#000000a6'
-
 const chartOptions = ({ x, y }) => {
   return {
     tooltip: {
@@ -29,29 +27,12 @@ const chartOptions = ({ x, y }) => {
       show: false,
       data: x,
       axisLabel: {
-        rotate: 60,
-        fontSize: 10,
-        fontFamily: '微软雅黑',
-        color: txtColor
+        rotate: 60
       }
     },
     yAxis: {
       min: 0,
       max: 1,
-      axisLabel: {
-        fontFamily: '微软雅黑',
-        color: txtColor
-      },
-      axisTick: {
-        lineStyle: {
-          color: txtColor
-        }
-      },
-      axisLine: {
-        lineStyle: {
-          color: txtColor
-        }
-      },
       splitLine: {
         lineStyle: {
           color: '#d9d9d9',
