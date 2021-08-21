@@ -42,10 +42,22 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
   })
   readonly highlightStyle!: Record<string, any>
 
+  timer = null
+
   mounted() {
     this.featureChange()
-    this.centerChange()
-    this.fitBoundChange()
+    this.timer = window.setTimeout(() => {
+      this.clearTimer()
+      this.centerChange()
+      this.fitBoundChange()
+    }, 500)
+  }
+
+  clearTimer() {
+    if (this.timer !== null) {
+      window.clearTimeout(this.timer)
+      this.timer = null
+    }
   }
 
   @Watch('feature', { deep: true })
@@ -104,6 +116,7 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
 
   beforeDestroy() {
     this.clear()
+    this.clearTimer()
   }
 
   private clear() {
