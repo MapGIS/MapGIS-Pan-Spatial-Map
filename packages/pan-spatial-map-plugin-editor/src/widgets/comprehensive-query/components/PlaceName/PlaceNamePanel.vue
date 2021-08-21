@@ -31,9 +31,7 @@
           />
         </div>
       </template>
-      <template v-else>
-        <a-empty />
-      </template>
+      <a-empty v-else :image="simpleImage" />
     </a-spin>
     <a-spin :spinning="spinning" v-else>
       <div class="cluster-title">
@@ -58,6 +56,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { Empty } from 'ant-design-vue'
 import { UUID, AppMixin, Feature } from '@mapgis/web-app-framework'
 import { markerIconInstance } from '@mapgis/pan-spatial-map-store'
 
@@ -101,15 +100,13 @@ export default class PlaceNamePanel extends Vue {
     return this.widgetInfo.config.placeName || this.widgetInfo.config.dataStore
   }
 
+  private get selectedItem() {
+    return this.allItems.find(item => this.name === item.placeName)
+  }
+
   @Watch('cluster')
   clusterChange() {
     this.queryFeature()
-  }
-
-  setCounts() {
-    return this.config.clusterMaxCount < this.maxCount
-      ? `大于${this.config.clusterMaxCount}`
-      : `为${this.maxCount}`
   }
 
   @Watch('activeTab', { immediate: true })
@@ -117,10 +114,8 @@ export default class PlaceNamePanel extends Vue {
     this.updataMarkers()
   }
 
-  updataMarkers() {
-    if (this.activeTab === this.name) {
-      this.$emit('show-coords', this.markersInfos, this.fieldConfigs)
-    }
+  beforeCreate() {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
 
   mounted() {
@@ -140,8 +135,16 @@ export default class PlaceNamePanel extends Vue {
     this.queryFeature()
   }
 
-  private get selectedItem() {
-    return this.allItems.find(item => this.name === item.placeName)
+  setCounts() {
+    return this.config.clusterMaxCount < this.maxCount
+      ? `大于${this.config.clusterMaxCount}`
+      : `为${this.maxCount}`
+  }
+
+  updataMarkers() {
+    if (this.activeTab === this.name) {
+      this.$emit('show-coords', this.markersInfos, this.fieldConfigs)
+    }
   }
 
   async queryFeature() {
@@ -285,6 +288,7 @@ export default class PlaceNamePanel extends Vue {
     }
     .cluster-content {
       display: flex;
+      align-items: center;
       span:nth-child(2) {
         flex: 1;
         text-align: right;
@@ -301,7 +305,7 @@ export default class PlaceNamePanel extends Vue {
       margin: 0;
       li {
         border-bottom: 1px solid @border-color;
-        padding: 10px;
+        padding: 5px;
         display: flex;
         align-items: center;
         &:last-child {
@@ -329,7 +333,10 @@ export default class PlaceNamePanel extends Vue {
     .pagination-container {
       display: flex;
       justify-content: flex-end;
-      margin-top: 10px;
+      margin-top: 5px;
+    }
+    .ant-empty-normal {
+      margin: 15px 0 5px 0;
     }
   }
 }
