@@ -125,7 +125,7 @@
           v-bind="slotProps"
         >
           <template>
-            <mp-attr-statistics
+            <mp-attribute-statistics
               v-if="currentTableParams"
               :queryParams="statisticAndFilterParamas"
             />
@@ -149,8 +149,7 @@
             <mp-filter
               v-if="currentTableParams"
               :queryParams="statisticAndFilterParamas"
-              @filterVal="onUpdateWhere"
-              @close="onCloseFilter"
+              @finish="onUpdateWhere"
             />
           </template>
         </mp-window>
@@ -180,8 +179,6 @@ import {
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
 import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
-import MpFilter from '../Filter/Filter.vue'
-import MpAttrStatistics from '../AttrStatistics/AttrStatistics.vue'
 import axios from 'axios'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
@@ -191,9 +188,7 @@ const { IAttributeTableOption, IAttributeTableExhibition } = Exhibition
 @Component({
   name: 'MpAttributeTable',
   components: {
-    MpAttributeTableColumnSetting,
-    MpAttrStatistics,
-    MpFilter
+    MpAttributeTableColumnSetting
   }
 })
 export default class MpAttributeTable extends Mixins(
@@ -444,12 +439,9 @@ export default class MpAttributeTable extends Mixins(
     this.updateStatisticAndFilterParamas()
   }
 
-  private onCloseFilter() {
-    this.showFilter = false
-  }
-
   private async onUpdateWhere(val) {
     await this.query(val)
+    this.showFilter = false
   }
 
   async onGetGeometry(val: Record<string, any>) {
