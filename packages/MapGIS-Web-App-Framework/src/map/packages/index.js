@@ -8,6 +8,9 @@ import MpMarkerSetPro from './marker-pro/MarkerSetPro.vue'
 import Mp3dMarkerSetPro from './marker-pro/3dMarkerSetPro.vue'
 import MpMarkerPlotting from './marker-plotting/MarkerPlotting.vue'
 import Mp3dMarkerPlotting from './marker-plotting/3dMarkerPlotting.vue'
+import MpAttributeStatistics from './attribute-statistics/AttributeStatistics.vue'
+import MpFieldCalculator from './field-calculator/FieldCalculator.vue'
+import MpFilter from './filter/Filter.vue'
 
 export { default as MarkerPlottingMixin } from './marker-plotting/mixins/marker-plotting'
 
@@ -21,7 +24,10 @@ const components = [
   MpMarkerSetPro,
   Mp3dMarkerSetPro,
   MpMarkerPlotting,
-  Mp3dMarkerPlotting
+  Mp3dMarkerPlotting,
+  MpAttributeStatistics,
+  MpFieldCalculator,
+  MpFilter
 ]
 
 const install = Vue => {

@@ -20,10 +20,9 @@
 
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import {
-  ExhibitionMixin,
-  IAttributeTableListExhibition
-} from '@mapgis/pan-spatial-map-store'
+import { ExhibitionMixin, Exhibition } from '@mapgis/web-app-framework'
+
+const { IAttributeTableListExhibition } = Exhibition
 
 @Component({ name: 'MpAttributeTableList' })
 export default class MpAttributeTableList extends Mixins(ExhibitionMixin) {

@@ -67,6 +67,8 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
 
   private positions2D: Array<{ x: number; y: number }> = []
 
+  private isLogarithmicDepthBufferEnable = false
+
   get sceneControllerInstance() {
     return Objects.SceneController.getInstance(
       this.Cesium,
@@ -94,6 +96,24 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
   // 微件关闭时
   onClose() {
     this.remove()
+
+    if (
+      this.isLogarithmicDepthBufferEnable !==
+      this.sceneControllerInstance.isLogarithmicDepthBufferEnable()
+    ) {
+      this.sceneControllerInstance.setLogarithmicDepthBufferEnable(
+        this.isLogarithmicDepthBufferEnable
+      )
+    }
+  }
+
+  onOpen() {
+    // 修改说明：在鲲鹏机器，UOS系统的firefox浏览器，使用天际线分析功能，点击后直接报错。三维部门建议在鲲鹏机器上关闭该缓存区。
+    // 修改人：马原野 2021年8月21日
+    this.isLogarithmicDepthBufferEnable = this.sceneControllerInstance.isLogarithmicDepthBufferEnable()
+    if (this.isLogarithmicDepthBufferEnable === true) {
+      this.sceneControllerInstance.setLogarithmicDepthBufferEnable(false)
+    }
   }
 
   // 微件失活时

@@ -3,10 +3,18 @@
     <div class="visual-panel">
       <mp-setting-form v-model="formData" :wrapper-width="240">
         <a-form-item label="水平视角">
-          <a-input v-model.number="formData.horizontAngle" type="number" />
+          <a-input
+            v-model.number="formData.horizontAngle"
+            :min="1"
+            type="number"
+          />
         </a-form-item>
         <a-form-item label="垂直视角">
-          <a-input v-model.number="formData.verticalAngle" type="number" />
+          <a-input
+            v-model.number="formData.verticalAngle"
+            :min="1"
+            type="number"
+          />
         </a-form-item>
         <a-form-item label="附加高度(米)">
           <a-input
