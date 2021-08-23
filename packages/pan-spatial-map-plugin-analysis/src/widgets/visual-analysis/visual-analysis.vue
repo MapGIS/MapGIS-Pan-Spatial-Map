@@ -40,7 +40,11 @@
                 <template slot="content">
                   <p>{{ posData.viewPositionX }}</p>
                 </template>
-                <a-input v-model.number="posData.viewPositionX" type="number" />
+                <a-input
+                  v-model.number="posData.viewPositionX"
+                  :step="0.0001"
+                  type="number"
+                />
               </a-popover>
             </a-col>
             <a-col v-else :span="8">
@@ -51,7 +55,11 @@
                 <template slot="content">
                   <p>{{ posData.viewPositionY }}</p>
                 </template>
-                <a-input v-model.number="posData.viewPositionY" type="number" />
+                <a-input
+                  v-model.number="posData.viewPositionY"
+                  :step="0.0001"
+                  type="number"
+                />
               </a-popover>
             </a-col>
             <a-col v-else :span="8">
@@ -79,6 +87,7 @@
                 </template>
                 <a-input
                   v-model.number="posData.targetPositionX"
+                  :step="0.0001"
                   type="number"
                 />
               </a-popover>
@@ -93,6 +102,7 @@
                 </template>
                 <a-input
                   v-model.number="posData.targetPositionY"
+                  :step="0.0001"
                   type="number"
                 />
               </a-popover>
@@ -254,6 +264,9 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   onHeadingChange(newVal) {
     if (window.VisualAnalysisManage.visualAnalysis) {
       window.VisualAnalysisManage.visualAnalysis.heading = newVal
+      this.updateTargetPosition(
+        window.VisualAnalysisManage.visualAnalysis.targetPosition
+      )
     }
   }
 
@@ -261,6 +274,9 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   onPitchChange(newVal) {
     if (window.VisualAnalysisManage.visualAnalysis) {
       window.VisualAnalysisManage.visualAnalysis.pitch = newVal
+      this.updateTargetPosition(
+        window.VisualAnalysisManage.visualAnalysis.targetPosition
+      )
     }
   }
 
@@ -268,6 +284,9 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   onViewRadiusChange(newVal) {
     if (window.VisualAnalysisManage.visualAnalysis) {
       window.VisualAnalysisManage.visualAnalysis.viewRadius = newVal
+      this.updateTargetPosition(
+        window.VisualAnalysisManage.visualAnalysis.targetPosition
+      )
     }
   }
 
@@ -305,6 +324,8 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
     window.VisualAnalysisManage.visualAnalysis.viewPosition = viewCartesian
     window.VisualAnalysisManage.visualAnalysis.targetPosition = targetCartesian
+
+    this.setVisualAttrs()
 
     // 添加观察点到地图
     this.addViewPoint(viewCartesian)
@@ -654,6 +675,11 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.heading = heading.toFixed(2)
     this.pitch = pitch.toFixed(2)
     this.viewRadius = parseInt(viewRadius)
+  }
+
+  // 若分析完成后，当方向角、俯仰角、可视距离变化时，更新目标点坐标
+  private updateTargetPosition(cartesian) {
+    this.convertPosition(cartesian, 'target')
   }
 }
 </script>
