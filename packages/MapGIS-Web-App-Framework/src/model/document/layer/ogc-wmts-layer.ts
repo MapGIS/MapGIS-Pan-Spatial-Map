@@ -17,6 +17,12 @@ export enum WMTSCorporation {
   corporationOther = 6 // 其它
 }
 
+const ARCGIS_METERPERUNIT = 111194872.221777
+const MAPGIS_OLD_METERPERUNIT = ARCGIS_METERPERUNIT
+const GEOSERVER_METERPERUNIT = 111319490.79327358
+const MAPGIS_METERPERUNIT = GEOSERVER_METERPERUNIT
+const OTHER_METERPERUNIT = GEOSERVER_METERPERUNIT
+
 /**
  * OGCWMTS服务瓦片矩阵集
  *
@@ -93,6 +99,15 @@ export class TileMatrixSet {
   tileInfo: TileInfo = new TileInfo()
 
   /**
+   * 该TileMatrixSet所属的OGCWMTSLayer
+   *
+   * @date 30/03/2021
+   * @type {OGCWMTSLayer}
+   * @memberof TileMatrixSet
+   */
+  layer: OGCWMTSLayer | undefined
+
+  /**
    * 创建一个深度克隆的TileMatrixSet
    *
    * @date 06/04/2021
@@ -108,6 +123,8 @@ export class TileMatrixSet {
 
       if (key === 'tileInfo') {
         result[key] = element[valueIndex].clone()
+      } else if (key === 'layer') {
+        result[key] = element[valueIndex]
       } else {
         result[key] = ObjectTool.deepClone(element[valueIndex])
       }
@@ -140,18 +157,20 @@ export class TileMatrixSet {
         const lod = new LOD()
         lod.level = index
         lod.scale = element.ScaleDenominator
-        lod.resolution = this.getResolutionByScale(lod.scale)
 
         if (element.Identifier) {
           // 存在两种情况，其一是参照系:级数,其二是只为级数
           const pos = element.Identifier.lastIndexOf(':')
           if (pos >= 0) {
-            // zoom = atol(strValue.Mid(pos + 1))
             lod.levelValue = parseInt(element.Identifier.substring(pos + 1))
           } else {
             lod.levelValue = parseInt(element.Identifier)
           }
         }
+
+        const resolution = this.getResolutionByScale(lod.scale)
+
+        lod.resolution = this.getTileResolution(lod.scale)
 
         this.tileInfo.lods.push(lod)
 
@@ -182,6 +201,210 @@ export class TileMatrixSet {
     const resolution = dMMPerPix / (1 / Scale)
 
     return resolution
+  }
+
+  /**
+ *
+ *
+ * @date 23/08/2021
+ * @param {number} dScale 比例尺分母
+ * @return {*}  {number} 级数对应的分辨率
+ * @memberof TileMatrixSet
+ * @summary 
+ *    该函数支持MapGIS IGServer 发布的JWD,MKT瓦片只有一个矩阵集(老版本,地调局原来有用),
+      支持MapGIS IGServer 发布的JWD 三个矩阵集,MKT 的两个矩阵集(新版本,该版本MapGIS发布的WMTS可以再Arcmap 和ArcGIS Server发布的WMTS完美叠加,ArcGIS Online中和地图完美叠加)
+      支持ArcGIS Server   发布的JWD,MKT瓦片
+      支持天地图(全国)    JWD，MKT两种
+      支持GeoServer       JWD,MKT两种
+各个厂家以及MapGIS IGServer发布的老版本和新版本之间关于1逻辑单位代表多少毫米的理解如下:
+服务名              坐标系          矩阵集个数/名称           1逻辑单位代表多少毫米      1像素等于多少毫米
+IGServer老服务      JWD             一个矩阵集                111194872.221777			    25.4/96
+IGServer老服务      MKT             一个矩阵集                1000						          25.4/96
+IGServer新服务      JWD      3个(EPSG:4326_XXXX_028mm_GB)     111319490.79327358        0.28
+IGServer新服务      JWD      3个(EPSG:4326_XXXX_arcgis_GB)    111194872.221777			    0.28
+IGServer新服务      JWD      3个(EPSG:4326_XXXX_dpi96_GB)     111319490.79327358		    25.4/96
+IGServer新服务      MKT      2个(GoogleMapsCompatible_GB)     1000						          0.28
+IGServer新服务      MKT      2个(EPSG:3857_XXXX_dpi96_GB)     1000						          25.4/96
+
+ArcGIS Server       JWD      2个(default028mm)				        111194872.221777			  25.4000508/96(0.28的比例尺反算96DPI的比例尺后,用96DPI的计算,这种情况下1英寸等于25.4000508毫米)
+ArcGIS Server       JWD      2个(native)					            111194872.221777			  25.4000508/96
+ArcGIS Server       MKT      3个(default028mm)				        1000						        25.4000508/96(0.28的比例尺反算96DPI的比例尺后,用96DPI的计算,这种情况下1英寸等于25.4000508毫米)
+ArcGIS Server       MKT      3个(native)					            1000						        25.4000508/96
+ArcGIS Server       MKT      3个(GoogleMapsCompatible)		    1000						        0.28    
+
+GeoServer           JWD             一个矩阵集                111319490.79327358 		  0.28
+GeoServer			      MKT             一个矩阵集                1000						        0.28
+
+tianditu            JWD             一个矩阵集                111319490.79327358 		  25.4/96
+tianditu			      MKT             一个矩阵集                1000						        25.4/96
+ * 
+ */
+  getTileResolution(dScale: number): number {
+    let szMatrixSetName = ''
+    let szTmp = ''
+    const szWellKnownScaleSetName = ''
+    let nPos = -1
+    let nMapGISType = 0 // 0是国标标准的0.28,1是Arcgis0.28,2是96dpi,3是GoogleMapsCompatible(OGC MKT 0.28)
+    let nArcGISTyep = 0 // 0是default0.28,1是nativeTileMatrixSet,2是GoogleMapsCompatible(OGC MKT 0.28),3其它
+    let nOtherType = 0 // 0是国标的96DPI(严格的标准),1可能是用ArcGIS发布的但是基地址又不能判断出是ArcGIS的情况(吉威广西: http://121.40.62.120:8066/ime-server/rest/gxyx/wmts?service=wmts&request=GetCapabilities)
+    let dMMPerPix = 25.4 / 96 // 一个像素等于多少毫米
+    let dScaleEx = 0
+    let lod: LOD | undefined
+    let dConst = -1
+
+    szMatrixSetName = this.id
+
+    // 不支持获取WellKnownScaleSet名称。
+    // szWellKnownScaleSetName = pMatrixSet->matriSet.szWellKnownScaleSetName;
+
+    if (this.layer?.corporationType == WMTSCorporation.corporationZD) {
+      // 新版本2016-1-27之后 MapGIS IGServer发布的JWD有三个矩阵集: 如下
+      // EPSG:4326_武汉1~12级_028mm_GB
+      // EPSG:4326_武汉1~12级_arcgis_GB
+      // EPSG:4326_武汉1~12级_dpi96_GB
+      // MKT数据有2个矩阵集
+      // GoogleMapsCompatible_GB
+      // EPSG:3857_WH_MKT_1~16级_dpi96_GB
+
+      nPos = szMatrixSetName.lastIndexOf('_GB')
+
+      if (nPos > 0) {
+        szTmp = szMatrixSetName.slice(0, szMatrixSetName.length - 3)
+        nPos = szTmp.lastIndexOf('_')
+        if (nPos > 0)
+          // 028mm_GB,arcgis_GB,dpi96_GB三种
+          szTmp = szTmp.slice(nPos + 1)
+
+        if (szTmp === '028mm') nMapGISType = 0
+        else if (szTmp === 'arcgis') nMapGISType = 1
+        else if (szTmp === 'dpi96') nMapGISType = 2
+        else if (szTmp === 'GoogleMapsCompatible') nMapGISType = 3
+
+        if (this.tileInfo.spatialReference.isWGS84()) {
+          if (nMapGISType == 0) {
+            // 标准的国标
+            dConst = MAPGIS_METERPERUNIT
+            dMMPerPix = 0.28
+          } else if (nMapGISType == 1) {
+            // ArcGIS的0.28
+            dMMPerPix = 0.28
+            dConst = ARCGIS_METERPERUNIT
+          } else if (nMapGISType == 2) {
+            dConst = MAPGIS_METERPERUNIT
+            dMMPerPix = 25.4 / 96
+          }
+        } else {
+          if (nMapGISType == 0) {
+            // 标准的国标
+            dMMPerPix = 0.28
+          } else if (nMapGISType == 1) {
+            // ArcGIS的0.28
+            dMMPerPix = 0.28
+          } else if (nMapGISType == 2) {
+            dMMPerPix = 25.4 / 96
+          } else if (nMapGISType == 3) {
+            dMMPerPix = 0.28
+          }
+        }
+      } // 老版本
+      else {
+        if (this.tileInfo.spatialReference.isWGS84()) {
+          dConst = MAPGIS_OLD_METERPERUNIT
+          dMMPerPix = 25.4 / 96
+        } else {
+          dMMPerPix = 25.4 / 96
+        }
+      }
+    } else if (
+      this.layer?.corporationType == WMTSCorporation.corporationArcGIS
+    ) {
+      // http://portal.smartxspace.com/arcgis/rest/services/wuhan_base/MapServer/WMTS/1.0.0/WMTSCapabilities.xml
+      // 修改说明：ArcGIS的部分WMTS服务的dpi为0.28，但其矩阵集名称为default，原有写法会造成该类服务无法显示。
+      // 修改人：马原野 2018-12-26
+      if (szMatrixSetName.includes('default')) nArcGISTyep = 0
+      else if (szMatrixSetName.includes('native')) nArcGISTyep = 1
+      else if (szMatrixSetName.includes('GoogleMapsCompatible')) nArcGISTyep = 2
+      else nArcGISTyep = 3
+      if (this.tileInfo.spatialReference.isWGS84()) {
+        if (nArcGISTyep == 0) {
+          dScaleEx = (dScale * 0.28 * 96) / 25.4 // 反算96DPI对应的比例尺,直接用0.28对应的比例尺不准确
+          dScale = dScaleEx
+          dConst = ARCGIS_METERPERUNIT
+          dMMPerPix = 25.4000508 / 96
+        } else if (nArcGISTyep == 1) {
+          dConst = ARCGIS_METERPERUNIT
+          dMMPerPix = 25.4000508 / 96
+        }
+      } else {
+        if (nArcGISTyep == 0) {
+          dScaleEx = (dScale * 0.28 * 96) / 25.4 // 反算96DPI对应的比例尺,直接用0.28对应的比例尺不准确
+          dScale = dScaleEx
+          dMMPerPix = 25.4000508 / 96
+        } else if (nArcGISTyep == 1) {
+          dMMPerPix = 25.4000508 / 96
+        } else if (nArcGISTyep == 2) {
+          dMMPerPix = 0.28
+        }
+      }
+    } else if (
+      this.layer?.corporationType == WMTSCorporation.corporationGeoServer
+    ) {
+      if (this.tileInfo.spatialReference.isWGS84()) {
+        dConst = GEOSERVER_METERPERUNIT
+        dMMPerPix = 0.28
+      } else {
+        dMMPerPix = 0.28
+      }
+    } else if (
+      this.layer?.corporationType == WMTSCorporation.corporationTianDiTu
+    ) {
+      if (this.tileInfo.spatialReference.isWGS84()) {
+        dConst = OTHER_METERPERUNIT
+        dMMPerPix = 25.4 / 96
+      } else {
+        dMMPerPix = 25.4 / 96
+      }
+    }
+    // 修改说明：修订bug7584 对吉威发布的类似于ArcGIS规则的WMTS的支持.本质需要按照ArcGIS方式计算
+    //           其它厂商发布的WMTS认为都是严格按照国家标准执行(都只处理一个矩阵级,且认为是96DPI,一度等于多少米为111319490.79327358)
+    // 修改人： 潘明敏 2016-04-14
+    else {
+      // 对于其它厂家发布的WMTS原则上认为是严格执行国家标准(关键参数同天地图)
+      // 但是对于吉威发布的WMTS特殊处理下,吉威发布的WMTS有两套标准
+      // 1.http:// 121.40.62.120:8066/ime-server/rest/gxyx/wmts?service=wmts&request=GetCapabilities  其实内部比例尺是符合ArcGIS的标准发布,包含了default028mm矩阵集,计算时需要用ArcGIS的计算方法才能对
+      // 2.http://www.mapgx.com/ime-server/rest/tdtgx_vec/wmts/wmts?service=wmts&request=getcapabilities 符合国家标准执行，使用国家标准的参数计算即可
+      if (szMatrixSetName.includes('028')) nOtherType = 1
+
+      // 修改说明：某些服务szWellKnownScaleSetName中含有"GoogleMapsCompatible"关键词，计算时需要用ArcGIS的计算方法。
+      // 如：中国地质调查局西安地质调查中心发布的服务，url:http://219.144.130.58:6400/getcapabilities?Theme=HillShade  bug[12561]
+      // 修改人：马原野 2019-07-20
+      if (szWellKnownScaleSetName.includes('GoogleMapsCompatible')) {
+        nOtherType = 1
+      }
+
+      // 修改说明：szWellKnownScaleSetName中含有"GoogleMapsCompatible"关键词，计算时也需要用ArcGIS的计算方法。
+      // 修改恩：王必聪 2019-07-26
+      if (szWellKnownScaleSetName.includes('GoogleCRS84Quad')) nOtherType = 1
+
+      if (this.tileInfo.spatialReference.isWGS84()) {
+        if (nOtherType == 1) {
+          dScaleEx = (dScale * 0.28 * 96) / 25.4 // 反算96DPI对应的比例尺,直接用0.28对应的比例尺不准确
+          dScale = dScaleEx
+          dConst = ARCGIS_METERPERUNIT
+          dMMPerPix = 25.4000508 / 96
+        } else {
+          dConst = OTHER_METERPERUNIT
+          dMMPerPix = 25.4 / 96
+        }
+      } else {
+        if (nOtherType == 1) {
+          dScaleEx = (dScale * 0.28 * 96) / 25.4 // 反算96DPI对应的比例尺,直接用0.28对应的比例尺不准确
+          dScale = dScaleEx
+          dMMPerPix = 25.4000508 / 96
+        } else dMMPerPix = 25.4 / 96
+      }
+    }
+    return (dScale * dMMPerPix) / dConst
   }
 
   /**
@@ -698,6 +921,21 @@ export class OGCWMTSLayer extends Layer {
         // 给activeLayer赋值
         if (this.activeLayer)
           result.activeLayer = result.findSublayerById(this.activeLayer.id)
+      } else if (key === 'tileMatrixSets') {
+        const tileMatrixSets = element[valueIndex]
+        const tileMatrixSetsCopy: TileMatrixSet[] = []
+        let tileMatrixSetCopy: TileMatrixSet | undefined
+
+        tileMatrixSets.forEach(tileMatrixSet => {
+          tileMatrixSetCopy = tileMatrixSet.clone()
+
+          if (tileMatrixSetCopy) {
+            tileMatrixSetCopy.layer = result
+            tileMatrixSetsCopy.push(tileMatrixSetCopy)
+          }
+        })
+
+        result[key] = tileMatrixSetsCopy
       } else {
         result[key] = this._deepClone(element[valueIndex])
       }
@@ -786,6 +1024,8 @@ export class OGCWMTSLayer extends Layer {
             if (result.Contents.TileMatrixSet) {
               result.Contents.TileMatrixSet.forEach(item => {
                 const tileMatrixSet: TileMatrixSet = new TileMatrixSet()
+
+                tileMatrixSet.layer = this
 
                 tileMatrixSet.fromJSON(item)
 
