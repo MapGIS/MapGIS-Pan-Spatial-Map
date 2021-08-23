@@ -70,9 +70,6 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
   // 观察点坐标
   private viewPosition
 
-  // 通视分析结果集
-  private visibilityArr = []
-
   get formDataClone() {
     return JSON.parse(JSON.stringify(this.formData))
   }
@@ -115,6 +112,9 @@ export default class MpVisibilityAnalysis extends Mixins(WidgetMixin) {
     window.VisibilityAnalysisManage = {
       visibility: null
     }
+
+    // 通视分析结果集
+    this.visibilityArr = []
   }
 
   // 创建通视分析工具
