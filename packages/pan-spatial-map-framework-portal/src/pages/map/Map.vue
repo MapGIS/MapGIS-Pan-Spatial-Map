@@ -70,19 +70,22 @@ export default {
       const type = this.getQueryString('type', searchString)
       const url = this.getQueryString('url', searchString)
 
-      if (ip && port && name && type) {
-        eventBus.$emit(events.IMPOSE_SERVICE_PREVIEW_EVENT, {
-          ip: ip,
-          port: port,
-          name: name,
-          type: type
-        })
-      }
-      if (url && type) {
-        eventBus.$emit(events.IMPOSE_SERVICE_PREVIEW_EVENT, {
-          url: url,
-          type: type
-        })
+      if (type === 'WMS' || type === 'WMTS') {
+        if (url && type) {
+          eventBus.$emit(events.IMPOSE_SERVICE_PREVIEW_EVENT, {
+            url: url,
+            type: type
+          })
+        }
+      } else {
+        if (ip && port && name && type) {
+          eventBus.$emit(events.IMPOSE_SERVICE_PREVIEW_EVENT, {
+            ip: ip,
+            port: port,
+            name: name,
+            type: type
+          })
+        }
       }
     },
     getQueryString(name, searchString) {
