@@ -87,7 +87,7 @@
       <a-button type="primary" @click="analysis">
         分析
       </a-button>
-      <a-button type="primary" @click="remove">
+      <a-button @click="remove">
         清除
       </a-button>
     </div>
@@ -161,12 +161,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
           }
         },
         confine: true, // 是否将 tooltip 框限制在图表的区域内。
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        position: function(pos, params, el, elRect, size) {
-          const obj = { top: 10 }
-          obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30
-          return obj
-        }
+        backgroundColor: 'rgba(255, 255, 255, 0.8)'
       },
       title: {
         show: false
