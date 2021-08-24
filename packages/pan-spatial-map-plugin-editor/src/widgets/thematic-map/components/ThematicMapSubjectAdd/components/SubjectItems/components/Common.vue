@@ -2,7 +2,7 @@
   <div class="common">
     <!-- 服务地址设置 -->
     <div class="server-tree-select">
-      <mp-row-flex type="vertical" label="服务地址">
+      <mp-row-flex :label-width="76" label-align="right" label="服务地址">
         <mp-tree-select
           @change="selfUriChange"
           :value="selfUri"
@@ -20,16 +20,14 @@
       <mp-row-flex
         v-for="{ label, content } in examples"
         :key="label"
-        :label="label"
-        :label-width="44"
-        align="top"
+        :label-width="76"
         class="server-tree-select-example"
       >
         {{ label }}：{{ content }}
       </mp-row-flex>
     </div>
     <!-- 统计属性 -->
-    <mp-row-flex label="统计属性" label-align="right" :label-width="76">
+    <mp-row-flex :label-width="76" label-align="right" label="统计属性">
       <a-select
         v-model="field"
         :options="fields"
@@ -69,6 +67,9 @@ interface IField {
 @Component
 export default class Common extends Vue {
   @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
+
+  // 属性列表
+  fields: Array<IField> = []
 
   // 目录树
   catalogTreeData: Layer[] = []
@@ -347,20 +348,26 @@ export default class Common extends Vue {
 </script>
 <style lang="less" scoped>
 .common {
-  .server-tree-select {
-    margin-bottom: 12px;
-    ::v-deep .ant-input {
+  ::v-deep {
+    .ant-input,
+    .ant-select-selection {
       border-color: transparent;
-      &:focus {
-        box-shadow: none;
+      &:hover {
+        border-color: @primary-color;
       }
     }
+  }
+
+  .server-tree-select {
     &-example {
       word-break: break-all;
       white-space: normal;
       font-size: @font-size-sm;
       color: #a7a4a4;
       margin: 4px 0;
+    }
+    + div {
+      margin: 10px 0 14px 0;
     }
   }
 }

@@ -4,7 +4,7 @@
     :title="title"
     :tools="tableTools"
     :loading="loading"
-    class="mp-editable-table"
+    :class="prefixCls"
   >
     <a-table
       bordered
@@ -14,7 +14,7 @@
       :loading="loading"
       :pagination="false"
       :row-key="rowKey"
-      class="editable-table-table"
+      :class="`${prefixCls}-table`"
     >
       <template
         v-for="column in tableColumns"
@@ -24,9 +24,10 @@
         <mp-editable-table-cell
           v-if="column.dataIndex"
           @change="cellChange($event, column, record)"
+          :key="column.dataIndex"
           :column="column"
           :record="record"
-          :key="column.dataIndex"
+          :size="size"
         />
         <span v-else :key="column.dataIndex">
           <slot
@@ -40,6 +41,7 @@
   </mp-card>
 </template>
 <script>
+import { CommonUtil } from '@mapgis/web-app-framework'
 import MpEditableTableCell from './EditableTableCell.js'
 
 export default {
@@ -49,6 +51,7 @@ export default {
   },
   props: {
     title: {
+      // 标题
       type: String,
       default: '列表'
     },
@@ -56,43 +59,49 @@ export default {
       type: String,
       default: 'small',
       validator(v) {
-        return ['large', 'default', 'small'].includes(v)
+        return CommonUtil.oneOf(v, ['large', 'small'])
       }
     },
     tools: {
+      // 操作按钮设置: 默认有一个添加按钮
       type: [Array, Function],
       default: () => []
     },
     loading: {
+      // 列表加载提示
       type: Boolean,
       default: false
     },
     checkable: {
+      // 是否开启批量选择
       type: Boolean,
       default: true
     },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
     columns: {
+      // 列表列字段配置项
       type: Array,
       default: () => []
     },
     data: {
+      // 列表数据
       type: Array,
       default: () => []
     },
     rowKey: {
+      // 数据标识
       type: String,
       default: 'index'
     }
   },
-  data: vm => ({
-    index: 0,
-    selectedRowKeys: [],
-    tableData: []
-  }),
+  data() {
+    const prefixCls = 'mp-editable-table'
+    return {
+      prefixCls,
+      index: 0,
+      selectedRowKeys: [],
+      tableData: []
+    }
+  },
   computed: {
     // 新增按钮
     addTool() {
@@ -230,33 +239,35 @@ export default {
 </script>
 <style lang="less" scoped>
 .mp-editable-table {
-  ::v-deep .ant-table {
-    th {
-      padding: 4px 8px !important;
-    }
-    td {
-      padding: 0 !important;
-    }
-
-    .ant-empty,
-    .ant-empty-image {
-      margin: 0;
-    }
-
-    .anticon {
-      cursor: pointer;
-      &:hover {
-        color: @primary-color;
+  &-table {
+    ::v-deep .ant-table {
+      th {
+        padding: 4px 8px !important;
       }
-    }
-    .ant-input,
-    .ant-select-selection {
-      border: none;
-    }
+      td {
+        padding: 0 !important;
+      }
 
-    .ant-input:focus,
-    .ant-select-focused .ant-select-selection {
-      box-shadow: none;
+      .ant-empty,
+      .ant-empty-image {
+        margin: 0;
+      }
+
+      .anticon {
+        cursor: pointer;
+        &:hover {
+          color: @primary-color;
+        }
+      }
+      .ant-input,
+      .ant-select-selection {
+        border: none;
+      }
+
+      .ant-input:focus,
+      .ant-select-focused .ant-select-selection {
+        box-shadow: none;
+      }
     }
   }
 }

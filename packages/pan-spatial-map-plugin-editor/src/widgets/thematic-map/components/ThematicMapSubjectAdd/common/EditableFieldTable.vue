@@ -78,7 +78,9 @@ export default class EditableFieldTable extends Vue {
         const options = v.dataIndex === 'field' ? this.fieldList : undefined
         return {
           ...v,
-          options,
+          props: {
+            options
+          },
           scopedSlots: {
             customRender: v.dataIndex
           }

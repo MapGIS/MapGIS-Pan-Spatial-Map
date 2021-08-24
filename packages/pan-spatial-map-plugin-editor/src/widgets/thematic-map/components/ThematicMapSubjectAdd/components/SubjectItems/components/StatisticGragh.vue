@@ -64,7 +64,7 @@ export default class StatisticGragh extends Vue {
 
   field = null
 
-  way = 3
+  way = '3'
 
   fieldList = []
 
@@ -87,7 +87,8 @@ export default class StatisticGragh extends Vue {
         type: 'ColorPicker',
         title: '颜色设置',
         dataIndex: 'color',
-        align: 'center'
+        align: 'center',
+        width: 100
       }
     ]
   }

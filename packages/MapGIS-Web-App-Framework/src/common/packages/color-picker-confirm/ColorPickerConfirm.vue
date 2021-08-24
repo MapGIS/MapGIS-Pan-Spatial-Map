@@ -6,14 +6,13 @@
         :title="color"
         :style="colorPickerBtnStyle"
         :class="colorPickerBtnCls"
-        class="color-picker-btn"
         >{{ color }}</span
       >
     </slot>
-    <div class="color-picker-content" slot="overlay">
+    <div :class="`${prefixCls}-content`" slot="overlay">
       <chrome-picker v-if="isChrome" @input="colorChange" :value="color" />
       <sketch-picker v-else @input="colorChange" :value="color" />
-      <div class="color-picker-content-btns">
+      <div :class="`${prefixCls}-content-btns`">
         <a-button size="small" @click="cancel">取消</a-button>
         <a-button type="primary" size="small" @click="confirm">确定</a-button>
       </div>
@@ -21,7 +20,7 @@
   </a-dropdown>
 </template>
 <script>
-import { ColorUtil } from '@mapgis/web-app-framework'
+import { ColorUtil, CommonUtil } from '@mapgis/web-app-framework'
 import { Sketch, Chrome } from 'vue-color'
 
 export default {
@@ -35,21 +34,20 @@ export default {
       type: String,
       default: 'chrome',
       validator(v) {
-        return ['sketch', 'chrome'].includes(v)
+        return CommonUtil.oneOf(v, ['sketch', 'chrome'])
       }
     },
     colorType: {
       type: String,
       default: 'rgb',
       validator(v) {
-        return ['hex', 'rgb', 'rgba'].includes(v)
+        return CommonUtil.oneOf(v, ['hex', 'rgb', 'rgba'])
       }
     },
     size: {
       type: String,
-      default: 'default',
       validator(v) {
-        return ['large', 'default', 'small'].includes(v)
+        return CommonUtil.oneOf(v, ['large', 'small'])
       }
     },
     disabled: {
@@ -77,7 +75,9 @@ export default {
     }
   },
   data() {
+    const prefixCls = 'color-picker'
     return {
+      prefixCls,
       color: '',
       visible: false
     }
@@ -86,13 +86,16 @@ export default {
     isChrome({ type }) {
       return type === 'chrome'
     },
-    colorPickerBtnCls({ size, border, borderRadius, disabled }) {
-      return {
-        [size]: true,
-        border,
-        borderRadius,
-        disabled
-      }
+    colorPickerBtnCls({ prefixCls, size, border, borderRadius, disabled }) {
+      return [
+        `${prefixCls}-btn`,
+        {
+          [`${prefixCls}-${size}`]: !!size,
+          [`${prefixCls}-bordered`]: !!border,
+          [`${prefixCls}-border-radius`]: !!borderRadius,
+          [`${prefixCls}-disabled`]: !!disabled
+        }
+      ]
     },
     colorPickerBtnStyle({ defaultValue, value = defaultValue, border }) {
       return {
@@ -169,64 +172,69 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.color-picker-btn {
-  min-width: 100px;
-  width: 100%;
-  height: 32px;
-  line-height: 32px;
-  padding: 0 4px;
-  display: inline-block;
-  vertical-align: middle;
-  cursor: pointer;
-  text-align: center;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  position: relative;
-  &.border {
+.color-picker {
+  @size-lg: 40px;
+  @size-md: 32px;
+  @size-sm: 24px;
+
+  &-btn {
+    max-width: 100%;
+    min-width: @size-md;
+    height: @size-md;
+    line-height: @size-md;
+    padding: 0 4px;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  &-content {
+    color: #333;
+    border: 1px solid @border-color-base;
+    border-radius: @border-radius-base;
+    > div {
+      box-shadow: none;
+      border-radius: 0;
+    }
+    &-btns {
+      background: @white;
+      padding: 12px 0;
+      text-align: center;
+      border-top: 1px solid @border-color-base;
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
+      button {
+        margin: 0 5px;
+      }
+    }
+  }
+  &-large {
+    min-width: @size-lg;
+    height: @size-lg;
+    line-height: @size-lg;
+  }
+  &-small {
+    min-width: @size-sm;
+    height: @size-sm;
+    line-height: @size-sm;
+  }
+  &-bordered {
     border: 1px solid transparent;
   }
-  &.borderRadius {
+  &-border-radius {
     border-radius: @border-radius-base;
   }
-  &.large {
-    min-width: 40px;
-    height: 40px;
-    line-height: 40px;
-  }
-  &.small {
-    min-width: 24px;
-    height: 24px;
-    line-height: 24px;
-  }
-  &.disabled {
+  &-disabled {
     &:after {
       content: '';
       position: absolute;
       left: 0;
       top: 0;
       background: fade(@white, 85%);
-    }
-  }
-}
-
-.color-picker-content {
-  color: #333;
-  border: 1px solid @border-color-base;
-  border-radius: @border-radius-base;
-  > div {
-    box-shadow: none;
-    border-radius: 0;
-  }
-  &-btns {
-    background: @white;
-    padding: 12px 0;
-    text-align: center;
-    border-top: 1px solid @border-color-base;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    button {
-      margin: 0 5px;
     }
   }
 }

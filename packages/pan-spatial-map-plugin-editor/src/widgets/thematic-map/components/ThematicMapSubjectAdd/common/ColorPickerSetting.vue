@@ -21,6 +21,7 @@
           <mp-color-picker-confirm
             v-model="record.color"
             :border-radius="false"
+            class="color-picker-confirm"
           />
         </template>
         <template slot="percent" slot-scope="text, record">
@@ -225,6 +226,10 @@ export default class ColorPickerSetting extends Vue {
   border-radius: @border-radius-base;
   border: 1px solid transparent;
   cursor: pointer;
+}
+
+.color-picker-confirm {
+  width: 100px;
 }
 
 ::v-deep .ant-table {

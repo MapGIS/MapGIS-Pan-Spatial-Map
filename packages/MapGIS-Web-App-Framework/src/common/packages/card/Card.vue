@@ -1,11 +1,8 @@
 <template>
-  <a-card
-    :title="title"
-    :size="size"
-    :bordered="bordered"
-    :loading="loading"
-    :class="cardCls"
-  >
+  <a-card :size="size" :bordered="bordered" :loading="loading" :class="cardCls">
+    <slot name="title">
+      <span slot="title">{{ title }}</span>
+    </slot>
     <template #extra>
       <slot name="extra">
         <mp-toolbar-command-group>
@@ -24,6 +21,10 @@
   </a-card>
 </template>
 <script>
+import { CommonUtil } from '@mapgis/web-app-framework'
+
+const prefixCls = 'mp-card'
+
 export default {
   name: 'MpCard',
   props: {
@@ -37,9 +38,8 @@ export default {
     },
     size: {
       type: String,
-      default: 'default',
       validator(v) {
-        return ['large', 'default', 'small'].includes(v)
+        return CommonUtil.oneOf(v, ['large', 'small'])
       }
     },
     boxShadow: {
@@ -56,58 +56,66 @@ export default {
     }
   },
   computed: {
-    cardCls({ boxShadow }) {
-      return {
-        'mp-card': true,
-        'is-box-shadow': boxShadow
-      }
+    cardCls({ size, boxShadow }) {
+      return [
+        prefixCls,
+        {
+          [`${prefixCls}-box-shadow`]: !!boxShadow
+        }
+      ]
     }
   }
 }
 </script>
 <style lang="less">
-.mp-card.ant-card {
-  .ant-card-head {
-    padding: 0 8px;
-    min-height: 30px;
-    line-height: 30px;
-    font-size: 14px;
+.mp-card {
+  @height-lg: 36px;
+  @height-md: 30px;
+  @height-sm: 24px;
+  @padding-lg: 12px;
+  @padding-md: 8px;
+  @padding-sm: 4px;
+  &.ant-card {
+    .ant-card-head {
+      font-size: 14px;
+      min-height: @height-md;
+      line-height: @height-md;
+      padding: 0 @padding-md;
 
-    .ant-card-head-title,
-    .ant-card-extra {
-      padding: 0;
-      color: @text-color;
+      .ant-card-head-title,
+      .ant-card-extra {
+        padding: 0;
+        color: @text-color;
+      }
+    }
+    .ant-card-body {
+      padding: @padding-md;
+    }
+    &.ant-card-small {
+      .ant-card-head {
+        margin-bottom: 4px;
+        min-height: @height-sm;
+        line-height: @height-sm;
+        padding: 0 @padding-sm;
+      }
+      .ant-card-body {
+        padding: @padding-sm;
+      }
+    }
+    &.ant-card-large {
+      .ant-card-head {
+        padding: 0 @padding-lg;
+        min-height: @height-lg;
+        line-height: @height-lg;
+      }
+      .ant-card-body {
+        padding: @padding-lg;
+      }
     }
   }
-  .ant-card-body {
-    padding: 8px;
-  }
 
-  &.is-box-shadow {
+  &-box-shadow {
     box-shadow: @box-shadow-base;
-  }
-
-  &.ant-card-small {
-    .ant-card-head {
-      padding: 0 4px;
-      min-height: 24px;
-      line-height: 24px;
-      margin-bottom: 4px;
-    }
-    .ant-card-body {
-      padding: 4px;
-    }
-  }
-
-  &.ant-card-large {
-    .ant-card-head {
-      padding: 0 12px;
-      min-height: 36px;
-      line-height: 36px;
-    }
-    .ant-card-body {
-      padding: 12px;
-    }
   }
 }
 </style>
