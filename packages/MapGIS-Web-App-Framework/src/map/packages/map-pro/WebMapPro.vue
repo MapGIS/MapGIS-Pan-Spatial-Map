@@ -18,6 +18,7 @@
         :baseUrl="layerProps.url"
         :serverName="layerProps.serverName"
         :before="getBeforeLayerId(layerProps.beforeId)"
+        :zoomOffset="layerProps.zoomOffset"
       />
       <mapgis-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
@@ -222,7 +223,7 @@ export default {
       const arr = []
       for (let level = 0; level <= 19; level++) {
         const r = 6378137 // 赤道半径
-        const resolutionOnTheEquator = (2 * Math.PI * r) / (256 * 2 ** level)
+        const resolutionOnTheEquator = 360 / (256 * 2 ** level)
         arr.push({
           level,
           resolution: resolutionOnTheEquator
@@ -237,7 +238,9 @@ export default {
       let allLayerNames = []
       let showLayers = ''
       let visibleSubLayers = []
-      let zoomOffset = 0
+      let zoomOffset = -1
+      let lodBegin = {}
+      let levelInMapView = -1
       // 图层显示样式
       const layerStyle = {
         layout: { visibility: layer.isVisible ? 'visible' : 'none' },
@@ -253,12 +256,24 @@ export default {
 
       switch (layer.type) {
         case LayerType.IGSTile:
+
+          lodBegin = layer.tileInfo.lods[0]
+
+          // 根据分辨率查找瓦片图层初始级别在地图视图中所处的级别
+          levelInMapView = getLevelInMap(
+            lodBegin.resolution,
+            this.mapboxLevelResolutions
+          )
+
+          zoomOffset = lodBegin.levelValue - levelInMapView
+
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
             sourceId: layer.id,
-            serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
+            serverName: '', // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
+            zoomOffset
           }
 
           break
@@ -298,21 +313,17 @@ export default {
           }
           break
         case LayerType.OGCWMTS:
-          // 修改说明：修订arcGIS wmts服务在mapbox下显示不了的问题。
-          // 原因：服务初始级别与webClient要求的初始级别不一致。对于ArcGIS 全球经纬度裁图方式,须将zoomOffset设为-1,才能显示。
-          // zoomOffset计算方式不明确，已录入缺陷列表。
-          // 修改人：马原野 2021年7月22日
-
           const { tileMatrixSet } = layer.activeLayer
-          let { resolution } = tileMatrixSet.tileInfo.lods[0]
-          const { levelValue } = tileMatrixSet.tileInfo.lods[0]
-          // 如果分辨率单位为（度/像素）需要转换为（米/像素）
-          resolution = layer.spatialReference.isWGS84()
-            ? resolution * 111194.872221777
-            : resolution
-          // 获取当前分辨率对应cesium里面的层级，计算偏移量
-          const level = getLevelInMap(resolution, this.mapboxLevelResolutions)
-          zoomOffset = levelValue - level
+          lodBegin = tileMatrixSet.tileInfo.lods[0]
+
+          // 根据分辨率查找瓦片图层初始级别在地图视图中所处的级别
+          levelInMapView = getLevelInMap(
+            lodBegin.resolution,
+            this.mapboxLevelResolutions
+          )
+
+          zoomOffset = lodBegin.levelValue - levelInMapView
+
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,

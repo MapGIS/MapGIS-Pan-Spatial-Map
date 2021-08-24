@@ -277,7 +277,7 @@ class FitBound {
       case LayerType.IGSTile:
         // case LayerType.ArcGISTile:
         // case LayerType.OGCWMTS:
-        startLevel = layer.titleInfo.lods[0].level
+        startLevel = layer.tileInfo.lods[0].level
 
         // 修改说明：对于经纬度的IGSTile图层,WebClient-vue的mapgis-igs-tile-layer组件在显示时,会默认将zoomOffset设为-1.
         // 故这里为了保证刚好缩放到IGSTile的起始级别，需要将startLevel+1.

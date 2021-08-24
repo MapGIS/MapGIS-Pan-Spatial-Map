@@ -5,14 +5,8 @@
  * @returns 当前分辨对应地图里面的层级
  */
 export function getLevelInMap(resolution, levelResolutions) {
-  // let level = levelResolutions[levelResolutions.length - 1].level
-  // for (let index = levelResolutions.length - 1; index >= 1; index--) {
-  //   const levelResolution = levelResolutions[index]
-  //   if (resolution > levelResolution.resolution) {
-  //     level = levelResolutions[index - 1].level
-  //   }
-  // }
-  const nearlevel = levelResolutions.sort(function(a, b) {
+  const levelResolutionsTemp = JSON.parse(JSON.stringify(levelResolutions))
+  const nearlevel = levelResolutionsTemp.sort(function(a, b) {
     return (
       Math.abs(a.resolution - resolution) - Math.abs(b.resolution - resolution)
     )

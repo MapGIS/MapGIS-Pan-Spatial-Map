@@ -99,7 +99,7 @@ export class ArcGISTileLayer extends TileLayer {
                     lod.resolution = lods[i].resolution
                     lod.scale = lods[i].scale
 
-                    this.titleInfo.lods.push(lod)
+                    this.tileInfo.lods.push(lod)
                   }
                 }
               }
