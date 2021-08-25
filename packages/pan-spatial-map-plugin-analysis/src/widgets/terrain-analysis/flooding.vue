@@ -60,8 +60,8 @@
     </mp-setting-form>
     <div class="mp-footer-actions">
       <a-button type="primary" @click="add">分析</a-button>
-      <a-button type="primary" @click="rise">升高</a-button>
-      <a-button type="primary" @click="down">下降</a-button>
+      <!-- <a-button type="primary" @click="rise">升高</a-button>
+      <a-button type="primary" @click="down">下降</a-button> -->
       <a-button @click="remove">清除</a-button>
     </div>
   </div>
@@ -81,7 +81,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     frequency: 1000,
     animationSpeed: 0.01,
     amplitude: 10,
-    floodColor: 'rgba(255,255,102,0.7)'
+    floodColor: 'rgba(149,232,249,0.5)'
   }
 
   private depthTestAgainstTerrain = false // 深度检测是否已开启

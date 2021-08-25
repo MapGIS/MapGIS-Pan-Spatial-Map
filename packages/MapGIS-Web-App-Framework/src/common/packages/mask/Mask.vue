@@ -96,7 +96,7 @@ export default {
     width: 100%;
     height: 100%;
     z-index: 20000;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.3);
   }
   .loading {
     position: absolute;

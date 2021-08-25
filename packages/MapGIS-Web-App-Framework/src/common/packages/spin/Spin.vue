@@ -38,7 +38,7 @@ export default {
     },
     background: {
       type: String,
-      default: 'rgba(255, 255, 255, .7)',
+      default: 'rgba(255, 255, 255, .3)',
       validator: v =>
         ColorUtil.isHex(v) || ColorUtil.isRgb(v) || ColorUtil.isRgba(v)
     },
@@ -93,7 +93,7 @@ export default {
     align-items: center;
     justify-content: center;
     z-index: 1;
-    background: fade(@white, 70%);
+    background: fade(@white, 30%);
     span {
       display: inline-block;
       vertical-align: middle;
