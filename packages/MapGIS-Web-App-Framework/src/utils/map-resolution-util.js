@@ -40,7 +40,7 @@ class ComputeZoomOffset {
    * @param {Array<Record<string,number>>} levelResolutions 地图的层级与最大分辨率的对应关系
    * @returns 当前分辨对应地图里面的层级
    */
-  getLevelInMap(resolution, levelResolutions) {
+  getNearLevel(resolution, levelResolutions) {
     const levelResolutionsTemp = JSON.parse(JSON.stringify(levelResolutions))
     const nearlevel = levelResolutionsTemp.sort(function(a, b) {
       return (
@@ -60,7 +60,7 @@ class ComputeZoomOffset {
    */
   getZoomOffsetByResolution({ resolution, levelResolutions, levelValue }) {
     // 获取当前分辨率对应cesium里面的层级，计算偏移量
-    const level = this.getLevelInMap(resolution, levelResolutions)
+    const level = this.getNearLevel(resolution, levelResolutions)
     const zoomOffset = levelValue - level
 
     return zoomOffset
