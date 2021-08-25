@@ -43,127 +43,103 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  Component,
-  Vue,
-  Inject,
-  Prop,
-  Watch,
-  Emit
-} from 'vue-property-decorator'
+<script>
 import { SceneOverlays } from '../../../model/overlay'
 
 /**
  * cesium标注，弹出框使用@mapgis/webclient-vue-cesium里的popup
  */
-@Component({
-  name: 'Mp3dMarkerPro'
-})
-export default class Mp3dMarkerPro extends Vue {
-  @Inject('Cesium') Cesium: any
-
-  @Inject('CesiumZondy') CesiumZondy: any
-
-  @Inject('webGlobe') webGlobe: any
-
-  @Prop() readonly vueKey!: string
-
-  @Prop({ type: Object, required: true }) marker!: Record<string, any>
-
-  @Prop({
-    type: Array,
-    required: false,
-    default: () => []
-  })
-  readonly fieldConfigs!: any[]
-
-  // 当前显示弹出框的标注id
-  @Prop({ type: String, required: false }) currentMarkerId?: string
-
-  @Emit()
-  change(currentMarkerId) {}
-
-  private showPopup = false
-
-  private entityNames: string[] = []
-
-  get img() {
-    return this.marker.img
-  }
-
-  get popupPosition() {
-    if (!this.marker) {
-      return {}
+export default {
+  name: 'Mp3dMarkerPro',
+  inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
+  props: {
+    vueKey: String,
+    marker: {
+      type: Object,
+      required: true
+    },
+    fieldConfigs: {
+      type: Array,
+      required: false,
+      default: () => []
+    },
+    // 当前显示弹出框的标注id
+    currentMarkerId: {
+      type: String,
+      required: false
     }
-    const { coordinates } = this.marker
-    const height = coordinates.length > 2 ? Number(coordinates[2]) : 0
-    const position = {
-      longitude: Number(coordinates[0]),
-      latitude: Number(coordinates[1]),
-      height: height
+  },
+  data() {
+    return {
+      showPopup: false,
+      entityNames: []
     }
-    return position
-  }
-
-  private changePopup(val) {
-    this.showPopup = val
-    if (!val) {
-      this.change('')
-    }
-  }
-
-  // 根据filedConfigs做一个过滤，去除不可见的
-  private get propertyKeys() {
-    const keys = Object.keys(this.marker.properties)
-    return keys.filter(key => {
-      const config = this.fieldConfigs.find(config => config.name === key)
-
-      if (
-        config &&
-        Object.hasOwnProperty.call(config, 'visible') &&
-        !config.visible
-      ) {
-        return false
+  },
+  computed: {
+    img() {
+      return this.marker.img
+    },
+    popupPosition() {
+      if (!this.marker) {
+        return {}
       }
-
-      return true
-    })
-  }
-
-  private get propertyName() {
-    return function(key) {
-      const config = this.fieldConfigs.find(config => config.name === key)
-
-      if (config && Object.hasOwnProperty.call(config, 'title')) {
-        return config.title
+      const { coordinates } = this.marker
+      const height = coordinates.length > 2 ? Number(coordinates[2]) : 0
+      const position = {
+        longitude: Number(coordinates[0]),
+        latitude: Number(coordinates[1]),
+        height: height
       }
+      return position
+    },
+    // 根据filedConfigs做一个过滤，去除不可见的
+    propertyKeys() {
+      const keys = Object.keys(this.marker.properties)
+      return keys.filter(key => {
+        const config = this.fieldConfigs.find(config => config.name === key)
 
-      return key
+        if (
+          config &&
+          Object.hasOwnProperty.call(config, 'visible') &&
+          !config.visible
+        ) {
+          return false
+        }
+
+        return true
+      })
+    },
+    propertyName() {
+      return function(key) {
+        const config = this.fieldConfigs.find(config => config.name === key)
+
+        if (config && Object.hasOwnProperty.call(config, 'title')) {
+          return config.title
+        }
+
+        return key
+      }
     }
-  }
-
-  private bindEvent() {
-    this.$emit('popupload', this.marker.markerId)
-  }
-
-  // 更换图片，更换地图上的标注
-  @Watch('img', { deep: true })
-  changeImg() {
-    this.updateMarker()
-  }
-
-  @Watch('currentMarkerId', { deep: true, immediate: true })
-  hidePopup() {
-    // 当前显示弹出框的标注与组件内的id不一致时，隐藏弹出框
-    if (this.currentMarkerId !== this.marker.markerId) {
-      this.showPopup = false
+  },
+  watch: {
+    // 更换图片，更换地图上的标注
+    img: {
+      deep: true,
+      handler() {
+        this.updateMarker()
+      }
+    },
+    currentMarkerId: {
+      deep: true,
+      immediate: true,
+      handler() {
+        // 当前显示弹出框的标注与组件内的id不一致时，隐藏弹出框
+        if (this.currentMarkerId !== this.marker.markerId) {
+          this.showPopup = false
+        }
+      }
     }
-  }
-
-  @Emit('marker-id')
-  emitId(id: string) {}
-
+  },
   mounted() {
     const webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey) || this.webGlobe
     this.sceneOverlays = SceneOverlays.getInstance(
@@ -172,34 +148,41 @@ export default class Mp3dMarkerPro extends Vue {
       webGlobe
     )
     this.updateMarker()
-  }
-
+  },
   beforeDestroy() {
     this.sceneOverlays.removeEntityByName(this.marker.markerId)
-  }
-
-  updateMarker() {
-    this.sceneOverlays.removeEntityByName(this.marker.markerId)
-    const marker: any = { ...this.marker }
-    marker.mouseOver = event => {
-      this.mouseOver(event, marker)
+  },
+  methods: {
+    changePopup(val) {
+      this.showPopup = val
+      if (!val) {
+        this.$emit('change', '')
+      }
+    },
+    bindEvent() {
+      this.$emit('popupload', this.marker.markerId)
+    },
+    updateMarker() {
+      this.sceneOverlays.removeEntityByName(this.marker.markerId)
+      const marker = { ...this.marker }
+      marker.mouseOver = event => {
+        this.mouseOver(event, marker)
+      }
+      marker.mouseOut = event => {
+        this.mouseOut(event, marker)
+      }
+      marker.name = marker.markerId
+      marker.center = marker.coordinates
+      this.sceneOverlays.addMarker(marker)
+    },
+    mouseOver(event, marker) {
+      this.showPopup = true
+      this.$emit('marker-id', marker.markerId)
+      this.$emit('mouseenter', event, marker.markerId)
+    },
+    mouseOut(event, marker) {
+      this.$emit('mouseleave', event, marker.markerId)
     }
-    marker.mouseOut = event => {
-      this.mouseOut(event, marker)
-    }
-    marker.name = marker.markerId
-    marker.center = marker.coordinates
-    this.sceneOverlays.addMarker(marker)
-  }
-
-  mouseOver(event, marker) {
-    this.showPopup = true
-    this.emitId(marker.markerId)
-    this.$emit('mouseenter', event, marker.markerId)
-  }
-
-  mouseOut(event, marker) {
-    this.$emit('mouseleave', event, marker.markerId)
   }
 }
 </script>

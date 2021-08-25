@@ -136,4 +136,4 @@ export default class ZoneFrameMapbox extends Mixins(MapMixin) {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="less"></style>
