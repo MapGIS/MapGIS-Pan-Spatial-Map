@@ -41,7 +41,7 @@ export default class MpChangeActiveLayer extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .select-tilematrixSet {
   margin: 0.5em;
 }

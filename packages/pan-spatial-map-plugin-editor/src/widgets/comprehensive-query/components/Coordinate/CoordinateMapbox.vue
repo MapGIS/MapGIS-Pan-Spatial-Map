@@ -177,4 +177,4 @@ export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="less"></style>

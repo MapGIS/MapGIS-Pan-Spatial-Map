@@ -20,51 +20,50 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+<script>
 import Mp3dMarkerPro from './3dMarkerPro.vue'
 
-@Component({
+export default {
   name: 'Mp3dMarkerSetPro',
-  components: { Mp3dMarkerPro }
-})
-export default class Mp3dMarkerSetPro extends Vue {
-  @Prop({ default: 'default' }) readonly vueKey!: string
-
-  @Prop({
-    type: Array,
-    required: true
-  })
-  readonly markers!: Record<string, any>[]
-
-  @Prop({
-    type: Array,
-    required: false,
-    default: () => []
-  })
-  readonly fieldConfigs!: any[]
-
-  private currentMarkerId = ''
-
-  private updateCurrentMarkerId(id: string) {
-    this.currentMarkerId = id
-  }
-
-  private mouseEnterEvent(e, id) {
-    this.$emit('mouseenter', e, id)
-  }
-
-  private mouseLeaveEvent(e, id) {
-    this.$emit('mouseleave', e, id)
-  }
-
-  private popupLoad(markerId) {
-    this.$emit('popupload', markerId)
-  }
-
-  changePopup(val) {
-    this.currentMarkerId = val
+  components: { Mp3dMarkerPro },
+  props: {
+    vueKey: {
+      type: String,
+      default: 'default'
+    },
+    markers: {
+      type: Array,
+      required: true
+    },
+    fieldConfigs: {
+      type: Array,
+      required: false,
+      default: () => []
+    }
+  },
+  data() {
+    return {
+      currentMarkerId: ''
+    }
+  },
+  methods: {
+    updateCurrentMarkerId(id) {
+      this.currentMarkerId = id
+    },
+    mouseEnterEvent(e, id) {
+      this.$emit('mouseenter', e, id)
+    },
+    mouseLeaveEvent(e, id) {
+      this.$emit('mouseleave', e, id)
+    },
+    popupLoad(markerId) {
+      this.$emit('popupload', markerId)
+    },
+    changePopup(val) {
+      this.currentMarkerId = val
+    }
   }
 }
 </script>
-<style lang="scss" scoped></style>
+
+<style lang="less" scoped></style>

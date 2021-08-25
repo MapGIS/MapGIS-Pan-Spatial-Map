@@ -64,7 +64,7 @@ export default class Setting extends Vue {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .form-card-container {
   display: flex;
   flex-direction: column;

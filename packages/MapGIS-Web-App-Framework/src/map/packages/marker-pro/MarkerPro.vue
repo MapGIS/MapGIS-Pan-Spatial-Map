@@ -47,79 +47,76 @@
   </mapgis-marker>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-
-@Component({
-  name: 'MpMarkerPro'
-})
-export default class MpMarkerPro extends Vue {
-  @Prop({
-    type: Object,
-    required: true
-  })
-  readonly marker!: Record<string, any>
-
-  @Prop({
-    type: String,
-    default: 'bottom'
-  })
-  readonly anchor!: string
-
-  @Prop({
-    type: Array,
-    required: false,
-    default: () => []
-  })
-  readonly fieldConfigs!: any[]
-
-  private markerImageLoadStatus = false
-
-  // 根据filedConfigs做一个过滤，去除不可见的
-  private get propertyKeys() {
-    const keys = Object.keys(this.marker.properties)
-    return keys.filter(key => {
-      const config = this.fieldConfigs.find(config => config.name === key)
-
-      if (
-        config &&
-        Object.hasOwnProperty.call(config, 'visible') &&
-        !config.visible
-      ) {
-        return false
-      }
-
-      return true
-    })
-  }
-
-  private get propertyName() {
-    return function(key) {
-      const config = this.fieldConfigs.find(config => config.name === key)
-
-      if (config && Object.hasOwnProperty.call(config, 'title')) {
-        return config.title
-      }
-
-      return key
+<script>
+export default {
+  name: 'MpMarkerPro',
+  props: {
+    marker: {
+      type: Object,
+      required: true
+    },
+    anchor: {
+      type: String,
+      default: 'bottom'
+    },
+    fieldConfigs: {
+      type: Array,
+      required: false,
+      default: () => []
     }
-  }
-
-  private get popupOffset() {
-    const self = this
-    return function(ref) {
-      if (self.$refs[ref]) {
-        return [0, -self.$refs[ref].clientHeight]
-      }
-      return [0, 0]
+  },
+  data() {
+    return {
+      markerImageLoadStatus: false
     }
-  }
+  },
+  computed: {
+    // 根据filedConfigs做一个过滤，去除不可见的
+    propertyKeys() {
+      const keys = Object.keys(this.marker.properties)
+      return keys.filter(key => {
+        const config = this.fieldConfigs.find(config => config.name === key)
 
-  private onMarkerImageLoad() {
-    this.markerImageLoadStatus = true
+        if (
+          config &&
+          Object.hasOwnProperty.call(config, 'visible') &&
+          !config.visible
+        ) {
+          return false
+        }
+
+        return true
+      })
+    },
+    propertyName() {
+      return function(key) {
+        const config = this.fieldConfigs.find(config => config.name === key)
+
+        if (config && Object.hasOwnProperty.call(config, 'title')) {
+          return config.title
+        }
+
+        return key
+      }
+    },
+    popupOffset() {
+      const self = this
+      return function(ref) {
+        if (self.$refs[ref]) {
+          return [0, -self.$refs[ref].clientHeight]
+        }
+        return [0, 0]
+      }
+    }
+  },
+  methods: {
+    onMarkerImageLoad() {
+      this.markerImageLoadStatus = true
+    }
   }
 }
 </script>
+
 <style lang="less" scoped>
 .table-marker {
   max-height: 200px;
