@@ -126,6 +126,9 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 
   @Watch('formData.maxHeight', { deep: true, immediate: true })
   changeMaxHeight() {
+    if (!window.FloodingManage || !window.FloodingManage.flood) {
+      return
+    }
     if (!this.timer) {
       this.timer = setTimeout(() => {
         if (this.timer) clearTimeout(this.timer)
