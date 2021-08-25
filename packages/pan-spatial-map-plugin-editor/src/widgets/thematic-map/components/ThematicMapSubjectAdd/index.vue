@@ -34,6 +34,7 @@ import _uniqBy from 'lodash/uniqBy'
 import {
   mapGetters,
   mapMutations,
+  ModuleType,
   SubjectType,
   NewSubjectConfig,
   ThematicMapSubjectConfigNode
@@ -54,27 +55,29 @@ import SubjectItems from './components/SubjectItems'
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
-  @Prop({ default: () => ({}) }) readonly subjectNode!: NewSubjectConfig
+  @Prop({ default: () => ({}) }) readonly node!: NewSubjectConfig
 
-  // 专题配置的id， 名称等
+  // 专题配置基础信息(隶属的专题分类,专题名,专题类型等)
   subjectNodeBase = {}
 
-  // 专题配置的年度配置集合
+  // 专题配置的配置集合
   subjectNodeConfig = []
 
-  @Watch('subjectNode', { deep: true })
-  subjectNodeChanged({ config, ...others }) {
+  // 监听: 需要编辑的专题图节点
+  @Watch('node', { deep: true })
+  nodeChanged({ config, ...others }) {
     this.subjectNodeBase = others
     this.subjectNodeConfig = config
   }
 
+  // 显示开关
   get visible() {
-    return this.isVisible('create')
+    return this.isVisible(ModuleType.CREATE)
   }
 
   set visible(nV) {
     if (!nV) {
-      this.resetVisible('create')
+      this.resetVisible(ModuleType.CREATE)
     }
   }
 
@@ -165,7 +168,7 @@ export default class ThematicMapSubjectAdd extends Vue {
 
   /**
    * 保存
-   * todo 专题配置表单校验?是否使用a-form来实现, 业务组件如何触发校验?
+   * todo 专题配置表单校验?是否使用a-form来实现, 业务组件如何触发校验?包装a-form-item?
    */
   onSave() {
     if (!this.parentTitle) {

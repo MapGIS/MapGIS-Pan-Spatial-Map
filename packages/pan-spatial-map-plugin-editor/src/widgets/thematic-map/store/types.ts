@@ -8,6 +8,23 @@ type NodeType = 'panel' | 'list' | 'subjet'
 // 专题图配置
 type ConfigType = 'gdbp' | 'doc' | 'geojson' | 'excel'
 
+// 专题图专题功能模块
+// export type ModuleType =
+//   | 'table' // 属性表
+//   | 'graph' // 统计表
+//   | 'timeline' // 时间轴
+//   | 'create' // 新建专题图
+//   | 'tools' // 管理工具栏
+
+// 专题图专题功能模块
+export enum ModuleType {
+  TABLE = 'TABLE', // 属性表
+  GRAPH = 'GRAPH', // 统计表
+  TIMELINE = 'TIMELINE', // 时间轴
+  CREATE = 'CREATE', // 新建专题图
+  TOOLS = 'TOOLS' // 管理工具栏
+}
+
 /**
  * 专题类型:
  * 分段专题图 : SubSectionMap
@@ -101,14 +118,6 @@ export type ThematicMapSubjectConfigNode =
   | NewSubjectConfig
   | null
   | undefined
-
-// 专题图专题功能模块
-export type ModuleType =
-  | 'table' // 属性表
-  | 'graph' // 统计表
-  | 'timeline' // 时间轴
-  | 'create' // 新建专题图
-  | 'tools' // 管理工具栏
 
 // 图属联动项
 export interface LinkageItem {

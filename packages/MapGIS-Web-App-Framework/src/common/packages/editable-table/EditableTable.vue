@@ -59,7 +59,7 @@ export default {
       type: String,
       default: 'small',
       validator(v) {
-        return CommonUtil.oneOf(v, ['large', 'small'])
+        return CommonUtil.oneOf(v, ['large', 'default', 'small'])
       }
     },
     tools: {

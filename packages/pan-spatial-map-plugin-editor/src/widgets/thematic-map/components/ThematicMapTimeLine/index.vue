@@ -32,7 +32,7 @@
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import * as echarts from 'echarts'
-import { mapGetters, mapMutations } from '../../store'
+import { ModuleType, mapGetters, mapMutations } from '../../store'
 import { chartOption } from './config/timeLineChartOption'
 
 @Component({
@@ -65,7 +65,7 @@ export default class ThematicMapTimeLine extends Vue {
 
   // 显示开关
   get visible() {
-    const isVisible = this.isVisible('timeline')
+    const isVisible = this.isVisible(ModuleType.TimeLine)
     const _visible = isVisible && this.timeList.length > 1
     if (_visible) {
       this.onUpdateChart()
@@ -75,7 +75,7 @@ export default class ThematicMapTimeLine extends Vue {
 
   set visible(nV) {
     if (!nV) {
-      this.resetVisible('timeline')
+      this.resetVisible(ModuleType.TimeLine)
     }
   }
 

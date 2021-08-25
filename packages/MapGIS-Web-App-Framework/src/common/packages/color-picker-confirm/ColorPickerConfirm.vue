@@ -64,7 +64,7 @@ export default {
     },
     defaultValue: {
       type: String,
-      default: 'rgb(64,169,255)',
+      default: 'rgb(24,144,255)',
       validator: v =>
         ColorUtil.isHex(v) || ColorUtil.isRgb(v) || ColorUtil.isRgba(v)
     },

@@ -1,6 +1,15 @@
 <template>
   <div class="mp-widget-thematic-map">
     <!-- 专题图树 -->
+    <mp-group-tab size="default" title="专题">
+      <mp-toolbar-command-group slot="handle">
+        <mp-toolbar-command
+          @click="createSubject"
+          title="新建专题图"
+          icon="plus"
+        />
+      </mp-toolbar-command-group>
+    </mp-group-tab>
     <a-spin :spinning="loading">
       <a-empty v-if="!thematicMapTree.length" />
       <a-tree
@@ -16,13 +25,15 @@
           <a-dropdown :trigger="['contextmenu']">
             <span>{{ node.title }}</span>
             <a-menu slot="overlay" @click="onTreeNodeMenuClick($event, node)">
-              <!-- <a-menu-item v-show="!node.checkable" :key="handleKeys.create"
+              <!-- <a-menu-item v-show="!node.checkable" :key="thematicMapNodeHandles.CREATE"
                 >新建</a-menu-item
               > -->
-              <!-- <a-menu-item v-show="node.checkable" :key="handleKeys.edit"
+              <!-- <a-menu-item v-show="node.checkable" :key="thematicMapNodeHandles.EDIT"
                 >编辑</a-menu-item
               > -->
-              <a-menu-item :key="handleKeys.remove">删除</a-menu-item>
+              <a-menu-item :key="thematicMapNodeHandles.REMOVE"
+                >删除</a-menu-item
+              >
             </a-menu>
           </a-dropdown>
         </span>
@@ -39,7 +50,7 @@
     <!-- 工具栏 -->
     <thematic-map-manage-tools />
     <!-- 新建专题图 -->
-    <thematic-map-subject-add :subject-node="subjectNode" />
+    <thematic-map-subject-add :node="currentThematicMapNode" />
   </div>
 </template>
 
@@ -48,10 +59,10 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 import _cloneDeep from 'lodash/cloneDeep'
 import {
+  ModuleType,
+  NewSubjectConfig,
   mapGetters,
   mapMutations,
-  NewSubjectConfig,
-  ModuleType,
   moduleTypeList
 } from './store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
@@ -61,10 +72,10 @@ import ThematicMapManageTools from './components/ThematicMapManageTools'
 import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
 import ThematicMapLayers from './components/ThematicMapLayers'
 
-enum HandleKeys {
-  create = 'create',
-  edit = 'edit',
-  remove = 'remove'
+enum ThematicMapNodeHandles {
+  CREATE = 'CREATE',
+  EDIT = 'EDIT',
+  REMOVE = 'REMOVE'
 }
 
 @Component({
@@ -92,35 +103,42 @@ enum HandleKeys {
     ThematicMapLayers
   }
 })
-export default class MpThematicMap extends Mixins<Record<string, any>>(
-  WidgetMixin
-) {
+export default class MpThematicMap extends Mixins(WidgetMixin) {
+  // 放置面板打开时多次触发更新
   flag = true
 
+  // 数据加载提示
   loading = false
-
-  // 节点处理操作
-  handleKeys = HandleKeys
-
-  // 选中的专题图树节点
-  checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
 
   // 专题图树
   thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
 
-  // 专题节点
-  subjectNode: NewSubjectConfig = {}
+  // 专题图节点的操作按钮
+  thematicMapNodeHandles = ThematicMapNodeHandles
 
+  // 选中的专题图树节点集合
+  checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
+
+  // 当前操作的专题图节点
+  currentThematicMapNode: NewSubjectConfig = {}
+
+  // 选中的专题图树节点key集合
   get checkedThematicMapKeys() {
     return this.checkedThematicMapNodes.map(({ id }) => id)
   }
 
+  /**
+   * 展示专题图树加载提示
+   */
   setLoadingShow() {
     if (!this.loading) {
       this.loading = true
     }
   }
 
+  /**
+   * 隐藏专题图树加载提示
+   */
   setLoadingHide() {
     if (this.loading) {
       this.loading = false
@@ -132,7 +150,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * @param type 打开参数对应的面板
    * @param exclude 打开除参数外的面板
    */
-  setModulesShow(type: ModuleType, exclude: ModuleType = 'create') {
+  setModulesShow(type: ModuleType, exclude: ModuleType = ModuleType.CREATE) {
     if (type) {
       this.setVisible(type)
     } else {
@@ -149,6 +167,13 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   setModulesHide(exclude: ModuleType) {
     moduleTypeList.forEach(t => t !== exclude && this.resetVisible(t))
     this.resetLinkage()
+  }
+
+  /**
+   * 新建专题图
+   */
+  createSubject() {
+    this.setVisible(ModuleType.CREATE)
   }
 
   /**
@@ -170,7 +195,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
    * todo 创建节点
    */
   onTreeNodeCreate(nodeData: ThematicMapSubjectConfigNode) {
-    this.setModulesShow('create')
+    this.setModulesShow(ModuleType.CREATE)
   }
 
   /**
@@ -179,11 +204,11 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   onTreeNodeEdit(nodeData: ThematicMapSubjectConfigNode) {
     if (nodeData.parentId) {
       // 新的专题配置
-      this.subjectNode = nodeData
+      this.currentThematicMapNode = nodeData
     } else {
       // 旧配置, 需要转换为新配置回显编辑
     }
-    this.setModulesShow('create')
+    this.setModulesShow(ModuleType.CREATE)
   }
 
   /**
@@ -222,18 +247,18 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
 
   /**
    * 节点下拉菜单点击
-   * @param key HandleKeys
+   * @param key ThematicMapNodeHandles
    * @param dataRef 节点数据
    */
   onTreeNodeMenuClick({ key }, { dataRef }) {
     switch (key) {
-      case HandleKeys.create:
+      case ThematicMapNodeHandles.CREATE:
         this.onTreeNodeCreate(dataRef)
         break
-      case HandleKeys.edit:
+      case ThematicMapNodeHandles.EDIT:
         this.onTreeNodeEdit(dataRef)
         break
-      case HandleKeys.remove:
+      case ThematicMapNodeHandles.REMOVE:
         this.onTreeNodeRemove(dataRef)
         break
       default:
@@ -250,7 +275,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
     )
     this.setSelectedSubjectList(this.checkedThematicMapNodes)
     if (!this.checkedThematicMapNodes.length) {
-      this.setModulesHide('tools')
+      this.setModulesHide(ModuleType.TOOLS)
     } else {
       this.setModulesShow()
     }
@@ -263,7 +288,7 @@ export default class MpThematicMap extends Mixins<Record<string, any>>(
   onOpen() {
     if (this.flag) {
       this.setSubjectConfig(this.subjectConfig)
-      this.setModulesShow('tools')
+      this.setModulesShow(ModuleType.TOOLS)
       this.flag = false
     }
   }

@@ -7,7 +7,7 @@
         active: active,
         disabled: disabled,
         'hover-bordered': hoverBordered,
-        [size]: true
+        [`mp-toolbar-command-${size}`]: !!size
       }"
       class="mp-toolbar-command"
       @click="onClick"
@@ -21,7 +21,7 @@
         active: active,
         disabled: disabled,
         'hover-bordered': hoverBordered,
-        [size]: true
+        [`mp-toolbar-command-${size}`]: !!size
       }"
       @click="onClick"
       :type="icon"
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import { CommonUtil } from '@mapgis/web-app-framework'
+
 export default {
   name: 'MpToolbarCommand',
   props: {
@@ -55,9 +57,8 @@ export default {
     },
     size: {
       type: String,
-      default: 'default',
       validator(v) {
-        return ['large', 'default', 'small'].includes(v)
+        return CommonUtil.oneOf(v, ['large', 'small'])
       }
     }
   },
@@ -82,17 +83,17 @@ export default {
     height: 27px;
     line-height: 27px;
   }
-  &.large {
+  &-large {
     width: 34px;
   }
-  &.large.anticon {
+  &-large.anticon {
     height: 34px;
     line-height: 34px;
   }
-  &.small {
+  &-small {
     width: 20px;
   }
-  &.small.anticon {
+  &-small.anticon {
     height: 20px;
     line-height: 20px;
   }

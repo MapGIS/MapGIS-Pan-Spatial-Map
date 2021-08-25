@@ -1,76 +1,80 @@
 <template>
   <!-- 统计表 -->
-  <mp-window-wrapper :visible="visible">
-    <mp-window
-      @window-size="onWindowSize"
-      :visible.sync="visible"
-      :horizontalOffset="12"
-      :verticalOffset="50"
-      :min-width="500"
-      :max-height="400"
-      title="统计表"
-      anchor="top-left"
-    >
-      <a-spin :spinning="loading">
-        <div ref="statisticGraph" class="thematic-map-statistic-graph">
-          <!-- 指标和图表切换 -->
-          <mp-row-flex
-            class="thematic-map-statistic-graph-head"
-            :span="[16, 8]"
-            content-align="right"
-          >
-            <template #label>
-              <mp-row-flex :span="[4, 20]" label="指标">
+  <transition name="fade">
+    <mp-window-wrapper :visible="visible">
+      <mp-window
+        @window-size="onWindowSize"
+        :visible.sync="visible"
+        :horizontalOffset="48"
+        :verticalOffset="50"
+        title="统计表"
+        anchor="bottom-right"
+      >
+        <a-spin :spinning="loading">
+          <div ref="statisticGraph" class="thematic-map-statistic-graph">
+            <!-- 指标和图表切换 -->
+            <mp-row-flex class="target" :span="[16, 8]" content-align="right">
+              <mp-row-flex slot="label" :label-width="44" label="指标">
                 <a-select
+                  @change="onTargetChange"
                   :value="target"
                   :options="targetList"
-                  @change="onTargetChange"
+                  size="small"
                 />
               </mp-row-flex>
-            </template>
-            <a-tooltip
-              v-for="item in chartConfig"
-              :key="item.type"
-              :title="item.tooltip"
-              placement="bottom"
-            >
-              <a-icon
-                :type="item.iconType"
-                :class="{ active: item.type === activeChart }"
-                @click="onChartTypeChange(item.type)"
-              />
-            </a-tooltip>
-          </mp-row-flex>
-          <!-- 图表 -->
-          <div id="thematic-map-graph-chart" v-show="showChart" />
-          <!-- 空数据友好提示 -->
-          <div class="empty-tip" v-show="!showChart">
-            <a-empty />
+              <a-tooltip
+                v-for="item in chartConfig"
+                :key="item.type"
+                :title="item.tooltip"
+              >
+                <a-icon
+                  :type="item.iconType"
+                  :class="{ active: item.type === activeChart }"
+                  @click="onChartTypeChange(item.type)"
+                />
+              </a-tooltip>
+            </mp-row-flex>
+            <!-- 图表 -->
+            <div id="thematic-map-graph-chart" v-show="showChart" />
+            <!-- 空数据提示 -->
+            <div class="empty-tip" v-show="!showChart">
+              <a-empty />
+            </div>
           </div>
-        </div>
-      </a-spin>
-    </mp-window>
-  </mp-window-wrapper>
+        </a-spin>
+      </mp-window>
+    </mp-window-wrapper>
+  </transition>
 </template>
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
 import * as echarts from 'echarts'
-import { mapGetters, mapMutations, highlightSubjectTypes } from '../../store'
+import {
+  ModuleType,
+  mapGetters,
+  mapMutations,
+  highlightSubjectTypes
+} from '../../store'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
 
-type TChartType = 'bar' | 'line' | 'pie'
+enum ChartType {
+  BAR = 'BAR',
+  LINE = 'LINE',
+  PIE = 'PIE'
+}
 
 interface IChartConfig {
   iconType: string
   tooltip: string
-  type: TChartType
+  type: keyof ChartType
 }
 
 interface IChartOption {
   title: string
+  color: string
   x?: any[]
   y?: any[]
 }
@@ -96,7 +100,7 @@ export default class ThematicMapStatisticGraph extends Vue {
   defaultIcon = ''
 
   // 当前活动的图标
-  activeChart: TChartType = 'bar'
+  activeChart: keyof ChartType = ChartType.BAR
 
   // 指标
   target = ''
@@ -120,27 +124,27 @@ export default class ThematicMapStatisticGraph extends Vue {
     {
       iconType: 'bar-chart',
       tooltip: '柱状图',
-      type: 'bar'
+      type: ChartType.BAR
     },
     {
       iconType: 'line-chart',
       tooltip: '折线图',
-      type: 'line'
+      type: ChartType.LINE
     },
     {
       iconType: 'pie-chart',
       tooltip: '饼图',
-      type: 'pie'
+      type: ChartType.PIE
     }
   ]
 
   get visible() {
-    return this.graph && this.isVisible('graph')
+    return this.graph && this.isVisible(ModuleType.GRAPH)
   }
 
   set visible(nV) {
     if (!nV) {
-      this.resetVisible('graph')
+      this.resetVisible(ModuleType.GRAPH)
     }
   }
 
@@ -166,9 +170,13 @@ export default class ThematicMapStatisticGraph extends Vue {
   onWindowSize(mode?: 'max' | 'normal') {
     this.$nextTick(() => {
       if (this.chart) {
-        const width =
-          mode === 'max' ? this.$refs.statisticGraph.clientWidth : 500
-        this.chart.resize({ width })
+        // const width =
+        //   mode === 'max' ? this.$refs.statisticGraph.clientWidth : 360
+        if (mode === 'max') {
+          this.chart.resize({
+            width: this.$refs.statisticGraph.clientWidth
+          })
+        }
       }
     })
   }
@@ -196,7 +204,7 @@ export default class ThematicMapStatisticGraph extends Vue {
     }
     this.chartOption.x = xArr
     this.chartOption.y = yArr
-    this.onChartTypeChange('bar')
+    this.onChartTypeChange(ChartType.BAR)
   }
 
   /**
@@ -229,17 +237,17 @@ export default class ThematicMapStatisticGraph extends Vue {
    * 图表类型变化
    * @param type<string>
    */
-  onChartTypeChange(type: TChartType) {
+  onChartTypeChange(type: keyof ChartType) {
     this.$nextTick(() => {
       let options: (a: IChartOption) => any
       switch (type) {
-        case 'bar':
+        case ChartType.BAR:
           options = barChartOptions
           break
-        case 'line':
+        case ChartType.LINE:
           options = lineChartOptions
           break
-        case 'pie':
+        case ChartType.PIE:
           options = pieChartOptions
           break
         default:
