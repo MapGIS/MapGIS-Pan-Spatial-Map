@@ -36,6 +36,7 @@ import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
 import axios from 'axios'
 import * as Zondy from '@mapgis/webclient-es6-service'
+import XLSX from 'xlsx'
 
 @Component({ name: 'MarkerExport' })
 export default class MarkerExport extends Vue {
@@ -234,81 +235,49 @@ export default class MarkerExport extends Vue {
 
   // 导出格式为Excel
   private ouputToExcel(flieName: string, exportedMarkers) {
-    const managerBaseUrl = ''
-    const url = `${managerBaseUrl}WebService/ExportToExcel`
-    const record: Array<Record<string, any>> = []
-    for (let i = 0; i < exportedMarkers.length; i += 1) {
-      let coord = ''
-      let fileType = '点'
-      // 区标注只有一个feature，一个feature里可以有多个面
-      if (exportedMarkers[i].features) {
-        for (let f = 0; f < exportedMarkers[i].features.length; f += 1) {
-          if (f > 0) {
-            coord += '#'
-          }
-          const { geometry } = exportedMarkers[i].features[f]
-          const { type, coordinates } = geometry
-          fileType = type
-          // 要素之间用'#'分隔，坐标之间用' '分隔，xy之间用','分隔
-          switch (type) {
-            case 'Point':
-              coord += coordinates.join(',')
-              break
-            case 'LineString':
-              for (let l = 0; l < coordinates.length; l += 1) {
-                if (l > 0) {
-                  coord += ' '
-                }
-                coord += coordinates[l].join(',')
-              }
-              break
-            case 'Polygon':
-              for (let p = 0; p < coordinates.length; p += 1) {
-                if (p > 0) {
-                  coord += '#'
-                }
-                const arcPoints = coordinates[p]
-                for (let a = 0; a < arcPoints.length; a += 1) {
-                  if (a > 0) {
-                    coord += ' '
-                  }
-                  coord += arcPoints[a].join(',')
-                }
-              }
-              break
-            default:
-              break
-          }
-        }
-      } else {
-        coord = exportedMarkers[i].center.join(',')
-      }
-      const opt = {
-        标注序号: i + 1,
-        标注名称: exportedMarkers[i].title,
-        标注类型: fileType,
-        备注: exportedMarkers[i].description,
-        中心点坐标: exportedMarkers[i].center,
-        几何坐标: coord
-      }
-      record.push(opt)
+    exportedMarkers = exportedMarkers.map(item => {
+      return { ...item, center: `${item.center[0]}, ${item.center[1]}` }
+    })
+    const sheet = XLSX.utils.json_to_sheet(exportedMarkers)
+    let blob = this.sheet2blob(sheet)
+
+    if (typeof blob === 'object' && blob instanceof Blob) {
+      blob = URL.createObjectURL(blob) // 创建blob地址
     }
 
-    axios.post(url, `name=${flieName}&content=${JSON.stringify(record)}`).then(
-      res => {
-        const { data } = res
-        if (!data) {
-          return
-        }
-        const uploadUrl = `${managerBaseUrl}WebService/DownloadTempFile?name=${flieName}&file=${data}&contentType=application/vnd.ms-excel`
-        // 本地发送请求将文件下载
-        // eslint-disable-next-line no-restricted-globals
-        location.href = uploadUrl
-      },
-      error => {
-        console.log(error)
-      }
-    )
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = blob
+    a.download = `${flieName}.xlsx`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  }
+
+  // 将一个sheet转成最终的excel文件的blob对象，然后利用URL.createObjectURL下载
+  private sheet2blob(sheet, sheetName) {
+    sheetName = sheetName || 'sheet1'
+    const workbook = {
+      SheetNames: [sheetName],
+      Sheets: {}
+    }
+    workbook.Sheets[sheetName] = sheet
+    // 生成excel的配置项
+    const wopts = {
+      bookType: 'xlsx', // 要生成的文件类型
+      bookSST: false, // 是否生成Shared String Table，官方解释是，如果开启生成速度会下降，但在低版本IOS设备上有更好的兼容性
+      type: 'binary'
+    }
+    const wbout = XLSX.write(workbook, wopts)
+    const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' })
+    // 字符串转ArrayBuffer
+    function s2ab(s) {
+      const buf = new ArrayBuffer(s.length)
+      const view = new Uint8Array(buf)
+      for (let i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xff
+      return buf
+    }
+    return blob
   }
 
   private markers2Features(markers: Record<string, any>[]) {
