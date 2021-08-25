@@ -82,6 +82,7 @@
         :sourceId="layerProps.sourceId"
         :baseUrl="layerProps.baseUrl"
         :before="getBeforeLayerId(layerProps.beforeId)"
+        :zoomOffset="layerProps.zoomOffset"
       />
       <mapgis-rastertile-layer
         v-if="isRasterLayer(layerProps.type)"
@@ -256,7 +257,6 @@ export default {
 
       switch (layer.type) {
         case LayerType.IGSTile:
-
           lodBegin = layer.tileInfo.lods[0]
 
           // 根据分辨率查找瓦片图层初始级别在地图视图中所处的级别
@@ -357,11 +357,22 @@ export default {
 
           break
         case LayerType.ArcGISTile:
+          lodBegin = layer.tileInfo.lods[0]
+
+          // 根据分辨率查找瓦片图层初始级别在地图视图中所处的级别
+          levelInMapView = getLevelInMap(
+            lodBegin.resolution,
+            this.mapboxLevelResolutions
+          )
+
+          zoomOffset = lodBegin.levelValue - levelInMapView
+
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             baseUrl: layer.url,
-            sourceId: layer.id
+            sourceId: layer.id,
+            zoomOffset: zoomOffset
           }
 
           break
