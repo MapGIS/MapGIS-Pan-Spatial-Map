@@ -509,6 +509,8 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
 
     this.isAddEventListener = false
     this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
+    this.hasViewPosition = false
+    this.isAnalyze = false
   }
 
   // 为鼠标的各种行为注册监听事件
