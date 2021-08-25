@@ -119,7 +119,7 @@ import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
 import { Layer, LayerType, LoadStatus } from '../../../model/document/layer'
 import { ObjectUtil } from '../../../utils'
 import DefaultMapStyle from '../../styles/map-style.json'
-import { getLevelInMap } from '../../../utils/map-resolution-util.js'
+import ComputeZoomOffset from '../../../utils/map-resolution-util.js'
 
 export default {
   name: 'MpWebMapPro',
@@ -174,23 +174,6 @@ export default {
   },
   methods: {
     getBeforeLayerId(beforeId) {
-      // TODO 此段屏蔽代码请勿删除，防止以后做拖动排序的时候，可以作为参考
-      // if (beforeId === 'defaultMap') {
-      //   return undefined
-      // } else if (beforeId) {
-      //   if (this.map.getLayer(beforeId)) {
-      //     return beforeId
-      //   } else {
-      //     return undefined
-      //   }
-      // } else if (index + 1 >= this.layers.length) {
-      //   return undefined
-      // } else if (this.map.getLayer(this.layers[index + 1].layerId)) {
-      //   return this.layers[index + 1].layerId
-      // } else {
-      //   return undefined
-      // }
-
       /**
        * 修改说明：这里对构造layers的时候，对底图进行了标识，传入beforeId字段
        *          当beforeId==='defaultMap'表示暂未添加图层树图层。当添加了
@@ -217,20 +200,6 @@ export default {
       } else {
         this.$root.$emit('mapbox-load', payload)
       }
-      this.getMapboxLevelResolution(payload.mapr)
-    },
-    // 获取各个层级在maobox上最大分辨率
-    getMapboxLevelResolution(map) {
-      const arr = []
-      for (let level = 0; level <= 19; level++) {
-        const r = 6378137 // 赤道半径
-        const resolutionOnTheEquator = 360 / (256 * 2 ** level)
-        arr.push({
-          level,
-          resolution: resolutionOnTheEquator
-        })
-      }
-      this.mapboxLevelResolutions = arr
     },
     genMapboxLayerComponentPropsByLayer(layer, beforeId) {
       // mapbox图层组件所需要的属性
@@ -240,8 +209,6 @@ export default {
       let showLayers = ''
       let visibleSubLayers = []
       let zoomOffset = -1
-      let lodBegin = {}
-      let levelInMapView = -1
       // 图层显示样式
       const layerStyle = {
         layout: { visibility: layer.isVisible ? 'visible' : 'none' },
@@ -257,16 +224,7 @@ export default {
 
       switch (layer.type) {
         case LayerType.IGSTile:
-          lodBegin = layer.tileInfo.lods[0]
-
-          // 根据分辨率查找瓦片图层初始级别在地图视图中所处的级别
-          levelInMapView = getLevelInMap(
-            lodBegin.resolution,
-            this.mapboxLevelResolutions
-          )
-
-          zoomOffset = lodBegin.levelValue - levelInMapView
-
+          zoomOffset = ComputeZoomOffset.getZoomOffsetByTileInfo(layer.tileInfo)
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -314,15 +272,9 @@ export default {
           break
         case LayerType.OGCWMTS:
           const { tileMatrixSet } = layer.activeLayer
-          lodBegin = tileMatrixSet.tileInfo.lods[0]
-
-          // 根据分辨率查找瓦片图层初始级别在地图视图中所处的级别
-          levelInMapView = getLevelInMap(
-            lodBegin.resolution,
-            this.mapboxLevelResolutions
+          zoomOffset = ComputeZoomOffset.getZoomOffsetByTileInfo(
+            tileMatrixSet.tileInfo
           )
-
-          zoomOffset = lodBegin.levelValue - levelInMapView
 
           mapboxLayerComponentProps = {
             type: layer.type,
@@ -357,22 +309,13 @@ export default {
 
           break
         case LayerType.ArcGISTile:
-          lodBegin = layer.tileInfo.lods[0]
-
-          // 根据分辨率查找瓦片图层初始级别在地图视图中所处的级别
-          levelInMapView = getLevelInMap(
-            lodBegin.resolution,
-            this.mapboxLevelResolutions
-          )
-
-          zoomOffset = lodBegin.levelValue - levelInMapView
-
+          zoomOffset = ComputeZoomOffset.getZoomOffsetByTileInfo(layer.tileInfo)
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             baseUrl: layer.url,
             sourceId: layer.id,
-            zoomOffset: zoomOffset
+            zoomOffset
           }
 
           break

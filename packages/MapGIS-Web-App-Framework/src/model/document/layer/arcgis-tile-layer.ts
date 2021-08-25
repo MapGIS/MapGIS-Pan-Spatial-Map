@@ -80,6 +80,11 @@ export class ArcGISTileLayer extends TileLayer {
               let endLevel = 0
               let i = 0
 
+              if (tileInfoJsonObject.cols)
+                this.tileInfo.size[0] = tileInfoJsonObject.cols
+              if (tileInfoJsonObject.rows)
+                this.tileInfo.size[1] = tileInfoJsonObject.rows
+
               if (tileInfoJsonObject.startLevel)
                 startLevel = tileInfoJsonObject.startLevel
 
@@ -90,7 +95,7 @@ export class ArcGISTileLayer extends TileLayer {
                 const lods: any[] = tileInfoJsonObject.lods
 
                 if (lods.length > 0) {
-                  for (i = startLevel; i <= endLevel; i++) {
+                  for (i = startLevel; i <= lods.length - 1; i++) {
                     const lod = new LOD()
 
                     lod.level = lods[i].level

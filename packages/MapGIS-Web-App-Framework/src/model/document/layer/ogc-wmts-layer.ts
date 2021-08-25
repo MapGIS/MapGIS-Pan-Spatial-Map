@@ -168,8 +168,6 @@ export class TileMatrixSet {
           }
         }
 
-        const resolution = this.getResolutionByScale(lod.scale)
-
         lod.resolution = this.getTileResolution(lod.scale)
 
         this.tileInfo.lods.push(lod)
@@ -187,20 +185,6 @@ export class TileMatrixSet {
         }
       })
     }
-  }
-
-  /**
-   * 通过比例计算该层级对应的分辨率（单位为米）
-   * @param {number} Scale 比例尺
-   * @returns 分辨率（单位为米）
-   */
-  getResolutionByScale(Scale: number): number {
-    // TODO 需要根据厂商来确定dpi，这里为了暂时写死
-    const dMMPerPix = 25.4 / 96 / 1000
-
-    const resolution = dMMPerPix / (1 / Scale)
-
-    return resolution
   }
 
   /**

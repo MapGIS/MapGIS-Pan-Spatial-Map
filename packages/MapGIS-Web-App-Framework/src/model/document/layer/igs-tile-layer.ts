@@ -150,6 +150,11 @@ export class IGSTileLayer extends TileLayer {
       let endLevel = 0
       let i = 0
 
+      if (tileInfoJsonObject.cols)
+        this.tileInfo.size[0] = tileInfoJsonObject.cols
+      if (tileInfoJsonObject.rows)
+        this.tileInfo.size[1] = tileInfoJsonObject.rows
+
       if (tileInfoJsonObject.startLevel)
         startLevel = tileInfoJsonObject.startLevel
 

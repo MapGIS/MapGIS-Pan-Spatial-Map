@@ -44,7 +44,7 @@ class FitBound {
     // sseDenominator是相机fovy角度的tan值的2倍
     const sseDenominator = viewer.camera.frustum.sseDenominator
 
-    for (let level = 0; level <= 19; level++) {
+    for (let level = 0; level <= 24; level++) {
       // maxGeometricError是地球赤道的周长/像素数，一个像素代表多少米(该层级下最大的几何误差)
       const maxGeometricError = tileProvider.getLevelMaximumGeometricError(
         level
@@ -168,23 +168,23 @@ class FitBound {
   public fitBound3D(
     bound: Objects.Bound,
     mapParams: MapParams,
-    level?: number
+    level: number | undefined
   ) {
     const { xmin, ymin, xmax, ymax } = bound
     const { webGlobe, Cesium } = mapParams
     // 如果获取不到对应层级的高度则还是用范围缩放
-    if (
-      level !== undefined &&
-      this.getCameraHeightByLevel(level, webGlobe.viewer) !== undefined
-    ) {
-      const center = new Cesium.Cartesian3.fromDegrees(
-        (xmin + xmax) / 2,
-        (ymin + ymax) / 2,
-        this.getCameraHeightByLevel(level, webGlobe.viewer)
-      )
-      webGlobe.viewer.camera.flyTo({
-        destination: center
-      })
+    if (level !== undefined) {
+      const cameraHeight = this.getCameraHeightByLevel(level, webGlobe.viewer)
+      if (cameraHeight !== undefined) {
+        const center = new Cesium.Cartesian3.fromDegrees(
+          (xmin + xmax) / 2,
+          (ymin + ymax) / 2,
+          cameraHeight
+        )
+        webGlobe.viewer.camera.flyTo({
+          destination: center
+        })
+      }
     } else {
       const rectangle = new Cesium.Rectangle.fromDegrees(xmin, ymin, xmax, ymax)
       webGlobe.viewer.camera.flyTo({
