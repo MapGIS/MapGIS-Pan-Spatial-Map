@@ -167,7 +167,6 @@ export class TileMatrixSet {
             lod.levelValue = parseInt(element.Identifier)
           }
         }
-        debugger
         lod.resolution = this.getTileResolution(lod.scale)
 
         this.tileInfo.lods.push(lod)
