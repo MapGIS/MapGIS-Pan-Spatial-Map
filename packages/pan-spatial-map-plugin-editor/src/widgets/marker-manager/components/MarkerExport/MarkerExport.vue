@@ -236,7 +236,11 @@ export default class MarkerExport extends Vue {
   // 导出格式为Excel
   private ouputToExcel(flieName: string, exportedMarkers) {
     exportedMarkers = exportedMarkers.map(item => {
-      return { ...item, center: `${item.center[0]}, ${item.center[1]}` }
+      return {
+        ...item,
+        center: `${item.center[0]}, ${item.center[1]}`,
+        features: `type: ${item.features[0].geometry.type}`
+      }
     })
     const sheet = XLSX.utils.json_to_sheet(exportedMarkers)
     let blob = this.sheet2blob(sheet)

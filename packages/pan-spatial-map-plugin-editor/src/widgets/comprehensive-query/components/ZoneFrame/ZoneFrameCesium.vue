@@ -203,4 +203,4 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="less"></style>
