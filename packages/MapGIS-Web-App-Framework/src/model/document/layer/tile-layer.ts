@@ -245,7 +245,7 @@ export abstract class TileLayer extends Layer {
    * @type {TileInfo}
    * @memberof TileLayer
    */
-  titleInfo: TileInfo = new TileInfo()
+  tileInfo: TileInfo = new TileInfo()
 
   /**
    * token的参数名
