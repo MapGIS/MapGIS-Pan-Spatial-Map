@@ -5,25 +5,30 @@ class ComputeZoomOffset {
    */
   levelResolutionToTileSizes = {}
 
+  // 赤道周长（单位：m）
+  static get EQUATOR_PERIMTER() {
+    return 6378137
+  }
+
   /**
    * 通过瓦片大小获取层级与分辨关系的数组
-   * @param {*} TileSize 瓦片尺寸，三维用的瓦片尺寸为512的levelResolution数组
+   * @param {*} tileSize 瓦片尺寸，三维用的瓦片尺寸为512的levelResolution数组
    * @returns 层级与分辨关系的数组
    */
-  getLevelResolutionByTileSize(TileSize) {
-    if (!this.levelResolutionToTileSizes[TileSize]) {
+  getLevelResolutionByTileSize(tileSize) {
+    if (!this.levelResolutionToTileSizes[tileSize]) {
       const arr = []
       for (let level = 0; level <= 24; level++) {
-        const r = 6378137 // 赤道半径
-        const resolutionOnTheEquator = 360 / (TileSize * 2 ** level)
+        const r = ComputeZoomOffset.EQUATOR_PERIMTER // 赤道半径
+        const resolutionOnTheEquator = 360 / (tileSize * 2 ** level)
         arr.push({
           level,
           resolution: resolutionOnTheEquator
         })
       }
-      this.levelResolutionToTileSizes[TileSize] = arr
+      this.levelResolutionToTileSizes[tileSize] = arr
     }
-    return this.levelResolutionToTileSizes[TileSize]
+    return this.levelResolutionToTileSizes[tileSize]
   }
 
   /**
