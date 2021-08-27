@@ -75,46 +75,122 @@ class FitBound {
    * @returns level与相机高度关系数组
    */
   public getLevelDetails(viewer: unknown): Array<LevelDetail> {
+    // 如果_cesiumLevelToHeights高度与层级关系已经计算出来了，则直接返回，不用多次计算
     if (this._cesiumLevelToHeights.length <= 0) {
-      // 计算层级高度是最小误差
-      const precision = 1
-      // 记录level的数组
-      const result: Array<LevelDetail> = []
+      /**
+       * 这里由于高度达到亿级别，普通循环计算量非常大，这里吧高度分为三段分别采用二分法来计算，提高计算速度
+       * @修改人 龚瑞强
+       * @date 2021/8/27
+       */
+      const largeDistances = this.getLevelByStep({
+        step: 100000,
+        initZoomLevel: 0,
+        initHeight: 100000000,
+        viewer
+      })
 
-      let currentZoomLevel = 1
-      for (let height = 40000000.0; height >= 0; height -= 5) {
-        const level = this.detectZoomLevel(height, viewer)
-        // 当此次算出来的层级与上次算出来的层级不同，则认为当前高度为该层级最小高度
-        const preLevel = this.detectZoomLevel(height + 5, viewer)
-        if (
-          level !== null &&
-          level !== undefined &&
-          level !== currentZoomLevel &&
-          preLevel === currentZoomLevel
-        ) {
-          // 这里找出层级对应的最小高度
-          const minHeight = height + 5
-          if (result.length === 0) {
-            result.push({
-              level: currentZoomLevel,
-              height: minHeight,
-              minHeight
-            })
-          } else {
-            // 区当前层级最小高度与最大高度区间的1/4最为该层级的高度
-            const step = (result[result.length - 1].minHeight - minHeight) / 4
-            result.push({
-              level: currentZoomLevel,
-              height: minHeight + step,
-              minHeight
-            })
-          }
-          currentZoomLevel = level
+      const normalDistances = this.getLevelByStep({
+        step: 100,
+        initZoomLevel: largeDistances[largeDistances.length - 1].level,
+        initHeight: largeDistances[largeDistances.length - 1].minHeight,
+        viewer
+      })
+
+      const littleDistances = this.getLevelByStep({
+        step: 1,
+        initZoomLevel: normalDistances[normalDistances.length - 1].level,
+        initHeight: normalDistances[normalDistances.length - 1].minHeight,
+        viewer
+      })
+      const levelHeights = [
+        ...largeDistances,
+        ...normalDistances,
+        ...littleDistances
+      ]
+      // 由于这里设置的高度是最小高度，需要给增加一些高度（这里增加的值是最大高度与最小高度的四分之一），才能保证此高度在该层级范围内
+      const arr: Array<LevelDetail> = []
+      for (let index = 0; index < levelHeights.length; index++) {
+        const element = levelHeights[index]
+        if (index > 0) {
+          const nearHeight =
+            element.height +
+            (levelHeights[index - 1].height - element.height) / 4
+          arr.push({
+            ...element,
+            height: nearHeight
+          })
+        } else {
+          arr.push(element)
         }
       }
-      this._cesiumLevelToHeights = result
+      this._cesiumLevelToHeights = arr
     }
     return this._cesiumLevelToHeights
+  }
+
+  /**
+   * 计算层级与最低高度的数组
+   * @param step 步进器
+   * @param initZoomLevel 初始层级
+   * @param initHeight 初始高度
+   * @param viewer 三维对象
+   * @returns 层级与最低高度的数组
+   */
+  private getLevelByStep({
+    step,
+    initZoomLevel,
+    initHeight,
+    viewer
+  }): Array<LevelDetail> {
+    const result: Array<LevelDetail> = []
+    let currentZoomLevel = initZoomLevel
+    for (let height = initHeight; height >= 0; height -= step) {
+      let currentHeight = height
+      let preHeight = height + step
+      /**
+       * @description 当此次算出来的层级与上次算出来的层级不同，则采用去上次高度与此次高度的中间值进行计算，
+       * 直到上次高度与此次高度差值只有1的时候，则可以计算出来临界值。这样采用二分法计算速度比普通的循环速度快很多
+       */
+      let level = this.detectZoomLevel(currentHeight, viewer)
+      let preLevel = this.detectZoomLevel(preHeight, viewer)
+      if (
+        level !== null &&
+        level !== undefined &&
+        level !== currentZoomLevel &&
+        preLevel === currentZoomLevel
+      ) {
+        while (preHeight - currentHeight > 1) {
+          level = this.detectZoomLevel(currentHeight, viewer)
+          // 当此次算出来的层级与上次算出来的层级不同，则认为当前高度为该层级最小高度
+          preLevel = this.detectZoomLevel(preHeight, viewer)
+          if (
+            level !== null &&
+            level !== undefined &&
+            level !== currentZoomLevel &&
+            preLevel === currentZoomLevel
+          ) {
+            preHeight = currentHeight + (preHeight - currentHeight) / 2
+          } else if (
+            level !== null &&
+            level !== undefined &&
+            level !== currentZoomLevel &&
+            preLevel !== currentZoomLevel
+          ) {
+            // 如果两次算得的层级一样，中间值偏大。需要把currentHeight设为此次的高度，然后继续使用二分法进行查找
+            const num = preHeight - currentHeight
+            currentHeight = preHeight
+            preHeight = currentHeight + num
+          }
+        }
+        result.push({
+          level: currentZoomLevel,
+          height: parseInt(preHeight),
+          minHeight: parseInt(preHeight)
+        })
+        currentZoomLevel++
+      }
+    }
+    return result
   }
 
   /**
