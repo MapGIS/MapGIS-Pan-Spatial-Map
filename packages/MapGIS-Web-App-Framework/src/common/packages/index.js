@@ -36,6 +36,14 @@ import MpSpin from './spin/Spin.vue'
 
 import MpPortal from './portal'
 
+import MpColorCheckbox from './checkbox/ColorCheckbox.vue'
+
+import MpImgCheckbox from './checkbox/ImgCheckbox.vue'
+
+const MpColorCheckboxGroup = MpColorCheckbox.Group
+
+const MpImgCheckboxGroup = MpImgCheckbox.Group
+
 const components = [
   MpIcon,
   MpButton,
@@ -54,7 +62,11 @@ const components = [
   MpAdjustLine,
   MpCollapseButton,
   MpMask,
-  MpSpin
+  MpSpin,
+  MpColorCheckboxGroup,
+  MpColorCheckbox,
+  MpImgCheckboxGroup,
+  MpImgCheckbox
 ]
 
 const install = Vue => {

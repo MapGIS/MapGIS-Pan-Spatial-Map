@@ -8,5 +8,8 @@ module.exports = {
   ROUTES: `${BASE_URL}/routes`,
   LOGOUT: `${BASE_URL}/auth/logout`,
   INFO: `${BASE_URL}/auth/info`,
-  APPINFO: `${BASE_URL}/auth/app-info`
+  APPINFO: `${BASE_URL}/auth/app-info`,
+  APP_WIDGETS: `${BASE_URL}/api/app/widgets`,
+  APP_THEMES: `${BASE_URL}/api/app/themes`,
+  APP_CONFIG: `${BASE_URL}/api/app/config`
 }

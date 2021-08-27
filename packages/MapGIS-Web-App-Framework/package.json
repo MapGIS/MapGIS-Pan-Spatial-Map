@@ -27,6 +27,9 @@
   "dependencies": {
     "@mapgis/mapbox-gl": "^1.9.3",
     "element-resize-detector": "^1.2.1",
+    "codemirror": "^5.49.2",
+    "jsonlint": "1.6.3",
+    "vuedraggable": "^2.23.2",
     "@mapgis/webclient-es6-service": "^10.5.3-beta",
     "@mapgis/webclient-vue-cesium": "link:../../../WebClient-Vue/cesium",
     "@mapgis/webclient-vue-mapboxgl": "link:../../../WebClient-Vue/mapboxgl"
@@ -38,6 +41,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-loader": "^3.0.3",
     "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-vue": "^6.1.2"
+    "eslint-plugin-vue": "^6.1.2",
+    "script-loader": "0.7.2"
   }
 }

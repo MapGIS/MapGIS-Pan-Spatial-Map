@@ -1,4 +1,5 @@
 import MpAppLoader from './app-loader/AppLoader.vue'
+import MpAppBuilder from './app-builder/AppBuilder.vue'
 import MpMapContainer from './map-container/MapContainer.vue'
 import MpMapWidgetButton from './map-widget-indicator/MapWidgetButton.vue'
 import MpContentWidgetPanel from './map-panel/ContentWidgetPanel.vue'
@@ -8,6 +9,7 @@ import MpWindowWrapper from './window-wrapper/WindowWrapper.vue'
 
 const components = [
   MpAppLoader,
+  MpAppBuilder,
   MpMapContainer,
   MpMapWidgetButton,
   MpContentWidgetPanel,

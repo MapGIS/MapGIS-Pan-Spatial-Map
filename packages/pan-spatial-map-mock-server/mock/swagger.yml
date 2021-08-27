@@ -56,6 +56,30 @@ paths:
           required: true
           description: config name.
       responses:
+  /api/app/themes:
+    get:
+      tags:
+        - app
+      summary: Get themes
+      description: Get themes.
+      operationId: getThemes
+      responses:
+  /api/app/widgets:
+    get:
+      tags:
+        - app
+      summary: Get widgets
+      description: Get widgets.
+      operationId: getWidgets
+      responses:
+  /api/app/config:
+    put:
+      tags:
+        - app
+      summary: Save app config
+      description: Save app config.
+      operationId: saveAppConfig
+      responses:
   /api/app/widget-config:
     get:
       tags:

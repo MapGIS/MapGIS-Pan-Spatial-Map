@@ -26,6 +26,10 @@ export default class AppManager {
     return this.app
   }
 
+  getAppConfig() {
+    return this.config
+  }
+
   // 加载应用
   async loadConfig(baseAPI, appConfigPath, appAssetsPath, request) {
     // 创建配置服务
@@ -144,5 +148,25 @@ export default class AppManager {
         )
       }
     }
+  }
+
+  async getWidgetConfig(widgetConfigUrl) {
+    // eslint-disable-next-line no-return-await
+    return await this.configService.getWidgetConfig(widgetConfigUrl)
+  }
+
+  async getThemeManifest(themeUri) {
+    // eslint-disable-next-line no-return-await
+    return await this.configService.getThemeManifest(themeUri)
+  }
+
+  async getThemeLayout(themeUri) {
+    // eslint-disable-next-line no-return-await
+    return await this.configService.getThemeLayout(themeUri)
+  }
+
+  async getWidgetManifest(widgetUri) {
+    // eslint-disable-next-line no-return-await
+    return await this.configService.getWidgetManifest(widgetUri)
   }
 }

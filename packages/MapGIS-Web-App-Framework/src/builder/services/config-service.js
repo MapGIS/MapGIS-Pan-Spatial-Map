@@ -30,6 +30,13 @@ export default class ConfigService {
     })
   }
 
+  getThemeLayout(themeUri) {
+    return this.request({
+      url: `${this.appAssetsPath}${themeUri}/layout.json`,
+      method: 'get'
+    })
+  }
+
   getWidgetManifest(widgetUri) {
     return this.request({
       url: `${this.appAssetsPath}${widgetUri}/manifest.json`,

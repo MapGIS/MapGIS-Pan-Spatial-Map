@@ -20,15 +20,6 @@
       />
       <a-layout class="main-wrapper">
         <a-layout-content class="content-wrapper">
-          <mp-map-container
-            v-if="configInitialized"
-            class="map-wrapper"
-            :cesium-lib-path="publicPath + 'cesium/Cesium.js'"
-            :cesium-plugin-path="
-              publicPath + 'cesium/webclient-cesium-plugin.js'
-            "
-            :map-options="mapOptions"
-          />
           <component
             :is="toolbarContentComponent"
             ref="toolbarContent"
@@ -42,6 +33,13 @@
           :max-view-height="maxFooterHeight"
         />
       </a-layout>
+      <mp-map-container
+        v-if="configInitialized"
+        class="map-wrapper"
+        :cesium-lib-path="publicPath + 'cesium/Cesium.js'"
+        :cesium-plugin-path="publicPath + 'cesium/webclient-cesium-plugin.js'"
+        :map-options="mapOptions"
+      />
     </a-layout>
   </a-layout>
 </template>
@@ -131,19 +129,21 @@ export default {
 
 <style lang="less" scoped>
 .pan-spatial-map-wrapper {
+  height: 100vh;
+  position: relative;
   .main-wrapper {
     overflow-y: hidden;
     .content-wrapper {
       position: relative;
       padding: 0;
-      .map-wrapper {
-        position: fixed;
-        top: 48px;
-        left: 48px;
-        width: calc(100vw - 48px);
-        height: calc(100vh - 48px);
-      }
     }
+  }
+  .map-wrapper {
+    position: absolute;
+    top: 48px;
+    left: 48px;
+    width: calc(100% - 48px);
+    height: calc(100% - 48px);
   }
 }
 </style>

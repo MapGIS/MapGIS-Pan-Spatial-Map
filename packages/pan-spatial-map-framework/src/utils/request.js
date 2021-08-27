@@ -25,7 +25,8 @@ const AUTH_TYPE = {
 const METHOD = {
   GET: 'get',
   POST: 'post',
-  DELETE: 'delete'
+  DELETE: 'delete',
+  PUT: 'put'
 }
 
 /**
@@ -43,6 +44,8 @@ function request(url, method, params, config) {
       return service.post(url, params, config)
     case METHOD.DELETE:
       return service.delete(url, config)
+    case METHOD.PUT:
+      return service.put(url, params, config)
     default:
       return service.get(url, { params, ...config })
   }

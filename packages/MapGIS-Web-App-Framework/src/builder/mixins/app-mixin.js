@@ -1,4 +1,3 @@
-import AppManager from '../managers/app-manager'
 import MapRender, {
   default2DMapRender,
   default3DMapRender

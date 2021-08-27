@@ -1,0 +1,67 @@
+<template>
+  <mp-app-builder
+    v-if="initialized"
+    :baseAPI="baseAPI"
+    :appConfigPath="appConfigPath"
+    :appAssetsPath="appAssetsPath"
+    :themes="themes"
+    :widgets="widgets"
+    @theme-change="onThemeChange"
+    @save="onSaveApp"
+  />
+</template>
+
+<script>
+import { mapState, mapMutations } from 'vuex'
+import { getAppInfo } from '@/services/user'
+import { getThemes, getWidgets, edit } from '@/services/app'
+import { BASE_URL } from '@/services/api'
+
+export default {
+  data() {
+    return {
+      initialized: false,
+      baseAPI: '',
+      appConfigPath: '',
+      appAssetsPath: '',
+      themes: [],
+      widgets: []
+    }
+  },
+  computed: {
+    ...mapState('setting', ['theme'])
+  },
+  async created() {
+    // 获取应用信息
+    const appInfo = await getAppInfo()
+
+    this.baseAPI = BASE_URL
+    this.appConfigPath = appInfo.data.configPath
+    this.appAssetsPath = appInfo.data.assetsPath
+
+    // 获取可用于搭建的主题和微件列表
+    const themes = await getThemes()
+    const widgets = await getWidgets()
+
+    this.themes = themes.data
+    this.widgets = widgets.data
+
+    this.initialized = true
+  },
+  methods: {
+    ...mapMutations('setting', ['setTheme']),
+    onThemeChange({ theme, color }) {
+      this.setTheme({ ...this.theme, mode: theme, color: color })
+    },
+    onSaveApp(appConfig) {
+      edit({ config: JSON.stringify(appConfig) })
+        .then(() => {
+          this.$message.success('保存成功')
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
+    }
+  }
+}
+</script>
