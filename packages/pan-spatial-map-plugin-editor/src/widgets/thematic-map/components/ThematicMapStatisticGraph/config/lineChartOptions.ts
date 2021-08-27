@@ -1,36 +1,38 @@
-// 折线图配置
-import { txtColor, getGridX } from './barChartOptions'
+import { defaultColor, txtColor, splitColor, getGridX } from './chartCommon'
 
-export const lineChartOptions = ({ title, x, y }) => {
+/**
+ * 折线图配置
+ * @param param0
+ * @returns
+ */
+export const lineChartOptions = ({ color, title, x, y }) => {
   const gridX = getGridX(y)
-  const barGraphWidth = 400 - gridX // 柱状图能够显示数据的宽度
-  const barNum = Math.floor(barGraphWidth / 24) // 柱状图中能显示柱状图的个数
-  const dataZoomEnd = Math.floor((barNum / x.length) * 100) // 柱状图能显示的比例
+  const _color = color || defaultColor
   return {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
         type: 'line',
         lineStyle: {
-          color: '#41aeff',
+          color: _color,
           type: 'dashed'
         }
       }
     },
     grid: {
-      x: gridX,
-      x2: 10,
-      y: 20,
-      y2: 50
+      top: 20,
+      left: gridX,
+      bottom: 40,
+      right: 0
     },
     dataZoom: {
       show: true,
       realtime: true,
-      bottom: 50,
+      bottom: 40,
       height: 8,
-      fillerColor: '#40a9ff',
+      fillerColor: color,
       start: 0,
-      end: dataZoomEnd,
+      end: 14,
       showDetail: false,
       zoomLock: true
     },
@@ -70,18 +72,20 @@ export const lineChartOptions = ({ title, x, y }) => {
         color: txtColor
       },
       axisTick: {
+        show: true,
         lineStyle: {
           color: txtColor
         }
       },
       axisLine: {
+        show: true,
         lineStyle: {
           color: txtColor
         }
       },
       splitLine: {
         lineStyle: {
-          color: '#d9d9d9',
+          color: splitColor,
           type: 'dotted'
         }
       }
@@ -92,7 +96,7 @@ export const lineChartOptions = ({ title, x, y }) => {
         data: y,
         smooth: true,
         itemStyle: {
-          color: '#40a9ff'
+          color: _color
         }
       }
     ]

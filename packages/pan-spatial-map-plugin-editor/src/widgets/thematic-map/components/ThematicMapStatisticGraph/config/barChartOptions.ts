@@ -1,35 +1,20 @@
-export const txtColor = '#000000a6'
+import { defaultColor, txtColor, splitColor, getGridX } from './chartCommon'
 /**
- * 调整y轴宽度
- * @param y<array> y轴数据
+ * 柱状图配置
+ * @param param0
  * @returns
  */
-export const getGridX = (y: number[]) => {
-  let gridX = 80
-  const strMax = `${Math.max(...y)}`
-  const index = strMax.indexOf('.')
-  const numLength =
-    index !== -1 ? strMax.substring(0, index).length : strMax.length
-  const arrs = [[1, 2, 3], [4, 5], [6, 7], [8]]
-  arrs.forEach((arr: number[]) => {
-    if (arr.includes(numLength)) {
-      gridX = Math.max(...arr) * 10
-    }
-  })
-  return gridX
-}
-
-// 柱状图配置
-export const barChartOptions = ({ title, x, y }) => {
+export const barChartOptions = ({ color, title, x, y }) => {
   const gridX = getGridX(y)
-
+  const _color = color || defaultColor
   return {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
         type: 'shadow',
         shadowStyle: {
-          color: '#41aeff'
+          opacity: 0.2,
+          color: _color
         }
       },
       textStyle: {
@@ -39,19 +24,19 @@ export const barChartOptions = ({ title, x, y }) => {
     dataZoom: {
       show: true,
       realtime: true,
-      bottom: 50,
+      bottom: 40,
       height: 8,
-      fillerColor: '#40a9ff',
+      fillerColor: color,
       startValue: 0,
       endValue: 14,
       showDetail: false,
       zoomLock: true
     },
     grid: {
-      x: gridX,
-      x2: 10,
-      y: 20,
-      y2: 50
+      top: 20,
+      left: gridX,
+      bottom: 40,
+      right: 0
     },
     title: {
       text: title,
@@ -65,6 +50,7 @@ export const barChartOptions = ({ title, x, y }) => {
     },
     xAxis: {
       data: x,
+      type: 'category',
       axisLabel: {
         rotate: 60,
         interval: 0,
@@ -84,40 +70,37 @@ export const barChartOptions = ({ title, x, y }) => {
       }
     },
     yAxis: {
+      type: 'value',
       axisLabel: {
         fontFamily: '微软雅黑',
         color: txtColor
       },
       axisTick: {
+        show: true,
         lineStyle: {
           color: txtColor
         }
       },
       axisLine: {
+        show: true,
         lineStyle: {
           color: txtColor
         }
       },
       splitLine: {
         lineStyle: {
-          color: '#d9d9d9',
+          color: splitColor,
           type: 'dotted'
         }
       }
     },
     series: [
       {
-        name: '',
         type: 'bar',
         data: y,
-        barWidth: 20,
-        // label: {
-        //   show: true,
-        //   position: 'top',
-        //   formatter: '{c}'
-        // },
+        barWidth: 10,
         itemStyle: {
-          color: '#40a9ff'
+          color: _color
         }
       }
     ]

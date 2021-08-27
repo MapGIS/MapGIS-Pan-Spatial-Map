@@ -5,78 +5,52 @@
       :style="{ background }"
       @click.stop="showDropdown"
     />
-    <div class="color-picker-setting" slot="overlay">
-      <mp-toolbar :bordered="false" class="color-picker-setting-head">
-        <mp-toolbar-title :has-padding="false">
-          颜色设置
-        </mp-toolbar-title>
-        <mp-toolbar-command-group>
-          <mp-toolbar-command
-            v-for="item in tools"
-            :key="item.title"
-            :title="item.title"
-            :icon="item.icon"
-            @click="item.method()"
-          >
-          </mp-toolbar-command>
-        </mp-toolbar-command-group>
-      </mp-toolbar>
-      <div class="color-picker-setting-content">
-        <a-table
-          bordered
-          :pagination="false"
-          :columns="tableColumns"
-          :data-source="tableData"
-          :row-selection="{
-            columnWidth: 32,
-            selectedRowKeys,
-            onChange: selectChange
-          }"
-        >
-          <template slot="color" slot-scope="text, record">
-            <color-picker
-              v-model="record.color"
-              :border-radius="false"
-              type="rgb"
-            />
-          </template>
-          <template slot="percent" slot-scope="text, record">
-            <a-input-number
-              v-model="record.percent"
-              :min="0"
-              :max="100"
-              :precision="0"
-              :formatter="value => `${value}%`"
-              :parser="value => value.replace('%', '')"
-            />
-          </template>
-          <template slot="operation" slot-scope="text, record, index">
-            <a-icon
-              type="delete"
-              class="pointer"
-              @click="remove(index)"
-            ></a-icon>
-          </template>
-        </a-table>
-      </div>
-    </div>
+    <mp-card slot="overlay" :box-shadow="true" title="颜色设置" :tools="tools">
+      <a-table
+        bordered
+        :row-selection="{
+          columnWidth: 32,
+          selectedRowKeys,
+          onChange: selectChange
+        }"
+        :pagination="false"
+        :columns="tableColumns"
+        :data-source="tableData"
+      >
+        <template slot="color" slot-scope="text, record">
+          <mp-color-picker-confirm
+            v-model="record.color"
+            :border-radius="false"
+            class="color-picker-confirm"
+          />
+        </template>
+        <template slot="percent" slot-scope="text, record">
+          <a-input-number
+            v-model="record.percent"
+            :min="0"
+            :max="100"
+            :precision="0"
+            :formatter="value => `${value}%`"
+            :parser="value => value.replace('%', '')"
+          />
+        </template>
+        <template slot="operation" slot-scope="text, record, index">
+          <a-icon type="delete" @click="removeRow(index)" />
+        </template>
+      </a-table>
+    </mp-card>
   </a-dropdown>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
-import ColorPicker from './ColorPicker.vue'
 
 interface ITableDataItem {
   color: string
   percent: number
 }
 
-@Component({
-  components: {
-    ColorPicker
-  }
-})
+@Component
 export default class ColorPickerSetting extends Vue {
   // {0.25: rgb(0,0,255), 0.55: rgb(0,0,255)}
   @Prop() readonly value!: Record<string, string>
@@ -177,32 +151,17 @@ export default class ColorPickerSetting extends Vue {
   }
 
   /**
-   * 关闭
+   * 选择
    */
-  close() {
-    this.hideDropdown()
-    this.selectChange([])
+  selectChange(selectedRowKeys) {
+    this.selectedRowKeys = selectedRowKeys
   }
 
   /**
    * 删除
    */
-  remove(index: number) {
+  removeRow(index: number) {
     this.tableData.splice(index, 1)
-  }
-
-  /**
-   * 批量删除
-   */
-  batchRemove() {
-    if (!this.selectedRowKeys.length) {
-      this.$message.warning('请勾选数据')
-    } else {
-      this.selectedRowKeys.forEach(k =>
-        this.remove(this.tableData.findIndex(({ key }) => key === k))
-      )
-      this.selectedRowKeys = []
-    }
   }
 
   /**
@@ -215,6 +174,20 @@ export default class ColorPickerSetting extends Vue {
       percent: 0
     }
     this.tableData.push(node)
+  }
+
+  /**
+   * 批量删除
+   */
+  batchRemove() {
+    if (!this.selectedRowKeys.length) {
+      this.$message.warning('请勾选数据')
+    } else {
+      this.selectedRowKeys.forEach(k =>
+        this.removeRow(this.tableData.findIndex(({ key }) => key === k))
+      )
+      this.selectedRowKeys = []
+    }
   }
 
   /**
@@ -235,20 +208,15 @@ export default class ColorPickerSetting extends Vue {
   }
 
   /**
-   * 选择
+   * 关闭
    */
-  selectChange(selectedRowKeys) {
-    this.selectedRowKeys = selectedRowKeys
+  close() {
+    this.hideDropdown()
+    this.selectChange([])
   }
 }
 </script>
 <style lang="less" scoped>
-.pointer {
-  cursor: pointer;
-  &:hover {
-    color: @primary-color;
-  }
-}
 .color-view {
   width: 88px;
   height: 32px;
@@ -260,38 +228,30 @@ export default class ColorPickerSetting extends Vue {
   cursor: pointer;
 }
 
-.color-picker-setting {
-  background: @white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  &-head {
-    padding: 0 10px;
-    border-bottom: 1px solid @border-color-base;
-  }
-  &-content {
-    max-height: 280px;
-    overflow-y: auto;
-    padding: 10px 10px 12px;
-  }
+.color-picker-confirm {
+  width: 100px;
+}
 
-  /deep/ .ant-input-number {
+::v-deep .ant-table {
+  th {
+    padding: 4px 8px;
+  }
+  td {
+    padding: 0;
+  }
+  .anticon {
+    cursor: pointer;
+    &:hover {
+      color: @primary-color;
+    }
+  }
+  .ant-input-number {
     border: none;
     border-radius: 0;
     &-focused {
       box-shadow: none;
-    }
-    &-focused,
-    &:hover,
-    &:focus {
       border-color: @border-color-base;
     }
-  }
-
-  /deep/ th {
-    padding: 6px 8px !important;
-  }
-
-  /deep/ td {
-    padding: 0 !important;
   }
 }
 </style>
