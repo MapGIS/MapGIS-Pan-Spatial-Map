@@ -915,6 +915,20 @@
             "serverUrl": "",
             "wfsUrl": "",
             "extent": ""
+          },
+          {
+            "label": "luzhouwp_level16",
+            "describe": "luzhouwp_level16",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSTILED",
+            "name": "luzhouwp_level16",
+            "searchName": "",
+            "token": "",
+            "guid": "1c3bd807-52c5-42d5-bdcb-08234af8b4ff",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": ""
           }
         ]
       },
@@ -1023,6 +1037,20 @@
             "token": "",
             "guid": "a96fea53-d97d-401a-a502-f5621f098c14",
             "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/WORLDMKTTILE2/WMTSServer",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
+            "label": "luzhouwp_level16",
+            "describe": "luzhouwp_level16",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "WMTS",
+            "name": "luzhouwp_level16",
+            "searchName": "",
+            "token": "",
+            "guid": "a96fea53-d97d-401a-a502-f5621f098c24",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/luzhouwp_level16/WMTSServer",
             "wfsUrl": "",
             "extent": ""
           }

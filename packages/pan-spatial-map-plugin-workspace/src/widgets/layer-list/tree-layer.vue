@@ -429,7 +429,10 @@ export default class TreeLayer extends Mixins(
       this.isAttributes(item) ||
       this.isParentLayer(item) ||
       (this.isParentLayer(item) && this.isWMTSLayer(item)) ||
-      (this.isParentLayer(item) && !this.isIGSScene(item))
+      (this.isParentLayer(item) && !this.isIGSScene(item)) ||
+      (item.layer &&
+        this.isWMTSLayer(item.layer) &&
+        this.isActiveWMTSLayer(item))
     ) {
       return true
     }

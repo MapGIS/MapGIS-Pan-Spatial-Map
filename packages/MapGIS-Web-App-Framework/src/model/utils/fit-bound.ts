@@ -7,6 +7,7 @@ import {
 import { CoordinateTransformation } from './coordinate-transformation'
 import * as Objects from '../objects'
 import { CoordinateSystemType } from '../document/spatial-reference'
+import ComputeZoomOffset from '../../utils/map-resolution-util.js'
 
 export interface MapParams {
   webGlobe: unknown
@@ -16,9 +17,9 @@ export interface MapParams {
 }
 
 interface LevelDetail {
-  level?: number
-  height?: number
-  resolution?: number
+  level: number
+  height: number
+  minHeight: number
 }
 
 class FitBound {
@@ -35,7 +36,7 @@ class FitBound {
    * @param viewer cesium对象
    * @returns
    */
-  private detectZoomLevel(distance: number, viewer: unknown): LevelDetail {
+  private detectZoomLevel(distance: number, viewer: unknown): number | null {
     const scene = viewer.scene
     const tileProvider = scene.globe._surface.tileProvider
     const quadtree = tileProvider._quadtree
@@ -44,7 +45,7 @@ class FitBound {
     // sseDenominator是相机fovy角度的tan值的2倍
     const sseDenominator = viewer.camera.frustum.sseDenominator
 
-    for (let level = 0; level <= 19; level++) {
+    for (let level = 0; level <= 24; level++) {
       // maxGeometricError是地球赤道的周长/像素数，一个像素代表多少米(该层级下最大的几何误差)
       const maxGeometricError = tileProvider.getLevelMaximumGeometricError(
         level
@@ -60,72 +61,74 @@ class FitBound {
       const error = L / distance
       // 如果屏幕空间误差小于maximumScreenSpaceError最大屏幕空间误差，则返回当前层级
       if (error < quadtree.maximumScreenSpaceError) {
-        return { level, resolution: maxGeometricError / 111194.872221777 }
+        return level
       }
     }
 
-    return {}
+    return null
   }
 
   /**
    * 获取level与相机高度关系数组
    * @param startLevel 起始层级（层级小于2时，球会卡死）
    * @param viewer
-   * @returns
+   * @returns level与相机高度关系数组
    */
-  private getZoomLevelHeights(
-    startLevel: number,
-    viewer: unknown
-  ): number | undefined {
-    startLevel = startLevel <= 2 ? 2 : startLevel
-
+  public getLevelDetails(viewer: unknown): Array<LevelDetail> {
     if (this._cesiumLevelToHeights.length <= 0) {
       // 计算层级高度是最小误差
       const precision = 1
-
-      // 递减的高度
-      let step = 100000.0
-
       // 记录level的数组
       const result: Array<LevelDetail> = []
 
-      let currentZoomLevel = 0
-
-      for (let height = 100000000.0; height > step; height -= step) {
-        const { level, resolution } = this.detectZoomLevel(height, viewer)
-        if (level === undefined) {
-          break
-        }
-
-        if (level !== currentZoomLevel) {
-          let minHeight = height
-          let maxHeight = height + step
-          while (maxHeight - minHeight > precision) {
-            height = minHeight + (maxHeight - minHeight) / 2
-            if (this.detectZoomLevel(height, viewer).level === level) {
-              minHeight = height
-            } else {
-              maxHeight = height
-            }
+      let currentZoomLevel = 1
+      for (let height = 40000000.0; height >= 0; height -= 5) {
+        const level = this.detectZoomLevel(height, viewer)
+        // 当此次算出来的层级与上次算出来的层级不同，则认为当前高度为该层级最小高度
+        const preLevel = this.detectZoomLevel(height + 5, viewer)
+        if (
+          level !== null &&
+          level !== undefined &&
+          level !== currentZoomLevel &&
+          preLevel === currentZoomLevel
+        ) {
+          // 这里找出层级对应的最小高度
+          const minHeight = height + 5
+          if (result.length === 0) {
+            result.push({
+              level: currentZoomLevel,
+              height: minHeight,
+              minHeight
+            })
+          } else {
+            // 区当前层级最小高度与最大高度区间的1/4最为该层级的高度
+            const step = (result[result.length - 1].minHeight - minHeight) / 4
+            result.push({
+              level: currentZoomLevel,
+              height: minHeight + step,
+              minHeight
+            })
           }
-
-          result.push({
-            level,
-            height: Math.round(height),
-            resolution
-          })
-
           currentZoomLevel = level
-
-          if (result.length >= 2) {
-            step =
-              ((result[result.length - 2].height as number) - height) / 1000.0
-          }
         }
       }
       this._cesiumLevelToHeights = result
     }
+    return this._cesiumLevelToHeights
+  }
 
+  /**
+   * 通过层级获取相机高度
+   * @param startLevel 初始层级
+   * @param viewer
+   * @returns
+   */
+  private getCameraHeightByLevel(
+    startLevel: number,
+    viewer: unknown
+  ): number | undefined {
+    startLevel = startLevel <= 2 ? 2 : startLevel
+    this.getLevelDetails(viewer)
     return this._cesiumLevelToHeights.find(x => x.level === startLevel)?.height
   }
 
@@ -159,23 +162,23 @@ class FitBound {
   public fitBound3D(
     bound: Objects.Bound,
     mapParams: MapParams,
-    level?: number
+    level?: number | undefined
   ) {
     const { xmin, ymin, xmax, ymax } = bound
     const { webGlobe, Cesium } = mapParams
     // 如果获取不到对应层级的高度则还是用范围缩放
-    if (
-      level !== undefined &&
-      this.getZoomLevelHeights(level, webGlobe.viewer) !== undefined
-    ) {
-      const center = new Cesium.Cartesian3.fromDegrees(
-        (xmin + xmax) / 2,
-        (ymin + ymax) / 2,
-        this.getZoomLevelHeights(level, webGlobe.viewer)
-      )
-      webGlobe.viewer.camera.flyTo({
-        destination: center
-      })
+    if (level !== undefined) {
+      const cameraHeight = this.getCameraHeightByLevel(level, webGlobe.viewer)
+      if (cameraHeight !== undefined) {
+        const center = new Cesium.Cartesian3.fromDegrees(
+          (xmin + xmax) / 2,
+          (ymin + ymax) / 2,
+          cameraHeight
+        )
+        webGlobe.viewer.camera.flyTo({
+          destination: center
+        })
+      }
     } else {
       const rectangle = new Cesium.Rectangle.fromDegrees(xmin, ymin, xmax, ymax)
       webGlobe.viewer.camera.flyTo({
@@ -263,20 +266,19 @@ class FitBound {
     // a.瓦片图层(IGSTile、ArcGISTile、OGCWMTS)将视图跳转到以图层全图范围为中心，以瓦片支持的最小级别为级别的视图下。
     // b.其它图层，将当前视图跳转到以图层全图范围为范围的视图下。
     let startLevel: number
+    let zoomOffset: number
     switch (type) {
       case LayerType.ArcGISTile:
       case LayerType.IGSTile:
-        // case LayerType.ArcGISTile:
-        // case LayerType.OGCWMTS:
-        startLevel = layer.titleInfo.lods[0].level
-
-        // 修改说明：对于经纬度的IGSTile图层,WebClient-vue的mapgis-igs-tile-layer组件在显示时,会默认将zoomOffset设为-1.
-        // 故这里为了保证刚好缩放到IGSTile的起始级别，需要将startLevel+1.
-        // 修改人：马原野 2021年7月29日
-        // 修改说明：这里spatialReference克隆的有问题,不是一个真正的对象,故无法调用其上面的方法,需要优化。
-        // 修改人：马原野 2021年7月29日
-        if (layer.spatialReference.isWGS84()) {
-          startLevel++
+        startLevel = layer.tileInfo.lods[0].levelValue
+        // 由于三维ArcGISTile、IGSTile没有设置瓦片的偏移量，所以这里不需要计算
+        if (is2DMap) {
+          zoomOffset = ComputeZoomOffset.getZoomOffsetByTileInfo(
+            layer.tileInfo,
+            !is2DMap
+          )
+          // 修改说明：由于Tile设置了偏移量zoomOffset,为了保证刚好缩放到Tile的起始级别，需要将startLevel-zoomOffset
+          startLevel -= zoomOffset
         }
         if (is2DMap) {
           this.fitBound2D(fullExtentJWD, mapParams, startLevel)
@@ -287,9 +289,11 @@ class FitBound {
       case LayerType.OGCWMTS:
         const tileMatrixSet = layer.activeLayer.tileMatrixSet
         startLevel = tileMatrixSet.tileInfo.lods[0].levelValue
-        if (layer.spatialReference.isWGS84()) {
-          startLevel++
-        }
+        zoomOffset = ComputeZoomOffset.getZoomOffsetByTileInfo(
+          tileMatrixSet.tileInfo,
+          !is2DMap
+        )
+        startLevel -= zoomOffset
         if (is2DMap) {
           this.fitBound2D(fullExtentJWD, mapParams, startLevel)
         } else {

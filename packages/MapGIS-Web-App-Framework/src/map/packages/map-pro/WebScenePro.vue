@@ -84,7 +84,7 @@
         :show="layerProps.show"
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
-        @loaded="() => M3Dloaded(layerProps.layerId)"
+        @loaded="() => SceneLoaded(layerProps.layerId)"
       />
       <mapgis-3d-igs-terrain
         v-if="isIgsTerrainLayer(layerProps.type, layerProps.renderType)"
@@ -94,7 +94,7 @@
         :url="layerProps.url"
         :layerStyle="layerProps.layerStyle"
         :requestVertexNormals="true"
-        @terrain-loaded="() => M3Dloaded(layerProps.layerId)"
+        @terrain-loaded="() => SceneLoaded(layerProps.layerId)"
       />
     </div>
     <div class="statebardiv">
@@ -110,6 +110,7 @@ import {
   LoadStatus,
   IGSSceneSublayerRenderType
 } from '../../../model/document/layer'
+import ComputeZoomOffset from '../../../utils/map-resolution-util.js'
 
 export default {
   name: 'MpWebScenePro',
@@ -137,8 +138,9 @@ export default {
   data() {
     return {
       layers: [],
-      recordZindex: 1000,
-      computedBaseLayerTotal: false
+      recordZindex: 1000, // TODO 在MapGIS-Web-App-Framework里面不能依赖其他包，这里暂时先把底图管理的初始值设置为1000
+      computedBaseLayerTotal: false,
+      cesiumLevelResolutions: [] // 记录cesium中各个层级对应的分辨率
     }
   },
   computed: {
@@ -158,12 +160,10 @@ export default {
     this.parseDocument()
   },
   methods: {
-    M3Dloaded(id) {
+    SceneLoaded(id) {
       const guid = id.split(':')[0]
-      this.$root.$emit(guid, 'M3D加载了')
-    },
-    getBaseLayerTotal() {
-      // TODO 在MapGIS-Web-App-Framework里面不能依赖其他包，这里暂时先把底图管理的初始值设置为1000
+      // 由于framework不能依赖其他组件，这里不能把监听函数名定义在store里面
+      this.$root.$emit('scene-loaded-on-map', guid)
     },
     parseDocument() {
       if (!this.document) return
@@ -277,7 +277,7 @@ export default {
 
       let tempStr = ''
       let parms = {}
-      let tileMatrixSet = {}
+      let startLevel
 
       switch (layer.type) {
         case LayerType.IGSTile:
@@ -336,12 +336,11 @@ export default {
           }
           break
         case LayerType.OGCWMTS:
-          // 修改说明：修订吉威的wmts服务在三维场景下显示不了的问题。
-          // 初始级别 默认为0 有的为1 比如吉威的瓦片服务
-          // 修改人：马原野 2021年6月7日
-
-          tileMatrixSet = layer.activeLayer.tileMatrixSet
-
+          const { tileMatrixSet } = layer.activeLayer
+          startLevel = ComputeZoomOffset.getZoomOffsetByTileInfo(
+            tileMatrixSet.tileInfo,
+            true
+          )
           layerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -351,7 +350,7 @@ export default {
             wmtsStyle: layer.activeLayer.styleId,
             format: layer.activeLayer.imageFormat,
             options: {
-              startLevel: tileMatrixSet.tileInfo.lods[0].levelValue
+              startLevel: startLevel || 0
             }
           }
 

@@ -117,6 +117,7 @@
     <marker-export
       :visible="exportModalVisible"
       :markers="markers"
+      :exportConfig="exportConfig"
       @finished="exportModalVisible = false"
     />
   </div>
@@ -250,6 +251,10 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     return this.stateClosed ? [] : this.markers
   }
 
+  private get exportConfig() {
+    return this.widgetInfo.config.exportConfig
+  }
+
   // 二三维地图模式切换时
   @Watch('mapRender')
   mapRenderChange() {
@@ -271,7 +276,7 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
     const unSelectIcon = await markerIconInstance.unSelectIcon()
 
     // 下面的操作都是为了兼容老版的三个标注点的数据(因为老版标注点的构造和新版的标注点构造不一样)
-    this.markers = this.widgetInfo.config.reduce((result, item) => {
+    this.markers = this.widgetInfo.config.markers.reduce((result, item) => {
       if (Object.keys(item).includes('ftype')) {
         // 老版标注点包含'ftype'属性
         let coordinates = []
@@ -452,10 +457,12 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
       }
     })
 
+    const newConfig = { ...this.widgetInfo.config, markers: savedMarkers }
+
     api
       .saveWidgetConfig({
         name: 'marker-manager',
-        config: JSON.stringify(savedMarkers)
+        config: JSON.stringify(newConfig)
       })
       .then(() => {
         this_.$message.success('保存成功')

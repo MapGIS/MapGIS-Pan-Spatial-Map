@@ -18,6 +18,7 @@
         :baseUrl="layerProps.url"
         :serverName="layerProps.serverName"
         :before="getBeforeLayerId(layerProps.beforeId)"
+        :zoomOffset="layerProps.zoomOffset"
       />
       <mapgis-igs-doc-layer
         v-if="isIgsDocLayer(layerProps.type)"
@@ -81,6 +82,7 @@
         :sourceId="layerProps.sourceId"
         :baseUrl="layerProps.baseUrl"
         :before="getBeforeLayerId(layerProps.beforeId)"
+        :zoomOffset="layerProps.zoomOffset"
       />
       <mapgis-rastertile-layer
         v-if="isRasterLayer(layerProps.type)"
@@ -117,6 +119,7 @@ import '@mapgis/mapbox-gl/dist/mapbox-gl.css'
 import { Layer, LayerType, LoadStatus } from '../../../model/document/layer'
 import { ObjectUtil } from '../../../utils'
 import DefaultMapStyle from '../../styles/map-style.json'
+import ComputeZoomOffset from '../../../utils/map-resolution-util.js'
 
 export default {
   name: 'MpWebMapPro',
@@ -147,7 +150,8 @@ export default {
         'pk.eyJ1IjoicGFybmRlZWRsaXQiLCJhIjoiY2o1MjBtYTRuMDhpaTMzbXhpdjd3YzhjdCJ9.sCoubaHF9-nhGTA-sgz0sA',
       crs: 'EPSG:4326',
       layers: [],
-      map: null
+      map: null,
+      mapboxLevelResolutions: [] // 记录mapbox中各个层级对应的分辨率
     }
   },
   computed: {
@@ -170,23 +174,6 @@ export default {
   },
   methods: {
     getBeforeLayerId(beforeId) {
-      // TODO 此段屏蔽代码请勿删除，防止以后做拖动排序的时候，可以作为参考
-      // if (beforeId === 'defaultMap') {
-      //   return undefined
-      // } else if (beforeId) {
-      //   if (this.map.getLayer(beforeId)) {
-      //     return beforeId
-      //   } else {
-      //     return undefined
-      //   }
-      // } else if (index + 1 >= this.layers.length) {
-      //   return undefined
-      // } else if (this.map.getLayer(this.layers[index + 1].layerId)) {
-      //   return this.layers[index + 1].layerId
-      // } else {
-      //   return undefined
-      // }
-
       /**
        * 修改说明：这里对构造layers的时候，对底图进行了标识，传入beforeId字段
        *          当beforeId==='defaultMap'表示暂未添加图层树图层。当添加了
@@ -221,7 +208,7 @@ export default {
       let allLayerNames = []
       let showLayers = ''
       let visibleSubLayers = []
-      let zoomOffset = 0
+      let zoomOffset = -1
       // 图层显示样式
       const layerStyle = {
         layout: { visibility: layer.isVisible ? 'visible' : 'none' },
@@ -237,12 +224,14 @@ export default {
 
       switch (layer.type) {
         case LayerType.IGSTile:
+          zoomOffset = ComputeZoomOffset.getZoomOffsetByTileInfo(layer.tileInfo)
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             url: layer.url,
             sourceId: layer.id,
-            serverName: '' // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
+            serverName: '', // 组件接口设计不友好:该属性不是必需属性。传了url后就不再需要serverName.这里给空值。
+            zoomOffset
           }
 
           break
@@ -282,17 +271,11 @@ export default {
           }
           break
         case LayerType.OGCWMTS:
-          // 修改说明：修订arcGIS wmts服务在mapbox下显示不了的问题。
-          // 原因：服务初始级别与webClient要求的初始级别不一致。对于ArcGIS 全球经纬度裁图方式,须将zoomOffset设为-1,才能显示。
-          // zoomOffset计算方式不明确，已录入缺陷列表。
-          // 修改人：马原野 2021年7月22日
+          const { tileMatrixSet } = layer.activeLayer
+          zoomOffset = ComputeZoomOffset.getZoomOffsetByTileInfo(
+            tileMatrixSet.tileInfo
+          )
 
-          if (
-            layer.spatialReference.isWGS84() &&
-            layer.url.search('arcgis') > -1
-          ) {
-            zoomOffset = -1
-          }
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
@@ -326,11 +309,13 @@ export default {
 
           break
         case LayerType.ArcGISTile:
+          zoomOffset = ComputeZoomOffset.getZoomOffsetByTileInfo(layer.tileInfo)
           mapboxLayerComponentProps = {
             type: layer.type,
             layerId: layer.id,
             baseUrl: layer.url,
-            sourceId: layer.id
+            sourceId: layer.id,
+            zoomOffset
           }
 
           break

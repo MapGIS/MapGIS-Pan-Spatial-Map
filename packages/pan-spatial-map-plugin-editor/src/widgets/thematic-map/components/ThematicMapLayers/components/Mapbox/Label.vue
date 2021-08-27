@@ -18,7 +18,7 @@ export default class MapboxLabel extends Mixins(BaseMinxin) {
     return 'count'
   }
 
-  get labelOptions() {
+  get options() {
     return {
       draw: 'cluster',
       fillStyle: 'rgba(255, 50, 0, 1.0)',

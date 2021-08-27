@@ -49,6 +49,8 @@ export default class MarkerExport extends Vue {
     Record<string, any>
   >
 
+  @Prop({ type: Object }) exportConfig: Record<string, any>
+
   // 表单数据
   private exportOptions = {
     exportFileName: '',
@@ -57,14 +59,6 @@ export default class MarkerExport extends Vue {
 
   // 导出格式下拉项配置
   private exportFileTypes = ['shp格式', '6x格式', 'excel格式']
-
-  private markerServerConfig = {
-    ip: '192.168.21.191',
-    port: '6163',
-    isHorizontalSet: 'true',
-    userName: 'admin',
-    passWord: 'sa.mapgis'
-  }
 
   private shpOr6xOption: any
 
@@ -128,9 +122,8 @@ export default class MarkerExport extends Vue {
   // 发送请求创建简单要素类 --> 发送请求将简单要素类保存
   private creatFeature(flieName: string, featureSet: any, featureType: string) {
     const { projectionName } = baseConfigInstance.config // 获取目标参考系
-    const { userName, passWord } = this.markerServerConfig
-    const getFeatureUrl = `http://${this.markerServerConfig.ip}:${this.markerServerConfig.port}/onemap/featureSet/export?path=${flieName}&srsName=${projectionName}&type=${featureType}&f=json&user=${userName}&password=${passWord}`
-    console.log(getFeatureUrl)
+    const { username, password } = this.exportConfig
+    const getFeatureUrl = `http://${this.exportConfig.ip}:${this.exportConfig.port}/onemap/featureSet/export?path=${flieName}&srsName=${projectionName}&type=${featureType}&f=json&user=${username}&password=${password}`
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
@@ -142,7 +135,7 @@ export default class MarkerExport extends Vue {
         if (data.indexOf('"') > -1) {
           result = data.replaceAll('"', '')
         }
-        const url = `http://${this.markerServerConfig.ip}:9999/open/download?path=${result}&user=${userName}&password=${passWord}`
+        const url = `http://${this.exportConfig.ip}:9999/open/download?path=${result}&user=${username}&password=${password}`
 
         // eslint-disable-next-line no-restricted-globals
         location.href = url // 下载文件至本地
@@ -236,7 +229,11 @@ export default class MarkerExport extends Vue {
   // 导出格式为Excel
   private ouputToExcel(flieName: string, exportedMarkers) {
     exportedMarkers = exportedMarkers.map(item => {
-      return { ...item, center: `${item.center[0]}, ${item.center[1]}` }
+      return {
+        ...item,
+        center: `${item.center[0]}, ${item.center[1]}`,
+        features: `type: ${item.features[0].geometry.type}`
+      }
     })
     const sheet = XLSX.utils.json_to_sheet(exportedMarkers)
     let blob = this.sheet2blob(sheet)

@@ -68,20 +68,6 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 
   /**
-   * zoom到指定范围
-   * @param {object} bound 经纬度范围
-   */
-  panTo(bound) {
-    if (bound) {
-      const { xmin, xmax, ymin, ymax } = bound
-      this.map.panTo([
-        (bound.xmin + bound.xmax) / 2,
-        (bound.ymin + bound.ymax) / 2
-      ])
-    }
-  }
-
-  /**
    * 清除高亮
    */
   clearHighlight() {
@@ -90,10 +76,25 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   /**
    * 设置高亮
+   * xmin: 25.859588307966845,
+   * ymin: 3.1473739454943654,
+   * xmax: 167.62576717829563,
+   * ymax: 70.47116294961994
    */
   setHighlight(marker) {
     this.marker = marker
-    this.panTo(this.marker.feature.bound)
+    if (this.map) {
+      const { xmin, xmax, ymin, ymax } = marker.feature.bound
+      this.map.fitBounds(
+        [
+          [xmax, ymin],
+          [xmin, ymax]
+        ],
+        {
+          animate: false
+        }
+      )
+    }
   }
 
   /**

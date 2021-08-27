@@ -83,6 +83,10 @@ export class SpatialReference {
    * @memberof SpatialReference
    */
   isWGS84(): boolean {
-    return this.wkid === 4326 || this.wkid === 4490
+    /**
+     * EPSG:4610 -> Xian 1980
+     * EPSG:4490 -> China Geodetic Coordinate System 2000
+     */
+    return this.wkid === 4326 || this.wkid === 4490 || this.wkid === 4610
   }
 }

@@ -207,10 +207,17 @@ export default {
         })
       }
       let options = {}
-      const { line, reg } = this.highlightStyle.feature
+      const { pnt, line, reg } = this.highlightStyle.feature
       switch (feature.geometry.type) {
         case 'Point':
           // 点要素的高亮符号怎么处理?
+          options = {
+            type: 'circle',
+            paint: {
+              'circle-color': pnt.color,
+              'circle-radius': parseInt(pnt.size)
+            }
+          }
           break
         case 'LineString':
           options = {

@@ -20,49 +20,57 @@
     </mp-toolbar>
     <!-- 设置面板内容 -->
     <div class="subject-items-content">
-      <a-empty description="暂无数据" v-if="!configList.length" />
+      <a-empty class="subject-items-empty" v-if="!configList.length" />
       <a-collapse
         v-else
         @change="panelChange"
         :activeKey="activePanel"
         :accordion="true"
+        class="subject-items-collapse"
       >
-        <a-collapse-panel v-for="(sub, i) in configList" :key="i">
-          <!-- 设置头 -->
+        <a-collapse-panel v-for="(config, i) in configList" :key="i">
+          <!-- 年度/时间 -->
           <mp-row-flex
             slot="header"
+            :span="panelHeaderSpan"
             justify="space-between"
-            :label="sub.time || '年度/时间'"
-            :span="[23, 1]"
-            :colon="false"
           >
-            <transition name="fade">
-              <a-checkbox
-                v-show="showCheckbox"
-                @click.stop
-                @change="checked($event, sub, i)"
-                :checked="sub._checked"
-              />
-            </transition>
+            <a-input
+              slot="label"
+              @click.stop
+              @blur="timeBlur(config.time)"
+              v-model="config.time"
+              size="small"
+              placeholder="请输入年度/时间"
+              class="subject-items-time"
+            />
+            <a-checkbox
+              @click.stop
+              @change="checked($event, config, i)"
+              v-show="showCheckbox"
+              :checked="config._checked"
+            />
           </mp-row-flex>
-          <!-- 年度或时间、服务设置等公共设置项 -->
+          <!-- 服务设置等公共设置项 -->
           <common
-            :subject-config="sub"
-            @time-change="timeChange($event, sub)"
-            @field-change="fieldChange($event, sub)"
-            @server-change="serverChange($event, sub)"
+            @change="configChange($event, config)"
+            :subject-config="config"
           />
-          <!-- 各专题图样式、动画等配置 -->
-          <subject-styles
-            :subject-type="subjectType"
-            @change="subjectStylesChange($event, sub)"
-          />
-          <!-- 属性表配置 -->
-          <!-- <attribute-table /> -->
-          <!-- 统计表配置 -->
-          <!--  <statistic-graph /> -->
-          <!-- 弹框配置 -->
-          <!--  <popup /> -->
+          <!-- 样式、属性表、统计表、弹框配置 -->
+          <a-tabs type="card" size="small" class="subject-items-card">
+            <a-tab-pane
+              v-for="{ key, tab } in configTabList"
+              :key="key"
+              :tab="tab"
+            >
+              <component
+                @change="configChange($event, config)"
+                :subject-config="config"
+                :subject-type="subjectType"
+                :is="key"
+              />
+            </a-tab-pane>
+          </a-tabs>
         </a-collapse-panel>
       </a-collapse>
     </div>
@@ -73,13 +81,17 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { SubjectType, NewSubjectConfig } from '../../../../store'
 import Common from './components/Common.vue'
 import SubjectStyles from './components/SubjectStyles'
-// import AttributeTable from './components/AttributeTable.vue'
+import AttributeTable from './components/AttributeTable.vue'
+import StatisticGragh from './components/StatisticGragh.vue'
+import Popup from './components/Popup.vue'
 
 @Component({
   components: {
     Common,
-    SubjectStyles
-    // AttributeTable
+    SubjectStyles,
+    AttributeTable,
+    StatisticGragh,
+    Popup
   }
 })
 export default class SubjectItems extends Vue {
@@ -91,9 +103,33 @@ export default class SubjectItems extends Vue {
 
   showCheckbox = false
 
-  checkedPanel = []
+  checkedPanels = []
 
-  configListMap = new Map()
+  configTabList: Array<{
+    key: string
+    tab: string
+  }> = [
+    {
+      key: 'SubjectStyles',
+      tab: '样式配置'
+    },
+    {
+      key: 'AttributeTable',
+      tab: '表格配置'
+    },
+    {
+      key: 'StatisticGragh',
+      tab: '统计图配置'
+    },
+    {
+      key: 'Popup',
+      tab: '弹框配置'
+    }
+  ]
+
+  get panelHeaderSpan() {
+    return this.showCheckbox ? [23, 1] : [24, 0]
+  }
 
   get configList() {
     return this.value
@@ -115,36 +151,27 @@ export default class SubjectItems extends Vue {
   /**
    * 面板change
    */
-  panelChange(key) {
+  panelChange(key: string | number) {
     this.activePanel = key
   }
 
   /**
-   * 专题图选择change
+   * 专题配置change
    */
-  timeChange(time, sub) {
-    this.$set(sub, 'time', time)
+  configChange(newConfig: Record<string, any>, config: NewSubjectConfig) {
+    this.setProperties(newConfig, config)
+    console.log('配置数据', { ...config })
   }
 
   /**
-   * 专题图选择change
+   * 专题图年度输入失焦
    */
-  fieldChange(field, sub) {
-    this.$set(sub, 'field', field)
-  }
-
-  /**
-   * 专题图选择change
-   */
-  serverChange(serverConfig, sub) {
-    this.setProperties(serverConfig, sub)
-  }
-
-  /**
-   * 专题个性配置选择change
-   */
-  subjectStylesChange(newSub, sub) {
-    this.setProperties(newSub, sub)
+  timeBlur(time: string) {
+    if (this.configList.filter(c => time && c.time === time).length > 1) {
+      this.$message.warning(
+        `存在相同的年度"${time}"， 若继续保存，将会保存最新配置的年度`
+      )
+    }
   }
 
   /**
@@ -170,24 +197,24 @@ export default class SubjectItems extends Vue {
    * 移除年度
    */
   remove() {
-    if (!this.checkedPanel.length) {
+    if (!this.checkedPanels.length) {
       this.$message.warning('请选择需要删除的年度')
       return
     }
-    this.checkedPanel.forEach(index => this.configList.splice(index, 1))
+    this.checkedPanels.forEach(index => this.configList.splice(index, 1))
   }
 
   /**
    * 选中年度
    */
-  checked(e: Event, sub: Record<string, unknown>, index: number) {
+  checked(e: Event, config: Record<string, unknown>, index: number) {
     e.stopPropagation()
     const { checked } = e.target
-    this.$set(sub, '_checked', checked)
+    this.$set(config, '_checked', checked)
     if (checked) {
-      this.checkedPanel.push(index)
+      this.checkedPanels.push(index)
     } else {
-      this.checkedPanel.splice(index, 1)
+      this.checkedPanels.splice(index, 1)
     }
   }
 
@@ -196,11 +223,11 @@ export default class SubjectItems extends Vue {
    */
   cancel() {
     this.showCheckbox = false
-    this.checkedPanel = []
+    this.checkedPanels = []
     this.configList.forEach(v => this.$set(v, '_checked', false))
   }
 }
 </script>
-<style lang="less" scoped>
+<style lang="less">
 @import './index.less';
 </style>

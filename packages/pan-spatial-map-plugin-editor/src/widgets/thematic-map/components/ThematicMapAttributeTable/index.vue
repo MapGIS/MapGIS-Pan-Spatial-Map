@@ -1,65 +1,72 @@
 <template>
   <!-- 属性表 -->
-  <mp-window-wrapper :visible="visible">
-    <mp-window
-      :visible.sync="visible"
-      :horizontalOffset="12"
-      :verticalOffset="50"
-      :min-width="500"
-      :max-height="400"
-      :has-padding="false"
-      anchor="top-right"
-      title="属性表"
-    >
-      <div class="thematic-map-attribute-table">
-        <a-spin :spinning="loading">
-          <mp-row-flex
-            :span="[13, 10]"
-            justify="space-between"
-            class="attribute-table-head"
-          >
-            <template #label>
-              <mp-row-flex label="专题" :span="[4, 20]">
-                <a-select
-                  :value="subject"
-                  :options="subjectList"
-                  @change="onSubjectChange"
-                />
+  <transition name="fade">
+    <mp-window-wrapper :visible="visible">
+      <mp-window
+        :visible.sync="visible"
+        :horizontalOffset="48"
+        :verticalOffset="50"
+        :max-width="tableWidth"
+        :has-padding="false"
+        anchor="top-right"
+        title="属性表"
+      >
+        <div class="thematic-map-attribute-table">
+          <a-spin :spinning="loading">
+            <mp-row-flex
+              :span="[13, 10]"
+              justify="space-between"
+              class="attribute-table-head"
+            >
+              <template #label>
+                <mp-row-flex label="专题" :label-width="44">
+                  <a-select
+                    @change="onSubjectChange"
+                    :value="subject"
+                    :options="subjectList"
+                    size="small"
+                  />
+                </mp-row-flex>
+              </template>
+              <mp-row-flex label="时间" :label-width="44">
+                <a-select @change="onTimeChange" :value="time" size="small">
+                  <a-select-option
+                    v-for="y in selectedSubjectTimeList"
+                    :key="y"
+                    >{{ y }}</a-select-option
+                  >
+                </a-select>
               </mp-row-flex>
-            </template>
-            <mp-row-flex label="时间" :span="[5, 19]">
-              <a-select :value="time" @change="onTimeChange">
-                <a-select-option
-                  v-for="y in selectedSubjectTimeList"
-                  :key="y"
-                  >{{ y }}</a-select-option
-                >
-              </a-select>
             </mp-row-flex>
-          </mp-row-flex>
-          <!-- 分页列表 -->
-          <a-empty v-if="!tableColumns.length" />
-          <a-table
-            v-else
-            bordered
-            row-key="fid"
-            @change="onTableChange"
-            :columns="tableColumns"
-            :data-source="tableData"
-            :pagination="tablePagination"
-            :scroll="tableScroll"
-            :customRow="setCustomRow"
-          />
-        </a-spin>
-      </div>
-    </mp-window>
-  </mp-window-wrapper>
+            <!-- 分页列表 -->
+            <a-empty v-if="!tableColumns.length" />
+            <a-table
+              v-else
+              bordered
+              row-key="fid"
+              @change="onTableChange"
+              :columns="tableColumns"
+              :data-source="tableData"
+              :pagination="tablePagination"
+              :scroll="tableScroll"
+              :customRow="setCustomRow"
+            />
+          </a-spin>
+        </div>
+      </mp-window>
+    </mp-window-wrapper>
+  </transition>
 </template>
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
 import _debounce from 'lodash/debounce'
-import { mapGetters, mapMutations, highlightSubjectTypes } from '../../store'
+import {
+  ModuleType,
+  mapGetters,
+  mapMutations,
+  highlightSubjectTypes
+} from '../../store'
 import base from '@mapgis/pan-spatial-map-store/src/config/base'
 
 @Component({
@@ -113,12 +120,12 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 显示开关
   get visible() {
-    return this.table && this.isVisible('table')
+    return this.table && this.isVisible(ModuleType.TABLE)
   }
 
   set visible(nV) {
     if (!nV) {
-      this.resetVisible('table')
+      this.resetVisible(ModuleType.TABLE)
     }
   }
 
@@ -132,13 +139,18 @@ export default class ThematicMapAttributeTable extends Vue {
     return this.subjectData?.table
   }
 
+  // 列表宽度
+  get tableWidth() {
+    return 360
+  }
+
   // 列表滚动
   get tableScroll() {
     const { length } = this.tableColumns
-    const x = length > 3 ? length * 120 : 500
+    const x = length > 3 ? length * 120 : this.tableWidth
     return {
       x,
-      y: 216
+      y: 230
     }
   }
 
@@ -187,7 +199,7 @@ export default class ThematicMapAttributeTable extends Vue {
   setCustomRow(record, index) {
     return {
       class: {
-        highlight: record._highlight
+        'row-highlight': record._highlight
       },
       on: this.hasHighlight
         ? {
@@ -215,7 +227,6 @@ export default class ThematicMapAttributeTable extends Vue {
       return {
         title,
         dataIndex: v,
-        align: 'center',
         sorter: (a, b) => {
           if ([a[v], b[v]].every(v => !isNaN(Number(v)))) {
             return a[v] - b[v]

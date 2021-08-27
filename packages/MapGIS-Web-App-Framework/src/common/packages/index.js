@@ -3,6 +3,9 @@ import MpIcon from './icon/Icon.vue'
 import MpButton from './button/Button.vue'
 
 import MpRowFlex from './row-flex/RowFlex.vue'
+import MpCard from './card/Card.vue'
+import MpEditableTable from './editable-table/EditableTable.vue'
+import MpColorPickerConfirm from './color-picker-confirm/ColorPickerConfirm.vue'
 
 import MpToolbar from './toolbar/Toolbar.vue'
 
@@ -47,6 +50,8 @@ const MpImgCheckboxGroup = MpImgCheckbox.Group
 const components = [
   MpIcon,
   MpButton,
+  MpCard,
+  MpEditableTable,
   MpRowFlex,
   MpToolbar,
   MpToolbarSpace,
@@ -56,6 +61,7 @@ const components = [
   MpPlacement,
   MpWindow,
   MpColorPicker,
+  MpColorPickerConfirm,
   MpTreeSelect,
   MpSettingForm,
   MpGroupTab,
