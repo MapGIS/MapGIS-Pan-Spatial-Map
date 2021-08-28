@@ -20,8 +20,6 @@
     "yarn": ">= 1.6.0"
   },
   "dependencies": {
-    "@mapgis/web-app-framework": "^0.2.0",
-    "vue-color": "^2.8.1",
     "vue-property-decorator": "^8.3.0"
   },
   "devDependencies": {

@@ -27,6 +27,12 @@
     "limit": "cd packages/pan-spatial-map-framework && yarn fix-memory-limit",
     "limit-portal": "cd packages/pan-spatial-map-framework-portal && yarn fix-memory-limit"
   },
+  "dependencies": {
+    "vue-color": "^2.8.1",
+    "@mapgis/webclient-es6-service": "^10.5.3-beta",
+    "@mapgis/webclient-es6-mapboxgl": "link:../WebClient-JavaScript/src/mapboxgl",
+    "@mapgis/web-app-framework": "link:../MapGIS-Web-App-Framework"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.17.0",
     "@typescript-eslint/parser": "^2.17.0",
