@@ -220,7 +220,7 @@ import {
   eventBus,
   events,
   api
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import NonSpatial from './non-spatial.vue'

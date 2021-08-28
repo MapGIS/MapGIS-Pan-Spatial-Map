@@ -6,7 +6,7 @@ import {
   api,
   baseConfigInstance,
   markerIconInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import { useFetch } from '../../components/ThematicMapSubjectAdd/components/SubjectItems/hooks/fetch'
 import {
   ModuleType,

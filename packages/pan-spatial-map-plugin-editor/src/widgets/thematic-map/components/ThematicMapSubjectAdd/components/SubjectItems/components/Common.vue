@@ -42,7 +42,7 @@ import { Feature, Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
   baseConfigInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import url from 'url'
 import _cloneDeep from 'lodash/cloneDeep'
 import _debounce from 'lodash/debounce'

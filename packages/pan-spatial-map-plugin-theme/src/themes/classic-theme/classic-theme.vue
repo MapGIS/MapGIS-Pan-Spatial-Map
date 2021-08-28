@@ -46,7 +46,7 @@
 
 <script>
 import { ThemeMixin } from '@mapgis/web-app-framework'
-import { baseConfigInstance, loadConfigs } from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance, loadConfigs } from '@mapgis/pan-spatial-map-common'
 import { mapState } from 'vuex'
 import MpPanSpatialMapSidePanel from '../../components/SidePanel/SidePanel.vue'
 

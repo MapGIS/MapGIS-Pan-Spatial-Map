@@ -87,7 +87,7 @@ import {
   Emit
 } from 'vue-property-decorator'
 import { AppMixin, MapMixin, Feature } from '@mapgis/web-app-framework'
-import { api, baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { api, baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 import { bboxPolygon, lineString, bbox } from '@turf/turf'
 import ZoneFrameMapbox from './ZoneFrameMapbox.vue'
 import ZoneFrameCesium from './ZoneFrameCesium.vue'

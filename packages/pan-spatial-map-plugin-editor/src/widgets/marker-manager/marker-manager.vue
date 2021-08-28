@@ -131,7 +131,7 @@ import {
   baseConfigInstance,
   markerIconInstance,
   eventBus
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 
 import MarkerAdd from './components/MarkerAdd/MarkerAdd'
 import MarkerShowWindow from './components/MarkerWindow/MarkerShowWindow.vue'

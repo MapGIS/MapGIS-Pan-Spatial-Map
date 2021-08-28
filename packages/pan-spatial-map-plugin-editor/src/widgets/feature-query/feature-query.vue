@@ -51,7 +51,7 @@ import { Component, Vue, Mixins, Watch, Inject } from 'vue-property-decorator'
 import {
   baseConfigInstance,
   dataCatalogManagerInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import {
   WidgetMixin,
   ExhibitionControllerMixin,

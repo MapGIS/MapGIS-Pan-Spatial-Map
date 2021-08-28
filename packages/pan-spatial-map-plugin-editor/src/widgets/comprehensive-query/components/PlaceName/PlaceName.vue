@@ -66,7 +66,7 @@ import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import PlaceNamePanel from './PlaceNamePanel'
 import PlaceNameMapbox from './PlaceNameMapbox'
 import PlaceNameCesium from './PlaceNameCesium'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 import {
   LayerType,
   AppMixin,

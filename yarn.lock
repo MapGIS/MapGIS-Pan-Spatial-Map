@@ -1190,6 +1190,10 @@
   resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
   integrity sha1-Cab3kgWtGJSqqZEisITs6R1p4tw=
 
+"@mapgis/web-app-framework@link:../MapGIS-Web-App-Framework":
+  version "0.0.0"
+  uid ""
+
 "@mapgis/webclient-es6-mapboxgl@link:../WebClient-JavaScript/src/mapboxgl":
   version "0.0.0"
   uid ""
@@ -4400,7 +4404,7 @@
   resolved "https://registry.npm.taobao.org/@xtuc/long/download/@xtuc/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha1-0pHGpOl5ibXGHZrPOWrk/hM6cY0=
 
-"JSV@>= 4.0.x":
+"JSV@>= 4.0.x", JSV@^4.0.x:
   version "4.0.2"
   resolved "https://registry.npm.taobao.org/JSV/download/JSV-4.0.2.tgz#d077f6825571f82132f9dffaed587b4029feff57"
   integrity sha1-0Hf2glVx+CEy+d/67Vh7QCn+/1c=
@@ -5837,6 +5841,11 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.nlark.com/code-point-at/download/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
+
+codemirror@^5.49.2:
+  version "5.62.3"
+  resolved "https://registry.nlark.com/codemirror/download/codemirror-5.62.3.tgz?cache=0&sync_timestamp=1629450520293&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcodemirror%2Fdownload%2Fcodemirror-5.62.3.tgz#5cfdee6931c8b2d1b39ae773aaaaec2cc6b5558e"
+  integrity sha1-XP3uaTHIstGzmudzqqrsLMa1VY4=
 
 codepage@~1.15.0:
   version "1.15.0"
@@ -9868,6 +9877,14 @@ jsonlint-lines@1.7.1:
     JSV ">= 4.0.x"
     nomnom ">= 1.5.x"
 
+jsonlint@1.6.3:
+  version "1.6.3"
+  resolved "https://registry.npm.taobao.org/jsonlint/download/jsonlint-1.6.3.tgz#cb5e31efc0b78291d0d862fbef05900adf212988"
+  integrity sha1-y14x78C3gpHQ2GL77wWQCt8hKYg=
+  dependencies:
+    JSV "^4.0.x"
+    nomnom "^1.5.x"
+
 jsonrepair@^2.2.1:
   version "2.2.1"
   resolved "https://registry.nlark.com/jsonrepair/download/jsonrepair-2.2.1.tgz#7c6257c36550a310150c41ab7d5d4cab71828456"
@@ -10960,7 +10977,7 @@ node-sql-parser@^3.2.0:
   dependencies:
     big-integer "^1.6.48"
 
-"nomnom@>= 1.5.x":
+"nomnom@>= 1.5.x", nomnom@^1.5.x:
   version "1.8.1"
   resolved "https://registry.npm.taobao.org/nomnom/download/nomnom-1.8.1.tgz#2151f722472ba79e50a76fc125bb8c8f2e4dc2a7"
   integrity sha1-IVH3Ikcrp55Qp2/BJbuMjy5Nwqc=
@@ -13257,6 +13274,11 @@ sort-object@^0.3.2:
     sort-asc "^0.1.0"
     sort-desc "^0.1.1"
 
+sortablejs@1.10.2:
+  version "1.10.2"
+  resolved "https://registry.nlark.com/sortablejs/download/sortablejs-1.10.2.tgz#6e40364d913f98b85a14f6678f92b5c1221f5290"
+  integrity sha1-bkA2TZE/mLhaFPZnj5K1wSIfUpA=
+
 source-list-map@^2.0.0, source-list-map@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npm.taobao.org/source-list-map/download/source-list-map-2.0.1.tgz#3993bd873bfc48479cca9ea3a547835c7c154b34"
@@ -14793,6 +14815,13 @@ vue@^2.5.17, vue@^2.6.10, vue@^2.6.11:
   version "2.6.14"
   resolved "https://registry.nlark.com/vue/download/vue-2.6.14.tgz#e51aa5250250d569a3fbad3a8a5a687d6036e235"
   integrity sha1-5RqlJQJQ1Wmj+606ilpofWA24jU=
+
+vuedraggable@^2.23.2:
+  version "2.24.3"
+  resolved "https://registry.nlark.com/vuedraggable/download/vuedraggable-2.24.3.tgz?cache=0&sync_timestamp=1629673069618&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fvuedraggable%2Fdownload%2Fvuedraggable-2.24.3.tgz#43c93849b746a24ce503e123d5b259c701ba0d19"
+  integrity sha1-Q8k4SbdGokzlA+Ej1bJZxwG6DRk=
+  dependencies:
+    sortablejs "1.10.2"
 
 vuepress-html-webpack-plugin@^3.2.0:
   version "3.2.0"

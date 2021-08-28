@@ -67,7 +67,6 @@ import {
   mapMutations,
   highlightSubjectTypes
 } from '../../store'
-import base from '@mapgis/pan-spatial-map-store/src/config/base'
 
 @Component({
   computed: {

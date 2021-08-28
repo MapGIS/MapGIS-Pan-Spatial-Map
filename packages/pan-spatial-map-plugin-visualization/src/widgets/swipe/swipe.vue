@@ -7,10 +7,9 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch, Provide } from 'vue-property-decorator'
-import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
+import { WidgetMixin, AppMixin, Layer } from '@mapgis/web-app-framework'
 import MapboxCompare from './components/MapboxCompare'
 import CesiumCompare from './components/CesiumCompare'
-import { Layer } from 'app/packages/MapGIS-Web-App-Framework/src/store/document/layer'
 
 type Direction = 'vertical' | 'horizontal'
 

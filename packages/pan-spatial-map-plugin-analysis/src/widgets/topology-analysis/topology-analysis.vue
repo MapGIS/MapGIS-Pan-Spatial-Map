@@ -138,7 +138,7 @@ import {
   IGSMapImageLayer,
   IGSVectorLayer
 } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 import mapboxLayer from './map-layer/mapbox-layer.vue'
 import cesiumLayer from './map-layer/cesium-layer'
 import featureList from './feature-list.vue'

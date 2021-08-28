@@ -15,7 +15,7 @@ import {
   LoadStatus,
   CommonUtil
 } from '@mapgis/web-app-framework'
-import { DataCatalogManager } from '@mapgis/pan-spatial-map-store'
+import { DataCatalogManager } from '@mapgis/pan-spatial-map-common'
 import BaseMinxin from '../../mixins/base'
 
 type HeatMapData = Array<{ x: number; y: number; value: number }>

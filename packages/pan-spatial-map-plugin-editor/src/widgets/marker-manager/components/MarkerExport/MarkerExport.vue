@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 import axios from 'axios'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import XLSX from 'xlsx'

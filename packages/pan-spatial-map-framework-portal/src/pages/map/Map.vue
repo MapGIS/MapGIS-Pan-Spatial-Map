@@ -5,7 +5,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { AppManager } from '@mapgis/web-app-framework'
-import { eventBus, events } from '@mapgis/pan-spatial-map-store'
+import { eventBus, events } from '@mapgis/pan-spatial-map-common'
 
 import { BASE_URL } from '@/services/api'
 import { request } from '@/utils/request'

@@ -57,7 +57,7 @@ import {
   DataCatalogManager,
   eventBus,
   events
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 
 import AddDataList from './components/AddDataList.vue'
 import AddDataUrl from './components/AddDataUrl.vue'

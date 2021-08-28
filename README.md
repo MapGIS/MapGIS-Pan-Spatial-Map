@@ -19,13 +19,14 @@ MapGIS全空间一张图（MapGIS Pan-Spatial Map）是以全空间信息模型�
 ```text
 |── packages
    |── pan-spatial-map-framework              # 框架应用
+   |── pan-spatial-map-framework              # 门户应用
    |── pan-spatial-map-mock-server            # mock
    |── pan-spatial-map-plugin-theme           # 主题插件
    |── pan-spatial-map-plugin-workspace       # 工作空间插件
    |── pan-spatial-map-plugin-editor          # 编辑器插件
    |── pan-spatial-map-plugin-visualization   # 可视化插件
    |── pan-spatial-map-plugin-analysis        # 分析插件
-   |── pan-spatial-map-store                  # 全局上下文环境&存储结构
+   |── pan-spatial-map-common                 # 通用模块
 |── .editorconfig                             # editor配置
 |── .eslintignore                             # ESlint忽略路径
 |── .eslintrc.js                              # ESlint配置

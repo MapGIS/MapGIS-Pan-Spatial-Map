@@ -39,7 +39,7 @@ import {
   DataCatalogManager,
   eventBus,
   events
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 
 // {
 //  "DataType": 1, // 参数类型，1为string，0为Int、2为Float、3为Bool、4为Date、5为DateTime、6为Unknow

@@ -18,7 +18,7 @@ import {
   Emit
 } from 'vue-property-decorator'
 import { MapMixin, AppMixin, Feature } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component
 export default class CoordinateMapbox extends Mixins(MapMixin, AppMixin) {

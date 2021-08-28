@@ -26,7 +26,7 @@ import {
 import {
   baseConfigInstance,
   DataCatalogManager
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import MpBasemapItem from './components/BasemapItem/BasemapItem.vue'
 
 @Component({ name: 'MpBasemapManager', components: { MpBasemapItem } })

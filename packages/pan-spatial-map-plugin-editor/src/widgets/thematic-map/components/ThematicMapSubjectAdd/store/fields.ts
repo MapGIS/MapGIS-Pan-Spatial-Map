@@ -1,5 +1,5 @@
 import { Feature } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 interface QueryParams {
   ip: string
