@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-plugin-editor",
-  "version": "0.2.0",
+  "version": "0.9.0",
   "description": "全空间一张图制图编辑插件",
   "author": "MapGIS",
   "license": "Apache-2.0",
