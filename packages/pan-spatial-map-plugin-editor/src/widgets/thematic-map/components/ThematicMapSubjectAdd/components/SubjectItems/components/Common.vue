@@ -1,16 +1,8 @@
 <template>
   <div class="common">
-    <!-- 年度或时间 -->
-    <mp-row-flex label="年度/时间" label-align="right" :label-width="76">
-      <a-input
-        v-model="selfTime"
-        :allow-clear="true"
-        placeholder="请输入年度/时间"
-      />
-    </mp-row-flex>
-    <!-- 服务设置 -->
+    <!-- 服务地址设置 -->
     <div class="server-tree-select">
-      <mp-row-flex label="服务地址" label-align="right" :label-width="76">
+      <mp-row-flex :label-width="76" label-align="right" label="服务地址">
         <mp-tree-select
           @change="selfUriChange"
           :value="selfUri"
@@ -29,14 +21,13 @@
         v-for="{ label, content } in examples"
         :key="label"
         :label-width="76"
-        label-align="right"
         class="server-tree-select-example"
       >
         {{ label }}：{{ content }}
       </mp-row-flex>
     </div>
     <!-- 统计属性 -->
-    <mp-row-flex label="统计属性" label-align="right" :label-width="76">
+    <mp-row-flex :label-width="76" label-align="right" label="统计属性">
       <a-select
         v-model="field"
         :options="fields"
@@ -51,11 +42,21 @@ import { Feature, Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
   baseConfigInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import url from 'url'
 import _cloneDeep from 'lodash/cloneDeep'
 import _debounce from 'lodash/debounce'
 import _last from 'lodash/last'
+import { NewSubjectConfig } from '../../../../../store'
+
+interface IServerParams {
+  ip: string
+  port: string
+  gdbp?: string
+  docName?: string
+  layerName?: string
+  layerIndex?: string
+}
 
 interface IField {
   type: string
@@ -65,7 +66,7 @@ interface IField {
 
 @Component
 export default class Common extends Vue {
-  @Prop({ default: () => ({}) }) readonly subjectConfig!: Record<string, any>
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
 
   // 属性列表
   fields: Array<IField> = []
@@ -88,22 +89,24 @@ export default class Common extends Vue {
     }
   ]
 
-  // 年度
-  get selfTime() {
-    return this.subjectConfig.time || ''
-  }
-
-  set selfTime(value) {
-    this.$emit('time-change', value)
-  }
-
   // 服务地址
   get selfUri() {
-    return ''
+    const { gdbp, docName, ...others } = this.subjectConfig
+    const serverType = docName
+      ? LayerType.IGSMapImage
+      : gdbp
+      ? LayerType.IGSVector
+      : null
+    return this.getServerUri({
+      ...others,
+      gdbp,
+      docName,
+      serverType
+    })
   }
 
   set selfUri(value) {
-    this.$emit('server-change', this.getServerParams(value))
+    this.$emit('change', this.getServerParams(value))
   }
 
   // 统计属性
@@ -112,11 +115,14 @@ export default class Common extends Vue {
   }
 
   set field(nV) {
-    this.$emit('field-change', nV)
+    this.$emit('change', {
+      ...this.subjectConfig,
+      field: nV
+    })
   }
 
   /**
-   * 是否有gdbp
+   * 是否gdbp
    */
   isGdbp(serverType) {
     return LayerType.IGSVector === serverType
@@ -140,7 +146,7 @@ export default class Common extends Vue {
   /**
    * server全地址
    */
-  getServerUri(node) {
+  getServerUri(node: Layer) {
     const {
       ip,
       port,
@@ -160,6 +166,7 @@ export default class Common extends Vue {
         serverUri += `layers?gdbp=${gdbp || gdbps}`
         break
       default:
+        serverUri = ''
         break
     }
     return serverUri
@@ -240,7 +247,7 @@ export default class Common extends Vue {
   }
 
   /**
-   * 异步加载节点数据的回调
+   * 异步加载目录树节点数据的回调
    */
   async catalogTreeLoadData(treeNode: any) {
     const {
@@ -340,17 +347,28 @@ export default class Common extends Vue {
 }
 </script>
 <style lang="less" scoped>
-.server-tree-select {
-  margin-bottom: 10px;
-  ::v-deep .ant-row-flex {
-    margin-bottom: 4px;
+.common {
+  ::v-deep {
+    .ant-input,
+    .ant-select-selection {
+      border-color: transparent;
+      &:hover {
+        border-color: @primary-color;
+      }
+    }
   }
-  &-example {
-    word-break: break-all;
-    white-space: normal;
-    font-size: 12px;
-    color: @text-color-secondary;
-    margin-bottom: 4px !important;
+
+  .server-tree-select {
+    &-example {
+      word-break: break-all;
+      white-space: normal;
+      font-size: @font-size-sm;
+      color: #a7a4a4;
+      margin: 4px 0;
+    }
+    + div {
+      margin: 10px 0 14px 0;
+    }
   }
 }
 </style>

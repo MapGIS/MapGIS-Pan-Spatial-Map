@@ -89,7 +89,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin, Feature } from '@mapgis/web-app-framework'
-import { api } from '@mapgis/pan-spatial-map-store'
+import { api } from '@mapgis/pan-spatial-map-common'
 import PlaceName from './components/PlaceName/PlaceName'
 import Zone from './components/ZoneFrame/Zone'
 import Coordinate from './components/Coordinate/Coordinate'

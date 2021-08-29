@@ -1,46 +1,95 @@
 .subject-items {
-  min-height: 200px;
-  max-height: 380px;
   display: flex;
   flex-flow: column nowrap;
   border: 1px solid @border-color-base;
   border-radius: @border-radius-base;
+  .scrollbar {
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+  }
+
+  &-time {
+    border: none;
+    &:hover,
+    &:focus {
+      box-shadow: none;
+      border-color: @border-color-base;
+    }
+  }
+
   &-head {
     border-bottom: 1px solid @border-color-base;
     padding: 0 2px 0 8px;
   }
+
   &-content {
     flex: 1;
+    min-height: 200px;
+    max-height: 400px;
     overflow-y: auto;
+    .scrollbar();
+  }
 
-    &::-webkit-scrollbar {
-      width: 2px;
+  &-empty {
+    padding: 32px 0;
+  }
+
+  &-collapse.ant-collapse {
+    border: none;
+    background-color: transparent;
+    .ant-collapse-header,
+    .ant-collapse-item {
+      border-radius: 0;
+    }
+    .ant-collapse-header {
+      color: @text-color-secondary;
+      height: 25px;
+      line-height: 25px;
+      padding: 0 4px;
+      padding-left: 25px;
+    }
+    .ant-collapse-content-box {
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 8px;
+      background: #f0f2f5;
+      .scrollbar();
+    }
+    .ant-collapse-arrow {
+      left: 8px !important;
+    }
+  }
+
+  &-card.ant-tabs.ant-tabs-card {
+    .ant-tabs-bar {
+      margin-bottom: 0;
+      border-color: @white;
     }
 
-    ::v-deep .ant-empty {
-      padding: 12px 0;
+    .ant-tabs-content {
+      background: @white;
     }
-    ::v-deep .ant-collapse {
-      border: none;
-      background-color: transparent;
-      .ant-collapse-header,
-      .ant-collapse > .ant-collapse-item:last-child,
-      .ant-collapse > .ant-collapse-item:last-child > .ant-collapse-header {
-        border-radius: 0;
+
+    .ant-tabs-tab {
+      border-color: transparent;
+      background: transparent;
+      &-active {
+        border-color: @white;
+        background: @white;
       }
-      .ant-collapse-header {
-        color: @text-color-secondary;
-        height: 25px;
-        line-height: 25px;
-        padding: 0 4px;
-        padding-left: 25px;
-      }
-      .ant-collapse-content > .ant-collapse-content-box {
-        padding: 8px;
-      }
-      .ant-collapse-arrow {
-        left: 8px;
-      }
+    }
+
+    .ant-tabs-nav-container,
+    .ant-tabs-tab,
+    .ant-tabs-tab-active {
+      height: 30px;
+      line-height: 30px;
+    }
+
+    .ant-tabs-tab,
+    .ant-tabs-tab-active {
+      padding: 0 8px;
     }
   }
 }

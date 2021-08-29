@@ -16,7 +16,7 @@ import Workspace from '@mapgis/pan-spatial-map-plugin-workspace'
 import Editor from '@mapgis/pan-spatial-map-plugin-editor'
 import Analysis from '@mapgis/pan-spatial-map-plugin-analysis'
 import Visualization from '@mapgis/pan-spatial-map-plugin-visualization'
-import { api } from '@mapgis/pan-spatial-map-store'
+import { api } from '@mapgis/pan-spatial-map-common'
 
 const router = initRouter()
 

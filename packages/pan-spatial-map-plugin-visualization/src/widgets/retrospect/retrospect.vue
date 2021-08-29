@@ -87,7 +87,7 @@
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { Empty } from 'ant-design-vue'
 import { WidgetMixin, WidgetState } from '@mapgis/web-app-framework'
-import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
+import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-common'
 import _cloneDeep from 'lodash/cloneDeep'
 import TimeLine from './components/TimeLine.vue'
 

@@ -66,7 +66,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, Document, LayerType } from '@mapgis/web-app-framework'
-import { eventBus, events } from '@mapgis/pan-spatial-map-store'
+import { eventBus, events } from '@mapgis/pan-spatial-map-common'
 import LayerSetting from './LayerSetting.vue'
 
 @Component({

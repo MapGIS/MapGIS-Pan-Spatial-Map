@@ -25,6 +25,11 @@ const options = {
       path: '/map',
       name: '地图',
       component: () => import('@/pages/map')
+    },
+    {
+      path: '/builder',
+      name: '应用构建器',
+      component: () => import('@/pages/builder')
     }
   ]
 }

@@ -20,7 +20,7 @@ import {
   Overlay
 } from '@mapgis/web-app-framework'
 
-import { markerIconInstance } from '@mapgis/pan-spatial-map-store'
+import { markerIconInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   components: {}

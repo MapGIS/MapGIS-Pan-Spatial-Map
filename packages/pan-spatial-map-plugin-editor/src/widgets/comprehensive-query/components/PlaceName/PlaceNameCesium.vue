@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { IFields } from '@mapgis/pan-spatial-map-store'
+import { IFields } from '@mapgis/pan-spatial-map-common'
 import { MapMixin } from '@mapgis/web-app-framework'
 
 @Component({ components: {} })

@@ -58,7 +58,7 @@
 import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator'
 import { Empty } from 'ant-design-vue'
 import { UUID, AppMixin, Feature } from '@mapgis/web-app-framework'
-import { markerIconInstance } from '@mapgis/pan-spatial-map-store'
+import { markerIconInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component
 export default class PlaceNamePanel extends Vue {

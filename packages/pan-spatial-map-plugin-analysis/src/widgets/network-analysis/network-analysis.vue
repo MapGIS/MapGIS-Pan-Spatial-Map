@@ -151,12 +151,7 @@ import {
   Analysis,
   UUID
 } from '@mapgis/web-app-framework'
-import {
-  dataCatalogInstance,
-  utilInstance,
-  markerIconInstance
-} from '@mapgis/pan-spatial-map-store'
-import dataCatalog from '@mapgis/pan-spatial-map-store/src/data-catalog/data-catalog'
+import { markerIconInstance } from '@mapgis/pan-spatial-map-common'
 import MpHinderTable from './hinder-table'
 import MpCoordinateTable from './coordinate-table'
 import MpAnakysisResultTable from './analysis-result-table'

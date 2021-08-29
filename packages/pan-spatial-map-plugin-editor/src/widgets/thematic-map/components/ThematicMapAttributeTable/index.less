@@ -1,28 +1,49 @@
 .thematic-map-attribute-table {
-  padding: 10px 12px 0 12px;
-  /deep/ .ant-table {
-    line-height: 1.2;
-    .ant-table-thead > tr > th,
-    .ant-table-tbody > tr > td {
-      padding: 8px;
-      white-space: pre-wrap;
-    }
+  padding: 10px;
+  font-size: 13px;
 
-    .ant-table-body {
-      overflow: auto !important;
-      .highlight {
-        background: rgba(65, 174, 255, 0.2);
-      }
+  .scroller(@size: 2px) {
+    &::-webkit-scrollbar {
+      width: @size;
+      height: @size;
     }
   }
-  /deep/.ant-table-pagination.ant-pagination {
-    float: unset;
-    text-align: center;
-  }
+
   .attribute-table-head {
     margin-bottom: 10px;
     .ant-select {
       width: 100%;
     }
+  }
+
+  .row-highlight {
+    background: rgba(65, 174, 255, 0.2);
+  }
+
+  ::v-deep .ant-table {
+    line-height: 1.1;
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 6px 8px;
+      white-space: pre-wrap;
+    }
+
+    .ant-table-header {
+      .scroller(0);
+    }
+
+    .ant-table-body {
+      overflow: auto !important;
+      .scroller();
+      &:hover {
+        .scroller(6px);
+      }
+    }
+  }
+  ::v-deep .ant-table-pagination.ant-pagination {
+    float: unset;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 0;
   }
 }

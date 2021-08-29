@@ -1,57 +1,105 @@
 <template>
-  <div class="popup">
-    <a-row type="flex" align="middle">
-      <a-checkbox @change="onPopupChange">
-        弹出框设置
-      </a-checkbox>
-    </a-row>
-    <template v-if="showPopup">
-      <mp-row-flex label="显示字段" label-align="right">
-        <a-select
-          v-model="displayField"
-          mode="tags"
-          :options="displayFieldList"
-        />
-      </mp-row-flex>
-      <a-table
-        row-key="id"
-        :loading="tableLoading"
-        :columns="tableColumns"
-        :data-source="tableData"
-        :scroll="{ y: 250 }"
-      />
-    </template>
-  </div>
+  <editable-field-table
+    @view="onView"
+    @change="onChange"
+    :data="tableData"
+    :columns="tableColumns"
+    :subject-config="subjectConfig"
+  >
+    <mp-row-flex slot="top" label="弹框标题" :label-width="72">
+      <a-input v-model="title" placeholder="请选择" />
+    </mp-row-flex>
+  </editable-field-table>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { NewSubjectConfig } from '../../../../../store'
+import EditableFieldTable from '../../../common/EditableFieldTable.vue'
 
-@Component
-export default class Popup extends Vue {
-  showPopup = false
+interface ITableDataItem {
+  index: number
+  field: string
+  alias: string
+}
 
-  displayField = []
+interface IPopup{
+  showFields: string[]
+  showFieldsTitle: Record<string, string>
+}
 
-  displayFieldList = []
-
-  tableLoading = false
-
-  tableColumns = [
-    {
-      title: '字段名',
-      dataIndex: 'key'
-    },
-    {
-      title: '别名',
-      dataIndex: 'val'
-    }
-  ]
-
-  tableData = []
-
-  onPopupChange(e) {
-    this.showPopup = e.target.checked
+@Component({
+  components: {
+    EditableFieldTable
   }
+})
+export default class Popup extends Vue {
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
+
+  @Watch('subjectConfig.popup', { deep: true })
+  tableDataChange({ showFields = [], showFieldsTitle } = {}) {
+    if (showFields.length === this.tableData.length) {
+      this.tableData = showFields.map((f, i) => ({
+        index: i,
+        field: f,
+        alias: showFieldsTitle[f]
+      }))
+    }
+  }
+
+  title = ''
+
+  tableData: ITableDataItem[] = []
+
+  get tableColumns() {
+    return [
+      {
+        type: 'Select',
+        title: '属性字段',
+        dataIndex: 'field',
+        width: 160
+      },
+      {
+        type: 'Input',
+        title: '属性别名',
+        dataIndex: 'alias'
+      }
+    ]
+  }
+
+  /**
+   * 属性配置变化
+   */
+  onChange(data: ITableDataItem[] = []) {
+    const popup: ?IPopup =
+      data.length && data.some(({ field }) => !!field)
+        ? data.reduce(
+            ({ showFields, showFieldsTitle }, { field, alias }) => {
+              if (field) {
+                if (!showFields.includes(field)) {
+                  showFields.push(field)
+                }
+                showFieldsTitle[field] = alias
+              }
+              return { showFields, showFieldsTitle }
+            },
+            {
+              showFields: [],
+              showFieldsTitle: {}
+            }
+          )
+        : undefined
+    this.tableData = data
+    this.$emit('change', { popup })
+  }
+
+  /**
+   * 预览
+   */
+  onView() {}
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+::v-deep .ant-row-flex {
+  padding: 0 4px 8px;
+}
+</style>

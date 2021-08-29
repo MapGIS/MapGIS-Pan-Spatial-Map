@@ -65,7 +65,7 @@ import { Component, Prop, Emit, Mixins } from 'vue-property-decorator'
 import {
   markerIconInstance,
   baseConfigInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import { UUID, Feature } from '@mapgis/web-app-framework'
 import moment from 'moment'
 import MarkerImportFileDesc from './MarkerImportFileDesc.vue'

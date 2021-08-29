@@ -132,7 +132,6 @@ export default {
   overflow: auto;
   z-index: 1000;
   box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
-  height: calc(100vh - 48px);
   .side-collapsed-button {
     border-top: 1px solid rgba(0, 0, 0, 0.25);
     .anticon {

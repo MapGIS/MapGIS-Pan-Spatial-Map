@@ -1,5 +1,5 @@
 import { Vue, Component } from 'vue-property-decorator'
-import { ProjectionTransformationUtil } from '@mapgis/pan-spatial-map-store'
+import { ProjectionTransformationUtil } from '@mapgis/pan-spatial-map-common'
 
 @Component({})
 export default class MarkerAddMixin extends Vue {

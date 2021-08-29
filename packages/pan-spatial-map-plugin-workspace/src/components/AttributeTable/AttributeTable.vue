@@ -163,7 +163,7 @@ import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import {
   baseConfigInstance,
   markerIconInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import {
   DomUtil,
   AppMixin,

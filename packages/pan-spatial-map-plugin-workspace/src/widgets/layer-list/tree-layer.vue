@@ -262,7 +262,7 @@ import {
 import {
   baseConfigInstance,
   dataCatalogManagerInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../../components/CustomQuery/CustomQuery.vue'
 import MpUnifyModify from './components/UnifyModify/UnifyModify.vue'

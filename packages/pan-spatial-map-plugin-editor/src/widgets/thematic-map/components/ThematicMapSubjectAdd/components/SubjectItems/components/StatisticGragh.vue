@@ -1,64 +1,180 @@
 <template>
-  <div class="statistic-graph">
-    <a-row type="flex" align="middle">
-      <a-checkbox @change="onStatisticTableChange">
-        开启统计图
-      </a-checkbox>
-    </a-row>
-    <template v-if="showStatisticTable">
-      <mp-row-flex label="横轴字段" label-align="right">
-        <a-select v-model="xAxisKey" :options="xAxisFields" />
+  <editable-field-table
+    @view="onView"
+    @change="onChange"
+    @fields-loaded="onFieldsLoaded"
+    :subject-config="subjectConfig"
+    :columns="tableColumns"
+    :data="tableData"
+    title="图表配置"
+  >
+    <mp-row-flex slot="top" :span="[11, 11]" justify="space-between">
+      <mp-row-flex slot="label" label="分组字段" :label-width="72">
+        <a-select v-model="field" :options="fieldList" placeholder="请选择" />
       </mp-row-flex>
-      <mp-row-flex label="统计指标" label-align="right">
+      <mp-row-flex label="统计方式" :label-width="72">
         <a-select
-          v-model="targetField"
-          mode="tags"
-          :options="targetFieldList"
+          v-model="way"
+          :options="statisticWays"
+          :disabled="true"
+          placeholder="请选择"
         />
       </mp-row-flex>
-      <a-table
-        row-key="id"
-        :loading="tableLoading"
-        :columns="tableColumns"
-        :data-source="tableData"
-        :scroll="{ y: 250 }"
-      />
-    </template>
-  </div>
+    </mp-row-flex>
+  </editable-field-table>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { NewSubjectConfig } from '../../../../../store'
+import EditableFieldTable from '../../../common/EditableFieldTable.vue'
 
-@Component
-export default class StatisticGraph extends Vue {
-  showStatisticTable = false
+interface ITableDataItem {
+  index: number
+  field: string
+  alias: string
+  color: string
+}
 
-  xAxisKey = ''
+interface IGragh{
+  field: string
+  fieldColors: string[]
+  showFields: string[]
+  showFieldsTitle: Record<string, string>
+}
 
-  xAxisFields = []
+@Component({
+  components: {
+    EditableFieldTable
+  }
+})
+export default class StatisticGragh extends Vue {
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
 
-  targetField = []
+  @Watch('subjectConfig.graph', { deep: true })
+  tableDataChange({ fieldColors, showFields = [], showFieldsTitle } = {}) {
+    if (showFields.length === this.tableData.length) {
+      this.tableData = showFields.map((f, i) => ({
+        index: i,
+        field: f,
+        color: fieldColors[i],
+        alias: showFieldsTitle[f]
+      }))
+    }
+  }
 
-  targetFieldList = []
+  field = null
 
-  tableLoading = false
+  way = '3'
 
-  tableColumns = [
-    {
-      title: '字段名',
-      dataIndex: 'key'
+  fieldList = []
+
+  tableData: ITableDataItem[] = []
+
+  get tableColumns() {
+    return [
+      {
+        type: 'Select',
+        title: '统计字段',
+        dataIndex: 'field',
+        width: 130
+      },
+      {
+        type: 'Input',
+        title: '别名',
+        dataIndex: 'alias'
+      },
+      {
+        type: 'ColorPicker',
+        title: '颜色设置',
+        dataIndex: 'color',
+        align: 'center',
+        width: 100
+      }
+    ]
+  }
+
+  get statisticWays() {
+    return [
+       {
+      label: '求和',
+      value: '3',
+      type: 'sum'
     },
     {
-      title: '别名',
-      dataIndex: 'val'
+      label: '求平均值',
+      value: '4',
+      type: 'avg'
+    },
+    {
+      label: '最大值',
+      value: '1',
+      type: 'max'
+    },
+    {
+      label: '最小值',
+      value: '2',
+      type: 'min'
+    },
+    {
+      label: '计数',
+      value: '6',
+      type: 'count'
+    },
+    {
+      label: '去重',
+      value: '7',
+      type: 'var'
     }
-  ]
-
-  tableData = []
-
-  onStatisticTableChange(e) {
-    this.showStatisticTable = e.target.checked
+    ]
   }
+
+  /**
+   * 属性配置变化
+   */
+  onChange(data: ITableDataItem[] = []) {
+    const graph: ?IGragh =
+      data.length && data.some(({ field }) => !!field)
+        ? {
+          field: this.field,
+          ...data.reduce((obj,{ field, alias, color }) => {
+              const  { fieldColors, showFields, showFieldsTitle } = obj
+              if (field) {
+                if (!showFields.includes(field)) {
+                  showFields.push(field)
+                  fieldColors.push(color)
+                }
+                showFieldsTitle[field] = alias
+              }
+              return obj
+            },
+            {
+              fieldColors: [],
+              showFields: [],
+              showFieldsTitle: {}
+            }
+          )
+        }
+        : undefined
+    this.tableData = data
+    this.$emit('change', { graph })
+  }
+
+  /**
+   * 属性列表加载完成
+   */
+  onFieldsLoaded(list) {
+    this.fieldList = list
+    this.field = this.fieldList[0]?.value
+  }
+
+  /**
+   * 预览
+   */
+  onView() {}
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+::v-deep > .ant-row-flex {
+  padding: 0 4px 8px;
+}
+</style>

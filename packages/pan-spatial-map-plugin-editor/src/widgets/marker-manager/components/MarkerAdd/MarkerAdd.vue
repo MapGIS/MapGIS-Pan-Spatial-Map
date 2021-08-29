@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Component, Emit, Prop, Mixins } from 'vue-property-decorator'
-import { markerIconInstance } from '@mapgis/pan-spatial-map-store'
+import { markerIconInstance } from '@mapgis/pan-spatial-map-common'
 import { AppMixin, UUID } from '@mapgis/web-app-framework'
 import moment from 'moment'
 import MarkerEditWindow from '../MarkerWindow/MarkerEditWindow'

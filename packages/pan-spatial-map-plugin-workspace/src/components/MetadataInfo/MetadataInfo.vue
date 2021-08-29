@@ -43,7 +43,7 @@ import {
   Layer,
   Metadata
 } from '@mapgis/web-app-framework'
-import baseConfigInstance from '../../../../pan-spatial-map-store/src/config/base'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 import MpMetadataInfoDoc from './MetadataInfoDoc'
 import MpMetadataInfoTile from './MetadataInfoTile'

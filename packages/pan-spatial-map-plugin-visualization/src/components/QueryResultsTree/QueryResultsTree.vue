@@ -33,7 +33,7 @@ import { Common } from '@mapgis/webclient-es6-service'
 import {
   baseConfigInstance,
   dataCatalogManagerInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import _uniq from 'lodash/uniq'
 
 interface IQueryParams extends Catalog.DocInfoQueryParam {

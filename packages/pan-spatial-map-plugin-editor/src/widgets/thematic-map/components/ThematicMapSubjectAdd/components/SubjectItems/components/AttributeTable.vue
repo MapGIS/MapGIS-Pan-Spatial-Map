@@ -1,53 +1,94 @@
 <template>
-  <div class="attribute-table">
-    <mp-row-flex label="开启表格展示" label-align="right" :span="[6, 18]">
-      <a-radio-group v-model="isShow">
-        <a-radio :value="true">是</a-radio>
-        <a-radio :value="false">否</a-radio>
-      </a-radio-group>
-    </mp-row-flex>
-    <transition name="fade">
-      <template v-if="isShow">
-        <a-table
-          row-key="id"
-          :columns="tableColumns"
-          :data-source="tableData"
-          :scroll="{ y: 250 }"
-          bordered
-        >
-          <template slot="field" slot-scope="text, record">
-            <a-select v-model="record.field" :options="fieldList" />
-          </template>
-          <template slot="alias" slot-scope="text, record">
-            <a-input v-model="record.alias" /> </template
-        ></a-table>
-      </template>
-    </transition>
-  </div>
+  <editable-field-table
+    @view="onView"
+    @change="onChange"
+    :columns="tableColumns"
+    :data="tableData"
+    :subject-config="subjectConfig"
+  />
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { NewSubjectConfig } from '../../../../../store'
+import EditableFieldTable from '../../../common/EditableFieldTable.vue'
 
-@Component
+interface ITableDataItem {
+  index: number
+  field: string
+  alias: string
+}
+
+interface ITable {
+  showFields: string[]
+  showFieldsTitle: Record<string, string>
+}
+
+@Component({
+  components: {
+    EditableFieldTable
+  }
+})
 export default class AttributeTable extends Vue {
-  isShow = false
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
 
-  fieldList = []
-
-  tableColumns = [
-    {
-      title: '字段',
-      dataIndex: 'field',
-      scopedSlots: { customRender: 'field' }
-    },
-    {
-      title: '别名',
-      dataIndex: 'alias',
-      scopedSlots: { customRender: 'alias' }
+  @Watch('subjectConfig.table', { deep: true })
+  tableDataChange({ showFields = [], showFieldsTitle } = {}) {
+    if (showFields.length === this.tableData.length) {
+      this.tableData = showFields.map((f, i) => ({
+        index: i,
+        field: f,
+        alias: showFieldsTitle[f]
+      }))
     }
-  ]
+  }
 
   tableData = []
+
+  get tableColumns() {
+    return [
+      {
+        type: 'Select',
+        title: '属性字段',
+        dataIndex: 'field',
+        width: 160
+      },
+      {
+        type: 'Input',
+        title: '属性别名',
+        dataIndex: 'alias'
+      }
+    ]
+  }
+
+  /**
+   * 属性配置变化
+   */
+  onChange(data: ITableDataItem[] = []) {
+    const table =
+      data.length && data.some(({ field }) => !!field)
+        ? data.reduce(
+            ({ showFields, showFieldsTitle }, { field, alias }) => {
+              if (field) {
+                if (!showFields.includes(field)) {
+                  showFields.push(field)
+                }
+                showFieldsTitle[field] = alias
+              }
+              return { showFields, showFieldsTitle }
+            },
+            {
+              showFields: [],
+              showFieldsTitle: {}
+            }
+          )
+        : undefined
+    this.tableData = data
+    this.$emit('change', { table })
+  }
+
+  /**
+   * 预览
+   */
+  onView() {}
 }
 </script>
-<style lang="less" scoped></style>

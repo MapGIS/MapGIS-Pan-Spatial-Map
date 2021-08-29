@@ -8,7 +8,7 @@ import { AppMixin, UUID, Feature } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
   markerIconInstance
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 
 interface IFeature {
   key?: string // 图层UUID

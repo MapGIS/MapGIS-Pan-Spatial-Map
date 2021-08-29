@@ -153,7 +153,7 @@ import {
   api,
   baseConfigInstance,
   ProjectionTransformationUtil
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 import CoordinateMapbox from './CoordinateMapbox.vue'
 import CoordinateCesium from './CoordinateCesium.vue'
 

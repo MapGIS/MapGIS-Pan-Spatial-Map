@@ -29,7 +29,7 @@ import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
 import { Empty } from 'ant-design-vue'
 import treeLayer from './tree-layer'
 import layerOpacity from './layer-opacity'
-import { api, dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-store'
+import { api, dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpLayerList',

@@ -73,7 +73,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { api } from '@mapgis/pan-spatial-map-store'
+import { api } from '@mapgis/pan-spatial-map-common'
 import PathItem from './components/PathItem.vue'
 import PathRoaming from './components/PathRoaming.vue'
 

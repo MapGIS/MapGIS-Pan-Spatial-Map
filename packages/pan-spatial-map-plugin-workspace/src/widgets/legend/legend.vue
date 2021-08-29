@@ -35,7 +35,7 @@ import {
   eventBus,
   events,
   api
-} from '@mapgis/pan-spatial-map-store'
+} from '@mapgis/pan-spatial-map-common'
 
 @Component({ name: 'MpLegend' })
 export default class MpLegend extends Mixins(WidgetMixin) {

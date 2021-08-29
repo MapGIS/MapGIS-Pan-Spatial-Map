@@ -136,7 +136,7 @@ export default {
   left: 0;
   top: 0;
   z-index: 500;
-  height: calc(100vh - 48px);
+  height: 100%;
   .window-wrapper {
     flex: auto;
     transition: none;

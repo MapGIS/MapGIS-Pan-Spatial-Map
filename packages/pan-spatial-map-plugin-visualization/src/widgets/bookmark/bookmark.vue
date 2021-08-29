@@ -30,7 +30,7 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { Empty } from 'ant-design-vue'
 import { WidgetMixin, UUID } from '@mapgis/web-app-framework'
-import { eventBus, events, api } from '@mapgis/pan-spatial-map-store'
+import { eventBus, events, api } from '@mapgis/pan-spatial-map-common'
 import { TreeConfig } from './tree-config'
 
 @Component({ name: 'MpBookmark' })

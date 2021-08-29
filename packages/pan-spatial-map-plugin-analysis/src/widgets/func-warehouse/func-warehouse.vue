@@ -87,7 +87,7 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { Empty } from 'ant-design-vue'
 import { WidgetMixin, Analysis } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-store'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 import MpHandlerWindow from './handler-window.vue'
 
 // {
