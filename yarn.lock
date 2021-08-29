@@ -24,7 +24,7 @@
     "@ant-design/colors" "^3.1.0"
     babel-runtime "^6.26.0"
 
-"@ant-design/icons@^2.1.1":
+"@ant-design/icons@2.1.1", "@ant-design/icons@^2.1.1":
   version "2.1.1"
   resolved "https://registry.npm.taobao.org/@ant-design/icons/download/@ant-design/icons-2.1.1.tgz?cache=0&sync_timestamp=1616135567365&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40ant-design%2Ficons%2Fdownload%2F%40ant-design%2Ficons-2.1.1.tgz#7b9c08dffd4f5d41db667d9dbe5e0107d0bd9a4a"
   integrity sha1-e5wI3/1PXUHbZn2dvl4BB9C9mko=
@@ -1069,6 +1069,11 @@
   resolved "https://registry.npm.taobao.org/@mapbox/jsonlint-lines-primitives/download/@mapbox/jsonlint-lines-primitives-2.0.2.tgz#ce56e539f83552b58d10d672ea4d6fc9adc7b234"
   integrity sha1-zlblOfg1UrWNENZy6k1vya3HsjQ=
 
+"@mapbox/mapbox-gl-draw-static-mode@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.nlark.com/@mapbox/mapbox-gl-draw-static-mode/download/@mapbox/mapbox-gl-draw-static-mode-1.0.1.tgz#da873099b60acaf91790b961ce84b2c762815041"
+  integrity sha1-2ocwmbYKyvkXkLlhzoSyx2KBUEE=
+
 "@mapbox/mapbox-gl-draw@1.1.1":
   version "1.1.1"
   resolved "https://registry.nlark.com/@mapbox/mapbox-gl-draw/download/@mapbox/mapbox-gl-draw-1.1.1.tgz#b88a7919c8de04eb7946885e747e22049c3a3138"
@@ -1242,6 +1247,27 @@
 "@mapgis/webclient-vue-mapboxgl@link:../WebClient-Vue/mapboxgl":
   version "0.0.0"
   uid ""
+
+"@mapgis/webclient-vue-ui@^10.5.4-1":
+  version "10.5.4-1"
+  resolved "https://registry.nlark.com/@mapgis/webclient-vue-ui/download/@mapgis/webclient-vue-ui-10.5.4-1.tgz#fc41169d82fee6811ddd2386bd308861d9ef4b1b"
+  integrity sha1-/EEWnYL+5oEd3SOGvTCIYdnvSxs=
+  dependencies:
+    "@ant-design/icons" "2.1.1"
+    "@vue/composition-api" "^1.0.0-rc.13"
+    "@vuepress/plugin-active-header-links" "^1.8.2"
+    "@vuepress/plugin-nprogress" "^1.8.2"
+    ant-design-vue "^1.7.5"
+    css-vars-ponyfill "^2.4.5"
+    echarts "^5.1.2"
+    lodash "^4.17.21"
+    lodash.uniqueid "^4.0.1"
+    resize-detector "^0.3.0"
+    tinycolor2 "^1.4.2"
+    vue-echarts "^6.0.0-rc.6"
+    vuepress "^1.8.2"
+    vuepress-plugin-demo-block "^0.7.2"
+    vuepress-plugin-demo-code "^0.6.0"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -4099,6 +4125,13 @@
   optionalDependencies:
     prettier "^1.18.2"
 
+"@vue/composition-api@^1.0.0-rc.13":
+  version "1.1.3"
+  resolved "https://registry.nlark.com/@vue/composition-api/download/@vue/composition-api-1.1.3.tgz?cache=0&sync_timestamp=1629644727697&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40vue%2Fcomposition-api%2Fdownload%2F%40vue%2Fcomposition-api-1.1.3.tgz#8fa528c5f68fec47363340fdae7c7fe047ba5e10"
+  integrity sha1-j6UoxfaP7Ec2M0D9rnx/4Ee6XhA=
+  dependencies:
+    tslib "^2.3.0"
+
 "@vue/preload-webpack-plugin@^1.1.0":
   version "1.1.2"
   resolved "https://registry.npm.taobao.org/@vue/preload-webpack-plugin/download/@vue/preload-webpack-plugin-1.1.2.tgz?cache=0&sync_timestamp=1613215046917&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40vue%2Fpreload-webpack-plugin%2Fdownload%2F%40vue%2Fpreload-webpack-plugin-1.1.2.tgz#ceb924b4ecb3b9c43871c7a429a02f8423e621ab"
@@ -4175,7 +4208,7 @@
     markdown-it-table-of-contents "^0.4.0"
     prismjs "^1.13.0"
 
-"@vuepress/plugin-active-header-links@1.8.2", "@vuepress/plugin-active-header-links@^1.7.1":
+"@vuepress/plugin-active-header-links@1.8.2", "@vuepress/plugin-active-header-links@^1.7.1", "@vuepress/plugin-active-header-links@^1.8.2":
   version "1.8.2"
   resolved "https://registry.nlark.com/@vuepress/plugin-active-header-links/download/@vuepress/plugin-active-header-links-1.8.2.tgz#0cb9b29c826dd97d35357a9b09c962ef782cb793"
   integrity sha1-DLmynIJt2X01NXqbCcli73gst5M=
@@ -4196,7 +4229,7 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@vuepress/plugin-nprogress@1.8.2", "@vuepress/plugin-nprogress@^1.7.1":
+"@vuepress/plugin-nprogress@1.8.2", "@vuepress/plugin-nprogress@^1.7.1", "@vuepress/plugin-nprogress@^1.8.2":
   version "1.8.2"
   resolved "https://registry.nlark.com/@vuepress/plugin-nprogress/download/@vuepress/plugin-nprogress-1.8.2.tgz#dc6c082925420c8c59ecb7fc2d4a9401f6d4664a"
   integrity sha1-3GwIKSVCDIxZ7Lf8LUqUAfbUZko=
@@ -5005,7 +5038,7 @@ babel-runtime@6.x, babel-runtime@^6.22.0, babel-runtime@^6.23.0, babel-runtime@^
     core-js "^2.4.0"
     regenerator-runtime "^0.11.0"
 
-balanced-match@^1.0.0:
+balanced-match@^1.0.0, balanced-match@^1.0.2:
   version "1.0.2"
   resolved "https://registry.nlark.com/balanced-match/download/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha1-6D46fj8wCzTLnYf2FfoMvzV2kO4=
@@ -5848,7 +5881,7 @@ codesandbox-import-util-types@^2.2.3:
   resolved "https://registry.nlark.com/codesandbox-import-util-types/download/codesandbox-import-util-types-2.2.3.tgz#b354b2f732ad130e119ebd9ead3bda3be5981a54"
   integrity sha1-s1Sy9zKtEw4Rnr2erTvaO+WYGlQ=
 
-codesandbox-import-utils@^2.1.16:
+codesandbox-import-utils@^2.2.3:
   version "2.2.3"
   resolved "https://registry.nlark.com/codesandbox-import-utils/download/codesandbox-import-utils-2.2.3.tgz?cache=0&sync_timestamp=1619601467672&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcodesandbox-import-utils%2Fdownload%2Fcodesandbox-import-utils-2.2.3.tgz#f7b4801245b381cb8c90fe245e336624e19b6c84"
   integrity sha1-97SAEkWzgcuMkP4kXjNmJOGbbIQ=
@@ -6449,6 +6482,14 @@ css-url-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npm.taobao.org/css-url-regex/download/css-url-regex-1.1.0.tgz#83834230cc9f74c457de59eebd1543feeb83b7ec"
   integrity sha1-g4NCMMyfdMRX3lnuvRVD/uuDt+w=
+
+css-vars-ponyfill@^2.4.5:
+  version "2.4.6"
+  resolved "https://registry.nlark.com/css-vars-ponyfill/download/css-vars-ponyfill-2.4.6.tgz#9499068d21af6a265ecf55dfeaa50968e5bd63d5"
+  integrity sha1-lJkGjSGvaiZez1Xf6qUJaOW9Y9U=
+  dependencies:
+    balanced-match "^1.0.2"
+    get-css-data "^2.0.2"
 
 css-what@^3.2.1:
   version "3.4.2"
@@ -7349,7 +7390,7 @@ echarts@^4.8.0:
   dependencies:
     zrender "4.3.2"
 
-echarts@^5.0.2:
+echarts@^5.0.2, echarts@^5.1.2:
   version "5.1.2"
   resolved "https://registry.nlark.com/echarts/download/echarts-5.1.2.tgz#aa1ab0cef5b74fa2f7c620261a5f286893d30fd1"
   integrity sha1-qhqwzvW3T6L3xiAmGl8oaJPTD9E=
@@ -8444,6 +8485,11 @@ get-closest@*:
   version "0.0.4"
   resolved "https://registry.npm.taobao.org/get-closest/download/get-closest-0.0.4.tgz#269ac776d1e6022aa0fd586dd708e8a7d32269af"
   integrity sha1-JprHdtHmAiqg/Vht1wjop9Miaa8=
+
+get-css-data@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.nlark.com/get-css-data/download/get-css-data-2.0.2.tgz#5a24784f155944021b6f3fff304c15bcfcebdb9e"
+  integrity sha1-WiR4TxVZRAIbbz//MEwVvPzr254=
 
 get-intrinsic@^1.0.2, get-intrinsic@^1.1.1:
   version "1.1.1"
@@ -10170,6 +10216,11 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.npm.taobao.org/lodash.uniq/download/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
+lodash.uniqueid@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.npm.taobao.org/lodash.uniqueid/download/lodash.uniqueid-4.0.1.tgz#3268f26a7c88e4f4b1758d679271814e31fa5b26"
+  integrity sha1-MmjyanyI5PSxdY1nknGBTjH6WyY=
+
 lodash@^4.0.0, lodash@^4.17.11, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.3, lodash@^4.17.5, lodash@~4.17.10:
   version "4.17.21"
   resolved "https://registry.npm.taobao.org/lodash/download/lodash-4.17.21.tgz?cache=0&sync_timestamp=1613835817439&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Flodash%2Fdownload%2Flodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -10713,7 +10764,7 @@ mobius1-selectr@^2.4.13:
   resolved "https://registry.npm.taobao.org/mobius1-selectr/download/mobius1-selectr-2.4.13.tgz#0019dfd9f984840d6e40f70683ab3ec78ce3b5df"
   integrity sha1-ABnf2fmEhA1uQPcGg6s+x4zjtd8=
 
-moment@^2.21.0:
+moment@^2.21.0, moment@^2.29.1:
   version "2.29.1"
   resolved "https://registry.npm.taobao.org/moment/download/moment-2.29.1.tgz?cache=0&sync_timestamp=1601983320283&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmoment%2Fdownload%2Fmoment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha1-sr52n6MZQL6e7qZGnAdeNQBvo9M=
@@ -12128,12 +12179,17 @@ printj@~1.1.0, printj@~1.1.2:
   resolved "https://registry.nlark.com/printj/download/printj-1.1.2.tgz#d90deb2975a8b9f600fb3a1c94e3f4c53c78a222"
   integrity sha1-2Q3rKXWoufYA+zoclOP0xTx4oiI=
 
-prismjs@^1.13.0, prismjs@^1.20.0:
+prismjs@^1.13.0:
   version "1.23.0"
   resolved "https://registry.nlark.com/prismjs/download/prismjs-1.23.0.tgz#d3b3967f7d72440690497652a9d40ff046067f33"
   integrity sha1-07OWf31yRAaQSXZSqdQP8EYGfzM=
   optionalDependencies:
     clipboard "^2.0.0"
+
+prismjs@^1.23.0:
+  version "1.24.1"
+  resolved "https://registry.nlark.com/prismjs/download/prismjs-1.24.1.tgz?cache=0&sync_timestamp=1625313362193&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fprismjs%2Fdownload%2Fprismjs-1.24.1.tgz#c4d7895c4d6500289482fa8936d9cdd192684036"
+  integrity sha1-xNeJXE1lACiUgvqJNtnN0ZJoQDY=
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
@@ -13923,7 +13979,7 @@ tiny-emitter@^2.0.0:
   resolved "https://registry.nlark.com/tiny-emitter/download/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
   integrity sha1-HRpW7fxRxD6GPLtTgqcjMONVVCM=
 
-tinycolor2@^1.1.2, tinycolor2@^1.4.1:
+tinycolor2@^1.1.2, tinycolor2@^1.4.1, tinycolor2@^1.4.2:
   version "1.4.2"
   resolved "https://registry.npm.taobao.org/tinycolor2/download/tinycolor2-1.4.2.tgz#3f6a4d1071ad07676d7fa472e1fac40a719d8803"
   integrity sha1-P2pNEHGtB2dtf6Ry4frECnGdiAM=
@@ -14168,6 +14224,11 @@ tslib@^1.10.0, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"
   resolved "https://registry.nlark.com/tslib/download/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha1-zy04vcNKE0vK8QkcQfZhni9nLQA=
+
+tslib@^2.3.0:
+  version "2.3.1"
+  resolved "https://registry.nlark.com/tslib/download/tslib-2.3.1.tgz?cache=0&sync_timestamp=1628722556410&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftslib%2Fdownload%2Ftslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
+  integrity sha1-6KM1rdXOrlGqJh0ypJAVjvBC7wE=
 
 tslint@^5.20.1:
   version "5.20.1"
@@ -14690,6 +14751,19 @@ vue-color@^2.8.1:
     material-colors "^1.0.0"
     tinycolor2 "^1.1.2"
 
+vue-demi@^0.11.2:
+  version "0.11.3"
+  resolved "https://registry.nlark.com/vue-demi/download/vue-demi-0.11.3.tgz?cache=0&sync_timestamp=1628928156379&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fvue-demi%2Fdownload%2Fvue-demi-0.11.3.tgz#dd7495b92b495ecfa35675bf024b1358a7add150"
+  integrity sha1-3XSVuStJXs+jVnW/AksTWKet0VA=
+
+vue-echarts@^6.0.0-rc.6:
+  version "6.0.0"
+  resolved "https://registry.nlark.com/vue-echarts/download/vue-echarts-6.0.0.tgz?cache=0&sync_timestamp=1627907508392&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fvue-echarts%2Fdownload%2Fvue-echarts-6.0.0.tgz#480263fc6ed2125b886bb1b7f05bf9273edee552"
+  integrity sha1-SAJj/G7SEluIa7G38Fv5Jz7e5VI=
+  dependencies:
+    resize-detector "^0.3.0"
+    vue-demi "^0.11.2"
+
 vue-eslint-parser@^7.0.0:
   version "7.6.0"
   resolved "https://registry.npm.taobao.org/vue-eslint-parser/download/vue-eslint-parser-7.6.0.tgz#01ea1a2932f581ff244336565d712801f8f72561"
@@ -14820,14 +14894,19 @@ vuepress-plugin-container@^2.0.2:
     "@vuepress/shared-utils" "^1.2.0"
     markdown-it-container "^2.0.0"
 
-vuepress-plugin-demo-code@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.nlark.com/vuepress-plugin-demo-code/download/vuepress-plugin-demo-code-0.5.2.tgz#4bf30e48c38d3093c9641f1db695c8be0b0a038b"
-  integrity sha1-S/MOSMONMJPJZB8dtpXIvgsKA4s=
+vuepress-plugin-demo-block@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.nlark.com/vuepress-plugin-demo-block/download/vuepress-plugin-demo-block-0.7.2.tgz#02fc4f0ef764052981accf41f1403fdb9f794c0d"
+  integrity sha1-AvxPDvdkBSmBrM9B8UA/2595TA0=
+
+vuepress-plugin-demo-code@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.nlark.com/vuepress-plugin-demo-code/download/vuepress-plugin-demo-code-0.6.0.tgz#71bd228eab09a12d8cbb99416658572cb7510a8d"
+  integrity sha1-cb0ijqsJoS2Mu5lBZlhXLLdRCo0=
   dependencies:
-    codesandbox-import-utils "^2.1.16"
+    codesandbox-import-utils "^2.2.3"
     markdown-it-container "^3.0.0"
-    prismjs "^1.20.0"
+    prismjs "^1.23.0"
     vuepress-plugin-code-copy "^1.0.6"
 
 vuepress-plugin-smooth-scroll@^0.0.3:
