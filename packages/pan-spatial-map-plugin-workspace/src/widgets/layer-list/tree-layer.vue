@@ -101,7 +101,7 @@
                 要素统改
               </a-list-item> 
               -->
-              <a-list-item v-if="isParentLayer(item)" @click="fitBounds(item)">
+              <a-list-item v-if="isFitbound(item)" @click="fitBounds(item)">
                 缩放至
               </a-list-item>
               <a-list-item
@@ -792,13 +792,7 @@ export default class TreeLayer extends Mixins(
     this.showCustomQuery = true
     this.clickPopover(layer, false)
     const parent: IGSMapImageLayer = layer.layer
-    if (
-      parent &&
-      this.isIgsDocLayer(parent)
-      // TODO：新版document的暂时还没有封装RasterArcgisLayer，这里留着以后做
-      //  ||
-      // parent.subtype === SubLayerType.RasterArcgisLayer
-    ) {
+    if (parent && this.isIgsDocLayer(parent)) {
       const { ip, port, docName } = parent._parseUrl(parent.url)
       this.queryParams = {
         id: `${parent.title} ${layer.title} ${layer.id} 自定义查询`,
@@ -1013,6 +1007,18 @@ export default class TreeLayer extends Mixins(
 
   isWMSLayer({ type }) {
     return type === LayerType.OGCWMS
+  }
+
+  isFitbound(layer) {
+    if (this.isParentLayer(layer)) {
+      if (this.isIGSScene(layer) && this.is2DMapMode === false) {
+        return true
+      } else if (!this.isIGSScene(layer)) {
+        return true
+      }
+      return false
+    }
+    return false
   }
 
   isArcGISMapImage({ layer, type }) {
