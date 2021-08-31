@@ -67,8 +67,8 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { UrlUtil } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { WidgetMixin, UrlUtil } from '@mapgis/web-app-framework'
 import AddDataCategorySelect from './AddDataCategorySelect.vue'
 import AddDataTypeSelect from './AddDataTypeSelect.vue'
 
@@ -79,7 +79,7 @@ import AddDataTypeSelect from './AddDataTypeSelect.vue'
     AddDataTypeSelect
   }
 })
-export default class AddDataFile extends Vue {
+export default class AddDataFile extends Mixins(WidgetMixin) {
   @Prop({ type: Array }) categories
 
   @Prop({ type: Array }) fileDataTypes
@@ -101,6 +101,12 @@ export default class AddDataFile extends Vue {
 
   // 接受的上传文件类型
   private accept = ''
+
+  // 二三维地图模式切换时
+  @Watch('is2DMapMode', { immediate: true })
+  mapRenderChange(newVal) {
+    this.fileDataType = this.fileDataTypes.length ? this.fileDataTypes[0] : null
+  }
 
   @Watch('fileDataType')
   onFileTypeChange(newVal) {
