@@ -1,7 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
 import { initRouter } from './router'
+// fixme 暂时这样引入, 后期提供了未压缩的css文件会在theme文件下@import引入
+import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css'
 import './theme/index.less'
+import MapgisUi from '@mapgis/webclient-vue-ui'
 import Antd from 'ant-design-vue'
 import store from './store'
 import Plugins from '@/plugins'
@@ -22,6 +25,7 @@ import Visualization from '@mapgis/pan-spatial-map-plugin-visualization'
 const router = initRouter(store.state.setting.asyncRoutes)
 const i18n = initI18n('CN', 'US')
 
+Vue.use(MapgisUi)
 Vue.use(Antd)
 Vue.config.productionTip = false
 Vue.use(Plugins)

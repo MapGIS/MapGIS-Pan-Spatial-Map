@@ -31,6 +31,7 @@
     "vue-color": "^2.8.1",
     "@mapgis/webclient-es6-service": "^10.5.3-beta",
     "@mapgis/webclient-es6-mapboxgl": "link:../WebClient-JavaScript/src/mapboxgl",
+    "@mapgis/webclient-vue-ui": "link:../WebClient-Vue/ui",
     "@mapgis/web-app-framework": "link:../MapGIS-Web-App-Framework"
   },
   "devDependencies": {

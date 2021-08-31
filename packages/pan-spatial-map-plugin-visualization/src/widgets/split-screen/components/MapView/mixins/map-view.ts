@@ -77,10 +77,10 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   /**
    * 查询要素
-   * @param {Rect} rect 经纬度范围
+   * @param {object|array} shape 经纬度范围或者三维坐标集合
    */
-  query(rect: Rect) {
-    this.$emit('on-query', rect)
+  query(shape: Rect | Array<{ x: number; y: number; z: number }>) {
+    this.$emit('on-query', shape)
   }
 
   /**

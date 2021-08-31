@@ -47,7 +47,7 @@
         v-if="queryWindowVisible"
         @on-node-loaded="queryNodeLoaded"
         @on-select="querySelected"
-        :query-rect="queryRect"
+        :query-shape="queryShape"
         :layer="mapViewLayer"
         :vue-key="mapViewId"
       />
@@ -104,7 +104,9 @@ export default class MapView extends Mixins<Record<string, any>>(
   @Prop({ default: false }) readonly queryVisible!: boolean
 
   // 根据查询的范围显示标注
-  @Prop({ default: () => ({}) }) readonly queryRect!: boolean
+  @Prop() readonly queryShape!:
+    | Rect
+    | Array<{ x: number; y: number; z: number }>
 
   // document
   mapViewDocument: Document | null = null
@@ -168,17 +170,16 @@ export default class MapView extends Mixins<Record<string, any>>(
 
   /**
    * 二三维绘制结束操作
-   * @param Rect 绘制范围
+   * @param {object} 绘制结果
+   * @param {object} 绘制经纬度范围
    */
-  drawFinished({ mode, feature, shape, center }) {
-    const { xmin, ymin, xmax, ymax }: Rect = shape
+  drawFinished(shape, { xmin, ymin, xmax, ymax }) {
     const rect = new Rect(xmin, ymin, xmax, ymax)
     switch (this.operationType) {
       case 'query':
-        // todo 三维暂不支持查询
-        this.is2dLayer && this.toggleQueryWindow(true)
+        this.toggleQueryWindow(true)
         this.clearQueryResults()
-        this.query(rect)
+        this.query(shape)
         break
       case 'zoomIn':
         this.zoomIn(rect)

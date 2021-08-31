@@ -15,10 +15,9 @@
           <map-view
             @on-query="onQuery"
             :queryVisible.sync="queryVisible"
-            :query-rect="queryRect"
+            :query-shape="queryShape"
             :map-view-id="`split-screen-map-${s}`"
             :map-view-layer="mapViewLayer(s)"
-            :excludes-tools="excludesTools(s)"
             :resize="resize"
           />
         </a-col>
@@ -53,7 +52,7 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
 
   queryVisible = false
 
-  queryRect: Rect = {}
+  queryShape = null
 
   // 每个屏的高度
   get mapSpanStyle() {
@@ -74,16 +73,6 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
   // 图层
   get mapViewLayer() {
     return s => this.layers.find(({ id }) => this.layerIds[s] === id)
-  }
-
-  // todo 三维暂不支持查询和清除查询,直接隐藏查询和清除按钮
-  get excludesTools() {
-    return s => {
-      const _layer = this.mapViewLayer(s)
-      if (_layer instanceof Layer3D) {
-        return ['query', 'clear']
-      }
-    }
   }
 
   /**
@@ -109,11 +98,11 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
 
   /**
    * 某个地图的查询抛出的事件
-   * @param result 查询结果
+   * @param {object|array} 查询结果
    */
-  onQuery(result: Rect) {
+  onQuery(shape: Rect | Array<{ x: number; y: number; z: number }>) {
     this.queryVisible = true
-    this.queryRect = result
+    this.queryShape = shape
   }
 
   created() {
@@ -125,7 +114,7 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
   beforeDestroy() {
     this.initBound = initRectangle
     this.queryVisible = false
-    this.queryRect = {}
+    this.queryShape = null
   }
 }
 </script>

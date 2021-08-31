@@ -58,7 +58,7 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   markers: IMarker[] = []
 
   // 选中的数据范围
-  selectionBound: Record<string, any> = {}
+  selectionBound = null
 
   // 选中的标注图标
   selectedIcon = ''
@@ -121,7 +121,7 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
    * 移除标注
    */
   removeMarkers() {
-    this.selectionBound = {}
+    this.selectionBound = null
     this.markers = []
   }
 

@@ -50,8 +50,8 @@ export default class CesiumView extends Vue {
   /**
    * 供父组件调用
    */
-  openDraw(mode) {
-    this.drawComponent.openDraw(mode || 'draw-rectangle')
+  openDraw() {
+    this.drawComponent.openDraw('draw-polygon')
   }
 
   /**
@@ -75,7 +75,12 @@ export default class CesiumView extends Vue {
    */
   onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
-      this.$emit('draw-finished', { mode, feature, shape, center })
+      const [coord0, coord1] = shape
+      const xmin = coord0.x < coord1.x ? coord0.x : coord1.x
+      const ymin = coord0.y < coord1.y ? coord0.y : coord1.y
+      const xmax = coord1.x > coord0.x ? coord1.x : coord0.x
+      const ymax = coord1.y > coord0.y ? coord1.y : coord0.y
+      this.$emit('draw-finished', shape, { xmin, ymin, xmax, ymax })
     }
   }
 

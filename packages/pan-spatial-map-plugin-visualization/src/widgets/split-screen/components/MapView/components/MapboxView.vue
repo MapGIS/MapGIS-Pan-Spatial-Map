@@ -27,8 +27,8 @@ export default class MapboxView extends Vue {
   /**
    * 供父组件调用
    */
-  openDraw(mode) {
-    this.drawComponent.openDraw(mode || 'draw-rectangle')
+  openDraw() {
+    this.drawComponent.openDraw('draw-rectangle')
   }
 
   /**
@@ -52,7 +52,7 @@ export default class MapboxView extends Vue {
    */
   onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
-      this.$emit('draw-finished', { mode, feature, shape, center })
+      this.$emit('draw-finished', shape, shape)
     }
   }
 }
