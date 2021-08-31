@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Prop } from 'vue-property-decorator'
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
 import {
   WidgetMixin,
   UUID,
@@ -74,10 +74,15 @@ import AddDataFile from './components/AddDataFile.vue'
 export default class MpAddData extends Mixins(WidgetMixin) {
   private tab = 'list'
 
-  private tabs = [
+  private tabs2D = [
     { key: 'list', label: '数据列表' },
     { key: 'url', label: 'URL' },
     { key: 'file', label: '文件' }
+  ]
+
+  private tabs3D = [
+    { key: 'list', label: '数据列表' },
+    { key: 'url', label: 'URL' }
   ]
 
   private config
@@ -133,6 +138,10 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   private isZoomLayer = false
 
   private dataCatalogManager = dataCatalogManagerInstance
+
+  get tabs() {
+    return this.is2DMapMode ? this.tabs2D : this.tabs3D
+  }
 
   get urlDataTypes2D() {
     return [...this.commonDataTypes]
@@ -196,6 +205,14 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     return this.dataList.map(item => {
       return { name: item.name, description: item.description }
     })
+  }
+
+  // 二三维地图模式切换时
+  @Watch('is2DMapMode', { immediate: true })
+  mapRenderChange(newVal) {
+    if (!newVal && this.tab === 'file') {
+      this.tab = 'list'
+    }
   }
 
   mounted() {
