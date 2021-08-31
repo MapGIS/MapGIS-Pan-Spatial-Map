@@ -3,6 +3,11 @@
     <template v-if="!cluster">
       <mp-3d-marker-set-pro :markers="markers" :field-configs="fieldConfigs">
       </mp-3d-marker-set-pro>
+      <mp-3d-marker-set-pro
+        :markers="activeMarkers"
+        :field-configs="activeFieldConfigs"
+      >
+      </mp-3d-marker-set-pro>
     </template>
   </div>
 </template>
@@ -19,6 +24,12 @@ export default class PlaceNameCesium extends Mixins(MapMixin) {
 
   @Prop({ type: [Array, Object], required: true, default: [] })
   readonly markers!: Record<string, any>[]
+
+  @Prop({ type: Array, required: true, default: () => [] })
+  readonly activeFieldConfigs!: IFields[]
+
+  @Prop({ type: [Array, Object], required: true, default: [] })
+  readonly activeMarkers!: Record<string, any>[]
 
   @Prop() cluster!: boolean
 

@@ -88,6 +88,10 @@ export default class PlaceNamePanel extends Vue {
 
   private markersInfos = []
 
+  private activeMarkersInfos = []
+
+  private activeFieldConfigs = []
+
   private spinning = false
 
   private geojson = {}
@@ -111,6 +115,8 @@ export default class PlaceNamePanel extends Vue {
 
   @Watch('activeTab', { immediate: true })
   activeTabChange() {
+    this.activeMarkersInfos = []
+    this.activeFieldConfigs = []
     this.updataMarkers()
   }
 
@@ -143,7 +149,13 @@ export default class PlaceNamePanel extends Vue {
 
   updataMarkers() {
     if (this.activeTab === this.name) {
-      this.$emit('show-coords', this.markersInfos, this.fieldConfigs)
+      this.$emit(
+        'show-coords',
+        this.markersInfos,
+        this.fieldConfigs,
+        this.activeMarkersInfos,
+        this.activeFieldConfigs
+      )
     }
   }
 
@@ -224,8 +236,12 @@ export default class PlaceNamePanel extends Vue {
       if (this.cluster) {
         this.geojson = { type: 'FeatureCollection', features }
         this.markersInfos = []
+        this.activeMarkersInfos = []
+        this.activeFieldConfigs = []
       } else {
         this.markersInfos = markerCoords
+        this.activeMarkersInfos = []
+        this.activeFieldConfigs = []
         this.geojson = {}
       }
       this.maxCount = geoJSONData.dataCount
@@ -242,12 +258,34 @@ export default class PlaceNamePanel extends Vue {
 
   async mouseOver(index) {
     const selectedImg = await markerIconInstance.selectIcon()
+    this.activeMarkersInfos = [
+      {
+        ...this.markersInfos[index],
+        img: selectedImg
+      }
+    ]
+    this.activeFieldConfigs = [
+      {
+        ...this.fieldConfigs[index]
+      }
+    ]
     this.$set(this.markersInfos[index], 'img', selectedImg)
     this.updataMarkers()
   }
 
   async mouseLeave(index) {
     const defaultImg = await markerIconInstance.unSelectIcon()
+    this.activeMarkersInfos = [
+      {
+        ...this.markersInfos[index],
+        img: defaultImg
+      }
+    ]
+    this.activeFieldConfigs = [
+      {
+        ...this.fieldConfigs[index]
+      }
+    ]
     this.$set(this.markersInfos[index], 'img', defaultImg)
     this.updataMarkers()
   }
