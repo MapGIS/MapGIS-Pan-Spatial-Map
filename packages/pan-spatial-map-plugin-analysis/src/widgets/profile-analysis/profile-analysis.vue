@@ -408,7 +408,8 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         pointColor: ptColor,
         showPolygon: showPolygon,
         polylineGroundColor: glColor,
-        samplePrecision
+        samplePrecision,
+        profileType: smooth ? 0 : 1 // 0表示只采地形，分析中界面不会卡顿；2表示支持模型和地形，分析中界面会卡顿
       })
     }
     this.terrainProfile.profile(this.profileStart, this.profileSuccess)
@@ -449,8 +450,11 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
    * 分析结束，移除进度条，并显示二维剖面
    */
   profileSuccess() {
-    this.profile2dVisible = true
-    this.removeLoading()
+    // 剖切分析对象存在才显示二维剖面，以防在分析中，点击了清除
+    if (this.terrainProfile) {
+      this.profile2dVisible = true
+      this.removeLoading()
+    }
   }
 
   remove() {
