@@ -1,5 +1,5 @@
 <template>
-  <div v-if="document" class="cesium-view">
+  <div class="cesium-view">
     <!-- 三维地图组件 -->
     <mp-web-scene-pro
       @map-load="onMapLoad"
@@ -26,14 +26,26 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
-import { Document, UUID } from '@mapgis/web-app-framework'
+import { Component, Prop, Vue, Inject, Watch } from 'vue-property-decorator'
+import {
+  Document,
+  Layer,
+  Rectangle3D,
+  Objects,
+  UUID
+} from '@mapgis/web-app-framework'
 
 @Component
 export default class CesiumView extends Vue {
+  @Inject('Cesium') Cesium: unknown
+
+  @Inject('CesiumZondy') CesiumZondy: unknown
+
+  @Prop() readonly vueKey!: string
+
   @Prop() readonly document!: Document
 
-  @Prop({ default: UUID.uuid() }) readonly vueKey!: string
+  @Prop({ default: () => ({}) }) readonly layer!: Layer
 
   @Prop({ default: 500 }) readonly height!: number
 
@@ -49,9 +61,11 @@ export default class CesiumView extends Vue {
 
   /**
    * 供父组件调用
+   * 三维下默认画区
+   * @param {string} [mode = 'draw-polygon'] 参考Mp3dDrawPro组件内定义的mode类型
    */
-  openDraw() {
-    this.drawComponent.openDraw('draw-polygon')
+  openDraw(mode = 'draw-polygon') {
+    this.drawComponent.openDraw(mode)
   }
 
   /**
@@ -62,12 +76,85 @@ export default class CesiumView extends Vue {
   }
 
   /**
-   * 地图加载成功回调
-   * @param payload { Cesium, CesiumZondy }
+   * 获取二维经纬度范围
    */
-  onMapLoad(payload) {
-    this.isMapLoaded = true
-    this.$emit('load', payload)
+  getRect2D(shape) {
+    const [{ x: x1, y: y1 }, { x: x2, y: y2 }] = shape
+    const xmin = x1 < x2 ? x1 : x2
+    const ymin = y1 < y2 ? y1 : y2
+    const xmax = x2 > x1 ? x2 : x1
+    const ymax = y2 > y1 ? y2 : y1
+    return Objects.GeometryExp.creatRectByMinMax(xmin, ymin, xmax, ymax)
+  }
+
+  /**
+   * 获取三维范围
+   * @param {array} 几何坐标集合
+   * @param {unknown}
+   */
+  getRect3D(shape, transform) {
+    const positions = shape.map(item => {
+      const { x, y, z } = this.sceneController.globelPositionToLocalPosition(
+        item,
+        transform
+      )
+      return {
+        x,
+        y,
+        z: item.z
+      }
+    })
+    let xmin = 0
+    let ymin = 0
+    let zmin = 0
+    let xmax = 0
+    let ymax = 0
+    let zmax = 0
+    positions.forEach(({ x, y, z }, index) => {
+      if (index === 0) {
+        xmin = x
+        ymin = y
+        zmin = z
+        xmax = x
+        ymax = y
+        zmax = z
+      } else {
+        xmin = xmin - x < 0 ? xmin : x
+        ymin = ymin - y < 0 ? ymin : y
+        zmin = zmin - z < 0 ? zmin : z
+        xmax = xmax - x > 0 ? xmax : x
+        ymax = ymax - y > 0 ? ymax : y
+        zmax = zmax - z > 0 ? zmax : z
+      }
+    })
+    return {
+      xmin,
+      ymin,
+      xmax,
+      ymax,
+      zmin,
+      zmax
+    }
+  }
+
+  /**
+   * 获取几何范围
+   * @param {array} 几何坐标集合
+   */
+  getGeometry(shape) {
+    const { sublayers } = this.layer.activeScene || {}
+    if (sublayers) {
+      const { source } = this.sceneController.findSource(
+        sublayers.find(({ visible }) => !!visible).id
+      )
+      if (source && source.length) {
+        const { xmin, ymin, xmax, ymax, zmin, zmax } = this.getRect3D(
+          shape,
+          source[0].root.transform
+        )
+        return new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
+      }
+    }
   }
 
   /**
@@ -75,12 +162,9 @@ export default class CesiumView extends Vue {
    */
   onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
-      const [coord0, coord1] = shape
-      const xmin = coord0.x < coord1.x ? coord0.x : coord1.x
-      const ymin = coord0.y < coord1.y ? coord0.y : coord1.y
-      const xmax = coord1.x > coord0.x ? coord1.x : coord0.x
-      const ymax = coord1.y > coord0.y ? coord1.y : coord0.y
-      this.$emit('draw-finished', shape, { xmin, ymin, xmax, ymax })
+      const geometry = this.getGeometry(shape)
+      const rect2D = this.getRect2D(shape)
+      this.$emit('draw-finished', geometry, rect2D)
     }
   }
 
@@ -89,6 +173,22 @@ export default class CesiumView extends Vue {
    */
   onLinkChange({ '3d': view3d, '2d': rect2d }) {
     this.$emit('link-changed', rect2d)
+  }
+
+  /**
+   * 地图加载成功回调
+   * @param {object}
+   */
+  onMapLoad(payload) {
+    this.CesiumZondy.getWebGlobeByInterval(webGlobe => {
+      this.sceneController = Objects.SceneController.getInstance(
+        this.Cesium,
+        this.CesiumZondy,
+        webGlobe
+      )
+      this.isMapLoaded = true
+      this.$emit('load', webGlobe, this.sceneController)
+    }, this.vueKey)
   }
 }
 </script>

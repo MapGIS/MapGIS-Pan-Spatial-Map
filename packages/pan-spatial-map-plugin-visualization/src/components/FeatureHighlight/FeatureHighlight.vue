@@ -3,8 +3,8 @@
   <mp-3d-marker-plotting v-else v-bind="bindProps" />
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { AppMixin, UUID, Feature } from '@mapgis/web-app-framework'
+import { Mixins, Component, Prop, Watch, Inject } from 'vue-property-decorator'
+import { AppMixin, UUID, Feature, Objects } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
   markerIconInstance
@@ -26,15 +26,17 @@ interface IMarker {
   img: stirng
   coordinates: number[]
   feature: Feature.GFeature
-  properties: any
+  properties: unknown
   fid: string
   markerId: string
 }
 
 @Component
-export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
-  AppMixin
-) {
+export default class MpFeatureHighlight extends Mixins(AppMixin) {
+  @Inject('Cesium') Cesium: unknown
+
+  @Inject('CesiumZondy') CesiumZondy: unknown
+
   // 三维地图vueKey
   @Prop({ default: UUID.uuid() }) readonly vueKey!: string
 
@@ -118,6 +120,33 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   }
 
   /**
+   *  获取模型高度
+   * @param {array} markers
+   * @return {promise}
+   */
+  getModelHeight(markers: Array<IMarker>) {
+    return new Promise((resolve, reject) => {
+      const webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey)
+      if (!webGlobe) {
+        return reject('WebGlobe未初始化')
+      }
+      const positions = markers.map(
+        ({ coordinates }) =>
+          new this.Cesium.Cartesian3.fromDegrees(coordinates[0], coordinates[1])
+      )
+      const sampleElevationTool = new this.Cesium.SampleElevationTool(
+        webGlobe.viewer,
+        positions,
+        'model',
+        positions => {
+          resolve(positions && positions.length ? positions : [])
+        }
+      )
+      sampleElevationTool.start()
+    })
+  }
+
+  /**
    * 移除标注
    */
   removeMarkers() {
@@ -130,24 +159,49 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
    */
   async addMarkers() {
     this.defaultIcon = await markerIconInstance.unSelectIcon()
-    this.markers = this.normalizedFeatures.reduce<IMarker[]>(
-      (result, { uid, feature }) => {
-        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
-        const centerItems = [coordinates[0], coordinates[1]]
-        if (centerItems.every(v => !Number.isNaN(v))) {
+    const tempMarkers = this.normalizedFeatures.reduce<IMarker[]>(
+      (result, { uid, feature, feature: { properties } }) => {
+        let coordinates = []
+        if (!this.is2dLayer) {
+          const { xmin, xmax, ymin, ymax } = properties.specialLayerBound
+          coordinates = [(xmin + xmax) / 2, (ymin + ymax) / 2]
+        } else {
+          coordinates = Feature.getGeoJSONFeatureCenter(feature)
+        }
+
+        if (coordinates.every(v => !Number.isNaN(v))) {
           result.push({
             coordinates,
             feature,
+            properties,
             markerId: uid,
-            fid: feature.properties.fid,
-            img: this.defaultIcon,
-            properties: feature.properties
+            fid: properties.fid,
+            img: this.defaultIcon
           })
         }
         return result
       },
       []
     )
+    if (!this.is2dLayer && tempMarkers.length) {
+      try {
+        const arr = await this.getModelHeight(tempMarkers)
+        if (arr.length === tempMarkers.length) {
+          arr.forEach(({ longitude, latitude, height }, index) => {
+            this.$set(tempMarkers[index], 'coordinates', [
+              longitude,
+              latitude,
+              height
+            ])
+          })
+        }
+        this.markers = [...tempMarkers]
+      } catch (e) {
+        this.$message.error(e)
+      }
+    } else {
+      this.markers = [...tempMarkers]
+    }
   }
 
   /**

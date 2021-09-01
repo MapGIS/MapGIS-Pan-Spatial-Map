@@ -2,10 +2,10 @@
   <div class="split-screen-map">
     <transition name="fade">
       <a-empty
-        description="请在数据目录中选择需要分屏的数据"
         v-if="!screenNums.length"
+        description="请在数据目录中选择需要分屏的数据"
       />
-      <a-row :gutter="[5, 5]" v-else>
+      <a-row v-else :gutter="[5, 5]">
         <a-col
           v-for="s in screenNums"
           :key="s"
@@ -13,9 +13,9 @@
           :style="mapSpanStyle"
         >
           <map-view
-            @on-query="onQuery"
+            @on-query="query"
             :queryVisible.sync="queryVisible"
-            :query-shape="queryShape"
+            :query-geometry="queryGeometry"
             :map-view-id="`split-screen-map-${s}`"
             :map-view-layer="mapViewLayer(s)"
             :resize="resize"
@@ -27,11 +27,15 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator'
-import { MapMixin, Layer, Layer3D, Objects } from '@mapgis/web-app-framework'
-import mapViewStateInstance, {
-  initRectangle,
-  Rect
-} from '../MapView/store/map-view-state'
+import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
+import {
+  MapMixin,
+  Layer,
+  Layer3D,
+  Objects,
+  Rectangle3D
+} from '@mapgis/web-app-framework'
+import mapViewStateInstance from '../MapView/store/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -52,9 +56,9 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
 
   queryVisible = false
 
-  queryShape = null
+  queryGeometry = null
 
-  // 每个屏的高度
+  // 每个屏的高度设置
   get mapSpanStyle() {
     const height = this.screenNums.length > 2 ? '50%' : '100%'
     return { height }
@@ -66,11 +70,11 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
   }
 
   // 设置初始地图视图的复位范围
-  set initBound(bound: Rect) {
+  set initBound(bound: Rectangle) {
     mapViewStateInstance.initBound = bound
   }
 
-  // 图层
+  // 每屏的图层
   get mapViewLayer() {
     return s => this.layers.find(({ id }) => this.layerIds[s] === id)
   }
@@ -80,29 +84,30 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
    */
   getInitBound() {
     const layer = this.layers[0]
-    const { fullExtent, scenes } = layer
+    const { fullExtent, activeScene = {} } = layer
     if (layer instanceof Layer3D) {
-      if (scenes) {
-        const controller = Objects.SceneController.getInstance(
-          this.Cesium,
-          this.CesiumZondy,
-          this.webGlobe
+      const sceneController = Objects.SceneController.getInstance(
+        this.Cesium,
+        this.CesiumZondy,
+        this.webGlobe
+      )
+      if (activeScene.sublayers) {
+        return sceneController.layerLocalExtentToGlobelExtent(
+          activeScene.sublayers.find(({ visible }) => !!visible) ||
+            activeScene.sublayers[0]
         )
-        const sceneController = controller.sceneController || controller
-        const subLayer = scenes[0].sublayers[0]
-        return sceneController.layerLocalExtentToGlobelExtent(subLayer)
       }
     }
     return fullExtent
   }
 
   /**
-   * 某个地图的查询抛出的事件
-   * @param {object|array} 查询结果
+   * 每屏的查询结果
+   * @param {Rectangle | Rectangle3D} geometry 查询的几何范围
    */
-  onQuery(shape: Rect | Array<{ x: number; y: number; z: number }>) {
+  query(geometry: Rectangle | Rectangle3D) {
     this.queryVisible = true
-    this.queryShape = shape
+    this.queryGeometry = geometry
   }
 
   created() {
@@ -112,9 +117,8 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
   }
 
   beforeDestroy() {
-    this.initBound = initRectangle
     this.queryVisible = false
-    this.queryShape = null
+    this.queryGeometry = null
   }
 }
 </script>

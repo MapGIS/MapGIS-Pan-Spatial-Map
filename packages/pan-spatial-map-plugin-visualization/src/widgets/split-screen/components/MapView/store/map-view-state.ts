@@ -1,28 +1,9 @@
 import { CommonUtil } from '@mapgis/web-app-framework'
-import { Common } from '@mapgis/webclient-es6-service'
+import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 
-export class Rect {
-  /**
-   * Creates an instance of Rect.
-   * @param {number} xmin X坐标最小值
-   * @param {number} ymin Y坐标最小值
-   * @param {number} xmax X坐标最大值
-   * @param {number} ymax Y坐标最大值
-   */
-  constructor(
-    public xmin: number = 0.0,
-    public ymin: number = 0.0,
-    public xmax: number = 0.0,
-    public ymax: number = 0.0
-  ) {
-    this.xmin = xmin
-    this.xmax = xmax
-    this.ymin = ymin
-    this.ymax = ymax
-  }
-}
+// 初始范围
+export const initRectangle = new Rectangle(0.0, 0.0, 0.0, 0.0)
 
-export const initRectangle = new Common.Rectangle(0.0, 0.0, 0.0, 0.0)
 /**
  * 地图视图状态类.记录地图的ID、显示范围信息
  */
@@ -34,7 +15,7 @@ export class MapViewState {
   private _initBound = initRectangle
 
   // 二三维当前活动的地图经纬度范围
-  private _activeBound: Rect = initRectangle
+  private _activeBound: Rectangle = initRectangle
 
   get mapViewId(): string {
     return this._mapViewId
@@ -44,11 +25,11 @@ export class MapViewState {
     this._mapViewId = id
   }
 
-  get activeBound(): Rect {
+  get activeBound() {
     return this._activeBound
   }
 
-  set activeBound(rect: Rect) {
+  set activeBound(rect: Rectangle) {
     if (this.isValidRect(rect)) {
       this._activeBound = rect
     }
@@ -58,7 +39,7 @@ export class MapViewState {
     return this._initBound
   }
 
-  set initBound(rect: Rect) {
+  set initBound(rect: Rectangle) {
     if (this.isValidRect(rect)) {
       this._initBound = rect
     }
@@ -66,9 +47,9 @@ export class MapViewState {
 
   /**
    * 判断矩形范围是否可用
-   * @param {Rect} rect
+   * @param {object} Rectangle
    */
-  isValidRect(rect: Rect) {
+  isValidRect(rect: Rectangle) {
     if (!CommonUtil.isEmpty(rect)) {
       const boundKeys = ['xmin', 'xmax', 'ymin', 'ymax']
       const hasBoundKeys = boundKeys.every(v => v in rect)

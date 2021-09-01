@@ -1,27 +1,17 @@
-import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { AppMixin, Layer3D, Objects } from '@mapgis/web-app-framework'
-import mapViewStateInstance, { Rect } from '../store/map-view-state'
+import { Component, Mixins, Watch } from 'vue-property-decorator'
+import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
+import { Rectangle3D } from '@mapgis/web-app-framework'
+import mapViewStateInstance from '../store/map-view-state'
 import MapViewMapboxMixin from './map-view-mapbox'
 import MapViewCesiumMixin from './map-view-cesium'
 
-export { Rect }
-
 @Component
-export default class MapViewMixin extends Mixins<Record<string, any>>(
+export default class MapViewMixin extends Mixins(
   MapViewMapboxMixin,
-  MapViewCesiumMixin,
-  AppMixin
+  MapViewCesiumMixin
 ) {
-  @Prop() mapViewId!: string
-
   // 公共状态
   activeMapViewState = mapViewStateInstance
-
-  // 是否是二维图层
-  get is2dLayer() {
-    const is3dLayer = this.mapViewLayer instanceof Layer3D
-    return typeof is3dLayer === 'boolean' ? !is3dLayer : this.is2DMapMode
-  }
 
   // 获取地图视图的复位范围
   get initBound() {
@@ -33,7 +23,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
     return this.activeMapViewState.activeBound
   }
 
-  set activeBound(bound: Rect) {
+  set activeBound(bound: Rectangle) {
     this.activeMapViewState.activeBound = bound
   }
 
@@ -50,7 +40,7 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
    * 监听: 更新活动地图经纬度范围
    */
   @Watch('activeBound', { immediate: true, deep: true })
-  watchActiveBound(nV: Rect) {
+  watchActiveBound(nV: Rectangle) {
     if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
       this.zoomIn(nV)
     }
@@ -67,9 +57,9 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   /**
    * 更新动态变化的经纬度范围
-   * @param rect 经纬度范围
+   * @param {Rectangle} rect 经纬度范围
    */
-  setActiveBound(rect: Rect) {
+  setActiveBound(rect: Rectangle) {
     if (this.isMapLoaded && this.activeMapViewId === this.mapViewId) {
       this.activeBound = rect
     }
@@ -77,15 +67,15 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   /**
    * 查询要素
-   * @param {object|array} shape 经纬度范围或者三维坐标集合
+   * @param {Rectangle | Rectangle3D} geometry 经纬度范围或者三维坐标集合
    */
-  query(shape: Rect | Array<{ x: number; y: number; z: number }>) {
-    this.$emit('on-query', shape)
+  query(geometry: Rectangle | Rectangle3D) {
+    this.$emit('on-query', geometry)
   }
 
   /**
    * 复位
-   * @param  restoreOtherViews 是否同步复位其他图层
+   * @param {boolean} restoreOtherViews 是否同步复位其他图层
    */
   restore(restoreOtherViews = false) {
     const _bound = { ...this.initBound }
@@ -97,9 +87,9 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   /**
    * 放大地图到指定区域的中心
-   * @param {Rect} rect 经纬度范围
+   * @param {Rectangle} rect 经纬度范围
    */
-  zoomIn(rect: Rect) {
+  zoomIn(rect: Rectangle) {
     if (this.activeMapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomInToRect(rect)
@@ -113,9 +103,9 @@ export default class MapViewMixin extends Mixins<Record<string, any>>(
 
   /**
    * 缩小地图到指定经纬度范围的中心
-   * @param {Rect} rect 经纬度范围
+   * @param {Rectangle} rect 经纬度范围
    */
-  zoomOut(rect: Rect) {
+  zoomOut(rect: Rectangle) {
     if (this.activeMapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomOutToRect(rect)

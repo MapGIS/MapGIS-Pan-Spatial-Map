@@ -1,31 +1,13 @@
-import { Mixins, Vue, Component } from 'vue-property-decorator'
-import { Rect } from '../store/map-view-state'
+import { Vue, Component } from 'vue-property-decorator'
+import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 
 @Component
-export default class MapViewMapboxMixin extends Mixins<Record<string, any>>(
-  Vue
-) {
-  /**
-   * 地图事件注册
-   */
-  registerMapboxEvent() {
-    this.ssMap.on('mousemove', this.setActiveMapView)
-    this.ssMap.on('move', () => {
-      const { _sw, _ne } = this.ssMap.getBounds()
-      this.setActiveBound({
-        xmin: _sw.lng,
-        ymin: _sw.lat,
-        xmax: _ne.lng,
-        ymax: _ne.lat
-      })
-    })
-  }
-
+export default class MapViewMapboxMixin extends Vue {
   /**
    *  放大至指定范围
-   * @param 经纬度范围
+   * @param {Rectangle} 经纬度范围
    */
-  zoomInToRect({ xmin, ymin, xmax, ymax }: Rect) {
+  zoomInToRect({ xmin, ymin, xmax, ymax }: Rectangle) {
     if (xmin == xmax) {
       this.ssMap.setZoom(this.ssMap.getZoom() + 1)
     } else {
@@ -43,9 +25,9 @@ export default class MapViewMapboxMixin extends Mixins<Record<string, any>>(
 
   /**
    *  缩小至指定范围
-   * @param 经纬度范围
+   * @param {Rectangle} 经纬度范围
    */
-  zoomOutToRect({ xmin, ymin, xmax, ymax }: Rect) {
+  zoomOutToRect({ xmin, ymin, xmax, ymax }: Rectangle) {
     this.ssMap.setZoom(this.ssMap.getZoom() - 1)
     if (xmin !== xmax) {
       this.ssMap.setCenter([(xmin + xmax) / 2, (ymin + ymax) / 2])

@@ -22,10 +22,12 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 import {
   UUID,
   Layer,
   LayerType,
+  Rectangle3D,
   Objects,
   Feature,
   Catalog,
@@ -79,14 +81,12 @@ export default class MpQueryResultTree extends Mixins(
   @Prop() readonly vueKey!: string
 
   // 待查询的图层：支持查询的类型图层如下：1.在线地图服务图层。2.在线矢量图层。3.关联了在线地图服务的在线瓦片图层
-  @Prop({ type: Object, required: true, default: () => ({}) })
-  readonly layer!: Record<string, any>
+  @Prop({ type: Object, default: () => ({}) })
+  readonly layer!: Record<string, unknown>
 
   // 待查询的图层的查询范围
-  @Prop({ type: [Object, Array], required: true, default: () => ({}) })
-  readonly queryShape!:
-    | Record<string, number>
-    | Array<{ x: number; y: number; z: number }>
+  @Prop({ type: [Object, Array] })
+  readonly geometry!: Rectangle | Rectangle3D
 
   // 参与查询的地图索引,可选属性,仅对1、3两种类型的图层有效。
   @Prop({ type: Number, default: 0 })
@@ -119,7 +119,7 @@ export default class MpQueryResultTree extends Mixins(
     }
   }
 
-  @Watch('queryShape', { deep: true })
+  @Watch('geometry', { deep: true })
   watchQueryRect() {
     if (!this.loading) {
       this.getTreeData()
@@ -161,79 +161,6 @@ export default class MpQueryResultTree extends Mixins(
           port: basePort,
           ...others
         }
-  }
-
-  // 获取范围
-  get geometry() {
-    const {
-      type,
-      activeScene: { sublayers }
-    } = this.layerParams
-    if (type === LayerType.IGSScene) {
-      if (sublayers) {
-        const { source } = this.sceneController.findSource(
-          sublayers.find(({ visible }) => visible).id
-        )
-        if (source.length) {
-          const { xmin, ymin, xmax, ymax, zmin, zmax } = this.toQueryRect3D(
-            this.queryShape,
-            source[0].root.transform
-          )
-          return new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
-        }
-      }
-    } else {
-      const { xmin, ymin, xmax, ymax } = this.queryShape
-      return Objects.GeometryExp.creatRectByMinMax(xmin, ymin, xmax, ymax)
-    }
-  }
-
-  /**
-   * 三维范围转换
-   */
-  toQueryRect3D(shape, transform) {
-    const positions = shape.map(item => {
-      const { x, y, z } = this.sceneController.globelPositionToLocalPosition(
-        item,
-        transform
-      )
-      return {
-        x,
-        y,
-        z: item.z
-      }
-    })
-    let xmin = 0
-    let ymin = 0
-    let zmin = 0
-    let xmax = 0
-    let ymax = 0
-    let zmax = 0
-    positions.forEach(({ x, y, z }, index) => {
-      if (index === 0) {
-        xmin = x
-        ymin = y
-        zmin = z
-        xmax = x
-        ymax = y
-        zmax = z
-      } else {
-        xmin = xmin - x < 0 ? xmin : x
-        ymin = ymin - y < 0 ? ymin : y
-        zmin = zmin - z < 0 ? zmin : z
-        xmax = xmax - x > 0 ? xmax : x
-        ymax = ymax - y > 0 ? ymax : y
-        zmax = zmax - z > 0 ? zmax : z
-      }
-    })
-    return {
-      xmin,
-      ymin,
-      xmax,
-      ymax,
-      zmin,
-      zmax
-    }
   }
 
   /**
@@ -370,7 +297,6 @@ export default class MpQueryResultTree extends Mixins(
         if (this.treeData.length) {
           this.expandedKeys.push(this.treeData[0]?.key)
         }
-        console.log('treeData', this.treeData)
         this.loading = false
       }
     } catch (e) {
@@ -408,6 +334,14 @@ export default class MpQueryResultTree extends Mixins(
     queryOptions: FeatureQueryParam,
     specialLayerId: string
   ) {
+    const sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.CesiumZondy.getWebGlobe(this.vueKey)
+    )
+    if (!sceneController) {
+      return Promise.reject('WebGlobe未初始化')
+    }
     const featureIGS: FeatureIGS = await FeatureQuery.query(
       {
         ...queryOptions,
@@ -416,28 +350,27 @@ export default class MpQueryResultTree extends Mixins(
       false,
       true
     )
-    const {
-      AttStruct: { FldNumber = 0, FldName = [] },
-      SFEleArray = []
-    } = featureIGS
+    const { AttStruct, SFEleArray = [] } = featureIGS
     if (!SFEleArray || !SFEleArray.length) {
       return []
     }
-    const { source } = this.sceneController.findSource(specialLayerId)
+    const { source } = sceneController.findSource(specialLayerId)
     return SFEleArray.map(({ AttValue = [], bound = {}, FID }) => {
-      const boundObj = source.length
-        ? this.sceneController.localExtentToGlobelExtent(
-            bound,
-            source[0].root.transform
-          )
-        : null
+      const boundObj =
+        source && source.length
+          ? sceneController.localExtentToGlobelExtent(
+              bound,
+              source[0].root.transform
+            )
+          : bound
       const properties = {
         FID,
         specialLayerId: specialLayerId,
         specialLayerBound: boundObj,
-        ...new Array(FldNumber).fill().map((v, i) => ({
-          [FldName[i]]: AttValue[i]
-        }))
+        ...AttStruct.FldName.reduce((obj, n, i) => {
+          obj[n] = AttValue[i]
+          return obj
+        }, {})
       }
       return {
         key: UUID.uuid(),
@@ -460,45 +393,49 @@ export default class MpQueryResultTree extends Mixins(
    * @param {Object}
    */
   async queryFeatures(dataRef: ITreeNode) {
-    const { ip, port } = this.layerParams
-    const option = {
-      ip,
-      port,
-      page: this.page - 1,
-      pageCount: this.pageCount,
-      geometry: this.geometry,
-      coordPrecision: 8,
-      f: 'json'
-    }
-    let children = []
-    switch (dataRef.layerType) {
-      case LayerType.IGSMapImage:
-        children = await this.igsQueryFeature({
-          ...option,
-          layerIdxs: dataRef.layerIndex,
-          mapIndex: this.mapIndex,
-          docName: this.layerParams.docName
-        })
-        break
-      case LayerType.IGSVector:
-        children = await this.igsQueryFeature({
-          ...option,
-          gdbp: this.layerParams.gdbps
-        })
-        break
-      case LayerType.IGSScene:
-        children = await this.igsQuery3DFeature(
-          {
+    try {
+      const { ip, port } = this.layerParams
+      const option = {
+        ip,
+        port,
+        page: this.page - 1,
+        pageCount: this.pageCount,
+        geometry: this.geometry,
+        coordPrecision: 8,
+        f: 'json'
+      }
+      let children = []
+      switch (dataRef.layerType) {
+        case LayerType.IGSMapImage:
+          children = await this.igsQueryFeature({
             ...option,
-            gdbp: dataRef.layerGdbp
-          },
-          dataRef.layerId
-        )
-        break
-      default:
-        break
+            layerIdxs: dataRef.layerIndex,
+            mapIndex: this.mapIndex,
+            docName: this.layerParams.docName
+          })
+          break
+        case LayerType.IGSVector:
+          children = await this.igsQueryFeature({
+            ...option,
+            gdbp: this.layerParams.gdbps
+          })
+          break
+        case LayerType.IGSScene:
+          children = await this.igsQuery3DFeature(
+            {
+              ...option,
+              gdbp: dataRef.layerGdbp
+            },
+            dataRef.layerId
+          )
+          break
+        default:
+          break
+      }
+      return children
+    } catch (e) {
+      this.$message.error(e || '请求错误')
     }
-    return children
   }
 
   /**
@@ -511,8 +448,8 @@ export default class MpQueryResultTree extends Mixins(
         resolve()
         return
       }
-      console.log('dataRef', dataRef)
       this.queryFeatures(dataRef).then(children => {
+        console.log('loadTreeData', children)
         dataRef.children = children
         this.treeData = [...this.treeData]
         resolve()
@@ -569,11 +506,6 @@ export default class MpQueryResultTree extends Mixins(
   }
 
   created() {
-    this.sceneController = Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.CesiumZondy.getWebGlobe(this.vueKey) || this.webGlobe
-    )
     this.getTreeData()
     this.registerClearSelectionEvent(this.clearSelectionCallback)
   }
