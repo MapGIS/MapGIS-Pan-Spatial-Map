@@ -72,6 +72,14 @@ interface ITreeNode extends ILayerInfoItem {
   feature?: GFeature
 }
 
+/**
+ * 目前支持的图层类型有:
+ * IGSTile瓦片(4) IGS瓦片
+ * IGSMapImage地图(5) IGS矢量文档(doc)
+ * IGSVector矢量(6) IGS矢量图层(gdbp)
+ * IGSScene(23) 三维DOC3D和IGSIMAGE3D (gdbp)
+ * ArcGISMapImage(10)  ArcGIS IMAGE REST
+ */
 @Component
 export default class MpQueryResultTree extends Mixins(
   MapMixin,
@@ -258,19 +266,15 @@ export default class MpQueryResultTree extends Mixins(
 
   /**
    * 获取数据
-   * IGSTile瓦片(4)
-   * IGSMapImage地图(5)
-   * IGSVector矢量(6)
-   * IGSScene(23)
    */
   async getTreeData() {
     try {
       this.loading = true
       const {
         layerParams,
-        layerParams: { id, type }
+        layerParams: { id, type, isVisible }
       } = this
-      if (id) {
+      if (isVisible) {
         let treeData = []
         switch (type) {
           case LayerType.IGSMapImage:

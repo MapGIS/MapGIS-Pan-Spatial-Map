@@ -162,7 +162,7 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
     const tempMarkers = this.normalizedFeatures.reduce<IMarker[]>(
       (result, { uid, feature, feature: { properties } }) => {
         let coordinates = []
-        if (!this.is2dLayer) {
+        if (!this.is2d) {
           const { xmin, xmax, ymin, ymax } = properties.specialLayerBound
           coordinates = [(xmin + xmax) / 2, (ymin + ymax) / 2]
         } else {
@@ -183,7 +183,7 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
       },
       []
     )
-    if (!this.is2dLayer && tempMarkers.length) {
+    if (!this.is2d && tempMarkers.length) {
       try {
         const arr = await this.getModelHeight(tempMarkers)
         if (arr.length === tempMarkers.length) {
