@@ -4,7 +4,7 @@ interface IParams {
   currentIndex: number
   autoPlay: boolean
 }
-const txtColor = 'rgba(0, 0, 0, 0.7)'
+
 export const chartOption = (params: IParams) => {
   return {
     baseOption: {

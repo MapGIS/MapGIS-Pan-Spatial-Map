@@ -4,8 +4,8 @@
     <mp-window
       title="时间轴"
       :visible.sync="visible"
+      :vertical-offset="50"
       anchor="bottom-center"
-      :verticalOffset="30"
     >
       <div class="thematic-map-time-line">
         <a-spin :spinning="loading">
@@ -65,17 +65,12 @@ export default class ThematicMapTimeLine extends Vue {
 
   // 显示开关
   get visible() {
-    const isVisible = this.isVisible(ModuleType.TimeLine)
-    const _visible = isVisible && this.timeList.length > 1
-    if (_visible) {
-      this.onUpdateChart()
-    }
-    return _visible
+    return this.isVisible(ModuleType.TIMELINE) && this.timeList.length > 1
   }
 
   set visible(nV) {
     if (!nV) {
-      this.resetVisible(ModuleType.TimeLine)
+      this.resetVisible(ModuleType.TIMELINE)
     }
   }
 
@@ -139,6 +134,16 @@ export default class ThematicMapTimeLine extends Vue {
     const index = value ? this.timeList.indexOf(value) : 0
     if (this.currentIndex !== index) {
       this.currentIndex = index
+      this.onUpdateChart()
+    }
+  }
+
+  /**
+   * 监听: 显示和隐藏开挂
+   */
+  @Watch('visible')
+  visibleChanged(nV) {
+    if (nV) {
       this.onUpdateChart()
     }
   }

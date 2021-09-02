@@ -4,9 +4,9 @@
     <mp-window-wrapper :visible="visible">
       <mp-placement
         v-show="visible"
-        :offset="[12, 0]"
         class="thematic-map-manage-tools"
         position="center-right"
+        :offset="[12, 0]"
       >
         <a-row v-for="item in iconList" :key="item.icon">
           <a-col>
@@ -53,31 +53,31 @@ export default class ThematicMapManageTools extends Vue {
    */
   getIconList() {
     const list: Array<IIcon> = []
-    const tableConfig = {
-      icon: 'table',
-      title: '属性表',
-      type: ModuleType.TABLE
-    }
-    const graphConfig = {
-      icon: 'bar-chart',
-      title: '统计表',
-      type: ModuleType.GRAPH
-    }
-    const timelineConfig = {
-      icon: 'clock-circle',
-      title: '时间轴',
-      type: ModuleType.TIMELINE
-    }
     if (this.subjectData?.table) {
+      const tableConfig = {
+        icon: 'table',
+        title: '属性表',
+        type: ModuleType.TABLE
+      }
       list.push(tableConfig)
     }
     if (this.subjectData?.graph) {
+      const graphConfig = {
+        icon: 'bar-chart',
+        title: '统计表',
+        type: ModuleType.GRAPH
+      }
       list.push(graphConfig)
     }
     if (
       this.selectedSubjectTimeList &&
       this.selectedSubjectTimeList.length > 1
     ) {
+      const timelineConfig = {
+        icon: 'clock-circle',
+        title: '时间轴',
+        type: ModuleType.TIMELINE
+      }
       list.push(timelineConfig)
     }
     return list

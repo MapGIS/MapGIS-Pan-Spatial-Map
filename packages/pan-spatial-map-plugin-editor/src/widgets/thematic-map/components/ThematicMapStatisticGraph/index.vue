@@ -5,8 +5,8 @@
       <mp-window
         @window-size="onWindowSize"
         :visible.sync="visible"
-        :horizontalOffset="48"
-        :verticalOffset="50"
+        :horizontal-offset="48"
+        :vertical-offset="50"
         title="统计表"
         anchor="bottom-right"
       >

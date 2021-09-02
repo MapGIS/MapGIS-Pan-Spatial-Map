@@ -4,8 +4,8 @@
     <mp-window-wrapper :visible="visible">
       <mp-window
         :visible.sync="visible"
-        :horizontalOffset="48"
-        :verticalOffset="50"
+        :horizontal-offset="48"
+        :vertical-offset="50"
         :max-width="tableWidth"
         :has-padding="false"
         anchor="top-right"
