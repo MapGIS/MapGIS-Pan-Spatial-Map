@@ -1,7 +1,12 @@
 <template>
   <div class="mp-widget-thematic-map">
     <!-- 专题图树 -->
-    <mp-group-tab size="default" title="专题">
+    <mp-group-tab
+      :has-top-margin="false"
+      :has-bottom-margin="false"
+      size="default"
+      title="专题"
+    >
       <mp-toolbar-command-group slot="handle">
         <mp-toolbar-command
           @click="createSubject"
@@ -324,7 +329,13 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
 }
 </script>
 <style lang="less" scoped>
+.mp-widget-thematic-map {
+  height: 100%;
+}
 .tree-node-context-menue {
   box-shadow: @box-shadow-base;
+}
+::v-deep .ant-empty {
+  margin-top: 20%;
 }
 </style>
