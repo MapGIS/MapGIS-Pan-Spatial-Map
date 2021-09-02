@@ -45,7 +45,9 @@ const { DocumentCatalog } = Catalog
 const {
   FeatureQueryParam,
   FeatureIGS,
+  FeatureGeoJSON,
   GFeature,
+  ArcGISFeatureQuery,
   FeatureQuery,
   FeatureConvert
 } = Feature
@@ -113,7 +115,7 @@ export default class MpQueryResultTree extends Mixins(
   readonly multiple!: boolean
 
   // 分页显示的条目数
-  @Prop({ type: Number, default: 20 })
+  @Prop({ type: Number, default: 100 })
   readonly pageCount!: number
 
   // 分页显示时的当前页码，从1开始。
@@ -121,17 +123,13 @@ export default class MpQueryResultTree extends Mixins(
   readonly page!: number
 
   @Watch('layer', { deep: true })
-  watchLayer() {
-    if (!this.loading) {
-      this.getTreeData()
-    }
+  layerChanged() {
+    this.getTreeData()
   }
 
   @Watch('geometry', { deep: true })
-  watchQueryRect() {
-    if (!this.loading) {
-      this.getTreeData()
-    }
+  geometryChanged() {
+    this.getTreeData()
   }
 
   loading = false
@@ -155,20 +153,22 @@ export default class MpQueryResultTree extends Mixins(
   selectedKeys: string[] = []
 
   // 根据图层url格式化图层的ip,port,docName等信息
-  get layerParams(): ILayerParams {
-    const { url, ...others } = this.layer
+  get layerParams() {
     const { ip: baseIp, port: basePort } = baseConfigInstance.config
+    let _ip = baseIp
+    let _port = basePort
 
-    return typeof this.layer._parseUrl === 'function'
-      ? {
-          ...this.layer._parseUrl(url),
-          ...others
-        }
-      : {
-          ip: baseIp,
-          port: basePort,
-          ...others
-        }
+    if (typeof this.layer._parseUrl === 'function') {
+      const { ip, port, docName } = this.layer._parseUrl(this.layer.url)
+      _ip = ip
+      _port = port
+      this.layer.docName = docName
+    }
+
+    this.layer.ip = _ip
+    this.layer.port = _port
+
+    return this.layer
   }
 
   /**
@@ -209,7 +209,7 @@ export default class MpQueryResultTree extends Mixins(
    * 获取IGSTile图层信息
    * @param {object}
    */
-  async getIGSTileLayerInfo({ ip, port, serverName, id }: ILayerParams) {
+  async getIGSTileLayerInfo({ ip, port, id, serverName }: ILayerParams) {
     const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(id)
     const docName =
       layerConfig && layerConfig.bindData
@@ -236,6 +236,26 @@ export default class MpQueryResultTree extends Mixins(
       })
     }
     return res
+  }
+
+  /**
+   * 获取IGSScene图层信息
+   * @param {object}
+   */
+  getArcGISMapImageLayerInfo({ id, allSublayers }: ILayerParams) {
+    return allSublayers.reduce<ILayerInfoItem[]>(
+      (arr, { id, title, visible }, index) => {
+        if (visible) {
+          arr.push({
+            layerId: id,
+            layerIndex: id,
+            layerName: title
+          })
+        }
+        return arr
+      },
+      []
+    )
   }
 
   /**
@@ -272,7 +292,7 @@ export default class MpQueryResultTree extends Mixins(
       this.loading = true
       const {
         layerParams,
-        layerParams: { id, type, isVisible }
+        layerParams: { isVisible, type }
       } = this
       if (isVisible) {
         let treeData = []
@@ -285,6 +305,10 @@ export default class MpQueryResultTree extends Mixins(
             break
           case LayerType.IGSVector:
             treeData = this.getIGSVectorLayerInfo(layerParams)
+            break
+          case LayerType.ArcGISMapImage:
+            debugger
+            treeData = this.getArcGISMapImageLayerInfo(layerParams)
             break
           case LayerType.IGSScene:
             treeData = this.getIGSSceneLayerInfo(layerParams)
@@ -301,8 +325,8 @@ export default class MpQueryResultTree extends Mixins(
         if (this.treeData.length) {
           this.expandedKeys.push(this.treeData[0]?.key)
         }
-        this.loading = false
       }
+      this.loading = false
     } catch (e) {
       this.loading = false
     }
@@ -310,12 +334,14 @@ export default class MpQueryResultTree extends Mixins(
 
   /**
    * igs要素查询
-   * @param {Object} 要素查询参数
+   * @param {Object} queryOptions 要素查询参数
    */
   async igsQueryFeature(queryOptions) {
     const featureIGS = await FeatureQuery.query(queryOptions)
     if (featureIGS.SFEleArray && featureIGS.SFEleArray.length) {
-      const { features } = FeatureConvert.featureIGSToFeatureGeoJSON(featureIGS)
+      const {
+        features
+      }: FeatureGeoJSON = FeatureConvert.featureIGSToFeatureGeoJSON(featureIGS)
       if (features && features.length) {
         return features.map(item => ({
           key: UUID.uuid(),
@@ -331,8 +357,8 @@ export default class MpQueryResultTree extends Mixins(
 
   /**
    * igs三维要素查询
-   * @param {Object} 要素查询参数
-   * @param {string} 图层ID
+   * @param {Object} queryOptions 要素查询参数
+   * @param {string} specialLayerId 图层ID
    */
   async igsQuery3DFeature(
     queryOptions: FeatureQueryParam,
@@ -393,15 +419,41 @@ export default class MpQueryResultTree extends Mixins(
   }
 
   /**
+   * arcgis要素查询
+   * @param {Object} queryOptions 要素查询参数
+   */
+  async arcGISQueryFeature(queryOptions: FeatureQueryParam) {
+    const { layerIndex, serverUrl, geometry } = queryOptions
+    const { count: totalCount } = await ArcGISFeatureQuery.getTotal({
+      geometry,
+      layerIndex,
+      serverUrl,
+      f: 'json'
+    })
+    const { features }: FeatureGeoJSON = await ArcGISFeatureQuery.query({
+      ...queryOptions,
+      totalCount
+    })
+    return features && features.length
+      ? features.map(item => ({
+          key: UUID.uuid(),
+          layerName: item.properties.fid,
+          feature: item,
+          isLeaf: true,
+          selectable: true
+        }))
+      : []
+  }
+
+  /**
    * 要素查询
    * @param {Object}
    */
   async queryFeatures(dataRef: ITreeNode) {
     try {
-      const { ip, port } = this.layerParams
-      const option = {
-        ip,
-        port,
+      const queryOptions = {
+        ip: this.layerParams.ip,
+        port: this.layerParams.port,
         page: this.page - 1,
         pageCount: this.pageCount,
         geometry: this.geometry,
@@ -412,7 +464,7 @@ export default class MpQueryResultTree extends Mixins(
       switch (dataRef.layerType) {
         case LayerType.IGSMapImage:
           children = await this.igsQueryFeature({
-            ...option,
+            ...queryOptions,
             layerIdxs: dataRef.layerIndex,
             mapIndex: this.mapIndex,
             docName: this.layerParams.docName
@@ -420,14 +472,21 @@ export default class MpQueryResultTree extends Mixins(
           break
         case LayerType.IGSVector:
           children = await this.igsQueryFeature({
-            ...option,
+            ...queryOptions,
             gdbp: this.layerParams.gdbps
+          })
+          break
+        case LayerType.ArcGISMapImage:
+          children = await this.arcGISQueryFeature({
+            ...queryOptions,
+            layerIndex: dataRef.layerIndex,
+            serverUrl: this.layerParams.url
           })
           break
         case LayerType.IGSScene:
           children = await this.igsQuery3DFeature(
             {
-              ...option,
+              ...queryOptions,
               gdbp: dataRef.layerGdbp
             },
             dataRef.layerId

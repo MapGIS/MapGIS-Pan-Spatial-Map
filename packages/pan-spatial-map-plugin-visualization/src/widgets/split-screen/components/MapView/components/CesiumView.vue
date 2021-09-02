@@ -61,7 +61,6 @@ export default class CesiumView extends Vue {
 
   /**
    * 供父组件调用
-   * 三维下默认画区
    * @param {string} [mode = 'draw-polygon'] 参考Mp3dDrawPro组件内定义的mode类型
    */
   openDraw(mode = 'draw-polygon') {
@@ -77,14 +76,23 @@ export default class CesiumView extends Vue {
 
   /**
    * 获取二维经纬度范围
+   * @param {}
+   * @return
    */
-  getRect2D(shape) {
+  getRect({ xmin, ymin, xmax, ymax }) {
+    return Objects.GeometryExp.creatRectByMinMax(xmin, ymin, xmax, ymax)
+  }
+
+  /**
+   * 三维坐标集合转二维经纬度范围
+   */
+  toRect2D(shape) {
     const [{ x: x1, y: y1 }, { x: x2, y: y2 }] = shape
     const xmin = x1 < x2 ? x1 : x2
     const ymin = y1 < y2 ? y1 : y2
     const xmax = x2 > x1 ? x2 : x1
     const ymax = y2 > y1 ? y2 : y1
-    return Objects.GeometryExp.creatRectByMinMax(xmin, ymin, xmax, ymax)
+    return this.getRect({ xmin, ymin, xmax, ymax })
   }
 
   /**
@@ -92,7 +100,7 @@ export default class CesiumView extends Vue {
    * @param {array} 几何坐标集合
    * @param {unknown}
    */
-  getRect3D(shape, transform) {
+  toRect3D(shape, transform) {
     const positions = shape.map(item => {
       const { x, y, z } = this.sceneController.globelPositionToLocalPosition(
         item,
@@ -162,9 +170,29 @@ export default class CesiumView extends Vue {
    */
   onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
-      const geometry = this.getGeometry(shape)
-      const rect2D = this.getRect2D(shape)
-      this.$emit('draw-finished', geometry, rect2D)
+      let payload: unknown
+      switch (mode) {
+        case 'draw-polygon': {
+          const geometry = this.getGeometry(shape)
+          const rect = this.toRect2D(shape)
+          payload = {
+            geometry,
+            rect
+          }
+          break
+        }
+        case 'draw-rectangle': {
+          const rect = this.getRect(shape)
+          payload = {
+            geometry: rect,
+            rect
+          }
+          break
+        }
+        default:
+          break
+      }
+      this.$emit('draw-finished', payload)
     }
   }
 

@@ -233,7 +233,7 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
     this.layers = this.document.defaultMap
       .clone()
       .getFlatLayers()
-      .filter(v => v.isVisible)
+      .filter(v => !!v.isVisible)
     const { length } = this.layers
     if (length) {
       this.setLayers(length < 7 ? length : 6)

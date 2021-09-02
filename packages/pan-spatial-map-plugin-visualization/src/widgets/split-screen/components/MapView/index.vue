@@ -147,6 +147,11 @@ export default class MapView extends Mixins(
     return typeof is3dLayer === 'boolean' ? !is3dLayer : this.is2DMapMode
   }
 
+  // 二维或三维地图组件
+  get mapComponent() {
+    return this.$refs[`${this.is2dLayer ? 'mapboxView' : 'cesiumView'}`]
+  }
+
   /**
    * 初始化图层
    */
@@ -184,7 +189,6 @@ export default class MapView extends Mixins(
    * 三维地图初始化
    */
   cesiumLoaded(webGlobe, sceneController) {
-    // this._webGlobe = webGlobe
     this.sceneController = sceneController
     this.isMapLoaded = true
     this.restore()
@@ -206,10 +210,16 @@ export default class MapView extends Mixins(
 
   /**
    * 二三维绘制结束操作
-   * @param {object|array} geometry 绘制几何
-   * @param {object} Rectangle 绘制经纬度范围
+   * @param {object} geometry 绘制几何
+   * @param {object} rect 绘制经纬度范围
    */
-  drawFinished(geometry: Rectangle | Rectangle3D, rect: Rectangle) {
+  drawFinished({
+    geometry,
+    rect
+  }: {
+    geometry: Rectangle | Rectangle3D
+    rect: Rectangle
+  }) {
     switch (this.operationType) {
       case 'query':
         this.toggleQueryWindow(true)
@@ -227,21 +237,11 @@ export default class MapView extends Mixins(
   }
 
   /**
-   * 清除三维球上的实体内容
-   */
-  // clearWebGlobeEntities() {
-  //   if (!this.is2dLayer && this._webGlobe) {
-  //     this._webGlobe.viewer.entities.removeAll()
-  //   }
-  // }
-
-  /**
    * 清除结果树查询结果
    */
   clearQueryResults() {
     this.queryFeatures = []
     this.querySelection = []
-    // this.clearWebGlobeEntities()
   }
 
   /**
@@ -285,11 +285,11 @@ export default class MapView extends Mixins(
     if (this.isMapLoaded) {
       switch (type) {
         case 'query':
+          this.mapComponent.openDraw()
+          break
         case 'zoomIn':
         case 'zoomOut':
-          this.$refs[
-            `${this.is2dLayer ? 'mapboxView' : 'cesiumView'}`
-          ].openDraw()
+          this.mapComponent.openDraw('draw-rectangle')
           break
         case 'restore':
           this.restore(true)

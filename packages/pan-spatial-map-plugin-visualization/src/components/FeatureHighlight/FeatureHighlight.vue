@@ -40,7 +40,7 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   // 三维地图vueKey
   @Prop({ default: UUID.uuid() }) readonly vueKey!: string
 
-  // 是否二维图层
+  // 是否二维图层, 根据图层是否属于Layer3D还是Layer判断的
   @Prop() readonly is2dLayer!: boolean
 
   // 所有的标注点信息
@@ -227,13 +227,12 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
     })
     const { MIN_VALUE, MAX_VALUE } = Number
     this.selectionBound = this.normalizedFeatures.reduce(
-      ({ xmin, xmax, ymin, ymax }, { feature }: GFeature) => {
-        const _bound = feature.bound || Feature.getGeoJsonFeatureBound(feature)
+      ({ xmin, xmax, ymin, ymax }, { feature: { bound } }: GFeature) => {
         return {
-          xmin: _bound.xmin < xmin ? _bound.xmin : xmin,
-          ymin: _bound.ymin < ymin ? _bound.ymin : ymin,
-          xmax: _bound.xmax > xmax ? _bound.xmax : xmax,
-          ymax: _bound.ymax > ymax ? _bound.ymax : ymax
+          xmin: bound.xmin < xmin ? bound.xmin : xmin,
+          ymin: bound.ymin < ymin ? bound.ymin : ymin,
+          xmax: bound.xmax > xmax ? bound.xmax : xmax,
+          ymax: bound.ymax > ymax ? bound.ymax : ymax
         }
       },
       {

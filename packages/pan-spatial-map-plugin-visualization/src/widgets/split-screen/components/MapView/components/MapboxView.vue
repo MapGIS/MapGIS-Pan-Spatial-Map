@@ -55,7 +55,7 @@ export default class MapboxView extends Vue {
   onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
       const rect = this.getRect(shape)
-      this.$emit('draw-finished', rect, rect)
+      this.$emit('draw-finished', { geometry: rect, rect })
     }
   }
 
