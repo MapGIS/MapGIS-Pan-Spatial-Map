@@ -47,6 +47,8 @@
       ref="refPlaceNameMapbox"
       :markers="markers"
       :field-configs="fieldConfigs"
+      :active-markers="activeMarkers"
+      :active-field-configs="activeFieldConfigs"
       :cluster="cluster"
       :geojson="geojson"
     />
@@ -55,6 +57,8 @@
       ref="refPlaceNameCesium"
       :markers="markers"
       :field-configs="fieldConfigs"
+      :active-markers="activeMarkers"
+      :active-field-configs="activeFieldConfigs"
       :cluster="cluster"
       :geojson="geojson"
     />
@@ -102,6 +106,10 @@ export default class PlaceName extends Mixins(
   private tab = ''
 
   private markers = []
+
+  private activeMarkers = []
+
+  private activeFieldConfigs = []
 
   private fieldConfigs: string[] = []
 
@@ -327,9 +335,11 @@ export default class PlaceName extends Mixins(
     this.geojson = {}
   }
 
-  showCoords(markers, fieldConfigs) {
-    this.markers = markers
-    this.fieldConfigs = fieldConfigs
+  showCoords(markers, fieldConfigs, activeMarkers, activeFieldConfigs) {
+    this.markers = [...markers, ...activeMarkers]
+    this.fieldConfigs = [...fieldConfigs, ...activeFieldConfigs]
+    // this.activeFieldConfigs = activeFieldConfigs
+    // this.activeMarkers = activeMarkers
   }
 
   updateGeojson(geojson) {
