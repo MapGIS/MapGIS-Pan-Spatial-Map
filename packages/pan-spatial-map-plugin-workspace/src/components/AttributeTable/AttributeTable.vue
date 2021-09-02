@@ -537,14 +537,14 @@ export default class MpAttributeTable extends Mixins(
       const queryGeometry = geometry || this.optionVal.geometry
       const { current, pageSize } = this.pagination
       const { count: totalCount } = await ArcGISFeatureQuery.getTotal({
-        f: 'json',
+        f: 'pjson',
         where: queryWhere,
         geometry: queryGeometry,
         serverUrl,
         layerIndex
       })
       const geojson = await ArcGISFeatureQuery.query({
-        f: 'json',
+        f: 'pjson',
         where: queryWhere,
         geometry: queryGeometry,
         page: current - 1,

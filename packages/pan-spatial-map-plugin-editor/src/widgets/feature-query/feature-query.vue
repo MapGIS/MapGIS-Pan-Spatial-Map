@@ -368,7 +368,7 @@ export default class MpFeatureQuery extends Mixins(
 
     const sublayers = layer.allSublayers
     sublayers.forEach(sublayer => {
-      if (!layer.visible) {
+      if (!sublayer.visible) {
         return
       }
       exhibition.options.push({
