@@ -106,7 +106,7 @@ export default class ThematicMapAttributeTable extends Vue {
   page = 1
 
   // 列表页容量
-  pageCount = 10
+  pageCount = 20
 
   // 列表总数
   total = 0
@@ -156,7 +156,8 @@ export default class ThematicMapAttributeTable extends Vue {
       pageSize: this.pageCount,
       total: this.total,
       showSizeChanger: true,
-      pageSizeOptions: ['10', '15', '20', '25', '30', '35', '40', '45', '50'],
+      showLessItems: true,
+      pageSizeOptions: ['20', '40', '60', '80', '100'],
       showTotal: total => `共${total}条`
     }
   }
