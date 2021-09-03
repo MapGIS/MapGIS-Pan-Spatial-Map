@@ -38,8 +38,9 @@
       :width="200"
       :height="200"
       :visible.sync="queryWindowVisible"
-      :vertical-offset="30"
+      :vertical-offset="32"
       :full-screen-action="false"
+      :has-padding="false"
     >
       <mp-query-result-tree
         v-if="queryWindowVisible"

@@ -455,7 +455,15 @@
                           }
                         ],
                         "table": {
-                          "showFields": ["面积", "周长", "省名", "人口数"],
+                          "showFields": [
+                            "面积",
+                            "周长",
+                            "省名",
+                            "人口数",
+                            "GDP_2011",
+                            "GDP_2012",
+                            "GDP_2013"
+                          ],
                           "showFieldsTitle": {}
                         },
                         "graph": {

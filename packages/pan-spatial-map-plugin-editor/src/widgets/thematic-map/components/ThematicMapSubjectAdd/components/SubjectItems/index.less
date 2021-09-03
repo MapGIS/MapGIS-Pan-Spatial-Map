@@ -3,11 +3,6 @@
   flex-flow: column nowrap;
   border: 1px solid @border-color-base;
   border-radius: @border-radius-base;
-  .scrollbar {
-    ::-webkit-scrollbar {
-      width: 2px;
-    }
-  }
 
   &-time {
     border: none;
@@ -28,7 +23,7 @@
     min-height: 200px;
     max-height: 400px;
     overflow-y: auto;
-    .scrollbar();
+    .hoverScrollbar(2px);
   }
 
   &-empty {
@@ -54,7 +49,7 @@
       overflow-y: auto;
       padding: 8px;
       background: #f0f2f5;
-      .scrollbar();
+      .hoverScrollbar(2px);
     }
     .ant-collapse-arrow {
       left: 8px !important;

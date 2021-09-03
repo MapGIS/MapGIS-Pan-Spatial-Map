@@ -307,7 +307,6 @@ export default class MpQueryResultTree extends Mixins(
             treeData = this.getIGSVectorLayerInfo(layerParams)
             break
           case LayerType.ArcGISMapImage:
-            debugger
             treeData = this.getArcGISMapImageLayerInfo(layerParams)
             break
           case LayerType.IGSScene:
@@ -326,8 +325,7 @@ export default class MpQueryResultTree extends Mixins(
           this.expandedKeys.push(this.treeData[0]?.key)
         }
       }
-      this.loading = false
-    } catch (e) {
+    } finally {
       this.loading = false
     }
   }
@@ -435,9 +433,9 @@ export default class MpQueryResultTree extends Mixins(
       totalCount
     })
     return features && features.length
-      ? features.map(item => ({
+      ? features.map((item: GFeature) => ({
           key: UUID.uuid(),
-          layerName: item.properties.fid,
+          layerName: item.properties.ID,
           feature: item,
           isLeaf: true,
           selectable: true
@@ -450,55 +448,51 @@ export default class MpQueryResultTree extends Mixins(
    * @param {Object}
    */
   async queryFeatures(dataRef: ITreeNode) {
-    try {
-      const queryOptions = {
-        ip: this.layerParams.ip,
-        port: this.layerParams.port,
-        page: this.page - 1,
-        pageCount: this.pageCount,
-        geometry: this.geometry,
-        coordPrecision: 8,
-        f: 'json'
-      }
-      let children = []
-      switch (dataRef.layerType) {
-        case LayerType.IGSMapImage:
-          children = await this.igsQueryFeature({
-            ...queryOptions,
-            layerIdxs: dataRef.layerIndex,
-            mapIndex: this.mapIndex,
-            docName: this.layerParams.docName
-          })
-          break
-        case LayerType.IGSVector:
-          children = await this.igsQueryFeature({
-            ...queryOptions,
-            gdbp: this.layerParams.gdbps
-          })
-          break
-        case LayerType.ArcGISMapImage:
-          children = await this.arcGISQueryFeature({
-            ...queryOptions,
-            layerIndex: dataRef.layerIndex,
-            serverUrl: this.layerParams.url
-          })
-          break
-        case LayerType.IGSScene:
-          children = await this.igsQuery3DFeature(
-            {
-              ...queryOptions,
-              gdbp: dataRef.layerGdbp
-            },
-            dataRef.layerId
-          )
-          break
-        default:
-          break
-      }
-      return children
-    } catch (e) {
-      this.$message.error(e || '请求错误')
+    const queryOptions = {
+      ip: this.layerParams.ip,
+      port: this.layerParams.port,
+      page: this.page - 1,
+      pageCount: this.pageCount,
+      geometry: this.geometry,
+      coordPrecision: 8,
+      f: 'json'
     }
+    let children = []
+    switch (dataRef.layerType) {
+      case LayerType.IGSMapImage:
+        children = await this.igsQueryFeature({
+          ...queryOptions,
+          layerIdxs: dataRef.layerIndex,
+          mapIndex: this.mapIndex,
+          docName: this.layerParams.docName
+        })
+        break
+      case LayerType.IGSVector:
+        children = await this.igsQueryFeature({
+          ...queryOptions,
+          gdbp: this.layerParams.gdbps
+        })
+        break
+      case LayerType.ArcGISMapImage:
+        children = await this.arcGISQueryFeature({
+          ...queryOptions,
+          layerIndex: dataRef.layerIndex,
+          serverUrl: this.layerParams.url
+        })
+        break
+      case LayerType.IGSScene:
+        children = await this.igsQuery3DFeature(
+          {
+            ...queryOptions,
+            gdbp: dataRef.layerGdbp
+          },
+          dataRef.layerId
+        )
+        break
+      default:
+        break
+    }
+    return children
   }
 
   /**
@@ -511,12 +505,17 @@ export default class MpQueryResultTree extends Mixins(
         resolve()
         return
       }
-      this.queryFeatures(dataRef).then(children => {
-        console.log('loadTreeData', children)
-        dataRef.children = children
-        this.treeData = [...this.treeData]
-        resolve()
-      })
+      this.queryFeatures(dataRef)
+        .then(children => {
+          dataRef.children = children
+          this.treeData = [...this.treeData]
+          resolve()
+        })
+        .catch(e => {
+          console.log('e', e)
+          this.$message.error(e || '请求错误')
+          resolve([])
+        })
     })
   }
 
@@ -574,3 +573,16 @@ export default class MpQueryResultTree extends Mixins(
   }
 }
 </script>
+<style scoped lang="less">
+.mp-query-result-tree {
+  padding: 4px 8px;
+  overflow: auto;
+  .hoverScrollbar();
+  .ant-tree > li:first-child {
+    padding-top: 0;
+  }
+  .ant-tree > li:last-child {
+    padding-bottom: 10px;
+  }
+}
+</style>
