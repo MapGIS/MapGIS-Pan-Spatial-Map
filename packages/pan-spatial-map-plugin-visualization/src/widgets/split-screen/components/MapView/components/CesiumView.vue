@@ -156,7 +156,7 @@ export default class CesiumView extends Vue {
         sublayers.find(({ visible }) => !!visible).id
       )
       if (source && source.length) {
-        const { xmin, ymin, xmax, ymax, zmin, zmax } = this.getRect3D(
+        const { xmin, ymin, xmax, ymax, zmin, zmax } = this.toRect3D(
           shape,
           source[0].root.transform
         )

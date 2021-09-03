@@ -227,7 +227,13 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
     })
     const { MIN_VALUE, MAX_VALUE } = Number
     this.selectionBound = this.normalizedFeatures.reduce(
-      ({ xmin, xmax, ymin, ymax }, { feature: { bound } }: GFeature) => {
+      (
+        { xmin, xmax, ymin, ymax },
+        { feature, feature: { properties } }: GFeature
+      ) => {
+        const bound =
+          properties.specialLayerBound ||
+          Feature.getGeoJSONFeatureBound(feature)
         return {
           xmin: bound.xmin < xmin ? bound.xmin : xmin,
           ymin: bound.ymin < ymin ? bound.ymin : ymin,
