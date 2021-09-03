@@ -1,5 +1,3 @@
-export const txtColor = '#000000a6'
-
 export const splitColor = '#d9d9d9'
 
 export const defaultColor = '#1890ff'

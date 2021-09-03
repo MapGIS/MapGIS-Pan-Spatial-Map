@@ -299,6 +299,8 @@ export class DataCatalogManager {
     const url = new URL(data.url)
     const ip = url.hostname
     const port = url.port
+    const defaultIp = baseConfigInstance.config.ip
+    const defaultPort = baseConfigInstance.config.port
     let isRepeated = false
 
     switch (type) {
@@ -310,8 +312,8 @@ export class DataCatalogManager {
         if (
           this._allLayerConfigItems.some(item => {
             return (
-              item.ip === ip &&
-              item.port === port &&
+              (item.ip === '' ? defaultIp : item.ip) === ip &&
+              (item.port === '' ? defaultPort : item.port) === port &&
               item.serverName === serverName
             )
           }) ||
@@ -326,7 +328,11 @@ export class DataCatalogManager {
         const gdbps = this.getQueryString('gdbps', url.search.substring(1))
         if (
           this._allLayerConfigItems.some(item => {
-            return item.ip === ip && item.port === port && item.gdbps === gdbps
+            return (
+              (item.ip === '' ? defaultIp : item.ip) === ip &&
+              (item.port === '' ? defaultPort : item.port) === port &&
+              item.gdbps === gdbps
+            )
           }) ||
           this._allLayerConfigItems.some(item => {
             return item.serverURL === data.url

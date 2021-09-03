@@ -6,6 +6,7 @@
       ref="measure"
       :measureMode="measureMode"
       :styles="drawStyle"
+      :enableControl="false"
       @added="onAdded"
       @measureResult="onMeasureResult"
     >

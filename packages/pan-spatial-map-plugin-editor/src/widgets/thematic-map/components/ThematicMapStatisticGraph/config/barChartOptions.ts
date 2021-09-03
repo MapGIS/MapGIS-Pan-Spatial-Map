@@ -1,4 +1,4 @@
-import { defaultColor, txtColor, splitColor, getGridX } from './chartCommon'
+import { defaultColor, splitColor, getGridX } from './chartCommon'
 /**
  * 柱状图配置
  * @param param0
@@ -43,7 +43,6 @@ export const barChartOptions = ({ color, title, x, y }) => {
       left: 'right',
       padding: 0,
       textStyle: {
-        color: txtColor,
         fontSize: 14,
         fontFamily: '微软雅黑'
       }
@@ -55,37 +54,19 @@ export const barChartOptions = ({ color, title, x, y }) => {
         rotate: 60,
         interval: 0,
         fontSize: 10,
-        fontFamily: '微软雅黑',
-        color: txtColor
-      },
-      axisTick: {
-        lineStyle: {
-          color: txtColor
-        }
-      },
-      axisLine: {
-        lineStyle: {
-          color: txtColor
-        }
+        fontFamily: '微软雅黑'
       }
     },
     yAxis: {
       type: 'value',
       axisLabel: {
-        fontFamily: '微软雅黑',
-        color: txtColor
+        fontFamily: '微软雅黑'
       },
       axisTick: {
-        show: true,
-        lineStyle: {
-          color: txtColor
-        }
+        show: true
       },
       axisLine: {
-        show: true,
-        lineStyle: {
-          color: txtColor
-        }
+        show: true
       },
       splitLine: {
         lineStyle: {
