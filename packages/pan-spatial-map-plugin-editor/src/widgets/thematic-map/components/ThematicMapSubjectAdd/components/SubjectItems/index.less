@@ -2,14 +2,12 @@
   display: flex;
   flex-flow: column nowrap;
   border: 1px solid @border-color-base;
-  border-radius: @border-radius-base;
 
   &-time {
     border: none;
     &:hover,
     &:focus {
       box-shadow: none;
-      border-color: @border-color-base;
     }
   }
 
@@ -23,7 +21,7 @@
     min-height: 200px;
     max-height: 400px;
     overflow-y: auto;
-    .hoverScrollbar(2px);
+    .scrollbar(2px);
   }
 
   &-empty {
@@ -37,25 +35,32 @@
     .ant-collapse-item {
       border-radius: 0;
     }
-    .ant-collapse-header {
-      color: @text-color-secondary;
-      height: 25px;
-      line-height: 25px;
-      padding: 0 4px;
-      padding-left: 25px;
-    }
-    .ant-collapse-content-box {
-      max-height: 360px;
-      overflow-y: auto;
-      padding: 8px;
-      background: #f0f2f5;
-      .hoverScrollbar(2px);
-    }
     .ant-collapse-arrow {
       left: 8px !important;
     }
+    .ant-collapse-item {
+      .ant-collapse-header {
+        color: @text-color-secondary;
+        height: 25px;
+        line-height: 25px;
+        padding: 0 4px;
+        padding-left: 25px;
+      }
+      .ant-collapse-content {
+        border-radius: 0;
+      }
+      .ant-collapse-content-box {
+        max-height: 360px;
+        overflow-y: auto;
+        padding: 8px;
+        background: #f0f2f5;
+        .hoverScrollbar(2px);
+      }
+      &.ant-collapse-item-active:last-of-type {
+        border-bottom: none;
+      }
+    }
   }
-
   &-card.ant-tabs.ant-tabs-card {
     .ant-tabs-bar {
       margin-bottom: 0;

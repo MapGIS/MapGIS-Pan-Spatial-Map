@@ -5,12 +5,14 @@
       title="时间轴"
       :visible.sync="visible"
       :vertical-offset="50"
+      :max-width="360"
+      :has-padding="false"
       anchor="bottom-center"
     >
       <div class="thematic-map-time-line">
         <a-spin :spinning="loading">
           <!-- 时间轴 -->
-          <mp-row-flex :span="[2, 22]" v-show="timeList.length">
+          <mp-row-flex v-show="timeList.length" :span="[2, 22]" align="top">
             <template #label>
               <a-tooltip placement="bottom" :title="autoPlay.tooltip">
                 <a-icon

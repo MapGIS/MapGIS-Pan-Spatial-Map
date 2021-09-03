@@ -19,14 +19,17 @@
       .ant-table-thead > tr > th,
       .ant-table-tbody > tr > td {
         padding: 6px 8px;
-        // white-space: pre-wrap;
-      }
-      .ant-table-header {
-        overflow: hidden;
+        white-space: pre-wrap;
       }
       .ant-table-body {
-        // overflow: auto !important;
-        // .hoverScrollbar(6px, 6px);
+        border-right: 1px solid fade(@border-color-base, 60%);
+        border-bottom: 1px solid fade(@border-color-base, 60%);
+        .scrollbar();
+        &:hover {
+          border-right-color: transparent;
+          border-bottom-color: transparent;
+          .scrollbar(6px);
+        }
       }
     }
     .ant-table-pagination.ant-pagination {
