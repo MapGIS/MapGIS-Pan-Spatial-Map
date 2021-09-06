@@ -113,18 +113,18 @@
     <div class="non-spatial-footer">
       <a-pagination
         v-show="!showPicutre"
+        :current="currentPageList"
         :total="pageTotal"
         :show-total="
           (total, range) => `${range[0]}-${range[1]} of ${total} items`
         "
         :page-size="8"
-        :default-current="1"
         @change="onPageChange"
       />
 
       <a-pagination
         v-show="showPicutre"
-        :current="currentPage"
+        :current="currentPagePic"
         :total="pageTotal"
         :show-total="
           (total, range) => `${range[0]}-${range[1]} of ${total} items`
@@ -244,7 +244,8 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 数据是否以大图显示
   private showPicutre = false
 
-  // 分页器配置
+  // table的分页器配置(table自身的分页器在页面中隐藏显示了)
+  // table的分页功能是通过页面下方的分页器进行控制的
   private pagination = {
     current: 1,
     total: this.tableData.length,
@@ -255,8 +256,11 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 分页器总数
   private pageTotal = 0
 
-  // 分页器当前页数
-  private currentPage = 1
+  // 分页器当前页数(列表状态显示)
+  private currentPageList = 1
+
+  // 分页器当前页数(大图状态显示)
+  private currentPagePic = 1
 
   // 点击的文件对应的资源url
   private fileUrl = ''
@@ -331,9 +335,9 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   }
 
   // 分页页码改变的回调(列表状态显示)
-  private onPageChange(page, pageSize) {
+  private onPageChange(page) {
+    this.currentPageList = page
     this.pagination.current = page
-    this.pagination.pageSize = pageSize
 
     // 同步更新table表格的分页器
     this.onTablePageChange(this.pagination)
@@ -341,7 +345,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
 
   // 分页页码改变的回调(大图状态显示)
   private onPicturePageChange(page) {
-    this.currentPage = page
+    this.currentPagePic = page
 
     this.getPictureData()
   }
@@ -356,8 +360,8 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     if (this.tableData.length <= 10) {
       this.pictrueData = this.tableData
     } else {
-      const startIndex = (this.currentPage - 1) * 10
-      const endIndex = this.currentPage * 10
+      const startIndex = (this.currentPagePic - 1) * 10
+      const endIndex = this.currentPagePic * 10
       this.pictrueData = this.tableData.slice(startIndex, endIndex)
     }
   }
@@ -390,7 +394,10 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
         }
         return result
       }, [])
+
+      // 筛选数据后，数据总数会变，同时也要同步table表格的页码
       this.pageTotal = this.tableData.length
+      this.onPageChange(this.currentPageList)
 
       if (this.showPicutre) {
         this.getPictureData()
@@ -503,9 +510,6 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
 
       .btn-first {
         margin-right: 8px;
-      }
-
-      .btn-second {
       }
     }
 

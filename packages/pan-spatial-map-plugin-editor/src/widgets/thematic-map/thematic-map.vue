@@ -339,4 +339,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
 .tree-node-context-menue {
   box-shadow: @box-shadow-base;
 }
+::v-deep .ant-empty {
+  margin-top: 20%;
+}
 </style>

@@ -261,6 +261,7 @@ export default class PlaceNamePanel extends Vue {
     this.activeMarkersInfos = [
       {
         ...this.markersInfos[index],
+        markerId: `active-${this.markersInfos[index].markerId}`,
         img: selectedImg
       }
     ]
@@ -278,6 +279,7 @@ export default class PlaceNamePanel extends Vue {
     this.activeMarkersInfos = [
       {
         ...this.markersInfos[index],
+        markerId: `active-${this.markersInfos[index].markerId}`,
         img: defaultImg
       }
     ]
