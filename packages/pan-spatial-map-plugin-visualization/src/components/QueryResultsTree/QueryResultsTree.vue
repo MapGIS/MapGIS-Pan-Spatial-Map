@@ -31,8 +31,7 @@ import {
   Objects,
   Feature,
   Catalog,
-  MapMixin,
-  MarkerPlottingMixin
+  MapMixin
 } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
@@ -83,10 +82,7 @@ interface ITreeNode extends ILayerInfoItem {
  * ArcGISMapImage(10)  ArcGIS IMAGE REST
  */
 @Component
-export default class MpQueryResultTree extends Mixins(
-  MapMixin,
-  MarkerPlottingMixin
-) {
+export default class MpQueryResultTree extends Mixins(MapMixin) {
   // 组件唯一标识
   @Prop() readonly vueKey!: string
 
@@ -558,18 +554,12 @@ export default class MpQueryResultTree extends Mixins(
     this.$emit('on-select', selectedKeys, selectedDatas, nodeData)
   }
 
-  /**
-   * 清除选中的回调
-   */
-  clearSelectionCallback(vueKey) {
-    if (this.vueKey !== vueKey) {
-      this.onCanceTreeSelect()
-    }
-  }
-
   created() {
     this.getTreeData()
-    this.registerClearSelectionEvent(this.clearSelectionCallback)
+  }
+
+  beforeDestroy() {
+    this.onCanceTreeSelect()
   }
 }
 </script>

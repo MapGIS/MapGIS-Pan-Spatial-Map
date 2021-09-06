@@ -30,7 +30,6 @@
       :is-2d-layer="is2dLayer"
       :features="queryFeatures"
       :selected-features="querySelection"
-      :normalize="({ key }) => ({ uid: key })"
     />
     <!-- 结果树 -->
     <mp-window
@@ -62,10 +61,10 @@ import {
   Layer3D,
   Rectangle3D,
   Objects,
-  AppMixin,
-  MarkerPlottingMixin
+  AppMixin
 } from '@mapgis/web-app-framework'
 import { MpQueryResultTree, MpFeatureHighlight } from '../../../../components'
+import dep from './store/map-view-dep'
 import MapViewMixin from './mixins/map-view'
 import MapboxView from './components/MapboxView'
 import CesiumView from './components/CesiumView'
@@ -91,11 +90,7 @@ import Tools, { ToolType } from './components/Tools'
     }
   }
 })
-export default class MapView extends Mixins(
-  AppMixin,
-  MapViewMixin,
-  MarkerPlottingMixin
-) {
+export default class MapView extends Mixins(AppMixin, MapViewMixin) {
   @Inject('map') map: any
 
   @Inject('mapbox') mapbox: any
@@ -140,7 +135,7 @@ export default class MapView extends Mixins(
   queryFeatures: Array<Record<string, unknown>> = []
 
   // 结果树选中的节点
-  querySelection: Array<string> = []
+  querySelection: Array<Record<string, unknown>> = []
 
   // 是否是二维图层
   get is2dLayer() {
@@ -237,45 +232,6 @@ export default class MapView extends Mixins(
     }
   }
 
-  /**
-   * 清除结果树查询结果
-   */
-  clearQueryResults() {
-    this.queryFeatures = []
-    this.querySelection = []
-  }
-
-  /**
-   * 结果树弹框开关设置
-   */
-  toggleQueryWindow(visible: boolean) {
-    this.queryWindowVisible = visible
-    this.clearQueryResults()
-    if (!visible) {
-      this.$emit('update:queryVisible', false)
-    }
-  }
-
-  /**
-   * 结果树加载的要素集合
-   * @param {array} loadedKeys 已经加载的父节点key
-   * @param {array} loadedChildNodes 已经加载的所有子节点
-   */
-  loadQuery(
-    loadedKeys: Array<string>,
-    loadedChildNodes: Array<Record<string, unknown>>
-  ) {
-    this.queryFeatures = loadedChildNodes
-  }
-
-  /**
-   * 结果树选中
-   * @param {array} selectedKeys 选中的要素id集合
-   */
-  selectQuery(selectedKeys: Array<string>) {
-    this.querySelection = selectedKeys
-  }
-
   /*
    * 地图操作按钮触发
    * @param type 按钮类型
@@ -302,6 +258,52 @@ export default class MapView extends Mixins(
           break
       }
     }
+  }
+
+  /**
+   * 结果树弹框开关设置
+   */
+  toggleQueryWindow(visible: boolean) {
+    this.queryWindowVisible = visible
+    this.queryFeatures = []
+    this.querySelection = []
+    if (!visible) {
+      this.$emit('update:queryVisible', false)
+    }
+  }
+
+  /**
+   * 结果树加载的要素集合
+   * @param {array} loadedKeys 已经加载的父节点key
+   * @param {array} loadedChildNodes 已经加载的所有子节点
+   */
+  loadQuery(
+    loadedKeys: Array<string>,
+    loadedNodes: Array<Record<string, unknown>>
+  ) {
+    this.queryFeatures = loadedNodes
+  }
+
+  /**
+   * 结果树选中
+   * @param {array} selectedKeys 选中的要素id集合
+   */
+  selectQuery(
+    selectedKeys: Array<string>,
+    selectedNodes: Array<Record<string, unknown>>
+  ) {
+    dep.setState({ selectedNodes })
+    dep.notify()
+    console.log('selectQuery', this.mapViewId)
+  }
+
+  /**
+   * 订阅更新事件
+   */
+  update() {
+    const { selectedNodes } = dep.getState()
+    this.querySelection = selectedNodes
+    console.log('update', this.mapViewId)
   }
 
   /**
@@ -346,17 +348,16 @@ export default class MapView extends Mixins(
   }
 
   mounted() {
+    dep.addSub(this)
     this.initDocument()
     this.onResize()
     window.onresize = this.onResize
   }
 
   beforeDestroy() {
+    dep.removeSub(this)
     this.isMapLoaded = false
     this.mapViewHandlesAttached('clear')
-    this.unregisterHighlightEvent()
-    this.unregisterClearHighlightEvent()
-    this.unregisterClearSelectionEvent()
   }
 }
 </script>
