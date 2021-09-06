@@ -65,7 +65,9 @@
                         "graph": {
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
@@ -125,7 +127,8 @@
                         "graph": {
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
@@ -185,7 +188,8 @@
                         "graph": {
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
@@ -245,7 +249,8 @@
                         "graph": {
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
@@ -305,7 +310,8 @@
                         "graph": {
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
@@ -365,7 +371,8 @@
                         "graph": {
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
@@ -461,7 +468,8 @@
                         "graph": {
                           "showFields": ["人口数"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["省名", "人口数"],
@@ -527,7 +535,8 @@
                         "graph": {
                           "showFields": ["人口数"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["省名", "人口数"],
@@ -593,7 +602,8 @@
                         "graph": {
                           "showFields": ["人口数"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["省名", "人口数"],
@@ -647,7 +657,8 @@
                         "graph": {
                           "showFields": ["GDP_2008"],
                           "showFieldsTitle": {},
-                          "field": "省名"
+                          "field": "省名",
+                          "target": []
                         },
                         "labelStyle": {
                           "labelType": "circle",
@@ -877,7 +888,8 @@
                       "showFieldsTitle": {
                         "AREA": "面积"
                       },
-                      "field": "name"
+                      "field": "name",
+                      "target": []
                     }
                   }
                 ]
@@ -940,7 +952,8 @@
                           "showFieldsTitle": {
                             "AREA": "面积"
                           },
-                          "field": "name"
+                          "field": "name",
+                          "target": []
                         },
                         "popup": {
                           "showFields": ["name"],
