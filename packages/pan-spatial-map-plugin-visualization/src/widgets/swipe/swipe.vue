@@ -98,7 +98,7 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
     const _layers = this.document.defaultMap
       .clone()
       .getFlatLayers()
-      .filter(v => v.isVisible)
+      .filter(v => !!v.isVisible)
     if (_layers && _layers.length > 1) {
       success(_layers)
       this.onForceRefreshCesiumCompare()

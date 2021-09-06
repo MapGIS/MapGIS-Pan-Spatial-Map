@@ -7,6 +7,8 @@
         :visible.sync="visible"
         :horizontal-offset="48"
         :vertical-offset="50"
+        :width="360"
+        :has-padding="false"
         title="统计表"
         anchor="bottom-right"
       >

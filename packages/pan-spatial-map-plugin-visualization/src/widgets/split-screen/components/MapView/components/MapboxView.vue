@@ -1,5 +1,5 @@
 <template>
-  <div v-if="document" class="mapbox-view">
+  <div class="mapbox-view">
     <!-- 二维地图组件 -->
     <mp-web-map-pro @map-load="onMapLoad" :document="document" />
     <!-- 二维地图绘制组件 -->
@@ -8,11 +8,13 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { Document } from '@mapgis/web-app-framework'
+import { Document, Layer, Objects } from '@mapgis/web-app-framework'
 
 @Component
 export default class MapboxView extends Vue {
   @Prop() readonly document!: Document
+
+  @Prop({ default: () => ({}) }) readonly layer!: Layer
 
   isMapLoaded = false
 
@@ -26,9 +28,11 @@ export default class MapboxView extends Vue {
 
   /**
    * 供父组件调用
+   * 二维默认画矩形
+   * @param {string} [mode = 'draw-rectangle'] 参考MpDrawPro组件内定义的mode类型
    */
-  openDraw(mode) {
-    this.drawComponent.openDraw(mode || 'draw-rectangle')
+  openDraw(mode = 'draw-rectangle') {
+    this.drawComponent.openDraw(mode)
   }
 
   /**
@@ -39,12 +43,10 @@ export default class MapboxView extends Vue {
   }
 
   /**
-   * 地图加载成功回调
-   * @param payload { map, mapbox }
+   * 获取经纬度范围
    */
-  onMapLoad(payload) {
-    this.isMapLoaded = true
-    this.$emit('load', payload)
+  getRect({ xmin, ymin, xmax, ymax }) {
+    return Objects.GeometryExp.creatRectByMinMax(xmin, ymin, xmax, ymax)
   }
 
   /**
@@ -52,8 +54,18 @@ export default class MapboxView extends Vue {
    */
   onDrawFinished({ mode, feature, shape, center }) {
     if (this.isMapLoaded) {
-      this.$emit('draw-finished', { mode, feature, shape, center })
+      const rect = this.getRect(shape)
+      this.$emit('draw-finished', { geometry: rect, rect })
     }
+  }
+
+  /**
+   * 地图加载成功回调
+   * @param payload { map, mapbox }
+   */
+  onMapLoad(payload) {
+    this.isMapLoaded = true
+    this.$emit('load', payload)
   }
 }
 </script>

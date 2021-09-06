@@ -331,6 +331,10 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
 <style lang="less" scoped>
 .mp-widget-thematic-map {
   height: 100%;
+  overflow-y: auto;
+  .ant-empty {
+    margin-top: 10%;
+  }
 }
 .tree-node-context-menue {
   box-shadow: @box-shadow-base;

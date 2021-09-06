@@ -31,3 +31,17 @@
   color: @disabled-color;
   pointer-events: none;
 }
+
+.scrollbar(@width: 0, @height: 0) {
+  &::-webkit-scrollbar {
+    width: @width;
+    height: @height;
+  }
+}
+
+.hoverScrollbar(@width: 4px, @height: 4px) {
+  .scrollbar();
+  &:hover {
+    .scrollbar(@width, @height);
+  }
+}

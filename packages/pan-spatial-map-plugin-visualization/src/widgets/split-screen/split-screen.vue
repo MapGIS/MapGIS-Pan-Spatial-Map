@@ -233,7 +233,7 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
     this.layers = this.document.defaultMap
       .clone()
       .getFlatLayers()
-      .filter(v => v.isVisible)
+      .filter(v => !!v.isVisible)
     const { length } = this.layers
     if (length) {
       this.setLayers(length < 7 ? length : 6)
@@ -258,16 +258,12 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
 .mp-widget-split-screen {
   width: 100%;
   position: relative;
-  &.max {
-    height: 100%;
-  }
-  &.normal {
-    height: 500px;
-  }
-  /deep/ .ant-drawer-right.ant-drawer-open {
-    .ant-drawer-content-wrapper {
-      box-shadow: none;
-      border-left: 1px solid @primary-color;
+  ::v-deep {
+    .ant-drawer-right.ant-drawer-open {
+      .ant-drawer-content-wrapper {
+        box-shadow: none;
+        border-left: 1px solid @primary-color;
+      }
     }
   }
   .drawer-handle {
@@ -289,6 +285,13 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
       color: white;
       background: @primary-color;
     }
+  }
+
+  &.max {
+    height: 100%;
+  }
+  &.normal {
+    height: 500px;
   }
 }
 </style>

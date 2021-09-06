@@ -25,7 +25,7 @@ export const chartOption = (params: IParams) => {
         }
       },
       tooltip: {
-        position: 'top'
+        position: 'bottom'
       }
     }
   }

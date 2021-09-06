@@ -3,8 +3,8 @@
   <mp-3d-marker-plotting v-else v-bind="bindProps" />
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { AppMixin, UUID, Feature } from '@mapgis/web-app-framework'
+import { Mixins, Component, Prop, Watch, Inject } from 'vue-property-decorator'
+import { AppMixin, UUID, Feature, Objects } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
   markerIconInstance
@@ -26,19 +26,21 @@ interface IMarker {
   img: stirng
   coordinates: number[]
   feature: Feature.GFeature
-  properties: any
+  properties: unknown
   fid: string
   markerId: string
 }
 
 @Component
-export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
-  AppMixin
-) {
+export default class MpFeatureHighlight extends Mixins(AppMixin) {
+  @Inject('Cesium') Cesium: unknown
+
+  @Inject('CesiumZondy') CesiumZondy: unknown
+
   // 三维地图vueKey
   @Prop({ default: UUID.uuid() }) readonly vueKey!: string
 
-  // 是否二维图层
+  // 是否二维图层, 根据图层是否属于Layer3D还是Layer判断的
   @Prop() readonly is2dLayer!: boolean
 
   // 所有的标注点信息
@@ -58,7 +60,7 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   markers: IMarker[] = []
 
   // 选中的数据范围
-  selectionBound: Record<string, any> = {}
+  selectionBound = null
 
   // 选中的标注图标
   selectedIcon = ''
@@ -118,10 +120,37 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
   }
 
   /**
+   *  获取模型高度
+   * @param {array} markers
+   * @return {promise}
+   */
+  getModelHeight(markers: Array<IMarker>) {
+    return new Promise((resolve, reject) => {
+      const webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey)
+      if (!webGlobe) {
+        return reject('WebGlobe未初始化')
+      }
+      const positions = markers.map(
+        ({ coordinates }) =>
+          new this.Cesium.Cartesian3.fromDegrees(coordinates[0], coordinates[1])
+      )
+      const sampleElevationTool = new this.Cesium.SampleElevationTool(
+        webGlobe.viewer,
+        positions,
+        'model',
+        positions => {
+          resolve(positions && positions.length ? positions : [])
+        }
+      )
+      sampleElevationTool.start()
+    })
+  }
+
+  /**
    * 移除标注
    */
   removeMarkers() {
-    this.selectionBound = {}
+    this.selectionBound = null
     this.markers = []
   }
 
@@ -130,24 +159,49 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
    */
   async addMarkers() {
     this.defaultIcon = await markerIconInstance.unSelectIcon()
-    this.markers = this.normalizedFeatures.reduce<IMarker[]>(
-      (result, { uid, feature }) => {
-        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
-        const centerItems = [coordinates[0], coordinates[1]]
-        if (centerItems.every(v => !Number.isNaN(v))) {
+    const tempMarkers = this.normalizedFeatures.reduce<IMarker[]>(
+      (result, { uid, feature, feature: { properties } }) => {
+        let coordinates = []
+        if (!this.is2d) {
+          const { xmin, xmax, ymin, ymax } = properties.specialLayerBound
+          coordinates = [(xmin + xmax) / 2, (ymin + ymax) / 2]
+        } else {
+          coordinates = Feature.getGeoJSONFeatureCenter(feature)
+        }
+
+        if (coordinates.every(v => !Number.isNaN(v))) {
           result.push({
             coordinates,
             feature,
+            properties,
             markerId: uid,
-            fid: feature.properties.fid,
-            img: this.defaultIcon,
-            properties: feature.properties
+            fid: properties.fid,
+            img: this.defaultIcon
           })
         }
         return result
       },
       []
     )
+    if (!this.is2d && tempMarkers.length) {
+      try {
+        const arr = await this.getModelHeight(tempMarkers)
+        if (arr.length === tempMarkers.length) {
+          arr.forEach(({ longitude, latitude, height }, index) => {
+            this.$set(tempMarkers[index], 'coordinates', [
+              longitude,
+              latitude,
+              height
+            ])
+          })
+        }
+        this.markers = [...tempMarkers]
+      } catch (e) {
+        this.$message.error(e)
+      }
+    } else {
+      this.markers = [...tempMarkers]
+    }
   }
 
   /**
@@ -173,13 +227,18 @@ export default class MpFeatureHighlight extends Mixins<Record<string, any>>(
     })
     const { MIN_VALUE, MAX_VALUE } = Number
     this.selectionBound = this.normalizedFeatures.reduce(
-      ({ xmin, xmax, ymin, ymax }, { feature }: GFeature) => {
-        const _bound = feature.bound || Feature.getGeoJsonFeatureBound(feature)
+      (
+        { xmin, xmax, ymin, ymax },
+        { feature, feature: { properties } }: GFeature
+      ) => {
+        const bound =
+          properties.specialLayerBound ||
+          Feature.getGeoJSONFeatureBound(feature)
         return {
-          xmin: _bound.xmin < xmin ? _bound.xmin : xmin,
-          ymin: _bound.ymin < ymin ? _bound.ymin : ymin,
-          xmax: _bound.xmax > xmax ? _bound.xmax : xmax,
-          ymax: _bound.ymax > ymax ? _bound.ymax : ymax
+          xmin: bound.xmin < xmin ? bound.xmin : xmin,
+          ymin: bound.ymin < ymin ? bound.ymin : ymin,
+          xmax: bound.xmax > xmax ? bound.xmax : xmax,
+          ymax: bound.ymax > ymax ? bound.ymax : ymax
         }
       },
       {

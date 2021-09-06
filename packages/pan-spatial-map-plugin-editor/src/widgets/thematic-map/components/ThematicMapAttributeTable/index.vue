@@ -6,7 +6,7 @@
         :visible.sync="visible"
         :horizontal-offset="48"
         :vertical-offset="50"
-        :max-width="tableWidth"
+        :width="360"
         :has-padding="false"
         anchor="top-right"
         title="属性表"
@@ -106,7 +106,7 @@ export default class ThematicMapAttributeTable extends Vue {
   page = 1
 
   // 列表页容量
-  pageCount = 10
+  pageCount = 20
 
   // 列表总数
   total = 0
@@ -138,15 +138,10 @@ export default class ThematicMapAttributeTable extends Vue {
     return this.subjectData?.table
   }
 
-  // 列表宽度
-  get tableWidth() {
-    return 360
-  }
-
   // 列表滚动
   get tableScroll() {
     const { length } = this.tableColumns
-    const x = length > 3 ? length * 120 : this.tableWidth
+    const x = length > 3 ? length * 120 : 360
     return {
       x,
       y: 230
@@ -161,7 +156,8 @@ export default class ThematicMapAttributeTable extends Vue {
       pageSize: this.pageCount,
       total: this.total,
       showSizeChanger: true,
-      pageSizeOptions: ['10', '15', '20', '25', '30', '35', '40', '45', '50'],
+      showLessItems: true,
+      pageSizeOptions: ['20', '40', '60', '80', '100'],
       showTotal: total => `共${total}条`
     }
   }
