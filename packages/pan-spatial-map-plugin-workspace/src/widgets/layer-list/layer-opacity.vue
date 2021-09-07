@@ -1,6 +1,6 @@
 <template>
   <ul class=" beauty-scroll">
-    <li v-for="item in layers" :key="item.id">
+    <li v-for="item in layers" v-show="isIgsTerrainLayer(item)" :key="item.id">
       <a-tooltip>
         <template slot="title">
           {{ item.description }}
@@ -21,7 +21,11 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { AppMixin } from '@mapgis/web-app-framework'
+import {
+  AppMixin,
+  IGSSceneSublayerRenderType,
+  LayerType
+} from '@mapgis/web-app-framework'
 
 @Component
 export default class LayerOpacity extends Mixins(AppMixin) {
@@ -29,6 +33,20 @@ export default class LayerOpacity extends Mixins(AppMixin) {
 
   setOpacity(val, item) {
     item.opacity = Number((100 - val) / 100)
+  }
+
+  isIgsTerrainLayer(layer) {
+    let elevation = false
+    if (layer.type === LayerType.IGSScene) {
+      layer.activeScene.sublayers.forEach(igsSceneSublayer => {
+        if (
+          igsSceneSublayer.renderType === IGSSceneSublayerRenderType.elevation
+        ) {
+          elevation = true
+        }
+      })
+    }
+    return !elevation
   }
 }
 </script>
