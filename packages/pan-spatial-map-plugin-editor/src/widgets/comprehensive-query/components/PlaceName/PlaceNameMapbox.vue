@@ -10,7 +10,12 @@
       </mp-marker-set-pro>
     </template>
     <!-- 聚合标注专题图 -->
-    <mapgis-mapv-layer v-else :geojson="geojson" :options="options" />
+    <mapgis-mapv-layer
+      v-else-if="geojson && geojson.features && geojson.features.length > 0"
+      :geojson="geojson"
+      :options="options"
+      count-field="count"
+    />
   </div>
 </template>
 

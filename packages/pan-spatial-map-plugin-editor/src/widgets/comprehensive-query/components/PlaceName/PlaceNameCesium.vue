@@ -11,7 +11,7 @@
     </template>
     <!-- 聚合标注专题图 -->
     <mapgis-3d-mapv-layer
-      v-else
+      v-else-if="geojson && geojson.features && geojson.features.length > 0"
       :geojson="geojson"
       :options="options"
       count-field="count"
