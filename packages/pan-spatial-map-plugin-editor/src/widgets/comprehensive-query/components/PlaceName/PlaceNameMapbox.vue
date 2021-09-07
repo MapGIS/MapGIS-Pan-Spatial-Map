@@ -10,7 +10,12 @@
       </mp-marker-set-pro>
     </template>
     <!-- 聚合标注专题图 -->
-    <mapgis-mapv-layer v-else :geojson="geojson" :options="options" />
+    <mapgis-mapv-layer
+      v-else
+      :geojson="geojsonData"
+      :options="options"
+      count-field="count"
+    />
   </div>
 </template>
 
@@ -36,6 +41,16 @@ export default class PlaceNameMapbox extends Mixins(MapMixin) {
   @Prop() cluster!: boolean
 
   @Prop() geojson!: Record<string, unknown>
+
+  get geojsonData() {
+    if (this.cluster) {
+      return this.geojson
+    }
+    return {
+      features: [],
+      type: 'FeatureCollection'
+    }
+  }
 
   options = {
     fillStyle: 'rgba(255, 50, 0, 1.0)',
