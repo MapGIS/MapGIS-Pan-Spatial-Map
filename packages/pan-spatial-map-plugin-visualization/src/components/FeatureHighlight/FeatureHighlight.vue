@@ -9,6 +9,7 @@ import {
   baseConfigInstance,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-common'
+import dep from './Dep'
 
 interface IFeature {
   key?: string // 图层UUID
@@ -38,11 +39,10 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   @Prop() readonly is2dLayer!: boolean
 
   // 所有的要素信息
-  @Prop({ required: true, default: () => [] }) readonly features!: IFeature[]
+  @Prop({ default: () => [] }) readonly features!: IFeature[]
 
-  // 选中的的要素信息
-  @Prop({ required: true, default: () => [] })
-  readonly selectedFeatures!: IFeature[]
+  // 选中的的要素ID集合
+  @Prop({ default: () => [] }) readonly selectedFeatures!: string[]
 
   // 是否随地图范围过滤
   @Prop({ default: false }) readonly filterWithMap!: boolean
@@ -208,14 +208,19 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   }
 
   /**
+   * 重置高亮
+   */
+  resetHighlight() {
+    this.markers.forEach(marker => this.$set(marker, 'img', this.defaultIcon))
+  }
+
+  /**
    * 取消高亮
    */
   clearHightlight() {
     this.selectionBound = null
     this.selectedMarkers = []
-    this.markers.forEach(marker => {
-      this.$set(marker, 'img', this.defaultIcon)
-    })
+    this.resetHighlight()
   }
 
   /**
@@ -225,15 +230,42 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
     this.clearHightlight()
     this.setSelectionBound()
     this.markers.forEach(marker => {
-      if (
-        this.selectedFeatures.findIndex(
-          ({ key }) => key === marker.markerId
-        ) !== -1
-      ) {
-        this.selectedMarkers.push(marker)
+      if (this.selectedFeatures.includes(marker.markerId)) {
         this.$set(marker, 'img', this.selectedIcon)
+        this.selectedMarkers.push(marker)
       }
     })
+    dep.setState({
+      vueKey: this.vueKey,
+      selection: this.selectedMarkers,
+      bound: this.selectionBound
+    })
+    dep.notify()
+  }
+
+  /**
+   * 订阅更新
+   */
+  update() {
+    const { vueKey, selection, bound } = dep.getState()
+    if (this.vueKey !== vueKey) {
+      this.$root.$emit('clear-selection', this.vueKey)
+    }
+    this.resetHighlight()
+    this.selectionBound = bound
+    this.selectedMarkers = selection
+  }
+
+  /**
+   * 订阅销毁
+   */
+  destroy() {
+    dep.setState({
+      vueKey: this.vueKey,
+      selection: [],
+      bound: null
+    })
+    dep.notify()
   }
 
   @Watch('features', { immediate: true })
@@ -249,11 +281,11 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   async created() {
     this.defaultIcon = await markerIconInstance.unSelectIcon()
     this.selectedIcon = await markerIconInstance.selectIcon()
+    dep.addSub(this)
   }
 
   beforeDestroy() {
-    this.clearHightlight()
-    this.removeMarkers()
+    dep.removeSub(this)
   }
 }
 </script>

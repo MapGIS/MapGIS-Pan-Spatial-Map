@@ -1,18 +1,22 @@
 // 1.添加订阅者
 // 2.存储状态
 // 3.通知更新
+import _cloneDeep from 'lodash/cloneDeep'
+
 interface DepInterface {
   new (subs: unknown[], state: Record<string, unknown>): Record<string, any>
 }
 
-class Dep {
+export class Dep {
   private subs: unknown[] = []
 
-  private state: Record<string, unknown> = {
-    vueKey: '',
-    data: null,
-    selectedKeys: [],
-    selectedData: []
+  private initState: Record<string, unknown> = {}
+
+  private state: Record<string, unknown> = {}
+
+  constructor(state = {}) {
+    this.initState = state
+    this.state = _cloneDeep(state)
   }
 
   setState(state) {
@@ -33,12 +37,17 @@ class Dep {
     return this.state
   }
 
-  addSub(sub: unknown) {
+  resetState() {
+    this.state = _cloneDeep(this.initState)
+  }
+
+  addSub(sub: Vue) {
     this.subs.push(sub)
   }
 
-  removeSub(sub: unknown) {
+  removeSub(sub: Vue) {
     this.subs.splice(this.subs.indexOf(sub), 1)
+    sub.destroy && sub.destroy()
   }
 
   notify() {

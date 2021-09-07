@@ -19,21 +19,26 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
-export type ToolType = 'query' | 'zoomIn' | 'zoomOut' | 'restore' | 'clear'
+export enum Tool {
+  UNKNOWN = 'UNKNOWN',
+  QUERY = 'QUERY',
+  ZOOMIN = 'ZOOMIN',
+  ZOOMOUT = 'ZOOMOUT',
+  RESTORE = 'RESTORE',
+  CLEAR = 'CLEAR'
+}
 
 interface ITool {
   label: string
   icon: string
-  type: ToolType
+  type: keyof Tool
 }
 
-@Component({
-  components: {}
-})
+@Component
 export default class Tools extends Vue {
   @Prop() readonly title!: string
 
-  @Prop() readonly excludes!: ToolType | Array<ToolType>
+  @Prop() readonly excludes!: keyof Tool | Array<keyof Tool>
 
   @Prop() readonly tools!: ITool[]
 
@@ -41,28 +46,28 @@ export default class Tools extends Vue {
     {
       label: '查询',
       icon: 'search',
-      type: 'query'
+      type: Tool.QUERY
     },
     {
       label: '放大',
       icon: 'zoom-in',
-      type: 'zoomIn'
+      type: Tool.ZOOMIN
     },
     {
       label: '缩小',
       icon: 'zoom-out',
-      type: 'zoomOut'
+      type: Tool.ZOOMOUT
     },
 
     {
       label: '复位',
       icon: 'redo',
-      type: 'restore'
+      type: Tool.RESTORE
     },
     {
       label: '清除',
       icon: 'delete',
-      type: 'clear'
+      type: Tool.CLEAR
     }
   ]
 

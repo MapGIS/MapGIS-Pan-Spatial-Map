@@ -1,7 +1,7 @@
 import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 import { Rectangle3D } from '@mapgis/web-app-framework'
-import mapViewStateInstance from '../store/map-view-state'
+import mapViewState from '../store/map-view-state'
 import MapViewMapboxMixin from './map-view-mapbox'
 import MapViewCesiumMixin from './map-view-cesium'
 
@@ -10,39 +10,60 @@ export default class MapViewMixin extends Mixins(
   MapViewMapboxMixin,
   MapViewCesiumMixin
 ) {
-  // 公共状态
-  activeMapViewState = mapViewStateInstance
+  mapViewState = mapViewState
 
-  // 获取地图视图的复位范围
-  get initBound() {
-    return this.activeMapViewState.initBound
+  // 活动视图
+  get activeId() {
+    return this.mapViewState._activeId
   }
 
-  // 获取地图视图的活动范围
+  set activeId(id) {
+    this.mapViewState._activeId = id
+  }
+
+  // 活动视图范围
   get activeBound() {
-    return this.activeMapViewState.activeBound
+    return this.mapViewState._activeBound
   }
 
-  set activeBound(bound: Rectangle) {
-    this.activeMapViewState.activeBound = bound
+  set activeBound(bound) {
+    this.mapViewState._activeBound = bound
   }
 
-  // 是否为当前活动的地图
-  get activeMapViewId() {
-    return this.activeMapViewState.mapViewId
+  // 查询的几何范围
+  get queryGeometry() {
+    return this.mapViewState._queryGeometry
   }
 
-  set activeMapViewId(id: string) {
-    this.activeMapViewState.mapViewId = id
+  set queryGeometry(geometry) {
+    this.mapViewState._queryGeometry = geometry
+  }
+
+  // 是否当前活动视图
+  get isActiveMapView() {
+    return this.activeId === this.mapViewId
   }
 
   /**
-   * 监听: 更新活动地图经纬度范围
+   * 监听: 查询的几何范围
    */
-  @Watch('activeBound', { immediate: true, deep: true })
-  watchActiveBound(nV: Rectangle) {
-    if (this.isMapLoaded && this.activeMapViewId !== this.mapViewId) {
-      this.zoomIn(nV)
+  @Watch('queryGeometry', { deep: true })
+  queryGeometryChanged(geometry: Rectangle | Rectangle3D) {
+    if (geometry) {
+      this.queryVisible = !!geometry
+    } else {
+      this.onQueryClear()
+    }
+  }
+
+  /**
+   * 监听: 活动范围
+   * @param rect
+   */
+  @Watch('activeBound', { deep: true })
+  boundChanged(rect: Rectangle) {
+    if (this.isMapLoaded && !this.isActiveMapView) {
+      this.zoomIn(rect)
     }
   }
 
@@ -51,18 +72,26 @@ export default class MapViewMixin extends Mixins(
    */
   setActiveMapView() {
     if (this.isMapLoaded) {
-      this.activeMapViewId = this.mapViewId
+      this.activeId = this.mapViewId
     }
   }
 
   /**
    * 更新动态变化的经纬度范围
-   * @param {Rectangle} rect 经纬度范围
+   * @param {Rectangle} bound 经纬度范围
    */
-  setActiveBound(rect: Rectangle) {
-    if (this.isMapLoaded && this.activeMapViewId === this.mapViewId) {
-      this.activeBound = rect
+  setActiveBound(bound: Rectangle) {
+    if (this.isMapLoaded && this.isActiveMapView) {
+      this.activeBound = bound
     }
+  }
+
+  /**
+   * 清除
+   */
+  clear() {
+    this.onQueryClear()
+    this.queryGeometry = null
   }
 
   /**
@@ -70,7 +99,8 @@ export default class MapViewMixin extends Mixins(
    * @param {Rectangle | Rectangle3D} geometry 经纬度范围或者三维坐标集合
    */
   query(geometry: Rectangle | Rectangle3D) {
-    this.$emit('on-query', geometry)
+    this.onQueryClear()
+    this.queryGeometry = geometry
   }
 
   /**
@@ -90,7 +120,7 @@ export default class MapViewMixin extends Mixins(
    * @param {Rectangle} rect 经纬度范围
    */
   zoomIn(rect: Rectangle) {
-    if (this.activeMapViewState.isValidRect(rect)) {
+    if (this.mapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomInToRect(rect)
       } else {
@@ -106,7 +136,7 @@ export default class MapViewMixin extends Mixins(
    * @param {Rectangle} rect 经纬度范围
    */
   zoomOut(rect: Rectangle) {
-    if (this.activeMapViewState.isValidRect(rect)) {
+    if (this.mapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomOutToRect(rect)
       } else {

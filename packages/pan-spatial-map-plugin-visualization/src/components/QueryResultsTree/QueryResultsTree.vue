@@ -39,7 +39,6 @@ import {
 } from '@mapgis/pan-spatial-map-common'
 import _uniqBy from 'lodash/uniqBy'
 import _last from 'lodash/last'
-import dep from './Dep.ts'
 
 const { DocumentCatalog } = Catalog
 const {
@@ -359,7 +358,12 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     queryOptions: FeatureQueryParam,
     specialLayerId: string
   ) {
-    if (!this.sceneController) {
+    const sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.CesiumZondy.getWebGlobe(this.vueKey)
+    )
+    if (!sceneController) {
       return Promise.reject('WebGlobe未初始化')
     }
     const featureIGS: FeatureIGS = await FeatureQuery.query(
@@ -374,11 +378,11 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     if (!SFEleArray || !SFEleArray.length) {
       return []
     }
-    const { source } = this.sceneController.findSource(specialLayerId)
+    const { source } = sceneController.findSource(specialLayerId)
     return SFEleArray.map(({ AttValue = [], bound = {}, FID }) => {
       const boundObj =
         source && source.length
-          ? this.sceneController.localExtentToGlobelExtent(
+          ? sceneController.localExtentToGlobelExtent(
               bound,
               source[0].root.transform
             )
@@ -531,51 +535,32 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   onTreeSelect(selectedKeys, { selectedNodes, checkedNodes, node }) {
     this.selectedKeys = selectedKeys
     const vnodes = this.multiple ? checkedNodes : selectedNodes
+    // 选中节点数据
+    const data = node.dataRef
     // 选中节点的数据集合
     const selectedData = vnodes.length
       ? vnodes.map(({ data }) => data.props.dataRef)
       : []
 
-    dep.setState({
-      selectedKeys,
-      selectedData,
-      data: node.dataRef,
-      vueKey: this.vueKey
-    })
-    dep.notify()
+    this.$emit('on-select', selectedKeys, selectedData, data)
   }
 
   /**
    * 清除选中
    */
-  onClearTreeSelect() {
-    this.$emit('on-select', [], [], null)
-  }
-
-  /**
-   * 订阅更新事件
-   */
-  update() {
-    const { vueKey, selectedKeys, selectedData, data } = dep.getState()
-    if (vueKey !== this.vueKey) {
+  onClearTreeSelect(vueKey) {
+    if (this.vueKey === vueKey) {
       this.selectedKeys = []
     }
-    this.$emit('on-select', selectedKeys, selectedData, data)
   }
 
   created() {
     this.getTreeData()
-    this.sceneController = Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.CesiumZondy.getWebGlobe(this.vueKey)
-    )
-    dep.addSub(this)
+    this.$root.$on('clear-selection', this.onClearTreeSelect)
   }
 
   beforeDestroy() {
-    dep.removeSub(this)
-    this.onClearTreeSelect()
+    this.$root.$off('clear-selection', this.onClearTreeSelect)
   }
 }
 </script>
