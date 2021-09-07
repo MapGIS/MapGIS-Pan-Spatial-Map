@@ -11,8 +11,8 @@
     </template>
     <!-- 聚合标注专题图 -->
     <mapgis-mapv-layer
-      v-else
-      :geojson="geojsonData"
+      v-else-if="geojson && geojson.features && geojson.features.length > 0"
+      :geojson="geojson"
       :options="options"
       count-field="count"
     />
@@ -41,16 +41,6 @@ export default class PlaceNameMapbox extends Mixins(MapMixin) {
   @Prop() cluster!: boolean
 
   @Prop() geojson!: Record<string, unknown>
-
-  get geojsonData() {
-    if (this.cluster) {
-      return this.geojson
-    }
-    return {
-      features: [],
-      type: 'FeatureCollection'
-    }
-  }
 
   options = {
     fillStyle: 'rgba(255, 50, 0, 1.0)',
