@@ -1,13 +1,13 @@
 <template>
   <div class="map-view-wrap">
     <!-- 标题/工具栏 -->
-    <tools :title="mapViewLayer.title" @on-click="mapViewHandlesAttached" />
+    <tools :title="mapViewLayer.title" @on-click="onIconAttached" />
     <!-- 二维地图 -->
     <mapbox-view
       v-if="is2dLayer"
       ref="mapboxView"
-      @load="mapboxLoaded"
-      @draw-finished="drawFinished"
+      @load="onMapboxLoaded"
+      @draw-finished="onDrawFinished"
       :layer="mapViewLayer"
       :document="mapViewDocument"
     />
@@ -15,9 +15,9 @@
     <cesium-view
       v-else
       ref="cesiumView"
-      @load="cesiumLoaded"
-      @draw-finished="drawFinished"
-      @link-changed="linkChanged"
+      @load="onCesiumLoaded"
+      @draw-finished="onDrawFinished"
+      @link-changed="onLinkChanged"
       :vue-key="mapViewId"
       :height="mapViewHeight"
       :layer="mapViewLayer"
@@ -30,7 +30,6 @@
       :is-2d-layer="is2dLayer"
       :features="queryFeatures"
       :selected-features="querySelection"
-      :normalize="({ key }) => ({ uid: key })"
     />
     <!-- 结果树 -->
     <mp-window
@@ -44,8 +43,8 @@
     >
       <mp-query-result-tree
         v-if="queryWindowVisible"
-        @on-node-loaded="loadQuery"
-        @on-select="selectQuery"
+        @on-node-loaded="onQueryLoaded"
+        @on-select="onQuerySelected"
         :geometry="queryGeometry"
         :layer="mapViewLayer"
         :vue-key="mapViewId"
@@ -62,8 +61,7 @@ import {
   Layer3D,
   Rectangle3D,
   Objects,
-  AppMixin,
-  MarkerPlottingMixin
+  AppMixin
 } from '@mapgis/web-app-framework'
 import { MpQueryResultTree, MpFeatureHighlight } from '../../../../components'
 import MapViewMixin from './mixins/map-view'
@@ -91,11 +89,7 @@ import Tools, { ToolType } from './components/Tools'
     }
   }
 })
-export default class MapView extends Mixins(
-  AppMixin,
-  MapViewMixin,
-  MarkerPlottingMixin
-) {
+export default class MapView extends Mixins(AppMixin, MapViewMixin) {
   @Inject('map') map: any
 
   @Inject('mapbox') mapbox: any
@@ -140,7 +134,7 @@ export default class MapView extends Mixins(
   queryFeatures: Array<Record<string, unknown>> = []
 
   // 结果树选中的节点
-  querySelection: Array<string> = []
+  querySelection: Array<Record<string, unknown>> = []
 
   // 是否是二维图层
   get is2dLayer() {
@@ -154,22 +148,23 @@ export default class MapView extends Mixins(
   }
 
   /**
-   * 初始化图层
+   * 分屏窗口变化
    */
-  initDocument() {
-    if (!this.mapViewDocument) {
-      this.mapViewDocument = new Document()
-    }
-    const { defaultMap } = this.mapViewDocument
-    defaultMap.removeAll()
-    defaultMap.add(this.mapViewLayer)
+  onResize() {
+    this.$nextTick(() => {
+      if (!this.is2dLayer) {
+        this.mapViewHeight = this.$el.clientHeight - 32
+      } else if (this.ssMap) {
+        this.ssMap.resize()
+      }
+    })
   }
 
   /**
    * 二维地图初始化
    * @param payload
    */
-  mapboxLoaded({ map, mapbox }) {
+  onMapboxLoaded({ map, mapbox }) {
     this.ssMap = map
     this.ssMapbox = mapbox
     this.ssMap.on('mousemove', this.setActiveMapView)
@@ -189,7 +184,7 @@ export default class MapView extends Mixins(
   /**
    * 三维地图初始化
    */
-  cesiumLoaded(webGlobe, sceneController) {
+  onCesiumLoaded(webGlobe, sceneController) {
     this.sceneController = sceneController
     this.isMapLoaded = true
     this.restore()
@@ -199,7 +194,7 @@ export default class MapView extends Mixins(
    * 地图联动变化
    * @param {object} 范围
    */
-  linkChanged({ west, east, north, south }) {
+  onLinkChanged({ west, east, north, south }) {
     this.setActiveMapView()
     this.setActiveBound({
       xmin: west,
@@ -214,7 +209,7 @@ export default class MapView extends Mixins(
    * @param {object} geometry 绘制几何
    * @param {object} rect 绘制经纬度范围
    */
-  drawFinished({
+  onDrawFinished({
     geometry,
     rect
   }: {
@@ -237,50 +232,11 @@ export default class MapView extends Mixins(
     }
   }
 
-  /**
-   * 清除结果树查询结果
-   */
-  clearQueryResults() {
-    this.queryFeatures = []
-    this.querySelection = []
-  }
-
-  /**
-   * 结果树弹框开关设置
-   */
-  toggleQueryWindow(visible: boolean) {
-    this.queryWindowVisible = visible
-    this.clearQueryResults()
-    if (!visible) {
-      this.$emit('update:queryVisible', false)
-    }
-  }
-
-  /**
-   * 结果树加载的要素集合
-   * @param {array} loadedKeys 已经加载的父节点key
-   * @param {array} loadedChildNodes 已经加载的所有子节点
-   */
-  loadQuery(
-    loadedKeys: Array<string>,
-    loadedChildNodes: Array<Record<string, unknown>>
-  ) {
-    this.queryFeatures = loadedChildNodes
-  }
-
-  /**
-   * 结果树选中
-   * @param {array} selectedKeys 选中的要素id集合
-   */
-  selectQuery(selectedKeys: Array<string>) {
-    this.querySelection = selectedKeys
-  }
-
   /*
    * 地图操作按钮触发
    * @param type 按钮类型
    */
-  mapViewHandlesAttached(type: ToolType) {
+  onIconAttached(type: ToolType) {
     this.operationType = type
     this.setActiveMapView()
     if (this.isMapLoaded) {
@@ -305,16 +261,61 @@ export default class MapView extends Mixins(
   }
 
   /**
-   * 分屏窗口变化
+   * 结果树加载的要素集合
+   * @param {array} loadedKeys 已经加载的父节点key
+   * @param {array} loadedChildNodes 已经加载的所有子节点
    */
-  onResize() {
-    this.$nextTick(() => {
-      if (!this.is2dLayer) {
-        this.mapViewHeight = this.$el.clientHeight - 32
-      } else if (this.ssMap) {
-        this.ssMap.resize()
-      }
-    })
+  onQueryLoaded(
+    loadedKeys: Array<string>,
+    loadedNodes: Array<Record<string, unknown>>
+  ) {
+    this.queryFeatures = loadedNodes
+  }
+
+  /**
+   * 结果树选中
+   * @param {array} selectedKeys 选中的要素id集合
+   * @param {array} selectedNodes 选中的要素集合
+   */
+  onQuerySelected(
+    selectedKeys: Array<string>,
+    selectedData: Array<Record<string, unknown>>
+  ) {
+    this.querySelection = selectedData
+  }
+
+  /**
+   * 结果树弹框开关设置
+   */
+  toggleQueryWindow(visible: boolean) {
+    this.queryWindowVisible = visible
+    this.queryFeatures = []
+    this.querySelection = []
+    if (!visible) {
+      this.$emit('update:queryVisible', false)
+    }
+  }
+
+  /**
+   * 初始化图层
+   */
+  initDocument() {
+    if (!this.mapViewDocument) {
+      this.mapViewDocument = new Document()
+    }
+    const { defaultMap } = this.mapViewDocument
+    defaultMap.removeAll()
+    defaultMap.add(this.mapViewLayer)
+  }
+
+  /**
+   * 监听: 图层变化
+   */
+  @Watch('mapViewLayer.id', { immediate: true })
+  watchMapViewLayer(id: string) {
+    if (id) {
+      this.initDocument()
+    }
   }
 
   /**
@@ -335,28 +336,14 @@ export default class MapView extends Mixins(
     this.onResize()
   }
 
-  /**
-   * 监听: 图层变化
-   */
-  @Watch('mapViewLayer.id', { immediate: true })
-  watchMapViewLayer(id: string) {
-    if (id) {
-      this.initDocument()
-    }
-  }
-
   mounted() {
-    this.initDocument()
     this.onResize()
     window.onresize = this.onResize
   }
 
   beforeDestroy() {
     this.isMapLoaded = false
-    this.mapViewHandlesAttached('clear')
-    this.unregisterHighlightEvent()
-    this.unregisterClearHighlightEvent()
-    this.unregisterClearSelectionEvent()
+    this.onIconAttached('clear')
   }
 }
 </script>

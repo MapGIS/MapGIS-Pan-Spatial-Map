@@ -31,8 +31,7 @@ import {
   Objects,
   Feature,
   Catalog,
-  MapMixin,
-  MarkerPlottingMixin
+  MapMixin
 } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
@@ -40,6 +39,7 @@ import {
 } from '@mapgis/pan-spatial-map-common'
 import _uniqBy from 'lodash/uniqBy'
 import _last from 'lodash/last'
+import dep from './Dep.ts'
 
 const { DocumentCatalog } = Catalog
 const {
@@ -83,10 +83,7 @@ interface ITreeNode extends ILayerInfoItem {
  * ArcGISMapImage(10)  ArcGIS IMAGE REST
  */
 @Component
-export default class MpQueryResultTree extends Mixins(
-  MapMixin,
-  MarkerPlottingMixin
-) {
+export default class MpQueryResultTree extends Mixins(MapMixin) {
   // 组件唯一标识
   @Prop() readonly vueKey!: string
 
@@ -362,12 +359,7 @@ export default class MpQueryResultTree extends Mixins(
     queryOptions: FeatureQueryParam,
     specialLayerId: string
   ) {
-    const sceneController = Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.CesiumZondy.getWebGlobe(this.vueKey)
-    )
-    if (!sceneController) {
+    if (!this.sceneController) {
       return Promise.reject('WebGlobe未初始化')
     }
     const featureIGS: FeatureIGS = await FeatureQuery.query(
@@ -382,11 +374,11 @@ export default class MpQueryResultTree extends Mixins(
     if (!SFEleArray || !SFEleArray.length) {
       return []
     }
-    const { source } = sceneController.findSource(specialLayerId)
+    const { source } = this.sceneController.findSource(specialLayerId)
     return SFEleArray.map(({ AttValue = [], bound = {}, FID }) => {
       const boundObj =
         source && source.length
-          ? sceneController.localExtentToGlobelExtent(
+          ? this.sceneController.localExtentToGlobelExtent(
               bound,
               source[0].root.transform
             )
@@ -512,7 +504,6 @@ export default class MpQueryResultTree extends Mixins(
           resolve()
         })
         .catch(e => {
-          console.log('e', e)
           this.$message.error(e || '请求错误')
           resolve([])
         })
@@ -533,15 +524,6 @@ export default class MpQueryResultTree extends Mixins(
   }
 
   /**
-   * 取消选中
-   */
-  onCanceTreeSelect() {
-    const empty = []
-    this.selectedKeys = empty
-    this.$emit('on-select', empty, empty, null)
-  }
-
-  /**
    * 结果树选中
    * @param selectedKeys
    * @param treeNode
@@ -549,27 +531,51 @@ export default class MpQueryResultTree extends Mixins(
   onTreeSelect(selectedKeys, { selectedNodes, checkedNodes, node }) {
     this.selectedKeys = selectedKeys
     const vnodes = this.multiple ? checkedNodes : selectedNodes
-    // 当前节点的数据
-    const nodeData = node.dataRef
     // 选中节点的数据集合
-    const selectedDatas = vnodes.length
+    const selectedData = vnodes.length
       ? vnodes.map(({ data }) => data.props.dataRef)
       : []
-    this.$emit('on-select', selectedKeys, selectedDatas, nodeData)
+
+    dep.setState({
+      selectedKeys,
+      selectedData,
+      data: node.dataRef,
+      vueKey: this.vueKey
+    })
+    dep.notify()
   }
 
   /**
-   * 清除选中的回调
+   * 清除选中
    */
-  clearSelectionCallback(vueKey) {
-    if (this.vueKey !== vueKey) {
-      this.onCanceTreeSelect()
+  onClearTreeSelect() {
+    this.$emit('on-select', [], [], null)
+  }
+
+  /**
+   * 订阅更新事件
+   */
+  update() {
+    const { vueKey, selectedKeys, selectedData, data } = dep.getState()
+    if (vueKey !== this.vueKey) {
+      this.selectedKeys = []
     }
+    this.$emit('on-select', selectedKeys, selectedData, data)
   }
 
   created() {
     this.getTreeData()
-    this.registerClearSelectionEvent(this.clearSelectionCallback)
+    this.sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.CesiumZondy.getWebGlobe(this.vueKey)
+    )
+    dep.addSub(this)
+  }
+
+  beforeDestroy() {
+    dep.removeSub(this)
+    this.onClearTreeSelect()
   }
 }
 </script>

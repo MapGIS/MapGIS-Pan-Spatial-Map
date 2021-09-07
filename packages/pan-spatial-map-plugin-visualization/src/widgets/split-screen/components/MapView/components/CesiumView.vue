@@ -13,7 +13,7 @@
         @change="onLinkChange"
         :vue-key="vueKey"
         :enable="isMapLoaded"
-        :interval="20"
+        :interval="60"
         :excludes="['default']"
       />
       <!-- 绘制组件 -->
