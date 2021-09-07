@@ -9,7 +9,10 @@ class Dep {
   private subs: unknown[] = []
 
   private state: Record<string, unknown> = {
-    selectedNodes: []
+    vueKey: '',
+    data: null,
+    selectedKeys: [],
+    selectedData: []
   }
 
   setState(state) {

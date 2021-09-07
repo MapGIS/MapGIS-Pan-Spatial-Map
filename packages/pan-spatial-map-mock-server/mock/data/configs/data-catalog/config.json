@@ -1005,6 +1005,20 @@
             "serverUrl": "gdbp://MapGISLocalPlus/示例数据/sfcls/信创BIM图层热力图测试数据.json_Pnt",
             "wfsUrl": "",
             "extent": ""
+          },
+          {
+            "label": "景观_建筑物",
+            "describe": "景观_建筑物",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSVECTOR",
+            "name": "景观_建筑物",
+            "searchName": "",
+            "token": "",
+            "guid": "e76f9c13-0fcb-8537-96ab-daa533bf5det",
+            "serverUrl": "gdbp://MapGisLocal/示例数据/ds/三维示例/sfcls/景观_建筑物",
+            "wfsUrl": "",
+            "extent": ""
           }
         ]
       },

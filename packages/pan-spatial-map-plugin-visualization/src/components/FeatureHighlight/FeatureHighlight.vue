@@ -133,7 +133,6 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
    */
   async addMarkers() {
     this.removeMarkers()
-    this.defaultIcon = await markerIconInstance.unSelectIcon()
     const tempMarkers = this.features.reduce<IMarker[]>(
       (result, { key, feature, feature: { properties } }) => {
         let coordinates = []
@@ -222,10 +221,9 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   /**
    * 高亮选择集对应的标注图标
    */
-  async hightlightMarkers() {
+  hightlightMarkers() {
     this.clearHightlight()
     this.setSelectionBound()
-    this.selectedIcon = await markerIconInstance.selectIcon()
     this.markers.forEach(marker => {
       if (
         this.selectedFeatures.findIndex(
@@ -246,6 +244,11 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   @Watch('selectedFeatures', { immediate: true })
   selectedFeaturesChanged() {
     this.hightlightMarkers()
+  }
+
+  async created() {
+    this.defaultIcon = await markerIconInstance.unSelectIcon()
+    this.selectedIcon = await markerIconInstance.selectIcon()
   }
 
   beforeDestroy() {
