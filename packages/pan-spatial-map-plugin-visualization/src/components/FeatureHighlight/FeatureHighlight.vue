@@ -249,9 +249,9 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   update() {
     const { vueKey, selection, bound } = dep.getState()
     if (this.vueKey !== vueKey) {
+      this.resetHighlight()
       this.$root.$emit('clear-selection', this.vueKey)
     }
-    this.resetHighlight()
     this.selectionBound = bound
     this.selectedMarkers = selection
   }
