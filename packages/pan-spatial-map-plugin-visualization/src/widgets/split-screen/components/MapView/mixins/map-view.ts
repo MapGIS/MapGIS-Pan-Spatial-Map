@@ -99,7 +99,6 @@ export default class MapViewMixin extends Mixins(
    * @param {Rectangle | Rectangle3D} geometry 经纬度范围或者三维坐标集合
    */
   query(geometry: Rectangle | Rectangle3D) {
-    this.onQueryClear()
     this.queryGeometry = geometry
   }
 

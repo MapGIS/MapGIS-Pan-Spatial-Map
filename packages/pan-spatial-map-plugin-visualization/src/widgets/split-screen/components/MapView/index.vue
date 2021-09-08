@@ -28,26 +28,26 @@
       :document="mapViewDocument"
     />
     <!-- 高亮查询的要素 -->
-    <mp-feature-highlight
-      v-if="isMapLoaded && queryVisible"
+    <feature-highlight
+      v-if="queryVisible"
       :vue-key="mapViewId"
       :is-2d-layer="is2dLayer"
       :features="queryFeatures"
-      :selected-features="querySelection"
+      :selected-keys="querySelection"
     />
     <!-- 结果树 -->
     <mp-window
       title="查询结果"
       :width="200"
       :height="200"
-      :visible.sync="queryVisible"
       :vertical-offset="32"
       :full-screen-action="false"
       :has-padding="false"
+      :visible.sync="queryVisible"
     >
       <mp-query-result-tree
         v-if="queryVisible"
-        @on-node-loaded="onQueryLoaded"
+        @on-loaded="onQueryLoaded"
         @on-select="onQuerySelected"
         :geometry="queryGeometry"
         :layer="mapViewLayer"
@@ -67,19 +67,20 @@ import {
   Objects,
   AppMixin
 } from '@mapgis/web-app-framework'
-import { MpQueryResultTree, MpFeatureHighlight } from '../../../../components'
+import { MpQueryResultTree } from '../../../../components'
 import MapViewMixin from './mixins/map-view'
 import MapboxView from './components/MapboxView'
 import CesiumView from './components/CesiumView'
 import Tools, { Tool } from './components/Tools'
+import FeatureHighlight from './components/FeatureHighlight'
 
 @Component({
   components: {
     Tools,
     MapboxView,
     CesiumView,
-    MpQueryResultTree,
-    MpFeatureHighlight
+    FeatureHighlight,
+    MpQueryResultTree
   },
   provide() {
     const self = this
@@ -265,9 +266,9 @@ export default class MapView extends Mixins(AppMixin, MapViewMixin) {
    */
   onQueryLoaded(
     loadedKeys: Array<string>,
-    loadedNodes: Array<Record<string, unknown>>
+    loadedData: Array<Record<string, unknown>>
   ) {
-    this.queryFeatures = loadedNodes
+    this.queryFeatures = loadedData
   }
 
   /**

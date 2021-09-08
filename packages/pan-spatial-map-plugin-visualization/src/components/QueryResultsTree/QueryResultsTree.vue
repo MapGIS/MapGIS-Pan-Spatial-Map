@@ -9,11 +9,11 @@
         @select="onTreeSelect"
         :checkedKeys="selectedKeys"
         :selectedKeys="selectedKeys"
-        :checkable="multiple"
         :expandedKeys.sync="expandedKeys"
-        :load-data="loadTreeData"
+        :load-data="loadDataMethod"
         :tree-data="treeData"
         :replace-fields="{ title: 'layerName' }"
+        :checkable="multiple"
         showLine
       />
     </a-spin>
@@ -37,7 +37,6 @@ import {
   baseConfigInstance,
   dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-common'
-import _uniqBy from 'lodash/uniqBy'
 import _last from 'lodash/last'
 
 const { DocumentCatalog } = Catalog
@@ -118,29 +117,16 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   @Prop({ type: Number, default: 1 })
   readonly page!: number
 
-  @Watch('layer', { deep: true })
-  layerChanged() {
-    this.getTreeData()
-  }
-
-  @Watch('geometry', { deep: true })
-  geometryChanged() {
-    this.getTreeData()
-  }
-
   loading = false
 
   // 结果树数据
   treeData: ITreeNode[] = []
 
-  // 已经加载的节点的子节点数据
-  loadedChildNodes: string[] = []
+  // 已经加载的节点的children集合
+  loadedNodeDataChildren: ITreeNode[] = []
 
-  // 已经加载的节点
-  loadedKeys: string[] = []
-
-  // 默认展开的节点, 第一个节点
-  defaultExpandedKeys: string[] = []
+  // 已经加载的节点的dataRef集合
+  loadedNodeData: ITreeNode[] = []
 
   // 展开的节点
   expandedKeys: string[] = []
@@ -165,6 +151,19 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     this.layer.port = _port
 
     return this.layer
+  }
+
+  @Watch('layer.id')
+  layerChanged() {
+    this.getTreeData()
+  }
+
+  @Watch('geometry', { deep: true })
+  geometryChanged(nV) {
+    if (nV) {
+      // this.getTreeData()
+      this.onRefresh()
+    }
   }
 
   /**
@@ -333,9 +332,10 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   async igsQueryFeature(queryOptions) {
     const featureIGS = await FeatureQuery.query(queryOptions)
     if (featureIGS.SFEleArray && featureIGS.SFEleArray.length) {
-      const {
-        features
-      }: FeatureGeoJSON = FeatureConvert.featureIGSToFeatureGeoJSON(featureIGS)
+      const geojson: FeatureGeoJSON = FeatureConvert.featureIGSToFeatureGeoJSON(
+        featureIGS
+      )
+      const { features } = geojson
       if (features && features.length) {
         return features.map(item => ({
           key: UUID.uuid(),
@@ -495,7 +495,7 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    * 异步加载数据
    * @param {object}
    */
-  loadTreeData({ dataRef }) {
+  loadDataMethod({ dataRef }) {
     return new Promise(resolve => {
       if (!dataRef || dataRef.children) {
         resolve()
@@ -515,20 +515,21 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   }
 
   /**
-   *  结果树展开
+   *  节点加载
    *  @param {array}
    * @param {object}
    */
   onTreeLoad(loadedKeys, { node }) {
-    this.loadedChildNodes = _uniqBy(
-      [...this.loadedChildNodes, ...(node.dataRef.children || [])],
-      ({ key }) => key
-    )
-    this.$emit('on-node-loaded', loadedKeys, this.loadedChildNodes)
+    this.loadedNodeData.push(node.dataRef)
+    this.loadedNodeDataChildren = [
+      ...this.loadedNodeDataChildren,
+      ...(node.dataRef.children || [])
+    ]
+    this.$emit('on-loaded', loadedKeys, this.loadedNodeDataChildren)
   }
 
   /**
-   * 结果树选中
+   * 节点选中
    * @param selectedKeys
    * @param treeNode
    */
@@ -546,21 +547,45 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   }
 
   /**
-   * 清除选中
+   * 清除节点选中和已加载的节点的children集合
    */
-  onClearTreeSelect(vueKey) {
-    if (this.vueKey === vueKey) {
-      this.selectedKeys = []
-    }
+  onClearTreeSelect() {
+    this.selectedKeys = []
+    this.loadedNodeDataChildren = []
+  }
+
+  /**
+   * 刷新
+   */
+  onRefresh() {
+    this.onClearTreeSelect()
+    this.loading = true
+    Promise.all(this.loadedNodeData.map(dataRef => this.queryFeatures(dataRef)))
+      .then((childrenArr = []) => {
+        const loadedKeys = []
+        const loadedNodeDataChildren = childrenArr.flat()
+        this.loadedNodeData.forEach((dataRef, i) => {
+          loadedKeys.push(dataRef.key)
+          dataRef.children = childrenArr[i] || []
+        })
+        this.$emit('on-loaded', loadedKeys, loadedNodeDataChildren)
+        this.loadedNodeDataChildren = loadedNodeDataChildren
+        this.treeData = [...this.treeData]
+        this.loading = false
+      })
+      .catch(e => {
+        this.loading = false
+        this.$message.error(e || '请求错误')
+      })
   }
 
   created() {
     this.getTreeData()
-    this.$root.$on('clear-selection', this.onClearTreeSelect)
+    this.$root.$on(`clear-${this.vueKey}-query`, this.onClearTreeSelect)
   }
 
   beforeDestroy() {
-    this.$root.$off('clear-selection', this.onClearTreeSelect)
+    this.$root.$off(`clear-${this.vueKey}-query`, this.onClearTreeSelect)
   }
 }
 </script>

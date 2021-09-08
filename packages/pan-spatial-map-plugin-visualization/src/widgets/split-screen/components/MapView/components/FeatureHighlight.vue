@@ -1,18 +1,18 @@
 <template>
-  <mp-marker-plotting v-if="is2d" v-bind="bindProps" />
+  <mp-marker-plotting v-if="is2dLayer" v-bind="bindProps" />
   <mp-3d-marker-plotting v-else v-bind="bindProps" />
 </template>
 <script lang="ts">
-import { Mixins, Component, Prop, Watch, Inject } from 'vue-property-decorator'
-import { AppMixin, UUID, Feature, Objects } from '@mapgis/web-app-framework'
+import { Vue, Component, Prop, Watch, Inject } from 'vue-property-decorator'
+import { Feature } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-common'
-import dep from './Dep'
+import dep from '../store/map-view-dep'
 
 interface IFeature {
-  key?: string // 图层UUID
+  key: string // 图层UUID
   title?: string // 图层名称
   feature?: Feature.GFeature // 图层的查询的要素信息
 }
@@ -27,25 +27,22 @@ interface IMarker {
 }
 
 @Component
-export default class MpFeatureHighlight extends Mixins(AppMixin) {
+export default class FeatureHighlight extends Vue {
   @Inject('Cesium') Cesium: unknown
 
   @Inject('CesiumZondy') CesiumZondy: unknown
 
   // 三维地图vueKey
-  @Prop({ default: UUID.uuid() }) readonly vueKey!: string
+  @Prop() readonly vueKey!: string
 
   // 是否二维图层, 根据图层是否属于Layer3D还是Layer判断的
-  @Prop() readonly is2dLayer!: boolean
+  @Prop({ default: true }) readonly is2dLayer!: boolean
 
   // 所有的要素信息
   @Prop({ default: () => [] }) readonly features!: IFeature[]
 
-  // 选中的的要素ID集合
-  @Prop({ default: () => [] }) readonly selectedFeatures!: string[]
-
-  // 是否随地图范围过滤
-  @Prop({ default: false }) readonly filterWithMap!: boolean
+  // 选中的的要素KEY集合
+  @Prop({ default: () => [] }) readonly selectedKeys!: string[]
 
   // 标注点集合
   markers: IMarker[] = []
@@ -53,44 +50,25 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   // 选中的标注点集合
   selectedMarkers: IMarker[] = []
 
-  // 选中的数据范围
-  selectionBound = null
-
   // 选中的标注图标
   selectedIcon = ''
 
   // 标注默认的图标
   defaultIcon = ''
 
-  // 是否二维地图图层
-  get is2d() {
-    return typeof this.is2dLayer !== 'undefined'
-      ? this.is2dLayer
-      : this.is2DMapMode
-  }
-
   // 颜色配置
-  get colorConfig() {
+  get highlightStyle() {
     return baseConfigInstance.config.colorConfig
   }
 
   // 二三维marker组件绑定的属性
   get bindProps() {
-    const {
-      vueKey,
-      markers,
-      selectedMarkers,
-      filterWithMap,
-      selectionBound,
-      colorConfig
-    } = this
+    const { vueKey, markers, selectedMarkers, highlightStyle } = this
     return {
       vueKey,
       markers,
       selectedMarkers,
-      filterWithMap,
-      selectionBound,
-      highlightStyle: colorConfig
+      highlightStyle
     }
   }
 
@@ -125,6 +103,7 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
    * 移除标注
    */
   removeMarkers() {
+    this.selectedMarkers = []
     this.markers = []
   }
 
@@ -132,11 +111,10 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
    * 添加标注
    */
   async addMarkers() {
-    this.removeMarkers()
     const tempMarkers = this.features.reduce<IMarker[]>(
       (result, { key, feature, feature: { properties } }) => {
         let coordinates = []
-        if (!this.is2d) {
+        if (!this.is2dLayer) {
           const { xmin, xmax, ymin, ymax } = properties.specialLayerBound
           coordinates = [(xmin + xmax) / 2, (ymin + ymax) / 2]
         } else {
@@ -157,7 +135,7 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
       },
       []
     )
-    if (!this.is2d && tempMarkers.length) {
+    if (!this.is2dLayer && tempMarkers.length) {
       try {
         const arr = await this.getModelHeight(tempMarkers)
         if (arr.length === tempMarkers.length) {
@@ -179,102 +157,59 @@ export default class MpFeatureHighlight extends Mixins(AppMixin) {
   }
 
   /**
-   * 设置要素选中范围
-   */
-  setSelectionBound() {
-    const { MIN_VALUE, MAX_VALUE } = Number
-    this.selectionBound = this.features.reduce(
-      (
-        { xmin, xmax, ymin, ymax },
-        { feature, feature: { properties } }: GFeature
-      ) => {
-        const bound =
-          properties.specialLayerBound ||
-          Feature.getGeoJSONFeatureBound(feature)
-        return {
-          xmin: bound.xmin < xmin ? bound.xmin : xmin,
-          ymin: bound.ymin < ymin ? bound.ymin : ymin,
-          xmax: bound.xmax > xmax ? bound.xmax : xmax,
-          ymax: bound.ymax > ymax ? bound.ymax : ymax
-        }
-      },
-      {
-        xmin: MAX_VALUE,
-        ymin: MAX_VALUE,
-        xmax: MIN_VALUE,
-        ymax: MIN_VALUE
-      }
-    )
-  }
-
-  /**
-   * 重置高亮
-   */
-  resetHighlight() {
-    this.markers.forEach(marker => this.$set(marker, 'img', this.defaultIcon))
-  }
-
-  /**
    * 取消高亮
    */
   clearHightlight() {
-    this.selectionBound = null
-    this.selectedMarkers = []
-    this.resetHighlight()
+    if (this.vueKey !== dep.getState().vueKey) {
+      this.selectedMarkers = []
+    }
   }
 
   /**
    * 高亮选择集对应的标注图标
    */
   hightlightMarkers() {
-    this.clearHightlight()
-    this.setSelectionBound()
-    this.markers.forEach(marker => {
-      if (this.selectedFeatures.includes(marker.markerId)) {
-        this.$set(marker, 'img', this.selectedIcon)
-        this.selectedMarkers.push(marker)
-      }
-    })
+    const selectedMarkers = this.markers.filter(({ markerId }) =>
+      this.selectedKeys.includes(markerId)
+    )
     dep.setState({
       vueKey: this.vueKey,
-      selection: this.selectedMarkers,
-      bound: this.selectionBound
+      selectedKeys: this.selectedKeys,
+      selectedMarkers
     })
     dep.notify()
   }
 
   /**
-   * 订阅更新
+   * 订阅: 更新
    */
   update() {
-    const { vueKey, selection, bound } = dep.getState()
+    const { vueKey, selectedKeys, selectedMarkers } = dep.getState()
+    // 清除非当前vueKey的结果树选中
     if (this.vueKey !== vueKey) {
-      this.resetHighlight()
-      this.$root.$emit('clear-selection', this.vueKey)
+      this.$root.$emit(`clear-${this.vueKey}-query`)
     }
-    this.selectionBound = bound
-    this.selectedMarkers = selection
-  }
-
-  /**
-   * 订阅销毁
-   */
-  destroy() {
-    dep.setState({
-      vueKey: this.vueKey,
-      selection: [],
-      bound: null
+    this.markers.forEach(marker => {
+      this.$set(
+        marker,
+        'img',
+        selectedKeys.includes(marker.markerId)
+          ? this.selectedIcon
+          : this.defaultIcon
+      )
     })
-    dep.notify()
+    this.selectedMarkers = selectedMarkers
   }
 
   @Watch('features', { immediate: true })
-  featuresChanged() {
+  featuresChanged(nV) {
+    this.removeMarkers()
     this.addMarkers()
   }
 
-  @Watch('selectedFeatures', { immediate: true })
-  selectedFeaturesChanged() {
+  @Watch('selectedKeys', { immediate: true })
+  selectedKeysChanged(nV) {
+    this.clearHightlight()
     this.hightlightMarkers()
   }
 
