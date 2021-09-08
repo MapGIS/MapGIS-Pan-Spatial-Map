@@ -497,7 +497,7 @@
         ]
       },
       {
-        "describe": "分类:遥感影像综合信息库",
+        "describe": "专题:遥感影像综合信息库",
         "label": "遥感影像综合信息库",
         "children": [
           {
@@ -505,8 +505,8 @@
             "label": "全国影像",
             "children": [
               {
-                "label": "全国TM遥感影像-30米（2014年）",
-                "describe": "全国TM遥感影像-30米（2014年）",
+                "label": "2014全国TM遥感影像-30米（2014年）",
+                "describe": "2014全国TM遥感影像-30米（2014年）",
                 "name": "qgtmygyx",
                 "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/qgtmygyx/wmts",
                 "ip": "",
@@ -525,8 +525,8 @@
                 "guid": "7a506e38-6cce-46c5-a8bc-bdb5d9a3547c"
               },
               {
-                "label": "全国GF-1遥感正射影像-16米（2015年）",
-                "describe": "全国GF-1遥感正射影像-16米（2015年）",
+                "label": "2015全国GF-1遥感正射影像-16米（2015年）",
+                "describe": "2015全国GF-1遥感正射影像-16米（2015年）",
                 "name": "2015qggf1ygzsyx",
                 "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/2015qggf1ygzsyx/wmts",
                 "ip": "",
@@ -535,8 +535,8 @@
                 "guid": "15fba5f0-60ef-4e47-b4a3-97b9a4066bd5"
               },
               {
-                "label": "全国GF-1遥感影像-16米（2017年）",
-                "describe": "全国GF-1遥感影像-16米（2017年）",
+                "label": "2017全国GF-1遥感影像-16米（2017年）",
+                "describe": "2017全国GF-1遥感影像-16米（2017年）",
                 "name": "quanguogf1",
                 "serverUrl": "http://59.252.165.22:8066/ime-cloud/rest/quanguogf1/wmts",
                 "ip": "",
