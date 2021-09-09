@@ -13,7 +13,7 @@ import dep from '../store/map-view-dep'
 
 interface IFeature {
   key: string // 图层UUID
-  title?: string // 图层名称
+  layerName?: string // 图层名称
   feature?: Feature.GFeature // 图层的查询的要素信息
 }
 
@@ -35,8 +35,8 @@ export default class FeatureHighlight extends Vue {
   // 三维地图vueKey
   @Prop() readonly vueKey!: string
 
-  // 是否二维图层, 根据图层是否属于Layer3D还是Layer判断的
-  @Prop({ default: true }) readonly is2dLayer!: boolean
+  // 是否二维图层
+  @Prop() readonly is2dLayer!: boolean
 
   // 所有的要素信息
   @Prop({ default: () => [] }) readonly features!: IFeature[]
@@ -111,6 +111,7 @@ export default class FeatureHighlight extends Vue {
    * 添加标注
    */
   async addMarkers() {
+    this.removeMarkers()
     const tempMarkers = this.features.reduce<IMarker[]>(
       (result, { key, feature, feature: { properties } }) => {
         let coordinates = []
@@ -157,65 +158,63 @@ export default class FeatureHighlight extends Vue {
   }
 
   /**
-   * 取消高亮
+   * 设置选中操作
    */
-  clearHightlight() {
-    if (this.vueKey !== dep.getState().vueKey) {
-      this.selectedMarkers = []
-    }
-  }
+  setSelectedMarkers() {
+    const { vueKey } = dep.getState()
 
-  /**
-   * 高亮选择集对应的标注图标
-   */
-  hightlightMarkers() {
-    const selectedMarkers = this.markers.filter(({ markerId }) =>
-      this.selectedKeys.includes(markerId)
-    )
+    // 如果此时点击取消的屏不是上一次触发选中的屏则只清除取消的屏;
+    // 否则需要清空存储并通知其他屏清除
+    if (!this.selectedKeys.length && this.vueKey !== vueKey) {
+      this.selectedMarkers = []
+      return
+    }
+    // 获取并存储选中要素
     dep.setState({
       vueKey: this.vueKey,
-      selectedKeys: this.selectedKeys,
-      selectedMarkers
+      selectedMarkers: this.markers.filter(({ markerId }) =>
+        this.selectedKeys.includes(markerId)
+      )
     })
+    // 通知其他
     dep.notify()
   }
 
   /**
-   * 订阅: 更新
+   * 订阅: 标注和要素状态更新
    */
   update() {
-    const { vueKey, selectedKeys, selectedMarkers } = dep.getState()
-    // 清除非当前vueKey的结果树选中
-    if (this.vueKey !== vueKey) {
-      this.$root.$emit(`clear-${this.vueKey}-query`)
-    }
+    const { selectedMarkers } = dep.getState()
+    // 设置高亮标注状态
     this.markers.forEach(marker => {
       this.$set(
         marker,
         'img',
-        selectedKeys.includes(marker.markerId)
+        selectedMarkers.findIndex(
+          ({ markerId }) => markerId === marker.markerId
+        ) !== -1
           ? this.selectedIcon
           : this.defaultIcon
       )
     })
+    // 设置高亮的要素
     this.selectedMarkers = selectedMarkers
   }
 
-  @Watch('features', { immediate: true })
+  @Watch('features')
   featuresChanged(nV) {
-    this.removeMarkers()
     this.addMarkers()
   }
 
-  @Watch('selectedKeys', { immediate: true })
-  selectedKeysChanged(nV) {
-    this.clearHightlight()
-    this.hightlightMarkers()
+  @Watch('selectedKeys')
+  selectedKeysChanged() {
+    this.setSelectedMarkers()
   }
 
   async created() {
     this.defaultIcon = await markerIconInstance.unSelectIcon()
     this.selectedIcon = await markerIconInstance.selectIcon()
+    this.addMarkers()
     dep.addSub(this)
   }
 

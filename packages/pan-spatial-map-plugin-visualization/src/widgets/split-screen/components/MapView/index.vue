@@ -31,7 +31,7 @@
     <feature-highlight
       v-if="queryVisible"
       :vue-key="mapViewId"
-      :is-2d-layer="is2dLayer"
+      :is2d-layer="is2dLayer"
       :features="queryFeatures"
       :selected-keys="querySelection"
     />
@@ -64,8 +64,7 @@ import {
   Layer,
   Layer3D,
   Rectangle3D,
-  Objects,
-  AppMixin
+  Objects
 } from '@mapgis/web-app-framework'
 import { MpQueryResultTree } from '../../../../components'
 import MapViewMixin from './mixins/map-view'
@@ -94,7 +93,7 @@ import FeatureHighlight from './components/FeatureHighlight'
     }
   }
 })
-export default class MapView extends Mixins(AppMixin, MapViewMixin) {
+export default class MapView extends Mixins(MapViewMixin) {
   @Inject('map') map: any
 
   @Inject('mapbox') mapbox: any
@@ -140,8 +139,7 @@ export default class MapView extends Mixins(AppMixin, MapViewMixin) {
 
   // 是否是二维图层
   get is2dLayer() {
-    const is3dLayer = this.mapViewLayer instanceof Layer3D
-    return typeof is3dLayer === 'boolean' ? !is3dLayer : this.is2DMapMode
+    return !(this.mapViewLayer instanceof Layer3D)
   }
 
   // 二维或三维地图组件

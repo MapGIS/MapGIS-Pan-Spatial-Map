@@ -66,8 +66,8 @@ interface ILayerInfoItem {
 
 interface ITreeNode extends ILayerInfoItem {
   key: string
-  layerType: LayerType
   children?: ITreeNode[]
+  isLeaf?: boolean
   selectable?: boolean
   feature?: GFeature
 }
@@ -312,9 +312,8 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
         }
         this.treeData = treeData.map<ITreeNode>((node: ILayerInfoItem) => ({
           ...node,
-          selectable: false,
-          layerType: type,
-          key: UUID.uuid()
+          key: UUID.uuid(),
+          selectable: false
         }))
         if (this.treeData.length) {
           this.expandedKeys.push(this.treeData[0]?.key)
@@ -339,10 +338,10 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
       if (features && features.length) {
         return features.map(item => ({
           key: UUID.uuid(),
-          layerName: item.properties.fid,
-          feature: item,
           isLeaf: true,
-          selectable: true
+          selectable: true,
+          layerName: item.properties.fid,
+          feature: item
         }))
       }
     }
@@ -398,9 +397,9 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
       }
       return {
         key: UUID.uuid(),
-        layerName: FID,
-        selectable: true,
         isLeaf: true,
+        selectable: true,
+        layerName: FID,
         feature: {
           geometry: {
             coordinates: [],
@@ -431,10 +430,10 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     return features && features.length
       ? features.map((item: GFeature) => ({
           key: UUID.uuid(),
-          layerName: item.properties.ID,
-          feature: item,
           isLeaf: true,
-          selectable: true
+          selectable: true,
+          layerName: item.properties.ID,
+          feature: item
         }))
       : []
   }
@@ -443,10 +442,11 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    * 要素查询
    * @param {Object}
    */
-  async queryFeatures(dataRef: ITreeNode) {
+  async queryFeatures({ layerId, layerIndex, layerGdbp }: ITreeNode) {
+    const { ip, port, type, docName, gdbps, url } = this.layerParams
     const queryOptions = {
-      ip: this.layerParams.ip,
-      port: this.layerParams.port,
+      ip,
+      port,
       page: this.page - 1,
       pageCount: this.pageCount,
       geometry: this.geometry,
@@ -454,35 +454,35 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
       f: 'json'
     }
     let children = []
-    switch (dataRef.layerType) {
+    switch (type) {
       case LayerType.IGSMapImage:
         children = await this.igsQueryFeature({
-          ...queryOptions,
-          layerIdxs: dataRef.layerIndex,
+          docName,
           mapIndex: this.mapIndex,
-          docName: this.layerParams.docName
+          layerIdxs: layerIndex,
+          ...queryOptions
         })
         break
       case LayerType.IGSVector:
         children = await this.igsQueryFeature({
-          ...queryOptions,
-          gdbp: this.layerParams.gdbps
+          gdbp: gdbps,
+          ...queryOptions
         })
         break
       case LayerType.ArcGISMapImage:
         children = await this.arcGISQueryFeature({
-          ...queryOptions,
-          layerIndex: dataRef.layerIndex,
-          serverUrl: this.layerParams.url
+          layerIndex,
+          serverUrl: url,
+          ...queryOptions
         })
         break
       case LayerType.IGSScene:
         children = await this.igsQuery3DFeature(
           {
-            ...queryOptions,
-            gdbp: dataRef.layerGdbp
+            gdbp: layerGdbp,
+            ...queryOptions
           },
-          dataRef.layerId
+          layerId
         )
         break
       default:
@@ -519,11 +519,11 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    *  @param {array}
    * @param {object}
    */
-  onTreeLoad(loadedKeys, { node }) {
-    this.loadedNodeData.push(node.dataRef)
+  onTreeLoad(loadedKeys, { node: { dataRef } }) {
+    this.loadedNodeData.push(dataRef)
     this.loadedNodeDataChildren = [
       ...this.loadedNodeDataChildren,
-      ...(node.dataRef.children || [])
+      ...(dataRef.children || [])
     ]
     this.$emit('on-loaded', loadedKeys, this.loadedNodeDataChildren)
   }
@@ -542,24 +542,26 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     const selectedData = vnodes.length
       ? vnodes.map(({ data }) => data.props.dataRef)
       : []
-
+    this.$root.$emit('clear-query-selection', this.vueKey)
     this.$emit('on-select', selectedKeys, selectedData, data)
   }
 
   /**
    * 清除节点选中和已加载的节点的children集合
    */
-  onClearTreeSelect() {
-    this.selectedKeys = []
-    this.loadedNodeDataChildren = []
+  onClearTreeSelect(vueKey) {
+    if (this.vueKey !== vueKey) {
+      this.selectedKeys = []
+    }
   }
 
   /**
    * 刷新
    */
   onRefresh() {
-    this.onClearTreeSelect()
     this.loading = true
+    this.selectedKeys = []
+    this.loadedNodeDataChildren = []
     Promise.all(this.loadedNodeData.map(dataRef => this.queryFeatures(dataRef)))
       .then((childrenArr = []) => {
         const loadedKeys = []
@@ -581,11 +583,11 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
 
   created() {
     this.getTreeData()
-    this.$root.$on(`clear-${this.vueKey}-query`, this.onClearTreeSelect)
+    this.$root.$on('clear-query-selection', this.onClearTreeSelect)
   }
 
   beforeDestroy() {
-    this.$root.$off(`clear-${this.vueKey}-query`, this.onClearTreeSelect)
+    this.$root.$off('clear-query-selection', this.onClearTreeSelect)
   }
 }
 </script>
