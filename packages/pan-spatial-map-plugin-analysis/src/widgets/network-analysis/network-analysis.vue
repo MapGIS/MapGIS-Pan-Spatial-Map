@@ -445,36 +445,36 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
       const elementType = elementTypeArray.join(',')
       param = [
         {
-          key: 'netClsUrl',
-          value: netClsUrl
+          Key: 'netClsUrl',
+          Value: netClsUrl
         },
         {
-          key: 'flag',
-          value: flag
+          Key: 'flag',
+          Value: flag
         },
         {
-          key: 'flagPosStr',
-          value: flagPosStr
+          Key: 'flagPosStr',
+          Value: flagPosStr
         },
         {
-          key: 'elementType',
-          value: elementType
+          Key: 'elementType',
+          Value: elementType
         },
         {
-          key: 'nearDis',
-          value: nearDis
+          Key: 'nearDis',
+          Value: nearDis
         },
         {
-          key: 'weight',
-          value: weight
+          Key: 'weight',
+          Value: weight
         },
         {
-          key: 'analyTp',
-          value: analyTp
+          Key: 'analyTp',
+          Value: analyTp
         },
         {
-          key: 'flowId',
-          value: workFlowId
+          Key: 'flowId',
+          Value: workFlowId
         }
       ]
     } else if (type === 'pathAnalysis') {
@@ -487,40 +487,40 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
       const barrierPosStr = barrierPosStrArray.join(',')
       param = [
         {
-          key: 'netClsUrl',
-          value: netClsUrl
+          Key: 'netClsUrl',
+          Value: netClsUrl
         },
         {
-          key: 'flagPosStr',
-          value: flagPosStr
+          Key: 'flagPosStr',
+          Value: flagPosStr
         },
         {
-          key: 'elementType',
-          value: elementType
+          Key: 'elementType',
+          Value: elementType
         },
         {
-          key: 'barrierPosStr',
-          value: barrierPosStr
+          Key: 'barrierPosStr',
+          Value: barrierPosStr
         },
         {
-          key: 'nearDis',
-          value: nearDis
+          Key: 'nearDis',
+          Value: nearDis
         },
         {
-          key: 'analyTp',
-          value: analyTp
+          Key: 'analyTp',
+          Value: analyTp
         },
         {
-          key: 'weight',
-          value: weight
+          Key: 'weight',
+          Value: weight
         },
         {
-          key: 'outFormat',
-          value: 'JSON'
+          Key: 'outFormat',
+          Value: 'JSON'
         },
         {
-          key: 'flowId',
-          value: workFlowId
+          Key: 'flowId',
+          Value: workFlowId
         }
       ]
       this.color = 'rgba(39,194,76,1)'

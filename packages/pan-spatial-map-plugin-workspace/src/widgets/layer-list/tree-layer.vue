@@ -684,7 +684,7 @@ export default class TreeLayer extends Mixins(
 
   fitBounds(item) {
     const { Cesium, map, webGlobe, CesiumZondy } = this
-    FitBound.fitBoundByLayer(
+    const isOutOfRange = FitBound.fitBoundByLayer(
       item.dataRef,
       {
         Cesium,
@@ -695,6 +695,9 @@ export default class TreeLayer extends Mixins(
       this.is2DMapMode === true
     )
     this.clickPopover(item, false)
+    if (isOutOfRange) {
+      this.$message.error('地图范围有误，已调整为经纬度最大范围')
+    }
   }
 
   resetTilematrixSet(item) {
