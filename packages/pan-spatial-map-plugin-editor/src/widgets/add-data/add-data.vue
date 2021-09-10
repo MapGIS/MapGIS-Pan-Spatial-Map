@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
+import { Mixins, Component, Prop } from 'vue-property-decorator'
 import {
   WidgetMixin,
   UUID,
@@ -74,15 +74,10 @@ import AddDataFile from './components/AddDataFile.vue'
 export default class MpAddData extends Mixins(WidgetMixin) {
   private tab = 'list'
 
-  private tabs2D = [
+  private tabs = [
     { key: 'list', label: '数据列表' },
     { key: 'url', label: 'URL' },
     { key: 'file', label: '文件' }
-  ]
-
-  private tabs3D = [
-    { key: 'list', label: '数据列表' },
-    { key: 'url', label: 'URL' }
   ]
 
   private config
@@ -139,10 +134,6 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
   private dataCatalogManager = dataCatalogManagerInstance
 
-  get tabs() {
-    return this.is2DMapMode ? this.tabs2D : this.tabs3D
-  }
-
   get urlDataTypes2D() {
     return [...this.commonDataTypes]
   }
@@ -194,7 +185,9 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   }
 
   get fileDataTypes() {
-    return this.is2DMapMode ? this.fileDataTypes2D : this.fileDataTypes3D
+    // 目前暂不支持kml、kmz、czml类型文件上传出图、所以暂时隐藏这三种上传文件类型
+    // return this.is2DMapMode ? this.fileDataTypes2D : this.fileDataTypes3D
+    return this.fileDataTypes2D
   }
 
   get dataList() {
@@ -205,14 +198,6 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     return this.dataList.map(item => {
       return { name: item.name, description: item.description }
     })
-  }
-
-  // 二三维地图模式切换时
-  @Watch('is2DMapMode', { immediate: true })
-  mapRenderChange(newVal) {
-    if (!newVal && this.tab === 'file') {
-      this.tab = 'list'
-    }
   }
 
   mounted() {
