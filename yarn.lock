@@ -24,7 +24,7 @@
     "@ant-design/colors" "^3.1.0"
     babel-runtime "^6.26.0"
 
-"@ant-design/icons@^2.1.1":
+"@ant-design/icons@2.1.1", "@ant-design/icons@^2.1.1":
   version "2.1.1"
   resolved "https://registry.npm.taobao.org/@ant-design/icons/download/@ant-design/icons-2.1.1.tgz?cache=0&sync_timestamp=1616135567365&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40ant-design%2Ficons%2Fdownload%2F%40ant-design%2Ficons-2.1.1.tgz#7b9c08dffd4f5d41db667d9dbe5e0107d0bd9a4a"
   integrity sha1-e5wI3/1PXUHbZn2dvl4BB9C9mko=
@@ -1074,6 +1074,11 @@
   resolved "https://registry.npm.taobao.org/@mapbox/jsonlint-lines-primitives/download/@mapbox/jsonlint-lines-primitives-2.0.2.tgz#ce56e539f83552b58d10d672ea4d6fc9adc7b234"
   integrity sha1-zlblOfg1UrWNENZy6k1vya3HsjQ=
 
+"@mapbox/mapbox-gl-draw-static-mode@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.nlark.com/@mapbox/mapbox-gl-draw-static-mode/download/@mapbox/mapbox-gl-draw-static-mode-1.0.1.tgz#da873099b60acaf91790b961ce84b2c762815041"
+  integrity sha1-2ocwmbYKyvkXkLlhzoSyx2KBUEE=
+
 "@mapbox/mapbox-gl-draw@1.1.1":
   version "1.1.1"
   resolved "https://registry.nlark.com/@mapbox/mapbox-gl-draw/download/@mapbox/mapbox-gl-draw-1.1.1.tgz#b88a7919c8de04eb7946885e747e22049c3a3138"
@@ -1190,10 +1195,15 @@
     lodash "^4.17.21"
     numeral "^2.0.6"
 
-"@mapgis/mapbox-gl@^1.9.3", "@mapgis/mapbox-gl@^1.9.4", "@mapgis/mapbox-gl@^1.9.6":
+"@mapgis/mapbox-gl@^1.9.3", "@mapgis/mapbox-gl@^1.9.6":
   version "1.9.8"
   resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
   integrity sha1-Cab3kgWtGJSqqZEisITs6R1p4tw=
+
+"@mapgis/mapbox-gl@^1.9.9":
+  version "1.9.9"
+  resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.9.tgz#baf1684d8d2f00a71a1e51d51e15123524e6f3f1"
+  integrity sha1-uvFoTY0vAKcaHlHVHhUSNSTm8/E=
 
 "@mapgis/web-app-framework@link:../MapGIS-Web-App-Framework":
   version "0.0.0"
@@ -1216,6 +1226,15 @@
   version "10.5.4"
   resolved "https://registry.nlark.com/@mapgis/webclient-es6-service/download/@mapgis/webclient-es6-service-10.5.4.tgz#3614851b36f6766b84e2626028f7eb224cd7a044"
   integrity sha1-NhSFGzb2dmuE4mJgKPfrIkzXoEQ=
+  dependencies:
+    "@turf/turf" "^6.3.0"
+    fast-xml-parser "^3.17.6"
+    qs "^6.9.4"
+
+"@mapgis/webclient-es6-service@^10.5.5":
+  version "10.5.5"
+  resolved "https://registry.nlark.com/@mapgis/webclient-es6-service/download/@mapgis/webclient-es6-service-10.5.5.tgz#5766b4923fccd4472354321b775c4959a9ca35b7"
+  integrity sha1-V2a0kj/M1EcjVDIbd1xJWanKNbc=
   dependencies:
     "@turf/turf" "^6.3.0"
     fast-xml-parser "^3.17.6"
@@ -1249,6 +1268,37 @@
   uid ""
 
 "@mapgis/webclient-vue-mapboxgl@link:../WebClient-Vue/mapboxgl":
+  version "0.0.0"
+  uid ""
+
+"@mapgis/webclient-vue-ui@^10.5.4-1":
+  version "10.5.5"
+  resolved "https://registry.nlark.com/@mapgis/webclient-vue-ui/download/@mapgis/webclient-vue-ui-10.5.5.tgz#883392c354b552019511df7582c02c76cc3da9cc"
+  integrity sha1-iDOSw1S1UgGVEd91gsAsdsw9qcw=
+  dependencies:
+    "@ant-design/icons" "2.1.1"
+    "@mapgis/webclient-es6-service" "^10.5.5"
+    "@vue/composition-api" "^1.0.0-rc.13"
+    "@vuepress/plugin-active-header-links" "^1.8.2"
+    "@vuepress/plugin-nprogress" "^1.8.2"
+    ant-design-vue "^1.7.5"
+    axios "^0.21.1"
+    clone "^2.1.2"
+    css-vars-ponyfill "^2.4.5"
+    echarts "^5.1.2"
+    js-md5 "^0.7.3"
+    lodash "^4.17.21"
+    lodash.uniqueid "^4.0.1"
+    qs "^6.10.1"
+    resize-detector "^0.3.0"
+    simple-uploader.js "^0.5.6"
+    spark-md5 "^3.0.1"
+    tinycolor2 "^1.4.2"
+    vuepress "^1.8.2"
+    vuepress-plugin-demo-block "^0.7.2"
+    vuepress-plugin-demo-code "^0.6.0"
+
+"@mapgis/webclient-vue-ui@link:../WebClient-Vue/ui":
   version "0.0.0"
   uid ""
 
@@ -4232,6 +4282,13 @@
   optionalDependencies:
     prettier "^1.18.2"
 
+"@vue/composition-api@^1.0.0-rc.13":
+  version "1.1.4"
+  resolved "https://registry.nlark.com/@vue/composition-api/download/@vue/composition-api-1.1.4.tgz?cache=0&sync_timestamp=1630402316518&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40vue%2Fcomposition-api%2Fdownload%2F%40vue%2Fcomposition-api-1.1.4.tgz#b4cd566e575350b86c22fa02632e4a356ac2e26e"
+  integrity sha1-tM1WbldTULhsIvoCYy5KNWrC4m4=
+  dependencies:
+    tslib "^2.3.0"
+
 "@vue/preload-webpack-plugin@^1.1.0":
   version "1.1.2"
   resolved "https://registry.npm.taobao.org/@vue/preload-webpack-plugin/download/@vue/preload-webpack-plugin-1.1.2.tgz?cache=0&sync_timestamp=1613215046917&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40vue%2Fpreload-webpack-plugin%2Fdownload%2F%40vue%2Fpreload-webpack-plugin-1.1.2.tgz#ceb924b4ecb3b9c43871c7a429a02f8423e621ab"
@@ -4308,7 +4365,7 @@
     markdown-it-table-of-contents "^0.4.0"
     prismjs "^1.13.0"
 
-"@vuepress/plugin-active-header-links@1.8.2", "@vuepress/plugin-active-header-links@^1.7.1":
+"@vuepress/plugin-active-header-links@1.8.2", "@vuepress/plugin-active-header-links@^1.7.1", "@vuepress/plugin-active-header-links@^1.8.2":
   version "1.8.2"
   resolved "https://registry.nlark.com/@vuepress/plugin-active-header-links/download/@vuepress/plugin-active-header-links-1.8.2.tgz#0cb9b29c826dd97d35357a9b09c962ef782cb793"
   integrity sha1-DLmynIJt2X01NXqbCcli73gst5M=
@@ -4329,7 +4386,7 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@vuepress/plugin-nprogress@1.8.2", "@vuepress/plugin-nprogress@^1.7.1":
+"@vuepress/plugin-nprogress@1.8.2", "@vuepress/plugin-nprogress@^1.7.1", "@vuepress/plugin-nprogress@^1.8.2":
   version "1.8.2"
   resolved "https://registry.nlark.com/@vuepress/plugin-nprogress/download/@vuepress/plugin-nprogress-1.8.2.tgz#dc6c082925420c8c59ecb7fc2d4a9401f6d4664a"
   integrity sha1-3GwIKSVCDIxZ7Lf8LUqUAfbUZko=
@@ -5042,6 +5099,13 @@ axios@^0.19.2:
   dependencies:
     follow-redirects "1.5.10"
 
+axios@^0.21.1:
+  version "0.21.4"
+  resolved "https://registry.nlark.com/axios/download/axios-0.21.4.tgz?cache=0&sync_timestamp=1630942656836&other_urls=https%3A%2F%2Fregistry.nlark.com%2Faxios%2Fdownload%2Faxios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha1-xnuQ3AVo5cHPKwuFjEO6KOLtpXU=
+  dependencies:
+    follow-redirects "^1.14.0"
+
 babel-code-frame@^6.22.0:
   version "6.26.0"
   resolved "https://registry.npm.taobao.org/babel-code-frame/download/babel-code-frame-6.26.0.tgz#63fd43f7dc1e3bb7ce35947db8fe369a3f58c74b"
@@ -5138,7 +5202,7 @@ babel-runtime@6.x, babel-runtime@^6.22.0, babel-runtime@^6.23.0, babel-runtime@^
     core-js "^2.4.0"
     regenerator-runtime "^0.11.0"
 
-balanced-match@^1.0.0:
+balanced-match@^1.0.0, balanced-match@^1.0.2:
   version "1.0.2"
   resolved "https://registry.nlark.com/balanced-match/download/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha1-6D46fj8wCzTLnYf2FfoMvzV2kO4=
@@ -5992,7 +6056,7 @@ codesandbox-import-util-types@^2.2.3:
   resolved "https://registry.nlark.com/codesandbox-import-util-types/download/codesandbox-import-util-types-2.2.3.tgz#b354b2f732ad130e119ebd9ead3bda3be5981a54"
   integrity sha1-s1Sy9zKtEw4Rnr2erTvaO+WYGlQ=
 
-codesandbox-import-utils@^2.1.16:
+codesandbox-import-utils@^2.2.3:
   version "2.2.3"
   resolved "https://registry.nlark.com/codesandbox-import-utils/download/codesandbox-import-utils-2.2.3.tgz?cache=0&sync_timestamp=1619601467672&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcodesandbox-import-utils%2Fdownload%2Fcodesandbox-import-utils-2.2.3.tgz#f7b4801245b381cb8c90fe245e336624e19b6c84"
   integrity sha1-97SAEkWzgcuMkP4kXjNmJOGbbIQ=
@@ -6593,6 +6657,14 @@ css-url-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npm.taobao.org/css-url-regex/download/css-url-regex-1.1.0.tgz#83834230cc9f74c457de59eebd1543feeb83b7ec"
   integrity sha1-g4NCMMyfdMRX3lnuvRVD/uuDt+w=
+
+css-vars-ponyfill@^2.4.5:
+  version "2.4.7"
+  resolved "https://registry.nlark.com/css-vars-ponyfill/download/css-vars-ponyfill-2.4.7.tgz#df6fb2928e5ff013eb67e968761f8ed3d440b1e3"
+  integrity sha1-32+yko5f8BPrZ+lodh+O09RAseM=
+  dependencies:
+    balanced-match "^1.0.2"
+    get-css-data "^2.0.2"
 
 css-what@^3.2.1:
   version "3.4.2"
@@ -7506,6 +7578,14 @@ echarts@^5.0.2:
     tslib "2.0.3"
     zrender "5.1.1"
 
+echarts@^5.1.2:
+  version "5.2.0"
+  resolved "https://registry.nlark.com/echarts/download/echarts-5.2.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fecharts%2Fdownload%2Fecharts-5.2.0.tgz#9f1fbfbf048c15ab630bf0a74525c4c534d6cebc"
+  integrity sha1-nx+/vwSMFatjC/CnRSXExTTWzrw=
+  dependencies:
+    tslib "2.3.0"
+    zrender "5.2.0"
+
 editions@^2.2.0:
   version "2.3.1"
   resolved "https://registry.nlark.com/editions/download/editions-2.3.1.tgz#3bc9962f1978e801312fbd0aebfed63b49bfe698"
@@ -8375,6 +8455,11 @@ follow-redirects@^1.0.0:
   resolved "https://registry.nlark.com/follow-redirects/download/follow-redirects-1.14.1.tgz?cache=0&sync_timestamp=1620555300559&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ffollow-redirects%2Fdownload%2Ffollow-redirects-1.14.1.tgz#d9114ded0a1cfdd334e164e6662ad02bfd91ff43"
   integrity sha1-2RFN7Qoc/dM04WTmZirQK/2R/0M=
 
+follow-redirects@^1.14.0:
+  version "1.14.3"
+  resolved "https://registry.nlark.com/follow-redirects/download/follow-redirects-1.14.3.tgz?cache=0&sync_timestamp=1630591684956&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ffollow-redirects%2Fdownload%2Ffollow-redirects-1.14.3.tgz#6ada78118d8d24caee595595accdc0ac6abd022e"
+  integrity sha1-atp4EY2NJMruWVWVrM3ArGq9Ai4=
+
 for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.nlark.com/for-in/download/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -8630,6 +8715,11 @@ get-closest@*:
   version "0.0.4"
   resolved "https://registry.npm.taobao.org/get-closest/download/get-closest-0.0.4.tgz#269ac776d1e6022aa0fd586dd708e8a7d32269af"
   integrity sha1-JprHdtHmAiqg/Vht1wjop9Miaa8=
+
+get-css-data@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.nlark.com/get-css-data/download/get-css-data-2.0.2.tgz#5a24784f155944021b6f3fff304c15bcfcebdb9e"
+  integrity sha1-WiR4TxVZRAIbbz//MEwVvPzr254=
 
 get-intrinsic@^1.0.2, get-intrinsic@^1.1.1:
   version "1.1.1"
@@ -9902,6 +9992,11 @@ js-cookie@^2.2.1:
   resolved "https://registry.npm.taobao.org/js-cookie/download/js-cookie-2.2.1.tgz#69e106dc5d5806894562902aa5baec3744e9b2b8"
   integrity sha1-aeEG3F1YBolFYpAqpbrsN0Tpsrg=
 
+js-md5@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.npm.taobao.org/js-md5/download/js-md5-0.7.3.tgz#b4f2fbb0b327455f598d6727e38ec272cd09c3f2"
+  integrity sha1-tPL7sLMnRV9ZjWcn447Ccs0Jw/I=
+
 js-message@1.0.7:
   version "1.0.7"
   resolved "https://registry.nlark.com/js-message/download/js-message-1.0.7.tgz#fbddd053c7a47021871bb8b2c95397cc17c20e47"
@@ -10126,6 +10221,11 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   resolved "https://registry.nlark.com/kind-of/download/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha1-B8BQNKbDSfoG4k+jWqdttFgM5N0=
 
+klona@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.nlark.com/klona/download/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
+  integrity sha1-e7Hjr/sMuGJFR+9+j2cI6i4538A=
+
 last-call-webpack-plugin@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npm.taobao.org/last-call-webpack-plugin/download/last-call-webpack-plugin-3.0.0.tgz#9742df0e10e3cf46e5c0381c2de90d3a7a2d7555"
@@ -10156,6 +10256,15 @@ launch-editor@^2.2.1:
     chalk "^2.3.0"
     shell-quote "^1.6.1"
 
+less-loader@7.0.2:
+  version "7.0.2"
+  resolved "https://registry.nlark.com/less-loader/download/less-loader-7.0.2.tgz?cache=0&sync_timestamp=1625230463215&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fless-loader%2Fdownload%2Fless-loader-7.0.2.tgz#0d73a49ec32a9d3ff12614598e6e2b47fb2a35c4"
+  integrity sha1-DXOknsMqnT/xJhRZjm4rR/sqNcQ=
+  dependencies:
+    klona "^2.0.4"
+    loader-utils "^2.0.0"
+    schema-utils "^3.0.0"
+
 less-loader@^6.1.1:
   version "6.2.0"
   resolved "https://registry.nlark.com/less-loader/download/less-loader-6.2.0.tgz#8b26f621c155b342eefc24f5bd6e9dc40c42a719"
@@ -10165,6 +10274,21 @@ less-loader@^6.1.1:
     less "^3.11.3"
     loader-utils "^2.0.0"
     schema-utils "^2.7.0"
+
+less@3.12.2:
+  version "3.12.2"
+  resolved "https://registry.npm.taobao.org/less/download/less-3.12.2.tgz#157e6dd32a68869df8859314ad38e70211af3ab4"
+  integrity sha1-FX5t0ypohp34hZMUrTjnAhGvOrQ=
+  dependencies:
+    tslib "^1.10.0"
+  optionalDependencies:
+    errno "^0.1.1"
+    graceful-fs "^4.1.2"
+    image-size "~0.5.0"
+    make-dir "^2.1.0"
+    mime "^1.4.1"
+    native-request "^1.0.5"
+    source-map "~0.6.0"
 
 less@^3.11.3:
   version "3.13.1"
@@ -10371,6 +10495,11 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.npm.taobao.org/lodash.uniq/download/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
+
+lodash.uniqueid@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.npm.taobao.org/lodash.uniqueid/download/lodash.uniqueid-4.0.1.tgz#3268f26a7c88e4f4b1758d679271814e31fa5b26"
+  integrity sha1-MmjyanyI5PSxdY1nknGBTjH6WyY=
 
 lodash@^4.0.0, lodash@^4.17.11, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.3, lodash@^4.17.5, lodash@~4.17.10:
   version "4.17.21"
@@ -10915,7 +11044,7 @@ mobius1-selectr@^2.4.13:
   resolved "https://registry.npm.taobao.org/mobius1-selectr/download/mobius1-selectr-2.4.13.tgz#0019dfd9f984840d6e40f70683ab3ec78ce3b5df"
   integrity sha1-ABnf2fmEhA1uQPcGg6s+x4zjtd8=
 
-moment@^2.21.0:
+moment@^2.21.0, moment@^2.29.1:
   version "2.29.1"
   resolved "https://registry.npm.taobao.org/moment/download/moment-2.29.1.tgz?cache=0&sync_timestamp=1601983320283&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmoment%2Fdownload%2Fmoment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha1-sr52n6MZQL6e7qZGnAdeNQBvo9M=
@@ -11047,7 +11176,7 @@ negotiator@0.6.2:
   resolved "https://registry.nlark.com/negotiator/download/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha1-/qz3zPUlp3rpY0Q2pkiD/+yjRvs=
 
-neo-async@^2.5.0, neo-async@^2.6.0, neo-async@^2.6.1:
+neo-async@^2.5.0, neo-async@^2.6.0, neo-async@^2.6.1, neo-async@^2.6.2:
   version "2.6.2"
   resolved "https://registry.nlark.com/neo-async/download/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha1-tKr7k+OustgXTKU88WOrfXMIMF8=
@@ -11137,7 +11266,7 @@ node-releases@^1.1.71:
   resolved "https://registry.nlark.com/node-releases/download/node-releases-1.1.73.tgz?cache=0&sync_timestamp=1623060212043&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fnode-releases%2Fdownload%2Fnode-releases-1.1.73.tgz#dd4e81ddd5277ff846b80b52bb40c49edf7a7b20"
   integrity sha1-3U6B3dUnf/hGuAtSu0DEnt96eyA=
 
-node-sass@^4.14.0:
+node-sass@^4.11.0, node-sass@^4.14.0:
   version "4.14.1"
   resolved "https://registry.nlark.com/node-sass/download/node-sass-4.14.1.tgz#99c87ec2efb7047ed638fb4c9db7f3a42e2217b5"
   integrity sha1-mch+wu+3BH7WOPtMnbfzpC4iF7U=
@@ -12342,7 +12471,7 @@ prismjs@^1.13.0:
   optionalDependencies:
     clipboard "^2.0.0"
 
-prismjs@^1.20.0:
+prismjs@^1.23.0:
   version "1.24.1"
   resolved "https://registry.nlark.com/prismjs/download/prismjs-1.24.1.tgz?cache=0&sync_timestamp=1625313362193&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fprismjs%2Fdownload%2Fprismjs-1.24.1.tgz#c4d7895c4d6500289482fa8936d9cdd192684036"
   integrity sha1-xNeJXE1lACiUgvqJNtnN0ZJoQDY=
@@ -12472,7 +12601,7 @@ qs@6.7.0:
   resolved "https://registry.npm.taobao.org/qs/download/qs-6.7.0.tgz?cache=0&sync_timestamp=1616385328325&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fqs%2Fdownload%2Fqs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha1-QdwaAV49WB8WIXdr4xr7KHapsbw=
 
-qs@^6.9.4:
+qs@^6.10.1, qs@^6.9.4:
   version "6.10.1"
   resolved "https://registry.npm.taobao.org/qs/download/qs-6.10.1.tgz?cache=0&sync_timestamp=1616385328325&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fqs%2Fdownload%2Fqs-6.10.1.tgz#4931482fa8d647a5aab799c5271d2133b981fb6a"
   integrity sha1-STFIL6jWR6Wqt5nFJx0hM7mB+2o=
@@ -13065,6 +13194,17 @@ sass-graph@2.2.5:
     scss-tokenizer "^0.2.3"
     yargs "^13.3.2"
 
+sass-loader@10.1.1:
+  version "10.1.1"
+  resolved "https://registry.nlark.com/sass-loader/download/sass-loader-10.1.1.tgz?cache=0&sync_timestamp=1623351005877&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fsass-loader%2Fdownload%2Fsass-loader-10.1.1.tgz#4ddd5a3d7638e7949065dd6e9c7c04037f7e663d"
+  integrity sha1-Td1aPXY455SQZd1unHwEA39+Zj0=
+  dependencies:
+    klona "^2.0.4"
+    loader-utils "^2.0.0"
+    neo-async "^2.6.2"
+    schema-utils "^3.0.0"
+    semver "^7.3.2"
+
 sass-loader@^8.0.2:
   version "8.0.2"
   resolved "https://registry.nlark.com/sass-loader/download/sass-loader-8.0.2.tgz?cache=0&sync_timestamp=1623351005877&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fsass-loader%2Fdownload%2Fsass-loader-8.0.2.tgz#debecd8c3ce243c76454f2e8290482150380090d"
@@ -13357,6 +13497,11 @@ simple-swizzle@^0.2.2:
   dependencies:
     is-arrayish "^0.3.1"
 
+simple-uploader.js@^0.5.6:
+  version "0.5.6"
+  resolved "https://registry.npm.taobao.org/simple-uploader.js/download/simple-uploader.js-0.5.6.tgz#d37b8c0238348b3993541c7293ae9de5658b23a0"
+  integrity sha1-03uMAjg0izmTVBxyk66d5WWLI6A=
+
 skmeans@0.9.7:
   version "0.9.7"
   resolved "https://registry.npm.taobao.org/skmeans/download/skmeans-0.9.7.tgz#72670cebb728508f56e29c0e10d11e623529ce5d"
@@ -13529,6 +13674,11 @@ source-map@^0.7.3:
   version "0.7.3"
   resolved "https://registry.nlark.com/source-map/download/source-map-0.7.3.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fsource-map%2Fdownload%2Fsource-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha1-UwL4FpAxc1ImVECS5kmB91F1A4M=
+
+spark-md5@^3.0.1:
+  version "3.0.2"
+  resolved "https://registry.nlark.com/spark-md5/download/spark-md5-3.0.2.tgz?cache=0&sync_timestamp=1629907509508&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fspark-md5%2Fdownload%2Fspark-md5-3.0.2.tgz#7952c4a30784347abcee73268e473b9c0167e3fc"
+  integrity sha1-eVLEoweENHq87nMmjkc7nAFn4/w=
 
 spawn-command@^0.0.2-1:
   version "0.0.2-1"
@@ -14147,7 +14297,7 @@ tiny-emitter@^2.0.0:
   resolved "https://registry.nlark.com/tiny-emitter/download/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
   integrity sha1-HRpW7fxRxD6GPLtTgqcjMONVVCM=
 
-tinycolor2@^1.1.2, tinycolor2@^1.4.1:
+tinycolor2@^1.1.2, tinycolor2@^1.4.1, tinycolor2@^1.4.2:
   version "1.4.2"
   resolved "https://registry.npm.taobao.org/tinycolor2/download/tinycolor2-1.4.2.tgz#3f6a4d1071ad07676d7fa472e1fac40a719d8803"
   integrity sha1-P2pNEHGtB2dtf6Ry4frECnGdiAM=
@@ -14398,10 +14548,20 @@ tslib@2.0.3:
   resolved "https://registry.nlark.com/tslib/download/tslib-2.0.3.tgz?cache=0&sync_timestamp=1628722556410&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftslib%2Fdownload%2Ftslib-2.0.3.tgz#8e0741ac45fc0c226e58a17bfc3e64b9bc6ca61c"
   integrity sha1-jgdBrEX8DCJuWKF7/D5kubxsphw=
 
+tslib@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.nlark.com/tslib/download/tslib-2.3.0.tgz?cache=0&sync_timestamp=1628722556410&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftslib%2Fdownload%2Ftslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
+  integrity sha1-gDuM2rPhK6WBpMpByIObuw2ssJ4=
+
 tslib@^1.10.0, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"
   resolved "https://registry.nlark.com/tslib/download/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha1-zy04vcNKE0vK8QkcQfZhni9nLQA=
+
+tslib@^2.3.0:
+  version "2.3.1"
+  resolved "https://registry.nlark.com/tslib/download/tslib-2.3.1.tgz?cache=0&sync_timestamp=1628722556410&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftslib%2Fdownload%2Ftslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
+  integrity sha1-6KM1rdXOrlGqJh0ypJAVjvBC7wE=
 
 tslint@^5.20.1:
   version "5.20.1"
@@ -15068,14 +15228,19 @@ vuepress-plugin-container@^2.0.2:
     "@vuepress/shared-utils" "^1.2.0"
     markdown-it-container "^2.0.0"
 
-vuepress-plugin-demo-code@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.nlark.com/vuepress-plugin-demo-code/download/vuepress-plugin-demo-code-0.5.2.tgz#4bf30e48c38d3093c9641f1db695c8be0b0a038b"
-  integrity sha1-S/MOSMONMJPJZB8dtpXIvgsKA4s=
+vuepress-plugin-demo-block@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.nlark.com/vuepress-plugin-demo-block/download/vuepress-plugin-demo-block-0.7.2.tgz#02fc4f0ef764052981accf41f1403fdb9f794c0d"
+  integrity sha1-AvxPDvdkBSmBrM9B8UA/2595TA0=
+
+vuepress-plugin-demo-code@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.nlark.com/vuepress-plugin-demo-code/download/vuepress-plugin-demo-code-0.6.0.tgz#71bd228eab09a12d8cbb99416658572cb7510a8d"
+  integrity sha1-cb0ijqsJoS2Mu5lBZlhXLLdRCo0=
   dependencies:
-    codesandbox-import-utils "^2.1.16"
+    codesandbox-import-utils "^2.2.3"
     markdown-it-container "^3.0.0"
-    prismjs "^1.20.0"
+    prismjs "^1.23.0"
     vuepress-plugin-code-copy "^1.0.6"
 
 vuepress-plugin-smooth-scroll@^0.0.3:
@@ -15607,3 +15772,10 @@ zrender@5.1.1:
   integrity sha1-BRX0+MwPR0LwKmuIGVUKbRPWTFw=
   dependencies:
     tslib "2.0.3"
+
+zrender@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.nlark.com/zrender/download/zrender-5.2.0.tgz?cache=0&sync_timestamp=1630140908990&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fzrender%2Fdownload%2Fzrender-5.2.0.tgz#f8abc484ac4a8a51b04c3ccd37beabe1def342cd"
+  integrity sha1-+KvEhKxKilGwTDzNN76r4d7zQs0=
+  dependencies:
+    tslib "2.3.0"

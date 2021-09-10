@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-visual-analysis">
     <div class="visual-panel">
-      <mp-setting-form v-model="formData" :wrapper-width="240">
+      <mp-setting-form v-model="formData" :wrapper-width="350">
         <a-form-item label="水平视角">
           <a-input
             v-model.number="formData.horizontAngle"
@@ -35,94 +35,55 @@
         </a-form-item>
         <a-form-item label="观察点坐标">
           <a-row>
-            <a-col v-if="posData.viewPositionX !== ''" :span="8">
-              <a-popover>
-                <template slot="content">
-                  <p>{{ posData.viewPositionX }}</p>
-                </template>
-                <a-input
-                  v-model.number="posData.viewPositionX"
-                  :step="0.0001"
-                  type="number"
-                />
-              </a-popover>
+            <a-col :span="8">
+              <a-input
+                v-model.number="posData.viewPositionX"
+                :step="0.0001"
+                type="number"
+                placeholder="经度"
+              />
             </a-col>
-            <a-col v-else :span="8">
-              <a-input v-model.number="posData.viewPositionX" type="number" />
+            <a-col :span="8">
+              <a-input
+                v-model.number="posData.viewPositionY"
+                :step="0.0001"
+                type="number"
+                placeholder="纬度"
+              />
             </a-col>
-            <a-col v-if="posData.viewPositionY !== ''" :span="8">
-              <a-popover>
-                <template slot="content">
-                  <p>{{ posData.viewPositionY }}</p>
-                </template>
-                <a-input
-                  v-model.number="posData.viewPositionY"
-                  :step="0.0001"
-                  type="number"
-                />
-              </a-popover>
-            </a-col>
-            <a-col v-else :span="8">
-              <a-input v-model.number="posData.viewPositionY" type="number" />
-            </a-col>
-            <a-col v-if="posData.viewPositionZ !== ''" :span="8">
-              <a-popover>
-                <template slot="content">
-                  <p>{{ posData.viewPositionZ }}</p>
-                </template>
-                <a-input v-model.number="posData.viewPositionZ" type="number" />
-              </a-popover>
-            </a-col>
-            <a-col v-else :span="8">
-              <a-input v-model.number="posData.viewPositionZ" type="number" />
+            <a-col :span="8">
+              <a-input
+                v-model.number="posData.viewPositionZ"
+                type="number"
+                placeholder="高度"
+              />
             </a-col>
           </a-row>
         </a-form-item>
         <a-form-item label="目标点坐标">
           <a-row>
-            <a-col v-if="posData.targetPositionX !== ''" :span="8">
-              <a-popover>
-                <template slot="content">
-                  <p>{{ posData.targetPositionX }}</p>
-                </template>
-                <a-input
-                  v-model.number="posData.targetPositionX"
-                  :step="0.0001"
-                  type="number"
-                />
-              </a-popover>
+            <a-col :span="8">
+              <a-input
+                v-model.number="posData.targetPositionX"
+                :step="0.0001"
+                type="number"
+                placeholder="经度"
+              />
             </a-col>
-            <a-col v-else :span="8">
-              <a-input v-model.number="posData.targetPositionX" type="number" />
+            <a-col :span="8">
+              <a-input
+                v-model.number="posData.targetPositionY"
+                :step="0.0001"
+                type="number"
+                placeholder="纬度"
+              />
             </a-col>
-            <a-col v-if="posData.targetPositionY !== ''" :span="8">
-              <a-popover>
-                <template slot="content">
-                  <p>{{ posData.targetPositionY }}</p>
-                </template>
-                <a-input
-                  v-model.number="posData.targetPositionY"
-                  :step="0.0001"
-                  type="number"
-                />
-              </a-popover>
-            </a-col>
-            <a-col v-else :span="8">
-              <a-input v-model.number="posData.targetPositionY" type="number" />
-            </a-col>
-            <a-col v-if="posData.targetPositionZ !== ''" :span="8">
-              <a-popover>
-                <template slot="content">
-                  <p>{{ posData.targetPositionZ }}</p>
-                </template>
-                <a-input
-                  v-model.number="posData.targetPositionZ"
-                  type="number"
-                />
-              </a-popover>
-            </a-col>
-            <a-col v-else :span="8">
-              <a-input v-model.number="posData.targetPositionZ" type="number" />
+            <a-col :span="8">
+              <a-input
+                v-model.number="posData.targetPositionZ"
+                type="number"
+                placeholder="高度"
+              />
             </a-col>
           </a-row>
         </a-form-item>
