@@ -182,10 +182,8 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    * 打开模块
    */
   onOpen() {
-    window.WebClippingPlaneManage = {
-      dynaCut: null,
-      analysisManager: null,
-      plane: null
+    window.Cutting = {
+      CuttingTool: null
     }
   }
 
@@ -212,14 +210,10 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    * 移除动态剖切对象
    */
   removeDynaCut() {
-    if (window.WebClippingPlaneManage.dynaCut) {
-      window.WebClippingPlaneManage.analysisManager.deleteDynamicCutting(
-        window.WebClippingPlaneManage.dynaCut
-      )
-      window.WebClippingPlaneManage.dynaCut = null
+    if (window.Cutting.CuttingTool) {
+      window.Cutting.CuttingTool.removeAll()
+      window.Cutting.CuttingTool = null
     }
-    window.WebClippingPlaneManage.plane = null
-    this.landscapeLayer = []
   }
 
   /**
@@ -234,30 +228,18 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   }
 
   /**
-   * 剖切方向
+   * 剖切方向，Cesium.Cartesian3中第一个参数是左右，第二个参数是前后，第三个参数是上下
    */
-  clippingPlane() {
+  clippingDirection() {
     switch (this.axis) {
       case 'X':
-        return new this.Cesium.ClippingPlane(
-          new this.Cesium.Cartesian3(-1.0, 0.0, 0.0),
-          0.0
-        )
+        return new this.Cesium.Cartesian3(-1.0, 0.0, 0.0)
       case 'Y':
-        return new this.Cesium.ClippingPlane(
-          new this.Cesium.Cartesian3(0.0, -1.0, 0.0),
-          0.0
-        )
+        return new this.Cesium.Cartesian3(0.0, -1.0, 0.0)
       case 'Z':
-        return new this.Cesium.ClippingPlane(
-          new this.Cesium.Cartesian3(0.0, 0.0, -1.0),
-          0.0
-        )
+        return new this.Cesium.Cartesian3(0.0, 0.0, -1.0)
       default:
-        return new this.Cesium.ClippingPlane(
-          new this.Cesium.Cartesian3(-1.0, 0.0, 0.0),
-          0.0
-        )
+        return new this.Cesium.Cartesian3(-1.0, 0.0, 0.0)
     }
   }
 
@@ -280,31 +262,25 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
       return
     }
     this.clearTimer()
-    // 初始化分析功能管理类
-    if (!window.WebClippingPlaneManage.analysisManager) {
-      window.WebClippingPlaneManage.analysisManager = new this.CesiumZondy.Manager.AnalysisManager(
-        {
-          viewer: this.webGlobe.viewer
-        }
-      )
-    } else {
-      this.removeDynaCut()
-    }
-    // 进行剖切分析的面，从上往下切，Cesium.Cartesian3中第一个参数是左右，第二个参数是前后，第三个参数是上下
-    window.WebClippingPlaneManage.plane = this.clippingPlane()
+    this.removeDynaCut()
     // 获取切割图层
-    this.landscapeLayer = this.landscapeLayerFuc()
+    const landscapeLayer = this.landscapeLayerFuc()
+
+    // 初始化分析功能管理类
+    window.Cutting.CuttingTool =
+      window.Cutting.CuttingTool ||
+      new this.Cesium.CuttingTool(this.webGlobe.viewer, landscapeLayer)
+
+    // 剖切方向
+    const direction = this.clippingDirection()
     // 创建剖切对象实例
-    window.WebClippingPlaneManage.dynaCut = window.WebClippingPlaneManage.analysisManager.createDynamicCutting(
-      this.landscapeLayer,
-      [window.WebClippingPlaneManage.plane],
-      {
-        color: this.edgeColor(),
-        // 剖切辅助面的宽高缩放比(基于模型球的半径)
-        scaleHeight: 2.0,
-        scaleWidth: 2.0
-      }
-    )
+    window.Cutting.CuttingTool.createModelCuttingPlane(direction, {
+      distance: 0,
+      color: this.edgeColor(),
+      // 剖切辅助面的宽高缩放比(基于模型球的半径)
+      scaleHeight: 2.0,
+      scaleWidth: 2.0
+    })
     this.setDistance(this.distance)
   }
 
@@ -343,24 +319,9 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    * 设置剖切距离
    */
   setDistance(value) {
-    if (
-      window.WebClippingPlaneManage.dynaCut &&
-      window.WebClippingPlaneManage.plane &&
-      this.landscapeLayer.length > 0
-    ) {
-      // 设置切面回调函数
-      window.WebClippingPlaneManage.dynaCut.planes[0].plane.plane = new this.Cesium.CallbackProperty(
-        date => {
-          // 设置剖切面距离
-          window.WebClippingPlaneManage.plane.distance = value
-          return this.Cesium.Plane.transform(
-            window.WebClippingPlaneManage.plane,
-            this.landscapeLayer[0].modelMatrix,
-            new this.Cesium.ClippingPlane(this.Cesium.Cartesian3.UNIT_X, 0.0)
-          )
-        },
-        false
-      )
+    if (window.Cutting.CuttingTool) {
+      // 设置剖切面距离
+      window.Cutting.CuttingTool.distance = value
     }
   }
 
