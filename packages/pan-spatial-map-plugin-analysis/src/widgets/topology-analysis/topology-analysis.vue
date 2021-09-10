@@ -3,7 +3,7 @@
     <div class="mp-widget-topology-analysis">
       <mp-group-tab
         slot="label"
-        title="选择参照要素(区要素)"
+        title="选择源要素(仅限区要素)"
         :has-top-margin="false"
       >
         <div slot="handle" class="layer-select-container">
@@ -44,16 +44,18 @@
                 :tab="item.name"
               >
                 <feature-list
+                  type="target"
                   :params="item"
                   :active="tDataTab === item.id"
                   @select-item="val => selectItem(val, 'Target')"
                 />
               </a-tab-pane>
             </a-tabs>
+            <a-empty v-else description="请点击搜索按钮查询要素" />
           </div>
         </a-form-item>
       </mp-setting-form>
-      <mp-group-tab slot="label" title="选择分区要素" :has-top-margin="false">
+      <mp-group-tab slot="label" title="选择目标要素" :has-top-margin="false">
         <div slot="handle" class="layer-select-container">
           <a-select v-model="aDataIndex" @change="changeAnalysis">
             <a-select-option
@@ -98,6 +100,7 @@
                 />
               </a-tab-pane>
             </a-tabs>
+            <a-empty v-else description="请点击搜索按钮查询要素" />
           </div>
         </a-form-item>
       </mp-setting-form>
@@ -450,6 +453,9 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
     border-radius: 4px;
     height: 180px;
     border: 1px solid @border-color;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     .ant-tabs {
       .ant-tabs-left-content {
         padding-left: 8px;

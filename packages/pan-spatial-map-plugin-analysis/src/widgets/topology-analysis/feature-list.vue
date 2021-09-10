@@ -8,6 +8,7 @@
           style="padding-left:15px"
         >
           <a-radio
+            :disabled="!(type === 'target' && item.type != 3)"
             @click="selectFeature(item)"
             :checked="selectItem && selectItem.FID === item.FID"
           >
@@ -37,6 +38,8 @@ export default class FeatureList extends Vue {
   @Prop() params: Record<string, unknown>
 
   @Prop() active: boolean
+
+  @Prop() type: string
 
   loading = false
 
