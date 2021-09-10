@@ -10,7 +10,7 @@
     "build": "vue-cli-service build",
     "build:portal": "vue-cli-service build --mode portal",
     "lint": "vue-cli-service lint",
-    "fix-memory-limit": "cross-env LIMIT=4096 increase-memory-limit"
+    "fix-memory-limit": "cross-env LIMIT=8192 increase-memory-limit"
   },
   "dependencies": {
     "ant-design-vue": "1.7.2",

@@ -481,7 +481,7 @@ export default class MpAttributeTable extends Mixins(
       )
     } catch (error) {
       const e = error as Error
-      this.$message.warning(e.message)
+      this.$message.warning('请求失败！')
     } finally {
       this.loading = false
       this.calcTableScrollY()
