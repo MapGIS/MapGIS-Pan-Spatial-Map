@@ -9,11 +9,11 @@
         @select="onTreeSelect"
         :checkedKeys="selectedKeys"
         :selectedKeys="selectedKeys"
-        :checkable="multiple"
         :expandedKeys.sync="expandedKeys"
-        :load-data="loadTreeData"
+        :load-data="loadDataMethod"
         :tree-data="treeData"
         :replace-fields="{ title: 'layerName' }"
+        :checkable="multiple"
         showLine
       />
     </a-spin>
@@ -37,9 +37,7 @@ import {
   baseConfigInstance,
   dataCatalogManagerInstance
 } from '@mapgis/pan-spatial-map-common'
-import _uniqBy from 'lodash/uniqBy'
 import _last from 'lodash/last'
-import dep from './Dep.ts'
 
 const { DocumentCatalog } = Catalog
 const {
@@ -68,8 +66,8 @@ interface ILayerInfoItem {
 
 interface ITreeNode extends ILayerInfoItem {
   key: string
-  layerType: LayerType
   children?: ITreeNode[]
+  isLeaf?: boolean
   selectable?: boolean
   feature?: GFeature
 }
@@ -119,29 +117,16 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   @Prop({ type: Number, default: 1 })
   readonly page!: number
 
-  @Watch('layer', { deep: true })
-  layerChanged() {
-    this.getTreeData()
-  }
-
-  @Watch('geometry', { deep: true })
-  geometryChanged() {
-    this.getTreeData()
-  }
-
   loading = false
 
   // 结果树数据
   treeData: ITreeNode[] = []
 
-  // 已经加载的节点的子节点数据
-  loadedChildNodes: string[] = []
+  // 已经加载的节点的children集合
+  loadedNodeDataChildren: ITreeNode[] = []
 
-  // 已经加载的节点
-  loadedKeys: string[] = []
-
-  // 默认展开的节点, 第一个节点
-  defaultExpandedKeys: string[] = []
+  // 已经加载的节点的dataRef集合
+  loadedNodeData: ITreeNode[] = []
 
   // 展开的节点
   expandedKeys: string[] = []
@@ -166,6 +151,19 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     this.layer.port = _port
 
     return this.layer
+  }
+
+  @Watch('layer.id')
+  layerChanged() {
+    this.getTreeData()
+  }
+
+  @Watch('geometry', { deep: true })
+  geometryChanged(nV) {
+    if (nV) {
+      // this.getTreeData()
+      this.onRefresh()
+    }
   }
 
   /**
@@ -314,9 +312,8 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
         }
         this.treeData = treeData.map<ITreeNode>((node: ILayerInfoItem) => ({
           ...node,
-          selectable: false,
-          layerType: type,
-          key: UUID.uuid()
+          key: UUID.uuid(),
+          selectable: false
         }))
         if (this.treeData.length) {
           this.expandedKeys.push(this.treeData[0]?.key)
@@ -334,16 +331,17 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   async igsQueryFeature(queryOptions) {
     const featureIGS = await FeatureQuery.query(queryOptions)
     if (featureIGS.SFEleArray && featureIGS.SFEleArray.length) {
-      const {
-        features
-      }: FeatureGeoJSON = FeatureConvert.featureIGSToFeatureGeoJSON(featureIGS)
+      const geojson: FeatureGeoJSON = FeatureConvert.featureIGSToFeatureGeoJSON(
+        featureIGS
+      )
+      const { features } = geojson
       if (features && features.length) {
         return features.map(item => ({
           key: UUID.uuid(),
-          layerName: item.properties.fid,
-          feature: item,
           isLeaf: true,
-          selectable: true
+          selectable: true,
+          layerName: item.properties.fid,
+          feature: item
         }))
       }
     }
@@ -359,7 +357,12 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     queryOptions: FeatureQueryParam,
     specialLayerId: string
   ) {
-    if (!this.sceneController) {
+    const sceneController = Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.CesiumZondy.getWebGlobe(this.vueKey)
+    )
+    if (!sceneController) {
       return Promise.reject('WebGlobe未初始化')
     }
     const featureIGS: FeatureIGS = await FeatureQuery.query(
@@ -374,11 +377,11 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     if (!SFEleArray || !SFEleArray.length) {
       return []
     }
-    const { source } = this.sceneController.findSource(specialLayerId)
+    const { source } = sceneController.findSource(specialLayerId)
     return SFEleArray.map(({ AttValue = [], bound = {}, FID }) => {
       const boundObj =
         source && source.length
-          ? this.sceneController.localExtentToGlobelExtent(
+          ? sceneController.localExtentToGlobelExtent(
               bound,
               source[0].root.transform
             )
@@ -394,9 +397,9 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
       }
       return {
         key: UUID.uuid(),
-        layerName: FID,
-        selectable: true,
         isLeaf: true,
+        selectable: true,
+        layerName: FID,
         feature: {
           geometry: {
             coordinates: [],
@@ -427,10 +430,10 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     return features && features.length
       ? features.map((item: GFeature) => ({
           key: UUID.uuid(),
-          layerName: item.properties.ID,
-          feature: item,
           isLeaf: true,
-          selectable: true
+          selectable: true,
+          layerName: item.properties.ID,
+          feature: item
         }))
       : []
   }
@@ -439,10 +442,11 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    * 要素查询
    * @param {Object}
    */
-  async queryFeatures(dataRef: ITreeNode) {
+  async queryFeatures({ layerId, layerIndex, layerGdbp }: ITreeNode) {
+    const { ip, port, type, docName, gdbps, url } = this.layerParams
     const queryOptions = {
-      ip: this.layerParams.ip,
-      port: this.layerParams.port,
+      ip,
+      port,
       page: this.page - 1,
       pageCount: this.pageCount,
       geometry: this.geometry,
@@ -450,35 +454,35 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
       f: 'json'
     }
     let children = []
-    switch (dataRef.layerType) {
+    switch (type) {
       case LayerType.IGSMapImage:
         children = await this.igsQueryFeature({
-          ...queryOptions,
-          layerIdxs: dataRef.layerIndex,
+          docName,
           mapIndex: this.mapIndex,
-          docName: this.layerParams.docName
+          layerIdxs: layerIndex,
+          ...queryOptions
         })
         break
       case LayerType.IGSVector:
         children = await this.igsQueryFeature({
-          ...queryOptions,
-          gdbp: this.layerParams.gdbps
+          gdbp: gdbps,
+          ...queryOptions
         })
         break
       case LayerType.ArcGISMapImage:
         children = await this.arcGISQueryFeature({
-          ...queryOptions,
-          layerIndex: dataRef.layerIndex,
-          serverUrl: this.layerParams.url
+          layerIndex,
+          serverUrl: url,
+          ...queryOptions
         })
         break
       case LayerType.IGSScene:
         children = await this.igsQuery3DFeature(
           {
-            ...queryOptions,
-            gdbp: dataRef.layerGdbp
+            gdbp: layerGdbp,
+            ...queryOptions
           },
-          dataRef.layerId
+          layerId
         )
         break
       default:
@@ -491,7 +495,7 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    * 异步加载数据
    * @param {object}
    */
-  loadTreeData({ dataRef }) {
+  loadDataMethod({ dataRef }) {
     return new Promise(resolve => {
       if (!dataRef || dataRef.children) {
         resolve()
@@ -511,71 +515,79 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   }
 
   /**
-   *  结果树展开
+   *  节点加载
    *  @param {array}
    * @param {object}
    */
-  onTreeLoad(loadedKeys, { node }) {
-    this.loadedChildNodes = _uniqBy(
-      [...this.loadedChildNodes, ...(node.dataRef.children || [])],
-      ({ key }) => key
-    )
-    this.$emit('on-node-loaded', loadedKeys, this.loadedChildNodes)
+  onTreeLoad(loadedKeys, { node: { dataRef } }) {
+    this.loadedNodeData.push(dataRef)
+    this.loadedNodeDataChildren = [
+      ...this.loadedNodeDataChildren,
+      ...(dataRef.children || [])
+    ]
+    this.$emit('on-loaded', loadedKeys, this.loadedNodeDataChildren)
   }
 
   /**
-   * 结果树选中
+   * 节点选中
    * @param selectedKeys
    * @param treeNode
    */
   onTreeSelect(selectedKeys, { selectedNodes, checkedNodes, node }) {
     this.selectedKeys = selectedKeys
     const vnodes = this.multiple ? checkedNodes : selectedNodes
+    // 选中节点数据
+    const data = node.dataRef
     // 选中节点的数据集合
     const selectedData = vnodes.length
       ? vnodes.map(({ data }) => data.props.dataRef)
       : []
-
-    dep.setState({
-      selectedKeys,
-      selectedData,
-      data: node.dataRef,
-      vueKey: this.vueKey
-    })
-    dep.notify()
+    this.$root.$emit('clear-query-selection', this.vueKey)
+    this.$emit('on-select', selectedKeys, selectedData, data)
   }
 
   /**
-   * 清除选中
+   * 清除节点选中和已加载的节点的children集合
    */
-  onClearTreeSelect() {
-    this.$emit('on-select', [], [], null)
-  }
-
-  /**
-   * 订阅更新事件
-   */
-  update() {
-    const { vueKey, selectedKeys, selectedData, data } = dep.getState()
-    if (vueKey !== this.vueKey) {
+  onClearTreeSelect(vueKey) {
+    if (this.vueKey !== vueKey) {
       this.selectedKeys = []
     }
-    this.$emit('on-select', selectedKeys, selectedData, data)
+  }
+
+  /**
+   * 刷新
+   */
+  onRefresh() {
+    this.loading = true
+    this.selectedKeys = []
+    this.loadedNodeDataChildren = []
+    Promise.all(this.loadedNodeData.map(dataRef => this.queryFeatures(dataRef)))
+      .then((childrenArr = []) => {
+        const loadedKeys = []
+        const loadedNodeDataChildren = childrenArr.flat()
+        this.loadedNodeData.forEach((dataRef, i) => {
+          loadedKeys.push(dataRef.key)
+          dataRef.children = childrenArr[i] || []
+        })
+        this.$emit('on-loaded', loadedKeys, loadedNodeDataChildren)
+        this.loadedNodeDataChildren = loadedNodeDataChildren
+        this.treeData = [...this.treeData]
+        this.loading = false
+      })
+      .catch(e => {
+        this.loading = false
+        this.$message.error(e || '请求错误')
+      })
   }
 
   created() {
     this.getTreeData()
-    this.sceneController = Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.CesiumZondy.getWebGlobe(this.vueKey)
-    )
-    dep.addSub(this)
+    this.$root.$on('clear-query-selection', this.onClearTreeSelect)
   }
 
   beforeDestroy() {
-    dep.removeSub(this)
-    this.onClearTreeSelect()
+    this.$root.$off('clear-query-selection', this.onClearTreeSelect)
   }
 }
 </script>

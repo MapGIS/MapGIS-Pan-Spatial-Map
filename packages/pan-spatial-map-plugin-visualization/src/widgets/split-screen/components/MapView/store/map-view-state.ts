@@ -1,49 +1,15 @@
 import { CommonUtil } from '@mapgis/web-app-framework'
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 
-// 初始范围
-export const initRectangle = new Rectangle(0.0, 0.0, 0.0, 0.0)
-
 /**
  * 地图视图状态类.记录地图的ID、显示范围信息
  */
 export class MapViewState {
-  // 地图视图的ID
-  private _mapViewId = ''
+  _activeId = '' // 地图视图的ID
 
-  // 二三维维地图复位时的经纬度范围
-  private _initBound = initRectangle
+  _queryGeometry = null // 地图视图绘制的几何范围
 
-  // 二三维当前活动的地图经纬度范围
-  private _activeBound: Rectangle = initRectangle
-
-  get mapViewId(): string {
-    return this._mapViewId
-  }
-
-  set mapViewId(id: string) {
-    this._mapViewId = id
-  }
-
-  get activeBound() {
-    return this._activeBound
-  }
-
-  set activeBound(rect: Rectangle) {
-    if (this.isValidRect(rect)) {
-      this._activeBound = rect
-    }
-  }
-
-  get initBound() {
-    return this._initBound
-  }
-
-  set initBound(rect: Rectangle) {
-    if (this.isValidRect(rect)) {
-      this._initBound = rect
-    }
-  }
+  _activeBound = new Rectangle(0.0, 0.0, 0.0, 0.0) // 二三维当前活动的地图经纬度范围
 
   /**
    * 判断矩形范围是否可用

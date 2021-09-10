@@ -144,6 +144,7 @@ export default {
     left: 48px;
     width: calc(100% - 48px);
     height: calc(100% - 48px);
+    z-index: 0;
   }
 }
 </style>

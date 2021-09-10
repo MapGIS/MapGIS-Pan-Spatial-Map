@@ -13,9 +13,7 @@
           :style="mapSpanStyle"
         >
           <map-view
-            @on-query="query"
-            :queryVisible.sync="queryVisible"
-            :query-geometry="queryGeometry"
+            :init-bound="initBound"
             :map-view-id="`split-screen-map-${s}`"
             :map-view-layer="mapViewLayer(s)"
             :resize="resize"
@@ -35,7 +33,6 @@ import {
   Objects,
   Rectangle3D
 } from '@mapgis/web-app-framework'
-import mapViewStateInstance from '../MapView/store/map-view-state'
 import MapView from '../MapView'
 
 @Component({
@@ -54,24 +51,13 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
 
   @Prop({ default: () => [] }) readonly layers!: Layer[]
 
-  queryVisible = false
-
-  queryGeometry = null
+  // 获取初始地图视图的复位范围
+  initBound = new Rectangle(0.0, 0.0, 0.0, 0.0)
 
   // 每个屏的高度设置
   get mapSpanStyle() {
     const height = this.screenNums.length > 2 ? '50%' : '100%'
     return { height }
-  }
-
-  // 获取初始地图视图的复位范围
-  get initBound() {
-    return mapViewStateInstance.initBound
-  }
-
-  // 设置初始地图视图的复位范围
-  set initBound(bound: Rectangle) {
-    mapViewStateInstance.initBound = bound
   }
 
   // 每屏的图层
@@ -101,24 +87,10 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
     return fullExtent
   }
 
-  /**
-   * 每屏的查询结果
-   * @param {Rectangle | Rectangle3D} geometry 查询的几何范围
-   */
-  query(geometry: Rectangle | Rectangle3D) {
-    this.queryVisible = true
-    this.queryGeometry = geometry
-  }
-
   created() {
     if (this.screenNums.length) {
       this.initBound = this.getInitBound()
     }
-  }
-
-  beforeDestroy() {
-    this.queryVisible = false
-    this.queryGeometry = null
   }
 }
 </script>
