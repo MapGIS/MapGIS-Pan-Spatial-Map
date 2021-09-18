@@ -325,7 +325,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
 
     this.dataCatalogManager.init(this.widgetInfo.config)
-    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
+    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData(
+      true
+    )
     const _allTreeDataConfigs = []
     const { treeData, allTreeDataConfigs } = this.handleTreeData(
       this.dataCatalogTreeData,
@@ -440,7 +442,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         layerConfigNodeList.push(layerConfig)
       }
     })
-
     if (layerConfigNodeList.length > 0) {
       // 选中节点中保含有图层节点
       const doc: Document = this.document
@@ -669,7 +670,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   async refreshTree() {
     const config = await api.getWidgetConfig('data-catalog')
     this.dataCatalogManager.init(config)
-    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData()
+    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData(
+      true
+    )
     const _allTreeDataConfigs = []
     const { treeData, allTreeDataConfigs } = this.handleTreeData(
       this.dataCatalogTreeData,

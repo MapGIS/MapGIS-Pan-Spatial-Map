@@ -372,7 +372,7 @@ export class DataCatalogManager {
    * @date 05/03/2021
    * @memberof DataCatalogManager
    */
-  public async getDataCatalogTreeData(isFilterInvalidLayer = true) {
+  public async getDataCatalogTreeData(isFilterInvalidLayer = false) {
     this.isFilterInvalidLayerConfig = isFilterInvalidLayer
     // 修改说明：优先采用this.config.treeConfig.treeData中的数据目录。如果this.config.treeConfig.treeData不可用,
     // 则看是否配置了treeDataUrl。如果配置了，则从服务请求数据目录。
@@ -688,15 +688,17 @@ export class DataCatalogManager {
           level: nodeLevel
         }
 
-        let guid: string = node[this.configConverted.keyConfig.guid]
+        const guid: string = node[this.configConverted.keyConfig.guid]
 
         // todo:按设计图层节点的guid应该在服务器端生成,并且保持不变,在后台不支持该功能的情况下先在前端处理。
         // 除图层节点外,其它节点在config中的guid不是必需的，这里生成guid是为满足UI显示的需要。
         if (guid === undefined || guid === '') {
-          guid = this.genGUID()
+          // 当treedata的guid为空时，随机生成一个guid，同时在这里修改treedata源数据，防止后续重复多次生成guid
+          node[this.configConverted.keyConfig.guid] = this.genGUID()
         }
 
-        commonInfo.guid = guid
+
+        commonInfo.guid = node[this.configConverted.keyConfig.guid]
 
         const layerServeiceType = node[this.config.paramConfig.LAYERSERVICETYPE]
         const data = node[this.config.paramConfig.DATA]
