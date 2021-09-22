@@ -18,10 +18,10 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
 import _debounce from 'lodash/debounce'
-import MapboxMinxin from '../../mixins/mapbox'
+import MapboxMixin from '../../mixins/mapbox'
 
 @Component
-export default class MapboxBaseMapWithGraph extends Mixins(MapboxMinxin) {
+export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
   colors: string[] = ['#FFB980', '#5AB1EF', '#B6A2DE', '#2EC7C9', '#D87A80']
 
   // Bar add Bar3D chartsSetting

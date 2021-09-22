@@ -21,7 +21,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer, Feature } from '@mapgis/web-app-framework'
-import CesiumMinxin from '../../mixins/cesium'
+import CesiumMixin from '../../mixins/cesium'
 
 interface ISectionColor {
   min: number
@@ -30,7 +30,7 @@ interface ISectionColor {
 }
 
 @Component
-export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
+export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
   get isShow3D() {
     return this.subjectData?.isShow3D
   }

@@ -1,11 +1,9 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
-import BaseMinxin from './base'
+import BaseMixin from './base'
 
 @Component
-export default class MapboxMinxin extends Mixins<Record<string, any>>(
-  BaseMinxin
-) {
+export default class MapboxMixin extends Mixins(BaseMixin) {
   id = UUID.uuid()
 
   thematicMapLayer: any = null

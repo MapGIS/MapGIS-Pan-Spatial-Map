@@ -1,15 +1,13 @@
 import { Component, Mixins, Inject } from 'vue-property-decorator'
 import { UUID, Layer, ColorUtil, Feature } from '@mapgis/web-app-framework'
-import BaseMinxin from './base'
+import BaseMixin from './base'
 
 interface ILngLat {
   longitude?: number
   latitude?: number
 }
 @Component
-export default class CesiumMinxin extends Mixins<Record<string, any>>(
-  BaseMinxin
-) {
+export default class CesiumMixin extends Mixins(BaseMixin) {
   @Inject('CesiumZondy') CesiumZondy
 
   id = UUID.uuid()

@@ -16,14 +16,14 @@ import {
   CommonUtil
 } from '@mapgis/web-app-framework'
 import { DataCatalogManager } from '@mapgis/pan-spatial-map-common'
-import BaseMinxin from '../../mixins/base'
+import BaseMixin from '../../mixins/base'
 
 type HeatMapData = Array<{ x: number; y: number; value: number }>
 
 @Component({
   inject: ['webGlobe', 'CesiumZondy']
 })
-export default class CesiumHeatMap extends Mixins(BaseMinxin) {
+export default class CesiumHeatMap extends Mixins(BaseMixin) {
   private mapvData: Feature.FeatureGeoJSON = {}
 
   // 是否是mapv热力图

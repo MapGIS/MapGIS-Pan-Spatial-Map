@@ -18,10 +18,10 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import { RankSymbolThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
 import _debounce from 'lodash/debounce'
-import MapboxMinxin from '../../mixins/mapbox'
+import MapboxMixin from '../../mixins/mapbox'
 
 @Component
-export default class MapboxStatisticLabel extends Mixins(MapboxMinxin) {
+export default class MapboxStatisticLabel extends Mixins(MapboxMixin) {
   symbolSetting = {
     maxR: 25,
     minR: 5,
