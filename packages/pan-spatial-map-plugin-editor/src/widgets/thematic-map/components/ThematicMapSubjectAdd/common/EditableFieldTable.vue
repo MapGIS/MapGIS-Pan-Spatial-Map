@@ -44,14 +44,6 @@ export default class EditableFieldTable extends Vue {
 
   fieldList = []
 
-  get viewTool() {
-    return {
-      title: '预览',
-      icon: 'eye',
-      method: this.onView
-    }
-  }
-
   get closeTool() {
     return {
       title: '取消配置',
@@ -62,7 +54,7 @@ export default class EditableFieldTable extends Vue {
 
   get tools() {
     return (add, batchDel) => {
-      return [add, this.viewTool, batchDel, this.closeTool]
+      return [add, batchDel, this.closeTool]
     }
   }
 
@@ -116,13 +108,6 @@ export default class EditableFieldTable extends Vue {
       return
     }
     this.visible = true
-  }
-
-  /**
-   * 预览
-   */
-  onView() {
-    this.$emit('view')
   }
 
   /**

@@ -21,10 +21,10 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer, Feature } from '@mapgis/web-app-framework'
-import CesiumMinxin from '../../mixins/cesium'
+import CesiumMixin from '../../mixins/cesium'
 
 @Component
-export default class CesiumStatisticLabel extends Mixins(CesiumMinxin) {
+export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
   get labelStyle() {
     return this.subjectData.labelStyle
   }

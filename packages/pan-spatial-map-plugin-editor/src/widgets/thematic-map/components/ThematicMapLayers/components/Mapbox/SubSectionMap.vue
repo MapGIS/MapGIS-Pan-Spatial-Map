@@ -19,7 +19,7 @@ import { Mixins, Component } from 'vue-property-decorator'
 import { RangeThemeLayer, ThemeStyle } from '@mapgis/webclient-es6-mapboxgl'
 import { ColorUtil } from '@mapgis/web-app-framework'
 import _debounce from 'lodash/debounce'
-import MapboxMinxin from '../../mixins/mapbox'
+import MapboxMixin from '../../mixins/mapbox'
 
 interface IColor {
   start: number
@@ -37,7 +37,7 @@ interface ISectionColor {
 }
 
 @Component
-export default class MapboxSubSectionMap extends Mixins(MapboxMinxin) {
+export default class MapboxSubSectionMap extends Mixins(MapboxMixin) {
   // 样式
   get colors() {
     return this.subjectData?.color

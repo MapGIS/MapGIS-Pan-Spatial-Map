@@ -4,7 +4,7 @@ import _isNumber from 'lodash/isNumber'
 import { highlightSubjectTypes } from '../../../store'
 
 @Component
-export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
+export default class BaseMixin extends Mixins(MapMixin) {
   // 组件唯一值
   @Prop({ default: 'map' }) readonly vueKey!: string
 

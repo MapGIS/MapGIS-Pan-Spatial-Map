@@ -106,17 +106,13 @@ interface IDataCatalog {
   displayName?: string
 }
 
-interface IMpRetrospect {
-  [k: string]: any
-}
-
 @Component({
   name: 'MpRetrospect',
   components: {
     TimeLine
   }
 })
-export default class MpRetrospect extends Mixins<IMpRetrospect>(WidgetMixin) {
+export default class MpRetrospect extends Mixins(WidgetMixin) {
   // 加载开关
   loading = false
 
