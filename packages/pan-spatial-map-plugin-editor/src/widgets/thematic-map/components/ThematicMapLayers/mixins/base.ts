@@ -12,18 +12,15 @@ export default class BaseMixin extends Mixins(MapMixin) {
   @Prop({ default: () => ({}) }) readonly subjectData!: any
 
   // 专题某年度的要素数据
-  @Prop({ default: () => ({}) }) readonly dataSet!: Feature.FeatureIGS
+  @Prop({ default: () => ({}) }) readonly dataSet!: Feature.FeatureIGS | null
 
   /**
    * 监听: 要素数据变化
    */
   @Watch('dataSet', { deep: true })
   watchDataSet(nV: Feature.FeatureIGS | null) {
-    if (nV && nV.SFEleArray) {
-      this.showLayer()
-    } else {
-      this.removeLayer()
-    }
+    this.removeLayer()
+    this.showLayer()
   }
 
   // 是否支持图属高亮
