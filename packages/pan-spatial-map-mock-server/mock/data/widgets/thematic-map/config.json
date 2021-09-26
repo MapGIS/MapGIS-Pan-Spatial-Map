@@ -713,7 +713,7 @@
           "children": [
             {
               "id": "951289e5-89c5-6ab2-9e5f-e6793146034b",
-              "title": "信创BIM_原生",
+              "title": "中地_MAPV(测试专用,勿删)",
               "visible": true,
               "nodeType": "subject",
               "type": "HeatMap",
@@ -722,24 +722,7 @@
                   "time": "2008",
                   "ip": "",
                   "port": "",
-                  "gdbp": "gdbp://MapGISLocalPlus/示例数据/sfcls/信创BIM图层热力图测试数据.json_Pnt",
-                  "field": "count"
-                }
-              ]
-            },
-            {
-              "id": "951289e5-89c5-6ab2-9e5f-e6793146034f",
-              "title": "信创BIM_mapv",
-              "visible": true,
-              "nodeType": "subject",
-              "type": "HeatMap",
-              "config": [
-                {
-                  "time": "2007",
-                  "ip": "",
-                  "port": "",
-                  "gdbp": "gdbp://MapGISLocalPlus/示例数据/sfcls/信创BIM图层热力图测试数据.json_Pnt",
-                  "field": "count",
+                  "gdbp": "",
                   "style": {
                     "type": "MAPV"
                   }
@@ -747,8 +730,26 @@
               ]
             },
             {
+              "id": "951289e5-89c5-6ab2-9e5f-e6793146034y",
+              "title": "中地_原生(测试专用,勿删)",
+              "visible": true,
+              "nodeType": "subject",
+              "type": "HeatMap",
+              "config": [
+                {
+                  "time": "2008",
+                  "ip": "",
+                  "port": "",
+                  "gdbp": "",
+                  "style": {
+                    "type": "CESIUM"
+                  }
+                }
+              ]
+            },
+            {
               "id": "951289e5-89c5-6ab2-9e5f-e6793146034u",
-              "title": "县城驻地",
+              "title": "县城驻地_AREA_MAPV",
               "visible": true,
               "nodeType": "subject",
               "type": "HeatMap",
@@ -791,7 +792,7 @@
             },
             {
               "id": "951289e5-89c5-6ab2-9e5f-e6793146036c",
-              "title": "驻地数据_1",
+              "title": "地级市驻地1_AREA_MAPV",
               "visible": true,
               "nodeType": "subject",
               "type": "HeatMap",
