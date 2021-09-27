@@ -27,14 +27,7 @@ class Fields {
 
   async getFields(subjectConfig) {
     if (!this.isFetched) {
-      const { ip: baseIp, port: basePort } = baseConfigInstance.config
-      const {
-        ip = baseIp,
-        port = basePort,
-        gdbp,
-        docName,
-        layerIndex
-      } = subjectConfig
+      const { ip, port, gdbp, docName, layerIndex } = subjectConfig
       this.fields = await this.fetchFields({
         ip,
         port,
@@ -42,14 +35,18 @@ class Fields {
         docName,
         layerIndex
       })
+      this.isFetched = true
     }
     return this.fields
   }
 
   async fetchFields({ ip, port, gdbp, docName, layerIndex }: QueryParams) {
+    const { ip: baseIp, port: basePort } = baseConfigInstance.config
+    const _ip = ip || baseIp
+    const _port = port || basePort
     const result = await Feature.FeatureQuery.query({
-      ip,
-      port,
+      ip: _ip,
+      port: _port,
       gdbp,
       docName,
       layerIdxs: layerIndex,
@@ -67,7 +64,6 @@ class Fields {
         value: v
       }))
     }
-    this.isFetched = true
     return fields
   }
 }

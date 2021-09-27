@@ -13,10 +13,6 @@ export default class SubSectionMap extends Vue {
 
   private dataSource: Feature.FeatureGeoJSON | null = null
 
-  get field() {
-    return this.value.field
-  }
-
   get options() {
     return [
       {
@@ -35,38 +31,18 @@ export default class SubSectionMap extends Vue {
     ]
   }
 
-  /**
-   * 获取指定属性的GeoJSON数据
-   * @param {object} params 查询参数
-   */
-  async setDataSource({
-    ip,
-    port,
-    docName,
-    layerName,
-    layerIndex,
-    gdbp,
-    field
-  }) {
-    if (!field) return
-    const dataSet: Feature.FeatureIGS = await Feature.FeatureQuery.query({
-      ip,
-      port,
-      fields: field,
-      IncludeGeometry: true,
-      f: 'json',
-      ...(docName
-        ? {
-            docName,
-            layerName,
-            layerIdxs: layerIndex
-          }
-        : {
-            gdbp
-          })
-    })
-    if (!dataSet) return
-    this.dataSource = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(dataSet)
+  get field() {
+    return this.value.field
+  }
+
+  @Watch('field')
+  fieldChanged(nV) {
+    dep
+      .getFieldGeoJson({
+        field: nV,
+        ...this.value
+      })
+      .then(dataSource => (this.dataSource = dataSource))
   }
 
   /**
@@ -79,14 +55,6 @@ export default class SubSectionMap extends Vue {
     }
   }
 
-  @Watch('field')
-  fieldChanged(nV) {
-    this.setDataSource({
-      field: nV,
-      ...this.value
-    })
-  }
-
   mounted() {
     dep.addSub(this)
   }
@@ -96,4 +64,3 @@ export default class SubSectionMap extends Vue {
   }
 }
 </script>
-<style lang="less" scoped></style>
