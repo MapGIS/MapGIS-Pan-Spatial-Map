@@ -24,7 +24,7 @@ export default class MapboxMixin extends Mixins(BaseMixin) {
    */
   showLayer() {
     this.removeLayer()
-    if (!this.thematicMapLayer) {
+    if (!this.thematicMapLayer && this.getThematicMapLayer) {
       this.getThematicMapLayer()
     }
   }

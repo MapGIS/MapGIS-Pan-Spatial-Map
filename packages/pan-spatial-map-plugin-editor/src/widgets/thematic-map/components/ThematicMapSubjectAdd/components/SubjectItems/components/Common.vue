@@ -320,7 +320,7 @@ export default class Common extends Vue {
         fields = FldName.map((v: string, i: number) => ({
           type: FldType[i],
           label: FldAlias[i] || v,
-          value: FldAlias[i] || v
+          value: v
         }))
       }
     }
