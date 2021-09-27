@@ -52,7 +52,7 @@ export default class SubSectionMap extends Vue {
     const dataSet: Feature.FeatureIGS = await Feature.FeatureQuery.query({
       ip,
       port,
-      fields: [field],
+      fields: field,
       IncludeGeometry: true,
       f: 'json',
       ...(docName
