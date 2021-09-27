@@ -7,7 +7,6 @@ import {
   baseConfigInstance,
   markerIconInstance
 } from '@mapgis/pan-spatial-map-common'
-import { useFetch } from '../../components/ThematicMapSubjectAdd/components/SubjectItems/hooks/fetch'
 import {
   ModuleType,
   LinkageItem,
@@ -77,7 +76,8 @@ const mutations = {
     { isPage = true, onSuccess, onError }: any = {}
   ) {
     try {
-      if (!state.subjectData) {
+      const { subjectData, baseConfig, pageParam } = state
+      if (!subjectData) {
         commit('setPageDataSet', null)
         return
       }
@@ -90,22 +90,22 @@ const mutations = {
         layerIndex,
         table,
         configType
-      } = state.subjectData
-      const { baseIp, basePort } = state.baseConfig
+      } = subjectData
+      const { baseIp, basePort } = baseConfig
       const {
         ip: baseConfigIp,
         port: baseConfigPort
       } = baseConfigInstance.config
       const _ip = ip || baseIp || baseConfigIp
       const _port = port || basePort || baseConfigPort
-      const fields = table ? table.showFields.join(',') : ''
-      const pageParam = isPage
-        ? state.pageParam
+      const _pageParam = isPage
+        ? pageParam
         : {
             page: 0,
             pageCount: 9999
           }
-      let params: Feature.FeatureQueryParam
+      const fields = table ? table.showFields.join(',') : ''
+      let params: Feature.FeatureQueryParam = {}
       switch (configType.toLowerCase()) {
         case IConfigType.DOC:
           params = {
@@ -124,20 +124,14 @@ const mutations = {
         default:
           break
       }
-      if (!params) {
-        console.error('查询参数为undefined')
-        return
-      }
       commit('setLoading', true)
-      const dataSet:
-        | Feature.FeatureIGS
-        | any = await Feature.FeatureQuery.query({
+      const dataSet: Feature.FeatureIGS = await Feature.FeatureQuery.query({
         ip: _ip,
         port: _port,
         IncludeGeometry: true,
         f: 'json',
         fields,
-        ...pageParam,
+        ..._pageParam,
         ...params
       })
       commit('setLoading', false)
@@ -211,11 +205,11 @@ const mutations = {
       const { config } = subject
       if (Array.isArray(config)) {
         // 新版
-        selectedSubjectTimeList = config.map(({ time }) => time)
+        selectedSubjectTimeList = config.map(({ time }: any) => time)
       } else {
         // 旧版
         const { data = [] } = config
-        selectedSubjectTimeList = data.map(({ time }) => time)
+        selectedSubjectTimeList = data.map(({ time }: any) => time)
       }
     }
     commit('setSelectedSubjectTimeList', selectedSubjectTimeList)
