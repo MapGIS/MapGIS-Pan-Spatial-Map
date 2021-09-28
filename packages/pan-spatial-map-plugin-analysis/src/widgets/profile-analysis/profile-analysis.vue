@@ -74,12 +74,13 @@
         :visible.sync="profile2dVisible"
         :min-width="400"
         :max-height="250"
-        anchor="bottom-left"
-        title="二维剖面"
+        anchor="bottom-center"
+        title="剖面信息"
+        ref="profileWindow"
       >
         <div
           id="profileChart"
-          style="width: 380px; height: 180px; float: right"
+          style="width: 800px; height: 180px; float: right"
         ></div>
       </mp-window>
     </mp-window-wrapper>
@@ -101,7 +102,8 @@ import {
   LayerType,
   IGSSceneSublayerRenderType,
   LoadStatus,
-  Objects
+  Objects,
+  ColorUtil
 } from '@mapgis/web-app-framework'
 import * as echarts from 'echarts'
 
@@ -168,7 +170,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       },
       grid: {
         top: 25,
-        left: 40,
+        left: 60,
         right: 20,
         bottom: 20,
         contentLabel: false
@@ -199,11 +201,11 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
           axisLabel: {
             formatter(value) {
               const texts = []
-              if (value > 99999) {
-                const text = Number(value).toExponential(1)
-                texts.push(text)
+              if (value > 999) {
+                const text = (Number(value) / 1000).toFixed(2)
+                texts.push(`${text}km`)
               } else {
-                texts.push(parseInt(value))
+                texts.push(`${parseInt(value)}m`)
               }
               return texts
             }
@@ -225,7 +227,8 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
               { type: 'max', name: '最高点' },
               { type: 'min', name: '最低点' }
             ]
-          }
+          },
+          areaStyle: {}
         }
       ]
     }
@@ -303,6 +306,18 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  changeProfileWindowApha() {
+    const components = document.getElementsByClassName('mp-window-wrapper')[0]
+    const bgColor = document.defaultView.getComputedStyle(components, null)[
+      'background-color'
+    ]
+    const colorObject = ColorUtil.getColorObject(bgColor, 0.6)
+    const { r, g, b, a } = colorObject
+    const component = this.$refs.profileWindow
+
+    component.style.background = `rgba(${r},${g},${b},${a})`
+  }
+
   /**
    * 打开模块
    */
@@ -313,6 +328,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     }
     this.isActive = true
     this.changeLayer()
+    this.changeProfileWindowApha()
   }
 
   /**
