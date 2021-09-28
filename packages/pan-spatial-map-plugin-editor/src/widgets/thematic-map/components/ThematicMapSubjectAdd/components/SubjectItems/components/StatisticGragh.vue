@@ -12,6 +12,7 @@
         v-model="field"
         :options="fieldList"
         :auto-width="true"
+        size="small"
         placeholder="请选择"
       />
     </mapgis-ui-row-flex>
@@ -176,7 +177,7 @@ export default class StatisticGragh extends Vue {
 }
 </script>
 <style lang="less" scoped>
-::v-deep > .ant-row-flex {
-  padding: 0 4px 8px;
+::v-deep .mapgis-ui-row-flex {
+  padding-bottom: 8px;
 }
 </style>
