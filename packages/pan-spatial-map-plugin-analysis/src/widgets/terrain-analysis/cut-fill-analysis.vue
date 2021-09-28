@@ -278,10 +278,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     const { viewer } = this.webGlobe
     const { x, y, z } = this.formData
 
-    if (!this.depthTestAgainstTerrain) {
-      viewer.scene.globe.depthTestAgainstTerrain = true
-    }
-
+    viewer.scene.globe.depthTestAgainstTerrain = true
     // 初始化高级分析功能管理类
     const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
       {
