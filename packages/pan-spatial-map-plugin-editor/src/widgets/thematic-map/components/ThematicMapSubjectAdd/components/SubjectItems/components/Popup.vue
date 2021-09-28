@@ -5,8 +5,8 @@
     :columns="tableColumns"
     :subject-config="subjectConfig"
   >
-    <mapgis-ui-row-flex slot="top" label="弹框标题" :label-width="72">
-      <mapgis-ui-input v-model="title" placeholder="请选择" />
+    <mapgis-ui-row-flex slot="top" label="标题" :label-width="50">
+      <mapgis-ui-input v-model="title" placeholder="请填写" size="small" />
     </mapgis-ui-row-flex>
   </editable-field-table>
 </template>
@@ -93,7 +93,7 @@ export default class Popup extends Vue {
 }
 </script>
 <style lang="less" scoped>
-::v-deep .ant-row-flex {
-  padding: 0 4px 8px;
+::v-deep .mapgis-ui-row-flex {
+  padding-bottom: 8px;
 }
 </style>

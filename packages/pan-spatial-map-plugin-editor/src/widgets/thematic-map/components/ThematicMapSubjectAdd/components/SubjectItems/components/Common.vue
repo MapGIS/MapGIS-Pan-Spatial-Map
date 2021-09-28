@@ -15,6 +15,7 @@
           }"
           filter-prop="serverUri"
           label-prop="serverUri"
+          placeholder="请选择或按照示例输入服务地址"
         />
       </mp-row-flex>
       <mp-row-flex

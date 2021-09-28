@@ -99,7 +99,7 @@ export default class SubjectItems extends Vue {
 
   @Prop({ default: () => [] }) readonly value!: Array<NewSubjectConfig>
 
-  activePanel = 0
+  activePanel = '0'
 
   showCheckbox = false
 
@@ -151,7 +151,7 @@ export default class SubjectItems extends Vue {
   /**
    * 面板change
    */
-  panelChange(key: string | number) {
+  panelChange(key: string) {
     this.activePanel = key
   }
 
