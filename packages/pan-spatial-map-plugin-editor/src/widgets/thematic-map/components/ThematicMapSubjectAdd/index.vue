@@ -41,6 +41,7 @@ import {
 } from '../../store'
 import BaseItems from './components/BaseItems'
 import SubjectItems from './components/SubjectItems'
+import dep from './store/dep'
 
 @Component({
   components: {
@@ -149,6 +150,7 @@ export default class ThematicMapSubjectAdd extends Vue {
     }
     this.updateSubjectConfig(config)
       .then(() => {
+        console.log('保存-----------', config)
         this.$message.success('保存成功')
         this.onCancel()
       })
@@ -178,11 +180,14 @@ export default class ThematicMapSubjectAdd extends Vue {
     } else if (!this.subjectNodeConfig.length) {
       this.$message.warning('请填写专题配置')
     } else {
-      // 年度去重
+      const customForms = dep.getSub()
       const config = _uniqBy(this.subjectNodeConfig, ({ time }) => time)
       this.createSubjectConfigNode({
         ...this.subjectNodeBase,
-        config
+        config: config.map((c, i) => ({
+          ...c,
+          ...customForms[i].getFormResult()
+        }))
       })
     }
   }

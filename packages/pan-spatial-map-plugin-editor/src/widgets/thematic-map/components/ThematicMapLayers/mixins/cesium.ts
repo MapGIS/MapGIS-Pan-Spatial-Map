@@ -1,26 +1,26 @@
 import { Component, Mixins, Inject } from 'vue-property-decorator'
 import { UUID, Layer, ColorUtil, Feature } from '@mapgis/web-app-framework'
-import BaseMinxin from './base'
+import BaseMixin from './base'
 
 interface ILngLat {
   longitude?: number
   latitude?: number
 }
 @Component
-export default class CesiumMinxin extends Mixins<Record<string, any>>(
-  BaseMinxin
-) {
+export default class CesiumMixin extends Mixins(BaseMixin) {
+  @Inject('webGlobe') webGlobe
+
+  @Inject('Cesium') Cesium
+
   @Inject('CesiumZondy') CesiumZondy
 
-  id = UUID.uuid()
+  private thematicMapLayer: any = null
 
-  thematicMapLayer: any = null
+  private showPopup = false
 
-  showPopup = false
+  private popupProperties: any = null
 
-  popupProperties: any = null
-
-  popupPosition: ILngLat = {}
+  private popupPosition: ILngLat = {}
 
   // 信息弹框字段配置
   get popupConfig() {

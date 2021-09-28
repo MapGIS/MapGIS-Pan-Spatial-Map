@@ -1,10 +1,9 @@
-import { Component, Prop, Watch, Vue, Mixins } from 'vue-property-decorator'
-import { MapMixin, Feature } from '@mapgis/web-app-framework'
-import _isNumber from 'lodash/isNumber'
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+import { UUID, Feature } from '@mapgis/web-app-framework'
 import { highlightSubjectTypes } from '../../../store'
 
 @Component
-export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
+export default class BaseMixin extends Vue {
   // 组件唯一值
   @Prop({ default: 'map' }) readonly vueKey!: string
 
@@ -12,18 +11,17 @@ export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
   @Prop({ default: () => ({}) }) readonly subjectData!: any
 
   // 专题某年度的要素数据
-  @Prop({ default: () => ({}) }) readonly dataSet!: Feature.FeatureIGS
+  @Prop({ default: () => ({}) }) readonly dataSet!: Feature.FeatureIGS | null
+
+  private id = UUID.uuid()
 
   /**
    * 监听: 要素数据变化
    */
   @Watch('dataSet', { deep: true })
   watchDataSet(nV: Feature.FeatureIGS | null) {
-    if (nV && nV.SFEleArray) {
-      this.showLayer()
-    } else {
-      this.removeLayer()
-    }
+    this.removeLayer()
+    this.showLayer()
   }
 
   // 是否支持图属高亮

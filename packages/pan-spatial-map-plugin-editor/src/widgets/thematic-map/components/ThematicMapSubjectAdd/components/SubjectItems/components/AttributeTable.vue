@@ -1,6 +1,5 @@
 <template>
   <editable-field-table
-    @view="onView"
     @change="onChange"
     :columns="tableColumns"
     :data="tableData"
@@ -85,10 +84,5 @@ export default class AttributeTable extends Vue {
     this.tableData = data
     this.$emit('change', { table })
   }
-
-  /**
-   * 预览
-   */
-  onView() {}
 }
 </script>

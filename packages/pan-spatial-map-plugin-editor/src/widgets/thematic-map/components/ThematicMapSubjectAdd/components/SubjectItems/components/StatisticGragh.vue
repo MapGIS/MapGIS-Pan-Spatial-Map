@@ -1,6 +1,5 @@
 <template>
   <editable-field-table
-    @view="onView"
     @change="onChange"
     @fields-loaded="onFieldsLoaded"
     :subject-config="subjectConfig"
@@ -8,19 +7,27 @@
     :data="tableData"
     title="图表配置"
   >
-    <mp-row-flex slot="top" :span="[11, 11]" justify="space-between">
-      <mp-row-flex slot="label" label="分组字段" :label-width="72">
+    <mapgis-ui-row-flex slot="top" label="分组字段" :label-width="72">
+      <mapgis-ui-select
+        v-model="field"
+        :options="fieldList"
+        :auto-width="true"
+        placeholder="请选择"
+      />
+    </mapgis-ui-row-flex>
+    <!-- <mapgis-ui-row-flex slot="top" :span="[11, 11]" justify="space-between">
+      <mapgis-ui-row-flex slot="label" label="分组字段" :label-width="72">
         <a-select v-model="field" :options="fieldList" placeholder="请选择" />
-      </mp-row-flex>
-      <mp-row-flex label="统计方式" :label-width="72">
+      </mapgis-ui-row-flex>
+      <mapgis-ui-row-flex label="统计方式" :label-width="72">
         <a-select
           v-model="way"
           :options="statisticWays"
           :disabled="true"
           placeholder="请选择"
         />
-      </mp-row-flex>
-    </mp-row-flex>
+      </mapgis-ui-row-flex>
+    </mapgis-ui-row-flex> -->
   </editable-field-table>
 </template>
 <script lang="ts">
@@ -62,13 +69,13 @@ export default class StatisticGragh extends Vue {
     }
   }
 
-  field = null
+  private field = null
 
-  way = '3'
+  // private way = '3'
 
-  fieldList = []
+  private fieldList = []
 
-  tableData: ITableDataItem[] = []
+  private tableData: ITableDataItem[] = []
 
   get tableColumns() {
     return [
@@ -93,40 +100,40 @@ export default class StatisticGragh extends Vue {
     ]
   }
 
-  get statisticWays() {
-    return [
-       {
-      label: '求和',
-      value: '3',
-      type: 'sum'
-    },
-    {
-      label: '求平均值',
-      value: '4',
-      type: 'avg'
-    },
-    {
-      label: '最大值',
-      value: '1',
-      type: 'max'
-    },
-    {
-      label: '最小值',
-      value: '2',
-      type: 'min'
-    },
-    {
-      label: '计数',
-      value: '6',
-      type: 'count'
-    },
-    {
-      label: '去重',
-      value: '7',
-      type: 'var'
-    }
-    ]
-  }
+  // get statisticWays() {
+  //   return [
+  //      {
+  //     label: '求和',
+  //     value: '3',
+  //     type: 'sum'
+  //   },
+  //   {
+  //     label: '求平均值',
+  //     value: '4',
+  //     type: 'avg'
+  //   },
+  //   {
+  //     label: '最大值',
+  //     value: '1',
+  //     type: 'max'
+  //   },
+  //   {
+  //     label: '最小值',
+  //     value: '2',
+  //     type: 'min'
+  //   },
+  //   {
+  //     label: '计数',
+  //     value: '6',
+  //     type: 'count'
+  //   },
+  //   {
+  //     label: '去重',
+  //     value: '7',
+  //     type: 'var'
+  //   }
+  //   ]
+  // }
 
   /**
    * 属性配置变化
@@ -166,11 +173,6 @@ export default class StatisticGragh extends Vue {
     this.fieldList = list
     this.field = this.fieldList[0]?.value
   }
-
-  /**
-   * 预览
-   */
-  onView() {}
 }
 </script>
 <style lang="less" scoped>

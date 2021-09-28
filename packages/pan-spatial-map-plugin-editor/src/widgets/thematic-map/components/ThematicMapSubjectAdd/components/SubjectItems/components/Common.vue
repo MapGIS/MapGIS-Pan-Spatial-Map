@@ -38,15 +38,12 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { Feature, Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
-import {
-  dataCatalogManagerInstance,
-  baseConfigInstance
-} from '@mapgis/pan-spatial-map-common'
+import { Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
+import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-common'
 import url from 'url'
 import _cloneDeep from 'lodash/cloneDeep'
-import _debounce from 'lodash/debounce'
 import _last from 'lodash/last'
+import FieldInstance from '../../../store/fields'
 import { NewSubjectConfig } from '../../../../../store'
 
 interface IServerParams {
@@ -292,41 +289,15 @@ export default class Common extends Vue {
   /**
    * 查询的属性列表
    */
-  async getFields(serverParams) {
-    let fields = []
+  getFields(serverParams) {
     if (serverParams) {
-      const { ip: baseIp, port: basePort } = baseConfigInstance.config
-      const {
-        ip = baseIp,
-        port = basePort,
-        gdbp,
-        docName,
-        layerIndex
-      } = serverParams
-      const result = await Feature.FeatureQuery.query({
-        ip,
-        port,
-        gdbp,
-        docName,
-        layerIdxs: layerIndex,
-        IncludeAttribute: false,
-        IncludeGeometry: false,
-        IncludeWebGraphic: false,
-        f: 'json'
+      const { ip, port, gdbp, docName, layerIndex } = serverParams
+
+      FieldInstance.fetchFields(serverParams, true).then(fields => {
+        this.fields = fields
+        this.field = this.fields[0]?.value
       })
-
-      if (result) {
-        const { FldName, FldType, FldAlias } = result.AttStruct
-        fields = FldName.map((v: string, i: number) => ({
-          type: FldType[i],
-          label: FldAlias[i] || v,
-          value: FldAlias[i] || v
-        }))
-      }
     }
-
-    this.fields = fields
-    this.field = this.fields[0]?.value
   }
 
   /**

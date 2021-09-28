@@ -1,6 +1,6 @@
 <template>
   <div class="editable-field-table">
-    <a-empty :image-style="emptyImageStyle" v-if="!visible">
+    <a-empty v-if="!visible" :image-style="emptyImageStyle">
       <span slot="description" @click="showTable" class="description">
         点击开始配置
       </span>
@@ -44,14 +44,6 @@ export default class EditableFieldTable extends Vue {
 
   fieldList = []
 
-  get viewTool() {
-    return {
-      title: '预览',
-      icon: 'eye',
-      method: this.onView
-    }
-  }
-
   get closeTool() {
     return {
       title: '取消配置',
@@ -62,7 +54,11 @@ export default class EditableFieldTable extends Vue {
 
   get tools() {
     return (add, batchDel) => {
-      return [add, this.viewTool, batchDel, this.closeTool]
+      const _tools = [add, this.closeTool]
+      if (this.tableData.length) {
+        _tools.splice(1, 0, batchDel)
+      }
+      return _tools
     }
   }
 
@@ -116,13 +112,6 @@ export default class EditableFieldTable extends Vue {
       return
     }
     this.visible = true
-  }
-
-  /**
-   * 预览
-   */
-  onView() {
-    this.$emit('view')
   }
 
   /**

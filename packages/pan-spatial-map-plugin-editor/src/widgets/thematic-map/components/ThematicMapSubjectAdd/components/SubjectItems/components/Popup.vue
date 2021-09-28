@@ -1,14 +1,13 @@
 <template>
   <editable-field-table
-    @view="onView"
     @change="onChange"
     :data="tableData"
     :columns="tableColumns"
     :subject-config="subjectConfig"
   >
-    <mp-row-flex slot="top" label="弹框标题" :label-width="72">
-      <a-input v-model="title" placeholder="请选择" />
-    </mp-row-flex>
+    <mapgis-ui-row-flex slot="top" label="弹框标题" :label-width="72">
+      <mapgis-ui-input v-model="title" placeholder="请选择" />
+    </mapgis-ui-row-flex>
   </editable-field-table>
 </template>
 <script lang="ts">
@@ -91,11 +90,6 @@ export default class Popup extends Vue {
     this.tableData = data
     this.$emit('change', { popup })
   }
-
-  /**
-   * 预览
-   */
-  onView() {}
 }
 </script>
 <style lang="less" scoped>

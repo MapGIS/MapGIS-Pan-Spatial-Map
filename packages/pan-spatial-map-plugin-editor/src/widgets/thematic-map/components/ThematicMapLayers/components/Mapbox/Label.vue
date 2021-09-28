@@ -8,10 +8,10 @@
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import BaseMinxin from '../../mixins/base'
+import BaseMixin from '../../mixins/base'
 
 @Component
-export default class MapboxLabel extends Mixins(BaseMinxin) {
+export default class MapboxLabel extends Mixins(BaseMixin) {
   geojsonPoint = {}
 
   get countField() {

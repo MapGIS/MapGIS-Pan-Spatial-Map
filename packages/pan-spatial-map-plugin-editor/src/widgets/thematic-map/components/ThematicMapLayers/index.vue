@@ -9,7 +9,7 @@
         :key="t"
         :is="t"
         :vue-key="vueKey"
-        :dataSet="dataSet"
+        :data-set="dataSet"
         :subject-data="subjectData"
       />
     </template>
@@ -40,8 +40,6 @@ import CesiumLayers from './components/Cesium'
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
-  @Inject('map') map!: any
-
   // 组件唯一值
   vueKey = 'map'
 
@@ -76,25 +74,10 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   /**
    * 设置高亮
-   * xmin: 25.859588307966845,
-   * ymin: 3.1473739454943654,
-   * xmax: 167.62576717829563,
-   * ymax: 70.47116294961994
    */
   setHighlight(marker) {
+    // const { xmin, xmax, ymin, ymax } = marker.feature.bound
     this.marker = marker
-    if (this.map) {
-      const { xmin, xmax, ymin, ymax } = marker.feature.bound
-      this.map.fitBounds(
-        [
-          [xmax, ymin],
-          [xmin, ymax]
-        ],
-        {
-          animate: false
-        }
-      )
-    }
   }
 
   /**
@@ -107,9 +90,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
     } else {
       this.setFeaturesQuery({
         isPage: false,
-        onSuccess: dataSet => {
-          this.dataSet = dataSet
-        }
+        onSuccess: dataSet => (this.dataSet = dataSet)
       })
     }
   }
