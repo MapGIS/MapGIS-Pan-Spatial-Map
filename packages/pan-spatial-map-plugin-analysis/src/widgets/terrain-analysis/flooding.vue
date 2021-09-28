@@ -241,9 +241,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     // 指定光线强度
     window.FloodingManage.flood.specularIntensity = 3.0
 
-    if (!this.depthTestAgainstTerrain) {
-      viewer.scene.globe.depthTestAgainstTerrain = true
-    }
+    viewer.scene.globe.depthTestAgainstTerrain = true
     // 添加洪水淹没结果显示
     this.webGlobe.scene.VisualAnalysisManager.add(window.FloodingManage.flood)
     this.mHeight = maxHeight

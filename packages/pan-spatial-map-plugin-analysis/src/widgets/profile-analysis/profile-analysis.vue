@@ -307,6 +307,10 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
    * 打开模块
    */
   onOpen() {
+    const { viewer } = this.webGlobe
+    if (viewer.scene.globe.depthTestAgainstTerrain) {
+      this.depthTestAgainstTerrain = true
+    }
     this.isActive = true
     this.changeLayer()
   }
@@ -321,10 +325,6 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
 
   // 微件激活时
   onActive() {
-    const { viewer } = this.webGlobe
-    if (viewer.scene.globe.depthTestAgainstTerrain) {
-      this.depthTestAgainstTerrain = true
-    }
     this.isActive = true
   }
 
@@ -374,9 +374,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   analysis() {
     const { viewer } = this.webGlobe
     this.profile2dVisible = false
-    if (!this.depthTestAgainstTerrain) {
-      viewer.scene.globe.depthTestAgainstTerrain = true
-    }
+    viewer.scene.globe.depthTestAgainstTerrain = true
     const {
       polygonColor,
       height,
