@@ -3,21 +3,16 @@
   <mapgis-ui-custom-panel ref="customPanelForm" :options="options" />
 </template>
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { UUID, Feature } from '@mapgis/web-app-framework'
-import dep from '../../../../store/dep'
+import { Component, Mixins } from 'vue-property-decorator'
+import SubjectStylesMixin from '../../../../mixins/subject-styles-mixin'
 
 @Component
-export default class SubSectionMap extends Vue {
-  @Prop({ type: Object }) readonly value!: Record<string, any>
-
-  private dataSource: Feature.FeatureGeoJSON | null = null
-
+export default class SubSectionMap extends Mixins(SubjectStylesMixin) {
   get options() {
     return [
       {
-        id: UUID.uuid(),
-        title: '列表',
+        id: this.id,
+        title: '',
         type: 'MapgisUiThemeList',
         props: {
           size: 'small',
@@ -31,20 +26,6 @@ export default class SubSectionMap extends Vue {
     ]
   }
 
-  get field() {
-    return this.value.field
-  }
-
-  @Watch('field')
-  fieldChanged(nV) {
-    dep
-      .getFieldGeoJson({
-        field: nV,
-        ...this.value
-      })
-      .then(dataSource => (this.dataSource = dataSource))
-  }
-
   /**
    * 保存: 保存时调用
    */
@@ -53,14 +34,6 @@ export default class SubSectionMap extends Vue {
     return {
       color: Object.values(values)
     }
-  }
-
-  mounted() {
-    dep.addSub(this)
-  }
-
-  beforeDestroy() {
-    dep.removeSub(this)
   }
 }
 </script>

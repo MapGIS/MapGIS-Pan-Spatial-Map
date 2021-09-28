@@ -8,17 +8,19 @@ interface ILngLat {
 }
 @Component
 export default class CesiumMixin extends Mixins(BaseMixin) {
+  @Inject('webGlobe') webGlobe
+
+  @Inject('Cesium') Cesium
+
   @Inject('CesiumZondy') CesiumZondy
 
-  id = UUID.uuid()
+  private thematicMapLayer: any = null
 
-  thematicMapLayer: any = null
+  private showPopup = false
 
-  showPopup = false
+  private popupProperties: any = null
 
-  popupProperties: any = null
-
-  popupPosition: ILngLat = {}
+  private popupPosition: ILngLat = {}
 
   // 信息弹框字段配置
   get popupConfig() {

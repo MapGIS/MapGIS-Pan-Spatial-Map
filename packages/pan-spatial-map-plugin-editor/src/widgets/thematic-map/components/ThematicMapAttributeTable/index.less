@@ -12,10 +12,6 @@
     }
   }
 
-  .row-highlight {
-    background: rgba(65, 174, 255, 0.2);
-  }
-
   ::v-deep {
     .ant-table {
       line-height: 1.1;
@@ -27,12 +23,13 @@
       .ant-table-body {
         border-right: 1px solid fade(@border-color-base, 60%);
         border-bottom: 1px solid fade(@border-color-base, 60%);
-        .scrollbar();
         &:hover {
           border-right-color: transparent;
           border-bottom-color: transparent;
-          .scrollbar(6px);
         }
+      }
+      .ant-table-row.row-highlight {
+        background: rgba(65, 174, 255, 0.2);
       }
     }
     .ant-table-pagination.ant-pagination {

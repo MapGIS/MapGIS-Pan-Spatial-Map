@@ -40,8 +40,6 @@ import CesiumLayers from './components/Cesium'
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
-  @Inject('map') map!: any
-
   // 组件唯一值
   vueKey = 'map'
 
@@ -78,18 +76,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * 设置高亮
    */
   setHighlight(marker) {
-    if (this.map) {
-      const { xmin, xmax, ymin, ymax } = marker.feature.bound
-      this.map.fitBounds(
-        [
-          [xmax, ymin],
-          [xmin, ymax]
-        ],
-        {
-          animate: false
-        }
-      )
-    }
+    // const { xmin, xmax, ymin, ymax } = marker.feature.bound
     this.marker = marker
   }
 
