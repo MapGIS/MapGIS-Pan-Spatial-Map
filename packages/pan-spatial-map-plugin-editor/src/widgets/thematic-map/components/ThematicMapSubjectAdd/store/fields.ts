@@ -11,7 +11,7 @@ interface QueryParams {
 
 interface FieldInfosItem {
   type: string
-  label: string
+  alias: string
   value: string
 }
 
@@ -27,8 +27,7 @@ class Fields {
 
   async getFields(subjectConfig) {
     if (!this.isFetched) {
-      this.fields = await this.fetchFields(subjectConfig)
-      this.isFetched = true
+      await this.fetchFields(subjectConfig)
     }
     return this.fields
   }
@@ -57,15 +56,18 @@ class Fields {
       IncludeGeometry: false,
       IncludeWebGraphic: false
     })
+    let fields = []
     if (result) {
       const { FldName, FldType, FldAlias } = result.AttStruct
-      return FldName.map((v: string, i: number) => ({
+      fields = FldName.map((v: string, i: number) => ({
         type: FldType[i],
         alias: FldAlias[i] || v,
         value: v
       }))
     }
-    return []
+    this.isFetched = true
+    this.fields = fields
+    return fields
   }
 }
 

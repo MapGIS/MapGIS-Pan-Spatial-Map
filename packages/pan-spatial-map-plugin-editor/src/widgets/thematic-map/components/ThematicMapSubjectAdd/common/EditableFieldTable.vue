@@ -117,14 +117,9 @@ export default class EditableFieldTable extends Vue {
   }
 
   /**
-   * 取消
+   * 设置属性列表
    */
-  onClose() {
-    this.tableData = undefined
-    this.hideTable()
-  }
-
-  created() {
+  setFields() {
     FieldInstance.getFields(this.subjectConfig).then(fields => {
       this.fieldList = fields.map(({ value }) => ({
         label: value,
@@ -132,6 +127,21 @@ export default class EditableFieldTable extends Vue {
       }))
       this.$emit('fields-loaded', this.fieldList)
     })
+  }
+
+  /**
+   * 取消
+   */
+  onClose() {
+    this.tableData = undefined
+    this.hideTable()
+  }
+
+  @Watch('subjectConfig.field', { immediate: true })
+  fieldChanged(nV) {
+    if (nV) {
+      this.setFields()
+    }
   }
 }
 </script>
