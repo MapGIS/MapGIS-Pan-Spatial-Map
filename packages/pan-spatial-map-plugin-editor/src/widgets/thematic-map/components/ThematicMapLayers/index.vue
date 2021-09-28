@@ -90,6 +90,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
     } else {
       this.setFeaturesQuery({
         isPage: false,
+        isCache: false,
         onSuccess: dataSet => (this.dataSet = dataSet)
       })
     }

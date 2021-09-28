@@ -27,8 +27,8 @@ export const barChartOptions = ({ color, title, x, y }) => {
       bottom: 40,
       height: 8,
       fillerColor: color,
-      startValue: 0,
-      endValue: 14,
+      start: 0,
+      end: 70,
       showDetail: false,
       zoomLock: true
     },

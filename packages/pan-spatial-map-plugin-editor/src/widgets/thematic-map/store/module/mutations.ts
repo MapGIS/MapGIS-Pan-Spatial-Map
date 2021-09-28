@@ -8,21 +8,69 @@ import {
   markerIconInstance
 } from '@mapgis/pan-spatial-map-common'
 import {
+  FeatureFormatType,
+  ConfigType,
   ModuleType,
   LinkageItem,
   PageParam,
   SubjectData,
   ThematicMapBaseConfig,
   ThematicMapSubjectConfigNode,
-  NewSubjectConfig
+  NewSubjectConfig,
+  IResolveQueryParams
 } from '../types'
 import state from './state'
 
-enum IConfigType {
-  DOC = 'doc',
-  GDBP = 'gdbp',
-  GEOJSON = 'geojson',
-  EXCEL = 'excel'
+/**
+ * 查询
+ * @param {object} params 请求参数
+ * @param {string} f 格式化 <json | geojson>
+ * @returns <FeatureIGS | FeatureIGSGeoJSON | null>
+ */
+export const resolveQuery = async (
+  params: IResolveQueryParams,
+  f = FeatureFormatType.json
+) => {
+  const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
+  const {
+    ip,
+    port,
+    docName,
+    layerName,
+    layerIndex,
+    gdbp,
+    configType,
+    page,
+    pageCount,
+    ...others
+  } = params
+  const serverParams = (configType
+  ? configType === ConfigType.doc
+  : !!docName)
+    ? {
+        docName,
+        layerName,
+        layerIdxs: layerIndex
+      }
+    : {
+        gdbp
+      }
+
+  const dataSet: Feature.FeatureIGS = await Feature.FeatureQuery.query({
+    ip: ip || baseConfigIp,
+    port: port || baseConfigPort,
+    page: page || 0,
+    pageCount: pageCount || 9999,
+    IncludeGeometry: true,
+    f: FeatureFormatType.json,
+    ...serverParams,
+    ...others
+  })
+  return f === FeatureFormatType.geojson
+    ? dataSet
+      ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(dataSet)
+      : null
+    : dataSet
 }
 
 const mutations = {
@@ -67,13 +115,14 @@ const mutations = {
   /**
    * 要素查询
    * @param isPage 是否分页
-   * @param onSuccess
-   * @param onError
-   * 目前只支持查询格式为json, 主要因为webclient-vue的分段/统计/普通静态标注专题图暂不支持geojson的解析
+   * @param isCache 是否缓存
+   * @param onSuccess 成功回调
+   * @param onError 失败回调
+   * 目前只支持查询格式为json, 因为webclient-vue的统计/普通静态标注专题图暂不支持geojson
    */
   async setFeaturesQuery(
     { state, commit },
-    { isPage = true, onSuccess, onError }: any = {}
+    { isPage = true, isCache = true, onSuccess, onError }: any = {}
   ) {
     try {
       const { subjectData, baseConfig, pageParam } = state
@@ -81,62 +130,21 @@ const mutations = {
         commit('setPageDataSet', null)
         return
       }
-      const {
-        ip,
-        port,
-        gdbp,
-        docName,
-        layerName,
-        layerIndex,
-        table,
-        configType
-      } = subjectData
       const { baseIp, basePort } = baseConfig
-      const {
-        ip: baseConfigIp,
-        port: baseConfigPort
-      } = baseConfigInstance.config
-      const _ip = ip || baseIp || baseConfigIp
-      const _port = port || basePort || baseConfigPort
-      const _pageParam = isPage
-        ? pageParam
-        : {
-            page: 0,
-            pageCount: 9999
-          }
+      const { ip, port, table, ...others } = subjectData
       const fields = table ? table.showFields.join(',') : ''
-      let params: Feature.FeatureQueryParam = {}
-      switch (configType.toLowerCase()) {
-        case IConfigType.DOC:
-          params = {
-            ...params,
-            docName,
-            layerName,
-            layerIdxs: layerIndex
-          }
-          break
-        case IConfigType.GDBP:
-          params = {
-            ...params,
-            gdbp
-          }
-          break
-        default:
-          break
-      }
+
       commit('setLoading', true)
-      const dataSet: Feature.FeatureIGS = await Feature.FeatureQuery.query({
-        ip: _ip,
-        port: _port,
-        IncludeGeometry: true,
-        f: 'json',
+      const dataSet: Feature.FeatureIGS | null = await resolveQuery({
+        ip: ip || baseIp,
+        port: port || basePort,
         fields,
-        ..._pageParam,
-        ...params
+        ...(isPage ? pageParam : {}),
+        ...others
       })
-      commit('setLoading', false)
-      commit('setPageDataSet', dataSet)
       onSuccess && onSuccess(dataSet)
+      commit('setLoading', false)
+      isCache && commit('setPageDataSet', dataSet)
     } catch (e) {
       commit('setLoading', false)
       onError && onError(e)
@@ -162,7 +170,7 @@ const mutations = {
       if (Array.isArray(config)) {
         // 新版
         const item = config.find((d: any) => d.time === time)
-        const configType = item.docName ? IConfigType.DOC : IConfigType.GDBP
+        const configType = item.docName ? ConfigType.doc : ConfigType.gdbp
         subjectData = {
           ...item,
           subjectType,
@@ -170,7 +178,7 @@ const mutations = {
         }
       } else {
         // 旧版
-        const { type: configType = IConfigType.GDBP, data } = config
+        const { type: configType = ConfigType.gdbp, data } = config
         if (data && data.length) {
           const item = data.find((d: any) => d.time === time)
           const subData =

@@ -288,14 +288,17 @@ export default class Common extends Vue {
   }
 
   /**
-   * 查询的属性列表
+   * 设置查询的属性列表
    */
-  getFields(serverParams) {
+  setFields(serverParams) {
     if (serverParams) {
       const { ip, port, gdbp, docName, layerIndex } = serverParams
 
-      FieldInstance.fetchFields(serverParams, true).then(fields => {
-        this.fields = fields
+      FieldInstance.getFields(serverParams).then(fields => {
+        this.fields = fields.map(({ alias, value }) => ({
+          label: alias,
+          value
+        }))
         this.field = this.fields[0]?.value
       })
     }
@@ -309,7 +312,7 @@ export default class Common extends Vue {
       this.$message.warn('请输入正确的数据服务地址')
       return
     }
-    this.getFields(this.getServerParams(value))
+    this.setFields(this.getServerParams(value))
     this.selfUri = value
   }
 

@@ -1,5 +1,6 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { UUID, Feature } from '@mapgis/web-app-framework'
+import { FeatureFormatType, resolveQuery } from '../../../store'
 import dep from '../store/dep'
 
 @Component
@@ -14,14 +15,41 @@ export default class SubjectStylesMixin extends Vue {
     return this.value.field
   }
 
+  /**
+   * 获取指定属性的GeoJSON数据
+   * @param {object} params 查询参数
+   */
+  async getFieldGeoJson({
+    ip,
+    port,
+    docName,
+    layerName,
+    layerIndex,
+    gdbp,
+    fields
+  }) {
+    if (!fields) return
+    const geojson: Feature.FeatureGeoJSON | null = await resolveQuery(
+      {
+        ip,
+        port,
+        gdbp,
+        docName,
+        layerName,
+        layerIndex,
+        fields
+      },
+      FeatureFormatType.geojson
+    )
+    return geojson
+  }
+
   @Watch('field')
   fieldChanged(nV: string) {
-    dep
-      .getFieldGeoJson({
-        field: nV,
-        ...this.value
-      })
-      .then(dataSource => (this.dataSource = dataSource))
+    this.getFieldGeoJson({
+      fields: nV,
+      ...this.value
+    }).then(geojson => (this.dataSource = geojson))
   }
 
   mounted() {

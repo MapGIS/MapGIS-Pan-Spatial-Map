@@ -125,9 +125,12 @@ export default class EditableFieldTable extends Vue {
   }
 
   created() {
-    FieldInstance.getFields(this.subjectConfig).then(list => {
-      this.fieldList = list
-      this.$emit('fields-loaded', list)
+    FieldInstance.getFields(this.subjectConfig).then(fields => {
+      this.fieldList = fields.map(({ value }) => ({
+        label: value,
+        value
+      }))
+      this.$emit('fields-loaded', this.fieldList)
     })
   }
 }

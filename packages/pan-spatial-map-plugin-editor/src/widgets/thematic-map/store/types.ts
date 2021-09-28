@@ -3,18 +3,21 @@ import { LayerType, Feature } from '@mapgis/web-app-framework'
 export const tuple = <T extends string[]>(...args: T) => args
 
 // 节点类型
-type NodeType = 'panel' | 'list' | 'subjet'
+type NodeType = 'panel' | 'list' | 'subject'
 
 // 专题图配置
-type ConfigType = 'gdbp' | 'doc' | 'geojson' | 'excel'
+export enum ConfigType {
+  doc = 'doc',
+  gdbp = 'gdbp',
+  geojson = 'geojson',
+  excel = 'excel'
+}
 
-// 专题图专题功能模块
-// export type ModuleType =
-//   | 'table' // 属性表
-//   | 'graph' // 统计表
-//   | 'timeline' // 时间轴
-//   | 'create' // 新建专题图
-//   | 'tools' // 管理工具栏
+// 要素查询的数据格式
+export enum FeatureFormatType {
+  json = 'json',
+  geojson = 'geojson'
+}
 
 // 专题图专题功能模块
 export enum ModuleType {
@@ -48,7 +51,7 @@ export type SubjectType =
 // 专题图配置
 export interface ISubjectConfigItem {
   subjectType?: SubjectType
-  configType?: ConfigType
+  configType?: keyof ConfigType
   time?: string
   ip?: string
   port?: string
@@ -85,7 +88,7 @@ interface OldSubjectConfig extends IConfigBase {
   children?: OldSubjectConfig[] // 子节点数据,panel和list有,subject没有
   type?: SubjectType // 专题类型
   config?: {
-    type?: ConfigType // 数据请求方式
+    type?: keyof ConfigType // 数据请求方式
     data:
       | Array<ISubjectConfigItem>
       | Array<{
@@ -141,7 +144,7 @@ export interface PageParam {
 
 // 专题数据: 旧版本的请求方式提取到了外层, 新版本直接根据配置项里的gdbp|docName判断
 export interface SubjectData {
-  configType?: ConfigType
+  configType?: keyof ConfigType
   subjectType: SubjectType
   [k: string]: any
 }
@@ -159,4 +162,20 @@ export interface IState {
   baseConfig?: ThematicMapBaseConfig | null
   subjectConfig: Array<ThematicMapSubjectConfigNode>
   linkageItem: LinkageItem | null
+}
+
+export interface IResolveQueryParams {
+  ip: string
+  port: string
+  gdbp: string
+  docName: string
+  layerIndex: string
+  layerName?: string
+  fields?: string
+  page?: number
+  pageCount?: number
+  IncludeAttribute?: boolean
+  IncludeGeometry?: boolean
+  IncludeWebGraphic?: boolean
+  configType?: ConfigType
 }
