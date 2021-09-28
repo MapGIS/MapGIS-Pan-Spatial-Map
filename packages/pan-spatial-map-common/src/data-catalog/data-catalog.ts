@@ -410,11 +410,16 @@ export class DataCatalogManager {
         }
       }
     }
+
+    const defaultIp = baseConfigInstance.config.ip
+    const defaultPort = baseConfigInstance.config.port
+
+    if (defaultIp == '' || defaultPort == '') {
+      this.isFilterInvalidLayerConfig = false
+    }
+
     if (this.isFilterInvalidLayerConfig) {
       // 1.获取基本配置中指定的服务器上发布的IGS服务列表。
-      const defaultIp = baseConfigInstance.config.ip
-      const defaultPort = baseConfigInstance.config.port
-
       let tileList: any[] = []
       let docList: any[] = []
       let sceneList: any[] = []
@@ -696,7 +701,6 @@ export class DataCatalogManager {
           // 当treedata的guid为空时，随机生成一个guid，同时在这里修改treedata源数据，防止后续重复多次生成guid
           node[this.configConverted.keyConfig.guid] = this.genGUID()
         }
-
 
         commonInfo.guid = node[this.configConverted.keyConfig.guid]
 
