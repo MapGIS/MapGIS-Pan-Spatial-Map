@@ -170,8 +170,8 @@ export default class StatisticGragh extends Vue {
   /**
    * 属性列表加载完成
    */
-  onFieldsLoaded(list) {
-    this.fieldList = list
+  onFieldsLoaded(fields) {
+    this.fieldList = fields
     this.field = this.fieldList[0]?.value
   }
 }

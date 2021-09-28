@@ -1,10 +1,13 @@
 import {
   tuple,
+  ConfigType,
   ModuleType,
   SubjectType,
+  FeatureFormatType,
   NewSubjectConfig,
   ThematicMapSubjectConfigNode
 } from './types'
+import { resolveQuery } from './module/mutations'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
 // 模块列表
@@ -30,6 +33,8 @@ const subjectTypeList: Array<{ label: string; value: SubjectType }> = [
 export {
   ModuleType,
   SubjectType,
+  ConfigType,
+  FeatureFormatType,
   NewSubjectConfig,
   ThematicMapSubjectConfigNode,
   moduleTypeList,
@@ -37,5 +42,6 @@ export {
   highlightSubjectTypes,
   thematicMapStore,
   mapGetters,
-  mapMutations
+  mapMutations,
+  resolveQuery
 }
