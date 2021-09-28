@@ -40,7 +40,16 @@ class Fields {
     return this.fields
   }
 
-  async fetchFields({ ip, port, gdbp, docName, layerIndex }: QueryParams) {
+  /**
+   * 请求属性列表数据
+   * @param {object} param0 查询参数
+   * @param {boolean} [aliasLabel = false] label是否使用别名
+   * @returns
+   */
+  async fetchFields(
+    { ip, port, gdbp, docName, layerIndex }: QueryParams,
+    aliasLabel = false
+  ) {
     const { ip: baseIp, port: basePort } = baseConfigInstance.config
     const _ip = ip || baseIp
     const _port = port || basePort
@@ -60,7 +69,7 @@ class Fields {
       const { FldName, FldType, FldAlias } = result.AttStruct
       fields = FldName.map((v: string, i: number) => ({
         type: FldType[i],
-        label: FldAlias[i] || v,
+        label: aliasLabel && FldAlias[i] ? FldAlias[i] : v,
         value: v
       }))
     }

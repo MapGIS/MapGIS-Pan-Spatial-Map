@@ -5,14 +5,15 @@
     :dataSource="geojson"
     :themeProps="themeProps"
     :theme-options="themeOptions"
+    ref="customThemeLayer"
   />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import MapboxMixin from '../../mixins/mapbox'
+import BaseMixin from '../../mixins/base'
 
 @Component
-export default class MapboxSubSectionMap extends Mixins(MapboxMixin) {
+export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
   get themeProps() {
     return {
       layerId: this.id,

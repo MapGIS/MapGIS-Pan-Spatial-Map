@@ -1,5 +1,14 @@
 import { Feature } from '@mapgis/web-app-framework'
 
+interface IFieldGeoJsonParams {
+  ip: string
+  port: string
+  docName: string
+  layerName: string
+  layerIndex: string
+  gdbp: string
+  field: string
+}
 class Dep {
   constructor(private subs: Vue[] = []) {
     this.subs = subs
@@ -17,7 +26,7 @@ class Dep {
     layerIndex,
     gdbp,
     field
-  }) {
+  }: IFieldGeoJsonParams) {
     if (!field) return
     const dataSet: Feature.FeatureIGS = await Feature.FeatureQuery.query({
       ip,

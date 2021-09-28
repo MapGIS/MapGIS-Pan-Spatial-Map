@@ -1,18 +1,20 @@
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Inject } from 'vue-property-decorator'
 import { UUID } from '@mapgis/web-app-framework'
 import BaseMixin from './base'
 
 @Component
 export default class MapboxMixin extends Mixins(BaseMixin) {
-  id = UUID.uuid()
+  @Inject('map') map
 
-  thematicMapLayer: any = null
+  @Inject('mapbox') mapbox
 
-  showPopup = false
+  private thematicMapLayer: any = null
 
-  properties = null
+  private showPopup = false
 
-  coordinates: number[] = [0, 0]
+  private properties = null
+
+  private coordinates: number[] = [0, 0]
 
   // 信息弹框字段配置
   get popupConfig() {

@@ -1,6 +1,6 @@
 <template>
   <div class="editable-field-table">
-    <a-empty :image-style="emptyImageStyle" v-if="!visible">
+    <a-empty v-if="!visible" :image-style="emptyImageStyle">
       <span slot="description" @click="showTable" class="description">
         点击开始配置
       </span>
@@ -54,7 +54,11 @@ export default class EditableFieldTable extends Vue {
 
   get tools() {
     return (add, batchDel) => {
-      return [add, batchDel, this.closeTool]
+      const _tools = [add, this.closeTool]
+      if (this.tableData.length) {
+        _tools.splice(1, 0, batchDel)
+      }
+      return _tools
     }
   }
 
