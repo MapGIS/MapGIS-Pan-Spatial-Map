@@ -294,7 +294,7 @@ export default class Common extends Vue {
     if (serverParams) {
       const { ip, port, gdbp, docName, layerIndex } = serverParams
 
-      FieldInstance.getFields(serverParams).then(fields => {
+      FieldInstance.fetchFields(serverParams).then(fields => {
         this.fields = fields.map(({ alias, value }) => ({
           label: alias,
           value
