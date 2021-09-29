@@ -1,9 +1,9 @@
 <template>
   <!-- 聚合标注专题图 -->
   <mapgis-3d-mapv-layer
-    :geojson="geojsonPoint"
+    :geojson="geojson"
     :options="options"
-    :count-field="countField"
+    :count-field="field"
   />
 </template>
 <script lang="ts">
@@ -12,15 +12,11 @@ import BaseMixin from '../../mixins/base'
 
 @Component
 export default class CesiumLabel extends Mixins(BaseMixin) {
-  geojsonPoint = {}
-
-  get countField() {
-    return 'count'
-  }
-
   get options() {
     return {
+      cesium: { postRender: true, postRenderFrame: 0 },
       draw: 'cluster',
+      context: '2d',
       fillStyle: 'rgba(255, 50, 0, 1.0)',
       size: 50 / 3 / 2,
       minSize: 8,
@@ -43,24 +39,5 @@ export default class CesiumLabel extends Mixins(BaseMixin) {
       ...(this.subjectData.style || {})
     }
   }
-
-  /**
-   * 展示图层
-   */
-  showLayer() {
-    if (this.geojson) {
-      this.geojsonPoint = this.geojson
-    }
-  }
-
-  /**
-   * 移除图层
-   */
-  removeLayer() {
-    if (this.geojsonPoint) {
-      this.geojsonPoint.features = []
-    }
-  }
 }
 </script>
-<style lang="less" scoped></style>

@@ -29,10 +29,6 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
     return this.subjectData.labelStyle
   }
 
-  get field() {
-    return this.subjectData.field
-  }
-
   /**
    * 获取图层geo要素数据存入实体中
    * @param layer 图层
