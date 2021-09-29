@@ -40,14 +40,16 @@ import CesiumLayers from './components/Cesium'
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
-  // 组件唯一值
-  vueKey = 'map'
+  @Inject('map') map
+
+  // 联动标识|组件标识
+  private vueKey = 'map'
 
   // 高亮选项的标注点
-  marker = null
+  private marker = null
 
   // 要素数据
-  dataSet: Feature.FeatureIGS | null = null
+  private dataSet: Feature.FeatureIGS | null = null
 
   get prefix() {
     return this.is2DMapMode ? 'Mapbox' : 'Cesium'
@@ -66,6 +68,14 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   }
 
   /**
+   * 设置初始范围
+   */
+  initBound() {
+    this.map.setCenter([105, 36])
+    this.map.setZoom(5)
+  }
+
+  /**
    * 清除高亮
    */
   clearHighlight() {
@@ -76,7 +86,6 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * 设置高亮
    */
   setHighlight(marker) {
-    // const { xmin, xmax, ymin, ymax } = marker.feature.bound
     this.marker = marker
   }
 
@@ -89,7 +98,6 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
       this.dataSet = null
     } else {
       this.setFeaturesQuery({
-        isPage: false,
         isCache: false,
         onSuccess: dataSet => (this.dataSet = dataSet)
       })
@@ -106,6 +114,14 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
     } else if (nV.from !== this.vueKey) {
       this.setHighlight(nV.marker)
     }
+  }
+
+  created() {
+    this.initBound()
+  }
+
+  beforeDestroy() {
+    this.resetLinkage()
   }
 }
 </script>

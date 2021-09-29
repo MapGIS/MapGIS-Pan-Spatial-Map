@@ -1,6 +1,6 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { UUID, Feature } from '@mapgis/web-app-framework'
-import { FeatureFormatType, resolveQuery } from '../../../store'
+import { FeatureFormatType, resolveFeatureQuery } from '../../../store'
 import dep from '../store/dep'
 
 @Component
@@ -29,7 +29,7 @@ export default class SubjectStylesMixin extends Vue {
     fields
   }) {
     if (!fields) return
-    const geojson: Feature.FeatureGeoJSON | null = await resolveQuery(
+    const geojson: Feature.FeatureGeoJSON | null = await resolveFeatureQuery(
       {
         ip,
         port,
