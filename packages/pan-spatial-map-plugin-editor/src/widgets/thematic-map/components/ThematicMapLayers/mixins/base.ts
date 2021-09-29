@@ -4,9 +4,6 @@ import { highlightSubjectTypes } from '../../../store'
 
 @Component
 export default class BaseMixin extends Vue {
-  // 联动标识|组件标识
-  @Prop({ default: 'map' }) readonly vueKey!: string
-
   // 专题配置
   @Prop({ default: () => ({}) }) readonly subjectData!: any
 
@@ -25,7 +22,7 @@ export default class BaseMixin extends Vue {
 
   private id = UUID.uuid()
 
-  private geojson: Feature.FeatureGeoJSON = {}
+  private geojson: Feature.FeatureGeoJSON = null
 
   // 是否支持图属高亮
   get hasHighlight() {
@@ -45,19 +42,16 @@ export default class BaseMixin extends Vue {
   setGeoJSON(dataSet: Feature.FeatureIGS | null = null) {
     this.geojson = dataSet
       ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(dataSet)
-      : {}
+      : null
   }
 
   /**
    * 专题图鼠标移入高亮
    * @param 移入的要素数据索引
    */
-  emitHighlight(itemIndex: number) {
+  emitHighlight(dataIndex: number) {
     if (this.hasHighlight) {
-      this.$emit('highlight', {
-        from: this.vueKey,
-        itemIndex
-      })
+      this.$emit('highlight', { dataIndex })
     }
   }
 

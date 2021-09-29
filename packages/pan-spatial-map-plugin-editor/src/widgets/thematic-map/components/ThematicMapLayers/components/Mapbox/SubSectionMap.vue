@@ -1,6 +1,7 @@
 <template>
   <!-- 分段专题图图层 -->
   <mapgis-igs-theme-layer-custom
+    @highlightChanged="emitHighlight"
     :showPanel="false"
     :dataSource="geojson"
     :themeProps="themeProps"
@@ -29,7 +30,7 @@ export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
   removeLayer() {
     const rangeLayer = this.$refs.customRangeThemeLayer
     if (rangeLayer) {
-      // rangeLayer.resetLayer(this.id)
+      rangeLayer.resetLayer(this.id)
     }
   }
 }

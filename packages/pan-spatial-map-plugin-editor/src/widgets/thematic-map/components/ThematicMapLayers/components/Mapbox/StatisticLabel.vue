@@ -29,7 +29,7 @@ export default class MapboxStatisticLabel extends Mixins(BaseMixin) {
   removeLayer() {
     const staticLabelLayer = this.$refs.customStaticLabelThemeLayer
     if (staticLabelLayer) {
-      // staticLabelLayer.resetLayer(this.id)
+      staticLabelLayer.resetLayer(this.id)
     }
   }
 }

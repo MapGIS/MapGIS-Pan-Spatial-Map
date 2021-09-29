@@ -48,7 +48,6 @@
               :columns="tableColumns"
               :data-source="tableData"
               :pagination="tablePagination"
-              :scroll="tableScroll"
               :customRow="setCustomRow"
             />
           </a-spin>
@@ -92,9 +91,6 @@ import {
   }
 })
 export default class ThematicMapAttributeTable extends Vue {
-  // 联动标识|组件标识
-  private vueKey = 'table'
-
   // 专题
   private subject = ''
 
@@ -140,16 +136,6 @@ export default class ThematicMapAttributeTable extends Vue {
     return this.subjectData?.table
   }
 
-  // 列表滚动
-  get tableScroll() {
-    const { length } = this.tableColumns
-    const x = length > 3 ? length * 120 : this.tableWidth
-    return {
-      x,
-      y: 230
-    }
-  }
-
   // 分页配置
   get tablePagination() {
     return {
@@ -182,10 +168,10 @@ export default class ThematicMapAttributeTable extends Vue {
 
   /**
    * 设置高亮
-   * @param {number} itemIndex 索引
+   * @param {object}  param dataIndex 数据索引
    */
-  setHighlight(itemIndex: number) {
-    this.$set(this.tableData[itemIndex], '_highlight', true)
+  setHighlight({ dataIndex }) {
+    this.$set(this.tableData[dataIndex], '_highlight', true)
   }
 
   /**
@@ -193,19 +179,14 @@ export default class ThematicMapAttributeTable extends Vue {
    * @param {object} record 行数据
    * @param {number} index 索引
    */
-  setCustomRow(record, index) {
+  setCustomRow(record, dataIndex) {
     return {
       class: {
         'row-highlight': record._highlight
       },
       on: this.hasHighlight
         ? {
-            mouseenter: () => {
-              this.setLinkageItem({
-                from: this.vueKey,
-                itemIndex: index
-              })
-            },
+            mouseenter: () => this.setLinkageItem({ dataIndex }),
             mouseleave: this.resetLinkage
           }
         : {}
@@ -224,6 +205,8 @@ export default class ThematicMapAttributeTable extends Vue {
       return {
         title,
         dataIndex: v,
+        ellipsis: true,
+        width: 120,
         sorter: (a, b) => {
           const front = a[v]
           const end = b[v]
@@ -250,12 +233,12 @@ export default class ThematicMapAttributeTable extends Vue {
       },
       onSuccess: (dataSet: Feature.FeatureIGS | null) => {
         if (dataSet) {
-          const geojsonData = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
+          const geojson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
             dataSet
           )
-          if (geojsonData) {
-            this.total = geojsonData.dataCount
-            this.tableData = geojsonData.features.map(
+          if (geojson) {
+            this.total = geojson.dataCount
+            this.tableData = geojson.features.map(
               ({ properties }) => properties
             )
           }
@@ -334,10 +317,9 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   @Watch('linkageItem', { deep: true })
   linkageItemChanged(nV) {
-    if (!nV) {
-      this.clearHighlight()
-    } else if (nV.from !== this.vueKey) {
-      this.setHighlight(nV.itemIndex)
+    this.clearHighlight()
+    if (nV) {
+      this.setHighlight(nV)
     }
   }
 }

@@ -1,6 +1,7 @@
 <template>
-  <!-- 聚合标注专题图 -->
+  <!-- 聚合标注专题图， 必须有geojson数据才会展示 -->
   <mapgis-3d-mapv-layer
+    v-if="geojson && geojson.features && !!geojson.features.length"
     :geojson="geojson"
     :options="options"
     :count-field="field"
