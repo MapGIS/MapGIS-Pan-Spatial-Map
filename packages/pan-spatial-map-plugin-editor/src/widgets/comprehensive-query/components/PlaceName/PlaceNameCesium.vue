@@ -1,13 +1,6 @@
 <template>
   <div>
     <template v-if="!cluster">
-      <mp-3d-marker-set-pro :markers="markers" :field-configs="fieldConfigs">
-      </mp-3d-marker-set-pro>
-      <mp-3d-marker-set-pro
-        :markers="activeMarkers"
-        :field-configs="activeFieldConfigs"
-      >
-      </mp-3d-marker-set-pro>
     </template>
     <!-- 聚合标注专题图 -->
     <mapgis-3d-mapv-layer
@@ -21,22 +14,13 @@
 
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { IFields } from '@mapgis/pan-spatial-map-common'
 import { MapMixin } from '@mapgis/web-app-framework'
 
 @Component({ components: {} })
 export default class PlaceNameCesium extends Mixins(MapMixin) {
-  @Prop({ type: Array, required: true, default: () => [] })
-  readonly fieldConfigs!: IFields[]
+  @Prop() selectedMarkerIcon!: string
 
-  @Prop({ type: [Array, Object], required: true, default: [] })
-  readonly markers!: Record<string, any>[]
-
-  @Prop({ type: Array, required: true, default: () => [] })
-  readonly activeFieldConfigs!: IFields[]
-
-  @Prop({ type: [Array, Object], required: true, default: [] })
-  readonly activeMarkers!: Record<string, any>[]
+  @Prop() defaultMarkerIcon!: string
 
   @Prop() cluster!: boolean
 
@@ -62,10 +46,6 @@ export default class PlaceNameCesium extends Mixins(MapMixin) {
     draw: 'cluster',
     cesium: { postRender: true, postRenderFrame: 0 },
     context: '2d'
-  }
-
-  setMapCenter(positionCoord) {
-    this.webGlobe.flyTo(positionCoord[0], positionCoord[1])
   }
 }
 </script>

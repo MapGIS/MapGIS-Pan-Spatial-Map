@@ -1,14 +1,14 @@
 <template>
   <div>
-    <template v-if="!cluster">
-      <mp-marker-set-pro :markers="markers" :field-configs="fieldConfigs">
-      </mp-marker-set-pro>
-      <mp-marker-set-pro
-        :markers="activeMarkers"
-        :field-configs="activeFieldConfigs"
-      >
-      </mp-marker-set-pro>
-    </template>
+    <mapgis-marker-layer
+      v-if="!cluster"
+      :data="geojson"
+      :highlight="false"
+      :style="{
+        activeimag: selectedMarkerIcon,
+        inactiveimage: defaultMarkerIcon
+      }"
+    />
     <!-- 聚合标注专题图 -->
     <mapgis-mapv-layer
       v-else-if="geojson && geojson.features && geojson.features.length > 0"
@@ -21,26 +21,33 @@
 
 <script lang="ts">
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator'
-import { IFields } from '@mapgis/pan-spatial-map-common'
 import { MapMixin } from '@mapgis/web-app-framework'
 
-@Component()
+@Component({ components: {} })
 export default class PlaceNameMapbox extends Mixins(MapMixin) {
-  @Prop({ type: Array, required: true, default: [] })
-  readonly fieldConfigs!: IFields[]
+  @Prop({
+    type: String,
+    default: ''
+  })
+  selectedMarkerIcon!: string
 
-  @Prop({ type: [Array, Object], required: true, default: [] })
-  readonly markers!: Record<string, any>[]
+  @Prop({
+    type: String,
+    default: ''
+  })
+  defaultMarkerIcon!: string
 
-  @Prop({ type: Array, required: true, default: () => [] })
-  readonly activeFieldConfigs!: IFields[]
+  @Prop({
+    type: Boolean,
+    default: false
+  })
+  cluster!: boolean
 
-  @Prop({ type: [Array, Object], required: true, default: [] })
-  readonly activeMarkers!: Record<string, any>[]
-
-  @Prop() cluster!: boolean
-
-  @Prop() geojson!: Record<string, unknown>
+  @Prop({
+    type: Object,
+    default: () => ({})
+  })
+  geojson!: Record<string, unknown>
 
   options = {
     fillStyle: 'rgba(255, 50, 0, 1.0)',
@@ -62,16 +69,6 @@ export default class PlaceNameMapbox extends Mixins(MapMixin) {
     cesium: { postRender: true, postRenderFrame: 0 },
     draw: 'cluster',
     context: '2d'
-  }
-
-  setMapCenter(positionCoord) {
-    this.map.flyTo({
-      center: positionCoord,
-      curve: 1,
-      easing(t) {
-        return t
-      }
-    })
   }
 }
 </script>
