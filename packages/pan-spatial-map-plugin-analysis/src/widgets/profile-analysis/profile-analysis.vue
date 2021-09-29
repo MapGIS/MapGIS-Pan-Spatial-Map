@@ -72,11 +72,11 @@
     <mp-window-wrapper :visible="profile2dVisible">
       <mp-window
         :visible.sync="profile2dVisible"
-        :min-width="400"
+        :min-width="800"
         :max-height="250"
         anchor="bottom-center"
         title="剖面信息"
-        ref="profileWindow"
+        :style="{ background: `${profileWindowBackground}` }"
       >
         <div
           id="profileChart"
@@ -146,6 +146,8 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   // 进度条对象
   private loading = null
 
+  private profileWindowBackground = 'rgba(20,20,20,0.6)'
+
   get sceneControllerInstance() {
     return Objects.SceneController.getInstance(
       this.Cesium,
@@ -173,6 +175,16 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       },
       title: {
         show: false
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {
+            type: 'png',
+            show: true,
+            title: '保存为图片'
+          },
+          restore: { show: true, title: '刷新' }
+        }
       },
       grid: {
         top: 25,
@@ -319,9 +331,8 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     ]
     const colorObject = ColorUtil.getColorObject(bgColor, 0.6)
     const { r, g, b, a } = colorObject
-    const component = this.$refs.profileWindow
 
-    component.style.background = `rgba(${r},${g},${b},${a})`
+    this.profileWindowBackground = `rgba(${r},${g},${b},${a})`
   }
 
   /**

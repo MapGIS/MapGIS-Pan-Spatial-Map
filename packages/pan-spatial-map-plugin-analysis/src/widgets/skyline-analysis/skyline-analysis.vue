@@ -29,10 +29,11 @@
       <mp-window
         @window-size="onSkyline2dWindowSize"
         :visible.sync="skyline2dVisible"
-        :min-width="300"
-        :max-height="300"
-        anchor="bottom-left"
+        :min-width="800"
+        :max-height="250"
+        anchor="bottom-center"
         title="二维天际线"
+        :style="{ background: `${skylineWindowBackground}` }"
       >
         <div ref="skyline2dChart">
           <div id="skyline-2d-chart" />
@@ -43,7 +44,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
+import { WidgetMixin, Objects, ColorUtil } from '@mapgis/web-app-framework'
 import * as echarts from 'echarts'
 import _cloneDeep from 'lodash/cloneDeep'
 import chartOptions from './config/skyline2dChartOptions'
@@ -68,6 +69,8 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
   private positions2D: Array<{ x: number; y: number }> = []
 
   private isLogarithmicDepthBufferEnable = false
+
+  private skylineWindowBackground = 'rgba(20,20,20,0.6)'
 
   get sceneControllerInstance() {
     return Objects.SceneController.getInstance(
@@ -114,6 +117,7 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
     if (this.isLogarithmicDepthBufferEnable === true) {
       this.sceneControllerInstance.setLogarithmicDepthBufferEnable(false)
     }
+    this.changeSkylineWindowApha()
   }
 
   // 微件失活时
@@ -129,10 +133,21 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
     this.$nextTick(() => {
       if (this.skyline2dChart) {
         const width =
-          mode === 'max' ? this.$refs.skyline2dChart.clientWidth : 300
+          mode === 'max' ? this.$refs.skyline2dChart.clientWidth : 800
         this.skyline2dChart.resize({ width })
       }
     })
+  }
+
+  changeSkylineWindowApha() {
+    const components = document.getElementsByClassName('mp-window-wrapper')[0]
+    const bgColor = document.defaultView.getComputedStyle(components, null)[
+      'background-color'
+    ]
+    const colorObject = ColorUtil.getColorObject(bgColor, 0.6)
+    const { r, g, b, a } = colorObject
+
+    this.skylineWindowBackground = `rgba(${r},${g},${b},${a})`
   }
 
   /**
@@ -285,8 +300,8 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
 }
 
 #skyline-2d-chart {
-  width: 300px;
-  height: 230px;
+  width: 800px;
+  height: 180px;
 }
 
 .mp-widget-skyline-analysis {
