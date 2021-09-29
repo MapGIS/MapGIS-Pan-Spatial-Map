@@ -98,21 +98,28 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 
   private recalculate = false // 是否重新计算
 
-  private depthTestAgainstTerrain = false // 深度检测是否已开启
+  // 深度检测是否已开启，默认为undefined，当这个值为undefined的时候，说明没有赋值，不做任何处理
+  private isDepthTestAgainstTerrainEnable = undefined
 
   private mHeight = this.formData.maxHeight // 淹没最高高度变化前的值
 
   private timer = null
 
-  /**
-   * rgba转cesium内部颜色
-   */
-  get edgeColor() {
+  get sceneControllerInstance() {
     return Objects.SceneController.getInstance(
       this.Cesium,
       this.CesiumZondy,
       this.webGlobe
-    ).colorToCesiumColor(this.formData.floodColor)
+    )
+  }
+
+  /**
+   * rgba转cesium内部颜色
+   */
+  get edgeColor() {
+    return this.sceneControllerInstance.colorToCesiumColor(
+      this.formData.floodColor
+    )
   }
 
   @Watch('formData.minHeight', { deep: true, immediate: true })
@@ -155,12 +162,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     }
   }
 
-  onActive() {
-    const { viewer } = this.webGlobe
-    if (viewer.scene.globe.depthTestAgainstTerrain) {
-      this.depthTestAgainstTerrain = true
-    }
-  }
+  onActive() {}
 
   // 微件失活时
   onDeActive() {
@@ -241,7 +243,11 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     // 指定光线强度
     window.FloodingManage.flood.specularIntensity = 3.0
 
-    viewer.scene.globe.depthTestAgainstTerrain = true
+    this.isDepthTestAgainstTerrainEnable = this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    if (!this.isDepthTestAgainstTerrainEnable) {
+      // 如果深度检测没有开启，则开启
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(true)
+    }
     // 添加洪水淹没结果显示
     this.webGlobe.scene.VisualAnalysisManager.add(window.FloodingManage.flood)
     this.mHeight = maxHeight
@@ -277,6 +283,19 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
     this.analysis()
   }
 
+  restoreDepthTestAgainstTerrain() {
+    // 恢复深度检测设置
+    if (
+      this.isDepthTestAgainstTerrainEnable !== undefined &&
+      this.isDepthTestAgainstTerrainEnable !==
+        this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    ) {
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(
+        this.isDepthTestAgainstTerrainEnable
+      )
+    }
+  }
+
   /**
    * 移除洪水淹没对象
    */
@@ -289,6 +308,8 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
       )
       window.FloodingManage.flood = null
     }
+
+    this.restoreDepthTestAgainstTerrain()
   }
 
   /**
@@ -300,10 +321,6 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
       // 取消交互式绘制矩形事件激活状态
       window.FloodingManage.drawElement.stopDrawing()
       window.FloodingManage.drawElement = null
-    }
-
-    if (!this.depthTestAgainstTerrain) {
-      this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
     }
 
     this.positions = null

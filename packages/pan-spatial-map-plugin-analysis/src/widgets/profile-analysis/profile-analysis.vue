@@ -140,13 +140,19 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   // 是否显示二维剖面
   private profile2dVisible = false
 
-  // 深度检测是否已开启
-  private depthTestAgainstTerrain = false
+  // 深度检测是否已开启，默认为undefined，当这个值为undefined的时候，说明没有赋值，不做任何处理
+  private isDepthTestAgainstTerrainEnable = undefined
 
   // 进度条对象
   private loading = null
 
-  // private txtColor = '#000000a6'
+  get sceneControllerInstance() {
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+  }
 
   /**
    * 获取二维剖面设置参数
@@ -322,10 +328,6 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
    * 打开模块
    */
   onOpen() {
-    const { viewer } = this.webGlobe
-    if (viewer.scene.globe.depthTestAgainstTerrain) {
-      this.depthTestAgainstTerrain = true
-    }
     this.isActive = true
     this.changeLayer()
     this.changeProfileWindowApha()
@@ -390,7 +392,11 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   analysis() {
     const { viewer } = this.webGlobe
     this.profile2dVisible = false
-    viewer.scene.globe.depthTestAgainstTerrain = true
+    this.isDepthTestAgainstTerrainEnable = this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    if (!this.isDepthTestAgainstTerrainEnable) {
+      // 如果深度检测没有开启，则开启
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(true)
+    }
     const {
       polygonColor,
       height,
@@ -469,13 +475,24 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       this.profile2dVisible = true
       this.removeLoading()
     }
+    this.restoreDepthTestAgainstTerrain()
+  }
+
+  restoreDepthTestAgainstTerrain() {
+    // 恢复深度检测设置
+    if (
+      this.isDepthTestAgainstTerrainEnable !== undefined &&
+      this.isDepthTestAgainstTerrainEnable !==
+        this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    ) {
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(
+        this.isDepthTestAgainstTerrainEnable
+      )
+    }
   }
 
   remove() {
-    // 恢复深度检测设置
-    if (!this.depthTestAgainstTerrain) {
-      this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
-    }
+    this.restoreDepthTestAgainstTerrain()
 
     // 移除分析结果
     if (this.terrainProfile) {
