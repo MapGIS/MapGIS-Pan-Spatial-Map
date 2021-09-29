@@ -1,6 +1,7 @@
 <template>
   <!-- 蜂窝图 -->
   <mapgis-3d-mapv-layer
+    v-if="geojson && geojson.features && !!geojson.features.length"
     :geojson="geojson"
     :options="options"
     :count-field="field"

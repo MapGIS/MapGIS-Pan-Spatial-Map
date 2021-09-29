@@ -8,7 +8,6 @@
         @clear-highlight="resetLinkage"
         :key="t"
         :is="t"
-        :vue-key="vueKey"
         :data-set="dataSet"
         :subject-data="subjectData"
       />
@@ -41,9 +40,6 @@ import CesiumLayers from './components/Cesium'
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
   @Inject('map') map
-
-  // 联动标识|组件标识
-  private vueKey = 'map'
 
   // 高亮选项的标注点
   private marker = null
@@ -84,8 +80,9 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
 
   /**
    * 设置高亮
+   * @param {object}  param marker 标注信息
    */
-  setHighlight(marker) {
+  setHighlight({ marker }) {
     this.marker = marker
   }
 
@@ -109,10 +106,9 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    */
   @Watch('linkageItem', { deep: true })
   watchHighlightItem(nV) {
-    if (!nV) {
-      this.clearHighlight()
-    } else if (nV.from !== this.vueKey) {
-      this.setHighlight(nV.marker)
+    this.clearHighlight()
+    if (nV) {
+      this.setHighlight(nV)
     }
   }
 

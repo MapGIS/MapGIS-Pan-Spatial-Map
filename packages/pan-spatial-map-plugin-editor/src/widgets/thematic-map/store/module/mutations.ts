@@ -262,18 +262,17 @@ const mutations = {
    * 当前高亮的要素数据项(图属联动项)
    * 高亮项使用的是geojson数据需对dataSet转换
    */
-  setLinkageItem({ state }, { from, itemIndex }: LinkageItem) {
+  setLinkageItem({ state }, { dataIndex }: LinkageItem) {
     markerIconInstance.unSelectIcon().then(img => {
       const geoJson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
         state.pageDataSet
       )
-      const feature = geoJson.features[itemIndex]
+      const feature = geoJson.features[dataIndex]
       if (feature) {
         const coordinates = Feature.getGeoJSONFeatureCenter(feature)
         const { properties } = feature
         state.linkageItem = {
-          from,
-          itemIndex,
+          dataIndex,
           marker: {
             img,
             coordinates,

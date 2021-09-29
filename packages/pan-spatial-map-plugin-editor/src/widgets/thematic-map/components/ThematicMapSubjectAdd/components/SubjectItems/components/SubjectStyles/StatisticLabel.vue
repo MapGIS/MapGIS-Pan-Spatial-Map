@@ -30,9 +30,9 @@ export default class StatisticLabel extends Mixins(SubjectStylesMixin) {
    * 保存: 保存时调用
    */
   getFormResult() {
-    const values = this.$refs.customPanelForm.$_getForm()
+    const labelStyle = this.$refs.customPanelForm.$_getForm()
     return {
-      labelStyle: Object.values(values)
+      labelStyle
     }
   }
 }

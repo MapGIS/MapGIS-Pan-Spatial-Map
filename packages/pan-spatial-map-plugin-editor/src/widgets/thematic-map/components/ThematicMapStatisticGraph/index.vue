@@ -100,9 +100,6 @@ interface IChartOption {
   }
 })
 export default class ThematicMapStatisticGraph extends Vue {
-  // 联动标识|组件标识
-  private vueKey = 'gragh'
-
   // 默认标注图标
   private defaultIcon = ''
 
@@ -286,9 +283,9 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 取消高亮图表图形
-   * @param {number} dataIndex 数据索引
+   * @param {object}  param dataIndex 数据索引
    */
-  onClearHighlight(dataIndex) {
+  onClearHighlight({ dataIndex }) {
     this.chart.dispatchAction({
       type: 'downplay',
       dataIndex
@@ -301,9 +298,9 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 高亮图表图形
-   * @param {number} dataIndex 数据索引
+   * @param {object}  param dataIndex 数据索引
    */
-  onHighlight(dataIndex) {
+  onHighlight({ dataIndex }) {
     this.chart.dispatchAction({
       type: 'showTip',
       seriesIndex: 0,
@@ -321,12 +318,9 @@ export default class ThematicMapStatisticGraph extends Vue {
   @Watch('hasHighlight')
   watchHasHighlight(nV) {
     if (nV) {
-      this.chart.on('mouseover', ({ dataIndex }) => {
-        this.setLinkageItem({
-          from: this.vueKey,
-          itemIndex: dataIndex
-        })
-      })
+      this.chart.on('mouseover', ({ dataIndex }) =>
+        this.setLinkageItem({ dataIndex })
+      )
       this.chart.on('mouseout', this.resetLinkage)
     }
   }
@@ -345,10 +339,9 @@ export default class ThematicMapStatisticGraph extends Vue {
    */
   @Watch('linkageItem', { deep: true })
   watchHighlightItem(nV) {
-    if (!nV) {
-      this.onClearHighlight()
-    } else if (nV.from !== this.vueKey) {
-      this.onHighlight(nV.itemIndex)
+    if (nV) {
+      this.onClearHighlight(nV)
+      this.onHighlight(nV)
     }
   }
 

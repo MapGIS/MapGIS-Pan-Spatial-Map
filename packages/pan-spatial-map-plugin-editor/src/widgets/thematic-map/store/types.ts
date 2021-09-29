@@ -124,8 +124,7 @@ export type ThematicMapSubjectConfigNode =
 
 // 图属联动项
 export interface LinkageItem {
-  from: string
-  itemIndex: number
+  dataIndex: number
   marker?: {
     fid: string
     markerId: string

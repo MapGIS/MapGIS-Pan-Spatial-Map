@@ -30,9 +30,10 @@ export default class SubSectionMap extends Mixins(SubjectStylesMixin) {
    * 保存: 保存时调用
    */
   getFormResult() {
-    const values = this.$refs.customPanelForm.$_getForm()
+    const color = this.$refs.customPanelForm.$_getForm()
+
     return {
-      color: Object.values(values)
+      color
     }
   }
 }
