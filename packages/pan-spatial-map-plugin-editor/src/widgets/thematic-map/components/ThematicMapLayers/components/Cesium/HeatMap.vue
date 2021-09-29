@@ -36,11 +36,6 @@ export default class CesiumHeatMap extends Mixins(BaseMixin) {
     return this.subjectData.style?.type === typeEnum.MAPV
   }
 
-  // 统计属性
-  get field() {
-    return this.subjectData.field
-  }
-
   // 热力图配置项
   get options() {
     return this.subjectData.style
@@ -92,4 +87,3 @@ export default class CesiumHeatMap extends Mixins(BaseMixin) {
   }
 }
 </script>
-<style lang="less" scoped></style>

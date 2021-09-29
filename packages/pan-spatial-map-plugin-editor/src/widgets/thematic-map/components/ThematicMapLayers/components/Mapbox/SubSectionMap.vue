@@ -5,7 +5,7 @@
     :dataSource="geojson"
     :themeProps="themeProps"
     :theme-options="themeOptions"
-    ref="customThemeLayer"
+    ref="customRangeThemeLayer"
   />
 </template>
 <script lang="ts">
@@ -17,13 +17,20 @@ export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
   get themeProps() {
     return {
       layerId: this.id,
-      themeField: this.subjectData.field,
+      themeField: this.field,
       themeType: 'range'
     }
   }
 
   get themeOptions() {
     return this.subjectData?.color || []
+  }
+
+  removeLayer() {
+    const rangeLayer = this.$refs.customRangeThemeLayer
+    if (rangeLayer) {
+      // rangeLayer.resetLayer(this.id)
+    }
   }
 }
 </script>

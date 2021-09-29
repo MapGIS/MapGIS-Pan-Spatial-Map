@@ -15,17 +15,35 @@
   </mapgis-popup>
 </template>
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Inject } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
 import _debounce from 'lodash/debounce'
-import MapboxMixin from '../../mixins/mapbox'
+import BaseMixin from '../../mixins/base'
 
 @Component
-export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
-  colors: string[] = ['#FFB980', '#5AB1EF', '#B6A2DE', '#2EC7C9', '#D87A80']
+export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
+  @Inject('map') map
+
+  @Inject('mapbox') mapbox
+
+  private thematicMapLayer: any = null
+
+  private showPopup = false
+
+  private properties = null
+
+  private coordinates: number[] = [0, 0]
+
+  private colors: string[] = [
+    '#FFB980',
+    '#5AB1EF',
+    '#B6A2DE',
+    '#2EC7C9',
+    '#D87A80'
+  ]
 
   // Bar add Bar3D chartsSetting
-  chartsSettingForBarAddBar3DCommon = {
+  private chartsSettingForBarAddBar3DCommon = {
     width: 230,
     height: 110,
     xShapeBlank: [10, 10, 10],
@@ -39,7 +57,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
   }
 
   // Point add Line chartsSetting
-  chartsSettingForPointOrLine = {
+  private chartsSettingForPointOrLine = {
     width: 220,
     height: 100,
     xShapeBlank: [10, 10],
@@ -65,7 +83,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
   }
 
   // Pie add Ring chartsSetting
-  chartsSettingForPieOrRing = {
+  private chartsSettingForPieOrRing = {
     width: 240,
     height: 100,
     sectorStyle: {
@@ -80,7 +98,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
   }
 
   // 设置graphThemeLayer option参数
-  thematicMapLayerOptions = {
+  private thematicMapLayerOptions = {
     map: this.map,
     isOverLay: true,
     calGravity: true,
@@ -96,6 +114,11 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
 
   get graphType() {
     return this.subjectData.graphType
+  }
+
+  // 信息弹框字段配置
+  get popupConfig() {
+    return this.subjectData?.popup || {}
   }
 
   get faceStyleByFields() {
@@ -210,10 +233,32 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
   }
 
   /**
-   * 获取专题图图层
+   * 移除图层
    */
-  getThematicMapLayer() {
+  removeLayer() {
+    if (this.thematicMapLayer) {
+      const { id } = this.thematicMapLayer
+      if (this.map.getLayer(id)) {
+        this.map.removeLayer(id)
+      } else {
+        if (this.thematicMapLayer.clear) {
+          this.thematicMapLayer.clear()
+        }
+        if (this.thematicMapLayer.removeFromMap) {
+          this.thematicMapLayer.removeFromMap()
+        }
+      }
+      this.thematicMapLayer = null
+      this.closePopupWin()
+    }
+  }
+
+  /**
+   * 显示图层
+   */
+  showLayer() {
     if (!this.graph) return
+    this.removeLayer()
     this.initGraphicStyles()
     let chartsSetting = null
     let type = ''
@@ -257,10 +302,13 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
   }
 
   /**
-   * 展示信息弹框
+   * 开启信息窗口
    */
-  getPopupInfos({ event, target }: any, { showFields }: any) {
-    if (!target.dataInfo) return
+  showPopupWin({ event, target }: any) {
+    const { showFields } = this.popupConfig
+    if (!target || !target.dataInfo || !showFields || !showFields.length) return
+    this.showPopup = true
+    this.emitHighlight(target.refDataID - 1)
     const { field, value } = target.dataInfo
     const { offsetTop, offsetLeft } = this.map.getContainer()
     const { lng, lat } = this.map.unproject(
@@ -270,6 +318,16 @@ export default class MapboxBaseMapWithGraph extends Mixins(MapboxMixin) {
     this.properties = {
       [field]: value
     }
+  }
+
+  /**
+   * 关闭信息窗口
+   */
+  closePopupWin() {
+    this.showPopup = false
+    this.properties = null
+    this.coordinates = [0, 0]
+    this.emitClearHighlight()
   }
 }
 </script>

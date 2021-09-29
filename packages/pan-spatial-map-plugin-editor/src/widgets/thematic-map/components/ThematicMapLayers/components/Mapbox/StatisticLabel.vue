@@ -5,7 +5,7 @@
     :dataSource="geojson"
     :themeProps="themeProps"
     :theme-options="themeOptions"
-    ref="customThemeLayer"
+    ref="customStaticLabelThemeLayer"
   />
 </template>
 <script lang="ts">
@@ -17,13 +17,20 @@ export default class MapboxStatisticLabel extends Mixins(BaseMixin) {
   get themeProps() {
     return {
       layerId: this.id,
-      themeField: this.subjectData.field,
+      themeField: this.field,
       themeType: 'symbol'
     }
   }
 
   get themeOptions() {
     return this.subjectData?.labelStyle || []
+  }
+
+  removeLayer() {
+    const staticLabelLayer = this.$refs.customStaticLabelThemeLayer
+    if (staticLabelLayer) {
+      // staticLabelLayer.resetLayer(this.id)
+    }
   }
 }
 </script>

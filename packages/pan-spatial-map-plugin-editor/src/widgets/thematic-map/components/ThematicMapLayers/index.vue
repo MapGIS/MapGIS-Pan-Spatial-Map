@@ -72,7 +72,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    */
   initBound() {
     this.map.setCenter([105, 36])
-    this.map.setZoom(5)
+    this.map.setZoom(3)
   }
 
   /**
