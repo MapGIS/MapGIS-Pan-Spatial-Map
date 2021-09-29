@@ -136,12 +136,6 @@ export interface LinkageItem {
   }
 }
 
-// 分页配置
-export interface PageParam {
-  page: number
-  pageCount: number
-}
-
 // 专题数据: 旧版本的请求方式提取到了外层, 新版本直接根据配置项里的gdbp|docName判断
 export interface SubjectData {
   configType?: keyof ConfigType
@@ -149,22 +143,7 @@ export interface SubjectData {
   [k: string]: any
 }
 
-export interface IState {
-  modules: Array<ModuleType>
-  loading: boolean
-  pageParam: PageParam
-  pageDataSet: Feature.FeatureIGS | null
-  subjectData: SubjectData | null
-  selectedSubjectTime: string
-  selectedSubjectTimeList: Array<string>
-  selectedSubject?: ThematicMapSubjectConfigNode
-  selectedSubjectList: Array<ThematicMapSubjectConfigNode>
-  baseConfig?: ThematicMapBaseConfig | null
-  subjectConfig: Array<ThematicMapSubjectConfigNode>
-  linkageItem: LinkageItem | null
-}
-
-export interface IResolveQueryParams {
+export interface IFeatureQueryParams {
   ip: string
   port: string
   gdbp: string
@@ -178,4 +157,18 @@ export interface IResolveQueryParams {
   IncludeGeometry?: boolean
   IncludeWebGraphic?: boolean
   configType?: ConfigType
+}
+
+export interface State {
+  modules: Array<ModuleType>
+  loading: boolean
+  pageDataSet: Feature.FeatureIGS | null
+  subjectData: SubjectData | null
+  selectedSubjectTime: string
+  selectedSubjectTimeList: Array<string>
+  selectedSubject?: ThematicMapSubjectConfigNode
+  selectedSubjectList: Array<ThematicMapSubjectConfigNode>
+  baseConfig?: ThematicMapBaseConfig | null
+  subjectConfig: Array<ThematicMapSubjectConfigNode>
+  linkageItem: LinkageItem | null
 }

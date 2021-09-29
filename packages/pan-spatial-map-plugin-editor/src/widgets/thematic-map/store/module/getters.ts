@@ -1,29 +1,29 @@
 import Vue from 'vue'
-import { ModuleType, IState } from '../types'
+import { ModuleType, State } from '../types'
 
 const getters = {
   // 获取某个功能模块的开关状态
-  isVisible: ({ modules }: IState) => (t: ModuleType) => modules.includes(t),
+  isVisible: ({ modules }: State) => (t: ModuleType) => modules.includes(t),
   // 加载
-  loading: (state: IState) => state.loading,
+  loading: (state: State) => state.loading,
   // 获取要素查询当前页数据
-  pageDataSet: (state: IState) => state.pageDataSet,
+  pageDataSet: (state: State) => state.pageDataSet,
   // 获取选中专题对应年度的专题数据
-  subjectData: (state: IState) => state.subjectData,
+  subjectData: (state: State) => state.subjectData,
   // 获取选中的专题
-  selectedSubject: (state: IState) => state.selectedSubject,
+  selectedSubject: (state: State) => state.selectedSubject,
   // 获取选中的专题集合
-  selectedSubjectList: (state: IState) => state.selectedSubjectList,
+  selectedSubjectList: (state: State) => state.selectedSubjectList,
   // 获取时间轴已选中的年度
-  selectedSubjectTime: (state: IState) => state.selectedSubjectTime,
+  selectedSubjectTime: (state: State) => state.selectedSubjectTime,
   // 获取选中专题的年度列表
-  selectedSubjectTimeList: (state: IState) => state.selectedSubjectTimeList,
+  selectedSubjectTimeList: (state: State) => state.selectedSubjectTimeList,
   // 基础配置
-  baseConfig: (state: IState) => state.baseConfig,
+  baseConfig: (state: State) => state.baseConfig,
   // 专题配置
-  subjectConfig: (state: IState) => state.subjectConfig,
+  subjectConfig: (state: State) => state.subjectConfig,
   // 图属联动项
-  linkageItem: (state: IState) => state.linkageItem
+  linkageItem: (state: State) => state.linkageItem
 }
 
 export default Vue.observable(getters)

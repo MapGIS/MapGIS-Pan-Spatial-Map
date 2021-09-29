@@ -7,7 +7,7 @@
         :visible.sync="visible"
         :horizontal-offset="48"
         :vertical-offset="50"
-        :width="360"
+        :width="chartWidth"
         :has-padding="false"
         title="统计表"
         anchor="bottom-right"
@@ -62,6 +62,10 @@ import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
 
+enum windowMode {
+  max = 'max',
+  normal = 'normal'
+}
 enum ChartType {
   BAR = 'BAR',
   LINE = 'LINE',
@@ -96,25 +100,29 @@ interface IChartOption {
   }
 })
 export default class ThematicMapStatisticGraph extends Vue {
-  vueKey = 'gragh'
+  // 联动标识|组件标识
+  private vueKey = 'gragh'
 
   // 默认标注图标
-  defaultIcon = ''
+  private defaultIcon = ''
 
   // 当前活动的图标
-  activeChart: keyof ChartType = ChartType.BAR
+  private activeChart: keyof ChartType = ChartType.BAR
 
   // 指标
-  target = ''
+  private target = ''
 
   // 指标列表
-  targetList = []
+  private targetList = []
 
   // 图表
-  chart: HTMLCanvasElement | null = null
+  private chart: HTMLCanvasElement | null = null
+
+  // 图表宽度
+  private chartWidth = 360
 
   // 图表配置
-  chartOption: IChartOption = {
+  private chartOption: IChartOption = {
     title: '',
     color: '',
     x: [],
@@ -122,7 +130,7 @@ export default class ThematicMapStatisticGraph extends Vue {
   }
 
   // 3种图表配置
-  chartConfig: IChartConfig[] = [
+  private chartConfig: IChartConfig[] = [
     {
       iconType: 'bar-chart',
       tooltip: '柱状图',
@@ -168,24 +176,24 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 窗口变化
+   * @param {string} mode <max | normal> 模式
    */
-  onWindowSize(mode?: 'max' | 'normal') {
+  onWindowSize(mode?: keyof windowMode) {
     this.$nextTick(() => {
       if (this.chart) {
-        // const width =
-        //   mode === 'max' ? this.$refs.statisticGraph.clientWidth : 360
-        if (mode === 'max') {
-          this.chart.resize({
-            width: this.$refs.statisticGraph.clientWidth
-          })
-        }
+        this.chart.resize({
+          width:
+            mode === windowMode.MAX
+              ? this.$refs.statisticGraph.clientWidth
+              : this.chartWidth
+        })
       }
     })
   }
 
   /**
    * 将query的结果设置图表配置里
-   * @param dataSet
+   * @param {object} dataSet FeatureIGS
    */
   getChartOptions(dataSet: Feature.FeatureIGS | null) {
     const xArr = []
@@ -237,7 +245,7 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 图表类型变化
-   * @param type<string>
+   * @param {string} type<BAR | LINE | PIE> 类型
    */
   onChartTypeChange(type: keyof ChartType) {
     this.$nextTick(() => {
@@ -278,7 +286,7 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 取消高亮图表图形
-   * @param {Number} 数据索引
+   * @param {number} dataIndex 数据索引
    */
   onClearHighlight(dataIndex) {
     this.chart.dispatchAction({
@@ -293,7 +301,7 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 高亮图表图形
-   * @param {Number} 数据索引
+   * @param {number} dataIndex 数据索引
    */
   onHighlight(dataIndex) {
     this.chart.dispatchAction({

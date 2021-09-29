@@ -7,7 +7,7 @@ import {
   NewSubjectConfig,
   ThematicMapSubjectConfigNode
 } from './types'
-import { resolveQuery } from './module/mutations'
+import { resolveFeatureQuery } from './module/mutations'
 import thematicMapStore, { mapGetters, mapMutations } from './module'
 
 // 模块列表
@@ -43,5 +43,5 @@ export {
   thematicMapStore,
   mapGetters,
   mapMutations,
-  resolveQuery
+  resolveFeatureQuery
 }

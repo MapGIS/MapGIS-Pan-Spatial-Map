@@ -1,4 +1,4 @@
-import { resolveQuery } from '../../../store'
+import { resolveFeatureQuery } from '../../../store'
 
 interface QueryParams {
   ip: string
@@ -45,7 +45,7 @@ class Fields {
     layerName,
     layerIndex
   }: QueryParams) {
-    const result = await resolveQuery({
+    const result = await resolveFeatureQuery({
       ip,
       port,
       gdbp,

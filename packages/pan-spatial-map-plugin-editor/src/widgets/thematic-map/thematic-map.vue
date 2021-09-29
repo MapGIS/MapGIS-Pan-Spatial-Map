@@ -1,5 +1,5 @@
 <template>
-  <div class="mp-widget-thematic-map">
+  <div class="mp-widget-thematic-map" v-if="!flag">
     <!-- 专题图树 -->
     <!-- <mp-group-tab
       :has-top-margin="false"
@@ -171,7 +171,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    */
   setModulesHide(exclude: ModuleType) {
     moduleTypeList.forEach(t => t !== exclude && this.resetVisible(t))
-    this.resetLinkage()
+    // this.resetLinkage()
   }
 
   /**
@@ -287,6 +287,20 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   }
 
   /**
+   * 清除
+   */
+  onClear() {
+    this.flag = true
+    this.checkedThematicMapNodes = []
+    this.setLoadingHide()
+    // 重置缓存
+    this.setModulesHide()
+    this.setBaseConfig(null)
+    this.setSubjectConfig([])
+    this.setSelectedSubjectList([])
+  }
+
+  /**
    * 专题图面板打开
    * fixme 未对接服务，取store里缓存的配置
    */
@@ -301,15 +315,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * 专题图面板关闭
    */
-  onClose() {
-    this.flag = true
-    this.checkedThematicMapNodes = []
-    this.setSelectedSubjectList([])
-    this.setModulesHide()
-    this.setLoadingHide()
-    // this.setBaseConfig(null)
-    // this.setSubjectConfig([])
-  }
+  onClose() {}
 
   /**
    * 保存后更新了store里的subjectConfig后需要更新专题配置树
@@ -325,6 +331,10 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
     const { baseConfig, subjectConfig = [] } = this.widgetInfo.config
     this.setBaseConfig(baseConfig)
     this.setSubjectConfig(subjectConfig)
+  }
+
+  beforeDestroy() {
+    this.onClear()
   }
 }
 </script>

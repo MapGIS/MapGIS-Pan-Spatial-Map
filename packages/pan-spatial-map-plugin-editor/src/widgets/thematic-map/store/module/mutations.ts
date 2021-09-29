@@ -12,27 +12,22 @@ import {
   ConfigType,
   ModuleType,
   LinkageItem,
-  PageParam,
   SubjectData,
   ThematicMapBaseConfig,
   ThematicMapSubjectConfigNode,
   NewSubjectConfig,
-  IResolveQueryParams
+  IFeatureQueryParams
 } from '../types'
 import state from './state'
 
 /**
- * 查询
+ * 要素查询
  * @param {object} params 请求参数
  * @param {string} f 格式化 <json | geojson>
  * @returns <FeatureIGS | FeatureIGSGeoJSON | null>
  */
-export const resolveQuery = async (
-  params: IResolveQueryParams,
-  f = FeatureFormatType.json
-) => {
-  const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
-  const {
+export const resolveFeatureQuery = async (
+  {
     ip,
     port,
     docName,
@@ -43,7 +38,10 @@ export const resolveQuery = async (
     page,
     pageCount,
     ...others
-  } = params
+  }: IFeatureQueryParams,
+  f = FeatureFormatType.json
+) => {
+  const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
   const serverParams = (configType
   ? configType === ConfigType.doc
   : !!docName)
@@ -97,24 +95,13 @@ const mutations = {
     state.loading = loading
   },
   /**
-   * 分页设置
-   */
-  setPage({ state }, { page, pageCount }: PageParam) {
-    state.pageParam = {
-      ...state.pageParam,
-      page,
-      pageCount
-    }
-  },
-  /**
    * 当前页的查询的要素数据
    */
   setPageDataSet({ state }, data: Feature.FeatureIGS | null) {
     state.pageDataSet = _cloneDeep(data)
   },
   /**
-   * 要素查询
-   * @param isPage 是否分页
+   * 设置要素查询， 缓存要素数据
    * @param isCache 是否缓存
    * @param onSuccess 成功回调
    * @param onError 失败回调
@@ -122,7 +109,7 @@ const mutations = {
    */
   async setFeaturesQuery(
     { state, commit },
-    { isPage = true, isCache = true, onSuccess, onError }: any = {}
+    { isCache = true, params = {}, onSuccess, onError }: any = {}
   ) {
     try {
       const { subjectData, baseConfig, pageParam } = state
@@ -135,12 +122,12 @@ const mutations = {
       const fields = table ? table.showFields.join(',') : ''
 
       commit('setLoading', true)
-      const dataSet: Feature.FeatureIGS | null = await resolveQuery({
+      const dataSet: Feature.FeatureIGS | null = await resolveFeatureQuery({
         ip: ip || baseIp,
         port: port || basePort,
         fields,
-        ...(isPage ? pageParam : {}),
-        ...others
+        ...others,
+        ...params
       })
       onSuccess && onSuccess(dataSet)
       commit('setLoading', false)
@@ -283,7 +270,6 @@ const mutations = {
       const feature = geoJson.features[itemIndex]
       if (feature) {
         const coordinates = Feature.getGeoJSONFeatureCenter(feature)
-        const centerItems = [coordinates[0], coordinates[1]]
         const { properties } = feature
         state.linkageItem = {
           from,
