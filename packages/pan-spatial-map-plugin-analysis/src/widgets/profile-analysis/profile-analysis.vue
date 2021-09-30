@@ -71,6 +71,7 @@
     <!-- 二维剖面 -->
     <mp-window-wrapper :visible="profile2dVisible">
       <mp-window
+        @window-size="onProfileWindowSize"
         :visible.sync="profile2dVisible"
         :min-width="800"
         :max-height="250"
@@ -78,10 +79,9 @@
         title="剖面信息"
         :style="{ background: `${profileWindowBackground}` }"
       >
-        <div
-          id="profileChart"
-          style="width: 800px; height: 180px; float: right"
-        ></div>
+        <div ref="profileeChart">
+          <div id="profile-eChart" style="width: 800px; height: 180px"></div>
+        </div>
       </mp-window>
     </mp-window-wrapper>
     <div class="mp-footer-actions">
@@ -147,6 +147,8 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   private loading = null
 
   private profileWindowBackground = 'rgba(20,20,20,0.6)'
+
+  private profileeChart = undefined
 
   get sceneControllerInstance() {
     return Objects.SceneController.getInstance(
@@ -324,6 +326,16 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  onProfileWindowSize(mode?: 'max' | 'normal') {
+    this.$nextTick(() => {
+      if (this.profileeChart) {
+        const width =
+          mode === 'max' ? this.$refs.profileeChart.clientWidth : 800
+        this.profileeChart.resize({ width })
+      }
+    })
+  }
+
   changeProfileWindowApha() {
     const components = document.getElementsByClassName('mp-window-wrapper')[0]
     const bgColor = document.defaultView.getComputedStyle(components, null)[
@@ -333,6 +345,10 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     const { r, g, b, a } = colorObject
 
     this.profileWindowBackground = `rgba(${r},${g},${b},${a})`
+  }
+
+  mounted() {
+    this.profileeChart = echarts.init(document.getElementById('profile-eChart'))
   }
 
   /**
@@ -440,7 +456,8 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         showPolygon: showPolygon,
         polylineGroundColor: glColor,
         samplePrecision,
-        profileType: smooth ? 0 : 1 // 0表示只采地形，分析中界面不会卡顿；2表示支持模型和地形，分析中界面会卡顿
+        profileType: smooth ? 0 : 1, // 0表示只采地形，分析中界面不会卡顿；2表示支持模型和地形，分析中界面会卡顿
+        echart: this.profileeChart
       })
     }
     this.terrainProfile.profile(this.profileStart, this.profileSuccess)
