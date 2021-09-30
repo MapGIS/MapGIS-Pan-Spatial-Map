@@ -1,7 +1,7 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { UUID, Feature } from '@mapgis/web-app-framework'
-import { FeatureFormatType, resolveFeatureQuery } from '../../../store'
 import dep from '../store/dep'
+import fieldInstance from '../store/fields'
 
 @Component
 export default class SubjectStylesMixin extends Vue {
@@ -9,47 +9,35 @@ export default class SubjectStylesMixin extends Vue {
 
   private id: string = UUID.uuid()
 
+  private customFormRef: Vue | null = null // 主组件赋值
+
   private dataSource: Feature.FeatureGeoJSON | null = null
 
   get field() {
     return this.value.field
   }
 
-  /**
-   * 获取指定属性的GeoJSON数据
-   * @param {object} params 查询参数
-   */
-  async getFieldGeoJson({
-    ip,
-    port,
-    docName,
-    layerName,
-    layerIndex,
-    gdbp,
-    fields
-  }) {
-    if (!fields) return
-    const geojson: Feature.FeatureGeoJSON | null = await resolveFeatureQuery(
-      {
-        ip,
-        port,
-        gdbp,
-        docName,
-        layerName,
-        layerIndex,
-        fields
-      },
-      FeatureFormatType.geojson
-    )
-    return geojson
-  }
-
   @Watch('field')
   fieldChanged(nV: string) {
-    this.getFieldGeoJson({
-      fields: nV,
-      ...this.value
-    }).then(geojson => (this.dataSource = geojson))
+    fieldInstance
+      .getFieldGeoJson({
+        fields: nV,
+        ...this.value
+      })
+      .then(geojson => (this.dataSource = geojson))
+  }
+
+  /**
+   * 保存时获取配置数据
+   * @param {string} [key='themeStyle'] key 保存的字段名
+   */
+  getFormResult(key = 'themeStyle') {
+    if (this.customFormRef) {
+      return {
+        [key]: this.customFormRef.$_getForm()
+      }
+    }
+    return {}
   }
 
   mounted() {

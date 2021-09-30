@@ -18,25 +18,6 @@ export default class CesiumLabel extends Mixins(BaseMixin) {
       cesium: { postRender: true, postRenderFrame: 0 },
       draw: 'cluster',
       context: '2d',
-      fillStyle: 'rgba(255, 50, 0, 1.0)',
-      size: 50 / 3 / 2,
-      minSize: 8,
-      maxSize: 31,
-      globalAlpha: 0.8,
-      clusterRadius: 150,
-      maxClusterZoom: 18,
-      maxZoom: 19,
-      minPoints: 5,
-      extent: 400,
-      label: {
-        show: true,
-        fillStyle: 'white'
-      },
-      gradient: {
-        '0': 'blue',
-        '0.5': 'yellow',
-        '1.0': 'rgb(255,0,0)'
-      },
       ...(this.subjectData.style || {})
     }
   }

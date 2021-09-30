@@ -124,15 +124,12 @@ export type ThematicMapSubjectConfigNode =
 
 // 图属联动项
 export interface LinkageItem {
-  dataIndex: number
-  marker?: {
-    fid: string
-    markerId: string
-    img: string
-    coordinates: number[]
-    feature: Feature.GFeature
-    properties: Feature.GFeature['properties']
-  }
+  fid: string
+  markerId: string
+  img: string
+  coordinates: number[]
+  feature: Feature.GFeature
+  properties: Feature.GFeature['properties']
 }
 
 // 专题数据: 旧版本的请求方式提取到了外层, 新版本直接根据配置项里的gdbp|docName判断
@@ -161,7 +158,7 @@ export interface IFeatureQueryParams {
 export interface State {
   modules: Array<ModuleType>
   loading: boolean
-  pageDataSet: Feature.FeatureIGS | null
+  pageGeojson: Feature.FeatureIGSGeoJSON | null
   subjectData: SubjectData | null
   selectedSubjectTime: string
   selectedSubjectTimeList: Array<string>
@@ -169,5 +166,5 @@ export interface State {
   selectedSubjectList: Array<ThematicMapSubjectConfigNode>
   baseConfig?: ThematicMapBaseConfig | null
   subjectConfig: Array<ThematicMapSubjectConfigNode>
-  linkageItem: LinkageItem | null
+  linkageFid: string
 }

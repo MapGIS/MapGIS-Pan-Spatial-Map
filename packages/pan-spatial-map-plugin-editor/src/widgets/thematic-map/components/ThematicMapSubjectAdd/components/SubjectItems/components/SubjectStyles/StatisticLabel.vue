@@ -1,6 +1,6 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mapgis-ui-custom-panel ref="customPanelForm" :options="options" />
+  <mapgis-ui-custom-panel ref="staticLabelForm" :options="options" />
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
@@ -12,7 +12,6 @@ export default class StatisticLabel extends Mixins(SubjectStylesMixin) {
     return [
       {
         id: this.id,
-        title: '',
         type: 'MapgisUiThemeListSymbol',
         props: {
           size: 'small',
@@ -26,14 +25,8 @@ export default class StatisticLabel extends Mixins(SubjectStylesMixin) {
     ]
   }
 
-  /**
-   * 保存: 保存时调用
-   */
-  getFormResult() {
-    const labelStyle = this.$refs.customPanelForm.$_getForm()
-    return {
-      labelStyle
-    }
+  mounted() {
+    this.customFormRef = this.$refs.staticLabelForm
   }
 }
 </script>

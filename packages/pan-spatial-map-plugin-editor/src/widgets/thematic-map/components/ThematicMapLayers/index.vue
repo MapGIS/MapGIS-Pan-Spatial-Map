@@ -4,11 +4,11 @@
     <template v-for="t in subjectLayers">
       <component
         v-if="subjectType === t"
-        @highlight="setLinkageItem"
+        @highlight="setLinkage"
         @clear-highlight="resetLinkage"
         :key="t"
         :is="t"
-        :data-set="dataSet"
+        :geojson="geojson"
         :subject-data="subjectData"
       />
     </template>
@@ -21,7 +21,8 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
-import { Feature, AppMixin } from '@mapgis/web-app-framework'
+import { UUID, Feature, AppMixin } from '@mapgis/web-app-framework'
+import { markerIconInstance } from '@mapgis/pan-spatial-map-common'
 import { subjectTypeList, mapGetters, mapMutations } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
@@ -32,10 +33,10 @@ import CesiumLayers from './components/Cesium'
     ...CesiumLayers
   },
   computed: {
-    ...mapGetters(['loading', 'subjectData', 'linkageItem'])
+    ...mapGetters(['loading', 'subjectData', 'linkageFid'])
   },
   methods: {
-    ...mapMutations(['setFeaturesQuery', 'setLinkageItem', 'resetLinkage'])
+    ...mapMutations(['setFeaturesQuery', 'setLinkage', 'resetLinkage'])
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
@@ -45,7 +46,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   private marker = null
 
   // 要素数据
-  private dataSet: Feature.FeatureIGS | null = null
+  private geojson: Feature.FeatureIGSGeoJSON | null = null
 
   get prefix() {
     return this.is2DMapMode ? 'Mapbox' : 'Cesium'
@@ -74,16 +75,42 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   /**
    * 清除高亮
    */
-  clearHighlight() {
+  onClearHighlight() {
     this.marker = null
   }
 
   /**
-   * 设置高亮
-   * @param {object}  param marker 标注信息
+   * 高亮
+   * @param {string} fid 要素fid
    */
-  setHighlight({ marker }) {
-    this.marker = marker
+  onHighlight(fid: string) {
+    if (!this.geojson || !fid) return
+    markerIconInstance.unSelectIcon().then(img => {
+      const feature = this.geojson.features.find(
+        ({ properties }) => properties.fid === fid
+      )
+      if (feature) {
+        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
+        const { properties } = feature
+        this.marker = {
+          img,
+          feature,
+          properties,
+          coordinates,
+          fid: properties.fid,
+          markerId: UUID.uuid()
+        }
+      }
+    })
+  }
+
+  /**
+   * 设置高亮
+   * @param {string} fid 要素fid
+   */
+  setHighlight(fid: string) {
+    this.onClearHighlight()
+    this.onHighlight(fid)
   }
 
   /**
@@ -92,11 +119,11 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   @Watch('subjectData', { deep: true })
   subjectDataChanged(nV) {
     if (!nV) {
-      this.dataSet = null
+      this.geojson = null
     } else {
       this.setFeaturesQuery({
         isCache: false,
-        onSuccess: dataSet => (this.dataSet = dataSet)
+        onSuccess: geojson => (this.geojson = geojson)
       })
     }
   }
@@ -104,12 +131,9 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   /**
    * 监听: 联动项变化
    */
-  @Watch('linkageItem', { deep: true })
-  watchHighlightItem(nV) {
-    this.clearHighlight()
-    if (nV) {
-      this.setHighlight(nV)
-    }
+  @Watch('linkageFid')
+  linkageFidChanged(nV) {
+    this.setHighlight(nV)
   }
 
   created() {
