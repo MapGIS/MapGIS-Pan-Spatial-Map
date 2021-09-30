@@ -3,9 +3,9 @@
   <mapgis-igs-theme-layer-custom
     @highlightChanged="emitHighlight"
     :showPanel="false"
-    :dataSource="geojson"
-    :themeProps="themeProps"
-    :theme-options="themeOptions"
+    :layer-id="id"
+    :data-source="geojson"
+    v-bind="themeOptions"
     ref="customRangeThemeLayer"
   />
 </template>
@@ -15,16 +15,25 @@ import BaseMixin from '../../mixins/base'
 
 @Component
 export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
-  get themeProps() {
-    return {
-      layerId: this.id,
-      themeField: this.field,
-      themeType: 'range'
-    }
-  }
-
   get themeOptions() {
-    return this.subjectData?.color || []
+    const { color, themeStyle = {} } = this.subjectData
+    // 兼容旧配置
+    const _themeStyle = color
+      ? {
+          styleGroups: color.map(({ min, max, color }) => ({
+            start: min,
+            end: max,
+            style: {
+              color
+            }
+          }))
+        }
+      : themeStyle
+    return {
+      type: 'range',
+      field: this.field,
+      ..._themeStyle
+    }
   }
 
   removeLayer() {

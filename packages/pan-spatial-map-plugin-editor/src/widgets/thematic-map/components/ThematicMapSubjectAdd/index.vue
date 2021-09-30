@@ -180,13 +180,13 @@ export default class ThematicMapSubjectAdd extends Vue {
     } else if (!this.subjectNodeConfig.length) {
       this.$message.warning('请填写专题配置')
     } else {
-      const customForms = dep.getSub()
-      const config = _uniqBy(this.subjectNodeConfig, ({ time }) => time)
+      const subjectStyleComps = dep.getSub() // 获取专题图样式配置组件
+      const configs = _uniqBy(this.subjectNodeConfig, ({ time }) => time)
       this.createSubjectConfigNode({
         ...this.subjectNodeBase,
-        config: config.map((c, i) => ({
+        config: configs.map((c, i) => ({
           ...c,
-          ...customForms[i].getFormResult()
+          ...subjectStyleComps[i].getFormResult() // 获取样式配置结果
         }))
       })
     }

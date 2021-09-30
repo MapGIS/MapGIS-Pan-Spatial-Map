@@ -1,6 +1,6 @@
 <template>
   <!-- 分段专题图配置 -->
-  <mapgis-ui-custom-panel ref="customPanelForm" :options="options" />
+  <mapgis-ui-custom-panel ref="rangeForm" :options="options" />
 </template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
@@ -12,7 +12,6 @@ export default class SubSectionMap extends Mixins(SubjectStylesMixin) {
     return [
       {
         id: this.id,
-        title: '',
         type: 'MapgisUiThemeList',
         props: {
           size: 'small',
@@ -26,15 +25,8 @@ export default class SubSectionMap extends Mixins(SubjectStylesMixin) {
     ]
   }
 
-  /**
-   * 保存: 保存时调用
-   */
-  getFormResult() {
-    const color = this.$refs.customPanelForm.$_getForm()
-
-    return {
-      color
-    }
+  mounted() {
+    this.customFormRef = this.$refs.rangeForm
   }
 }
 </script>

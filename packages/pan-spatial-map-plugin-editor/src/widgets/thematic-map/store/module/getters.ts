@@ -7,7 +7,7 @@ const getters = {
   // 加载
   loading: (state: State) => state.loading,
   // 获取要素查询当前页数据
-  pageDataSet: (state: State) => state.pageDataSet,
+  pageGeojson: (state: State) => state.pageGeojson,
   // 获取选中专题对应年度的专题数据
   subjectData: (state: State) => state.subjectData,
   // 获取选中的专题
@@ -23,7 +23,7 @@ const getters = {
   // 专题配置
   subjectConfig: (state: State) => state.subjectConfig,
   // 图属联动项
-  linkageItem: (state: State) => state.linkageItem
+  linkageFid: (state: State) => state.linkageFid
 }
 
 export default Vue.observable(getters)

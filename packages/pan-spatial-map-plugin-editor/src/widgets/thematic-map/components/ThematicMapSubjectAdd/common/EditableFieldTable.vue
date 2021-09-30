@@ -120,7 +120,7 @@ export default class EditableFieldTable extends Vue {
    * 设置属性列表
    */
   setFields() {
-    FieldInstance.getFields(this.subjectConfig).then(fields => {
+    FieldInstance.fetchFields(this.subjectConfig).then(fields => {
       this.fieldList = fields.map(({ value }) => ({
         label: value,
         value

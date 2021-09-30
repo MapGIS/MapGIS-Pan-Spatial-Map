@@ -14,11 +14,11 @@ import BaseMixin from '../../mixins/base'
 @Component
 export default class MapboxHeatMap extends Mixins(BaseMixin) {
   get options() {
+    const { themeStyle } = this.subjectData
     return {
-      context: '2d',
       draw: 'heatmap',
-      max: 60,
-      ...(this.subjectData.style || {})
+      context: '2d',
+      ...(themeStyle || {})
     }
   }
 }

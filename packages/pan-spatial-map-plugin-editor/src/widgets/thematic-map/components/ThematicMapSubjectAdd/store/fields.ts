@@ -1,4 +1,4 @@
-import { resolveFeatureQuery } from '../../../store'
+import { FeatureFormatType, resolveFeatureQuery } from '../../../store'
 
 interface QueryParams {
   ip: string
@@ -7,6 +7,7 @@ interface QueryParams {
   docName: string
   layerName: string
   layerIndex: string
+  fields?: string
 }
 
 interface FieldInfosItem {
@@ -20,16 +21,31 @@ class Fields {
 
   private fields: FieldInfosItem[] = []
 
-  clearFields() {
-    this.isFetched = false
-    this.fields = []
-  }
-
-  async getFields(subjectConfig) {
-    if (!this.isFetched) {
-      await this.fetchFields(subjectConfig)
-    }
-    return this.fields
+  /**
+   * 获取指定属性的GeoJSON数据
+   * @param {object} params 查询参数
+   * @returns GeoJSON | undefined
+   */
+  async getFieldGeoJson({
+    ip,
+    port,
+    gdbp,
+    docName,
+    layerName,
+    layerIndex,
+    fields
+  }: QueryParams) {
+    if (!fields) return
+    const geojson = await resolveFeatureQuery({
+      ip,
+      port,
+      gdbp,
+      docName,
+      layerName,
+      layerIndex,
+      fields
+    })
+    return geojson
   }
 
   /**
@@ -45,29 +61,44 @@ class Fields {
     layerName,
     layerIndex
   }: QueryParams) {
-    const result = await resolveFeatureQuery({
-      ip,
-      port,
-      gdbp,
-      docName,
-      layerName,
-      layerIndex,
-      IncludeAttribute: false,
-      IncludeGeometry: false,
-      IncludeWebGraphic: false
-    })
+    if (this.isFetched) {
+      return this.fields
+    }
+    const igsJson = await resolveFeatureQuery(
+      {
+        ip,
+        port,
+        gdbp,
+        docName,
+        layerName,
+        layerIndex,
+        IncludeAttribute: false,
+        IncludeGeometry: false,
+        IncludeWebGraphic: false
+      },
+      FeatureFormatType.json
+    )
     let fields = []
-    if (result) {
-      const { FldName, FldType, FldAlias } = result.AttStruct
+    if (igsJson) {
+      const { FldName, FldType, FldAlias } = igsJson.AttStruct
       fields = FldName.map((v: string, i: number) => ({
         type: FldType[i],
         alias: FldAlias[i] || v,
         value: v
       }))
     }
-    this.isFetched = true
     this.fields = fields
+    this.isFetched = true
+
     return fields
+  }
+
+  /**
+   * 清除缓存
+   */
+  clearFields() {
+    this.isFetched = false
+    this.fields = []
   }
 }
 
