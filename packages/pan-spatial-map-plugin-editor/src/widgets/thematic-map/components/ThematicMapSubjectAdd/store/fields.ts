@@ -1,17 +1,17 @@
-import { Feature } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
+import { resolveFeatureQuery } from '../../../store'
 
 interface QueryParams {
   ip: string
   port: string
-  gdbp?: string
-  docName?: string
-  layerIndex?: string
+  gdbp: string
+  docName: string
+  layerName: string
+  layerIndex: string
 }
 
 interface FieldInfosItem {
   type: string
-  label: string
+  alias: string
   value: string
 }
 
@@ -27,15 +27,7 @@ class Fields {
 
   async getFields(subjectConfig) {
     if (!this.isFetched) {
-      const { ip, port, gdbp, docName, layerIndex } = subjectConfig
-      this.fields = await this.fetchFields({
-        ip,
-        port,
-        gdbp,
-        docName,
-        layerIndex
-      })
-      this.isFetched = true
+      await this.fetchFields(subjectConfig)
     }
     return this.fields
   }
@@ -43,36 +35,38 @@ class Fields {
   /**
    * 请求属性列表数据
    * @param {object} param0 查询参数
-   * @param {boolean} [aliasLabel = false] label是否使用别名
    * @returns
    */
-  async fetchFields(
-    { ip, port, gdbp, docName, layerIndex }: QueryParams,
-    aliasLabel = false
-  ) {
-    const { ip: baseIp, port: basePort } = baseConfigInstance.config
-    const _ip = ip || baseIp
-    const _port = port || basePort
-    const result = await Feature.FeatureQuery.query({
-      ip: _ip,
-      port: _port,
+  async fetchFields({
+    ip,
+    port,
+    gdbp,
+    docName,
+    layerName,
+    layerIndex
+  }: QueryParams) {
+    const result = await resolveFeatureQuery({
+      ip,
+      port,
       gdbp,
       docName,
-      layerIdxs: layerIndex,
+      layerName,
+      layerIndex,
       IncludeAttribute: false,
       IncludeGeometry: false,
-      IncludeWebGraphic: false,
-      f: 'json'
+      IncludeWebGraphic: false
     })
     let fields = []
     if (result) {
       const { FldName, FldType, FldAlias } = result.AttStruct
       fields = FldName.map((v: string, i: number) => ({
         type: FldType[i],
-        label: aliasLabel && FldAlias[i] ? FldAlias[i] : v,
+        alias: FldAlias[i] || v,
         value: v
       }))
     }
+    this.isFetched = true
+    this.fields = fields
     return fields
   }
 }

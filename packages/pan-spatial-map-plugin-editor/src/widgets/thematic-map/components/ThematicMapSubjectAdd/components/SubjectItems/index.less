@@ -68,8 +68,11 @@
     }
 
     .ant-tabs-content {
-      min-height: 100px;
+      min-height: 90px;
+      max-height: 208px;
+      overflow: auto;
       background: @white;
+      .hoverScrollbar(2px);
     }
 
     .ant-tabs-tab {

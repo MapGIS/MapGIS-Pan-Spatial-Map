@@ -5,15 +5,17 @@
         点击开始配置
       </span>
     </a-empty>
-    <template v-else>
-      <slot name="top" />
-      <mp-editable-table
-        :columns="tableColumns"
-        :data.sync="tableData"
-        :tools="tools"
-        :title="title"
-      />
-    </template>
+    <mp-editable-table
+      v-else
+      :columns="tableColumns"
+      :data.sync="tableData"
+      :tools="tools"
+      :title="title"
+    >
+      <template #top>
+        <slot name="top" />
+      </template>
+    </mp-editable-table>
   </div>
 </template>
 <script lang="ts">
@@ -115,6 +117,19 @@ export default class EditableFieldTable extends Vue {
   }
 
   /**
+   * 设置属性列表
+   */
+  setFields() {
+    FieldInstance.getFields(this.subjectConfig).then(fields => {
+      this.fieldList = fields.map(({ value }) => ({
+        label: value,
+        value
+      }))
+      this.$emit('fields-loaded', this.fieldList)
+    })
+  }
+
+  /**
    * 取消
    */
   onClose() {
@@ -122,17 +137,17 @@ export default class EditableFieldTable extends Vue {
     this.hideTable()
   }
 
-  created() {
-    FieldInstance.getFields(this.subjectConfig).then(list => {
-      this.fieldList = list
-      this.$emit('fields-loaded', list)
-    })
+  @Watch('subjectConfig.field', { immediate: true })
+  fieldChanged(nV) {
+    if (nV) {
+      this.setFields()
+    }
   }
 }
 </script>
 <style lang="less" scoped>
 .editable-field-table {
-  padding: 8px;
+  padding: 4px 8px;
   .description {
     color: @primary-color;
     cursor: pointer;

@@ -6,7 +6,7 @@
         :visible.sync="visible"
         :horizontal-offset="48"
         :vertical-offset="50"
-        :width="360"
+        :width="tableWidth"
         :has-padding="false"
         anchor="top-right"
         title="属性表"
@@ -48,7 +48,6 @@
               :columns="tableColumns"
               :data-source="tableData"
               :pagination="tablePagination"
-              :scroll="tableScroll"
               :customRow="setCustomRow"
             />
           </a-spin>
@@ -60,7 +59,6 @@
 <script lang="ts">
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
-import _debounce from 'lodash/debounce'
 import {
   ModuleType,
   mapGetters,
@@ -83,7 +81,6 @@ import {
   },
   methods: {
     ...mapMutations([
-      'setPage',
       'setFeaturesQuery',
       'setSelectedSubject',
       'setSelectedSubjectTime',
@@ -94,28 +91,29 @@ import {
   }
 })
 export default class ThematicMapAttributeTable extends Vue {
-  vueKey = 'table'
-
   // 专题
-  subject = ''
+  private subject = ''
 
   // 时间
-  time = ''
+  private time = ''
 
   // 列表页码
-  page = 1
+  private page = 1
 
   // 列表页容量
-  pageCount = 20
+  private pageCount = 20
 
   // 列表总数
-  total = 0
+  private total = 0
+
+  // 列表宽度
+  private tableWidth = 360
 
   // 列表配置
-  tableColumns = []
+  private tableColumns = []
 
   // 列表数据
-  tableData: Record<string, any>[] = []
+  private tableData: Record<string, any>[] = []
 
   // 显示开关
   get visible() {
@@ -136,16 +134,6 @@ export default class ThematicMapAttributeTable extends Vue {
   // 列表配置
   get table() {
     return this.subjectData?.table
-  }
-
-  // 列表滚动
-  get tableScroll() {
-    const { length } = this.tableColumns
-    const x = length > 3 ? length * 120 : 360
-    return {
-      x,
-      y: 230
-    }
   }
 
   // 分页配置
@@ -180,30 +168,25 @@ export default class ThematicMapAttributeTable extends Vue {
 
   /**
    * 设置高亮
+   * @param {object}  param dataIndex 数据索引
    */
-  setHighlight(itemIndex: number) {
-    const node = this.tableData[itemIndex]
-    if (node) {
-      this.$set(node, '_highlight', true)
-    }
+  setHighlight({ dataIndex }) {
+    this.$set(this.tableData[dataIndex], '_highlight', true)
   }
 
   /**
    * 自定义行数据和事件
+   * @param {object} record 行数据
+   * @param {number} index 索引
    */
-  setCustomRow(record, index) {
+  setCustomRow(record, dataIndex) {
     return {
       class: {
         'row-highlight': record._highlight
       },
       on: this.hasHighlight
         ? {
-            mouseenter: _debounce(() => {
-              this.setLinkageItem({
-                from: this.vueKey,
-                itemIndex: index
-              })
-            }, 400),
+            mouseenter: () => this.setLinkageItem({ dataIndex }),
             mouseleave: this.resetLinkage
           }
         : {}
@@ -222,11 +205,15 @@ export default class ThematicMapAttributeTable extends Vue {
       return {
         title,
         dataIndex: v,
+        ellipsis: true,
+        width: 120,
         sorter: (a, b) => {
-          if ([a[v], b[v]].every(v => !isNaN(Number(v)))) {
-            return a[v] - b[v]
+          const front = a[v]
+          const end = b[v]
+          if ([front, end].every(v => !isNaN(Number(v)))) {
+            return front - end
           } else {
-            return a[v].length - b[v].length
+            return front.length - end.length
           }
         }
       }
@@ -235,23 +222,23 @@ export default class ThematicMapAttributeTable extends Vue {
 
   /**
    * 设置列表数据
+   * @param {number} page 页码
+   * @param {number} pageCout 页容量
    */
-  setTableData(page = this.page, pageCount = this.pageCount) {
-    this.page = page
-    this.pageCount = pageCount
-    this.setPage({
-      page: page - 1,
-      pageCount
-    })
+  setTableData() {
     this.setFeaturesQuery({
+      params: {
+        page: this.page - 1,
+        pageCount: this.pageCount
+      },
       onSuccess: (dataSet: Feature.FeatureIGS | null) => {
         if (dataSet) {
-          const geojsonData = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
+          const geojson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
             dataSet
           )
-          if (geojsonData) {
-            this.total = geojsonData.dataCount
-            this.tableData = geojsonData.features.map(
+          if (geojson) {
+            this.total = geojson.dataCount
+            this.tableData = geojson.features.map(
               ({ properties }) => properties
             )
           }
@@ -265,6 +252,8 @@ export default class ThematicMapAttributeTable extends Vue {
 
   /**
    * 专题切换
+   * @param {string} value 选项value值
+   * @param {object} option 选项
    */
   onSubjectChange(value, option) {
     this.subject = value
@@ -273,6 +262,7 @@ export default class ThematicMapAttributeTable extends Vue {
 
   /**
    * 年度时间切换
+   * @param {stirng} value 时间
    */
   onTimeChange(value) {
     this.time = value
@@ -281,11 +271,13 @@ export default class ThematicMapAttributeTable extends Vue {
 
   /**
    * 列表分页变化
-   * @param 分页参数 current: 当前页; pageSize: 页容量
+   * @param {object} param0
    */
-  onTableChange({ current, pageSize }, filters, sorter) {
+  onTableChange({ current, pageSize }) {
     if (this.page !== current || this.pageCount !== pageSize) {
-      this.setTableData(current, pageSize)
+      this.page = current
+      if (pageSize) this.pageCount = pageSize
+      this.setTableData()
     }
   }
 
@@ -315,7 +307,9 @@ export default class ThematicMapAttributeTable extends Vue {
   @Watch('subjectData', { deep: true })
   subjectDataChanged() {
     this.setTableColumns()
-    this.setTableData(1)
+    this.onTableChange({
+      current: 1
+    })
   }
 
   /**
@@ -323,10 +317,9 @@ export default class ThematicMapAttributeTable extends Vue {
    */
   @Watch('linkageItem', { deep: true })
   linkageItemChanged(nV) {
-    if (!nV) {
-      this.clearHighlight()
-    } else if (nV.from !== this.vueKey) {
-      this.setHighlight(nV.itemIndex)
+    this.clearHighlight()
+    if (nV) {
+      this.setHighlight(nV)
     }
   }
 }

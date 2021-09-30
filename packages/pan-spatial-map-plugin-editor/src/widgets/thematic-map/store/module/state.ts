@@ -1,18 +1,12 @@
 import Vue from 'vue'
-import { IState, ModuleType } from '../types'
+import { State, ModuleType } from '../types'
 
-export default Vue.observable<IState>({
+export default Vue.observable<State>({
   // 属性表|统计表|时间轴|专题新建|工具栏
   modules: [],
 
   // 数据加载状态
   loading: false,
-
-  // 页码和页容量
-  pageParam: {
-    page: 0,
-    pageCount: 10
-  },
 
   // 当前页的查询的要素数据
   pageDataSet: null,

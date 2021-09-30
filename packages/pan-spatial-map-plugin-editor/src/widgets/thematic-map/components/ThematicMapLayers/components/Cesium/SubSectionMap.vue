@@ -43,10 +43,6 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
     return this.subjectData?.color
   }
 
-  get field() {
-    return this.subjectData.field
-  }
-
   /**
    * 获取形状
    * @param 半径

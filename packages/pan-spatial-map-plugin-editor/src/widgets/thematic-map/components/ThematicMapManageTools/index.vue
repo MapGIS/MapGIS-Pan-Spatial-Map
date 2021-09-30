@@ -85,6 +85,7 @@ export default class ThematicMapManageTools extends Vue {
 
   /**
    * 按钮变化
+   * @param {string} type 类型
    */
   iconChange(type: keyof ModuleType) {
     this.setVisible(type)

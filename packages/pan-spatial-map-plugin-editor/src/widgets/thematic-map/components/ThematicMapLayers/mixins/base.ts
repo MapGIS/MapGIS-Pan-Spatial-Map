@@ -4,16 +4,11 @@ import { highlightSubjectTypes } from '../../../store'
 
 @Component
 export default class BaseMixin extends Vue {
-  // 组件唯一值
-  @Prop({ default: 'map' }) readonly vueKey!: string
-
   // 专题配置
   @Prop({ default: () => ({}) }) readonly subjectData!: any
 
   // 专题某年度的要素数据
   @Prop({ default: () => ({}) }) readonly dataSet!: Feature.FeatureIGS | null
-
-  private id = UUID.uuid()
 
   /**
    * 监听: 要素数据变化
@@ -21,18 +16,32 @@ export default class BaseMixin extends Vue {
   @Watch('dataSet', { deep: true })
   watchDataSet(nV: Feature.FeatureIGS | null) {
     this.removeLayer()
+    this.setGeoJSON(nV)
     this.showLayer()
   }
+
+  private id = UUID.uuid()
+
+  private geojson: Feature.FeatureGeoJSON = null
 
   // 是否支持图属高亮
   get hasHighlight() {
     return highlightSubjectTypes.includes(this.subjectData.subjectType)
   }
 
-  // 获取geojson数据
-  get geojson(): Feature.FeatureGeoJSON | null {
-    return this.dataSet
-      ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(this.dataSet)
+  // 获取统计属性
+  get field() {
+    return this.subjectData?.field
+  }
+
+  /**
+   * 获取geojson数据
+   * @param {object} dataSet json数据
+   * @returns
+   */
+  setGeoJSON(dataSet: Feature.FeatureIGS | null = null) {
+    this.geojson = dataSet
+      ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(dataSet)
       : null
   }
 
@@ -40,12 +49,9 @@ export default class BaseMixin extends Vue {
    * 专题图鼠标移入高亮
    * @param 移入的要素数据索引
    */
-  emitHighlight(itemIndex: number) {
+  emitHighlight(dataIndex: number) {
     if (this.hasHighlight) {
-      this.$emit('highlight', {
-        from: this.vueKey,
-        itemIndex
-      })
+      this.$emit('highlight', { dataIndex })
     }
   }
 
