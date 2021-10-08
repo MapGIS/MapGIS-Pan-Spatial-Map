@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- 加载专题图层 -->
     <template v-for="t in subjectLayers">
       <component
         v-if="subjectType === t"
@@ -8,14 +7,10 @@
         @clear-highlight="resetLinkage"
         :key="t"
         :is="t"
+        :marker="marker"
         :geojson="geojson"
         :subject-data="subjectData"
       />
-    </template>
-    <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
-    <template v-if="marker">
-      <mp-marker-pro :marker="marker" v-if="is2DMapMode" />
-      <mp-3d-marker-pro :marker="marker" v-else />
     </template>
   </div>
 </template>
@@ -109,6 +104,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * @param {string} fid 要素fid
    */
   setHighlight(fid: string) {
+    debugger
     this.onClearHighlight()
     this.onHighlight(fid)
   }

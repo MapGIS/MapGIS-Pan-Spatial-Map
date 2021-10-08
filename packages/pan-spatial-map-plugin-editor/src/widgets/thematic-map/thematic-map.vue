@@ -95,8 +95,7 @@ enum ThematicMapNodeHandles {
       'setSubjectConfig',
       'updateSubjectConfig',
       'setSelectedSubjectList',
-      'resetVisible',
-      'resetLinkage'
+      'resetVisible'
     ])
   },
   components: {
@@ -171,7 +170,6 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    */
   setModulesHide(exclude: ModuleType) {
     moduleTypeList.forEach(t => t !== exclude && this.resetVisible(t))
-    // this.resetLinkage()
   }
 
   /**
