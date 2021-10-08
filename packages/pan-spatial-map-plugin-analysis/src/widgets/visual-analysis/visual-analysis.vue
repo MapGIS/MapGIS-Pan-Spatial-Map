@@ -182,6 +182,9 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   // 观察点
   private viewPoint
 
+  // 深度检测是否已开启，默认为undefined，当这个值为undefined的时候，说明没有赋值，不做任何处理
+  private isDepthTestAgainstTerrainEnable = undefined
+
   get formDataClone() {
     return JSON.parse(JSON.stringify(this.formData))
   }
@@ -366,6 +369,7 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
   // 是否开启地形深度检测
   private isOpenDepthTest() {
     // 若分析的模型是三维地形，则开启地形深度检测,否则关闭深度检测。若未选择任何模型，则默认开启深度检测
+    let needDepthTestAgainstTerrain = false // 是否需要开启深度检测
     const doc: Document = this.document
     if (doc.defaultMap && doc.defaultMap.allLayers.length > 0) {
       const analysisLry =
@@ -380,15 +384,22 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
           })
         ) {
           // 开启地形深度测试
-          this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+          needDepthTestAgainstTerrain = true
         } else {
-          this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
+          needDepthTestAgainstTerrain = false
         }
       } else {
-        this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+        needDepthTestAgainstTerrain = true
       }
     } else {
-      this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = true
+      needDepthTestAgainstTerrain = true
+    }
+    if (needDepthTestAgainstTerrain) {
+      this.isDepthTestAgainstTerrainEnable = this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+      if (!this.isDepthTestAgainstTerrainEnable) {
+        // 如果深度检测没有开启，则开启
+        this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(true)
+      }
     }
   }
 
@@ -469,9 +480,22 @@ export default class MpVisualAnalysis extends Mixins(WidgetMixin) {
     this.webGlobe.viewer.scene.VisualAnalysisManager._visualAnalysisList = []
 
     this.isAddEventListener = false
-    this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
+    this.restoreDepthTestAgainstTerrain()
     this.hasViewPosition = false
     this.isAnalyze = false
+  }
+
+  restoreDepthTestAgainstTerrain() {
+    // 恢复深度检测设置
+    if (
+      this.isDepthTestAgainstTerrainEnable !== undefined &&
+      this.isDepthTestAgainstTerrainEnable !==
+        this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    ) {
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(
+        this.isDepthTestAgainstTerrainEnable
+      )
+    }
   }
 
   // 为鼠标的各种行为注册监听事件

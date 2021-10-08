@@ -115,7 +115,16 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
 
   private terrainPolygon = null
 
-  private depthTestAgainstTerrain = false // 深度检测是否已开启
+  // 深度检测是否已开启，默认为undefined，当这个值为undefined的时候，说明没有赋值，不做任何处理
+  private isDepthTestAgainstTerrainEnable = undefined
+
+  get sceneControllerInstance() {
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+  }
 
   @Watch('formData', { deep: true, immediate: true })
   changeFormData() {
@@ -131,12 +140,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  onActive() {
-    const { viewer } = this.webGlobe
-    if (viewer.scene.globe.depthTestAgainstTerrain) {
-      this.depthTestAgainstTerrain = true
-    }
-  }
+  onActive() {}
 
   // 微件失活时
   onDeActive() {
@@ -278,10 +282,11 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     const { viewer } = this.webGlobe
     const { x, y, z } = this.formData
 
-    if (!this.depthTestAgainstTerrain) {
-      viewer.scene.globe.depthTestAgainstTerrain = true
+    this.isDepthTestAgainstTerrainEnable = this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    if (!this.isDepthTestAgainstTerrainEnable) {
+      // 如果深度检测没有开启，则开启
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(true)
     }
-
     // 初始化高级分析功能管理类
     const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
       {
@@ -309,6 +314,19 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     )
   }
 
+  restoreDepthTestAgainstTerrain() {
+    // 恢复深度检测设置
+    if (
+      this.isDepthTestAgainstTerrainEnable !== undefined &&
+      this.isDepthTestAgainstTerrainEnable !==
+        this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    ) {
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(
+        this.isDepthTestAgainstTerrainEnable
+      )
+    }
+  }
+
   analysisSuccess(result) {
     this.result = {
       height: `${result.minHeight.toFixed(2)}~${result.maxHeight.toFixed(2)}`,
@@ -317,6 +335,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
       fillVolume: result.fillVolume
     }
     this.removeLoading()
+    this.restoreDepthTestAgainstTerrain()
   }
 
   // 移除填挖方计算
@@ -350,9 +369,7 @@ export default class MpCutFillAnalysis extends Mixins(WidgetMixin) {
     this.recalculate = false
     this.removeLoading()
 
-    if (!this.depthTestAgainstTerrain) {
-      this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
-    }
+    this.restoreDepthTestAgainstTerrain()
 
     if (this.terrainLine) {
       this.entityController.removeEntity(this.terrainLine)

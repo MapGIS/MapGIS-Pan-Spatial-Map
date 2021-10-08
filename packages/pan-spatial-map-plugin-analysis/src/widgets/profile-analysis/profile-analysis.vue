@@ -71,16 +71,17 @@
     <!-- 二维剖面 -->
     <mp-window-wrapper :visible="profile2dVisible">
       <mp-window
+        @window-size="onProfileWindowSize"
         :visible.sync="profile2dVisible"
-        :min-width="400"
+        :min-width="800"
         :max-height="250"
-        anchor="bottom-left"
-        title="二维剖面"
+        anchor="bottom-center"
+        title="剖面信息"
+        :style="{ background: `${profileWindowBackground}` }"
       >
-        <div
-          id="profileChart"
-          style="width: 380px; height: 180px; float: right"
-        ></div>
+        <div ref="profileeChart">
+          <div id="profile-eChart" style="width: 800px; height: 180px"></div>
+        </div>
       </mp-window>
     </mp-window-wrapper>
     <div class="mp-footer-actions">
@@ -101,7 +102,8 @@ import {
   LayerType,
   IGSSceneSublayerRenderType,
   LoadStatus,
-  Objects
+  Objects,
+  ColorUtil
 } from '@mapgis/web-app-framework'
 import * as echarts from 'echarts'
 
@@ -138,13 +140,23 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   // 是否显示二维剖面
   private profile2dVisible = false
 
-  // 深度检测是否已开启
-  private depthTestAgainstTerrain = false
+  // 深度检测是否已开启，默认为undefined，当这个值为undefined的时候，说明没有赋值，不做任何处理
+  private isDepthTestAgainstTerrainEnable = undefined
 
   // 进度条对象
   private loading = null
 
-  // private txtColor = '#000000a6'
+  private profileWindowBackground = 'rgba(20,20,20,0.6)'
+
+  private profileeChart = undefined
+
+  get sceneControllerInstance() {
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+  }
 
   /**
    * 获取二维剖面设置参数
@@ -166,9 +178,19 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       title: {
         show: false
       },
+      toolbox: {
+        feature: {
+          saveAsImage: {
+            type: 'png',
+            show: true,
+            title: '保存为图片'
+          },
+          restore: { show: true, title: '刷新' }
+        }
+      },
       grid: {
         top: 25,
-        left: 40,
+        left: 60,
         right: 20,
         bottom: 20,
         contentLabel: false
@@ -199,11 +221,11 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
           axisLabel: {
             formatter(value) {
               const texts = []
-              if (value > 99999) {
-                const text = Number(value).toExponential(1)
-                texts.push(text)
+              if (value > 999) {
+                const text = (Number(value) / 1000).toFixed(2)
+                texts.push(`${text}km`)
               } else {
-                texts.push(parseInt(value))
+                texts.push(`${parseInt(value)}m`)
               }
               return texts
             }
@@ -225,7 +247,8 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
               { type: 'max', name: '最高点' },
               { type: 'min', name: '最低点' }
             ]
-          }
+          },
+          areaStyle: {}
         }
       ]
     }
@@ -303,12 +326,38 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  onProfileWindowSize(mode?: 'max' | 'normal') {
+    this.$nextTick(() => {
+      if (this.profileeChart) {
+        const width =
+          mode === 'max' ? this.$refs.profileeChart.clientWidth : 800
+        this.profileeChart.resize({ width })
+      }
+    })
+  }
+
+  changeProfileWindowApha() {
+    const components = document.getElementsByClassName('mp-window-wrapper')[0]
+    const bgColor = document.defaultView.getComputedStyle(components, null)[
+      'background-color'
+    ]
+    const colorObject = ColorUtil.getColorObject(bgColor, 0.6)
+    const { r, g, b, a } = colorObject
+
+    this.profileWindowBackground = `rgba(${r},${g},${b},${a})`
+  }
+
+  mounted() {
+    this.profileeChart = echarts.init(document.getElementById('profile-eChart'))
+  }
+
   /**
    * 打开模块
    */
   onOpen() {
     this.isActive = true
     this.changeLayer()
+    this.changeProfileWindowApha()
   }
 
   /**
@@ -321,10 +370,6 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
 
   // 微件激活时
   onActive() {
-    const { viewer } = this.webGlobe
-    if (viewer.scene.globe.depthTestAgainstTerrain) {
-      this.depthTestAgainstTerrain = true
-    }
     this.isActive = true
   }
 
@@ -374,8 +419,10 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   analysis() {
     const { viewer } = this.webGlobe
     this.profile2dVisible = false
-    if (!this.depthTestAgainstTerrain) {
-      viewer.scene.globe.depthTestAgainstTerrain = true
+    this.isDepthTestAgainstTerrainEnable = this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    if (!this.isDepthTestAgainstTerrainEnable) {
+      // 如果深度检测没有开启，则开启
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(true)
     }
     const {
       polygonColor,
@@ -409,7 +456,8 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         showPolygon: showPolygon,
         polylineGroundColor: glColor,
         samplePrecision,
-        profileType: smooth ? 0 : 1 // 0表示只采地形，分析中界面不会卡顿；2表示支持模型和地形，分析中界面会卡顿
+        profileType: smooth ? 0 : 1, // 0表示只采地形，分析中界面不会卡顿；2表示支持模型和地形，分析中界面会卡顿
+        echart: this.profileeChart
       })
     }
     this.terrainProfile.profile(this.profileStart, this.profileSuccess)
@@ -455,13 +503,24 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       this.profile2dVisible = true
       this.removeLoading()
     }
+    this.restoreDepthTestAgainstTerrain()
+  }
+
+  restoreDepthTestAgainstTerrain() {
+    // 恢复深度检测设置
+    if (
+      this.isDepthTestAgainstTerrainEnable !== undefined &&
+      this.isDepthTestAgainstTerrainEnable !==
+        this.sceneControllerInstance.isDepthTestAgainstTerrainEnable()
+    ) {
+      this.sceneControllerInstance.setDepthTestAgainstTerrainEnable(
+        this.isDepthTestAgainstTerrainEnable
+      )
+    }
   }
 
   remove() {
-    // 恢复深度检测设置
-    if (!this.depthTestAgainstTerrain) {
-      this.webGlobe.viewer.scene.globe.depthTestAgainstTerrain = false
-    }
+    this.restoreDepthTestAgainstTerrain()
 
     // 移除分析结果
     if (this.terrainProfile) {

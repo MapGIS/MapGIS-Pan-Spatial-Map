@@ -17,7 +17,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { WidgetMixin, ColorUtil } from '@mapgis/web-app-framework'
+import { WidgetMixin, ColorUtil, Objects } from '@mapgis/web-app-framework'
 import MpColorsSetting from './components/colors-setting.vue'
 
 @Component({
@@ -36,9 +36,21 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     { min: 75, max: 90, color: 'rgba(76, 175, 80, 0.5)' }
   ]
 
-  private brightnessEnabled = false // 光照是否已开启
+  private isEnableLighting = undefined // 光照是否已开启
+
+  private noBrightness = undefined // 是否有brightness对象
+
+  private brightnessStatusAndUniformsBrightness = undefined // 光照参数
 
   private info = '坡度分析需要带法线地形'
+
+  get sceneControllerInstance() {
+    return Objects.SceneController.getInstance(
+      this.Cesium,
+      this.CesiumZondy,
+      this.webGlobe
+    )
+  }
 
   getLabel(index) {
     return (0.0 + index * 0.2).toFixed(1)
@@ -51,12 +63,7 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  onActive() {
-    const { viewer } = this.webGlobe
-    if (viewer.scene.globe.enableLighting && viewer.scene.brightness) {
-      this.brightnessEnabled = true
-    }
-  }
+  onActive() {}
 
   // 微件失活时
   onDeActive() {
@@ -66,20 +73,34 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
   /**
    * 开启光照
    */
-  enableBrightness() {
-    if (this.brightnessEnabled) {
-      return
-    }
+  enableBrightnessFuc() {
     // 开启光照，不然放大地图，分析结果显示异常
-    const { viewer } = this.webGlobe
-    viewer.scene.globe.enableLighting = true
+
+    this.isEnableLighting = this.sceneControllerInstance.isEnableLighting()
+    if (!this.isEnableLighting) {
+      // 未开启光照，开启
+      this.sceneControllerInstance.setEnableLighting(true)
+    }
     // 调高亮度
+    const { viewer } = this.webGlobe
     const stages = viewer.scene.postProcessStages
-    viewer.scene.brightness =
-      viewer.scene.brightness ||
-      stages.add(this.Cesium.PostProcessStageLibrary.createBrightnessStage())
-    viewer.scene.brightness.enabled = true
-    viewer.scene.brightness.uniforms.brightness = 1.2
+    const brightness = this.sceneControllerInstance.getBrightness()
+    if (!brightness) {
+      // 初始没有brightness对象
+      this.noBrightness = true
+      viewer.scene.brightness = stages.add(
+        this.Cesium.PostProcessStageLibrary.createBrightnessStage()
+      )
+    }
+    // 设置前记录原有光照参数
+    this.brightnessStatusAndUniformsBrightness = this.sceneControllerInstance.getBrightnessStatusAndUniformsBrightness()
+    const statusAndUniformsBrightness = {
+      enabled: true,
+      brightness: 1.2
+    }
+    this.sceneControllerInstance.setBrightnessStatusAndUniformsBrightness(
+      statusAndUniformsBrightness
+    )
   }
 
   add() {
@@ -107,7 +128,7 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
       // 绘制完成回调函数
       callback: positions => {
         this.remove()
-        this.enableBrightness()
+        this.enableBrightnessFuc() // 开启光照
         window.SlopeAnalyzeManage.slopeAnalysis =
           window.SlopeAnalyzeManage.slopeAnalysis ||
           new this.Cesium.TerrainAnalyse(viewer, {
@@ -136,6 +157,38 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
     return arr
   }
 
+  // 恢复光照设置
+  restoreEnableLighting() {
+    // 恢复光照开启状态设置
+    if (
+      this.isEnableLighting !== undefined &&
+      this.isEnableLighting !== this.sceneControllerInstance.isEnableLighting()
+    ) {
+      this.sceneControllerInstance.setEnableLighting(this.isEnableLighting)
+    }
+    const stages = this.webGlobe.viewer.scene.postProcessStages
+    if (this.noBrightness) {
+      // 如果开始没有brightness对象，恢复
+      stages.remove(this.webGlobe.viewer.scene.brightness)
+      this.webGlobe.viewer.scene.brightness = undefined
+    } else {
+      // 恢复brightness参数设置
+      if (this.brightnessStatusAndUniformsBrightness !== undefined) {
+        const brightnessStatusAndUniformsBrightness = this.sceneControllerInstance.getBrightnessStatusAndUniformsBrightness()
+        if (
+          this.brightnessStatusAndUniformsBrightness.enabled !==
+            brightnessStatusAndUniformsBrightness.enabled ||
+          this.brightnessStatusAndUniformsBrightness.brightness !==
+            brightnessStatusAndUniformsBrightness.brightness
+        ) {
+          this.sceneControllerInstance.setBrightnessStatusAndUniformsBrightness(
+            this.brightnessStatusAndUniformsBrightness
+          )
+        }
+      }
+    }
+  }
+
   remove() {
     // 判断是否已有坡度分析结果
     if (window.SlopeAnalyzeManage.slopeAnalysis) {
@@ -150,12 +203,8 @@ export default class MpSlopeAnalysis extends Mixins(WidgetMixin) {
       window.SlopeAnalyzeManage.drawElement = null
     }
 
-    // 关闭光照
-    const { viewer } = this.webGlobe
-    if (viewer.scene.brightness && !this.brightnessEnabled) {
-      viewer.scene.globe.enableLighting = false
-      viewer.scene.brightness.enabled = false
-    }
+    // 恢复光照设置
+    this.restoreEnableLighting()
   }
 }
 </script>

@@ -10,6 +10,8 @@ const productionGzipExtensions = ['js', 'css']
 const isProd = process.env.NODE_ENV === 'production'
 const name = defaultSettings.title
 
+console.log('NODE_ENV=' + process.env.NODE_ENV)
+
 module.exports = {
   devServer: {
     hot: true,
