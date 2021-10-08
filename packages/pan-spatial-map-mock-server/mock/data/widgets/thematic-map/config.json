@@ -375,94 +375,92 @@
           "visible": true,
           "nodeType": "subject",
           "type": "SubSectionMap",
-          "config": [
-            {
-              "type": "gdbp",
-              "data": [
-                {
-                  "time": "2008",
-                  "subData": [
-                    {
-                      "minZoom": "0",
-                      "maxZoom": "10",
-                      "queryFeatureNum": "10000+",
-                      "ip": "",
-                      "port": "",
-                      "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
-                      "docName": "",
-                      "layerIndex": "",
-                      "layerName": "undefined",
-                      "showLegend": "true",
-                      "field": "人口数",
-                      "webglTextField": "省名",
-                      "dataBase": {
-                        "code": "",
-                        "codeYear": "",
-                        "dataYear": ""
+          "config": {
+            "type": "gdbp",
+            "data": [
+              {
+                "time": "2008",
+                "subData": [
+                  {
+                    "minZoom": "0",
+                    "maxZoom": "10",
+                    "queryFeatureNum": "10000+",
+                    "ip": "",
+                    "port": "",
+                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
+                    "docName": "",
+                    "layerIndex": "",
+                    "layerName": "undefined",
+                    "showLegend": "true",
+                    "field": "人口数",
+                    "webglTextField": "省名",
+                    "dataBase": {
+                      "code": "",
+                      "codeYear": "",
+                      "dataYear": ""
+                    },
+                    "isShow3D": true,
+                    "setting3D": {
+                      "radius": 6,
+                      "strokeWidth": 1,
+                      "lineType": "走廊状",
+                      "sides": 5,
+                      "useHeightScale": true,
+                      "heightScale": 0.000001
+                    },
+                    "color": [
+                      {
+                        "min": "0",
+                        "max": "20000000",
+                        "sectionColor": "#FFFF66"
                       },
-                      "isShow3D": true,
-                      "setting3D": {
-                        "radius": 6,
-                        "strokeWidth": 1,
-                        "lineType": "走廊状",
-                        "sides": 5,
-                        "useHeightScale": true,
-                        "heightScale": 0.000001
+                      {
+                        "min": "20000000",
+                        "max": "40000000",
+                        "sectionColor": "#FFCC66"
                       },
-                      "color": [
-                        {
-                          "min": "0",
-                          "max": "20000000",
-                          "sectionColor": "#FFFF66"
-                        },
-                        {
-                          "min": "20000000",
-                          "max": "40000000",
-                          "sectionColor": "#FFCC66"
-                        },
-                        {
-                          "min": "40000000",
-                          "max": "60000000",
-                          "sectionColor": "#FF9999"
-                        },
-                        {
-                          "min": "60000000",
-                          "max": "80000000",
-                          "sectionColor": "#FF66CC"
-                        },
-                        {
-                          "min": "80000000",
-                          "max": "100000000",
-                          "sectionColor": "#FF3399"
-                        }
-                      ],
-                      "table": {
-                        "showFields": [
-                          "面积",
-                          "周长",
-                          "省名",
-                          "人口数",
-                          "GDP_2007",
-                          "GDP_2008"
-                        ],
-                        "showFieldsTitle": {}
+                      {
+                        "min": "40000000",
+                        "max": "60000000",
+                        "sectionColor": "#FF9999"
                       },
-                      "graph": {
-                        "showFields": ["人口数"],
-                        "showFieldsTitle": {},
-                        "field": "省名"
+                      {
+                        "min": "60000000",
+                        "max": "80000000",
+                        "sectionColor": "#FF66CC"
                       },
-                      "popup": {
-                        "showFields": ["省名", "人口数"],
-                        "showFieldsTitle": {},
-                        "title": ""
+                      {
+                        "min": "80000000",
+                        "max": "100000000",
+                        "sectionColor": "#FF3399"
                       }
+                    ],
+                    "table": {
+                      "showFields": [
+                        "面积",
+                        "周长",
+                        "省名",
+                        "人口数",
+                        "GDP_2007",
+                        "GDP_2008"
+                      ],
+                      "showFieldsTitle": {}
+                    },
+                    "graph": {
+                      "showFields": ["人口数"],
+                      "showFieldsTitle": {},
+                      "field": "省名"
+                    },
+                    "popup": {
+                      "showFields": ["省名", "人口数"],
+                      "showFieldsTitle": {},
+                      "title": ""
                     }
-                  ]
-                }
-              ]
-            }
-          ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "id": "a55a2eca-e16e-5aeb-20b7-fbf906f685c0",

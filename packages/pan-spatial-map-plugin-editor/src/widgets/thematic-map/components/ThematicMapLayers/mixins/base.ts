@@ -4,6 +4,9 @@ import { highlightSubjectTypes } from '../../../store'
 
 @Component
 export default class BaseMixin extends Vue {
+  // 高亮的要素信息
+  @Prop({ default: () => ({}) }) readonly marker!: any
+
   // 专题配置
   @Prop({ default: () => ({}) }) readonly subjectData!: any
 

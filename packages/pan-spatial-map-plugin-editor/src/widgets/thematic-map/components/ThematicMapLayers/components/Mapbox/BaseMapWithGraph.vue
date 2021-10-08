@@ -1,18 +1,27 @@
 <template>
   <!-- 统计专题图 -->
-  <mapgis-popup :showed="showPopup" :coordinates="coordinates" v-if="showPopup">
-    <span class="popup-fontsize" v-if="!properties">暂无数据</span>
-    <div v-else>
-      <div
-        v-for="(v, k) in properties"
-        :key="`base-map-with-graph-properties-${v}`"
-        class="popup-row popup-fontsize"
-      >
-        <span>{{ `${k}：` }}</span>
-        <span>{{ v }}</span>
+  <div>
+    <!-- 弹框 -->
+    <mapgis-popup
+      :showed="showPopup"
+      :coordinates="coordinates"
+      v-if="showPopup"
+    >
+      <span class="popup-fontsize" v-if="!properties">暂无数据</span>
+      <div v-else>
+        <div
+          v-for="(v, k) in properties"
+          :key="`base-map-with-graph-properties-${v}`"
+          class="popup-row popup-fontsize"
+        >
+          <span>{{ `${k}：` }}</span>
+          <span>{{ v }}</span>
+        </div>
       </div>
-    </div>
-  </mapgis-popup>
+    </mapgis-popup>
+    <!-- 高亮标注点 -->
+    <mp-marker-pro :marker="marker" v-if="marker" />
+  </div>
 </template>
 <script lang="ts">
 import { Component, Mixins, Inject } from 'vue-property-decorator'

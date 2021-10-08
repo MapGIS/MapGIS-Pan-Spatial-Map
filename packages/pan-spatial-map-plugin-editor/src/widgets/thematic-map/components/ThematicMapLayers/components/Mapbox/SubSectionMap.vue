@@ -1,11 +1,16 @@
 <template>
-  <!-- 分段专题图图层 -->
-  <mapgis-igs-theme-layer-custom
+  <!-- 分段专题图 -->
+  <mapgis-theme-layer-custom
     @highlightChanged="emitHighlight"
-    :showPanel="false"
-    :layer-id="id"
-    :data-source="geojson"
     v-bind="themeOptions"
+    :show-panel="false"
+    :is-hover-able="true"
+    :is-pop-up-able="true"
+    :layer-id="id"
+    :field="field"
+    :data-source="geojson"
+    :marker="marker"
+    type="range"
     ref="customRangeThemeLayer"
   />
 </template>
@@ -18,22 +23,17 @@ export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
   get themeOptions() {
     const { color, themeStyle = {} } = this.subjectData
     // 兼容旧配置
-    const _themeStyle = color
+    return color
       ? {
-          styleGroups: color.map(({ min, max, color }) => ({
+          styleGroups: color.map(({ min, max, sectionColor }) => ({
             start: min,
             end: max,
             style: {
-              color
+              color: sectionColor
             }
           }))
         }
       : themeStyle
-    return {
-      type: 'range',
-      field: this.field,
-      ..._themeStyle
-    }
   }
 
   removeLayer() {
