@@ -162,26 +162,24 @@ export default class FeatureHighlight extends Vue {
    */
   setSelectedMarkers() {
     const { vueKey } = dep.getState()
-
-    // 如果此时点击取消的屏不是上一次触发选中的屏则只清除取消的屏;
-    // 否则需要清空存储并通知其他屏清除
+    // 如果此时取消选中的屏不是上一次触发选中的屏则只清除取消的屏;
+    // 否则需要清空存储并通知其他屏清除选中
     if (!this.selectedKeys.length && this.vueKey !== vueKey) {
       this.selectedMarkers = []
       return
     }
-    // 获取并存储选中要素
+    // 存储选中要素并触发通知
     dep.setState({
       vueKey: this.vueKey,
       selectedMarkers: this.markers.filter(({ markerId }) =>
         this.selectedKeys.includes(markerId)
       )
     })
-    // 通知其他
     dep.notify()
   }
 
   /**
-   * 订阅: 标注和要素状态更新
+   * 订阅更新: 标注和要素状态更新
    */
   update() {
     const { selectedMarkers } = dep.getState()
@@ -201,6 +199,17 @@ export default class FeatureHighlight extends Vue {
     this.selectedMarkers = selectedMarkers
   }
 
+  /**
+   * 订阅销毁: 标注销毁
+   */
+  destroy() {
+    dep.setState({
+      vueKey: this.vueKey,
+      selectedMarkers: []
+    })
+    dep.notify()
+  }
+
   @Watch('features')
   featuresChanged(nV) {
     this.addMarkers()
@@ -212,10 +221,14 @@ export default class FeatureHighlight extends Vue {
   }
 
   async created() {
-    this.defaultIcon = await markerIconInstance.unSelectIcon()
-    this.selectedIcon = await markerIconInstance.selectIcon()
-    this.addMarkers()
-    dep.addSub(this)
+    try {
+      this.defaultIcon = await markerIconInstance.unSelectIcon()
+      this.selectedIcon = await markerIconInstance.selectIcon()
+      this.addMarkers()
+    } catch (e) {
+    } finally {
+      dep.addSub(this)
+    }
   }
 
   beforeDestroy() {
