@@ -1,11 +1,56 @@
 <template>
   <!-- 聚合标注专题图 -->
-  <div></div>
+  <div class="cluster-label">
+    <mapgis-ui-row>
+      <mapgis-ui-col :span="12">
+        <mapgis-ui-row-flex label="最小半径" :label-width="72">
+          <mapgis-ui-input-number v-model="themeStyle.minSize" :min="1" />
+        </mapgis-ui-row-flex>
+      </mapgis-ui-col>
+      <mapgis-ui-col :span="12">
+        <mapgis-ui-row-flex label="最大半径" :label-width="72">
+          <mapgis-ui-input-number v-model="themeStyle.maxSize" :min="1" />
+        </mapgis-ui-row-flex>
+      </mapgis-ui-col>
+    </mapgis-ui-row>
+    <mapgis-ui-row>
+      <mapgis-ui-col :span="12">
+        <mapgis-ui-row-flex label="聚合点数" :label-width="72">
+          <mapgis-ui-input-number v-model="themeStyle.minPoints" :min="1" />
+        </mapgis-ui-row-flex>
+      </mapgis-ui-col>
+      <mapgis-ui-col :span="12">
+        <mapgis-ui-row-flex label="聚合级别" :label-width="72">
+          <mapgis-ui-input-number
+            v-model="themeStyle.maxClusterZoom"
+            :min="1"
+          />
+        </mapgis-ui-row-flex>
+      </mapgis-ui-col>
+    </mapgis-ui-row>
+    <mapgis-ui-row>
+      <mapgis-ui-col :span="12">
+        <mapgis-ui-row-flex label="细腻程度" :label-width="72">
+          <mapgis-ui-input-number v-model="themeStyle.extent" :min="1" />
+        </mapgis-ui-row-flex>
+      </mapgis-ui-col>
+      <mapgis-ui-col :span="12">
+        <mapgis-ui-row-flex label="填充颜色" :label-width="72">
+          <color-picker-setting v-model="themeStyle.gradient" />
+        </mapgis-ui-row-flex>
+      </mapgis-ui-col>
+    </mapgis-ui-row>
+  </div>
 </template>
 <script lang="ts">
 import { Vue, Prop, Component } from 'vue-property-decorator'
+import ColorPickerSetting from '../../../../common/ColorPickerSetting.vue'
 
-@Component
+@Component({
+  components: {
+    ColorPickerSetting
+  }
+})
 export default class Label extends Vue {
   @Prop({ type: Object }) readonly value!: Record<string, any>
 
@@ -50,4 +95,11 @@ export default class Label extends Vue {
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.cluster-label {
+  padding: 12px 8px 0 8px;
+  > .mapgis-ui-row {
+    margin-bottom: 12px;
+  }
+}
+</style>

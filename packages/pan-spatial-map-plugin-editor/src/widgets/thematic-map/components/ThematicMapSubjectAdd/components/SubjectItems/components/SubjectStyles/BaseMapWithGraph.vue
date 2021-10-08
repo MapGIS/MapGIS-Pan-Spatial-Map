@@ -1,6 +1,8 @@
 <template>
   <!-- 统计专题图 -->
-  <div></div>
+  <div class="base-map-with-graph">
+    <mapgis-ui-empty description="暂无配置" />
+  </div>
 </template>
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'

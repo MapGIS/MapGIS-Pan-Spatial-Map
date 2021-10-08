@@ -20,7 +20,7 @@
       </div>
     </mapgis-3d-popup>
     <!-- 高亮标注点 -->
-    <mp-3d-marker-pro :marker="marker" v-if="marker" />
+    <mp-3d-marker-pro :marker="marker" v-if="marker.fid" />
   </div>
 </template>
 <script lang="ts">
