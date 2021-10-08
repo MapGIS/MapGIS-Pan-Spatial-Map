@@ -9,7 +9,7 @@
     :layer-id="id"
     :field="field"
     :data-source="geojson"
-    :marker="marker"
+    :fid="marker.fid"
     type="symbol"
     ref="customStaticLabelThemeLayer"
   />

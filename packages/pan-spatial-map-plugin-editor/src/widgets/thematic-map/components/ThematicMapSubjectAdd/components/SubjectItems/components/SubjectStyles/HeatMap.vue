@@ -1,38 +1,38 @@
 <template>
   <div class="heat-map">
-    <mp-row-flex label="类型选择" :label-width="76">
-      <a-radio-group v-model="type">
-        <a-radio value="CESIUM">原生</a-radio>
-        <a-radio value="MAPV">mapv</a-radio>
-      </a-radio-group>
-    </mp-row-flex>
+    <mapgis-ui-row-flex label="类型选择" :label-width="76">
+      <mapgis-ui-radio-group v-model="type">
+        <mapgis-ui-radio value="CESIUM">原生</mapgis-ui-radio>
+        <mapgis-ui-radio value="MAPV">mapv</mapgis-ui-radio>
+      </mapgis-ui-radio-group>
+    </mapgis-ui-row-flex>
     <template v-if="isCesium">
-      <mp-row-flex label="是否聚合" :label-width="76">
-        <a-radio-group v-model="themeStyle.useClustering">
-          <a-radio :value="true">是</a-radio>
-          <a-radio :value="false">否</a-radio>
-        </a-radio-group>
-      </mp-row-flex>
-      <mp-row-flex label="半径大小" :label-width="76">
-        <a-input-number v-model="themeStyle.radius" :min="13" />
-      </mp-row-flex>
-      <mp-row-flex label="模糊大小" :label-width="76">
-        <a-input-number v-model="themeStyle.blur" :min="0.1" :max="1" />
-      </mp-row-flex>
+      <mapgis-ui-row-flex label="是否聚合" :label-width="76">
+        <mapgis-ui-radio-group v-model="themeStyle.useClustering">
+          <mapgis-ui-radio :value="true">是</mapgis-ui-radio>
+          <mapgis-ui-radio :value="false">否</mapgis-ui-radio>
+        </mapgis-ui-radio-group>
+      </mapgis-ui-row-flex>
+      <mapgis-ui-row-flex label="半径大小" :label-width="76">
+        <mapgis-ui-input-number v-model="themeStyle.radius" :min="13" />
+      </mapgis-ui-row-flex>
+      <mapgis-ui-row-flex label="模糊大小" :label-width="76">
+        <mapgis-ui-input-number v-model="themeStyle.blur" :min="0.1" :max="1" />
+      </mapgis-ui-row-flex>
     </template>
     <template v-else>
-      <mp-row-flex label="半径大小" :label-width="72">
-        <a-input-number v-model="themeStyle.size" :min="13" />
-      </mp-row-flex>
-      <mp-row-flex label="最大权重" :label-width="72">
-        <a-input-number v-model="themeStyle.max" :min="1" />
-      </mp-row-flex>
+      <mapgis-ui-row-flex label="半径大小" :label-width="72">
+        <mapgis-ui-input-number v-model="themeStyle.size" :min="13" />
+      </mapgis-ui-row-flex>
+      <mapgis-ui-row-flex label="最大权重" :label-width="72">
+        <mapgis-ui-input-number v-model="themeStyle.max" :min="1" />
+      </mapgis-ui-row-flex>
       <!-- 动画项设置(缺陷列表#108) -->
       <!-- <animation-items v-model="themeStyle.animation" /> -->
     </template>
-    <mp-row-flex label="填充颜色" :label-width="76">
+    <mapgis-ui-row-flex label="填充颜色" :label-width="76">
       <color-picker-setting v-model="themeStyle.gradient" />
-    </mp-row-flex>
+    </mapgis-ui-row-flex>
   </div>
 </template>
 <script lang="ts">
@@ -58,7 +58,7 @@ export default class HeatMap extends Vue {
 
   @Watch('type')
   typeChanged(t) {
-    this.themeStyle = this.getOptions(t)
+    this.themeStyle = this.getThemeStyle(t)
   }
 
   get isCesium() {
@@ -106,8 +106,8 @@ export default class HeatMap extends Vue {
 </script>
 <style lang="less" scoped>
 .heat-map {
-  padding: 12px 8px 8px;
-  > .ant-row-flex {
+  padding: 12px 8px 0 8px;
+  > .mapgis-ui-row-flex {
     margin-bottom: 12px;
   }
 }

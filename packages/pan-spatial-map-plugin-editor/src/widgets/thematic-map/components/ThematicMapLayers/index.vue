@@ -38,7 +38,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   @Inject('map') map
 
   // 高亮选项的标注点
-  private marker = null
+  private marker: unknown = {}
 
   // 要素数据
   private geojson: Feature.FeatureIGSGeoJSON | null = null
@@ -71,7 +71,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * 清除高亮
    */
   onClearHighlight() {
-    this.marker = null
+    this.marker = {}
   }
 
   /**
