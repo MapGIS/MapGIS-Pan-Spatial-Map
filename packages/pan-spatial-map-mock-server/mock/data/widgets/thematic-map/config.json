@@ -15,7 +15,7 @@
       "children": [
         {
           "id": "92fd7586-e248-c105-918d-843fb090e24a",
-          "title": "GDP",
+          "title": "GDP统计",
           "visible": true,
           "nodeType": "list",
           "children": [
@@ -47,7 +47,6 @@
                     "codeYear": "",
                     "dataYear": ""
                   },
-                  "color": [],
                   "table": {
                     "showFields": [
                       "面积",
@@ -69,8 +68,7 @@
                     "showFields": ["GDP_2007", "GDP_2008"],
                     "showFieldsTitle": {},
                     "title": "省名"
-                  },
-                  "colorLength": "5"
+                  }
                 }
               ]
             },
@@ -106,7 +104,6 @@
                           "codeYear": "",
                           "dataYear": ""
                         },
-                        "color": [],
                         "table": {
                           "showFields": [
                             "面积",
@@ -127,8 +124,7 @@
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": ""
-                        },
-                        "colorLength": "5"
+                        }
                       }
                     ]
                   }
@@ -167,7 +163,6 @@
                           "codeYear": "",
                           "dataYear": ""
                         },
-                        "color": [],
                         "table": {
                           "showFields": [
                             "面积",
@@ -188,8 +183,7 @@
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": "省名"
-                        },
-                        "colorLength": "5"
+                        }
                       }
                     ]
                   }
@@ -228,7 +222,6 @@
                           "codeYear": "",
                           "dataYear": ""
                         },
-                        "color": [],
                         "table": {
                           "showFields": [
                             "面积",
@@ -249,8 +242,7 @@
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": "省名"
-                        },
-                        "colorLength": "5"
+                        }
                       }
                     ]
                   }
@@ -289,7 +281,6 @@
                           "codeYear": "",
                           "dataYear": ""
                         },
-                        "color": [],
                         "table": {
                           "showFields": [
                             "面积",
@@ -310,8 +301,7 @@
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": ""
-                        },
-                        "colorLength": "5"
+                        }
                       }
                     ]
                   }
@@ -350,7 +340,6 @@
                           "codeYear": "",
                           "dataYear": ""
                         },
-                        "color": [],
                         "table": {
                           "showFields": [
                             "面积",
@@ -371,8 +360,7 @@
                           "showFields": ["GDP_2007", "GDP_2008"],
                           "showFieldsTitle": {},
                           "title": ""
-                        },
-                        "colorLength": "5"
+                        }
                       }
                     ]
                   }
@@ -382,163 +370,166 @@
           ]
         },
         {
-          "id": "92fd7586-e248-c105-918d-843fb090e24b",
-          "title": "人口",
+          "id": "098d7343-f2e6-26c1-e07b-ccbf604fa308",
+          "title": "省级行政区人口分段",
           "visible": true,
-          "nodeType": "list",
-          "children": [
-            {
-              "id": "098d7343-f2e6-26c1-e07b-ccbf604fa308",
-              "title": "省级行政区",
-              "visible": true,
-              "nodeType": "subject",
-              "type": "SubSectionMap",
-              "config": [
-                {
-                  "time": "2006",
-                  "minZoom": "0",
-                  "maxZoom": "10",
-                  "queryFeatureNum": "10000+",
-                  "ip": "",
-                  "port": "",
-                  "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
-                  "docName": "",
-                  "layerIndex": "",
-                  "layerName": "undefined",
-                  "showLegend": "true",
-                  "isShow3D": true,
-                  "field": "人口数",
-                  "webglTextField": "省名",
-                  "dataBase": {
-                    "code": "",
-                    "codeYear": "",
-                    "dataYear": ""
-                  },
-                  "setting3D": {
-                    "radius": 6,
-                    "strokeWidth": 1,
-                    "lineType": "走廊状",
-                    "sides": 5,
-                    "useHeightScale": true,
-                    "heightScale": 0.000001
-                  },
-                  "color": [
-                    {
-                      "min": "0",
-                      "max": "20000000",
-                      "sectionColor": "#FFFF66"
+          "nodeType": "subject",
+          "type": "SubSectionMap",
+          "config": {
+            "type": "gdbp",
+            "data": [
+              {
+                "time": "2008",
+                "subData": [
+                  {
+                    "minZoom": "0",
+                    "maxZoom": "10",
+                    "queryFeatureNum": "10000+",
+                    "ip": "",
+                    "port": "",
+                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
+                    "docName": "",
+                    "layerIndex": "",
+                    "layerName": "undefined",
+                    "showLegend": "true",
+                    "field": "人口数",
+                    "webglTextField": "省名",
+                    "dataBase": {
+                      "code": "",
+                      "codeYear": "",
+                      "dataYear": ""
                     },
-                    {
-                      "min": "20000000",
-                      "max": "40000000",
-                      "sectionColor": "#FFCC66"
+                    "isShow3D": true,
+                    "setting3D": {
+                      "radius": 6,
+                      "strokeWidth": 1,
+                      "lineType": "走廊状",
+                      "sides": 5,
+                      "useHeightScale": true,
+                      "heightScale": 0.000001
                     },
-                    {
-                      "min": "40000000",
-                      "max": "60000000",
-                      "sectionColor": "#FF9999"
-                    },
-                    {
-                      "min": "60000000",
-                      "max": "80000000",
-                      "sectionColor": "#FF66CC"
-                    },
-                    {
-                      "min": "80000000",
-                      "max": "100000000",
-                      "sectionColor": "#FF3399"
-                    }
-                  ],
-                  "table": {
-                    "showFields": [
-                      "面积",
-                      "周长",
-                      "省名",
-                      "人口数",
-                      "GDP_2011",
-                      "GDP_2012",
-                      "GDP_2013"
-                    ],
-                    "showFieldsTitle": {}
-                  },
-                  "graph": {
-                    "showFields": ["人口数"],
-                    "showFieldsTitle": {},
-                    "field": "省名"
-                  },
-                  "popup": {
-                    "showFields": ["省名", "人口数"],
-                    "showFieldsTitle": {},
-                    "title": ""
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "92fd7586-e248-c105-918d-843fb090e24c",
-          "title": "产业生产总值",
-          "visible": true,
-          "nodeType": "list",
-          "children": [
-            {
-              "id": "a55a2eca-e16e-5aeb-20b7-fbf906f685c0",
-              "title": "省级行政区",
-              "visible": true,
-              "nodeType": "subject",
-              "type": "StatisticLabel",
-              "config": [
-                {
-                  "time": "2011",
-                  "minZoom": 1,
-                  "maxZoom": 10,
-                  "ip": "",
-                  "port": "",
-                  "src": "",
-                  "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
-                  "showTextLabel": "true",
-                  "docName": "",
-                  "field": "GDP_2011",
-                  "layerIndex": null,
-                  "labelStyle": {
-                    "labelType": "circle",
-                    "textStyle": {
-                      "fillColor": "#FF9933",
-                      "textColor": "#FFFFFF"
-                    },
-                    "radius": [
+                    "color": [
                       {
-                        "min": 0,
-                        "max": 40000,
-                        "sectionColor": 10,
-                        "radiu": "1000"
+                        "min": "0",
+                        "max": "20000000",
+                        "sectionColor": "#FFFF66"
+                      },
+                      {
+                        "min": "20000000",
+                        "max": "40000000",
+                        "sectionColor": "#FFCC66"
+                      },
+                      {
+                        "min": "40000000",
+                        "max": "60000000",
+                        "sectionColor": "#FF9999"
+                      },
+                      {
+                        "min": "60000000",
+                        "max": "80000000",
+                        "sectionColor": "#FF66CC"
+                      },
+                      {
+                        "min": "80000000",
+                        "max": "100000000",
+                        "sectionColor": "#FF3399"
                       }
                     ],
-                    "radiusLength": "1"
-                  },
-                  "table": {
-                    "showFields": ["省名", "GDP_2011"],
-                    "showFieldsTitle": {},
-                    "type": "sum",
-                    "sumFiled": [],
-                    "sumColumn": []
-                  },
-                  "graph": {
-                    "showFields": ["GDP_2011"],
-                    "showFieldsTitle": {},
-                    "field": "省名",
-                    "target": []
-                  },
-                  "popup": {
-                    "showFields": ["GDP_2011"],
-                    "showFieldsTitle": {},
-                    "title": "GDP_2011"
+                    "table": {
+                      "showFields": [
+                        "面积",
+                        "周长",
+                        "省名",
+                        "人口数",
+                        "GDP_2007",
+                        "GDP_2008"
+                      ],
+                      "showFieldsTitle": {}
+                    },
+                    "graph": {
+                      "showFields": ["人口数"],
+                      "showFieldsTitle": {},
+                      "field": "省名"
+                    },
+                    "popup": {
+                      "showFields": ["省名", "人口数"],
+                      "showFieldsTitle": {},
+                      "title": ""
+                    }
                   }
-                }
-              ]
-            }
-          ]
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "a55a2eca-e16e-5aeb-20b7-fbf906f685c0",
+          "title": "省级行政区GDP_2011符号图",
+          "visible": true,
+          "nodeType": "subject",
+          "type": "StatisticLabel",
+          "config": {
+            "type": "gdbp",
+            "data": [
+              {
+                "time": "2011",
+                "subData": [
+                  {
+                    "minZoom": 1,
+                    "maxZoom": 10,
+                    "ip": "",
+                    "port": "",
+                    "src": "",
+                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
+                    "showTextLabel": "true",
+                    "docName": "",
+                    "field": "GDP_2011",
+                    "layerIndex": null,
+                    "labelStyle": {
+                      "labelType": "circle",
+                      "radiusLength": "1",
+                      "textStyle": {
+                        "fillColor": "#FF9933",
+                        "textColor": ""
+                      },
+                      "radius": {
+                        "min": 0,
+                        "max": 36796.71,
+                        "sectionColor": "#FFFFFF",
+                        "radius": 1000
+                      },
+                      "text": {
+                        "type": "",
+                        "field": "",
+                        "baseField": "",
+                        "countField": "",
+                        "countFieldValue": "",
+                        "sumField": ""
+                      }
+                    },
+                    "table": {
+                      "showFields": ["省名", "GDP_2011"],
+                      "showFieldsTitle": {},
+                      "type": "sum",
+                      "sumFiled": [],
+                      "sumColumn": []
+                    },
+                    "graph": {
+                      "showFields": ["GDP_2011"],
+                      "showFieldsTitle": {},
+                      "field": "省名",
+                      "target": []
+                    },
+                    "popup": {
+                      "showFields": ["GDP_2011"],
+                      "showFieldsTitle": {},
+                      "title": "GDP_2011"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -558,7 +549,7 @@
             "type": "gdbp",
             "data": [
               {
-                "time": "2000",
+                "time": "2008",
                 "subData": [
                   {
                     "ip": "",
@@ -566,7 +557,7 @@
                     "gdbp": "gdbp://MapGisLocal/专题图数据/sfcls/县城驻地",
                     "weight": "30",
                     "field": "AREA",
-                    "style": {
+                    "themeStyle": {
                       "type": "MAPV",
                       "size": 13,
                       "max": 100
@@ -601,7 +592,7 @@
             "type": "doc",
             "data": [
               {
-                "time": "2009",
+                "time": "2008",
                 "subData": [
                   {
                     "ip": "",
@@ -612,7 +603,7 @@
                     "layerIndex": "1",
                     "weight": "30",
                     "field": "AREA",
-                    "style": {
+                    "themeStyle": {
                       "type": "MAPV",
                       "size": 13,
                       "max": 100
@@ -655,7 +646,7 @@
                 "layerIndex": null,
                 "weight": 8,
                 "field": "AREA",
-                "style": {
+                "themeStyle": {
                   "size": 30,
                   "max": 100,
                   "label": {
@@ -707,7 +698,7 @@
             "type": "gdbp",
             "data": [
               {
-                "time": "2019",
+                "time": "2008",
                 "subData": [
                   {
                     "minZoom": 1,
@@ -724,15 +715,26 @@
                       "codeYear": "",
                       "dataYear": ""
                     },
-                    "textColor": "rgb(237, 241, 242)",
-                    "color": "rgb(237, 241, 242)",
-                    "text": {
-                      "baseField": "Shape_Length",
-                      "countField": "SHENG_DM",
-                      "countFieldValue": "",
-                      "field": "配色字段",
-                      "sumField": "F_GUID",
-                      "type": "att"
+                    "themeStyle": {
+                      "fillStyle": "rgba(255, 50, 0, 1.0)",
+                      "size": 8,
+                      "minSize": 8,
+                      "maxSize": 31,
+                      "globalAlpha": 0.8,
+                      "clusterRadius": 150,
+                      "maxClusterZoom": 18,
+                      "maxZoom": 19,
+                      "minPoints": 5,
+                      "extent": 400,
+                      "label": {
+                        "show": true,
+                        "fillStyle": "white"
+                      },
+                      "gradient": {
+                        "0": "blue",
+                        "0.5": "yellow",
+                        "1.0": "rgb(255,0,0)"
+                      }
                     },
                     "table": {
                       "showFields": ["name", "AREA"],
@@ -772,7 +774,7 @@
               "ip": "",
               "port": "",
               "gdbp": "",
-              "style": {
+              "themeStyle": {
                 "type": "MAPV"
               }
             }
@@ -790,7 +792,7 @@
               "ip": "",
               "port": "",
               "gdbp": "",
-              "style": {
+              "themeStyle": {
                 "type": "CESIUM"
               }
             }

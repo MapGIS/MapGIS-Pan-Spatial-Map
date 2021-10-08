@@ -21,7 +21,6 @@ export default class CesiumHexBin extends Mixins(BaseMixin) {
       },
       context: '2d',
       draw: 'honeycomb',
-      max: 100,
       ...(this.subjectData.style || {})
     }
   }

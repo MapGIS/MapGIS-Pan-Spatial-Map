@@ -1,22 +1,27 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mapgis-3d-popup
-    v-model="showPopup"
-    :position="popupPosition"
-    :forceRender="true"
-  >
-    <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
-    <div v-else>
-      <div
-        v-for="(v, k) in popupProperties"
-        :key="`statistic-label-properties-${v}`"
-        class="popup-row popup-fontsize"
-      >
-        <span>{{ `${k}：` }}</span>
-        <span>{{ v }}</span>
+  <div>
+    <!-- 弹框 -->
+    <mapgis-3d-popup
+      v-model="showPopup"
+      :position="popupPosition"
+      :forceRender="true"
+    >
+      <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
+      <div v-else>
+        <div
+          v-for="(v, k) in popupProperties"
+          :key="`statistic-label-properties-${v}`"
+          class="popup-row popup-fontsize"
+        >
+          <span>{{ `${k}：` }}</span>
+          <span>{{ v }}</span>
+        </div>
       </div>
-    </div>
-  </mapgis-3d-popup>
+    </mapgis-3d-popup>
+    <!-- 高亮标注点 -->
+    <mp-3d-marker-pro :marker="marker" v-if="marker" />
+  </div>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'

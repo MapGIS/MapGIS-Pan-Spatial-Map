@@ -1,10 +1,16 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mapgis-igs-theme-layer-custom
-    :showPanel="false"
-    :dataSource="geojson"
-    :themeProps="themeProps"
-    :theme-options="themeOptions"
+  <mapgis-theme-layer-custom
+    @highlightChanged="emitHighlight"
+    v-bind="themeOptions"
+    :show-panel="false"
+    :is-hover-able="true"
+    :is-pop-up-able="true"
+    :layer-id="id"
+    :field="field"
+    :data-source="geojson"
+    :marker="marker"
+    type="symbol"
     ref="customStaticLabelThemeLayer"
   />
 </template>
@@ -14,16 +20,9 @@ import BaseMixin from '../../mixins/base'
 
 @Component
 export default class MapboxStatisticLabel extends Mixins(BaseMixin) {
-  get themeProps() {
-    return {
-      layerId: this.id,
-      themeField: this.field,
-      themeType: 'symbol'
-    }
-  }
-
   get themeOptions() {
-    return this.subjectData?.labelStyle || []
+    const { labelStyle, themeStyle = {} } = this.subjectData
+    return themeStyle
   }
 
   removeLayer() {

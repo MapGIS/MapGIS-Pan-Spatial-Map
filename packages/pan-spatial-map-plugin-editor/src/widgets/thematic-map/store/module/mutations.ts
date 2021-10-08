@@ -1,32 +1,30 @@
 import Vue from 'vue'
+import { UUID, Feature } from '@mapgis/web-app-framework'
+import { api, baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 import _cloneDeep from 'lodash/cloneDeep'
 import _last from 'lodash/last'
-import { UUID, Feature } from '@mapgis/web-app-framework'
-import {
-  api,
-  baseConfigInstance,
-  markerIconInstance
-} from '@mapgis/pan-spatial-map-common'
 import {
   FeatureFormatType,
   ConfigType,
   ModuleType,
-  LinkageItem,
   SubjectData,
   ThematicMapBaseConfig,
   ThematicMapSubjectConfigNode,
-  NewSubjectConfig,
   IFeatureQueryParams
 } from '../types'
-import state from './state'
 
 /**
  * 要素查询
  * @param {object} params 请求参数
- * @param {string} f 格式化 <json | geojson>
- * @returns <FeatureIGS | FeatureIGSGeoJSON | null>
+ * @param {string} [f = geojson] f <json | geojson> 格式化
+ * @description 不直接请求geojson数据而是请求json数据再转GeoJSON数据的原因是：
+ * 直接使用f=geojson请求数据中，目前发现bound参数内容和f=json的不一致，导致统计专题图错误
+ * 此外totalCount参数也没有，导致属性表分页错误
+ * @returns <FeatureIGSGeoJSON | FeatureIGS>
  */
-export const resolveFeatureQuery = async (
+export const resolveFeatureQuery:
+  | Feature.FeatureIGS
+  | Feature.FeatureIGSGeoJSON = async (
   {
     ip,
     port,
@@ -39,7 +37,7 @@ export const resolveFeatureQuery = async (
     pageCount,
     ...others
   }: IFeatureQueryParams,
-  f = FeatureFormatType.json
+  f = FeatureFormatType.geojson
 ) => {
   const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
   const serverParams = (configType
@@ -50,11 +48,9 @@ export const resolveFeatureQuery = async (
         layerName,
         layerIdxs: layerIndex
       }
-    : {
-        gdbp
-      }
+    : { gdbp }
 
-  const dataSet: Feature.FeatureIGS = await Feature.FeatureQuery.query({
+  const dataSource = await Feature.FeatureQuery.query({
     ip: ip || baseConfigIp,
     port: port || baseConfigPort,
     page: page || 0,
@@ -65,10 +61,10 @@ export const resolveFeatureQuery = async (
     ...others
   })
   return f === FeatureFormatType.geojson
-    ? dataSet
-      ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(dataSet)
+    ? dataSource
+      ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(dataSource)
       : null
-    : dataSet
+    : dataSource
 }
 
 const mutations = {
@@ -89,23 +85,23 @@ const mutations = {
       : []
   },
   /**
-   * 加载
+   * 加载（控制属性表、统计表、时间轴的加载提示）
    */
   setLoading({ state }, loading: boolean) {
     state.loading = loading
   },
   /**
-   * 当前页的查询的要素数据
+   * 缓存当前页的查询的要素geojson数据
    */
-  setPageDataSet({ state }, data: Feature.FeatureIGS | null) {
-    state.pageDataSet = _cloneDeep(data)
+  setPageData({ state }, geojson: Feature.FeatureIGSGeoJSON | null) {
+    state.pageGeojson = _cloneDeep(geojson)
   },
   /**
-   * 设置要素查询， 缓存要素数据
-   * @param isCache 是否缓存
-   * @param onSuccess 成功回调
-   * @param onError 失败回调
-   * 目前只支持查询格式为json, 因为webclient-vue的统计/普通静态标注专题图暂不支持geojson
+   * 根据选中的专题配置，查询要素并决定是否缓存
+   * @param {boolean} isCache 是否缓存
+   * @param {object} params 其他参数（例如分页参数等，不在state.subjectData中的参数）
+   * @param {function} onSuccess 成功回调
+   * @param {function} onError 失败回调
    */
   async setFeaturesQuery(
     { state, commit },
@@ -114,7 +110,7 @@ const mutations = {
     try {
       const { subjectData, baseConfig, pageParam } = state
       if (!subjectData) {
-        commit('setPageDataSet', null)
+        commit('setPageData', null)
         return
       }
       const { baseIp, basePort } = baseConfig
@@ -122,16 +118,16 @@ const mutations = {
       const fields = table ? table.showFields.join(',') : ''
 
       commit('setLoading', true)
-      const dataSet: Feature.FeatureIGS | null = await resolveFeatureQuery({
+      const geojson = await resolveFeatureQuery({
         ip: ip || baseIp,
         port: port || basePort,
         fields,
         ...others,
         ...params
       })
-      onSuccess && onSuccess(dataSet)
+      onSuccess && onSuccess(geojson)
+      isCache && commit('setPageData', geojson)
       commit('setLoading', false)
-      isCache && commit('setPageDataSet', dataSet)
     } catch (e) {
       commit('setLoading', false)
       onError && onError(e)
@@ -139,8 +135,6 @@ const mutations = {
   },
   /**
    * 对应专题年度的配置子配置数据
-   * 旧版专题配置: OldSubjectConfig
-   * 新版专题配置: NewSubjectConfig
    */
   setSubjectData({ state }, data: SubjectData | null) {
     state.subjectData = data
@@ -233,7 +227,8 @@ const mutations = {
   },
   /**
    * 更新专题配置
-   * fixme 未实现真实的保存，不能保存在server的config中去
+   * fixme 未实现真实的保存
+   * 不能保存在pan-spatial-map-mock-server/widgets/thematic-map/config.json
    */
   updateSubjectConfig(
     { state, commit },
@@ -260,36 +255,19 @@ const mutations = {
   },
   /**
    * 当前高亮的要素数据项(图属联动项)
-   * 高亮项使用的是geojson数据需对dataSet转换
    */
-  setLinkageItem({ state }, { dataIndex }: LinkageItem) {
-    markerIconInstance.unSelectIcon().then(img => {
-      const geoJson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
-        state.pageDataSet
-      )
-      const feature = geoJson.features[dataIndex]
-      if (feature) {
-        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
-        const { properties } = feature
-        state.linkageItem = {
-          dataIndex,
-          marker: {
-            img,
-            coordinates,
-            feature,
-            markerId: UUID.uuid(),
-            fid: properties.fid,
-            properties
-          }
-        }
-      }
-    })
+  setLinkage({ state, commit }, fid: string) {
+    if (!fid) {
+      commit('resetLinkage')
+    } else {
+      state.linkageFid = fid
+    }
   },
   /**
    * 重置高亮
    */
   resetLinkage({ state }) {
-    state.linkageItem = null
+    state.linkageFid = ''
   }
 }
 

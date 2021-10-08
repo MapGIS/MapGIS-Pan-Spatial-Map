@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { State, ModuleType } from '../types'
+import { State } from '../types'
 
 export default Vue.observable<State>({
   // 属性表|统计表|时间轴|专题新建|工具栏
@@ -8,8 +8,8 @@ export default Vue.observable<State>({
   // 数据加载状态
   loading: false,
 
-  // 当前页的查询的要素数据
-  pageDataSet: null,
+  // 当前页的查询的要素GeoJSON数据
+  pageGeojson: null,
 
   // 选中的专题的年度的专题数据
   subjectData: null,
@@ -32,6 +32,6 @@ export default Vue.observable<State>({
   // 专题图专题配置
   subjectConfig: [],
 
-  // 高亮的选项
-  linkageItem: null
+  // 联动时的要素fid
+  linkageFid: ''
 })

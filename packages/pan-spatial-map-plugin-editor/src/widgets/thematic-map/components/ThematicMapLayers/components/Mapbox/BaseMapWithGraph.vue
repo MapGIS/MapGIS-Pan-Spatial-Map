@@ -1,22 +1,32 @@
 <template>
   <!-- 统计专题图 -->
-  <mapgis-popup :showed="showPopup" :coordinates="coordinates" v-if="showPopup">
-    <span class="popup-fontsize" v-if="!properties">暂无数据</span>
-    <div v-else>
-      <div
-        v-for="(v, k) in properties"
-        :key="`base-map-with-graph-properties-${v}`"
-        class="popup-row popup-fontsize"
-      >
-        <span>{{ `${k}：` }}</span>
-        <span>{{ v }}</span>
+  <div>
+    <!-- 弹框 -->
+    <mapgis-popup
+      :showed="showPopup"
+      :coordinates="coordinates"
+      v-if="showPopup"
+    >
+      <span class="popup-fontsize" v-if="!properties">暂无数据</span>
+      <div v-else>
+        <div
+          v-for="(v, k) in properties"
+          :key="`base-map-with-graph-properties-${v}`"
+          class="popup-row popup-fontsize"
+        >
+          <span>{{ `${k}：` }}</span>
+          <span>{{ v }}</span>
+        </div>
       </div>
-    </div>
-  </mapgis-popup>
+    </mapgis-popup>
+    <!-- 高亮标注点 -->
+    <mp-marker-pro :marker="marker" v-if="marker" />
+  </div>
 </template>
 <script lang="ts">
 import { Component, Mixins, Inject } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
+import { Feature } from '@mapgis/web-app-framework'
 import _debounce from 'lodash/debounce'
 import BaseMixin from '../../mixins/base'
 
@@ -257,7 +267,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
    * 显示图层
    */
   showLayer() {
-    if (!this.graph) return
+    if (!this.graph || !this.geojson) return
     this.removeLayer()
     this.initGraphicStyles()
     let chartsSetting = null
@@ -296,7 +306,8 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
       chartsSetting
     })
     if (!this.thematicMapLayer) return
-    this.thematicMapLayer.addFeatures(this.dataSet)
+    const igs = Feature.FeatureConvert.featureGeoJSONTofeatureIGS(this.geojson)
+    this.thematicMapLayer.addFeatures(igs)
     this.thematicMapLayer.on('mousemove', _debounce(this.showPopupWin, 200))
     this.thematicMapLayer.on('mouseout', _debounce(this.closePopupWin, 200))
   }
@@ -308,7 +319,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     const { showFields } = this.popupConfig
     if (!target || !target.dataInfo || !showFields || !showFields.length) return
     this.showPopup = true
-    this.emitHighlight(target.refDataID - 1)
+    this.emitHighlight(target.refDataID)
     const { field, value } = target.dataInfo
     const { offsetTop, offsetLeft } = this.map.getContainer()
     const { lng, lat } = this.map.unproject(

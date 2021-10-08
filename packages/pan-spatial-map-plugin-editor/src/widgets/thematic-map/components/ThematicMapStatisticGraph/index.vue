@@ -49,8 +49,7 @@
   </transition>
 </template>
 <script lang="ts">
-import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
-import { Feature } from '@mapgis/web-app-framework'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import * as echarts from 'echarts'
 import {
   ModuleType,
@@ -90,19 +89,16 @@ interface IChartOption {
     ...mapGetters([
       'loading',
       'isVisible',
-      'pageDataSet',
+      'pageGeojson',
       'subjectData',
-      'linkageItem'
+      'linkageFid'
     ])
   },
   methods: {
-    ...mapMutations(['setLinkageItem', 'resetVisible', 'resetLinkage'])
+    ...mapMutations(['setLinkage', 'resetVisible', 'resetLinkage'])
   }
 })
 export default class ThematicMapStatisticGraph extends Vue {
-  // 默认标注图标
-  private defaultIcon = ''
-
   // 当前活动的图标
   private activeChart: keyof ChartType = ChartType.BAR
 
@@ -190,23 +186,15 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 将query的结果设置图表配置里
-   * @param {object} dataSet FeatureIGS
    */
-  getChartOptions(dataSet: Feature.FeatureIGS | null) {
+  getChartOptions() {
     const xArr = []
     const yArr = []
-    if (dataSet && dataSet.AttStruct.FldName && this.graph) {
-      const {
-        SFEleArray,
-        AttStruct: { FldName }
-      } = dataSet
-      const xIndex = FldName.indexOf(this.graph.field)
-      const yIndex = FldName.indexOf(this.target)
-      SFEleArray.forEach(({ AttValue }) => {
-        if (AttValue) {
-          xArr.push(AttValue[xIndex])
-          yArr.push(AttValue[yIndex])
-        }
+    const geojson = this.pageGeojson
+    if (geojson && geojson.features?.length && this.graph) {
+      geojson.features.forEach(({ properties }) => {
+        xArr.push(properties[this.graph.field])
+        yArr.push(properties[this.target])
       })
     }
     this.chartOption.x = xArr
@@ -278,14 +266,14 @@ export default class ThematicMapStatisticGraph extends Vue {
   onTargetChange(value: string) {
     this.target = value
     this.chartOption.title = value
-    this.getChartOptions(this.pageDataSet)
+    this.getChartOptions()
   }
 
   /**
    * 取消高亮图表图形
-   * @param {object}  param dataIndex 数据索引
+   * @param {number} dataIndex 索引
    */
-  onClearHighlight({ dataIndex }) {
+  onClearHighlight(dataIndex) {
     this.chart.dispatchAction({
       type: 'downplay',
       dataIndex
@@ -298,9 +286,9 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 高亮图表图形
-   * @param {object}  param dataIndex 数据索引
+   * @param {number} dataIndex 索引
    */
-  onHighlight({ dataIndex }) {
+  onHighlight(dataIndex) {
     this.chart.dispatchAction({
       type: 'showTip',
       seriesIndex: 0,
@@ -313,36 +301,52 @@ export default class ThematicMapStatisticGraph extends Vue {
   }
 
   /**
+   * 设置高亮
+   * @param {string} fid 要素fid
+   */
+  setHighlight(fid: string) {
+    if (!this.pageGeojson) return
+    const dataIndex = this.pageGeojson.features.findIndex(
+      ({ properties }) => properties.fid === fid
+    )
+    this.onClearHighlight(dataIndex)
+    this.onHighlight(dataIndex)
+  }
+
+  /**
+   * 图表事件绑定
+   */
+  setChartEventBind() {
+    this.chart.on('mouseout', this.resetLinkage)
+    this.chart.on('mouseover', ({ dataIndex }) => {
+      if (!this.pageGeojson) return
+      this.setLinkage(this.pageGeojson.features[dataIndex]?.properties.fid)
+    })
+  }
+
+  /**
    * 监听: 高亮配置
    */
   @Watch('hasHighlight')
-  watchHasHighlight(nV) {
-    if (nV) {
-      this.chart.on('mouseover', ({ dataIndex }) =>
-        this.setLinkageItem({ dataIndex })
-      )
-      this.chart.on('mouseout', this.resetLinkage)
-    }
+  hasHighlightChanged(has) {
+    has && this.setChartEventBind()
   }
 
   /**
    * 监听: 分页数据变化
    */
-  @Watch('pageDataSet', { deep: true })
-  watchPageDataSet(nV: Feature.FeatureIGS | null) {
+  @Watch('pageGeojson', { deep: true })
+  pageGeojsonChanged() {
     this.getTargetList()
-    this.getChartOptions(nV)
+    this.getChartOptions()
   }
 
   /**
    * 监听: 联动项变化
    */
-  @Watch('linkageItem', { deep: true })
-  watchHighlightItem(nV) {
-    if (nV) {
-      this.onClearHighlight(nV)
-      this.onHighlight(nV)
-    }
+  @Watch('linkageFid')
+  linkageFidChanged(nV) {
+    this.setHighlight(nV)
   }
 
   mounted() {
@@ -350,6 +354,10 @@ export default class ThematicMapStatisticGraph extends Vue {
       'thematic-map-graph-chart'
     )
     this.chart = echarts.init(chartDom)
+  }
+
+  beforeDestroy() {
+    this.resetLinkage()
   }
 }
 </script>

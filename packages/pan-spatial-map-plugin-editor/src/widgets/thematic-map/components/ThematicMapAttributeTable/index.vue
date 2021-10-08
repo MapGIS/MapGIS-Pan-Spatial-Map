@@ -76,7 +76,7 @@ import {
       'selectedSubjectList',
       'selectedSubjectTime',
       'selectedSubjectTimeList',
-      'linkageItem'
+      'linkageFid'
     ])
   },
   methods: {
@@ -84,7 +84,7 @@ import {
       'setFeaturesQuery',
       'setSelectedSubject',
       'setSelectedSubjectTime',
-      'setLinkageItem',
+      'setLinkage',
       'resetLinkage',
       'resetVisible'
     ])
@@ -160,33 +160,18 @@ export default class ThematicMapAttributeTable extends Vue {
   }
 
   /**
-   * 清除所有高亮
-   */
-  clearHighlight() {
-    this.tableData.forEach(d => this.$set(d, '_highlight', false))
-  }
-
-  /**
-   * 设置高亮
-   * @param {object}  param dataIndex 数据索引
-   */
-  setHighlight({ dataIndex }) {
-    this.$set(this.tableData[dataIndex], '_highlight', true)
-  }
-
-  /**
    * 自定义行数据和事件
    * @param {object} record 行数据
    * @param {number} index 索引
    */
-  setCustomRow(record, dataIndex) {
+  setCustomRow(record, index) {
     return {
       class: {
         'row-highlight': record._highlight
       },
       on: this.hasHighlight
         ? {
-            mouseenter: () => this.setLinkageItem({ dataIndex }),
+            mouseenter: () => this.setLinkage(record.fid),
             mouseleave: this.resetLinkage
           }
         : {}
@@ -222,8 +207,6 @@ export default class ThematicMapAttributeTable extends Vue {
 
   /**
    * 设置列表数据
-   * @param {number} page 页码
-   * @param {number} pageCout 页容量
    */
   setTableData() {
     this.setFeaturesQuery({
@@ -231,21 +214,11 @@ export default class ThematicMapAttributeTable extends Vue {
         page: this.page - 1,
         pageCount: this.pageCount
       },
-      onSuccess: (dataSet: Feature.FeatureIGS | null) => {
-        if (dataSet) {
-          const geojson = Feature.FeatureConvert.featureIGSToFeatureGeoJSON(
-            dataSet
-          )
-          if (geojson) {
-            this.total = geojson.dataCount
-            this.tableData = geojson.features.map(
-              ({ properties }) => properties
-            )
-          }
-        } else {
-          this.total = 0
-          this.tableData = []
-        }
+      onSuccess: (geojson: Feature.FeatureIGSGeoJSON) => {
+        this.total = geojson?.dataCount || 0
+        this.tableData = geojson
+          ? geojson.features.map(({ properties }) => properties)
+          : []
       }
     })
   }
@@ -282,6 +255,31 @@ export default class ThematicMapAttributeTable extends Vue {
   }
 
   /**
+   * 清除所有高亮
+   */
+  onClearHighlight() {
+    this.tableData.forEach(d => this.$set(d, '_highlight', false))
+  }
+
+  /**
+   * 高亮
+   * @param {string} fid  要素fid
+   */
+  onHighlight(fid: string) {
+    const item = this.tableData.find(d => d.fid === fid)
+    if (item) this.$set(item, '_highlight', true)
+  }
+
+  /**
+   * 设置高亮
+   * @param {string} fid  要素fid
+   */
+  setHighlight(fid: string) {
+    this.onClearHighlight()
+    this.onHighlight(fid)
+  }
+
+  /**
    * 监听: 选中的专题变化
    */
   @Watch('selectedSubject.id')
@@ -315,12 +313,13 @@ export default class ThematicMapAttributeTable extends Vue {
   /**
    * 监听: 联动项变化
    */
-  @Watch('linkageItem', { deep: true })
-  linkageItemChanged(nV) {
-    this.clearHighlight()
-    if (nV) {
-      this.setHighlight(nV)
-    }
+  @Watch('linkageFid')
+  linkageFidChanged(nV) {
+    this.setHighlight(nV)
+  }
+
+  beforeDestroy() {
+    this.resetLinkage()
   }
 }
 </script>
