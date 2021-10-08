@@ -15,6 +15,7 @@
       @change-cluster="changeCluster"
       @open-attribute-table="openAttributeTable"
       @remove-attribute-table="removeAttributeTable"
+      @color-cluster="setColorCluster"
     >
       <mapgis-ui-tabs v-model="locationType" size="small" type="card">
         <mapgis-ui-tab-pane key="district" tab="行政区划定位">
@@ -45,8 +46,10 @@
     <place-name-mapbox
       :defaultMarkerIcon="defaultMarkerIcon"
       :selectedMarkerIcon="selectedMarkerIcon"
+      :hoverMarker="hoverMarker"
       :cluster="cluster"
       :geojson="current"
+      :colorCluster="colorCluster"
     />
   </div>
 </template>
@@ -91,6 +94,8 @@ export default class MpComprehensiveQuery extends Mixins(
    */
   private cluster = false
 
+  private colorCluster = ''
+
   /**
    * 控制面板回传回来的范围
    */
@@ -102,6 +107,11 @@ export default class MpComprehensiveQuery extends Mixins(
   private current = { type: 'FeatureCollection', features: [] }
 
   private districtName = ''
+
+  /**
+   * 鼠标移入的marker
+   */
+  private hoverMarker = []
 
   /**
    * 行政区范围
@@ -183,6 +193,13 @@ export default class MpComprehensiveQuery extends Mixins(
   }
 
   /**
+   * 设置聚合图标的颜色
+   */
+  setColorCluster(color: string) {
+    this.colorCluster = color
+  }
+
+  /**
    * 手动选择范围的时候回调函数
    */
   change(val) {
@@ -261,13 +278,14 @@ export default class MpComprehensiveQuery extends Mixins(
    * 当前选中的坐标
    */
   selectMarkers(selectMarkers) {
-    this.$emit('select-markers', selectMarkers)
+    this.hoverMarker = selectMarkers
   }
 
   /**
    * 聚合按钮改变时的回调
    */
   changeCluster(val) {
+    this.current = { type: 'FeatureCollection', features: [] }
     this.cluster = val
   }
 
