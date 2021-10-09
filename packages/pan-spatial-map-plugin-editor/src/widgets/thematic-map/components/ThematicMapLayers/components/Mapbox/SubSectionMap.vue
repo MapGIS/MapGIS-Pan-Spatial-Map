@@ -9,7 +9,7 @@
     :layer-id="id"
     :field="field"
     :data-source="geojson"
-    :fid="marker.fid"
+    :highlight-feature="marker.feature"
     type="range"
     ref="customRangeThemeLayer"
   />
@@ -21,19 +21,23 @@ import BaseMixin from '../../mixins/base'
 @Component
 export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
   get themeOptions() {
-    const { color, themeStyle = {} } = this.subjectData
-    // 兼容旧配置
-    return color
-      ? {
-          styleGroups: color.map(({ min, max, sectionColor }) => ({
-            start: min,
-            end: max,
-            style: {
-              color: sectionColor
-            }
-          }))
-        }
-      : themeStyle
+    if (!this.subjectData) {
+      return {}
+    } else {
+      const { color, themeStyle } = this.subjectData
+      // 兼容旧配置
+      return color && color.length
+        ? {
+            styleGroups: color.map(({ min, max, sectionColor }) => ({
+              start: min,
+              end: max,
+              style: {
+                color: sectionColor
+              }
+            }))
+          }
+        : themeStyle || {}
+    }
   }
 
   removeLayer() {

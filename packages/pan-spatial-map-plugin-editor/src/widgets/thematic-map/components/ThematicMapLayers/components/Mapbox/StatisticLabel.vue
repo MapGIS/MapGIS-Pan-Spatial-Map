@@ -9,7 +9,7 @@
     :layer-id="id"
     :field="field"
     :data-source="geojson"
-    :fid="marker.fid"
+    :highlight-feature="marker.feature"
     type="symbol"
     ref="customStaticLabelThemeLayer"
   />
@@ -21,8 +21,7 @@ import BaseMixin from '../../mixins/base'
 @Component
 export default class MapboxStatisticLabel extends Mixins(BaseMixin) {
   get themeOptions() {
-    const { labelStyle, themeStyle = {} } = this.subjectData
-    return themeStyle
+    return this.subjectData?.themeStyle || {}
   }
 
   removeLayer() {

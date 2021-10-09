@@ -35,9 +35,9 @@ import {
   mapGetters,
   mapMutations,
   ModuleType,
-  SubjectType,
-  NewSubjectConfig,
-  ThematicMapSubjectConfigNode
+  ISubjectType,
+  INewSubjectConfig,
+  ISubjectConfigNode
 } from '../../store'
 import BaseItems from './components/BaseItems'
 import SubjectItems from './components/SubjectItems'
@@ -56,7 +56,7 @@ import dep from './store/dep'
   }
 })
 export default class ThematicMapSubjectAdd extends Vue {
-  @Prop({ default: () => ({}) }) readonly node!: NewSubjectConfig
+  @Prop({ default: () => ({}) }) readonly node!: INewSubjectConfig
 
   // 专题配置基础信息(隶属的专题分类,专题名,专题类型等)
   subjectNodeBase = {}
@@ -95,10 +95,7 @@ export default class ThematicMapSubjectAdd extends Vue {
   /**
    * 添加节点
    */
-  addNodeToTreeNode(
-    tree: Array<ThematicMapSubjectConfigNode>,
-    node: NewSubjectConfig
-  ) {
+  addNodeToTreeNode(tree: Array<ISubjectConfigNode>, node: INewSubjectConfig) {
     return tree.map(item => {
       if (item.id === node.parentId) {
         if (item.children && item.children.length) {
@@ -121,10 +118,7 @@ export default class ThematicMapSubjectAdd extends Vue {
   /**
    * 添加根级节点
    */
-  addNodeToTreeRoot(
-    tree: Array<ThematicMapSubjectConfigNode>,
-    node: NewSubjectConfig
-  ) {
+  addNodeToTreeRoot(tree: Array<ISubjectConfigNode>, node: INewSubjectConfig) {
     const parentId = `root-${UUID.uuid()}`
     const rootNode = {
       id: parentId,
@@ -141,7 +135,7 @@ export default class ThematicMapSubjectAdd extends Vue {
    * 如果没有指定的parentId，则自创建一个分类节点并挂载新建的专题图;
    * 如果指点parentId， 则直接挂载至指定的节点
    */
-  createSubjectConfigNode(node: NewSubjectConfig) {
+  createSubjectConfigNode(node: INewSubjectConfig) {
     let config = this.subjectConfig
     if (!node.parentId) {
       config = this.addNodeToTreeRoot(config, node)

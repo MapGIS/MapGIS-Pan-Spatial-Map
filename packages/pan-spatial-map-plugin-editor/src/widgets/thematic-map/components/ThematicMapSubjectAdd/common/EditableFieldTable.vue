@@ -20,7 +20,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { NewSubjectConfig } from '../../../store'
+import { INewSubjectConfig } from '../../../store'
 import FieldInstance from '../store/fields'
 
 interface IColumn extends ColumnProps {
@@ -40,7 +40,7 @@ export default class EditableFieldTable extends Vue {
   >
 
   @Prop({ type: Object, default: () => ({}) })
-  readonly subjectConfig!: NewSubjectConfig
+  readonly subjectConfig!: INewSubjectConfig
 
   visible = false
 

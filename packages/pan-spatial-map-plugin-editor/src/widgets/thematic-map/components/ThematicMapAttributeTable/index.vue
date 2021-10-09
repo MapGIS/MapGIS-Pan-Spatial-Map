@@ -63,7 +63,7 @@ import {
   ModuleType,
   mapGetters,
   mapMutations,
-  highlightSubjectTypes
+  hasHighlightSubjectList
 } from '../../store'
 
 @Component({
@@ -128,7 +128,7 @@ export default class ThematicMapAttributeTable extends Vue {
 
   // 是否支持图属高亮
   get hasHighlight() {
-    return highlightSubjectTypes.includes(this.subjectData?.subjectType)
+    return hasHighlightSubjectList.includes(this.subjectData?.subjectType)
   }
 
   // 列表配置

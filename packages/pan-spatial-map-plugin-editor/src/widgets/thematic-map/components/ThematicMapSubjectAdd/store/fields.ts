@@ -1,4 +1,4 @@
-import { FeatureFormatType, resolveFeatureQuery } from '../../../store'
+import { FeatureFormatType, featureQueryFn } from '../../../store'
 
 interface QueryParams {
   ip: string
@@ -36,7 +36,7 @@ class Fields {
     fields
   }: QueryParams) {
     if (!fields) return
-    const geojson = await resolveFeatureQuery({
+    const geojson = await featureQueryFn({
       ip,
       port,
       gdbp,
@@ -74,7 +74,7 @@ class Fields {
     layerName,
     layerIndex
   }: QueryParams) {
-    const igsJson = await resolveFeatureQuery(
+    const igsJson = await featureQueryFn(
       {
         ip,
         port,

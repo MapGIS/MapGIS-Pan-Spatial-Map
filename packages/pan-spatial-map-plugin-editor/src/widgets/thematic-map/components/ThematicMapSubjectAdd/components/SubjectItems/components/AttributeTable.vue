@@ -8,7 +8,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { NewSubjectConfig } from '../../../../../store'
+import { INewSubjectConfig } from '../../../../../store'
 import EditableFieldTable from '../../../common/EditableFieldTable.vue'
 
 interface ITableDataItem {
@@ -28,7 +28,7 @@ interface ITable {
   }
 })
 export default class AttributeTable extends Vue {
-  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: INewSubjectConfig
 
   @Watch('subjectConfig.table', { deep: true })
   tableDataChange({ showFields = [], showFieldsTitle } = {}) {

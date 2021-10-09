@@ -14,12 +14,10 @@ import BaseMixin from '../../mixins/base'
 @Component
 export default class MapboxLabel extends Mixins(BaseMixin) {
   get options() {
-    const { themeStyle, color, textColor, text } = this.subjectData
-
     return {
       draw: 'cluster',
       context: '2d',
-      ...(themeStyle || {})
+      ...(this.subjectData?.themeStyle || {})
     }
   }
 }
