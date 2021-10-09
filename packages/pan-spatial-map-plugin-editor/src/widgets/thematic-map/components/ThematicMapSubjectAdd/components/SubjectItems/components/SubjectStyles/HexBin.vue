@@ -1,33 +1,34 @@
 <template>
   <div class="hex-bin">
-    <mapgis-ui-row>
-      <mapgis-ui-col :span="12">
-        <mapgis-ui-row-flex label="半径大小" :label-width="72">
-          <mapgis-ui-input-number v-model="themeStyle.size" :min="10" />
-        </mapgis-ui-row-flex>
-      </mapgis-ui-col>
-      <mapgis-ui-col :span="12">
-        <mapgis-ui-row-flex label="最大权重" :label-width="72">
-          <mapgis-ui-input-number v-model="themeStyle.max" :min="1" />
-        </mapgis-ui-row-flex>
-      </mapgis-ui-col>
-    </mapgis-ui-row>
-    <mapgis-ui-row>
-      <mapgis-ui-col :span="12">
-        <mapgis-ui-row-flex label="透明度" :label-width="72">
-          <mapgis-ui-input-number
+    <a-row>
+      <a-col :span="12">
+        <mp-row-flex label="半径大小" :label-width="72">
+          <a-input-number v-model="themeStyle.size" :min="10" />
+        </mp-row-flex>
+      </a-col>
+      <a-col :span="12">
+        <mp-row-flex label="最大权重" :label-width="72">
+          <a-input-number v-model="themeStyle.max" :min="1" />
+        </mp-row-flex>
+      </a-col>
+    </a-row>
+    <a-row>
+      <a-col :span="12">
+        <mp-row-flex label="透明度" :label-width="72">
+          <a-input-number
             v-model="themeStyle.globalAlpha"
+            :step="0.1"
             :min="0.1"
             :max="1"
           />
-        </mapgis-ui-row-flex>
-      </mapgis-ui-col>
-      <mapgis-ui-col :span="12">
-        <mapgis-ui-row-flex label="填充颜色" :label-width="72">
+        </mp-row-flex>
+      </a-col>
+      <a-col :span="12">
+        <mp-row-flex label="渐变颜色" :label-width="72">
           <color-picker-setting v-model="themeStyle.gradient" />
-        </mapgis-ui-row-flex>
-      </mapgis-ui-col>
-    </mapgis-ui-row>
+        </mp-row-flex>
+      </a-col>
+    </a-row>
   </div>
 </template>
 <script lang="ts">
@@ -56,7 +57,7 @@ export default class HexBin extends Vue {
     gradient: {
       0.25: 'rgb(0,0,255)',
       0.55: 'rgb(0,255,0)',
-      0.85: 'yellow',
+      0.85: '#bdbd0d',
       1.0: 'rgb(255,0,0)'
     }
   }
@@ -80,9 +81,9 @@ export default class HexBin extends Vue {
 </script>
 <style lang="less" scoped>
 .hex-bin {
-  padding: 12px 8px 0 8px;
-  > .mapgis-ui-row {
-    margin-bottom: 12px;
+  padding: 8px;
+  > .ant-row:not(:last-of-type) {
+    margin-bottom: 8px;
   }
 }
 </style>

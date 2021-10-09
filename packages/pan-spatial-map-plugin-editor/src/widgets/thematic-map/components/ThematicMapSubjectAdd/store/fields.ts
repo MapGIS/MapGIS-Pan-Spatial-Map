@@ -49,6 +49,19 @@ class Fields {
   }
 
   /**
+   * 获取属性列表数据
+   * @param {object} param0 查询参数
+   * @returns
+   */
+  async getFields(subjectConfig) {
+    if (!this.isFetched) {
+      this.fields = await this.fetchFields(subjectConfig)
+      this.isFetched = true
+    }
+    return this.fields
+  }
+
+  /**
    * 请求属性列表数据
    * @param {object} param0 查询参数
    * @returns
@@ -61,9 +74,6 @@ class Fields {
     layerName,
     layerIndex
   }: QueryParams) {
-    if (this.isFetched) {
-      return this.fields
-    }
     const igsJson = await resolveFeatureQuery(
       {
         ip,
@@ -78,19 +88,15 @@ class Fields {
       },
       FeatureFormatType.json
     )
-    let fields = []
     if (igsJson) {
       const { FldName, FldType, FldAlias } = igsJson.AttStruct
-      fields = FldName.map((v: string, i: number) => ({
+      return FldName.map((v: string, i: number) => ({
         type: FldType[i],
         alias: FldAlias[i] || v,
         value: v
       }))
     }
-    this.fields = fields
-    this.isFetched = true
-
-    return fields
+    return []
   }
 
   /**

@@ -7,28 +7,28 @@
     :data="tableData"
     title="图表配置"
   >
-    <mapgis-ui-row-flex slot="top" label="分组字段" :label-width="72">
-      <mapgis-ui-select
+    <mp-row-flex slot="top" label="分组字段" :label-width="72">
+      <a-select
         v-model="field"
         :options="fieldList"
         :auto-width="true"
         size="small"
         placeholder="请选择"
       />
-    </mapgis-ui-row-flex>
-    <!-- <mapgis-ui-row-flex slot="top" :span="[11, 11]" justify="space-between">
-      <mapgis-ui-row-flex slot="label" label="分组字段" :label-width="72">
+    </mp-row-flex>
+    <!-- <mp-row-flex slot="top" :span="[11, 11]" justify="space-between">
+      <mp-row-flex slot="label" label="分组字段" :label-width="72">
         <a-select v-model="field" :options="fieldList" placeholder="请选择" />
-      </mapgis-ui-row-flex>
-      <mapgis-ui-row-flex label="统计方式" :label-width="72">
+      </mp-row-flex>
+      <mp-row-flex label="统计方式" :label-width="72">
         <a-select
           v-model="way"
           :options="statisticWays"
           :disabled="true"
           placeholder="请选择"
         />
-      </mapgis-ui-row-flex>
-    </mapgis-ui-row-flex> -->
+      </mp-row-flex>
+    </mp-row-flex> -->
   </editable-field-table>
 </template>
 <script lang="ts">
@@ -177,7 +177,7 @@ export default class StatisticGragh extends Vue {
 }
 </script>
 <style lang="less" scoped>
-::v-deep .mapgis-ui-row-flex {
+::v-deep .mp-row-flex {
   padding-bottom: 8px;
 }
 </style>

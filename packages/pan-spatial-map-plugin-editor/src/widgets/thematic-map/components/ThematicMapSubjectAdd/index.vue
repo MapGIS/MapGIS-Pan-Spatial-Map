@@ -184,10 +184,12 @@ export default class ThematicMapSubjectAdd extends Vue {
       const configs = _uniqBy(this.subjectNodeConfig, ({ time }) => time)
       this.createSubjectConfigNode({
         ...this.subjectNodeBase,
-        config: configs.map((c, i) => ({
-          ...c,
-          ...subjectStyleComps[i].getFormResult() // 获取样式配置结果
-        }))
+        config: subjectStyleComps.length
+          ? configs.map((c, i) => ({
+              ...c,
+              ...subjectStyleComps[i].getFormResult() // 获取样式配置结果
+            }))
+          : configs
       })
     }
   }
