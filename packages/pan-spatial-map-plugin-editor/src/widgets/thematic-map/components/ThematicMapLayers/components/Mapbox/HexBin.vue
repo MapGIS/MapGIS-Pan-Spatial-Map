@@ -14,11 +14,10 @@ import BaseMixin from '../../mixins/base'
 @Component
 export default class MapboxHexBin extends Mixins(BaseMixin) {
   get options() {
-    const { hexBinStyle, themeStyle } = this.subjectData
     return {
       draw: 'honeycomb',
       context: '2d',
-      ...(themeStyle || {})
+      ...(this.subjectData?.themeStyle || {})
     }
   }
 }

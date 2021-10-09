@@ -55,7 +55,7 @@ import {
   ModuleType,
   mapGetters,
   mapMutations,
-  highlightSubjectTypes
+  hasHighlightSubjectList
 } from '../../store'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
@@ -153,7 +153,7 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   // 是否支持图属高亮
   get hasHighlight() {
-    return highlightSubjectTypes.includes(this.subjectData?.subjectType)
+    return hasHighlightSubjectList.includes(this.subjectData?.subjectType)
   }
 
   // 图表配置

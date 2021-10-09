@@ -7,9 +7,9 @@ import {
   FeatureFormatType,
   ConfigType,
   ModuleType,
-  SubjectData,
-  ThematicMapBaseConfig,
-  ThematicMapSubjectConfigNode,
+  ISubjectData,
+  IBaseConfig,
+  ISubjectConfigNode,
   IFeatureQueryParams
 } from '../types'
 
@@ -22,7 +22,7 @@ import {
  * 此外totalCount参数也没有，导致属性表分页错误
  * @returns <FeatureIGSGeoJSON | FeatureIGS>
  */
-export const resolveFeatureQuery:
+export const featureQueryFn:
   | Feature.FeatureIGS
   | Feature.FeatureIGSGeoJSON = async (
   {
@@ -118,7 +118,7 @@ const mutations = {
       const fields = table ? table.showFields.join(',') : ''
 
       commit('setLoading', true)
-      const geojson = await resolveFeatureQuery({
+      const geojson = await featureQueryFn({
         ip: ip || baseIp,
         port: port || basePort,
         fields,
@@ -136,7 +136,7 @@ const mutations = {
   /**
    * 对应专题年度的配置子配置数据
    */
-  setSubjectData({ state }, data: SubjectData | null) {
+  setSubjectData({ state }, data: ISubjectData | null) {
     state.subjectData = data
   },
   /**
@@ -145,7 +145,7 @@ const mutations = {
   setSelectedSubjectTime({ state, commit }, time?: string) {
     state.selectedSubjectTime = time
     const subject = state.selectedSubject
-    let subjectData: SubjectData | null = null
+    let subjectData: ISubjectData | null = null
     if (subject && subject.config) {
       const { type: subjectType, config } = subject
       if (Array.isArray(config)) {
@@ -184,10 +184,7 @@ const mutations = {
   /**
    * 选中的单个专题图
    */
-  setSelectedSubject(
-    { state, commit },
-    subject?: ThematicMapSubjectConfigNode
-  ) {
+  setSelectedSubject({ state, commit }, subject?: ISubjectConfigNode) {
     state.selectedSubject = subject
     let selectedSubjectTimeList: Array<string> = []
     if (subject && subject.config) {
@@ -208,7 +205,7 @@ const mutations = {
    */
   setSelectedSubjectList(
     { state, commit },
-    list: Array<ThematicMapSubjectConfigNode> = []
+    list: Array<ISubjectConfigNode> = []
   ) {
     state.selectedSubjectList = list
     commit('setSelectedSubject', _last(list))
@@ -216,13 +213,13 @@ const mutations = {
   /**
    * 专题图的基础配置数据
    */
-  setBaseConfig({ state }, config?: ThematicMapBaseConfig) {
+  setBaseConfig({ state }, config?: IBaseConfig) {
     state.baseConfig = config
   },
   /**
    * 存储专题图总专题配置数据
    */
-  setSubjectConfig({ state }, config: Array<ThematicMapSubjectConfigNode>) {
+  setSubjectConfig({ state }, config: Array<ISubjectConfigNode>) {
     state.subjectConfig = config
   },
   /**
@@ -232,7 +229,7 @@ const mutations = {
    */
   updateSubjectConfig(
     { state, commit },
-    subjectConfig: Array<ThematicMapSubjectConfigNode>
+    subjectConfig: Array<ISubjectConfigNode>
   ) {
     return new Promise((resolve, reject) => {
       const config = {

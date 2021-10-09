@@ -65,7 +65,7 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import _cloneDeep from 'lodash/cloneDeep'
 import {
   ModuleType,
-  NewSubjectConfig,
+  INewSubjectConfig,
   mapGetters,
   mapMutations,
   moduleTypeList
@@ -115,16 +115,16 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   loading = false
 
   // 专题图树
-  thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
+  thematicMapTree: Array<ISubjectConfigNode> = []
 
   // 专题图节点的操作按钮
   thematicMapNodeHandles = ThematicMapNodeHandles
 
   // 选中的专题图树节点集合
-  checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
+  checkedThematicMapNodes: Array<ISubjectConfigNode> = []
 
   // 当前操作的专题图节点
-  currentThematicMapNode: NewSubjectConfig = {}
+  currentThematicMapNode: INewSubjectConfig = {}
 
   // 选中的专题图树节点key集合
   get checkedThematicMapKeys() {
@@ -183,7 +183,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    * 格式化专题图树
    * @param tree
    */
-  normalizeThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
+  normalizeThematicMapTree(tree: Array<ISubjectConfigNode>) {
     return tree.map(node => {
       this.$set(node, 'checkable', node.nodeType === 'subject')
       this.$set(node, 'scopedSlots', { title: 'custom' })
@@ -197,14 +197,14 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * todo 创建节点
    */
-  onTreeNodeCreate(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeCreate(nodeData: ISubjectConfigNode) {
     this.setModulesShow(ModuleType.CREATE)
   }
 
   /**
    * todo 编辑节点, 需要兼容新旧配置
    */
-  onTreeNodeEdit(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeEdit(nodeData: ISubjectConfigNode) {
     if (nodeData.parentId) {
       // 新的专题配置
       this.currentThematicMapNode = nodeData
@@ -217,13 +217,13 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * 移除节点
    */
-  onTreeNodeRemove(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeRemove(nodeData: ISubjectConfigNode) {
     this.setSelectedSubjectList(
       this.checkedThematicMapNodes.filter(s => s.id !== nodeData.id)
     )
     const recursion = (
-      tree: Array<ThematicMapSubjectConfigNode>,
-      node: ThematicMapSubjectConfigNode
+      tree: Array<ISubjectConfigNode>,
+      node: ISubjectConfigNode
     ) => {
       for (let i = 0; i < tree.length; i++) {
         const n = tree[i]
