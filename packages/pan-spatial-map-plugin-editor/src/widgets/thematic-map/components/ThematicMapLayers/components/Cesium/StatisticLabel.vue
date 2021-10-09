@@ -34,7 +34,9 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
   // 新旧版本的样式设置对比参照 https://shimowendang.com/docs/gO3oxMwgNmHJddqD
   // 此处只对新版的样式兼容，旧版的每个字段没有具体说明，无法和新版对应起来
   get options() {
-    return this.subjectData?.themeStyle || this.subjectData?.labelStyle
+    return this.subjectData
+      ? this.subjectData.themeStyle || this.subjectData.labelStyle
+      : null
   }
 
   /**
@@ -46,24 +48,25 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
     this.geojson.features.forEach((feature: Feature.GFeature) => {
       const value = feature.properties[this.field]
       const center = Feature.getGeoJSONFeatureCenter(feature)
-      const {
-        textStyle: { fillColor },
-        radius
-      } = this.options
-      const { min, max, radiu } = radius[0]
-      const plus = max - min
-      const maxR = Number(radiu)
-      const _radius = value * 150 * (max && plus > 0 ? maxR / plus : maxR)
-      const material = this.getColor(fillColor)
-      const position = this.getPosition(center[0], center[1])
-      this.addEntityToLayer(layer, feature, {
-        position,
-        cylinder: {
+      let cylinder
+      if (this.options) {
+        const { textStyle, radius } = this.options
+        const { min, max, radiu } = Array.isArray(radius) ? radius[0] : radius
+        const plus = max - min
+        const maxR = Number(radiu)
+        const _radius = value * 150 * (max && plus > 0 ? maxR / plus : maxR)
+        const material = this.getColor(textStyle.fillColor)
+        cylinder = {
           material,
           length: 0.001, // 圆柱体高度
           topRadius: _radius, // 圆柱体顶部半径
           bottomRadius: _radius // 圆柱体底部半径
         }
+      }
+      const position = this.getPosition(center[0], center[1])
+      this.addEntityToLayer(layer, feature, {
+        position,
+        cylinder
       })
     })
   }

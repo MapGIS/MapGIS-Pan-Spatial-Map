@@ -14,11 +14,11 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
 
   @Inject('CesiumZondy') CesiumZondy
 
-  private thematicMapLayer: any = null
+  private thematicMapLayer = null
 
   private showPopup = false
 
-  private popupProperties: any = null
+  private popupProperties = null
 
   private popupPosition: ILngLat = {}
 
@@ -53,7 +53,7 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
    * @param feature 要素数据
    * @param option 实体配置
    */
-  addEntityToLayer(layer: Layer, feature: Feature.GFeature, option: any) {
+  addEntityToLayer(layer: Layer, feature: Feature.GFeature, option = {}) {
     const entity = new this.Cesium.Entity(option)
     entity.geojsonFeature = feature
     layer.entities.add(entity)
@@ -101,9 +101,9 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
    * @param feature 要素数据
    */
   getPopupInfos(feature: Feature.GFeature | null) {
-    const { showFields, showFieldsTitle } = this.popupConfig
+    const { showFields, showFieldsTitle }: any = this.popupConfig
     if (!feature || !showFields || !showFields.length) return
-    this.popupProperties = showFields.reduce((obj: any, v: string) => {
+    this.popupProperties = showFields.reduce((obj, v: string) => {
       const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
       obj[tag] = feature.properties[v]
       return obj
@@ -142,11 +142,11 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
       this.closePopupWin()
       const pick = scene.pick(position)
       if (pick && pick.id) {
+        const { geojsonFeature } = pick.id
         this.getCartographic(CommonFuncManager, position)
-        this.getPopupInfos(pick.id.geojsonFeature)
+        this.getPopupInfos(geojsonFeature)
+        this.emitHighlight(geojsonFeature.properties.fid)
         this.showPopup = true
-        // todo 图属高亮
-        // this.emitHighlight(dataIndex)
       }
     })
   }
@@ -158,8 +158,7 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
     this.showPopup = false
     this.popupPosition = {}
     this.popupProperties = null
-    // todo 取消图属高亮
-    // this.emitClearHighlight()
+    this.emitClearHighlight()
   }
 
   /**

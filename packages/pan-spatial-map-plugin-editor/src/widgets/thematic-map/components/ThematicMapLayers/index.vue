@@ -104,7 +104,6 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * @param {string} fid 要素fid
    */
   setHighlight(fid: string) {
-    debugger
     this.onClearHighlight()
     this.onHighlight(fid)
   }

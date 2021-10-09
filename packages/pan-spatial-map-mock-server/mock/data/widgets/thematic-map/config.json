@@ -464,7 +464,7 @@
         },
         {
           "id": "a55a2eca-e16e-5aeb-20b7-fbf906f685c0",
-          "title": "省级行政区GDP_2011符号图",
+          "title": "省级行政区GDP_2008符号图",
           "visible": true,
           "nodeType": "subject",
           "type": "StatisticLabel",
@@ -472,7 +472,7 @@
             "type": "gdbp",
             "data": [
               {
-                "time": "2011",
+                "time": "2008",
                 "subData": [
                   {
                     "minZoom": 1,
@@ -483,7 +483,7 @@
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "showTextLabel": "true",
                     "docName": "",
-                    "field": "GDP_2011",
+                    "field": "GDP_2008",
                     "layerIndex": null,
                     "labelStyle": {
                       "labelType": "circle",
@@ -496,7 +496,7 @@
                         "min": 0,
                         "max": 36796.71,
                         "sectionColor": "#FFFFFF",
-                        "radius": 1000
+                        "radiu": 1000
                       },
                       "text": {
                         "type": "",
@@ -508,22 +508,28 @@
                       }
                     },
                     "table": {
-                      "showFields": ["省名", "GDP_2011"],
+                      "showFields": [
+                        "面积",
+                        "周长",
+                        "省名",
+                        "GDP_2007",
+                        "GDP_2008"
+                      ],
                       "showFieldsTitle": {},
                       "type": "sum",
                       "sumFiled": [],
                       "sumColumn": []
                     },
                     "graph": {
-                      "showFields": ["GDP_2011"],
+                      "showFields": ["GDP_2008"],
                       "showFieldsTitle": {},
                       "field": "省名",
                       "target": []
                     },
                     "popup": {
-                      "showFields": ["GDP_2011"],
+                      "showFields": ["GDP_2008"],
                       "showFieldsTitle": {},
-                      "title": "GDP_2011"
+                      "title": "GDP_2008"
                     }
                   }
                 ]

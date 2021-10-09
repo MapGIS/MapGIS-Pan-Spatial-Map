@@ -9,7 +9,7 @@ import BaseMixin from '../../mixins/base'
 @Component
 export default class CesiumBaseMapWithGraph extends Mixins(BaseMixin) {
   showLayer() {
-    this.$message.warning('三维模式下暂不支持统计专题图')
+    this.$message.warning('三维模式下暂不支持统计专题图图层')
   }
 }
 </script>

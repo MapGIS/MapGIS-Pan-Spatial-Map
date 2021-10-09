@@ -224,8 +224,8 @@ const mutations = {
   },
   /**
    * 更新专题配置
-   * fixme 未实现真实的保存
-   * 不能保存在pan-spatial-map-mock-server/widgets/thematic-map/config.json
+   * fixme 未实现服务端保存
+   * saveWidgetConfig方法也还没有实现可以保存在mock-server中
    */
   updateSubjectConfig(
     { state, commit },

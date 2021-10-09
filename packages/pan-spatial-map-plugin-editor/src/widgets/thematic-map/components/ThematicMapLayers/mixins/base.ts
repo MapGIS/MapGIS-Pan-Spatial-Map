@@ -13,7 +13,7 @@ interface IMarker {
 
 @Component
 export default class BaseMixin extends Vue {
-  // 高亮的要素信息
+  // 高亮的标注信息
   @Prop({ default: () => ({}) }) readonly marker!: IMarker
 
   // 某专题配置
@@ -33,7 +33,7 @@ export default class BaseMixin extends Vue {
     this.showLayer()
   }
 
-  private id = UUID.uuid()
+  id = UUID.uuid()
 
   // 是否支持图属高亮
   get hasHighlight() {
