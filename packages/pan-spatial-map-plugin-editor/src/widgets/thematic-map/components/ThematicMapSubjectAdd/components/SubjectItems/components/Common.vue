@@ -342,7 +342,7 @@ export default class Common extends Vue {
       margin: 4px 0;
     }
     + div {
-      margin: 10px 0 14px 0;
+      margin: 10px 0 12px 0;
     }
   }
 }
