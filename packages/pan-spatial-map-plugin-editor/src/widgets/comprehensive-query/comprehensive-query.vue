@@ -17,33 +17,45 @@
       @remove-attribute-table="removeAttributeTable"
       @color-cluster="setColorCluster"
     >
-      <mapgis-ui-tabs v-model="locationType" size="small" type="card">
-        <mapgis-ui-tab-pane key="district" tab="行政区划定位">
-          <zone
-            ref="zone"
-            v-if="district"
-            :district="district"
-            :active="locationType === 'district'"
-            @change="change"
-          />
-        </mapgis-ui-tab-pane>
-        <mapgis-ui-tab-pane key="coordinate" tab="坐标定位" force-render>
-          <coordinate
-            ref="coordinate"
-            :active="locationType === 'coordinate'"
-            @change="change"
-          />
-        </mapgis-ui-tab-pane>
-        <mapgis-ui-tab-pane key="map-sheet" tab="图幅定位">
-          <frame
-            ref="map-sheet"
-            @change="change"
-            :active="locationType === 'map-sheet'"
-          />
-        </mapgis-ui-tab-pane>
-      </mapgis-ui-tabs>
+      <div class="query-section panel-container">
+        <mapgis-ui-tabs v-model="locationType" size="small" type="card">
+          <mapgis-ui-tab-pane key="district" tab="行政区划定位">
+            <zone
+              ref="zone"
+              v-if="district"
+              :district="district"
+              :active="locationType === 'district'"
+              @change="change"
+            />
+          </mapgis-ui-tab-pane>
+          <mapgis-ui-tab-pane key="coordinate" tab="坐标定位" force-render>
+            <coordinate
+              ref="coordinate"
+              :active="locationType === 'coordinate'"
+              @change="change"
+            />
+          </mapgis-ui-tab-pane>
+          <mapgis-ui-tab-pane key="map-sheet" tab="图幅定位">
+            <frame
+              ref="map-sheet"
+              @change="change"
+              :active="locationType === 'map-sheet'"
+            />
+          </mapgis-ui-tab-pane>
+        </mapgis-ui-tabs>
+      </div>
     </mapgis-ui-comprehensive-query>
     <place-name-mapbox
+      v-if="is2DMapMode"
+      :defaultMarkerIcon="defaultMarkerIcon"
+      :selectedMarkerIcon="selectedMarkerIcon"
+      :hoverMarker="hoverMarker"
+      :cluster="cluster"
+      :geojson="current"
+      :colorCluster="colorCluster"
+    />
+    <place-name-cesium
+      v-else
       :defaultMarkerIcon="defaultMarkerIcon"
       :selectedMarkerIcon="selectedMarkerIcon"
       :hoverMarker="hoverMarker"
@@ -70,13 +82,14 @@ import Zone from './components/ZoneFrame/Zone.vue'
 import Coordinate from './components/Coordinate/Coordinate.vue'
 import Frame from './components/ZoneFrame/Frame.vue'
 import PlaceNameMapbox from './components/PlaceName/PlaceNameMapbox.vue'
+import PlaceNameCesium from './components/PlaceName/PlaceNameCesium.vue'
 import * as turf from '@turf/turf'
 
 const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
 @Component({
   name: 'MpComprehensiveQuery',
-  components: { Zone, Coordinate, Frame, PlaceNameMapbox }
+  components: { Zone, Coordinate, Frame, PlaceNameMapbox, PlaceNameCesium }
 })
 export default class MpComprehensiveQuery extends Mixins(
   WidgetMixin,
