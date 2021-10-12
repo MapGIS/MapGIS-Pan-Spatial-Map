@@ -70,16 +70,15 @@ export default class PlaceNameCesium extends Mixins(MapMixin) {
   hoverMarker?: Array<string>
 
   get layerStyle() {
-    return {
-      type: 'dynamic-marker',
-      marker: new MarkerStyle({
-        symbol: this.defaultMarkerIcon
-      })
-    }
+    return new MarkerStyle({
+      symbol: this.defaultMarkerIcon
+    })
   }
 
   get highlightStyle() {
     return {
+      enableHoverMarker: false,
+      enableHoverFeature: false,
       marker: new MarkerStyle({
         symbol: this.selectedMarkerIcon
       }),

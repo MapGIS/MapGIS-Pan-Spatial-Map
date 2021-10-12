@@ -11,7 +11,12 @@
     />
     <!-- 聚合标注专题图 -->
     <mapgis-mapv-layer
-      v-else-if="geojson && geojson.features && geojson.features.length > 0 && colorCluster"
+      v-else-if="
+        geojson &&
+          geojson.features &&
+          geojson.features.length > 0 &&
+          colorCluster
+      "
       :geojson="geojson"
       :options="options"
       count-field="count"
@@ -65,16 +70,15 @@ export default class PlaceNameMapbox extends Mixins(MapMixin) {
   hoverMarker?: Array<string>
 
   get layerStyle() {
-    return {
-      type: 'dynamic-marker',
-      marker: new MarkerStyle({
-        symbol: this.defaultMarkerIcon
-      })
-    }
+    return new MarkerStyle({
+      symbol: this.defaultMarkerIcon
+    })
   }
 
   get highlightStyle() {
     return {
+      enableHoverMarker: false,
+      enableHoverFeature: false,
       marker: new MarkerStyle({
         symbol: this.selectedMarkerIcon
       }),
