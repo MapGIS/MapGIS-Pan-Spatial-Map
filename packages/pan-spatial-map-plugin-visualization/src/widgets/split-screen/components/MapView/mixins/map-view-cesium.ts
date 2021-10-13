@@ -8,7 +8,7 @@ export default class MapViewCesiumMixin extends Vue {
    * @param {Rectangle} bound 经纬度范围
    */
   zoomInToRect3d(bound: Rectangle) {
-    this.sceneController.cameraFlyTo({
+    this.sceneController.cameraSetView({
       destination: this.sceneController.getRectangleFromDegrees(bound)
     })
   }
@@ -18,7 +18,7 @@ export default class MapViewCesiumMixin extends Vue {
    * @param {Rectangle} 经纬度范围
    */
   zoomOutToRect3d({ xmin, ymin, xmax, ymax }: Rectangle) {
-    this.sceneController.cameraFlyTo({
+    this.sceneController.cameraSetView({
       destination: this.sceneController.getCartesian3FromDegrees(
         (xmin + xmax) / 2,
         (ymin + ymax) / 2,

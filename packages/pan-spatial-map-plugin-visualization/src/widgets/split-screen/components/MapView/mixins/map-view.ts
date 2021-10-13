@@ -30,6 +30,15 @@ export default class MapViewMixin extends Mixins(
     this.mapViewState._activeBound = bound
   }
 
+  // 三维活动视图范围
+  get active3dBound() {
+    return this.mapViewState._active3dBound
+  }
+
+  set active3dBound(bound) {
+    this.mapViewState._active3dBound = bound
+  }
+
   // 查询的几何范围
   get queryGeometry() {
     return this.mapViewState._queryGeometry
@@ -73,16 +82,19 @@ export default class MapViewMixin extends Mixins(
   setActiveMapView() {
     if (this.isMapLoaded) {
       this.activeId = this.mapViewId
+      this.active3dBound = null
     }
   }
 
   /**
    * 更新动态变化的经纬度范围
    * @param {Rectangle} bound 经纬度范围
+   * @param {object} bound3d 三维视图范围
    */
-  setActiveBound(bound: Rectangle) {
+  setActiveBound(bound: Rectangle, bound3d?) {
     if (this.isMapLoaded && this.isActiveMapView) {
       this.activeBound = bound
+      this.active3dBound = bound3d
     }
   }
 
@@ -122,7 +134,7 @@ export default class MapViewMixin extends Mixins(
     if (this.mapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomInToRect(rect)
-      } else {
+      } else if (!this.isAll3d || !this.active3dBound) {
         this.zoomInToRect3d(rect)
       }
     } else {
@@ -138,7 +150,7 @@ export default class MapViewMixin extends Mixins(
     if (this.mapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomOutToRect(rect)
-      } else {
+      } else if (!this.isAll3d || !this.active3dBound) {
         this.zoomOutToRect3d(rect)
       }
     } else {

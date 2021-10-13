@@ -98,6 +98,9 @@ export default class MapView extends Mixins(MapViewMixin) {
 
   @Inject('mapbox') mapbox: any
 
+  // 是否全部三维屏
+  @Prop({ default: false }) readonly isAll3d!: boolean
+
   // 获取地图视图的复位范围
   @Prop() readonly initBound!: Rectangle
 
@@ -126,7 +129,7 @@ export default class MapView extends Mixins(MapViewMixin) {
   isMapLoaded = false
 
   // 操作按钮类型
-  operationType: keyof Tool = 'UNKNOWN'
+  operationType: keyof Tool = Tool.UNKNOWN
 
   // 结果树弹框开关
   queryVisible = false
@@ -192,16 +195,20 @@ export default class MapView extends Mixins(MapViewMixin) {
 
   /**
    * 地图联动变化
-   * @param {object} 范围
+   * @param {object} param 范围
+   * @param {object} bound3d 三维视图范围
    */
-  onLinkChanged({ west, east, north, south }) {
+  onLinkChanged({ west, east, north, south }, bound3d) {
     this.setActiveMapView()
-    this.setActiveBound({
-      xmin: west,
-      xmax: east,
-      ymax: north,
-      ymin: south
-    })
+    this.setActiveBound(
+      {
+        xmin: west,
+        xmax: east,
+        ymax: north,
+        ymin: south
+      },
+      bound3d
+    )
   }
 
   /**

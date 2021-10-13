@@ -9,7 +9,9 @@ export class MapViewState {
 
   _queryGeometry = null // 地图视图绘制的几何范围
 
-  _activeBound = new Rectangle(0.0, 0.0, 0.0, 0.0) // 二三维当前活动的地图经纬度范围
+  _activeBound = new Rectangle(0.0, 0.0, 0.0, 0.0) // 当前活动的地图经纬度范围
+
+  _active3dBound = null // 当前活动的三维地图视图范围
 
   /**
    * 判断矩形范围是否可用

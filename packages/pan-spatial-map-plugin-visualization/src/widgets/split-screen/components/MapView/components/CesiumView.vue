@@ -200,7 +200,7 @@ export default class CesiumView extends Vue {
    * 联动组件change
    */
   onLinkChange({ '3d': view3d, '2d': rect2d }) {
-    this.$emit('link-changed', rect2d)
+    this.$emit('link-changed', rect2d, view3d)
   }
 
   /**
