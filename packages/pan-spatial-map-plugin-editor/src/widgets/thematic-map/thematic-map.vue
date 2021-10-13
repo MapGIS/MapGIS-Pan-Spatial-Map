@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-thematic-map">
     <!-- 专题图树 -->
-    <mp-group-tab
+    <!-- <mp-group-tab
       :has-top-margin="false"
       :has-bottom-margin="false"
       size="default"
@@ -14,7 +14,7 @@
           icon="plus"
         />
       </mp-toolbar-command-group>
-    </mp-group-tab>
+    </mp-group-tab> -->
     <a-spin :spinning="loading">
       <a-empty v-if="!thematicMapTree.length" />
       <a-tree
@@ -55,7 +55,7 @@
     <!-- 工具栏 -->
     <thematic-map-manage-tools />
     <!-- 新建专题图 -->
-    <thematic-map-subject-add :node="currentThematicMapNode" />
+    <!-- <thematic-map-subject-add :node="currentThematicMapNode" /> -->
   </div>
 </template>
 
@@ -74,7 +74,7 @@ import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
 import ThematicMapStatisticGraph from './components/ThematicMapStatisticGraph'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
 import ThematicMapManageTools from './components/ThematicMapManageTools'
-import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
+// import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
 import ThematicMapLayers from './components/ThematicMapLayers'
 
 enum ThematicMapNodeHandles {
@@ -104,7 +104,7 @@ enum ThematicMapNodeHandles {
     ThematicMapStatisticGraph,
     ThematicMapTimeLine,
     ThematicMapManageTools,
-    ThematicMapSubjectAdd,
+    // ThematicMapSubjectAdd,
     ThematicMapLayers
   }
 })
