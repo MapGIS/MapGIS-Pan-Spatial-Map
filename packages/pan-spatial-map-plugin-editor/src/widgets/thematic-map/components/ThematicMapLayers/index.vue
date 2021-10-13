@@ -113,9 +113,8 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    */
   @Watch('subjectData', { deep: true })
   subjectDataChanged(nV) {
-    if (!nV) {
-      this.geojson = null
-    } else {
+    this.geojson = null
+    if (nV) {
       this.setFeaturesQuery({
         isCache: false,
         onSuccess: geojson => (this.geojson = geojson)
