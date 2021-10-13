@@ -20,7 +20,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { NewSubjectConfig } from '../../../store'
+import { INewSubjectConfig } from '../../../store'
 import FieldInstance from '../store/fields'
 
 interface IColumn extends ColumnProps {
@@ -40,7 +40,7 @@ export default class EditableFieldTable extends Vue {
   >
 
   @Prop({ type: Object, default: () => ({}) })
-  readonly subjectConfig!: NewSubjectConfig
+  readonly subjectConfig!: INewSubjectConfig
 
   visible = false
 
@@ -120,7 +120,7 @@ export default class EditableFieldTable extends Vue {
    * 设置属性列表
    */
   setFields() {
-    FieldInstance.fetchFields(this.subjectConfig).then(fields => {
+    FieldInstance.getFields(this.subjectConfig).then(fields => {
       this.fieldList = fields.map(({ value }) => ({
         label: value,
         value
@@ -147,7 +147,7 @@ export default class EditableFieldTable extends Vue {
 </script>
 <style lang="less" scoped>
 .editable-field-table {
-  padding: 4px 8px;
+  padding: 8px;
   .description {
     color: @primary-color;
     cursor: pointer;

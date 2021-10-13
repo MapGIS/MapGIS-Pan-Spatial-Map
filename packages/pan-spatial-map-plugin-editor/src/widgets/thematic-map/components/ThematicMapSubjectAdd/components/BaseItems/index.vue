@@ -38,9 +38,9 @@ import _cloneDeep from 'lodash/cloneDeep'
 import {
   mapGetters,
   subjectTypeList,
-  SubjectType,
-  NewSubjectConfig,
-  ThematicMapSubjectConfigNode
+  ISubjectType,
+  INewSubjectConfig,
+  ISubjectConfigNode
 } from '../../../../store'
 
 @Component({
@@ -49,7 +49,7 @@ import {
   }
 })
 export default class BaseItems extends Vue {
-  @Prop({ default: () => ({}) }) readonly value!: NewSubjectConfig
+  @Prop({ default: () => ({}) }) readonly value!: INewSubjectConfig
 
   // 专题类型列表
   subjectTypeList = subjectTypeList
@@ -58,7 +58,7 @@ export default class BaseItems extends Vue {
   subjectClassify = ''
 
   // 专题图树
-  thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
+  thematicMapTree: Array<ISubjectConfigNode> = []
 
   // 专题节点公共的基础数据
   get baseItemsObj() {
@@ -89,7 +89,7 @@ export default class BaseItems extends Vue {
   /**
    * 专题类型选择变化
    */
-  subjectTypeChange(type: SubjectType) {
+  subjectTypeChange(type: ISubjectType) {
     this.baseItemsObj = {
       ...this.baseItemsObj,
       type
@@ -110,7 +110,7 @@ export default class BaseItems extends Vue {
    * 格式化专题图树
    * @param tree
    */
-  normalizeThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
+  normalizeThematicMapTree(tree: Array<ISubjectConfigNode>) {
     if (!tree.length) return []
     return tree.map(node => {
       this.$set(node, 'selectable', node.nodeType !== 'subject')
@@ -127,7 +127,7 @@ export default class BaseItems extends Vue {
    * 设置专题图树
    * @param tree
    */
-  setThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
+  setThematicMapTree(tree: Array<ISubjectConfigNode>) {
     this.thematicMapTree = this.normalizeThematicMapTree(_cloneDeep(tree))
   }
 

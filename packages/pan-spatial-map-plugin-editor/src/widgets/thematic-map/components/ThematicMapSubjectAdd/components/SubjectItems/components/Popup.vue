@@ -5,14 +5,14 @@
     :columns="tableColumns"
     :subject-config="subjectConfig"
   >
-    <mapgis-ui-row-flex slot="top" label="标题" :label-width="50">
-      <mapgis-ui-input v-model="title" placeholder="请填写" size="small" />
-    </mapgis-ui-row-flex>
+    <mp-row-flex slot="top" label="标题" :label-width="50">
+      <a-input v-model="title" placeholder="请填写" size="small" />
+    </mp-row-flex>
   </editable-field-table>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { NewSubjectConfig } from '../../../../../store'
+import { INewSubjectConfig } from '../../../../../store'
 import EditableFieldTable from '../../../common/EditableFieldTable.vue'
 
 interface ITableDataItem {
@@ -32,7 +32,7 @@ interface IPopup{
   }
 })
 export default class Popup extends Vue {
-  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: INewSubjectConfig
 
   @Watch('subjectConfig.popup', { deep: true })
   tableDataChange({ showFields = [], showFieldsTitle } = {}) {
@@ -93,7 +93,7 @@ export default class Popup extends Vue {
 }
 </script>
 <style lang="less" scoped>
-::v-deep .mapgis-ui-row-flex {
+::v-deep .mp-row-flex {
   padding-bottom: 8px;
 }
 </style>

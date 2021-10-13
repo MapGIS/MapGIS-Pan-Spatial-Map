@@ -30,7 +30,7 @@
       <!-- 动画项设置(缺陷列表#108) -->
       <!-- <animation-items v-model="themeStyle.animation" /> -->
     </template>
-    <mp-row-flex label="填充颜色" :label-width="76">
+    <mp-row-flex label="渐变颜色" :label-width="76">
       <color-picker-setting v-model="themeStyle.gradient" />
     </mp-row-flex>
   </div>
@@ -58,7 +58,7 @@ export default class HeatMap extends Vue {
 
   @Watch('type')
   typeChanged(t) {
-    this.themeStyle = this.getOptions(t)
+    this.themeStyle = this.getThemeStyle(t)
   }
 
   get isCesium() {
@@ -106,9 +106,9 @@ export default class HeatMap extends Vue {
 </script>
 <style lang="less" scoped>
 .heat-map {
-  padding: 12px 8px 8px;
-  > .ant-row-flex {
-    margin-bottom: 12px;
+  padding: 8px;
+  > .mp-row-flex:not(:last-of-type) {
+    margin-bottom: 8px;
   }
 }
 </style>

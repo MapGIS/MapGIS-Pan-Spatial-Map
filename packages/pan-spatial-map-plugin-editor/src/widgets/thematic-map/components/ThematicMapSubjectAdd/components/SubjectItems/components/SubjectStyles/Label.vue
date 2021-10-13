@@ -1,11 +1,78 @@
 <template>
   <!-- 聚合标注专题图 -->
-  <div></div>
+  <div class="cluster-label">
+    <a-row>
+      <a-col :span="12">
+        <mp-row-flex label="最小半径" :label-width="72">
+          <a-input-number v-model="themeStyle.minSize" :min="1" />
+        </mp-row-flex>
+      </a-col>
+      <a-col :span="12">
+        <mp-row-flex label="最大半径" :label-width="72">
+          <a-input-number v-model="themeStyle.maxSize" :min="1" />
+        </mp-row-flex>
+      </a-col>
+    </a-row>
+    <a-row>
+      <a-col :span="12">
+        <mp-row-flex
+          :label-width="72"
+          label="聚合点数"
+          title="点数多于此值才会被聚合"
+        >
+          <a-input-number v-model="themeStyle.minPoints" :min="1" />
+        </mp-row-flex>
+      </a-col>
+      <a-col :span="12">
+        <mp-row-flex label="聚合级别" :label-width="72">
+          <a-input-number v-model="themeStyle.maxClusterZoom" :min="1" />
+        </mp-row-flex>
+      </a-col>
+    </a-row>
+    <a-row>
+      <a-col :span="12">
+        <mp-row-flex label="像素半径" :label-width="72">
+          <a-input-number v-model="themeStyle.clusterRadius" :min="1" />
+        </mp-row-flex>
+      </a-col>
+      <a-col :span="12">
+        <mp-row-flex
+          :label-width="72"
+          label="细腻程度"
+          title="细腻程度越高聚合后点越密集"
+        >
+          <a-input-number v-model="themeStyle.extent" :min="1" />
+        </mp-row-flex>
+      </a-col>
+    </a-row>
+    <a-row>
+      <a-col :span="12">
+        <mp-row-flex :label-width="72" label="透明度">
+          <a-input-number
+            v-model="themeStyle.globalAlpha"
+            :step="0.1"
+            :min="0.1"
+            :max="1"
+          />
+        </mp-row-flex>
+      </a-col>
+      <a-col :span="12">
+        <mp-row-flex :label-width="72" label="渐变颜色">
+          <color-picker-setting v-model="themeStyle.gradient" />
+        </mp-row-flex>
+      </a-col>
+    </a-row>
+  </div>
 </template>
 <script lang="ts">
 import { Vue, Prop, Component } from 'vue-property-decorator'
+import ColorPickerSetting from '../../../../common/ColorPickerSetting.vue'
 
-@Component
+@Component({
+  components: {
+    ColorPickerSetting
+  }
+})
 export default class Label extends Vue {
   @Prop({ type: Object }) readonly value!: Record<string, any>
 
@@ -27,8 +94,8 @@ export default class Label extends Vue {
     },
     gradient: {
       // 聚合图标渐变色
-      0: 'blue',
-      0.5: 'yellow',
+      0: '#1876d0',
+      0.5: '#bdbd0d',
       1.0: 'rgb(255,0,0)'
     }
   }
@@ -50,4 +117,11 @@ export default class Label extends Vue {
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.cluster-label {
+  padding: 8px;
+  > .ant-row:not(:last-of-type) {
+    margin-bottom: 8px;
+  }
+}
+</style>

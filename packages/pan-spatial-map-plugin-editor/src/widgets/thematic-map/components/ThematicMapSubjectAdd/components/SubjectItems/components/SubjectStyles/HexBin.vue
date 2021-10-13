@@ -1,33 +1,64 @@
 <template>
-  <div></div>
+  <div class="hex-bin">
+    <a-row>
+      <a-col :span="12">
+        <mp-row-flex label="半径大小" :label-width="72">
+          <a-input-number v-model="themeStyle.size" :min="10" />
+        </mp-row-flex>
+      </a-col>
+      <a-col :span="12">
+        <mp-row-flex label="最大权重" :label-width="72">
+          <a-input-number v-model="themeStyle.max" :min="1" />
+        </mp-row-flex>
+      </a-col>
+    </a-row>
+    <a-row>
+      <a-col :span="12">
+        <mp-row-flex label="透明度" :label-width="72">
+          <a-input-number
+            v-model="themeStyle.globalAlpha"
+            :step="0.1"
+            :min="0.1"
+            :max="1"
+          />
+        </mp-row-flex>
+      </a-col>
+      <a-col :span="12">
+        <mp-row-flex label="渐变颜色" :label-width="72">
+          <color-picker-setting v-model="themeStyle.gradient" />
+        </mp-row-flex>
+      </a-col>
+    </a-row>
+  </div>
 </template>
 <script lang="ts">
 import { Vue, Prop, Component } from 'vue-property-decorator'
+import ColorPickerSetting from '../../../../common/ColorPickerSetting.vue'
 
-@Component
+@Component({
+  components: {
+    ColorPickerSetting
+  }
+})
 export default class HexBin extends Vue {
   @Prop({ type: Object }) readonly value!: Record<string, any>
 
   private defaultThemeStyle = {
     max: 100,
+    size: 50,
+    fillStyle: 'rgba(55, 50, 250, 0.8)',
+    shadowColor: 'rgba(255, 250, 50, 1)',
+    shadowBlur: 20,
+    globalAlpha: 0.5,
     label: {
       show: true,
-      fillStyle: 'white',
-      shadowColor: 'yellow',
-      font: '15px Arial',
-      shadowBlur: 10
+      fillStyle: 'white'
     },
     gradient: {
-      '0': 'rgba(49, 54, 149, 0)',
-      '0.2': 'rgba(69,117,180, 0.7)',
-      '0.3': 'rgba(116,173,209, 0.7)',
-      '0.4': 'rgba(171,217,233, 0.7)',
-      '0.5': 'rgba(224,243,248, 0.7)',
-      '0.6': 'rgba(254,224,144,0.7)',
-      '0.7': 'rgba(253,174,97,0.7)',
-      '0.8': 'rgba(244,109,67,0.8)',
-      '0.9': 'rgba(215,48,39,0.8)',
-      '0.95': 'rgba(165, 0, 38,0.8)'
+      0.25: 'rgb(0,0,255)',
+      0.55: 'rgb(0,255,0)',
+      0.85: '#bdbd0d',
+      1.0: 'rgb(255,0,0)'
     }
   }
 
@@ -48,4 +79,11 @@ export default class HexBin extends Vue {
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.hex-bin {
+  padding: 8px;
+  > .ant-row:not(:last-of-type) {
+    margin-bottom: 8px;
+  }
+}
+</style>

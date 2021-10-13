@@ -45,7 +45,7 @@ import url from 'url'
 import _cloneDeep from 'lodash/cloneDeep'
 import _last from 'lodash/last'
 import FieldInstance from '../../../store/fields'
-import { NewSubjectConfig } from '../../../../../store'
+import { INewSubjectConfig } from '../../../../../store'
 
 interface IServerParams {
   ip: string
@@ -64,7 +64,7 @@ interface IField {
 
 @Component
 export default class Common extends Vue {
-  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: INewSubjectConfig
 
   // 属性列表
   fields: Array<IField> = []
@@ -342,7 +342,7 @@ export default class Common extends Vue {
       margin: 4px 0;
     }
     + div {
-      margin: 10px 0 14px 0;
+      margin: 10px 0 12px 0;
     }
   }
 }

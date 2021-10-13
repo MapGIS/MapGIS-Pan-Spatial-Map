@@ -2,14 +2,13 @@
   <!-- 分段专题图 -->
   <mapgis-theme-layer-custom
     @highlightChanged="emitHighlight"
-    v-bind="themeOptions"
+    :theme-option="themeOptions"
     :show-panel="false"
-    :is-hover-able="true"
-    :is-pop-up-able="true"
+    :enable-tips="true"
     :layer-id="id"
     :field="field"
     :data-source="geojson"
-    :marker="marker"
+    :highlight-feature="marker.feature"
     type="range"
     ref="customRangeThemeLayer"
   />
@@ -21,19 +20,23 @@ import BaseMixin from '../../mixins/base'
 @Component
 export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
   get themeOptions() {
-    const { color, themeStyle = {} } = this.subjectData
-    // 兼容旧配置
-    return color
-      ? {
-          styleGroups: color.map(({ min, max, sectionColor }) => ({
-            start: min,
-            end: max,
-            style: {
-              color: sectionColor
-            }
-          }))
-        }
-      : themeStyle
+    if (!this.subjectData) {
+      return {}
+    } else {
+      const { color, themeStyle } = this.subjectData
+      // 兼容旧配置
+      return color && color.length
+        ? {
+            styleGroups: color.map(({ min, max, sectionColor }) => ({
+              start: min,
+              end: max,
+              style: {
+                color: sectionColor
+              }
+            }))
+          }
+        : themeStyle || {}
+    }
   }
 
   removeLayer() {
@@ -44,3 +47,8 @@ export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
   }
 }
 </script>
+<style>
+/* .mapboxgl-popup-content{
+  padding: 0;
+} */
+</style>

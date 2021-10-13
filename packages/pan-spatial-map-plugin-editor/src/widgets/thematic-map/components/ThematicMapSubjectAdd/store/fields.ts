@@ -1,4 +1,4 @@
-import { FeatureFormatType, resolveFeatureQuery } from '../../../store'
+import { FeatureFormatType, featureQueryFn } from '../../../store'
 
 interface QueryParams {
   ip: string
@@ -36,7 +36,7 @@ class Fields {
     fields
   }: QueryParams) {
     if (!fields) return
-    const geojson = await resolveFeatureQuery({
+    const geojson = await featureQueryFn({
       ip,
       port,
       gdbp,
@@ -46,6 +46,19 @@ class Fields {
       fields
     })
     return geojson
+  }
+
+  /**
+   * 获取属性列表数据
+   * @param {object} param0 查询参数
+   * @returns
+   */
+  async getFields(subjectConfig) {
+    if (!this.isFetched) {
+      this.fields = await this.fetchFields(subjectConfig)
+      this.isFetched = true
+    }
+    return this.fields
   }
 
   /**
@@ -61,10 +74,7 @@ class Fields {
     layerName,
     layerIndex
   }: QueryParams) {
-    if (this.isFetched) {
-      return this.fields
-    }
-    const igsJson = await resolveFeatureQuery(
+    const igsJson = await featureQueryFn(
       {
         ip,
         port,
@@ -78,19 +88,15 @@ class Fields {
       },
       FeatureFormatType.json
     )
-    let fields = []
     if (igsJson) {
       const { FldName, FldType, FldAlias } = igsJson.AttStruct
-      fields = FldName.map((v: string, i: number) => ({
+      return FldName.map((v: string, i: number) => ({
         type: FldType[i],
         alias: FldAlias[i] || v,
         value: v
       }))
     }
-    this.fields = fields
-    this.isFetched = true
-
-    return fields
+    return []
   }
 
   /**

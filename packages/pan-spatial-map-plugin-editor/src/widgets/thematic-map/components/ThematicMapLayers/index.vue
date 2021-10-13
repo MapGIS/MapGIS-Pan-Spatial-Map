@@ -38,7 +38,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   @Inject('map') map
 
   // 高亮选项的标注点
-  private marker = null
+  private marker: unknown = {}
 
   // 要素数据
   private geojson: Feature.FeatureIGSGeoJSON | null = null
@@ -50,7 +50,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   // 获取专题类别
   get subjectType() {
     return this.subjectData
-      ? `${this.prefix}${this.subjectData.subjectType}`
+      ? `${this.prefix}${this.subjectData?.subjectType}`
       : ''
   }
 
@@ -71,7 +71,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * 清除高亮
    */
   onClearHighlight() {
-    this.marker = null
+    this.marker = {}
   }
 
   /**
@@ -104,7 +104,6 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * @param {string} fid 要素fid
    */
   setHighlight(fid: string) {
-    debugger
     this.onClearHighlight()
     this.onHighlight(fid)
   }
@@ -114,9 +113,8 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    */
   @Watch('subjectData', { deep: true })
   subjectDataChanged(nV) {
-    if (!nV) {
-      this.geojson = null
-    } else {
+    this.geojson = null
+    if (nV) {
       this.setFeaturesQuery({
         isCache: false,
         onSuccess: geojson => (this.geojson = geojson)

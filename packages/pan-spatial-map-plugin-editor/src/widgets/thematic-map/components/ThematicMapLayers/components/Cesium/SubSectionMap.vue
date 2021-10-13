@@ -20,7 +20,7 @@
       </div>
     </mapgis-3d-popup>
     <!-- 高亮标注点 -->
-    <mp-3d-marker-pro :marker="marker" v-if="marker" />
+    <mp-3d-marker-pro :marker="marker" v-if="marker.fid" />
   </div>
 </template>
 <script lang="ts">
@@ -36,16 +36,19 @@ interface ISectionColor {
 
 @Component
 export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
+  // 是否展示3D效果
   get isShow3D() {
     return this.subjectData?.isShow3D
   }
 
+  // 3D设置
   get setting3D() {
     return this.subjectData?.setting3D || {}
   }
 
+  // 分段值设置
   get colors() {
-    return this.subjectData?.color
+    return this.subjectData?.color || []
   }
 
   /**
@@ -77,22 +80,28 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
   getSegmentstyle(colors: ISectionColor[], value: any) {
     let color
     let noSegColor
-    for (let i = 0; i < colors.length; i += 1) {
-      const { min, max, sectionColor } = colors[i]
-      if (!value || value === null) {
-        noSegColor = sectionColor
-      } else if (Number(value) >= Number(min) && Number(value) <= Number(max)) {
-        color = sectionColor
-        break
-      }
-      if (noSegColor && value === '未参与分段的值') {
-        noSegColor = sectionColor
-      }
-      if (!color && i === colors.length - 1 && noSegColor) {
-        color = noSegColor
-        break
+    if (colors.length) {
+      for (let i = 0; i < colors.length; i += 1) {
+        const { min, max, sectionColor } = colors[i]
+        if (!value || value === null) {
+          noSegColor = sectionColor
+        } else if (
+          Number(value) >= Number(min) &&
+          Number(value) <= Number(max)
+        ) {
+          color = sectionColor
+          break
+        }
+        if (noSegColor && value === '未参与分段的值') {
+          noSegColor = sectionColor
+        }
+        if (!color && i === colors.length - 1 && noSegColor) {
+          color = noSegColor
+          break
+        }
       }
     }
+
     return color
   }
 

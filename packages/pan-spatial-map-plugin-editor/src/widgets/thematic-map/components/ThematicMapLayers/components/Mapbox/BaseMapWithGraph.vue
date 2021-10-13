@@ -20,7 +20,7 @@
       </div>
     </mapgis-popup>
     <!-- 高亮标注点 -->
-    <mp-marker-pro :marker="marker" v-if="marker" />
+    <mp-marker-pro :marker="marker" v-if="marker.fid" />
   </div>
 </template>
 <script lang="ts">
@@ -119,11 +119,11 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
   }
 
   get graph() {
-    return this.subjectData.graph
+    return this.subjectData?.graph
   }
 
   get graphType() {
-    return this.subjectData.graphType
+    return this.subjectData?.graphType
   }
 
   // 信息弹框字段配置

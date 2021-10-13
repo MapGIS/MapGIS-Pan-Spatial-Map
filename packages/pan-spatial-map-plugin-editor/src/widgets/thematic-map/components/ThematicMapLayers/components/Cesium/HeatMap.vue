@@ -29,16 +29,19 @@ enum typeEnum {
 export default class CesiumHeatMap extends Mixins(BaseMixin) {
   private bound = null
 
+  // fixme, 此处是为了测试贴模型临时创建的变量，实际上取BaseMixin文件的geojson数据即可
   private selfGeojson = null
+
+  // 热力图配置项
+  // 新旧版本的样式设置对比参照 https://shimowendang.com/docs/gO3oxMwgNmHJddqD
+  // 此处只对新版的样式兼容，旧版的每个字段没有具体说明，无法和新版对应起来
+  get options() {
+    return this.subjectData?.themeStyle
+  }
 
   // 是否mapv图层
   get isMapv() {
-    return this.subjectData.style?.type === typeEnum.MAPV
-  }
-
-  // 热力图配置项
-  get options() {
-    return this.subjectData.style
+    return this.options?.type === typeEnum.MAPV
   }
 
   /**
