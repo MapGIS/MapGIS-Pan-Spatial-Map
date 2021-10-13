@@ -2,10 +2,9 @@
   <!-- 等级符号专题图 -->
   <mapgis-theme-layer-custom
     @highlightChanged="emitHighlight"
-    v-bind="themeOptions"
+    :theme-option="themeOptions"
     :show-panel="false"
-    :is-hover-able="true"
-    :is-pop-up-able="true"
+    :enable-tips="true"
     :layer-id="id"
     :field="field"
     :data-source="geojson"
@@ -32,3 +31,8 @@ export default class MapboxStatisticLabel extends Mixins(BaseMixin) {
   }
 }
 </script>
+<style>
+/* .mapboxgl-popup-content{
+  padding: 0;
+} */
+</style>
