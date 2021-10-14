@@ -2,9 +2,11 @@
   <div class="mp-widget-split-screen" :class="mode" v-if="isOpen">
     <!-- 分屏地图 -->
     <split-screen-map
-      ref="splitScreenMap"
-      v-bind="bindProps"
+      :map-span="mapSpan"
+      :layer-ids="layerIds"
+      :layers="layers"
       :resize="resize"
+      ref="splitScreenMap"
     />
     <!-- 分屏设置 -->
     <a-drawer
@@ -24,11 +26,14 @@
         <a-icon :type="settingPanelVisible ? 'right' : 'left'" />
       </div>
       <split-screen-setting
-        v-bind="bindProps"
         @in-full-screen="onInFullScreen"
         @out-full-screen="onOutFullScreen"
         @on-screen-count-change="onScreenCountChange"
         @on-layer-change="onLayerChange"
+        :screen-num="screenNum"
+        :map-span="mapSpan"
+        :layer-ids="layerIds"
+        :layers="layers"
       />
     </a-drawer>
   </div>
@@ -36,16 +41,14 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import {
-  DomUtil,
-  WidgetMixin,
-  WidgetState,
-  Layer
-} from '@mapgis/web-app-framework'
+import { DomUtil, WidgetMixin, Layer } from '@mapgis/web-app-framework'
 import SplitScreenMap from './components/SplitScreenMap'
 import SplitScreenSetting from './components/SplitScreenSetting'
 
-type Mode = 'normal' | 'max'
+enum Mode {
+  normal = 'normal',
+  max = 'max'
+}
 
 @Component({
   name: 'MpSplitScreen',
@@ -54,17 +57,15 @@ type Mode = 'normal' | 'max'
     SplitScreenSetting
   }
 })
-export default class MpSplitScreen extends Mixins<Record<string, any>>(
-  WidgetMixin
-) {
+export default class MpSplitScreen extends Mixins(WidgetMixin) {
   isOpen = false
 
   resize = ''
 
-  mode: Mode = 'max'
+  mode: keyof Mode = Mode.max
 
   // 分屏数量
-  screenNums: number[] = []
+  screenNum = 0
 
   // 屏索引和图层id的数据集合
   layerIds: string[] = []
@@ -78,30 +79,14 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
   // 地图排列
   get mapSpan() {
     let span = 24
-    switch (this.screenNums.length) {
-      case 2:
-      case 3:
-      case 4:
-        span = 12
-        break
-      case 5:
-      case 6:
+    if (!isNaN(this.screenNum)) {
+      if (this.screenNum >= 5) {
         span = 8
-        break
-      default:
-        break
+      } else if (this.screenNum >= 2) {
+        span = 12
+      }
     }
     return span
-  }
-
-  get bindProps() {
-    const { mapSpan, screenNums, layerIds, layers } = this
-    return {
-      mapSpan,
-      screenNums,
-      layerIds,
-      layers
-    }
   }
 
   // 弹框wrap样式
@@ -135,46 +120,24 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
     }
   }
 
-  @Watch('document.defaultMap', { deep: true })
-  watchDefaultMap() {
-    if (this.isOpen) {
-      this.initLayers()
-    }
-  }
-
-  /**
-   * 弹框开启
-   */
-  onOpen() {
-    this.isOpen = true
-    this.initLayers()
-  }
-
-  /**
-   * 弹框关闭
-   */
-  onClose() {
-    this.isOpen = false
-    this.screenNums = []
-    this.layerIds = []
-  }
-
-  /**
-   * 面板窗口size变化
-   */
-  onWindowSize(mode: Mode) {
-    if (this.mode !== mode) {
-      this.mode = mode
-      this.setResize()
-    }
-  }
-
   /**
    * 屏数变化
-   * @param screenCount<number>
+   * @param screenCount
    */
   onScreenCountChange(screenCount: number) {
-    this.setLayers(screenCount)
+    if (this.screenNum >= screenCount) {
+      this.layerIds.splice(screenCount - this.screenNum)
+    } else {
+      this.layers
+        .slice(this.screenNum - 1)
+        .map(({ id }) => id)
+        .forEach(id => {
+          if (!this.layerIds.includes(id)) {
+            this.layerIds.push(id)
+          }
+        })
+    }
+    this.screenNum = screenCount
     this.setResize()
   }
 
@@ -220,35 +183,60 @@ export default class MpSplitScreen extends Mixins<Record<string, any>>(
   }
 
   /**
+   * 弹框开启
+   */
+  onOpen() {
+    this.isOpen = true
+    this.initLayers()
+  }
+
+  /**
+   * 弹框关闭
+   */
+  onClose() {
+    this.isOpen = false
+    this.screenNum = 0
+    this.layerIds = []
+  }
+
+  /**
+   * 面板窗口size变化
+   */
+  onWindowSize(mode: keyof Mode) {
+    if (this.mode !== mode) {
+      this.mode = mode
+      this.setResize()
+    }
+  }
+
+  /**
    * 设置是否resize
    */
-  private setResize() {
+  setResize() {
     this.resize = `${(Math.random() * 10000).toFixed(0)}`
   }
 
   /**
    * 初始化图层
    */
-  private initLayers() {
+  initLayers() {
     this.layers = this.document.defaultMap
       .clone()
       .getFlatLayers()
       .filter(v => !!v.isVisible)
     const { length } = this.layers
     if (length) {
-      this.setLayers(length < 7 ? length : 6)
+      this.screenNum = length < 7 ? length : 6
+      this.layerIds = new Array(this.screenNum)
+        .fill()
+        .map((v, i) => this.layers[i].id)
     }
   }
 
-  /**
-   * 初始化地图信息
-   */
-  private setLayers(screenNums?: number) {
-    this.screenNums = []
-    this.layerIds = []
-    for (let i = 0; i < screenNums; i++) {
-      this.screenNums.push(i)
-      this.layerIds.push(this.layers[i].id)
+  @Watch('document.defaultMap', { deep: true })
+  watchDefaultMap() {
+    if (this.isOpen) {
+      this.initLayers()
     }
   }
 }

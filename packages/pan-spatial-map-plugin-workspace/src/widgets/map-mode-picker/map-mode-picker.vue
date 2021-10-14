@@ -59,7 +59,7 @@ export default class MpMapModePicker extends Mixins(WidgetMixin) {
   // onMapModeChanged() {
   //   const { xmin, ymin, xmax, ymax } = this.rectBounds
   //   if (!this.is2DMapMode) {
-  //     this.sceneController.CameraSetView({
+  //     this.sceneController.cameraSetView({
   //       destination: this.sceneController.getCartesian3FromDegrees(
   //         (xmin + xmax) / 2,
   //         (ymin + ymax) / 2,
