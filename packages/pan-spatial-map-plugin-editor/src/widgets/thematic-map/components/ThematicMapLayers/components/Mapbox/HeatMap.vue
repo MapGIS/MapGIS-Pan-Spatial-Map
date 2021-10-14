@@ -1,6 +1,7 @@
 <template>
   <!-- 热力图 -->
   <mapgis-mapv-layer
+    v-if="geojsonPoint.features && geojsonPoint.features.length"
     :geojson="geojsonPoint"
     :options="options"
     :count-field="countField"
