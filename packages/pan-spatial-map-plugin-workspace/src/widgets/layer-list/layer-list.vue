@@ -12,7 +12,12 @@
             {{ label }}
           </li>
         </ul>
-        <tree-layer v-show="tab === 'tree'" :widgetInfo="widgetInfo" />
+        <mp-tree-layer
+          v-show="tab === 'tree'"
+          :widgetInfo="widgetInfo"
+          :layerDocument.sync="document"
+        >
+        </mp-tree-layer>
         <layer-opacity
           v-show="tab === 'opacity'"
           :layers="document.defaultMap.layers()"
@@ -27,13 +32,13 @@
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { WidgetMixin, AppMixin } from '@mapgis/web-app-framework'
 import { Empty } from 'ant-design-vue'
-import treeLayer from './tree-layer'
-import layerOpacity from './layer-opacity'
+// import treeLayer from '../../components/TreeLayer/index.vue'
+import layerOpacity from './layer-opacity.vue'
 import { api, dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpLayerList',
-  components: { treeLayer, layerOpacity }
+  components: { layerOpacity }
 })
 export default class MpLayerList extends Mixins(WidgetMixin) {
   private tab = 'tree'
@@ -52,6 +57,10 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
       this.document.defaultMap.layers() &&
       this.document.defaultMap.layers().length > 0
     )
+  }
+
+  metaDataInfo(layer) {
+    console.log(layer)
   }
 
   beforeCreate() {
