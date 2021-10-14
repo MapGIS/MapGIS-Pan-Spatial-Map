@@ -13,7 +13,7 @@
         @change="onLinkChange"
         :vue-key="vueKey"
         :enable="isMapLoaded"
-        :interval="60"
+        :interval="30"
         :excludes="['default']"
       />
       <!-- 绘制组件 -->
@@ -200,7 +200,8 @@ export default class CesiumView extends Vue {
    * 联动组件change
    */
   onLinkChange({ '3d': view3d, '2d': rect2d }) {
-    this.$emit('link-changed', rect2d, view3d)
+    console.log(`${this.vueKey}-link-changed`, { ...rect2d })
+    this.$emit('link-changed', rect2d)
   }
 
   /**

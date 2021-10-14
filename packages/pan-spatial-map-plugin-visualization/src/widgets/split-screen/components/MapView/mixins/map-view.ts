@@ -1,7 +1,7 @@
 import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { Rectangle } from '@mapgis/webclient-es6-service/common/Rectangle'
 import { Rectangle3D } from '@mapgis/web-app-framework'
-import mapViewState from '../store/map-view-state'
+import mapViewState, { OperationType } from '../store/map-view-state'
 import MapViewMapboxMixin from './map-view-mapbox'
 import MapViewCesiumMixin from './map-view-cesium'
 
@@ -21,6 +21,15 @@ export default class MapViewMixin extends Mixins(
     this.mapViewState._activeId = id
   }
 
+  // 激活操作类型
+  get activeOperationType() {
+    return this.mapViewState._activeOperationType
+  }
+
+  set activeOperationType(type: keyof typeof OperationType) {
+    this.mapViewState._activeOperationType = type
+  }
+
   // 活动视图范围
   get activeBound() {
     return this.mapViewState._activeBound
@@ -30,15 +39,6 @@ export default class MapViewMixin extends Mixins(
     this.mapViewState._activeBound = bound
   }
 
-  // 三维活动视图范围
-  get active3dBound() {
-    return this.mapViewState._active3dBound
-  }
-
-  set active3dBound(bound) {
-    this.mapViewState._active3dBound = bound
-  }
-
   // 查询的几何范围
   get queryGeometry() {
     return this.mapViewState._queryGeometry
@@ -46,6 +46,11 @@ export default class MapViewMixin extends Mixins(
 
   set queryGeometry(geometry) {
     this.mapViewState._queryGeometry = geometry
+  }
+
+  // 是否时候三维屏拖拽操作
+  get isActive3dDrag() {
+    return this.activeOperationType === OperationType.CESIUMDRAG
   }
 
   // 是否当前活动视图
@@ -79,22 +84,24 @@ export default class MapViewMixin extends Mixins(
   /**
    * 设置当前的活动地图
    */
-  setActiveMapView() {
+  setActiveMapView(type: keyof typeof OperationType) {
     if (this.isMapLoaded) {
       this.activeId = this.mapViewId
-      this.active3dBound = null
+      if (this.activeOperationType !== type) {
+        this.activeOperationType = type
+        console.log(`激活操作：${this.mapViewId}-${type}`)
+      }
     }
   }
 
   /**
    * 更新动态变化的经纬度范围
    * @param {Rectangle} bound 经纬度范围
-   * @param {object} bound3d 三维视图范围
    */
-  setActiveBound(bound: Rectangle, bound3d?) {
+  setActiveBound(bound: Rectangle) {
     if (this.isMapLoaded && this.isActiveMapView) {
       this.activeBound = bound
-      this.active3dBound = bound3d
+      console.log(`设置${this.mapViewId}激活范围`, bound)
     }
   }
 
@@ -120,6 +127,7 @@ export default class MapViewMixin extends Mixins(
    */
   restore(restoreOtherViews = false) {
     const _bound = { ...this.initBound }
+    console.log(`点击${this.mapViewId}重置`)
     this.zoomIn(_bound)
     if (restoreOtherViews) {
       this.setActiveBound(_bound)
@@ -133,8 +141,10 @@ export default class MapViewMixin extends Mixins(
   zoomIn(rect: Rectangle) {
     if (this.mapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
+        console.log(`二维${this.mapViewId}跳转`)
         this.zoomInToRect(rect)
-      } else if (!this.isAll3d || !this.active3dBound) {
+      } else if (!this.isActive3dDrag) {
+        console.log(`三维${this.mapViewId}跳转`)
         this.zoomInToRect3d(rect)
       }
     } else {
@@ -150,7 +160,7 @@ export default class MapViewMixin extends Mixins(
     if (this.mapViewState.isValidRect(rect)) {
       if (this.is2dLayer) {
         this.zoomOutToRect(rect)
-      } else if (!this.isAll3d || !this.active3dBound) {
+      } else if (!this.isActive3dDrag) {
         this.zoomOutToRect3d(rect)
       }
     } else {
