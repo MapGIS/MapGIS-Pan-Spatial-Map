@@ -1,17 +1,18 @@
-import { Feature } from '@mapgis/web-app-framework'
-import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
+import { FeatureFormatType, featureQueryFn } from '../../../store'
 
 interface QueryParams {
   ip: string
   port: string
-  gdbp?: string
-  docName?: string
-  layerIndex?: string
+  gdbp: string
+  docName: string
+  layerName: string
+  layerIndex: string
+  fields?: string
 }
 
 interface FieldInfosItem {
   type: string
-  label: string
+  alias: string
   value: string
 }
 
@@ -20,55 +21,90 @@ class Fields {
 
   private fields: FieldInfosItem[] = []
 
-  clearFields() {
-    this.isFetched = false
-    this.fields = []
-  }
-
-  async getFields(subjectConfig) {
-    if (!this.isFetched) {
-      const { ip: baseIp, port: basePort } = baseConfigInstance.config
-      const {
-        ip = baseIp,
-        port = basePort,
-        gdbp,
-        docName,
-        layerIndex
-      } = subjectConfig
-      this.fields = await this.fetchFields({
-        ip,
-        port,
-        gdbp,
-        docName,
-        layerIndex
-      })
-    }
-    return this.fields
-  }
-
-  async fetchFields({ ip, port, gdbp, docName, layerIndex }: QueryParams) {
-    const result = await Feature.FeatureQuery.query({
+  /**
+   * 获取指定属性的GeoJSON数据
+   * @param {object} params 查询参数
+   * @returns GeoJSON | undefined
+   */
+  async getFieldGeoJson({
+    ip,
+    port,
+    gdbp,
+    docName,
+    layerName,
+    layerIndex,
+    fields
+  }: QueryParams) {
+    if (!fields) return
+    const geojson = await featureQueryFn({
       ip,
       port,
       gdbp,
       docName,
-      layerIdxs: layerIndex,
-      IncludeAttribute: false,
-      IncludeGeometry: false,
-      IncludeWebGraphic: false,
-      f: 'json'
+      layerName,
+      layerIndex,
+      fields
     })
-    let fields = []
-    if (result) {
-      const { FldName, FldType, FldAlias } = result.AttStruct
-      fields = FldName.map((v: string, i: number) => ({
+    return geojson
+  }
+
+  /**
+   * 获取属性列表数据
+   * @param {object} param0 查询参数
+   * @returns
+   */
+  async getFields(subjectConfig) {
+    if (!this.isFetched) {
+      this.fields = await this.fetchFields(subjectConfig)
+      this.isFetched = true
+    }
+    return this.fields
+  }
+
+  /**
+   * 请求属性列表数据
+   * @param {object} param0 查询参数
+   * @returns
+   */
+  async fetchFields({
+    ip,
+    port,
+    gdbp,
+    docName,
+    layerName,
+    layerIndex
+  }: QueryParams) {
+    const igsJson = await featureQueryFn(
+      {
+        ip,
+        port,
+        gdbp,
+        docName,
+        layerName,
+        layerIndex,
+        IncludeAttribute: false,
+        IncludeGeometry: false,
+        IncludeWebGraphic: false
+      },
+      FeatureFormatType.json
+    )
+    if (igsJson) {
+      const { FldName, FldType, FldAlias } = igsJson.AttStruct
+      return FldName.map((v: string, i: number) => ({
         type: FldType[i],
-        label: FldAlias[i] || v,
+        alias: FldAlias[i] || v,
         value: v
       }))
     }
-    this.isFetched = true
-    return fields
+    return []
+  }
+
+  /**
+   * 清除缓存
+   */
+  clearFields() {
+    this.isFetched = false
+    this.fields = []
   }
 }
 

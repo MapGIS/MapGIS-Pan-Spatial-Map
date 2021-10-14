@@ -54,9 +54,7 @@ type Mode = 'normal' | 'max'
     SplitScreenSetting
   }
 })
-export default class MpSplitScreen extends Mixins<Record<string, any>>(
-  WidgetMixin
-) {
+export default class MpSplitScreen extends Mixins(WidgetMixin) {
   isOpen = false
 
   resize = ''

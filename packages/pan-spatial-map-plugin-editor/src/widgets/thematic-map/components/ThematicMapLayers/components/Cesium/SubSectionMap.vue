@@ -1,27 +1,32 @@
 <template>
-  <!-- 分段专题图图层 -->
-  <mapgis-3d-popup
-    v-model="showPopup"
-    :position="popupPosition"
-    :forceRender="true"
-  >
-    <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
-    <div v-else>
-      <div
-        v-for="(v, k) in popupProperties"
-        :key="`sub-section-map-properties-${v}`"
-        class="popup-row popup-fontsize"
-      >
-        <span>{{ `${k}：` }}</span>
-        <span>{{ v }}</span>
+  <!-- 分段专题图-->
+  <div>
+    <!-- 弹框 -->
+    <mapgis-3d-popup
+      v-model="showPopup"
+      :position="popupPosition"
+      :forceRender="true"
+    >
+      <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
+      <div v-else>
+        <div
+          v-for="(v, k) in popupProperties"
+          :key="`sub-section-map-properties-${v}`"
+          class="popup-row popup-fontsize"
+        >
+          <span>{{ `${k}：` }}</span>
+          <span>{{ v }}</span>
+        </div>
       </div>
-    </div>
-  </mapgis-3d-popup>
+    </mapgis-3d-popup>
+    <!-- 高亮标注点 -->
+    <mp-3d-marker-pro :marker="marker" v-if="marker.fid" />
+  </div>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer, Feature } from '@mapgis/web-app-framework'
-import CesiumMinxin from '../../mixins/cesium'
+import CesiumMixin from '../../mixins/cesium'
 
 interface ISectionColor {
   min: number
@@ -30,21 +35,20 @@ interface ISectionColor {
 }
 
 @Component
-export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
+export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
+  // 是否展示3D效果
   get isShow3D() {
     return this.subjectData?.isShow3D
   }
 
+  // 3D设置
   get setting3D() {
     return this.subjectData?.setting3D || {}
   }
 
+  // 分段值设置
   get colors() {
-    return this.subjectData?.color
-  }
-
-  get field() {
-    return this.subjectData.field
+    return this.subjectData?.color || []
   }
 
   /**
@@ -76,22 +80,28 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
   getSegmentstyle(colors: ISectionColor[], value: any) {
     let color
     let noSegColor
-    for (let i = 0; i < colors.length; i += 1) {
-      const { min, max, sectionColor } = colors[i]
-      if (!value || value === null) {
-        noSegColor = sectionColor
-      } else if (Number(value) >= Number(min) && Number(value) <= Number(max)) {
-        color = sectionColor
-        break
-      }
-      if (noSegColor && value === '未参与分段的值') {
-        noSegColor = sectionColor
-      }
-      if (!color && i === colors.length - 1 && noSegColor) {
-        color = noSegColor
-        break
+    if (colors.length) {
+      for (let i = 0; i < colors.length; i += 1) {
+        const { min, max, sectionColor } = colors[i]
+        if (!value || value === null) {
+          noSegColor = sectionColor
+        } else if (
+          Number(value) >= Number(min) &&
+          Number(value) <= Number(max)
+        ) {
+          color = sectionColor
+          break
+        }
+        if (noSegColor && value === '未参与分段的值') {
+          noSegColor = sectionColor
+        }
+        if (!color && i === colors.length - 1 && noSegColor) {
+          color = noSegColor
+          break
+        }
       }
     }
+
     return color
   }
 

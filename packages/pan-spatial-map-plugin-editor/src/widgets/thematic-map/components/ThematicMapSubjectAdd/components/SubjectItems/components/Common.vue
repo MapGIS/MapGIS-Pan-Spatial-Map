@@ -15,6 +15,7 @@
           }"
           filter-prop="serverUri"
           label-prop="serverUri"
+          placeholder="请选择或按照示例输入服务地址"
         />
       </mp-row-flex>
       <mp-row-flex
@@ -38,16 +39,13 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { Feature, Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
-import {
-  dataCatalogManagerInstance,
-  baseConfigInstance
-} from '@mapgis/pan-spatial-map-common'
+import { Layer, LayerType, Catalog } from '@mapgis/web-app-framework'
+import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-common'
 import url from 'url'
 import _cloneDeep from 'lodash/cloneDeep'
-import _debounce from 'lodash/debounce'
 import _last from 'lodash/last'
-import { NewSubjectConfig } from '../../../../../store'
+import FieldInstance from '../../../store/fields'
+import { INewSubjectConfig } from '../../../../../store'
 
 interface IServerParams {
   ip: string
@@ -66,7 +64,7 @@ interface IField {
 
 @Component
 export default class Common extends Vue {
-  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: INewSubjectConfig
 
   // 属性列表
   fields: Array<IField> = []
@@ -290,43 +288,20 @@ export default class Common extends Vue {
   }
 
   /**
-   * 查询的属性列表
+   * 设置查询的属性列表
    */
-  async getFields(serverParams) {
-    let fields = []
+  setFields(serverParams) {
     if (serverParams) {
-      const { ip: baseIp, port: basePort } = baseConfigInstance.config
-      const {
-        ip = baseIp,
-        port = basePort,
-        gdbp,
-        docName,
-        layerIndex
-      } = serverParams
-      const result = await Feature.FeatureQuery.query({
-        ip,
-        port,
-        gdbp,
-        docName,
-        layerIdxs: layerIndex,
-        IncludeAttribute: false,
-        IncludeGeometry: false,
-        IncludeWebGraphic: false,
-        f: 'json'
-      })
+      const { ip, port, gdbp, docName, layerIndex } = serverParams
 
-      if (result) {
-        const { FldName, FldType, FldAlias } = result.AttStruct
-        fields = FldName.map((v: string, i: number) => ({
-          type: FldType[i],
-          label: FldAlias[i] || v,
-          value: FldAlias[i] || v
+      FieldInstance.fetchFields(serverParams).then(fields => {
+        this.fields = fields.map(({ alias, value }) => ({
+          label: alias,
+          value
         }))
-      }
+        this.field = this.fields[0]?.value
+      })
     }
-
-    this.fields = fields
-    this.field = this.fields[0]?.value
   }
 
   /**
@@ -337,7 +312,7 @@ export default class Common extends Vue {
       this.$message.warn('请输入正确的数据服务地址')
       return
     }
-    this.getFields(this.getServerParams(value))
+    this.setFields(this.getServerParams(value))
     this.selfUri = value
   }
 
@@ -367,7 +342,7 @@ export default class Common extends Vue {
       margin: 4px 0;
     }
     + div {
-      margin: 10px 0 14px 0;
+      margin: 10px 0 12px 0;
     }
   }
 }

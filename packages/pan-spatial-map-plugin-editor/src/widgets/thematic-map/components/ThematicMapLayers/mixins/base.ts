@@ -1,53 +1,59 @@
-import { Component, Prop, Watch, Vue, Mixins } from 'vue-property-decorator'
-import { MapMixin, Feature } from '@mapgis/web-app-framework'
-import _isNumber from 'lodash/isNumber'
-import { highlightSubjectTypes } from '../../../store'
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
+import { UUID, Feature } from '@mapgis/web-app-framework'
+import { hasHighlightSubjectList, ISubjectData } from '../../../store'
+
+interface IMarker {
+  img: string
+  feature: Feature.GFeature
+  properties: Feature.GFeature['properties']
+  coordinates: number[]
+  fid: string
+  markerId: string
+}
 
 @Component
-export default class BaseMinxin extends Mixins<Record<string, any>>(MapMixin) {
-  // 组件唯一值
-  @Prop({ default: 'map' }) readonly vueKey!: string
+export default class BaseMixin extends Vue {
+  // 高亮的标注信息
+  @Prop({ default: () => ({}) }) readonly marker!: IMarker
 
-  // 专题配置
-  @Prop({ default: () => ({}) }) readonly subjectData!: any
+  // 某专题配置
+  @Prop({ default: () => ({}) })
+  readonly subjectData!: ISubjectData
 
-  // 专题某年度的要素数据
-  @Prop({ default: () => ({}) }) readonly dataSet!: Feature.FeatureIGS
+  // 某专题某年度的要素GeoJson数据
+  @Prop({ default: () => ({}) })
+  readonly geojson!: Feature.FeatureIGSGeoJSON | null
 
   /**
-   * 监听: 要素数据变化
+   * 监听: 要素geojson数据变化
    */
-  @Watch('dataSet', { deep: true })
-  watchDataSet(nV: Feature.FeatureIGS | null) {
-    if (nV && nV.SFEleArray) {
-      this.showLayer()
-    } else {
-      this.removeLayer()
-    }
+  @Watch('geojson', { deep: true })
+  geojsonChanged() {
+    this.removeLayer()
+    this.showLayer()
   }
+
+  id = UUID.uuid()
 
   // 是否支持图属高亮
   get hasHighlight() {
-    return highlightSubjectTypes.includes(this.subjectData.subjectType)
+    return this.subjectData
+      ? hasHighlightSubjectList.includes(this.subjectData.subjectType)
+      : false
   }
 
-  // 获取geojson数据
-  get geojson(): Feature.FeatureGeoJSON | null {
-    return this.dataSet
-      ? Feature.FeatureConvert.featureIGSToFeatureGeoJSON(this.dataSet)
-      : null
+  // 获取统计属性
+  get field() {
+    return this.subjectData?.field
   }
 
   /**
    * 专题图鼠标移入高亮
-   * @param 移入的要素数据索引
+   * @param {string} fid 要素fid
    */
-  emitHighlight(itemIndex: number) {
+  emitHighlight(fid: string) {
     if (this.hasHighlight) {
-      this.$emit('highlight', {
-        from: this.vueKey,
-        itemIndex
-      })
+      this.$emit('highlight', fid)
     }
   }
 

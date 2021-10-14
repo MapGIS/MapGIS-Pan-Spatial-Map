@@ -78,7 +78,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { SubjectType, NewSubjectConfig } from '../../../../store'
+import { ISubjectType, INewSubjectConfig } from '../../../../store'
 import Common from './components/Common.vue'
 import SubjectStyles from './components/SubjectStyles'
 import AttributeTable from './components/AttributeTable.vue'
@@ -95,11 +95,11 @@ import Popup from './components/Popup.vue'
   }
 })
 export default class SubjectItems extends Vue {
-  @Prop() readonly subjectType!: SubjectType
+  @Prop() readonly subjectType!: ISubjectType
 
-  @Prop({ default: () => [] }) readonly value!: Array<NewSubjectConfig>
+  @Prop({ default: () => [] }) readonly value!: Array<INewSubjectConfig>
 
-  activePanel = 0
+  activePanel = '0'
 
   showCheckbox = false
 
@@ -135,7 +135,7 @@ export default class SubjectItems extends Vue {
     return this.value
   }
 
-  set configList(config: Array<NewSubjectConfig>) {
+  set configList(config: Array<INewSubjectConfig>) {
     this.$emit('input', config)
   }
 
@@ -151,14 +151,14 @@ export default class SubjectItems extends Vue {
   /**
    * 面板change
    */
-  panelChange(key: string | number) {
+  panelChange(key: string) {
     this.activePanel = key
   }
 
   /**
    * 专题配置change
    */
-  configChange(newConfig: Record<string, any>, config: NewSubjectConfig) {
+  configChange(newConfig: Record<string, any>, config: INewSubjectConfig) {
     this.setProperties(newConfig, config)
     console.log('配置数据', { ...config })
   }

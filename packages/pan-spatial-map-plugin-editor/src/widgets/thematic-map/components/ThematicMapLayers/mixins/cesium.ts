@@ -1,26 +1,26 @@
 import { Component, Mixins, Inject } from 'vue-property-decorator'
 import { UUID, Layer, ColorUtil, Feature } from '@mapgis/web-app-framework'
-import BaseMinxin from './base'
+import BaseMixin from './base'
 
 interface ILngLat {
   longitude?: number
   latitude?: number
 }
 @Component
-export default class CesiumMinxin extends Mixins<Record<string, any>>(
-  BaseMinxin
-) {
+export default class CesiumMixin extends Mixins(BaseMixin) {
+  @Inject('webGlobe') webGlobe
+
+  @Inject('Cesium') Cesium
+
   @Inject('CesiumZondy') CesiumZondy
 
-  id = UUID.uuid()
+  private thematicMapLayer = null
 
-  thematicMapLayer: any = null
+  private showPopup = false
 
-  showPopup = false
+  private popupProperties = null
 
-  popupProperties: any = null
-
-  popupPosition: ILngLat = {}
+  private popupPosition: ILngLat = {}
 
   // 信息弹框字段配置
   get popupConfig() {
@@ -53,7 +53,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
    * @param feature 要素数据
    * @param option 实体配置
    */
-  addEntityToLayer(layer: Layer, feature: Feature.GFeature, option: any) {
+  addEntityToLayer(layer: Layer, feature: Feature.GFeature, option = {}) {
     const entity = new this.Cesium.Entity(option)
     entity.geojsonFeature = feature
     layer.entities.add(entity)
@@ -101,9 +101,9 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
    * @param feature 要素数据
    */
   getPopupInfos(feature: Feature.GFeature | null) {
-    const { showFields, showFieldsTitle } = this.popupConfig
+    const { showFields, showFieldsTitle }: any = this.popupConfig
     if (!feature || !showFields || !showFields.length) return
-    this.popupProperties = showFields.reduce((obj: any, v: string) => {
+    this.popupProperties = showFields.reduce((obj, v: string) => {
       const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
       obj[tag] = feature.properties[v]
       return obj
@@ -142,11 +142,11 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
       this.closePopupWin()
       const pick = scene.pick(position)
       if (pick && pick.id) {
+        const { geojsonFeature } = pick.id
         this.getCartographic(CommonFuncManager, position)
-        this.getPopupInfos(pick.id.geojsonFeature)
+        this.getPopupInfos(geojsonFeature)
+        this.emitHighlight(geojsonFeature.properties.fid)
         this.showPopup = true
-        // todo 图属高亮
-        // this.emitHighlight(dataIndex)
       }
     })
   }
@@ -158,8 +158,7 @@ export default class CesiumMinxin extends Mixins<Record<string, any>>(
     this.showPopup = false
     this.popupPosition = {}
     this.popupProperties = null
-    // todo 取消图属高亮
-    // this.emitClearHighlight()
+    this.emitClearHighlight()
   }
 
   /**

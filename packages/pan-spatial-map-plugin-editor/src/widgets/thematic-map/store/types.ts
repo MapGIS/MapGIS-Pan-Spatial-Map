@@ -2,19 +2,22 @@ import { LayerType, Feature } from '@mapgis/web-app-framework'
 
 export const tuple = <T extends string[]>(...args: T) => args
 
+// 要素查询的数据格式
+export enum FeatureFormatType {
+  json = 'json',
+  geojson = 'geojson'
+}
+
 // 节点类型
-type NodeType = 'panel' | 'list' | 'subjet'
+type NodeType = 'panel' | 'list' | 'subject'
 
 // 专题图配置
-type ConfigType = 'gdbp' | 'doc' | 'geojson' | 'excel'
-
-// 专题图专题功能模块
-// export type ModuleType =
-//   | 'table' // 属性表
-//   | 'graph' // 统计表
-//   | 'timeline' // 时间轴
-//   | 'create' // 新建专题图
-//   | 'tools' // 管理工具栏
+export enum ConfigType {
+  doc = 'doc',
+  gdbp = 'gdbp',
+  geojson = 'geojson',
+  excel = 'excel'
+}
 
 // 专题图专题功能模块
 export enum ModuleType {
@@ -35,7 +38,7 @@ export enum ModuleType {
  * 标注专题图 : Label
  * 蜂窝图 : HexBin
  */
-export type SubjectType =
+export type ISubjectType =
   | 'SubSectionMap'
   | 'DataShowSubject'
   | 'HeatMap'
@@ -46,9 +49,9 @@ export type SubjectType =
   | string
 
 // 专题图配置
-export interface ISubjectConfigItem {
-  subjectType?: SubjectType
-  configType?: ConfigType
+export interface ISubjectData {
+  subjectType: ISubjectType
+  configType: keyof ConfigType
   time?: string
   ip?: string
   port?: string
@@ -57,6 +60,7 @@ export interface ISubjectConfigItem {
   layerName?: string
   layerIndex?: string
   serverType?: LayerType
+  field?: string
   table?: {
     showFields: string[]
     showFieldsTitle?: Record<string, string>
@@ -73,7 +77,7 @@ export interface ISubjectConfigItem {
   }
 }
 
-export interface IConfigBase {
+export interface ISubjectConfigBase {
   id: string // 节点名
   title: string // 节点名
   visible: boolean // 是否可见
@@ -81,30 +85,30 @@ export interface IConfigBase {
 }
 
 // 旧专题配置
-interface OldSubjectConfig extends IConfigBase {
-  children?: OldSubjectConfig[] // 子节点数据,panel和list有,subject没有
-  type?: SubjectType // 专题类型
+interface IOldSubjectConfig extends ISubjectConfigBase {
+  children?: IOldSubjectConfig[] // 子节点数据,panel和list有,subject没有
+  type?: ISubjectType // 专题类型
   config?: {
-    type?: ConfigType // 数据请求方式
+    type?: keyof ConfigType // 数据请求方式
     data:
-      | Array<ISubjectConfigItem>
+      | Array<ISubjectData>
       | Array<{
           time: string
-          subData: Array<ISubjectConfigItem>
+          subData: Array<ISubjectData>
         }>
   }
 }
 
 // 新专题配置
-export interface NewSubjectConfig extends IConfigBase {
+export interface INewSubjectConfig extends ISubjectConfigBase {
   parentId: string // 父节点ID
   parentTitle: string // 父节点Title
-  type: SubjectType
-  config: Array<ISubjectConfigItem>
+  type: ISubjectType
+  config: Array<ISubjectData>
 }
 
 // 专题图基础配置
-export interface ThematicMapBaseConfig {
+export interface IBaseConfig {
   baseIp: string // 主题服务默认 ip
   basePort: string // 主题服务默认 port
   isLocation: boolean // 是否覆盖
@@ -113,50 +117,38 @@ export interface ThematicMapBaseConfig {
 }
 
 // 专题图专题配置树的节点
-export type ThematicMapSubjectConfigNode =
-  | OldSubjectConfig
-  | NewSubjectConfig
+export type ISubjectConfigNode =
+  | IOldSubjectConfig
+  | INewSubjectConfig
   | null
   | undefined
 
-// 图属联动项
-export interface LinkageItem {
-  from: string
-  itemIndex: number
-  marker?: {
-    fid: string
-    markerId: string
-    img: string
-    coordinates: number[]
-    feature: Feature.GFeature
-    properties: Feature.GFeature['properties']
-  }
-}
-
-// 分页配置
-export interface PageParam {
-  page: number
-  pageCount: number
-}
-
-// 专题数据: 旧版本的请求方式提取到了外层, 新版本直接根据配置项里的gdbp|docName判断
-export interface SubjectData {
+export interface IFeatureQueryParams {
+  ip: string
+  port: string
+  gdbp: string
+  docName: string
+  layerIndex: string
+  layerName?: string
+  fields?: string
+  page?: number
+  pageCount?: number
+  IncludeAttribute?: boolean
+  IncludeGeometry?: boolean
+  IncludeWebGraphic?: boolean
   configType?: ConfigType
-  subjectType: SubjectType
-  [k: string]: any
 }
 
-export interface IState {
+export interface State {
   modules: Array<ModuleType>
   loading: boolean
-  pageParam: PageParam
-  pageDataSet: Feature.FeatureIGS | null
-  subjectData: SubjectData | null
+  pageGeojson: Feature.FeatureIGSGeoJSON | null
+  subjectData: ISubjectData | null
   selectedSubjectTime: string
   selectedSubjectTimeList: Array<string>
-  selectedSubject?: ThematicMapSubjectConfigNode
-  selectedSubjectList: Array<ThematicMapSubjectConfigNode>
-  baseConfig?: ThematicMapBaseConfig | null
-  subjectConfig: Array<ThematicMapSubjectConfigNode>
-  linkageItem: LinkageItem | null
+  selectedSubject?: ISubjectConfigNode
+  selectedSubjectList: Array<ISubjectConfigNode>
+  baseConfig?: IBaseConfig | null
+  subjectConfig: Array<ISubjectConfigNode>
+  linkageFid: string
 }

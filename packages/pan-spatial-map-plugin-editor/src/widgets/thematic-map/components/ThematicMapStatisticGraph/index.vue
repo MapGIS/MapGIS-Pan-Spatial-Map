@@ -7,7 +7,7 @@
         :visible.sync="visible"
         :horizontal-offset="48"
         :vertical-offset="50"
-        :width="360"
+        :width="chartWidth"
         :has-padding="false"
         title="统计表"
         anchor="bottom-right"
@@ -49,19 +49,22 @@
   </transition>
 </template>
 <script lang="ts">
-import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
-import { Feature } from '@mapgis/web-app-framework'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import * as echarts from 'echarts'
 import {
   ModuleType,
   mapGetters,
   mapMutations,
-  highlightSubjectTypes
+  hasHighlightSubjectList
 } from '../../store'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
 
+enum windowMode {
+  max = 'max',
+  normal = 'normal'
+}
 enum ChartType {
   BAR = 'BAR',
   LINE = 'LINE',
@@ -86,35 +89,33 @@ interface IChartOption {
     ...mapGetters([
       'loading',
       'isVisible',
-      'pageDataSet',
+      'pageGeojson',
       'subjectData',
-      'linkageItem'
+      'linkageFid'
     ])
   },
   methods: {
-    ...mapMutations(['setLinkageItem', 'resetVisible', 'resetLinkage'])
+    ...mapMutations(['setLinkage', 'resetVisible', 'resetLinkage'])
   }
 })
 export default class ThematicMapStatisticGraph extends Vue {
-  vueKey = 'gragh'
-
-  // 默认标注图标
-  defaultIcon = ''
-
   // 当前活动的图标
-  activeChart: keyof ChartType = ChartType.BAR
+  private activeChart: keyof ChartType = ChartType.BAR
 
   // 指标
-  target = ''
+  private target = ''
 
   // 指标列表
-  targetList = []
+  private targetList = []
 
   // 图表
-  chart: HTMLCanvasElement | null = null
+  private chart: HTMLCanvasElement | null = null
+
+  // 图表宽度
+  private chartWidth = 360
 
   // 图表配置
-  chartOption: IChartOption = {
+  private chartOption: IChartOption = {
     title: '',
     color: '',
     x: [],
@@ -122,7 +123,7 @@ export default class ThematicMapStatisticGraph extends Vue {
   }
 
   // 3种图表配置
-  chartConfig: IChartConfig[] = [
+  private chartConfig: IChartConfig[] = [
     {
       iconType: 'bar-chart',
       tooltip: '柱状图',
@@ -152,7 +153,7 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   // 是否支持图属高亮
   get hasHighlight() {
-    return highlightSubjectTypes.includes(this.subjectData?.subjectType)
+    return hasHighlightSubjectList.includes(this.subjectData?.subjectType)
   }
 
   // 图表配置
@@ -168,40 +169,32 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 窗口变化
+   * @param {string} mode <max | normal> 模式
    */
-  onWindowSize(mode?: 'max' | 'normal') {
+  onWindowSize(mode?: keyof windowMode) {
     this.$nextTick(() => {
       if (this.chart) {
-        // const width =
-        //   mode === 'max' ? this.$refs.statisticGraph.clientWidth : 360
-        if (mode === 'max') {
-          this.chart.resize({
-            width: this.$refs.statisticGraph.clientWidth
-          })
-        }
+        this.chart.resize({
+          width:
+            mode === windowMode.MAX
+              ? this.$refs.statisticGraph.clientWidth
+              : this.chartWidth
+        })
       }
     })
   }
 
   /**
    * 将query的结果设置图表配置里
-   * @param dataSet
    */
-  getChartOptions(dataSet: Feature.FeatureIGS | null) {
+  getChartOptions() {
     const xArr = []
     const yArr = []
-    if (dataSet && dataSet.AttStruct.FldName && this.graph) {
-      const {
-        SFEleArray,
-        AttStruct: { FldName }
-      } = dataSet
-      const xIndex = FldName.indexOf(this.graph.field)
-      const yIndex = FldName.indexOf(this.target)
-      SFEleArray.forEach(({ AttValue }) => {
-        if (AttValue) {
-          xArr.push(AttValue[xIndex])
-          yArr.push(AttValue[yIndex])
-        }
+    const geojson = this.pageGeojson
+    if (geojson && geojson.features?.length && this.graph) {
+      geojson.features.forEach(({ properties }) => {
+        xArr.push(properties[this.graph.field])
+        yArr.push(properties[this.target])
       })
     }
     this.chartOption.x = xArr
@@ -237,7 +230,7 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 图表类型变化
-   * @param type<string>
+   * @param {string} type<BAR | LINE | PIE> 类型
    */
   onChartTypeChange(type: keyof ChartType) {
     this.$nextTick(() => {
@@ -273,12 +266,12 @@ export default class ThematicMapStatisticGraph extends Vue {
   onTargetChange(value: string) {
     this.target = value
     this.chartOption.title = value
-    this.getChartOptions(this.pageDataSet)
+    this.getChartOptions()
   }
 
   /**
    * 取消高亮图表图形
-   * @param {Number} 数据索引
+   * @param {number} dataIndex 索引
    */
   onClearHighlight(dataIndex) {
     this.chart.dispatchAction({
@@ -293,7 +286,7 @@ export default class ThematicMapStatisticGraph extends Vue {
 
   /**
    * 高亮图表图形
-   * @param {Number} 数据索引
+   * @param {number} dataIndex 索引
    */
   onHighlight(dataIndex) {
     this.chart.dispatchAction({
@@ -308,40 +301,52 @@ export default class ThematicMapStatisticGraph extends Vue {
   }
 
   /**
+   * 设置高亮
+   * @param {string} fid 要素fid
+   */
+  setHighlight(fid: string) {
+    if (!this.pageGeojson) return
+    const dataIndex = this.pageGeojson.features.findIndex(
+      ({ properties }) => properties.fid === fid
+    )
+    this.onClearHighlight(dataIndex)
+    this.onHighlight(dataIndex)
+  }
+
+  /**
+   * 图表事件绑定
+   */
+  setChartEventBind() {
+    this.chart.on('mouseout', this.resetLinkage)
+    this.chart.on('mouseover', ({ dataIndex }) => {
+      if (!this.pageGeojson) return
+      this.setLinkage(this.pageGeojson.features[dataIndex]?.properties.fid)
+    })
+  }
+
+  /**
    * 监听: 高亮配置
    */
   @Watch('hasHighlight')
-  watchHasHighlight(nV) {
-    if (nV) {
-      this.chart.on('mouseover', ({ dataIndex }) => {
-        this.setLinkageItem({
-          from: this.vueKey,
-          itemIndex: dataIndex
-        })
-      })
-      this.chart.on('mouseout', this.resetLinkage)
-    }
+  hasHighlightChanged(has) {
+    has && this.setChartEventBind()
   }
 
   /**
    * 监听: 分页数据变化
    */
-  @Watch('pageDataSet', { deep: true })
-  watchPageDataSet(nV: Feature.FeatureIGS | null) {
+  @Watch('pageGeojson', { deep: true })
+  pageGeojsonChanged() {
     this.getTargetList()
-    this.getChartOptions(nV)
+    this.getChartOptions()
   }
 
   /**
    * 监听: 联动项变化
    */
-  @Watch('linkageItem', { deep: true })
-  watchHighlightItem(nV) {
-    if (!nV) {
-      this.onClearHighlight()
-    } else if (nV.from !== this.vueKey) {
-      this.onHighlight(nV.itemIndex)
-    }
+  @Watch('linkageFid')
+  linkageFidChanged(nV) {
+    this.setHighlight(nV)
   }
 
   mounted() {
@@ -349,6 +354,10 @@ export default class ThematicMapStatisticGraph extends Vue {
       'thematic-map-graph-chart'
     )
     this.chart = echarts.init(chartDom)
+  }
+
+  beforeDestroy() {
+    this.resetLinkage()
   }
 }
 </script>

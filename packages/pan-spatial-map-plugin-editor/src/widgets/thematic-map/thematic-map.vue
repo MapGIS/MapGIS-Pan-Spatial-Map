@@ -1,5 +1,5 @@
 <template>
-  <div class="mp-widget-thematic-map">
+  <div class="mp-widget-thematic-map" v-if="!flag">
     <!-- 专题图树 -->
     <mp-group-tab
       :has-top-margin="false"
@@ -65,7 +65,7 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import _cloneDeep from 'lodash/cloneDeep'
 import {
   ModuleType,
-  NewSubjectConfig,
+  INewSubjectConfig,
   mapGetters,
   mapMutations,
   moduleTypeList
@@ -95,8 +95,7 @@ enum ThematicMapNodeHandles {
       'setSubjectConfig',
       'updateSubjectConfig',
       'setSelectedSubjectList',
-      'resetVisible',
-      'resetLinkage'
+      'resetVisible'
     ])
   },
   components: {
@@ -116,16 +115,16 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   loading = false
 
   // 专题图树
-  thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
+  thematicMapTree: Array<ISubjectConfigNode> = []
 
   // 专题图节点的操作按钮
   thematicMapNodeHandles = ThematicMapNodeHandles
 
   // 选中的专题图树节点集合
-  checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
+  checkedThematicMapNodes: Array<ISubjectConfigNode> = []
 
   // 当前操作的专题图节点
-  currentThematicMapNode: NewSubjectConfig = {}
+  currentThematicMapNode: INewSubjectConfig = {}
 
   // 选中的专题图树节点key集合
   get checkedThematicMapKeys() {
@@ -171,7 +170,6 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    */
   setModulesHide(exclude: ModuleType) {
     moduleTypeList.forEach(t => t !== exclude && this.resetVisible(t))
-    this.resetLinkage()
   }
 
   /**
@@ -185,7 +183,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    * 格式化专题图树
    * @param tree
    */
-  normalizeThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
+  normalizeThematicMapTree(tree: Array<ISubjectConfigNode>) {
     return tree.map(node => {
       this.$set(node, 'checkable', node.nodeType === 'subject')
       this.$set(node, 'scopedSlots', { title: 'custom' })
@@ -199,14 +197,14 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * todo 创建节点
    */
-  onTreeNodeCreate(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeCreate(nodeData: ISubjectConfigNode) {
     this.setModulesShow(ModuleType.CREATE)
   }
 
   /**
    * todo 编辑节点, 需要兼容新旧配置
    */
-  onTreeNodeEdit(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeEdit(nodeData: ISubjectConfigNode) {
     if (nodeData.parentId) {
       // 新的专题配置
       this.currentThematicMapNode = nodeData
@@ -219,13 +217,13 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * 移除节点
    */
-  onTreeNodeRemove(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeRemove(nodeData: ISubjectConfigNode) {
     this.setSelectedSubjectList(
       this.checkedThematicMapNodes.filter(s => s.id !== nodeData.id)
     )
     const recursion = (
-      tree: Array<ThematicMapSubjectConfigNode>,
-      node: ThematicMapSubjectConfigNode
+      tree: Array<ISubjectConfigNode>,
+      node: ISubjectConfigNode
     ) => {
       for (let i = 0; i < tree.length; i++) {
         const n = tree[i]
@@ -287,6 +285,20 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   }
 
   /**
+   * 清除
+   */
+  onClear() {
+    this.flag = true
+    this.checkedThematicMapNodes = []
+    this.setLoadingHide()
+    // 重置缓存
+    this.setModulesHide()
+    this.setBaseConfig(null)
+    this.setSubjectConfig([])
+    this.setSelectedSubjectList([])
+  }
+
+  /**
    * 专题图面板打开
    * fixme 未对接服务，取store里缓存的配置
    */
@@ -301,15 +313,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * 专题图面板关闭
    */
-  onClose() {
-    this.flag = true
-    this.checkedThematicMapNodes = []
-    this.setSelectedSubjectList([])
-    this.setModulesHide()
-    this.setLoadingHide()
-    // this.setBaseConfig(null)
-    // this.setSubjectConfig([])
-  }
+  onClose() {}
 
   /**
    * 保存后更新了store里的subjectConfig后需要更新专题配置树
@@ -325,6 +329,10 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
     const { baseConfig, subjectConfig = [] } = this.widgetInfo.config
     this.setBaseConfig(baseConfig)
     this.setSubjectConfig(subjectConfig)
+  }
+
+  beforeDestroy() {
+    this.onClear()
   }
 }
 </script>
