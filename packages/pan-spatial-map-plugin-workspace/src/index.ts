@@ -1,4 +1,8 @@
-import { MpAttributeTable, MpAttributeTableList } from './components'
+import {
+  MpAttributeTable,
+  MpAttributeTableList,
+  MpTreeLayer
+} from './components'
 
 import {
   MpZoom,
@@ -21,7 +25,8 @@ const components = [
   MpAttributeTable,
   MpAttributeTableList,
   MpBasemapManager,
-  MpLegend
+  MpLegend,
+  MpTreeLayer
 ]
 
 const install = Vue => {
