@@ -184,7 +184,7 @@ export default class MapView extends Mixins(MapViewMixin) {
       })
     })
     this.isMapLoaded = true
-    this.restore()
+    this.zoomTo({ ...this.initBound })
   }
 
   /**
@@ -193,7 +193,7 @@ export default class MapView extends Mixins(MapViewMixin) {
   onCesiumLoaded(webGlobe, sceneController) {
     this.sceneController = sceneController
     this.isMapLoaded = true
-    this.restore()
+    this.zoomTo({ ...this.initBound })
   }
 
   /**
@@ -227,10 +227,9 @@ export default class MapView extends Mixins(MapViewMixin) {
         this.query(geometry)
         break
       case OperationType.ZOOMIN:
-        this.zoomIn(rect)
-        break
       case OperationType.ZOOMOUT:
-        this.zoomOut(rect)
+        this.setActiveBound(rect)
+        this.zoomTo(rect, this.operationType)
         break
       default:
         break
@@ -253,7 +252,7 @@ export default class MapView extends Mixins(MapViewMixin) {
         this.mapComponent.openDraw('draw-rectangle')
         break
       case OperationType.RESTORE:
-        this.restore(true)
+        this.restore({ ...this.initBound })
         break
       case OperationType.CLEAR:
         this.clear()

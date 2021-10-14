@@ -77,7 +77,7 @@ export default class MapViewMixin extends Mixins(
   @Watch('activeBound', { deep: true })
   boundChanged(rect: Rectangle) {
     if (this.isMapLoaded && !this.isActiveMapView) {
-      this.zoomIn(rect)
+      this.zoomTo(rect)
     }
   }
 
@@ -89,7 +89,6 @@ export default class MapViewMixin extends Mixins(
       this.activeId = this.mapViewId
       if (this.activeOperationType !== type) {
         this.activeOperationType = type
-        console.log(`激活操作：${this.mapViewId}-${type}`)
       }
     }
   }
@@ -101,7 +100,6 @@ export default class MapViewMixin extends Mixins(
   setActiveBound(bound: Rectangle) {
     if (this.isMapLoaded && this.isActiveMapView) {
       this.activeBound = bound
-      console.log(`设置${this.mapViewId}激活范围`, bound)
     }
   }
 
@@ -123,15 +121,11 @@ export default class MapViewMixin extends Mixins(
 
   /**
    * 复位
-   * @param {boolean} restoreOtherViews 是否同步复位其他图层
+   * @param {Rectangle} rect 经纬度范围
    */
-  restore(restoreOtherViews = false) {
-    const _bound = { ...this.initBound }
-    console.log(`点击${this.mapViewId}重置`)
-    this.zoomIn(_bound)
-    if (restoreOtherViews) {
-      this.setActiveBound(_bound)
-    }
+  restore(rect: Rectangle) {
+    this.setActiveBound(rect)
+    this.zoomTo(rect)
   }
 
   /**
@@ -139,16 +133,12 @@ export default class MapViewMixin extends Mixins(
    * @param {Rectangle} rect 经纬度范围
    */
   zoomIn(rect: Rectangle) {
-    if (this.mapViewState.isValidRect(rect)) {
-      if (this.is2dLayer) {
-        console.log(`二维${this.mapViewId}跳转`)
-        this.zoomInToRect(rect)
-      } else if (!this.isActive3dDrag) {
-        console.log(`三维${this.mapViewId}跳转`)
-        this.zoomInToRect3d(rect)
-      }
-    } else {
+    if (!this.mapViewState.isValidRect(rect)) {
       this.ssMap.zoomIn()
+    } else if (this.is2dLayer) {
+      this.zoomInToRect(rect)
+    } else if (!this.isActive3dDrag) {
+      this.zoomInToRect3d(rect)
     }
   }
 
@@ -157,14 +147,30 @@ export default class MapViewMixin extends Mixins(
    * @param {Rectangle} rect 经纬度范围
    */
   zoomOut(rect: Rectangle) {
-    if (this.mapViewState.isValidRect(rect)) {
-      if (this.is2dLayer) {
-        this.zoomOutToRect(rect)
-      } else if (!this.isActive3dDrag) {
-        this.zoomOutToRect3d(rect)
-      }
-    } else {
+    if (!this.mapViewState.isValidRect(rect)) {
       this.ssMap.zoomOut()
+    } else if (this.is2dLayer) {
+      this.zoomOutToRect(rect)
+    } else if (!this.isActive3dDrag) {
+      this.zoomOutToRect3d(rect)
+    }
+  }
+
+  /**
+   * 视角跳转
+   * @param {Rectangle} rect 经纬度范围
+   * @param {string} type
+   */
+  zoomTo(rect: Rectangle, type = OperationType.ZOOMIN) {
+    switch (type) {
+      case OperationType.ZOOMIN:
+        this.zoomIn(rect)
+        break
+      case OperationType.ZOOMOUT:
+        this.zoomOut(rect)
+        break
+      default:
+        break
     }
   }
 }
