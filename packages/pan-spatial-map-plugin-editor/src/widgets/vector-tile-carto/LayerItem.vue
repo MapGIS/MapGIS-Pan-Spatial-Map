@@ -10,6 +10,8 @@
         class="middle-input"
         v-model.number="item[0]"
         type="number"
+        :min="minZoom"
+        :max="maxZoom"
       ></a-input>
       <a-input
         v-if="
@@ -71,6 +73,12 @@ export default class LayerItem extends Vue {
 
   // 该矢量瓦片所对应的区填充图案数据
   @Prop({ type: Array }) readonly spriteData: array
+
+  // 该矢量瓦片所对应的最小级数
+  @Prop({ type: Number, default: 0 }) readonly minZoom: number
+
+  // 该矢量瓦片所对应的最大级数
+  @Prop({ type: Number, default: 10 }) readonly maxZoom: number
 
   @Emit('delete')
   emitDeleteBtn(delIndex, delType) {}

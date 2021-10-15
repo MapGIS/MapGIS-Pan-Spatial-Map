@@ -34,6 +34,8 @@
         >
           <LayerItem
             :layer-style-items="paint['background-color'].stops"
+            :maxZoom="maxZoom"
+            :minZoom="minZoom"
             type="background-color-picker"
             @delete="onClickDeleteBtn"
           ></LayerItem>
@@ -65,6 +67,8 @@
         >
           <LayerItem
             :layer-style-items="paint['background-opacity'].stops"
+            :maxZoom="maxZoom"
+            :minZoom="minZoom"
             type="opacity-background"
             @delete="onClickDeleteBtn"
           ></LayerItem>
@@ -102,6 +106,8 @@
         <div class="style-multiple-item" v-if="hasMultiStyleVal('fill-color')">
           <LayerItem
             :layer-style-items="paint['fill-color'].stops"
+            :maxZoom="maxZoom"
+            :minZoom="minZoom"
             type="fill-color-picker"
             @delete="onClickDeleteBtn"
           ></LayerItem>
@@ -141,6 +147,8 @@
         >
           <LayerItem
             :layer-style-items="paint['fill-outline-color'].stops"
+            :maxZoom="maxZoom"
+            :minZoom="minZoom"
             type="outline-color-picker"
             @delete="onClickDeleteBtn"
           ></LayerItem>
@@ -180,6 +188,8 @@
           <LayerItem
             :layer-style-items="paint['fill-pattern'].stops"
             :sprite-data="spriteData"
+            :maxZoom="maxZoom"
+            :minZoom="minZoom"
             type="option-select"
             @delete="onClickDeleteBtn"
           ></LayerItem>
@@ -211,6 +221,8 @@
         >
           <LayerItem
             :layer-style-items="paint['fill-opacity'].stops"
+            :maxZoom="maxZoom"
+            :minZoom="minZoom"
             type="opacity-input"
             @delete="onClickDeleteBtn"
           ></LayerItem>
@@ -238,6 +250,8 @@
         >
           <LayerItem
             :layer-style-items="paint['fill-antialias'].stops"
+            :maxZoom="maxZoom"
+            :minZoom="minZoom"
             type="switch"
             @delete="onClickDeleteBtn"
           ></LayerItem>
@@ -271,6 +285,12 @@ export default class LayerSetting extends Vue {
 
   // 子图层的图层类型,若为background,这说明是背景底色图层
   @Prop({ type: String, default: 'fill' }) readonly layerType: string
+
+  // 该矢量瓦片所对应的最小级数
+  @Prop({ type: Number, default: 0 }) readonly minZoom: number
+
+  // 该矢量瓦片所对应的最大级数
+  @Prop({ type: Number, default: 10 }) readonly maxZoom: number
 
   // 判断该子图层的样式属性集是否含有该样式属性
   private hasStyleKey(key) {
