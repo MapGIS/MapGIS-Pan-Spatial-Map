@@ -80,7 +80,7 @@
           </a-tooltip>
           <!---------------------------- 图层的子图层end -------------------------->
           <a-popover
-            v-if="showPopover(item)"
+            v-if="showPopover(item, isVectorTileCharting)"
             placement="bottomLeft"
             arrow-point-at-center
             :visible="item.visiblePopover"
@@ -89,18 +89,22 @@
             overlayClassName="layer-list-popover"
           >
             <template slot="content">
-              <slot name="popover-content" :layer="item">
-                <right-popover
-                  :layer-item="item"
-                  @meta-data-info="metaDataInfo"
-                  @attributes="attributes"
-                  @custom-query="customQuery"
-                  @fit-bounds="fitBounds"
-                  @reset-tilematrix-set="resetTilematrixSet"
-                  @open-change-active-layer="openChangeActiveLayer"
-                  @to-top="toTop"
-                />
-              </slot>
+              <right-popover
+                v-if="!isVectorTileSubLayer(item, isVectorTileCharting)"
+                :layer-item="item"
+                @meta-data-info="metaDataInfo"
+                @attributes="attributes"
+                @custom-query="customQuery"
+                @fit-bounds="fitBounds"
+                @reset-tilematrix-set="resetTilematrixSet"
+                @open-change-active-layer="openChangeActiveLayer"
+                @to-top="toTop"
+              />
+              <slot
+                v-else
+                name="vector-tile-sublayer-popover"
+                :layer="item"
+              ></slot>
             </template>
             <a-icon type="more" class="more"></a-icon>
           </a-popover>
@@ -269,6 +273,8 @@ export default class MpTreeLayer extends Mixins(
   @Prop() widgetInfo!: Record<string, any>
 
   @Prop() layerDocument!: Record<string, any>
+
+  @Prop() isVectorTileCharting?: false
 
   private filter = ''
 

@@ -1,10 +1,12 @@
-import { Component, Vue, Mixins } from 'vue-property-decorator'
+import { Component, Vue, Mixins, Prop } from 'vue-property-decorator'
 import { AppMixin, LayerType } from '@mapgis/web-app-framework'
 
 import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component({})
 export default class LayerTypeUtil extends Mixins(AppMixin) {
+  private layers: Array<Record<string, any>> = []
+
   /**
    * 判断是否是子图层
    * @param item layer图层
@@ -63,8 +65,30 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
    * @param item layer图层
    * @returns boolean
    */
-  isVectorTile({ type }) {
+  isVectorTile({ type, key }) {
+    // 矢量文档子图层没有type属性，需要找到他的父级查看他是什么类型的属性
+    if (
+      key !== undefined &&
+      key !== null &&
+      key !== '' &&
+      key.indexOf('-') > -1
+    ) {
+      const index = key.split('-')[0]
+      return this.layers[index]?.type === LayerType.VectorTile
+    }
     return type === LayerType.VectorTile
+  }
+
+  /**
+   * 判断是否是矢量瓦片的子图层（针对矢量瓦片制图）
+   * @param item 图层
+   * @param isVectorTileCharting
+   * @returns
+   */
+  isVectorTileSubLayer(item, isVectorTileCharting = false) {
+    return (
+      isVectorTileCharting && this.isSubLayer(item) && this.isVectorTile(item)
+    )
   }
 
   /**
@@ -86,7 +110,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
    * @returns boolean
    */
   isActiveWMTSLayer({ layer: { activeLayer }, id }) {
-    return activeLayer && (activeLayer as WMTSSublayer).id === id
+    return activeLayer && activeLayer.id === id
   }
 
   /**
@@ -107,8 +131,13 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
     return type === LayerType.OGCWMS
   }
 
-  // 判断是否展示列表右侧操作菜单
-  showPopover(item) {
+  /**
+   * 判断是否展示列表右侧操作菜单（在在线制图组件中需要打开左侧弹框组件）
+   * @param item 图层
+   * @param isVectorTileCharting 是否是在线制图组件
+   * @returns
+   */
+  showPopover(item, isVectorTileCharting = false) {
     if (
       this.isMetaData(item) ||
       this.isAttributes(item) ||
@@ -117,7 +146,8 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
       (this.isParentLayer(item) && !this.isIGSScene(item)) ||
       (item.layer &&
         this.isWMTSLayer(item.layer) &&
-        this.isActiveWMTSLayer(item))
+        this.isActiveWMTSLayer(item)) ||
+      this.isVectorTileSubLayer(item, isVectorTileCharting)
     ) {
       return true
     }
