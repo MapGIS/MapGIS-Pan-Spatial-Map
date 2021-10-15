@@ -68,9 +68,10 @@ import {
 } from '@mapgis/web-app-framework'
 import { MpQueryResultTree } from '../../../../components'
 import MapViewMixin from './mixins/map-view'
+import { OperationType } from './store/map-view-state'
 import MapboxView from './components/MapboxView'
 import CesiumView from './components/CesiumView'
-import Tools, { Tool } from './components/Tools'
+import Tools from './components/Tools'
 import FeatureHighlight from './components/FeatureHighlight'
 
 @Component({
@@ -97,6 +98,9 @@ export default class MapView extends Mixins(MapViewMixin) {
   @Inject('map') map: any
 
   @Inject('mapbox') mapbox: any
+
+  // 是否全部三维屏
+  @Prop({ default: false }) readonly isAll3d!: boolean
 
   // 获取地图视图的复位范围
   @Prop() readonly initBound!: Rectangle
@@ -126,7 +130,7 @@ export default class MapView extends Mixins(MapViewMixin) {
   isMapLoaded = false
 
   // 操作按钮类型
-  operationType: keyof Tool = 'UNKNOWN'
+  operationType: keyof typeof OperationType = OperationType.UNKNOWN
 
   // 结果树弹框开关
   queryVisible = false
@@ -167,7 +171,9 @@ export default class MapView extends Mixins(MapViewMixin) {
   onMapboxLoaded({ map, mapbox }) {
     this.ssMap = map
     this.ssMapbox = mapbox
-    this.ssMap.on('mousemove', this.setActiveMapView)
+    this.ssMap.on('mousemove', () => {
+      this.setActiveMapView(OperationType.MAPDRAG)
+    })
     this.ssMap.on('move', () => {
       const { _sw, _ne } = this.ssMap.getBounds()
       this.setActiveBound({
@@ -178,7 +184,7 @@ export default class MapView extends Mixins(MapViewMixin) {
       })
     })
     this.isMapLoaded = true
-    this.restore()
+    this.zoomTo({ ...this.initBound })
   }
 
   /**
@@ -187,15 +193,15 @@ export default class MapView extends Mixins(MapViewMixin) {
   onCesiumLoaded(webGlobe, sceneController) {
     this.sceneController = sceneController
     this.isMapLoaded = true
-    this.restore()
+    this.zoomTo({ ...this.initBound })
   }
 
   /**
    * 地图联动变化
-   * @param {object} 范围
+   * @param {object} param 范围
    */
   onLinkChanged({ west, east, north, south }) {
-    this.setActiveMapView()
+    this.setActiveMapView(OperationType.CESIUMDRAG)
     this.setActiveBound({
       xmin: west,
       xmax: east,
@@ -217,14 +223,13 @@ export default class MapView extends Mixins(MapViewMixin) {
     rect: Rectangle
   }) {
     switch (this.operationType) {
-      case Tool.QUERY:
+      case OperationType.QUERY:
         this.query(geometry)
         break
-      case Tool.ZOOMIN:
-        this.zoomIn(rect)
-        break
-      case Tool.ZOOMOUT:
-        this.zoomOut(rect)
+      case OperationType.ZOOMIN:
+      case OperationType.ZOOMOUT:
+        this.setActiveBound(rect)
+        this.zoomTo(rect, this.operationType)
         break
       default:
         break
@@ -235,21 +240,21 @@ export default class MapView extends Mixins(MapViewMixin) {
    * 地图操作按钮触发
    * @param type 按钮类型
    */
-  onOperationAttached(type: keyof Tool) {
+  onOperationAttached(type: keyof OperationType) {
     this.operationType = type
-    this.setActiveMapView()
+    this.setActiveMapView(type)
     switch (type) {
-      case Tool.QUERY:
+      case OperationType.QUERY:
         this.mapComponent.openDraw()
         break
-      case Tool.ZOOMIN:
-      case Tool.ZOOMOUT:
+      case OperationType.ZOOMIN:
+      case OperationType.ZOOMOUT:
         this.mapComponent.openDraw('draw-rectangle')
         break
-      case Tool.RESTORE:
-        this.restore(true)
+      case OperationType.RESTORE:
+        this.restore({ ...this.initBound })
         break
-      case Tool.CLEAR:
+      case OperationType.CLEAR:
         this.clear()
         break
       default:

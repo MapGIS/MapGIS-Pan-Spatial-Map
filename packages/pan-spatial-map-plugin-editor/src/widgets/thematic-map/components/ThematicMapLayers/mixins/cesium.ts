@@ -1,6 +1,7 @@
-import { Component, Mixins, Inject } from 'vue-property-decorator'
+import { Component, Mixins, Watch, Inject } from 'vue-property-decorator'
 import { UUID, Layer, ColorUtil, Feature } from '@mapgis/web-app-framework'
 import BaseMixin from './base'
+import { getMarker } from '../../../utils'
 
 interface ILngLat {
   longitude?: number
@@ -14,7 +15,14 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
 
   @Inject('CesiumZondy') CesiumZondy
 
+  @Watch('marker.fid')
+  fidChanged() {
+    this.selfMarker = this.marker
+  }
+
   private thematicMapLayer = null
+
+  private selfMarker: any = {}
 
   private showPopup = false
 
@@ -97,39 +105,6 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
   }
 
   /**
-   * 获取实体弹框的信息
-   * @param feature 要素数据
-   */
-  getPopupInfos(feature: Feature.GFeature | null) {
-    const { showFields, showFieldsTitle }: any = this.popupConfig
-    if (!feature || !showFields || !showFields.length) return
-    this.popupProperties = showFields.reduce((obj, v: string) => {
-      const tag = showFieldsTitle[v] ? showFieldsTitle[v] : v
-      obj[tag] = feature.properties[v]
-      return obj
-    }, {})
-  }
-
-  /**
-   * 获取经纬度坐标
-   * @param CommonFuncManager
-   * @param position 屏幕位置坐标
-   */
-  getCartographic(CommonFuncManager: any, position: any) {
-    const {
-      longitude,
-      latitude
-    } = CommonFuncManager.screenPositionToCartographic(position)
-    this.popupPosition = Object.entries({ longitude, latitude }).reduce(
-      (obj, [k, v]) => {
-        obj[k] = this.Cesium.Math.toDegrees(v)
-        return obj
-      },
-      {} as ILngLat
-    )
-  }
-
-  /**
    * 点击显示实体弹框
    */
   showPopupWin() {
@@ -143,10 +118,11 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
       const pick = scene.pick(position)
       if (pick && pick.id) {
         const { geojsonFeature } = pick.id
-        this.getCartographic(CommonFuncManager, position)
-        this.getPopupInfos(geojsonFeature)
-        this.emitHighlight(geojsonFeature.properties.fid)
-        this.showPopup = true
+        const { fid } = geojsonFeature.properties
+        getMarker(geojsonFeature, fid).then(
+          marker => (this.selfMarker = marker || {})
+        )
+        this.emitHighlight(fid)
       }
     })
   }
@@ -155,9 +131,6 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
    * 关闭实体弹框
    */
   closePopupWin() {
-    this.showPopup = false
-    this.popupPosition = {}
-    this.popupProperties = null
     this.emitClearHighlight()
   }
 

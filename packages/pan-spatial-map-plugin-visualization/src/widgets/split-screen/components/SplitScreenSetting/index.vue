@@ -12,39 +12,41 @@
     <mp-setting-form layout="vertical" size="small">
       <a-form-item label="屏数">
         <a-select :value="screenCount" @change="onScreenCountChange">
-          <a-select-option v-for="(s, i) in layers" :key="i" :value="i + 1">
+          <a-select-option v-for="(l, i) in layers" :key="i" :value="i + 1">
             {{ i + 1 }}
           </a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item v-show="screenNums.length" label="图示">
-        <a-row class="diagram-grid">
-          <a-col
-            v-for="s in screenNums"
-            :key="s"
-            :span="mapSpan"
-            class="diagram-col"
-          >
-            {{ s + 1 }}
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item
-        v-for="s in screenNums"
-        :key="s"
-        :label="`第${screenLabel[s]}屏`"
-      >
-        <a-select :value="layerIds[s]" @change="onLayerChange($event, s)">
-          <a-select-option
-            v-for="{ id, title } in layers"
-            :key="id"
-            :value="id"
-            :title="title"
-          >
-            {{ title }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
+      <template v-if="!!screenCount">
+        <a-form-item label="图示">
+          <a-row class="diagram-grid">
+            <a-col
+              v-for="s in screenCount"
+              :key="s"
+              :span="mapSpan"
+              class="diagram-col"
+            >
+              {{ s }}
+            </a-col>
+          </a-row>
+        </a-form-item>
+        <a-form-item
+          v-for="(s, i) in screenCount"
+          :key="s"
+          :label="`第${screenLabel[i]}屏`"
+        >
+          <a-select :value="layerIds[i]" @change="onLayerChange($event, i)">
+            <a-select-option
+              v-for="{ id, title } in layers"
+              :key="id"
+              :value="id"
+              :title="title"
+            >
+              {{ title }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+      </template>
     </mp-setting-form>
   </div>
 </template>
@@ -65,7 +67,7 @@ enum ScreenLabel {
 export default class SplitScreenSetting extends Vue {
   @Prop({ default: 12 }) readonly mapSpan!: number
 
-  @Prop({ default: () => [] }) readonly screenNums!: number[]
+  @Prop() readonly screenNum!: number
 
   @Prop({ default: () => [] }) readonly layerIds!: string[]
 
@@ -75,7 +77,7 @@ export default class SplitScreenSetting extends Vue {
 
   private screenLabel = ScreenLabel
 
-  private screenCount = null
+  private screenCount: number | null = null
 
   private fullScreen = false
 
@@ -87,9 +89,9 @@ export default class SplitScreenSetting extends Vue {
   /**
    * 监听: 分屏数量变化
    */
-  @Watch('screenNums', { immediate: true })
-  watchScreenNums(nV: number[]) {
-    this.screenCount = nV.length
+  @Watch('screenNum', { immediate: true })
+  screenNumChanged(nV: number) {
+    this.screenCount = nV || null
   }
 
   created() {
@@ -102,7 +104,7 @@ export default class SplitScreenSetting extends Vue {
 
   /**
    * 屏数变化
-   * @param screenCount<number>
+   * @param screenCount
    */
   onScreenCountChange(screenCount: number) {
     this.screenCount = screenCount

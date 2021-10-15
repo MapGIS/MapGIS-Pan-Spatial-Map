@@ -18,27 +18,19 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-
-export enum Tool {
-  UNKNOWN = 'UNKNOWN',
-  QUERY = 'QUERY',
-  ZOOMIN = 'ZOOMIN',
-  ZOOMOUT = 'ZOOMOUT',
-  RESTORE = 'RESTORE',
-  CLEAR = 'CLEAR'
-}
+import { OperationType } from '../store/map-view-state'
 
 interface ITool {
   label: string
   icon: string
-  type: keyof Tool
+  type: keyof OperationType
 }
 
 @Component
 export default class Tools extends Vue {
   @Prop() readonly title!: string
 
-  @Prop() readonly excludes!: keyof Tool | Array<keyof Tool>
+  @Prop() readonly excludes!: keyof OperationType | Array<keyof OperationType>
 
   @Prop() readonly tools!: ITool[]
 
@@ -46,28 +38,28 @@ export default class Tools extends Vue {
     {
       label: '查询',
       icon: 'search',
-      type: Tool.QUERY
+      type: OperationType.QUERY
     },
     {
       label: '放大',
       icon: 'zoom-in',
-      type: Tool.ZOOMIN
+      type: OperationType.ZOOMIN
     },
     {
       label: '缩小',
       icon: 'zoom-out',
-      type: Tool.ZOOMOUT
+      type: OperationType.ZOOMOUT
     },
 
     {
       label: '复位',
       icon: 'redo',
-      type: Tool.RESTORE
+      type: OperationType.RESTORE
     },
     {
       label: '清除',
       icon: 'delete',
-      type: Tool.CLEAR
+      type: OperationType.CLEAR
     }
   ]
 
