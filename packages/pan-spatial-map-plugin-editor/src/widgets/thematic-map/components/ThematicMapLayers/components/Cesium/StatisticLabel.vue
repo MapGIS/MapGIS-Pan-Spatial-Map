@@ -1,6 +1,10 @@
 <template>
   <!-- 等级符号专题图 -->
-  <mp-3d-marker-pro :marker="selfMarker" v-if="selfMarker.fid" />
+  <mp-3d-marker-pro
+    ref="marker3dProRef"
+    :marker="selfMarker"
+    v-if="selfMarker.fid"
+  />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'

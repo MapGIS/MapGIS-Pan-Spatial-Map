@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { Feature, AppMixin } from '@mapgis/web-app-framework'
-import { getMarker } from '../../utils'
+import { getMarker, IMarker } from '../../utils'
 import { subjectTypeList, mapGetters, mapMutations } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
@@ -38,7 +38,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   @Inject('map') map
 
   // 高亮选项的标注点
-  private marker: unknown = {}
+  private marker: IMarker | Record<string, unknown> = {}
 
   // 要素数据
   private geojson: Feature.FeatureIGSGeoJSON | null = null

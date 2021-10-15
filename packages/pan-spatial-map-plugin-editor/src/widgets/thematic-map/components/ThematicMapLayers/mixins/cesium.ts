@@ -1,12 +1,8 @@
 import { Component, Mixins, Watch, Inject } from 'vue-property-decorator'
-import { UUID, Layer, ColorUtil, Feature } from '@mapgis/web-app-framework'
+import { Layer, ColorUtil, Feature } from '@mapgis/web-app-framework'
+import { getMarker, IMarker } from '../../../utils'
 import BaseMixin from './base'
-import { getMarker } from '../../../utils'
 
-interface ILngLat {
-  longitude?: number
-  latitude?: number
-}
 @Component
 export default class CesiumMixin extends Mixins(BaseMixin) {
   @Inject('webGlobe') webGlobe
@@ -15,24 +11,67 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
 
   @Inject('CesiumZondy') CesiumZondy
 
-  @Watch('marker.fid')
-  fidChanged() {
-    this.selfMarker = this.marker
-  }
-
+  // 专题图层
   private thematicMapLayer = null
 
+  // 标注
   private selfMarker: any = {}
 
-  private showPopup = false
+  /**
+   * 监听：图属联动变化
+   */
+  @Watch('marker.fid')
+  fidChanged() {
+    this.setSelfMarker(this.marker)
+  }
 
-  private popupProperties = null
+  /**
+   * 公共方法：添加实体到图层
+   * @param layer 图层
+   * @param feature 要素数据
+   * @param option 实体配置
+   */
+  addEntityToLayer(layer: Layer, feature: Feature.GFeature, option = {}) {
+    const entity = new this.Cesium.Entity(option)
+    entity.geojsonFeature = feature
+    layer.entities.add(entity)
+  }
 
-  private popupPosition: ILngLat = {}
+  /**
+   * 公共方法：移除所有实体
+   * @param layer 图层
+   */
+  removeAllEntity(layer: Layer) {
+    if (layer) {
+      layer.entities.removeAll()
+    }
+  }
 
-  // 信息弹框字段配置
-  get popupConfig() {
-    return this.subjectData?.popup || {}
+  /**
+   * 公共方法：获取颜色值
+   * @param color 颜色
+   */
+  getColor(color: string) {
+    const { r, g, b, a } = ColorUtil.getColorObject(color)
+    return new this.Cesium.Color(r / 255, g / 255, b / 255, a)
+  }
+
+  /**
+   * 公共方法：获取颜色值
+   * @param color 颜色
+   */
+  getCssColorStr(color: string) {
+    return new this.Cesium.Color.fromCssColorString(color)
+  }
+
+  /**
+   * 公共方法：获取Cartesian坐标
+   * @param lng
+   * @param lat
+   * @param alt
+   */
+  getPosition(lng: number, lat: number, alt = 0) {
+    return new this.Cesium.Cartesian3.fromDegrees(lng, lat, alt)
   }
 
   /**
@@ -56,52 +95,21 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
   }
 
   /**
-   * 添加实体到图层
-   * @param layer 图层
-   * @param feature 要素数据
-   * @param option 实体配置
+   * fixme 设置标注
+   * Mp3dMarkerPro组件默认初始marker时不会展示popup弹框。暂不考虑扩展Mp3dMarkerPro组件，因为该组件已被下沉，可能有不稳定的因素，故由上层根据需要手动控制popup弹框的展示。
+   * 需要注意的是如果Mp3dMarkerPro组件的showPopup字段被改名，需同步此处代码。
    */
-  addEntityToLayer(layer: Layer, feature: Feature.GFeature, option = {}) {
-    const entity = new this.Cesium.Entity(option)
-    entity.geojsonFeature = feature
-    layer.entities.add(entity)
-  }
-
-  /**
-   * 移除所有实体
-   * @param layer 图层
-   */
-  removeAllEntity(layer: Layer) {
-    if (layer) {
-      layer.entities.removeAll()
+  setSelfMarker(marker?: IMarker) {
+    this.selfMarker = {}
+    if (marker) {
+      this.selfMarker = marker
+      this.$nextTick(() => {
+        const markerRef: any = this.$refs.marker3dProRef
+        if (markerRef && typeof markerRef.showPopup !== 'undefined') {
+          markerRef.showPopup = true
+        }
+      })
     }
-  }
-
-  /**
-   * 获取颜色值
-   * @param color 颜色
-   */
-  getColor(color: string) {
-    const { r, g, b, a } = ColorUtil.getColorObject(color)
-    return new this.Cesium.Color(r / 255, g / 255, b / 255, a)
-  }
-
-  /**
-   * 获取颜色值
-   * @param color 颜色
-   */
-  getCssColorStr(color: string) {
-    return new this.Cesium.Color.fromCssColorString(color)
-  }
-
-  /**
-   * 获取Cartesian坐标
-   * @param lng
-   * @param lat
-   * @param alt
-   */
-  getPosition(lng: number, lat: number, alt = 0) {
-    return new this.Cesium.Cartesian3.fromDegrees(lng, lat, alt)
   }
 
   /**
@@ -119,9 +127,7 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
       if (pick && pick.id) {
         const { geojsonFeature } = pick.id
         const { fid } = geojsonFeature.properties
-        getMarker(geojsonFeature, fid).then(
-          marker => (this.selfMarker = marker || {})
-        )
+        getMarker(geojsonFeature, fid).then(this.setSelfMarker)
         this.emitHighlight(fid)
       }
     })
