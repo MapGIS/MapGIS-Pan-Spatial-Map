@@ -17,6 +17,9 @@
           :widgetInfo="widgetInfo"
           :layerDocument.sync="document"
         >
+          <!-- <template v-slot:vector-tile-sublayer-popover>
+            <div>1111</div>
+          </template> -->
         </mp-tree-layer>
         <layer-opacity
           v-show="tab === 'opacity'"

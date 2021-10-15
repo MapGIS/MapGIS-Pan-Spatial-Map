@@ -80,7 +80,7 @@
           </a-tooltip>
           <!---------------------------- 图层的子图层end -------------------------->
           <a-popover
-            v-if="showPopover(item, isVectorTileCharting)"
+            v-if="showPopover(item)"
             placement="bottomLeft"
             arrow-point-at-center
             :visible="item.visiblePopover"
@@ -90,7 +90,7 @@
           >
             <template slot="content">
               <right-popover
-                v-if="!isVectorTileSubLayer(item, isVectorTileCharting)"
+                v-if="!isVectorTileSubLayer(item)"
                 :layer-item="item"
                 @meta-data-info="metaDataInfo"
                 @attributes="attributes"
@@ -273,8 +273,6 @@ export default class MpTreeLayer extends Mixins(
   @Prop() widgetInfo!: Record<string, any>
 
   @Prop() layerDocument!: Record<string, any>
-
-  @Prop() isVectorTileCharting?: false
 
   private filter = ''
 

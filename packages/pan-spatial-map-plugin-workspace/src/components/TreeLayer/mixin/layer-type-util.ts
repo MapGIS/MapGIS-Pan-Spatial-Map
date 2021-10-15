@@ -82,12 +82,13 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
   /**
    * 判断是否是矢量瓦片的子图层（针对矢量瓦片制图）
    * @param item 图层
-   * @param isVectorTileCharting
    * @returns
    */
-  isVectorTileSubLayer(item, isVectorTileCharting = false) {
+  isVectorTileSubLayer(item) {
     return (
-      isVectorTileCharting && this.isSubLayer(item) && this.isVectorTile(item)
+      this.$slots['vector-tile-sublayer-popover'] &&
+      this.isSubLayer(item) &&
+      this.isVectorTile(item)
     )
   }
 
@@ -134,10 +135,9 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
   /**
    * 判断是否展示列表右侧操作菜单（在在线制图组件中需要打开左侧弹框组件）
    * @param item 图层
-   * @param isVectorTileCharting 是否是在线制图组件
    * @returns
    */
-  showPopover(item, isVectorTileCharting = false) {
+  showPopover(item) {
     if (
       this.isMetaData(item) ||
       this.isAttributes(item) ||
@@ -147,7 +147,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
       (item.layer &&
         this.isWMTSLayer(item.layer) &&
         this.isActiveWMTSLayer(item)) ||
-      this.isVectorTileSubLayer(item, isVectorTileCharting)
+      this.isVectorTileSubLayer(item)
     ) {
       return true
     }
