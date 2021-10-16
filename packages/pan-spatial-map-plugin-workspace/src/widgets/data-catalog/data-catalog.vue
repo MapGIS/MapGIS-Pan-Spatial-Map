@@ -192,7 +192,8 @@
       >
         <template>
           <NonSpatial
-            :url="nonSpatialUrl"
+            :nonSpatialUrl="nonSpatialUrl"
+            :url="nonSpatialFileListUrl"
             :type="nonSpatialType"
             :treeConfig="widgetConfig"
           ></NonSpatial>
@@ -285,6 +286,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 非空间数据窗口的显隐
   private showNoSpatial = false
+
+  // 获取当前选种的非空间数据资源列表url
+  private nonSpatialFileListUrl = ''
 
   // 非空间数据资源url
   private nonSpatialUrl = ''
@@ -703,7 +707,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         widgetConfig.treeConfig.useLocalData ||
         widgetConfig.treeConfig.useLocalParam
       ) {
-        this.nonSpatialUrl = `${this.baseUrl}/api/non-spatial/files?pageNumber=0&pageSize=1000&path=${item.data}&protocol=ftp&url=ftp://192.168.21.191:21`
+        console.log(widgetConfig.urlConfig.nonSpatialUrl)
+        this.nonSpatialUrl = widgetConfig.urlConfig.nonSpatialUrl
+        this.nonSpatialFileListUrl = `${this.baseUrl}/api/non-spatial/files?pageNumber=0&pageSize=1000&path=${item.data}&protocol=ftp&url=${this.nonSpatialUrl}`
       }
     }
   }

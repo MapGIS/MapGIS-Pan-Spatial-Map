@@ -1172,10 +1172,10 @@
   resolved "https://registry.npm.taobao.org/@mapbox/whoots-js/download/@mapbox/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha1-SXxnoc71DRokWbpg8xXkSNKth/4=
 
-"@mapgis/cesium@^1.59.3":
-  version "1.59.3"
-  resolved "https://registry.nlark.com/@mapgis/cesium/download/@mapgis/cesium-1.59.3.tgz#f2986323dbc48c006a6a7ab8324ecd46a6bf2b73"
-  integrity sha1-8phjI9vEjABqanq4Mk7NRqa/K3M=
+"@mapgis/cesium@1.59.4":
+  version "1.59.4"
+  resolved "https://registry.nlark.com/@mapgis/cesium/download/@mapgis/cesium-1.59.4.tgz#22ec25856b67760a8bf47a901e0a73116e046422"
+  integrity sha1-IuwlhWtndgqL9HqQHgpzEW4EZCI=
 
 "@mapgis/mapbox-gl-compare@^0.4.0":
   version "0.4.0"
@@ -1222,15 +1222,6 @@
     fast-xml-parser "^3.17.6"
     qs "^6.9.4"
 
-"@mapgis/webclient-es6-service@^10.5.4":
-  version "10.5.4"
-  resolved "https://registry.nlark.com/@mapgis/webclient-es6-service/download/@mapgis/webclient-es6-service-10.5.4.tgz#3614851b36f6766b84e2626028f7eb224cd7a044"
-  integrity sha1-NhSFGzb2dmuE4mJgKPfrIkzXoEQ=
-  dependencies:
-    "@turf/turf" "^6.3.0"
-    fast-xml-parser "^3.17.6"
-    qs "^6.9.4"
-
 "@mapgis/webclient-es6-service@^10.5.5":
   version "10.5.5"
   resolved "https://registry.nlark.com/@mapgis/webclient-es6-service/download/@mapgis/webclient-es6-service-10.5.5.tgz#5766b4923fccd4472354321b775c4959a9ca35b7"
@@ -1271,32 +1262,9 @@
   version "0.0.0"
   uid ""
 
-"@mapgis/webclient-vue-ui@^10.5.4-1":
-  version "10.5.5"
-  resolved "https://registry.nlark.com/@mapgis/webclient-vue-ui/download/@mapgis/webclient-vue-ui-10.5.5.tgz#883392c354b552019511df7582c02c76cc3da9cc"
-  integrity sha1-iDOSw1S1UgGVEd91gsAsdsw9qcw=
-  dependencies:
-    "@ant-design/icons" "2.1.1"
-    "@mapgis/webclient-es6-service" "^10.5.5"
-    "@vue/composition-api" "^1.0.0-rc.13"
-    "@vuepress/plugin-active-header-links" "^1.8.2"
-    "@vuepress/plugin-nprogress" "^1.8.2"
-    ant-design-vue "^1.7.5"
-    axios "^0.21.1"
-    clone "^2.1.2"
-    css-vars-ponyfill "^2.4.5"
-    echarts "^5.1.2"
-    js-md5 "^0.7.3"
-    lodash "^4.17.21"
-    lodash.uniqueid "^4.0.1"
-    qs "^6.10.1"
-    resize-detector "^0.3.0"
-    simple-uploader.js "^0.5.6"
-    spark-md5 "^3.0.1"
-    tinycolor2 "^1.4.2"
-    vuepress "^1.8.2"
-    vuepress-plugin-demo-block "^0.7.2"
-    vuepress-plugin-demo-code "^0.6.0"
+"@mapgis/webclient-vue-ui@^10.5.5":
+  version "0.0.0"
+  uid ""
 
 "@mapgis/webclient-vue-ui@link:../WebClient-Vue/ui":
   version "0.0.0"
