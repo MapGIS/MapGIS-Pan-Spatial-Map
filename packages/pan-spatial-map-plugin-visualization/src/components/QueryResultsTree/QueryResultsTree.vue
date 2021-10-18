@@ -110,7 +110,7 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   readonly multiple!: boolean
 
   // 分页显示的条目数
-  @Prop({ type: Number, default: 100 })
+  @Prop({ type: Number, default: 9999 })
   readonly pageCount!: number
 
   // 分页显示时的当前页码，从1开始。
@@ -161,7 +161,6 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   @Watch('geometry', { deep: true })
   geometryChanged(nV) {
     if (nV) {
-      // this.getTreeData()
       this.onRefresh()
     }
   }
@@ -329,21 +328,15 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    * @param {Object} queryOptions 要素查询参数
    */
   async igsQueryFeature(queryOptions) {
-    const featureIGS = await FeatureQuery.query(queryOptions)
-    if (featureIGS.SFEleArray && featureIGS.SFEleArray.length) {
-      const geojson: FeatureGeoJSON = FeatureConvert.featureIGSToFeatureGeoJSON(
-        featureIGS
-      )
-      const { features } = geojson
-      if (features && features.length) {
-        return features.map(item => ({
-          key: UUID.uuid(),
-          isLeaf: true,
-          selectable: true,
-          layerName: item.properties.fid,
-          feature: item
-        }))
-      }
+    const geojson = await FeatureQuery.query(queryOptions)
+    if (geojson && geojson.features && geojson.features.length) {
+      return geojson.features.map(item => ({
+        key: UUID.uuid(),
+        isLeaf: true,
+        selectable: true,
+        layerName: item.properties.fid,
+        feature: item
+      }))
     }
     return []
   }
@@ -366,14 +359,11 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
       return Promise.reject('WebGlobe未初始化')
     }
     const featureIGS: FeatureIGS = await FeatureQuery.query(
-      {
-        ...queryOptions,
-        rtnLabel: false
-      },
+      queryOptions,
       false,
       true
     )
-    const { AttStruct, SFEleArray = [] } = featureIGS
+    const { AttStruct, SFEleArray } = featureIGS
     if (!SFEleArray || !SFEleArray.length) {
       return []
     }
@@ -416,12 +406,12 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    * @param {Object} queryOptions 要素查询参数
    */
   async arcGISQueryFeature(queryOptions: FeatureQueryParam) {
-    const { layerIndex, serverUrl, geometry } = queryOptions
+    const { layerIndex, serverUrl, geometry, f } = queryOptions
     const { count: totalCount } = await ArcGISFeatureQuery.getTotal({
       geometry,
       layerIndex,
       serverUrl,
-      f: 'json'
+      f
     })
     const { features }: FeatureGeoJSON = await ArcGISFeatureQuery.query({
       ...queryOptions,
@@ -457,30 +447,33 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     switch (type) {
       case LayerType.IGSMapImage:
         children = await this.igsQueryFeature({
-          docName,
+          ...queryOptions,
           mapIndex: this.mapIndex,
           layerIdxs: layerIndex,
-          ...queryOptions
+          docName,
+          f: 'geojson'
         })
         break
       case LayerType.IGSVector:
         children = await this.igsQueryFeature({
+          ...queryOptions,
           gdbp: gdbps,
-          ...queryOptions
+          f: 'geojson'
         })
         break
       case LayerType.ArcGISMapImage:
         children = await this.arcGISQueryFeature({
-          layerIndex,
+          ...queryOptions,
           serverUrl: url,
-          ...queryOptions
+          layerIndex
         })
         break
       case LayerType.IGSScene:
         children = await this.igsQuery3DFeature(
           {
+            ...queryOptions,
             gdbp: layerGdbp,
-            ...queryOptions
+            rtnLabel: false
           },
           layerId
         )

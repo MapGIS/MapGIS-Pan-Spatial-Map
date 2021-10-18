@@ -183,6 +183,14 @@ export default class MpSplitScreen extends Mixins(WidgetMixin) {
   }
 
   /**
+   * 清除
+   */
+  onClear() {
+    this.screenNum = 0
+    this.layerIds = []
+  }
+
+  /**
    * 弹框开启
    */
   onOpen() {
@@ -195,8 +203,7 @@ export default class MpSplitScreen extends Mixins(WidgetMixin) {
    */
   onClose() {
     this.isOpen = false
-    this.screenNum = 0
-    this.layerIds = []
+    this.onClear()
   }
 
   /**
@@ -230,6 +237,8 @@ export default class MpSplitScreen extends Mixins(WidgetMixin) {
       this.layerIds = new Array(this.screenNum)
         .fill()
         .map((v, i) => this.layers[i].id)
+    } else {
+      this.onClear()
     }
   }
 

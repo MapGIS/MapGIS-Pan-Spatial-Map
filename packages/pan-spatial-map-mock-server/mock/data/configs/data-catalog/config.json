@@ -27,7 +27,7 @@
     "8": "/upload/8.png"
   },
   "urlConfig": {
-    "nonSpatialUrl": ""
+    "nonSpatialUrl": "ftp://192.168.21.191:21"
   },
   "otherConfig": {
     "nonSpatial": "非空间数据",
