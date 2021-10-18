@@ -5,7 +5,7 @@
 <script lang="ts">
 import { Component, Mixins, Inject, Watch } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
-import { getMarker } from '../../../../utils'
+import { getMarker, IMarker } from '../../../../utils'
 import { Feature } from '@mapgis/web-app-framework'
 import _debounce from 'lodash/debounce'
 import BaseMixin from '../../mixins/base'
@@ -16,15 +16,21 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
 
   @Inject('mapbox') mapbox
 
+  /**
+   * 监听：图属联动变化
+   */
   @Watch('marker.fid')
   fidChanged() {
     this.selfMarker = this.marker
   }
 
+  // 专题图层
   private thematicMapLayer: any = null
 
-  private selfMarker = {}
+  // 标注
+  private selfMarker: IMarker | Record<string, unknown> = {}
 
+  // 图标实体颜色
   private colors: string[] = [
     '#FFB980',
     '#5AB1EF',
@@ -33,7 +39,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     '#D87A80'
   ]
 
-  // Bar add Bar3D chartsSetting
+  // Bar add Bar3D 图表配置
   private chartsSettingForBarAddBar3DCommon = {
     width: 230,
     height: 110,
@@ -47,7 +53,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     }
   }
 
-  // Point add Line chartsSetting
+  // Point add Line 图表配置
   private chartsSettingForPointOrLine = {
     width: 220,
     height: 100,
@@ -73,7 +79,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     }
   }
 
-  // Pie add Ring chartsSetting
+  // Pie add Ring 图表配置
   private chartsSettingForPieOrRing = {
     width: 240,
     height: 100,
@@ -88,7 +94,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     backgroundRadius: [5, 5, 5, 5]
   }
 
-  // 设置graphThemeLayer option参数
+  // 设置专题图层 option参数
   private thematicMapLayerOptions = {
     map: this.map,
     isOverLay: true,
@@ -99,14 +105,17 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     themeFields: []
   }
 
+  // 图表x轴或y轴字段
   get graph() {
     return this.subjectData?.graph
   }
 
+  // 图表类型
   get graphType() {
     return this.subjectData?.graphType
   }
 
+  // 图表填充色
   get faceStyleByFields() {
     return this.colors.map(v => ({ fillColor: v }))
   }
@@ -241,6 +250,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
 
   /**
    * 显示图层
+   * fixme 统计专题图目前不支持geojson数据
    */
   showLayer() {
     if (!this.graph || !this.geojson) return
@@ -282,9 +292,9 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
       chartsSetting
     })
     if (!this.thematicMapLayer) return
-    // 统计专题图目前不支持geojson数据
-    const igs = Feature.FeatureConvert.featureGeoJSONTofeatureIGS(this.geojson)
-    this.thematicMapLayer.addFeatures(igs)
+    this.thematicMapLayer.addFeatures(
+      Feature.FeatureConvert.featureGeoJSONTofeatureIGS(this.geojson)
+    )
     this.thematicMapLayer.on('mousemove', _debounce(this.showPopupWin, 200))
     this.thematicMapLayer.on('mouseout', _debounce(this.closePopupWin, 200))
   }

@@ -4,12 +4,19 @@ import gettersMap from './getters'
 import mutationsMap from './mutations'
 import { State } from '../types'
 
-class Store<S = any, G = any, M = any> {
-  state: S
+type Getters<T = typeof gettersMap> = {
+  [k in keyof T]: ((a: State) => any) | ((a: State) => (a: any) => any)
+}
 
-  getters: G
+type Mutations<T = typeof mutationsMap, P = any> = {
+  [k in keyof T]: (a: Store, p: P) => void
+}
+class Store {
+  state: State
 
-  mutations: M
+  getters: Getters
+
+  mutations: Mutations
 
   constructor({ state, getters, mutations }) {
     this.state = state
@@ -17,7 +24,7 @@ class Store<S = any, G = any, M = any> {
     this.mutations = mutations
   }
 
-  commit = (funName: any, payload: unknown) => {
+  commit = (funName: keyof Mutations, payload: unknown) => {
     if (funName) {
       this.mutations[funName](this, payload)
     } else {
@@ -28,15 +35,7 @@ class Store<S = any, G = any, M = any> {
   // dispatch = (fun, params) => {}
 }
 
-type Getters<T = typeof gettersMap> = {
-  [k in keyof T]: ((a: State) => any) | ((a: State) => (a: any) => any)
-}
-
-type Mutations<T = typeof mutationsMap, P = any> = {
-  [k in keyof T]: (a: Store, p: P) => void
-}
-
-const store: Store = new Store<Store, Getters, Mutations>({
+const store: Store = new Store({
   state: stateMap,
   getters: gettersMap,
   mutations: mutationsMap
