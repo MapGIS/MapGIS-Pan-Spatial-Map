@@ -138,7 +138,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       const requestUrl = `${this.currentLayer.currentStyle.sprite}.json`
       this.styleOptions = this.currentLayer.styleList.map(item => item.name)
       this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
-      let { sources } = this.currentLayer.currentStyle
+      const { sources } = this.currentLayer.currentStyle
       const keys = Object.keys(this.currentLayer.currentStyle.sources)
       this.minZoom = this.currentLayer.currentStyle.sources[keys[0]].minZoom
       this.maxZoom = this.currentLayer.currentStyle.sources[keys[0]].maxZoom

@@ -42,6 +42,7 @@
               v-model="emissionRate"
               :min="0"
               :max="100"
+              @change="val => onChangeEffect(val, 'emissionRate')"
             />
           </a-col>
         </a-row>
@@ -63,6 +64,7 @@
               v-model="imageSize"
               :min="2"
               :max="60"
+              @change="val => onChangeEffect(val, 'imageSize')"
             />
           </a-col>
         </a-row>
@@ -86,6 +88,7 @@
               :min="0.1"
               :max="30.0"
               :step="0.1"
+              @change="val => onChangeEffect(val, 'minimumParticleLife')"
             />
           </a-col>
         </a-row>
@@ -109,6 +112,7 @@
               :min="0.1"
               :max="30.0"
               :step="0.1"
+              @change="val => onChangeEffect(val, 'maximumParticleLife')"
             />
           </a-col>
         </a-row>
@@ -130,6 +134,7 @@
               v-model="minimumSpeed"
               :min="0"
               :max="30"
+              @change="val => onChangeEffect(val, 'minimumSpeed')"
             />
           </a-col>
         </a-row>
@@ -151,6 +156,7 @@
               v-model="maximumSpeed"
               :min="0"
               :max="30"
+              @change="val => onChangeEffect(val, 'maximumSpeed')"
             />
           </a-col>
         </a-row>
@@ -174,6 +180,7 @@
               :min="0.0"
               :max="10.0"
               :step="0.5"
+              @change="val => onChangeEffect(val, 'startScale')"
             />
           </a-col>
         </a-row>
@@ -197,6 +204,7 @@
               :min="0.0"
               :max="10.0"
               :step="0.5"
+              @change="val => onChangeEffect(val, 'endScale')"
             />
           </a-col>
         </a-row>
