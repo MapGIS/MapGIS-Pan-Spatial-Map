@@ -1,38 +1,63 @@
 <template>
   <div class="mp-widget-vector-tile-carto">
-    <tree-layer
+    <mp-tree-layer
       v-show="!showStyleSetting"
       :widgetInfo="widgetInfo"
-      @changeNode="changeNode"
-    />
+      :layerDocument.sync="vectorTileDocument"
+      @click-item="changeNode"
+    >
+    </mp-tree-layer>
     <div v-show="showStyleSetting">
       <mapgis-ui-button type="link" @click="goBack" size="small">
         <mapgis-ui-iconfont type="mapgis-left" />返回主页
       </mapgis-ui-button>
-      <mapgis-ui-group-tab :title="settingLayerId" style="margin-bottom:5px" />
-      <mapgis-mvt-editor
-        v-if="settingLayerId !== undefined"
-        :layerid="settingLayerId"
-        :visible="true"
-        @edit-change="handleEditChange"
-      />
+      <div v-if="settingLayerId !== undefined">
+        <mapgis-ui-group-tab
+          :title="settingLayerId"
+          style="margin-bottom:5px"
+        />
+        <mapgis-mvt-editor
+          :layerid="settingLayerId"
+          :visible="true"
+          @edit-change="handleEditChange"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin } from '@mapgis/web-app-framework'
-import treeLayer from '../../../../pan-spatial-map-plugin-workspace/src/widgets/layer-list/tree-layer.vue'
+import { Mixins, Component, Watch } from 'vue-property-decorator'
+import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
-  name: 'MpVectorTileCarto',
-  components: { treeLayer }
+  name: 'MpVectorTileCarto'
 })
 export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   private showStyleSetting = false
 
   private settingLayerId = undefined
+
+  // private vectorTileDocument = undefined
+
+  // @Watch('document', { deep: true, immediate: true })
+  get vectorTileDocument() {
+    if (!this.document) return
+    const datas = this.document.clone()
+    // const layers = datas.defaultMap.clone().getFlatLayers()
+    // for (let i = 0; i < layers.length; i += 1) {
+    //   const layer = layers[i]
+    //   if (layer.type !== LayerType.VectorTile) {
+    //     datas.defaultMap.remove(datas.defaultMap.findLayerById(layer.id))
+    //   }
+    // }
+    console.log(datas)
+    return datas
+  }
+
+  // mounted() {
+  //   this.getVectorTileDocument()
+  // }
 
   changeNode(node) {
     this.settingLayerId = node['source-layer']
@@ -62,7 +87,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   ::v-deep .mapgis-ui-form label {
     font-size: 12px;
   }
-  
+
   ::v-deep .mapgis-mvt-action-filter {
     font-size: 12px;
   }
