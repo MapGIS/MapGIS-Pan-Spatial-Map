@@ -16,8 +16,8 @@
 </template>
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
-import { UUID, Feature, AppMixin } from '@mapgis/web-app-framework'
-import { markerIconInstance } from '@mapgis/pan-spatial-map-common'
+import { Feature, AppMixin } from '@mapgis/web-app-framework'
+import { getMarker, IMarker } from '../../utils'
 import { subjectTypeList, mapGetters, mapMutations } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
@@ -38,7 +38,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   @Inject('map') map
 
   // 高亮选项的标注点
-  private marker: unknown = {}
+  private marker: IMarker | Record<string, unknown> = {}
 
   // 要素数据
   private geojson: Feature.FeatureIGSGeoJSON | null = null
@@ -79,24 +79,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * @param {string} fid 要素fid
    */
   onHighlight(fid: string) {
-    if (!this.geojson || !fid) return
-    markerIconInstance.unSelectIcon().then(img => {
-      const feature = this.geojson.features.find(
-        ({ properties }) => properties.fid === fid
-      )
-      if (feature) {
-        const coordinates = Feature.getGeoJSONFeatureCenter(feature)
-        const { properties } = feature
-        this.marker = {
-          img,
-          feature,
-          properties,
-          coordinates,
-          fid: properties.fid,
-          markerId: UUID.uuid()
-        }
-      }
-    })
+    getMarker(this.geojson, fid).then(marker => (this.marker = marker))
   }
 
   /**

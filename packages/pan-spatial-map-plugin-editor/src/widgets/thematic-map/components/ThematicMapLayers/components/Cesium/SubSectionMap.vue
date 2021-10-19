@@ -1,27 +1,10 @@
 <template>
   <!-- 分段专题图-->
-  <div>
-    <!-- 弹框 -->
-    <mapgis-3d-popup
-      v-model="showPopup"
-      :position="popupPosition"
-      :forceRender="true"
-    >
-      <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
-      <div v-else>
-        <div
-          v-for="(v, k) in popupProperties"
-          :key="`sub-section-map-properties-${v}`"
-          class="popup-row popup-fontsize"
-        >
-          <span>{{ `${k}：` }}</span>
-          <span>{{ v }}</span>
-        </div>
-      </div>
-    </mapgis-3d-popup>
-    <!-- 高亮标注点 -->
-    <mp-3d-marker-pro :marker="marker" v-if="marker.fid" />
-  </div>
+  <mp-3d-marker-pro
+    ref="marker3dProRef"
+    :marker="selfMarker"
+    v-if="selfMarker.fid"
+  />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'

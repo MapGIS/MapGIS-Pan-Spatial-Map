@@ -1,31 +1,11 @@
 <template>
   <!-- 统计专题图 -->
-  <div>
-    <!-- 弹框 -->
-    <mapgis-popup
-      :showed="showPopup"
-      :coordinates="coordinates"
-      v-if="showPopup"
-    >
-      <span class="popup-fontsize" v-if="!properties">暂无数据</span>
-      <div v-else>
-        <div
-          v-for="(v, k) in properties"
-          :key="`base-map-with-graph-properties-${v}`"
-          class="popup-row popup-fontsize"
-        >
-          <span>{{ `${k}：` }}</span>
-          <span>{{ v }}</span>
-        </div>
-      </div>
-    </mapgis-popup>
-    <!-- 高亮标注点 -->
-    <mp-marker-pro :marker="marker" v-if="marker.fid" />
-  </div>
+  <mp-marker-pro :marker="selfMarker" v-if="selfMarker.fid" />
 </template>
 <script lang="ts">
-import { Component, Mixins, Inject } from 'vue-property-decorator'
+import { Component, Mixins, Inject, Watch } from 'vue-property-decorator'
 import { GraphThemeLayer } from '@mapgis/webclient-es6-mapboxgl'
+import { getMarker, IMarker } from '../../../../utils'
 import { Feature } from '@mapgis/web-app-framework'
 import _debounce from 'lodash/debounce'
 import BaseMixin from '../../mixins/base'
@@ -36,14 +16,21 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
 
   @Inject('mapbox') mapbox
 
+  /**
+   * 监听：图属联动变化
+   */
+  @Watch('marker.fid')
+  fidChanged() {
+    this.selfMarker = this.marker
+  }
+
+  // 专题图层
   private thematicMapLayer: any = null
 
-  private showPopup = false
+  // 标注
+  private selfMarker: IMarker | Record<string, unknown> = {}
 
-  private properties = null
-
-  private coordinates: number[] = [0, 0]
-
+  // 图标实体颜色
   private colors: string[] = [
     '#FFB980',
     '#5AB1EF',
@@ -52,7 +39,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     '#D87A80'
   ]
 
-  // Bar add Bar3D chartsSetting
+  // Bar add Bar3D 图表配置
   private chartsSettingForBarAddBar3DCommon = {
     width: 230,
     height: 110,
@@ -66,7 +53,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     }
   }
 
-  // Point add Line chartsSetting
+  // Point add Line 图表配置
   private chartsSettingForPointOrLine = {
     width: 220,
     height: 100,
@@ -92,7 +79,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     }
   }
 
-  // Pie add Ring chartsSetting
+  // Pie add Ring 图表配置
   private chartsSettingForPieOrRing = {
     width: 240,
     height: 100,
@@ -107,7 +94,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     backgroundRadius: [5, 5, 5, 5]
   }
 
-  // 设置graphThemeLayer option参数
+  // 设置专题图层 option参数
   private thematicMapLayerOptions = {
     map: this.map,
     isOverLay: true,
@@ -118,19 +105,17 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     themeFields: []
   }
 
+  // 图表x轴或y轴字段
   get graph() {
     return this.subjectData?.graph
   }
 
+  // 图表类型
   get graphType() {
     return this.subjectData?.graphType
   }
 
-  // 信息弹框字段配置
-  get popupConfig() {
-    return this.subjectData?.popup || {}
-  }
-
+  // 图表填充色
   get faceStyleByFields() {
     return this.colors.map(v => ({ fillColor: v }))
   }
@@ -265,6 +250,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
 
   /**
    * 显示图层
+   * fixme 统计专题图目前不支持geojson数据
    */
   showLayer() {
     if (!this.graph || !this.geojson) return
@@ -306,8 +292,9 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
       chartsSetting
     })
     if (!this.thematicMapLayer) return
-    const igs = Feature.FeatureConvert.featureGeoJSONTofeatureIGS(this.geojson)
-    this.thematicMapLayer.addFeatures(igs)
+    this.thematicMapLayer.addFeatures(
+      Feature.FeatureConvert.featureGeoJSONTofeatureIGS(this.geojson)
+    )
     this.thematicMapLayer.on('mousemove', _debounce(this.showPopupWin, 200))
     this.thematicMapLayer.on('mouseout', _debounce(this.closePopupWin, 200))
   }
@@ -316,28 +303,18 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
    * 开启信息窗口
    */
   showPopupWin({ event, target }: any) {
-    const { showFields } = this.popupConfig
-    if (!target || !target.dataInfo || !showFields || !showFields.length) return
-    this.showPopup = true
-    this.emitHighlight(target.refDataID)
-    const { field, value } = target.dataInfo
-    const { offsetTop, offsetLeft } = this.map.getContainer()
-    const { lng, lat } = this.map.unproject(
-      new this.mapbox.Point(event.x - offsetLeft, event.y - offsetTop - 60)
+    if (!target || !target.dataInfo) return
+    const fid = target.refDataID + 1
+    this.emitHighlight(fid)
+    getMarker(this.geojson, fid).then(
+      marker => (this.selfMarker = marker || {})
     )
-    this.coordinates = [lng, lat]
-    this.properties = {
-      [field]: value
-    }
   }
 
   /**
    * 关闭信息窗口
    */
   closePopupWin() {
-    this.showPopup = false
-    this.properties = null
-    this.coordinates = [0, 0]
     this.emitClearHighlight()
   }
 }
