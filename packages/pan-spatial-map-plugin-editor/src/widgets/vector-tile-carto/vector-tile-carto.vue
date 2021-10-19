@@ -138,8 +138,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       const requestUrl = `${this.currentLayer.currentStyle.sprite}.json`
       this.styleOptions = this.currentLayer.styleList.map(item => item.name)
       this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
-      this.minZoom = this.currentLayer.currentStyle.sources[0].minZoom
-      this.maxZoom = this.currentLayer.currentStyle.sources[0].maxZoom
+      let { sources } = this.currentLayer.currentStyle
+      const keys = Object.keys(this.currentLayer.currentStyle.sources)
+      this.minZoom = this.currentLayer.currentStyle.sources[keys[0]].minZoom
+      this.maxZoom = this.currentLayer.currentStyle.sources[keys[0]].maxZoom
       // 获取到区填充图案数据
       this.getSpriteData(requestUrl).then(res => {
         res.unshift('清空区填充图案')
