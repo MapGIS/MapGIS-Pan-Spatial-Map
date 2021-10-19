@@ -1,8 +1,24 @@
 <template>
   <div class="mp-handler-window">
     <template v-if="funcParamCopy.Parameters">
-      <mp-group-tab title="参数" :has-top-margin="false"></mp-group-tab>
-      <mp-setting-form :no-last-margin-bottom="true" :wrapper-width="300">
+      <mapgis-ui-group-tab title="参数" :has-top-margin="false"></mapgis-ui-group-tab>
+      <mapgis-ui-clouddisk-model-fields
+        style="width:350px;"
+        ref="fieldsData"
+        v-if="hackReset"
+        :isOneMap="true"
+        :detailButton="false"
+        :autoHeight="'calc(100vh - 300px)'"
+        :params="funcParamCopy.Parameters"
+        :modelGroup="funcParamCopy.Group"
+        :modelType="modelType"
+        :showLoading="showLoading"
+        :handleParams="handleParams"
+        @handleConfirm="doExecuteWorkflow"
+        @handleClearParams="handleClearParams"
+      >
+      </mapgis-ui-clouddisk-model-fields>
+      <!-- <mp-setting-form :no-last-margin-bottom="true" :wrapper-width="300">
         <a-form-item
           v-for="(item, index) in funcParamCopy.Parameters"
           :key="index"
@@ -20,7 +36,7 @@
             执行
           </a-button>
         </a-form-item>
-      </mp-setting-form>
+      </mp-setting-form> -->
     </template>
   </div>
 </template>
@@ -64,6 +80,27 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
   // 功能参数
   @Prop({ type: Object, required: true, default: () => ({}) }) funcParam: object
 
+  // 功能仓库组件对应的映射关系
+  public DataTypeMap = {
+    0: 'INT',
+    1: 'STRING',
+    2: 'FLOAT',
+    3: 'BOOLEAN',
+    4: 'TIME',
+    5: 'TIMESTAMP',
+    6: 'UNKNOW'
+  }
+
+  // 功能仓库组件对应的映射关系
+  public DirectionMap = {
+    0: 'IN',
+    1: 'OUT',
+    2: 'INOUT',
+  }
+
+  // 类型为igs
+  private modelType = 'igs'
+
   // 是否显示进度条
   private showLoading = false
 
@@ -76,11 +113,59 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
   // 功能参数副本
   private funcParamCopy = {}
 
+  // 用于清空数据功能
+  private hackReset = true
+
   @Watch('funcParam', { deep: true, immediate: true })
   funcParamChange(val) {
     // this.deleteLayer()
     const item = JSON.parse(JSON.stringify(this.funcParam))
-    this.funcParamCopy = item
+    this.funcParamCopy = this.formatParams(item)
+
+    console.warn('【获取模型】', this.funcParamCopy)
+  }
+
+  /**
+   * 将参数类型等内容映射为组件可识别的信息（如将1映射为STRING）
+   * 王魁帅
+   */
+  formatParams(item) {
+    if (item.Parameters && item.Parameters.length > 0) {
+      item.Parameters.forEach(ele => {
+        ele.briefDescp = null
+        ele.dataSourceType = null
+        ele.descp = null
+        ele.example = null
+        ele.need = null
+        ele.xattrs = null
+        if (!ele.value) {
+          ele.value = (ele.DefaultValue === 'true' || ele.DefaultValue === 'false') ? JSON.parse(ele.DefaultValue) : ele.DefaultValue
+        }
+        ele.Direction = this.DirectionMap[ele.Direction]
+        ele.DataType = this.DataTypeMap[ele.DataType]
+        for (const key in ele) { // 首字母小写
+          const newKey = key.slice(0,1).toLowerCase() + key.slice(1)
+          ele[newKey] = ele[key]
+        }
+      })
+    }
+    return item
+  }
+
+  handleParams (params) {
+    this.funcParamCopy.Parameters = params
+  }
+
+  /**
+   * 点击清空按钮的回调
+   * 王魁帅
+   */
+  handleClearParams () {
+    this.$refs.fieldsData.clearParams()
+    this.hackReset = false
+    this.$nextTick(() => {
+      this.hackReset = true
+    })
   }
 
   /**
@@ -89,7 +174,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
   doExecuteWorkflow() {
     const params = []
     this.funcParamCopy.Parameters.forEach(item => {
-      const value = item.DefaultValue
+      const value = item.value
       const id = item.Name
       params.push({
         key: id,
@@ -159,12 +244,14 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
     if (result.results && result.results.length > 0) {
       const res = result.results[0]
       if (res.DataType === 1) {
+        // res.Value = 'overlayResult' // 测试用
         if (res.ParaName && res.Value) {
           const paramName = res.ParaName
           const value = res.Value
           this.funcParamCopy.Parameters.forEach(item => {
             if (item.Name === paramName) {
               item.DefaultValue = value
+              item.value = value
             }
             return item
           })
