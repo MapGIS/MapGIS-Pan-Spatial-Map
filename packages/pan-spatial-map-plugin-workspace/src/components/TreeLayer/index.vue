@@ -17,7 +17,6 @@
         checkable
         :tree-data="layers"
         block-node
-        @select="clickItem"
         :selectedKeys="selectedKeys"
         :replaceFields="{
           children: 'sublayers'
@@ -49,7 +48,7 @@
             <template v-if="item.description" slot="title">
               {{ item.description }}
             </template>
-            <span :id="`tree_${item.key}`">
+            <span :id="`tree_${item.key}`" @click="clickItem(item)">
               <!---------- 高亮查询查询结果start -------->
               <span>{{
                 item.title.substr(
@@ -76,7 +75,9 @@
             <template v-if="item.description" slot="title">
               {{ item.description }}
             </template>
-            <span :id="`tree_${item.key}`">{{ item.title }}</span>
+            <span :id="`tree_${item.key}`" @click="clickItem(item)">{{
+              item.title
+            }}</span>
           </a-tooltip>
           <!---------------------------- 图层的子图层end -------------------------->
           <a-popover
@@ -463,8 +464,8 @@ export default class MpTreeLayer extends Mixins(
   /**
    * 点击树节点的回调函数
    */
-  clickItem(selectedKeys, { selected, selectedNodes, node, event }) {
-    this.$emit('click-item', node.dataRef)
+  clickItem(node) {
+    this.$emit('click-item', node)
   }
 
   setBackgroundColor(item) {
