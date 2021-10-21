@@ -150,7 +150,9 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     } else {
       this.model = null
       // 基础目录树上取消勾选会直接移除模型，这里把window.Cutting.CuttingTool置空处理，不然报错
-      window.Cutting.CuttingTool = null
+      if (window.Cutting && window.Cutting.CuttingTool) {
+        window.Cutting.CuttingTool = null
+      }
     }
   }
 
