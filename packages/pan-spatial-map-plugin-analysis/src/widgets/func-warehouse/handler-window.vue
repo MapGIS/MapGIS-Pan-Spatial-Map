@@ -92,16 +92,16 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
       const value = item.DefaultValue
       const id = item.Name
       params.push({
-        key: id,
-        value
+        Key: id,
+        Value: value
       })
     })
     const flowId = this.funcParamCopy.FlowNo
     params.push({
-      ip: this.ip || baseConfigInstance.config.ip,
-      port: this.port || baseConfigInstance.config.port,
-      key: 'flowId',
-      value: flowId
+      Ip: this.ip || baseConfigInstance.config.ip,
+      Port: this.port || baseConfigInstance.config.port,
+      Key: 'flowId',
+      Value: flowId
     })
     this.executeParam = params
     this.showLoading = true
@@ -173,10 +173,10 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
             let url
             for (let i = 0; i < this.executeParam.length; i++) {
               if (
-                typeof this.executeParam[i].value === 'string' &&
-                this.executeParam[i].value.indexOf(value) >= 0
+                typeof this.executeParam[i].Value === 'string' &&
+                this.executeParam[i].Value.indexOf(value) >= 0
               ) {
-                url = this.executeParam[i].value
+                url = this.executeParam[i].Value
                 break
               }
             }
