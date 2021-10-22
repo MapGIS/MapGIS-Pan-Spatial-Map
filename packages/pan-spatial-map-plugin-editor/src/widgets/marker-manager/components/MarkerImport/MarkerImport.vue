@@ -134,16 +134,16 @@ export default class MpMarkerImport extends Mixins(MarkerMixin) {
 
     for (let i = 0; i < lines.length; i += 4) {
       // 每四行一个标注
-      const line0: string = lines[i * 4 + 0]
+      const line0: string = lines[i + 0]
       const title = line0 && (line0.split('：')[1] || line0.split(':')[1])
 
-      const line1: string = lines[i * 4 + 1]
+      const line1: string = lines[i + 1]
       const description = line1 && (line1.split('：')[1] || line1.split(':')[1])
 
-      const line2 = lines[i * 4 + 2]
+      const line2 = lines[i + 2]
       const featureType = line2 && (line2.split('：')[1] || line2.split(':')[1])
 
-      const line3 = lines[i * 4 + 3]
+      const line3 = lines[i + 3]
       const coordsStr = line3 && (line3.split('：')[1] || line3.split(':')[1])
       let featuresCoord = [coordsStr]
 
