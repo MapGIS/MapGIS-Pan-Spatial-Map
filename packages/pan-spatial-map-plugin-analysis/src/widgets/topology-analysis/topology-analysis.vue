@@ -112,22 +112,20 @@
           分析
         </a-button>
       </div>
-      <template v-if="isWidgetOpen">
-        <mapbox-layer
-          v-if="is2DMapMode"
-          ref="mapboxLayer"
-          @finish-draw="clickFunciton"
-          :geoJSONTarget="geoJSONTarget"
-          :geoJSONAnalysis="geoJSONAnalysis"
-        />
-        <cesium-layer
-          v-else
-          ref="cesiumLayer"
-          @finish-draw="clickFunciton"
-          :geoJSONTarget="geoJSONTarget"
-          :geoJSONAnalysis="geoJSONAnalysis"
-        ></cesium-layer>
-      </template>
+      <mapbox-layer
+        v-if="is2DMapMode"
+        ref="mapboxLayer"
+        @finish-draw="clickFunciton"
+        :geoJSONTarget="geoJSONTarget"
+        :geoJSONAnalysis="geoJSONAnalysis"
+      />
+      <cesium-layer
+        v-else
+        ref="cesiumLayer"
+        @finish-draw="clickFunciton"
+        :geoJSONTarget="geoJSONTarget"
+        :geoJSONAnalysis="geoJSONAnalysis"
+      ></cesium-layer>
     </div>
   </a-spin>
 </template>
@@ -180,7 +178,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
 
   geoJSONAnalysis = null
 
-  isWidgetOpen = false
+  // isWidgetOpen = false
 
   // 微件窗口模式切换时回调
   onWindowSize(mode) {
@@ -188,7 +186,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
   }
 
   onOpen() {
-    this.isWidgetOpen = true
+    // this.isWidgetOpen = true
   }
 
   get drawComponent() {
@@ -412,7 +410,8 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
 
   // 面板关闭时候触发函数
   onClose() {
-    this.isWidgetOpen = false
+    // this.isWidgetOpen = false
+    this.drawComponent.clear()
     this.reset()
   }
 
