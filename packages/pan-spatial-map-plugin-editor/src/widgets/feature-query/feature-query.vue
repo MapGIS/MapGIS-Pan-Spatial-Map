@@ -90,7 +90,9 @@ enum QueryType {
   PickModel = 'PickModel'
 }
 
-@Component
+@Component({
+  name: 'MpFeatureQuery'
+})
 export default class MpFeatureQuery extends Mixins(
   WidgetMixin,
   ExhibitionControllerMixin

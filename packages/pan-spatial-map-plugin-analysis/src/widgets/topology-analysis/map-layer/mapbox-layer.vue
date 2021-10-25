@@ -136,6 +136,7 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
 
   onDrawFinished(e) {
     this.finishDraw(e)
+    this.stopDraw()
   }
 
   clearDataTargetArr() {
@@ -156,10 +157,14 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
     }
   }
 
-  beforeDestroy() {
+  clear() {
     this.stopDraw()
     this.clearDataTargetArr()
     this.clearDataAnalysisArr()
+  }
+
+  beforeDestroy() {
+    this.clear()
   }
 }
 </script>
