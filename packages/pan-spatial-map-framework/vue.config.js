@@ -69,6 +69,10 @@ module.exports = {
         return args
       })
     }
+    config.plugin('fork-ts-checker').tap(args => {
+      args[0].memoryLimit = 12288
+      return args
+    })
   },
   css: {
     loaderOptions: {
