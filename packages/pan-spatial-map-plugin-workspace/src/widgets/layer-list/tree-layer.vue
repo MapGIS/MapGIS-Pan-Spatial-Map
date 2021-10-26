@@ -44,7 +44,7 @@
             <template v-if="item.description" slot="title">
               {{ item.description }}
             </template>
-            <span :id="`tree_${item.key}`">
+            <span :id="`tree_${item.key}`" @click="fitBounds(item)">
               <span>{{
                 item.title.substr(
                   0,
@@ -69,7 +69,9 @@
             <template v-if="item.description" slot="title">
               {{ item.description }}
             </template>
-            <span :id="`tree_${item.key}`">{{ item.title }}</span>
+            <span :id="`tree_${item.key}`" @click="fitBounds(item)">{{
+              item.title
+            }}</span>
           </a-tooltip>
           <a-popover
             v-if="showPopover(item)"

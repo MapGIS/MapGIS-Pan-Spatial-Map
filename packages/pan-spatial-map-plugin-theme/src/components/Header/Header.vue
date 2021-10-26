@@ -4,7 +4,7 @@
       <div class="header-left">
         <slot name="header-left">
           <div :class="['logo', themeMode]">
-            <mp-icon :icon="application.logo" class="icon" />
+            <mp-icon :icon="appLogo" class="icon" />
             <h1>{{ application.title }}</h1>
             <h2>{{ application.subtitle }}</h2>
           </div>

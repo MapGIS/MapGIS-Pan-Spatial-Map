@@ -765,6 +765,18 @@
             "serverUrl": ""
           },
           {
+            "label": "hongkong",
+            "describe": "hongkong",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "hongkong",
+            "searchName": "",
+            "model": "globe",
+            "guid": "68744fd8-61be-400d-a861-4a0415a339cc",
+            "serverUrl": ""
+          },
+          {
             "label": "全国地形",
             "describe": "全国地形",
             "ip": "",
