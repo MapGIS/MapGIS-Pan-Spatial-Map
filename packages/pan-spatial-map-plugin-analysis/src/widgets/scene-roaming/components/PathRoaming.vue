@@ -175,6 +175,21 @@
           </a-col>
         </a-row>
       </a-form-item>
+      <a-form-item label="模型">
+        <a-row>
+          <a-col :span="24">
+            <a-select
+              v-model="modelUrl"
+              @change="onModelChange"
+              :disabled="isStart"
+            >
+              <a-select-option v-for="item in modelOptions" :key="item.value">
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
+          </a-col></a-row
+        >
+      </a-form-item>
     </mp-setting-form>
   </div>
 </template>
@@ -228,6 +243,23 @@ export default class PathRoaming extends Vue {
     }
   ]
 
+  private modelUrl = 'models/CesiumModels/Cesium_Man.glb'
+
+  private modelOptions = [
+    {
+      label: '人',
+      value: 'models/CesiumModels/Cesium_Man.glb'
+    },
+    {
+      label: '卡车',
+      value: 'models/CesiumModels/CesiumMilkTruck.glb'
+    },
+    {
+      label: '飞机',
+      value: 'models/CesiumModels/Cesium_Air.gltf'
+    }
+  ]
+
   get playTitle() {
     if (!this.isStart) {
       return '开始'
@@ -246,7 +278,7 @@ export default class PathRoaming extends Vue {
     window.SceneWanderManager.animation = new this.Cesium.AnimationAnalyse(
       this.webGlobe.viewer,
       {
-        modelUrl: 'models/CesiumAir/Cesium_Air.gltf',
+        modelUrl: vm.modelUrl,
         complete: function() {
           vm.isStart = false
           vm.isPause = false
@@ -369,6 +401,10 @@ export default class PathRoaming extends Vue {
     if (window.SceneWanderManager.animation.animationType === 3) {
       window.SceneWanderManager.animation.range = 200
     }
+  }
+
+  private onModelChange(value) {
+    window.SceneWanderManager.animation._modelUrl = value
   }
 }
 </script>
