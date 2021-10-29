@@ -469,7 +469,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                   await layer.load()
                 }
               } catch (error) {
-                console.log(error)
               } finally {
                 // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
                 if (layer.loadStatus === LoadStatus.loaded) {
@@ -707,7 +706,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         widgetConfig.treeConfig.useLocalData ||
         widgetConfig.treeConfig.useLocalParam
       ) {
-        console.log(widgetConfig.urlConfig.nonSpatialUrl)
         this.nonSpatialUrl = widgetConfig.urlConfig.nonSpatialUrl
         this.nonSpatialFileListUrl = `${this.baseUrl}/api/non-spatial/files?pageNumber=0&pageSize=1000&path=${item.data}&protocol=ftp&url=${this.nonSpatialUrl}`
       }
@@ -891,7 +889,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             const imposeLayer = doc.defaultMap.allLayers.find(
               item => item.id === node.guid
             )
-            console.log(imposeLayer)
 
             if (imposeLayer.type !== LayerType.IGSScene) {
               FitBound.fitBoundByLayer(

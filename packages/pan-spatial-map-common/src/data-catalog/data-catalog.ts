@@ -295,67 +295,15 @@ export class DataCatalogManager {
    * @memberof DataCatalogManager
    */
   public hasRepeatedService(data) {
-    const type = data.type
-    const url = new URL(data.url)
-    const ip = url.hostname
-    const port = url.port
-    const defaultIp = baseConfigInstance.config.ip
-    const defaultPort = baseConfigInstance.config.port
     let isRepeated = false
 
-    switch (type) {
-      case 'IGSTile':
-      case 'IGSMapImage':
-      case 'IGSScene':
-        const pathNameArr = url.pathname.split('/')
-        const serverName = pathNameArr[pathNameArr.length - 1]
-        if (
-          this._allLayerConfigItems.some(item => {
-            return (
-              (item.ip === '' ? defaultIp : item.ip) === ip &&
-              (item.port === '' ? defaultPort : item.port) === port &&
-              item.serverName === serverName
-            )
-          }) ||
-          this._allLayerConfigItems.some(item => {
-            return item.serverURL === data.url
-          })
-        ) {
-          isRepeated = true
-        }
-        break
-      case 'IGSVector':
-        const gdbps = this.getQueryString('gdbps', url.search.substring(1))
-        if (
-          this._allLayerConfigItems.some(item => {
-            return (
-              (item.ip === '' ? defaultIp : item.ip) === ip &&
-              (item.port === '' ? defaultPort : item.port) === port &&
-              item.gdbps === gdbps
-            )
-          }) ||
-          this._allLayerConfigItems.some(item => {
-            return item.serverURL === data.url
-          })
-        ) {
-          isRepeated = true
-        }
-        break
-      case 'OGCWMTS':
-      case 'OGCWMS':
-      case 'ArcGISTile':
-      case 'ArcGISMapImage':
-      case 'VectorTile':
-        if (
-          this._allLayerConfigItems.some(item => {
-            return item.serverURL === data.url
-          })
-        ) {
-          isRepeated = true
-        }
-        break
-      default:
-        break
+    if (
+      this._allLayerConfigItems.some(item => {
+        const layer = DataCatalogManager.generateLayerByConfig(item)
+        return layer.url === data.url
+      })
+    ) {
+      isRepeated = true
     }
 
     return isRepeated
