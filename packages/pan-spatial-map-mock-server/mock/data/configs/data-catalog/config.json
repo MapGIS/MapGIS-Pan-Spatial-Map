@@ -837,6 +837,18 @@
             "serverUrl": ""
           },
           {
+            "label": "大楼",
+            "describe": "大楼",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "大楼",
+            "searchName": "",
+            "model": "surface",
+            "guid": "79edf234-3187-442e-9162-96335bb90b25ccccc",
+            "serverUrl": ""
+          },
+          {
             "label": "学校BIM模型",
             "describe": "学校BIM模型",
             "ip": "",
