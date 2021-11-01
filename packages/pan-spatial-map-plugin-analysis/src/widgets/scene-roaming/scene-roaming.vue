@@ -125,6 +125,10 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     }
   ]
 
+  private linePoints = []
+
+  private polyline
+
   get paths() {
     return this.widgetInfo.config
   }
@@ -161,6 +165,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 
     const material = this.Cesium.Material.fromType('Color')
     material.uniforms.color = new this.Cesium.Color(0.9, 0.6, 0.1, 0.5)
+    this.linePoints = []
 
     this.draw.startDrawingMarker({
       material,
@@ -180,6 +185,28 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
           y: latDegree,
           z: height
         })
+
+        this.linePoints.push(lonDegree)
+        this.linePoints.push(latDegree)
+        this.linePoints.push(height)
+
+        if (this.addedPositions.length > 1) {
+          if (this.polyline) {
+            this.webGlobe.viewer.entities.remove(this.polyline)
+          }
+
+          this.polyline = this.webGlobe.viewer.entities.add({
+            name: 'scence-roaming',
+            polyline: {
+              positions: this.Cesium.Cartesian3.fromDegreesArrayHeights(
+                this.linePoints
+              ),
+              width: 2,
+              material: this.Cesium.Color.RED,
+              clampToGround: false
+            }
+          })
+        }
       }
     })
   }
@@ -209,9 +236,9 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
           return a.concat(b)
         }),
       para: {
-        speed: 60,
-        exHeight: 1000,
-        til: 0,
+        speed: 10,
+        exHeight: 1,
+        til: 90,
         pitch: 0,
         animationType: 1,
         interpolationAlgorithm: 'LagrangePolynomialApproximation',
@@ -267,6 +294,11 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     }
     this.interactiveAdding = false
     this.addedPositions = []
+    this.linePoints = []
+
+    if (this.polyline) {
+      this.webGlobe.viewer.entities.remove(this.polyline)
+    }
   }
 
   private stopRoaming() {

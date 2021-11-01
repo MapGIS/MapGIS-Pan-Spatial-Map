@@ -31,6 +31,8 @@
         <LayerSetting
           :setting.sync="multiSetting"
           :sprite-data="spriteData"
+          :maxZoom="maxZoom"
+          :minZoom="minZoom"
         ></LayerSetting>
       </a-collapse-panel>
     </a-collapse>
@@ -117,6 +119,12 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     'fill-antialias': true
   }
 
+  // 该矢量瓦片所对应的最小级数
+  private minZoom = 0
+
+  // 该矢量瓦片所对应的最大级数
+  private maxZoom = 10
+
   // 监听矢量瓦片下拉项变化，实时构造该矢量瓦片对应的样式文件下拉项,以及区填充图案下拉项数据
   @Watch('formData.vectorTileName', { deep: true })
   onTileNameChange(newVal) {
@@ -130,6 +138,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
       const requestUrl = `${this.currentLayer.currentStyle.sprite}.json`
       this.styleOptions = this.currentLayer.styleList.map(item => item.name)
       this.formData.vectorTileStyle = this.currentLayer.currentStyle.name
+      const { sources } = this.currentLayer.currentStyle
+      const keys = Object.keys(this.currentLayer.currentStyle.sources)
+      this.minZoom = this.currentLayer.currentStyle.sources[keys[0]].minZoom
+      this.maxZoom = this.currentLayer.currentStyle.sources[keys[0]].maxZoom
       // 获取到区填充图案数据
       this.getSpriteData(requestUrl).then(res => {
         res.unshift('清空区填充图案')

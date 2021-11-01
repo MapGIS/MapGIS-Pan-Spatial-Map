@@ -148,8 +148,11 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     if (layers.length > 0) {
       this.model = layers[layers.length - 1]
     } else {
-      this.models = layers
       this.model = null
+      // 基础目录树上取消勾选会直接移除模型，这里把window.Cutting.CuttingTool置空处理，不然报错
+      if (window.Cutting && window.Cutting.CuttingTool) {
+        window.Cutting.CuttingTool = null
+      }
     }
   }
 
@@ -346,25 +349,28 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     let min = -max
     if (!this.model) return
     const { range } = this.model.activeScene.sublayers[0]
+    const { xmin, ymin, xmax, ymax, zmin, zmax } = range
+    let length = max - min
     switch (this.axis) {
       case 'X':
-        max = range.xmax
-        min = range.xmin
+        max = xmax
+        min = xmin
         break
       case 'Y':
-        max = range.ymax
-        min = range.ymin
+        max = ymax
+        min = ymin
         break
       case 'Z':
-        max = range.zmax
-        min = range.zmin
+        max = zmax
+        min = zmin
         break
       default:
         break
     }
-    this.max = max
-    this.min = min
-    this.distance = (min + max) / 2
+    length = (max - min) * 1.5
+    this.distance = length / 2
+    this.max = length
+    this.min = -length
   }
 }
 </script>

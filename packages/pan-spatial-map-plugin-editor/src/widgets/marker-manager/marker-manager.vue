@@ -275,56 +275,60 @@ export default class MpMarkerManager extends Mixins(WidgetMixin) {
 
     const unSelectIcon = await markerIconInstance.unSelectIcon()
 
-    // 下面的操作都是为了兼容老版的三个标注点的数据(因为老版标注点的构造和新版的标注点构造不一样)
-    this.markers = this.widgetInfo.config.markers.reduce((result, item) => {
-      if (Object.keys(item).includes('ftype')) {
-        // 老版标注点包含'ftype'属性
-        let coordinates = []
-        switch (item.fileType) {
-          case 'Polygon':
-            coordinates = [item.coordinates]
-            break
-          case 'LineString':
-            coordinates = item.coordinates
-            break
-          default:
-            coordinates = item.point
-            break
+    if (!this.widgetInfo.config.markers) {
+      this.markers = []
+    } else {
+      // 下面的操作都是为了兼容老版的三个标注点的数据(因为老版标注点的构造和新版的标注点构造不一样)
+      this.markers = this.widgetInfo.config.markers.reduce((result, item) => {
+        if (Object.keys(item).includes('ftype')) {
+          // 老版标注点包含'ftype'属性
+          let coordinates = []
+          switch (item.fileType) {
+            case 'Polygon':
+              coordinates = [item.coordinates]
+              break
+            case 'LineString':
+              coordinates = item.coordinates
+              break
+            default:
+              coordinates = item.point
+              break
+          }
+          const geoJsonFeature = {
+            geometry: {
+              coordinates: coordinates,
+              type: item.fileType || 'Point'
+            },
+            properties: {},
+            type: 'Feature'
+          }
+          const marker = {
+            markerId: UUID.uuid(),
+            title: item.name,
+            description: item.info,
+            coordinates: item.point,
+            img: unSelectIcon,
+            properties: geoJsonFeature.properties,
+            feature: geoJsonFeature
+          }
+          result.push(marker)
+        } else {
+          // 新版标注点不包含'ftype'属性
+          const marker = {
+            markerId: item.id,
+            title: item.title,
+            description: item.description,
+            coordinates: item.center,
+            img: unSelectIcon,
+            properties: item.feature.properties,
+            feature: item.feature,
+            picture: item.picture
+          }
+          result.push(marker)
         }
-        const geoJsonFeature = {
-          geometry: {
-            coordinates: coordinates,
-            type: item.fileType || 'Point'
-          },
-          properties: {},
-          type: 'Feature'
-        }
-        const marker = {
-          markerId: UUID.uuid(),
-          title: item.name,
-          description: item.info,
-          coordinates: item.point,
-          img: unSelectIcon,
-          properties: geoJsonFeature.properties,
-          feature: geoJsonFeature
-        }
-        result.push(marker)
-      } else {
-        // 新版标注点不包含'ftype'属性
-        const marker = {
-          markerId: item.id,
-          title: item.title,
-          description: item.description,
-          coordinates: item.center,
-          img: unSelectIcon,
-          properties: item.feature.properties,
-          feature: item.feature,
-          picture: item.picture
-        }
-        result.push(marker)
-      }
-      return result
-    }, [])
+        return result
+      }, [])
+    }
   }
 
   // 微件打开时

@@ -114,8 +114,14 @@ export default class MpSkylineAnalysis extends Mixins(WidgetMixin) {
     // 修改说明：在鲲鹏机器，UOS系统的firefox浏览器，使用天际线分析功能，点击后直接报错。三维部门建议在鲲鹏机器上关闭该缓存区。
     // 修改人：马原野 2021年8月21日
     this.isLogarithmicDepthBufferEnable = this.sceneControllerInstance.isLogarithmicDepthBufferEnable()
-    if (this.isLogarithmicDepthBufferEnable === true) {
+    if (
+      navigator.userAgent.indexOf('Linux') > 0 &&
+      navigator.userAgent.indexOf('Firefox') > 0
+    ) {
       this.sceneControllerInstance.setLogarithmicDepthBufferEnable(false)
+    } else {
+      // 其他浏览器还是设置为true，不然会导致分析结果不正确，cesium1.8版本已不需要再额外设置
+      this.sceneControllerInstance.setLogarithmicDepthBufferEnable(true)
     }
     this.changeSkylineWindowApha()
   }

@@ -44,63 +44,151 @@
         显示提示信息
       </a-checkbox>
     </div>
-    <mp-setting-form class="roadming-setting">
+    <mp-setting-form
+      class="roadming-setting"
+      :itemLayout="'grid'"
+      :labelCol="{ span: 6 }"
+      :wrapperCol="{ span: 18 }"
+    >
       <a-form-item label="移动速度">
-        <a-input
-          v-model.number="path.para.speed"
-          type="number"
-          min="1"
-          addon-after="公里/小时"
-          @change="onSpeedChange"
-        />
+        <a-row>
+          <a-col :span="24">
+            <a-input
+              v-model.number="path.para.speed"
+              type="number"
+              min="1"
+              addon-after="公里/小时"
+              @change="onSpeedChange"
+            />
+          </a-col>
+        </a-row>
       </a-form-item>
       <a-form-item label="附加高程">
-        <a-input
-          v-model.number="path.para.exHeight"
-          type="number"
-          min="0"
-          :disabled="isStart ? true : false"
-        />
+        <a-row>
+          <a-col :span="24">
+            <a-input-number
+              v-model="path.para.exHeight"
+              :min="0"
+              :disabled="isStart ? true : false"
+            />
+          </a-col>
+        </a-row>
       </a-form-item>
       <a-form-item label="方位角">
-        <a-input
-          v-model.number="path.para.til"
-          type="number"
-          min="-180"
-          max="180"
-          :disabled="path.para.animationType !== 2 ? true : false"
-          @change="e => onEffectsChange(e, 'heading')"
-        />
+        <a-row>
+          <a-col :span="15">
+            <a-slider
+              class="slider-body"
+              v-model="path.para.til"
+              :min="-180"
+              :max="180"
+              :disabled="path.para.animationType !== 2 ? true : false"
+              @change="val => onEffectsChange(val, 'heading')"
+            />
+          </a-col>
+          <a-col :span="9">
+            <a-input-number
+              class="slider-number"
+              v-model="path.para.til"
+              :min="-180"
+              :max="180"
+              :disabled="path.para.animationType !== 2 ? true : false"
+              @change="val => onEffectsChange(val, 'heading')"
+            />
+          </a-col>
+        </a-row>
       </a-form-item>
       <a-form-item label="俯仰角">
-        <a-input
-          v-model.number="path.para.pitch"
-          type="number"
-          min="-180"
-          max="180"
-          :disabled="path.para.animationType !== 2 ? true : false"
-          @change="e => onEffectsChange(e, 'pitch')"
-        />
+        <a-row>
+          <a-col :span="15">
+            <a-slider
+              class="slider-body"
+              v-model="path.para.pitch"
+              :min="-180"
+              :max="180"
+              :disabled="path.para.animationType !== 2 ? true : false"
+              @change="val => onEffectsChange(val, 'pitch')"
+            />
+          </a-col>
+          <a-col :span="9">
+            <a-input-number
+              class="slider-number"
+              v-model="path.para.pitch"
+              :min="-180"
+              :max="180"
+              :disabled="path.para.animationType !== 2 ? true : false"
+              @change="val => onEffectsChange(val, 'pitch')"
+            />
+          </a-col>
+        </a-row>
+      </a-form-item>
+      <a-form-item label="距离">
+        <a-row>
+          <a-col :span="15">
+            <a-slider
+              class="slider-body"
+              v-model="path.para.range"
+              :min="0"
+              :max="200"
+              @change="val => changeRange(val)"
+            />
+          </a-col>
+          <a-col :span="9">
+            <a-input-number
+              class="slider-number"
+              v-model="path.para.range"
+              :min="0"
+              :max="200"
+              @change="val => changeRange(val)"
+            />
+          </a-col>
+        </a-row>
       </a-form-item>
       <a-form-item label="视角">
-        <a-select v-model="path.para.animationType" @change="onTypeChange">
-          <a-select-option v-for="item in perspectiveOptions" :key="item.value">
-            {{ item.label }}
-          </a-select-option>
-        </a-select>
+        <a-row>
+          <a-col :span="24">
+            <a-select v-model="path.para.animationType" @change="onTypeChange">
+              <a-select-option
+                v-for="item in perspectiveOptions"
+                :key="item.value"
+              >
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
+          </a-col></a-row
+        >
       </a-form-item>
       <a-form-item label="插值">
-        <a-select
-          v-model="path.para.interpolationAlgorithm"
-          :disabled="isStart ? true : false"
+        <a-row>
+          <a-col :span="24">
+            <a-select
+              v-model="path.para.interpolationAlgorithm"
+              :disabled="isStart ? true : false"
+            >
+              <a-select-option
+                v-for="item in interpolationOptions"
+                :key="item.value"
+              >
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
+          </a-col>
+        </a-row>
+      </a-form-item>
+      <a-form-item label="模型">
+        <a-row>
+          <a-col :span="24">
+            <a-select
+              v-model="modelUrl"
+              @change="onModelChange"
+              :disabled="isStart"
+            >
+              <a-select-option v-for="item in modelOptions" :key="item.value">
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
+          </a-col></a-row
         >
-          <a-select-option
-            v-for="item in interpolationOptions"
-            :key="item.value"
-          >
-            {{ item.label }}
-          </a-select-option>
-        </a-select>
       </a-form-item>
     </mp-setting-form>
   </div>
@@ -155,6 +243,23 @@ export default class PathRoaming extends Vue {
     }
   ]
 
+  private modelUrl = 'models/CesiumModels/Cesium_Man.glb'
+
+  private modelOptions = [
+    {
+      label: '人',
+      value: 'models/CesiumModels/Cesium_Man.glb'
+    },
+    {
+      label: '卡车',
+      value: 'models/CesiumModels/CesiumMilkTruck.glb'
+    },
+    {
+      label: '飞机',
+      value: 'models/CesiumModels/Cesium_Air.gltf'
+    }
+  ]
+
   get playTitle() {
     if (!this.isStart) {
       return '开始'
@@ -167,12 +272,17 @@ export default class PathRoaming extends Vue {
     window.SceneWanderManager = {
       animation: null
     }
+    const vm = this
 
     //  初始化漫游动画
     window.SceneWanderManager.animation = new this.Cesium.AnimationAnalyse(
       this.webGlobe.viewer,
       {
-        modelUrl: 'models/CesiumAir/Cesium_Air.gltf'
+        modelUrl: vm.modelUrl,
+        complete: function() {
+          vm.isStart = false
+          vm.isPause = false
+        }
       }
     )
   }
@@ -192,7 +302,6 @@ export default class PathRoaming extends Vue {
         this.setAnimationAttr()
 
         window.SceneWanderManager.animation.start()
-        window.SceneWanderManager.animation.pause = false
 
         this.isStart = true
         this.isPause = false
@@ -239,9 +348,9 @@ export default class PathRoaming extends Vue {
         break
     }
 
-    // 若是上帝视角，设置动画的视角高度为4000
+    // 若是上帝视角，设置动画的视角高度为200
     if (window.SceneWanderManager.animation.animationType === 3) {
-      window.SceneWanderManager.animation.range = 4000
+      window.SceneWanderManager.animation.range = 200
     }
   }
 
@@ -267,22 +376,35 @@ export default class PathRoaming extends Vue {
     window.SceneWanderManager.animation.speed = parseFloat(
       e.target.value * 0.28
     ).toFixed(2)
+    // TODO 临时解决办法，cesium1.8已解决这个问题
+    // speed默认值是10
+    window.SceneWanderManager.animation.speedupFactor = e.target.value
+      ? e.target.value / 10
+      : 1
   }
 
   // 漫游方位角、俯仰角变化时回调
-  private onEffectsChange(e, key) {
+  private onEffectsChange(val, key) {
     window.SceneWanderManager.animation[key] = this.Cesium.Math.toRadians(
-      parseInt(e.target.value)
+      parseInt(val)
     )
+  }
+
+  private changeRange(val) {
+    window.SceneWanderManager.animation.range = parseInt(val)
   }
 
   // 漫游视角变化时回调
   private onTypeChange(value) {
     window.SceneWanderManager.animation.animationType = value
-    // 若是上帝视角，设置动画的视角高度为4000
+    // 若是上帝视角，设置动画的视角高度为200
     if (window.SceneWanderManager.animation.animationType === 3) {
-      window.SceneWanderManager.animation.range = 4000
+      window.SceneWanderManager.animation.range = 200
     }
+  }
+
+  private onModelChange(value) {
+    window.SceneWanderManager.animation._modelUrl = value
   }
 }
 </script>
@@ -312,11 +434,19 @@ export default class PathRoaming extends Vue {
   .roaming-options {
     padding-bottom: 12px;
   }
+  .ant-checkbox-wrapper {
+    font-size: 12px;
+  }
   .roadming-setting {
-    .ant-form-item {
-      &:last-child {
-        margin-bottom: 0;
-      }
+    padding-top: 8px;
+    .slider-body {
+      margin-right: 10px;
+    }
+    .slider-number {
+      width: 100%;
+    }
+    .ant-input-number {
+      width: 100%;
     }
   }
 }
