@@ -374,36 +374,70 @@ export class DataCatalogManager {
 
       let tileServiceInfo: any = {}
       let docServiceInfo: any = {}
-
-      await Catalog.DocumentCatalog.getTiles({
-        ip: defaultIp,
-        port: defaultPort
-      })
-        .then(tiles => {
-          tileServiceInfo = tiles
-        })
-        .catch(err => {})
-
-      await Catalog.DocumentCatalog.getDocs({
-        ip: defaultIp,
-        port: defaultPort
-      })
-        .then(docs => {
-          docServiceInfo = docs
-        })
-        .catch(err => {})
-
       const url = `http://${defaultIp}:${defaultPort}/igs/rest/g3d/GetDocList`
-      const res = await axios.get(url)
-      sceneList = res.data
 
-      // 对请求回来的结果进行处理:考虑有嵌套的服务列表,应该全部展开后放到一个数组中。
-      tileList = this.processServiceInfo(tileServiceInfo, 'HDFNames', 'DirHDFs')
-      docList = this.processServiceInfo(docServiceInfo, 'DOCNames', 'DirDOCs')
+      await Promise.race([
+        this._timeOut(),
+        Promise.all([
+          Catalog.DocumentCatalog.getTiles({
+            ip: defaultIp,
+            port: defaultPort
+          }),
+          Catalog.DocumentCatalog.getDocs({
+            ip: defaultIp,
+            port: defaultPort
+          }),
+          axios.get(url)
+        ])
+      ])
+        .then(resArr => {
+          tileServiceInfo = resArr[0]
+          docServiceInfo = resArr[1]
+          // const url = `http://${defaultIp}:${defaultPort}/igs/rest/g3d/GetDocList`
+          // const res = await axios.get(url)
+          sceneList = resArr[2].data
 
-      this.defaultServerList = { tileList, docList, sceneList }
-      // 2.格式转换、为节点添加级别信息、判断服务是否可用。
-      this.convertConfigData()
+          // 对请求回来的结果进行处理:考虑有嵌套的服务列表,应该全部展开后放到一个数组中。
+          tileList = this.processServiceInfo(
+            tileServiceInfo,
+            'HDFNames',
+            'DirHDFs'
+          )
+          docList = this.processServiceInfo(
+            docServiceInfo,
+            'DOCNames',
+            'DirDOCs'
+          )
+
+          this.defaultServerList = { tileList, docList, sceneList }
+          // 2.格式转换、为节点添加级别信息、判断服务是否可用。
+          this.convertConfigData()
+        })
+        .catch(() => {
+          if (
+            this.configConverted.treeConfig === undefined ||
+            this.configConverted.treeConfig.treeData === undefined
+          ) {
+            this.convertConfigData()
+          }
+        })
+
+      // await Catalog.DocumentCatalog.getTiles({
+      //   ip: defaultIp,
+      //   port: defaultPort
+      // })
+      //   .then(tiles => {
+      //     tileServiceInfo = tiles
+      //   })
+      //   .catch(err => {})
+      // await Catalog.DocumentCatalog.getDocs({
+      //   ip: defaultIp,
+      //   port: defaultPort
+      // })
+      //   .then(docs => {
+      //     docServiceInfo = docs
+      //   })
+      //   .catch(err => {})
     } else if (
       this.configConverted.treeConfig === undefined ||
       this.configConverted.treeConfig.treeData === undefined
@@ -412,6 +446,14 @@ export class DataCatalogManager {
     }
 
     return this.configConverted.treeConfig.treeData
+  }
+
+  _timeOut(millisecond = 5000) {
+    return new Promise((resolve, reject) => {
+      window.setTimeout(() => {
+        reject('timeout')
+      }, millisecond)
+    })
   }
 
   /**

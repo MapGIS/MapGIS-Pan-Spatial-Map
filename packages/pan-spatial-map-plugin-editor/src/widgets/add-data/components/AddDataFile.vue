@@ -166,7 +166,7 @@ export default class AddDataFile extends Mixins(WidgetMixin) {
       if (info.file.type.indexOf('zip-compressed') !== -1) {
         // 上传的是zip压缩包(即shp类型文件)
         const shpItem = info.file.response.data.find(item =>
-          item.url.includes('shp')
+          item.url.endsWith('shp')
         )
         path = shpItem.path
       } else {

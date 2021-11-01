@@ -32,21 +32,26 @@ export default {
     ...mapState('setting', ['theme'])
   },
   async created() {
-    // 获取应用信息
-    const appInfo = await getAppInfo()
+    try {
+      // 获取应用信息
+      const appInfo = await getAppInfo()
 
-    this.baseAPI = BASE_URL
-    this.appConfigPath = appInfo.data.configPath
-    this.appAssetsPath = appInfo.data.assetsPath
+      this.baseAPI = BASE_URL
+      this.appConfigPath = appInfo.data.configPath
+      this.appAssetsPath = appInfo.data.assetsPath
 
-    // 获取可用于搭建的主题和微件列表
-    const themes = await getThemes()
-    const widgets = await getWidgets()
+      // 获取可用于搭建的主题和微件列表
+      const themes = await getThemes()
+      const widgets = await getWidgets()
 
-    this.themes = themes.data
-    this.widgets = widgets.data
+      this.themes = themes.data
+      this.widgets = widgets.data
 
-    this.initialized = true
+      this.initialized = true
+    } catch (error) {
+      this.$message.warning('认证 token 已过期，请重新登录')
+      this.$router.replace('/login')
+    }
   },
   methods: {
     ...mapMutations('setting', ['setTheme']),
