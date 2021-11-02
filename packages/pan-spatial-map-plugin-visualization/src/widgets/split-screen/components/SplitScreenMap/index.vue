@@ -90,9 +90,13 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
         this.webGlobe
       )
       if (activeScene.sublayers) {
-        _initBound = sceneController.layerExtentToGlobelExtent(
+        const layer =
           activeScene.sublayers.find(({ visible }) => !!visible) ||
-            activeScene.sublayers[0],
+          activeScene.sublayers[0]
+        layer.id = layer.layer.id
+        // 获取第一个图层的范围（因此时分屏的地图未完全加载，通过主视图的webGlobe获取图层范围）
+        _initBound = sceneController.layerExtentToGlobelExtent(
+          layer,
           activeScene.sceneMode
         )
       }
