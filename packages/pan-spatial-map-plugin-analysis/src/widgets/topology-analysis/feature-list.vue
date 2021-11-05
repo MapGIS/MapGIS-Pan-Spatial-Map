@@ -8,7 +8,6 @@
           style="padding-left:15px"
         >
           <a-radio
-            :disabled="!(type === 'target' && item.type != 3)"
             @click="selectFeature(item)"
             :checked="selectItem && selectItem.FID === item.FID"
           >
