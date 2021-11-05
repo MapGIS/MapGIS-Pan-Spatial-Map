@@ -57,6 +57,7 @@
               v-model.number="path.para.speed"
               type="number"
               min="1"
+              :disabled="isStart ? true : false"
               addon-after="公里/小时"
               @change="onSpeedChange"
             />
@@ -74,7 +75,7 @@
           </a-col>
         </a-row>
       </a-form-item>
-      <a-form-item label="方位角">
+      <a-form-item label="方位角" v-show="path.para.animationType !== 1">
         <a-row>
           <a-col :span="15">
             <a-slider
@@ -82,7 +83,7 @@
               v-model="path.para.til"
               :min="-180"
               :max="180"
-              :disabled="path.para.animationType !== 2 ? true : false"
+              :disabled="path.para.animationType === 1 ? true : false"
               @change="val => onEffectsChange(val, 'heading')"
             />
           </a-col>
@@ -92,13 +93,13 @@
               v-model="path.para.til"
               :min="-180"
               :max="180"
-              :disabled="path.para.animationType !== 2 ? true : false"
+              :disabled="path.para.animationType === 1 ? true : false"
               @change="val => onEffectsChange(val, 'heading')"
             />
           </a-col>
         </a-row>
       </a-form-item>
-      <a-form-item label="俯仰角">
+      <a-form-item label="俯仰角" v-show="path.para.animationType === 2">
         <a-row>
           <a-col :span="15">
             <a-slider
@@ -122,7 +123,7 @@
           </a-col>
         </a-row>
       </a-form-item>
-      <a-form-item label="距离">
+      <a-form-item label="距离" v-show="path.para.animationType !== 1">
         <a-row>
           <a-col :span="15">
             <a-slider
@@ -130,6 +131,7 @@
               v-model="path.para.range"
               :min="0"
               :max="200"
+              :disabled="path.para.animationType === 1 ? true : false"
               @change="val => changeRange(val)"
             />
           </a-col>
@@ -139,6 +141,7 @@
               v-model="path.para.range"
               :min="0"
               :max="200"
+              :disabled="path.para.animationType === 1 ? true : false"
               @change="val => changeRange(val)"
             />
           </a-col>
@@ -350,8 +353,11 @@ export default class PathRoaming extends Vue {
 
     // 若是上帝视角，设置动画的视角高度为200
     if (window.SceneWanderManager.animation.animationType === 3) {
-      window.SceneWanderManager.animation.range = 200
+      this.path.para.range = 200
+    } else {
+      this.path.para.range = 0
     }
+    window.SceneWanderManager.animation.range = this.path.para.range
   }
 
   // 多选项变化时回调(循环、显示路径、显示提示信息)
@@ -399,8 +405,11 @@ export default class PathRoaming extends Vue {
     window.SceneWanderManager.animation.animationType = value
     // 若是上帝视角，设置动画的视角高度为200
     if (window.SceneWanderManager.animation.animationType === 3) {
-      window.SceneWanderManager.animation.range = 200
+      this.path.para.range = 200
+    } else {
+      this.path.para.range = 0
     }
+    window.SceneWanderManager.animation.range = this.path.para.range
   }
 
   private onModelChange(value) {

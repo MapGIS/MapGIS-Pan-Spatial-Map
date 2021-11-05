@@ -22,7 +22,7 @@
                 type="file"
                 id="file"
                 accept=".txt"
-                @input="readImportFile"
+                @input="readImportFile('utf-8')"
               />
               <label ref="fileLabel" class="labelfile" for="file"
                 >上传文件</label
@@ -99,6 +99,8 @@ export default class MpMarkerImport extends Mixins(MarkerMixin) {
 
   private markers = []
 
+  private noUtf8 = false // 文件编码格式不是utf8
+
   // 确认按钮回调函数
   private onImportOk() {
     if (this.markers.length) {
@@ -112,13 +114,17 @@ export default class MpMarkerImport extends Mixins(MarkerMixin) {
     this.emitFinished()
   }
 
-  readImportFile() {
+  readImportFile(encodingType?: string) {
     const file = this.$refs.fileInput.files[0]
     this.$refs.fileLabel.innerHTML = file.name
     const reader = new FileReader()
     // 文件内容载入完毕之后的回调。
     reader.onload = this.fileLoad.bind(this)
-    reader.readAsText(file)
+    if (encodingType === 'utf-8') {
+      this.noUtf8 = false
+    }
+    encodingType = encodingType || 'utf-8'
+    reader.readAsText(file, encodingType)
   }
 
   async fileLoad(e: any) {
@@ -126,6 +132,16 @@ export default class MpMarkerImport extends Mixins(MarkerMixin) {
   }
 
   async analyzeFile(str: string) {
+    if (str.includes('�')) {
+      // 当解析文件有乱码，则表示编码格式不是utf-8，使用gbk格式
+      if (this.noUtf8) {
+        this.$message("暂只支持编码格式为'utf-8'或者'gbk'的文件")
+        return
+      }
+      this.noUtf8 = true
+      this.readImportFile('gbk')
+      return
+    }
     this.markers = []
 
     const unSelectIcon = await markerIconInstance.unSelectIcon()

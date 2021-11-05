@@ -240,6 +240,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
         exHeight: 1,
         til: 90,
         pitch: 0,
+        range: 0,
         animationType: 1,
         interpolationAlgorithm: 'LagrangePolynomialApproximation',
         isLoop: true,
