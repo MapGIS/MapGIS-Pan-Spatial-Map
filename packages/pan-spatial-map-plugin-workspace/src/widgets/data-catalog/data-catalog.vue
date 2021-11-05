@@ -119,12 +119,16 @@
               item.name
             }}</span>
             <a-menu slot="overlay">
-              <a-menu-item key="1" @click="showMetaDataInfo(item)">
+              <a-menu-item
+                v-if="!isNonSpatial(item)"
+                key="1"
+                @click="showMetaDataInfo(item)"
+              >
                 元数据信息
               </a-menu-item>
               <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
               <a-menu-item
-                v-if="hasLegend(item)"
+                v-if="hasLegend(item) && !isNonSpatial(item)"
                 key="3"
                 @click="onUploadLegend(item)"
               >
@@ -953,6 +957,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
       eventBus.$emit(events.ADD_DATA_EVENT, data)
     }
+  }
+
+  isNonSpatial(item) {
+    return item.description.indexOf('非空间数据') > -1
   }
 }
 </script>

@@ -1195,6 +1195,14 @@
     lodash "^4.17.21"
     numeral "^2.0.6"
 
+"@mapgis/mapbox-gl-inspect@^10.5.5":
+  version "10.5.5"
+  resolved "https://registry.npmmirror.com/@mapgis/mapbox-gl-inspect/download/@mapgis/mapbox-gl-inspect-10.5.5.tgz#18d334ff0ccd758089e2a1f3a4572e121282fce4"
+  integrity sha1-GNM0/wzNdYCJ4qHzpFcuEhKC/OQ=
+  dependencies:
+    lodash.isequal "^4.4.0"
+    randomcolor "^0.4.4"
+
 "@mapgis/mapbox-gl@^1.9.3", "@mapgis/mapbox-gl@^1.9.6":
   version "1.9.8"
   resolved "https://registry.nlark.com/@mapgis/mapbox-gl/download/@mapgis/mapbox-gl-1.9.8.tgz#09a6f79205ad1894aaa99122b084ece91d69e2dc"
@@ -1262,9 +1270,32 @@
   version "0.0.0"
   uid ""
 
-"@mapgis/webclient-vue-ui@^10.5.5":
-  version "0.0.0"
-  uid ""
+"@mapgis/webclient-vue-ui@^10.5.5-2":
+  version "10.5.5-2"
+  resolved "https://registry.npmmirror.com/@mapgis/webclient-vue-ui/download/@mapgis/webclient-vue-ui-10.5.5-2.tgz#aa96f6c2e865b93c861f46ad8b079f87d094e750"
+  integrity sha1-qpb2wuhluTyGH0atiwefh9CU51A=
+  dependencies:
+    "@ant-design/icons" "2.1.1"
+    "@mapgis/webclient-es6-service" "^10.5.5"
+    "@vue/composition-api" "^1.0.0-rc.13"
+    "@vuepress/plugin-active-header-links" "^1.8.2"
+    "@vuepress/plugin-nprogress" "^1.8.2"
+    ant-design-vue "^1.7.5"
+    axios "^0.21.1"
+    clone "^2.1.2"
+    css-vars-ponyfill "^2.4.5"
+    echarts "^5.1.2"
+    js-md5 "^0.7.3"
+    lodash "^4.17.21"
+    lodash.uniqueid "^4.0.1"
+    qs "^6.10.1"
+    resize-detector "^0.3.0"
+    simple-uploader.js "^0.5.6"
+    spark-md5 "^3.0.1"
+    tinycolor2 "^1.4.2"
+    vuepress "^1.8.2"
+    vuepress-plugin-demo-block "^0.7.2"
+    vuepress-plugin-demo-code "^0.6.0"
 
 "@mapgis/webclient-vue-ui@link:../WebClient-Vue/ui":
   version "0.0.0"
@@ -5798,7 +5829,7 @@ chokidar@^2.0.3, chokidar@^2.1.8:
   optionalDependencies:
     fsevents "^1.2.7"
 
-chokidar@^3.3.0, chokidar@^3.4.1, chokidar@^3.5.1:
+chokidar@^3.3.0, chokidar@^3.4.1, chokidar@^3.4.2, chokidar@^3.5.1:
   version "3.5.2"
   resolved "https://registry.nlark.com/chokidar/download/chokidar-3.5.2.tgz?cache=0&sync_timestamp=1623763535523&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fchokidar%2Fdownload%2Fchokidar-3.5.2.tgz#dba3976fcadb016f66fd365021d91600d01c1e75"
   integrity sha1-26OXb8rbAW9m/TZQIdkWANAcHnU=
@@ -8474,6 +8505,25 @@ fork-ts-checker-webpack-plugin@^3.1.1:
     tapable "^1.0.0"
     worker-rpc "^0.1.0"
 
+fork-ts-checker-webpack-plugin@^6.3.4:
+  version "6.4.0"
+  resolved "https://registry.npmmirror.com/fork-ts-checker-webpack-plugin/download/fork-ts-checker-webpack-plugin-6.4.0.tgz#057e477cf1d8b013b2ed2669437f818680289c4c"
+  integrity sha1-BX5HfPHYsBOy7SZpQ3+BhoAonEw=
+  dependencies:
+    "@babel/code-frame" "^7.8.3"
+    "@types/json-schema" "^7.0.5"
+    chalk "^4.1.0"
+    chokidar "^3.4.2"
+    cosmiconfig "^6.0.0"
+    deepmerge "^4.2.2"
+    fs-extra "^9.0.0"
+    glob "^7.1.6"
+    memfs "^3.1.2"
+    minimatch "^3.0.4"
+    schema-utils "2.7.0"
+    semver "^7.3.2"
+    tapable "^1.0.0"
+
 form-data@~2.3.2:
   version "2.3.3"
   resolved "https://registry.npm.taobao.org/form-data/download/form-data-2.3.3.tgz?cache=0&sync_timestamp=1613410812604&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fform-data%2Fdownload%2Fform-data-2.3.3.tgz#dcce52c05f644f298c6a7ab936bd724ceffbf3a6"
@@ -10090,6 +10140,21 @@ jsoneditor@^9.5.3:
   version "9.5.4"
   resolved "https://registry.nlark.com/jsoneditor/download/jsoneditor-9.5.4.tgz#5d33e8cca4b80c996e1f2b55066178717821bab1"
   integrity sha1-XTPozKS4DJluHytVBmF4cXghurE=
+  dependencies:
+    ace-builds "^1.4.12"
+    ajv "^6.12.6"
+    javascript-natural-sort "^0.7.1"
+    jmespath "^0.15.0"
+    json-source-map "^0.6.1"
+    jsonrepair "^2.2.1"
+    mobius1-selectr "^2.4.13"
+    picomodal "^3.0.0"
+    vanilla-picker "^2.11.2"
+
+jsoneditor@^9.5.6:
+  version "9.5.6"
+  resolved "https://registry.nlark.com/jsoneditor/download/jsoneditor-9.5.6.tgz#b2abca2aeb34bb5291025d0eeddcb2845e0d90a9"
+  integrity sha1-sqvKKus0u1KRAl0O7dyyhF4NkKk=
   dependencies:
     ace-builds "^1.4.12"
     ajv "^6.12.6"
