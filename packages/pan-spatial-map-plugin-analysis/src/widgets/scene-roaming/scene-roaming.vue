@@ -157,7 +157,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
 
   private onAddPathStart() {
     this.interactiveAdding = true
-    this.draw = new this.Cesium.DrawElement(this.webGlobe.viewer)
+    this.draw = new this.Cesium.DrawElement(this.viewer)
 
     const material = this.Cesium.Material.fromType('Color')
     material.uniforms.color = new this.Cesium.Color(0.9, 0.6, 0.1, 0.5)
@@ -167,7 +167,7 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
       addDefaultMark: true,
       callback: coord => {
         // 获取当前坐标系标准
-        const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+        const ellipsoid = this.viewer.scene.globe.ellipsoid
         // 根据坐标系标准，将笛卡尔坐标转换为地理坐标
         const cartographic = ellipsoid.cartesianToCartographic(coord)
         // 获取该位置的经纬度坐标和镜头高度

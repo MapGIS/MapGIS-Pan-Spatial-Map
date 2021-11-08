@@ -78,14 +78,14 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   private pickableChange() {
     // 定义当前场景的画布元素的事件处理
     const handler = new this.Cesium.ScreenSpaceEventHandler(
-      this.webGlobe.scene._canvas
+      this.viewer.scene._canvas
     )
     // 设置鼠标移动事件的处理函数，这里负责监听x,y坐标值变化
     handler.setInputAction(movement => {
       if (!this.pickable) return
       // 通过指定的椭球或者地图对应的坐标系，将鼠标的二维坐标转换为对应椭球体三维坐标
-      const { ellipsoid } = this.webGlobe.scene.globe
-      const cartesian = this.webGlobe.viewer.camera.pickEllipsoid(
+      const { ellipsoid } = this.viewer.scene.globe
+      const cartesian = this.viewer.camera.pickEllipsoid(
         movement.position,
         ellipsoid
       )
@@ -103,11 +103,11 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   @Watch('center', { deep: true, immediate: false })
   centerChange() {
     if (this.center && this.center.length > 0) {
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           this.center[0],
           this.center[1],
-          this.webGlobe.viewer.camera.positionCartographic.height
+          this.viewer.camera.positionCartographic.height
         )
       })
     }
@@ -152,7 +152,10 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
           rgba.b / 255,
           rgba.a
         )
-        const text = this.webGlobe.appendLabel(
+        const labelLayer = new this.CesiumZondy.Manager.LabelLayer({
+          viewer: this.viewer
+        })
+        const text = labelLayer.appendLabel(
           // 经度、纬度、高程
           center[0],
           center[1],
@@ -197,7 +200,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
       this.CesiumZondy,
-      this.webGlobe
+      this.viewer
     )
 
     this.pickableChange()
@@ -229,7 +232,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
       this.entityNames.pop()
     }
     for (let i = this.entityTextNames.length - 1; i >= 0; i -= 1) {
-      this.webGlobe.viewer.entities.remove(this.entityTextNames[i])
+      this.viewer.entities.remove(this.entityTextNames[i])
       this.entityTextNames.pop()
     }
   }

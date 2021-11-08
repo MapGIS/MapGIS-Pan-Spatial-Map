@@ -414,7 +414,7 @@ export default class MpTreeLayer extends Mixins(
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
       this.CesiumZondy,
-      this.webGlobe
+      this.viewer
     )
   }
 
@@ -622,13 +622,13 @@ export default class MpTreeLayer extends Mixins(
   }
 
   fitBounds(item) {
-    const { Cesium, map, webGlobe, CesiumZondy } = this
+    const { Cesium, map, viewer, CesiumZondy } = this
     const isOutOfRange = FitBound.fitBoundByLayer(
       item.dataRef,
       {
         Cesium,
         map,
-        webGlobe,
+        viewer,
         CesiumZondy
       },
       this.is2DMapMode === true

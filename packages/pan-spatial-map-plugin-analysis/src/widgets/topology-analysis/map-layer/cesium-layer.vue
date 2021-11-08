@@ -35,7 +35,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
       this.CesiumZondy,
-      this.webGlobe
+      this.viewer
     )
     this.geoJSONChange('Analysis')
     this.geoJSONChange('Target')
@@ -85,11 +85,11 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         fillColor,
         outLineColor
       })
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           center[0],
           center[1],
-          this.webGlobe.viewer.camera.positionCartographic.height
+          this.viewer.camera.positionCartographic.height
         )
       })
       sourceArr.push(entity)
@@ -106,7 +106,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
           width: 3,
           color: fillColor
         })
-        this.webGlobe.viewer.camera.flyTo({
+        this.viewer.camera.flyTo({
           destination: this.Cesium.Rectangle.fromDegrees(
             bound[0][0],
             bound[0][1],
@@ -130,7 +130,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
           fillColor,
           outlineColor
         )
-        this.webGlobe.viewer.camera.flyTo({
+        this.viewer.camera.flyTo({
           destination: this.Cesium.Rectangle.fromDegrees(
             bound[0][0],
             bound[0][1],

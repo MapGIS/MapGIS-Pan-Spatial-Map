@@ -678,11 +678,11 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     if (this.is2DMapMode) {
       this.map.panTo(row.geometry.coordinates)
     } else {
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           row.geometry.coordinates[0],
           row.geometry.coordinates[1],
-          this.webGlobe.viewer.camera.positionCartographic.height
+          this.viewer.camera.positionCartographic.height
         )
       })
     }
