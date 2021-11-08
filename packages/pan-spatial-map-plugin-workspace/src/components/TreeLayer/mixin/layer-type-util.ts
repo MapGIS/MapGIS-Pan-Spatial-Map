@@ -86,7 +86,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
    */
   isVectorTileSubLayer(item) {
     return (
-      this.$slots['vector-tile-sublayer-popover'] &&
+      this.$scopedSlots['vector-tile-sublayer-popover'] &&
       this.isSubLayer(item) &&
       this.isVectorTile(item)
     )
