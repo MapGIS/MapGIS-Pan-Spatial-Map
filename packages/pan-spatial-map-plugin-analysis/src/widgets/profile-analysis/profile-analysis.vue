@@ -394,8 +394,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
    */
   landscapeLayerFuc() {
     const { layer } = this
-    const { renderType } = layer.activeScene.sublayers[0]
-    const { id } = this.layer.activeScene.sublayers[0]
+    const { renderType, id } = layer.activeScene.sublayers[0]
     let source = null
     if (renderType === IGSSceneSublayerRenderType.modelCache) {
       source = Objects.SceneController.getInstance(
