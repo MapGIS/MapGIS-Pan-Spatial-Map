@@ -562,9 +562,9 @@ export default class MpFeatureQuery extends Mixins(
     }
 
     if (visibleSublayerId !== '') {
-      const { source } = this.sceneController.findSource(visibleSublayerId)
-      if (source.length > 0) {
-        tranform = source[0].root.transform
+      const source = this.sceneController.findSource(visibleSublayerId)
+      if (source) {
+        tranform = source.root.transform
       }
     }
     return tranform

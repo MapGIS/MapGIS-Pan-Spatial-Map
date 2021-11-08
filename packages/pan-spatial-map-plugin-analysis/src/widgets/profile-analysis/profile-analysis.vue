@@ -396,21 +396,21 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     const { layer } = this
     const { renderType } = layer.activeScene.sublayers[0]
     const { id } = this.layer.activeScene.sublayers[0]
-    let res = null
+    let source = null
     if (renderType === IGSSceneSublayerRenderType.modelCache) {
-      res = Objects.SceneController.getInstance(
+      source = Objects.SceneController.getInstance(
         this.Cesium,
         this.CesiumZondy,
         this.webGlobe
       ).findSource(id)
     } else if (renderType === IGSSceneSublayerRenderType.elevation) {
-      res = Objects.SceneController.getInstance(
+      source = Objects.SceneController.getInstance(
         this.Cesium,
         this.CesiumZondy,
         this.webGlobe
       ).findTerrainSource(id)
     }
-    return res.source
+    return [source]
   }
 
   /**

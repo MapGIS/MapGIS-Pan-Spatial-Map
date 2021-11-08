@@ -152,13 +152,13 @@ export default class CesiumView extends Vue {
   getGeometry(shape) {
     const { sublayers } = this.layer.activeScene || {}
     if (sublayers) {
-      const { source } = this.sceneController.findSource(
+      const source = this.sceneController.findSource(
         sublayers.find(({ visible }) => !!visible).id
       )
-      if (source && source.length) {
+      if (source) {
         const { xmin, ymin, xmax, ymax, zmin, zmax } = this.toRect3D(
           shape,
-          source[0].root.transform
+          source.root.transform
         )
         return new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
       }
