@@ -332,7 +332,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
    * 获取剖切图层
    */
   landscapeLayerFuc() {
-    const { id } = this.model.activeScene.sublayers[0]
+    const { id } = this.model.activeScene.layer
     const { source } = Objects.SceneController.getInstance(
       this.Cesium,
       this.CesiumZondy,
