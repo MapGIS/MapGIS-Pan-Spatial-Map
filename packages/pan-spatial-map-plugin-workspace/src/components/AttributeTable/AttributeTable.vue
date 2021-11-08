@@ -597,7 +597,7 @@ export default class MpAttributeTable extends Mixins(
       }
     } else if (serverType === LayerType.IGSScene) {
       // 查找矩阵集
-      const { source } = this.sceneController.findSource(this.optionVal.id)
+      const source = this.sceneController.findSource(this.optionVal.id)
       const { gdbp } = this.optionVal
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry
@@ -630,8 +630,8 @@ export default class MpAttributeTable extends Mixins(
       this.tableData = (SFEleArray || []).map(
         ({ AttValue = [], bound = {}, FID }) => {
           let boundObj = null
-          if (source.length > 0) {
-            const tranform = source[0].root.transform
+          if (source) {
+            const tranform = source.root.transform
             boundObj = this.sceneController.localExtentToGlobelExtent(
               bound,
               tranform
@@ -665,8 +665,8 @@ export default class MpAttributeTable extends Mixins(
   }
 
   private getGeometry3D(source) {
-    if (source.length > 0) {
-      const transform = source[0].root.transform
+    if (source) {
+      const transform = source.root.transform
       const { xmin, ymin, xmax, ymax, zmin, zmax } = this.geometry3D
       const minPosition = this.sceneController.globelPositionToLocalPosition(
         { x: xmin, y: ymin, z: zmin },
