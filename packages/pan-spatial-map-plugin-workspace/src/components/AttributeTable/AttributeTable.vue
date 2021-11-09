@@ -331,7 +331,7 @@ export default class MpAttributeTable extends Mixins(
     // this.sceneController = Objects.SceneController.getInstance(
     //   this.Cesium,
     //   this.CesiumZondy,
-    //   this.webGlobe
+    //   this.viewer
     // )
   }
 
@@ -471,7 +471,7 @@ export default class MpAttributeTable extends Mixins(
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
       this.CesiumZondy,
-      this.webGlobe
+      this.viewer
     )
     try {
       this.clearSelection()
@@ -882,7 +882,7 @@ export default class MpAttributeTable extends Mixins(
         )
       })
       const sampleElevationTool = new this.Cesium.SampleElevationTool(
-        this.webGlobe.viewer,
+        this.viewer,
         positions,
         'model',
         elevationPosition => {

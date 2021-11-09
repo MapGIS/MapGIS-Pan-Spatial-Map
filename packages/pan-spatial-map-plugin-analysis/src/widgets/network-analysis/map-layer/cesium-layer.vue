@@ -55,7 +55,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
       this.CesiumZondy,
-      this.webGlobe
+      this.viewer
     )
     this.dataCoordinateArrChange()
     this.dataBarrierArrChange()
@@ -258,11 +258,11 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
 
   flyToHigh(center) {
     if (center && center.length > 0) {
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           center[0],
           center[1],
-          this.webGlobe.viewer.camera.positionCartographic.height
+          this.viewer.camera.positionCartographic.height
         )
       })
     }

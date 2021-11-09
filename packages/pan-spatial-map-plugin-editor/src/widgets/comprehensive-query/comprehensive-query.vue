@@ -241,7 +241,7 @@ export default class MpComprehensiveQuery extends Mixins(
         { name: 'bounds' }
       )
     } else {
-      const Rectangle = this.webGlobe.viewer.camera.computeViewRectangle()
+      const Rectangle = this.viewer.camera.computeViewRectangle()
       const xmin = (Rectangle.west / Math.PI) * 180
       const ymax = (Rectangle.north / Math.PI) * 180
       const xmax = (Rectangle.east / Math.PI) * 180
@@ -283,8 +283,28 @@ export default class MpComprehensiveQuery extends Mixins(
         }
       })
     } else {
-      this.webGlobe.flyTo(center[0], center[1])
+      this.flyTo(center[0], center[1])
     }
+  }
+
+  /**
+   * 三维跳转中心点方法
+   */
+  flyTo(lon, lat, height) {
+    const { viewer, Cesium } = this
+    if (height === null || height === '' || height === undefined) {
+      var cameraHeight = Math.ceil(viewer.camera.positionCartographic.height)
+      height = cameraHeight
+    }
+    viewer.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(lon, lat, height),
+      duration: 1000,
+      orientation: {
+        heading: Cesium.Math.toRadians(0), //0 //绕垂直于地心的轴旋转 ,相当于头部左右转
+        pitch: Cesium.Math.toRadians(-90), ///-90  //绕经度线旋转， 相当于头部上下
+        roll: Cesium.Math.toRadians(0) //0         //绕纬度线旋转 ，面对的一面瞬时针转
+      }
+    })
   }
 
   /**

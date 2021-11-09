@@ -5,7 +5,7 @@ import BaseMixin from './base'
 
 @Component
 export default class CesiumMixin extends Mixins(BaseMixin) {
-  @Inject('webGlobe') webGlobe
+  @Inject('viewer') viewer
 
   @Inject('Cesium') Cesium
 
@@ -79,7 +79,7 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
    */
   addDataSourceToViewer(layer: Layer) {
     if (layer) {
-      this.webGlobe.viewer.dataSources.add(layer)
+      this.viewer.dataSources.add(layer)
     }
   }
 
@@ -89,7 +89,7 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
    */
   removeViewerLayer(layer: Layer) {
     if (layer) {
-      this.webGlobe.viewer.dataSources.remove(layer)
+      this.viewer.dataSources.remove(layer)
       layer = null
     }
   }
@@ -116,7 +116,8 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
    * 点击显示实体弹框
    */
   showPopupWin() {
-    const { viewer, scene } = this.webGlobe
+    const { viewer } = this
+    const { scene } = viewer
     const { Manager } = this.CesiumZondy
     const mouseEventManager = new Manager.MouseEventManager({ viewer })
     const CommonFuncManager = new Manager.CommonFuncManager({ viewer })

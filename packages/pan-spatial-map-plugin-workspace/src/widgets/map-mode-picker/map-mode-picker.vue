@@ -83,7 +83,7 @@ export default class MpMapModePicker extends Mixins(WidgetMixin) {
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
       this.CesiumZondy,
-      this.webGlobe
+      this.viewer
     )
   }
 }

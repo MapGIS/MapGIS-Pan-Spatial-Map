@@ -151,7 +151,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       Objects.SceneController.getInstance(
         this.Cesium,
         this.CesiumZondy,
-        this.webGlobe
+        this.viewer
       ).zoomToM3dLayerBySource(source[0])
       this.samplePrecision = 0.2
       this.polygonHeight = 2
@@ -160,7 +160,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       // 地形
       const bound = layer.fullExtent
       if (bound) {
-        this.webGlobe.viewer.camera.flyTo({
+        this.viewer.camera.flyTo({
           destination: this.Cesium.Rectangle.fromDegrees(
             bound.xmin,
             bound.ymin,
@@ -173,7 +173,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       this.polygonHeight = 100
       this.profileType = 0
       // 设置当前地形对象
-      this.webGlobe.viewer.terrainProvider = source[0]
+      this.viewer.terrainProvider = source[0]
     }
   }
 
@@ -204,13 +204,13 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       res = Objects.SceneController.getInstance(
         this.Cesium,
         this.CesiumZondy,
-        this.webGlobe
+        this.viewer
       ).findSource(id)
     } else if (renderType === IGSSceneSublayerRenderType.elevation) {
       res = Objects.SceneController.getInstance(
         this.Cesium,
         this.CesiumZondy,
-        this.webGlobe
+        this.viewer
       ).findTerrainSource(id)
     }
     return res.source

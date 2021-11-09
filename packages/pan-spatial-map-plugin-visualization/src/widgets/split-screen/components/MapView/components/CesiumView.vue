@@ -209,14 +209,14 @@ export default class CesiumView extends Vue {
    * @param {object}
    */
   onMapLoad(payload) {
-    this.CesiumZondy.getWebGlobeByInterval(webGlobe => {
+    this.CesiumZondy.getWebGlobeByInterval(viewer => {
       this.sceneController = Objects.SceneController.getInstance(
         this.Cesium,
         this.CesiumZondy,
-        webGlobe
+        viewer
       )
       this.isMapLoaded = true
-      this.$emit('load', webGlobe, this.sceneController)
+      this.$emit('load', viewer, this.sceneController)
     }, this.vueKey)
   }
 }

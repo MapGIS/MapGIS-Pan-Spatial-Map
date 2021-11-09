@@ -79,8 +79,8 @@ export default class FeatureHighlight extends Vue {
    */
   getModelHeight(markers: Array<IMarker>) {
     return new Promise((resolve, reject) => {
-      const webGlobe = this.CesiumZondy.getWebGlobe(this.vueKey)
-      if (!webGlobe) {
+      const viewer = this.CesiumZondy.getWebGlobe(this.vueKey)
+      if (!viewer) {
         return reject('WebGlobe未初始化')
       }
       const positions = markers.map(
@@ -88,7 +88,7 @@ export default class FeatureHighlight extends Vue {
           new this.Cesium.Cartesian3.fromDegrees(coordinates[0], coordinates[1])
       )
       const sampleElevationTool = new this.Cesium.SampleElevationTool(
-        webGlobe.viewer,
+        viewer,
         positions,
         'model',
         positions => {

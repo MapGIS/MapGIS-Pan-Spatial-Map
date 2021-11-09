@@ -115,7 +115,7 @@ import { Component, Vue, Prop, Inject, Watch } from 'vue-property-decorator'
 export default class PathRoaming extends Vue {
   @Inject('Cesium') Cesium: any
 
-  @Inject('webGlobe') webGlobe: any
+  @Inject('viewer') viewer: any
 
   @Prop() path
 
@@ -170,7 +170,7 @@ export default class PathRoaming extends Vue {
 
     //  初始化漫游动画
     window.SceneWanderManager.animation = new this.Cesium.AnimationAnalyse(
-      this.webGlobe.viewer,
+      this.viewer,
       {
         modelUrl: 'models/CesiumAir/Cesium_Air.gltf'
       }

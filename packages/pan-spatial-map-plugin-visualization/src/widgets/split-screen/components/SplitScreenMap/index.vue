@@ -87,7 +87,7 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
       const sceneController = Objects.SceneController.getInstance(
         this.Cesium,
         this.CesiumZondy,
-        this.webGlobe
+        this.viewer
       )
       if (activeScene.sublayers) {
         _initBound = sceneController.layerLocalExtentToGlobelExtent(
