@@ -86,7 +86,7 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
     if (layer instanceof Layer3D) {
       const sceneController = Objects.SceneController.getInstance(
         this.Cesium,
-        this.CesiumZondy,
+        this.vueCesium,
         this.viewer
       )
       if (activeScene.sublayers) {

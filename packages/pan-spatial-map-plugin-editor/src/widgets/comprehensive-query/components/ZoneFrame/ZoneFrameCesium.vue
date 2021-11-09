@@ -55,7 +55,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
-      this.CesiumZondy,
+      this.vueCesium,
       this.viewer
     )
     this.featureChange()

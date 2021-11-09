@@ -352,8 +352,8 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   ) {
     const sceneController = Objects.SceneController.getInstance(
       this.Cesium,
-      this.CesiumZondy,
-      this.CesiumZondy.getWebGlobe(this.vueKey)
+      this.vueCesium,
+      this.vueCesium.getViewer(this.vueKey)
     )
     if (!sceneController) {
       return Promise.reject('WebGlobe未初始化')

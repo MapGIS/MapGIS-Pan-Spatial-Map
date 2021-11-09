@@ -173,7 +173,7 @@ export default class MpFeatureQuery extends Mixins(
   created() {
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
-      this.CesiumZondy,
+      this.vueCesium,
       this.viewer
     )
   }

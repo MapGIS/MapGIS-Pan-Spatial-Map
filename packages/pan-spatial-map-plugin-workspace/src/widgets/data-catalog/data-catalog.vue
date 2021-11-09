@@ -857,7 +857,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 监听服务叠加事件
   imposeService(params) {
     this.imposeNode = {}
-    const { Cesium, map, viewer, CesiumZondy } = this
+    const { Cesium, map, viewer, vueCesium } = this
     let node = {}
 
     if (params.type === 'WMS' || params.type === 'WMTS') {
@@ -894,7 +894,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                   Cesium,
                   map,
                   viewer,
-                  CesiumZondy
+                  vueCesium
                 },
                 this.is2DMapMode === true
               )

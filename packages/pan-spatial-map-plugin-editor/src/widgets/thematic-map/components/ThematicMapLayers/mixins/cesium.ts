@@ -9,7 +9,7 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
 
   @Inject('Cesium') Cesium
 
-  @Inject('CesiumZondy') CesiumZondy
+  @Inject('vueCesium') vueCesium
 
   // 专题图层
   private thematicMapLayer = null
@@ -120,7 +120,6 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
     const { scene } = viewer
     const { Manager } = this.CesiumZondy
     const mouseEventManager = new Manager.MouseEventManager({ viewer })
-    const CommonFuncManager = new Manager.CommonFuncManager({ viewer })
     mouseEventManager.unRegisterMouseEvent('LEFT_CLICK')
     mouseEventManager.registerMouseEvent('LEFT_CLICK', ({ position }) => {
       this.closePopupWin()

@@ -199,7 +199,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
-      this.CesiumZondy,
+      this.vueCesium,
       this.viewer
     )
 

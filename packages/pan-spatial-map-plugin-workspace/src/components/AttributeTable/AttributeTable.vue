@@ -330,7 +330,7 @@ export default class MpAttributeTable extends Mixins(
     DomUtil.addFullScreenListener(this.fullScreenListener)
     // this.sceneController = Objects.SceneController.getInstance(
     //   this.Cesium,
-    //   this.CesiumZondy,
+    //   this.vueCesium,
     //   this.viewer
     // )
   }
@@ -470,7 +470,7 @@ export default class MpAttributeTable extends Mixins(
     this.loading = true
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
-      this.CesiumZondy,
+      this.vueCesium,
       this.viewer
     )
     try {
