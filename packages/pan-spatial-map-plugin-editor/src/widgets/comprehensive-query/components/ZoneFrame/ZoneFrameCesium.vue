@@ -126,10 +126,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
             rgba.b / 255,
             rgba.a
           )
-          const labelLayer = new this.CesiumZondy.Manager.LabelLayer({
-            viewer: this.viewer
-          })
-          const text = labelLayer.appendLabel(
+          const text = this.sceneOverlays.addLabel(
             // 经度、纬度、高程
             this.center[0],
             this.center[1],

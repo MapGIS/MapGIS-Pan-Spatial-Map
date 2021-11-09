@@ -118,10 +118,8 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
   showPopupWin() {
     const { viewer } = this
     const { scene } = viewer
-    const { Manager } = this.CesiumZondy
-    const mouseEventManager = new Manager.MouseEventManager({ viewer })
-    mouseEventManager.unRegisterMouseEvent('LEFT_CLICK')
-    mouseEventManager.registerMouseEvent('LEFT_CLICK', ({ position }) => {
+    viewer.unRegisterMouseEvent('LEFT_CLICK')
+    viewer.registerMouseEvent('LEFT_CLICK', ({ position }) => {
       this.closePopupWin()
       const pick = scene.pick(position)
       if (pick && pick.id) {
