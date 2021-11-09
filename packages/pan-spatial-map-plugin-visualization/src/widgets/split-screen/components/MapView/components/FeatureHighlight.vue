@@ -30,7 +30,7 @@ interface IMarker {
 export default class FeatureHighlight extends Vue {
   @Inject('Cesium') Cesium: unknown
 
-  @Inject('CesiumZondy') CesiumZondy: unknown
+  @Inject('vueCesium') vueCesium: unknown
 
   // 三维地图vueKey
   @Prop() readonly vueKey!: string
@@ -79,7 +79,7 @@ export default class FeatureHighlight extends Vue {
    */
   getModelHeight(markers: Array<IMarker>) {
     return new Promise((resolve, reject) => {
-      const viewer = this.CesiumZondy.getWebGlobe(this.vueKey)
+      const viewer = this.vueCesium.getViewer(this.vueKey)
       if (!viewer) {
         return reject('WebGlobe未初始化')
       }

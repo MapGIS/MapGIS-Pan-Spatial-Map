@@ -269,7 +269,7 @@ export default class MpTreeLayer extends Mixins(
   ExhibitionControllerMixin,
   layerTypeUtil
 ) {
-  @Inject('CesiumZondy') CesiumZondy
+  @Inject('vueCesium') vueCesium
 
   @Prop() widgetInfo!: Record<string, any>
 
@@ -413,7 +413,7 @@ export default class MpTreeLayer extends Mixins(
   created() {
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
-      this.CesiumZondy,
+      this.vueCesium,
       this.viewer
     )
   }
@@ -622,14 +622,14 @@ export default class MpTreeLayer extends Mixins(
   }
 
   fitBounds(item) {
-    const { Cesium, map, viewer, CesiumZondy } = this
+    const { Cesium, map, viewer, vueCesium } = this
     const isOutOfRange = FitBound.fitBoundByLayer(
       item.dataRef,
       {
         Cesium,
         map,
         viewer,
-        CesiumZondy
+        vueCesium
       },
       this.is2DMapMode === true
     )

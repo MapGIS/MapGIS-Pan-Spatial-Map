@@ -39,7 +39,7 @@ import {
 export default class CesiumView extends Vue {
   @Inject('Cesium') Cesium: unknown
 
-  @Inject('CesiumZondy') CesiumZondy: unknown
+  @Inject('vueCesium') vueCesium: unknown
 
   @Prop() readonly vueKey!: string
 
@@ -209,10 +209,10 @@ export default class CesiumView extends Vue {
    * @param {object}
    */
   onMapLoad(payload) {
-    this.CesiumZondy.getWebGlobeByInterval(viewer => {
+    this.vueCesium.getViewerByInterval(viewer => {
       this.sceneController = Objects.SceneController.getInstance(
         this.Cesium,
-        this.CesiumZondy,
+        this.vueCesium,
         viewer
       )
       this.isMapLoaded = true

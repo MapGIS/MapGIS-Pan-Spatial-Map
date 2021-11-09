@@ -150,7 +150,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       // 模型只要把模型移到当前视图范围下即可进行分析
       Objects.SceneController.getInstance(
         this.Cesium,
-        this.CesiumZondy,
+        this.vueCesium,
         this.viewer
       ).zoomToM3dLayerBySource(source[0])
       this.samplePrecision = 0.2
@@ -203,13 +203,13 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
     if (renderType === IGSSceneSublayerRenderType.modelCache) {
       res = Objects.SceneController.getInstance(
         this.Cesium,
-        this.CesiumZondy,
+        this.vueCesium,
         this.viewer
       ).findSource(id)
     } else if (renderType === IGSSceneSublayerRenderType.elevation) {
       res = Objects.SceneController.getInstance(
         this.Cesium,
-        this.CesiumZondy,
+        this.vueCesium,
         this.viewer
       ).findTerrainSource(id)
     }

@@ -34,7 +34,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
-      this.CesiumZondy,
+      this.vueCesium,
       this.viewer
     )
     this.geoJSONChange('Analysis')

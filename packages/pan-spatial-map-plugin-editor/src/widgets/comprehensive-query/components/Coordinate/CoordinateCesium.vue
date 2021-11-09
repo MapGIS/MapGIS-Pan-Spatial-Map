@@ -152,10 +152,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
           rgba.b / 255,
           rgba.a
         )
-        const labelLayer = new this.CesiumZondy.Manager.LabelLayer({
-          viewer: this.viewer
-        })
-        const text = labelLayer.appendLabel(
+        const text = this.sceneOverlays.addLabel(
           // 经度、纬度、高程
           center[0],
           center[1],
@@ -199,7 +196,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
-      this.CesiumZondy,
+      this.vueCesium,
       this.viewer
     )
 

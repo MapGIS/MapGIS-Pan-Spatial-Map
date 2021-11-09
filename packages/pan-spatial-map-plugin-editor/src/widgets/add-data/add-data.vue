@@ -281,7 +281,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   }
 
   async onAddLayer(data) {
-    const { Cesium, map, viewer, CesiumZondy } = this
+    const { Cesium, map, viewer, vueCesium } = this
     const layerConfig = {
       name: data.name,
       guid: data.id,
@@ -316,7 +316,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
                   Cesium,
                   map,
                   viewer,
-                  CesiumZondy
+                  vueCesium
                 },
                 this.is2DMapMode === true
               )
