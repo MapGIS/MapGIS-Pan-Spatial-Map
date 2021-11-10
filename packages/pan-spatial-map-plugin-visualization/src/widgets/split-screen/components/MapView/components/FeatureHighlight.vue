@@ -81,7 +81,7 @@ export default class FeatureHighlight extends Vue {
     return new Promise((resolve, reject) => {
       const viewer = this.vueCesium.getViewer(this.vueKey)
       if (!viewer) {
-        return reject('WebGlobe未初始化')
+        return reject('viewer未初始化')
       }
       const positions = markers.map(
         ({ coordinates }) =>

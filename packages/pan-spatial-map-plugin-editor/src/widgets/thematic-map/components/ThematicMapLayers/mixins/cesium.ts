@@ -1,5 +1,5 @@
 import { Component, Mixins, Watch, Inject } from 'vue-property-decorator'
-import { Layer, ColorUtil, Feature } from '@mapgis/web-app-framework'
+import { Layer, ColorUtil, Feature, Overlay } from '@mapgis/web-app-framework'
 import { getMarker, IMarker } from '../../../utils'
 import BaseMixin from './base'
 
@@ -16,6 +16,8 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
 
   // 标注
   private selfMarker: any = {}
+
+  private sceneOverlays: any = undefined
 
   /**
    * 监听：图属联动变化
@@ -117,9 +119,17 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
    */
   showPopupWin() {
     const { viewer } = this
+    let { sceneOverlays } = this
+    if (!sceneOverlays) {
+      sceneOverlays = Overlay.SceneOverlays.getInstance(
+        this.Cesium,
+        this.vueCesium,
+        viewer
+      )
+    }
     const { scene } = viewer
-    viewer.unRegisterMouseEvent('LEFT_CLICK')
-    viewer.registerMouseEvent('LEFT_CLICK', ({ position }) => {
+    sceneOverlays.unRegisterMouseEvent('LEFT_CLICK')
+    sceneOverlays.registerMouseEvent('LEFT_CLICK', ({ position }) => {
       this.closePopupWin()
       const pick = scene.pick(position)
       if (pick && pick.id) {
