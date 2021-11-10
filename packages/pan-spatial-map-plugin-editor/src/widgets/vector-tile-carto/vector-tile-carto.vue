@@ -40,7 +40,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
 
   // private vectorTileDocument = undefined
 
-  // @Watch('document', { deep: true, immediate: true })
+  // // @Watch('document', { deep: true, immediate: true })
   get vectorTileDocument() {
     if (!this.document) return
     const datas = this.document.clone()
@@ -53,6 +53,10 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     // }
     console.log(datas)
     return datas
+  }
+
+  set vectorTileDocument(val) {
+    this.document = val
   }
 
   // mounted() {
