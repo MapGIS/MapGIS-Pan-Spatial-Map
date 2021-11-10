@@ -11,7 +11,7 @@
       <mapgis-ui-button type="link" @click="goBack" size="small">
         <mapgis-ui-iconfont type="mapgis-left" />返回主页
       </mapgis-ui-button>
-      <div v-if="settingLayerId !== undefined">
+      <div v-if="settingLayerId !== ''">
         <mapgis-ui-group-tab
           :title="settingLayerId"
           style="margin-bottom:5px"
@@ -36,7 +36,7 @@ import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
 export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   private showStyleSetting = false
 
-  private settingLayerId = undefined
+  private settingLayerId = ''
 
   // private vectorTileDocument = undefined
 

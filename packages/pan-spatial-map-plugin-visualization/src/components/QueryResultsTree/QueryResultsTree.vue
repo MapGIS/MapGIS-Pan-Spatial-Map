@@ -356,7 +356,7 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
       this.vueCesium.getViewer(this.vueKey)
     )
     if (!sceneController) {
-      return Promise.reject('WebGlobe未初始化')
+      return Promise.reject('viewer未初始化')
     }
     const featureIGS: FeatureIGS = await FeatureQuery.query(
       queryOptions,
