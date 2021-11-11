@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-vector-tile-carto">
     <mp-tree-layer
-      v-show="!showStyleSetting"
+      v-if="showWidget && !showStyleSetting"
       :widgetInfo="widgetInfo"
       :layerDocument.sync="vectorTileDocument"
       @click-item="changeNode"
@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
+import { LayerType, WidgetMixin, Document } from '@mapgis/web-app-framework'
 
 @Component({
   name: 'MpVectorTileCarto'
@@ -38,30 +38,23 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
 
   private settingLayerId = ''
 
-  // private vectorTileDocument = undefined
+  private vectorTileDocument = new Document()
 
-  // // @Watch('document', { deep: true, immediate: true })
-  get vectorTileDocument() {
+  get showWidget() {
+    return (
+      this.vectorTileDocument &&
+      this.vectorTileDocument.defaultMap &&
+      this.vectorTileDocument.defaultMap.layers() &&
+      this.vectorTileDocument.defaultMap.layers().length > 0
+    )
+  }
+
+  @Watch('document.defaultMap', { deep: true, immediate: true })
+  documentChange() {
     if (!this.document) return
     const datas = this.document.clone()
-    // const layers = datas.defaultMap.clone().getFlatLayers()
-    // for (let i = 0; i < layers.length; i += 1) {
-    //   const layer = layers[i]
-    //   if (layer.type !== LayerType.VectorTile) {
-    //     datas.defaultMap.remove(datas.defaultMap.findLayerById(layer.id))
-    //   }
-    // }
-    console.log(datas)
-    return datas
+    this.vectorTileDocument = datas
   }
-
-  set vectorTileDocument(val) {
-    this.document = val
-  }
-
-  // mounted() {
-  //   this.getVectorTileDocument()
-  // }
 
   changeNode(node) {
     this.settingLayerId = node['source-layer']
