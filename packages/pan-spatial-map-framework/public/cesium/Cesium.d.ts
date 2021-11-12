@@ -27965,19 +27965,14 @@ export class TerrainAnalyse {
         aspectRampColor?: any[];
     });
     /**
-     * 修改等高线间距
+     * 修改等高线宽度，间距和颜色
+     * @param ContourSpacing - 修改等间距
+     * @param ContourWidth - 修改等高线宽度
+     * @param ContourColor - 修改等高线颜色
      */
-    changeContourSpacing(): void;
+    changeContours(ContourSpacing: number, ContourWidth: number, ContourColor: Color): void;
     /**
-     * 修改等高线宽度
-     */
-    changeContourWidth(): void;
-    /**
-     * 修改等高线颜色
-     */
-    changeContourColor(): void;
-    /**
-     * 开启地形分析
+     * 开启等值线分析
      * @example
      * terrainAnalyse.enableContour(true);
      * @param enableContour - 是否开启等高线
@@ -28013,17 +28008,31 @@ export class TerrainAnalyse {
      * @example
      * var  cartesian2= new Cesium.Cartesian2(3.0,3.0);
      * terrainAnalyse.changeArrowAspectRepeat(cartesian2);
-     * @param colorTableDis - 色表间距值
-     * @param ShadingType - 渲染类型，高程赋色'elevation'、坡度分析'slope'、坡向分析'aspect'。
      */
-    changeArrowAspectRepeat(colorTableDis: any[], ShadingType: string): void;
+    changeArrowAspectRepeat(): void;
     /**
-     * 开启地形分析
+     * 开启地形分析，坡度，坡向和等值线
      * @example
      * terrainAnalyse.updateMaterial('elevation'); //地形分析包括高程赋色'elevation'、坡度分析'slope'、坡向分析'aspect'。
      * @param selectedShading - 地形分析类型
      */
     updateMaterial(selectedShading: string): void;
+    /**
+     * 开启地形等值面分析
+     * @example
+     * var bandPositions = [400,800,1300];
+     * var terrainA = new Cesium.TerrainAnalyse(viewer);
+     *
+     * var colorsArray =[Cesium.Color.RED,Cesium.Color.BLUE,Cesium.Color.GREEN];
+     * terrainAnalyse.updateElevationBandMaterial(bandPositions,false,100,1.0,0.0,colorsArray);
+     * @param bandPositions - 等值面数组，高度，单位米
+     * @param gradient - 是否渐变
+     * @param bandThickness - 等值面宽度
+     * @param bandTransparency - 等值面透明度
+     * @param backgroundTransparency - 等值面背景透明度
+     * @param colorsArray - 等值面颜色数组
+     */
+    updateElevationBandMaterial(bandPositions: any[], gradient: boolean, bandThickness: number, bandTransparency: number, backgroundTransparency: number, colorsArray: any[]): void;
     /**
      * 地形压平
      * @param positions - 多边形顶点坐标数组
@@ -28031,6 +28040,10 @@ export class TerrainAnalyse {
      * @returns 返回是否成功执行
      */
     terrainFlatten(positions: any[], flattenHeight: number): boolean;
+    /**
+     * 移除地形压平
+     */
+    removeTerrainFlatten(): void;
 }
 
 /**
