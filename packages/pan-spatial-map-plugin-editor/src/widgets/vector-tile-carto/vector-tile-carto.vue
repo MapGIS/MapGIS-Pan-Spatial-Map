@@ -52,8 +52,15 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
   @Watch('document.defaultMap', { deep: true, immediate: true })
   documentChange() {
     if (!this.document) return
-    const datas = this.document.clone()
-    this.vectorTileDocument = datas
+    this.vectorTileDocument.defaultMap.removeAll()
+    this.document.defaultMap
+      .clone()
+      .getFlatLayers()
+      .forEach(layer => {
+        if (layer.type === LayerType.VectorTile) {
+          this.vectorTileDocument.defaultMap.add(layer)
+        }
+      })
   }
 
   changeNode(node) {
