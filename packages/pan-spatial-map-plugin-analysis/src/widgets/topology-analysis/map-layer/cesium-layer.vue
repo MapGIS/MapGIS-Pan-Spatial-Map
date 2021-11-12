@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" />
+    <!-- <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" /> -->
   </div>
 </template>
 
@@ -26,10 +26,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
 
   // 点集资源ID
   sourceAnalysisArr = []
-
-  get drawComponent() {
-    return this.$refs.draw3d
-  }
 
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
@@ -143,22 +139,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     }
   }
 
-  // 打开绘制，点击图标激活对应类型的绘制功能
-  private onOpenDraw() {
-    this.drawComponent && this.drawComponent.openDraw('draw-rectangle')
-  }
-
-  private stopDraw() {
-    this.drawComponent && this.drawComponent.closeDraw()
-  }
-
-  @Emit()
-  finishDraw(e) {}
-
-  onDrawFinished(e) {
-    this.finishDraw(e)
-  }
-
   clearDataTargetArr() {
     this.sourceTargetArr.forEach(entity => {
       this.sceneOverlays.removeEntity(entity)
@@ -172,7 +152,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   }
 
   beforeDestroy() {
-    this.stopDraw()
     this.clearDataTargetArr()
     this.clearDataAnalysisArr()
   }

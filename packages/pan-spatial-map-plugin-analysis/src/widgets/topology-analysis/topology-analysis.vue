@@ -116,18 +116,18 @@
         <mapbox-layer
           v-if="is2DMapMode"
           ref="mapboxLayer"
-          @finish-draw="clickFunciton"
           :geoJSONTarget="geoJSONTarget"
           :geoJSONAnalysis="geoJSONAnalysis"
         />
         <cesium-layer
           v-else
           ref="cesiumLayer"
-          @finish-draw="clickFunciton"
           :geoJSONTarget="geoJSONTarget"
           :geoJSONAnalysis="geoJSONAnalysis"
         ></cesium-layer>
       </template>
+      <mp-draw-pro ref="draw" @finished="clickFunciton" />
+      <mp-3d-draw-pro ref="draw3d" @finished="clickFunciton" />
     </div>
   </a-spin>
 </template>
@@ -191,8 +191,12 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
     this.isWidgetOpen = true
   }
 
-  get drawComponent() {
+  get drawLayer() {
     return this.is2DMapMode ? this.$refs.mapboxLayer : this.$refs.cesiumLayer
+  }
+
+  get drawComponent() {
+    return this.is2DMapMode ? this.$refs.draw : this.$refs.draw3d
   }
 
   // 目标类
@@ -264,7 +268,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
 
   draw(type) {
     this.queryType = type
-    this.drawComponent && this.drawComponent.onOpenDraw()
+    this.drawComponent && this.drawComponent.openDraw('draw-rectangle')
   }
 
   clickFunciton(e) {

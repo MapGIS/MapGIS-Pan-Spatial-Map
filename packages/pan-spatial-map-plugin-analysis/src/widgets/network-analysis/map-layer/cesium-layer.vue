@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" />
+    <!-- <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" /> -->
   </div>
 </template>
 
@@ -45,10 +45,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     'circle-radius': 5, // 半径
     'circle-color': '#FF9933', // 颜色
     'circle-opacity': 1 // 透明度
-  }
-
-  get drawComponent() {
-    return this.$refs.draw3d
   }
 
   mounted() {
@@ -244,18 +240,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     this.entityHighResultIndex = undefined
   }
 
-  // 打开绘制，点击图标激活对应类型的绘制功能
-  private onOpenDraw() {
-    this.drawComponent && this.drawComponent.openDraw('draw-point')
-  }
-
-  private stopDraw() {
-    this.drawComponent && this.drawComponent.closeDraw()
-  }
-
-  @Emit()
-  finishDraw(e) {}
-
   flyToHigh(center) {
     if (center && center.length > 0) {
       this.viewer.camera.flyTo({
@@ -268,13 +252,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     }
   }
 
-  onDrawFinished(e) {
-    this.finishDraw(e)
-    window.setTimeout(() => {
-      this.onOpenDraw()
-    })
-  }
-
   clearMark() {
     if (this.markerEntity) {
       this.sceneOverlays.removeEntity(this.markerEntity)
@@ -283,7 +260,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   }
 
   beforeDestroy() {
-    this.stopDraw()
     this.clearDataBarrierArr()
     this.clearDataCoordinateArr()
     this.clearResultLayer()

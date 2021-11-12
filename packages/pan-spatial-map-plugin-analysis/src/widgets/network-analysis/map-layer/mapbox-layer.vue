@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mp-draw-pro ref="draw" @finished="onDrawFinished" />
+    <!-- <mp-draw-pro ref="draw" @finished="onDrawFinished" /> -->
     <mapgis-marker v-if="marker" :coordinates="marker.center" anchor="bottom">
       <img slot="marker" :src="marker.img" />
     </mapgis-marker>
@@ -63,10 +63,6 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
 
   // 障碍物资源ID
   barrierSourceId = 'network-analysis-barrier'
-
-  get drawComponent() {
-    return this.$refs.draw
-  }
 
   mounted() {
     this.dataCoordinateArrChange()
@@ -201,31 +197,11 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
     }
   }
 
-  // 打开绘制，点击图标激活对应类型的绘制功能
-  private onOpenDraw() {
-    this.drawComponent && this.drawComponent.openDraw('draw-point')
-  }
-
-  private stopDraw() {
-    this.drawComponent && this.drawComponent.closeDraw()
-  }
-
-  @Emit()
-  finishDraw(e) {}
-
   flyToHigh(val) {
     this.map.panTo(val)
   }
 
-  onDrawFinished(e) {
-    this.finishDraw(e)
-    window.setTimeout(() => {
-      this.onOpenDraw()
-    })
-  }
-
   beforeDestroy() {
-    this.stopDraw()
     this.clearDataBarrierArr()
     this.clearDataCoordinateArr()
     this.clearResultLayer()
