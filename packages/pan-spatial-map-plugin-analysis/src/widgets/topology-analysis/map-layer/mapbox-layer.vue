@@ -136,10 +136,13 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
     }
   }
 
-  beforeDestroy() {
-    this.stopDraw()
+  clear() {
     this.clearDataTargetArr()
     this.clearDataAnalysisArr()
+  }
+
+  beforeDestroy() {
+    this.clear()
   }
 }
 </script>
