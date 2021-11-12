@@ -283,28 +283,23 @@ export default class MpComprehensiveQuery extends Mixins(
         }
       })
     } else {
-      this.flyTo(center[0], center[1])
+      this.flyTo()
+      const { viewer, Cesium } = this
+      const cameraHeight = Math.ceil(viewer.camera.positionCartographic.height)
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(
+          center[0],
+          center[1],
+          cameraHeight
+        ),
+        duration: 1000,
+        orientation: {
+          heading: Cesium.Math.toRadians(0), // 0 // 绕垂直于地心的轴旋转 ,相当于头部左右转
+          pitch: Cesium.Math.toRadians(-90), // -90  //绕经度线旋转， 相当于头部上下
+          roll: Cesium.Math.toRadians(0) // 0         //绕纬度线旋转 ，面对的一面瞬时针转
+        }
+      })
     }
-  }
-
-  /**
-   * 三维跳转中心点方法
-   */
-  flyTo(lon, lat, height) {
-    const { viewer, Cesium } = this
-    if (height === null || height === '' || height === undefined) {
-      var cameraHeight = Math.ceil(viewer.camera.positionCartographic.height)
-      height = cameraHeight
-    }
-    viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(lon, lat, height),
-      duration: 1000,
-      orientation: {
-        heading: Cesium.Math.toRadians(0), //0 //绕垂直于地心的轴旋转 ,相当于头部左右转
-        pitch: Cesium.Math.toRadians(-90), ///-90  //绕经度线旋转， 相当于头部上下
-        roll: Cesium.Math.toRadians(0) //0         //绕纬度线旋转 ，面对的一面瞬时针转
-      }
-    })
   }
 
   /**

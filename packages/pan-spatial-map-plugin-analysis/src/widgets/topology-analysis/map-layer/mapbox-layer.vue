@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mp-draw-pro ref="draw" @finished="onDrawFinished" />
+    <!-- <mp-draw-pro ref="draw" @finished="onDrawFinished" /> -->
   </div>
 </template>
 
@@ -32,10 +32,6 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
 
   // 点集资源ID
   sourceAnalysisId = 'topology-analysis-analysis'
-
-  get drawComponent() {
-    return this.$refs.draw
-  }
 
   @Watch('geoJSONAnalysis', { deep: true, immediate: true })
   geoJSONAnalysisChange() {
@@ -120,22 +116,6 @@ export default class MapboxLayer extends Mixins(WidgetMixin) {
         padding: { top: 100, bottom: 100, left: 200, right: 200 }
       })
     }
-  }
-
-  // 打开绘制，点击图标激活对应类型的绘制功能
-  private onOpenDraw() {
-    this.drawComponent && this.drawComponent.openDraw('draw-rectangle')
-  }
-
-  private stopDraw() {
-    this.drawComponent && this.drawComponent.closeDraw()
-  }
-
-  @Emit()
-  finishDraw(e) {}
-
-  onDrawFinished(e) {
-    this.finishDraw(e)
   }
 
   clearDataTargetArr() {
