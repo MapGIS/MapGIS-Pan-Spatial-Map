@@ -27,7 +27,7 @@
     "8": "/upload/8.png"
   },
   "urlConfig": {
-    "nonSpatialUrl": ""
+    "nonSpatialUrl": "ftp://192.168.21.191:21"
   },
   "otherConfig": {
     "nonSpatial": "非空间数据",
@@ -765,6 +765,18 @@
             "serverUrl": ""
           },
           {
+            "label": "hongkong",
+            "describe": "hongkong",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "hongkong",
+            "searchName": "",
+            "model": "globe",
+            "guid": "68744fd8-61be-400d-a861-4a0415a339cc",
+            "serverUrl": ""
+          },
+          {
             "label": "全国地形",
             "describe": "全国地形",
             "ip": "",
@@ -822,6 +834,18 @@
             "searchName": "",
             "model": "surface",
             "guid": "79edf234-3187-442e-9162-96335bb90b25",
+            "serverUrl": ""
+          },
+          {
+            "label": "大楼",
+            "describe": "大楼",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "大楼",
+            "searchName": "",
+            "model": "surface",
+            "guid": "79edf234-3187-442e-9162-96335bb90b25ccccc",
             "serverUrl": ""
           },
           {

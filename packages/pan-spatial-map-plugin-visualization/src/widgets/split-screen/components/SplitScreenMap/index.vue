@@ -90,9 +90,10 @@ export default class SplitScreenMap extends Mixins(MapMixin) {
         this.viewer
       )
       if (activeScene.sublayers) {
-        _initBound = sceneController.layerLocalExtentToGlobelExtent(
+        _initBound = sceneController.layerExtentToGlobelExtent(
           activeScene.sublayers.find(({ visible }) => !!visible) ||
-            activeScene.sublayers[0]
+            activeScene.sublayers[0],
+          activeScene.sceneMode
         )
       }
     }

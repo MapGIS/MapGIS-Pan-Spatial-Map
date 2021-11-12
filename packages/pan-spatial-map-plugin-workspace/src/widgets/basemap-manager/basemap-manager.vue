@@ -21,7 +21,8 @@ import {
   WidgetMixin,
   UUID,
   LayerType,
-  LoadStatus
+  LoadStatus,
+  FitBound
 } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
@@ -32,6 +33,8 @@ import MpBasemapItem from './components/BasemapItem/BasemapItem.vue'
 @Component({ name: 'MpBasemapManager', components: { MpBasemapItem } })
 export default class MpBasemapManager extends Mixins(WidgetMixin) {
   private basemapNames: Array<string> = []
+
+  private isInitMapRange = false // 是否已初始化地图范围,只有初次进入程序，才会初始化地图范围
 
   get imageUrl() {
     return function(image) {
@@ -91,6 +94,23 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     }
   }
 
+  fitBounds(item) {
+    const { Cesium, map, webGlobe, CesiumZondy } = this
+    const isOutOfRange = FitBound.fitBoundByLayer(
+      item,
+      {
+        Cesium,
+        map,
+        webGlobe,
+        CesiumZondy
+      },
+      this.is2DMapMode === true
+    )
+    if (isOutOfRange) {
+      this.$message.error('初始底图范围有误，已调整为经纬度最大范围')
+    }
+  }
+
   onSelect(name) {
     this.basemapNames.push(name)
 
@@ -101,6 +121,11 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
         if (mapLayer.loadStatus === LoadStatus.notLoaded) {
           await mapLayer.load()
           this.document.baseLayerMap.add(mapLayer)
+          if (!this.isInitMapRange) {
+            // 未初始化地图范围,进行初始化操作,自适应配置的底图范围
+            this.fitBounds(mapLayer)
+            this.isInitMapRange = true
+          }
         } else {
           this.document.baseLayerMap.add(mapLayer)
         }

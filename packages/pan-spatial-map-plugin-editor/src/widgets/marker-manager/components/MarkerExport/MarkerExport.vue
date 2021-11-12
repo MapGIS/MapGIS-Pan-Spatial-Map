@@ -185,6 +185,10 @@ export default class MarkerExport extends Vue {
 
   // 导出形式为shp文件或6x
   private ouputToShpOr6x(flieName: string, exportedMarkers, fileType: string) {
+    if (!this.exportConfig) {
+      this.$message.success('请先设置配置数据')
+      return
+    }
     const setOption = this.markers2Features(exportedMarkers) // 获取结果集对象
     let flieNameItem: string
     if (setOption.featureSet1.SFEleArray.length > 0) {

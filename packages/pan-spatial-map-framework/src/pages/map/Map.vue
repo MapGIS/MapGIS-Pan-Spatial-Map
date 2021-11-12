@@ -18,19 +18,24 @@ export default {
     ...mapState('setting', ['theme'])
   },
   async created() {
-    const appInfo = await getAppInfo()
+    try {
+      const appInfo = await getAppInfo()
 
-    await AppManager.getInstance().loadConfig(
-      BASE_URL,
-      appInfo.data.configPath,
-      appInfo.data.assetsPath
-    )
+      await AppManager.getInstance().loadConfig(
+        BASE_URL,
+        appInfo.data.configPath,
+        appInfo.data.assetsPath
+      )
 
-    this.application = AppManager.getInstance().getApplication()
+      this.application = AppManager.getInstance().getApplication()
 
-    const style = this.themeStyle()
+      const style = this.themeStyle()
 
-    this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
+      this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
+    } catch (error) {
+      this.$message.warning('认证 token 已过期，请重新登录')
+      this.$router.replace('/login')
+    }
   },
   methods: {
     ...mapMutations('setting', ['setTheme']),
