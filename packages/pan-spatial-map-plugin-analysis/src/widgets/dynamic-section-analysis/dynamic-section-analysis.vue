@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-dynamic-section-analysis">
-    <mapgis-3d-dynamic-section ref="dynamicSection" :models="models" />
+    <mapgis-3d-dynamic-section :models="models" @load="load" />
   </div>
 </template>
 
@@ -20,6 +20,8 @@ import {
 export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   // 模型集合
   private models = []
+
+  private dynamicSection = undefined
 
   /**
    * 动态获取基础目录树上已勾选的三维模型数据
@@ -50,19 +52,27 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
     this.models = layers
   }
 
+  load(dynamicSection) {
+    this.dynamicSection = dynamicSection
+  }
+
+  onActive() {
+    this.dynamicSection.mount()
+  }
+
   /**
    * 打开模块
    */
   onOpen() {
-    this.$refs.dynamicSection?.onOpen()
+    this.dynamicSection.mount()
+    this.dynamicSection.startClipping()
   }
 
   /**
    * 关闭模块
    */
   onClose() {
-    this.$refs.dynamicSection?.onClose()
-    this.$refs.dynamicSection?.unmount()
+    this.dynamicSection.unmount()
   }
 }
 </script>
