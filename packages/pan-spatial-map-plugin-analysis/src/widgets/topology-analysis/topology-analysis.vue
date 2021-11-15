@@ -417,6 +417,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
   // 面板关闭时候触发函数
   onClose() {
     this.isWidgetOpen = false
+    this.drawComponent.clear()
     this.reset()
   }
 

@@ -367,15 +367,14 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     if (!SFEleArray || !SFEleArray.length) {
       return []
     }
-    const { source } = sceneController.findSource(specialLayerId)
+    const source = sceneController.findSource(specialLayerId)
     return SFEleArray.map(({ AttValue = [], bound = {}, FID }) => {
-      const boundObj =
-        source && source.length
-          ? sceneController.localExtentToGlobelExtent(
-              bound,
-              source[0].root.transform
-            )
-          : bound
+      const boundObj = source
+        ? sceneController.localExtentToGlobelExtent(
+            bound,
+            source.root.transform
+          )
+        : bound
       const properties = {
         FID,
         specialLayerId: specialLayerId,

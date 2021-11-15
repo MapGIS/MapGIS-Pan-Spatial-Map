@@ -151,9 +151,13 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     })
   }
 
-  beforeDestroy() {
+  clear() {
     this.clearDataTargetArr()
     this.clearDataAnalysisArr()
+  }
+
+  beforeDestroy() {
+    this.clear()
   }
 }
 </script>

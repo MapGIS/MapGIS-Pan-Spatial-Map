@@ -438,8 +438,12 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
       flagPosStrArray.push(item.geometry.coordinates)
       elementTypeArray.push(item.properties.type)
     })
-    if (!netClsUrl || flagPosStrArray.length === 0) {
-      this.$message.error('参数异常')
+    if (!netClsUrl) {
+      this.$message.error('请选择要分析的图层')
+      return
+    }
+    if (flagPosStrArray.length === 0) {
+      this.$message.error('至少绘制一个的目标点')
       return
     }
     const flagPosStr = flagPosStrArray.join(',')

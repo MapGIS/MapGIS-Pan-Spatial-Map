@@ -173,7 +173,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       this.polygonHeight = 100
       this.profileType = 0
       // 设置当前地形对象
-      this.viewer.terrainProvider = source[0]
+      // this.viewer.terrainProvider = source[0]
     }
   }
 
@@ -197,23 +197,22 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
    */
   landscapeLayerFuc() {
     const { layer } = this
-    const { renderType } = layer.activeScene.sublayers[0]
-    const { id } = this.layer.activeScene.sublayers[0]
-    let res = null
+    const { renderType, id } = layer.activeScene.sublayers[0]
+    let source = null
     if (renderType === IGSSceneSublayerRenderType.modelCache) {
-      res = Objects.SceneController.getInstance(
+      source = Objects.SceneController.getInstance(
         this.Cesium,
         this.vueCesium,
         this.viewer
       ).findSource(id)
     } else if (renderType === IGSSceneSublayerRenderType.elevation) {
-      res = Objects.SceneController.getInstance(
+      source = Objects.SceneController.getInstance(
         this.Cesium,
         this.vueCesium,
         this.viewer
       ).findTerrainSource(id)
     }
-    return res.source
+    return [source]
   }
 
   changeProfileWindowApha() {

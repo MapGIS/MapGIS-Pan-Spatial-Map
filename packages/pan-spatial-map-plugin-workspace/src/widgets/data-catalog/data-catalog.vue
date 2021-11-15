@@ -119,12 +119,16 @@
               item.name
             }}</span>
             <a-menu slot="overlay">
-              <a-menu-item key="1" @click="showMetaDataInfo(item)">
+              <a-menu-item
+                v-if="!isNonSpatial(item)"
+                key="1"
+                @click="showMetaDataInfo(item)"
+              >
                 元数据信息
               </a-menu-item>
               <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
               <a-menu-item
-                v-if="hasLegend(item)"
+                v-if="hasLegend(item) && !isNonSpatial(item)"
                 key="3"
                 @click="onUploadLegend(item)"
               >
@@ -192,7 +196,8 @@
       >
         <template>
           <NonSpatial
-            :url="nonSpatialUrl"
+            :nonSpatialUrl="nonSpatialUrl"
+            :url="nonSpatialFileListUrl"
             :type="nonSpatialType"
             :treeConfig="widgetConfig"
           ></NonSpatial>
@@ -285,6 +290,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   // 非空间数据窗口的显隐
   private showNoSpatial = false
+
+  // 获取当前选种的非空间数据资源列表url
+  private nonSpatialFileListUrl = ''
 
   // 非空间数据资源url
   private nonSpatialUrl = ''
@@ -465,7 +473,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                   await layer.load()
                 }
               } catch (error) {
-                console.log(error)
               } finally {
                 // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
                 if (layer.loadStatus === LoadStatus.loaded) {
@@ -703,7 +710,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         widgetConfig.treeConfig.useLocalData ||
         widgetConfig.treeConfig.useLocalParam
       ) {
-        this.nonSpatialUrl = `${this.baseUrl}/api/non-spatial/files?pageNumber=0&pageSize=1000&path=${item.data}&protocol=ftp&url=ftp://192.168.21.191:21`
+        this.nonSpatialUrl = widgetConfig.urlConfig.nonSpatialUrl
+        this.nonSpatialFileListUrl = `${this.baseUrl}/api/non-spatial/files?pageNumber=0&pageSize=1000&path=${item.data}&protocol=ftp&url=${this.nonSpatialUrl}`
       }
     }
   }
@@ -885,7 +893,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             const imposeLayer = doc.defaultMap.allLayers.find(
               item => item.id === node.guid
             )
-            console.log(imposeLayer)
 
             if (imposeLayer.type !== LayerType.IGSScene) {
               FitBound.fitBoundByLayer(
@@ -950,6 +957,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
       eventBus.$emit(events.ADD_DATA_EVENT, data)
     }
+  }
+
+  isNonSpatial(item) {
+    return item.description.indexOf('非空间数据') > -1
   }
 }
 </script>

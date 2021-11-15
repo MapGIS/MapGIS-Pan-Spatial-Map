@@ -170,8 +170,11 @@ import axios from 'axios'
 
 @Component({ name: 'MpNonSpatial' })
 export default class MpNonSpatial extends Mixins(WidgetMixin) {
-  // 非空间数据资源url
+  // 获取当前选种的非空间数据资源列表url
   @Prop({ type: String }) url: string
+
+  // 非空间数据资源url
+  @Prop({ type: String }) nonSpatialUrl: string
 
   // 非空间数据类型
   @Prop({ type: String }) type: string
@@ -419,7 +422,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
 
   // 点击下载图标回调
   private onClickDownLoad(record) {
-    const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=ftp://192.168.21.191:21`
+    const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=${this.nonSpatialUrl}`
     this.getUrlData(downLoadUrl).then(res => {
       const downLoadPath = this.baseUrl + res.path
 
@@ -448,7 +451,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
 
   // 点击文件项进行预览回调
   private onView(record) {
-    const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=ftp://192.168.21.191:21`
+    const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=${this.nonSpatialUrl}`
 
     if (!'pdf,mp4,ogg,jpg,png'.includes(record.type)) {
       this.$message.warning('该类型文件暂不支持预览')
