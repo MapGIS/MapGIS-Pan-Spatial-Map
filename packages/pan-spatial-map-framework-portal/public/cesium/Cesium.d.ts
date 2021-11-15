@@ -26656,6 +26656,18 @@ export class MapGISM3DSet {
      * diffuse and specular lighting contribution from those sources to the final color. A value of 0.0 will disable those light sources.
      */
     imageBasedLightingFactor: Cartesian2;
+    /**
+     * 图层的 图层索引 可以用来区分组图层  一个组的图层 layerIndex是相同的 但是layerRenderIndex是不同的
+     */
+    readonly layerIndex: number;
+    /**
+     * 图层的渲染索引：发布的图层的唯一索引。 图层自身的索引
+     */
+    readonly layerRenderIndex: any;
+    /**
+     * 数据附带的 gdbp地址
+     */
+    readonly gdbpUrl: any;
     pickedColor: Color;
     pickedOid: Color;
     /**

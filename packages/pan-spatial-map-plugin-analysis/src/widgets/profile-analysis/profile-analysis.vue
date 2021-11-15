@@ -173,7 +173,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       this.polygonHeight = 100
       this.profileType = 0
       // 设置当前地形对象
-      this.viewer.terrainProvider = source[0]
+      // this.viewer.terrainProvider = source[0]
     }
   }
 
