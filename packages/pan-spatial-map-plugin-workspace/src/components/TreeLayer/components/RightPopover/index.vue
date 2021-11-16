@@ -9,14 +9,9 @@
     <a-list-item v-if="isAttributes(layerItem)" @click="customQuery">
       自定义查询
     </a-list-item>
-    <!-- 要素统改目前只有符号统改，功能较单一且应用性较弱，从产品角度考虑先去除，待后面要素统改（参数<->参数、属性<->参数）需求强烈且明确后再增加
-      <a-list-item
-        v-if="(isSubLayer(layerItem) && isIgsDocLayer(layerItem)) || isIgsVectorLayer(layerItem)"
-        @click="unifyMode"
-      >
-        要素统改
-      </a-list-item> 
-    -->
+    <a-list-item v-if="isDataFlow(layerItem)" @click="editDataFlowStyle">
+      编辑样式
+    </a-list-item>
     <a-list-item v-if="isFitbound(layerItem)" @click="fitBounds">
       缩放至
     </a-list-item>
@@ -59,6 +54,10 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
 
   attributes() {
     this.$emit('attributes', this.layerItem)
+  }
+
+  editDataFlowStyle() {
+    this.$emit('edit-data-flow-style', this.layerItem)
   }
 
   customQuery() {

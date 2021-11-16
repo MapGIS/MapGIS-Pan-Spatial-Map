@@ -237,8 +237,22 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
     return layerType === LayerType.ArcGISTile
   }
 
+  /**
+   * 判断是否是DataFlow
+   * @param item layer图层
+   * @returns boolean
+   */
+  isDataFlow({ layer, type }) {
+    let layerType = type
+    if (layer) {
+      layerType = layer.type
+      return layerType === LayerType.DataFlow
+    }
+    return layerType === LayerType.DataFlow
+  }
+
   isFitbound(layer) {
-    if (this.isParentLayer(layer)) {
+    if (this.isParentLayer(layer) && !this.isDataFlow(layer)) {
       if (this.isIGSScene(layer) && this.is2DMapMode === false) {
         return true
       } else if (!this.isIGSScene(layer)) {

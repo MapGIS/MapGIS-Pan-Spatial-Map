@@ -15,6 +15,7 @@ import {
   ArcGISMapImageLayer,
   VectorTileLayer,
   IGSSceneLayer,
+  DataFlowLayer,
   UUID,
   Catalog,
   UrlUtil
@@ -146,6 +147,10 @@ export class DataCatalogManager {
       case LayerType.VectorTile:
         url = layerConfig.serverURL
         layer = new VectorTileLayer({ url })
+        break
+      case LayerType.DataFlow:
+        url = layerConfig.serverURL
+        layer = new DataFlowLayer({ url })
         break
       case LayerType.IGSScene:
         if (layerConfig.serverURL && layerConfig.serverURL !== '') {
@@ -612,7 +617,12 @@ export class DataCatalogManager {
      * 视频
      * @type {string}
      */
-    VIDEO: 'VIDEO'
+    VIDEO: 'VIDEO',
+    /**
+     * 数据流
+     * @type {string}
+     */
+    DATAFLOW: 'DATAFLOW'
   }
 
   // 将老版本的配置转换为新版本的配置
@@ -811,6 +821,9 @@ export class DataCatalogManager {
         serverType = LayerType.VectorTile
         break
       case this.layerServiceType.TERRAIN:
+        break
+      case this.layerServiceType.DATAFLOW:
+        serverType = LayerType.DataFlow
         break
       default:
         break

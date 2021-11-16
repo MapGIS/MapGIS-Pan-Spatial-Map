@@ -4,6 +4,4 @@ tests/
 node_modules/
 dist/
 out/
-./packages/pan-spatial-map-plugin-editor/libs
-WebClient-Vue/
-WebClient-JavaScript/
+packages/pan-spatial-map-framework/node_modules/

@@ -462,7 +462,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             const layer = DataCatalogManager.generateLayerByConfig(
               layerConfigNode
             )
-
             layer.description = this.setDescription(layer)
             // 2.将图层添加到全局的document中。
             if (layer) {
