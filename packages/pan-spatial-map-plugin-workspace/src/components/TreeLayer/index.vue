@@ -100,6 +100,7 @@
                 @reset-tilematrix-set="resetTilematrixSet"
                 @open-change-active-layer="openChangeActiveLayer"
                 @to-top="toTop"
+                @edit-data-flow-style="editDataFlowStyle"
               />
               <slot
                 v-else
@@ -125,7 +126,10 @@
           v-bind="slotProps"
         >
           <template>
-            <mp-metadata-info :currentLayer="currentLayerInfo" />
+            <mp-metadata-info
+              v-if="showMetadataInfo"
+              :currentLayer="currentLayerInfo"
+            />
           </template>
         </mp-window>
       </template>
@@ -144,6 +148,7 @@
         >
           <template>
             <mp-custom-query
+              v-if="showCustomQuery"
               :queryParams="queryParams"
               @close="onCloseCustomQuery"
             />
@@ -164,8 +169,8 @@
         >
           <template>
             <mp-select-tilematrix-set
-              v-if="currentWmts"
-              :layer="currentWmts"
+              v-if="showSelectTilematrixSet"
+              :layer="currentLayerInfo"
               @update:layer="refreshCurrentWmts"
             />
           </template>
@@ -173,18 +178,24 @@
       </template>
     </mp-window-wrapper>
 
-    <mp-window-wrapper :visible="showUnifyModify">
+    <mp-window-wrapper :visible="showEditDataFlowStyle">
       <template v-slot:default="slotProps">
         <mp-window
-          title="要素统改"
+          title="编辑样式"
+          :width="350"
+          :height="400"
           :verticalOffset="10"
           :icon="widgetInfo.icon"
-          :visible.sync="showUnifyModify"
+          :visible.sync="showEditDataFlowStyle"
           anchor="top-center"
           v-bind="slotProps"
         >
           <template>
-            <mp-unify-modify :unifyModifyParams="unifyModifyParams" />
+            <mp-edit-data-flow-style
+              v-if="showEditDataFlowStyle"
+              :layer="currentLayerInfo"
+              @update:layer="updateDataFlowStyle"
+            />
           </template>
         </mp-window>
       </template>
@@ -202,8 +213,8 @@
         >
           <template>
             <mp-change-active-layer
-              v-if="currentWmtsActiveLayer"
-              :layer="currentWmtsActiveLayer"
+              v-if="showChangeActiveLayer"
+              :layer="currentLayerInfo"
               @update:layer="updateActiveLayer"
             />
           </template>
@@ -231,6 +242,7 @@ import {
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
+  DataFlowLayer,
   Sublayer,
   WMTSSublayer,
   CoordinateTransformation,
@@ -250,6 +262,7 @@ import MpSelectTilematrixSet from './components/SelectTilematrixSet/SelectTilema
 import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLayer.vue'
 import layerTypeUtil from './mixin/layer-type-util'
 import RightPopover from './components/RightPopover/index.vue'
+import MpEditDataFlowStyle from './components/EditDataFlowStyle/index.vue'
 
 const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
@@ -260,7 +273,8 @@ const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
     MpUnifyModify,
     MpSelectTilematrixSet,
     MpChangeActiveLayer,
-    RightPopover
+    RightPopover,
+    MpEditDataFlowStyle
   }
 })
 export default class MpTreeLayer extends Mixins(
@@ -287,6 +301,7 @@ export default class MpTreeLayer extends Mixins(
 
   private queryParams: Record<string, any> = {}
 
+  // 右侧菜单栏选中的图层信息
   private currentLayerInfo: Record<string, unknown> = {}
 
   private showSelectTilematrixSet = false
@@ -296,16 +311,10 @@ export default class MpTreeLayer extends Mixins(
   // 记录可见状态为true的父节点的key
   private parentKeys: Array<string> = []
 
-  // 当前选中的wmts图层的serverUrl
-  currentWmts: WMTSSublayer = null
-
-  showUnifyModify = false
-
-  unifyModifyParams: Record<string, any> = {}
-
+  // 改变WMTS活跃图层
   showChangeActiveLayer = false
 
-  currentWmtsActiveLayer: OGCWMTSLayer = null
+  showEditDataFlowStyle = false
 
   //  搜索功能，收到结果的  key的数组
   private searchkeyArr = []
@@ -641,13 +650,19 @@ export default class MpTreeLayer extends Mixins(
 
   resetTilematrixSet(item) {
     this.showSelectTilematrixSet = true
-    this.currentWmts = item.dataRef
+    this.currentLayerInfo = item.dataRef
+    this.clickPopover(item, false)
+  }
+
+  editDataFlowStyle(item) {
+    this.showEditDataFlowStyle = true
+    this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
   }
 
   openChangeActiveLayer(item) {
     this.showChangeActiveLayer = true
-    this.currentWmtsActiveLayer = item.dataRef
+    this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
   }
 
@@ -661,6 +676,15 @@ export default class MpTreeLayer extends Mixins(
         this.map.moveLayer(item.id)
       }
     }
+  }
+
+  updateDataFlowStyle(val: DataFlowLayer) {
+    const { key, layerStyle } = val
+    const doc = this.layerDocument.clone()
+    const layers: Array<unknown> = doc.defaultMap.layers()
+    const layerItem: DataFlowLayer = layers[key]
+    layerItem.setLayerStyle(layerStyle)
+    this.$emit('update:layerDocument', doc)
   }
 
   updateActiveLayer(val: OGCWMTSLayer) {
@@ -700,33 +724,6 @@ export default class MpTreeLayer extends Mixins(
     })
     // this.document = doc
     this.$emit('update:layerDocument', doc)
-  }
-
-  unifyMode(layer) {
-    this.showUnifyModify = true
-    if (
-      layer.dataRef.layer &&
-      layer.dataRef.layer.type === LayerType.IGSMapImage
-    ) {
-      const parentLayer: IGSMapImageLayer = layer.dataRef.layer
-      const sublayers: Sublayer = layer.dataRef
-      const { ip, port, docName } = parentLayer._parseUrl(parentLayer.url)
-      const { type } = parentLayer
-      const { geomType, sysLibraryGuid, url, id, key } = sublayers
-
-      this.unifyModifyParams = {
-        id: key,
-        ip: ip || baseConfigInstance.config.ip,
-        port: Number(port || baseConfigInstance.config.port),
-        serverName: docName,
-        serverType: type,
-        layerIndex: id,
-        geomType,
-        gdbps: url,
-        sysLibraryGuid
-      }
-    }
-    this.clickPopover(layer, false)
   }
 
   /**
