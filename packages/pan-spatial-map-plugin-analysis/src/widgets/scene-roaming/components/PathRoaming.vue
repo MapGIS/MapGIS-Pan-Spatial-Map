@@ -246,20 +246,22 @@ export default class PathRoaming extends Vue {
     }
   ]
 
-  private modelUrl = 'models/CesiumModels/Cesium_Man.glb'
+  private publicPath = process.env.BASE_URL
+
+  private modelUrl = `${this.publicPath}models/CesiumModels/Cesium_Man.glb`
 
   private modelOptions = [
     {
       label: '人',
-      value: 'models/CesiumModels/Cesium_Man.glb'
+      value: `${this.publicPath}models/CesiumModels/Cesium_Man.glb`
     },
     {
       label: '卡车',
-      value: 'models/CesiumModels/CesiumMilkTruck.glb'
+      value: `${this.publicPath}models/CesiumModels/CesiumMilkTruck.glb`
     },
     {
       label: '飞机',
-      value: 'models/CesiumModels/Cesium_Air.gltf'
+      value: `${this.publicPath}models/CesiumModels/Cesium_Air.gltf`
     }
   ]
 
