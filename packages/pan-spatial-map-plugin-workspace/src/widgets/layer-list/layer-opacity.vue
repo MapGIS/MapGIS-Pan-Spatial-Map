@@ -1,6 +1,10 @@
 <template>
   <ul class=" beauty-scroll">
-    <li v-for="item in layers" v-show="isIgsTerrainLayer(item)" :key="item.id">
+    <li
+      v-for="item in layers"
+      v-show="isIgsTerrainLayer(item) && !isDataFlow(item)"
+      :key="item.id"
+    >
       <a-tooltip>
         <template slot="title">
           {{ item.description }}
@@ -47,6 +51,10 @@ export default class LayerOpacity extends Mixins(AppMixin) {
       })
     }
     return !elevation
+  }
+
+  isDataFlow(layer) {
+    return layer.type === LayerType.DataFlow
   }
 }
 </script>

@@ -66,37 +66,37 @@ export default class MpEditDataFlowStyle extends Vue {
     switch (val) {
       case 'marker':
         formArr = [
-          { key: 'field', type: 'string', value: '', label: '显示的字段' },
-          { key: 'text', type: 'string', value: '', label: '文本' },
-          { key: 'scale', type: 'number', value: 1, label: '文字缩放' },
+          // { key: 'field', type: 'string', value: '', label: '显示的字段' },
+          // { key: 'text', type: 'string', value: '', label: '文本' },
+          // { key: 'scale', type: 'number', value: 1, label: '文字缩放' },
           { key: 'xOffset', type: 'number', value: 0, label: '水平偏移量' },
           { key: 'yOffset', type: 'number', value: 0, label: '垂直偏移量' },
-          { key: 'color', type: 'color', value: '#ffffff', label: '文字颜色' },
-          { key: 'opacity', type: 'number', value: 1, label: '文字透明度' },
-          {
-            key: 'outlineColor',
-            type: 'color',
-            value: '#ffffff',
-            label: '文字描边颜色'
-          },
-          {
-            key: 'outlineWidth',
-            type: 'number',
-            value: 0,
-            label: '文字描边宽度'
-          },
-          {
-            key: 'backgroundColor',
-            type: 'color',
-            value: '#ffffff',
-            label: '文字背景颜色'
-          },
-          {
-            key: 'backgroundOpacity',
-            type: 'number',
-            value: 0,
-            label: '文字背景透明度'
-          },
+          // { key: 'color', type: 'color', value: '#ffffff', label: '文字颜色' },
+          // { key: 'opacity', type: 'number', value: 1, label: '文字透明度' },
+          // {
+          //   key: 'outlineColor',
+          //   type: 'color',
+          //   value: '#ffffff',
+          //   label: '文字描边颜色'
+          // },
+          // {
+          //   key: 'outlineWidth',
+          //   type: 'number',
+          //   value: 0,
+          //   label: '文字描边宽度'
+          // },
+          // {
+          //   key: 'backgroundColor',
+          //   type: 'color',
+          //   value: '#ffffff',
+          //   label: '文字背景颜色'
+          // },
+          // {
+          //   key: 'backgroundOpacity',
+          //   type: 'number',
+          //   value: 0,
+          //   label: '文字背景透明度'
+          // },
           { key: 'url', type: 'string', value: '', label: '图标地址' },
           { key: 'rotation', type: 'number', value: 0, label: '图标旋转角度' },
           { key: 'imageScale', type: 'number', value: 1, label: '图标缩放' },

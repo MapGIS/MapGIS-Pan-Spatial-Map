@@ -501,6 +501,12 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             )
           }
           eventBus.$emit(events.DATA_SELECTION_CHANGE_EVENT)
+          /**
+           * @修改说明 当存储动态数据时候，深监听会导致document多次复制。在地图组件取消深监听后，需要修改document的引用才能触发
+           * @修改日期 2021/11/19
+           * @修改人 龚瑞强
+           */
+          this.document = doc.clone()
         }
       )
     }

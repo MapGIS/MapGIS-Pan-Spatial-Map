@@ -6,7 +6,10 @@
     <a-list-item v-if="isAttributes(layerItem)" @click="attributes">
       查看属性
     </a-list-item>
-    <a-list-item v-if="isAttributes(layerItem)" @click="customQuery">
+    <a-list-item
+      v-if="isAttributes(layerItem) && !isDataFlow(layerItem)"
+      @click="customQuery"
+    >
       自定义查询
     </a-list-item>
     <a-list-item v-if="isDataFlow(layerItem)" @click="editDataFlowStyle">

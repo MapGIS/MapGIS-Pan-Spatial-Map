@@ -687,6 +687,21 @@
         "describe": "矢量文档",
         "children": [
           {
+            "label": "本地测试",
+            "describe": "本地测试",
+            "ip": "localhost",
+            "port": "6163",
+            "layerServiceType": "IGSIMAGE",
+            "name": "本地测试",
+            "searchName": "",
+            "token": "",
+            "guid": "d3ac0679-e009-4e87-93ab-7181378efbbwwww",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": "Local,Local,Local"
+          },
+          {
             "label": "湖北省行政区划图",
             "describe": "湖北省行政区划图",
             "ip": "",

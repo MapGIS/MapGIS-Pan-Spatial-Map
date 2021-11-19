@@ -330,7 +330,7 @@ export default class MpTreeLayer extends Mixins(
     return []
   }
 
-  @Watch('layerDocument.defaultMap', { deep: true, immediate: true })
+  @Watch('layerDocument.defaultMap', { immediate: true })
   documentChange() {
     this.parentKeys = []
     if (
@@ -868,6 +868,16 @@ export default class MpTreeLayer extends Mixins(
             serverType: parent.type,
             gdbp: layerConfig.bindData.gdbps
           }
+        }
+      }
+    } else if (this.isDataFlow(layer)) {
+      exhibition = {
+        id: `${layer.title} ${layer.title} ${layer.id}`,
+        name: `${layer.title} 属性表`,
+        option: {
+          id: layer.id,
+          name: layer.title,
+          serverType: layer.type
         }
       }
     }

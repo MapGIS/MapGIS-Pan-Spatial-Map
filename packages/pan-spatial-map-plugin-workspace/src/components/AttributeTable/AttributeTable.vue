@@ -280,17 +280,26 @@ export default class MpAttributeTable extends Mixins(
 
   private get rowKey() {
     const { serverType } = this.optionVal
-    if (
-      serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
-    ) {
-      return 'fid'
-    } else if (serverType === LayerType.ArcGISMapImage) {
-      return 'ID'
-    } else if (this.isIGSScence) {
-      return 'FID'
+    let guid
+    switch (serverType) {
+      case LayerType.IGSMapImage:
+      case LayerType.IGSVector:
+        guid = 'fid'
+        break
+      case LayerType.ArcGISMapImage:
+        guid = 'ID'
+        break
+      case LayerType.IGSScene:
+        guid = 'FID'
+        break
+      case LayerType.DataFlow:
+        guid = 'imei'
+        break
+      default:
+        guid = 'fid'
+        break
     }
-    return 'fid'
+    return guid
   }
 
   private get selectedDescription() {
@@ -317,6 +326,19 @@ export default class MpAttributeTable extends Mixins(
       : this.$refs.ref3dMarkerPlotting
   }
 
+  private get getDataFLowList() {
+    const { serverType } = this.optionVal
+    debugger
+    if (serverType === LayerType.DataFlow) {
+      const { dataList: features } = this.document.defaultMap.findLayerById(
+        this.optionVal.id
+      )
+      return features
+    }
+    return []
+  }
+
+  @Watch('getDataFLowList', { deep: true })
   @Watch('optionVal', { deep: true, immediate: true })
   optionChange() {
     this.clearSelection()
@@ -553,41 +575,7 @@ export default class MpAttributeTable extends Mixins(
         layerIndex,
         totalCount
       })
-      const columns: Array = []
-      const { properties } = geojson.features[0]
-      const tags = Object.keys(properties)
-      if (tags.length <= 10) {
-        // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
-        this.useScrollX = false
-      } else {
-        // 10个以上，每个设固定宽度180，且启用水平滚动条
-        this.useScrollX = true
-      }
-      if (!(this.tableColumns && this.tableColumns.length > 0)) {
-        for (let index = 0; index < tags.length; index++) {
-          const name = tags[index]
-          const alias = tags[index] ? `${tags[index]}` : ''
-          const type = 'string'
-          const obj = {
-            title: alias.length ? alias : name,
-            key: name,
-            dataIndex: `properties.${name}`,
-            align: 'left',
-            ellipsis: true
-          }
-          if (this.useScrollX) {
-            obj.width = 180
-          }
-          // var str = '37'
-          const num = Number(properties[name])
-          if (!isNaN(num)) {
-            obj.sorter = (a, b) =>
-              Number(a.properties[name]) - Number(b.properties[name])
-          }
-          columns.push(obj)
-        }
-        this.tableColumns = columns
-      }
+      this.setGeoJsonColums(geojson)
       this.pagination.total = totalCount
       this.tableData = geojson.features
       this.removeMarkers()
@@ -661,6 +649,56 @@ export default class MpAttributeTable extends Mixins(
       if (this.isExhibitionActive) {
         await this.addMarkers()
       }
+    } else if (serverType === LayerType.DataFlow) {
+      const { dataList: features } = this.document.defaultMap.findLayerById(
+        this.optionVal.id
+      )
+      this.setGeoJsonColums({ features, type: 'FeatureCollection' })
+      this.pagination.total = features.length
+      this.tableData = features
+      this.removeMarkers()
+      // 如果当前是激活状态，则添加markers
+      if (this.isExhibitionActive) {
+        await this.addMarkers()
+      }
+    }
+  }
+
+  setGeoJsonColums(geojson) {
+    const columns: Array = []
+    const { properties } = geojson.features[0]
+    const tags = Object.keys(properties)
+    if (tags.length <= 10) {
+      // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
+      this.useScrollX = false
+    } else {
+      // 10个以上，每个设固定宽度180，且启用水平滚动条
+      this.useScrollX = true
+    }
+    if (!(this.tableColumns && this.tableColumns.length > 0)) {
+      for (let index = 0; index < tags.length; index++) {
+        const name = tags[index]
+        const alias = tags[index] ? `${tags[index]}` : ''
+        const type = 'string'
+        const obj = {
+          title: alias.length ? alias : name,
+          key: name,
+          dataIndex: `properties.${name}`,
+          align: 'left',
+          ellipsis: true
+        }
+        if (this.useScrollX) {
+          obj.width = 180
+        }
+        // var str = '37'
+        const num = Number(properties[name])
+        if (!isNaN(num)) {
+          obj.sorter = (a, b) =>
+            Number(a.properties[name]) - Number(b.properties[name])
+        }
+        columns.push(obj)
+      }
+      this.tableColumns = columns
     }
   }
 
