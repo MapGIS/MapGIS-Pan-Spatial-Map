@@ -328,7 +328,6 @@ export default class MpAttributeTable extends Mixins(
 
   private get getDataFLowList() {
     const { serverType } = this.optionVal
-    debugger
     if (serverType === LayerType.DataFlow) {
       const { dataList: features } = this.document.defaultMap.findLayerById(
         this.optionVal.id
