@@ -242,7 +242,7 @@ export default class MpSplitScreen extends Mixins(WidgetMixin) {
     }
   }
 
-  @Watch('document.defaultMap', { deep: true })
+  @Watch('document.defaultMap')
   watchDefaultMap() {
     if (this.isOpen) {
       this.initLayers()
