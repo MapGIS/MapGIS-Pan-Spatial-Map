@@ -27,7 +27,7 @@
     "8": "/upload/8.png"
   },
   "urlConfig": {
-    "nonSpatialUrl": "ftp://192.168.21.191:21"
+    "nonSpatialUrl": "ftp://192.168.21.192:21"
   },
   "otherConfig": {
     "nonSpatial": "非空间数据",
@@ -765,30 +765,6 @@
             "serverUrl": ""
           },
           {
-            "label": "hongkong",
-            "describe": "hongkong",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "hongkong",
-            "searchName": "",
-            "model": "globe",
-            "guid": "68744fd8-61be-400d-a861-4a0415a339cc",
-            "serverUrl": ""
-          },
-          {
-            "label": "全国地形",
-            "describe": "全国地形",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "DEM250_3D",
-            "searchName": "",
-            "model": "globe",
-            "guid": "68744fd8-61be-400d-a861-4a0415a339c2",
-            "serverUrl": ""
-          },
-          {
             "label": "三维模型",
             "describe": "三维模型",
             "ip": "",
@@ -813,18 +789,6 @@
             "serverUrl": ""
           },
           {
-            "label": "地质体",
-            "describe": "地质体",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "M3D",
-            "searchName": "",
-            "model": "surface",
-            "guid": "5d600334-c7c8-4194-ac0f-965093fd4635",
-            "serverUrl": ""
-          },
-          {
             "label": "中地景观模型",
             "describe": "中地景观模型",
             "ip": "",
@@ -837,18 +801,6 @@
             "serverUrl": ""
           },
           {
-            "label": "大楼",
-            "describe": "大楼",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "大楼",
-            "searchName": "",
-            "model": "surface",
-            "guid": "79edf234-3187-442e-9162-96335bb90b25ccccc",
-            "serverUrl": ""
-          },
-          {
             "label": "学校BIM模型",
             "describe": "学校BIM模型",
             "ip": "",
@@ -858,18 +810,6 @@
             "searchName": "",
             "model": "surface",
             "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7479",
-            "serverUrl": ""
-          },
-          {
-            "label": "信创BIM数据",
-            "describe": "信创BIM数据",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "m3d_bim",
-            "searchName": "",
-            "model": "surface",
-            "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7489",
             "serverUrl": ""
           },
           {
@@ -907,18 +847,6 @@
             "model": "surface",
             "guid": "a2ee2b40-14fd-4104-a05f-d8e77e54f1bb",
             "serverUrl": ""
-          },
-          {
-            "label": "地质体网格",
-            "describe": "地质体网格",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "地质体网格2",
-            "searchName": "",
-            "model": "surface",
-            "guid": "45d4c3ba-7865-44d2-8858-153fb7b9f8dd",
-            "serverUrl": ""
           }
         ]
       },
@@ -936,20 +864,6 @@
             "searchName": "",
             "token": "",
             "guid": "1c3bd807-52c5-42d5-bdcb-08234af8b4e8",
-            "serverUrl": "",
-            "wfsUrl": "",
-            "extent": ""
-          },
-          {
-            "label": "luzhouwp_level16",
-            "describe": "luzhouwp_level16",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "IGSTILED",
-            "name": "luzhouwp_level16",
-            "searchName": "",
-            "token": "",
-            "guid": "1c3bd807-52c5-42d5-bdcb-08234af8b4ff",
             "serverUrl": "",
             "wfsUrl": "",
             "extent": ""
@@ -1017,20 +931,6 @@
             "extent": ""
           },
           {
-            "label": "信创BIM图层热力图测试数据",
-            "describe": "信创BIM图层热力图测试数据",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "IGSVECTOR",
-            "name": "信创BIM图层热力图测试数据",
-            "searchName": "",
-            "token": "",
-            "guid": "e76f9c13-0fcb-8537-96ab-daa533bf5de9",
-            "serverUrl": "gdbp://MapGISLocalPlus/示例数据/sfcls/信创BIM图层热力图测试数据.json_Pnt",
-            "wfsUrl": "",
-            "extent": ""
-          },
-          {
             "label": "景观_建筑物",
             "describe": "景观_建筑物",
             "ip": "",
@@ -1060,35 +960,21 @@
             "searchName": "",
             "token": "",
             "guid": "8baba6b1-7eb9-423f-aefa-cb187bb1d4a9",
-            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/doc/北京市0630_hdf/WMSServer",
+            "serverUrl": "http://192.168.21.192:6163/igs/rest/ogc/doc/北京市0630_hdf/WMSServer",
             "wfsUrl": "",
             "extent": ""
           },
           {
-            "label": "WORLDMKTTILE2",
-            "describe": "WORLDMKTTILE2",
+            "label": "OGC_4326_CHINA",
+            "describe": "OGC_4326_CHINA",
             "ip": "",
             "port": "",
             "layerServiceType": "WMTS",
-            "name": "WORLDMKTTILE2",
+            "name": "OGC_4326_CHINA",
             "searchName": "",
             "token": "",
             "guid": "a96fea53-d97d-401a-a502-f5621f098c14",
-            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/WORLDMKTTILE2/WMTSServer",
-            "wfsUrl": "",
-            "extent": ""
-          },
-          {
-            "label": "luzhouwp_level16",
-            "describe": "luzhouwp_level16",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "WMTS",
-            "name": "luzhouwp_level16",
-            "searchName": "",
-            "token": "",
-            "guid": "a96fea53-d97d-401a-a502-f5621f098c24",
-            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/luzhouwp_level16/WMTSServer",
+            "serverUrl": "http://192.168.21.192:6163/igs/rest/ogc/OGC_4326_CHINA/WMTSServer",
             "wfsUrl": "",
             "extent": ""
           }
@@ -1109,26 +995,6 @@
             "token": "",
             "guid": "8c74f367-191a-458c-946f-de1cd3778537",
             "serverUrl": "http://192.168.21.191:6163/igs/rest/mrcs/vtiles/styles/OSM全中国经纬度.json",
-            "wfsUrl": "",
-            "extent": ""
-          }
-        ]
-      },
-      {
-        "label": "数据流",
-        "describe": "数据流",
-        "children": [
-          {
-            "label": "数据流",
-            "describe": "数据流",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DATAFLOW",
-            "name": "数据流",
-            "searchName": "",
-            "token": "",
-            "guid": "5ABC33D2-E1A5-1761-5B31-730CDBC0F96D",
-            "serverUrl": "ws://192.168.91.123:9382/dataflow/cars_xian/subscribe",
             "wfsUrl": "",
             "extent": ""
           }
