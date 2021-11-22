@@ -126,8 +126,20 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
             this.fitBounds(mapLayer)
             this.isInitMapRange = true
           }
+          /**
+           * 这里为了处理添加动态数据，导致document多次克隆，将document深度监听给关闭了，这里只有改变document的引用，才能触发document的监听函数
+           * @修改人 龚瑞强
+           * @date 2021/11/22
+           */
+          this.document = this.document.clone()
         } else {
+          /**
+           * 这里为了处理添加动态数据，导致document多次克隆，将document深度监听给关闭了，这里只有改变document的引用，才能触发document的监听函数
+           * @修改人 龚瑞强
+           * @date 2021/11/22
+           */
           this.document.baseLayerMap.add(mapLayer)
+          this.document = this.document.clone()
         }
       })
     }
@@ -144,6 +156,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
       info.children.forEach(layer => {
         const maplayer = this.document.baseLayerMap.findLayerById(layer.guid)
         this.document.baseLayerMap.remove(maplayer)
+        this.document = this.document.clone()
       })
     }
   }
