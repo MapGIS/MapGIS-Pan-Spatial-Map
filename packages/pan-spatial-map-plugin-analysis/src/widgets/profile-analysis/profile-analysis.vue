@@ -107,7 +107,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   /**
    * 动态获取基础目录树上已勾选的三维数据
    */
-  @Watch('document', { immediate: true })
+  @Watch('document', { immediate: true, deep: true })
   getScenes() {
     if (!this.document) return
     const layers = []

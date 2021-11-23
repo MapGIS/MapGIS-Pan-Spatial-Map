@@ -243,7 +243,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
     this.geoJSONAnalysis = null
   }
 
-  @Watch('document.defaultMap', { immediate: true })
+  @Watch('document.defaultMap', { immediate: true, deep: true })
   documentChange(val: Array<unknown>) {
     this.aDataIndex = null
     this.tDataIndex = null

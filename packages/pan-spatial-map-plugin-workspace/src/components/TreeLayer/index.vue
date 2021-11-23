@@ -630,7 +630,7 @@ export default class MpTreeLayer extends Mixins(
     }
   }
 
-  fitBounds(item) {
+  fitBounds(item, layeExtent) {
     const { Cesium, map, viewer, vueCesium } = this
     const isOutOfRange = FitBound.fitBoundByLayer(
       item.dataRef,
@@ -640,7 +640,8 @@ export default class MpTreeLayer extends Mixins(
         viewer,
         vueCesium
       },
-      this.is2DMapMode === true
+      this.is2DMapMode === true,
+      layeExtent
     )
     this.clickPopover(item, false)
     if (isOutOfRange) {

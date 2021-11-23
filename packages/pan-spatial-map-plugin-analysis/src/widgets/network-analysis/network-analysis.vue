@@ -403,7 +403,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     })
   }
 
-  @Watch('document.defaultMap', { immediate: true })
+  @Watch('document.defaultMap', { immediate: true, deep: true })
   documentChange(val: Array<unknown>) {
     this.layerSelectIndex = null
     this.layerArrOption = []

@@ -49,7 +49,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
     )
   }
 
-  @Watch('document.defaultMap', { immediate: true })
+  @Watch('document.defaultMap', { immediate: true, deep: true })
   documentChange() {
     if (!this.document) return
     this.vectorTileDocument.defaultMap.removeAll()

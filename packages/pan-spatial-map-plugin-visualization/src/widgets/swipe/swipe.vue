@@ -169,7 +169,7 @@ export default class MpSwipe extends Mixins(WidgetMixin, AppMixin) {
   /**
    * 监听: defaultMap变化
    */
-  @Watch('document.defaultMap', { immediate: true })
+  @Watch('document.defaultMap', { immediate: true, deep: true })
   watchDefaultMap() {
     if (this.isOpen) {
       this.initLayer((layers: Layer[]) => {

@@ -162,7 +162,9 @@
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import {
   baseConfigInstance,
-  markerIconInstance
+  markerIconInstance,
+  events,
+  DataFlowList
 } from '@mapgis/pan-spatial-map-common'
 import {
   DomUtil,
@@ -326,13 +328,15 @@ export default class MpAttributeTable extends Mixins(
       : this.$refs.ref3dMarkerPlotting
   }
 
+  private get dataFlowList() {
+    return DataFlowList
+  }
+
   private get getDataFLowList() {
     const { serverType } = this.optionVal
     if (serverType === LayerType.DataFlow) {
-      const { dataList: features } = this.document.defaultMap.findLayerById(
-        this.optionVal.id
-      )
-      return features
+      const features = this.dataFlowList.getDataFlowById(this.optionVal.id)
+      return features || []
     }
     return []
   }
@@ -649,9 +653,7 @@ export default class MpAttributeTable extends Mixins(
         await this.addMarkers()
       }
     } else if (serverType === LayerType.DataFlow) {
-      const { dataList: features } = this.document.defaultMap.findLayerById(
-        this.optionVal.id
-      )
+      const features = this.dataFlowList.getDataFlowById(this.optionVal.id)
       this.setGeoJsonColums({ features, type: 'FeatureCollection' })
       this.pagination.total = features.length
       this.tableData = features
