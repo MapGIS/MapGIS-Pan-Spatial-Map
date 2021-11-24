@@ -1,21 +1,22 @@
 <template>
   <mapgis-3d-shadow
-    :shadowColor='shadowColor'
-    :sunColor='sunColor'
-    :minHeight='minHeight'
-    :stretchHeight='stretchHeight'
-    @load='load'></mapgis-3d-shadow>
+    :shadowColor="shadowColor"
+    :sunColor="sunColor"
+    :minHeight="minHeight"
+    :stretchHeight="stretchHeight"
+    :enableShadowRatio="enableShadowRatio"
+    @load="load"
+  ></mapgis-3d-shadow>
 </template>
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import { WidgetMixin} from '@mapgis/web-app-framework'
+import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
-  name: 'MpShadowAnalysis',
+  name: 'MpShadowAnalysis'
 })
 export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
-
   // 阴影颜色
   private shadowColor = 'rgba(0,255,0,255)'
 
@@ -28,6 +29,9 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
   // 拉伸高度(米)
   private stretchHeight = 20
 
+  // 是否显示阴影率分析的结果
+  private enableShadowRatio = true
+
   // 阴影分析对象
   private shadowAnalysis = null
 
@@ -35,21 +39,20 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
    * 微件打开时
    */
   onOpen() {
-    this.shadowAnalysis.mount();
+    this.shadowAnalysis.mount()
   }
 
   /**
    * 微件关闭时
    */
   onClose() {
-    this.shadowAnalysis.removeAll();
+    this.shadowAnalysis.removeAll()
   }
 
-  load(shadowAnalysis){
-      this.shadowAnalysis = shadowAnalysis;
+  load(shadowAnalysis) {
+    this.shadowAnalysis = shadowAnalysis
   }
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>
