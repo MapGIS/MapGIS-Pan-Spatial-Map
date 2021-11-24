@@ -90,7 +90,8 @@ export default {
         center: { lng: Number(lnglat[0]), lat: Number(lnglat[1]) },
         zoom: baseConfigInstance.config.initZoom,
         mapStyle: {
-          glyphs: `http://${baseConfigInstance.config.ip}:${baseConfigInstance.config.port}/igs/rest/mrms/vtiles/fonts/{fontstack}/{range}.pbf`
+          sprite: `http://${baseConfigInstance.config.ip}:${baseConfigInstance.config.port}/igs/rest/mrcs/vtiles/sprite`,
+          glyphs: `http://${baseConfigInstance.config.ip}:${baseConfigInstance.config.port}/igs/rest/mrcs/vtiles/fonts/{fontstack}/{range}.pbf`
         }
       }
     }
