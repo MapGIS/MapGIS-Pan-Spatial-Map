@@ -6,7 +6,10 @@
     <a-list-item v-if="isAttributes(layerItem)" @click="attributes">
       查看属性
     </a-list-item>
-    <a-list-item v-if="isAttributes(layerItem)" @click="customQuery">
+    <a-list-item
+      v-if="isAttributes(layerItem) && !isDataFlow(layerItem)"
+      @click="customQuery"
+    >
       自定义查询
     </a-list-item>
     <a-list-item v-if="isDataFlow(layerItem)" @click="editDataFlowStyle">
@@ -43,6 +46,8 @@
 <script lang="ts">
 import { Component, Vue, Mixins, Prop } from 'vue-property-decorator'
 import layerTypeUtil from '../../mixin/layer-type-util'
+import { DataFlowList } from '@mapgis/pan-spatial-map-common'
+import * as turf from '@turf/turf'
 
 @Component
 export default class RightPopover extends Mixins(layerTypeUtil) {
@@ -65,7 +70,34 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
   }
 
   fitBounds() {
-    this.$emit('fit-bounds', this.layerItem)
+    this.getDataFlowExtent(this.layerItem)
+    this.$emit(
+      'fit-bounds',
+      this.layerItem,
+      this.getDataFlowExtent(this.layerItem)
+    )
+  }
+
+  getDataFlowExtent(layerItem) {
+    if (this.isDataFlow(layerItem)) {
+      const dataList = DataFlowList.getDataFlowById(layerItem.id)
+      const lineArr = dataList.map(item => {
+        const {
+          geometry: { coordinates }
+        } = item
+        return coordinates
+      })
+      const line = turf.lineString(lineArr)
+      const [xmin, ymin, xmax, ymax] = turf.bbox(line)
+      return {
+        xmin,
+        ymin,
+        xmax,
+        ymax
+      }
+    }
+
+    return undefined
   }
 
   resetTilematrixSet() {

@@ -9,3 +9,5 @@ export { baseConfigInstance, loadConfigs } from './config'
 export { markerIconInstance } from './marker-icon'
 
 export { dataCatalogManagerInstance, DataCatalogManager } from './data-catalog'
+
+export { DataFlowList } from './data-flow'

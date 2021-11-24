@@ -687,6 +687,21 @@
         "describe": "矢量文档",
         "children": [
           {
+            "label": "本地测试",
+            "describe": "本地测试",
+            "ip": "localhost",
+            "port": "6163",
+            "layerServiceType": "IGSIMAGE",
+            "name": "本地测试",
+            "searchName": "",
+            "token": "",
+            "guid": "d3ac0679-e009-4e87-93ab-7181378efbbwwww",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": "Local,Local,Local"
+          },
+          {
             "label": "湖北省行政区划图",
             "describe": "湖北省行政区划图",
             "ip": "",
@@ -975,6 +990,26 @@
             "token": "",
             "guid": "a96fea53-d97d-401a-a502-f5621f098c14",
             "serverUrl": "http://192.168.21.192:6163/igs/rest/ogc/OGC_4326_CHINA/WMTSServer",
+            "wfsUrl": "",
+            "extent": ""
+          }
+        ]
+      },
+      {
+        "label": "数据流",
+        "describe": "数据流",
+        "children": [
+          {
+            "label": "数据流",
+            "describe": "数据流",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DATAFLOW",
+            "name": "数据流",
+            "searchName": "",
+            "token": "",
+            "guid": "5ABC33D2-E1A5-1761-5B31-730CDBC0F96D",
+            "serverUrl": "ws://192.168.91.123:9382/dataflow/cars_xian/subscribe",
             "wfsUrl": "",
             "extent": ""
           }

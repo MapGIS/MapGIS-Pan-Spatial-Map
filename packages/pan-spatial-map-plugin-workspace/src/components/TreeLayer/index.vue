@@ -330,7 +330,7 @@ export default class MpTreeLayer extends Mixins(
     return []
   }
 
-  @Watch('layerDocument.defaultMap', { deep: true, immediate: true })
+  @Watch('layerDocument.defaultMap', { immediate: true })
   documentChange() {
     this.parentKeys = []
     if (
@@ -630,7 +630,7 @@ export default class MpTreeLayer extends Mixins(
     }
   }
 
-  fitBounds(item) {
+  fitBounds(item, layeExtent) {
     const { Cesium, map, viewer, vueCesium } = this
     const isOutOfRange = FitBound.fitBoundByLayer(
       item.dataRef,
@@ -640,7 +640,8 @@ export default class MpTreeLayer extends Mixins(
         viewer,
         vueCesium
       },
-      this.is2DMapMode === true
+      this.is2DMapMode === true,
+      layeExtent
     )
     this.clickPopover(item, false)
     if (isOutOfRange) {
@@ -868,6 +869,16 @@ export default class MpTreeLayer extends Mixins(
             serverType: parent.type,
             gdbp: layerConfig.bindData.gdbps
           }
+        }
+      }
+    } else if (this.isDataFlow(layer)) {
+      exhibition = {
+        id: `${layer.title} ${layer.title} ${layer.id}`,
+        name: `${layer.title} 属性表`,
+        option: {
+          id: layer.id,
+          name: layer.title,
+          serverType: layer.type
         }
       }
     }

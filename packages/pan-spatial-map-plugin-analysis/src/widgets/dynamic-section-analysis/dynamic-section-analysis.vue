@@ -26,7 +26,7 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
   /**
    * 动态获取基础目录树上已勾选的三维模型数据
    */
-  @Watch('document', { deep: true, immediate: true })
+  @Watch('document', { immediate: true, deep: true })
   getScenes() {
     if (!this.document) return
     const layers = []

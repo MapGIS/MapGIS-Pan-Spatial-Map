@@ -166,7 +166,8 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
         this.isIGSScene(item) &&
         this.includeBindData(item)) ||
       (this.isSubLayer(item) && this.isArcGISMapImage(item)) ||
-      this.isIgsVectorLayer(item)
+      this.isIgsVectorLayer(item) ||
+      this.isDataFlow(item)
 
     return bool
   }
@@ -252,7 +253,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
   }
 
   isFitbound(layer) {
-    if (this.isParentLayer(layer) && !this.isDataFlow(layer)) {
+    if (this.isParentLayer(layer)) {
       if (this.isIGSScene(layer) && this.is2DMapMode === false) {
         return true
       } else if (!this.isIGSScene(layer)) {
