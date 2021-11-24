@@ -22969,22 +22969,6 @@ export class PolylineOutlineMaterialProperty {
 }
 
 /**
- * 流动纹理线
- * @param options - 包含以下属性
- * @param [options.image] - 图片路径
- * @param [options.color] - 颜色
- * @param [option.duration] - 持续时间 毫秒
- * @param [options.direction] - 动态纹理中image流动的方向，1.0：顺时针，2.0：逆时针，3.0：由上到下，4.0：由下到上
- */
-export class PolylineTrailLinkMaterialProperty {
-    constructor(options: {
-        image?: string;
-        color?: Color;
-        direction?: number;
-    });
-}
-
-/**
  * A visualizer for polylines represented by {@link Primitive} instances.
  * @param scene - The scene the primitives will be rendered in.
  * @param entityCollection - The entityCollection to visualize.
@@ -25112,13 +25096,256 @@ export class VisiblityAnalysis {
 }
 
 /**
- * 标绘使用的 polygon
+ * @param options.viewer - 视图对象
+ * @param options.positions - 顶点集
+ * @param options.attributes - 属性列表
+ * @param options.attSpan - 属性跨度
+ * @param [options.width = 20] - 面默认大小
+ * @param [options.alpha = 1.0] - 初始化半透明参数
+ */
+export class AttributeSurfacePrimitive {
+    constructor(options: {
+        viewer: any;
+        positions: Cartesian3[];
+        attributes: number[];
+        attSpan: number;
+        width?: number;
+        alpha?: number;
+    });
+    /**
+     * 整体透明度
+     */
+    alpha: number;
+    /**
+     * 实体对象
+     */
+    readonly primitive: Primitive;
+    /**
+     * 加入渲染队列
+     */
+    add(): void;
+    /**
+     * 移出渲染队列
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘图形圆
+ * @example
+ * var PlottingCircle = new Cesium.PlottingCircle(viewer, position, {id:'111',pixelSize:15,isScaleByDistance:true});
+ * @param viewer - 场景视图
+ * @param position - 圆心点，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.id = createGuid()] - 点ID，默认创建随机ID。
+ * @param [options.pixelSize = 20.0] - 点大小，单位像素。
+ * @param [options.show = true] - 是否显示
+ * @param [options.isScaleByDistance = true] - 点大小是否随远近距离缩放。
+ * @param [options.NearFarScalar = new NearFarScalar(1.5e2, 1.0, 1.5e5, 0.5)] - 远近缩放比例，参见{@link NearFarScalar}
+ */
+export class PlottingCircle {
+    constructor(viewer: Viewer, position: Cartesian3, options: {
+        id?: string;
+        pixelSize?: number;
+        show?: boolean;
+        isScaleByDistance?: boolean;
+        NearFarScalar?: any;
+    });
+    /**
+     * 图形实体位置
+     */
+    position: Cartesian3;
+    /**
+     * 图形实体对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形实体上表面高度（体生效）
+     */
+    extrudedHeight: number;
+    /**
+     * 图形是否可见
+     */
+    show: boolean;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 移除图形
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘图形point
+ * @example
+ * var plottingPoint = new Cesium.PlottingPoint(viewer, position, {id:'111',pixelSize:15,isScaleByDistance:true});
  * @param viewer - 场景视图
  * @param positions - 顶点集，使用参数为世界坐标
  * @param options - 参数配置
+ * @param [options.id = createGuid()] - 点ID，默认创建随机ID。
+ * @param [options.pixelSize = 20.0] - 点大小，单位像素。
+ * @param [options.show = true] - 是否显示
+ * @param [options.isScaleByDistance = true] - 点大小是否随远近距离缩放。
+ * @param [options.NearFarScalar = new NearFarScalar(1.5e2, 1.0, 1.5e5, 0.5)] - 远近缩放比例，参见{@link NearFarScalar}
+ */
+export class PlottingPoint {
+    constructor(viewer: Viewer, positions: Cartesian3[], options: {
+        id?: string;
+        pixelSize?: number;
+        show?: boolean;
+        isScaleByDistance?: boolean;
+        NearFarScalar?: any;
+    });
+    /**
+     * 图形实体位置
+     */
+    position: Cartesian3;
+    /**
+     * 图形实体对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形是否可见
+     */
+    show: boolean;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 移除图形
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘使用的 polygon
+ * @example
+ * var plottingPolygon = new Cesium.PlottingPolygon(viewer, position, {id:'111',color:Cesium.Color.BLUE,arcType:Cesium.ArcType.RHUMB});
+ * @param viewer - 场景视图
+ * @param positions - 顶点集，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.id = createGuid()] - 多边形ID，默认创建随机ID。
+ * @param [options.classificationType = 'NONE'] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
+ * @param [options.color = Color.BLUE] - 多边形颜色。
+ * @param [options.stRotation = 0.0] - 多边形旋转角度。
+ * @param [options.extrudedHeight] - 多边形拉伸高度。
+ * @param [options.closeTop = true] - 多边形体顶部是否闭合。（当定义extrudedHeight拉伸高度后生效）
+ * @param [options.closeBottom = true] - 多边形体底部是否闭合。(当定义extrudedHeight拉伸高度后生效)
+ * @param [options.arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
+ * @param [options.appearance] - 。
+ * @param [options.material] - 多边形材质。
+ * @param [options.allowPicking = true] - 是否允许鼠标事件选中。
+ * @param [options.height] - 多边形高度（当不贴地时才能设置）。
+ * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
  */
 export class PlottingPolygon {
-    constructor(viewer: Viewer, positions: Cartesian3[], options: any);
+    constructor(viewer: Viewer, positions: Cartesian3[], options: {
+        id?: string;
+        classificationType?: boolean;
+        color?: Color;
+        stRotation?: number;
+        extrudedHeight?: number;
+        closeTop?: boolean;
+        closeBottom?: boolean;
+        arcType?: ArcType;
+        appearance?: any;
+        material?: any;
+        allowPicking?: boolean;
+        height?: number;
+        asynchronous?: boolean;
+    });
+    /**
+     * 图形实体位置数组
+     */
+    positions: Cartesian3[];
+    /**
+     * 图形实体上表面高度（多边形体生效）
+     */
+    extrudedHeight: number;
+    /**
+     * 获取图形对象
+     */
+    readonly primitive: any;
+    /**
+     * 获取图形对象ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 移除图形
+     * @returns 移除成功
+     */
+    remove(): boolean;
+}
+
+/**
+ * 标绘使用的 Polyline
+ * @example
+ * var plottingPolyline = new Cesium.PlottingPolyline(viewer, position, {id:'111',width:10,arcType:Cesium.ArcType.RHUMB});
+ * @param viewer - 场景视图
+ * @param positions - 顶点集，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.asynchronous = false] - 是否为阻塞式更新，默认false.
+ * @param [options.id = createGuid()] - 线段id，默认创建随机GUID。
+ * @param [options.arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
+ * @param [options.width = 1.0] - 线段宽度.
+ * @param [options.colorsArray] - 线段插值颜色 {@link Color} 数组，当开启colorsPerVertex时，对不同线段部分颜色进行插值。(贴地线无效)
+ * @param [options.colorsPerVertex = false] - 是否开启线段颜色插值(贴地线无效)
+ * @param [options.colorsPerSegment = false] - 是否开启线段颜色(贴地线无效)
+ * @param [options.translucent = true] - 是否半透明
+ * @param [options.loop = false] - 是否闭环 (贴地线生效)
+ */
+export class PlottingPolyline {
+    constructor(viewer: Viewer, positions: Cartesian3[], options: {
+        asynchronous?: string;
+        id?: string;
+        arcType?: ArcType;
+        width?: number;
+        colorsArray?: Color[];
+        colorsPerVertex?: boolean;
+        colorsPerSegment?: boolean;
+        translucent?: boolean;
+        loop?: boolean;
+    });
+    /**
+     * 图形实体位置数组
+     */
+    positions: Cartesian3[];
+    /**
+     * 图形实体对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 移除图形
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘图形基类
+ * @param viewer - 场景视图
+ * @param options - 参数配置
+ */
+export class PlottingPrimitive {
+    constructor(viewer: Viewer, options: any);
 }
 
 /**
@@ -25147,30 +25374,95 @@ export class G3DLayer {
     /**
      * 获取 G3DLayer 中的单个图层对象
      * @param layerIndex - 在G3D服务中的图层序号
-     * @returns 获取 M3D 对象
+     * @returns 获取 图层对象
      */
-    getLayer(layerIndex: number): MapGISM3DSet;
+    getLayer(layerIndex: number): MapGISM3DSet | MapGISTerrainProvider | MapGISVectorLayer;
     /**
-     * 获取G3DLayer中的全部索引
+     * 获取g3d图层中的全部索引
+     * @returns 索引数组
+     */
+    getAllLayerIndexes(): number[];
+    /**
+     * 获取m3d图层中的全部索引
      * @returns 索引数组
      */
     getM3DLayerIndexes(): number[];
+    /**
+     * 获取地形图层中的全部索引
+     * @returns 索引数组
+     */
+    getTerrainLayerIndexes(): number[];
+    /**
+     * 获取矢量图层中的全部索引
+     * @returns 索引数组
+     */
+    getVectorLayerIndexes(): number[];
+    /**
+     * 获取全部 Layers
+     */
+    getAllLayers(): (MapGISM3DSet | MapGISTerrainProvider)[];
     /**
      * 获取全部 M3DLayers
      * @returns 返回 G3DLayer 中的所有 M3D 图层
      */
     getM3DLayers(): MapGISM3DSet[];
     /**
-     * 按照 layerIndex 数组获取，对应的 M3D 图层集合
-     * @param layerIndexes - layerIndex 数组
-     * @returns 获取 M3D 图层集
+     * 获取全部 TerrainLayers
+     * @returns 返回 G3DLayer 中的所有 地形 图层
      */
-    getM3DLayersByIndexes(layerIndexes: number[]): MapGISM3DSet[];
+    getTerrainLayers(): TerrainProvider[];
+    /**
+     * 获取全部 VectorLayers
+     * @returns 返回 G3DLayer 中的所有 矢量 图层
+     */
+    getVectorLayers(): MapGISVectorLayer[];
+    /**
+     * 按照 layerIndex 数组获取，对应的  图层集合
+     * @param layerIndexes - layerIndex 数组
+     * @returns 获取  图层集
+     */
+    getLayersByIndexes(layerIndexes: number[]): (MapGISM3DSet | MapGISTerrainProvider)[];
+    /**
+     * 模型单体化,仅支持get方式查询
+     * @example
+     * var g3dLayer;
+     *         var clickHandler = viewer.screenSpaceEventHandler.getInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
+     *         viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement) {
+     *             g3dLayer = viewer.scene.layers.getLayer(layerIndex);
+     *             g3dLayer.Monomerization(
+     *                 function callback(result) {
+     *                     for(var i=0; i<result.length;i++){
+     *                         viewer.scene.primitives.add(result[i]);
+     *                     }
+     *                 },
+     *                 {
+     *                     position:new Cesium.Cartesian(121.1375,28.8576,21),
+     *                     tolerance:0.0001,
+     *                     layerIndex:modelIndex
+     *                 }
+     *             );
+     *         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+     * @param options - 查询参数
+     * @param options.layerIndex - 模型层索引号
+     * @param options.position - 单体化点位置
+     * @param options.tolerance - 查询单体化容差
+     * @returns 返回 单体化对象数组,需要接口层添加到场景中
+     */
+    Monomerization(options: {
+        layerIndex: number;
+        position: Cartesian3;
+        tolerance: number;
+    }): any;
     /**
      * 获取长度
      * @returns 获取G3DLayer中的数组长度
      */
     getLength(): number;
+    /**
+     * 获取M3D图层长度
+     * @returns 获取M3D中的数组长度
+     */
+    getM3DLayersLength(): number;
     /**
      * @param layerIndex - 在G3D服务中的图层序号
      * @returns 获取对应的图层名
@@ -25214,17 +25506,33 @@ export class G3DLayer {
 export class GraphicsLayer {
     constructor(viewer: Viewer, options: any);
     /**
-     * 添加点
+     * 开始绘制图形
+     * @param [options.type = 'none'] - 绘制类型：'point','polyline','polygon'
+     * 不同类型实体参数参考：type = 'point'参见{@link PlottingPoint} , type = 'polyline'参见{@link PlottingPolyline},type = 'polygon'参见{@link PlottingPolygon},
      */
-    addPolyline(): void;
+    startDrawing(options: {
+        type?: string;
+    }): void;
     /**
-     * 添加线
+     * 绘制点事件
      */
-    addPoint(): void;
+    drawPoint(): void;
     /**
-     * 添加多边形
+     * 绘制线事件
      */
-    addPolygon(): void;
+    drawPolyline(): void;
+    /**
+     * 绘制面事件
+     */
+    drawPolygon(): void;
+    /**
+     * 绘制圆事件
+     */
+    drawCircle(): void;
+    /**
+     * 移除所有鼠标事件，停止绘制
+     */
+    stopDrawing(): void;
     /**
      * 开始编辑
      */
@@ -25235,20 +25543,32 @@ export class GraphicsLayer {
     stopEdit(): void;
     /**
      * 根据ID获取标绘图形对象
+     * @param index - 图形ID
      */
-    getGraphicByID(): void;
+    getGraphicByID(index: string): void;
     /**
      * 根据ID移除标绘图形
+     * @param index - 图形ID
      */
-    removeGraphicByID(): void;
+    removeGraphicByID(index: string): void;
     /**
-     * 获取图层所有标绘图形
+     * 根据序号移除标绘图形
+     * @param index - 图形序号
      */
-    getAllGraphic(): void;
+    removeGraphicByIndex(index: string): void;
     /**
      * 移除图层所有标绘图形
      */
     removeAllGraphic(): void;
+    /**
+     * 根据序号获取标绘图形对象
+     * @param index - 图形序号
+     */
+    getGraphicByIndex(index: string): void;
+    /**
+     * 获取图层所有标绘图形
+     */
+    getAllGraphic(): void;
     /**
      * 移除图层
      */
@@ -25650,11 +25970,15 @@ export class Layers {
     /**
      * 添加地形图层（内部）
      * @param url - 服务地址
-     * @param options - 可选参数
+     * @param optionsParam - 可选参数
      * @param [optionsParam.requestVertexNormals = false] - 是否请求法向（地形）
-     * @returns layerIndex 返回图层序号
+     * @param [optionsParam.autoReset = true] - 是否自动跳转
+     * @returns terrainLayer 返回图层对象
      */
-    appendTerrainLayer(url: string, options: any): number;
+    appendTerrainLayer(url: string, optionsParam: {
+        requestVertexNormals?: boolean;
+        autoReset?: boolean;
+    }): MapGISTerrainProvider | TerrainProvider;
     /**
      * 根据图层索引号，获取 地形图层对象
      * @param layerIndex - 图层序号
@@ -26663,11 +26987,11 @@ export class MapGISM3DSet {
     /**
      * 图层的渲染索引：发布的图层的唯一索引。 图层自身的索引
      */
-    readonly layerRenderIndex: any;
+    readonly layerRenderIndex: number;
     /**
      * 数据附带的 gdbp地址
      */
-    readonly gdbpUrl: any;
+    readonly gdbpUrl: string;
     pickedColor: Color;
     pickedOid: Color;
     /**
@@ -26813,6 +27137,52 @@ export class MapGISM3DTileContent {
      * @returns The corresponding {@link Cesium3DTileFeature} object.
      */
     getFeature(batchId: number): Cesium3DTileFeature;
+}
+
+/**
+ * 动态圆波纹材质
+ * @param options - 附加属性
+ * @param [options.color] - 颜色
+ * @param [option.duration] - 持续时间 毫秒
+ * @param [options.count] - 波纹数量
+ * @param [options.gradient] - 梯度拖尾效果，取值范围[0,1]
+ */
+export class CircleWaveMaterialProperty {
+    constructor(options: {
+        color?: Color;
+        count?: number;
+        gradient?: number;
+    });
+}
+
+/**
+ * 流动纹理线
+ * @param options - 包含以下属性
+ * @param [options.image] - 图片路径
+ * @param [options.color] - 颜色
+ * @param [option.duration] - 持续时间 毫秒
+ * @param [options.direction] - 动态纹理中image流动的方向，1.0：顺时针，2.0：逆时针，3.0：由上到下，4.0：由下到上
+ * @param [options.repeat] - 在X轴方向与Y轴方向重复的次数
+ */
+export class PolylineTrailLinkMaterialProperty {
+    constructor(options: {
+        image?: string;
+        color?: Color;
+        direction?: number;
+        repeat?: Cartesian2;
+    });
+}
+
+/**
+ * 雷达扫描材质
+ * @param options - 附加属性
+ * @param [options.color] - 颜色
+ * @param [option.speed] - 速度因子，推荐值域范围0到1之间
+ */
+export class RadarMaterialProperty {
+    constructor(options: {
+        color?: Color;
+    });
 }
 
 /**
@@ -27532,7 +27902,7 @@ export class WeatherEffect {
      * @param [options.modelMatrix = Matrix4.IDENTITY] - 模型转换矩阵
      * @param [options.positionArray] - 限定模型上降雨范围的坐标数组
      * @param [options.alpha = 1.0] - 透明度，值域【0,1】
-     * @param [options.angle = 0.0] - 倾斜角度，值域【0,90】
+     * @param [options.angle = 0.0] - 倾斜角度，值域【-30,30】
      * @param [options.speed = 1.0] - 雨丝速度，值域【1.0,20.0】
      * @param [options.rainLength = 0.0] - 雨丝附加长度，值域【0.0,10.0】
      * @param [options.factor = 0.1] - 场景混合度，值域【0,1.0】
@@ -27668,9 +28038,9 @@ export class GoogleMapImageryProvider {
  *                                      ]
  *                      };
  *        //二维地图文档加载
- *        var mapGIS2DLayer = layers.appendImageryLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量',otherOptions);
+ *        var mapGIS2DLayer = viewer.scene.layers.appendImageryLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量',otherOptions);
  *        //三维地图文档加载
- *        var mapGIS3DLayer = layers.appendImageryLayer('http://54.222.218.173:6163/igs/rest/g3d/lcmap/',0,0,otherOptions);
+ *        var mapGIS3DLayer = viewer.scene.layers.appendImageryLayer('http://54.222.218.173:6163/igs/rest/g3d/lcmap/',0,0,otherOptions);
  * @param options - 包含以下属性
  * @param options.url - 服务地址 eg:http://localhost:6163/igs/rest/mrms/docs/地图文档名
  * @param [sceneIndex] - 三维地图文档图层所在场景索引，当加载三维地图文档时为必需参数
@@ -27827,7 +28197,7 @@ export class MapGISTerrainProvider {
     /**
      * 是否显示地形
      */
-    showTerrain: boolean;
+    show: boolean;
     /**
      * Gets the maximum geometric error allowed in a tile at a given level.
      * @param level - The tile level for which to get the maximum geometric error.
@@ -27860,13 +28230,13 @@ export class MapGISTerrainProvider {
  *    //  maxLevel:10
  *    //};
  *   var otherOptions ={
- *       tileRange:webRoot.Rectangle.fromDegrees(73.4625656504558,9.7218626686719958,139.249771965239,53.5800002118608),
+ *       tileRange:Cesium.Rectangle.fromDegrees(73.4625656504558,9.7218626686719958,139.249771965239,53.5800002118608),
  *       colNum:3,
  *       rowNum:2,
  *       maxLevel:10,
  *       proxy:'/Handler.ashx'//不存在跨域可不设置
  *     };
- *   var mapGisTile = webGlobe.appendMapGISTile('http://54.222.218.173:6163/igs/rest/mrms/tile/YX_TILE',otherOptions);
+ *   var mapGisTile = viewer.scene.layers.appendImageryLayer('http://54.222.218.173:6163/igs/rest/mrms/tile/YX_TILE',otherOptions);
  * @param options - 包含以下属性
  * @param options.url - 服务地址
  * @param [options.headers] - Http Headers
@@ -27945,14 +28315,12 @@ export class OpenWeatherImageryProvider {
 /**
  * TerrainAnalyse 地形分析功能的主要类
  * @example
- * var webGlobe = new Cesium.WebSceneControl('cesiumContainer', {});
- * var viewer = webGlobe.viewer;
+ * var viewer = new Cesium.Viewer('cesiumContainer', {});
  * var terrainAnalyse = new Cesium.TerrainAnalyse(viewer, {});
- * terrainAnalyse.updateMaterial('elevation');
+ * terrainAnalyse.selectedShading='elevation';
  * terrainAnalyse.enableContour(enableContour);
  * @param viewer - 场景视图对象
  * @param [options] - 包含以下属性的对象
- * @param [options.baseUrl] - mapgis地形地址
  * @param [options.contourColor = Color.RED.clone()] - 等高线颜色默认为红色
  * @param [options.contourWidth = 2.0] - 等高线宽度
  * @param [options.contourSpacing = 150.0] - 等高线间距
@@ -27962,10 +28330,11 @@ export class OpenWeatherImageryProvider {
  * @param [options.elevationRampColor] - 高程色表
  * @param [options.slopeRampColor] - 坡度色表
  * @param [options.aspectRampColor] - 坡向色表
+ * @param [options.bandPositionsColorsArray] - 等值面高度和颜色数组
+ * @param [options.selectedShading] - //地形分析渲染类型包括高程赋色'elevation'、坡度分析'slope'、坡向分析'aspect',坡向箭头+坡度颜色分析'arrowAspectSlope',等值面分析'elevationBand'。
  */
 export class TerrainAnalyse {
     constructor(viewer: Viewer, options?: {
-        baseUrl?: string;
         contourColor?: Color;
         contourWidth?: number;
         contourSpacing?: number;
@@ -27975,6 +28344,8 @@ export class TerrainAnalyse {
         elevationRampColor?: any[];
         slopeRampColor?: any[];
         aspectRampColor?: any[];
+        bandPositionsColorsArray?: any[];
+        selectedShading?: string;
     });
     /**
      * 修改等高线宽度，间距和颜色
@@ -27983,13 +28354,6 @@ export class TerrainAnalyse {
      * @param ContourColor - 修改等高线颜色
      */
     changeContours(ContourSpacing: number, ContourWidth: number, ContourColor: Color): void;
-    /**
-     * 开启等值线分析
-     * @example
-     * terrainAnalyse.enableContour(true);
-     * @param enableContour - 是否开启等高线
-     */
-    enableContour(enableContour: boolean): void;
     /**
      * 更新分析区域
      * @example
@@ -28019,13 +28383,13 @@ export class TerrainAnalyse {
      * 修改坡向箭头密度
      * @example
      * var  cartesian2= new Cesium.Cartesian2(3.0,3.0);
-     * terrainAnalyse.changeArrowAspectRepeat(cartesian2);
+     * changeArrowAspectRepeat(cartesian2);
      */
     changeArrowAspectRepeat(): void;
     /**
      * 开启地形分析，坡度，坡向和等值线
      * @example
-     * terrainAnalyse.updateMaterial('elevation'); //地形分析包括高程赋色'elevation'、坡度分析'slope'、坡向分析'aspect'。
+     * terrainAnalyse.updateMaterial('elevation'); //地形分析渲染类型包括高程赋色'elevation'、坡度分析'slope'、坡向分析'aspect',坡向箭头+坡度颜色分析'arrowAspectSlope',等值面分析'elevationBand'。
      * @param selectedShading - 地形分析类型
      */
     updateMaterial(selectedShading: string): void;
@@ -28042,9 +28406,13 @@ export class TerrainAnalyse {
      * @param bandThickness - 等值面宽度
      * @param bandTransparency - 等值面透明度
      * @param backgroundTransparency - 等值面背景透明度
-     * @param colorsArray - 等值面颜色数组
+     * @param colorsArray - 等值面颜色数组(数组长度不小于bandPositions)
      */
     updateElevationBandMaterial(bandPositions: any[], gradient: boolean, bandThickness: number, bandTransparency: number, backgroundTransparency: number, colorsArray: any[]): void;
+    /**
+     * 移除坡度坡向，等值面，等高线等分析结果
+     */
+    destroy(): void;
     /**
      * 地形压平
      * @param positions - 多边形顶点坐标数组
@@ -28218,6 +28586,9 @@ export class ReImg {
  * @param [options.rangeTargetPosition = 1.0] - 视点与目标点距离按照倍数增加
  * @param [options.isAddScanEffect = false] - 是否挂载动态扫描特效
  * @param [options.scanEffect] - 扫描特效实例，可以是动态圆，也可以是雷达扫描
+ * @param [option.onPositionTag = false] - 是否执行经过路径点返回回调函数的功能，默认为false不执行
+ * @param [options.onPositionCallback] - 当点经过设置的路径点时，返回路径点坐标和index索引号
+ * @param [options.disFactor = 0.01] - 用于判断当前点是否在路径点所在位置附近的精度
  */
 export class AnimationTool {
     constructor(viewer: any, options: {
@@ -28243,6 +28614,8 @@ export class AnimationTool {
         rangeTargetPosition?: number;
         isAddScanEffect?: boolean;
         scanEffect?: any;
+        onPositionCallback?: any;
+        disFactor?: number;
     });
     /**
      * 坐标点
@@ -28575,10 +28948,10 @@ export class DrawElement {
 }
 
 /**
- * 标绘工具
+ * 标绘编辑工具
  */
 export class EditTool {
-    constructor(viewer: Viewer, options: any);
+    constructor(viewer: Viewer, graphicsLayer: any, options: any);
     /**
      * 激活编辑工具
      */
@@ -28586,11 +28959,19 @@ export class EditTool {
     /**
      * 关闭编辑工具
      */
-    remove(): void;
+    stop(): void;
+    /**
+     * 返回所选图形
+     */
+    getPickingGraphic(): void;
     /**
      * 删除所选图形
      */
     deletePickGraphic(): void;
+    /**
+     * 清除选择
+     */
+    clearPick(): void;
 }
 
 /**
@@ -29499,7 +29880,7 @@ export class MapGISVectorLayer {
      * @param id - 矢量数据的id
      * @returns 由一个GeometryInstance和一个Primitive组成的对象，若查找不到则返回undefined
      */
-    getVectorById(id: number): any;
+    getVectorById(id: number): any | undefined;
     /**
      * 根据id获取绘制矢量数据边框线的GeometryInstance与所属的Primitive
      * @example
@@ -29523,6 +29904,7 @@ export class MapGISVectorLayer {
      * @param [options.pixelSize] - 矢量点的像素大小
      * @param [options.height = 0] - 矢量白模的高度
      * @param [options.width = 0] - 矢量线的线宽
+     * @param [options.extendAttr] - 拓展属性记录 eg: options.extendAttr={Name: name, Type: type}
      * @returns 绘制所添加矢量要素的Primitive
      */
     addVector(id: number, options: {
@@ -29531,6 +29913,7 @@ export class MapGISVectorLayer {
         pixelSize?: number;
         height?: number;
         width?: number;
+        extendAttr?: any;
     }): Primitive;
     /**
      * 根据id更新矢量
@@ -29569,6 +29952,73 @@ export class MapGISVectorLayer {
      * @param primitive - 进行更新的Primitive
      */
     updatePrimitive(primitive: Primitive): void;
+    /**
+     * 城市生长初始化，数据准备完成后会直接开始展示
+     * @example
+     * var url = 'http://192.168.10.214:6163/igs/rest/mrfs/docs/SZ';
+     * var options = {
+     *     autoReset: true,
+     *     cityGrow: true,
+     *     getDocLayerIndexes: function (indexs) {
+     *         var layerIndex = indexs[0];
+     *         //console.log(layerIndex);
+     *         var layer = viewer.scene.layers.getLayer(layerIndex);
+     *         //console.log(layer);
+     *         var timeLineOptions = {
+     *             timeField: 'startTime',
+     *             startColor: new Cesium.Color(51 / 255.0, 174 / 255.0, 204 / 255.0, 1.0),
+     *             endColor: new Cesium.Color(215 / 255.0, 104 / 255.0, 134 / 255.0, 1.0),
+     *             buildingsLimit: 100,
+     *             updateInterval: 0.5
+     *         };
+     *         layer.cityGrow(timeLineOptions);
+     *     },
+     *     style: {
+     *         type: 'building',
+     *         styleOptions: {
+     *             heightField: 'height'
+     *         }
+     *     }
+     * };
+     * options.url = url;
+     * viewer.scene.layers.appendVectorLayer(url, options);
+     * @param options.timeField - 数据的时间字段名
+     * @param [options.displayWithTile = false] - Line|Tile 根据时间线性加载或瓦片动态加载，适用不同的数据量展示,默认为线性加载
+     * @param [options.cityGrowSpeed = 0.5] - 城市生长速度，取值范围 0 ~ 1，速度为0不加载，速度为1时加载全部数据
+     * @param [options.buildingsGrowTime = 10] - 建筑建设时长，默认值为10秒
+     * @param [options.updateInerval = 1] - 更新间隔，默认每秒执行一次更新，间隔越短所需计算量越大，默认值为1秒
+     * @param [options.startTime] - 起始时间，未指定则自动请求
+     * @param [options.endTime] - 结束时间，未指定则自动请求
+     * @param [options.timeAsc = true] - 时间是否为升序，即升序排列第一个为城市建设开始时间，用于未指定起止时间的数据请求
+     * @param [options.buildingsLimit = Number.MAX_VALUE] - 线性加载时每一时段的建筑数量限制
+     * @param [options.startColor] - 建筑起始颜色
+     * @param [options.endColor] - 建筑最终颜色
+     */
+    cityGrowStart(options: {
+        timeField: string;
+        displayWithTile?: string;
+        cityGrowSpeed?: number;
+        buildingsGrowTime?: number;
+        updateInerval?: number;
+        startTime?: number;
+        endTime?: number;
+        timeAsc?: boolean;
+        buildingsLimit?: number;
+        startColor?: Color;
+        endColor?: Color;
+    }): void;
+    /**
+     * 暂停城市生长
+     */
+    cityGrowStop(): void;
+    /**
+     * 继续城市生长
+     */
+    cityGrowPlay(): void;
+    /**
+     * 设置城市生长当前时间
+     */
+    cityGrowSetTime(time: number): void;
 }
 
 /**
@@ -29607,6 +30057,19 @@ export class MapGISVectorLayer {
  * @param [options.style.styleOptions.width] - 线宽，仅当options.style.type=line时生效
  * @param [options.style.styleOptions.heightField] - 用作区矢量白模高程的属性字段名称，不设置则高程为零，仅当options.style.type=building时生效
  * @param [options.style.styleOptions.heightRatio] - 区矢量白模高程放缩比例，默认1.0，仅当options.style.type=building时生效
+ * @param [options.cityGrow = false] - 是否使用城市生长
+ * @param [options.cityGrowOptions] - 城市生长参数
+ * @param [options.cityGrowOptions.timeField] - 数据的时间字段名，城市生长必要参数
+ * @param [options.cityGrowOptions.displayWithTile = false] - Line|Tile 根据时间线性加载或瓦片动态加载，适用不同的数据量展示,默认为线性加载
+ * @param [options.cityGrowOptions.cityGrowSpeed = 0.5] - 城市生长速度，取值范围 0 ~ 1，速度为0不加载，速度为1时加载全部数据
+ * @param [options.cityGrowOptions.buildingsGrowTime = 10] - 建筑建设时长，默认值为10秒
+ * @param [options.cityGrowOptions.updateInerval = 1] - 更新间隔，默认每秒执行一次更新，间隔越短所需计算量越大，默认值为1秒
+ * @param [options.cityGrowOptions.startTime] - 起始时间，未指定则自动请求
+ * @param [options.cityGrowOptions.endTime] - 结束时间，未指定则自动请求
+ * @param [options.cityGrowOptions.timeAsc = true] - 时间是否为升序，即升序排列第一个为城市建设开始时间，用于未指定起止时间的数据请求
+ * @param [options.cityGrowOptions.buildingsLimit = Number.MAX_VALUE] - 线性加载时每一时段的建筑数量限制
+ * @param [options.cityGrowOptions.startColor] - 建筑起始颜色
+ * @param [options.cityGrowOptions.endColor] - 建筑最终颜色
  * @param [options.tileWidth = 256] - 瓦片宽度
  * @param [options.tileHeight = 256] - 瓦片高度
  * @param [options.minimumLevel = 0] - 瓦片最小级别
@@ -29640,6 +30103,20 @@ export class MapGISVectorProvider {
                 heightField?: string;
                 heightRatio?: number;
             };
+        };
+        cityGrow?: boolean;
+        cityGrowOptions?: {
+            timeField?: string;
+            displayWithTile?: string;
+            cityGrowSpeed?: number;
+            buildingsGrowTime?: number;
+            updateInerval?: number;
+            startTime?: number;
+            endTime?: number;
+            timeAsc?: boolean;
+            buildingsLimit?: number;
+            startColor?: Color;
+            endColor?: Color;
         };
         tileWidth?: number;
         tileHeight?: number;
@@ -39059,6 +39536,14 @@ export class Material {
      */
     static readonly PolylineTrailLinkType: string;
     /**
+     * Gets the name of the radar material
+     */
+    static readonly RadarMaterialType: string;
+    /**
+     * Gets the name of the circle wave material
+     */
+    static readonly CircleWaveMaterialType: string;
+    /**
      * Gets the name of the elevation contour material.
      */
     static readonly ElevationContourType: string;
@@ -48465,7 +48950,6 @@ declare module "cesium/Source/DataSources/PolylineGeometryUpdater" { import { Po
 declare module "cesium/Source/DataSources/PolylineGlowMaterialProperty" { import { PolylineGlowMaterialProperty } from 'cesium'; export default PolylineGlowMaterialProperty; }
 declare module "cesium/Source/DataSources/PolylineGraphics" { import { PolylineGraphics } from 'cesium'; export default PolylineGraphics; }
 declare module "cesium/Source/DataSources/PolylineOutlineMaterialProperty" { import { PolylineOutlineMaterialProperty } from 'cesium'; export default PolylineOutlineMaterialProperty; }
-declare module "cesium/Source/DataSources/PolylineTrailLinkMaterialProperty" { import { PolylineTrailLinkMaterialProperty } from 'cesium'; export default PolylineTrailLinkMaterialProperty; }
 declare module "cesium/Source/DataSources/PolylineVisualizer" { import { PolylineVisualizer } from 'cesium'; export default PolylineVisualizer; }
 declare module "cesium/Source/DataSources/PolylineVolumeGeometryUpdater" { import { PolylineVolumeGeometryUpdater } from 'cesium'; export default PolylineVolumeGeometryUpdater; }
 declare module "cesium/Source/DataSources/PolylineVolumeGraphics" { import { PolylineVolumeGraphics } from 'cesium'; export default PolylineVolumeGraphics; }
@@ -48639,11 +49123,19 @@ declare module "cesium/Source/MapGIS/Analysis/ShadowAnalysis" { import { ShadowA
 declare module "cesium/Source/MapGIS/Analysis/SkyLineAnalysis" { import { SkyLineAnalysis } from 'cesium'; export default SkyLineAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/ViewshedAnalysis" { import { ViewshedAnalysis } from 'cesium'; export default ViewshedAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/VisiblityAnalysis" { import { VisiblityAnalysis } from 'cesium'; export default VisiblityAnalysis; }
+declare module "cesium/Source/MapGIS/Entity/AttributeSurfacePrimitive" { import { AttributeSurfacePrimitive } from 'cesium'; export default AttributeSurfacePrimitive; }
+declare module "cesium/Source/MapGIS/Entity/PlottingCircle" { import { PlottingCircle } from 'cesium'; export default PlottingCircle; }
+declare module "cesium/Source/MapGIS/Entity/PlottingPoint" { import { PlottingPoint } from 'cesium'; export default PlottingPoint; }
 declare module "cesium/Source/MapGIS/Entity/PlottingPolygon" { import { PlottingPolygon } from 'cesium'; export default PlottingPolygon; }
+declare module "cesium/Source/MapGIS/Entity/PlottingPolyline" { import { PlottingPolyline } from 'cesium'; export default PlottingPolyline; }
+declare module "cesium/Source/MapGIS/Entity/PlottingPrimitive" { import { PlottingPrimitive } from 'cesium'; export default PlottingPrimitive; }
 declare module "cesium/Source/MapGIS/IndexedDB/TransactionImplement" { import { TransactionImplement } from 'cesium'; export default TransactionImplement; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3D" { import { MapGISM3D } from 'cesium'; export default MapGISM3D; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DSet" { import { MapGISM3DSet } from 'cesium'; export default MapGISM3DSet; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DTileContent" { import { MapGISM3DTileContent } from 'cesium'; export default MapGISM3DTileContent; }
+declare module "cesium/Source/MapGIS/Material/CircleWaveMaterialProperty" { import { CircleWaveMaterialProperty } from 'cesium'; export default CircleWaveMaterialProperty; }
+declare module "cesium/Source/MapGIS/Material/PolylineTrailLinkMaterialProperty" { import { PolylineTrailLinkMaterialProperty } from 'cesium'; export default PolylineTrailLinkMaterialProperty; }
+declare module "cesium/Source/MapGIS/Material/RadarMaterialProperty" { import { RadarMaterialProperty } from 'cesium'; export default RadarMaterialProperty; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/BloomEffect" { import { BloomEffect } from 'cesium'; export default BloomEffect; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/DynamicLightLineEffect" { import { DynamicLightLineEffect } from 'cesium'; export default DynamicLightLineEffect; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/GlobeEffect" { import { GlobeEffect } from 'cesium'; export default GlobeEffect; }
