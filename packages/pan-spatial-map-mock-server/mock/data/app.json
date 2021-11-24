@@ -203,6 +203,10 @@
             "uri": "widgets/network-analysis"
           },
           {
+            "id": "widget_ebc4e6c1-e17a-8c5a-6d65-d7f35f1f88c4",
+            "uri": "widgets/scene-setting"
+          },
+          {
             "id": "widget_fa2ea6fd-c838-46bc-9b89-de82fc102e67",
             "uri": "widgets/scene-roaming",
             "config": "configs/scene-roaming/config.json"
@@ -302,6 +306,9 @@
             "type": "folder",
             "label": "三维分析",
             "children": [
+              {
+                "id": "widget_ebc4e6c1-e17a-8c5a-6d65-d7f35f1f88c4"
+              },
               {
                 "id": "widget_fa2ea6fd-c838-46bc-9b89-de82fc102e67"
               },
