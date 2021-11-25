@@ -644,6 +644,10 @@ export default class MpTreeLayer extends Mixins(
     })
   }
 
+  queryFeature() {
+    
+  }
+
   /**
    * 打开M3D编辑属性页面
    */
