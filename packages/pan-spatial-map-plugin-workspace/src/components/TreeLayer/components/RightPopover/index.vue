@@ -18,6 +18,9 @@
     <a-list-item v-if="isFitbound(layerItem)" @click="fitBounds">
       缩放至
     </a-list-item>
+    <a-list-item v-if="isIGSScene(layerItem)" @click="enableQuery">
+      动态拾取
+    </a-list-item>
     <a-list-item
       v-if="
         layerItem.layer &&
@@ -75,6 +78,13 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
       'fit-bounds',
       this.layerItem,
       this.getDataFlowExtent(this.layerItem)
+    )
+  }
+
+  enableQuery() {
+    this.$emit(
+      'query',
+      this.layerItem,
     )
   }
 

@@ -101,6 +101,7 @@
                 @open-change-active-layer="openChangeActiveLayer"
                 @to-top="toTop"
                 @edit-data-flow-style="editDataFlowStyle"
+                @query="queryFeature"
               />
               <slot
                 v-else
@@ -659,6 +660,10 @@ export default class MpTreeLayer extends Mixins(
     this.showEditDataFlowStyle = true
     this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
+  }
+
+  queryFeature() {
+    
   }
 
   openChangeActiveLayer(item) {
