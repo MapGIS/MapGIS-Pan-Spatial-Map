@@ -294,7 +294,10 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
     const arr = []
     const sublayers = layer.allSublayers
     sublayers.forEach(sublayer => {
-      if (!sublayer.visible) {
+      if (
+        !sublayer.visible ||
+        (sublayer.sublayers && sublayer.sublayers.length > 0)
+      ) {
         return
       }
       arr.push({
