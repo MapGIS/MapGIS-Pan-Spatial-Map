@@ -360,9 +360,17 @@ export default class TreeLayer extends Mixins(
         }
 
         if (this.isVectorTile(item)) {
+          /**
+           * 修改说明：矢量瓦片里的layers没有row.layout或者没有row.layout.visibility字段时，是默认显示，这里默认设置为可见
+           * 修改人：龚跃健
+           * 修改日期：2021/11/25
+           */
           item.sublayers = item.currentStyle.layers.map(row => ({
             ...row,
-            visible: !!(row.layout && row.layout.visibility === 'visible'),
+            visible:
+              row.layout === undefined ||
+              row.layout.visibility === undefined ||
+              row.layout.visibility === 'visible',
             id: `${item.id}~${row.id}`,
             title: row.description || row.id
           }))
@@ -578,15 +586,20 @@ export default class TreeLayer extends Mixins(
               layerItem.activeScene.sublayers[i].visible = !layerItem
                 .activeScene.sublayers[i].visible
             } else if (this.isVectorTile(layers[parentIndex])) {
+              /**
+               * 修改说明：矢量瓦片里的layers没有row.layout或者没有row.layout.visibility字段时，是默认显示，这里默认设置为可见
+               * 修改人：龚跃健
+               * 修改日期：2021/11/25
+               */
+              const layer = layerItem.currentStyle.layers[i]
               const visible =
-                (layerItem.currentStyle.layers[i].layout || {}).visibility ===
-                'visible'
-              if (layerItem.currentStyle.layers[i].layout) {
-                layerItem.currentStyle.layers[i].layout.visibility = visible
-                  ? 'none'
-                  : 'visible'
+                layer.layout === undefined ||
+                layer.layout.visibility === undefined ||
+                layer.layout.visibility === 'visible'
+              if (layer.layout) {
+                layer.layout.visibility = visible ? 'none' : 'visible'
               } else {
-                layerItem.currentStyle.layers[i].layout = {
+                layer.layout = {
                   visibility: visible ? 'none' : 'visible'
                 }
               }

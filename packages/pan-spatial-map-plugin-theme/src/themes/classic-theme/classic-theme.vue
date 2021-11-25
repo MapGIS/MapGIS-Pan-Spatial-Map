@@ -86,9 +86,15 @@ export default {
     },
     mapOptions() {
       const lnglat = baseConfigInstance.config.center.split(',')
-      // 由于每个矢量瓦片的符号库可能不一样，为确保矢量瓦片的正常显示，在展示矢量瓦片之前，都需要在需要在后台应用基本配置里配置矢量瓦片对应的符号库地址。
-      // 主要原因是mapboxgl只支持在初始化的时候设置符号库，中途不支持修改。
-      // 如果在后台没有配置spriteUrl，那么就取全局配置的IGS默认的符号库（默认的符号库必须用/igs/rest/mrms/vtiles/sprite请求，矢量瓦片自己的则用/igs/rest/mrcs/vtiles/矢量瓦片服务名/sprite）
+      /**
+       * 修改说明：由于每个矢量瓦片的符号库可能不一样，为确保矢量瓦片的正常显示，在展示矢量瓦片之前，
+       * 都需要在需要在后台应用基本配置里配置矢量瓦片对应的符号库地址。
+       * 主要原因是mapboxgl只支持在初始化的时候设置符号库，中途不支持修改。
+       * 如果在后台没有配置spriteUrl，那么就取全局配置的IGS默认的符号库
+       * （默认的符号库必须用/igs/rest/mrms/vtiles/sprite请求，矢量瓦片自己的则用/igs/rest/mrcs/vtiles/矢量瓦片服务名/sprite）
+       * 修改人：龚跃健
+       * 修改日期：2021/11/25
+       */
       const spriteUrl =
         baseConfigInstance.config.spriteUrl ||
         `http://${baseConfigInstance.config.ip}:${baseConfigInstance.config.port}/igs/rest/mrms/vtiles/sprite`
