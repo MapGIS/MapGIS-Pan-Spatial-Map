@@ -11,7 +11,8 @@ import {
   MpShadowAnalysis,
   MpParticleEffects,
   MpProfileAnalysis,
-  MpSceneSetting
+  MpSceneSetting,
+  MpHeightLimitedAnalysis
 } from './widgets'
 
 const components = [
@@ -27,7 +28,8 @@ const components = [
   MpShadowAnalysis,
   MpParticleEffects,
   MpProfileAnalysis,
-  MpSceneSetting
+  MpSceneSetting,
+  MpHeightLimitedAnalysis
 ]
 
 const install = Vue => {
