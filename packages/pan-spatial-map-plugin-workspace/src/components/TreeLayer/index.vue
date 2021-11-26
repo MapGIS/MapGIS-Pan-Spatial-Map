@@ -330,7 +330,7 @@ export default class MpTreeLayer extends Mixins(
     return []
   }
 
-  @Watch('layerDocument.defaultMap', { immediate: true })
+  @Watch('layerDocument.defaultMap', { immediate: true, deep: true })
   documentChange() {
     this.parentKeys = []
     if (
