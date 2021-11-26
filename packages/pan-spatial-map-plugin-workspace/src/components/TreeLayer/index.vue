@@ -722,7 +722,7 @@ export default class MpTreeLayer extends Mixins(
   }
 
   updateM3DProps(val) {
-    const { key, maximumScreenSpaceError } = val
+    const { key, maximumScreenSpaceError, id } = val
     const indexArr: Array<string> = key.split('-')
     const doc = this.layerDocument.clone()
     const layers: Array<unknown> = doc.defaultMap.layers()
@@ -731,6 +731,8 @@ export default class MpTreeLayer extends Mixins(
       layers[firstIndex].activeScene.sublayers[
         secondIndex
       ].maximumScreenSpaceError = maximumScreenSpaceError
+      const m3d = this.sceneController.findSource(id)
+      m3d.maximumScreenSpaceError = maximumScreenSpaceError
       this.$emit('update:layerDocument', doc)
     }
   }

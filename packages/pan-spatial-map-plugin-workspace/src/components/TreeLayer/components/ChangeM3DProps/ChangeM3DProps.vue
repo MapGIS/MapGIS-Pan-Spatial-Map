@@ -6,7 +6,7 @@
       labelAlign="left"
     >
       <a-form-item label="最大几何误差">
-        <a-input-number v-model="maximumScreenSpaceError" :max="16" :min="1" />
+        <a-input-number v-model="maximumScreenSpaceError" :min="0" />
       </a-form-item>
     </a-form>
   </div>
