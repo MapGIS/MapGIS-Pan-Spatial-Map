@@ -101,6 +101,7 @@
                 @open-change-active-layer="openChangeActiveLayer"
                 @to-top="toTop"
                 @edit-data-flow-style="editDataFlowStyle"
+                @change-m3d-props="changeM3DProps"
               />
               <slot
                 v-else
@@ -221,6 +222,27 @@
         </mp-window>
       </template>
     </mp-window-wrapper>
+
+    <mp-window-wrapper :visible="showChangeM3DProps">
+      <template v-slot:default="slotProps">
+        <mp-window
+          title="属性设置"
+          :width="300"
+          :icon="widgetInfo.icon"
+          :visible.sync="showChangeM3DProps"
+          anchor="center-center"
+          v-bind="slotProps"
+        >
+          <template>
+            <mp-change-m-3-d-props
+              v-if="showChangeM3DProps"
+              :layer="currentLayerInfo"
+              @update:layer="updateM3DProps"
+            />
+          </template>
+        </mp-window>
+      </template>
+    </mp-window-wrapper>
   </div>
 </template>
 
@@ -263,6 +285,7 @@ import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLaye
 import layerTypeUtil from './mixin/layer-type-util'
 import RightPopover from './components/RightPopover/index.vue'
 import MpEditDataFlowStyle from './components/EditDataFlowStyle/index.vue'
+import MpChangeM3DProps from './components/ChangeM3DProps/ChangeM3DProps.vue'
 
 const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
@@ -274,7 +297,8 @@ const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
     MpSelectTilematrixSet,
     MpChangeActiveLayer,
     RightPopover,
-    MpEditDataFlowStyle
+    MpEditDataFlowStyle,
+    MpChangeM3DProps
   }
 })
 export default class MpTreeLayer extends Mixins(
@@ -315,6 +339,9 @@ export default class MpTreeLayer extends Mixins(
   showChangeActiveLayer = false
 
   showEditDataFlowStyle = false
+
+  // 改变M3D最大几何误差的值
+  showChangeM3DProps = false
 
   //  搜索功能，收到结果的  key的数组
   private searchkeyArr = []
@@ -661,6 +688,12 @@ export default class MpTreeLayer extends Mixins(
     this.clickPopover(item, false)
   }
 
+  changeM3DProps(item) {
+    this.showChangeM3DProps = true
+    this.currentLayerInfo = item.dataRef
+    this.clickPopover(item, false)
+  }
+
   openChangeActiveLayer(item) {
     this.showChangeActiveLayer = true
     this.currentLayerInfo = item.dataRef
@@ -686,6 +719,20 @@ export default class MpTreeLayer extends Mixins(
     const layerItem: DataFlowLayer = layers[key]
     layerItem.setLayerStyle(layerStyle)
     this.$emit('update:layerDocument', doc)
+  }
+
+  updateM3DProps(val) {
+    const { key, maximumScreenSpaceError } = val
+    const indexArr: Array<string> = key.split('-')
+    const doc = this.layerDocument.clone()
+    const layers: Array<unknown> = doc.defaultMap.layers()
+    if (indexArr.length === 2) {
+      const [firstIndex, secondIndex] = indexArr
+      layers[firstIndex].activeScene.sublayers[
+        secondIndex
+      ].maximumScreenSpaceError = maximumScreenSpaceError
+      this.$emit('update:layerDocument', doc)
+    }
   }
 
   updateActiveLayer(val: OGCWMTSLayer) {
