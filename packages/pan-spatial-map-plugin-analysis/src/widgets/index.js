@@ -10,4 +10,5 @@ export { default as MpSkylineAnalysis } from './skyline-analysis/skyline-analysi
 export { default as MpShadowAnalysis } from './shadow-analysis/shadow-analysis.vue'
 export { default as MpParticleEffects } from './particle-effects/particle-effects.vue'
 export { default as MpProfileAnalysis } from './profile-analysis/profile-analysis.vue'
+export { default as MpHeightLimitedAnalysis } from './height-limited-analysis/height-limited-analysis.vue'
 export { default as MpSceneSetting } from './scene-setting/scene-setting.vue'

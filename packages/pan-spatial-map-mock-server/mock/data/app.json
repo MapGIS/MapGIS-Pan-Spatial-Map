@@ -242,6 +242,10 @@
           {
             "id": "widget_5592ccaf-7357-4d9d-863c-de6de7bc129f",
             "uri": "widgets/particle-effects"
+          },
+          {
+            "id": "widget_6863645d-d6c6-dc3e-bb11-95ce43725b62",
+            "uri": "widgets/height-limited-analysis"
           }
         ],
         "widgetStructure": [
@@ -335,6 +339,9 @@
               },
               {
                 "id": "widget_5592ccaf-7357-4d9d-863c-de6de7bc129f"
+              },
+              {
+                "id": "widget_6863645d-d6c6-dc3e-bb11-95ce43725b62"
               }
             ]
           }
