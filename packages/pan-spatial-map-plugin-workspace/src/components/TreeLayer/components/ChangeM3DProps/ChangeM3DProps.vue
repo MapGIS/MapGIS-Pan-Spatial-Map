@@ -1,12 +1,13 @@
 <template>
   <div class="change-m3d-props-container">
-    <a-form
-      :label-col="{ span: 12 }"
-      :wrapper-col="{ span: 12 }"
-      labelAlign="left"
-    >
+    <a-form layout="inline" labelAlign="left">
       <a-form-item label="最大几何误差">
         <a-input-number v-model="maximumScreenSpaceError" :min="0" />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" @click="submit">
+          确认
+        </a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -23,12 +24,10 @@ import { LayerType } from '@mapgis/web-app-framework'
 export default class MpChangeM3DProps extends Vue {
   @Prop() layer
 
-  get maximumScreenSpaceError() {
-    return this.layer.maximumScreenSpaceError
-  }
+  maximumScreenSpaceError = this.layer.maximumScreenSpaceError
 
-  set maximumScreenSpaceError(val) {
-    this.layer.maximumScreenSpaceError = val
+  submit() {
+    this.layer.maximumScreenSpaceError = this.maximumScreenSpaceError
     this.$emit('update:layer', this.layer)
   }
 }
