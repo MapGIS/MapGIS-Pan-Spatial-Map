@@ -185,7 +185,6 @@ import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
 import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
 import axios from 'axios'
-import { log } from '../../../../../../WebClient-Vue/cesium/src/components/Utils/log'
 import FileSaver from 'file-saver'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
@@ -567,38 +566,24 @@ export default class MpAttributeTable extends Mixins(
         this.tableColumns = columns
       }
       this.pagination.total = TotalCount
-      if (val === '0') {
-        const geojson = await FeatureQuery.query({
-          ip,
-          port: port.toString(),
-          f: 'geojson',
-          where: queryWhere,
-          geometry: queryGeometry,
-          page: current - 1,
-          pageCount: pageSize,
-          gdbp,
-          docName: serverName,
-          layerIdxs: layerIndex,
-          coordPrecision: 8,
-        })
-        this.tableData = geojson.features
-      } else if (val === '1') {
-        const geojsonData = await FeatureQuery.query({
-          ip,
-          port: port.toString(),
-          f: 'geojson',
-          where: queryWhere,
-          geometry: queryGeometry,
-          page: 0,
-          pageCount: this.pagination.total,
-          gdbp,
-          docName: serverName,
-          layerIdxs: layerIndex,
-          coordPrecision: 8,
-        })
-        /* 使用获取Json数据的暂存属性接收geojson数据 */
-        this.attrTableToJsonData = geojsonData.features
+      const geojson = await FeatureQuery.query({
+        ip,
+        port: port.toString(),
+        f: 'geojson',
+        where: queryWhere,
+        geometry: queryGeometry,
+        page: val === '1' ? 0 : current - 1,
+        pageCount: val === '1' ? this.pagination.total : pageSize,
+        gdbp,
+        docName: serverName,
+        layerIdxs: layerIndex,
+        coordPrecision: 8,
+      })
+      if (val === '1') {
+        this.attrTableToJsonData = geojson.features
+        return
       }
+      this.tableData = geojson.features
       this.removeMarkers()
       // 如果当前是激活状态，则添加markers
       if (this.isExhibitionActive) {
@@ -616,30 +601,22 @@ export default class MpAttributeTable extends Mixins(
         serverUrl,
         layerIndex,
       })
+      this.pagination.total = totalCount
       const geojson = await ArcGISFeatureQuery.query({
         f: 'pjson',
         where: queryWhere,
         geometry: queryGeometry,
-        page: current - 1,
-        pageCount: pageSize,
+        page: val === '1' ? 0 : current - 1,
+        pageCount: val === '1' ? this.pagination.total : pageSize,
         serverUrl,
         layerIndex,
         totalCount,
       })
-      this.tableData = geojson.features
       if (val === '1') {
-        const geojsonData = await ArcGISFeatureQuery.query({
-          f: 'pjson',
-          where: queryWhere,
-          geometry: queryGeometry,
-          page: 0,
-          pageCount: totalCount,
-          serverUrl,
-          layerIndex,
-          totalCount,
-        })
-        this.attrTableToJsonData = geojsonData.feature
+        this.attrTableToJsonData = geojson.feature
+        return
       }
+      this.tableData = geojson.features
       const columns: Array = []
       const { properties } = geojson.features[0]
       const tags = Object.keys(properties)
@@ -706,11 +683,6 @@ export default class MpAttributeTable extends Mixins(
         serverType === LayerType.IGSScene
       )
       const { AttStruct, SFEleArray = [], TotalCount } = json
-      const { FldNumber = 0, FldName = [] } = AttStruct
-      if (!(this.tableColumns && this.tableColumns.length > 0)) {
-        const columns = this.setTableScroll(AttStruct)
-        this.tableColumns = columns
-      }
       this.pagination.total = TotalCount
       if (val === '1') {
         const jsonData = await FeatureQuery.query(
@@ -720,7 +692,7 @@ export default class MpAttributeTable extends Mixins(
             where: queryWhere,
             geometry: queryGeometry,
             page: 0,
-            pageCount: TotalCount,
+            pageCount: this.pagination.total,
             gdbp,
             coordPrecision: 8,
             rtnLabel: false,
@@ -758,6 +730,11 @@ export default class MpAttributeTable extends Mixins(
             }
           }
         )
+      }
+      const { FldNumber = 0, FldName = [] } = AttStruct
+      if (!(this.tableColumns && this.tableColumns.length > 0)) {
+        const columns = this.setTableScroll(AttStruct)
+        this.tableColumns = columns
       }
       this.tableData = (SFEleArray || []).map(
         ({ AttValue = [], bound = {}, FID }) => {
