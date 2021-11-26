@@ -463,11 +463,6 @@ export default class MpAttributeTable extends Mixins(
     await FileSaver.saveAs(blob, `attrData_${datetime}.csv`)
   }
 
-  /* 结果集统计图导出为图片 */
-  private imageFile() {
-    console.log('image')
-  }
-
   private onToggleScreen() {
     if (this.fullScreen) {
       this.outFullScreen()
