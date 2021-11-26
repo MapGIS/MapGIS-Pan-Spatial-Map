@@ -254,12 +254,12 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
 
   isFitbound(layer) {
     if (this.isParentLayer(layer)) {
-      if (this.isIGSScene(layer) && this.is2DMapMode === false) {
-        return true
-      } else if (!this.isIGSScene(layer)) {
-        return true
-      }
-      return false
+      // if (this.isIGSScene(layer) && this.is2DMapMode === false) {
+      //   return true
+      // } else if (!this.isIGSScene(layer)) {
+      //   return true
+      // }
+      return true
     }
     return false
   }
