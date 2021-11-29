@@ -1,45 +1,5 @@
 <template>
   <a-list :gutter="10">
-    <!-- <a-list-item v-if="isMetaData(layerItem)" @click="metaDataInfo">
-      图层元数据
-    </a-list-item>
-    <a-list-item v-if="isAttributes(layerItem)" @click="attributes">
-      查看属性
-    </a-list-item>
-    <a-list-item
-      v-if="isAttributes(layerItem) && !isDataFlow(layerItem)"
-      @click="customQuery"
-    >
-      自定义查询
-    </a-list-item>
-    <a-list-item v-if="isDataFlow(layerItem)" @click="editDataFlowStyle">
-      编辑样式
-    </a-list-item>
-    <a-list-item v-if="isFitbound(layerItem)" @click="fitBounds">
-      缩放至
-    </a-list-item>
-    <a-list-item
-      v-if="
-        layerItem.layer &&
-          isWMTSLayer(layerItem.layer) &&
-          isActiveWMTSLayer(layerItem)
-      "
-      @click="resetTilematrixSet"
-    >
-      切换矩阵集
-    </a-list-item>
-    <a-list-item
-      v-if="isParentLayer(layerItem) && isWMTSLayer(layerItem)"
-      @click="openChangeActiveLayer"
-    >
-      切换图层
-    </a-list-item>
-    <a-list-item
-      v-if="isParentLayer(layerItem) && !isIGSScene(layerItem)"
-      @click="toTop"
-    >
-      置顶
-    </a-list-item> -->
     <template v-for="item in listData">
       <a-list-item :key="item.name" v-if="item.show" @click="item.click">
         {{ item.name }}
@@ -103,6 +63,12 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
       show:
         this.isParentLayer(this.layerItem) && !this.isIGSScene(this.layerItem),
       click: () => this.toTop()
+    },
+    {
+      name: '属性设置',
+      show:
+        !this.isParentLayer(this.layerItem) && this.isIGSScene(this.layerItem),
+      click: () => this.changeM3DProps()
     }
   ]
 
@@ -131,7 +97,9 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
     )
   }
 
-  changeM3DProps() {}
+  changeM3DProps() {
+    this.$emit('change-m3d-props', this.layerItem)
+  }
 
   getDataFlowExtent(layerItem) {
     if (this.isDataFlow(layerItem)) {

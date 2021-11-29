@@ -828,6 +828,18 @@
             "serverUrl": ""
           },
           {
+            "label": "ks_buildings",
+            "describe": "ks_buildings",
+            "ip": "192.168.88.204",
+            "port": "6163",
+            "layerServiceType": "DOC3D",
+            "name": "ks_buildings",
+            "searchName": "",
+            "model": "surface",
+            "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01dsadsa79",
+            "serverUrl": ""
+          },
+          {
             "label": "点云数据",
             "describe": "点云数据",
             "ip": "",

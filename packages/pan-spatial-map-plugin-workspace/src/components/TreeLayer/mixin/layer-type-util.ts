@@ -142,6 +142,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
       this.isMetaData(item) ||
       this.isAttributes(item) ||
       this.isParentLayer(item) ||
+      this.isIGSScene(item) ||
       (this.isParentLayer(item) && this.isWMTSLayer(item)) ||
       (this.isParentLayer(item) && !this.isIGSScene(item)) ||
       (item.layer &&
