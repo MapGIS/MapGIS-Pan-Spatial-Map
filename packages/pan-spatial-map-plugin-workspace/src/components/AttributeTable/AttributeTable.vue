@@ -185,6 +185,7 @@ import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
 import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
 import axios from 'axios'
+/* 文件导出 */
 import FileSaver from 'file-saver'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
