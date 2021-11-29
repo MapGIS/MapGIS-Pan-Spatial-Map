@@ -1,7 +1,7 @@
 <template>
   <div class="about">
     <div class="header">
-      <img alt="logo" class="logo" src="@/assets/img/logo-blue.png" />
+      <img alt="logo" class="logo" src="@/assets/img/logo-earth-blue.png" />
       <span class="title">{{ systemName }}</span>
     </div>
     <div class="footer">

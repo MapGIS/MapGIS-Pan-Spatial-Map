@@ -2,7 +2,7 @@
   <common-layout class="login-wrapper">
     <div class="top">
       <div class="header">
-        <img alt="logo" class="logo" src="@/assets/img/logo.png" />
+        <img alt="logo" class="logo" src="@/assets/img/logo-earth.png" />
         <span class="title">{{ systemName }}</span>
       </div>
       <div class="desc"></div>
