@@ -12,7 +12,8 @@ import {
   MpDataCatalog,
   MpLayerList,
   MpBasemapManager,
-  MpLegend
+  MpLegend,
+  MpLayerListContainer
 } from './widgets'
 
 const components = [
@@ -26,7 +27,8 @@ const components = [
   MpAttributeTableList,
   MpBasemapManager,
   MpLegend,
-  MpTreeLayer
+  MpTreeLayer,
+  MpLayerListContainer
 ]
 
 const install = Vue => {
