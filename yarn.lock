@@ -1190,9 +1190,9 @@
     lodash "^4.17.21"
     numeral "^2.0.6"
 
-"@mapgis/mapbox-gl-inspect@^10.5.5":
+"@mapgis/mapbox-gl-inspect@^10.5.6":
   version "10.5.6"
-  resolved "https://registry.yarnpkg.com/@mapgis/mapbox-gl-inspect/-/mapbox-gl-inspect-10.5.6.tgz#5d89135ca7ea1059c9382f742b83cf6b71e48ec1"
+  resolved "https://registry.npmjs.org/@mapgis/mapbox-gl-inspect/-/mapbox-gl-inspect-10.5.6.tgz#5d89135ca7ea1059c9382f742b83cf6b71e48ec1"
   integrity sha512-jQBEBwID1yBcfzhIho1ZdrVrrz+ULRMigWuApTgFFX18xpJJfm31540bMYyWI9J36CIrD8dTIG9pfV2wdGY2EQ==
   dependencies:
     lodash.isequal "^4.4.0"
@@ -6176,6 +6176,11 @@ commander@2.17.x, commander@~2.17.1:
   resolved "https://registry.nlark.com/commander/download/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
   integrity sha1-vXerfebelCBc6sxy8XFtKfIKd78=
 
+commander@^6.1.0:
+  version "6.2.1"
+  resolved "https://registry.npmjs.org/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
+  integrity sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==
+
 commander@^7.2.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
@@ -10159,6 +10164,15 @@ json-stringify-safe@~5.0.1:
   resolved "https://registry.npm.taobao.org/json-stringify-safe/download/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
 
+json2csv@^5.0.6:
+  version "5.0.6"
+  resolved "https://registry.npmjs.org/json2csv/-/json2csv-5.0.6.tgz#590e0e1b9579e59baa53bda0c0d840f4d8009687"
+  integrity sha512-0/4Lv6IenJV0qj2oBdgPIAmFiKKnh8qh7bmLFJ+/ZZHLjSeiL3fKKGX3UryvKPbxFbhV+JcYo9KUC19GJ/Z/4A==
+  dependencies:
+    commander "^6.1.0"
+    jsonparse "^1.3.1"
+    lodash.get "^4.4.2"
+
 json2mq@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npm.taobao.org/json2mq/download/json2mq-0.2.0.tgz#b637bd3ba9eabe122c83e9720483aeb10d2c904a"
@@ -10251,6 +10265,11 @@ jsonlint@1.6.3:
   dependencies:
     JSV "^4.0.x"
     nomnom "^1.5.x"
+
+jsonparse@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.npmjs.org/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
+  integrity sha1-P02uSpH6wxX3EGL4UhzCOfE2YoA=
 
 jsonrepair@^2.2.1:
   version "2.2.1"
@@ -10527,6 +10546,11 @@ lodash.defaultsdeep@^4.6.1:
   version "4.6.1"
   resolved "https://registry.npm.taobao.org/lodash.defaultsdeep/download/lodash.defaultsdeep-4.6.1.tgz#512e9bd721d272d94e3d3a63653fa17516741ca6"
   integrity sha1-US6b1yHSctlOPTpjZT+hdRZ0HKY=
+
+lodash.get@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.npmjs.org/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
+  integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
 
 lodash.isequal@^4.2.0, lodash.isequal@^4.4.0, lodash.isequal@^4.5.0:
   version "4.5.0"
@@ -15414,6 +15438,11 @@ vuex@^3.4.0:
   version "3.6.2"
   resolved "https://registry.nlark.com/vuex/download/vuex-3.6.2.tgz#236bc086a870c3ae79946f107f16de59d5895e71"
   integrity sha1-I2vAhqhww655lG8QfxbeWdWJXnE=
+
+wangeditor-antd@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.npmjs.org/wangeditor-antd/-/wangeditor-antd-1.0.7.tgz#5da7bfbdef34bfd1462aa33be584b6a2bf192006"
+  integrity sha512-vp/9vZTqbyQSd/1RkmLVdHk2h8BXeAEGPqeJ5WqnoTzOTA15J8RNVKoPLcEETYo69lXiZz6vnSV6vWGqnxxwug==
 
 warning@^4.0.0:
   version "4.0.3"
