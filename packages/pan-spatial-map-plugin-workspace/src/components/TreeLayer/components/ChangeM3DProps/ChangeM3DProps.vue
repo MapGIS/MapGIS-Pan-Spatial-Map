@@ -1,7 +1,7 @@
 <template>
   <div class="change-m3d-props-container">
     <a-form layout="inline" labelAlign="left">
-      <a-form-item label="最大几何误差">
+      <a-form-item label="最大屏幕空间误差">
         <a-input-number v-model="maximumScreenSpaceError" :min="0" />
       </a-form-item>
       <a-form-item>
