@@ -193,11 +193,13 @@ export default class MpComprehensiveQuery extends Mixins(
 
   /**
    * 查询时的回调函数（在没有查询范围时，采用当前屏幕的范围）
+   * 如果是dataStore数据，并且查询keyword为空，在采用当前可视范围
    */
-  onSearch() {
+  onSearch(isDataStoreQuery, val) {
     if (
       this.geoJSONExtent === null ||
-      JSON.stringify(this.geoJSONExtent) === '{}'
+      JSON.stringify(this.geoJSONExtent) === '{}' ||
+      (isDataStoreQuery && !val)
     ) {
       this.extent = this.getBounds()
     } else {
@@ -283,7 +285,6 @@ export default class MpComprehensiveQuery extends Mixins(
         }
       })
     } else {
-      this.flyTo()
       const { viewer, Cesium } = this
       const cameraHeight = Math.ceil(viewer.camera.positionCartographic.height)
       viewer.camera.flyTo({
