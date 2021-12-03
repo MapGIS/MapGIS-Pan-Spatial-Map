@@ -37,6 +37,30 @@ export default class LayerOpacity extends Mixins(AppMixin) {
 
   setOpacity(val, item) {
     item.opacity = Number((100 - val) / 100)
+    if (item.type === LayerType.VectorTile) {
+      // 矢量瓦片不支持改整体的透明度，遍历layers，设置每个layer的透明度
+      const { layers } = item.styleList[0]
+      layers.forEach(layer => {
+        const { type } = layer
+        if (layer.paint !== undefined) {
+          // circle/line/fill/fill-extrusion/symbol/background
+          if (type === 'circle') {
+            layer.paint['circle-opacity'] = Number((100 - val) / 100)
+          } else if (type === 'line') {
+            layer.paint['line-opacity'] = Number((100 - val) / 100)
+          } else if (type === 'fill') {
+            layer.paint['fill-opacity'] = Number((100 - val) / 100)
+          } else if (type === 'fill-extrusion') {
+            layer.paint['fill-extrusion-opacity'] = Number((100 - val) / 100)
+          } else if (type === 'symbol') {
+            layer.paint['icon-opacity'] = Number((100 - val) / 100)
+            layer.paint['text-opacity'] = Number((100 - val) / 100)
+          } else if (type === 'background') {
+            layer.paint['background-opacity'] = Number((100 - val) / 100)
+          }
+        }
+      })
+    }
   }
 
   isIgsTerrainLayer(layer) {
