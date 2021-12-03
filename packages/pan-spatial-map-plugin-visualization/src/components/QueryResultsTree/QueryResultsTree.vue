@@ -14,8 +14,36 @@
         :tree-data="treeData"
         :replace-fields="{ title: 'layerName' }"
         :checkable="multiple"
-        showLine
-      />
+      >
+        <div slot="custom" slot-scope="item">
+          <div>
+            <span>
+              {{ item.layerName }}
+            </span>
+            <span v-show="item.total !== undefined" class="total-text">{{
+              `(${item.total})`
+            }}</span>
+          </div>
+          <a-pagination
+            v-show="
+              item.expanded &&
+                !!item.dataRef.children &&
+                item.dataRef.children.length > 0
+            "
+            simple
+            :current="item.currentPage"
+            :total="item.total"
+            :pageSize="item.pageSize"
+            size="small"
+            class="pagination"
+            @change="
+              (page, pageSize) => {
+                pageChange(page, pageSize, item.dataRef)
+              }
+            "
+          />
+        </div>
+      </a-tree>
     </a-spin>
   </div>
 </template>
@@ -70,6 +98,9 @@ interface ITreeNode extends ILayerInfoItem {
   isLeaf?: boolean
   selectable?: boolean
   feature?: GFeature
+  total?: number | undefined
+  currentPage?: number
+  pageSize?: number
 }
 
 /**
@@ -110,7 +141,7 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   readonly multiple!: boolean
 
   // 分页显示的条目数
-  @Prop({ type: Number, default: 9999 })
+  @Prop({ type: Number, default: 10 })
   readonly pageCount!: number
 
   // 分页显示时的当前页码，从1开始。
@@ -312,7 +343,11 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
         this.treeData = treeData.map<ITreeNode>((node: ILayerInfoItem) => ({
           ...node,
           key: UUID.uuid(),
-          selectable: false
+          selectable: false,
+          scopedSlots: { title: 'custom' },
+          total: undefined,
+          currentPage: this.page,
+          pageSize: this.pageCount
         }))
         if (this.treeData.length) {
           this.expandedKeys.push(this.treeData[0]?.key)
@@ -328,9 +363,17 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    * @param {Object} queryOptions 要素查询参数
    */
   async igsQueryFeature(queryOptions) {
+    let total = 0
+    let features = []
+    if (queryOptions.needTotal) {
+      // 初次查询或者查询几何变化的时候，需要查询总数
+      const params = { ...queryOptions, page: 0, pageCount: 1, f: 'json' }
+      const result = await FeatureQuery.query(params)
+      total = result.TotalCount
+    }
     const geojson = await FeatureQuery.query(queryOptions)
     if (geojson && geojson.features && geojson.features.length) {
-      return geojson.features.map(item => ({
+      features = geojson.features.map(item => ({
         key: UUID.uuid(),
         isLeaf: true,
         selectable: true,
@@ -338,7 +381,7 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
         feature: item
       }))
     }
-    return []
+    return { features, total }
   }
 
   /**
@@ -368,7 +411,7 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
       return []
     }
     const source = sceneController.findSource(specialLayerId)
-    return SFEleArray.map(({ AttValue = [], bound = {}, FID }) => {
+    const features = SFEleArray.map(({ AttValue = [], bound = {}, FID }) => {
       const boundObj = source
         ? sceneController.localExtentToGlobelExtent(
             bound,
@@ -398,6 +441,8 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
         }
       }
     })
+    const total = featureIGS.TotalCount
+    return { features, total }
   }
 
   /**
@@ -406,7 +451,7 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
    */
   async arcGISQueryFeature(queryOptions: FeatureQueryParam) {
     const { layerIndex, serverUrl, geometry, f } = queryOptions
-    const { count: totalCount } = await ArcGISFeatureQuery.getTotal({
+    const { count: total } = await ArcGISFeatureQuery.getTotal({
       geometry,
       layerIndex,
       serverUrl,
@@ -414,33 +459,43 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     })
     const { features }: FeatureGeoJSON = await ArcGISFeatureQuery.query({
       ...queryOptions,
-      totalCount
+      total
     })
-    return features && features.length
-      ? features.map((item: GFeature) => ({
-          key: UUID.uuid(),
-          isLeaf: true,
-          selectable: true,
-          layerName: item.properties.ID,
-          feature: item
-        }))
-      : []
+    const geojsonFeatures =
+      features && features.length
+        ? features.map((item: GFeature) => ({
+            key: UUID.uuid(),
+            isLeaf: true,
+            selectable: true,
+            layerName: item.properties.ID,
+            feature: item
+          }))
+        : []
+    return { features: geojsonFeatures, total }
   }
 
   /**
    * 要素查询
    * @param {Object}
    */
-  async queryFeatures({ layerId, layerIndex, layerGdbp }: ITreeNode) {
+  async queryFeatures({
+    layerId,
+    layerIndex,
+    layerGdbp,
+    currentPage,
+    pageSize,
+    needTotal
+  }) {
     const { ip, port, type, docName, gdbps, url } = this.layerParams
     const queryOptions = {
       ip,
       port,
-      page: this.page - 1,
-      pageCount: this.pageCount,
+      page: currentPage - 1,
+      pageCount: pageSize,
       geometry: this.geometry,
       coordPrecision: 8,
-      f: 'json'
+      f: 'json',
+      needTotal
     }
     let children = []
     switch (type) {
@@ -484,6 +539,52 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   }
 
   /**
+   * 图层分页查询
+   * @param page 当前页码
+   * @param pageSize 总页数
+   * @param dataRef node节点对象
+   */
+  pageChange(page, pageSize, dataRef) {
+    const { layerId, layerIndex, layerGdbp } = dataRef
+    const needTotal = false
+    const currentPage = page
+    console.log(page, pageSize, dataRef)
+    this.loading = true
+    return new Promise(resolve => {
+      this.queryFeatures({
+        layerId,
+        layerIndex,
+        layerGdbp,
+        currentPage,
+        pageSize,
+        needTotal
+      })
+        .then(children => {
+          dataRef.children = children.features
+          dataRef.currentPage = page
+          const loadedKeys = []
+          const featuresArr = []
+          this.loadedNodeData.forEach(item => {
+            if (item.key == dataRef.key) {
+              item.children = children.features
+            }
+            loadedKeys.push(item.key)
+            featuresArr.push(item.children)
+          })
+          const loadedNodeDataChildren = featuresArr.flat()
+          this.$emit('on-loaded', loadedKeys, loadedNodeDataChildren)
+          this.loadedNodeDataChildren = loadedNodeDataChildren
+          this.treeData = [...this.treeData]
+          this.loading = false
+        })
+        .catch(e => {
+          this.$message.error(e || '请求错误')
+          this.loading = false
+        })
+    })
+  }
+
+  /**
    * 异步加载数据
    * @param {object}
    */
@@ -493,9 +594,20 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
         resolve()
         return
       }
-      this.queryFeatures(dataRef)
+      // 第一次查询，增加查总数功能
+      const { layerId, layerIndex, layerGdbp, currentPage, pageSize } = dataRef
+      const needTotal = true
+      this.queryFeatures({
+        layerId,
+        layerIndex,
+        layerGdbp,
+        currentPage,
+        pageSize,
+        needTotal
+      })
         .then(children => {
-          dataRef.children = children
+          dataRef.children = children.features
+          dataRef.total = children.total
           this.treeData = [...this.treeData]
           resolve()
         })
@@ -554,14 +666,37 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
     this.loading = true
     this.selectedKeys = []
     this.loadedNodeDataChildren = []
-    Promise.all(this.loadedNodeData.map(dataRef => this.queryFeatures(dataRef)))
+    Promise.all(
+      this.loadedNodeData.map(dataRef => {
+        const {
+          layerId,
+          layerIndex,
+          layerGdbp,
+          currentPage,
+          pageSize
+        } = dataRef
+        // 更新查询范围后，增加查总数功能
+        const needTotal = true
+        return this.queryFeatures({
+          layerId,
+          layerIndex,
+          layerGdbp,
+          currentPage,
+          pageSize,
+          needTotal
+        })
+      })
+    )
       .then((childrenArr = []) => {
         const loadedKeys = []
-        const loadedNodeDataChildren = childrenArr.flat()
+        const featuresArr = []
         this.loadedNodeData.forEach((dataRef, i) => {
           loadedKeys.push(dataRef.key)
-          dataRef.children = childrenArr[i] || []
+          dataRef.children = childrenArr[i].features || []
+          dataRef.total = childrenArr[i].total || 0
+          featuresArr.push(dataRef.children)
         })
+        const loadedNodeDataChildren = featuresArr.flat()
         this.$emit('on-loaded', loadedKeys, loadedNodeDataChildren)
         this.loadedNodeDataChildren = loadedNodeDataChildren
         this.treeData = [...this.treeData]
@@ -593,6 +728,48 @@ export default class MpQueryResultTree extends Mixins(MapMixin) {
   }
   .ant-tree > li:last-child {
     padding-bottom: 10px;
+  }
+
+  .total-text {
+    font-size: xx-small;
+    color: gray;
+  }
+
+  ::v-deep .ant-tree-node-content-wrapper {
+    width: 100%;
+  }
+
+  .pagination {
+    float: right;
+    margin-right: 12px;
+    font-size: 12px;
+  }
+
+  ::v-deep .ant-pagination.mini .ant-pagination-prev {
+    min-width: 12px;
+    line-height: 15px;
+  }
+  ::v-deep .ant-pagination.mini .ant-pagination-next {
+    min-width: 12px;
+    line-height: 15px;
+  }
+
+  ::v-deep .ant-pagination-simple .ant-pagination-simple-pager {
+    margin-right: 0px;
+    line-height: 15px;
+  }
+
+  ::v-deep .ant-pagination-simple .ant-pagination-simple-pager input {
+    margin-right: 0px;
+    padding: 0 0;
+  }
+
+  ::v-deep .ant-pagination-slash {
+    margin: 0 0;
+  }
+
+  ::v-deep .ant-tree-node-content-wrapper-open {
+    height: 40px;
   }
 }
 </style>
