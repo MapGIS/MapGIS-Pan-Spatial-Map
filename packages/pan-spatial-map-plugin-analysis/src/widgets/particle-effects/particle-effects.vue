@@ -1,40 +1,9 @@
 <template>
   <div>
-    <mapgis-ui-toolbar>
-      <mapgis-ui-toolbar-command-group>
-        <mapgis-ui-toolbar-command
-          title="火焰"
-          icon="mapgis-fire"
-          :active="particleMode === 'fire'"
-          @click="onCreateParticle('fire')"
-        />
-        <mapgis-ui-toolbar-command
-          title="烟雾"
-          icon="mapgis-smoke"
-          :active="particleMode === 'smoke'"
-          @click="onCreateParticle('smoke')"
-        />
-      </mapgis-ui-toolbar-command-group>
-      <mapgis-ui-toolbar-space />
-      <mapgis-ui-toolbar-command-group>
-        <mapgis-ui-toolbar-command
-          title="清除"
-          icon="mapgis-delete"
-          @click="onClearParticle"
-        />
-      </mapgis-ui-toolbar-command-group>
-    </mapgis-ui-toolbar>
-    <mapgis-3d-particle-effects
-      :emissionRate="emissionRate"
-      :imageSize="imageSize"
-      :minimumParticleLife="minimumParticleLife"
-      :maximumParticleLife="maximumParticleLife"
-      :minimumSpeed="minimumSpeed"
-      :maximumSpeed="maximumSpeed"
-      :startScale="startScale"
-      :endScale="endScale"
-      :emitterType="emitterType"
-      :imgUrl="imgUrl"
+    <mapgis-3d-particle-effects-manager
+      :symbolList="symbolList"
+      :particleList="particleList"
+      @changeParticel="changeParticle"
       @load="load"
     />
   </div>
@@ -48,39 +17,74 @@ import smokeImg from './images/smoke.png'
 
 @Component({ name: 'MpParticleEffects' })
 export default class MpParticleEffects extends Mixins(WidgetMixin) {
-  // 粒子特效的模式
-  private particleMode = ''
 
-  // 发射速率
-  private emissionRate = 20.0
-
-  // 尺寸
-  private imageSize = 5.0
-
-  // 粒子最小存在时间
-  private minimumParticleLife = 2.0
-
-  // 粒子最大存在时间
-  private maximumParticleLife = 3.0
-
-  // 最小速度
-  private minimumSpeed = 9.0
-
-  // 最大速度
-  private maximumSpeed = 9.5
-
-  // 初始比例
-  private startScale = 1.0
-
-  // 结束比例
-  private endScale = 4.0
-
-  // 发射类型
-  private emitterType = '圆形放射'
-
-  private imgUrl = ''
 
   private particleEffects = null
+
+  private symbolList =
+    [
+      {
+        guid: "9D09DB87-7955-9295-2E34-61E83C30D3AA",
+        name: "外部火焰",
+        image: fireImg,
+        iconUrl: "mapgis-huoyan",
+      },
+      {
+        guid: "F9FDE880-8F5B-AEDF-CA95-ADC54F02A34F",
+        name: "外部烟雾",
+        image: smokeImg,
+        iconUrl: "mapgis-yanwu",
+      },
+  ]
+
+  private particleList = []
+
+  private particleListConfig =
+    [
+      {
+        guid: "49A834D7-97C6-F452-4611-6F0739809B50",
+        name: "粒子名称1",
+        param: {
+          emitterType: "圆形放射",
+          emissionRate: 20.0,
+          imageSize: 5.0,
+          minimumParticleLife: 2.0,
+          maximumParticleLife: 3.0,
+          minimumSpeed: 9.0,
+          maximumSpeed: 10.0,
+          startScale: 1.0,
+          endScale: 4.0,
+          symbolGuid: "9D09DB87-7955-9295-2E34-61E83C30D3AA",
+          position: {
+            longitude: 114.402023,
+            latitude: 30.46666308,
+            height: 7.160341631125318
+          }
+        }
+      },
+      {
+        guid: "36F335E8-1F3C-41E2-40AA-EE950D691761",
+        name: "粒子名称2",
+        param: {
+          emitterType: "球形放射",
+          emissionRate: 40.0,
+          imageSize: 6.0,
+          minimumParticleLife: 2.0,
+          maximumParticleLife: 3.0,
+          minimumSpeed: 9.0,
+          maximumSpeed: 10.0,
+          startScale: 1.0,
+          endScale: 4.0,
+          symbolGuid: "9D09DB87-7955-9295-2E34-61E83C30D3AA",
+          position: {
+            longitude: 114.40092382,
+            latitude: 30.46549092,
+            height: 1
+          }
+        }
+      }
+    ]
+
 
   load(particleEffects) {
     this.particleEffects = particleEffects
@@ -88,20 +92,15 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
 
   onOpen() {
     this.particleEffects.mount()
+    this.particleList = this.particleListConfig
   }
 
   onClose() {
     this.particleEffects.unmount()
   }
 
-  onCreateParticle(type) {
-    this.particleMode = type
-    this.imgUrl = type === 'fire' ? fireImg : smokeImg
-    this.particleEffects.onCreateParticle()
-  }
-
-  onClearParticle() {
-    this.particleEffects.onClearParticle()
+  changeParticle(e){
+    console.log("particleList",e);
   }
 }
 </script>
