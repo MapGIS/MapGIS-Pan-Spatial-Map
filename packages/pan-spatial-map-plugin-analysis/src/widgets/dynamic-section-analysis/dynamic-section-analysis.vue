@@ -38,7 +38,8 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
           if (layer.type === LayerType.IGSScene) {
             const { renderType } = layer.activeScene.sublayers[0]
             if (renderType === IGSSceneSublayerRenderType.modelCache) {
-              const { id, range } = layer.activeScene.sublayers[0]
+              const { range } = layer.activeScene.sublayers[0]
+              const { id } = layer.activeScene.layer
               // 剖切分析暂时只支持模型
               layers.push({
                 title: layer.title,
