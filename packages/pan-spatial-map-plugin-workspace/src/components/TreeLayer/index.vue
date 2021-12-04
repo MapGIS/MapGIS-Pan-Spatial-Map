@@ -290,6 +290,7 @@ import MpChangeM3DProps from './components/ChangeM3DProps/ChangeM3DProps.vue'
 const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
 @Component({
+  name: 'MpTreeLayer',
   components: {
     MpMetadataInfo,
     MpCustomQuery,
@@ -340,7 +341,7 @@ export default class MpTreeLayer extends Mixins(
 
   showEditDataFlowStyle = false
 
-  // 改变M3D最大几何误差的值
+  // 改变M3D最大屏幕空间误差的值
   showChangeM3DProps = false
 
   //  搜索功能，收到结果的  key的数组
