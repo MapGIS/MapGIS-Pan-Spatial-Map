@@ -97,6 +97,7 @@ export default class MpParticleEffects extends Mixins(WidgetMixin) {
 
   onClose() {
     this.particleEffects.unmount()
+    this.particleList = []
   }
 
   changeParticle(e){
