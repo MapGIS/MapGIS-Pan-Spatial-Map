@@ -916,6 +916,20 @@
             "extent": ""
           },
           {
+            "label": "大数据测试图层",
+            "describe": "大数据测试图层",
+            "ip": "localhost",
+            "port": "6163",
+            "layerServiceType": "IGSVECTOR",
+            "name": "中国",
+            "searchName": "",
+            "token": "",
+            "guid": "37ee717c-5f7e-40a9-a45a-55273a7cccfca",
+            "serverUrl": "gdbp://test@192.168.96.10130001gtcs/gtcs/sfcls/D430000DM2015LYJD.wt",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
             "label": "湖北省市级区划",
             "describe": "湖北省市级区划",
             "ip": "",

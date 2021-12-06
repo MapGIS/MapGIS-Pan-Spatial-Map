@@ -167,7 +167,9 @@
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import {
   baseConfigInstance,
-  markerIconInstance
+  markerIconInstance,
+  events,
+  DataFlowList
 } from '@mapgis/pan-spatial-map-common'
 import {
   DomUtil,
@@ -288,19 +290,21 @@ export default class MpAttributeTable extends Mixins(
 
   private isActive = true
 
+  rowKey = 'fid'
+
   private get selectedRowKeys() {
     return this.selection.map(
       item => (item as GFeature).properties[this.rowKey]
     )
   }
 
-  private get rowKey() {
-    const { serverType } = this.optionVal
+  private setRowKey() {
+    const { serverType, isDataStoreQuery } = this.optionVal
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
     ) {
-      return 'fid'
+      return isDataStoreQuery ? 'elemid' : 'fid'
     } else if (serverType === LayerType.ArcGISMapImage) {
       return 'ID'
     } else if (this.isIGSScence) {
@@ -333,6 +337,20 @@ export default class MpAttributeTable extends Mixins(
       : this.$refs.ref3dMarkerPlotting
   }
 
+  private get dataFlowList() {
+    return DataFlowList
+  }
+
+  private get getDataFLowList() {
+    const { serverType } = this.optionVal
+    if (serverType === LayerType.DataFlow) {
+      const features = this.dataFlowList.getDataFlowById(this.optionVal.id)
+      return features || []
+    }
+    return []
+  }
+
+  @Watch('getDataFLowList', { deep: true })
   @Watch('optionVal', { deep: true, immediate: true })
   optionChange() {
     this.clearSelection()
@@ -547,26 +565,29 @@ export default class MpAttributeTable extends Mixins(
     where: string | undefined,
     val = '0'
   ) {
+    this.rowKey = this.setRowKey()
     this.currentTableParams = { ...this.optionVal }
     const { ip, port, serverName, serverType, serverUrl } = this.optionVal
     if (
       serverType === LayerType.IGSMapImage ||
       serverType === LayerType.IGSVector
     ) {
-      const { layerIndex, gdbp, isDataStoreQuery } = this.optionVal
+      const { layerIndex, gdbp, isDataStoreQuery, DNSName } = this.optionVal
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry || this.optionVal.geometry
       const { current, pageSize } = this.pagination
-      // TODO
-      const { AttStruct, TotalCount } = await this.queryCount(
-        queryGeometry,
-        queryWhere
-      )
-      if (!(this.tableColumns && this.tableColumns.length > 0)) {
-        const columns = this.setTableScroll(AttStruct)
-        this.tableColumns = columns
+      if (!isDataStoreQuery) {
+        const { AttStruct, TotalCount } = await this.queryCount(
+          queryGeometry,
+          queryWhere
+        )
+        if (!(this.tableColumns && this.tableColumns.length > 0)) {
+          const columns = this.setTableScroll(AttStruct)
+          this.tableColumns = columns
+        }
+        this.pagination.total = TotalCount
       }
-      this.pagination.total = TotalCount
+      const page = isDataStoreQuery ? current : current - 1
       const geojson = await FeatureQuery.query({
         ip,
         port: port.toString(),
@@ -574,9 +595,10 @@ export default class MpAttributeTable extends Mixins(
         where: queryWhere,
         geometry: queryGeometry,
         isDataStoreQuery,
-        page: val === '1' ? 0 : current - 1,
+        page: val === '1' ? 0 : page,
         pageCount: val === '1' ? this.pagination.total : pageSize,
         gdbp,
+        DNSName,
         docName: serverName,
         layerIdxs: layerIndex,
         coordPrecision: 8
@@ -586,6 +608,10 @@ export default class MpAttributeTable extends Mixins(
         return
       }
       this.tableData = geojson.features
+      if (isDataStoreQuery) {
+        this.setGeoJsonColums(geojson)
+        this.pagination.total = geojson.dataCount
+      }
       this.removeMarkers()
       // 如果当前是激活状态，则添加markers
       if (this.isExhibitionActive) {
@@ -663,7 +689,7 @@ export default class MpAttributeTable extends Mixins(
     } else if (serverType === LayerType.IGSScene) {
       // 查找矩阵集
       const source = this.sceneController.findSource(this.optionVal.id)
-      const { isDataStoreQuery, gdbp } = this.optionVal
+      const { gdbp } = this.optionVal
       const queryWhere = where || this.optionVal.where
       const queryGeometry = geometry
         ? this.getGeometry3D(source)
@@ -675,7 +701,6 @@ export default class MpAttributeTable extends Mixins(
           port: port.toString(),
           where: queryWhere,
           geometry: queryGeometry,
-          isDataStoreQuery,
           page: current - 1,
           pageCount: pageSize,
           gdbp,
@@ -694,7 +719,6 @@ export default class MpAttributeTable extends Mixins(
             port: port.toString(),
             where: queryWhere,
             geometry: queryGeometry,
-            isDataStoreQuery,
             page: 0,
             pageCount: this.pagination.total,
             gdbp,
@@ -705,7 +729,7 @@ export default class MpAttributeTable extends Mixins(
           serverType === LayerType.IGSScene
         )
         const { AttStruct, SFEleArray = [], TotalCount } = jsonData
-        this.tableData = (SFEleArray || []).map(
+        this.attrTableToJsonData = (SFEleArray || []).map(
           ({ AttValue = [], bound = {}, FID }) => {
             let boundObj = null
             if (source) {
@@ -734,6 +758,7 @@ export default class MpAttributeTable extends Mixins(
             }
           }
         )
+        return
       }
       const { FldNumber = 0, FldName = [] } = AttStruct
       if (!(this.tableColumns && this.tableColumns.length > 0)) {
@@ -774,6 +799,58 @@ export default class MpAttributeTable extends Mixins(
       if (this.isExhibitionActive) {
         await this.addMarkers()
       }
+    } else if (serverType === LayerType.DataFlow) {
+      const features = this.dataFlowList.getDataFlowById(this.optionVal.id)
+      this.setGeoJsonColums({ features, type: 'FeatureCollection' })
+      this.pagination.total = features.length
+      this.tableData = features
+      this.removeMarkers()
+      // 如果当前是激活状态，则添加markers
+      if (this.isExhibitionActive) {
+        await this.addMarkers()
+      }
+    }
+  }
+
+  setGeoJsonColums(geojson) {
+    if (!geojson.features || geojson.features.length <= 0) {
+      this.tableColumns = []
+      return
+    }
+    const columns: Array = []
+    const { properties } = geojson.features[0]
+    const tags = Object.keys(properties)
+    if (tags.length <= 10) {
+      // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
+      this.useScrollX = false
+    } else {
+      // 10个以上，每个设固定宽度180，且启用水平滚动条
+      this.useScrollX = true
+    }
+    if (!(this.tableColumns && this.tableColumns.length > 0)) {
+      for (let index = 0; index < tags.length; index++) {
+        const name = tags[index]
+        const alias = tags[index] ? `${tags[index]}` : ''
+        const type = 'string'
+        const obj = {
+          title: alias.length ? alias : name,
+          key: name,
+          dataIndex: `properties.${name}`,
+          align: 'left',
+          ellipsis: true
+        }
+        if (this.useScrollX) {
+          obj.width = 180
+        }
+        // var str = '37'
+        const num = Number(properties[name])
+        if (!isNaN(num)) {
+          obj.sorter = (a, b) =>
+            Number(a.properties[name]) - Number(b.properties[name])
+        }
+        columns.push(obj)
+      }
+      this.tableColumns = columns
     }
   }
 

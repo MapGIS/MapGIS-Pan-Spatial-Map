@@ -295,7 +295,10 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
         type: parent && this.isIgsDocLayer(parent),
         setValue: async () => {
           const { ip, port, docName } = parent._parseUrl(parent.url)
-          const isDataStoreQuery = await FeatureQuery.isDataStoreQuery({
+          const {
+            isDataStoreQuery,
+            DNSName
+          } = await FeatureQuery.isDataStoreQuery({
             ip,
             port,
             gdbp: layer.url
@@ -309,6 +312,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
               id: layer.id,
               name: layer.title,
               isDataStoreQuery,
+              DNSName,
               // ip: ip || baseConfigInstance.config.ip,
               // port: Number(port || baseConfigInstance.config.port),
               ...ipPortObj,
@@ -326,7 +330,10 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
         setValue: async () => {
           const igsVectorLayer = layer.dataRef
           const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
-          const isDataStoreQuery = await FeatureQuery.isDataStoreQuery({
+          const {
+            isDataStoreQuery,
+            DNSName
+          } = await FeatureQuery.isDataStoreQuery({
             ip,
             port,
             gdbp: igsVectorLayer.gdbps
@@ -340,6 +347,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
               // port: Number(port || baseConfigInstance.config.port),
               ...ipPortObj,
               isDataStoreQuery,
+              DNSName,
               serverType: igsVectorLayer.type,
               gdbp: igsVectorLayer.gdbps
             }
@@ -365,7 +373,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
       },
       {
         type: this.isIGSScene(layer),
-        setValue: async () => {
+        setValue: () => {
           const sceneLayer = layer.dataRef
           const { ip, port, docName } = parent._parseUrl(parent.url)
           const { id, name, title } = sceneLayer
@@ -373,21 +381,13 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
             parent.id
           )
           if (layerConfig && layerConfig.bindData) {
-            const isDataStoreQuery = await FeatureQuery.isDataStoreQuery({
-              ip,
-              port,
-              gdbp: layerConfig.bindData.gdbps
-            })
-            const ipPortObj = this.getIpPort({ isDataStoreQuery, ip, port })
             exhibition = {
               id: `${title} ${id}`,
               name: `${title} ${titleType}`,
               option: {
                 id: `${id}`,
-                // ip: ip || baseConfigInstance.config.ip,
-                // port: Number(port || baseConfigInstance.config.port),
-                ...ipPortObj,
-                isDataStoreQuery,
+                ip: ip || baseConfigInstance.config.ip,
+                port: Number(port || baseConfigInstance.config.port),
                 serverType: parent.type,
                 gdbp: layerConfig.bindData.gdbps
               }
