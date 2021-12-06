@@ -793,158 +793,21 @@ export default class MpTreeLayer extends Mixins(
   /**
    * 自定义查询
    */
-  customQuery(layer) {
+  async customQuery(layer) {
     this.showCustomQuery = true
     this.clickPopover(layer, false)
-    const parent: IGSMapImageLayer = layer.layer
-    if (parent && this.isIgsDocLayer(parent)) {
-      const { ip, port, docName } = parent._parseUrl(parent.url)
-      this.queryParams = {
-        id: `${parent.title} ${layer.title} ${layer.id} 自定义查询`,
-        name: `${layer.title} 自定义查询`,
-        description: `${parent.title} ${layer.title}`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: parent.type,
-          layerIndex: layer.id,
-          serverName: docName,
-          serverUrl: parent.url
-        }
-      }
-    } else if (this.isIgsVectorLayer(layer)) {
-      const igsVectorLayer: IGSVectorLayer = layer.dataRef
-      const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
-      this.queryParams = {
-        id: `${igsVectorLayer.title} ${igsVectorLayer.id} 自定义查询`,
-        name: `${igsVectorLayer.title} 自定义查询`,
-        option: {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: igsVectorLayer.type,
-          gdbp: igsVectorLayer.gdbps
-        }
-      }
-    } else if (this.isIGSScene(layer)) {
-      const sceneLayer = layer.dataRef
-      const { ip, port, docName } = sceneLayer.layer._parseUrl(
-        sceneLayer.layer.url
-      )
-      const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(
-        sceneLayer.layer.id
-      )
-      if (layerConfig && layerConfig.bindData) {
-        this.queryParams = {
-          id: `${sceneLayer.title} ${sceneLayer.id} 自定义查询`,
-          name: `${sceneLayer.title} 自定义查询`,
-          option: {
-            id: `${sceneLayer.id}`,
-            ip: ip || baseConfigInstance.config.ip,
-            port: Number(port || baseConfigInstance.config.port),
-            serverType: sceneLayer.layer.type,
-            gdbp: layerConfig.bindData.gdbps
-          }
-        }
-      }
-    } else if (this.isArcGISMapImage(layer)) {
-      this.queryParams = {
-        id: `${parent.title} ${layer.title} ${layer.id}`,
-        name: `${layer.title} 属性表`,
-        description: `${parent.title} ${layer.title}`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          serverType: parent.type,
-          layerIndex: layer.id,
-          serverUrl: parent.url
-        }
-      }
+    const exhibition = await this.getExhibition(layer, '自定义查询')
+    if (exhibition) {
+      this.queryParams = exhibition
     }
   }
 
   /**
    * 查看属性
    */
-  attributes(layer) {
+  async attributes(layer) {
     this.clickPopover(layer, false)
-    const parent = layer.layer
-    let exhibition: IAttributeTableExhibition = null
-    if (parent && this.isIgsDocLayer(parent)) {
-      const { ip, port, docName } = parent._parseUrl(parent.url)
-      exhibition = {
-        id: `${parent.title} ${layer.title} ${layer.id}`,
-        name: `${layer.title} 属性表`,
-        description: `${parent.title} ${layer.title}`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: parent.type,
-          layerIndex: layer.id,
-          serverName: docName,
-          serverUrl: parent.url
-        }
-      }
-    } else if (this.isIgsVectorLayer(layer)) {
-      const igsVectorLayer: IGSVectorLayer = layer.dataRef
-      const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
-      exhibition = {
-        id: `${igsVectorLayer.title} ${igsVectorLayer.id}`,
-        name: `${igsVectorLayer.title} 属性表`,
-        option: {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: igsVectorLayer.type,
-          gdbp: igsVectorLayer.gdbps
-        }
-      }
-    } else if (this.isArcGISMapImage(layer)) {
-      exhibition = {
-        id: `${parent.title} ${layer.title} ${layer.id}`,
-        name: `${layer.title} 属性表`,
-        description: `${parent.title} ${layer.title}`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          serverType: parent.type,
-          layerIndex: layer.id,
-          serverUrl: parent.url
-        }
-      }
-    } else if (this.isIGSScene(layer)) {
-      const sceneLayer = layer.dataRef
-      const { ip, port, docName } = parent._parseUrl(parent.url)
-      const { id, name, title } = sceneLayer
-      const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(
-        parent.id
-      )
-      if (layerConfig && layerConfig.bindData) {
-        exhibition = {
-          id: `${title} ${id}`,
-          name: `${title} 属性表`,
-          option: {
-            id: `${id}`,
-            ip: ip || baseConfigInstance.config.ip,
-            port: Number(port || baseConfigInstance.config.port),
-            serverType: parent.type,
-            gdbp: layerConfig.bindData.gdbps
-          }
-        }
-      }
-    } else if (this.isDataFlow(layer)) {
-      exhibition = {
-        id: `${layer.title} ${layer.title} ${layer.id}`,
-        name: `${layer.title} 属性表`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          serverType: layer.type
-        }
-      }
-    }
+    const exhibition = await this.getExhibition(layer, '属性表')
     if (exhibition) {
       this.addExhibition(new AttributeTableExhibition(exhibition))
       this.openExhibitionPanel()

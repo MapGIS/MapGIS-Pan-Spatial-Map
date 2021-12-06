@@ -3,7 +3,7 @@
   "port": "6163",
   "globeIp": "192.168.21.191",
   "globePort": "6163",
-  "DataStoreIp": "192.168.96.101",
+  "DataStoreIp": "192.168.80.105",
   "DataStorePort": "9091",
   "IGServerXIp": "192.168.91.123",
   "IGServerXPort": "9381",
