@@ -343,6 +343,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
             id: `${igsVectorLayer.title} ${igsVectorLayer.id}`,
             name: `${igsVectorLayer.title} ${titleType}`,
             option: {
+              id: igsVectorLayer.id,
               // ip: ip || baseConfigInstance.config.ip,
               // port: Number(port || baseConfigInstance.config.port),
               ...ipPortObj,
