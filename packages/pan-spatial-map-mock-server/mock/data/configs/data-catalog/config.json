@@ -687,12 +687,12 @@
         "describe": "矢量文档",
         "children": [
           {
-            "label": "本地测试",
-            "describe": "本地测试",
-            "ip": "localhost",
+            "label": "城市中心线",
+            "describe": "城市中心线",
+            "ip": "192.168.23.84",
             "port": "6163",
             "layerServiceType": "IGSIMAGE",
-            "name": "本地测试",
+            "name": "城市中心线",
             "searchName": "",
             "token": "",
             "guid": "d3ac0679-e009-4e87-93ab-7181378efbbwwww",
@@ -912,6 +912,20 @@
             "token": "",
             "guid": "37ee717c-5f7e-40a9-a45a-55273a7d2fca",
             "serverUrl": "gdbp://MapGisLocal/专题图数据/sfcls/中国地级市x",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
+            "label": "行政区",
+            "describe": "行政区",
+            "ip": "192.168.23.84",
+            "port": "6163",
+            "layerServiceType": "IGSVECTOR",
+            "name": "中国",
+            "searchName": "",
+            "token": "",
+            "guid": "37ee717c-5f7e-40a9-a45a-55273a7cccfca",
+            "serverUrl": "gdbp://gtcs@192.168.96.10130001gtcs/gtcs/sfcls/行政区",
             "wfsUrl": "",
             "extent": ""
           },
