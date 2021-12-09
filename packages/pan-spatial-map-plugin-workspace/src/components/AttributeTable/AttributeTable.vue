@@ -169,7 +169,8 @@ import {
   baseConfigInstance,
   markerIconInstance,
   events,
-  DataFlowList
+  DataFlowList,
+  ActiveResultSet
 } from '@mapgis/pan-spatial-map-common'
 import {
   DomUtil,
@@ -623,6 +624,13 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       }
     }
     this.markers = [...tempMarkers]
+
+    ActiveResultSet.activeResultSet = {
+      type: 'FeatureCollection',
+      features: this.tableData,
+      id: this.optionVal.id
+    }
+    console.log(ActiveResultSet.activeResultSet)
   }
 
   getModelHeight(tempMarkers: Array<unknown>) {
