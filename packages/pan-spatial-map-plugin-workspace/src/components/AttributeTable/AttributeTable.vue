@@ -454,6 +454,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       )
     } catch (error) {
       const e = error as Error
+      console.error(e)
       this.$message.warning('请求失败！')
     } finally {
       this.loading = false
@@ -462,7 +463,17 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
   }
 
   private setTableScroll(AttStruct) {
-    const columns: Array = []
+    const columns: Array = [
+      {
+        title: this.rowKey,
+        key: this.rowKey,
+        dataIndex: `properties.${this.rowKey}`,
+        align: 'left',
+        // 超过宽度将自动省略
+        ellipsis: true,
+        width: 180
+      }
+    ]
     const {
       FldNumber = 0,
       FldName = [],
@@ -608,7 +619,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
           coordinates: center,
           fid: feature.properties[this.rowKey],
           img: unSelectIcon,
-          properties: feature.properties,
+          properties: this.setPropertiesAlias(feature.properties),
           feature: feature
         }
         tempMarkers.push(marker)
@@ -631,6 +642,26 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       id: this.optionVal.id
     }
     console.log(ActiveResultSet.activeResultSet)
+  }
+
+  /**
+   * 将弹窗的key设置成别名
+   * 这里images字段不能用别名，弹窗组件需要通过images字段添加图片
+   */
+  setPropertiesAlias(properties) {
+    const obj = {}
+    for (const key in properties) {
+      if (Object.prototype.hasOwnProperty.call(properties, key)) {
+        const value = properties[key]
+        const column = this.tableColumns.find(item => item.key === key)
+        if (column && key !== 'images') {
+          obj[column.title] = value
+        } else {
+          obj[key] = value
+        }
+      }
+    }
+    return obj
   }
 
   getModelHeight(tempMarkers: Array<unknown>) {

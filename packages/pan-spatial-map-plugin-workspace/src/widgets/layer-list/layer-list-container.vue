@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-layer-list">
     <div id="layerListEl">
-      <template v-if="showWidget">
+      <div v-show="showWidget">
         <ul class="top-tab-nav">
           <li
             v-for="{ key, label } in tabs"
@@ -22,8 +22,8 @@
           v-show="tab === 'opacity'"
           :layers="document.defaultMap.layers()"
         />
-      </template>
-      <a-empty v-else :image="simpleImage" />
+      </div>
+      <a-empty v-show="!showWidget" :image="simpleImage" />
     </div>
   </div>
 </template>

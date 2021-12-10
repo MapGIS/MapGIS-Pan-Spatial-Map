@@ -227,7 +227,7 @@
       <template v-slot:default="slotProps">
         <mp-window
           title="属性设置"
-          :width="300"
+          :width="380"
           :icon="widgetInfo.icon"
           :visible.sync="showChangeM3DProps"
           anchor="center-center"
@@ -425,6 +425,9 @@ export default class MpTreeLayer extends Mixins(
       }
       this.layers = layers
       this.ticked = arr
+      if (layers.length === 0) {
+        this.resetWindow()
+      }
     }
   }
 
@@ -461,6 +464,16 @@ export default class MpTreeLayer extends Mixins(
       this.vueCesium,
       this.viewer
     )
+  }
+
+  resetWindow() {
+    this.showSelectTilematrixSet = false
+    // 改变WMTS活跃图层
+    this.showChangeActiveLayer = false
+    this.showEditDataFlowStyle = false
+    // 改变M3D最大屏幕空间误差的值
+    this.showChangeM3DProps = false
+    this.showCustomQuery = false
   }
 
   onSearch(val) {
