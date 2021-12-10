@@ -1047,7 +1047,7 @@
             "searchName": "",
             "token": "",
             "guid": "5ABC33D2-E1A5-1761-5B31-730CDBC0F96D",
-            "serverUrl": "ws://192.168.91.123:9382/dataflow/cars_xian/subscribe",
+            "serverUrl": "ws://192.168.199.65:9382/dataflow/cars_xian/subscribe",
             "wfsUrl": "",
             "extent": ""
           }

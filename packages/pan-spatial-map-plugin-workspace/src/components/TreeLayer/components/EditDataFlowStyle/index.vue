@@ -25,6 +25,7 @@
             v-else-if="item.type === 'number'"
             v-model="item.value"
             type="number"
+            :min="0"
           />
           <mapgis-ui-sketch-color-picker v-else :color.sync="item.value" />
         </mapgis-ui-form-item>
