@@ -179,7 +179,7 @@
       </template>
     </mp-window-wrapper>
 
-    <mp-window-wrapper :visible="showEditDataFlowStyle">
+    <!-- <mp-window-wrapper :visible="showEditDataFlowStyle">
       <template v-slot:default="slotProps">
         <mp-window
           title="编辑样式"
@@ -200,7 +200,7 @@
           </template>
         </mp-window>
       </template>
-    </mp-window-wrapper>
+    </mp-window-wrapper> -->
 
     <mp-window-wrapper :visible="showChangeActiveLayer">
       <template v-slot:default="slotProps">
@@ -298,7 +298,7 @@ const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
     MpSelectTilematrixSet,
     MpChangeActiveLayer,
     RightPopover,
-    MpEditDataFlowStyle,
+    // MpEditDataFlowStyle,
     MpChangeM3DProps
   }
 })
@@ -309,6 +309,8 @@ export default class MpTreeLayer extends Mixins(
   layerTypeUtil
 ) {
   @Inject('vueCesium') vueCesium
+
+  @Prop() widgetRouters
 
   @Prop() widgetInfo!: Record<string, any>
 
@@ -710,8 +712,19 @@ export default class MpTreeLayer extends Mixins(
   }
 
   editDataFlowStyle(item) {
-    this.showEditDataFlowStyle = true
+    // this.showEditDataFlowStyle = true
     this.currentLayerInfo = item.dataRef
+    const arr = this.widgetRouters
+    arr.push({
+      title: '属性编辑',
+      component: () => import('./components/EditDataFlowStyle'),
+      props: {
+        layer: this.currentLayerInfo
+      },
+      listeners: {
+        'update:layer': this.updateDataFlowStyle
+      }
+    })
     this.clickPopover(item, false)
   }
 

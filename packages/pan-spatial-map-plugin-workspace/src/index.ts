@@ -28,7 +28,7 @@ const components = [
   MpBasemapManager,
   MpLegend,
   MpTreeLayer,
-  MpLayerListContainer
+  MpLayerListContainer,
 ]
 
 const install = Vue => {

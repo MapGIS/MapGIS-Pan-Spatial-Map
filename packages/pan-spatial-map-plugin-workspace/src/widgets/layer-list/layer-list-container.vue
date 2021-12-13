@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-layer-list">
-    <div id="layerListEl">
+    <div>
       <div v-show="showWidget">
         <ul class="top-tab-nav">
           <li
@@ -15,6 +15,7 @@
         <mp-tree-layer
           v-show="tab === 'tree'"
           :widgetInfo="widgetInfo"
+          :widgetRouters="widgetRouters"
           :layerDocument.sync="document"
         >
         </mp-tree-layer>
@@ -78,21 +79,6 @@ export default class MpLayerListContainer extends Mixins(AppMixin) {
 
   beforeCreate() {
     this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
-  }
-
-  /**
-   * 视图窗口变化
-   */
-  @Watch('mode', { immediate: true })
-  private onWindowSize(mode: 'max' | 'normal') {
-    this.$nextTick(() => {
-      const layerListEl = document.getElementById('layerListEl')
-      if (layerListEl) {
-        layerListEl.style.width = `${
-          mode === 'max' ? this.$el.clientWidth : 300
-        }px`
-      }
-    })
   }
 }
 </script>
