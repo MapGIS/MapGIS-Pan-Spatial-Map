@@ -782,8 +782,8 @@
           {
             "label": "三维模型",
             "describe": "三维模型",
-            "ip": "localhost",
-            "port": "6163",
+            "ip": "",
+            "port": "",
             "layerServiceType": "DOC3D",
             "name": "景观模型",
             "searchName": "gdbp://MapGISLocalPlus/示例数据/ds/三维示例/sfcls/景观_建筑模型",
@@ -874,18 +874,6 @@
             "model": "surface",
             "guid": "a2ee2b40-14fd-4104-a05f-d8e77e54f1bb",
             "serverUrl": ""
-          },
-          {
-            "label": "三维XL",
-            "describe": "三维XL",
-            "ip": "192.168.81.177",
-            "port": "6163",
-            "layerServiceType": "DOC3D",
-            "name": "三维数据XL",
-            "searchName": "gdbp://MapGISLocalPlus/示例数据/ds/三维示例/sfcls/景观_建筑模型",
-            "serverUrl": "",
-            "model": "surface",
-            "guid": "70b511fe-f6f9-4513-8df1-da43d7d649cf"
           }
         ]
       },
