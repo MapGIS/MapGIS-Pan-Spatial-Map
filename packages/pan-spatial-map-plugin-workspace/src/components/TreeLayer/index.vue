@@ -157,92 +157,6 @@
         </mp-window>
       </template>
     </mp-window-wrapper>
-
-    <mp-window-wrapper :visible="showSelectTilematrixSet">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="切换矩阵集"
-          :width="300"
-          :icon="widgetInfo.icon"
-          :visible.sync="showSelectTilematrixSet"
-          anchor="center-center"
-          v-bind="slotProps"
-        >
-          <template>
-            <mp-select-tilematrix-set
-              v-if="showSelectTilematrixSet"
-              :layer="currentLayerInfo"
-              @update:layer="refreshCurrentWmts"
-            />
-          </template>
-        </mp-window>
-      </template>
-    </mp-window-wrapper>
-
-    <!-- <mp-window-wrapper :visible="showEditDataFlowStyle">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="编辑样式"
-          :width="350"
-          :height="400"
-          :verticalOffset="10"
-          :icon="widgetInfo.icon"
-          :visible.sync="showEditDataFlowStyle"
-          anchor="top-center"
-          v-bind="slotProps"
-        >
-          <template>
-            <mp-edit-data-flow-style
-              v-if="showEditDataFlowStyle"
-              :layer="currentLayerInfo"
-              @update:layer="updateDataFlowStyle"
-            />
-          </template>
-        </mp-window>
-      </template>
-    </mp-window-wrapper> -->
-
-    <mp-window-wrapper :visible="showChangeActiveLayer">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="切换图层"
-          :width="300"
-          :icon="widgetInfo.icon"
-          :visible.sync="showChangeActiveLayer"
-          anchor="center-center"
-          v-bind="slotProps"
-        >
-          <template>
-            <mp-change-active-layer
-              v-if="showChangeActiveLayer"
-              :layer="currentLayerInfo"
-              @update:layer="updateActiveLayer"
-            />
-          </template>
-        </mp-window>
-      </template>
-    </mp-window-wrapper>
-
-    <mp-window-wrapper :visible="showChangeM3DProps">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="属性设置"
-          :width="380"
-          :icon="widgetInfo.icon"
-          :visible.sync="showChangeM3DProps"
-          anchor="center-center"
-          v-bind="slotProps"
-        >
-          <template>
-            <mp-change-m-3-d-props
-              v-if="showChangeM3DProps"
-              :layer="currentLayerInfo"
-              @update:layer="updateM3DProps"
-            />
-          </template>
-        </mp-window>
-      </template>
-    </mp-window-wrapper>
   </div>
 </template>
 
@@ -280,12 +194,8 @@ import {
 import MpMetadataInfo from '../MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../CustomQuery/CustomQuery.vue'
 import MpUnifyModify from './components/UnifyModify/UnifyModify.vue'
-import MpSelectTilematrixSet from './components/SelectTilematrixSet/SelectTilematrixSet.vue'
-import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLayer.vue'
 import layerTypeUtil from './mixin/layer-type-util'
 import RightPopover from './components/RightPopover/index.vue'
-import MpEditDataFlowStyle from './components/EditDataFlowStyle/index.vue'
-import MpChangeM3DProps from './components/ChangeM3DProps/ChangeM3DProps.vue'
 
 const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
@@ -295,11 +205,7 @@ const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
     MpMetadataInfo,
     MpCustomQuery,
     MpUnifyModify,
-    MpSelectTilematrixSet,
-    MpChangeActiveLayer,
-    RightPopover,
-    // MpEditDataFlowStyle,
-    MpChangeM3DProps
+    RightPopover
   }
 })
 export default class MpTreeLayer extends Mixins(
@@ -331,20 +237,10 @@ export default class MpTreeLayer extends Mixins(
   // 右侧菜单栏选中的图层信息
   private currentLayerInfo: Record<string, unknown> = {}
 
-  private showSelectTilematrixSet = false
-
   private expandedKeys = []
 
   // 记录可见状态为true的父节点的key
   private parentKeys: Array<string> = []
-
-  // 改变WMTS活跃图层
-  showChangeActiveLayer = false
-
-  showEditDataFlowStyle = false
-
-  // 改变M3D最大屏幕空间误差的值
-  showChangeM3DProps = false
 
   //  搜索功能，收到结果的  key的数组
   private searchkeyArr = []
@@ -363,6 +259,7 @@ export default class MpTreeLayer extends Mixins(
   @Watch('layerDocument.defaultMap', { immediate: true, deep: true })
   documentChange() {
     this.parentKeys = []
+    this.resetWidgetRouters()
     if (
       this.layerDocument &&
       this.layerDocument.defaultMap &&
@@ -427,9 +324,6 @@ export default class MpTreeLayer extends Mixins(
       }
       this.layers = layers
       this.ticked = arr
-      if (layers.length === 0) {
-        this.resetWindow()
-      }
     }
   }
 
@@ -468,14 +362,25 @@ export default class MpTreeLayer extends Mixins(
     )
   }
 
-  resetWindow() {
-    this.showSelectTilematrixSet = false
-    // 改变WMTS活跃图层
-    this.showChangeActiveLayer = false
-    this.showEditDataFlowStyle = false
-    // 改变M3D最大屏幕空间误差的值
-    this.showChangeM3DProps = false
-    this.showCustomQuery = false
+  /**
+   * 当正在编辑图层被取消的时候，复位图层树路由
+   */
+  resetWidgetRouters() {
+    let layer
+    if (
+      this.currentLayerInfo &&
+      this.layerDocument &&
+      this.layerDocument.defaultMap &&
+      this.layerDocument.defaultMap.layers() &&
+      this.layerDocument.defaultMap.layers().length > 0
+    ) {
+      layer = this.layerDocument.defaultMap.findLayerById(
+        this.currentLayerInfo.id
+      )
+    }
+    if (!layer && this.widgetRouters && this.widgetRouters.length > 1) {
+      this.widgetRouters.splice(1)
+    }
   }
 
   onSearch(val) {
@@ -706,17 +611,28 @@ export default class MpTreeLayer extends Mixins(
   }
 
   resetTilematrixSet(item) {
-    this.showSelectTilematrixSet = true
     this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
+    this.openPage({
+      title: '切换矩阵集',
+      name: 'MpSelectTilematrixSet',
+      component: () =>
+        import('./components/SelectTilematrixSet/SelectTilematrixSet.vue'),
+      props: {
+        layer: this.currentLayerInfo
+      },
+      listeners: {
+        'update:layer': this.refreshCurrentWmts
+      }
+    })
   }
 
   editDataFlowStyle(item) {
-    // this.showEditDataFlowStyle = true
     this.currentLayerInfo = item.dataRef
-    const arr = this.widgetRouters
-    arr.push({
-      title: '属性编辑',
+    this.clickPopover(item, false)
+    this.openPage({
+      title: '编辑样式',
+      name: 'MpEditDataFlowStyle',
       component: () => import('./components/EditDataFlowStyle'),
       props: {
         layer: this.currentLayerInfo
@@ -725,19 +641,45 @@ export default class MpTreeLayer extends Mixins(
         'update:layer': this.updateDataFlowStyle
       }
     })
-    this.clickPopover(item, false)
   }
 
+  /**
+   * 打开M3D编辑属性页面
+   */
   changeM3DProps(item) {
-    this.showChangeM3DProps = true
     this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
+    this.openPage({
+      title: '属性编辑',
+      name: 'MpChangeM3DProps',
+      component: () => import('./components/ChangeM3DProps/ChangeM3DProps.vue'),
+      props: {
+        layer: this.currentLayerInfo
+      },
+      listeners: {
+        'update:layer': this.updateM3DProps
+      }
+    })
   }
 
+  /**
+   * 打开wmts切换激活图层页面
+   */
   openChangeActiveLayer(item) {
-    this.showChangeActiveLayer = true
     this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
+    this.openPage({
+      title: '切换图层',
+      name: 'MpChangeActiveLayer',
+      component: () =>
+        import('./components/ChangeActiveLayer/ChangeActiveLayer.vue'),
+      props: {
+        layer: this.currentLayerInfo
+      },
+      listeners: {
+        'update:layer': this.updateActiveLayer
+      }
+    })
   }
 
   toTop(item) {
@@ -759,6 +701,7 @@ export default class MpTreeLayer extends Mixins(
     const layerItem: DataFlowLayer = layers[key]
     layerItem.setLayerStyle(layerStyle)
     this.$emit('update:layerDocument', doc)
+    this.currentLayerInfo = {}
   }
 
   updateM3DProps(val) {
@@ -775,6 +718,7 @@ export default class MpTreeLayer extends Mixins(
       m3d.maximumScreenSpaceError = maximumScreenSpaceError
       this.$emit('update:layerDocument', doc)
     }
+    this.currentLayerInfo = {}
   }
 
   updateActiveLayer(val: OGCWMTSLayer) {
@@ -790,8 +734,8 @@ export default class MpTreeLayer extends Mixins(
       // layerItem.activeLayer = val.activeLayer
       layerItem.activeLayer = layerItem.findSublayerById(id)
     }
-    // this.document = doc
     this.$emit('update:layerDocument', doc)
+    this.currentLayerInfo = {}
   }
 
   refreshCurrentWmts(val) {
@@ -812,8 +756,8 @@ export default class MpTreeLayer extends Mixins(
         layerItem = layerItem.sublayers[i]
       }
     })
-    // this.document = doc
     this.$emit('update:layerDocument', doc)
+    this.currentLayerInfo = {}
   }
 
   /**
@@ -840,6 +784,15 @@ export default class MpTreeLayer extends Mixins(
     }
   }
 
+  /**
+   * 打开新的router页面
+   */
+  openPage(router) {
+    this.$nextTick(() => {
+      this.widgetRouters.push(router)
+    })
+  }
+
   metaDataInfo(node) {
     const layer = node.dataRef
     if (this.isWMTSLayer(layer) || this.isWMSLayer(layer)) {
@@ -848,7 +801,10 @@ export default class MpTreeLayer extends Mixins(
       this.showMetadataInfo = true
       this.currentLayerInfo = layer
     }
-
+    // 复位当前选择的图层
+    this.$nextTick(() => {
+      this.currentLayerInfo = {}
+    })
     this.clickPopover(node, false)
   }
 

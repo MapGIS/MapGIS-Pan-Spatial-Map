@@ -73,10 +73,6 @@ export default class MpLayerListContainer extends Mixins(AppMixin) {
     )
   }
 
-  metaDataInfo(layer) {
-    console.log(layer)
-  }
-
   beforeCreate() {
     this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   }
