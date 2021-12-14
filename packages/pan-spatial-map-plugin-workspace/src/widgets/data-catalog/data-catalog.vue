@@ -120,7 +120,7 @@
             }}</span>
             <a-menu slot="overlay">
               <a-menu-item
-                v-if="!isNonSpatial(item)"
+                v-if="!isNonSpatial(item) && !isDataFlow(item)"
                 key="1"
                 @click="showMetaDataInfo(item)"
               >
@@ -128,7 +128,9 @@
               </a-menu-item>
               <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
               <a-menu-item
-                v-if="hasLegend(item) && !isNonSpatial(item)"
+                v-if="
+                  hasLegend(item) && !isNonSpatial(item) && !isDataFlow(item)
+                "
                 key="3"
                 @click="onUploadLegend(item)"
               >
@@ -960,6 +962,11 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   isNonSpatial(item) {
     return item.description.indexOf('非空间数据') > -1
+  }
+
+  isDataFlow(item) {
+    console.log(item.serverType === LayerType.DataFlow)
+    return item.serverType === LayerType.DataFlow
   }
 }
 </script>

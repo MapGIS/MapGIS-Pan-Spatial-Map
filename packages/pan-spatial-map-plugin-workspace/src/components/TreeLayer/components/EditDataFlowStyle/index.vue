@@ -21,10 +21,12 @@
           :label="item.label"
         >
           <mapgis-ui-input v-if="item.type === 'string'" v-model="item.value" />
-          <mapgis-ui-input
+          <mapgis-ui-input-number
             v-else-if="item.type === 'number'"
             v-model="item.value"
-            type="number"
+            style="width:100%"
+            :min="item.min"
+            :max="item.max"
           />
           <mapgis-ui-sketch-color-picker v-else :color.sync="item.value" />
         </mapgis-ui-form-item>
@@ -66,42 +68,50 @@ export default class MpEditDataFlowStyle extends Vue {
     switch (val) {
       case 'marker':
         formArr = [
-          // { key: 'field', type: 'string', value: '', label: '显示的字段' },
-          // { key: 'text', type: 'string', value: '', label: '文本' },
-          // { key: 'scale', type: 'number', value: 1, label: '文字缩放' },
-          { key: 'xOffset', type: 'number', value: 0, label: '水平偏移量' },
-          { key: 'yOffset', type: 'number', value: 0, label: '垂直偏移量' },
-          // { key: 'color', type: 'color', value: '#ffffff', label: '文字颜色' },
-          // { key: 'opacity', type: 'number', value: 1, label: '文字透明度' },
-          // {
-          //   key: 'outlineColor',
-          //   type: 'color',
-          //   value: '#ffffff',
-          //   label: '文字描边颜色'
-          // },
-          // {
-          //   key: 'outlineWidth',
-          //   type: 'number',
-          //   value: 0,
-          //   label: '文字描边宽度'
-          // },
-          // {
-          //   key: 'backgroundColor',
-          //   type: 'color',
-          //   value: '#ffffff',
-          //   label: '文字背景颜色'
-          // },
-          // {
-          //   key: 'backgroundOpacity',
-          //   type: 'number',
-          //   value: 0,
-          //   label: '文字背景透明度'
-          // },
+          {
+            key: 'xOffset',
+            type: 'number',
+            value: 0,
+            label: '水平偏移量',
+            min: 0
+          },
+          {
+            key: 'yOffset',
+            type: 'number',
+            value: 0,
+            label: '垂直偏移量',
+            min: 0
+          },
           { key: 'url', type: 'string', value: '', label: '图标地址' },
-          { key: 'rotation', type: 'number', value: 0, label: '图标旋转角度' },
-          { key: 'imageScale', type: 'number', value: 1, label: '图标缩放' },
-          { key: 'width', type: 'number', value: 20, label: '图标宽度' },
-          { key: 'height', type: 'number', value: 20, label: '图标高度' }
+          {
+            key: 'rotation',
+            type: 'number',
+            value: 0,
+            label: '图标旋转角度',
+            min: 0,
+            max: 360
+          },
+          {
+            key: 'imageScale',
+            type: 'number',
+            value: 1,
+            label: '图标缩放',
+            min: 1
+          },
+          {
+            key: 'width',
+            type: 'number',
+            value: 20,
+            label: '图标宽度',
+            min: 1
+          },
+          {
+            key: 'height',
+            type: 'number',
+            value: 20,
+            label: '图标高度',
+            min: 1
+          }
         ]
         if (type === 'marker') {
           this.setLayerValue(formArr)
@@ -110,7 +120,7 @@ export default class MpEditDataFlowStyle extends Vue {
       case 'model':
         formArr = [
           { key: 'url', type: 'string', value: '', label: '模型地址' },
-          { key: 'scale', type: 'number', value: 1, label: '缩放' }
+          { key: 'scale', type: 'number', value: 1, label: '缩放', min: 1 }
         ]
         if (type === 'model') {
           this.setLayerValue(formArr)
@@ -118,7 +128,7 @@ export default class MpEditDataFlowStyle extends Vue {
         break
       default:
         formArr = [
-          { key: 'radius', type: 'number', value: 24, label: '半径' },
+          { key: 'radius', type: 'number', value: 24, label: '半径', min: 0 },
           { key: 'color', type: 'color', value: '#FFFF00', label: '填充色' },
           {
             key: 'outlineColor',

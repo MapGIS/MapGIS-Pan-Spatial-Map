@@ -1,5 +1,9 @@
 <template>
-  <mp-widget-routers :mode="mode" :widgetRouters.sync="widgetRouters" />
+  <div class="layer-list-router-container">
+    <div id="layerListEl">
+      <mp-widget-routers :mode="mode" :widgetRouters.sync="widgetRouters" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -26,7 +30,8 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
   created() {
     this.widgetRouters = [
       {
-        name: 'MpLayerListContainer',
+        title: '图层树',
+        component: 'MpLayerListContainer',
         props: {
           widgetInfo: this.widgetInfo
         }
@@ -40,9 +45,20 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
   private onWindowSize(mode: 'max' | 'normal') {
     this.$nextTick(() => {
       this.mode = mode
+      const layerListEl = document.getElementById('layerListEl')
+      console.log(mode)
+      if (layerListEl) {
+        layerListEl.style.width = `${
+          mode === 'max' ? this.$el.clientWidth : 300
+        }px`
+      }
     })
   }
 }
 </script>
 
-<style lang="less"></style>
+<style lang="less" scoped>
+#layerListEl {
+  width: 300px;
+}
+</style>

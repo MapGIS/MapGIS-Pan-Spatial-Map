@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-layer-list">
-    <div id="layerListEl">
-      <template v-if="showWidget">
+    <div>
+      <div v-show="showWidget">
         <ul class="top-tab-nav">
           <li
             v-for="{ key, label } in tabs"
@@ -15,6 +15,7 @@
         <mp-tree-layer
           v-show="tab === 'tree'"
           :widgetInfo="widgetInfo"
+          :widgetRouters="widgetRouters"
           :layerDocument.sync="document"
         >
         </mp-tree-layer>
@@ -22,8 +23,8 @@
           v-show="tab === 'opacity'"
           :layers="document.defaultMap.layers()"
         />
-      </template>
-      <a-empty v-else :image="simpleImage" />
+      </div>
+      <a-empty v-show="!showWidget" :image="simpleImage" />
     </div>
   </div>
 </template>
@@ -72,27 +73,8 @@ export default class MpLayerListContainer extends Mixins(AppMixin) {
     )
   }
 
-  metaDataInfo(layer) {
-    console.log(layer)
-  }
-
   beforeCreate() {
     this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
-  }
-
-  /**
-   * 视图窗口变化
-   */
-  @Watch('mode', { immediate: true })
-  private onWindowSize(mode: 'max' | 'normal') {
-    this.$nextTick(() => {
-      const layerListEl = document.getElementById('layerListEl')
-      if (layerListEl) {
-        layerListEl.style.width = `${
-          mode === 'max' ? this.$el.clientWidth : 300
-        }px`
-      }
-    })
   }
 }
 </script>
