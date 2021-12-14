@@ -22,11 +22,23 @@
         @click="onClearSelection"
       />
       <mp-toolbar-space />
-      <mp-toolbar-command
-        title="属性表导出"
-        icon="download"
-        @click="jsonFile"
-      />
+      <a-dropdown class="download-dropdown">
+        <a-menu slot="overlay" @click="handleMenuClick">
+          <a-menu-item key="jsonData"> 导出json文件 </a-menu-item>
+          <a-menu-item key="csvData"> 导出csv文件 </a-menu-item>
+        </a-menu>
+        <a-button
+          class="download-button"
+          style="
+            margin: 0 13px;
+            border: 1px solid transparent;
+            height: 25px !important;
+            padding: 2px 0 0;
+          "
+        >
+          <a-icon type="download" />
+        </a-button>
+      </a-dropdown>
       <mp-toolbar-command
         title="属性统计"
         icon="bar-chart"
@@ -346,8 +358,13 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
     this.query()
   }
 
+  /* 属性表导出选择器 */
+  private async handleMenuClick(type) {
+    await this.jsonFile(type.key)
+  }
+
   /* 结果集属性列表导出为json数据 */
-  private async jsonFile() {
+  private async jsonFile(type) {
     const val = '1'
     const where = ''
     const datetime = Date.now()
@@ -366,10 +383,13 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       jsonDataList.push(element.properties)
     }
     /* csv文件下载 */
-    await this.exportCSV(JSON.parse(JSON.stringify(jsonDataList)))
-    jsonData.data = jsonDataList
-    const blob = new Blob([JSON.stringify(jsonData)])
-    await FileSaver.saveAs(blob, `attrData_${datetime}.json`)
+    if (type === 'csvData') {
+      await this.exportCSV(JSON.parse(JSON.stringify(jsonDataList)))
+    } else if (type === 'jsonData') {
+      jsonData.data = jsonDataList
+      const blob = new Blob([JSON.stringify(jsonData)])
+      await FileSaver.saveAs(blob, `attrData_${datetime}.json`)
+    }
   }
 
   /* json数据转换成csv文件导出 */

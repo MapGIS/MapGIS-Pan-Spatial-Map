@@ -246,6 +246,10 @@
           {
             "id": "widget_6863645d-d6c6-dc3e-bb11-95ce43725b62",
             "uri": "widgets/height-limited-analysis"
+          },
+          {
+            "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd",
+            "uri": "widgets/viewpoint-manager"
           }
         ],
         "widgetStructure": [
@@ -342,6 +346,9 @@
               },
               {
                 "id": "widget_6863645d-d6c6-dc3e-bb11-95ce43725b62"
+              },
+              {
+                "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd"
               }
             ]
           }

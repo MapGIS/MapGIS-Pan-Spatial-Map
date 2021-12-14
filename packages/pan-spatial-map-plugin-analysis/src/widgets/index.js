@@ -12,3 +12,4 @@ export { default as MpParticleEffects } from './particle-effects/particle-effect
 export { default as MpProfileAnalysis } from './profile-analysis/profile-analysis.vue'
 export { default as MpHeightLimitedAnalysis } from './height-limited-analysis/height-limited-analysis.vue'
 export { default as MpSceneSetting } from './scene-setting/scene-setting.vue'
+export { default as MpViewpointManager } from './viewpoint-manager/viewpoint-manager.vue'

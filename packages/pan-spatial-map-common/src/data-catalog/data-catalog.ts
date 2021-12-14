@@ -16,6 +16,7 @@ import {
   VectorTileLayer,
   IGSSceneLayer,
   DataFlowLayer,
+  IGSFeatureLayer,
   UUID,
   Catalog,
   UrlUtil
@@ -164,6 +165,14 @@ export class DataCatalogManager {
         }
         layer = new IGSSceneLayer({ url })
         break
+      case LayerType.IGSFeature:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        }
+
+        layer = new IGSFeatureLayer({ url })
+        break
+
       default:
         break
     }
