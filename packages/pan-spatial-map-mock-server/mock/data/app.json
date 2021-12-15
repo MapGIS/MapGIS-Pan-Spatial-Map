@@ -250,6 +250,10 @@
           {
             "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd",
             "uri": "widgets/viewpoint-manager"
+          },
+          {
+            "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a94",
+            "uri": "widgets/ponding-simulation"
           }
         ],
         "widgetStructure": [
@@ -349,6 +353,9 @@
               },
               {
                 "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd"
+              },
+              {
+                "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a94"
               }
             ]
           }

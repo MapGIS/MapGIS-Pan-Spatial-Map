@@ -13,7 +13,8 @@ import {
   MpProfileAnalysis,
   MpSceneSetting,
   MpHeightLimitedAnalysis,
-  MpViewpointManager
+  MpViewpointManager,
+  MpPondingSimulation
 } from './widgets'
 
 const components = [
@@ -31,7 +32,8 @@ const components = [
   MpProfileAnalysis,
   MpSceneSetting,
   MpHeightLimitedAnalysis,
-  MpViewpointManager
+  MpViewpointManager,
+  MpPondingSimulation
 ]
 
 const install = Vue => {
