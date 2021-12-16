@@ -6066,6 +6066,11 @@ commander@2.17.x:
   resolved "http://192.168.82.89:4873/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
   integrity sha1-vXerfebelCBc6sxy8XFtKfIKd78=
 
+commander@^6.1.0:
+  version "6.2.1"
+  resolved "http://192.168.82.89:4873/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
+  integrity sha1-B5LraC37wyWZm7K4T93duhEKxzw=
+
 commander@^7.2.0:
   version "7.2.0"
   resolved "http://192.168.82.89:4873/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
