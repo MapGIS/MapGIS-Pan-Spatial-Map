@@ -254,6 +254,14 @@
           {
             "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a94",
             "uri": "widgets/ponding-simulation"
+          },
+          {
+            "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a93",
+            "uri": "widgets/buffer-analysis"
+          },
+          {
+            "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a92",
+            "uri": "widgets/overlay-analysis"
           }
         ],
         "widgetStructure": [
@@ -356,6 +364,12 @@
               },
               {
                 "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a94"
+              },
+              {
+                "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a93"
+              },
+              {
+                "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a92"
               }
             ]
           }

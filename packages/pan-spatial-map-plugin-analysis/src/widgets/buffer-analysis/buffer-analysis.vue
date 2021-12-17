@@ -1,0 +1,348 @@
+<template>
+
+  <div class="mp-widget-buffer-analysis">
+    <div id="widgets-ui">
+		  <mapgis-ui-group-tab title="选择数据" id="title-space"/>
+      <mapgis-ui-form-model v-bind="{labelCol: {span: 6}, wrapperCol: {span: 17}}" :layout="layout">
+        <mapgis-ui-form-model-item label="选择图层">
+          <mapgis-ui-row>
+            <mapgis-ui-col>
+              <mapgis-ui-select v-model="tDataIndex" @change="tchangeTarget" v-if="!selectLevel">
+                <mapgis-ui-select-option v-for="(item, index) in layerArrOption" :key="index" :value="index">{{ item.title }}</mapgis-ui-select-option>
+              </mapgis-ui-select>
+              <mapgis-ui-select v-model="tDataIndex" @change="tchangeTarget" v-if="selectLevel" disabled>
+                <mapgis-ui-select-option v-for="(item, index) in layerArrOption" :key="index" :value="index">{{ item.title }}</mapgis-ui-select-option>
+              </mapgis-ui-select>
+            </mapgis-ui-col>
+          </mapgis-ui-row>
+          <mapgis-ui-checkbox :default-checked="selectLevel" @change="changeSelectLevel">只对选择数据进行操作</mapgis-ui-checkbox>
+        </mapgis-ui-form-model-item>
+      </mapgis-ui-form-model>
+    </div>
+    
+    <!-- 使用缓冲区分析组件 -->
+    <mapgis-3d-buffer-analysis
+      :layout='layout'
+      :baseUrl='baseBufferUrl'
+      :srcType='srcType'
+      :srcLayer='srcLayer'
+      :srcFeature='srcFeature'
+      @listenLayer='showLayer'
+      @listenFeature='showFeature'
+      @listenBufferAdd='showAdd'
+      @load='load'
+    ></mapgis-3d-buffer-analysis>
+
+    <!-- 绘制图层级缓冲区分析结果 -->
+    <!-- 目前通过事件总线的方式实现图层级缓冲结果加载到图层列表 -->
+    <!-- <mapgis-3d-igs-dynamic-layer v-if="finishL == true && add == true" :baseUrl="baseBufferUrl" :gdbps="destLayer"></mapgis-3d-igs-dynamic-layer> -->
+
+    <!-- 绘制要素级缓冲区分析结果 -->
+    <!-- 目前通过geojson-layer的方式实现要素级缓冲结果加载到图层列表 -->
+    <mapgis-3d-geojson-layer v-if="finishF == true && add == true" :layerStyle="layerStyle" :baseUrl="feature"/>
+
+  </div>
+</template>
+
+<script lang="ts">
+import { Mixins, Component, Watch } from 'vue-property-decorator'
+import {
+  LayerType,
+  WidgetMixin,
+} from '@mapgis/web-app-framework'
+import { Style } from "@mapgis/webclient-es6-service";
+import {
+  eventBus,
+  events
+} from '@mapgis/pan-spatial-map-common'
+import { ActiveResultSet } from '../../../../pan-spatial-map-common/src/active-result-set'
+
+const { FillStyle } = Style;
+
+@Component({
+  name: 'MpBufferAnalysis',
+})
+export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
+  private layout =  "horizontal"
+
+  private baseBufferUrl = "http://localhost:6163/"
+
+  private srcType = "Layer"
+
+  private srcLayer = ""
+
+  private srcFeature = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "id": "id0",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [114, 45]
+        },
+      },
+      {
+        "type": "Feature",
+        "properties": {},
+        "id": "id0",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [105, 30], [107, 31], [109, 30], [107, 29]
+          ]
+        },
+      },
+      {
+        "type": "Feature",
+        "properties": {},
+        "id": "id1",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [114,30], [114,40], [124,40], [124,30], [114,30]
+            ],
+            [
+              [110,15] , [120,20] , [125,25] , [130,30] , [110,15]
+            ]
+          ]
+        },
+      }
+    ]
+  }
+
+  private buffer = null
+
+  tDataIndex = null
+
+  isFullScreen = false
+
+  isWidgetOpen = false
+
+  private layerStyle = new FillStyle({
+    color: "#ff0000",
+    outlineColor: "#ff0000",
+    outlineWidth: 2.5,
+    opacity: 1,
+  })
+
+  selectLevel = false
+
+  private feature = undefined
+
+  add = false
+
+  finishL = false
+
+  finishF = false
+
+  changeSelectLevel() {
+    this.selectLevel = !this.selectLevel
+    if (this.selectLevel == false) {
+      this.srcType = "Layer"
+    } else {
+      this.srcType = "Feature"
+      if (JSON.stringify(ActiveResultSet.activeResultSet) == "{}") {
+        alert("当前选择集为空，请选择要素")
+      } else {
+        alert("当前选择集不为空")
+        this.srcFeature = ActiveResultSet.activeResultSet
+      }
+    }
+  }
+
+  // 监听图层列表，当图层发生变化时动态改变layerArrOption数组
+  @Watch('document.defaultMap', { deep: true, immediate: true })
+  documentChange(val: Array<unknown>) {
+    this.tDataIndex = null
+    this.layerArrOption = []
+    this.tchangeTarget()
+    const arr = []
+    val.layers().forEach(data => {
+      if (
+        data.type === LayerType.IGSMapImage ||
+        data.type === LayerType.IGSVector
+      ) {
+        arr.push(data)
+      }
+    })
+    if (arr.length > 0) {
+      this.layerArrOption = arr
+      this.tDataIndex = 0
+    }
+  }
+
+  // 微件窗口模式切换时回调
+  onWindowSize(mode) {
+    this.isFullScreen = mode === 'max'
+  }
+
+  load(buffer) {
+    this.buffer = buffer
+  }
+
+  /**
+   * 打开模块
+   */
+  onOpen() {
+    this.isWidgetOpen = true
+    if (this.layerArrOption.length != 0) {
+      this.baseBufferUrl = this.layerArrOption[0].url
+      this.srcLayer = this.layerArrOption[0].gdbps
+      const layerObj = this.layerArrOption
+      const layerUrl = layerObj.map((item, index, layerObj) => {
+        return item.gdbps
+      })
+    }
+    this.buffer.mount()
+  }
+
+  get tData() {
+    if (this.tDataIndex !== null) {
+      return this.layerArrOption[this.tDataIndex]
+    }
+    return null
+  }
+
+  tchangeTarget() {
+    const layerCurrent = this.tData
+
+    if (layerCurrent != null) {
+      this.baseBufferUrl = layerCurrent.url
+      this.srcLayer = layerCurrent.gdbps
+    }
+  }
+
+  /**
+   * 若缓冲区分析生成新图层，将结果显示在地图容器中，并用图层列表管理
+   */
+  addNewLayer() {
+    const url = `${this.baseBufferUrl}?gdbps=${this.destLayer}`
+    const index = url.lastIndexOf("/")
+    const layerName = url.substring(index + 1, url.length)
+
+    const data = {
+      name: 'IGS图层',
+      description: '综合分析_结果图层',
+      data: {
+        type: 'IGSVector',
+        url,
+        name: layerName
+      }
+    }
+    eventBus.$emit(events.ADD_DATA_EVENT, data)
+  }
+
+  /**
+   * 要素级增加GeoJsonLayer支持
+   */
+  addNewGeoJsonLayer() {
+    // const url = `${this.baseBufferUrl}?gdbps=${this.destLayer}`
+    const url = "http://localhost:6163/igs/rest/mrms/layers?gdbps=gdbp://MapGISLocalPlus/sample/sfcls/武汉市轮廓GeoJsonLayer"
+    const index = url.lastIndexOf("/")
+    const layerName = url.substring(index + 1, url.length)
+
+    const fea = this.feature
+
+    const data = {
+      name: 'GeoJson图层',
+      description: '综合分析_结果图层',
+      // data: {
+      //   type: 'GeoJson',
+      //   url,
+      //   name: layerName
+      // }
+      data: {
+        type: 'GeoJson',
+        fea,
+        name: "武汉市轮廓GeoJsonLayer"
+      }
+    }
+    eventBus.$emit(events.ADD_DATA_EVENT, data)
+  }
+
+  /**
+   * 关闭模块
+   */
+  onClose() {
+    this.isWidgetOpen = false
+    this.reset()
+    this.add = false
+    this.buffer.unmount()
+  }
+
+  reset() {
+    this.isFullScreen = false
+  }
+
+  showLayer(data) {
+    this.finishL = true
+    this.destLayer = data
+    if (this.add == true) {
+      this.addNewLayer()
+    }
+  }
+
+  showFeature(data) {
+    this.feature = data
+    console.log(this.feature)
+    console.log(JSON.stringify(this.feature))
+    this.finishF = true
+    if (this.add == true) {
+      this.addNewGeoJsonLayer()
+    }
+  }
+
+  showAdd(data) {
+    this.add = data
+  }
+
+}
+</script>
+
+<style lang="less">
+.mp-widget-buffer-analysis {
+  // height: auto;
+  height: 480px;
+}
+#widgets-ui {
+  height: 130px;
+  z-index: 100000
+}
+.mapgis-ui-form-item-label > label {
+	// margin-left: 0;
+	margin-left: 10px;
+}
+.mapgis-ui-form-item-label > label::after {
+  content: "1111";
+}
+#widgets-ui > .mapgis-ui-row.mapgis-ui-form-item {
+  margin-bottom: 0;
+}
+.mapgis-ui-form-item {
+  background-color: #fff;
+}
+
+#buffer-setting {
+  position: relative;
+  height: auto;
+  padding: 0px 0px 10px 0px;
+  top: 0px;
+  margin-top: -15px;
+  box-shadow: 0px 0px 1px 0px rgba(255, 255, 255, 1);
+  z-index: 1000
+}
+
+#title-space {
+  // margin-left: -10px;
+	margin-left: 0px;
+	font-size: 14px;
+}
+
+#title-space hr {
+  background-color: #fff;
+}
+
+</style>
