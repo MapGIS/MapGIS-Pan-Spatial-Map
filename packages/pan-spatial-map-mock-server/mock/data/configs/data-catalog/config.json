@@ -886,6 +886,18 @@
             "model": "surface",
             "guid": "a1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
             "serverUrl": ""
+          },
+          {
+              "label": "G3D-分层分户",
+              "describe": "G3D-分层分户",
+              "ip": "192.168.88.204",
+              "port": "6163",
+              "layerServiceType": "DOC3D",
+              "name": "大楼",
+              "searchName": "",
+              "model": "surface",
+              "guid": "b1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
+              "serverUrl": ""
           }
         ]
       },
