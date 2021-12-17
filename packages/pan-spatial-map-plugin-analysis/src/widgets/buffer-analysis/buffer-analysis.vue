@@ -39,7 +39,7 @@
 
     <!-- 绘制要素级缓冲区分析结果 -->
     <!-- 目前通过geojson-layer的方式实现要素级缓冲结果加载到图层列表 -->
-    <mapgis-3d-geojson-layer v-if="finishF == true && add == true" :layerStyle="layerStyle" :baseUrl="feature"/>
+    <!-- <mapgis-3d-geojson-layer v-if="finishF == true && add == true" :layerStyle="layerStyle" :baseUrl="feature"/> -->
 
   </div>
 </template>
@@ -239,24 +239,16 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
    * 要素级增加GeoJsonLayer支持
    */
   addNewGeoJsonLayer() {
-    // const url = `${this.baseBufferUrl}?gdbps=${this.destLayer}`
-    const url = "http://localhost:6163/igs/rest/mrms/layers?gdbps=gdbp://MapGISLocalPlus/sample/sfcls/武汉市轮廓GeoJsonLayer"
-    const index = url.lastIndexOf("/")
-    const layerName = url.substring(index + 1, url.length)
-
-    const fea = this.feature
+    const resultFeature = this.feature
+    console.log(resultFeature)
+    console.log(JSON.stringify(resultFeature))
 
     const data = {
       name: 'GeoJson图层',
       description: '综合分析_结果图层',
-      // data: {
-      //   type: 'GeoJson',
-      //   url,
-      //   name: layerName
-      // }
       data: {
         type: 'GeoJson',
-        fea,
+        source: resultFeature,
         name: "武汉市轮廓GeoJsonLayer"
       }
     }
