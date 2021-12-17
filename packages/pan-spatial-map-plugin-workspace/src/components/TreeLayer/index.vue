@@ -102,6 +102,7 @@
                 @to-top="toTop"
                 @edit-data-flow-style="editDataFlowStyle"
                 @change-m3d-props="changeM3DProps"
+                @query="queryFeature"
               />
               <slot
                 v-else
