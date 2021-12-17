@@ -5,7 +5,7 @@
     :minHeight="minHeight"
     :stretchHeight="stretchHeight"
     :enableShadowRatio="enableShadowRatio"
-    @load="load"
+    @loaded="loaded"
   ></mapgis-3d-shadow>
 </template>
 
@@ -49,7 +49,7 @@ export default class MpShadowAnalysis extends Mixins(WidgetMixin) {
     this.shadowAnalysis.removeAll()
   }
 
-  load(shadowAnalysis) {
+  loaded(shadowAnalysis) {
     this.shadowAnalysis = shadowAnalysis
   }
 }
