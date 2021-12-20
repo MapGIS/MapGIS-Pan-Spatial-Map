@@ -4,7 +4,7 @@
     <div id="widgets-ui">
 		  <mapgis-ui-group-tab title="选择数据" id="title-space"/>
       <mapgis-ui-form-model v-bind="{labelCol: {span: 6}, wrapperCol: {span: 17}}" :layout="layout">
-        <mapgis-ui-form-model-item label="叠加图层1">
+        <mapgis-ui-form-model-item label="叠加图层1" :colon="false">
           <mapgis-ui-row>
             <mapgis-ui-col>
               <mapgis-ui-select v-model="tDataIndex" @change="tchangeTarget">
@@ -14,7 +14,7 @@
           </mapgis-ui-row>
         </mapgis-ui-form-model-item>
 
-        <mapgis-ui-form-model-item label="叠加图层2">
+        <mapgis-ui-form-model-item label="叠加图层2" style="colon:false">
           <mapgis-ui-row>
             <mapgis-ui-col>
               <mapgis-ui-select v-model="dDataIndex" @change="dchangeTarget" v-if="!selectLevel">
@@ -244,9 +244,6 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
 .mapgis-ui-form-item-label > label {
 	// margin-left: 0;
 	margin-left: 10px;
-}
-.mapgis-ui-form-item-label > label::after {
-  content: "";
 }
 #widgets-ui > .mapgis-ui-row.mapgis-ui-form-item {
   margin-bottom: 0;

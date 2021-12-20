@@ -4,7 +4,7 @@
     <div id="widgets-ui">
 		  <mapgis-ui-group-tab title="选择数据" id="title-space"/>
       <mapgis-ui-form-model v-bind="{labelCol: {span: 6}, wrapperCol: {span: 17}}" :layout="layout">
-        <mapgis-ui-form-model-item label="选择图层">
+        <mapgis-ui-form-model-item label="选择图层" :colon="false">
           <mapgis-ui-row>
             <mapgis-ui-col>
               <mapgis-ui-select v-model="tDataIndex" @change="tchangeTarget" v-if="!selectLevel">
@@ -147,7 +147,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
       if (JSON.stringify(ActiveResultSet.activeResultSet) == "{}") {
         alert("当前选择集为空，请选择要素")
       } else {
-        alert("当前选择集不为空")
         this.srcFeature = ActiveResultSet.activeResultSet
       }
     }
@@ -248,7 +247,8 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
       description: '综合分析_结果图层',
       data: {
         type: 'GeoJson',
-        source: resultFeature,
+        url: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson",
+        // source: resultFeature,
         name: "武汉市轮廓GeoJsonLayer"
       }
     }
@@ -308,7 +308,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 	margin-left: 10px;
 }
 .mapgis-ui-form-item-label > label::after {
-  content: "1111";
+  content: "";
 }
 #widgets-ui > .mapgis-ui-row.mapgis-ui-form-item {
   margin-bottom: 0;
