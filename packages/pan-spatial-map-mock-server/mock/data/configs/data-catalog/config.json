@@ -1062,6 +1062,26 @@
         ]
       },
       {
+        "label": "geoJson",
+        "describe": "geoJson",
+        "children": [
+          {
+            "label": "earthquake",
+            "describe": "earthquake",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "GEOJSON",
+            "name": "",
+            "searchName": "",
+            "token": "",
+            "guid": "5ABC33D2-E1A5-1761-5B31-730CDBC012345D",
+            "serverUrl": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson",
+            "wfsUrl": "",
+            "extent": ""
+          }
+        ]
+      },
+      {
         "label": "图籍数据",
         "describe": "专题:图籍数据",
         "type": "normal",

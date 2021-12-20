@@ -174,7 +174,14 @@ export class DataCatalogManager {
         layer = new IGSFeatureLayer({ url })
         break
       case LayerType.GeoJson:
-        layer = new GeoJsonLayer(layerConfig)
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          layer = new GeoJsonLayer({ ...layerConfig, url })
+        } else {
+          layer = new GeoJsonLayer(layerConfig)
+        }
+
         break
 
       default:
@@ -837,6 +844,9 @@ export class DataCatalogManager {
         break
       case this.layerServiceType.DATAFLOW:
         serverType = LayerType.DataFlow
+        break
+      case this.layerServiceType.GEOJSON:
+        serverType = LayerType.GeoJson
         break
       default:
         break
