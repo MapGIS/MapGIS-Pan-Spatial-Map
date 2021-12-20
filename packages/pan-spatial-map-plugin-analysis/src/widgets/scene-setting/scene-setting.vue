@@ -1,5 +1,5 @@
 <template>
-  <mapgis-3d-scene-setting @load="load"></mapgis-3d-scene-setting>
+  <mapgis-3d-scene-setting @loaded="loaded"></mapgis-3d-scene-setting>
 </template>
 
 <script lang="ts">
@@ -28,7 +28,7 @@ export default class MpSceneSetting extends Mixins(WidgetMixin) {
     this.setting.unmount()
   }
 
-  load(setting) {
+  loaded(setting) {
     this.setting = setting
   }
 }

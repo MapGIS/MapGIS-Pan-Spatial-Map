@@ -1,5 +1,5 @@
 <template>
-  <mapgis-3d-ponding-simulation @load="load"></mapgis-3d-ponding-simulation>
+  <mapgis-3d-ponding-simulation @loaded="loaded"></mapgis-3d-ponding-simulation>
 </template>
 
 <script lang="ts">
@@ -25,7 +25,7 @@ export default class MpPondingSimulation extends Mixins(WidgetMixin) {
     this.ponding.destroyed()
   }
 
-  load(ponding) {
+  loaded(ponding) {
     this.ponding = ponding
   }
 }
