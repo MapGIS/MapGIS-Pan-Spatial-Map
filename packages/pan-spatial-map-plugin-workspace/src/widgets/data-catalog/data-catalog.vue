@@ -965,7 +965,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   }
 
   isDataFlow(item) {
-    console.log(item.serverType === LayerType.DataFlow)
     return item.serverType === LayerType.DataFlow
   }
 }
