@@ -15,3 +15,4 @@ export { default as MpHeightLimitedAnalysis } from './height-limited-analysis/he
 export { default as MpSceneSetting } from './scene-setting/scene-setting.vue'
 export { default as MpViewpointManager } from './viewpoint-manager/viewpoint-manager.vue'
 export { default as MpPondingSimulation } from './ponding-simulation/ponding-simulation.vue'
+export { default as MpVideo } from './video/video.vue'
