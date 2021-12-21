@@ -33,14 +33,6 @@
       @load='load'
     ></mapgis-3d-buffer-analysis>
 
-    <!-- 绘制图层级缓冲区分析结果 -->
-    <!-- 目前通过事件总线的方式实现图层级缓冲结果加载到图层列表 -->
-    <!-- <mapgis-3d-igs-dynamic-layer v-if="finishL == true && add == true" :baseUrl="baseBufferUrl" :gdbps="destLayer"></mapgis-3d-igs-dynamic-layer> -->
-
-    <!-- 绘制要素级缓冲区分析结果 -->
-    <!-- 目前通过geojson-layer的方式实现要素级缓冲结果加载到图层列表 -->
-    <!-- <mapgis-3d-geojson-layer v-if="finishF == true && add == true" :layerStyle="layerStyle" :baseUrl="feature"/> -->
-
   </div>
 </template>
 
@@ -130,6 +122,8 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   selectLevel = false
 
+  private destLayer = 'bufferResult'
+
   private feature = undefined
 
   add = false
@@ -214,21 +208,26 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
+  getResultLayer() {
+    debugger
+    const url = `${this.baseBufferUrl}?gdbps=${this.destLayer}`
+    const index = url.lastIndexOf("/")
+    const layerName = url.substring(index + 1, url.length)
+    return [url, layerName]
+  }
+
   /**
    * 若缓冲区分析生成新图层，将结果显示在地图容器中，并用图层列表管理
    */
   addNewLayer() {
-    const url = `${this.baseBufferUrl}?gdbps=${this.destLayer}`
-    const index = url.lastIndexOf("/")
-    const layerName = url.substring(index + 1, url.length)
-
+    const resultLayer: Array<string> = this.getResultLayer()
     const data = {
       name: 'IGS图层',
       description: '综合分析_结果图层',
       data: {
         type: 'IGSVector',
-        url,
-        name: layerName
+        url: resultLayer[0],
+        name: resultLayer[1]
       }
     }
     eventBus.$emit(events.ADD_DATA_EVENT, data)
@@ -239,17 +238,13 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
    */
   addNewGeoJsonLayer() {
     const resultFeature = this.feature
-    console.log(resultFeature)
-    console.log(JSON.stringify(resultFeature))
-
     const data = {
       name: 'GeoJson图层',
       description: '综合分析_结果图层',
       data: {
         type: 'GeoJson',
-        url: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson",
-        // source: resultFeature,
-        name: "武汉市轮廓GeoJsonLayer"
+        source: resultFeature,
+        name: this.destLayer
       }
     }
     eventBus.$emit(events.ADD_DATA_EVENT, data)
