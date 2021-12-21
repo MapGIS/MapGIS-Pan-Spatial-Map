@@ -357,7 +357,14 @@
               },
               {
                 "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd"
-              },
+              }
+            ]
+          },
+          {
+            "id": "folder_566d9d41-b02d-e9a6-ab99-28ce895c91df",
+            "type": "folder",
+            "label": "模拟仿真",
+            "children": [
               {
                 "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a94"
               }
