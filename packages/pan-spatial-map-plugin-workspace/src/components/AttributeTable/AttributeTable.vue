@@ -128,7 +128,11 @@
       :selection-bound="selectionBound"
       :highlight-style="highlightStyle"
       @map-bound-change="onGetGeometry"
-    />
+    >
+      <template slot="popup" slot-scope="{ properties }">
+        <popup-attribute :properties="properties" />
+      </template>
+    </mp-3d-marker-plotting>
     <mp-window-wrapper :visible="showAttrStatistics">
       <template v-slot:default="slotProps">
         <mp-window
@@ -202,6 +206,7 @@ import axios from 'axios'
 /* 文件导出 */
 import FileSaver from 'file-saver'
 import AttributeUtil from './mixin/AttributeUtil'
+import PopupAttribute from './popup/PopupAttribute.vue'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
 
@@ -210,7 +215,8 @@ const { IAttributeTableOption, IAttributeTableExhibition } = Exhibition
 @Component({
   name: 'MpAttributeTable',
   components: {
-    MpAttributeTableColumnSetting
+    MpAttributeTableColumnSetting,
+    PopupAttribute
   }
 })
 export default class MpAttributeTable extends Mixins(AttributeUtil) {
