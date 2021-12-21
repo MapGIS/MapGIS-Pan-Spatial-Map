@@ -1,5 +1,5 @@
 <template>
-  <mapgis-3d-viewpoint-manager @load="load"></mapgis-3d-viewpoint-manager>
+  <mapgis-3d-viewpoint-manager @loaded="loaded"></mapgis-3d-viewpoint-manager>
 </template>
 
 <script lang="ts">
@@ -25,7 +25,7 @@ export default class MpViewpointManager extends Mixins(WidgetMixin) {
     this.viewpoint.unmount()
   }
 
-  load(viewpoint) {
+  loaded(viewpoint) {
     this.viewpoint = viewpoint
   }
 }
