@@ -1,0 +1,16 @@
+{
+  "name": "城市生长",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpCityGrow",
+  "icon": "<svg t=\"1639618174657\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"42570\" width=\"16\" height=\"16\"><path d=\"M32 1024a32 32 0 1 1 0-64H64V128a64 64 0 0 1 64-64h384a64 64 0 0 1 64 64v226.944l414.016 167.296a32 32 0 0 1-24 59.328L960 579.2V960h32a32 32 0 1 1 0 64H32zM576 424V640h160a32 32 0 1 1 0 64H576v64h160a32 32 0 1 1 0 64H576v128h320V553.28l-320-129.28zM512 128H128v832h64v-192h256v192h64V128zM384 832H256v128h128v-128zM224 512a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0v-64a32 32 0 0 1 32-32z m192 0a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0v-64a32 32 0 0 1 32-32z m-192-256a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0v-64a32 32 0 0 1 32-32z m192 0a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0v-64a32 32 0 0 1 32-32z\" p-id=\"42571\"></path></svg>",
+  "properties": {
+    "2D": false,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": "",
+    "hasPadding": false
+  }
+}

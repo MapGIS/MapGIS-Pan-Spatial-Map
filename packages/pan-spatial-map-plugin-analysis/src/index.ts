@@ -15,7 +15,8 @@ import {
   MpSceneSetting,
   MpHeightLimitedAnalysis,
   MpViewpointManager,
-  MpPondingSimulation
+  MpPondingSimulation,
+  MpCityGrow
 } from './widgets'
 
 const components = [
@@ -35,7 +36,8 @@ const components = [
   MpSceneSetting,
   MpHeightLimitedAnalysis,
   MpViewpointManager,
-  MpPondingSimulation
+  MpPondingSimulation,
+  MpCityGrow
 ]
 
 const install = Vue => {
