@@ -266,6 +266,10 @@
           {
             "id": "widget_1de66402-bce0-7240-8278-76ba412c71c8",
             "uri": "widgets/overlay-analysis"
+          },
+          {
+            "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02",
+            "uri": "widgets/city-grow"
           }
         ],
         "widgetStructure": [
@@ -367,6 +371,19 @@
                 "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd"
               },
               {
+                "id": "widget_41894471-62ea-F7ba-21FF-17168abd24c0"
+              },
+              {
+                "id": "widget_1de66402-bce0-7240-8278-76ba412c71c8"
+              }
+            ]
+          },
+          {
+            "id": "folder_566d9d41-b02d-e9a6-ab99-28ce895c91df",
+            "type": "folder",
+            "label": "模拟仿真",
+            "children": [
+              {
                 "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a94"
               },
               {
@@ -374,6 +391,9 @@
               },
               {
                 "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a92"
+              },
+              {
+                "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02"
               }
             ]
           }

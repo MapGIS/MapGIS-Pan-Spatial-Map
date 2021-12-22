@@ -17,7 +17,8 @@ import {
   MpViewpointManager,
   MpPondingSimulation,
   MpBufferAnalysis,
-  MpOverlayAnalysis
+  MpOverlayAnalysis,
+  MpCityGrow
 } from './widgets'
 
 const components = [
@@ -39,7 +40,8 @@ const components = [
   MpViewpointManager,
   MpPondingSimulation,
   MpBufferAnalysis,
-  MpOverlayAnalysis
+  MpOverlayAnalysis,
+  MpCityGrow
 ]
 
 const install = Vue => {
