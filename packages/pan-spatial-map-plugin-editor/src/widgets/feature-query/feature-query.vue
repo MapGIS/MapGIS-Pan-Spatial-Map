@@ -50,7 +50,9 @@
 import { Component, Vue, Mixins, Watch, Inject } from 'vue-property-decorator'
 import {
   baseConfigInstance,
-  dataCatalogManagerInstance
+  dataCatalogManagerInstance,
+  ActiveResultSet,
+  DataStoreCatalog
 } from '@mapgis/pan-spatial-map-common'
 import {
   WidgetMixin,
@@ -63,7 +65,8 @@ import {
   Rectangle3D,
   Point3D,
   Objects,
-  Exhibition
+  Exhibition,
+  Feature
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import {
@@ -80,6 +83,8 @@ const {
   IAttributeTableListExhibition,
   AttributeTableListExhibition
 } = Exhibition
+
+const { FeatureQuery } = Feature
 
 enum QueryType {
   Point = 'Point',
@@ -170,9 +175,6 @@ export default class MpFeatureQuery extends Mixins(
         type.id = QueryType.Rectangle
       }
     })
-  }
-
-  created() {
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
       this.vueCesium,
@@ -297,7 +299,21 @@ export default class MpFeatureQuery extends Mixins(
     }
   }
 
-  private queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
+  getIpPort({ isDataStoreQuery, ip, port }) {
+    const ipPortObj = isDataStoreQuery
+      ? {
+          ip: baseConfigInstance.config.DataStoreIp,
+          port: Number(baseConfigInstance.config.DataStorePort)
+        }
+      : {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port)
+        }
+
+    return ipPortObj
+  }
+
+  private async queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
     if (!layer.isVisible) {
       return
     }
@@ -311,40 +327,72 @@ export default class MpFeatureQuery extends Mixins(
     }
 
     const sublayers = layer.allSublayers
-    sublayers.forEach(sublayer => {
-      if (!sublayer.visible) {
+    for (let index = 0; index < sublayers.length; index++) {
+      const sublayer = sublayers[index]
+      if (!sublayer.visible && sublayer.sublayers.length > 0) {
         return
       }
+      const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery(
+        {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          gdbp: sublayer.url
+        }
+      )
+      const ipPortObj = this.getIpPort({
+        isDataStoreQuery,
+        ip: ip || baseConfigInstance.config.ip,
+        port: Number(port || baseConfigInstance.config.port)
+      })
       exhibition.options.push({
         id: sublayer.id,
         name: sublayer.title,
-        ip: ip || baseConfigInstance.config.ip,
-        port: Number(port || baseConfigInstance.config.port),
+        DNSName,
+        isDataStoreQuery,
+        // ip: ip || baseConfigInstance.config.ip,
+        // port: Number(port || baseConfigInstance.config.port),
+        ...ipPortObj,
         serverType: layer.type,
+        gdbp: sublayer.url,
         layerIndex: sublayer.id,
         serverName: docName,
         serverUrl: layer.url,
         geometry: geometry
       })
-    })
+    }
 
     this.addExhibition(new AttributeTableListExhibition(exhibition))
     this.openExhibitionPanel()
   }
 
-  private quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
+  private async quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
     if (!layer.isVisible) {
       return
     }
     const { ip, port, docName } = layer._parseUrl(layer.url)
+
+    const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery({
+      ip: ip || baseConfigInstance.config.ip,
+      port: Number(port || baseConfigInstance.config.port),
+      gdbp: layer.gdbps
+    })
+    const ipPortObj = this.getIpPort({
+      isDataStoreQuery,
+      ip: ip || baseConfigInstance.config.ip,
+      port: Number(port || baseConfigInstance.config.port)
+    })
 
     const exhibition: IAttributeTableListExhibition = {
       id: `${layer.id}`,
       name: `${layer.title} 查询结果`,
       options: [
         {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
+          id: layer.id,
+          // ip: ip || baseConfigInstance.config.ip,
+          // port: Number(port || baseConfigInstance.config.port),
+          DNSName,
+          isDataStoreQuery,
+          ...ipPortObj,
           serverType: layer.type,
           gdbp: layer.gdbps,
           geometry: geometry

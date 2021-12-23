@@ -1,7 +1,12 @@
 import { Component, Vue, Mixins, Prop } from 'vue-property-decorator'
-import { AppMixin, LayerType } from '@mapgis/web-app-framework'
+import { AppMixin, LayerType, Feature } from '@mapgis/web-app-framework'
 
-import { dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-common'
+const { FeatureQuery } = Feature
+
+import {
+  baseConfigInstance,
+  dataCatalogManagerInstance
+} from '@mapgis/pan-spatial-map-common'
 
 @Component({})
 export default class LayerTypeUtil extends Mixins(AppMixin) {
@@ -263,5 +268,161 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
       return true
     }
     return false
+  }
+
+  getIpPort({ isDataStoreQuery, ip, port }) {
+    const ipPortObj = isDataStoreQuery
+      ? {
+          ip: baseConfigInstance.config.DataStoreIp,
+          port: Number(baseConfigInstance.config.DataStorePort)
+        }
+      : {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port)
+        }
+
+    return ipPortObj
+  }
+
+  /**
+   * 获取结果集查询参数
+   */
+  async getExhibition(layer, titleType) {
+    const parent = layer.layer
+    let exhibition: Record<string, any> | null = null
+    const arr: Array<Record<string, any>> = [
+      {
+        type: parent && this.isIgsDocLayer(parent),
+        setValue: async () => {
+          const { ip, port, docName } = parent._parseUrl(parent.url)
+          const {
+            isDataStoreQuery,
+            DNSName
+          } = await FeatureQuery.isDataStoreQuery({
+            ip,
+            port,
+            gdbp: layer.url
+          })
+          const ipPortObj = this.getIpPort({ isDataStoreQuery, ip, port })
+          exhibition = {
+            id: `${parent.title} ${layer.title} ${layer.id}`,
+            name: `${layer.title} ${titleType}`,
+            description: `${parent.title} ${layer.title}`,
+            option: {
+              id: layer.id,
+              name: layer.title,
+              isDataStoreQuery,
+              DNSName,
+              // ip: ip || baseConfigInstance.config.ip,
+              // port: Number(port || baseConfigInstance.config.port),
+              ...ipPortObj,
+              serverType: parent.type,
+              layerIndex: layer.id,
+              gdbp: layer.url,
+              serverName: docName,
+              serverUrl: parent.url
+            }
+          }
+        }
+      },
+      {
+        type: this.isIgsVectorLayer(layer),
+        setValue: async () => {
+          const igsVectorLayer = layer.dataRef
+          const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
+          const {
+            isDataStoreQuery,
+            DNSName
+          } = await FeatureQuery.isDataStoreQuery({
+            ip,
+            port,
+            gdbp: igsVectorLayer.gdbps
+          })
+          const ipPortObj = this.getIpPort({ isDataStoreQuery, ip, port })
+          exhibition = {
+            id: `${igsVectorLayer.title} ${igsVectorLayer.id}`,
+            name: `${igsVectorLayer.title} ${titleType}`,
+            option: {
+              id: igsVectorLayer.id,
+              // ip: ip || baseConfigInstance.config.ip,
+              // port: Number(port || baseConfigInstance.config.port),
+              ...ipPortObj,
+              isDataStoreQuery,
+              DNSName,
+              serverType: igsVectorLayer.type,
+              gdbp: igsVectorLayer.gdbps
+            }
+          }
+        }
+      },
+      {
+        type: this.isArcGISMapImage(layer),
+        setValue: () => {
+          exhibition = {
+            id: `${parent.title} ${layer.title} ${layer.id}`,
+            name: `${layer.title} ${titleType}`,
+            description: `${parent.title} ${layer.title}`,
+            option: {
+              id: layer.id,
+              name: layer.title,
+              serverType: parent.type,
+              layerIndex: layer.id,
+              serverUrl: parent.url
+            }
+          }
+        }
+      },
+      {
+        type: this.isIGSScene(layer),
+        setValue: () => {
+          const sceneLayer = layer.dataRef
+          const { ip, port, docName } = parent._parseUrl(parent.url)
+          const { id, name, title } = sceneLayer
+          const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(
+            parent.id
+          )
+          if (layerConfig && layerConfig.bindData) {
+            exhibition = {
+              id: `${title} ${id}`,
+              name: `${title} ${titleType}`,
+              option: {
+                id: `${id}`,
+                ip: ip || baseConfigInstance.config.ip,
+                port: Number(port || baseConfigInstance.config.port),
+                serverType: parent.type,
+                gdbp: layerConfig.bindData.gdbps
+              }
+            }
+          }
+        }
+      },
+      {
+        type: this.isDataFlow(layer),
+        setValue: () => {
+          exhibition = {
+            id: `${layer.title} ${layer.title} ${layer.id}`,
+            name: `${layer.title} ${titleType}`,
+            option: {
+              id: layer.id,
+              name: layer.title,
+              serverType: layer.type
+            }
+          }
+        }
+      }
+    ]
+    // arr.forEach(item => {
+    //   if (item.type) {
+    //     item.setValue()
+    //   }
+    // })
+
+    for (let index = 0; index < arr.length; index++) {
+      const item = arr[index]
+      if (item.type) {
+        await item.setValue()
+      }
+    }
+    return exhibition
   }
 }

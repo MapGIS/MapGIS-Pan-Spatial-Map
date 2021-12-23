@@ -11,7 +11,7 @@ module.exports = {
   },
   weekMode: false, // 色弱模式，true:开启，false:不开启
   systemName: '全空间一张图', // 系统名称
-  copyright: '2021 武汉中地数码科技有限公司 Version 10.5.4.10', // copyright
+  copyright: '2021 武汉中地数码科技有限公司 Version 10.5.5.12', // copyright
   footerLinks: [
     // 页面底部链接，{link: '链接地址', name: '名称/显示文字', icon: '图标，支持 ant design vue 图标库'}
   ]

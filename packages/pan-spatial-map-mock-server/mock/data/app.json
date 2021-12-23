@@ -124,6 +124,10 @@
             "uri": "widgets/thematic-map"
           },
           {
+            "id": "widget_83b272ec-f796-4b1c-a24e-ee04d86d27bf",
+            "uri": "widgets/map-story"
+          },
+          {
             "id": "widget_10e5628f-35aa-49d3-9f1b-450edcb409fb",
             "uri": "widgets/kibana-v",
             "config": "configs/kibana-v/config.json"
@@ -246,6 +250,18 @@
           {
             "id": "widget_6863645d-d6c6-dc3e-bb11-95ce43725b62",
             "uri": "widgets/height-limited-analysis"
+          },
+          {
+            "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd",
+            "uri": "widgets/viewpoint-manager"
+          },
+          {
+            "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a94",
+            "uri": "widgets/ponding-simulation"
+          },
+          {
+            "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02",
+            "uri": "widgets/city-grow"
           }
         ],
         "widgetStructure": [
@@ -342,6 +358,22 @@
               },
               {
                 "id": "widget_6863645d-d6c6-dc3e-bb11-95ce43725b62"
+              },
+              {
+                "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd"
+              }
+            ]
+          },
+          {
+            "id": "folder_566d9d41-b02d-e9a6-ab99-28ce895c91df",
+            "type": "folder",
+            "label": "模拟仿真",
+            "children": [
+              {
+                "id": "widget_6f3b4cda-7f02-410d-8c32-a517f5b13a94"
+              },
+              {
+                "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02"
               }
             ]
           }

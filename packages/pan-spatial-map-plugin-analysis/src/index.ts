@@ -6,13 +6,17 @@ import {
   MpVisualAnalysis,
   MpVisibilityAnalysis,
   MpDynamicSectionAnalysis,
+  MpMapStory,
   MpTerrainAnalysis,
   MpSkylineAnalysis,
   MpShadowAnalysis,
   MpParticleEffects,
   MpProfileAnalysis,
   MpSceneSetting,
-  MpHeightLimitedAnalysis
+  MpHeightLimitedAnalysis,
+  MpViewpointManager,
+  MpPondingSimulation,
+  MpCityGrow
 } from './widgets'
 
 const components = [
@@ -23,13 +27,17 @@ const components = [
   MpVisualAnalysis,
   MpVisibilityAnalysis,
   MpDynamicSectionAnalysis,
+  MpMapStory,
   MpTerrainAnalysis,
   MpSkylineAnalysis,
   MpShadowAnalysis,
   MpParticleEffects,
   MpProfileAnalysis,
   MpSceneSetting,
-  MpHeightLimitedAnalysis
+  MpHeightLimitedAnalysis,
+  MpViewpointManager,
+  MpPondingSimulation,
+  MpCityGrow
 ]
 
 const install = Vue => {

@@ -157,92 +157,6 @@
         </mp-window>
       </template>
     </mp-window-wrapper>
-
-    <mp-window-wrapper :visible="showSelectTilematrixSet">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="切换矩阵集"
-          :width="300"
-          :icon="widgetInfo.icon"
-          :visible.sync="showSelectTilematrixSet"
-          anchor="center-center"
-          v-bind="slotProps"
-        >
-          <template>
-            <mp-select-tilematrix-set
-              v-if="showSelectTilematrixSet"
-              :layer="currentLayerInfo"
-              @update:layer="refreshCurrentWmts"
-            />
-          </template>
-        </mp-window>
-      </template>
-    </mp-window-wrapper>
-
-    <mp-window-wrapper :visible="showEditDataFlowStyle">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="编辑样式"
-          :width="350"
-          :height="400"
-          :verticalOffset="10"
-          :icon="widgetInfo.icon"
-          :visible.sync="showEditDataFlowStyle"
-          anchor="top-center"
-          v-bind="slotProps"
-        >
-          <template>
-            <mp-edit-data-flow-style
-              v-if="showEditDataFlowStyle"
-              :layer="currentLayerInfo"
-              @update:layer="updateDataFlowStyle"
-            />
-          </template>
-        </mp-window>
-      </template>
-    </mp-window-wrapper>
-
-    <mp-window-wrapper :visible="showChangeActiveLayer">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="切换图层"
-          :width="300"
-          :icon="widgetInfo.icon"
-          :visible.sync="showChangeActiveLayer"
-          anchor="center-center"
-          v-bind="slotProps"
-        >
-          <template>
-            <mp-change-active-layer
-              v-if="showChangeActiveLayer"
-              :layer="currentLayerInfo"
-              @update:layer="updateActiveLayer"
-            />
-          </template>
-        </mp-window>
-      </template>
-    </mp-window-wrapper>
-
-    <mp-window-wrapper :visible="showChangeM3DProps">
-      <template v-slot:default="slotProps">
-        <mp-window
-          title="属性设置"
-          :width="300"
-          :icon="widgetInfo.icon"
-          :visible.sync="showChangeM3DProps"
-          anchor="center-center"
-          v-bind="slotProps"
-        >
-          <template>
-            <mp-change-m-3-d-props
-              v-if="showChangeM3DProps"
-              :layer="currentLayerInfo"
-              @update:layer="updateM3DProps"
-            />
-          </template>
-        </mp-window>
-      </template>
-    </mp-window-wrapper>
   </div>
 </template>
 
@@ -280,12 +194,8 @@ import {
 import MpMetadataInfo from '../MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../CustomQuery/CustomQuery.vue'
 import MpUnifyModify from './components/UnifyModify/UnifyModify.vue'
-import MpSelectTilematrixSet from './components/SelectTilematrixSet/SelectTilematrixSet.vue'
-import MpChangeActiveLayer from './components/ChangeActiveLayer/ChangeActiveLayer.vue'
 import layerTypeUtil from './mixin/layer-type-util'
 import RightPopover from './components/RightPopover/index.vue'
-import MpEditDataFlowStyle from './components/EditDataFlowStyle/index.vue'
-import MpChangeM3DProps from './components/ChangeM3DProps/ChangeM3DProps.vue'
 
 const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
 
@@ -295,11 +205,7 @@ const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
     MpMetadataInfo,
     MpCustomQuery,
     MpUnifyModify,
-    MpSelectTilematrixSet,
-    MpChangeActiveLayer,
-    RightPopover,
-    MpEditDataFlowStyle,
-    MpChangeM3DProps
+    RightPopover
   }
 })
 export default class MpTreeLayer extends Mixins(
@@ -309,6 +215,8 @@ export default class MpTreeLayer extends Mixins(
   layerTypeUtil
 ) {
   @Inject('vueCesium') vueCesium
+
+  @Prop() widgetRouters
 
   @Prop() widgetInfo!: Record<string, any>
 
@@ -329,20 +237,10 @@ export default class MpTreeLayer extends Mixins(
   // 右侧菜单栏选中的图层信息
   private currentLayerInfo: Record<string, unknown> = {}
 
-  private showSelectTilematrixSet = false
-
   private expandedKeys = []
 
   // 记录可见状态为true的父节点的key
   private parentKeys: Array<string> = []
-
-  // 改变WMTS活跃图层
-  showChangeActiveLayer = false
-
-  showEditDataFlowStyle = false
-
-  // 改变M3D最大屏幕空间误差的值
-  showChangeM3DProps = false
 
   //  搜索功能，收到结果的  key的数组
   private searchkeyArr = []
@@ -361,6 +259,7 @@ export default class MpTreeLayer extends Mixins(
   @Watch('layerDocument.defaultMap', { immediate: true, deep: true })
   documentChange() {
     this.parentKeys = []
+    this.resetWidgetRouters()
     if (
       this.layerDocument &&
       this.layerDocument.defaultMap &&
@@ -461,6 +360,27 @@ export default class MpTreeLayer extends Mixins(
       this.vueCesium,
       this.viewer
     )
+  }
+
+  /**
+   * 当正在编辑图层被取消的时候，复位图层树路由
+   */
+  resetWidgetRouters() {
+    let layer
+    if (
+      this.currentLayerInfo &&
+      this.layerDocument &&
+      this.layerDocument.defaultMap &&
+      this.layerDocument.defaultMap.layers() &&
+      this.layerDocument.defaultMap.layers().length > 0
+    ) {
+      layer = this.layerDocument.defaultMap.findLayerById(
+        this.currentLayerInfo.id
+      )
+    }
+    if (!layer && this.widgetRouters && this.widgetRouters.length > 1) {
+      this.widgetRouters.splice(1)
+    }
   }
 
   onSearch(val) {
@@ -691,27 +611,75 @@ export default class MpTreeLayer extends Mixins(
   }
 
   resetTilematrixSet(item) {
-    this.showSelectTilematrixSet = true
     this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
+    this.openPage({
+      title: '切换矩阵集',
+      name: 'MpSelectTilematrixSet',
+      component: () =>
+        import('./components/SelectTilematrixSet/SelectTilematrixSet.vue'),
+      props: {
+        layer: this.currentLayerInfo
+      },
+      listeners: {
+        'update:layer': this.refreshCurrentWmts
+      }
+    })
   }
 
   editDataFlowStyle(item) {
-    this.showEditDataFlowStyle = true
     this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
+    this.openPage({
+      title: '编辑样式',
+      name: 'MpEditDataFlowStyle',
+      component: () => import('./components/EditDataFlowStyle'),
+      props: {
+        layer: this.currentLayerInfo
+      },
+      listeners: {
+        'update:layer': this.updateDataFlowStyle
+      }
+    })
   }
 
+  /**
+   * 打开M3D编辑属性页面
+   */
   changeM3DProps(item) {
-    this.showChangeM3DProps = true
     this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
+    this.openPage({
+      title: '属性编辑',
+      name: 'MpChangeM3DProps',
+      component: () => import('./components/ChangeM3DProps/ChangeM3DProps.vue'),
+      props: {
+        layer: this.currentLayerInfo
+      },
+      listeners: {
+        'update:layer': this.updateM3DProps
+      }
+    })
   }
 
+  /**
+   * 打开wmts切换激活图层页面
+   */
   openChangeActiveLayer(item) {
-    this.showChangeActiveLayer = true
     this.currentLayerInfo = item.dataRef
     this.clickPopover(item, false)
+    this.openPage({
+      title: '切换图层',
+      name: 'MpChangeActiveLayer',
+      component: () =>
+        import('./components/ChangeActiveLayer/ChangeActiveLayer.vue'),
+      props: {
+        layer: this.currentLayerInfo
+      },
+      listeners: {
+        'update:layer': this.updateActiveLayer
+      }
+    })
   }
 
   toTop(item) {
@@ -733,6 +701,7 @@ export default class MpTreeLayer extends Mixins(
     const layerItem: DataFlowLayer = layers[key]
     layerItem.setLayerStyle(layerStyle)
     this.$emit('update:layerDocument', doc)
+    this.currentLayerInfo = {}
   }
 
   updateM3DProps(val) {
@@ -749,6 +718,7 @@ export default class MpTreeLayer extends Mixins(
       m3d.maximumScreenSpaceError = maximumScreenSpaceError
       this.$emit('update:layerDocument', doc)
     }
+    this.currentLayerInfo = {}
   }
 
   updateActiveLayer(val: OGCWMTSLayer) {
@@ -764,8 +734,8 @@ export default class MpTreeLayer extends Mixins(
       // layerItem.activeLayer = val.activeLayer
       layerItem.activeLayer = layerItem.findSublayerById(id)
     }
-    // this.document = doc
     this.$emit('update:layerDocument', doc)
+    this.currentLayerInfo = {}
   }
 
   refreshCurrentWmts(val) {
@@ -786,169 +756,41 @@ export default class MpTreeLayer extends Mixins(
         layerItem = layerItem.sublayers[i]
       }
     })
-    // this.document = doc
     this.$emit('update:layerDocument', doc)
+    this.currentLayerInfo = {}
   }
 
   /**
    * 自定义查询
    */
-  customQuery(layer) {
+  async customQuery(layer) {
     this.showCustomQuery = true
     this.clickPopover(layer, false)
-    const parent: IGSMapImageLayer = layer.layer
-    if (parent && this.isIgsDocLayer(parent)) {
-      const { ip, port, docName } = parent._parseUrl(parent.url)
-      this.queryParams = {
-        id: `${parent.title} ${layer.title} ${layer.id} 自定义查询`,
-        name: `${layer.title} 自定义查询`,
-        description: `${parent.title} ${layer.title}`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: parent.type,
-          layerIndex: layer.id,
-          serverName: docName,
-          serverUrl: parent.url
-        }
-      }
-    } else if (this.isIgsVectorLayer(layer)) {
-      const igsVectorLayer: IGSVectorLayer = layer.dataRef
-      const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
-      this.queryParams = {
-        id: `${igsVectorLayer.title} ${igsVectorLayer.id} 自定义查询`,
-        name: `${igsVectorLayer.title} 自定义查询`,
-        option: {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: igsVectorLayer.type,
-          gdbp: igsVectorLayer.gdbps
-        }
-      }
-    } else if (this.isIGSScene(layer)) {
-      const sceneLayer = layer.dataRef
-      const { ip, port, docName } = sceneLayer.layer._parseUrl(
-        sceneLayer.layer.url
-      )
-      const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(
-        sceneLayer.layer.id
-      )
-      if (layerConfig && layerConfig.bindData) {
-        this.queryParams = {
-          id: `${sceneLayer.title} ${sceneLayer.id} 自定义查询`,
-          name: `${sceneLayer.title} 自定义查询`,
-          option: {
-            id: `${sceneLayer.id}`,
-            ip: ip || baseConfigInstance.config.ip,
-            port: Number(port || baseConfigInstance.config.port),
-            serverType: sceneLayer.layer.type,
-            gdbp: layerConfig.bindData.gdbps
-          }
-        }
-      }
-    } else if (this.isArcGISMapImage(layer)) {
-      this.queryParams = {
-        id: `${parent.title} ${layer.title} ${layer.id}`,
-        name: `${layer.title} 属性表`,
-        description: `${parent.title} ${layer.title}`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          serverType: parent.type,
-          layerIndex: layer.id,
-          serverUrl: parent.url
-        }
-      }
+    const exhibition = await this.getExhibition(layer, '自定义查询')
+    if (exhibition) {
+      this.queryParams = exhibition
     }
   }
 
   /**
    * 查看属性
    */
-  attributes(layer) {
+  async attributes(layer) {
     this.clickPopover(layer, false)
-    const parent = layer.layer
-    let exhibition: IAttributeTableExhibition = null
-    if (parent && this.isIgsDocLayer(parent)) {
-      const { ip, port, docName } = parent._parseUrl(parent.url)
-      exhibition = {
-        id: `${parent.title} ${layer.title} ${layer.id}`,
-        name: `${layer.title} 属性表`,
-        description: `${parent.title} ${layer.title}`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: parent.type,
-          layerIndex: layer.id,
-          serverName: docName,
-          serverUrl: parent.url
-        }
-      }
-    } else if (this.isIgsVectorLayer(layer)) {
-      const igsVectorLayer: IGSVectorLayer = layer.dataRef
-      const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
-      exhibition = {
-        id: `${igsVectorLayer.title} ${igsVectorLayer.id}`,
-        name: `${igsVectorLayer.title} 属性表`,
-        option: {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          serverType: igsVectorLayer.type,
-          gdbp: igsVectorLayer.gdbps
-        }
-      }
-    } else if (this.isArcGISMapImage(layer)) {
-      exhibition = {
-        id: `${parent.title} ${layer.title} ${layer.id}`,
-        name: `${layer.title} 属性表`,
-        description: `${parent.title} ${layer.title}`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          serverType: parent.type,
-          layerIndex: layer.id,
-          serverUrl: parent.url
-        }
-      }
-    } else if (this.isIGSScene(layer)) {
-      const sceneLayer = layer.dataRef
-      const { ip, port, docName } = parent._parseUrl(parent.url)
-      const { id, name, title } = sceneLayer
-      const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(
-        parent.id
-      )
-      if (layerConfig && layerConfig.bindData) {
-        exhibition = {
-          id: `${title} ${id}`,
-          name: `${title} 属性表`,
-          option: {
-            id: `${id}`,
-            ip: ip || baseConfigInstance.config.ip,
-            port: Number(port || baseConfigInstance.config.port),
-            serverType: parent.type,
-            gdbp: layerConfig.bindData.gdbps
-          }
-        }
-      }
-    } else if (this.isDataFlow(layer)) {
-      exhibition = {
-        id: `${layer.title} ${layer.title} ${layer.id}`,
-        name: `${layer.title} 属性表`,
-        option: {
-          id: layer.id,
-          name: layer.title,
-          serverType: layer.type
-        }
-      }
-    }
+    const exhibition = await this.getExhibition(layer, '属性表')
     if (exhibition) {
       this.addExhibition(new AttributeTableExhibition(exhibition))
       this.openExhibitionPanel()
     }
+  }
+
+  /**
+   * 打开新的router页面
+   */
+  openPage(router) {
+    this.$nextTick(() => {
+      this.widgetRouters.push(router)
+    })
   }
 
   metaDataInfo(node) {
@@ -959,7 +801,10 @@ export default class MpTreeLayer extends Mixins(
       this.showMetadataInfo = true
       this.currentLayerInfo = layer
     }
-
+    // 复位当前选择的图层
+    this.$nextTick(() => {
+      this.currentLayerInfo = {}
+    })
     this.clickPopover(node, false)
   }
 

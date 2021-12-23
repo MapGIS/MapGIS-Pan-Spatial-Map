@@ -687,12 +687,12 @@
         "describe": "矢量文档",
         "children": [
           {
-            "label": "本地测试",
-            "describe": "本地测试",
-            "ip": "localhost",
+            "label": "城市中心线",
+            "describe": "城市中心线",
+            "ip": "192.168.23.84",
             "port": "6163",
             "layerServiceType": "IGSIMAGE",
-            "name": "本地测试",
+            "name": "城市中心线",
             "searchName": "",
             "token": "",
             "guid": "d3ac0679-e009-4e87-93ab-7181378efbbwwww",
@@ -828,12 +828,12 @@
             "serverUrl": ""
           },
           {
-            "label": "ks_buildings",
-            "describe": "ks_buildings",
-            "ip": "192.168.88.204",
-            "port": "6163",
+            "label": "ks_buildings_result",
+            "describe": "ks_buildings_result",
+            "ip": "",
+            "port": "",
             "layerServiceType": "DOC3D",
-            "name": "ks_buildings",
+            "name": "ks_buildings_result",
             "searchName": "",
             "model": "surface",
             "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01dsadsa79",
@@ -912,6 +912,20 @@
             "token": "",
             "guid": "37ee717c-5f7e-40a9-a45a-55273a7d2fca",
             "serverUrl": "gdbp://MapGisLocal/专题图数据/sfcls/中国地级市x",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
+            "label": "行政区",
+            "describe": "行政区",
+            "ip": "192.168.23.84",
+            "port": "6163",
+            "layerServiceType": "IGSVECTOR",
+            "name": "中国",
+            "searchName": "",
+            "token": "",
+            "guid": "37ee717c-5f7e-40a9-a45a-55273a7cccfca",
+            "serverUrl": "gdbp://gtcs@192.168.96.10130001gtcs/gtcs/sfcls/行政区",
             "wfsUrl": "",
             "extent": ""
           },
@@ -1021,7 +1035,7 @@
             "searchName": "",
             "token": "",
             "guid": "5ABC33D2-E1A5-1761-5B31-730CDBC0F96D",
-            "serverUrl": "ws://192.168.91.123:9382/dataflow/cars_xian/subscribe",
+            "serverUrl": "ws://192.168.199.65:9382/dataflow/cars_xian/subscribe",
             "wfsUrl": "",
             "extent": ""
           }
@@ -1042,6 +1056,26 @@
             "token": "",
             "guid": "8c74f367-191a-458c-946f-de1cd3778537",
             "serverUrl": "http://192.168.21.191:6163/igs/rest/mrcs/vtiles/styles/OSM全中国经纬度.json",
+            "wfsUrl": "",
+            "extent": ""
+          }
+        ]
+      },
+      {
+        "label": "geoJson",
+        "describe": "geoJson",
+        "children": [
+          {
+            "label": "earthquake",
+            "describe": "earthquake",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "GEOJSON",
+            "name": "",
+            "searchName": "",
+            "token": "",
+            "guid": "5ABC33D2-E1A5-1761-5B31-730CDBC012345D",
+            "serverUrl": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson",
             "wfsUrl": "",
             "extent": ""
           }

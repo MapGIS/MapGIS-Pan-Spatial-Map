@@ -11,3 +11,7 @@ export { markerIconInstance } from './marker-icon'
 export { dataCatalogManagerInstance, DataCatalogManager } from './data-catalog'
 
 export { DataFlowList } from './data-flow'
+
+export { ActiveResultSet } from './active-result-set'
+
+export { DataStoreCatalog } from './data-store-catalog'

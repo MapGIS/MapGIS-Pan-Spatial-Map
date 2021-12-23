@@ -22,11 +22,23 @@
         @click="onClearSelection"
       />
       <mp-toolbar-space />
-      <mp-toolbar-command
-        title="属性表导出"
-        icon="download"
-        @click="jsonFile"
-      />
+      <a-dropdown class="download-dropdown">
+        <a-menu slot="overlay" @click="handleMenuClick">
+          <a-menu-item key="jsonData"> 导出json文件 </a-menu-item>
+          <a-menu-item key="csvData"> 导出csv文件 </a-menu-item>
+        </a-menu>
+        <a-button
+          class="download-button"
+          style="
+            margin: 0 13px;
+            border: 1px solid transparent;
+            height: 25px !important;
+            padding: 2px 0 0;
+          "
+        >
+          <a-icon type="download" />
+        </a-button>
+      </a-dropdown>
       <mp-toolbar-command
         title="属性统计"
         icon="bar-chart"
@@ -61,20 +73,20 @@
         onChange: onSelectChange,
         type: 'checkbox',
         fixed: true,
-        columnWidth: '50px',
+        columnWidth: '50px'
       }"
-      :rowKey="(row) => row.properties[rowKey]"
+      :rowKey="row => row.properties[rowKey]"
       :scroll="{
         x: useScrollX ? '100%' : false,
-        y: scrollY,
+        y: scrollY
       }"
       :pagination="false"
       :customRow="
-        (record) => ({
+        record => ({
           on: {
             click: () => onRowClick(record),
-            dblclick: () => onRowDblclick(record),
-          },
+            dblclick: () => onRowDblclick(record)
+          }
         })
       "
     >
@@ -168,6 +180,9 @@ import { Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import {
   baseConfigInstance,
   markerIconInstance,
+  events,
+  DataFlowList,
+  ActiveResultSet
 } from '@mapgis/pan-spatial-map-common'
 import {
   DomUtil,
@@ -179,7 +194,7 @@ import {
   Rectangle3D,
   Feature,
   Objects,
-  Exhibition,
+  Exhibition
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import moment from 'moment'
@@ -187,6 +202,7 @@ import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
 import axios from 'axios'
 /* 文件导出 */
 import FileSaver from 'file-saver'
+import AttributeUtil from './mixin/AttributeUtil'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
 
@@ -195,118 +211,20 @@ const { IAttributeTableOption, IAttributeTableExhibition } = Exhibition
 @Component({
   name: 'MpAttributeTable',
   components: {
-    MpAttributeTableColumnSetting,
-  },
+    MpAttributeTableColumnSetting
+  }
 })
-export default class MpAttributeTable extends Mixins(
-  ExhibitionMixin,
-  AppMixin,
-  MapMixin
-) {
+export default class MpAttributeTable extends Mixins(AttributeUtil) {
   // 属性表选项
   @Prop({ type: Object }) exhibition!: IAttributeTableExhibition
 
   // 属性表选项
   @Prop({ type: Object }) option!: IAttributeTableOption
 
-  // // 下载包以时间命名
-  // private datetime: any = Date.now()
-
-  // csv对象
-  private Json2csvParser: any = require('json2csv').Parser
-
-  // 表格数据
-  private tableData: unknown[] = []
-
-  // 表头数据
-  private tableColumns: Array = []
-
-  private markers: Record<string, any>[] = []
-
-  private fitBound: Record<string, any> = {}
-
-  private selectionBound: Record<string, any> = {}
-
-  // 是否正在加载
-  private loading = false
-
-  private currentTableParams: Record<string, any> = {}
-
-  private showFilter = false
-
-  private showAttrStatistics = false
-
-  private statisticAndFilterParamas: Record<string, any> = {}
-
-  // 是否随地图范围过滤
-  private filterWithMap = false
-
-  // 地图范围
-  private geometry?: Record<string, unknown> = undefined
-
-  private geometry3D?: Record<string, unknown> = undefined
-
-  // 选中的行
-  private selection: unknown[] = []
-
-  selectIcon = ''
-
-  unSelectIcon = ''
-
-  // 分页信息
-  private pagination = {
-    current: 1,
-    pageSize: 10,
-    total: 0,
-    pageSizeOptions: ['5', '10', '20', '30', '50'], // 这里注意只能是字符串，不能是数字
-  }
-
-  private id = `${new Date().getTime()}-${Math.floor(
-    Math.random() * 10
-  )}-table-wrapper`
-
-  private tableId = `${new Date().getTime()}-${Math.floor(
-    Math.random() * 10
-  )}-table`
-
-  private filterId = `${new Date().getTime()}-${Math.floor(
-    Math.random() * 10
-  )}-filter`
-
-  private statisticsId = `${new Date().getTime()}-${Math.floor(
-    Math.random() * 10
-  )}-statistics`
-
-  /* 属性表数据转为json数据的暂存属性 */
-  private attrTableToJsonData = null
-
-  private fullScreen = false
-
-  private useScrollX = false
-
-  private scrollY = 0
-
-  private isActive = true
-
   private get selectedRowKeys() {
     return this.selection.map(
-      (item) => (item as GFeature).properties[this.rowKey]
+      item => (item as GFeature).properties[this.rowKey]
     )
-  }
-
-  private get rowKey() {
-    const { serverType } = this.optionVal
-    if (
-      serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
-    ) {
-      return 'fid'
-    } else if (serverType === LayerType.ArcGISMapImage) {
-      return 'ID'
-    } else if (this.isIGSScence) {
-      return 'FID'
-    }
-    return 'fid'
   }
 
   private get selectedDescription() {
@@ -320,7 +238,7 @@ export default class MpAttributeTable extends Mixins(
   }
 
   private get visibleColumns() {
-    return this.tableColumns.filter((col) => col.visible)
+    return this.tableColumns.filter(col => col.visible)
   }
 
   private get highlightStyle() {
@@ -333,6 +251,20 @@ export default class MpAttributeTable extends Mixins(
       : this.$refs.ref3dMarkerPlotting
   }
 
+  private get dataFlowList() {
+    return DataFlowList
+  }
+
+  private get getDataFLowList() {
+    const { serverType } = this.optionVal
+    if (serverType === LayerType.DataFlow) {
+      const features = this.dataFlowList.getDataFlowById(this.optionVal.id)
+      return features || []
+    }
+    return []
+  }
+
+  @Watch('getDataFLowList', { deep: true })
   @Watch('optionVal', { deep: true, immediate: true })
   optionChange() {
     this.clearSelection()
@@ -411,13 +343,13 @@ export default class MpAttributeTable extends Mixins(
     const height = bound.ymax - bound.ymin
     const center = {
       x: (bound.xmin + bound.xmax) / 2,
-      y: (bound.ymin + bound.ymax) / 2,
+      y: (bound.ymin + bound.ymax) / 2
     }
     bound = {
       xmin: center.x - width,
       ymin: center.y - height,
       xmax: center.x + width,
-      ymax: center.y + height,
+      ymax: center.y + height
     }
     this.fitBound = { ...(bound as Record<string, number>) }
   }
@@ -426,8 +358,13 @@ export default class MpAttributeTable extends Mixins(
     this.query()
   }
 
+  /* 属性表导出选择器 */
+  private async handleMenuClick(type) {
+    await this.jsonFile(type.key)
+  }
+
   /* 结果集属性列表导出为json数据 */
-  private async jsonFile() {
+  private async jsonFile(type) {
     const val = '1'
     const where = ''
     const datetime = Date.now()
@@ -446,10 +383,13 @@ export default class MpAttributeTable extends Mixins(
       jsonDataList.push(element.properties)
     }
     /* csv文件下载 */
-    await this.exportCSV(JSON.parse(JSON.stringify(jsonDataList)))
-    jsonData.data = jsonDataList
-    const blob = new Blob([JSON.stringify(jsonData)])
-    await FileSaver.saveAs(blob, `attrData_${datetime}.json`)
+    if (type === 'csvData') {
+      await this.exportCSV(JSON.parse(JSON.stringify(jsonDataList)))
+    } else if (type === 'jsonData') {
+      jsonData.data = jsonDataList
+      const blob = new Blob([JSON.stringify(jsonData)])
+      await FileSaver.saveAs(blob, `attrData_${datetime}.json`)
+    }
   }
 
   /* json数据转换成csv文件导出 */
@@ -457,7 +397,7 @@ export default class MpAttributeTable extends Mixins(
     const parser = new this.Json2csvParser()
     const csvData = parser.parse(data)
     const blob = new Blob([`\uFEFF${csvData}`], {
-      type: 'text/plain;charset=utf-8;',
+      type: 'text/plain;charset=utf-8;'
     })
     const datetime = Date.now()
     await FileSaver.saveAs(blob, `attrData_${datetime}.csv`)
@@ -507,7 +447,7 @@ export default class MpAttributeTable extends Mixins(
       zmin: -100000,
       xmax,
       ymax,
-      zmax: 100000,
+      zmax: 100000
     }
     // 分页初始化到第一页
     this.pagination.current = 1
@@ -534,6 +474,7 @@ export default class MpAttributeTable extends Mixins(
       )
     } catch (error) {
       const e = error as Error
+      console.error(e)
       this.$message.warning('请求失败！')
     } finally {
       this.loading = false
@@ -541,271 +482,23 @@ export default class MpAttributeTable extends Mixins(
     }
   }
 
-  /* val默认传参供attrTableToJsonData函数使用，传入val=“1”表示请求当前图层全部数据 */
-  private async queryGeoJSON(
-    geometry: Record<string, unknown> | undefined,
-    where: string | undefined,
-    val = '0'
-  ) {
-    this.currentTableParams = { ...this.optionVal }
-    const { ip, port, serverName, serverType, serverUrl } = this.optionVal
-    if (
-      serverType === LayerType.IGSMapImage ||
-      serverType === LayerType.IGSVector
-    ) {
-      const { layerIndex, gdbp } = this.optionVal
-      const queryWhere = where || this.optionVal.where
-      const queryGeometry = geometry || this.optionVal.geometry
-      const { current, pageSize } = this.pagination
-      // TODO
-      const { AttStruct, TotalCount } = await this.queryCount(
-        queryGeometry,
-        queryWhere
-      )
-      if (!(this.tableColumns && this.tableColumns.length > 0)) {
-        const columns = this.setTableScroll(AttStruct)
-        this.tableColumns = columns
-      }
-      this.pagination.total = TotalCount
-      const geojson = await FeatureQuery.query({
-        ip,
-        port: port.toString(),
-        f: 'geojson',
-        where: queryWhere,
-        geometry: queryGeometry,
-        page: val === '1' ? 0 : current - 1,
-        pageCount: val === '1' ? this.pagination.total : pageSize,
-        gdbp,
-        docName: serverName,
-        layerIdxs: layerIndex,
-        coordPrecision: 8,
-      })
-      if (val === '1') {
-        this.attrTableToJsonData = geojson.features
-        return
-      }
-      this.tableData = geojson.features
-      this.removeMarkers()
-      // 如果当前是激活状态，则添加markers
-      if (this.isExhibitionActive) {
-        await this.addMarkers()
-      }
-    } else if (serverType === LayerType.ArcGISMapImage) {
-      const { layerIndex, gdbp } = this.optionVal
-      const queryWhere = where || this.optionVal.where
-      const queryGeometry = geometry || this.optionVal.geometry
-      const { current, pageSize } = this.pagination
-      const { count: totalCount } = await ArcGISFeatureQuery.getTotal({
-        f: 'pjson',
-        where: queryWhere,
-        geometry: queryGeometry,
-        serverUrl,
-        layerIndex,
-      })
-      this.pagination.total = totalCount
-      const geojson = await ArcGISFeatureQuery.query({
-        f: 'pjson',
-        where: queryWhere,
-        geometry: queryGeometry,
-        page: val === '1' ? 0 : current - 1,
-        pageCount: val === '1' ? this.pagination.total : pageSize,
-        serverUrl,
-        layerIndex,
-        totalCount,
-      })
-      if (val === '1') {
-        this.attrTableToJsonData = geojson.feature
-        return
-      }
-      this.tableData = geojson.features
-      const columns: Array = []
-      const { properties } = geojson.features[0]
-      const tags = Object.keys(properties)
-      if (tags.length <= 10) {
-        // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
-        this.useScrollX = false
-      } else {
-        // 10个以上，每个设固定宽度180，且启用水平滚动条
-        this.useScrollX = true
-      }
-      if (!(this.tableColumns && this.tableColumns.length > 0)) {
-        for (let index = 0; index < tags.length; index++) {
-          const name = tags[index]
-          const alias = tags[index] ? `${tags[index]}` : ''
-          const type = 'string'
-          const obj = {
-            title: alias.length ? alias : name,
-            key: name,
-            dataIndex: `properties.${name}`,
-            align: 'left',
-            ellipsis: true,
-          }
-          if (this.useScrollX) {
-            obj.width = 180
-          }
-          // var str = '37'
-          const num = Number(properties[name])
-          if (!isNaN(num)) {
-            obj.sorter = (a, b) =>
-              Number(a.properties[name]) - Number(b.properties[name])
-          }
-          columns.push(obj)
-        }
-        this.tableColumns = columns
-      }
-      this.pagination.total = totalCount
-      this.removeMarkers()
-      // 如果当前是激活状态，则添加markers
-      if (this.isExhibitionActive) {
-        await this.addMarkers()
-      }
-    } else if (serverType === LayerType.IGSScene) {
-      // 查找矩阵集
-      const source = this.sceneController.findSource(this.optionVal.id)
-      const { gdbp } = this.optionVal
-      const queryWhere = where || this.optionVal.where
-      const queryGeometry = geometry
-        ? this.getGeometry3D(source)
-        : this.optionVal.geometry
-      const { current, pageSize } = this.pagination
-      const json = await FeatureQuery.query(
-        {
-          ip,
-          port: port.toString(),
-          where: queryWhere,
-          geometry: queryGeometry,
-          page: current - 1,
-          pageCount: pageSize,
-          gdbp,
-          coordPrecision: 8,
-          rtnLabel: false,
-        },
-        false,
-        serverType === LayerType.IGSScene
-      )
-      const { AttStruct, SFEleArray = [], TotalCount } = json
-      this.pagination.total = TotalCount
-      if (val === '1') {
-        const jsonData = await FeatureQuery.query(
-          {
-            ip,
-            port: port.toString(),
-            where: queryWhere,
-            geometry: queryGeometry,
-            page: 0,
-            pageCount: this.pagination.total,
-            gdbp,
-            coordPrecision: 8,
-            rtnLabel: false,
-          },
-          false,
-          serverType === LayerType.IGSScene
-        )
-        const { AttStruct, SFEleArray = [], TotalCount } = jsonData
-        this.tableData = (SFEleArray || []).map(
-          ({ AttValue = [], bound = {}, FID }) => {
-            let boundObj = null
-            if (source) {
-              const tranform = source.root.transform
-              boundObj = this.sceneController.localExtentToGlobelExtent(
-                bound,
-                tranform
-              )
-            }
-            const properties = {
-              FID,
-              specialLayerId: this.optionVal.id,
-              specialLayerBound: boundObj,
-            }
-            for (let index = 0; index < FldNumber; index++) {
-              const name = FldName[index]
-              const value = AttValue[index]
-              properties[name] = value
-            }
-            return {
-              geometry: {
-                coordinates: [],
-                type: '3DPolygon',
-              },
-              properties,
-            }
-          }
-        )
-      }
-      const { FldNumber = 0, FldName = [] } = AttStruct
-      if (!(this.tableColumns && this.tableColumns.length > 0)) {
-        const columns = this.setTableScroll(AttStruct)
-        this.tableColumns = columns
-      }
-      this.tableData = (SFEleArray || []).map(
-        ({ AttValue = [], bound = {}, FID }) => {
-          let boundObj = null
-          if (source) {
-            const tranform = source.root.transform
-            boundObj = this.sceneController.localExtentToGlobelExtent(
-              bound,
-              tranform
-            )
-          }
-          const properties = {
-            FID,
-            specialLayerId: this.optionVal.id,
-            specialLayerBound: boundObj,
-          }
-          for (let index = 0; index < FldNumber; index++) {
-            const name = FldName[index]
-            const value = AttValue[index]
-            properties[name] = value
-          }
-          return {
-            geometry: {
-              coordinates: [],
-              type: '3DPolygon',
-            },
-            properties,
-          }
-        }
-      )
-      this.removeMarkers()
-      // 如果当前是激活状态，则添加markers
-      if (this.isExhibitionActive) {
-        await this.addMarkers()
-      }
-    }
-  }
-
-  private getGeometry3D(source) {
-    if (source) {
-      const transform = source.root.transform
-      const { xmin, ymin, xmax, ymax, zmin, zmax } = this.geometry3D
-      const minPosition = this.sceneController.globelPositionToLocalPosition(
-        { x: xmin, y: ymin, z: zmin },
-        transform
-      )
-      const maxPosition = this.sceneController.globelPositionToLocalPosition(
-        { x: xmax, y: ymax, z: zmax },
-        transform
-      )
-      return new Rectangle3D(
-        minPosition.x,
-        minPosition.y,
-        zmin,
-        maxPosition.x,
-        maxPosition.y,
-        zmax
-      )
-    }
-
-    return undefined
-  }
-
   private setTableScroll(AttStruct) {
-    const columns: Array = []
+    const columns: Array = [
+      {
+        title: this.rowKey,
+        key: this.rowKey,
+        dataIndex: `properties.${this.rowKey}`,
+        align: 'left',
+        // 超过宽度将自动省略
+        ellipsis: true,
+        width: 180
+      }
+    ]
     const {
       FldNumber = 0,
       FldName = [],
       FldAlias = [],
-      FldType = [],
+      FldType = []
     } = AttStruct
     // 根据字段数计算useScrollX
     if (FldNumber <= 10) {
@@ -826,7 +519,7 @@ export default class MpAttributeTable extends Mixins(
         dataIndex: `properties.${name}`,
         align: 'left',
         // 超过宽度将自动省略
-        ellipsis: true,
+        ellipsis: true
       }
       if (this.useScrollX) {
         obj.width = 180
@@ -840,32 +533,13 @@ export default class MpAttributeTable extends Mixins(
                   a.properties[name],
                   b.properties[name],
                   type
-                ),
+                )
             }
           : obj
       )
     }
 
     return columns
-  }
-
-  private async queryCount(geometry?: Record<string, any>, where?: string) {
-    const { ip, port, serverName } = this.optionVal
-    const { layerIndex, gdbp } = this.optionVal
-    const featureSet = await FeatureQuery.query({
-      ip,
-      port: port.toString(),
-      f: 'json',
-      IncludeAttribute: false,
-      IncludeGeometry: false,
-      IncludeWebGraphic: false,
-      geometry,
-      where,
-      gdbp,
-      docName: serverName,
-      layerIdxs: layerIndex,
-    })
-    return featureSet
   }
 
   // 只有数字类型才会添加排序功能
@@ -877,7 +551,7 @@ export default class MpAttributeTable extends Mixins(
       'LONG',
       'FLOAT',
       'DOUBLE',
-      'BINARY',
+      'BINARY'
     ]
     const timeArr: Array<string> = ['TIME', 'DATE', 'TIMESTAMP']
     if (numberArr.includes(type.toUpperCase())) {
@@ -899,7 +573,7 @@ export default class MpAttributeTable extends Mixins(
   private async hightlightSelectionMarkers() {
     const selectIcon = await markerIconInstance.selectIcon()
     const unSelectIcon = await markerIconInstance.unSelectIcon()
-    this.markers.forEach((marker) => {
+    this.markers.forEach(marker => {
       if (this.selectedRowKeys.includes(marker.fid)) {
         marker.img = selectIcon
       } else {
@@ -924,14 +598,14 @@ export default class MpAttributeTable extends Mixins(
           xmin: bound.xmin < prev.xmin ? bound.xmin : prev.xmin,
           ymin: bound.ymin < prev.ymin ? bound.ymin : prev.ymin,
           xmax: bound.xmax > prev.xmax ? bound.xmax : prev.xmax,
-          ymax: bound.ymax > prev.ymax ? bound.ymax : prev.ymax,
+          ymax: bound.ymax > prev.ymax ? bound.ymax : prev.ymax
         }
       },
       {
         xmin: Number.MAX_VALUE,
         ymin: Number.MAX_VALUE,
         xmax: Number.MIN_VALUE,
-        ymax: Number.MIN_VALUE,
+        ymax: Number.MIN_VALUE
       }
     )
   }
@@ -965,8 +639,8 @@ export default class MpAttributeTable extends Mixins(
           coordinates: center,
           fid: feature.properties[this.rowKey],
           img: unSelectIcon,
-          properties: feature.properties,
-          feature: feature,
+          properties: this.setPropertiesAlias(feature.properties),
+          feature: feature
         }
         tempMarkers.push(marker)
       }
@@ -981,11 +655,38 @@ export default class MpAttributeTable extends Mixins(
       }
     }
     this.markers = [...tempMarkers]
+
+    ActiveResultSet.activeResultSet = {
+      type: 'FeatureCollection',
+      features: this.tableData,
+      id: this.optionVal.id
+    }
+    console.log(ActiveResultSet.activeResultSet)
+  }
+
+  /**
+   * 将弹窗的key设置成别名
+   * 这里images字段不能用别名，弹窗组件需要通过images字段添加图片
+   */
+  setPropertiesAlias(properties) {
+    const obj = {}
+    for (const key in properties) {
+      if (Object.prototype.hasOwnProperty.call(properties, key)) {
+        const value = properties[key]
+        const column = this.tableColumns.find(item => item.key === key)
+        if (column && key !== 'images') {
+          obj[column.title] = value
+        } else {
+          obj[key] = value
+        }
+      }
+    }
+    return obj
   }
 
   getModelHeight(tempMarkers: Array<unknown>) {
     return new Promise((resolve, reject) => {
-      const positions = tempMarkers.map((item) => {
+      const positions = tempMarkers.map(item => {
         return new this.Cesium.Cartesian3.fromDegrees(
           item.coordinates[0],
           item.coordinates[1]
@@ -995,7 +696,7 @@ export default class MpAttributeTable extends Mixins(
         this.viewer,
         positions,
         'model',
-        (elevationPosition) => {
+        elevationPosition => {
           if (elevationPosition && elevationPosition.length > 0) {
             resolve(elevationPosition)
           } else {
@@ -1034,14 +735,14 @@ export default class MpAttributeTable extends Mixins(
         serverName: this.optionVal.serverName,
         layerIndex: this.currentTableParams.layerIndex,
         serverType,
-        gdbp,
+        gdbp
       }
     } else if (serverType === LayerType.ArcGISMapImage) {
       this.statisticAndFilterParamas = {
         serverName: this.optionVal.serverName,
         layerIndex: this.currentTableParams.layerIndex,
         serverType,
-        serverUrl,
+        serverUrl
       }
     }
   }

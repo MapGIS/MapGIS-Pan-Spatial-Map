@@ -16,6 +16,8 @@ import {
   VectorTileLayer,
   IGSSceneLayer,
   DataFlowLayer,
+  IGSFeatureLayer,
+  GeoJsonLayer,
   UUID,
   Catalog,
   UrlUtil
@@ -164,6 +166,24 @@ export class DataCatalogManager {
         }
         layer = new IGSSceneLayer({ url })
         break
+      case LayerType.IGSFeature:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        }
+
+        layer = new IGSFeatureLayer({ url })
+        break
+      case LayerType.GeoJson:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          layer = new GeoJsonLayer({ ...layerConfig, url })
+        } else {
+          layer = new GeoJsonLayer(layerConfig)
+        }
+
+        break
+
       default:
         break
     }
@@ -824,6 +844,9 @@ export class DataCatalogManager {
         break
       case this.layerServiceType.DATAFLOW:
         serverType = LayerType.DataFlow
+        break
+      case this.layerServiceType.GEOJSON:
+        serverType = LayerType.GeoJson
         break
       default:
         break
