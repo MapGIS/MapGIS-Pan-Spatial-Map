@@ -1,13 +1,13 @@
 <template>
   <div class="attribute-popup-content-wrapper">
-    <a-list
+    <mapgis-ui-list
       item-layout="horizontal"
       :data-source="propertyKeys"
       size="small"
       class="table-marker"
       bordered
     >
-      <a-list-item
+      <mapgis-ui-list-item
         slot="renderItem"
         slot-scope="item"
         class="table-marker-item"
@@ -19,34 +19,38 @@
         <div :title="properties[item]">
           {{ properties[item] }}
         </div>
-      </a-list-item>
-    </a-list>
-    <div class="iot-enclosure-title">附件</div>
-    <ul class="iot-enclosure-container">
-      <li title="非结构化文件">
-        <mapgis-ui-iconfont
-          @click="clickIot(101)"
-          type="mapgis-feijiegouhuawenjian"
-        ></mapgis-ui-iconfont>
-      </li>
-      <li title="传感器">
-        <mapgis-ui-iconfont
-          @click="clickIot(301)"
-          type="mapgis-a-iotDevicechuanganqi"
-        ></mapgis-ui-iconfont>
-      </li>
-    </ul>
-    <a-modal
+      </mapgis-ui-list-item>
+    </mapgis-ui-list>
+    <!-- 如果存在实体编码entityCode字段，则暂时附件按钮 -->
+    <template v-if="entityCode">
+      <div class="iot-enclosure-title">附件</div>
+      <ul class="iot-enclosure-container">
+        <li title="非结构化文件">
+          <mapgis-ui-iconfont
+            @click="clickIot(101)"
+            type="mapgis-feijiegouhuawenjian"
+          ></mapgis-ui-iconfont>
+        </li>
+        <li title="传感器">
+          <mapgis-ui-iconfont
+            @click="clickIot(301)"
+            type="mapgis-a-iotDevicechuanganqi"
+          ></mapgis-ui-iconfont>
+        </li>
+      </ul>
+    </template>
+
+    <mapgis-ui-modal
       v-model="showModal"
-      :closable="false"
       :footer="null"
       :width="600"
       :centered="true"
-      :bodyStyle="{ padding: '10px' }"
+      class="attribute-model"
+      :bodyStyle="{ padding: '30px 10px 10px' }"
       :destroyOnClose="true"
     >
-      <iot-detail :toType="toType" />
-    </a-modal>
+      <iot-detail v-if="entityCode" :toType="toType" :entityCode="entityCode" />
+    </mapgis-ui-modal>
   </div>
 </template>
 
@@ -72,8 +76,20 @@ export default {
   computed: {
     // 根据filedConfigs做一个过滤，去除不可见的
     propertyKeys() {
-      const keys = Object.keys(this.properties)
+      const keys = []
+      for (const key in this.properties) {
+        // 不展示关联的实体编码
+        if (key !== 'entityCode') {
+          keys.push(key)
+        }
+      }
       return keys
+    },
+    /**
+     * 获取实体编码，实体编码存在的时候，展示预览界面
+     */
+    entityCode() {
+      return this.properties.entityCode
     }
   },
   methods: {
@@ -85,7 +101,14 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
+.attribute-model {
+  .mapgis-ui-modal-close-x {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+  }
+}
 .attribute-popup-content-wrapper {
   .table-marker {
     max-height: 130px;

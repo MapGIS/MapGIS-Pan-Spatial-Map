@@ -1,19 +1,19 @@
 <template>
-  <div>
+  <mapgis-ui-spin :spinning="loading">
     <div class="iot-detail-title">
       <h3>附件</h3>
-      <a-radio-group v-model="isList" button-style="solid" size="small">
-        <a-radio-button :value="true">
+      <mapgis-ui-radio-group v-model="isList" button-style="solid" size="small">
+        <mapgis-ui-radio-button :value="true">
           <mapgis-ui-iconfont type="mapgis-unorderedlist" />
-        </a-radio-button>
-        <a-radio-button :value="false">
+        </mapgis-ui-radio-button>
+        <mapgis-ui-radio-button :value="false">
           <mapgis-ui-iconfont type="mapgis-table" />
-        </a-radio-button>
-      </a-radio-group>
+        </mapgis-ui-radio-button>
+      </mapgis-ui-radio-group>
     </div>
     <mp-file-preview :isList="isList" :files="files" />
     <div class="iot-detail-pagination">
-      <a-pagination
+      <mapgis-ui-pagination
         size="small"
         v-model="current"
         show-size-changer
@@ -21,15 +21,20 @@
         :total="total"
       />
     </div>
-  </div>
+  </mapgis-ui-spin>
 </template>
 
 <script>
 import axios from 'axios'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 export default {
   name: 'IotDetail',
   props: {
+    entityCode: {
+      type: String,
+      default: ''
+    },
     toType: {
       type: Number,
       default: 1
@@ -41,7 +46,8 @@ export default {
       current: 1,
       pageSize: 10,
       total: 0,
-      files: []
+      files: [],
+      loading: false
     }
   },
   mounted() {
@@ -50,11 +56,13 @@ export default {
   methods: {
     async getData() {
       let arr = []
+      this.loading = true
       try {
         const res = await axios.get(
-          'http://192.168.96.101:9014/datastore/rest/services/dataset/relations',
+          `http://${baseConfigInstance.config.DataStoreIp}:${baseConfigInstance.config.DataStorePort}/datastore/rest/services/dataset/relations`,
           {
             params: {
+              fromID: this.entityCode,
               fromType: 1,
               toType: this.toType,
               pageNo: this.current,
@@ -66,6 +74,7 @@ export default {
           const {
             data: { total, rtn }
           } = res.data
+          this.total = total
           if (rtn) {
             switch (this.toType) {
               case 101:
@@ -82,6 +91,7 @@ export default {
       } catch (error) {
       } finally {
         this.files = arr
+        this.loading = false
       }
     },
     fileDataStore(rtn) {
@@ -102,11 +112,11 @@ export default {
     },
     iotDevice(rtn) {
       const arr = []
-      rtn.forEach(({ toDataUrl, toExtInfo, id }) => {
+      rtn.forEach(({ toDataUrl, toExtInfo, toID }) => {
         const { ip, port, provider } = JSON.parse(toExtInfo)
         const url = `http://${ip}:${port}/datastore/rest/services/dataset/${provider}${toDataUrl}/iots/devices/videos`
         arr.push({
-          name: id,
+          name: toID,
           type: 'hls',
           url
         })
