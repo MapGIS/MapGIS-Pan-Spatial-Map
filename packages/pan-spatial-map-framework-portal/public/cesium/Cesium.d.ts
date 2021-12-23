@@ -24503,6 +24503,14 @@ export class AlgorithmLib {
      */
     static getTransform(longitude: number, latitude: number, height: number): Matrix4;
     /**
+     * 计算屏幕坐标相对于地表某点垂直（或平行方向XY）的位置
+     * @param viewer - 视图
+     * @param point - 地表点
+     * @param windowPosition - 屏幕坐标
+     * @returns 与经过地表点的垂直地表的平面的交点,endPositionX表示X方向(经线方向)的面的交点位置(世界坐标)，endPositionY表示Y方向(纬线方向)的面的交点位置(世界坐标)，XYZLocPosition表示在地表点坐标系下局部坐标系XYZ方向的坐标
+     */
+    static getEastNorthUpXYZ(viewer: number, point: Cartesian3, windowPosition: Cartesian2): any;
+    /**
      * 获取当前场景下，每米占据多少个像素值
      * @returns pixel/m
      */
@@ -24555,6 +24563,20 @@ export class AlgorithmLib {
      * @returns Intersect.OUTSIDE, Intersect.INTERSECTING, or Intersect.INSIDE表示完全包围、相交和在外部.false表示计算失败
      */
     static computeTileInPolygon(tile: MapGISM3DSet[], positions: Cartesian3[]): Intersect | false;
+    /**
+     * 射线求交
+     * @param [options.direction] - 方向向量，传入该参数时后续方向参数无效
+     * @param [options.heading = 0] - 方位角
+     * @param [options.pitch = 0] - 俯仰角
+     * @param [options.distance] - 传入该值，则射线求交无结果时返回方向上该距离的点
+     * @returns 返回射线物体相交的第一个交点坐标，没有交点则返回undefined
+     */
+    static pickFromRay(scene: Scene, viewPosition: Cartesian3, options: {
+        direction?: Cartesian3;
+        heading?: number;
+        pitch?: number;
+        distance?: number;
+    }): Cartesian3 | undefined;
 }
 
 /**
@@ -24593,6 +24615,7 @@ export class CesiumHeatmap {
      * @param [options.minOpacity = 0.1] - 如果未在热图选项对象中给出，则使用的最小不透明度
      * @param [options.blur = 0.85] - 如果未在热力图选项对象中给出，则使用的模糊值为0.85
      * @param [options.gradient = {'0.3':'rgb(0,0,255)','0.65':'yellow','0.8':'orange','0.95':'red'}] - 热力图颜色梯度
+     * @param [options.canChange = true] - 默认自动重算热力半径
      * @returns 返回heatmap的实例化对象
      */
     static create(viewer: Viewer, boundingbox: Rectangle, options: {
@@ -24604,6 +24627,7 @@ export class CesiumHeatmap {
         minOpacity?: number;
         blur?: number;
         gradient?: number;
+        canChange?: boolean;
     }): any;
     /**
      * Convert a mercator location into a WGS84 location
@@ -24863,6 +24887,26 @@ export class SceneProjector {
      * 投影多边形
      */
     polygon: Cartesian3[];
+    /**
+     * 方位角
+     */
+    heading: number;
+    /**
+     * 俯仰角
+     */
+    pitch: number;
+    /**
+     * 翻滚角
+     */
+    roll: number;
+    /**
+     * 水平广角
+     */
+    horizontAngle: number;
+    /**
+     * 竖直广角
+     */
+    verticalAngle: number;
 }
 
 /**
@@ -25097,8 +25141,8 @@ export class VisiblityAnalysis {
 
 /**
  * @param options.viewer - 视图对象
- * @param options.positions - 顶点集
- * @param options.attributes - 属性列表
+ * @param options.pnts - 顶点集
+ * @param options.uvs - 纹理坐标
  * @param options.attSpan - 属性跨度
  * @param [options.width = 20] - 面默认大小
  * @param [options.alpha = 1.0] - 初始化半透明参数
@@ -25106,8 +25150,8 @@ export class VisiblityAnalysis {
 export class AttributeSurfacePrimitive {
     constructor(options: {
         viewer: any;
-        positions: Cartesian3[];
-        attributes: number[];
+        pnts: Cartesian3[][];
+        uvs: number[];
         attSpan: number;
         width?: number;
         alpha?: number;
@@ -25121,6 +25165,16 @@ export class AttributeSurfacePrimitive {
      */
     readonly primitive: Primitive;
     /**
+     * 方向索引
+     */
+    curIndex: number;
+    /**
+     * 纹理图片
+     * @example
+     * var image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAABCAYAAAAxWXB3AAAAAXNSR0IArs4c6QAAAHtJREFUOE/VksEOgDAMQqH7/08emNZGPUxPevCwZC/NOgJQhBVAHg9i0nVfchAzLvNkGh7AzPdfMk999d/PWATU/qb+t1iXvHL/E6/ylbGHrQA94DT2lgPOoI95cgVRBaC/ZJ76ugCH3j+wCKr97QK8wlWkzi/3P/Ei3w1kckASHtTExwAAAABJRU5ErkJggg==';
+     */
+    image: string;
+    /**
      * 加入渲染队列
      */
     add(): void;
@@ -25128,6 +25182,200 @@ export class AttributeSurfacePrimitive {
      * 移出渲染队列
      */
     remove(): void;
+}
+
+/**
+ * 图元
+ * @example
+ * var graphic = new Graphic({type:label,style:{text:'mapgis'}});
+ * @param viewer - 场景视图
+ * @param [options.type] - 图元类型{@link Graphic.graphicType}
+ * @param [options.id] - 图元ID
+ * @param [options.positions] - 图元坐标信息
+ * @param [options.style] - 图元样式信息 详情参见{@link Style}
+ * @param [options.editPointStyle] - 编辑点样式信息 详情参见{@link Style.EditPointStyle}
+ * @param [options.attributes] - 图元属性
+ * @param [options.name] - 图元名称
+ * @param [options.show = true] - 图元是否显示
+ * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
+ * @param [heading = 0.0] - 偏航角，弧度。
+ * @param [pitch = 0.0] - 俯仰角，弧度。
+ * @param [roll = 0.0] - 翻滚角，弧度。
+ * @param [transformX = 0.0] - 局部坐标系X方向平移量，单位米，X方向为纬线方向
+ * @param [transformY = 0.0] - 局部坐标系Y方向平移量，单位米，Y方向为经线方向
+ * @param [transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
+ */
+export class Graphic {
+    constructor(viewer: Viewer, options: {
+        type?: string;
+        id?: string;
+        positions?: Cartesian3[] | number[];
+        style?: any;
+        editPointStyle?: any;
+        attributes?: any;
+        name?: string;
+        show?: boolean;
+        asynchronous?: boolean;
+    }, heading?: number, pitch?: number, roll?: number, transformX?: number, transformY?: number, transformZ?: number);
+    /**
+     * 图元类型 参照{@link Graphic.graphicType}
+     */
+    readonly type: string;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 图形实体位置数组
+     */
+    positions: Cartesian3[];
+    /**
+     * 图元对象旋转平移矩阵
+     */
+    readonly modelMatrix: Matrix4;
+    /**
+     * 图元对象样式信息
+     * @example
+     * var graphic = new Graphic({type:label,style:{text:'mapgis'}});
+     * graphic.style.text = 'mapgispro';
+     */
+    style: Style;
+    /**
+     * 图形对象属性键值对
+     */
+    readonly attributes: any;
+    /**
+     * 图形对象名称
+     */
+    name: number;
+    /**
+     * 获取图形对象ID
+     */
+    readonly show: string;
+    /**
+     * 图形对象是否在编辑状态
+     */
+    editing: boolean;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 图形对象是否阻塞更新，一般设置为false避免更新时闪烁
+     */
+    asynchronous: boolean;
+    /**
+     * 图形对象偏航角，弧度。
+     */
+    heading: number;
+    /**
+     * 图形对象俯仰角，弧度。
+     */
+    pitch: number;
+    /**
+     * 图形对象翻滚角，弧度。
+     */
+    roll: number;
+    /**
+     * 图形对象局部坐标系X方向平移量，单位米，X方向为纬线方向
+     */
+    transformX: number;
+    /**
+     * 图形对象局部坐标系y方向平移量，单位米，y方向为经线方向
+     */
+    transformY: number;
+    /**
+     * 图形对象局部坐标系z方向平移量，单位米，z方向为垂直地表方向
+     */
+    transformZ: number;
+    /**
+     * 图形对象primitive
+     */
+    readonly primitive: Primitive;
+    /**
+     * 给图元添加属性字段
+     * @param key - 关键字
+     * @param value - 值
+     */
+    addAttributes(key: string, value: string | any): void;
+    /**
+     * 添加到图层上，同 layer.addGraphic （暂未实现）
+     * @param layer - 图层对象
+     */
+    addTo(layer: GraphicsLayer): void;
+    /**
+     * 从视图窗口中移除图元
+     */
+    remove(): void;
+    /**
+     * 图元类型
+     * @property [point = 'point'] - 点，类型（type）为point时样式参数参照{@link Style.PointStyle}
+     * @property [label = 'label'] - 文本,类型（type）为label时样式参数参照{@link Style.LabelStyle}
+     * @property [billboard = 'billboard'] - 广告牌，图标类型(type)为billboard时样式参数参照{@link Style.BillboardStyle}
+     * @property [polyline = 'polyline'] - 线，图标类型(type)为polyline时样式参数参照{@link Style.PolylineStyle}
+     * @property [polylineVolume = 'polylineVolume'] - 圆管线，图标类型(type)为polylineVolume时样式参数参照{@link Style.PolylineVolumeStyle}
+     * @property [polygon = 'polygon'] - 面（区），图标类型(type)为polygon时样式参数参照{@link Style.PolygonStyle}
+     * @property [rectangle = 'rectangle'] - 矩形，图标类型(type)为rectangle时样式参数参照{@link Style.RectangleStyle}
+     * @property [circle = 'circle'] - 圆，图标类型(type)为circle时样式参数参照{@link Style.CircleStyle}
+     * @property [corridor = 'corridor'] - 方管线，图标类型(type)为corridor时样式参数参照{@link Style.CorridorStyle}
+     * @property [cylinder = 'cylinder'] - 圆台（圆锥），图标类型(type)为cylinder时样式参数参照{@link Style.CylinderStyle}
+     * @property [ellipsiod = 'ellipsiod'] - 球，图标类型(type)为ellipsiod时样式参数参照{@link Style.EllipsiodStyle}
+     * @property [wall = 'wall'] - 墙，图标类型(type)为wall时样式参数参照{@link Style.WallStyle}
+     * @property [box = 'box'] - 盒子,类型（type）为box时样式参数参照{@link Style.BoxStyle}
+     */
+    static graphicType: {
+        point?: string;
+        label?: string;
+        billboard?: string;
+        polyline?: string;
+        polylineVolume?: string;
+        polygon?: string;
+        rectangle?: string;
+        circle?: string;
+        corridor?: string;
+        cylinder?: string;
+        ellipsiod?: string;
+        wall?: string;
+        box?: string;
+    };
+}
+
+/**
+ * 标绘使用的 box
+ * @example
+ * var PlottingBox = new PlottingBox(viewer, position, {id:'111',color:Color.BLUE,arcType:ArcType.RHUMB});
+ * @param viewer - 场景视图
+ * @param positions - 顶点集，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.id = createGuid()] - 盒子ID，默认创建随机ID。
+ * @param [options.color = Color.BLUE] - 盒子颜色。
+ * @param [options.arcType = ArcType.GEODESIC] - 盒子边界格式。大地GEODESIC或者恒向线RHUMB。
+ * @param [options.appearance] - 。
+ * @param [options.material] - 盒子材质。
+ * @param [options.allowPicking = true] - 是否允许鼠标事件选中。
+ * @param [options.height] - 盒子高度（当不贴地时才能设置）。
+ * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
+ */
+export class PlottingBox {
+    constructor(viewer: Viewer, positions: Cartesian3[], options: {
+        id?: string;
+        color?: Color;
+        arcType?: ArcType;
+        appearance?: any;
+        material?: any;
+        allowPicking?: boolean;
+        height?: number;
+        asynchronous?: boolean;
+    });
+    /**
+     * 图形对象拉伸高度属性
+     */
+    extrudedHeight: number;
+    /**
+     * 移除图形
+     * @returns 移除成功
+     */
+    remove(): boolean;
 }
 
 /**
@@ -25175,6 +25423,290 @@ export class PlottingCircle {
      * 图形对象是否可以选中
      */
     allowPicking: boolean;
+    /**
+     * 移除图形
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘使用的 PlottingCorridor(可拥有宽度，自定义折角类型，高度)
+ * @example
+ * var PlottingCorridor = new Cesium.PlottingCorridor(viewer, position, {id:'111',width:10,arcType:Cesium.ArcType.RHUMB});
+ * @param viewer - 场景视图
+ * @param positions - 顶点集，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.asynchronous = false] - 是否为阻塞式更新，默认false.
+ * @param [options.id = createGuid()] - 线段id，默认创建随机GUID。
+ * @param [options.arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
+ * @param [options.width = 1.0] - 线段宽度.
+ * @param [options.cornerType = CornerType.ROUNDED] - 折角类型 参见{@link CornerType}
+ * @param [options.height = 0] - 方管高度（高于地平面）
+ * @param [options.extrudedHeight] - 方管拉伸高度
+ * @param [options.material] - 材质。
+ * @param [options.translucent = true] - 是否半透明
+ */
+export class PlottingCorridor {
+    constructor(viewer: Viewer, positions: Cartesian3[], options: {
+        asynchronous?: string;
+        id?: string;
+        arcType?: ArcType;
+        width?: number;
+        cornerType?: CornerType;
+        height?: number;
+        extrudedHeight?: number;
+        material?: any;
+        translucent?: boolean;
+    });
+    /**
+     * 图形实体位置数组
+     */
+    positions: Cartesian3[];
+    /**
+     * 图形实体上表面高度（多边形体生效）
+     */
+    extrudedHeight: number;
+    /**
+     * 图形实体下表面高度
+     */
+    height: number;
+    /**
+     * 图形实体对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 图形对象是否开启深度检测
+     */
+    depthTest: boolean;
+    /**
+     * 移除图形
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘图形圆锥
+ * @example
+ * var PlottingCylinder = new Cesium.PlottingCylinder(viewer, position, {id:'111',pixelSize:15,isScaleByDistance:true});
+ * @param viewer - 场景视图
+ * @param position - 圆心点，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.id = createGuid()] - 点ID，默认创建随机ID。
+ * @param [options.pixelSize = 20.0] - 点大小，单位像素。
+ * @param [options.show = true] - 是否显示
+ * @param [options.isScaleByDistance = true] - 点大小是否随远近距离缩放。
+ * @param [options.NearFarScalar = new NearFarScalar(1.5e2, 1.0, 1.5e5, 0.5)] - 远近缩放比例，参见{@link NearFarScalar}
+ */
+export class PlottingCylinder {
+    constructor(viewer: Viewer, position: Cartesian3, options: {
+        id?: string;
+        pixelSize?: number;
+        show?: boolean;
+        isScaleByDistance?: boolean;
+        NearFarScalar?: any;
+    });
+    /**
+     * 图形实体位置
+     */
+    position: Cartesian3;
+    /**
+     * 图形实体长度
+     */
+    length: number;
+    /**
+     * 图形实体对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形是否可见
+     */
+    show: boolean;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 移除图形
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘图形椭球
+ * @example
+ * var PlottingEllipsoid = new PlottingEllipsoid(viewer, position, {id:'111',pixelSize:15,isScaleByDistance:true});
+ * @param viewer - 场景视图
+ * @param position - 圆心点，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.id = createGuid()] - 点ID，默认创建随机ID。
+ * @param [options.show = true] - 是否显示
+ * @param [options.height] - 椭球高度。
+ * @param [options.radius] - 椭球半径XYZ方向。
+ * @param [options.color = Color.BLUE] - 椭球颜色。
+ * @param [options.appearance] - 。
+ * @param [options.material] - 椭球材质。
+ * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
+ */
+export class PlottingEllipsoid {
+    constructor(viewer: Viewer, position: Cartesian3, options: {
+        id?: string;
+        show?: boolean;
+        height?: number;
+        radius?: Cartesian3;
+        color?: Color;
+        appearance?: any;
+        material?: any;
+        asynchronous?: boolean;
+    });
+    /**
+     * 图形实体位置
+     */
+    position: Cartesian3;
+    /**
+     * XYZ半径
+     */
+    radius: Cartesian3;
+    /**
+     * 图形实体对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形是否可见
+     */
+    show: boolean;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 移除图形
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘图形 文本
+ * @example
+ * var PlottingLabel = new Cesium.PlottingLabel(viewer, {position:position, id:'111'});
+ * @param viewer - 场景视图
+ * @param options - 参数配置
+ * @param [options.position] - 标注位置（世界坐标）
+ * //  * @param {Object}  [options.style] 标注样式，参见{@link Style.LabelStyle}
+ * @param [options.attributes] - 标注属性信息
+ */
+export class PlottingLabel {
+    constructor(viewer: Viewer, options: {
+        position?: Cartesian3;
+        attributes?: any;
+    });
+    /**
+     * 图形配置参数
+     */
+    options: any;
+    /**
+     * 文本位置
+     */
+    position: Cartesian3;
+    /**
+     * 图形类型
+     */
+    readonly type: string;
+    /**
+     * 文本内容
+     */
+    text: string;
+    /**
+     * 文本字体
+     */
+    font: string;
+    /**
+     * 文本填充颜色
+     */
+    fillColor: string | Color;
+    /**
+     * 文本边框颜色
+     */
+    outlineColor: string | Color;
+    /**
+     * 文本边框宽度（像素）
+     */
+    outlineWidth: number;
+    /**
+     * 是否显示文字背景
+     */
+    showBackground: boolean;
+    /**
+     * 文本背景颜色
+     */
+    backgroundColor: string | Color;
+    /**
+     * 文本背景偏移
+     */
+    backgroundPadding: number[];
+    /**
+     * 文本偏移（像素x,y）
+     */
+    pixelOffset: number[];
+    /**
+     * 文本偏移(坐标x,y)
+     */
+    eyeOffset: number[];
+    /**
+     * 标注水平方向放置位置(0表示中间，1表示右边，-1表示左边)
+     */
+    horizontalOrigin: number;
+    /**
+     * 标注水平方向放置位置(0表示中间，1表示下面，2表示在文字下面，-1表示上面)
+     */
+    verticalOrigin: number;
+    /**
+     * 标注缩放大小
+     */
+    scale: number;
+    /**
+     * 标注透明度随视距变化 以参数数组的形式输入{@link NearFarScalar}
+     */
+    translucencyByDistance: number[];
+    /**
+     * 按视距缩放像素大小 以参数数组的形式输入{@link NearFarScalar}
+     */
+    pixelOffsetScaleByDistance: number[] | boolean;
+    /**
+     * 位置高度 参数参考{@link heightReference} ， 0表示正常高度，1表示贴地，2表示地表以上高度
+     */
+    heightReference: number;
+    /**
+     * 图形实体对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形是否可见
+     */
+    show: boolean;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 是否编辑状态
+     */
+    editing: boolean;
     /**
      * 移除图形
      */
@@ -25234,7 +25766,7 @@ export class PlottingPoint {
  * @param [options.id = createGuid()] - 多边形ID，默认创建随机ID。
  * @param [options.classificationType = 'NONE'] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
  * @param [options.color = Color.BLUE] - 多边形颜色。
- * @param [options.stRotation = 0.0] - 多边形旋转角度。
+ * @param [options.stRotation = 0.0] - 多边形纹理旋转角度。
  * @param [options.extrudedHeight] - 多边形拉伸高度。
  * @param [options.closeTop = true] - 多边形体顶部是否闭合。（当定义extrudedHeight拉伸高度后生效）
  * @param [options.closeBottom = true] - 多边形体底部是否闭合。(当定义extrudedHeight拉伸高度后生效)
@@ -25326,6 +25858,10 @@ export class PlottingPolyline {
      */
     readonly primitive: any;
     /**
+     * 图形实体对象
+     */
+    readonly appearance: any;
+    /**
      * 图形ID
      */
     readonly id: string;
@@ -25340,12 +25876,582 @@ export class PlottingPolyline {
 }
 
 /**
- * 标绘图形基类
+ * 标绘使用的 PlottingPolylineVolume(可拥有宽度，自定义折角类型，高度)
+ * @example
+ * var PlottingPolylineVolume = new Cesium.PlottingPolylineVolume(viewer, position, {id:'111',width:10,arcType:Cesium.ArcType.RHUMB});
  * @param viewer - 场景视图
+ * @param positions - 顶点集，使用参数为世界坐标
  * @param options - 参数配置
+ * @param [options.asynchronous = false] - 是否为阻塞式更新，默认false.
+ * @param [options.id = createGuid()] - 线段id，默认创建随机GUID。
+ * @param [options.arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
+ * @param [options.width = 1.0] - 圆管宽度.
+ * @param [options.cornerType = CornerType.ROUNDED] - 折角类型 参见{@link CornerType}
+ * @param [options.height = 0] - 圆管高度（高于地平面）
+ * @param [options.materialType] - 材质类型
+ * @param [options.material] - 材质。
+ * @param [options.translucent = true] - 是否半透明
  */
-export class PlottingPrimitive {
-    constructor(viewer: Viewer, options: any);
+export class PlottingPolylineVolume {
+    constructor(viewer: Viewer, positions: Cartesian3[], options: {
+        asynchronous?: string;
+        id?: string;
+        arcType?: ArcType;
+        width?: number;
+        cornerType?: CornerType;
+        height?: number;
+        materialType?: any;
+        material?: any;
+        translucent?: boolean;
+    });
+    /**
+     * 图形实体位置数组
+     */
+    positions: Cartesian3[];
+    /**
+     * 图形实体上表面高度（多边形体生效）
+     */
+    width: number;
+    /**
+     * 图形实体对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 图形对象是否开启深度检测
+     */
+    depthTest: boolean;
+    /**
+     * 移除图形
+     */
+    remove(): void;
+}
+
+/**
+ * 标绘使用的 box
+ * @example
+ * var PlottingRectangle = new PlottingRectangle(viewer, position, {id:'111',color:Color.BLUE,arcType:ArcType.RHUMB});
+ * @param viewer - 场景视图
+ * @param positions - 顶点集，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.id = createGuid()] - 盒子ID，默认创建随机ID。
+ * @param [options.color = Color.BLUE] - 盒子颜色。
+ * @param [options.arcType = ArcType.GEODESIC] - 盒子边界格式。大地GEODESIC或者恒向线RHUMB。
+ * @param [options.appearance] - 。
+ * @param [options.material] - 盒子材质。
+ * @param [options.allowPicking = true] - 是否允许鼠标事件选中。
+ * @param [options.height] - 盒子高度（当不贴地时才能设置）。
+ * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
+ */
+export class PlottingRectangle {
+    constructor(viewer: Viewer, positions: Cartesian3[], options: {
+        id?: string;
+        color?: Color;
+        arcType?: ArcType;
+        appearance?: any;
+        material?: any;
+        allowPicking?: boolean;
+        height?: number;
+        asynchronous?: boolean;
+    });
+    /**
+     * 图形实体位置数组
+     */
+    positions: Cartesian3[];
+    /**
+     * 获取图形对象
+     */
+    readonly primitive: any;
+    /**
+     * 图形对象高度属性
+     */
+    extrudedHeight: number;
+    /**
+     * 获取图形对象ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 移除图形
+     * @returns 移除成功
+     */
+    remove(): boolean;
+}
+
+/**
+ * 标绘使用的 polygon
+ * @example
+ * var PlottingWall = new Cesium.PlottingWall(viewer, position, {id:'111',color:Cesium.Color.BLUE,arcType:Cesium.ArcType.RHUMB});
+ * @param viewer - 场景视图
+ * @param positions - 顶点集，使用参数为世界坐标
+ * @param options - 参数配置
+ * @param [options.id = createGuid()] - 墙ID，默认创建随机ID。
+ * @param [options.classificationType = 'NONE'] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
+ * @param [options.color = Color.BLUE] - 墙颜色。
+ * @param [options.extrudedHeight] - 墙拉伸高度。
+ * @param [options.arcType = ArcType.GEODESIC] - 墙边界格式。大地GEODESIC或者恒向线RHUMB。
+ * @param [options.appearance] - 。
+ * @param [options.material] - 墙材质。
+ * @param [options.allowPicking = true] - 是否允许鼠标事件选中。
+ * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
+ */
+export class PlottingWall {
+    constructor(viewer: Viewer, positions: Cartesian3[], options: {
+        id?: string;
+        classificationType?: boolean;
+        color?: Color;
+        extrudedHeight?: number;
+        arcType?: ArcType;
+        appearance?: any;
+        material?: any;
+        allowPicking?: boolean;
+        asynchronous?: boolean;
+    });
+    /**
+     * 图形实体位置数组
+     */
+    positions: Cartesian3[];
+    /**
+     * 图形实体上表面高度（墙体生效）
+     */
+    extrudedHeight: number;
+    /**
+     * 图形实体是否闭合
+     */
+    loop: boolean;
+    /**
+     * 获取图形对象
+     */
+    readonly primitive: any;
+    /**
+     * 获取图形对象ID
+     */
+    readonly id: string;
+    /**
+     * 图形对象是否可以选中
+     */
+    allowPicking: boolean;
+    /**
+     * 移除图形
+     * @returns 移除成功
+     */
+    remove(): boolean;
+}
+
+/**
+ * 图元样式库
+ */
+export class Style {
+    constructor();
+    /**
+     * 创建样式
+     * @param type - 样式类型，参见{@link Style.styleType}
+     * @param options - 样式参数
+     */
+    static creatstyle(type: string, options: any): void;
+    /**
+     * 编辑点样式
+     * @property [color = Color.RED] - 编辑点填充颜色
+     * @property [centerPointColor = Color.SLATEBLUE.withAlpha(0.9)] - 编辑点填充颜色
+     * @property [insertPointColor = Color.SANDYBROWN.withAlpha(0.6)] - 插入点填充颜色
+     * @property [pixelSize = 15] - 编辑点像素大小
+     * @property [outlineColor = Color.SEASHELL.withAlpha(0.9)] - 编辑点边框颜色
+     */
+    static EditPointStyle: {
+        color?: Color;
+        centerPointColor?: Color;
+        insertPointColor?: Color;
+        pixelSize?: number;
+        outlineColor?: Color;
+    };
+    /**
+     * 点样式
+     * @property options - 样式类型c
+     * @property [color = Cesium.Color.WHITE] - 点填充颜色
+     * @property [outlineColor = Cesium.Color.TRANSPARENT] - 点外边框颜色
+     * @property [pixelSize = 10] - 点的像素大小
+     * @property [scaleByDistance] - 随距离缩放大小
+     * @property [translucencyByDistance] - 随距离透明变化
+     * @property [distanceDisplayCondition] - 随距离显隐
+     * @property [disableDepthTestDistance] - 禁用深度检测的距离
+     */
+    static PointStyle: {
+        options: any;
+        color?: Color;
+        outlineColor?: Color;
+        pixelSize?: number;
+        scaleByDistance?: NearFarScalar;
+        translucencyByDistance?: NearFarScalar;
+        distanceDisplayCondition?: DistanceDisplayCondition;
+        disableDepthTestDistance?: number;
+    };
+    /**
+     * 文本样式
+     * @property [text] - 文本内容
+     * @property [font = '30px sans-serif'] - 字体类型(参照 CSS 的字体样式属性)
+     * @property [fillColor = Color.WHITE] - 字体颜色
+     * @property [style = LabelStyle.FILL] - 字体填充类型。参见{@link LabelStyle}
+     * @property [outlineColor = Color.BLACK] - 外边框颜色
+     * @property [outlineWidth = 1.0] - 外边框宽度
+     * @property [showBackground = false] - 是否显示背景
+     * @property [backgroundColor = new Color(0.165, 0.165, 0.165, 0.8)] - 背景颜色
+     * @property [backgroundPadding = new Cartesian2(7, 5)] - 背景偏移量
+     * @property [pixelOffset = new Cartesian2(0,0)] - 文本屏幕像素偏移量
+     * @property [eyeOffset = new Cartesian3(0,0,0)] - 文本相机坐标下偏移量
+     * @property [horizontalOrigin = HorizontalOrigin.LEFT] - 标注水平方向放置位置
+     * @property [verticalOrigin = VerticalOrigin.BASELINE] - 标注垂直方向放置位置
+     * @property [scale = 1.0] - 标注缩放大小
+     * @property [translucencyByDistance] - 远近缩放透明度
+     * @property [pixelOffsetScaleByDistance = false] - 按视距缩放像素大小(是否按视距缩放)
+     * @property [scaleByDistance] - 按视距缩放大小
+     * @property [heightReference = HeightReference.NONE] - 位置高度
+     * @property [distanceDisplayCondition] - 按视距是否显示
+     * @property [disableDepthTestDistance] - 禁用深度检测的距离，设置为Number.POSITIVE_INFINITY时禁用深度检测，设置为0.0的时候一直开启深度检测
+     */
+    static LabelStyle: {
+        text?: string;
+        font?: string;
+        fillColor?: string | Color;
+        style?: number;
+        outlineColor?: string | Color;
+        outlineWidth?: number;
+        showBackground?: boolean;
+        backgroundColor?: Color;
+        backgroundPadding?: Cartesian2;
+        pixelOffset?: Cartesian2;
+        eyeOffset?: Cartesian3;
+        horizontalOrigin?: number;
+        verticalOrigin?: number;
+        scale?: number;
+        translucencyByDistance?: NearFarScalar;
+        pixelOffsetScaleByDistance?: NearFarScalar | boolean;
+        scaleByDistance?: NearFarScalar;
+        heightReference?: number;
+        distanceDisplayCondition?: DistanceDisplayCondition;
+        disableDepthTestDistance?: number;
+    };
+    /**
+     * 广告牌样式
+     * @property [image] - 图片路径
+     * @property [color = Color.WHITE] - 广告牌颜色
+     * @property [rotation = 0.0] - 广告牌旋转角度，弧度值
+     * @property [alignedAxis = Cartesian3.ZERO] - 设置，示例billboard.alignedAxis = Cesium.Cartesian3.UNIT_Z;
+     * @property [width] - 宽度
+     * @property [height] - 高度
+     * @property [outlineColor = Color.BLACK] - 外边框颜色
+     * @property [outlineWidth = 0.0] - 外边框宽度
+     * @property [sizeInMeters = false] - 尺寸是否为米单位的，当为false时尺寸为像素，true时为米
+     * @property [pixelOffset = new Cartesian2(0,0)] - 广告牌屏幕像素偏移量
+     * @property [eyeOffset = new Cartesian3(0,0,0)] - 广告牌相机坐标下偏移量
+     * @property [horizontalOrigin = HorizontalOrigin.LEFT] - 广告牌水平方向放置位置
+     * @property [verticalOrigin = VerticalOrigin.BASELINE] - 广告牌垂直方向放置位置
+     * @property [scale = 1.0] - 广告牌缩放大小
+     * @property [translucencyByDistance] - 远近缩放透明度
+     * @property [pixelOffsetScaleByDistance = false] - 按视距缩放像素大小(是否按视距缩放)
+     * @property [scaleByDistance] - 按视距缩放大小
+     * @property [heightReference = HeightReference.NONE] - 位置高度
+     * @property [distanceDisplayCondition] - 按视距是否显示
+     * @property [disableDepthTestDistance] - 禁用深度检测的距离，设置为Number.POSITIVE_INFINITY时禁用深度检测，设置为0.0的时候一直开启深度检测
+     */
+    static BillboardStyle: {
+        image?: string;
+        color?: string | Color;
+        rotation?: number;
+        alignedAxis?: Cartesian3;
+        width?: number;
+        height?: number;
+        outlineColor?: string | Color;
+        outlineWidth?: number;
+        sizeInMeters?: boolean;
+        pixelOffset?: Cartesian2;
+        eyeOffset?: Cartesian3;
+        horizontalOrigin?: number;
+        verticalOrigin?: number;
+        scale?: number;
+        translucencyByDistance?: NearFarScalar;
+        pixelOffsetScaleByDistance?: NearFarScalar;
+        scaleByDistance?: NearFarScalar;
+        heightReference?: number;
+        distanceDisplayCondition?: DistanceDisplayCondition;
+        disableDepthTestDistance?: number;
+    };
+    /**
+     * 线图元样式
+     * @property [color = Color.RED] - 颜色
+     * @property [arcType = ArcType.GEODESIC] - 线边界格式。大地GEODESIC或者恒向线RHUMB。
+     * @property [width = 1.0] - 线段宽度.
+     * @property [colorsArray] - 线段插值颜色 {@link Color} 数组，未定义undefined时不开启，采用纯色渲染。传入空数组时默认创建随机颜色。(贴地线无效)
+     * @property [colorsPerVertex] - 是否开启线段颜色插值(贴地线无效),，true为按照顶点渐变，false为线段分段着色。
+     * @property [translucent = true] - 是否半透明
+     * @property [loop = false] - 是否闭环 (贴地线生效)
+     * @property [options.classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     */
+    static PolylineStyle: {
+        color?: string | Color;
+        arcType?: ArcType;
+        width?: number;
+        colorsArray?: Color[];
+        colorsPerVertex?: boolean;
+        translucent?: boolean;
+        loop?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+    };
+    /**
+     * 圆管线图元样式
+     * @property [color = Color.RED] - 颜色
+     * @property [arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
+     * @property [cornerType = CornerType.ROUNDED] - 折角类型 参见{@link CornerType}
+     * @property [width = 1.0] - 线段宽度.
+     * @property [translucent = true] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     */
+    static PolylineVolumeStyle: {
+        color?: string | Color;
+        arcType?: ArcType;
+        cornerType?: CornerType;
+        width?: number;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+    };
+    /**
+     * 面图元样式
+     * @property [color = Color.RED] - 颜色
+     * @property [stRotation = 0.0] - 多边形纹理顺时针旋转角度（弧度值）。
+     * @property [extrudedHeight] - 多边形体拉伸高度。为0时为区，不为0时为多边形体。
+     * @property [perPositionHeight = false] - 是否固定高度，为true时采用边界点的高度，为false时采用height高度。
+     * @property [height = 0.0] - 多边形体底面高度。当perPositionHeight为false时生效。
+     * @property [closeTop = true] - 多边形（体）顶部是否闭合。（当定义extrudedHeight拉伸高度后生效）
+     * @property [closeBottom = true] - 多边形体底部是否闭合。(当定义extrudedHeight拉伸高度后生效)
+     * @property [arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
+     * @property [translucent = false] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest] - 是否启用图元深度检测，设置成false为防止被地形遮挡，不贴地二维图形默认关闭，三维图形默认开启。
+     * @property [classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
+     */
+    static PolygonStyle: {
+        color?: string | Color;
+        stRotation?: number;
+        extrudedHeight?: number;
+        perPositionHeight?: boolean;
+        height?: number;
+        closeTop?: boolean;
+        closeBottom?: boolean;
+        arcType?: ArcType;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+        classificationType?: number;
+    };
+    /**
+     * 矩形面图元样式
+     * @property [color = Color.RED] - 颜色
+     * @property [translucent = true] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     */
+    static RectangleStyle: {
+        color?: string | Color;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+    };
+    /**
+     * 圆面(圆柱体)图元样式
+     * @property [extrudedHeight] - 圆柱体长度。设置时为体，不定义为圆面
+     * @property [height] - 圆距离地面抬高高度。
+     * @property [radius = 0] - 圆半径。
+     * @property [stRotation = 0.0] - 圆纹理顺时针旋转角度（弧度值）。
+     * @property [color = Color.RED] - 颜色
+     * @property [translucent = true] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡。不贴地二维图形默认关闭，三维图形默认开启。
+     * @property [classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
+     */
+    static CircleStyle: {
+        extrudedHeight?: number;
+        height?: number;
+        radius?: number;
+        stRotation?: number;
+        color?: string | Color;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+        classificationType?: number;
+    };
+    /**
+     * 方管图元样式
+     * @property [color = Color.RED] - 颜色
+     * @property [width = 10.0] - 线段宽度.
+     * @property [height = 0.0] - 方管高度（高于地平面）
+     * @property [extrudedHeight] - 方管拉伸高度
+     * @property [translucent = true] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     */
+    static CorridorStyle: {
+        color?: string | Color;
+        width?: number;
+        height?: number;
+        extrudedHeight?: number;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+    };
+    /**
+     * 圆台（圆锥）图元样式
+     * @property [extrudedHeight = 100] - 圆台长度。
+     * @property [height = 0] - 圆台距离地面抬高高度。
+     * @property [topRadius = 0] - 圆台顶半径。
+     * @property [bottomRadius = 0] - 圆台底半径。
+     * @property [color = Color.RED] - 颜色
+     * @property [translucent = true] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     * @property [slices = 128] - 圆台周长周围的边数。
+     */
+    static CylinderStyle: {
+        extrudedHeight?: number;
+        height?: number;
+        topRadius?: number;
+        bottomRadius?: number;
+        color?: string | Color;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+        slices?: number;
+    };
+    /**
+     * 球（椭球）图元样式
+     * @property [color = Color.RED] - 颜色
+     * @property [translucent = true] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     */
+    static EllipsiodStyle: {
+        color?: string | Color;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+    };
+    /**
+     * 墙图元样式
+     * @property [color = Color.RED] - 颜色
+     * @property [extrudedHeight = 100] - 墙拉伸长度。
+     * @property [height] - 墙距离地面抬高高度。默认不设置采用坐标点的高度
+     * @property [translucent = true] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     */
+    static WallStyle: {
+        color?: string | Color;
+        extrudedHeight?: number;
+        height?: number;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+    };
+    /**
+     * 盒子图元样式
+     * @property [color = Color.RED] - 颜色
+     * @property [height] - 位置高度
+     * @property [extrudedHeight = 100] - 位置高度
+     * @property [heightReference = HeightReference.NONE] - 位置高度
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [flat = false] - 是否启用平坦渲染，即不考虑光照。
+     */
+    static BoxStyle: {
+        color?: string | Color;
+        height?: number;
+        extrudedHeight?: number;
+        heightReference?: number;
+        materialType?: string;
+        depthTest?: boolean;
+        material?: Material;
+        flat?: boolean;
+    };
+    /**
+     * 将Style对象转换成与cesium无关的对象
+     * @example
+     * var options = new  Cesium.Style('label', {text:'mapgis',color:#ffffff});
+     * var packedObject =  options.pack();
+     */
+    static pack(): any;
+    /**
+     * 将对象转换成Style类型的对象
+     * @example
+     * var options = {type:'label', style:{text:'mapgis',color:#ffffff}};
+     * var packedObject =  Cesium.Style.unpack(options);
+     * @param type - 样式类型
+     * @param style - 从JSON或者其他地方读取的样式参数对象
+     * @returns 返回对应cesium样式的对象
+     */
+    static unpack(type: string, style: any): Style;
+    /**
+     * 样式类型  与图元类型一致，参见{@link Graphic.graphicType}
+     * @property [point = 'point'] - 点，类型（type）为point时样式参数参照{@link Style.PointStyle}
+     * @property [label = 'label'] - 文本,类型（type）为label时样式参数参照{@link Style.LabelStyle}
+     * @property [billboard = 'billboard'] - 广告牌，图标类型(type)为billboard时样式参数参照{@link Style.BillboardStyle}
+     * @property [polyline = 'polyline'] - 线，图标类型(type)为polyline时样式参数参照{@link Style.PolylineStyle}
+     * @property [polylineVolume = 'polylineVolume'] - 圆管线，图标类型(type)为polylineVolume时样式参数参照{@link Style.PolylineVolumeStyle}
+     * @property [polygon = 'polygon'] - 面（区），图标类型(type)为polygon时样式参数参照{@link Style.PolygonStyle}
+     * @property [rectangle = 'rectangle'] - 矩形，图标类型(type)为rectangle时样式参数参照{@link Style.RectangleStyle}
+     * @property [circle = 'circle'] - 圆，图标类型(type)为circle时样式参数参照{@link Style.CircleStyle}
+     * @property [corridor = 'corridor'] - 方管线，图标类型(type)为corridor时样式参数参照{@link Style.CorridorStyle}
+     * @property [cylinder = 'cylinder'] - 圆台（圆锥），图标类型(type)为cylinder时样式参数参照{@link Style.CylinderStyle}
+     * @property [ellipsiod = 'ellipsiod'] - 球，图标类型(type)为ellipsiod时样式参数参照{@link Style.EllipsiodStyle}
+     * @property [wall = 'wall'] - 墙，图标类型(type)为wall时样式参数参照{@link Style.WallStyle}
+     * @property [box = 'box'] - 盒子,类型（type）为box时样式参数参照{@link Style.BoxStyle}
+     */
+    static styleType: {
+        point?: string;
+        label?: string;
+        billboard?: string;
+        polyline?: string;
+        polylineVolume?: string;
+        polygon?: string;
+        rectangle?: string;
+        circle?: string;
+        corridor?: string;
+        cylinder?: string;
+        ellipsiod?: string;
+        wall?: string;
+        box?: string;
+    };
 }
 
 /**
@@ -25398,6 +26504,11 @@ export class G3DLayer {
      */
     getVectorLayerIndexes(): number[];
     /**
+     * 获取b标注图层中的全部索引
+     * @returns 索引数组
+     */
+    getLabelLayerIndexes(): number[];
+    /**
      * 获取全部 Layers
      */
     getAllLayers(): (MapGISM3DSet | MapGISTerrainProvider)[];
@@ -25416,6 +26527,11 @@ export class G3DLayer {
      * @returns 返回 G3DLayer 中的所有 矢量 图层
      */
     getVectorLayers(): MapGISVectorLayer[];
+    /**
+     * 获取全部 LabelLayers
+     * @returns 返回 G3DLayer 中的所有 矢量 图层
+     */
+    getLabelLayers(): MapGISLabelLayer[];
     /**
      * 按照 layerIndex 数组获取，对应的  图层集合
      * @param layerIndexes - layerIndex 数组
@@ -25502,33 +26618,58 @@ export class G3DLayer {
 
 /**
  * 标绘管理图层
+ * @example
+ * var graphicsLayer = new Cesium.GraphicsLayer(viewer);
+ * viewer.scene.layers.appendGraphicsLayer(graphicsLayer);
+ * @param [options.finishEdit = function] - 回调函数，每次编辑结束后的回调.返回编辑的对象
+ * @param [options.getGraphic = function] - 回调函数，返回绘制对象。
  */
 export class GraphicsLayer {
-    constructor(viewer: Viewer, options: any);
+    constructor(viewer: Viewer, options: {
+        finishEdit?: (...params: any[]) => any;
+        getGraphic?: (...params: any[]) => any;
+    });
     /**
-     * 开始绘制图形
-     * @param [options.type = 'none'] - 绘制类型：'point','polyline','polygon'
-     * 不同类型实体参数参考：type = 'point'参见{@link PlottingPoint} , type = 'polyline'参见{@link PlottingPolyline},type = 'polygon'参见{@link PlottingPolygon},
+     * 图形集合，包含该图层内所有图形对象的键值对
+     */
+    readonly graphicList: HashMap;
+    /**
+     * 图层编辑工具
+     */
+    readonly editTool: EditTool;
+    /**
+     * 开始绘制图形 (注意：内部会开始地形深度检测功能)
+     * @example
+     * var graphicsLayer = new Cesium.GraphicsLayer(viewer,{getGraphic:getGraphic});
+     * graphicsLayer.graphicsLayer.startDrawing({type: Cesium.Graphic.graphicType.box,style: { color: Cesium.color.BLUE,  extrudedHeight: 100 },name: 'box1',attributes: { key: 'www', map: 4645 }});
+     * function getGraphic(e) {console.log(e);}
+     * @param [options.type = 'none'] - 绘制类型：参照{@link Graphic.graphicType}
+     * @param [options.isContinued = true] - 是否连续绘制
      */
     startDrawing(options: {
         type?: string;
+        isContinued?: boolean;
     }): void;
     /**
-     * 绘制点事件
+     * 添加绘制图形
+     * @example
+     * var graphicsLayer = new Cesium.GraphicsLayer(viewer);
+     * var graphic = new Cesium.Graphic(type: 'label',style: {color: viewModel.color,text: 'hezihan',font: '50px Helvetica',pixelSize: 20,
+     *                                   pixelOffsetScaleByDistance: false,
+     *                                   horizontalOrigin: Cesium.HorizontalOrigin.right,
+     *                                   fillColor: '#818518',
+     *                                   isScaleByDistance: true, //是否远近缩放
+     *                                   distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 50000)},
+     *                                   name: 'box1',attributes: { key: 'www', map: 4645 },getGraphic: getGraphic);
+     * graphicsLayer.addGraphic(graphic);
+     * @param graphic - 不同类型实体参考：参见{@link Graphic.graphicType}
+     * @returns 放回回添加的图形
      */
-    drawPoint(): void;
+    addGraphic(graphic: any): Graphic;
     /**
-     * 绘制线事件
+     * 添加模型
      */
-    drawPolyline(): void;
-    /**
-     * 绘制面事件
-     */
-    drawPolygon(): void;
-    /**
-     * 绘制圆事件
-     */
-    drawCircle(): void;
+    addModel(url: string): void;
     /**
      * 移除所有鼠标事件，停止绘制
      */
@@ -25543,36 +26684,60 @@ export class GraphicsLayer {
     stopEdit(): void;
     /**
      * 根据ID获取标绘图形对象
-     * @param index - 图形ID
+     * @param ID - 图形ID
+     * @returns 返回图层对象或者返回false查询失败
      */
-    getGraphicByID(index: string): void;
+    getGraphicByID(ID: string): any | undefined;
+    /**
+     * 根据序号获取标绘图形对象
+     * @param index - 图形序号
+     * @returns 返回图形对象
+     */
+    getGraphicByIndex(index: string): any;
+    /**
+     * 根据对象获取index
+     */
+    getIndexByGraphic(): boolean;
+    /**
+     * 获取图层所有标绘图形
+     * @returns 返回所有图形对象
+     */
+    getAllGraphic(): object[];
     /**
      * 根据ID移除标绘图形
-     * @param index - 图形ID
+     * @param ID - 图形ID
      */
-    removeGraphicByID(index: string): void;
+    removeGraphicByID(ID: string): void;
     /**
      * 根据序号移除标绘图形
      * @param index - 图形序号
      */
     removeGraphicByIndex(index: string): void;
     /**
+     * 移除最后一个标绘图形
+     */
+    removeLastGraphic(): void;
+    /**
+     * 移除选中标绘图形
+     */
+    removePickingGraphic(): void;
+    /**
      * 移除图层所有标绘图形
+     * @returns 移除是否成功
      */
-    removeAllGraphic(): void;
+    removeAllGraphic(): boolean;
     /**
-     * 根据序号获取标绘图形对象
-     * @param index - 图形序号
+     * 整个图层导出为json文件
      */
-    getGraphicByIndex(index: string): void;
+    exportToJson(): void;
     /**
-     * 获取图层所有标绘图形
+     * 加载json文件
      */
-    getAllGraphic(): void;
+    loadJson(): void;
     /**
-     * 移除图层
+     * 移除整个图层
      */
-    destory(): void;
+    destroy(): void;
 }
 
 /**
@@ -25684,6 +26849,117 @@ export class TransactionImplement {
      * name of warehouse
      */
     nameStore: string;
+}
+
+/**
+ * An imagery layer that displays tiled image data from a single imagery provider
+ * on a {@link Globe}.
+ * @example
+ * var url = 'http://localhost:6163/igs/rest/g3d/label88204';
+ *     var options = {
+ *         labelExtend: { scale: 2.0 },
+ *         getDocLayerIndexes: function (indexs) {
+ *             console.log(indexs);
+ *             // 存储单图层
+ *             layerIndex = indexs[0];
+ *             layer = viewer.scene.layers.getLayer(layerIndex);
+ *             console.log(layer);
+ *             // 存储图层索引数组
+ *             // layerIndex=indexs;
+ *         }
+ *     };
+ *     viewer.scene.layers.appendG3DLayer(url, options);
+ * @param labelUrl - 请求到的注记信息
+ * @param scene - 场景对象
+ * @param options - Object with the following properties:
+ * @param option.labelExtend - 注记可配置参数 注记对象参数 {@link Label}
+ */
+export class MapGISLabelLayer {
+    constructor(labelUrl: string, scene: Scene, options: any);
+    readonly readyPromise: Promise<MapGISLabelLayer>;
+    readonly labels: LabelCollection;
+    readonly show: boolean;
+    /**
+     * 添加文字标签
+     * @example
+     * var url = 'http://localhost:6163/igs/rest/g3d/label88204';
+     *     var options = {
+     *         labelExtend: { scale: 2.0 },
+     *         getDocLayerIndexes: function (indexs) {
+     *             console.log(indexs);
+     *             // 存储单图层
+     *             layerIndex = indexs[0];
+     *             layer = viewer.scene.layers.getLayer(layerIndex);
+     *             console.log(layer);
+     *             var label = layer.appendLabel(114.2, 31, 200, '这是一个标签', {
+     *                 font:'14pt 楷体',
+     *                 style:Cesium.LabelStyle.FILL_AND_OUTLINE,
+     *                 verticalOrigin:Cesium.VerticalOrigin.BOTTOM,
+     *                 pixelOffset:new Cesium.Cartesian2(0, -9)});
+     *         }
+     *     };
+     *     viewer.scene.layers.appendG3DLayer(url, options);
+     * @param lat - 经度
+     * @param lon - 纬度
+     * @param height - 高程
+     * @param lText - 标签内容
+     * @param [options.id] - 标签id，不设置则使用默认顺序id
+     * @param [options.font = '14pt monospace'] - 字体
+     * @param [options.fillColor = Cesium.Color.WHITE] - 字体的填充色
+     * @param [options.outlineColor = Cesium.Color.WHITE] - 字体的填充色
+     * @param [options.style = Cesium.LabelStyle.FILL_AND_OUTLINE] - 样式
+     * @param [options.outlineWidth = 1] - 外边线宽度
+     * @param [options.heightReference = Cesium.HeightReference.NONE] - 外边线宽度
+     * @param [options.verticalOrigin = Cesium.VerticalOrigin.CENTER] - 标签位置 Cesium.VerticalOrigin.Cesium.VerticalOrigin.LEFT Cesium.VerticalOrigin.RIGHT
+     * @param [options.horizontalOrigin = Cesium.HorizontalOrigin.CENTER] - 标签位置 Cesium.HorizontalOrigin.Cesium.HorizontalOrigin.LEFT Cesium.HorizontalOrigin.RIGHT
+     * @param [options.description] - 属性描述
+     * @returns 标签对象 (Label)
+     */
+    appendLabel(lat: number, lon: number, height: number, lText: string, options: {
+        id?: string;
+        font?: string;
+        fillColor?: Color;
+        outlineColor?: Color;
+        style?: LabelStyle;
+        outlineWidth?: number;
+        heightReference?: number;
+        verticalOrigin?: VerticalOrigin;
+        horizontalOrigin?: HorizontalOrigin;
+        description?: string;
+    }): Label;
+    /**
+     * 查询Label是否在图层中
+     */
+    contains(label: Label): boolean;
+    /**
+     * 通过Id获取图层中的Label
+     */
+    getLabelById(id: string): Label;
+    /**
+     * 移除图层中的Label
+     * @returns true为成功移除 false为label不存在
+     */
+    removeLabel(label: Label): boolean;
+    /**
+     * Returns true if this object was destroyed; otherwise, false.
+     * <br /><br />
+     * If this object was destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
+     * @returns True if this object was destroyed; otherwise, false.
+     */
+    isDestroyed(): boolean;
+    /**
+     * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
+     * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
+     * <br /><br />
+     * Once an object is destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
+     * assign the return value (<code>undefined</code>) to the object as done in the example.
+     * @example
+     * MapGISLabelLayer = MapGISLabelLayer && MapGISLabelLayer.destroy();
+     * @param [destroy = true] - 是否销毁内存
+     */
+    destroy(destroy?: boolean): void;
 }
 
 /**
@@ -25856,6 +27132,16 @@ export class Layers {
      */
     removeAllG3DLayers(destroy: boolean): void;
     /**
+     * 图层跳转
+     * @param layer - G3D 图层对象
+     * @param [options.duration = 0] - 跳转时间，以秒为单位
+     * @param [options.orientation = new HeadingPitchRange(0.0, -0.5, boundingSphere.radius * 2.5)] - 镜头朝向
+     */
+    zoomToG3DLayer(layer: G3DLayer, options: {
+        duration?: number;
+        orientation?: HeadingPitchRange;
+    }): void;
+    /**
      * 添加 3DTileset 数据
      * @param [options.autoReset = true] - 跳转到模型位置
      * @param [options.duration = 0] - 跳转时间，以秒为单位
@@ -25920,14 +27206,14 @@ export class Layers {
      * 根据图层索引号，获取影像图层对象
      * @example
      * var layer = viewer.scene.layers.getImageryLayer(layerIndex);
-     * @returns vectorLayer 返回影像图层对象
+     * @returns ImageryLayer 返回影像图层对象
      */
-    getImageryLayer(layerIndex: number): any;
+    getImageryLayer(layerIndex: number): ImageryLayer;
     /**
      * 获取全部影像图层
      * @returns 获取全部影像图层
      */
-    getAllImageryLayers(): object[];
+    getAllImageryLayers(): ImageryLayer[];
     /**
      * 移除影像图层
      * @param layerIndex - 图层序号
@@ -25955,7 +27241,7 @@ export class Layers {
      * var layer = viewer.scene.layers.getVectorLayer(layerIndex);
      * @returns vectorLayer 返回矢量图层对象
      */
-    getVectorLayer(layerIndex: number): any;
+    getVectorLayer(layerIndex: number): MapGISVectorLayer;
     /**
      * 移除矢量图层
      * @param layerIndex - 图层序号
@@ -26004,6 +27290,32 @@ export class Layers {
         duration?: number;
         destination?: Cartesian3 | Rectangle;
     }): void;
+    /**
+     * 添加标绘图层
+     * @param graphicsLayer - 标绘图层对象
+     */
+    appendGraphicsLayer(graphicsLayer: GraphicsLayer): void;
+    /**
+     * 添加标绘图层
+     * @param viewer - 视图对象
+     * @param json - json格式的字符串
+     */
+    appendGraphicsLayerFromJson(viewer: Viewer, json: string): void;
+    /**
+     * 根据图层索引号，获取 标绘图层对象
+     * @param layerIndex - 图层序号
+     * @returns graphicsLayer返回标绘图层对象
+     */
+    getGraphicsLayer(layerIndex: number): GraphicsLayer;
+    /**
+     * 移除标绘图层
+     * @param layerIndex - 图层序号
+     */
+    removeGraphicsLayerByIndex(layerIndex: number): void;
+    /**
+     * 移除所有标绘图层
+     */
+    removeAllGraphicsLayers(): void;
     /**
      * 加载MapGIS矢量地图文档
      * @example
@@ -26073,7 +27385,6 @@ export class Layers {
      * @param url - 发布的文档地址，或Igs图层服务地址，对应的layers参数不同，使用Igs图层服务地址通过gdbp仅能加载二维矢量图层，eg：二维地图文档地址：http://[host]:[port]/igs/rest/mrfs/docs/{docName}，三维地图文档地址：http://[host]:[port]/igs/rest/g3d/{docName}，Igs图层服务地址：http://[host]:[port]/igs/rest/mrfs/layer
      * @param options - 其他附加属性包含以下属性的对象
      * @param [options.getDocLayerIndexes = function] - 回调函数，用于获取文档中的所有图层对象
-     * @param [options.mapIndex = 0] - 地图在文档下的序号
      * @param [options.autoReset = true] - 视角是否自动切换到地图文档范围或第一个gdbp图层范围
      * @param [options.loadAll = false] - 是否加载所有数据，默认以矢量瓦片形式动态加载
      * @param [options.setViewToExisting = false] - 视角是否定位到现存要素的范围，仅当loadAll=true时有效
@@ -26108,7 +27419,6 @@ export class Layers {
      */
     appendVectorLayer(url: string, options: {
         getDocLayerIndexes?: (...params: any[]) => any;
-        mapIndex?: number;
         autoReset?: boolean;
         loadAll?: boolean;
         setViewToExisting?: boolean;
@@ -26149,7 +27459,7 @@ export class Layers {
      * @param index - 图层索引号
      * @returns 返回图层对象
      */
-    getLayer(index: number): MapGISM3DSet | G3DLayer | Cesium3DTileset | ImageryProvider | TerrainProvider | MapGISVectorProvider;
+    getLayer(index: number): MapGISM3DSet | G3DLayer | Cesium3DTileset | ImageryLayer | TerrainProvider | MapGISVectorLayer;
     /**
      * 按图层索引号删除图层
      * @param index - 图层索引
@@ -26224,6 +27534,18 @@ export class MapGISM3D {
      * Returns <code>undefined</code> if <code>extras</code> does not exist.
      */
     readonly extras: any;
+    /**
+     * 强制节点不可见
+     */
+    forceInvisible: any;
+    /**
+     * 节点颜色
+     */
+    nodeColor: any;
+    /**
+     * 重置当前节点颜色
+     */
+    reset(): void;
 }
 
 /**
@@ -27040,6 +28362,10 @@ export class MapGISM3DSet {
      */
     readonly useRawSaveAtt: boolean;
     /**
+     * 构建树
+     */
+    readonly tree: any;
+    /**
      * Provides a hook to override the method used to request the tileset json
      * useful when fetching tilesets from remote servers
      * @param tilesetUrl - The url of the json file to be fetched
@@ -27093,6 +28419,10 @@ export class MapGISM3DSet {
      * tileset = tileset && tileset.destroy();
      */
     destroy(): void;
+    /**
+     * 重置被修改过的节点颜色
+     */
+    reset(): void;
 }
 
 export namespace MapGISM3DSet {
@@ -27137,6 +28467,45 @@ export class MapGISM3DTileContent {
      * @returns The corresponding {@link Cesium3DTileFeature} object.
      */
     getFeature(batchId: number): Cesium3DTileFeature;
+}
+
+/**
+ * 构建树
+ * @param options - 附加参数
+ * @param options.url - 用于请求数据的url
+ * @param options.treeParent - 构建过程中用于指定树节点的父节点
+ */
+export class Tree {
+    constructor(options: {
+        url: string;
+        treeParent: any;
+    });
+    /**
+     * 节点在树中的深度值
+     */
+    depth: number;
+    /**
+     * 节点的索引
+     */
+    index: string;
+    /**
+     * 节点的父节点
+     */
+    treeParent: any;
+    /**
+     * 节点的子节点数组
+     */
+    treeChildren: any;
+    /**
+     * 根据tileset/layer构建树
+     * @param tileset - 图层
+     * @returns 返回函数是否执行成功
+     */
+    createTreeByTileset(tileset: any): boolean;
+    /**
+     * 根据名称查询得到对应的mapgism3d
+     */
+    getM3DByName(name: string): void;
 }
 
 /**
@@ -28410,6 +29779,19 @@ export class TerrainAnalyse {
      */
     updateElevationBandMaterial(bandPositions: any[], gradient: boolean, bandThickness: number, bandTransparency: number, backgroundTransparency: number, colorsArray: any[]): void;
     /**
+     * 右键点击查询坡度坡向值
+     * @example
+     * var reslut = {cursor_slope_angle: '',cursor_aspect_angle: '',cursor_height: '',cursor_location: ''};
+     * var terrainAnalyse = new Cesium.TerrainAnalyse(viewer, {});
+     * terrainAnalyse.queryInfo(reslut);
+     * @param result - 结果
+     */
+    queryInfo(result: any): void;
+    /**
+     * 移除点击查询坡度坡向值
+     */
+    removeQueryInfo(): void;
+    /**
      * 移除坡度坡向，等值面，等高线等分析结果
      */
     destroy(): void;
@@ -28563,7 +29945,7 @@ export class ReImg {
 /**
  * @param viewer - 场景视图
  * @param options - 附加选项
- * @param [options.animationType = 2] - 1跟随,2锁定第一视角,3上帝视角
+ * @param [options.animationType = 2] - 0：一般场景，不操作相机；1：跟随；2：锁定第一视角；3：上帝视角
  * @param [options.isLoop = false] - 是否循环
  * @param [options.showPath = false] - 是否显示路径 (默认不显示路径)
  * @param [options.positions] - 漫游路径点  初始化可以不设置 但一定要在开始前设置好
@@ -28586,9 +29968,14 @@ export class ReImg {
  * @param [options.rangeTargetPosition = 1.0] - 视点与目标点距离按照倍数增加
  * @param [options.isAddScanEffect = false] - 是否挂载动态扫描特效
  * @param [options.scanEffect] - 扫描特效实例，可以是动态圆，也可以是雷达扫描
+ * @param [options.isGetRealHeight] - 是否获取路径点的真实高程
+ * @param [options.speedArray] - 速度不同时，各个路径点的对应速度
+ * @param [options.timeArray] - 路径点与时间相对应
+ * @param [options.accelerationArray] - 加速度数组
  * @param [option.onPositionTag = false] - 是否执行经过路径点返回回调函数的功能，默认为false不执行
  * @param [options.onPositionCallback] - 当点经过设置的路径点时，返回路径点坐标和index索引号
  * @param [options.disFactor = 0.01] - 用于判断当前点是否在路径点所在位置附近的精度
+ * @param [options.isSetModelPosture = true] - 是否设置模型运动姿态，保持朝向与运动方向一致，默认为true，设置为false时，模型姿态不改变
  */
 export class AnimationTool {
     constructor(viewer: any, options: {
@@ -28614,8 +30001,13 @@ export class AnimationTool {
         rangeTargetPosition?: number;
         isAddScanEffect?: boolean;
         scanEffect?: any;
+        isGetRealHeight?: boolean;
+        speedArray?: any[];
+        timeArray?: any[];
+        accelerationArray?: any[];
         onPositionCallback?: any;
         disFactor?: number;
+        isSetModelPosture?: boolean;
     });
     /**
      * 坐标点
@@ -28702,17 +30094,22 @@ export class AnimationTool {
      */
     scanEffect: any;
     /**
+     * 用于变速漫游中，设定各个点的速度
+     */
+    speedArray: any[];
+    /**
+     * 用于变速漫游中，设定各个点通过的时间数组，时间使用Date()对象
+     */
+    timeArray: any[];
+    /**
+     * 是否设置模型运动姿态，保持朝向与运动方向一致
+     */
+    isSetModelPosture: boolean;
+    /**
      * 开始
      * @returns True
      */
     start(): boolean;
-    /**
-     * 多模型漫游
-     * @param modelURL - 模型路径Url
-     * @param positionArr - 路径坐标点数组
-     * @returns resultEntities 实体数组
-     */
-    cruiseModel(modelURL: any, positionArr: any[]): any[];
 }
 
 /**
@@ -28961,13 +30358,9 @@ export class EditTool {
      */
     stop(): void;
     /**
-     * 返回所选图形
+     * 返回编辑状态的图形
      */
     getPickingGraphic(): void;
-    /**
-     * 删除所选图形
-     */
-    deletePickGraphic(): void;
     /**
      * 清除选择
      */
@@ -29871,6 +31264,23 @@ export class MapGISVectorLayer {
         rule?: string;
     }): void;
     /**
+     * 根据过滤条件闪烁要素，该方法支持点，线，区的闪烁，不支持边框线样式
+     * @param [options.filter] - 过滤条件,不指定则全部闪烁，同 {@link MapGISVectorprovider} 初始化中options.filter参数
+     * @param [options.flashColor] - 闪烁颜色
+     * @param [options.flashSpeed = 0.5] - 闪烁速度
+     * @param [options.flashAppearance] - 点线面的高亮效果
+     */
+    flashFeature(options: {
+        filter?: any;
+        flashColor?: Color;
+        flashSpeed?: number;
+        flashAppearance?: any;
+    }): void;
+    /**
+     * 移除要素闪烁
+     */
+    removeFlash(): void;
+    /**
      * 根据id获取绘制矢量数据的相关对象
      * @example
      * var mapGisVectorLayer = webGlobe.appendMapGISVectorLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量',options);
@@ -29929,6 +31339,7 @@ export class MapGISVectorLayer {
      * @param [options.width] - 矢量线的宽度
      * @param [options.outlineColor] - 边框线的颜色，仅当存在边框线时生效
      * @param [options.outlineWidth] - 边框线的宽度，仅当存在边框线时生效
+     * @returns 若该id找不到对应矢量返回false，成功更新返回true
      */
     updateVectorById(id: number, options: {
         positions?: Cartesian3[];
@@ -29938,51 +31349,56 @@ export class MapGISVectorLayer {
         width?: number;
         outlineColor?: Color;
         outlineWidth?: number;
-    }): void;
+    }): boolean;
     /**
      * 根据id移除矢量
      * @example
      * var mapGisVectorLayer = webGlobe.appendMapGISVectorLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量',options);
      *     mapGisVectorLayer.removeVectorById(193);
      * @param id - 矢量要素的id
+     * @returns 若该id找不到对应矢量返回false，成功移除返回true
      */
-    removeVectorById(id: number): void;
+    removeVectorById(id: number): boolean;
     /**
      * 更新发生更改的Primitive，供updateVectorById，removeVectorById使用
      * @param primitive - 进行更新的Primitive
      */
     updatePrimitive(primitive: Primitive): void;
+    static TimeControl: any;
     /**
      * 城市生长初始化，数据准备完成后会直接开始展示
      * @example
-     * var url = 'http://192.168.10.214:6163/igs/rest/mrfs/docs/SZ';
      * var options = {
      *     autoReset: true,
-     *     cityGrow: true,
+     *     //添加过滤条件，同矢量加载
+     *     // filter: { where: 'height>3' },
      *     getDocLayerIndexes: function (indexs) {
-     *         var layerIndex = indexs[0];
-     *         //console.log(layerIndex);
-     *         var layer = viewer.scene.layers.getLayer(layerIndex);
-     *         //console.log(layer);
-     *         var timeLineOptions = {
-     *             timeField: 'startTime',
-     *             startColor: new Cesium.Color(51 / 255.0, 174 / 255.0, 204 / 255.0, 1.0),
-     *             endColor: new Cesium.Color(215 / 255.0, 104 / 255.0, 134 / 255.0, 1.0),
-     *             buildingsLimit: 100,
-     *             updateInterval: 0.5
-     *         };
-     *         layer.cityGrow(timeLineOptions);
+     *         console.log(indexs);
+     *         layerIndex = indexs[0];
+     *         layer = viewer.scene.layers.getLayer(layerIndex);
+     *         console.log(layer);
      *     },
      *     style: {
-     *         type: 'building',
+     *         type: 'cityGrow',
      *         styleOptions: {
-     *             heightField: 'height'
+     *             heightField: 'height',
+     *             heightRatio: 10,
+     *             startTimeField: 'startTime',
+     *             endTimeField: 'endTime',
+     *             replay: false,
+     *             displayWithTile: false,
+     *             cityGrowSpeed: 0.5,
+     *             colors: colors,
+     *             colorSampling: false,
+     *             //buildingsLimit：线性加载时每一时段的建筑数量限制，默认无限制
+     *             buildingsLimit: 100,
+     *             updateInterval: 0.5
      *         }
-     *     }
+     *    }
      * };
-     * options.url = url;
      * viewer.scene.layers.appendVectorLayer(url, options);
-     * @param options.timeField - 数据的时间字段名
+     * @param options.startTimeField - 数据的建筑开始时间字段名
+     * @param [options.endTimeField] - 数据的拆除时间字段名
      * @param [options.displayWithTile = false] - Line|Tile 根据时间线性加载或瓦片动态加载，适用不同的数据量展示,默认为线性加载
      * @param [options.cityGrowSpeed = 0.5] - 城市生长速度，取值范围 0 ~ 1，速度为0不加载，速度为1时加载全部数据
      * @param [options.buildingsGrowTime = 10] - 建筑建设时长，默认值为10秒
@@ -29991,11 +31407,11 @@ export class MapGISVectorLayer {
      * @param [options.endTime] - 结束时间，未指定则自动请求
      * @param [options.timeAsc = true] - 时间是否为升序，即升序排列第一个为城市建设开始时间，用于未指定起止时间的数据请求
      * @param [options.buildingsLimit = Number.MAX_VALUE] - 线性加载时每一时段的建筑数量限制
-     * @param [options.startColor] - 建筑起始颜色
-     * @param [options.endColor] - 建筑最终颜色
+     * @param [options.colors] - 建筑颜色数组
      */
-    cityGrowStart(options: {
-        timeField: string;
+    cityGrowInit(options: {
+        startTimeField: string;
+        endTimeField?: string;
         displayWithTile?: string;
         cityGrowSpeed?: number;
         buildingsGrowTime?: number;
@@ -30004,9 +31420,13 @@ export class MapGISVectorLayer {
         endTime?: number;
         timeAsc?: boolean;
         buildingsLimit?: number;
-        startColor?: Color;
-        endColor?: Color;
+        colors?: Color[];
     }): void;
+    /**
+     * 开始城市生长
+     * @returns 若返回false，则还在进行数据准备
+     */
+    cityGrowStart(): boolean;
     /**
      * 暂停城市生长
      */
@@ -30016,9 +31436,16 @@ export class MapGISVectorLayer {
      */
     cityGrowPlay(): void;
     /**
-     * 设置城市生长当前时间
+     * 跳转到给定时间进行展示
+     * @param time - 秒数或时间戳
+     * @param [isPlayTime = flase] - false表示传入秒数，true表示传入时间戳
+     * @returns 若返回false，则还在进行数据准备,或者时间超出范围
      */
-    cityGrowSetTime(time: number): void;
+    cityGrowSetTime(time: number, isPlayTime?: boolean): boolean;
+    /**
+     * 城市生长线性展示更新
+     */
+    updateTimeLine(): void;
 }
 
 /**
@@ -30038,15 +31465,14 @@ export class MapGISVectorLayer {
  * @param options.url - 服务地址 默认为二维地图文档 eg:http://localhost:6163/igs/rest/mrms/docs/二维矢量 三维地图文档eg:http://localhost:6163/igs/rest/g3d/三维矢量
  * @param [options.is3d = false] - 是否为三维地图文档
  * @param [options.loadAll = flase] - 是否加载该图层所有数据，默认以矢量瓦片形式动态加载
- * @param [options.mapIndex = 0] - 地图在文档下的序号
- * @param [options.layerIdx = 0] - 图层序号
+ * @param [options.maxCount = 100000] - 该图层的矢量最大数量
  * @param [options.idField = FID] - id字段名
  * @param [options.tileFeaturesCount = 400] - 请求的瓦片矢量要素数量
  * @param [options.filter] - 图层过滤条件，具体参数参考MapGISVectorLayer.queryFeatures注释
  * @param [options.useSystemLib = false] - 是否使用MapGIS桌面端符号系统库
  * @param [options.systemLib = 'MapGIS 10'] - 符号系统库guid或名称,默认库为'MapGIS 10'
  * @param [options.clampToGround = false] - 是否贴地，当加载三维地图文档或矢量白模时该属性无效
- * @param [options.style] - 矢量数据的style样式
+ * @param [options.style] - 矢量地图文档的全局style样式对象,或分图层style样式对象数组，样式顺序与图层顺序一致，空对象则使用默认样式
  * @param [options.style.type] - style样式类型，可选参数为"point|line|polygon|building"，对应点，线，区，区矢量白模
  * @param [options.style.styleOptions] - style具体参数对象
  * @param [options.style.styleOptions.color = Cesium.Color.GHOSTWHITE] - 通用参数，颜色
@@ -30055,26 +31481,25 @@ export class MapGISVectorLayer {
  * @param [options.style.styleOptions.outlineColor] - 边框线颜色，仅当options.style.type=point|polygon|building时生效
  * @param [options.style.styleOptions.outlineWidth] - 边框线宽度，仅当options.style.type=point|polygon|building时生效
  * @param [options.style.styleOptions.width] - 线宽，仅当options.style.type=line时生效
- * @param [options.style.styleOptions.heightField] - 用作区矢量白模高程的属性字段名称，不设置则高程为零，仅当options.style.type=building时生效
- * @param [options.style.styleOptions.heightRatio] - 区矢量白模高程放缩比例，默认1.0，仅当options.style.type=building时生效
- * @param [options.cityGrow = false] - 是否使用城市生长
- * @param [options.cityGrowOptions] - 城市生长参数
- * @param [options.cityGrowOptions.timeField] - 数据的时间字段名，城市生长必要参数
- * @param [options.cityGrowOptions.displayWithTile = false] - Line|Tile 根据时间线性加载或瓦片动态加载，适用不同的数据量展示,默认为线性加载
- * @param [options.cityGrowOptions.cityGrowSpeed = 0.5] - 城市生长速度，取值范围 0 ~ 1，速度为0不加载，速度为1时加载全部数据
- * @param [options.cityGrowOptions.buildingsGrowTime = 10] - 建筑建设时长，默认值为10秒
- * @param [options.cityGrowOptions.updateInerval = 1] - 更新间隔，默认每秒执行一次更新，间隔越短所需计算量越大，默认值为1秒
- * @param [options.cityGrowOptions.startTime] - 起始时间，未指定则自动请求
- * @param [options.cityGrowOptions.endTime] - 结束时间，未指定则自动请求
- * @param [options.cityGrowOptions.timeAsc = true] - 时间是否为升序，即升序排列第一个为城市建设开始时间，用于未指定起止时间的数据请求
- * @param [options.cityGrowOptions.buildingsLimit = Number.MAX_VALUE] - 线性加载时每一时段的建筑数量限制
- * @param [options.cityGrowOptions.startColor] - 建筑起始颜色
- * @param [options.cityGrowOptions.endColor] - 建筑最终颜色
+ * @param [options.style.styleOptions.heightField] - 用作区矢量白模高程的属性字段名称，不设置则高程为零，仅当options.style.type=building|cityGrow时生效
+ * @param [options.style.styleOptions.heightRatio] - 区矢量白模高程放缩比例，默认1.0，仅当options.style.type=building|cityGrow时生效
+ * @param [options.style.styleOptions.startTimeField] - 数据的建筑开始时间字段名，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.endTimeField] - 数据的拆除时间字段名，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.displayWithTile = false] - Line|Tile 根据时间线性加载或瓦片动态加载，适用不同的数据量展示,默认为线性加载，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.cityGrowSpeed = 0.5] - 城市生长速度，取值范围 0 ~ 1，速度为0不加载，速度为1时加载全部数据，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.buildingsGrowTime = 10] - 建筑建设时长，默认值为10秒，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.updateInerval = 1] - 更新间隔，默认每秒执行一次更新，间隔越短所需计算量越大，默认值为1秒，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.startTime] - 起始时间，未指定则自动请求，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.endTime] - 结束时间，未指定则自动请求，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.timeAsc = true] - 时间是否为升序，即升序排列第一个为城市建设开始时间，用于未指定起止时间的数据请求，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.buildingsLimit = Number.MAX_VALUE] - 线性加载时每一时段的建筑数量限制，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.colors] - 建筑颜色数组,第一个为开始颜色，数组末为结束颜色，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.onReady] - 回调函数，城市生长准备完成时调用，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.onUpdate] - 时间回调函数，仅当options.style.type=cityGrow时生效
  * @param [options.tileWidth = 256] - 瓦片宽度
  * @param [options.tileHeight = 256] - 瓦片高度
  * @param [options.minimumLevel = 0] - 瓦片最小级别
  * @param [options.maximumLevel = 0] - 瓦片最大级别
- * @param [options.layers] - layers参数，用于过滤图层
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
  */
@@ -30083,8 +31508,7 @@ export class MapGISVectorProvider {
         url: string;
         is3d?: boolean;
         loadAll?: boolean;
-        mapIndex?: number;
-        layerIdx?: number;
+        maxCount?: number;
         idField?: string;
         tileFeaturesCount?: number;
         filter?: any;
@@ -30102,27 +31526,25 @@ export class MapGISVectorProvider {
                 width?: number;
                 heightField?: string;
                 heightRatio?: number;
+                startTimeField?: string;
+                endTimeField?: string;
+                displayWithTile?: string;
+                cityGrowSpeed?: number;
+                buildingsGrowTime?: number;
+                updateInerval?: number;
+                startTime?: number;
+                endTime?: number;
+                timeAsc?: boolean;
+                buildingsLimit?: number;
+                colors?: Color[];
+                onReady?: (...params: any[]) => any;
+                onUpdate?: (...params: any[]) => any;
             };
-        };
-        cityGrow?: boolean;
-        cityGrowOptions?: {
-            timeField?: string;
-            displayWithTile?: string;
-            cityGrowSpeed?: number;
-            buildingsGrowTime?: number;
-            updateInerval?: number;
-            startTime?: number;
-            endTime?: number;
-            timeAsc?: boolean;
-            buildingsLimit?: number;
-            startColor?: Color;
-            endColor?: Color;
         };
         tileWidth?: number;
         tileHeight?: number;
         minimumLevel?: number;
         maximumLevel?: number;
-        layers?: string;
         tilingScheme?: any;
         extensions?: any[];
     });
@@ -30384,15 +31806,22 @@ export class VisualAnalysisManager {
      */
     readonly length: number;
     /**
-     * 添加可视化分析
-     * @param analyseObject - 可视化分析对象
+     * 添加分析对象
+     * @param analyseObject - 分析对象
+     * @param [id] - 分析对象ID
+     * @returns 传入或默认赋予的ID值
      */
-    add(analyseObject: any): void;
+    add(analyseObject: any, id?: number | string): number | string;
     /**
-     * 删除可视域分析
-     * @param analyseObject - 可视域分析
+     * 删除分析对象
+     * @param analyseObject - 分析对象
      */
     remove(analyseObject: any): void;
+    /**
+     * 通过ID删除分析对象
+     * @param analyseObjectID - 分析对象ID
+     */
+    removeByID(analyseObjectID: number | string): void;
     /**
      * 移除所有的分析功能
      */
@@ -30400,7 +31829,7 @@ export class VisualAnalysisManager {
     /**
      * 根据索引获取可视化分析
      */
-    getVisualAnalysisByIndex(index: number): any | undefined;
+    getVisualAnalysisByID(ID: number | string): any | undefined;
 }
 
 /**
@@ -39492,6 +40921,10 @@ export class Material {
      */
     static readonly GridType: string;
     /**
+     * Gets the name of the polyline TrailLinkWithSpeed material
+     */
+    static readonly FlashType: string;
+    /**
      * Gets the name of the stripe material.
      */
     static readonly StripeType: string;
@@ -43732,6 +45165,42 @@ export class Scene {
      * @returns 返回的世界坐标 (注意检查返回值是否为undefined 因为拾取在天空背景上是undefined)
      */
     getCartesian3Position(screePosition: Cartesian2, position: Cartesian3): Cartesian3;
+    /**
+     * 设置单体要素高亮
+     * @param layerList - 图层列表
+     * @param idList - id列表
+     * @param options - 扩展属性
+     * @param [options.color = new Cesium.Color(1.0, 0, 0, 0.5)] - 高亮颜色
+     * @param [options.colorBlendMode = Cesium.Cesium3DTileColorBlendMode.HIGHLIGHT] - 高亮模式
+     * @param [options.colorBlendAmount = 0.5] - 混合系数
+     * @param [options.applyForLayer = false] - 是否应用至图层
+     * @param [options.negate = true] - 是否取反 ——意思是除了id列表中的要素应用color
+     * @param [options.negateColor = new Cesium.Color.WHITE] - 取反的颜色,只有在negate=true 的时候才起作用
+     * @param [options.style = 'Edge'] - 高亮模式,'Edge':描边;'EdgeHighlight':高亮+描边
+     * @param [options.edgeColor = new Cesium.Color(0, 0, 1, 1.0)] - 描边颜色 默认红色
+     * @param [options.isReset = true] - 重置单体数据的颜色
+     */
+    startCustomDisplay(layerList: MapGISM3DSet[], idList: number[], options: {
+        color?: Color;
+        colorBlendMode?: Cesium3DTileColorBlendMode;
+        colorBlendAmount?: number;
+        applyForLayer?: boolean;
+        negate?: Color;
+        negateColor?: Color;
+        style?: string;
+        edgeColor?: Color;
+        isReset?: boolean;
+    }): void;
+    /**
+     * 停止全部高亮
+     */
+    stopCustomDisplay(图层列表: MapGISM3DSet[]): void;
+    /**
+     * 根据id停止高亮
+     * @param layerList - 图层列表
+     * @param idList - id列表
+     */
+    stopCustomDisplayByIds(layerList: MapGISM3DSet[], idList: number[]): void;
 }
 
 /**
@@ -49124,15 +50593,26 @@ declare module "cesium/Source/MapGIS/Analysis/SkyLineAnalysis" { import { SkyLin
 declare module "cesium/Source/MapGIS/Analysis/ViewshedAnalysis" { import { ViewshedAnalysis } from 'cesium'; export default ViewshedAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/VisiblityAnalysis" { import { VisiblityAnalysis } from 'cesium'; export default VisiblityAnalysis; }
 declare module "cesium/Source/MapGIS/Entity/AttributeSurfacePrimitive" { import { AttributeSurfacePrimitive } from 'cesium'; export default AttributeSurfacePrimitive; }
+declare module "cesium/Source/MapGIS/Entity/Graphic" { import { Graphic } from 'cesium'; export default Graphic; }
+declare module "cesium/Source/MapGIS/Entity/PlottingBox" { import { PlottingBox } from 'cesium'; export default PlottingBox; }
 declare module "cesium/Source/MapGIS/Entity/PlottingCircle" { import { PlottingCircle } from 'cesium'; export default PlottingCircle; }
+declare module "cesium/Source/MapGIS/Entity/PlottingCorridor" { import { PlottingCorridor } from 'cesium'; export default PlottingCorridor; }
+declare module "cesium/Source/MapGIS/Entity/PlottingCylinder" { import { PlottingCylinder } from 'cesium'; export default PlottingCylinder; }
+declare module "cesium/Source/MapGIS/Entity/PlottingEllipsoid" { import { PlottingEllipsoid } from 'cesium'; export default PlottingEllipsoid; }
+declare module "cesium/Source/MapGIS/Entity/PlottingLabel" { import { PlottingLabel } from 'cesium'; export default PlottingLabel; }
 declare module "cesium/Source/MapGIS/Entity/PlottingPoint" { import { PlottingPoint } from 'cesium'; export default PlottingPoint; }
 declare module "cesium/Source/MapGIS/Entity/PlottingPolygon" { import { PlottingPolygon } from 'cesium'; export default PlottingPolygon; }
 declare module "cesium/Source/MapGIS/Entity/PlottingPolyline" { import { PlottingPolyline } from 'cesium'; export default PlottingPolyline; }
-declare module "cesium/Source/MapGIS/Entity/PlottingPrimitive" { import { PlottingPrimitive } from 'cesium'; export default PlottingPrimitive; }
+declare module "cesium/Source/MapGIS/Entity/PlottingPolylineVolume" { import { PlottingPolylineVolume } from 'cesium'; export default PlottingPolylineVolume; }
+declare module "cesium/Source/MapGIS/Entity/PlottingRectangle" { import { PlottingRectangle } from 'cesium'; export default PlottingRectangle; }
+declare module "cesium/Source/MapGIS/Entity/PlottingWall" { import { PlottingWall } from 'cesium'; export default PlottingWall; }
+declare module "cesium/Source/MapGIS/Entity/Style" { import { Style } from 'cesium'; export default Style; }
 declare module "cesium/Source/MapGIS/IndexedDB/TransactionImplement" { import { TransactionImplement } from 'cesium'; export default TransactionImplement; }
+declare module "cesium/Source/MapGIS/Label/MapGISLabelLayer" { import { MapGISLabelLayer } from 'cesium'; export default MapGISLabelLayer; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3D" { import { MapGISM3D } from 'cesium'; export default MapGISM3D; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DSet" { import { MapGISM3DSet } from 'cesium'; export default MapGISM3DSet; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DTileContent" { import { MapGISM3DTileContent } from 'cesium'; export default MapGISM3DTileContent; }
+declare module "cesium/Source/MapGIS/M3dLayer/Tree" { import { Tree } from 'cesium'; export default Tree; }
 declare module "cesium/Source/MapGIS/Material/CircleWaveMaterialProperty" { import { CircleWaveMaterialProperty } from 'cesium'; export default CircleWaveMaterialProperty; }
 declare module "cesium/Source/MapGIS/Material/PolylineTrailLinkMaterialProperty" { import { PolylineTrailLinkMaterialProperty } from 'cesium'; export default PolylineTrailLinkMaterialProperty; }
 declare module "cesium/Source/MapGIS/Material/RadarMaterialProperty" { import { RadarMaterialProperty } from 'cesium'; export default RadarMaterialProperty; }
