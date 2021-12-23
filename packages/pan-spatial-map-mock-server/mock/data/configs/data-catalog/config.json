@@ -792,18 +792,6 @@
             "serverUrl": ""
           },
           {
-            "label": "BIMCache",
-            "describe": "BIMCache",
-            "ip": "192.168.88.49",
-            "port": "6163",
-            "layerServiceType": "DOC3D",
-            "name": "BIMCache",
-            "searchName": "",
-            "model": "surface",
-            "guid": "e2abd1db-2705-4b78-9a5d-4effd7a456dsaf39ec",
-            "serverUrl": ""
-          },
-          {
             "label": "倾斜摄影数据",
             "describe": "倾斜摄影数据",
             "ip": "",
