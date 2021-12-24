@@ -30,12 +30,16 @@
           <a-dropdown :trigger="['contextmenu']">
             <span>{{ node.title }}</span>
             <a-menu slot="overlay" @click="onTreeNodeMenuClick($event, node)">
-              <!-- <a-menu-item v-show="!node.checkable" :key="thematicMapNodeHandles.CREATE"
+              <a-menu-item
+                v-show="!node.checkable"
+                :key="thematicMapNodeHandles.CREATE"
                 >新建</a-menu-item
-              > -->
-              <!-- <a-menu-item v-show="node.checkable" :key="thematicMapNodeHandles.EDIT"
+              >
+              <a-menu-item
+                v-show="node.checkable"
+                :key="thematicMapNodeHandles.EDIT"
                 >编辑</a-menu-item
-              > -->
+              >
               <a-menu-item :key="thematicMapNodeHandles.REMOVE"
                 >删除</a-menu-item
               >
