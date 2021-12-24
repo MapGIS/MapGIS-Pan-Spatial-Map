@@ -16,6 +16,7 @@ import {
   MpHeightLimitedAnalysis,
   MpViewpointManager,
   MpPondingSimulation,
+  MpVideo,
   MpCityGrow
 } from './widgets'
 
@@ -37,6 +38,7 @@ const components = [
   MpHeightLimitedAnalysis,
   MpViewpointManager,
   MpPondingSimulation,
+  MpVideo,
   MpCityGrow
 ]
 

@@ -260,6 +260,10 @@
             "uri": "widgets/ponding-simulation"
           },
           {
+            "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc",
+            "uri": "widgets/video"
+          },
+          {
             "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02",
             "uri": "widgets/city-grow"
           }
@@ -361,6 +365,9 @@
               },
               {
                 "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd"
+              },
+              {
+                "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc"
               }
             ]
           },
