@@ -1,5 +1,9 @@
 <template>
-  <mapgis-3d-scene-setting @loaded="loaded"></mapgis-3d-scene-setting>
+  <mapgis-3d-scene-setting 
+    @loaded="loaded" 
+    :initialStatebar="initialStatebar"
+  >
+  </mapgis-3d-scene-setting>
 </template>
 
 <script lang="ts">
@@ -13,6 +17,8 @@ import { api } from '@mapgis/pan-spatial-map-common'
 export default class MpSceneSetting extends Mixins(WidgetMixin) {
   // 页面布局方式
   private layout = 'horizontal'
+
+  private initialStatebar = true
 
   /**
    * 微件打开时
