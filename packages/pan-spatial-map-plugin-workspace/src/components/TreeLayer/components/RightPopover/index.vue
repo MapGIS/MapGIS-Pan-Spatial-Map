@@ -101,6 +101,13 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
     this.$emit('change-m3d-props', this.layerItem)
   }
 
+  enableQuery() {
+    this.$emit(
+      'query',
+      this.layerItem,
+    )
+  }
+
   getDataFlowExtent(layerItem) {
     if (this.isDataFlow(layerItem)) {
       const dataList = DataFlowList.getDataFlowById(layerItem.id)
