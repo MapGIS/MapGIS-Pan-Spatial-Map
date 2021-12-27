@@ -1,56 +1,10 @@
 <template>
   <a-list :gutter="10">
-<<<<<<< HEAD
     <template v-for="item in listData">
       <a-list-item :key="item.name" v-if="item.show" @click="item.click">
         {{ item.name }}
       </a-list-item>
     </template>
-=======
-    <a-list-item v-if="isMetaData(layerItem)" @click="metaDataInfo">
-      图层元数据
-    </a-list-item>
-    <a-list-item v-if="isAttributes(layerItem)" @click="attributes">
-      查看属性
-    </a-list-item>
-    <a-list-item
-      v-if="isAttributes(layerItem) && !isDataFlow(layerItem)"
-      @click="customQuery"
-    >
-      自定义查询
-    </a-list-item>
-    <a-list-item v-if="isDataFlow(layerItem)" @click="editDataFlowStyle">
-      编辑样式
-    </a-list-item>
-    <a-list-item v-if="isFitbound(layerItem)" @click="fitBounds">
-      缩放至
-    </a-list-item>
-    <a-list-item v-if="isIGSScene(layerItem)" @click="enableQuery">
-      动态拾取
-    </a-list-item>
-    <a-list-item
-      v-if="
-        layerItem.layer &&
-          isWMTSLayer(layerItem.layer) &&
-          isActiveWMTSLayer(layerItem)
-      "
-      @click="resetTilematrixSet"
-    >
-      切换矩阵集
-    </a-list-item>
-    <a-list-item
-      v-if="isParentLayer(layerItem) && isWMTSLayer(layerItem)"
-      @click="openChangeActiveLayer"
-    >
-      切换图层
-    </a-list-item>
-    <a-list-item
-      v-if="isParentLayer(layerItem) && !isIGSScene(layerItem)"
-      @click="toTop"
-    >
-      置顶
-    </a-list-item>
->>>>>>> be73e43e (【SDK】【Cesium】【将M3D组件替换成G3D组件】)
   </a-list>
 </template>
 
@@ -143,16 +97,8 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
     )
   }
 
-<<<<<<< HEAD
   changeM3DProps() {
     this.$emit('change-m3d-props', this.layerItem)
-=======
-  enableQuery() {
-    this.$emit(
-      'query',
-      this.layerItem,
-    )
->>>>>>> be73e43e (【SDK】【Cesium】【将M3D组件替换成G3D组件】)
   }
 
   enableQuery() {
