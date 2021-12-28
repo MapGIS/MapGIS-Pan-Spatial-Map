@@ -901,28 +901,30 @@
             "serverUrl": ""
           },
           {
-            "label": "G3D-分层分户",
-            "describe": "G3D-分层分户",
-            "ip": "192.168.88.204",
-            "port": "6163",
-            "layerServiceType": "DOC3D",
-            "name": "大楼",
-            "searchName": "",
-            "model": "surface",
-            "guid": "b1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
-            "serverUrl": ""
+              "label": "G3D-分层分户",
+              "describe": "G3D-分层分户",
+              "ip": "192.168.199.71",
+              "port": "8089",
+              "layerServiceType": "DOC3D",
+              "name": "G3D_分层分户",
+              "searchName": "",
+              "model": "surface",
+              "guid": "b1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
+              "serverUrl": "",
+              "customParameters": [{ "extendedPropKeys": "Expand,IsStratified" }]
           },
           {
-            "label": "模型绘存图层测试",
-            "describe": "模型绘存图层测试",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "TILE3D",
-            "name": "",
-            "searchName": "",
-            "model": "",
-            "guid": "abce2b60-14fd-4104-a05f-d8e77e54f1b3",
-            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/CIM/3栋/3栋.mcj"
+              "label": "M3D-BIM构建树",
+              "describe": "M3D-BIM构建树",
+              "ip": "",
+              "port": "",
+              "layerServiceType": "TILE3D",
+              "name": "",
+              "searchName": "",
+              "model": "surface",
+              "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c04",
+              "serverUrl": "http://192.168.88.204:8089/M3D/2.0/高级住所模型/高级住所模型.mcj",
+              "customParameters": [{ "extendedPropKeys": "Expand,IsBimComponent" }]
           }
         ]
       },
