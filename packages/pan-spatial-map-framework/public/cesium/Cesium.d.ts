@@ -25131,12 +25131,19 @@ export class VisiblityAnalysis {
     getVisibilityResult(viewPosition: Cartesian3, targetPosition: Cartesian3): boolean;
     /**
      * 环形通视分析
-     * @param viewPosition - 视点
-     * @param radius - 环形通视分析半径
-     * @param [verticalAngle] - 垂直视角，默认为60°
-     * @param [divideAngle] - 等分角度，默认为10°
+     * @param options.viewPosition - 视点
+     * @param options.radius - 环形通视分析半径
+     * @param [options.verticalAngle] - 垂直视角，默认为60°
+     * @param [options.divideAngle] - 等分角度，默认为10°
+     * @param [options.percentCallback] - 计算进度回调
      */
-    lookAroundAnalysis(viewPosition: Cartesian3, radius: number, verticalAngle?: number, divideAngle?: number): void;
+    lookAroundAnalysis(options: {
+        viewPosition: Cartesian3;
+        radius: number;
+        verticalAngle?: number;
+        divideAngle?: number;
+        percentCallback?: (...params: any[]) => any;
+    }): void;
 }
 
 /**
@@ -25239,7 +25246,7 @@ export class Graphic {
      * var graphic = new Graphic({type:label,style:{text:'mapgis'}});
      * graphic.style.text = 'mapgispro';
      */
-    style: Style;
+    readonly style: Style;
     /**
      * 图形对象属性键值对
      */
@@ -25319,9 +25326,10 @@ export class Graphic {
      * @property [circle = 'circle'] - 圆，图标类型(type)为circle时样式参数参照{@link Style.CircleStyle}
      * @property [corridor = 'corridor'] - 方管线，图标类型(type)为corridor时样式参数参照{@link Style.CorridorStyle}
      * @property [cylinder = 'cylinder'] - 圆台（圆锥），图标类型(type)为cylinder时样式参数参照{@link Style.CylinderStyle}
-     * @property [ellipsiod = 'ellipsiod'] - 球，图标类型(type)为ellipsiod时样式参数参照{@link Style.EllipsiodStyle}
+     * @property [ellipsoid = 'ellipsoid'] - 球，图标类型(type)为ellipsoid时样式参数参照{@link Style.EllipsoidStyle}
      * @property [wall = 'wall'] - 墙，图标类型(type)为wall时样式参数参照{@link Style.WallStyle}
      * @property [box = 'box'] - 盒子,类型（type）为box时样式参数参照{@link Style.BoxStyle}
+     * @property [model = 'model'] - gltf模型,类型（type）为model时样式参数参照{@link Style.ModelStyle}
      */
     static graphicType: {
         point?: string;
@@ -25334,9 +25342,10 @@ export class Graphic {
         circle?: string;
         corridor?: string;
         cylinder?: string;
-        ellipsiod?: string;
+        ellipsoid?: string;
         wall?: string;
         box?: string;
+        model?: string;
     };
 }
 
@@ -26066,6 +26075,7 @@ export class Style {
      * @property [insertPointColor = Color.SANDYBROWN.withAlpha(0.6)] - 插入点填充颜色
      * @property [pixelSize = 15] - 编辑点像素大小
      * @property [outlineColor = Color.SEASHELL.withAlpha(0.9)] - 编辑点边框颜色
+     * @property [highLightColor = Color.SKYBLUE.withAlpha(0.9)] - 编辑选中高亮颜色
      */
     static EditPointStyle: {
         color?: Color;
@@ -26073,6 +26083,7 @@ export class Style {
         insertPointColor?: Color;
         pixelSize?: number;
         outlineColor?: Color;
+        highLightColor?: Color;
     };
     /**
      * 点样式
@@ -26080,7 +26091,8 @@ export class Style {
      * @property [color = Cesium.Color.WHITE] - 点填充颜色
      * @property [outlineColor = Cesium.Color.TRANSPARENT] - 点外边框颜色
      * @property [pixelSize = 10] - 点的像素大小
-     * @property [scaleByDistance] - 随距离缩放大小
+     * @property [scaleByDistance] - 随距离缩放大小,例如var scaleByDistance =  new Cesium.NearFarScalar(10000,0.5,500000,0.1);
+     * 表示在视距一万米及50万米以下时图形缩放为0.5倍，50万米及以上时缩放为0.1倍，参数分别代表（第一个距离，第一个距离的缩放比例，第二个距离，第二个距离的缩放比例）。
      * @property [translucencyByDistance] - 随距离透明变化
      * @property [distanceDisplayCondition] - 随距离显隐
      * @property [disableDepthTestDistance] - 禁用深度检测的距离
@@ -26105,7 +26117,7 @@ export class Style {
      * @property [outlineWidth = 1.0] - 外边框宽度
      * @property [showBackground = false] - 是否显示背景
      * @property [backgroundColor = new Color(0.165, 0.165, 0.165, 0.8)] - 背景颜色
-     * @property [backgroundPadding = new Cartesian2(7, 5)] - 背景偏移量
+     * @property [backgroundPadding = new Cartesian2(0,0)] - 文本在背景中的偏移量，类似CSS中的padding，x代表水平padding像素值，y代表垂直padding像素值.左上角为原点。
      * @property [pixelOffset = new Cartesian2(0,0)] - 文本屏幕像素偏移量
      * @property [eyeOffset = new Cartesian3(0,0,0)] - 文本相机坐标下偏移量
      * @property [horizontalOrigin = HorizontalOrigin.LEFT] - 标注水平方向放置位置
@@ -26113,7 +26125,8 @@ export class Style {
      * @property [scale = 1.0] - 标注缩放大小
      * @property [translucencyByDistance] - 远近缩放透明度
      * @property [pixelOffsetScaleByDistance = false] - 按视距缩放像素大小(是否按视距缩放)
-     * @property [scaleByDistance] - 按视距缩放大小
+     * @property [scaleByDistance] - 按视距缩放大小，例如var scaleByDistance =  new Cesium.NearFarScalar(10000,0.5,500000,0.1);
+     * 表示在视距一万米及50万米以下时图形缩放为0.5倍，50万米及以上时缩放为0.1倍，参数分别代表（第一个距离，第一个距离的缩放比例，第二个距离，第二个距离的缩放比例）。
      * @property [heightReference = HeightReference.NONE] - 位置高度
      * @property [distanceDisplayCondition] - 按视距是否显示
      * @property [disableDepthTestDistance] - 禁用深度检测的距离，设置为Number.POSITIVE_INFINITY时禁用深度检测，设置为0.0的时候一直开启深度检测
@@ -26158,7 +26171,8 @@ export class Style {
      * @property [scale = 1.0] - 广告牌缩放大小
      * @property [translucencyByDistance] - 远近缩放透明度
      * @property [pixelOffsetScaleByDistance = false] - 按视距缩放像素大小(是否按视距缩放)
-     * @property [scaleByDistance] - 按视距缩放大小
+     * @property [scaleByDistance] - 按视距缩放大小，例如var scaleByDistance =  new Cesium.NearFarScalar(10000,0.5,500000,0.1);
+     * 表示在视距一万米及50万米以下时图形缩放为0.5倍，50万米及以上时缩放为0.1倍，参数分别代表（第一个距离，第一个距离的缩放比例，第二个距离，第二个距离的缩放比例）。
      * @property [heightReference = HeightReference.NONE] - 位置高度
      * @property [distanceDisplayCondition] - 按视距是否显示
      * @property [disableDepthTestDistance] - 禁用深度检测的距离，设置为Number.POSITIVE_INFINITY时禁用深度检测，设置为0.0的时候一直开启深度检测
@@ -26265,13 +26279,21 @@ export class Style {
     };
     /**
      * 矩形面图元样式
+     * @property [stRotation = 0.0] - 多边形纹理顺时针旋转角度（弧度值）。
+     * @property [extrudedHeight] - 多边形体拉伸高度。为0时为区，不为0时为多边形体。
+     * @property [rotation = 0.0] - 多边形顺时针旋转角度（弧度值）。
+     * @property [height = 0.0] - 多边形体底面高度。当perPositionHeight为false时生效。
      * @property [color = Color.RED] - 颜色
      * @property [translucent = true] - 是否半透明
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [material] - 材质 材质类型参见{@link Material}
-     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     * @property [depthTest] - 是否启用图元深度检测，设置成false为防止被地形遮挡
      */
     static RectangleStyle: {
+        stRotation?: number;
+        extrudedHeight?: number;
+        rotation?: number;
+        height?: number;
         color?: string | Color;
         translucent?: boolean;
         materialType?: string;
@@ -26351,13 +26373,27 @@ export class Style {
     };
     /**
      * 球（椭球）图元样式
+     * @property [radiusX] - 半径x
+     * @property [radiusY] - 半径Y
+     * @property [radiusZ] - 半径Z
+     * @property [innerRadiusX] - 内半径x
+     * @property [innerRadiusY] - 内半径Y
+     * @property [innerRadiusZ] - 内半径Z
+     * @property [height = 0] - 椭球距离地面抬高高度。
      * @property [color = Color.RED] - 颜色
      * @property [translucent = true] - 是否半透明
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [material] - 材质 材质类型参见{@link Material}
      * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
      */
-    static EllipsiodStyle: {
+    static EllipsoidStyle: {
+        radiusX?: number;
+        radiusY?: number;
+        radiusZ?: number;
+        innerRadiusX?: number;
+        innerRadiusY?: number;
+        innerRadiusZ?: number;
+        height?: number;
         color?: string | Color;
         translucent?: boolean;
         materialType?: string;
@@ -26405,6 +26441,45 @@ export class Style {
         flat?: boolean;
     };
     /**
+     * 模型图元样式
+     * @property [color = Color.WHITE] - 颜色
+     * @property [url] - gltf模型路径
+     * @property [scale] - 模型缩放大小
+     * @property [minimumPixelSize = 0.0] - 最小尺寸（像素）
+     * @property [maximumScale] - 最大缩放尺寸
+     * @property [shadows = ShadowMode.ENABLED] - 光照阴影类型
+     * @property [colorBlendMode = ColorBlendMode.HIGHLIGHT] - 颜色混合类型，设置的color与模型如何混合渲染。
+     * @property [colorBlendAmount = 0.5] - 颜色混合强度，设置的color与模型混合的强度。
+     * @property [silhouetteColor = Color.RED] - 轮廓颜色
+     * @property [silhouetteSize = 0.0] - 轮廓宽度
+     * @property [distanceDisplayCondition] - 随视距控制显示隐藏。
+     * @property [showOutline = true] - 是否启用模型外边线。
+     * @property [heightReference = HeightReference.NONE] - 位置高度相对地面模式。
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [flat = false] - 是否启用平坦渲染，即不考虑光照。
+     */
+    static ModelStyle: {
+        color?: string | Color;
+        url?: string;
+        scale?: number;
+        minimumPixelSize?: number;
+        maximumScale?: number;
+        shadows?: ShadowMode;
+        colorBlendMode?: ColorBlendMode;
+        colorBlendAmount?: number;
+        silhouetteColor?: Color;
+        silhouetteSize?: number;
+        distanceDisplayCondition?: DistanceDisplayCondition;
+        showOutline?: boolean;
+        heightReference?: number;
+        materialType?: string;
+        depthTest?: boolean;
+        material?: Material;
+        flat?: boolean;
+    };
+    /**
      * 将Style对象转换成与cesium无关的对象
      * @example
      * var options = new  Cesium.Style('label', {text:'mapgis',color:#ffffff});
@@ -26433,9 +26508,10 @@ export class Style {
      * @property [circle = 'circle'] - 圆，图标类型(type)为circle时样式参数参照{@link Style.CircleStyle}
      * @property [corridor = 'corridor'] - 方管线，图标类型(type)为corridor时样式参数参照{@link Style.CorridorStyle}
      * @property [cylinder = 'cylinder'] - 圆台（圆锥），图标类型(type)为cylinder时样式参数参照{@link Style.CylinderStyle}
-     * @property [ellipsiod = 'ellipsiod'] - 球，图标类型(type)为ellipsiod时样式参数参照{@link Style.EllipsiodStyle}
+     * @property [ellipsoid = 'ellipsoid'] - 球，图标类型(type)为Ellipsoid时样式参数参照{@link Style.EllipsoidStyle}
      * @property [wall = 'wall'] - 墙，图标类型(type)为wall时样式参数参照{@link Style.WallStyle}
      * @property [box = 'box'] - 盒子,类型（type）为box时样式参数参照{@link Style.BoxStyle}
+     * @property [model = 'model'] - gltf模型,类型（type）为model时样式参数参照{@link Style.ModelStyle}
      */
     static styleType: {
         point?: string;
@@ -26448,9 +26524,10 @@ export class Style {
         circle?: string;
         corridor?: string;
         cylinder?: string;
-        ellipsiod?: string;
+        ellipsoid?: string;
         wall?: string;
         box?: string;
+        model?: string;
     };
 }
 
@@ -26669,7 +26746,7 @@ export class GraphicsLayer {
     /**
      * 添加模型
      */
-    addModel(url: string): void;
+    addModel(options: string): void;
     /**
      * 移除所有鼠标事件，停止绘制
      */
@@ -27542,6 +27619,10 @@ export class MapGISM3D {
      * 节点颜色
      */
     nodeColor: any;
+    /**
+     * Get the Multimodal tile.
+     */
+    searchMultimodalTile(): void;
     /**
      * 重置当前节点颜色
      */
@@ -28489,6 +28570,10 @@ export class Tree {
      */
     index: string;
     /**
+     * 节点索引与对应MapgisM3D节点的映射
+     */
+    indexHashMap: HashMap;
+    /**
      * 节点的父节点
      */
     treeParent: any;
@@ -28496,6 +28581,14 @@ export class Tree {
      * 节点的子节点数组
      */
     treeChildren: any;
+    /**
+     * MapgisM3D叶子节点的属性
+     */
+    attMap: any;
+    /**
+     * 构建树的节点名称
+     */
+    nodeName: string;
     /**
      * 根据tileset/layer构建树
      * @param tileset - 图层
@@ -29356,6 +29449,12 @@ export class WindowLightEffect {
      */
     remove(): void;
 }
+
+/**
+ * 渲染到纹理对象
+ * @param positions - 位置点
+ */
+export function PrimitiveTexture(options: any, positions: Cartesian3[]): void;
 
 /**
  * @param options - 可选参数
@@ -50627,6 +50726,7 @@ declare module "cesium/Source/MapGIS/PostProcessingEffects/SearchlightEffect" { 
 declare module "cesium/Source/MapGIS/PostProcessingEffects/StableParticle" { import { StableParticle } from 'cesium'; export default StableParticle; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/WeatherEffect" { import { WeatherEffect } from 'cesium'; export default WeatherEffect; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/WindowLightEffect" { import { WindowLightEffect } from 'cesium'; export default WindowLightEffect; }
+declare module "cesium/Source/MapGIS/Primitive/PrimitiveTexture" { import { PrimitiveTexture } from 'cesium'; export default PrimitiveTexture; }
 declare module "cesium/Source/MapGIS/Provider/BaiduMapImagerProvider" { import { BaiduMapImagerProvider } from 'cesium'; export default BaiduMapImagerProvider; }
 declare module "cesium/Source/MapGIS/Provider/GoogleMapImageryProvider" { import { GoogleMapImageryProvider } from 'cesium'; export default GoogleMapImageryProvider; }
 declare module "cesium/Source/MapGIS/Provider/MapGISMapServerImageryProvider" { import { MapGISMapServerImageryProvider } from 'cesium'; export default MapGISMapServerImageryProvider; }
