@@ -18,3 +18,4 @@ export { default as MpViewpointManager } from './viewpoint-manager/viewpoint-man
 export { default as MpPondingSimulation } from './ponding-simulation/ponding-simulation.vue'
 export { default as MpVideo } from './video/video.vue'
 export { default as MpStratifiedHousehold } from './stratified-household/stratified-household.vue'
+export { default as MpBimComponent } from './bim-component/bim-component.vue'
