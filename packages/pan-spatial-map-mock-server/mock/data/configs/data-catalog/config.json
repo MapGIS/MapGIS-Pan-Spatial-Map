@@ -876,6 +876,20 @@
             "serverUrl": ""
           },
           {
+            "label": "场景文档扩展属性测试",
+            "describe": "场景文档扩展属性测试",
+            "ip": "192.168.199.71",
+            "port": "8089",
+            "layerServiceType": "DOC3D",
+            "name": "G3D_分层分户",
+            "searchName": "",
+            "model": "",
+            "guid": "a2ee2b40-14fd-4104-a05f-d8e77e54f1bc",
+            "serverUrl": "",
+            "customParameters": [{ "extendedPropKeys": "Expand,InitOpenView" }]
+
+          },
+          {
             "label": "M3D-1.0模型拾取",
             "describe": "M3D-1.0模型拾取",
             "ip": "192.168.88.204",
