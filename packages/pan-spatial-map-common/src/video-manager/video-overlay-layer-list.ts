@@ -41,7 +41,7 @@ export interface VideoOverlayLayer {
 }
 
 class VideoOverlayLayerList {
-  public _videoOverlayLayerList: Array<VideoOverlayLayer> = []
+  private _videoOverlayLayerList: Array<VideoOverlayLayer> = []
 
   /**
    * 获取videoOverlayLayerList

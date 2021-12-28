@@ -167,9 +167,7 @@ export default class MpVideo extends Mixins(WidgetMixin) {
     }
   ]
 
-  private get VideoOverlayLayerListInstance() {
-    return VideoOverlayLayerList
-  }
+  private VideoOverlayLayerListInstance = VideoOverlayLayerList
 
   private get videoOverlayLayerList() {
     const videoOverlayLayerList = this.VideoOverlayLayerListInstance.getVideoOverlayLayerList()
@@ -191,14 +189,6 @@ export default class MpVideo extends Mixins(WidgetMixin) {
   }
 
   private config
-
-  // get videoOverlayLayerList() {
-  //   return (
-  //     (this.widgetInfo.config &&
-  //       this.widgetInfo.config.videoOverlayLayerList) ||
-  //     this.videoLayerList
-  //   )
-  // }
 
   private videoComponent = null
 
@@ -234,10 +224,12 @@ export default class MpVideo extends Mixins(WidgetMixin) {
         config: JSON.stringify(config)
       })
       .then(() => {
-        this.$message.success('更新video配置成功')
+        // this.$message.success('更新video配置成功')
+        console.log('更新video配置成功')
       })
       .catch(() => {
-        this.$message.error('更新video配置失败')
+        // this.$message.error('更新video配置失败')
+        console.log('更新video配置失败')
       })
   }
 }
