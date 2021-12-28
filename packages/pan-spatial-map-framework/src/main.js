@@ -26,8 +26,9 @@ import Visualization from '@mapgis/pan-spatial-map-plugin-visualization'
 const router = initRouter(store.state.setting.asyncRoutes)
 const i18n = initI18n('CN', 'US')
 
-Vue.use(MapgisUi)
+
 Vue.use(Antd)
+Vue.use(MapgisUi)
 Vue.config.productionTip = false
 Vue.use(Plugins)
 
