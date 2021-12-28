@@ -3,16 +3,16 @@
     class="video-manager"
     :videoOverlayLayerList="videoOverlayLayerList"
     @load="load"
-    @update-config="updateConfig"
+    @update-videoOverlayLayerList="updateVideoOverlayLayerList"
     :modelUrl="modelUrl"
     :modelOffset="modelOffset"
   >
   </mapgis-3d-video-manager>
 </template>
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { api } from '@mapgis/pan-spatial-map-common'
+import { api, VideoOverlayLayerList } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpVideo'
@@ -167,20 +167,47 @@ export default class MpVideo extends Mixins(WidgetMixin) {
     }
   ]
 
-  private config
+  private get VideoOverlayLayerListInstance() {
+    return VideoOverlayLayerList
+  }
 
-  get videoOverlayLayerList() {
-    return (
-      (this.widgetInfo.config &&
-        this.widgetInfo.config.videoOverlayLayerList) ||
-      this.videoLayerList
+  private get videoOverlayLayerList() {
+    const videoOverlayLayerList = this.VideoOverlayLayerListInstance.getVideoOverlayLayerList()
+    return videoOverlayLayerList
+  }
+
+  private set videoOverlayLayerList(videoOverlayLayerList) {
+    this.VideoOverlayLayerListInstance.setVideoOverlayLayerList(
+      videoOverlayLayerList
     )
   }
+
+  @Watch('videoOverlayLayerList', {
+    deep: true,
+    immediate: true
+  })
+  changeVideoOverlayLayerList() {
+    console.log(this.videoOverlayLayerList)
+  }
+
+  private config
+
+  // get videoOverlayLayerList() {
+  //   return (
+  //     (this.widgetInfo.config &&
+  //       this.widgetInfo.config.videoOverlayLayerList) ||
+  //     this.videoLayerList
+  //   )
+  // }
 
   private videoComponent = null
 
   load(videoComponent) {
     this.videoComponent = videoComponent
+    this.videoOverlayLayerList =
+      (this.widgetInfo.config &&
+        this.widgetInfo.config.videoOverlayLayerList) ||
+      this.videoLayerList
   }
 
   onActive() {
@@ -189,22 +216,28 @@ export default class MpVideo extends Mixins(WidgetMixin) {
 
   // 微件失活时
   onDeActive() {
+    // 微件失活时自动保存配置到后台
+    this.saveConfig()
     this.videoComponent.unmount()
   }
 
-  updateConfig(layerList) {
-    console.log(layerList)
-    const config = { videoOverlayLayerList: [...layerList] }
+  updateVideoOverlayLayerList(layerList) {
+    this.videoOverlayLayerList = [...layerList]
+  }
+
+  saveConfig() {
+    console.log(this.videoOverlayLayerList)
+    const config = { videoOverlayLayerList: [...this.videoOverlayLayerList] }
     api
       .saveWidgetConfig({
         name: 'video',
         config: JSON.stringify(config)
       })
       .then(() => {
-        console.log('更新video配置成功')
+        this.$message.success('更新video配置成功')
       })
       .catch(() => {
-        console.log('更新video配置失败')
+        this.$message.error('更新video配置失败')
       })
   }
 }
