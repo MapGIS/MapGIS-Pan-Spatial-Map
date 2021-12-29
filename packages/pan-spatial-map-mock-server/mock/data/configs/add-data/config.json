@@ -36,6 +36,21 @@
       "children": [
         {
           "type": "IGSVector",
+          "url": "http://localhost:6163/igs/rest/mrms/layers?gdbps=gdbp://MapGISLocalPlus/sample/sfcls/湖北省路网",
+          "name": "湖北省路网"
+        },
+        {
+          "type": "IGSVector",
+          "url": "http://localhost:6163/igs/rest/mrms/layers?gdbps=gdbp://MapGISLocalPlus/sample/sfcls/武汉市轮廓",
+          "name": "武汉市轮廓"
+        },
+        {
+          "type": "IGSVector",
+          "url": "http://localhost:6163/igs/rest/mrms/layers?gdbps=gdbp://MapGISLocalPlus/sample/sfcls/武汉市建筑物",
+          "name": "武汉市建筑物"
+        },
+        {
+          "type": "IGSVector",
           "url": "http://192.168.21.191:6163/igs/rest/mrms/layers?gdbps=gdbp://MapGisLocal/专题图数据/sfcls/中国地级市x",
           "name": "中国地级市x"
         },

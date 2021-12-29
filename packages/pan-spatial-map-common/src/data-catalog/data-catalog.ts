@@ -180,6 +180,8 @@ export class DataCatalogManager {
           layer = new GeoJsonLayer({ ...layerConfig, url })
         } else {
           layer = new GeoJsonLayer(layerConfig)
+          // console.log("------------layer data-catalog--------------",layer);
+
         }
 
         break

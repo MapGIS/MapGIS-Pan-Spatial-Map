@@ -132,6 +132,12 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   finishF = false
 
+  featureStyle = new FillStyle({
+    // color: "#ff0000", 
+    color: "#66FF66",
+    opacity: 1
+  })
+
   changeSelectLevel() {
     this.selectLevel = !this.selectLevel
     if (this.selectLevel == false) {
@@ -244,6 +250,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
       data: {
         type: 'GeoJson',
         source: resultFeature,
+        featureStyle:  this.featureStyle,
         name: this.destLayer
       }
     }
