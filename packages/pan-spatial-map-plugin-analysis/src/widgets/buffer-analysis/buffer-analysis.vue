@@ -28,7 +28,7 @@
       :srcLayer='srcLayer'
       :srcFeature='srcFeature'
       @listenLayer='showLayer'
-      @listenFeature='showFeature'
+      @listenFeature='showFeature(arguments)'
       @listenBufferAdd='showAdd'
       @load='load'
     ></mapgis-3d-buffer-analysis>
@@ -113,7 +113,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   isWidgetOpen = false
 
-  private layerStyle = new FillStyle({
+  private featureStyle = new FillStyle({
     color: "#ff0000",
     outlineColor: "#ff0000",
     outlineWidth: 2.5,
@@ -122,7 +122,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   selectLevel = false
 
-  private destLayer = 'bufferResult'
+  private destLayer = ''
 
   private feature = undefined
 
@@ -131,12 +131,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   finishL = false
 
   finishF = false
-
-  featureStyle = new FillStyle({
-    // color: "#ff0000", 
-    color: "#66FF66",
-    opacity: 1
-  })
 
   changeSelectLevel() {
     this.selectLevel = !this.selectLevel
@@ -215,7 +209,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   }
 
   getResultLayer() {
-    debugger
     const url = `${this.baseBufferUrl}?gdbps=${this.destLayer}`
     const index = url.lastIndexOf("/")
     const layerName = url.substring(index + 1, url.length)
@@ -250,10 +243,11 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
       data: {
         type: 'GeoJson',
         source: resultFeature,
-        featureStyle:  this.featureStyle,
+        featureStyle: this.featureStyle,
         name: this.destLayer
       }
     }
+    debugger
     eventBus.$emit(events.ADD_DATA_EVENT, data)
   }
 
@@ -269,6 +263,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   reset() {
     this.isFullScreen = false
+    this.destLayer = ''
   }
 
   showLayer(data) {
@@ -280,8 +275,10 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   }
 
   showFeature(data) {
-    this.feature = data
+    this.feature = data[0]
+    this.destLayer = data[1]
     console.log(this.feature)
+    console.log(this.destLayer)
     console.log(JSON.stringify(this.feature))
     this.finishF = true
     if (this.add == true) {
@@ -325,7 +322,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   padding: 0px 0px 10px 0px;
   top: 0px;
   margin-top: -15px;
-  box-shadow: 0px 0px 1px 0px rgba(255, 255, 255, 1);
+  // box-shadow: 0px 0px 1px 0px rgba(255, 255, 255, 1);
   z-index: 1000
 }
 

@@ -12,7 +12,7 @@
     "name": "pan-spatial-map-classic-theme",
     "customStyle": {
       "color": "#1890ff",
-      "theme": "dark"
+      "theme": "night"
     }
   },
   "mapWidgets": {
