@@ -18,6 +18,7 @@ import {
   DataFlowLayer,
   IGSFeatureLayer,
   GeoJsonLayer,
+  ModelCacheLayer,
   UUID,
   Catalog,
   UrlUtil
@@ -194,7 +195,14 @@ export class DataCatalogManager {
         }
 
         break
+      case LayerType.ModelCache:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        }
 
+        layer = new ModelCacheLayer({ url })
+
+        break
       default:
         break
     }
@@ -848,6 +856,7 @@ export class DataCatalogManager {
         serverType = LayerType.IGSScene
         break
       case this.layerServiceType.TILE3D:
+        serverType = LayerType.ModelCache
         break
       case this.layerServiceType.POINTCLOUD:
         break

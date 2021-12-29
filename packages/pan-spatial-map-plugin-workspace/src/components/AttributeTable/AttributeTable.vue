@@ -350,11 +350,17 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       x: (bound.xmin + bound.xmax) / 2,
       y: (bound.ymin + bound.ymax) / 2
     }
+    /**
+     * 当缩放的范围为点时，跳转过去，会导致标注点消失，
+     * 这个给点一个矩形范围
+     * @修改人 龚瑞强
+     * @date 2021/12/28
+     */
     bound = {
-      xmin: center.x - width,
-      ymin: center.y - height,
-      xmax: center.x + width,
-      ymax: center.y + height
+      xmin: center.x - (width || 0.1),
+      ymin: center.y - (height || 0.1),
+      xmax: center.x + (width || 0.1),
+      ymax: center.y + (height || 0.1)
     }
     this.fitBound = { ...(bound as Record<string, number>) }
   }
