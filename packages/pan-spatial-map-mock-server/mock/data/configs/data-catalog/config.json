@@ -914,6 +914,19 @@
               "customParameters": [{ "extendedPropKeys": "Expand,IsStratified" }]
           },
           {
+            "label": "M3D-楼栋构建树",
+            "describe": "M3D-楼栋构建树",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILE3D",
+            "name": "",
+            "searchName": "",
+            "model": "surface",
+            "guid": "6058684b-b4b3-46a1-9b59-1057dbe00c04",
+            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/3栋/3栋.mcj",
+            "customParameters": [{ "extendedPropKeys": "Expand,IsBimComponent" }]
+          },
+          {
               "label": "M3D-BIM构建树",
               "describe": "M3D-BIM构建树",
               "ip": "",
