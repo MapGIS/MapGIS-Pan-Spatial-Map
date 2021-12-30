@@ -92,7 +92,8 @@ enum QueryType {
   Rectangle = 'Rectangle',
   Polygon = 'Polygon',
   LineString = 'LineString',
-  PickModel = 'PickModel'
+  PickModel = 'PickModel',
+  Cube = 'Cube'
 }
 
 @Component({
@@ -122,7 +123,8 @@ export default class MpFeatureQuery extends Mixins(
     QueryType.Point,
     QueryType.Polygon,
     QueryType.LineString,
-    QueryType.Rectangle
+    QueryType.Rectangle,
+    QueryType.Cube
   ]
 
   private queryTypes2DrawModes = {
