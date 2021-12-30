@@ -780,6 +780,18 @@
             "serverUrl": ""
           },
           {
+            "label": "武汉地形",
+            "describe": "武汉地形",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "武汉地形",
+            "searchName": "",
+            "model": "globe",
+            "guid": "68744fd8-61be-400d-a861-4a0415a339c2",
+            "serverUrl": ""
+          },
+          {
             "label": "三维模型",
             "describe": "三维模型",
             "ip": "",
@@ -901,30 +913,32 @@
             "serverUrl": ""
           },
           {
-              "label": "G3D-分层分户",
-              "describe": "G3D-分层分户",
-              "ip": "192.168.199.71",
-              "port": "8089",
-              "layerServiceType": "DOC3D",
-              "name": "G3D_分层分户",
-              "searchName": "",
-              "model": "surface",
-              "guid": "b1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
-              "serverUrl": "",
-              "customParameters": [{ "extendedPropKeys": "Expand,IsStratified" }]
+            "label": "G3D-分层分户",
+            "describe": "G3D-分层分户",
+            "ip": "192.168.199.71",
+            "port": "8089",
+            "layerServiceType": "DOC3D",
+            "name": "G3D_分层分户",
+            "searchName": "",
+            "model": "surface",
+            "guid": "b1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
+            "serverUrl": "",
+            "customParameters": [{ "extendedPropKeys": "Expand,IsStratified" }]
           },
           {
-              "label": "M3D-BIM构建树",
-              "describe": "M3D-BIM构建树",
-              "ip": "",
-              "port": "",
-              "layerServiceType": "TILE3D",
-              "name": "",
-              "searchName": "",
-              "model": "surface",
-              "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c04",
-              "serverUrl": "http://192.168.88.204:8089/M3D/2.0/高级住所模型/高级住所模型.mcj",
-              "customParameters": [{ "extendedPropKeys": "Expand,IsBimComponent" }]
+            "label": "M3D-BIM构建树",
+            "describe": "M3D-BIM构建树",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILE3D",
+            "name": "",
+            "searchName": "",
+            "model": "surface",
+            "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c04",
+            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/高级住所模型/高级住所模型.mcj",
+            "customParameters": [
+              { "extendedPropKeys": "Expand,IsBimComponent" }
+            ]
           }
         ]
       },

@@ -119,7 +119,7 @@
             "uri": "widgets/data-catalog",
             "config": "configs/data-catalog/config.json"
           },
-	      {
+          {
             "id": "widget_3e8667b6-71ce-492d-be6f-f8193360b4d2",
             "uri": "widgets/layer-list"
           },
