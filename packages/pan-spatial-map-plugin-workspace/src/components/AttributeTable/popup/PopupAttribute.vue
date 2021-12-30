@@ -1,5 +1,19 @@
 <template>
   <div class="attribute-popup-content-wrapper">
+    <a-carousel v-if="images && images.length > 0" autoplay>
+      <div
+        v-for="(image, index) in images"
+        :key="index"
+        class="carousel-image-container"
+      >
+        <img
+          :src="image"
+          width="100%"
+          height="100%"
+          style="object-fit:contain"
+        />
+      </div>
+    </a-carousel>
     <mapgis-ui-list
       item-layout="horizontal"
       :data-source="propertyKeys"
@@ -79,7 +93,7 @@ export default {
       const keys = []
       for (const key in this.properties) {
         // 不展示关联的实体编码
-        if (key !== 'entityCode') {
+        if (key !== 'entityCode' && key !== 'images') {
           keys.push(key)
         }
       }
@@ -90,6 +104,16 @@ export default {
      */
     entityCode() {
       return this.properties.entityCode
+    },
+    /**
+     * 获取轮播图图片
+     */
+    images() {
+      if (this.properties.images) {
+        const arr = this.properties.images.split(';')
+        return arr || []
+      }
+      return []
     }
   },
   methods: {
@@ -110,6 +134,15 @@ export default {
   }
 }
 .attribute-popup-content-wrapper {
+  .ant-carousel {
+    .slick-slide {
+      background-color: @hover-bg-color;
+      color: white;
+    }
+    .carousel-image-container {
+      height: 180px;
+    }
+  }
   .table-marker {
     max-height: 130px;
     overflow: auto;
