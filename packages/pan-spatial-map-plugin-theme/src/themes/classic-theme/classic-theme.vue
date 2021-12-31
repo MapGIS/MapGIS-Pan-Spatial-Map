@@ -95,16 +95,27 @@ export default {
        * 后台推荐配置的为形如“/igs/rest/mrcs/vtiles/矢量瓦片服务名/sprite”的服务接口。（IGS net和java版都支持）
        * 修改人：龚跃健
        * 修改日期：2021/11/25
+       * 修改说明：默认使用内置的字体库和符号库，如果baseConfigInstance.config.ip和baseConfigInstance.config.port配置了，则使用配置服务上的符号库和字体库
+       * 如果配置了baseConfigInstance.config.spriteUrl，就使用配置的符号库
+       * 修改人：龚跃健
+       * 修改日期：2021/12/30
        */
-      const spriteUrl =
-        baseConfigInstance.config.spriteUrl ||
-        `http://${baseConfigInstance.config.ip}:${baseConfigInstance.config.port}/igs/rest/mrms/vtiles/sprite`
+      const { location } = window
+      let sprite = `${location.protocol}//${location.host}${process.env.BASE_URL}sprite/sprite`
+      let glyphs = `${location.protocol}//${location.host}${process.env.BASE_URL}fonts/{fontstack}/{range}.pbf`
+      const { ip, port, spriteUrl } = baseConfigInstance.config
+      if (spriteUrl && spriteUrl.length > 0) {
+        sprite = spriteUrl
+      } else if (ip && ip.length > 0 && port && port.length > 0) {
+        sprite = `http://${ip}:${port}/igs/rest/mrms/vtiles/sprite`
+        glyphs = `http://${ip}:${port}/igs/rest/mrcs/vtiles/fonts/{fontstack}/{range}.pbf`
+      }
       return {
         center: { lng: Number(lnglat[0]), lat: Number(lnglat[1]) },
         zoom: baseConfigInstance.config.initZoom,
         mapStyle: {
-          sprite: spriteUrl,
-          glyphs: `http://${baseConfigInstance.config.ip}:${baseConfigInstance.config.port}/igs/rest/mrcs/vtiles/fonts/{fontstack}/{range}.pbf`
+          sprite,
+          glyphs
         }
       }
     }
