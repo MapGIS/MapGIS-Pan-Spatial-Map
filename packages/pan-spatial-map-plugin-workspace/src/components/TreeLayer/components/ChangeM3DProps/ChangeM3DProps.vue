@@ -1,8 +1,13 @@
 <template>
   <div class="change-m3d-props-container">
-    <a-form layout="inline" labelAlign="left">
+    <a-form labelAlign="left">
       <a-form-item label="最大屏幕空间误差">
-        <a-input-number v-model="maximumScreenSpaceError" :min="0" />
+        <a-input-number
+          v-model="maximumScreenSpaceError"
+          :min="0"
+          style="width:100%
+          "
+        />
       </a-form-item>
       <a-form-item>
         <a-button type="primary" @click="submit">

@@ -18,6 +18,7 @@ import {
   DataFlowLayer,
   IGSFeatureLayer,
   GeoJsonLayer,
+  ModelCacheLayer,
   UUID,
   Catalog,
   UrlUtil
@@ -194,7 +195,14 @@ export class DataCatalogManager {
         }
 
         break
+      case LayerType.ModelCache:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        }
 
+        layer = new ModelCacheLayer({ url })
+
+        break
       default:
         break
     }
@@ -848,6 +856,7 @@ export class DataCatalogManager {
         serverType = LayerType.IGSScene
         break
       case this.layerServiceType.TILE3D:
+        serverType = LayerType.ModelCache
         break
       case this.layerServiceType.POINTCLOUD:
         break
@@ -879,7 +888,7 @@ export class DataCatalogManager {
       case LayerType.IGSMapImage:
         serverList = this.defaultServerList.docList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -887,7 +896,7 @@ export class DataCatalogManager {
       case LayerType.IGSTile:
         serverList = this.defaultServerList.tileList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -896,7 +905,7 @@ export class DataCatalogManager {
       case LayerType.IGSScene:
         serverList = this.defaultServerList.sceneList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }

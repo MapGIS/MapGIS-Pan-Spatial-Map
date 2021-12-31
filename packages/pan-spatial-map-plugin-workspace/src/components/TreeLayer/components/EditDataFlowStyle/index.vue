@@ -1,8 +1,9 @@
 <template>
   <div class="edit-data-flow-style-container">
     <div class="edit-form-container">
-      <mapgis-ui-form :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
-        <mapgis-ui-form-item label="类型">
+      <a-row type="flex" style="margin-top:15px">
+        <a-col flex="100px">类型</a-col>
+        <a-col flex="1">
           <mapgis-ui-radio-group v-model="type">
             <mapgis-ui-radio-button value="point">
               点
@@ -14,23 +15,35 @@
               模型
             </mapgis-ui-radio-button>
           </mapgis-ui-radio-group>
-        </mapgis-ui-form-item>
-        <mapgis-ui-form-item
-          v-for="item in form"
-          :key="item.key"
-          :label="item.label"
-        >
-          <mapgis-ui-input v-if="item.type === 'string'" v-model="item.value" />
-          <mapgis-ui-input-number
+        </a-col>
+      </a-row>
+      <a-row
+        style="margin-top:15px"
+        v-for="item in form"
+        :key="item.key"
+        type="flex"
+      >
+        <a-col flex="100px">{{ item.label }}</a-col>
+        <a-col flex="1">
+          <mapgis-ui-input
+            style="width:100%"
+            v-if="item.type === 'string'"
+            v-model="item.value"
+          />
+          <a-input-number
             v-else-if="item.type === 'number'"
             v-model="item.value"
             style="width:100%"
             :min="item.min"
             :max="item.max"
           />
-          <mapgis-ui-sketch-color-picker v-else :color.sync="item.value" />
-        </mapgis-ui-form-item>
-      </mapgis-ui-form>
+          <mapgis-ui-sketch-color-picker
+            v-else
+            :color.sync="item.value"
+            style="width:100%"
+          />
+        </a-col>
+      </a-row>
     </div>
     <div class="edit-form-submit">
       <a-button type="primary" @click="submit">
@@ -136,12 +149,19 @@ export default class MpEditDataFlowStyle extends Vue {
             value: '#FF0000',
             label: '描边颜色'
           },
-          { key: 'outlineWidth', type: 'number', value: 2, label: '描边宽度' },
+          {
+            key: 'outlineWidth',
+            type: 'number',
+            value: 2,
+            label: '描边宽度',
+            min: 0
+          },
           {
             key: 'outlineOpacity',
             type: 'number',
             value: 1,
-            label: '描边透明度'
+            label: '描边透明度',
+            min: 0
           }
         ]
         if (type === 'point') {
