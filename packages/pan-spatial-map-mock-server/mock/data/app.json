@@ -274,6 +274,10 @@
           {
             "id": "widget_5058684b-b4b3-46a1-9b59-1057dbe00c04",
             "uri": "widgets/bim-component"
+          },
+          {
+            "id": "widget_d1a46c04-3a62-92e1-24d5-909bc46ccaa6",
+            "uri": "widgets/building-grow"
           }
         ],
         "widgetStructure": [
@@ -392,6 +396,9 @@
               },
               {
                 "id": "widget_79dd9f5e-95ad-4971-b822-520e2f721b51"
+              },
+              {
+                "id": "widget_d1a46c04-3a62-92e1-24d5-909bc46ccaa6"
               }
             ]
           }

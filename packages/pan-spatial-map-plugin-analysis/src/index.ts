@@ -19,7 +19,8 @@ import {
   MpVideo,
   MpCityGrow,
   MpStratifiedHousehold,
-  MpBimComponent
+  MpBimComponent,
+  MpBuildingGrow
 } from './widgets'
 
 const components = [
@@ -43,7 +44,8 @@ const components = [
   MpVideo,
   MpCityGrow,
   MpStratifiedHousehold,
-  MpBimComponent
+  MpBimComponent,
+  MpBuildingGrow
 ]
 
 const install = Vue => {
