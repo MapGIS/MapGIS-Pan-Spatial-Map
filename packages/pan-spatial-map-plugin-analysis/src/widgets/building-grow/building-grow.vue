@@ -31,6 +31,7 @@
               v-if='startBuildingGrow'
               :vueIndex='vueIndex'
               :enableSteps='true'
+              :steps='steps'
               @loaded='loaded'/>
           </template>
         </mp-window>
@@ -70,7 +71,7 @@ export default class MpBuildingGrow extends Mixins(WidgetMixin) {
 
   private vueIndex = undefined
 
-  // private m3dLength = 0
+  private steps = 2
 
   private selectDefaultVal = undefined
 
