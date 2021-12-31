@@ -260,6 +260,14 @@
             "uri": "widgets/ponding-simulation"
           },
           {
+            "id": "widget_41894471-62ea-F7ba-21FF-17168abd24c0",
+            "uri": "widgets/buffer-analysis"
+          },
+          {
+            "id": "widget_1de66402-bce0-7240-8278-76ba412c71c8",
+            "uri": "widgets/overlay-analysis"
+          },
+          {
             "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc",
             "uri": "widgets/video"
           },
@@ -373,6 +381,12 @@
               },
               {
                 "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd"
+              },
+              {
+                "id": "widget_41894471-62ea-F7ba-21FF-17168abd24c0"
+              },
+              {
+                "id": "widget_1de66402-bce0-7240-8278-76ba412c71c8"
               },
               {
                 "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc"
