@@ -42,23 +42,19 @@ export default class MpLayerList extends Mixins(WidgetMixin) {
   /**
    * 视图窗口变化
    */
-  private onWindowSize(mode: 'max' | 'normal') {
-    this.$nextTick(() => {
-      this.mode = mode
-      const layerListEl = document.getElementById('layerListEl')
-      console.log(mode)
-      if (layerListEl) {
-        layerListEl.style.width = `${
-          mode === 'max' ? this.$el.clientWidth : 300
-        }px`
-      }
-    })
-  }
+  // private onWindowSize(mode: 'max' | 'normal') {
+  //   this.$nextTick(() => {
+  //     this.mode = mode
+  //     const layerListEl = document.getElementById('layerListEl')
+  //     console.log(mode)
+  //     if (layerListEl) {
+  //       layerListEl.style.width = `${
+  //         mode === 'max' ? this.$el.clientWidth : 300
+  //       }px`
+  //     }
+  //   })
+  // }
 }
 </script>
 
-<style lang="less" scoped>
-#layerListEl {
-  width: 300px;
-}
-</style>
+<style lang="less" scoped></style>

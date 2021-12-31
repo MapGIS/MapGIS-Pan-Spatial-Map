@@ -888,7 +888,7 @@ export class DataCatalogManager {
       case LayerType.IGSMapImage:
         serverList = this.defaultServerList.docList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -896,7 +896,7 @@ export class DataCatalogManager {
       case LayerType.IGSTile:
         serverList = this.defaultServerList.tileList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -905,7 +905,7 @@ export class DataCatalogManager {
       case LayerType.IGSScene:
         serverList = this.defaultServerList.sceneList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }

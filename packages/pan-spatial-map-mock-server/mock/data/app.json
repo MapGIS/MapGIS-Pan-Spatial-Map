@@ -136,6 +136,10 @@
             "id": "widget_219be6f7-034a-4f06-ba0f-1be9d3b093bd",
             "uri": "widgets/map-data-v",
             "config": "configs/map-data-v/config.json"
+          },
+          {
+            "id": "widget_3e8667b6-71ce-492d-be6f-f8193360b4d2",
+            "uri": "widgets/layer-list"
           }
         ],
         "widgetStructure": [],
@@ -149,10 +153,6 @@
           {
             "id": "widget_878815b5-3f97-4026-80a9-46e683c053b1",
             "uri": "widgets/measurement"
-          },
-          {
-            "id": "widget_3e8667b6-71ce-492d-be6f-f8193360b4d2",
-            "uri": "widgets/layer-list"
           },
           {
             "id": "widget_b886364f-684a-4efb-98b7-7b98418f943a",
@@ -279,9 +279,6 @@
         "widgetStructure": [
           {
             "id": "widget_878815b5-3f97-4026-80a9-46e683c053b1"
-          },
-          {
-            "id": "widget_3e8667b6-71ce-492d-be6f-f8193360b4d2"
           },
           {
             "id": "widget_b886364f-684a-4efb-98b7-7b98418f943a"
