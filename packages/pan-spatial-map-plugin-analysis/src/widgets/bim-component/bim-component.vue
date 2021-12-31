@@ -1,10 +1,11 @@
 <template>
     <mapgis-3d-bim-component
+      v-if="show"
       @loaded="load"
       :outStyle="outStyle"
       :layers="layers"
       :enableCollapse="false"
-      :enableStratifiedHouse="true"
+      :enableBim="true"
     ></mapgis-3d-bim-component>
 </template>
 
@@ -28,18 +29,21 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
     padding: '0px',
     margin: '0px',
     height: '460px',
-    width: '270px',
+    width: '400px',
     top: '0px',
     left: '0px',
   }
 
   layers = [];
 
+  show = true;
+
  /**
    * 动态获取基础目录树上已勾选的三维模型数据
    */
   @Watch('document', { immediate: true, deep: true })
   getScenes() {
+    debugger
     if (!this.document) return
     const layers = []
     this.document.defaultMap
@@ -47,25 +51,9 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
       .getFlatLayers()
       .forEach((layer, index) => {
         if (layer.loadStatus === LoadStatus.loaded) {
-          if (layer.type === LayerType.IGSScene) {
-            const { renderType } = layer.activeScene.sublayers[0]
-            if (renderType === IGSSceneSublayerRenderType.modelCache) {
-              const { range } = layer.activeScene.sublayers[0]
-              const { id } = layer.activeScene.layer
-              let isHousehold;
-              if (layer.title.indexOf('G3D') >= 0) {
-                isHousehold = true;
-              } else {
-                isHousehold = false;
-              }
-              // 剖切分析暂时只支持模型
-              layers.push({
-                title: layer.title,
-                vueIndex: id,
-                range,
-                isHousehold
-              })
-            }
+          if (layer.type === LayerType.ModelCache) {
+            const { title, id } = layer
+            layers.push({ title, vueIndex: id, isBim: true })
           }
         }
       })
@@ -77,13 +65,15 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
    */
   onOpen() {
     // this.component.mount()
+    this.show = true;
   }
 
   /**
    * 微件关闭时
    */
   onClose() {
-    this.component.unmount()
+    // this.component.unmount()
+    this.show = false;
   }
 
   load(payload) {
@@ -93,9 +83,12 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
   .mapgis-3d-bim-component-wrapper {
     height: 450px;
-    width: 260px;
+    width: 400px;
+    .mapgis-3d-bim-component {
+      width: 400px;
+    }
   }
 </style>
