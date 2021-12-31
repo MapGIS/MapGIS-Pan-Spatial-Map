@@ -1,5 +1,6 @@
 <template>
     <mapgis-3d-stratified-household
+      v-if="show"
       @loaded="load"
       :outStyle="outStyle"
       :layers="layers"
@@ -34,6 +35,8 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   }
 
   layers = [];
+  
+  show = true;
 
  /**
    * 动态获取基础目录树上已勾选的三维模型数据
@@ -77,14 +80,14 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
    * 微件打开时
    */
   onOpen() {
-    // this.component.mount()
+    this.show = true
   }
 
   /**
    * 微件关闭时
    */
   onClose() {
-    this.component.unmount()
+    this.show = false  
   }
 
   load(payload) {

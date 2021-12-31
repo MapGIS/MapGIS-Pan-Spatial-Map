@@ -20,7 +20,8 @@ import {
   MpOverlayAnalysis,
   MpVideo,
   MpCityGrow,
-  MpStratifiedHousehold
+  MpStratifiedHousehold,
+  MpBimComponent
 } from './widgets'
 
 const components = [
@@ -45,7 +46,8 @@ const components = [
   MpOverlayAnalysis,
   MpVideo,
   MpCityGrow,
-  MpStratifiedHousehold
+  MpStratifiedHousehold,
+  MpBimComponent
 ]
 
 const install = Vue => {
