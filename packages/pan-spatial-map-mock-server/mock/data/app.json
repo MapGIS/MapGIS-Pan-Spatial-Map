@@ -268,8 +268,20 @@
             "uri": "widgets/overlay-analysis"
           },
           {
+            "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc",
+            "uri": "widgets/video"
+          },
+          {
             "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02",
             "uri": "widgets/city-grow"
+          },
+          {
+            "id": "widget_79dd9f5e-95ad-4971-b822-520e2f721b51",
+            "uri": "widgets/stratified-household"
+          },
+          {
+            "id": "widget_5058684b-b4b3-46a1-9b59-1057dbe00c04",
+            "uri": "widgets/bim-component"
           }
         ],
         "widgetStructure": [
@@ -371,10 +383,17 @@
                 "id": "widget_3ed34637-838e-da33-4027-24e2c4e16ebd"
               },
               {
+
                 "id": "widget_41894471-62ea-F7ba-21FF-17168abd24c0"
               },
               {
                 "id": "widget_1de66402-bce0-7240-8278-76ba412c71c8"
+              },
+              {
+                "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc"
+              },
+              {
+                "id": "widget_5058684b-b4b3-46a1-9b59-1057dbe00c04"
               }
             ]
           },
@@ -394,6 +413,9 @@
               },
               {
                 "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02"
+              },
+              {
+                "id": "widget_79dd9f5e-95ad-4971-b822-520e2f721b51"
               }
             ]
           }

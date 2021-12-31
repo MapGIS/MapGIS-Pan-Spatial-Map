@@ -1,5 +1,4 @@
 <template>
-
   <div class="mp-widget-buffer-analysis">
     <div id="widgets-ui">
 		  <mapgis-ui-group-tab title="选择数据" id="title-space"/>
@@ -7,7 +6,7 @@
         <mapgis-ui-form-model-item label="选择图层" :colon="false">
           <mapgis-ui-row>
             <mapgis-ui-col>
-              <mapgis-ui-select v-model="tDataIndex" @change="tchangeTarget" v-if="!selectLevel">
+              <mapgis-ui-select v-model="tDataIndex" @change="tchangeTarget($event)" v-if="!selectLevel">
                 <mapgis-ui-select-option v-for="(item, index) in layerArrOption" :key="index" :value="index">{{ item.title }}</mapgis-ui-select-option>
               </mapgis-ui-select>
               <mapgis-ui-select v-model="tDataIndex" @change="tchangeTarget" v-if="selectLevel" disabled>
@@ -19,7 +18,6 @@
         </mapgis-ui-form-model-item>
       </mapgis-ui-form-model>
     </div>
-    
     <!-- 使用缓冲区分析组件 -->
     <mapgis-3d-buffer-analysis
       :layout='layout'
@@ -32,7 +30,6 @@
       @listenBufferAdd='showAdd'
       @load='load'
     ></mapgis-3d-buffer-analysis>
-
   </div>
 </template>
 
@@ -63,47 +60,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   private srcLayer = ""
 
-  private srcFeature = {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {},
-        "id": "id0",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [114, 45]
-        },
-      },
-      {
-        "type": "Feature",
-        "properties": {},
-        "id": "id0",
-        "geometry": {
-          "type": "LineString",
-          "coordinates": [
-            [105, 30], [107, 31], [109, 30], [107, 29]
-          ]
-        },
-      },
-      {
-        "type": "Feature",
-        "properties": {},
-        "id": "id1",
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [114,30], [114,40], [124,40], [124,30], [114,30]
-            ],
-            [
-              [110,15] , [120,20] , [125,25] , [130,30] , [110,15]
-            ]
-          ]
-        },
-      }
-    ]
-  }
+  private srcFeature = {}
 
   private buffer = null
 
@@ -113,12 +70,11 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   isWidgetOpen = false
 
-  private featureStyle = new FillStyle({
-    color: "#ff0000",
-    outlineColor: "#ff0000",
-    outlineWidth: 2.5,
-    opacity: 1,
-  })
+  colorCopy = "rgba(255,0,0,1)"
+
+  colorCopyLine = "rgba(255,0,0,1)"
+
+  colorLineWidth = 3
 
   selectLevel = false
 
@@ -139,7 +95,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
     } else {
       this.srcType = "Feature"
       if (JSON.stringify(ActiveResultSet.activeResultSet) == "{}") {
-        alert("当前选择集为空，请选择要素")
       } else {
         this.srcFeature = ActiveResultSet.activeResultSet
       }
@@ -199,9 +154,8 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
     return null
   }
 
-  tchangeTarget() {
+  tchangeTarget(event) {
     const layerCurrent = this.tData
-
     if (layerCurrent != null) {
       this.baseBufferUrl = layerCurrent.url
       this.srcLayer = layerCurrent.gdbps
@@ -237,14 +191,21 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
    */
   addNewGeoJsonLayer() {
     const resultFeature = this.feature
+    const featureStyle = new FillStyle({
+      color: this.colorCopy,
+      outlineColor: this.colorCopyLine,
+      outlineWidth: this.colorLineWidth,
+      opacity: 1,
+    })
     const data = {
       name: 'GeoJson图层',
       description: '综合分析_结果图层',
       data: {
         type: 'GeoJson',
+        url: this.destLayer,
         source: resultFeature,
-        featureStyle: this.featureStyle,
-        name: this.destLayer
+        featureStyle: featureStyle,
+        name: this.destLayer,
       }
     }
     debugger
@@ -275,11 +236,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   }
 
   showFeature(data) {
-    this.feature = data[0]
-    this.destLayer = data[1]
-    console.log(this.feature)
-    console.log(this.destLayer)
-    console.log(JSON.stringify(this.feature))
+    [this.feature, this.destLayer, this.colorCopy, this.colorCopyLine, this.colorLineWidth] = data
     this.finishF = true
     if (this.add == true) {
       this.addNewGeoJsonLayer()
@@ -303,7 +260,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   z-index: 100000
 }
 .mapgis-ui-form-item-label > label {
-	// margin-left: 0;
 	margin-left: 10px;
 }
 .mapgis-ui-form-item-label > label::after {
@@ -315,25 +271,26 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 .mapgis-ui-form-item {
   background-color: #fff;
 }
-
 #buffer-setting {
   position: relative;
   height: auto;
   padding: 0px 0px 10px 0px;
   top: 0px;
   margin-top: -15px;
-  // box-shadow: 0px 0px 1px 0px rgba(255, 255, 255, 1);
   z-index: 1000
 }
-
 #title-space {
-  // margin-left: -10px;
 	margin-left: 0px;
 	font-size: 14px;
 }
-
 #title-space hr {
   background-color: #fff;
+}
+.mapgis-ui-color-pick-panel-label {
+	margin: 0px -6px 0 10px;
+}
+.mapgis-ui-color-pick-panel {
+	margin: 0 12px 0 0px;
 }
 
 </style>

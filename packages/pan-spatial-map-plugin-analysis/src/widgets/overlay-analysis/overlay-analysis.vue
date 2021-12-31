@@ -1,6 +1,5 @@
 <template>
   <div class="mp-widget-overlay-analysis">
-
     <div id="widgets-ui">
 		  <mapgis-ui-group-tab title="选择数据" id="title-space"/>
       <mapgis-ui-form-model v-bind="{labelCol: {span: 6}, wrapperCol: {span: 17}}" :layout="layout">
@@ -13,7 +12,6 @@
             </mapgis-ui-col>
           </mapgis-ui-row>
         </mapgis-ui-form-model-item>
-
         <mapgis-ui-form-model-item label="叠加图层2" style="colon:false">
           <mapgis-ui-row>
             <mapgis-ui-col>
@@ -29,7 +27,6 @@
         </mapgis-ui-form-model-item>
       </mapgis-ui-form-model>
     </div>
-
     <mapgis-3d-overlay-analysis
       :layout='layout'
       :baseUrl='baseOverlayUrl'
@@ -42,7 +39,6 @@
       @listenOverlayAdd='showAdd'
       @load='load'
     ></mapgis-3d-overlay-analysis>
-
   </div>
 </template>
 
@@ -106,7 +102,6 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
     } else {
       this.srcType = "Feature"
       if (JSON.stringify(ActiveResultSet.activeResultSet) == "{}") {
-        alert("当前选择集为空，请选择要素")
       } else {
         this.srcAFeature = ActiveResultSet.activeResultSet
       }
@@ -204,7 +199,6 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
     const url = `${this.baseOverlayUrl}?gdbps=${this.destLayer}`
     const index = url.lastIndexOf("/")
     const layerName = url.substring(index + 1, url.length)
-
     const data = {
       name: 'IGS图层',
       description: '综合分析_结果图层',
@@ -242,7 +236,6 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
   z-index: 100000
 }
 .mapgis-ui-form-item-label > label {
-	// margin-left: 0;
 	margin-left: 10px;
 }
 #widgets-ui > .mapgis-ui-row.mapgis-ui-form-item {
@@ -254,22 +247,18 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
 .mapgis-ui-form-item-control {
 	margin-left: 10px;
 }
-
 #overlay-setting {
   position: relative;
   height: auto;
   padding: 0;
   top: 0px;
   margin-top: 35px;
-  // box-shadow: 0px 0px 1px 0px rgba(255, 255, 255, 1);
   z-index: 1000
 }
-
 #title-space {
 	margin-left: 0px;
 	font-size: 14px;
 }
-
 #title-space hr {
   background-color: #fff;
 }

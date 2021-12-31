@@ -6,8 +6,8 @@
   "author": "MapGIS",
   "license": "MIT",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "node --max_old_space_size=8196 ../../node_modules/@vue/cli-service/bin/vue-cli-service serve",
+    "build": "node --max_old_space_size=8196 ../../node_modules/@vue/cli-service/bin/vue-cli-service build",
     "build:portal": "vue-cli-service build --mode portal",
     "lint": "vue-cli-service lint",
     "fix-memory-limit": "cross-env LIMIT=8192 increase-memory-limit"

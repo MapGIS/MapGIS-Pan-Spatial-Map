@@ -65,6 +65,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
           const layerConfig = {
             name: layer.name,
             guid: UUID.uuid(),
+            description: layer.description || '',
             serverURL: layer.url,
             serverType: this.parseLayerType(layer.type)
           }
@@ -118,6 +119,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     if (info) {
       info.children.forEach(async layer => {
         const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
+        mapLayer.description = layer.description
         if (mapLayer.loadStatus === LoadStatus.notLoaded) {
           await mapLayer.load()
           this.document.baseLayerMap.add(mapLayer)
@@ -165,7 +167,9 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
       children: []
     }
 
-    const defaultBasemapLayer = {}
+    const defaultBasemapLayer = {
+      description: '索引底图'
+    }
 
     // 根据服务类型初始化图层信息
     switch (serverType) {

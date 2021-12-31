@@ -12,6 +12,7 @@ import {
   Objects,
   Exhibition
 } from '@mapgis/web-app-framework'
+import moment from 'moment'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
 
@@ -421,6 +422,87 @@ export default class LayerTypeUtil extends Mixins(
       default:
         break
     }
+  }
+
+  private setTableScroll(AttStruct) {
+    const columns: Array = [
+      {
+        title: this.rowKey,
+        key: this.rowKey,
+        dataIndex: `properties.${this.rowKey}`,
+        align: 'left',
+        // 超过宽度将自动省略
+        ellipsis: true,
+        width: 180
+      }
+    ]
+    const {
+      FldNumber = 0,
+      FldName = [],
+      FldAlias = [],
+      FldType = []
+    } = AttStruct
+    // 根据字段数计算useScrollX
+    if (FldNumber <= 10) {
+      // 10个以内，不需要设固定宽度，且不需要启用水平滚动条
+      this.useScrollX = false
+    } else {
+      // 10个以上，每个设固定宽度180，且启用水平滚动条
+      this.useScrollX = true
+    }
+    for (let index = 0; index < FldNumber; index++) {
+      const name = FldName[index]
+      const alias = FldAlias[index] ? `${FldAlias[index]}` : ''
+      const type = FldType[index]
+      const sortable = !['GEOMETRY', 'STRING'].includes(type.toUpperCase())
+      const obj = {
+        title: alias.length ? alias : name,
+        key: name,
+        dataIndex: `properties.${name}`,
+        align: 'left',
+        // 超过宽度将自动省略
+        ellipsis: true
+      }
+      if (this.useScrollX) {
+        obj.width = 180
+      }
+      columns.push(
+        sortable
+          ? {
+              ...obj,
+              sorter: (a, b) =>
+                this.sorterFunciton(
+                  a.properties[name],
+                  b.properties[name],
+                  type
+                )
+            }
+          : obj
+      )
+    }
+
+    return columns
+  }
+
+  // 只有数字类型才会添加排序功能
+  private sorterFunciton(a: any, b: any, type: string): boolean {
+    const numberArr: Array<string> = [
+      'BYTE',
+      'SHORT',
+      'INT',
+      'LONG',
+      'FLOAT',
+      'DOUBLE',
+      'BINARY'
+    ]
+    const timeArr: Array<string> = ['TIME', 'DATE', 'TIMESTAMP']
+    if (numberArr.includes(type.toUpperCase())) {
+      return a - b
+    }
+    if (timeArr.includes(type.toUpperCase())) {
+      return moment(a) - moment(b)
+    }
+    return false
   }
 
   private getGeometry3D(source) {

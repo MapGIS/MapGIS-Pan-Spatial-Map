@@ -18,6 +18,7 @@ import {
   DataFlowLayer,
   IGSFeatureLayer,
   GeoJsonLayer,
+  ModelCacheLayer,
   UUID,
   Catalog,
   UrlUtil
@@ -164,7 +165,18 @@ export class DataCatalogManager {
 
           url = `http://${ip}:${port}/igs/rest/g3d/${serverName}`
         }
+
         layer = new IGSSceneLayer({ url })
+
+        if (layerConfig.customParameters) {
+          layerConfig.customParameters.forEach(param => {
+            const extendedPropKeys = param.extendedPropKeys
+
+            if (extendedPropKeys) {
+              layer.extendedPropKeys = extendedPropKeys
+            }
+          })
+        }
         break
       case LayerType.IGSFeature:
         if (layerConfig.serverURL && layerConfig.serverURL !== '') {
@@ -185,7 +197,14 @@ export class DataCatalogManager {
         }
 
         break
+      case LayerType.ModelCache:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        }
 
+        layer = new ModelCacheLayer({ url })
+
+        break
       default:
         break
     }
@@ -660,13 +679,14 @@ export class DataCatalogManager {
       serverName: this.config.paramConfig.SERVERNAME, // 服务名(可选)
       serverType: 'serverType', // 服务类型
       serverURL: this.config.paramConfig.SERVERURL, // 服务URL(可选)
-      tokenName: 'tokenName', // token名称(可选)
-      tokenValue: this.config.paramConfig.TOKEN, // token值(可选)
+      tokenName: 'tokenName', // token名称(可选),已废弃,请使用customParameters记录该信息
+      tokenValue: this.config.paramConfig.TOKEN, // token值(可选),已废弃,请使用customParameters记录该信息
       ip: this.config.paramConfig.SERVERIP, // 服务ip(可选)
       port: this.config.paramConfig.SERVERPORT, // 服务端口(可选)
       bindData: 'bindData', // 绑定数据：与该服务图层相关联的服务信息,比如：与该瓦片服务对应的地图服务。应用中利用该字段可实现对瓦片服务的查询功能
       gdbps: 'gdbps', // 图层的gdbp地址，允许多个图层
-      data: 'data' // 非空间数据节点中用于记录数据在ftp服务器上的目录名
+      data: 'data', // 非空间数据节点中用于记录数据在ftp服务器上的目录名,
+      customParameters: 'customParameters' // 自定义请求参数(可选),类型：数组，以key,value列表的形式记录的服务的额外请求参数。如场景服务的extendedPropKeys等。
     }
 
     this.configConverted.keyConfig = keyConfig
@@ -742,7 +762,9 @@ export class DataCatalogManager {
             port: node[this.configConverted.keyConfig.port] || '', // 服务端口(可选)
             gdbps:
               node[this.configConverted.keyConfig.gdbps] ||
-              node[this.configConverted.keyConfig.serverURL] // 图层的gdbp地址，允许多个图层
+              node[this.configConverted.keyConfig.serverURL], // 图层的gdbp地址，允许多个图层
+            customParameters:
+              node[this.configConverted.keyConfig.customParameters] || [] // 服务额外请求参数。
           }
 
           // 根据layerServiceType计算serverType
@@ -836,6 +858,7 @@ export class DataCatalogManager {
         serverType = LayerType.IGSScene
         break
       case this.layerServiceType.TILE3D:
+        serverType = LayerType.ModelCache
         break
       case this.layerServiceType.POINTCLOUD:
         break

@@ -21,7 +21,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { Objects, WidgetMixin } from '@mapgis/web-app-framework'
-import _last from 'lodash/last'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component({ name: 'MpZoom' })
 export default class MpZoom extends Mixins(WidgetMixin) {
@@ -69,14 +69,27 @@ export default class MpZoom extends Mixins(WidgetMixin) {
   }
 
   onRestore() {
+    /**
+     * 修改说明：重置范围使用索引底图的范围
+     * 修改人：龚跃健
+     * 修改日期：2021/12/23
+     */
+    const { xmin, ymin, xmax, ymax } = baseConfigInstance.config
     if (!this.is2DMapMode) {
-      this.sceneController.cameraFlyTo(this.cameraView)
+      const destination = this.Cesium.Rectangle.fromDegrees(
+        Number(xmin),
+        Number(ymin),
+        Number(xmax),
+        Number(ymax)
+      )
+      this.viewer.camera.flyTo({
+        destination
+      })
     } else if (this.map) {
-      const { _ne, _sw } = this.mapBounds
       this.map.setPitch(0)
       this.map.fitBounds([
-        [_sw.lng, _sw.lat],
-        [_ne.lng, _ne.lat]
+        [Number(xmin), Number(ymin)],
+        [Number(xmax), Number(ymax)]
       ])
     }
   }

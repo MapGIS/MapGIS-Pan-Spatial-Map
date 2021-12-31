@@ -218,7 +218,7 @@ import {
   LayerType,
   LoadStatus,
   Metadata,
-  IGSSceneSublayerRenderType,
+  Layer3D,
   FitBound
 } from '@mapgis/web-app-framework'
 import {
@@ -477,10 +477,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
               } finally {
                 // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
                 if (layer.loadStatus === LoadStatus.loaded) {
-                  if (
-                    layer.type === LayerType.IGSScene &&
-                    this.is2DMapMode === true
-                  ) {
+                  if (this.is3DLayer(layer) && this.is2DMapMode === true) {
                     this.switchMapMode()
                   }
 
@@ -489,7 +486,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                   this.$message.error(`图层:${layer.title}加载失败`)
                   checkedNodeKeys.splice(layer.id)
                 }
-                if (!this.isM3D(layer)) {
+                if (!this.is3DLayer(layer)) {
                   // 图层加载完毕，恢复checkbox可选状态
                   this.setCheckBoxEnable(recordCheckLayer, false)
                 }
@@ -508,9 +505,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     }
   }
 
-  // 判断是不是三维模型类型
-  isM3D(layer) {
-    if (layer.type === LayerType.IGSScene) {
+  // 判断是不是三维图层类型
+  is3DLayer(layer) {
+    if (layer instanceof Layer3D) {
       return true
     }
     return false
