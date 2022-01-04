@@ -120,6 +120,10 @@
             "config": "configs/data-catalog/config.json"
           },
           {
+            "id": "widget_3e8667b6-71ce-492d-be6f-f8193360b4d2",
+            "uri": "widgets/layer-list"
+          },
+          {
             "id": "widget_93d895de-f6c5-48c1-bbdc-6b34ab760e37",
             "uri": "widgets/thematic-map"
           },
@@ -136,10 +140,6 @@
             "id": "widget_219be6f7-034a-4f06-ba0f-1be9d3b093bd",
             "uri": "widgets/map-data-v",
             "config": "configs/map-data-v/config.json"
-          },
-          {
-            "id": "widget_3e8667b6-71ce-492d-be6f-f8193360b4d2",
-            "uri": "widgets/layer-list"
           }
         ],
         "widgetStructure": [],
@@ -393,6 +393,9 @@
                 "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc"
               },
               {
+                "id": "widget_79dd9f5e-95ad-4971-b822-520e2f721b51"
+              },
+              {
                 "id": "widget_5058684b-b4b3-46a1-9b59-1057dbe00c04"
               }
             ]
@@ -407,9 +410,6 @@
               },
               {
                 "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02"
-              },
-              {
-                "id": "widget_79dd9f5e-95ad-4971-b822-520e2f721b51"
               },
               {
                 "id": "widget_d1a46c04-3a62-92e1-24d5-909bc46ccaa6"
