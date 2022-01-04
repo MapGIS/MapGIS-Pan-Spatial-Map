@@ -325,6 +325,7 @@ export default class LayerTypeUtil extends Mixins(
             serverType === LayerType.IGSScene
           )
           const { AttStruct, SFEleArray = [], TotalCount } = jsonData
+          const { FldNumber = 0, FldName = [] } = AttStruct
           this.attrTableToJsonData = this.setTable(
             SFEleArray,
             source,
