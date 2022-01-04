@@ -15,3 +15,5 @@ export { DataFlowList } from './data-flow'
 export { ActiveResultSet } from './active-result-set'
 
 export { DataStoreCatalog } from './data-store-catalog'
+
+export { VideoOverlayLayerList } from './video-manager'
