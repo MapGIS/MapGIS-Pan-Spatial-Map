@@ -86,6 +86,9 @@
             auto-size
           ></a-textarea>
         </a-row>
+        <a-row>
+          <label class='mp-widget-label'>参数设置</label>
+        </a-row>
         <mapgis-3d-city-grow-options
           v-if='radioVal === 2'
           :cityGrowOptions='url'
@@ -208,12 +211,12 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
 }
 
 .mp-widget-label{
-  width: 56px;
+  width: 41px;
   height: 12px;
   font-size: 14px;
   font-family: Microsoft YaHei;
   font-weight: bold;
-  color: #333333;
+  //color: #333333;
   line-height: 36px;
 }
 

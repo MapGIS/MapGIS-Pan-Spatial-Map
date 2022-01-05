@@ -1,0 +1,266 @@
+<template>
+  <div class="mp-widget-overlay-analysis">
+    <div id="widgets-ui">
+		  <mapgis-ui-group-tab title="选择数据" id="title-space"/>
+      <mapgis-ui-form-model v-bind="{labelCol: {span: 6}, wrapperCol: {span: 17}}" :layout="layout">
+        <mapgis-ui-form-model-item label="叠加图层1" :colon="false">
+          <mapgis-ui-row>
+            <mapgis-ui-col>
+              <mapgis-ui-select v-model="tDataIndex" @change="tchangeTarget">
+                <mapgis-ui-select-option v-for="(item, index) in layerArrOption" :key="index" :value="index">{{ item.title }}</mapgis-ui-select-option>
+              </mapgis-ui-select>
+            </mapgis-ui-col>
+          </mapgis-ui-row>
+        </mapgis-ui-form-model-item>
+        <mapgis-ui-form-model-item label="叠加图层2" style="colon:false">
+          <mapgis-ui-row>
+            <mapgis-ui-col>
+              <mapgis-ui-select v-model="dDataIndex" @change="dchangeTarget" v-if="!selectLevel">
+                <mapgis-ui-select-option v-for="(item, index) in layerArrOption" :key="index" :value="index">{{ item.title }}</mapgis-ui-select-option>
+              </mapgis-ui-select>
+              <mapgis-ui-select v-model="dDataIndex" @change="dchangeTarget" v-if="selectLevel" disabled>
+                <mapgis-ui-select-option v-for="(item, index) in layerArrOption" :key="index" :value="index">{{ item.title }}</mapgis-ui-select-option>
+              </mapgis-ui-select>
+            </mapgis-ui-col>
+          </mapgis-ui-row>
+          <mapgis-ui-checkbox :default-checked="selectLevel" @change="changeSelectLevel">只对选择数据进行操作</mapgis-ui-checkbox>
+        </mapgis-ui-form-model-item>
+      </mapgis-ui-form-model>
+    </div>
+    <mapgis-3d-overlay-analysis
+      :layout='layout'
+      :baseUrl='baseOverlayUrl'
+      :srcType='srcType'
+      :srcALayer='srcALayer'
+      :srcBLayer='srcBLayer'
+      :srcAFeature='srcAFeature'
+      :srcBFeature='srcBFeature'
+      @listenLayer='showLayer'
+      @listenOverlayAdd='showAdd'
+      @load='load'
+    ></mapgis-3d-overlay-analysis>
+  </div>
+</template>
+
+<script lang="ts">
+import { Mixins, Component, Watch } from 'vue-property-decorator'
+import {
+  LayerType,
+  WidgetMixin,
+} from '@mapgis/web-app-framework'
+import {
+  eventBus,
+  events
+} from '@mapgis/pan-spatial-map-common'
+import { ActiveResultSet } from '../../../../pan-spatial-map-common/src/active-result-set'
+
+
+@Component({
+  name: 'MpOverlayAnalysis',
+})
+export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
+  private layout =  "horizontal"
+
+  private baseOverlayUrl = "http://localhost:6163"
+
+  private srcType = "Layer"
+
+  private srcALayer = ""
+
+  private srcBLayer = ""
+
+  private srcAFeature = {}
+
+  private srcBFeature = {}
+
+  private overlay = null
+
+  tDataIndex = null
+
+  dDataIndex = null
+
+  isFullScreen = false
+
+  isWidgetOpen = false
+
+  selectLevel = false
+
+  feature = undefined
+
+  destLayer = ""
+
+  add = false
+
+  finishL = false
+
+  finishF = false
+
+  changeSelectLevel() {
+    this.selectLevel = !this.selectLevel
+    if (this.selectLevel == false) {
+      this.srcType = "Layer"
+    } else {
+      this.srcType = "Feature"
+      if (JSON.stringify(ActiveResultSet.activeResultSet) == "{}") {
+      } else {
+        this.srcAFeature = ActiveResultSet.activeResultSet
+      }
+    }
+  }
+
+  // 监听图层列表，当图层发生变化时动态改变layerArrOption数组
+  @Watch('document.defaultMap', { deep: true, immediate: true })
+  documentChange(val: Array<unknown>) {
+    this.tDataIndex = null
+    this.dDataIndex = null
+    this.layerArrOption = []
+    this.tchangeTarget()
+    this.dchangeTarget()
+    const arr = []
+    val.layers().forEach(data => {
+      if (
+        data.type === LayerType.IGSMapImage ||
+        data.type === LayerType.IGSVector
+      ) {
+        arr.push(data)
+      }
+    })
+    if (arr.length > 0) {
+      this.layerArrOption = arr
+      this.tDataIndex = 0
+      this.dDataIndex = 0
+    }
+  }
+
+  // 微件窗口模式切换时回调
+  onWindowSize(mode) {
+    this.isFullScreen = mode === 'max'
+  }
+
+  load(overlay) {
+    this.overlay = overlay
+  }
+
+  /**
+   * 打开模块
+   */
+  onOpen() {
+    this.isWidgetOpen = true
+    const layerObj = this.layerArrOption
+    const layerUrl = layerObj.map((item, index, layerObj) => {
+      return item.gdbps
+    })
+    this.overlay.mount()
+  }
+
+  // 获取当前下拉框中的图层对象和索引值
+  get tData() {
+    if (this.tDataIndex !== null) {
+      return this.layerArrOption[this.tDataIndex]
+    }
+    return null
+  }
+
+  get dData() {
+    if (this.dDataIndex !== null) {
+      return this.layerArrOption[this.dDataIndex]
+    }
+    return null
+  }
+
+  tchangeTarget() {
+    const tlayerCurrent = this.tData
+    if (tlayerCurrent != null) {
+      this.baseOverlayUrl = tlayerCurrent.url
+      this.srcALayer = tlayerCurrent.gdbps
+    }
+  }
+
+  dchangeTarget() {
+    const dlayerCurrent = this.dData
+    if (dlayerCurrent != null) {
+      this.srcBLayer = dlayerCurrent.gdbps
+    }
+  }
+
+  showLayer(data) {
+    this.finishL = true
+    this.destLayer = data
+    if (this.add == true) {
+      this.addNewLayer()
+    }
+  }
+
+  showAdd(data) {
+    this.add = data
+  }
+
+  addNewLayer() {
+    const url = `${this.baseOverlayUrl}?gdbps=${this.destLayer}`
+    const index = url.lastIndexOf("/")
+    const layerName = url.substring(index + 1, url.length)
+    const data = {
+      name: 'IGS图层',
+      description: '综合分析_结果图层',
+      data: {
+        type: 'IGSVector',
+        url,
+        name: layerName
+      }
+    }
+    eventBus.$emit(events.ADD_DATA_EVENT, data)
+  }
+
+  /**
+   * 关闭模块
+   */
+  onClose() {
+    this.isWidgetOpen = false
+    this.reset()
+    this.overlay.unmount()
+  }
+
+  reset() {
+    this.isFullScreen = false
+  }
+
+}
+</script>
+
+<style lang="less">
+.mp-widget-overlay-analysis {
+  height: auto;
+}
+#widgets-ui {
+  height: 130px;
+  z-index: 100000
+}
+.mapgis-ui-form-item-label > label {
+	margin-left: 10px;
+}
+#widgets-ui > .mapgis-ui-row.mapgis-ui-form-item {
+  margin-bottom: 0;
+}
+.mapgis-ui-form-item {
+  background-color: #fff;
+}
+.mapgis-ui-form-item-control {
+	margin-left: 10px;
+}
+#overlay-setting {
+  position: relative;
+  height: auto;
+  padding: 0;
+  top: 0px;
+  margin-top: 35px;
+  z-index: 1000
+}
+#title-space {
+	margin-left: 0px;
+	font-size: 14px;
+}
+#title-space hr {
+  background-color: #fff;
+}
+
+</style>

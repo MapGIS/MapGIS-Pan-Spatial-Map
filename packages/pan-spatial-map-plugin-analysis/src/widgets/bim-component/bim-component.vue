@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import { 
+import {
   WidgetMixin,
   LayerType,
   IGSSceneSublayerRenderType,
@@ -43,7 +43,6 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
    */
   @Watch('document', { immediate: true, deep: true })
   getScenes() {
-    debugger
     if (!this.document) return
     const layers = []
     this.document.defaultMap

@@ -938,6 +938,18 @@
               "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c04",
               "serverUrl": "http://192.168.88.204:8089/M3D/2.0/高级住所模型/高级住所模型.mcj",
               "customParameters": [{ "extendedPropKeys": "Expand,IsBimComponent" }]
+          },
+          {
+            "label": "M3D-单体建筑生长",
+            "describe": "M3D-单体建筑生长",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILE3D",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fe",
+            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/BIM模型生长time/BIM模型生长time.mcj"
           }
         ]
       },

@@ -19,6 +19,7 @@ import {
   IGSFeatureLayer,
   GeoJsonLayer,
   ModelCacheLayer,
+  GraphicsLayer,
   UUID,
   Catalog,
   UrlUtil
@@ -201,6 +202,10 @@ export class DataCatalogManager {
         }
 
         layer = new ModelCacheLayer({ url })
+
+        break
+      case LayerType.Graphics:
+        layer = new GeoJsonLayer(layerConfig)
 
         break
       default:
@@ -888,7 +893,7 @@ export class DataCatalogManager {
       case LayerType.IGSMapImage:
         serverList = this.defaultServerList.docList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -896,7 +901,7 @@ export class DataCatalogManager {
       case LayerType.IGSTile:
         serverList = this.defaultServerList.tileList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -905,7 +910,7 @@ export class DataCatalogManager {
       case LayerType.IGSScene:
         serverList = this.defaultServerList.sceneList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
