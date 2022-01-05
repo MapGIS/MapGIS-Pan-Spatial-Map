@@ -12,7 +12,7 @@
             </mapgis-ui-col>
           </mapgis-ui-row>
         </mapgis-ui-form-model-item>
-        <mapgis-ui-form-model-item label="叠加图层2" style="colon:false">
+        <mapgis-ui-form-model-item label="叠加图层2" :colon="false">
           <mapgis-ui-row>
             <mapgis-ui-col>
               <mapgis-ui-select v-model="dDataIndex" @change="dchangeTarget" v-if="!selectLevel">
@@ -227,40 +227,16 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .mp-widget-overlay-analysis {
-  height: auto;
+  height: 480px;
+  overflow-y: auto;
+  padding: 10px 10px 10px 15px;
+  margin-left: 5px;
 }
 #widgets-ui {
   height: 130px;
-  z-index: 100000
+  z-index: 100000;
+  margin-bottom: -15px;
 }
-.mapgis-ui-form-item-label > label {
-	margin-left: 10px;
-}
-#widgets-ui > .mapgis-ui-row.mapgis-ui-form-item {
-  margin-bottom: 0;
-}
-.mapgis-ui-form-item {
-  background-color: #fff;
-}
-.mapgis-ui-form-item-control {
-	margin-left: 10px;
-}
-#overlay-setting {
-  position: relative;
-  height: auto;
-  padding: 0;
-  top: 0px;
-  margin-top: 35px;
-  z-index: 1000
-}
-#title-space {
-	margin-left: 0px;
-	font-size: 14px;
-}
-#title-space hr {
-  background-color: #fff;
-}
-
 </style>
