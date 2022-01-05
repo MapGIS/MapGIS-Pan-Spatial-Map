@@ -130,7 +130,11 @@
       @map-bound-change="onGetGeometry"
     >
       <template slot="popup" slot-scope="{ properties }">
-        <popup-attribute :properties="properties" />
+        <mp-popup-attribute
+          :properties="properties"
+          :dataStoreIp="dataStoreIp"
+          :dataStorePort="dataStorePort"
+        />
       </template>
     </mp-3d-marker-plotting>
     <mp-window-wrapper :visible="showAttrStatistics">
@@ -206,7 +210,6 @@ import axios from 'axios'
 /* 文件导出 */
 import FileSaver from 'file-saver'
 import AttributeUtil from './mixin/AttributeUtil'
-import PopupAttribute from './popup/PopupAttribute.vue'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
 
@@ -215,8 +218,7 @@ const { IAttributeTableOption, IAttributeTableExhibition } = Exhibition
 @Component({
   name: 'MpAttributeTable',
   components: {
-    MpAttributeTableColumnSetting,
-    PopupAttribute
+    MpAttributeTableColumnSetting
   }
 })
 export default class MpAttributeTable extends Mixins(AttributeUtil) {
@@ -230,6 +232,14 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
     return this.selection.map(
       item => (item as GFeature).properties[this.rowKey]
     )
+  }
+
+  private get dataStoreIp() {
+    return baseConfigInstance.config.DataStoreIp
+  }
+
+  private get dataStorePort() {
+    return baseConfigInstance.config.DataStorePort
   }
 
   private get selectedDescription() {

@@ -16,9 +16,13 @@ import {
   MpHeightLimitedAnalysis,
   MpViewpointManager,
   MpPondingSimulation,
+  MpBufferAnalysis,
+  MpOverlayAnalysis,
   MpVideo,
   MpCityGrow,
-  MpStratifiedHousehold
+  MpStratifiedHousehold,
+  MpBimComponent,
+  MpBuildingGrow
 } from './widgets'
 
 const components = [
@@ -39,9 +43,13 @@ const components = [
   MpHeightLimitedAnalysis,
   MpViewpointManager,
   MpPondingSimulation,
+  MpBufferAnalysis,
+  MpOverlayAnalysis,
   MpVideo,
   MpCityGrow,
-  MpStratifiedHousehold
+  MpStratifiedHousehold,
+  MpBimComponent,
+  MpBuildingGrow
 ]
 
 const install = Vue => {

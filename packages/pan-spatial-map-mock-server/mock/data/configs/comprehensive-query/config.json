@@ -3,14 +3,14 @@
     "ip": "192.168.80.105",
     "port": "9091",
     "libsName": "",
-    "showType": "result",
+    "showType": "normal",
     "clusterMaxCount": "10000",
     "allShows": "formatAddress:详细地址,name:名称,lat:纬度,lon:经度",
     "queryTable": [
       {
         "mLibsName": "wuhan_poi",
         "dataType": "政府机构",
-        "placeName": "武汉市",
+        "placeName": "武汉市POI",
         "color": "#FFE5B4",
         "titleAttr": "name",
         "attrs": [
