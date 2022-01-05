@@ -1,1 +1,1 @@
-export { default as VideoOverlayLayerList } from './video-overlay-layer-list'
+export { default as VideoManager } from './video-manager'
