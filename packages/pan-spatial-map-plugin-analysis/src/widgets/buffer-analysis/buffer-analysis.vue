@@ -2,7 +2,7 @@
   <div class="mp-widget-buffer-analysis">
     <div id="widgets-ui">
 		  <mapgis-ui-group-tab title="选择数据" id="title-space"/>
-      <mapgis-ui-form-model v-bind="{labelCol: {span: 6}, wrapperCol: {span: 17}}" :layout="layout">
+      <mapgis-ui-form-model v-bind="{labelCol: {span: 6}, wrapperCol: {span: 17}}" :layout="layout" :labelAlign="'left'">
         <mapgis-ui-form-model-item label="选择图层" :colon="false">
           <mapgis-ui-row>
             <mapgis-ui-col>
@@ -250,47 +250,16 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .mp-widget-buffer-analysis {
-  // height: auto;
   height: 480px;
+  overflow-y: auto;
+  padding: 10px 10px 10px 15px;
+  margin-left: 5px;
 }
 #widgets-ui {
   height: 130px;
-  z-index: 100000
+  z-index: 100000;
+  margin-bottom: -15px;
 }
-.mapgis-ui-form-item-label > label {
-	margin-left: 10px;
-}
-.mapgis-ui-form-item-label > label::after {
-  content: "";
-}
-#widgets-ui > .mapgis-ui-row.mapgis-ui-form-item {
-  margin-bottom: 0;
-}
-.mapgis-ui-form-item {
-  background-color: #fff;
-}
-#buffer-setting {
-  position: relative;
-  height: auto;
-  padding: 0px 0px 10px 0px;
-  top: 0px;
-  margin-top: -15px;
-  z-index: 1000
-}
-#title-space {
-	margin-left: 0px;
-	font-size: 14px;
-}
-#title-space hr {
-  background-color: #fff;
-}
-.mapgis-ui-color-pick-panel-label {
-	margin: 0px -6px 0 10px;
-}
-.mapgis-ui-color-pick-panel {
-	margin: 0 12px 0 0px;
-}
-
 </style>
