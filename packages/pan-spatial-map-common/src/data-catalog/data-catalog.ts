@@ -19,6 +19,7 @@ import {
   IGSFeatureLayer,
   GeoJsonLayer,
   ModelCacheLayer,
+  GraphicsLayer,
   UUID,
   Catalog,
   UrlUtil
@@ -201,6 +202,10 @@ export class DataCatalogManager {
         }
 
         layer = new ModelCacheLayer({ url })
+
+        break
+      case LayerType.Graphics:
+        layer = new GeoJsonLayer(layerConfig)
 
         break
       default:

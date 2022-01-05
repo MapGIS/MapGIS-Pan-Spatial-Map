@@ -41,7 +41,14 @@ export interface VideoOverlayLayer {
 }
 
 class VideoOverlayLayerList {
+  // 图层列表
   private _videoOverlayLayerList: Array<VideoOverlayLayer> = []
+
+  // 当前图层id
+  private _currentLayerId: string | undefined
+
+  // 当前video的id
+  private _currentVideoId: string | undefined
 
   /**
    * 获取videoOverlayLayerList
@@ -62,39 +69,64 @@ class VideoOverlayLayerList {
   }
 
   /**
-   * 根据video的id和图层名，查找video
-   * @param id video的id
-   * @param overlayLayerName 图层名
-   * @returns video对象或者null
+   * 获取当前图层id
+   * @returns
    */
-  public getVideoByIdAndOverlayLayerName(
-    id: string,
-    overlayLayerName: string
-  ): Video | null {
-    // 1.先找是否存在对应的图层
+  public getCurrentLayerId() {
+    return this._currentLayerId
+  }
+
+  /**
+   * 获取当前video的id
+   * @returns
+   */
+  public getCurrentVideoId() {
+    return this._currentVideoId
+  }
+
+  /**
+   * 根据图层的id获取图层
+   * @param layerId 图层的id
+   * @returns
+   */
+  public getVideoLayerById(layerId: string) {
     const videoOverlayLayer = this._videoOverlayLayerList.find(
-      layer => layer.name === overlayLayerName
+      layer => layer.id === layerId
     )
     if (videoOverlayLayer) {
-      // 2.如果图层存在，再找是否存在对应的video
-      const video = videoOverlayLayer.videoList.find(video => video.id === id)
-      if (video) {
-        return video
-      }
+      return videoOverlayLayer
     }
-    // 没有找到对应的图层和对应的video，则返回null
     return null
   }
 
   /**
+   * 根据图层id和video的id获取video对象
+   * @param videoId video的id
+   * @param layerId 图层的id
+   * @returns
+   */
+  public getVideoById(videoId: string, layerId: string) {
+    const videoOverlayLayer = this.getVideoLayerById(layerId)
+    let video
+    if (videoOverlayLayer) {
+      video = videoOverlayLayer.videoList.find(video => video.id === videoId)
+      if (video) {
+        return video
+      }
+    }
+    return undefined
+  }
+
+  /**
    * 添加video
-   * @param id  video的id
-   * @param overlayLayerName 图层名
+   * @param layerId  图层的id
+   * @param layerName 图层名
+   * @param videoId  video的id
+   * @param videoName video的name
    * @param protocol 视频协议
    * @param videoUrl 视频url
-   * @param name video的name
    * @param description 描述
-   * @param isProjected 是否已投放
+   * @param isProjected 是否投放
    * @param cameraPosition 相机位置(观察点)
    * @param orientation 朝向
    * @param hFOV 水平视角
@@ -103,11 +135,12 @@ class VideoOverlayLayerList {
    * @param isOverwrite 是否覆盖已存在的video对象(如果传入的id已存在对应的video对象，是否覆盖已有的video对象，设置否，则不会应用传入的内容)
    */
   public addVideo(
-    id: string,
-    overlayLayerName: string,
+    layerId: string,
+    layerName: string,
+    videoId: string,
+    videoName: string,
     protocol: string,
     videoUrl: string,
-    name?: string,
     description?: string,
     isProjected?: boolean,
     cameraPosition?: CameraPosition,
@@ -118,19 +151,17 @@ class VideoOverlayLayerList {
     isOverwrite?: boolean
   ) {
     // 1.先找是否存在对应的图层
-    const videoOverlayLayer = this._videoOverlayLayerList.find(
-      layer => layer.name === overlayLayerName
-    )
+    const videoOverlayLayer = this.getVideoLayerById(layerId)
     if (videoOverlayLayer) {
       // 2.如果图层存在，再找是否存在对应的video
-      let video = videoOverlayLayer.videoList.find(video => video.id === id)
+      let video = this.getVideoById(videoId, layerId)
       let newVideo
       if (video) {
         if (isOverwrite) {
           // 已存在id对应的video，覆盖已有内容
           newVideo = {
-            id,
-            name: name || video.name,
+            id: videoId,
+            name: videoName || video.name,
             description: description || video.description,
             isProjected: isProjected || video.isProjected,
             params: {
@@ -149,8 +180,8 @@ class VideoOverlayLayerList {
         }
       } else {
         newVideo = {
-          id,
-          name: name || 'newVideo',
+          id: videoId,
+          name: videoName || 'newVideo',
           description: description || '',
           isProjected: isProjected || false,
           params: {
@@ -178,12 +209,12 @@ class VideoOverlayLayerList {
     } else {
       // 未找到overlayLayerName对应的图层，新建图层
       const newVideoOverlayLayer = {
-        id: UUID.uuid(),
-        name: overlayLayerName,
+        id: layerId,
+        name: layerName,
         videoList: [
           {
-            id,
-            name: name || 'newVideo',
+            id: videoId,
+            name: videoName || 'newVideo',
             description: description || '',
             isProjected: isProjected || false,
             params: {
@@ -210,16 +241,18 @@ class VideoOverlayLayerList {
       }
       this._videoOverlayLayerList.push(newVideoOverlayLayer)
     }
+    this._currentLayerId = layerId
+    this._currentVideoId = videoId
   }
 
   /**
    * 获取video投放状态
-   * @param id
-   * @param overlayLayerName
+   * @param videoId
+   * @param layerId
    * @returns
    */
-  public getVideoStatus(id: string, overlayLayerName: string) {
-    const video = this.getVideoByIdAndOverlayLayerName(id, overlayLayerName)
+  public getVideoStatus(videoId: string, layerId: string) {
+    const video = this.getVideoById(videoId, layerId)
     if (video) {
       return video.isProjected
     }
@@ -228,16 +261,16 @@ class VideoOverlayLayerList {
 
   /**
    * 设置video投放状态
-   * @param id
-   * @param overlayLayerName
+   * @param videoId
+   * @param layerId
    * @param isProjected
    */
   public setVideoStatus(
-    id: string,
-    overlayLayerName: string,
+    videoId: string,
+    layerId: string,
     isProjected: boolean
   ) {
-    const video = this.getVideoByIdAndOverlayLayerName(id, overlayLayerName)
+    const video = this.getVideoById(videoId, layerId)
     if (video) {
       video.isProjected = isProjected
     }
