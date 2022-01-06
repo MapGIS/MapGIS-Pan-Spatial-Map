@@ -794,10 +794,10 @@
           {
             "label": "三维模型",
             "describe": "三维模型",
-            "ip": "localhost",
-            "port": "6163",
+            "ip": "",
+            "port": "",
             "layerServiceType": "DOC3D",
-            "name": "景观模型",
+            "name": "ModelM3D",
             "searchName": "gdbp://MapGISLocalPlus/示例数据/ds/三维示例/sfcls/景观_建筑模型",
             "model": "surface",
             "guid": "e2abd1db-2705-4b78-9a5d-4effd7af39ec",
