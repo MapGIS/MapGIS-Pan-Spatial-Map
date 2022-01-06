@@ -80,6 +80,22 @@ export default class MpVideo extends Mixins(WidgetMixin) {
     return videoId
   }
 
+  @Watch('currentLayerId', {
+    deep: true,
+    immediate: true
+  })
+  changeCurrentLayerId() {
+    console.log(this.currentLayerId)
+  }
+
+  @Watch('currentVideoId', {
+    deep: true,
+    immediate: true
+  })
+  changeCurrentVideoId() {
+    console.log(this.currentVideoId)
+  }
+
   @Watch('videoOverlayLayerList', {
     deep: true,
     immediate: true
