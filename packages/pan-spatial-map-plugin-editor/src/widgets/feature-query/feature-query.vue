@@ -513,7 +513,7 @@ export default class MpFeatureQuery extends Mixins(
             const { xmin, ymin, xmax, ymax, zmin, zmax } = shape
 
             geometry = this.transQueryRect3D(
-              { xmin, ymin, xmax, ymax, zmin: -100000, zmax: 100000 },
+              { xmin, ymin, xmax, ymax, zmin, zmax },
               transform
             )
           }
