@@ -7,32 +7,36 @@ import { mapState, mapMutations } from 'vuex'
 import { AppManager } from '@mapgis/web-app-framework'
 import { getAppInfo } from '@/services/user'
 import { BASE_URL } from '@/services/api'
+import { request } from '@/utils/request'
 
 export default {
   data() {
     return {
-      application: {}
+      application: {},
     }
   },
   computed: {
-    ...mapState('setting', ['theme'])
+    ...mapState('setting', ['theme']),
   },
   async created() {
     try {
       const appInfo = await getAppInfo()
-
+      console.log(appInfo.data.configPath)
+      console.log(appInfo.data.assetsPath)
+      console.log(BASE_URL)
       await AppManager.getInstance().loadConfig(
         BASE_URL,
         appInfo.data.configPath,
-        appInfo.data.assetsPath
+        appInfo.data.assetsPath,
+        request
       )
-
       this.application = AppManager.getInstance().getApplication()
 
       const style = this.themeStyle()
 
       this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
     } catch (error) {
+      this.$message.warning(error)
       this.$message.warning('认证 token 已过期，请重新登录')
       this.$router.replace('/login')
     }
@@ -43,14 +47,16 @@ export default {
       if (this.application.theme) {
         if (this.application.theme.style) {
           if (this.application.theme.manifest) {
-            const style = this.application.theme.manifest.styles.find(item => {
-              return item.name === this.application.theme.style
-            })
+            const style = this.application.theme.manifest.styles.find(
+              (item) => {
+                return item.name === this.application.theme.style
+              }
+            )
 
             if (style) {
               return {
                 color: style.color,
-                theme: style.theme
+                theme: style.theme,
               }
             }
           }
@@ -59,7 +65,7 @@ export default {
         }
       }
       return { theme: 'dark', color: '#1890ff' }
-    }
-  }
+    },
+  },
 }
 </script>
