@@ -183,7 +183,10 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
   }
 
   getCityGrowOptions(featureStyle) {
-    this.featureStyle = featureStyle
+    this.featureStyle = {}
+    this.$nextTick(function() {
+      this.featureStyle = featureStyle
+    })
     this.startCityGrow = true
   }
 
