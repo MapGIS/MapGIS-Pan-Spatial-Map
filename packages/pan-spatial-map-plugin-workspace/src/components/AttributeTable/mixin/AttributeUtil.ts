@@ -149,7 +149,7 @@ export default class LayerTypeUtil extends Mixins(
       file.url,
       file.url,
       file.type,
-      file.name,
+      file.url,
       '',
       true,
       cameraPosition
