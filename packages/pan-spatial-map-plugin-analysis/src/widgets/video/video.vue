@@ -6,6 +6,7 @@
     :modelOffset="modelOffset"
     :currentLayerId="currentLayerId"
     :currentVideoId="currentVideoId"
+    :maxProjected="maxProjected"
     @load="load"
     @update-videoOverlayLayerList="updateVideoOverlayLayerList"
   >
@@ -61,6 +62,8 @@ export default class MpVideo extends Mixins(WidgetMixin) {
 
   private VideoManagerInstance = VideoManager
 
+  private maxProjected = 10
+
   private get videoOverlayLayerList() {
     const videoOverlayLayerList = this.VideoManagerInstance.getVideoOverlayLayerList()
     return videoOverlayLayerList
@@ -113,6 +116,8 @@ export default class MpVideo extends Mixins(WidgetMixin) {
       (this.widgetInfo.config &&
         this.widgetInfo.config.videoOverlayLayerList) ||
       this.videoLayerList
+    this.maxProjected =
+      (this.widgetInfo.config && this.widgetInfo.config.maxProjected) || 10
   }
 
   load(videoComponent) {
