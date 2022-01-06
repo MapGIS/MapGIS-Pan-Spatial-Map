@@ -1,6 +1,6 @@
 import Cookie from 'js-cookie'
 
-// 兼容Web-App-FrameWork中请求返回提取axios中的data数据
+// 兼容Web-App-FrameWork中解构axios返回的data数据
 const respCommon = {
   /**
    * 响应数据之前做点什么
@@ -28,6 +28,7 @@ const respCommon = {
     return Promise.reject(error)
   },
 }
+
 // 401拦截
 const resp401 = {
   /**
@@ -58,7 +59,7 @@ const resp401 = {
       router.push('/login')
     }
     return Promise.reject(error)
-  },
+  }
 }
 
 const resp403 = {
@@ -76,7 +77,7 @@ const resp403 = {
       message.error('请求被拒绝')
     }
     return Promise.reject(error)
-  },
+  }
 }
 
 const reqCommon = {
@@ -87,10 +88,8 @@ const reqCommon = {
    * @returns {*}
    */
   onFulfilled(config, options) {
-    const { url, xsrfCookieName } = config
     const { message } = options
-    console.log(config)
-    debugger
+    const { url, xsrfCookieName } = config
     if (Object.prototype.toString.call(url) === '[object Object]') {
       if (
         url.url.indexOf('login') === -1 &&
@@ -100,7 +99,6 @@ const reqCommon = {
         message.warning('认证 token 已过期，请重新登录')
       }
       config.url = `${process.env.VUE_APP_API_BASE_URL}${url.url}`
-      console.log(config)
       return config
     }
     if (
@@ -110,7 +108,6 @@ const reqCommon = {
     ) {
       message.warning('认证 token 已过期，请重新登录')
     }
-    console.log(config)
     return config
   },
   /**
@@ -123,10 +120,10 @@ const reqCommon = {
     const { message } = options
     message.error(error.message)
     return Promise.reject(error)
-  },
+  }
 }
 
 export default {
   request: [reqCommon], // 请求拦截
-  response: [resp401, resp403, respCommon], // 响应拦截
+  response: [resp401, resp403, respCommon] // 响应拦截
 }

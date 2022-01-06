@@ -12,18 +12,15 @@ import { request } from '@/utils/request'
 export default {
   data() {
     return {
-      application: {},
+      application: {}
     }
   },
   computed: {
-    ...mapState('setting', ['theme']),
+    ...mapState('setting', ['theme'])
   },
   async created() {
     try {
       const appInfo = await getAppInfo()
-      console.log(appInfo.data.configPath)
-      console.log(appInfo.data.assetsPath)
-      console.log(BASE_URL)
       await AppManager.getInstance().loadConfig(
         BASE_URL,
         appInfo.data.configPath,
@@ -36,7 +33,6 @@ export default {
 
       this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
     } catch (error) {
-      this.$message.warning(error)
       this.$message.warning('认证 token 已过期，请重新登录')
       this.$router.replace('/login')
     }
@@ -56,7 +52,7 @@ export default {
             if (style) {
               return {
                 color: style.color,
-                theme: style.theme,
+                theme: style.theme
               }
             }
           }
@@ -65,7 +61,7 @@ export default {
         }
       }
       return { theme: 'dark', color: '#1890ff' }
-    },
-  },
+    }
+  }
 }
 </script>
