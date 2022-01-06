@@ -6,6 +6,7 @@
       :layers="layers"
       :enableCollapse="false"
       :enableBim="true"
+      :enablePopup="true"
     ></mapgis-3d-bim-component>
 </template>
 
