@@ -24452,6 +24452,13 @@ export class AlgorithmLib {
      */
     static linearInterpolate3D(positions: Cartesian3[], step: number): Cartesian3[];
     /**
+     * 区域插值(多边形)
+     * @param positions - 坐标点序列
+     * @param step - 步长
+     * @returns 插值后的坐标点序列
+     */
+    static polygonInterpolate(positions: Cartesian3[], step: number): Cartesian3[];
+    /**
      * 化简抽稀(用于折线路绘制)
      * @param positions - 坐标点序列
      * @returns 抽稀后的坐标点序列
@@ -24996,6 +25003,10 @@ export class ShadowAnalysis {
      * 移除绘制结果
      */
     remove(): void;
+    /**
+     * 移除并销毁阴影分析
+     */
+    destroy(): void;
 }
 
 /**
@@ -25562,7 +25573,7 @@ export class Style {
     };
     /**
      * 面图元样式
-     * @property [color = Color.RED] - 颜色
+     * @property [color = Color.SKYBLUE.withAlpha(0.7)] - 颜色
      * @property [stRotation = 0.0] - 多边形纹理顺时针旋转角度（弧度值）。
      * @property [extrudedHeight] - 多边形体拉伸高度。为0时为区，不为0时为多边形体。
      * @property [perPositionHeight = false] - 是否固定高度，为true时采用边界点的高度，为false时采用height高度。
@@ -26064,11 +26075,35 @@ export class GraphicsLayer {
      * @param [options.type = 'none'] - 绘制类型：参照{@link Graphic.graphicType}
      * @param [options.isContinued = true] - 是否连续绘制
      * @param [options.drawWithHeight = false] - 是否绘制高度，当为true时使用鼠标绘制高度，当为false时使用参数设置的统一高度
+     * @param [options.style] - 图元样式信息 详情参见{@link Style}
+     * @param [options.editPointStyle] - 编辑点样式信息 详情参见{@link Style.EditPointStyle}
+     * @param [options.attributes] - 图元属性
+     * @param [options.name] - 图元名称
+     * @param [options.show = true] - 图元是否显示
+     * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
+     * @param [options.heading = 0.0] - 偏航角，弧度。
+     * @param [options.pitch = 0.0] - 俯仰角，弧度。
+     * @param [options.roll = 0.0] - 翻滚角，弧度。
+     * @param [options.transformX = 0.0] - 局部坐标系X方向平移量，单位米，X方向为纬线方向
+     * @param [options.transformY = 0.0] - 局部坐标系Y方向平移量，单位米，Y方向为经线方向
+     * @param [options.transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
      */
     startDrawing(options: {
         type?: string;
         isContinued?: boolean;
         drawWithHeight?: boolean;
+        style?: any;
+        editPointStyle?: any;
+        attributes?: any;
+        name?: string;
+        show?: boolean;
+        asynchronous?: boolean;
+        heading?: number;
+        pitch?: number;
+        roll?: number;
+        transformX?: number;
+        transformY?: number;
+        transformZ?: number;
     }): void;
     /**
      * 添加绘制图形
@@ -26108,6 +26143,12 @@ export class GraphicsLayer {
      * @returns 返回图层对象或者返回false查询失败
      */
     getGraphicByID(ID: string): any | undefined;
+    /**
+     * 根据name获取标绘图形对象
+     * @param name - 图形ID
+     * @returns 返回对象组
+     */
+    getGraphicByName(name: string): object[] | undefined;
     /**
      * 根据序号获取标绘图形对象
      * @param index - 图形序号
@@ -26904,10 +26945,6 @@ export class Layers {
  */
 export class MapGISM3D {
     constructor();
-    /**
-     * The local transform of this tile.
-     */
-    transform: Matrix4;
     /**
      * The final computed transform of this tile.
      */
@@ -29855,26 +29892,123 @@ export class DrawElement {
 }
 
 /**
+ * 绘制工具
+ * @param graphicsLayer - 编辑的图层对象
+ * @param [options.isContinued = true] - 是否连续绘制
+ */
+export class DrawTool {
+    constructor(viewer: Viewer, graphicsLayer: any, options: {
+        isContinued?: boolean;
+    });
+    /**
+     * 通过画线批量绘制模型
+     * @example
+     * var url = '../../SampleData/models/CesiumMilkTruck/CesiumMilkTruck.glb';
+     * var tool = new Cesium.DrawTool(viewer,graphicsLayer);
+     * tool.DrawModelsByLine({type:'polyline',intervalDistance:100,style: { scale: 10, url: url }});
+     * @param [options.intervalDistance] - 绘制模型间距，单位米。
+     * @param [options.type] - 绘制类型，线、面。
+     * @param [options.style] - 模型样式信息 详情参见{@link Style.ModelStyle}
+     * @param [options.attributes] - 图元属性
+     * @param [options.name] - 图元名称
+     * @param [options.show = true] - 图元是否显示
+     * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
+     * @param [options.modelRadius] - 模型半径，单位米。
+     */
+    DrawModelsByLine(options: {
+        intervalDistance?: number;
+        type?: string;
+        style?: any;
+        attributes?: any;
+        name?: string;
+        show?: boolean;
+        asynchronous?: boolean;
+        modelRadius?: number;
+    }): void;
+    /**
+     * 通过画区批量绘制模型
+     * @example
+     * var url = '../../SampleData/models/CesiumMilkTruck/CesiumMilkTruck.glb';
+     * var tool = new Cesium.DrawTool(viewer,graphicsLayer);
+     * tool.DrawModelsByLine({type:'polyline',intervalDistance:100,style: { scale: 10, url: url }});
+     * @param [options.intervalDistance] - 绘制模型间距，单位米。
+     * @param [options.type] - 绘制类型，线、面。
+     * @param [options.style] - 模型样式信息 详情参见{@link Style.ModelStyle}
+     * @param [options.attributes] - 图元属性
+     * @param [options.name] - 图元名称
+     * @param [options.show = true] - 图元是否显示
+     * @param [options.asynchronous = false] - 默认为阻塞式更新，true为异步更新，false为阻塞式更新。
+     * @param [options.modelRadius] - 模型半径，单位米。
+     */
+    DrawModelsByArea(options: {
+        intervalDistance?: number;
+        type?: string;
+        style?: any;
+        attributes?: any;
+        name?: string;
+        show?: boolean;
+        asynchronous?: boolean;
+        modelRadius?: number;
+    }): void;
+    /**
+     * 移除所有鼠标事件，停止绘制
+     */
+    stopDrawing(): void;
+}
+
+/**
  * 标绘编辑工具
  */
 export class EditTool {
     constructor(viewer: Viewer, graphicsLayer: any, options: any);
     /**
+     * 返回当前选中图形
+     */
+    readonly pickingGraphic: Graphic;
+    /**
+     * 返回当前选中图形
+     */
+    readonly state: Graphic;
+    /**
+     * 开启旋转编辑模式
+     */
+    activeRotationMode(): void;
+    /**
+     * 开启平移编辑模式
+     */
+    activeTranslationMode(): void;
+    /**
+     * 开启缩放编辑模式
+     */
+    activeScaleMode(): void;
+    /**
+     * 开启等比缩放编辑模式
+     */
+    toggleNonUniformScaling(): void;
+    /**
+     * 鼠标拖动更新图形事件
+     */
+    mouseMoveEvent(): void;
+    /**
      * 激活编辑工具
      */
     active(): void;
+    /**
+     * 激活编辑工具
+     */
+    startEdit(): void;
     /**
      * 关闭编辑工具
      */
     stop(): void;
     /**
-     * 返回编辑状态的图形
+     * 取消编辑状态，清除选择
      */
-    getPickingGraphic(): void;
+    stopEdit(): void;
     /**
-     * 清除选择
+     * 销毁编辑工具,清除编辑点
      */
-    clearPick(): void;
+    destroy(): void;
 }
 
 /**
@@ -50139,6 +50273,7 @@ declare module "cesium/Source/MapGIS/Provider/TiandituImageryProvider" { import 
 declare module "cesium/Source/MapGIS/Tools/AnimationTool" { import { AnimationTool } from 'cesium'; export default AnimationTool; }
 declare module "cesium/Source/MapGIS/Tools/CuttingTool" { import { CuttingTool } from 'cesium'; export default CuttingTool; }
 declare module "cesium/Source/MapGIS/Tools/DrawElement" { import { DrawElement } from 'cesium'; export default DrawElement; }
+declare module "cesium/Source/MapGIS/Tools/DrawTool" { import { DrawTool } from 'cesium'; export default DrawTool; }
 declare module "cesium/Source/MapGIS/Tools/EditTool" { import { EditTool } from 'cesium'; export default EditTool; }
 declare module "cesium/Source/MapGIS/Tools/MeasureAreaTool" { import { MeasureAreaTool } from 'cesium'; export default MeasureAreaTool; }
 declare module "cesium/Source/MapGIS/Tools/MeasureLengthTool" { import { MeasureLengthTool } from 'cesium'; export default MeasureLengthTool; }
