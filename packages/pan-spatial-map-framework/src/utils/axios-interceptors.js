@@ -1,4 +1,5 @@
 import Cookie from 'js-cookie'
+import apis from '@/services/api'
 
 // 兼容Web-App-FrameWork中解构axios返回的data数据
 const respCommon = {
@@ -9,10 +10,8 @@ const respCommon = {
    * @returns {*}
    */
   onFulfilled(response, options) {
-    if (
-      response.config.url === 'http://localhost:8015/auth/login' ||
-      response.config.url === 'http://localhost:8015/auth/app-info'
-    ) {
+    const apisList = Object.values(apis)
+    if (apisList.includes(response.config.url)) {
       return response
     } else {
       return response.data
@@ -26,7 +25,7 @@ const respCommon = {
    */
   onRejected(error, options) {
     return Promise.reject(error)
-  },
+  }
 }
 
 // 401拦截
