@@ -123,7 +123,7 @@ export default class MpFeatureQuery extends Mixins(
     QueryType.Point,
     QueryType.Polygon,
     QueryType.LineString,
-    QueryType.Rectangle,
+    // QueryType.Rectangle,
     QueryType.Cube
   ]
 
@@ -132,7 +132,8 @@ export default class MpFeatureQuery extends Mixins(
     Circle: 'draw-circle',
     Rectangle: 'draw-rectangle',
     Polygon: 'draw-polygon',
-    LineString: 'draw-polyline'
+    LineString: 'draw-polyline',
+    Cube: 'draw-cube'
   }
 
   private get marks() {
@@ -504,6 +505,7 @@ export default class MpFeatureQuery extends Mixins(
           geometry = new Zondy.Common.Polygon(pointArray)
         }
         break
+      case QueryType.Cube:
       case QueryType.Circle:
       case QueryType.Rectangle:
         if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
@@ -664,6 +666,7 @@ export default class MpFeatureQuery extends Mixins(
       case QueryType.Polygon:
         geometry = polygon([shape.map(point => [point.x, point.y])])
         break
+      case QueryType.Cube:
       case QueryType.Circle:
       case QueryType.Rectangle:
         const { ymax, ymin, xmax, xmin } = shape
