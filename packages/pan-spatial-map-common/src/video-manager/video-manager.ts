@@ -45,10 +45,10 @@ class VideoOverlayLayerList {
   private _videoOverlayLayerList: Array<VideoOverlayLayer> = []
 
   // 当前图层id
-  private _currentLayerId: string | undefined
+  private _currentLayerId = ''
 
   // 当前video的id
-  private _currentVideoId: string | undefined
+  private _currentVideoId = ''
 
   /**
    * 获取videoOverlayLayerList
@@ -256,7 +256,7 @@ class VideoOverlayLayerList {
     if (video) {
       return video.isProjected
     }
-    return null
+    return false
   }
 
   /**

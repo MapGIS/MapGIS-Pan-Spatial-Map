@@ -6,6 +6,7 @@
     :modelOffset="modelOffset"
     :currentLayerId="currentLayerId"
     :currentVideoId="currentVideoId"
+    :maxProjected="maxProjected"
     @load="load"
     @update-videoOverlayLayerList="updateVideoOverlayLayerList"
   >
@@ -17,9 +18,9 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import { api, VideoManager } from '@mapgis/pan-spatial-map-common'
 
 @Component({
-  name: 'MpVideo'
+  name: 'MpVideoManager'
 })
-export default class MpVideo extends Mixins(WidgetMixin) {
+export default class MpVideoManager extends Mixins(WidgetMixin) {
   private modelUrl = './CesiumModels/Cesium_Camera.glb'
 
   private modelOffset = { headingOffset: -90, pitchOffset: 0, rollOffset: 0 }
@@ -61,6 +62,8 @@ export default class MpVideo extends Mixins(WidgetMixin) {
 
   private VideoManagerInstance = VideoManager
 
+  private maxProjected = 10
+
   private get videoOverlayLayerList() {
     const videoOverlayLayerList = this.VideoManagerInstance.getVideoOverlayLayerList()
     return videoOverlayLayerList
@@ -80,6 +83,22 @@ export default class MpVideo extends Mixins(WidgetMixin) {
     return videoId
   }
 
+  @Watch('currentLayerId', {
+    deep: true,
+    immediate: true
+  })
+  changeCurrentLayerId() {
+    console.log(this.currentLayerId)
+  }
+
+  @Watch('currentVideoId', {
+    deep: true,
+    immediate: true
+  })
+  changeCurrentVideoId() {
+    console.log(this.currentVideoId)
+  }
+
   @Watch('videoOverlayLayerList', {
     deep: true,
     immediate: true
@@ -97,6 +116,8 @@ export default class MpVideo extends Mixins(WidgetMixin) {
       (this.widgetInfo.config &&
         this.widgetInfo.config.videoOverlayLayerList) ||
       this.videoLayerList
+    this.maxProjected =
+      (this.widgetInfo.config && this.widgetInfo.config.maxProjected) || 10
   }
 
   load(videoComponent) {
