@@ -7,6 +7,7 @@ import { mapState, mapMutations } from 'vuex'
 import { AppManager } from '@mapgis/web-app-framework'
 import { getAppInfo } from '@/services/user'
 import { BASE_URL } from '@/services/api'
+import { request } from '@/utils/request'
 
 export default {
   data() {
@@ -20,13 +21,12 @@ export default {
   async created() {
     try {
       const appInfo = await getAppInfo()
-
       await AppManager.getInstance().loadConfig(
         BASE_URL,
         appInfo.data.configPath,
-        appInfo.data.assetsPath
+        appInfo.data.assetsPath,
+        request
       )
-
       this.application = AppManager.getInstance().getApplication()
 
       const style = this.themeStyle()
@@ -43,9 +43,11 @@ export default {
       if (this.application.theme) {
         if (this.application.theme.style) {
           if (this.application.theme.manifest) {
-            const style = this.application.theme.manifest.styles.find(item => {
-              return item.name === this.application.theme.style
-            })
+            const style = this.application.theme.manifest.styles.find(
+              (item) => {
+                return item.name === this.application.theme.style
+              }
+            )
 
             if (style) {
               return {
