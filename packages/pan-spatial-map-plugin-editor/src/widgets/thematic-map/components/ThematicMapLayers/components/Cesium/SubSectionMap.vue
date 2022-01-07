@@ -4,7 +4,11 @@
     ref="marker3dProRef"
     :marker="selfMarker"
     v-if="selfMarker.fid"
-  />
+  >
+    <template slot="popup" slot-scope="{ properties }">
+      <mp-popup-attribute :properties="properties" />
+    </template>
+  </mp-3d-marker-pro>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
@@ -17,7 +21,7 @@ interface ISectionColor {
   sectionColor: string
 }
 
-@Component
+@Component()
 export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
   // 是否展示3D效果
   get isShow3D() {
