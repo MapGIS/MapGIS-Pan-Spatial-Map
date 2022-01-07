@@ -25355,7 +25355,8 @@ export class Graphic {
      * @property [circle = 'circle'] - 圆，图标类型(type)为circle时样式参数参照{@link Style.CircleStyle}
      * @property [corridor = 'corridor'] - 方管线，图标类型(type)为corridor时样式参数参照{@link Style.CorridorStyle}
      * @property [cylinder = 'cylinder'] - 圆台（圆锥），图标类型(type)为cylinder时样式参数参照{@link Style.CylinderStyle}
-     * @property [ellipsoid = 'ellipsoid'] - 球，图标类型(type)为ellipsoid时样式参数参照{@link Style.EllipsoidStyle}
+     * @property [ellipsoid = 'ellipsoid'] - 椭球，图标类型(type)为ellipsoid时样式参数参照{@link Style.EllipsoidStyle}
+     * @property [sphere = 'sphere'] - 圆球，图标类型(type)为sphere时样式参数参照{@link Style.SphereStyle}
      * @property [wall = 'wall'] - 墙，图标类型(type)为wall时样式参数参照{@link Style.WallStyle}
      * @property [box = 'box'] - 盒子,类型（type）为box时样式参数参照{@link Style.BoxStyle}
      * @property [model = 'model'] - gltf模型,类型（type）为model时样式参数参照{@link Style.ModelStyle}
@@ -25372,6 +25373,7 @@ export class Graphic {
         corridor?: string;
         cylinder?: string;
         ellipsoid?: string;
+        sphere?: string;
         wall?: string;
         box?: string;
         model?: string;
@@ -25532,7 +25534,7 @@ export class Style {
      * @property [colorsArray] - 线段插值颜色 {@link Color} 数组，未定义undefined时不开启，采用纯色渲染。传入空数组时默认创建随机颜色。(贴地线无效)
      * @property [colorsPerVertex] - 是否开启线段颜色插值(贴地线无效),，true为按照顶点渐变，false为线段分段着色。
      * @property [translucent = true] - 是否半透明
-     * @property [loop = false] - 是否闭环 (贴地线生效)
+     * @property [loop = false] - 是否闭环
      * @property [options.classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [material] - 材质 材质类型参见{@link Material}
@@ -25718,7 +25720,7 @@ export class Style {
         slices?: number;
     };
     /**
-     * 球（椭球）图元样式
+     * 椭球图元样式
      * @property [radiusX] - 半径x
      * @property [radiusY] - 半径Y
      * @property [radiusZ] - 半径Z
@@ -25733,6 +25735,35 @@ export class Style {
      * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
      */
     static EllipsoidStyle: {
+        radiusX?: number;
+        radiusY?: number;
+        radiusZ?: number;
+        innerRadiusX?: number;
+        innerRadiusY?: number;
+        innerRadiusZ?: number;
+        height?: number;
+        color?: string | Color;
+        translucent?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+    };
+    /**
+     * 圆球图元样式
+     * @property [radiusX] - 半径x
+     * @property [radiusY] - 半径Y
+     * @property [radiusZ] - 半径Z
+     * @property [innerRadiusX] - 内半径x
+     * @property [innerRadiusY] - 内半径Y
+     * @property [innerRadiusZ] - 内半径Z
+     * @property [height = 0] - 椭球距离地面抬高高度。
+     * @property [color = Color.RED] - 颜色
+     * @property [translucent = true] - 是否半透明
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
+     */
+    static SphereStyle: {
         radiusX?: number;
         radiusY?: number;
         radiusZ?: number;
@@ -25772,8 +25803,8 @@ export class Style {
      * @property [isSquare = false] - 是否为正方体。
      * @property [color = Color.RED] - 颜色
      * @property [height] - 位置高度
-     * @property [extrudedHeight = 100] - 位置高度
-     * @property [heightReference = HeightReference.NONE] - 位置高度
+     * @property [extrudedHeight = 100] - 拉伸长度
+     * @property [heightReference = HeightReference.NONE] - 高度类型
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
      * @property [material] - 材质 材质类型参见{@link Material}
@@ -25858,7 +25889,8 @@ export class Style {
      * @property [circle = 'circle'] - 圆，图标类型(type)为circle时样式参数参照{@link Style.CircleStyle}
      * @property [corridor = 'corridor'] - 方管线，图标类型(type)为corridor时样式参数参照{@link Style.CorridorStyle}
      * @property [cylinder = 'cylinder'] - 圆台（圆锥），图标类型(type)为cylinder时样式参数参照{@link Style.CylinderStyle}
-     * @property [ellipsoid = 'ellipsoid'] - 球，图标类型(type)为Ellipsoid时样式参数参照{@link Style.EllipsoidStyle}
+     * @property [ellipsoid = 'ellipsoid'] - 椭球，图标类型(type)为ellipsoid时样式参数参照{@link Style.EllipsoidStyle}
+     * @property [sphere = 'sphere'] - 圆球，图标类型(type)为sphere时样式参数参照{@link Style.SphereStyle}
      * @property [wall = 'wall'] - 墙，图标类型(type)为wall时样式参数参照{@link Style.WallStyle}
      * @property [box = 'box'] - 盒子,类型（type）为box时样式参数参照{@link Style.BoxStyle}
      * @property [model = 'model'] - gltf模型,类型（type）为model时样式参数参照{@link Style.ModelStyle}
@@ -25875,10 +25907,31 @@ export class Style {
         corridor?: string;
         cylinder?: string;
         ellipsoid?: string;
+        sphere?: string;
         wall?: string;
         box?: string;
         model?: string;
     };
+}
+
+/**
+ * 平移旋转图元
+ * @param [options.heading = 0.0] - 偏航角，弧度。
+ * @param [options.pitch = 0.0] - 俯仰角，弧度。
+ * @param [options.roll = 0.0] - 翻滚角，弧度。
+ * @param [options.transformX = 0.0] - 局部坐标系X方向平移量，单位米，X方向为纬线方向
+ * @param [options.transformY = 0.0] - 局部坐标系Y方向平移量，单位米，Y方向为经线方向
+ * @param [options.transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
+ */
+export class TransformAndRotationGraphic {
+    constructor(graphic: Graphic, options: {
+        heading?: number;
+        pitch?: number;
+        roll?: number;
+        transformX?: number;
+        transformY?: number;
+        transformZ?: number;
+    });
 }
 
 /**
@@ -29440,6 +29493,8 @@ export class ReImg {
  * @param options.width - 显示柱状体或饼状的宽度
  * @param options.addExtrudedHeight - 是否为饼状体添加高度
  * @param options.addGeoGeometry - 解析GeoJson数据时，是否绘制polygon的Geometry
+ * @param options.attributeName - 用于显示的属性名
+ * @param options.attributeColor - 各个属性对应的颜色
  */
 export class ThemeManager {
     constructor(viewer: any, options: {
@@ -29450,6 +29505,8 @@ export class ThemeManager {
         width: number;
         addExtrudedHeight: boolean;
         addGeoGeometry: boolean;
+        attributeName: any[];
+        attributeColor: any[];
     });
     /**
      * 用于显示的属性名
@@ -29997,6 +30054,10 @@ export class EditTool {
      * 激活编辑工具
      */
     startEdit(): void;
+    /**
+     * 撤销
+     */
+    undo(): void;
     /**
      * 关闭编辑工具
      */
@@ -50240,6 +50301,7 @@ declare module "cesium/Source/MapGIS/Analysis/VisiblityAnalysis" { import { Visi
 declare module "cesium/Source/MapGIS/Entity/AttributeSurfacePrimitive" { import { AttributeSurfacePrimitive } from 'cesium'; export default AttributeSurfacePrimitive; }
 declare module "cesium/Source/MapGIS/Entity/Graphic" { import { Graphic } from 'cesium'; export default Graphic; }
 declare module "cesium/Source/MapGIS/Entity/Style" { import { Style } from 'cesium'; export default Style; }
+declare module "cesium/Source/MapGIS/Entity/TransformAndRotationGraphic" { import { TransformAndRotationGraphic } from 'cesium'; export default TransformAndRotationGraphic; }
 declare module "cesium/Source/MapGIS/IndexedDB/TransactionImplement" { import { TransactionImplement } from 'cesium'; export default TransactionImplement; }
 declare module "cesium/Source/MapGIS/Label/MapGISLabelLayer" { import { MapGISLabelLayer } from 'cesium'; export default MapGISLabelLayer; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3D" { import { MapGISM3D } from 'cesium'; export default MapGISM3D; }
