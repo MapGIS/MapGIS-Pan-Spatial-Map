@@ -18,9 +18,9 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import { api, VideoManager } from '@mapgis/pan-spatial-map-common'
 
 @Component({
-  name: 'MpVideo'
+  name: 'MpVideoManager'
 })
-export default class MpVideo extends Mixins(WidgetMixin) {
+export default class MpVideoManager extends Mixins(WidgetMixin) {
   private modelUrl = './CesiumModels/Cesium_Camera.glb'
 
   private modelOffset = { headingOffset: -90, pitchOffset: 0, rollOffset: 0 }
