@@ -177,6 +177,10 @@
             "uri": "widgets/feature-query"
           },
           {
+            "id": "widget_05bc8763-837b-4fd4-972e-5d8f49718d44",
+            "uri": "widgets/overlay-manager"
+          },
+          {
             "id": "widget_9e4f4ab9-8ab6-400d-ba01-7adab2963fcc",
             "uri": "widgets/vector-tile-carto"
           },
@@ -309,6 +313,9 @@
           },
           {
             "id": "widget_9e4f4ab9-8ab6-400d-ba01-7adab2963fcc"
+          },
+          {
+            "id": "widget_05bc8763-837b-4fd4-972e-5d8f49718d44"
           },
           {
             "id": "folder_86c9b153-0d1e-4617-2bc3-09fbae5e6715",
