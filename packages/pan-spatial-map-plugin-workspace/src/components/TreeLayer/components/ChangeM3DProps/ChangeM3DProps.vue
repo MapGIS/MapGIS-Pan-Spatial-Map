@@ -9,7 +9,7 @@
           "
         />
       </a-form-item>
-      <a-form-item>
+      <a-form-item style="textAlign:right">
         <a-button type="primary" @click="submit">
           确认
         </a-button>
