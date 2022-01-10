@@ -963,11 +963,11 @@
             "serverUrl": "http://192.168.88.204:8089/M3D/2.0/BIM模型生长time/BIM模型生长time.mcj"
           },
           {
-            "label": "V2_M3D-单体建筑生长",
+            "label": "M3D-2.0-单体建筑生长",
             "describe": "V2_M3D-单体建筑生长",
             "ip": "",
             "port": "",
-            "layerServiceType": "TILE3D",
+            "layerServiceType": "ModelCache",
             "name": "",
             "searchName": "",
             "model": "",
@@ -984,15 +984,10 @@
             "searchName": "",
             "model": "",
             "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fi",
-            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_分层分户-静态单体化/SceneServer",
-            "customParameters": [
-              {
-                "extendedPropKeys": "Expand,IsStratified"
-              }
-            ]
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_分层分户-静态单体化/SceneServer"
           },
           {
-            "label": "V2_M3D-BIM构建树",
+            "label": "M3D-2.0-BIM构建树",
             "describe": "M3D-BIM构建树",
             "ip": "",
             "port": "",
