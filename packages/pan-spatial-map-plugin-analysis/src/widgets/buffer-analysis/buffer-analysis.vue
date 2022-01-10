@@ -1,7 +1,7 @@
 <template>
   <div class="mp-widget-buffer-analysis">
-    <div id="widgets-ui">
-		  <mapgis-ui-group-tab title="选择数据" id="title-space"/>
+    <div id="widgets-ui" v-if="isWidgetOpen">
+      <mapgis-ui-group-tab title="选择数据" id="title-space"/>
       <mapgis-ui-form-model v-bind="{labelCol: {span: 6}, wrapperCol: {span: 17}}" :layout="layout" :labelAlign="'left'">
         <mapgis-ui-form-model-item label="选择图层" :colon="false">
           <mapgis-ui-row>
@@ -106,7 +106,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   documentChange(val: Array<unknown>) {
     this.tDataIndex = null
     this.layerArrOption = []
-    this.tchangeTarget()
     const arr = []
     val.layers().forEach(data => {
       if (
@@ -120,6 +119,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
       this.layerArrOption = arr
       this.tDataIndex = 0
     }
+    this.tchangeTarget()
   }
 
   // 微件窗口模式切换时回调
@@ -208,7 +208,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
         name: this.destLayer,
       }
     }
-    debugger
     eventBus.$emit(events.ADD_DATA_EVENT, data)
   }
 
@@ -225,6 +224,8 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   reset() {
     this.isFullScreen = false
     this.destLayer = ''
+    this.selectLevel = false
+    this.srcType = "Layer"
   }
 
   showLayer(data) {
