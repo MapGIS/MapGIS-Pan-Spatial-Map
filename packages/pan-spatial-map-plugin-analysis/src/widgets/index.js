@@ -19,6 +19,7 @@ export { default as MpPondingSimulation } from './ponding-simulation/ponding-sim
 export { default as MpBufferAnalysis } from './buffer-analysis/buffer-analysis.vue'
 export { default as MpOverlayAnalysis } from './overlay-analysis/overlay-analysis.vue'
 export { default as MpOverlayManager } from './overlay-manager/overlay-manager.vue'
+export { default as MpModelFlatten } from './model-flatten/model-flatten.vue'
 export { default as MpVideoManager } from './video-manager/video-manager.vue'
 export { default as MpStratifiedHousehold } from './stratified-household/stratified-household.vue'
 export { default as MpBuildingGrow } from './building-grow/building-grow.vue'

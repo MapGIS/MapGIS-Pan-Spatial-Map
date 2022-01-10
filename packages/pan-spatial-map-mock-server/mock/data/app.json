@@ -181,6 +181,10 @@
             "uri": "widgets/overlay-manager"
           },
           {
+            "id": "widget_a6885da5-cfc9-40b1-9324-9a1863b05e24",
+            "uri": "widgets/model-flatten"
+          },
+          {
             "id": "widget_9e4f4ab9-8ab6-400d-ba01-7adab2963fcc",
             "uri": "widgets/vector-tile-carto"
           },
@@ -407,6 +411,9 @@
               },
               {
                 "id": "widget_5058684b-b4b3-46a1-9b59-1057dbe00c04"
+              },
+              {
+                "id": "widget_a6885da5-cfc9-40b1-9324-9a1863b05e24"
               }
             ]
           },
