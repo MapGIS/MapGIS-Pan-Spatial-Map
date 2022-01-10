@@ -1,0 +1,8 @@
+[
+  {
+    "baseUrl": "http://192.168.21.192:6163/igs/rest/mrfs/docs/shengZhenBaiMo/0/0",
+    "startTimeField": "startTime",
+    "endTimeField": "endTime",
+    "heightField": "height"
+  }
+]
