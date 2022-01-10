@@ -938,7 +938,7 @@
             "describe": "M3D-楼栋构建树",
             "ip": "",
             "port": "",
-            "layerServiceType": "TILE3D",
+            "layerServiceType": "ModelCache",
             "name": "",
             "searchName": "",
             "model": "surface",
@@ -955,7 +955,7 @@
             "describe": "M3D-BIM构建树",
             "ip": "",
             "port": "",
-            "layerServiceType": "TILE3D",
+            "layerServiceType": "ModelCache",
             "name": "",
             "searchName": "",
             "model": "surface",
@@ -972,7 +972,7 @@
             "describe": "M3D-单体建筑生长",
             "ip": "",
             "port": "",
-            "layerServiceType": "TILE3D",
+            "layerServiceType": "ModelCache",
             "name": "",
             "searchName": "",
             "model": "",
@@ -980,11 +980,11 @@
             "serverUrl": "http://192.168.88.204:8089/M3D/2.0/BIM模型生长time/BIM模型生长time.mcj"
           },
           {
-            "label": "3DTileset-大雁塔",
-            "describe": "3DTileset-大雁塔",
+            "label": "3DTileset-大雁塔ModelCache",
+            "describe": "3DTileset-大雁塔ModelCache",
             "ip": "",
             "port": "",
-            "layerServiceType": "TILE3D",
+            "layerServiceType": "ModelCache",
             "name": "",
             "searchName": "",
             "model": "",
@@ -995,6 +995,18 @@
                 "format": "cesium3dTileset"
               }
             ]
+          },
+          {
+            "label": "3DTileset-大雁塔TILE3D",
+            "describe": "3DTileset-大雁塔TILE3D",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILE3D",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fh",
+            "serverUrl": "http://192.168.88.204:8089/3DTileset/dayantaresult/tileset.json"
           }
         ]
       },
@@ -1151,7 +1163,7 @@
             "describe": "数据流",
             "ip": "",
             "port": "",
-            "layerServiceType": "DATAFLOW",
+            "layerServiceType": "DataFlow",
             "name": "数据流",
             "searchName": "",
             "token": "",

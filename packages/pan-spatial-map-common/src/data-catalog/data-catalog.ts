@@ -569,7 +569,13 @@ export class DataCatalogManager {
   // 是否过滤不可用的图层节点
   private isFilterInvalidLayerConfig = true
 
-  // 老版数据目录配置中记录的地图服务类型
+  /**
+   * 数据目录配置中记录的地图服务类型,兼容jquery版一张图中的配置
+   *
+   * @date 10/01/2022
+   * @private
+   * @memberof DataCatalogManager
+   */
   private readonly layerServiceType = {
     /**
      * 地图文档
@@ -627,6 +633,7 @@ export class DataCatalogManager {
     TERRAINCACHE: 'TERRAINCACHE',
     /**
      * 模型缓存或倾斜摄影
+     * jquery版一张图中使用，特指cesium3dTileset模型缓存类型已废弃。建议使用ModelCache。
      * @type {string}
      */
     TILE3D: 'TILE3D',
@@ -690,11 +697,27 @@ export class DataCatalogManager {
      * @type {string}
      */
     VIDEO: 'VIDEO',
+
     /**
      * 数据流
+     * 10.5.6.10版本中新增，与LayerType的枚举名保持一致。
      * @type {string}
      */
-    DATAFLOW: 'DATAFLOW'
+    DataFlow: 'DataFlow',
+
+    /**
+     * 模型缓存图层
+     * 10.5.6.10版本中新增，与LayerType的枚举名保持一致。
+     * 支持cesium3dTileset、m3d等模型缓存类型，可通过配置项中的customParameters，指定具体的格式类型。不指定时，默认为m3d类型。
+     * 如：
+            "customParameters": [
+              {
+                "format": "cesium3dTileset"
+              }
+            ]
+     * @type {string}
+     */
+    ModelCache: 'ModelCache'
   }
 
   // 将老版本的配置转换为新版本的配置
@@ -801,6 +824,12 @@ export class DataCatalogManager {
           // 根据layerServiceType计算serverType
           const serverType = this.convertLayerServiceType(layerServeiceType)
 
+          // 修改说明：兼容jquery版TILE3D类型的配置。类型对应于新版配置中的ModelCache类型，需要增加format为cesium3dTileset的参数。
+          // 修改人：马原野 2022年01月10日
+          if (layerServeiceType === 'TILE3D') {
+            serverLayerInfo.customParameters.push({ format: 'cesium3dTileset' })
+          }
+
           serverLayerInfo.serverType = serverType // 服务类型
 
           // 绑定数据：与该服务图层相关联的服务信息,比如：与该瓦片服务对应的地图服务。应用中利用该字段可实现对瓦片服务的查询功能
@@ -858,10 +887,26 @@ export class DataCatalogManager {
     return nodeArrayConverted
   }
 
-  // 根据layerServiceType计算serverType
+  /**
+   * 将layerServiceType中记录的服务类型字符串，转换成serverType类型的枚举。serverType的定义采用LayerType的定义。
+   *
+   * @date 10/01/2022
+   * @private
+   * @param {string} layerServiceType
+   * @return {*}
+   * @memberof DataCatalogManager
+   */
   private convertLayerServiceType(layerServiceType: string) {
     let serverType = LayerType.Unknown
 
+    // 1.先处理新增的类型，新增的服务类型直接采用LayerType中的定义。
+    serverType = DataCatalogManager.parseLayerType(layerServiceType)
+
+    if (serverType !== LayerType.Unknown) {
+      return serverType
+    }
+
+    // 2.处理jquery版中定义的服务类型。
     switch (layerServiceType) {
       case this.layerServiceType.IGSDOC:
         serverType = LayerType.IGSMapImage
@@ -897,9 +942,6 @@ export class DataCatalogManager {
         serverType = LayerType.VectorTile
         break
       case this.layerServiceType.TERRAIN:
-        break
-      case this.layerServiceType.DATAFLOW:
-        serverType = LayerType.DataFlow
         break
       case this.layerServiceType.GEOJSON:
         serverType = LayerType.GeoJson
