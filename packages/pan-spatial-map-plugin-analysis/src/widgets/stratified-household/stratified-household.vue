@@ -4,6 +4,7 @@
     @loaded="load"
     :outStyle="outStyle"
     :layers="layers"
+    :enablePopup="true"
     :enableCollapse="false"
     :enableStratifiedHouse="true"
   ></mapgis-3d-stratified-household>
