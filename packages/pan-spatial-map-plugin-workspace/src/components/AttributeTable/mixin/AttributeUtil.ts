@@ -137,11 +137,26 @@ export default class LayerTypeUtil extends Mixins(
    *  name: 视频名称
    * }
    */
-  projectScreen(file, position) {
+  projectScreen(file) {
+    const {
+      vFOV,
+      orientationHeading,
+      orientationRoll,
+      positionX,
+      positionY,
+      positionZ,
+      hFOV,
+      orientationPitch
+    } = file
     const cameraPosition = {
-      x: position.longitude,
-      y: position.latitude,
-      z: position.height
+      x: positionX,
+      y: positionY,
+      z: positionZ
+    }
+    const Orientation = {
+      heading: orientationHeading,
+      pitch: orientationPitch,
+      roll: orientationRoll
     }
     VideoManager.addVideo(
       this.exhibition.id,
@@ -152,7 +167,10 @@ export default class LayerTypeUtil extends Mixins(
       file.url,
       '',
       true,
-      cameraPosition
+      cameraPosition,
+      Orientation,
+      hFOV,
+      vFOV
     )
   }
 
