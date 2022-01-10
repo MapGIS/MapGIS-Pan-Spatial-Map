@@ -1007,6 +1007,18 @@
             "model": "",
             "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fh",
             "serverUrl": "http://192.168.88.204:8089/3DTileset/dayantaresult/tileset.json"
+          },
+          {
+            "label": "V2_分层分户-静态单体化",
+            "describe": "V2_分层分户-静态单体化",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fi",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_分层分户-静态单体化/SceneServer"
           }
         ]
       },

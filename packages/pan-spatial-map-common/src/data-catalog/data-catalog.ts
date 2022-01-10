@@ -717,7 +717,14 @@ export class DataCatalogManager {
             ]
      * @type {string}
      */
-    ModelCache: 'ModelCache'
+    ModelCache: 'ModelCache',
+
+    /**
+     * IGS的三维场景服务
+     * 10.5.6.10版本中新增，与LayerType的枚举名保持一致。
+     * @type {string}
+     */
+    IGSScene: 'IGSScene'
   }
 
   // 将老版本的配置转换为新版本的配置
