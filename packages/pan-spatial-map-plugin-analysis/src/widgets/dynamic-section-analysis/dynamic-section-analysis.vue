@@ -36,13 +36,15 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
       .forEach((layer, index) => {
         if (layer.loadStatus === LoadStatus.loaded) {
           if (layer.type === LayerType.IGSScene) {
-            const { renderType } = layer.activeScene.sublayers[0]
-            if (renderType === IGSSceneSublayerRenderType.modelCache) {
-              const { id } = layer.activeScene.layer
-              layers.push({
-                title: layer.title,
-                vueIndex: id
-              })
+            if (layer.activeScene) {
+              const { renderType } = layer.activeScene.sublayers[0]
+              if (renderType === IGSSceneSublayerRenderType.modelCache) {
+                const { id } = layer.activeScene.layer
+                layers.push({
+                  title: layer.title,
+                  vueIndex: id
+                })
+              }
             }
           } else if (layer.type === LayerType.ModelCache) {
             layers.push({

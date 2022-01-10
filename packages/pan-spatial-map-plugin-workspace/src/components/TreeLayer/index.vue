@@ -277,9 +277,11 @@ export default class MpTreeLayer extends Mixins(
         item.scopedSlots = { title: 'custom' }
         item.visiblePopover = false
         if (this.isIGSScene(item)) {
-          item.sublayers = item.activeScene.sublayers.map(row => ({
-            ...row
-          }))
+          if (item.activeScene) {
+            item.sublayers = item.activeScene.sublayers.map(row => ({
+              ...row
+            }))
+          }
         }
 
         if (this.isVectorTile(item)) {
@@ -517,8 +519,10 @@ export default class MpTreeLayer extends Mixins(
           }
           if (index === childrenArr.length - 1) {
             if (this.isIGSScene(layerItem)) {
-              layerItem.activeScene.sublayers[i].visible = !layerItem
-                .activeScene.sublayers[i].visible
+              if (layerItem.activeScene) {
+                layerItem.activeScene.sublayers[i].visible = !layerItem
+                  .activeScene.sublayers[i].visible
+              }
             } else if (this.isVectorTile(layers[parentIndex])) {
               /**
                * 修改说明：矢量瓦片里的layers没有row.layout或者没有row.layout.visibility字段时，是默认显示，这里默认设置为可见
@@ -542,7 +546,9 @@ export default class MpTreeLayer extends Mixins(
             }
           } else {
             if (this.isIGSScene(layerItem)) {
-              layerItem = layerItem.activeScene.sublayers[i]
+              if (layerItem.activeScene) {
+                layerItem = layerItem.activeScene.sublayers[i]
+              }
             } else {
               layerItem = layerItem.sublayers[i]
             }
@@ -644,9 +650,7 @@ export default class MpTreeLayer extends Mixins(
     })
   }
 
-  queryFeature() {
-    
-  }
+  queryFeature() {}
 
   /**
    * 打开M3D编辑属性页面
@@ -716,12 +720,18 @@ export default class MpTreeLayer extends Mixins(
     const layers: Array<unknown> = doc.defaultMap.layers()
     if (indexArr.length === 2) {
       const [firstIndex, secondIndex] = indexArr
-      layers[firstIndex].activeScene.sublayers[
-        secondIndex
-      ].maximumScreenSpaceError = maximumScreenSpaceError
-      const m3d = this.sceneController.findSource(id)
-      m3d.maximumScreenSpaceError = maximumScreenSpaceError
-      this.$emit('update:layerDocument', doc)
+
+      const activeScene = layers[firstIndex].activeScene
+
+      if (activeScene) {
+        activeScene.sublayers[
+          secondIndex
+        ].maximumScreenSpaceError = maximumScreenSpaceError
+
+        const m3d = this.sceneController.findSource(id)
+        m3d.maximumScreenSpaceError = maximumScreenSpaceError
+        this.$emit('update:layerDocument', doc)
+      }
     }
     this.currentLayerInfo = {}
   }

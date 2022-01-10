@@ -117,13 +117,15 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       .forEach((layer, index) => {
         if (layer.loadStatus === LoadStatus.loaded) {
           if (layer.type === LayerType.IGSScene) {
-            const { renderType } = layer.activeScene.sublayers[0]
-            if (
-              renderType === IGSSceneSublayerRenderType.elevation ||
-              renderType === IGSSceneSublayerRenderType.modelCache
-            ) {
-              // 剖切分析支持地形和模型
-              layers.push(layer)
+            if (layer.activeScene) {
+              const { renderType } = layer.activeScene.sublayers[0]
+              if (
+                renderType === IGSSceneSublayerRenderType.elevation ||
+                renderType === IGSSceneSublayerRenderType.modelCache
+              ) {
+                // 剖切分析支持地形和模型
+                layers.push(layer)
+              }
             }
           }
         }
