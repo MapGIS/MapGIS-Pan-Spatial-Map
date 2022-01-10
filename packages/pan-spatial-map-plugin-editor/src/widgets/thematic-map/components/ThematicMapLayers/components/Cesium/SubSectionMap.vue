@@ -38,6 +38,19 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
     return this.subjectData?.color || []
   }
 
+  get classificationType() {
+    let type
+    const configType = this.subjectData.setting3D.classificationType
+    if (configType === 'terrain') {
+      type = this.Cesium.ClassificationType.TERRAIN
+    } else if (configType === '3DTiles') {
+      type = this.Cesium.ClassificationType.CESIUM_3D_TILE
+    } else if (configType === 'both') {
+      type = this.Cesium.ClassificationType.BOTH
+    }
+    return type
+  }
+
   /**
    * 获取形状
    * @param 半径
@@ -132,6 +145,12 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
       positions,
       material
     }
+    if (this.classificationType) {
+      option = {
+        ...option,
+        classificationType: this.classificationType
+      }
+    }
     if (this.isShow3D) {
       switch (lineType) {
         case '走廊状':
@@ -175,13 +194,19 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
     const hierarchy = this.Cesium.Cartesian3.fromDegreesArray(
       coordinates[0].flat()
     )
-    return {
+    let option: any = {
       polygon: {
         hierarchy,
-        extrudedHeight,
         material
       }
     }
+    if (this.classificationType) {
+      option = {
+        ...option,
+        classificationType: this.classificationType
+      }
+    }
+    return option
   }
 
   /**

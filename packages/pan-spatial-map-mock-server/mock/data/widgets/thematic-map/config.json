@@ -406,7 +406,8 @@
                       "lineType": "走廊状",
                       "sides": 5,
                       "useHeightScale": true,
-                      "heightScale": 0.000001
+                      "heightScale": 0.000001,
+                      "classificationType": "both"
                     },
                     "color": [
                       {
