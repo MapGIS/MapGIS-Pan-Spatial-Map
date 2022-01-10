@@ -19,6 +19,7 @@ import {
   IGSFeatureLayer,
   GeoJsonLayer,
   ModelCacheLayer,
+  ModelCacheFormat,
   GraphicsLayer,
   UUID,
   Catalog,
@@ -52,6 +53,26 @@ export class DataCatalogManager {
     return this._instance
   }
 
+  public static parseModelCacheFormatType(
+    typeString: string
+  ): ModelCacheFormat {
+    const type = ModelCacheFormat[typeString]
+    if (type === undefined) {
+      return LayerType.m3d
+    }
+
+    return type
+  }
+
+  public static parseLayerType(typeString: string): LayerType {
+    const type = LayerType[typeString]
+    if (type === undefined) {
+      return LayerType.Unknown
+    }
+
+    return type
+  }
+
   /**
    * 根据数据目录中图层节点的配置信息生成webclient-store对应的图层
    * 注意：当前webClient-store中图层类型和图层对象的定义不够规范和成熟，如:LayerType和SubLayerType的划分标准不统一。图层类型对象不全面、
@@ -77,6 +98,7 @@ export class DataCatalogManager {
     let serverName = ''
     let url = ''
     let gdbps = ''
+    let modelCacheFormat = ModelCacheFormat.m3d
     const layerID = layerConfig.guid
     const layerTitle = layerConfig.name
     const tokenKey = layerConfig.tokenKey ? layerConfig.tokenKey : ''
@@ -199,9 +221,15 @@ export class DataCatalogManager {
       case LayerType.ModelCache:
         if (layerConfig.serverURL && layerConfig.serverURL !== '') {
           url = layerConfig.serverURL
+
+          if (layerConfig.customParameters) {
+            modelCacheFormat = this.parseModelCacheFormatType(
+              layerConfig.customParameters.format
+            )
+          }
         }
 
-        layer = new ModelCacheLayer({ url })
+        layer = new ModelCacheLayer({ url, format: modelCacheFormat })
 
         break
       case LayerType.Graphics:
