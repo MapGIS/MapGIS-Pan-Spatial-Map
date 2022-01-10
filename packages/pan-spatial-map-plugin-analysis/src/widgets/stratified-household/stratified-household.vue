@@ -75,7 +75,6 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
         }
       })
     this.layers = layers
-    console.log('layers', layers)
   }
 
   /**
@@ -103,5 +102,11 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 .mapgis-3d-stratified-household-wrapper {
   height: 450px;
   width: 260px;
+<<<<<<< HEAD
+=======
+  .mapgis-ui-button {
+    display: block;
+  }
+>>>>>>> d66d0620 (【环境】【测试】【临时测试2.0】)
 }
 </style>
