@@ -249,7 +249,8 @@
           },
           {
             "id": "widget_5592ccaf-7357-4d9d-863c-de6de7bc129f",
-            "uri": "widgets/particle-effects"
+            "uri": "widgets/particle-effects",
+            "config": "configs/particle-effects/config.json"
           },
           {
             "id": "widget_6863645d-d6c6-dc3e-bb11-95ce43725b62",
@@ -277,7 +278,8 @@
           },
           {
             "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02",
-            "uri": "widgets/city-grow"
+            "uri": "widgets/city-grow",
+            "config": "configs/city-grow/config.json"
           },
           {
             "id": "widget_79dd9f5e-95ad-4971-b822-520e2f721b51",
