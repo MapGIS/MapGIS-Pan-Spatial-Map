@@ -129,13 +129,13 @@
       :highlight-style="highlightStyle"
       @map-bound-change="onGetGeometry"
     >
-      <template slot="popup" slot-scope="{ properties, position }">
+      <template slot="popup" slot-scope="{ properties }">
         <mp-popup-attribute
           :properties="properties"
           :dataStoreIp="dataStoreIp"
           :dataStorePort="dataStorePort"
           :getVideoStatus="getVideoStatus"
-          @project-screen="file => projectScreen(file, position)"
+          @project-screen="projectScreen"
         />
       </template>
     </mp-3d-marker-plotting>
