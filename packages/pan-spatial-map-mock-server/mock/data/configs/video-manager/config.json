@@ -3,7 +3,7 @@
   "videoOverlayLayerList": [
     {
       "id": "123-345-567-789",
-      "name": "test",
+      "name": "中地景观模型",
       "videoList": [
         {
           "id": "987-765-543-321",
@@ -73,6 +73,87 @@
             "orientation": {
               "heading": 271.628505216584,
               "pitch": -78.4,
+              "roll": 359.3
+            },
+            "hFOV": 32.5,
+            "vFOV": 19,
+            "hintLineVisible": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "123-345-567-789",
+      "name": "V2_分层分户-静态单体化",
+      "videoList": [
+        {
+          "id": "987-765-543-521",
+          "name": "V2testVideo1",
+          "description": "",
+          "isProjected": false,
+          "params": {
+            "videoSource": {
+              "protocol": "m3u8",
+              "videoUrl": "http://192.168.91.123:10008/record/video1/20211221/out.m3u8"
+            },
+            "cameraPosition": {
+              "x": 121.13954293662879,
+              "y": 28.8580385828088,
+              "z": 32.10693417797324
+            },
+            "orientation": {
+              "heading": 151.03208384340746,
+              "pitch": -77.9690786970861,
+              "roll": 354.1
+            },
+            "hFOV": 34.6,
+            "vFOV": 18.9,
+            "hintLineVisible": true
+          }
+        },
+        {
+          "id": "987-765-543-623",
+          "name": "V2testVideo2",
+          "description": "",
+          "isProjected": false,
+          "params": {
+            "videoSource": {
+              "protocol": "m3u8",
+              "videoUrl": "http://192.168.91.123:10008/record/video2/20211221/out.m3u8"
+            },
+            "cameraPosition": {
+              "x": 121.1396556601234,
+              "y": 28.85810575806669,
+              "z": 32.26852277144299
+            },
+            "orientation": {
+              "heading": 145.18812129884563,
+              "pitch": -78.7,
+              "roll": 0
+            },
+            "hFOV": 33.1,
+            "vFOV": 19.2,
+            "hintLineVisible": true
+          }
+        },
+        {
+          "id": "987-765-543-724",
+          "name": "V2testVideo3",
+          "description": "",
+          "isProjected": false,
+          "params": {
+            "videoSource": {
+              "protocol": "m3u8",
+              "videoUrl": "http://192.168.91.123:10008/record/video3/20211221/out.m3u8"
+            },
+            "cameraPosition": {
+              "x": 121.1397140051418,
+              "y": 28.85827369515551,
+              "z": 32.2421622304094
+            },
+            "orientation": {
+              "heading": 51.24449899562412,
+              "pitch": -69.63034156325763,
               "roll": 359.3
             },
             "hFOV": 32.5,
