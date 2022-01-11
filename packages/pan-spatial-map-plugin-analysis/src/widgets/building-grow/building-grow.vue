@@ -30,7 +30,7 @@
             <mapgis-3d-building-glow
               v-if='startBuildingGrow'
               :vueIndex='vueIndex'
-              :enableSteps='true'
+              :enableSteps='false'
               :steps='steps'
               @loaded='loaded'/>
           </template>

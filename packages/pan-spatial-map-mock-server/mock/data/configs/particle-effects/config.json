@@ -23,13 +23,14 @@
     {
       "guid": "80811AA9-A47F-709C-936C-C647FBD098E0",
       "name": "粒子名称1",
+      "isShow": true,
       "param": {
         "emitterType": "锥形放射",
-        "emissionRate": 9.0,
+        "emissionRate": 10.0,
         "imageSize":25.0,
         "minimumParticleLife": 1.5,
         "maximumParticleLife": 1.8,
-        "minimumSpeed": 5.0,
+        "minimumSpeed": 0.0,
         "maximumSpeed": 9.0,
         "startScale": 2.5,
         "endScale": 4.0,
@@ -37,7 +38,7 @@
         "position": {
           "longitude": 114.4023,
           "latitude": 30.465911,
-          "height": 10
+          "height": 15
         }
       }
     },
@@ -45,9 +46,10 @@
     {
       "guid": "49A834D7-97C6-F452-4611-6F0739809B50",
       "name": "粒子名称2",
+      "isShow": true,
       "param": {
         "emitterType": "圆形放射",
-        "emissionRate": 20.0,
+        "emissionRate": 13.0,
         "imageSize": 5.0,
         "minimumParticleLife": 2.0,
         "maximumParticleLife": 3.0,
@@ -66,9 +68,10 @@
     {
       "guid": "36F335E8-1F3C-41E2-40AA-EE950D691761",
       "name": "粒子名称3",
+      "isShow": true,
       "param": {
-        "emitterType": "球形放射",
-        "emissionRate": 40.0,
+        "emitterType": "锥形放射",
+        "emissionRate": 29.0,
         "imageSize": 6.0,
         "minimumParticleLife": 2.0,
         "maximumParticleLife": 3.0,
