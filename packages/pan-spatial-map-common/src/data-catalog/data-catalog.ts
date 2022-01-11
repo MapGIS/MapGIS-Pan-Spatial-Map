@@ -963,8 +963,12 @@ export class DataCatalogManager {
   // 判断服务是否可用.当前,只有服务类型为IGSDoc、IGSTile,且ip和port为空时,才能支持过滤。
   private isServiceVaild(layerConfig: any) {
     let isServiceVaild = true
-    const { ip, port, serverName, serverType } = layerConfig
+    const { ip, port, serverName, serverType,serverURL } = layerConfig
     let serverList: string[] = []
+
+    if(serverURL !== ''){
+      return true
+    }
 
     switch (serverType) {
       case LayerType.IGSMapImage:
