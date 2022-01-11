@@ -16,11 +16,11 @@ import {
   WidgetMixin,
   LayerType,
   IGSSceneSublayerRenderType,
-  LoadStatus
+  LoadStatus,
 } from '@mapgis/web-app-framework'
 
 @Component({
-  name: 'MpStratifiedHousehold'
+  name: 'MpStratifiedHousehold',
 })
 export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   outStyle = {
@@ -32,7 +32,7 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
     height: '460px',
     width: '270px',
     top: '0px',
-    left: '0px'
+    left: '0px',
   }
 
   layers = []
@@ -50,30 +50,27 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
       .clone()
       .getFlatLayers()
       .forEach((layer, index) => {
-        if (layer.loadStatus === LoadStatus.loaded) {
-          if (layer.type === LayerType.IGSScene) {
-            if (layer.activeScene) {
-              const { renderType } = layer.activeScene.sublayers[0]
-              if (renderType === IGSSceneSublayerRenderType.modelCache) {
-                const { range } = layer.activeScene.sublayers[0]
-                const { id } = layer.activeScene.layer
-                let isHousehold
-                if (layer.title.indexOf('G3D') >= 0) {
-                  isHousehold = true
-                } else {
-                  isHousehold = false
-                }
-                // 剖切分析暂时只支持模型
-                layers.push({
-                  title: layer.title,
-                  vueIndex: id,
-                  range,
-                  isHousehold
-                })
-              }
-            }
+        const { id, type, title } = layer
+        // if (layer.loadStatus === LoadStatus.loaded) {
+        if (type === LayerType.IGSScene) {
+          console.log('layer', layer)
+
+          // if (layer.activeScene) {
+          let isHousehold
+          if (layer.title.indexOf('G3D') >= 0) {
+            isHousehold = true
+          } else {
+            isHousehold = false
           }
+          // 剖切分析暂时只支持模型
+          layers.push({
+            title: title,
+            vueIndex: id,
+            isHousehold,
+          })
+          // }
         }
+        // }
       })
     this.layers = layers
   }
