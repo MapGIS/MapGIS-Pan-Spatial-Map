@@ -23,7 +23,8 @@ import {
   MpStratifiedHousehold,
   MpBimComponent,
   MpBuildingGrow,
-  MpOverlayManager
+  MpOverlayManager,
+  MpModelFlatten
 } from './widgets'
 
 const components = [
@@ -51,7 +52,8 @@ const components = [
   MpStratifiedHousehold,
   MpBimComponent,
   MpBuildingGrow,
-  MpOverlayManager
+  MpOverlayManager,
+  MpModelFlatten
 ]
 
 const install = Vue => {

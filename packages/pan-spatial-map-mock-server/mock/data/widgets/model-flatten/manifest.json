@@ -1,0 +1,16 @@
+{
+  "name": "模型压平",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpModelFlatten",
+  "icon": "<svg t=\"1639415304138\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"2137\" width=\"200\" height=\"200\"><path d=\"M384.384 896a366.304 366.304 0 0 1-64.032-224H128v224h256.384zM672 128v192.32a366.304 366.304 0 0 1 224 64.032V128h-224z m224 296.096a334.56 334.56 0 0 0-224-71.712V672h-319.616a334.56 334.56 0 0 0 71.744 224H896V424.096z m-256-100.992V128H128v512h195.104A368.192 368.192 0 0 1 640 323.104zM128 96h768a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H128a32 32 0 0 1-32-32V128a32 32 0 0 1 32-32z\" p-id=\"2138\"></path></svg>",
+  "properties": {
+    "2D": false,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "settingUiComponent": "",
+    "hasPadding": false
+  }
+}
