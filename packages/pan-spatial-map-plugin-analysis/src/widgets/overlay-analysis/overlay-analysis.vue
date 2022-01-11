@@ -114,8 +114,6 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
     this.tDataIndex = null
     this.dDataIndex = null
     this.layerArrOption = []
-    this.tchangeTarget()
-    this.dchangeTarget()
     const arr = []
     val.layers().forEach(data => {
       if (
@@ -130,6 +128,8 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
       this.tDataIndex = 0
       this.dDataIndex = 0
     }
+    this.tchangeTarget()
+    this.dchangeTarget()
   }
 
   // 微件窗口模式切换时回调
