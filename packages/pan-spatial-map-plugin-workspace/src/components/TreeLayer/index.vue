@@ -277,9 +277,11 @@ export default class MpTreeLayer extends Mixins(
         item.scopedSlots = { title: 'custom' }
         item.visiblePopover = false
         if (this.isIGSScene(item)) {
-          item.sublayers = item.activeScene.sublayers.map(row => ({
-            ...row
-          }))
+          if (item.activeScene) {
+            item.sublayers = item.activeScene.sublayers.map(row => ({
+              ...row
+            }))
+          }
         }
 
         if (this.isVectorTile(item)) {
@@ -517,8 +519,10 @@ export default class MpTreeLayer extends Mixins(
           }
           if (index === childrenArr.length - 1) {
             if (this.isIGSScene(layerItem)) {
-              layerItem.activeScene.sublayers[i].visible = !layerItem
-                .activeScene.sublayers[i].visible
+              if (layerItem.activeScene) {
+                layerItem.activeScene.sublayers[i].visible = !layerItem
+                  .activeScene.sublayers[i].visible
+              }
             } else if (this.isVectorTile(layers[parentIndex])) {
               /**
                * 修改说明：矢量瓦片里的layers没有row.layout或者没有row.layout.visibility字段时，是默认显示，这里默认设置为可见
@@ -542,7 +546,9 @@ export default class MpTreeLayer extends Mixins(
             }
           } else {
             if (this.isIGSScene(layerItem)) {
-              layerItem = layerItem.activeScene.sublayers[i]
+              if (layerItem.activeScene) {
+                layerItem = layerItem.activeScene.sublayers[i]
+              }
             } else {
               layerItem = layerItem.sublayers[i]
             }
