@@ -12,6 +12,7 @@ import {
   Objects,
   Exhibition
 } from '@mapgis/web-app-framework'
+import { VideoManager } from '@mapgis/pan-spatial-map-common'
 import moment from 'moment'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
@@ -125,6 +126,56 @@ export default class LayerTypeUtil extends Mixins(
       default:
         return 'fid'
     }
+  }
+
+  /**
+   * 投屏操作
+   * @param file
+   * {
+   *  url: 视频地址,
+   *  type: 视频类型,
+   *  name: 视频名称
+   * }
+   */
+  projectScreen(file) {
+    const {
+      vFOV,
+      orientationHeading,
+      orientationRoll,
+      positionX,
+      positionY,
+      positionZ,
+      hFOV,
+      orientationPitch
+    } = file
+    const cameraPosition = {
+      x: positionX,
+      y: positionY,
+      z: positionZ
+    }
+    const Orientation = {
+      heading: orientationHeading,
+      pitch: orientationPitch,
+      roll: orientationRoll
+    }
+    VideoManager.addVideo(
+      this.exhibition.id,
+      this.exhibition.name,
+      file.url,
+      file.url,
+      file.type,
+      file.url,
+      '',
+      true,
+      cameraPosition,
+      Orientation,
+      hFOV,
+      vFOV
+    )
+  }
+
+  getVideoStatus(url) {
+    return VideoManager.getVideoStatus(url, this.exhibition.id)
   }
 
   /**

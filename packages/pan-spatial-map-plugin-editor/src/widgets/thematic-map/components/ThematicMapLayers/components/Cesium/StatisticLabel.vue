@@ -4,7 +4,11 @@
     ref="marker3dProRef"
     :marker="selfMarker"
     v-if="selfMarker.fid"
-  />
+  >
+    <template slot="popup" slot-scope="{ properties }">
+      <mp-popup-attribute :properties="properties" />
+    </template>
+  </mp-3d-marker-pro>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'

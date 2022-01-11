@@ -18,11 +18,12 @@ import {
   MpPondingSimulation,
   MpBufferAnalysis,
   MpOverlayAnalysis,
-  MpVideo,
+  MpVideoManager,
   MpCityGrow,
   MpStratifiedHousehold,
   MpBimComponent,
-  MpBuildingGrow
+  MpBuildingGrow,
+  MpOverlayManager
 } from './widgets'
 
 const components = [
@@ -45,11 +46,12 @@ const components = [
   MpPondingSimulation,
   MpBufferAnalysis,
   MpOverlayAnalysis,
-  MpVideo,
+  MpVideoManager,
   MpCityGrow,
   MpStratifiedHousehold,
   MpBimComponent,
-  MpBuildingGrow
+  MpBuildingGrow,
+  MpOverlayManager
 ]
 
 const install = Vue => {

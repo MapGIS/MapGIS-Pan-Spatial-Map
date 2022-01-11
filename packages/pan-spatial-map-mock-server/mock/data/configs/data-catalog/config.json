@@ -780,6 +780,18 @@
             "serverUrl": ""
           },
           {
+            "label": "武汉市地形",
+            "describe": "武汉市地形",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "DOC3D",
+            "name": "武汉地形",
+            "searchName": "",
+            "model": "",
+            "guid": "68744fd8-61be-400d-a861-4a0415a339c2",
+            "serverUrl": ""
+          },
+          {
             "label": "三维模型",
             "describe": "三维模型",
             "ip": "",
@@ -886,7 +898,11 @@
             "model": "",
             "guid": "a2ee2b40-14fd-4104-a05f-d8e77e54f1bc",
             "serverUrl": "",
-            "customParameters": [{ "extendedPropKeys": "Expand,InitOpenView" }]
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,InitOpenView"
+              }
+            ]
           },
           {
             "label": "M3D-1.0模型拾取",
@@ -901,55 +917,108 @@
             "serverUrl": ""
           },
           {
-              "label": "G3D-分层分户",
-              "describe": "G3D-分层分户",
-              "ip": "192.168.88.204",
-              "port": "6163",
-              "layerServiceType": "DOC3D",
-              "name": "大楼",
-              "searchName": "",
-              "model": "surface",
-              "guid": "b1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
-              "serverUrl": "",
-              "customParameters": [{ "extendedPropKeys": "Expand,IsStratified" }]
+            "label": "G3D-分层分户",
+            "describe": "G3D-分层分户",
+            "ip": "192.168.88.204",
+            "port": "6163",
+            "layerServiceType": "DOC3D",
+            "name": "大楼",
+            "searchName": "",
+            "model": "surface",
+            "guid": "b1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
+            "serverUrl": "",
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,IsStratified"
+              }
+            ]
           },
           {
             "label": "M3D-楼栋构建树",
             "describe": "M3D-楼栋构建树",
             "ip": "",
             "port": "",
-            "layerServiceType": "TILE3D",
+            "layerServiceType": "ModelCache",
             "name": "",
             "searchName": "",
             "model": "surface",
             "guid": "6058684b-b4b3-46a1-9b59-1057dbe00c04",
             "serverUrl": "http://192.168.88.204:8089/M3D/2.0/3栋/3栋.mcj",
-            "customParameters": [{ "extendedPropKeys": "Expand,IsBimComponent" }]
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,IsBimComponent"
+              }
+            ]
           },
           {
-              "label": "M3D-BIM构建树",
-              "describe": "M3D-BIM构建树",
-              "ip": "",
-              "port": "",
-              "layerServiceType": "TILE3D",
-              "name": "",
-              "searchName": "",
-              "model": "surface",
-              "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c04",
-              "serverUrl": "http://192.168.88.204:8089/M3D/2.0/高级住所模型/高级住所模型.mcj",
-              "customParameters": [{ "extendedPropKeys": "Expand,IsBimComponent" }]
+            "label": "M3D-BIM构建树",
+            "describe": "M3D-BIM构建树",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "surface",
+            "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c04",
+            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/高级住所模型/高级住所模型.mcj",
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,IsBimComponent"
+              }
+            ]
           },
           {
             "label": "M3D-单体建筑生长",
             "describe": "M3D-单体建筑生长",
             "ip": "",
             "port": "",
-            "layerServiceType": "TILE3D",
+            "layerServiceType": "ModelCache",
             "name": "",
             "searchName": "",
             "model": "",
             "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fe",
             "serverUrl": "http://192.168.88.204:8089/M3D/2.0/BIM模型生长time/BIM模型生长time.mcj"
+          },
+          {
+            "label": "3DTileset-大雁塔ModelCache",
+            "describe": "3DTileset-大雁塔ModelCache",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fg",
+            "serverUrl": "http://192.168.88.204:8089/3DTileset/dayantaresult/tileset.json",
+            "customParameters": [
+              {
+                "format": "cesium3dTileset"
+              }
+            ]
+          },
+          {
+            "label": "3DTileset-大雁塔TILE3D",
+            "describe": "3DTileset-大雁塔TILE3D",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILE3D",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fh",
+            "serverUrl": "http://192.168.88.204:8089/3DTileset/dayantaresult/tileset.json"
+          },
+          {
+            "label": "V2_分层分户-静态单体化",
+            "describe": "V2_分层分户-静态单体化",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fi",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_分层分户-静态单体化/SceneServer"
           }
         ]
       },
@@ -1106,7 +1175,7 @@
             "describe": "数据流",
             "ip": "",
             "port": "",
-            "layerServiceType": "DATAFLOW",
+            "layerServiceType": "DataFlow",
             "name": "数据流",
             "searchName": "",
             "token": "",

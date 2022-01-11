@@ -4,7 +4,11 @@
     ref="marker3dProRef"
     :marker="selfMarker"
     v-if="selfMarker.fid"
-  />
+  >
+    <template slot="popup" slot-scope="{ properties }">
+      <mp-popup-attribute :properties="properties" />
+    </template>
+  </mp-3d-marker-pro>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
@@ -17,7 +21,7 @@ interface ISectionColor {
   sectionColor: string
 }
 
-@Component
+@Component()
 export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
   // 是否展示3D效果
   get isShow3D() {
@@ -32,6 +36,19 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
   // 分段值设置
   get colors() {
     return this.subjectData?.color || []
+  }
+
+  get classificationType() {
+    let type
+    const configType = this.subjectData.setting3D.classificationType
+    if (configType === 'terrain') {
+      type = this.Cesium.ClassificationType.TERRAIN
+    } else if (configType === '3DTiles') {
+      type = this.Cesium.ClassificationType.CESIUM_3D_TILE
+    } else if (configType === 'both') {
+      type = this.Cesium.ClassificationType.BOTH
+    }
+    return type
   }
 
   /**
@@ -128,6 +145,12 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
       positions,
       material
     }
+    if (this.classificationType) {
+      option = {
+        ...option,
+        classificationType: this.classificationType
+      }
+    }
     if (this.isShow3D) {
       switch (lineType) {
         case '走廊状':
@@ -171,13 +194,19 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
     const hierarchy = this.Cesium.Cartesian3.fromDegreesArray(
       coordinates[0].flat()
     )
-    return {
+    let option: any = {
       polygon: {
         hierarchy,
-        extrudedHeight,
         material
       }
     }
+    if (this.classificationType) {
+      option = {
+        ...option,
+        classificationType: this.classificationType
+      }
+    }
+    return option
   }
 
   /**

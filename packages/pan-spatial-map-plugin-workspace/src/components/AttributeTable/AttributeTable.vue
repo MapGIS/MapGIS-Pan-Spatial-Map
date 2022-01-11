@@ -134,6 +134,8 @@
           :properties="properties"
           :dataStoreIp="dataStoreIp"
           :dataStorePort="dataStorePort"
+          :getVideoStatus="getVideoStatus"
+          @project-screen="projectScreen"
         />
       </template>
     </mp-3d-marker-plotting>
@@ -495,7 +497,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       )
     } catch (error) {
       const e = error as Error
-      console.error(e)
+      console.error('属性表请求失败：', e)
       this.$message.warning('请求失败！')
     } finally {
       this.loading = false

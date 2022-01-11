@@ -177,6 +177,10 @@
             "uri": "widgets/feature-query"
           },
           {
+            "id": "widget_05bc8763-837b-4fd4-972e-5d8f49718d44",
+            "uri": "widgets/overlay-manager"
+          },
+          {
             "id": "widget_9e4f4ab9-8ab6-400d-ba01-7adab2963fcc",
             "uri": "widgets/vector-tile-carto"
           },
@@ -245,7 +249,8 @@
           },
           {
             "id": "widget_5592ccaf-7357-4d9d-863c-de6de7bc129f",
-            "uri": "widgets/particle-effects"
+            "uri": "widgets/particle-effects",
+            "config": "configs/particle-effects/config.json"
           },
           {
             "id": "widget_6863645d-d6c6-dc3e-bb11-95ce43725b62",
@@ -269,11 +274,13 @@
           },
           {
             "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc",
-            "uri": "widgets/video"
+            "uri": "widgets/video-manager",
+            "config": "configs/video-manager/config.json"
           },
           {
             "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02",
-            "uri": "widgets/city-grow"
+            "uri": "widgets/city-grow",
+            "config": "configs/city-grow/config.json"
           },
           {
             "id": "widget_79dd9f5e-95ad-4971-b822-520e2f721b51",
@@ -309,6 +316,9 @@
           },
           {
             "id": "widget_9e4f4ab9-8ab6-400d-ba01-7adab2963fcc"
+          },
+          {
+            "id": "widget_05bc8763-837b-4fd4-972e-5d8f49718d44"
           },
           {
             "id": "folder_86c9b153-0d1e-4617-2bc3-09fbae5e6715",

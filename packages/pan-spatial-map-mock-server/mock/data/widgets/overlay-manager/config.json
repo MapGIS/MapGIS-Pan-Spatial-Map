@@ -1,0 +1,82 @@
+{
+  "models": {
+    "tree": [{
+      "img": "/upload/gltf/tree/img/tree.png",
+      "model": "/upload/gltf/tree/tree.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree2.png",
+      "model": "/upload/gltf/tree/tree2.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree3.png",
+      "model": "/upload/gltf/tree/tree3.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree4.png",
+      "model": "/upload/gltf/tree/tree4.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree5.png",
+      "model": "/upload/gltf/tree/tree5.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree6.png",
+      "model": "/upload/gltf/tree/tree6.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree7.png",
+      "model": "/upload/gltf/tree/tree7.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree8.png",
+      "model": "/upload/gltf/tree/tree8.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree9.png",
+      "model": "/upload/gltf/tree/tree9.glb"
+    }],
+    "traffic": [{
+      "img": "/upload/gltf/traffic/img/car.png",
+      "model": "/upload/gltf/traffic/car.glb"
+    },{
+      "img": "/upload/gltf/traffic/img/car2.png",
+      "model": "/upload/gltf/traffic/car2.glb"
+    },{
+      "img": "/upload/gltf/traffic/img/car3.png",
+      "model": "/upload/gltf/traffic/car3.glb"
+    },{
+      "img": "/upload/gltf/traffic/img/car4.png",
+      "model": "/upload/gltf/traffic/car4.glb"
+    },{
+      "img": "/upload/gltf/traffic/img/airplane.png",
+      "model": "/upload/gltf/traffic/airplane.glb"
+    }],
+    "ground": [{
+      "img": "/upload/gltf/ground/img/grass.png",
+      "model": "/upload/gltf/ground/grass.glb"
+    }],
+    "fence": [{
+      "img": "/upload/gltf/fence/img/fence.png",
+      "model": "/upload/gltf/fence/fence.glb"
+    }],
+    "lamp": [{
+      "img": "/upload/gltf/lamp/img/lamp.png",
+      "model": "/upload/gltf/lamp/lamp.glb"
+    },{
+      "img": "/upload/gltf/lamp/img/lamp2.png",
+      "model": "/upload/gltf/lamp/lamp2.glb"
+    }],
+    "entertainment": [{
+      "img": "/upload/gltf/entertainment/img/entertainment.png",
+      "model": "/upload/gltf/entertainment/entertainment.glb"
+    },{
+      "img": "/upload/gltf/entertainment/img/entertainment2.png",
+      "model": "/upload/gltf/entertainment/entertainment2.glb"
+    },{
+      "img": "/upload/gltf/entertainment/img/entertainment3.png",
+      "model": "/upload/gltf/entertainment/entertainment3.glb"
+    },{
+      "img": "/upload/gltf/entertainment/img/entertainment4.png",
+      "model": "/upload/gltf/entertainment/entertainment4.glb"
+    },{
+      "img": "/upload/gltf/entertainment/img/entertainment5.png",
+      "model": "/upload/gltf/entertainment/entertainment5.glb"
+    },{
+      "img": "/upload/gltf/entertainment/img/entertainment6.png",
+      "model": "/upload/gltf/entertainment/entertainment6.glb"
+    }]
+  }
+}

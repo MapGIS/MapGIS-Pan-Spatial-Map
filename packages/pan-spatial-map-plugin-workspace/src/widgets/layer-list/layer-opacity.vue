@@ -66,13 +66,15 @@ export default class LayerOpacity extends Mixins(AppMixin) {
   isIgsTerrainLayer(layer) {
     let elevation = false
     if (layer.type === LayerType.IGSScene) {
-      layer.activeScene.sublayers.forEach(igsSceneSublayer => {
-        if (
-          igsSceneSublayer.renderType === IGSSceneSublayerRenderType.elevation
-        ) {
-          elevation = true
-        }
-      })
+      if (layer.activeScene) {
+        layer.activeScene.sublayers.forEach(igsSceneSublayer => {
+          if (
+            igsSceneSublayer.renderType === IGSSceneSublayerRenderType.elevation
+          ) {
+            elevation = true
+          }
+        })
+      }
     }
     return !elevation
   }
