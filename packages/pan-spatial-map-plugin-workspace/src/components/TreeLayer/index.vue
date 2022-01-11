@@ -644,9 +644,7 @@ export default class MpTreeLayer extends Mixins(
     })
   }
 
-  queryFeature() {
-    
-  }
+  queryFeature() {}
 
   /**
    * 打开M3D编辑属性页面
@@ -710,17 +708,23 @@ export default class MpTreeLayer extends Mixins(
   }
 
   updateM3DProps(val) {
-    const { key, maximumScreenSpaceError, id } = val
+    const {
+      key,
+      maximumScreenSpaceError,
+      layer: { popupEnabled },
+      id
+    } = val
     const indexArr: Array<string> = key.split('-')
     const doc = this.layerDocument.clone()
     const layers: Array<unknown> = doc.defaultMap.layers()
     if (indexArr.length === 2) {
       const [firstIndex, secondIndex] = indexArr
-      layers[firstIndex].activeScene.sublayers[
-        secondIndex
-      ].maximumScreenSpaceError = maximumScreenSpaceError
+      const sublayer = layers[firstIndex].activeScene.sublayers[secondIndex]
+      sublayer.maximumScreenSpaceError = maximumScreenSpaceError
+      sublayer.layer.popupEnabled = popupEnabled
       const m3d = this.sceneController.findSource(id)
       m3d.maximumScreenSpaceError = maximumScreenSpaceError
+      // m3d.enablePopup = enablePopup
       this.$emit('update:layerDocument', doc)
     }
     this.currentLayerInfo = {}
