@@ -2,6 +2,8 @@
   <mapgis-3d-stratified-household
     v-if="show"
     @loaded="load"
+    @project-screen="handleProjectScreen"
+    @change-layer="handleChangeLayer"
     :outStyle="outStyle"
     :layers="layers"
     :enablePopup="true"
@@ -13,6 +15,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, LayerType, LoadStatus } from '@mapgis/web-app-framework'
+import { VideoManager } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpStratifiedHousehold'
@@ -33,6 +36,10 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   layers = []
 
   show = true
+
+  layerId = ''
+
+  layerTitle = ''
 
   /**
    * 动态获取基础目录树上已勾选的三维模型数据
@@ -87,6 +94,51 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   load(payload) {
     const { component } = payload
     this.component = component
+  }
+
+  handleChangeLayer(layer) {
+    const { title, vueIndex } = layer;
+    this.layerId = vueIndex;
+    this.layerTitle = title;
+  }
+
+  handleProjectScreen(file) {
+    const { layerId, layerTitle } = this;
+    const {
+      vFOV,
+      orientationHeading,
+      orientationRoll,
+      positionX,
+      positionY,
+      positionZ,
+      hFOV,
+      orientationPitch
+    } = file
+    const cameraPosition = {
+      x: positionX,
+      y: positionY,
+      z: positionZ
+    }
+    const Orientation = {
+      heading: orientationHeading,
+      pitch: orientationPitch,
+      roll: orientationRoll
+    }
+    
+    VideoManager.addVideo(
+      layerId, // this.exhibition.id,
+      layerTitle, // this.exhibition.name,
+      file.url,
+      file.url,
+      file.type,
+      file.url,
+      '',
+      true,
+      cameraPosition,
+      Orientation,
+      hFOV,
+      vFOV
+    )
   }
 }
 </script>
