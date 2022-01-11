@@ -4,6 +4,7 @@
     @loaded="load"
     :outStyle="outStyle"
     :layers="layers"
+    :enablePopup="true"
     :enableCollapse="false"
     :enableStratifiedHouse="true"
   ></mapgis-3d-stratified-household>
@@ -75,7 +76,6 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
         }
       })
     this.layers = layers
-    console.log('layers', layers)
   }
 
   /**

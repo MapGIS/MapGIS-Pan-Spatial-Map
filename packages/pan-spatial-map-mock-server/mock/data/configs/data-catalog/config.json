@@ -917,7 +917,7 @@
             "serverUrl": ""
           },
           {
-            "label": "G3D-分层分户",
+            "label": "G3D-1.0-分层分户",
             "describe": "G3D-分层分户",
             "ip": "192.168.88.204",
             "port": "6163",
@@ -951,23 +951,6 @@
             ]
           },
           {
-            "label": "M3D-BIM构建树",
-            "describe": "M3D-BIM构建树",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "ModelCache",
-            "name": "",
-            "searchName": "",
-            "model": "surface",
-            "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c04",
-            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/高级住所模型/高级住所模型.mcj",
-            "customParameters": [
-              {
-                "extendedPropKeys": "Expand,IsBimComponent"
-              }
-            ]
-          },
-          {
             "label": "M3D-单体建筑生长",
             "describe": "M3D-单体建筑生长",
             "ip": "",
@@ -978,6 +961,52 @@
             "model": "",
             "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fe",
             "serverUrl": "http://192.168.88.204:8089/M3D/2.0/BIM模型生长time/BIM模型生长time.mcj"
+          },
+          {
+            "label": "M3D-2.0-单体建筑生长",
+            "describe": "V2_M3D-单体建筑生长",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fh",
+            "serverUrl": "http://192.168.88.204:8089/3DTileset/dayantaresult/tileset.json"
+          },
+          {
+            "label": "M3D-2.0-BIM构建树",
+            "describe": "M3D-BIM构建树",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "surface",
+            "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c04",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/BIM构建树/M3dServer",
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,IsBimComponent"
+              }
+            ]
+          },
+          {
+            "label": "M3D-2.0-BIM构建树111",
+            "describe": "M3D-BIM构建树111",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "surface",
+            "guid": "5058684b-b4b3-46a1-9b59-1057dbe00c08",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/BIM构建树/M3dServer",
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,IsBimComponent"
+              }
+            ]
           },
           {
             "label": "3DTileset-大雁塔ModelCache",
