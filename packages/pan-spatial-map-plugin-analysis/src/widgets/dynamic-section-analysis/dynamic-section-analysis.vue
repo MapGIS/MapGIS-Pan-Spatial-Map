@@ -9,7 +9,7 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import {
   WidgetMixin,
   LayerType,
-  IGSSceneSublayerRenderType,
+  IGSSceneSublayerType,
   LoadStatus,
   Objects
 } from '@mapgis/web-app-framework'
@@ -37,8 +37,8 @@ export default class MpDynamicSectionAnalysis extends Mixins(WidgetMixin) {
         if (layer.loadStatus === LoadStatus.loaded) {
           if (layer.type === LayerType.IGSScene) {
             if (layer.activeScene) {
-              const { renderType } = layer.activeScene.sublayers[0]
-              if (renderType === IGSSceneSublayerRenderType.modelCache) {
+              const { type } = layer.activeScene.sublayers[0]
+              if (type === IGSSceneSublayerType.modelCache) {
                 const { id } = layer.activeScene.layer
                 layers.push({
                   title: layer.title,

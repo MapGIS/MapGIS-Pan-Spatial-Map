@@ -185,7 +185,6 @@ import {
   CoordinateTransformation,
   CoordinateSystemType,
   Objects,
-  IGSSceneSublayerRenderType,
   FitBound
 } from '@mapgis/web-app-framework'
 import {

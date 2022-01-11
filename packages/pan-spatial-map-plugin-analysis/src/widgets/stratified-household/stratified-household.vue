@@ -12,15 +12,10 @@
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import {
-  WidgetMixin,
-  LayerType,
-  IGSSceneSublayerRenderType,
-  LoadStatus,
-} from '@mapgis/web-app-framework'
+import { WidgetMixin, LayerType, LoadStatus } from '@mapgis/web-app-framework'
 
 @Component({
-  name: 'MpStratifiedHousehold',
+  name: 'MpStratifiedHousehold'
 })
 export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   outStyle = {
@@ -32,7 +27,7 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
     height: '460px',
     width: '270px',
     top: '0px',
-    left: '0px',
+    left: '0px'
   }
 
   layers = []
@@ -66,7 +61,7 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
           layers.push({
             title: title,
             vueIndex: id,
-            isHousehold,
+            isHousehold
           })
           // }
         }

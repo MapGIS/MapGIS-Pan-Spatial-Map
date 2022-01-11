@@ -1,26 +1,21 @@
 <template>
-    <mapgis-3d-bim-component
-      v-if="show"
-      @loaded="load"
-      :outStyle="outStyle"
-      :layers="layers"
-      :enableCollapse="false"
-      :enableBim="true"
-      :enablePopup="true"
-    ></mapgis-3d-bim-component>
+  <mapgis-3d-bim-component
+    v-if="show"
+    @loaded="load"
+    :outStyle="outStyle"
+    :layers="layers"
+    :enableCollapse="false"
+    :enableBim="true"
+    :enablePopup="true"
+  ></mapgis-3d-bim-component>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import {
-  WidgetMixin,
-  LayerType,
-  IGSSceneSublayerRenderType,
-  LoadStatus,
-} from '@mapgis/web-app-framework'
+import { WidgetMixin, LayerType, LoadStatus } from '@mapgis/web-app-framework'
 
 @Component({
-  name: 'MpBimComponent',
+  name: 'MpBimComponent'
 })
 export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   outStyle = {
@@ -32,14 +27,14 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
     height: '460px',
     width: '400px',
     top: '0px',
-    left: '0px',
+    left: '0px'
   }
 
-  layers = [];
+  layers = []
 
-  show = true;
+  show = true
 
- /**
+  /**
    * 动态获取基础目录树上已勾选的三维模型数据
    */
   @Watch('document', { immediate: true, deep: true })
@@ -57,7 +52,7 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
           }
         }
       })
-    this.layers = layers;
+    this.layers = layers
   }
 
   /**
@@ -65,7 +60,7 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
    */
   onOpen() {
     // this.component.mount()
-    this.show = true;
+    this.show = true
   }
 
   /**
@@ -73,7 +68,7 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
    */
   onClose() {
     // this.component.unmount()
-    this.show = false;
+    this.show = false
   }
 
   load(payload) {
@@ -84,11 +79,11 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 </script>
 
 <style lang="less">
-  .mapgis-3d-bim-component-wrapper {
-    height: 450px;
+.mapgis-3d-bim-component-wrapper {
+  height: 450px;
+  width: 400px;
+  .mapgis-3d-bim-component {
     width: 400px;
-    .mapgis-3d-bim-component {
-      width: 400px;
-    }
   }
+}
 </style>

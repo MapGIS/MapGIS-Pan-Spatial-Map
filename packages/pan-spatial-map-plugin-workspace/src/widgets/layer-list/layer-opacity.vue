@@ -27,7 +27,7 @@
 import { Component, Vue, Prop, Mixins, Watch } from 'vue-property-decorator'
 import {
   AppMixin,
-  IGSSceneSublayerRenderType,
+  IGSSceneSublayerType,
   LayerType
 } from '@mapgis/web-app-framework'
 
@@ -68,9 +68,7 @@ export default class LayerOpacity extends Mixins(AppMixin) {
     if (layer.type === LayerType.IGSScene) {
       if (layer.activeScene) {
         layer.activeScene.sublayers.forEach(igsSceneSublayer => {
-          if (
-            igsSceneSublayer.renderType === IGSSceneSublayerRenderType.elevation
-          ) {
+          if (igsSceneSublayer.type === IGSSceneSublayerType.elevation) {
             elevation = true
           }
         })

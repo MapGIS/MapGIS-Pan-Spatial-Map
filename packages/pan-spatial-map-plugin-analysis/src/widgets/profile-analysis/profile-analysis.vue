@@ -58,7 +58,7 @@ import { Mixins, Component, Watch } from 'vue-property-decorator'
 import {
   WidgetMixin,
   LayerType,
-  IGSSceneSublayerRenderType,
+  IGSSceneSublayerType,
   LoadStatus,
   Objects
 } from '@mapgis/web-app-framework'
@@ -118,10 +118,10 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
         if (layer.loadStatus === LoadStatus.loaded) {
           if (layer.type === LayerType.IGSScene) {
             if (layer.activeScene) {
-              const { renderType } = layer.activeScene.sublayers[0]
+              const { type } = layer.activeScene.sublayers[0]
               if (
-                renderType === IGSSceneSublayerRenderType.elevation ||
-                renderType === IGSSceneSublayerRenderType.modelCache
+                type === IGSSceneSublayerType.elevation ||
+                type === IGSSceneSublayerType.modelCache
               ) {
                 // 剖切分析支持地形和模型
                 layers.push(layer)
@@ -146,14 +146,14 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
   changeLayer() {
     if (!this.isActive || !this.layer) return
     const { layer } = this
-    const { renderType } = layer.activeScene.sublayers[0]
+    const { type } = layer.activeScene.sublayers[0]
     const source = this.landscapeLayerFuc()
     /**
      * 修改说明：为优化用户体验，取消自动缩放至模型设置
      * 修改人：龚跃健
      * 修改时间：2021/12/24
      * */
-    if (renderType === IGSSceneSublayerRenderType.modelCache) {
+    if (type === IGSSceneSublayerType.modelCache) {
       // 模型只要把模型移到当前视图范围下即可进行分析
       // Objects.SceneController.getInstance(
       //   this.Cesium,
@@ -163,7 +163,7 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
       this.samplePrecision = 0.2
       this.polygonHeight = 2
       this.profileType = 1
-    } else if (renderType === IGSSceneSublayerRenderType.elevation) {
+    } else if (type === IGSSceneSublayerType.elevation) {
       // 地形
       // const bound = layer.fullExtent
       // if (bound) {
@@ -204,15 +204,15 @@ export default class MpProfileAnalysis extends Mixins(WidgetMixin) {
    */
   landscapeLayerFuc() {
     const { layer } = this
-    const { renderType, id } = layer.activeScene.sublayers[0]
+    const { type, id } = layer.activeScene.sublayers[0]
     let source = null
-    if (renderType === IGSSceneSublayerRenderType.modelCache) {
+    if (type === IGSSceneSublayerType.modelCache) {
       source = Objects.SceneController.getInstance(
         this.Cesium,
         this.vueCesium,
         this.viewer
       ).findSource(id)
-    } else if (renderType === IGSSceneSublayerRenderType.elevation) {
+    } else if (type === IGSSceneSublayerType.elevation) {
       source = Objects.SceneController.getInstance(
         this.Cesium,
         this.vueCesium,
