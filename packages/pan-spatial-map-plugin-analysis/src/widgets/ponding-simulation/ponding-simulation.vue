@@ -22,7 +22,7 @@
                     :horizontal-offset="28"
                     :vertical-offset="30"
                     :width="520"
-                    :height="100"
+                    :height="140"
                     :has-padding="false"
                     anchor="bottom-center"
                     v-bind="slotProps"
