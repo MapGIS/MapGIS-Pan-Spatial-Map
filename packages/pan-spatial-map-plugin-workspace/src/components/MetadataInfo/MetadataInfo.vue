@@ -1,5 +1,10 @@
 <template>
   <div class="metadata-info-container">
+    <MpMetadataInfoCloud
+      v-if="currentConfig && !currentConfig.type && currentConfig.metaData"
+      :metadata="currentConfig.metaData"
+    >
+    </MpMetadataInfoCloud>
     <a-spin :spinning="spinning" size="small">
       <template v-if="metadata">
         <div v-if="isIGSMapImage(currentLayer || currentConfig)">
@@ -51,6 +56,7 @@ import MpMetadataInfoVector from './MetadataInfoVector'
 import MpMetadataInfoDoc3D from './MetadataInfoDoc3D'
 import MpMetadataInfoArcgis from './MetadataInfoArcgis.vue'
 import MpMetadataInfoVectorTitle from './MetadataInfoVectorTitle.vue'
+import MpMetadataInfoCloud from './MetadataInfoCloud.vue'
 
 @Component({
   name: 'MpMetadataInfo',
@@ -60,7 +66,8 @@ import MpMetadataInfoVectorTitle from './MetadataInfoVectorTitle.vue'
     MpMetadataInfoVector,
     MpMetadataInfoDoc3D,
     MpMetadataInfoArcgis,
-    MpMetadataInfoVectorTitle
+    MpMetadataInfoVectorTitle,
+    MpMetadataInfoCloud
   }
 })
 export default class MpMetadataInfo extends Vue {
@@ -73,6 +80,10 @@ export default class MpMetadataInfo extends Vue {
   private tableColumns: Record<string, unknown>[] = []
 
   private spinning = false
+
+  cloudMetaData() {
+    return JSON.stringify(this.currentConfig.metaData)
+  }
 
   @Watch('currentLayer', { deep: true, immediate: true })
   private async currentLayerChange() {
