@@ -9,7 +9,6 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { api } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpSceneSetting'
