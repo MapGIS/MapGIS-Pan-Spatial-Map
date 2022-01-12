@@ -1,5 +1,48 @@
 <template>
-  <mapgis-3d-ponding-simulation @loaded="loaded"></mapgis-3d-ponding-simulation>
+    <div>
+        <mapgis-3d-ponding-simulation
+            @loaded="loaded"
+            @isPonding="
+                (e) => {
+                    pond = e
+                }
+            "
+            @updateValue="
+                (e) => {
+                    sliderValue = e
+                }
+            "
+            :pondingTime="pondingTime"
+        />
+        <mp-window-wrapper :visible="showTimeline">
+            <template v-slot:default="slotProps">
+                <mp-window
+                    :visible="showTimeline"
+                    title="积水仿真"
+                    :horizontal-offset="28"
+                    :vertical-offset="30"
+                    :width="520"
+                    :height="100"
+                    :has-padding="false"
+                    anchor="bottom-center"
+                    v-bind="slotProps"
+                >
+                    <template>
+                        <mapgis-3d-ponding-simulation-timeline
+                            :value="sliderValue"
+                            :pond="pond"
+                            @updateTime="
+                                (e) => {
+                                    pondingTime = e
+                                }
+                            "
+                            @play="addSimulation"
+                        />
+                    </template>
+                </mp-window>
+            </template>
+        </mp-window-wrapper>
+    </div>
 </template>
 
 <script lang="ts">
@@ -7,27 +50,42 @@ import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
-  name: 'MpPondingSimulation'
+    name: 'MpPondingSimulation',
 })
 export default class MpPondingSimulation extends Mixins(WidgetMixin) {
-  
-  /**
-   * 微件打开时
-   */
-  onOpen() {
-    this.ponding.mounted()
-  }
 
-  /**
-   * 微件关闭时
-   */
-  onClose() {
-    this.ponding.destroyed()
-  }
+    private pondingTime = 4
 
-  loaded(ponding) {
-    this.ponding = ponding
-  }
+    private pond = false
+
+    private sliderValue = 0
+
+    private showTimeline = false
+
+    /**
+     * 微件打开时
+     */
+    onOpen() {
+        this.ponding.mounted()
+        this.showTimeline = true
+    }
+
+    /**
+     * 微件关闭时
+     */
+    onClose() {
+        this.ponding.destroyed()
+        this.showTimeline = false
+
+    }
+
+    loaded(ponding) {
+        this.ponding = ponding
+    }
+
+    addSimulation() {
+        this.ponding.addSimulation()
+    }
 }
 </script>
 
