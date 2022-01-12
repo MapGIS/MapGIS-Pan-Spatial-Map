@@ -992,24 +992,6 @@
             "serverUrl": "http://192.168.88.204:8089/3DTileset/dayantaresult/tileset.json"
           },
           {
-            "label": "V2_地质体-静态单体化",
-            "describe": "V2_地质体-静态单体化(联系吉艳丽，版本信息不匹配，目前是1.0格式)",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "IGSScene",
-            "name": "",
-            "searchName": "",
-            "model": "",
-            "guid": "FB0E5340-3537-965B-902A-14DDA57FCDFA",
-            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/地质体/SceneServer"
-          }
-        ]
-      },
-      {
-        "label": "深圳录屏演示",
-        "describe": "深圳录屏演示",
-        "children": [
-          {
             "label": "V2_M3D-单体建筑生长",
             "describe": "V2_M3D-单体建筑生长",
             "ip": "",
@@ -1061,7 +1043,13 @@
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFA",
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_倾斜摄影_动态单体化/SceneServer"
-          },
+          }
+        ]
+      },
+      {
+        "label": "深圳录屏演示",
+        "describe": "深圳录屏演示",
+        "children": [
           {
             "label": "V2_临海道路网",
             "describe": "V2_临海道路网",
@@ -1089,6 +1077,18 @@
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/城市白膜/SceneServer"
           },
           {
+            "label": "V2_临海倾斜摄影数据",
+            "describe": "V2_临海倾斜摄影数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFZ",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/倾斜临时/SceneServer"
+          },
+          {
             "label": "V2_临海地形",
             "describe": "V2_临海地形",
             "ip": "",
@@ -1099,6 +1099,66 @@
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFC",
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/lh地形/SceneServer"
+          },
+          {
+            "label": "V2_临海地下空间数据_地质体模型",
+            "describe": "V2_临海地下空间数据_地质体模型",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFD",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/地质体模型/SceneServer"
+          },
+          {
+            "label": "V2_临海地下空间数据_管线模型",
+            "describe": "V2_临海地下空间数据_管线模型",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFE",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/管线模型V12/SceneServer"
+          },
+          {
+            "label": "V2_单体建筑生长",
+            "describe": "V2_单体建筑生长",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFF",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/BIM单体建筑生长V11/M3dServer"
+          },
+          {
+            "label": "V2_BIM构建树",
+            "describe": "V2_BIM构建树",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFG",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/BIM构建树V11/M3dServer"
+          },
+          {
+            "label": "V2_分层分户",
+            "describe": "V2_分层分户",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFH",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/分层分户V12/SceneServer"
           }
         ]
       },
