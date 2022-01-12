@@ -1063,8 +1063,8 @@
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_倾斜摄影_动态单体化/SceneServer"
           },
           {
-            "label": "V2_城市白膜",
-            "describe": "V2_城市白膜",
+            "label": "V2_城市白模",
+            "describe": "V2_城市白模",
             "ip": "",
             "port": "",
             "layerServiceType": "IGSScene",
