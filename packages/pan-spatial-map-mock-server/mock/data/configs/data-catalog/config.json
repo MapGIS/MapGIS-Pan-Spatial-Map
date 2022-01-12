@@ -1063,6 +1063,20 @@
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_倾斜摄影_动态单体化/SceneServer"
           },
           {
+            "label": "V2_临海道路网",
+            "describe": "V2_临海道路网",
+            "ip": "192.168.43.134",
+            "port": "6163",
+            "layerServiceType": "IGSVECTOR",
+            "name": "V2_临海道路网",
+            "searchName": "",
+            "token": "",
+            "guid": "42649f59-0729-cab2-8a4a-e139c1b6bfae",
+            "serverUrl": "gdbp://MapGISLocalPlus/sample/sfcls/临海市道路网",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
             "label": "V2_城市白模",
             "describe": "V2_城市白模",
             "ip": "",
