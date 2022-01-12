@@ -1,5 +1,5 @@
 <template>
-  <div style='height: 176px;width:332px'>
+  <div style='height: 210px;width:280px'>
     <mapgis-3d-model-flatten :M3Ds='M3Ds'/>
   </div>
 </template>
