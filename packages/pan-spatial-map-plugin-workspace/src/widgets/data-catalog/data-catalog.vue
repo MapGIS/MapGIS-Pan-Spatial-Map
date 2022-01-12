@@ -33,45 +33,59 @@
             :src="baseUrl + widgetInfo.config.iconConfig[nodeLevel(item)]"
             class="tree-item-icon"
           />
-          <span
+          <a-dropdown
             v-if="item.children && item.children.length > 0"
-            class="tree-node"
-            :id="`tree_${item.guid}`"
+            :trigger="['contextmenu']"
           >
-            <span
-              v-if="
-                searchValue !== '' &&
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
-                    -1
-              "
-            >
-              <span class="unfilter-words" :title="item.description">
-                {{
-                  item.name.substr(
-                    0,
-                    item.name.toUpperCase().indexOf(searchValue.toUpperCase())
-                  )
-                }}
-              </span>
-              <span class="filter-words" :title="item.description">
-                {{
-                  item.name.substr(
-                    item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
-                    searchValue.length
-                  )
-                }}
-              </span>
-              <span class="unfilter-words" :title="item.description">
-                {{
-                  item.name.substr(
-                    item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+            <a-menu slot="overlay">
+              <a-menu-item
+                v-if="item.metaData"
+                key="1"
+                @click="showMetaDataInfo(item)"
+              >
+                元数据信息
+              </a-menu-item>
+            </a-menu>
+            <span class="tree-node" :id="`tree_${item.guid}`">
+              <span
+                v-if="
+                  searchValue !== '' &&
+                    item.name
+                      .toUpperCase()
+                      .indexOf(searchValue.toUpperCase()) !== -1
+                "
+              >
+                <span class="unfilter-words" :title="item.description">
+                  {{
+                    item.name.substr(
+                      0,
+                      item.name.toUpperCase().indexOf(searchValue.toUpperCase())
+                    )
+                  }}
+                </span>
+                <span class="filter-words" :title="item.description">
+                  {{
+                    item.name.substr(
+                      item.name
+                        .toUpperCase()
+                        .indexOf(searchValue.toUpperCase()),
                       searchValue.length
-                  )
-                }}
+                    )
+                  }}
+                </span>
+                <span class="unfilter-words" :title="item.description">
+                  {{
+                    item.name.substr(
+                      item.name
+                        .toUpperCase()
+                        .indexOf(searchValue.toUpperCase()) + searchValue.length
+                    )
+                  }}
+                </span>
               </span>
+              <span v-else :title="item.description">{{ item.name }}</span>
             </span>
-            <span v-else :title="item.description">{{ item.name }}</span>
-          </span>
+          </a-dropdown>
           <a-dropdown
             v-else
             :trigger="['contextmenu']"
@@ -120,7 +134,9 @@
             }}</span>
             <a-menu slot="overlay">
               <a-menu-item
-                v-if="!isNonSpatial(item) && !isDataFlow(item)"
+                v-if="
+                  item.serverType && !isNonSpatial(item) && !isDataFlow(item)
+                "
                 key="1"
                 @click="showMetaDataInfo(item)"
               >

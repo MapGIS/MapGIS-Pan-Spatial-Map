@@ -45,7 +45,7 @@ class MarkerIcon {
         reject(err)
       }
       const application = AppManager.getInstance().getApplication()
-      image.src = `${application.baseAPI}${application.appAssetsPath}${url}`
+      image.src = `${application.baseAPI}${url}`
     })
   }
 

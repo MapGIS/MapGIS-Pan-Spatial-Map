@@ -419,7 +419,19 @@ export class DataCatalogManager {
           this.config.urlConfig.treeDataUrl.includes('https') ||
           this.config.urlConfig.treeDataUrl.includes('http')
         ) {
-          res = await axios.get(this.config.urlConfig.treeDataUrl)
+          const { treeDataUrl } = this.config.urlConfig
+          const Authorization = this.getQueryString(
+            'Authorization',
+            treeDataUrl
+          )
+          res = await axios.get(
+            this.config.urlConfig.treeDataUrl.split('?')[0],
+            {
+              headers: {
+                Authorization
+              }
+            }
+          )
         } else {
           const protocol = window.location.protocol
           const host = window.location.host
@@ -428,8 +440,8 @@ export class DataCatalogManager {
           res = await axios.get(url)
         }
 
-        if (res.data.data && res.data.data.treeData) {
-          this.serviceTreeData = res.data.data.treeData
+        if (res.data.data) {
+          this.serviceTreeData = res.data.data
         } else {
           this.serviceTreeData = res.data.treeData
         }
@@ -768,7 +780,10 @@ export class DataCatalogManager {
     ) {
       treeData = this.convertTreeData(this.config.treeConfig.treeData, 0)
     } else {
-      treeData = this.convertTreeData(this.serviceTreeData, 0)
+      const treeArr = []
+      this.convertCloudToTreeData(this.serviceTreeData, treeArr)
+      debugger
+      treeData = this.convertTreeData(treeArr, 0)
     }
 
     const treeConfig: any = {
@@ -778,6 +793,157 @@ export class DataCatalogManager {
     }
 
     this.configConverted.treeConfig = treeConfig
+  }
+
+  /**
+   * 将云管数据目录转换为一张图的treeData
+   */
+  private convertCloudToTreeData(serviceTreeData, treeArr) {
+    serviceTreeData.forEach(treeData => {
+      const { name, type, children, resource, treeInfo } = treeData
+      const treeChildren = []
+      if (!resource && (children || treeInfo)) {
+        this.convertCloudToTreeData(children || treeInfo, treeChildren)
+        treeArr.push({
+          label: name,
+          describe: type || '',
+          children: treeChildren
+        })
+      } else if (
+        resource &&
+        resource.services &&
+        resource.services.length > 0
+      ) {
+        // 存储云管目录树里面  服务列表
+        const serverArr: Array<any> = []
+        resource.services.forEach(service => {
+          const { protocolTypes, name, proto, ip, port } = service
+          // 将同一数据支持多种类型构造成多个子节点
+          if (protocolTypes && protocolTypes.length > 1) {
+            const cloudLeafNodes: Array<any> = []
+            protocolTypes.forEach(protocolType => {
+              const cloudLeaf = {
+                label: `${name}-${protocolType}`,
+                name,
+                protocolTypes: [protocolType],
+                proto,
+                ip,
+                port
+              }
+              // 转换成一张图的叶子节点
+              const dataCatalogLeaf = this.convertTreeDataByProtocolTypes(
+                cloudLeaf
+              )
+              if (dataCatalogLeaf) {
+                cloudLeafNodes.push(dataCatalogLeaf)
+              }
+            })
+            serverArr.push({
+              label: name,
+              describe: type || '',
+              children: cloudLeafNodes
+            })
+          } else {
+            // 转换成一张图的叶子节点
+            const dataCatalogLeaf = this.convertTreeDataByProtocolTypes(service)
+            if (dataCatalogLeaf) {
+              serverArr.push(dataCatalogLeaf)
+            }
+          }
+        })
+        // 将服务列表存储在 资源目录中，资源目录是可以查看云管元数据的
+        treeArr.push({
+          label: name,
+          describe: type || '',
+          metaData: resource.metaData || '',
+          children: serverArr
+        })
+      }
+    })
+  }
+
+  /**
+   * 通过ProtocolTypes转成一张图数据目录的叶子节点
+   * @param service 云管叶子节点
+   */
+  convertTreeDataByProtocolTypes(service) {
+    const {
+      label,
+      protocolTypes: [cloudDataType],
+      name,
+      proto,
+      ip,
+      port
+    } = service
+    const commonData = {
+      label: label || name,
+      describe: label || name,
+      ip,
+      port,
+      name,
+      guid: UUID.uuid(),
+      searchName: ''
+    }
+    let leafData
+    switch (cloudDataType) {
+      case 'IGSRestTile':
+        leafData = {
+          layerServiceType: this.layerServiceType.IGSTILE,
+          token: '',
+          serverUrl: '',
+          wfsUrl: '',
+          extent: ''
+        }
+        break
+      case 'IGSRestScene':
+        leafData = {
+          layerServiceType: this.layerServiceType.IGSDOC3D,
+          model: '',
+          serverUrl: ''
+        }
+        break
+      case 'IGSRestMap':
+        leafData = {
+          layerServiceType: this.layerServiceType.IGSDOC,
+          token: '',
+          serverUrl: '',
+          wfsUrl: '',
+          extent: '',
+          gdbTypeList: ''
+        }
+        break
+      case 'WMS':
+        leafData = {
+          layerServiceType: this.layerServiceType.WMS,
+          token: '',
+          serverUrl: `${proto}://${ip}:${port}/igs/rest/ogc/doc/${name}/WMSServer`,
+          wfsUrl: '',
+          extent: ''
+        }
+        break
+      case 'WFS':
+        break
+
+      case 'IGSRestVectorTile':
+        leafData = {
+          layerServiceType: this.layerServiceType.VECTORTILE,
+          token: '',
+          serverUrl: `${proto}://${ip}:${port}/igs/rest/mrcs/vtiles/0/${name}`,
+          wfsUrl: '',
+          extent: ''
+        }
+        break
+
+      default:
+        break
+    }
+    if (leafData) {
+      return {
+        ...commonData,
+        ...leafData
+      }
+    }
+    return undefined
   }
 
   // 转换数据目录配置信息
@@ -794,6 +960,10 @@ export class DataCatalogManager {
           description: node[this.configConverted.keyConfig.description] || '', // 节点描述
           icon: node[this.configConverted.keyConfig.icon] || '', // 节点的图标(可选)
           level: nodeLevel
+        }
+        // 如果该节点有元数据信息，则将元数据信息存储起来
+        if (node.metaData) {
+          commonInfo.metaData = node.metaData
         }
 
         const guid: string = node[this.configConverted.keyConfig.guid]
@@ -963,10 +1133,10 @@ export class DataCatalogManager {
   // 判断服务是否可用.当前,只有服务类型为IGSDoc、IGSTile,且ip和port为空时,才能支持过滤。
   private isServiceVaild(layerConfig: any) {
     let isServiceVaild = true
-    const { ip, port, serverName, serverType,serverURL } = layerConfig
+    const { ip, port, serverName, serverType, serverURL } = layerConfig
     let serverList: string[] = []
 
-    if(serverURL !== ''){
+    if (serverURL !== '') {
       return true
     }
 
@@ -1056,9 +1226,9 @@ export class DataCatalogManager {
   private getQueryString(name, searchString) {
     const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
 
-    if (searchString) {
+    if (searchString && searchString.split('?').length > 1) {
       // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
-      const r = searchString.match(reg)
+      const r = searchString.split('?')[1].match(reg)
       if (r !== null) {
         return decodeURIComponent(r[2])
       }
