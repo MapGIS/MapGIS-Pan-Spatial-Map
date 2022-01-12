@@ -25213,9 +25213,8 @@ export class AttributeSurfacePrimitive {
  * 图元
  * @example
  * var graphic = new Graphic({type:label,style:{text:'mapgis'}});
- * @param viewer - 场景视图
  * @param [options.type] - 图元类型{@link Graphic.graphicType}
- * @param [options.id] - 图元ID
+ * //  * @param {String}  [options.id] 图元ID
  * @param [options.positions] - 图元坐标信息,笛卡尔世界坐标为cartesian3,经纬度数组为例如[-115.0, 37.0, 100000.0, -107.0, 33.0, 150000.0]
  * @param [options.style] - 图元样式信息 详情参见{@link Style}
  * @param [options.editPointStyle] - 编辑点样式信息 详情参见{@link Style.EditPointStyle}
@@ -25231,9 +25230,8 @@ export class AttributeSurfacePrimitive {
  * @param [options.transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
  */
 export class Graphic {
-    constructor(viewer: Viewer, options: {
+    constructor(options: {
         type?: string;
-        id?: string;
         positions?: Cartesian3[] | number[];
         style?: any;
         editPointStyle?: any;
@@ -25253,6 +25251,10 @@ export class Graphic {
      */
     readonly type: string;
     /**
+     * 图元父图层
+     */
+    readonly parentLayer: GraphicsLayer;
+    /**
      * 图形ID
      */
     readonly id: string;
@@ -25269,6 +25271,10 @@ export class Graphic {
      */
     readonly modelMatrix: Matrix4;
     /**
+     * 图元对象包围盒
+     */
+    readonly boundingSphere: BoundingSphere;
+    /**
      * 图元对象样式信息
      * @example
      * var graphic = new Graphic({type:label,style:{text:'mapgis'}});
@@ -25283,6 +25289,10 @@ export class Graphic {
      * 图形对象名称
      */
     name: number;
+    /**
+     * 图形是否为点，文本或者广告牌
+     */
+    isPoint: boolean;
     /**
      * 图形是否显示
      */
@@ -25334,7 +25344,7 @@ export class Graphic {
      */
     addAttributes(key: string, value: string | any): void;
     /**
-     * 添加到图层上，同 layer.addGraphic （暂未实现）
+     * 添加到图层上，同 layer.addGraphic
      * @param layer - 图层对象
      */
     addTo(layer: GraphicsLayer): void;
@@ -25394,7 +25404,7 @@ export class Style {
     /**
      * 编辑点样式
      * @property [color = Color.RED] - 编辑点填充颜色
-     * @property [centerPointColor = Color.SLATEBLUE.withAlpha(0.9)] - 编辑点填充颜色
+     * @property [centerPointColor = Color.SLATEBLUE.withAlpha(0.9)] - 编辑中心点填充颜色
      * @property [insertPointColor = Color.SANDYBROWN.withAlpha(0.6)] - 插入点填充颜色
      * @property [pixelSize = 15] - 编辑点像素大小
      * @property [outlineColor = Color.SEASHELL.withAlpha(0.9)] - 编辑点边框颜色
@@ -25803,7 +25813,7 @@ export class Style {
      * @property [isSquare = false] - 是否为正方体。
      * @property [color = Color.RED] - 颜色
      * @property [height] - 位置高度
-     * @property [extrudedHeight = 100] - 拉伸长度
+     * @property [extrudedHeight = 0] - 拉伸长度
      * @property [heightReference = HeightReference.NONE] - 高度类型
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
@@ -25915,26 +25925,6 @@ export class Style {
 }
 
 /**
- * 平移旋转图元
- * @param [options.heading = 0.0] - 偏航角，弧度。
- * @param [options.pitch = 0.0] - 俯仰角，弧度。
- * @param [options.roll = 0.0] - 翻滚角，弧度。
- * @param [options.transformX = 0.0] - 局部坐标系X方向平移量，单位米，X方向为纬线方向
- * @param [options.transformY = 0.0] - 局部坐标系Y方向平移量，单位米，Y方向为经线方向
- * @param [options.transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
- */
-export class TransformAndRotationGraphic {
-    constructor(graphic: Graphic, options: {
-        heading?: number;
-        pitch?: number;
-        roll?: number;
-        transformX?: number;
-        transformY?: number;
-        transformZ?: number;
-    });
-}
-
-/**
  * G3D 服务图层
  * @param scene - 场景对象
  * @param options - 可选参数
@@ -25958,36 +25948,44 @@ export class G3DLayer {
      */
     readonly port: number;
     /**
+     * G3D 可视属性
+     */
+    show: boolean;
+    /**
+     * G3D 透明属性
+     */
+    translucency: number;
+    /**
      * 获取 G3DLayer 中的单个图层对象
      * @param layerIndex - 在G3D服务中的图层序号
      * @returns 获取 图层对象
      */
-    getLayer(layerIndex: number): MapGISM3DSet | MapGISTerrainProvider | MapGISVectorLayer;
+    getLayer(layerIndex: string): MapGISM3DSet | MapGISTerrainProvider | MapGISVectorLayer;
     /**
      * 获取g3d图层中的全部索引
      * @returns 索引数组
      */
-    getAllLayerIndexes(): number[];
+    getAllLayerIndexes(): string[];
     /**
      * 获取m3d图层中的全部索引
      * @returns 索引数组
      */
-    getM3DLayerIndexes(): number[];
+    getM3DLayerIndexes(): string[];
     /**
      * 获取地形图层中的全部索引
      * @returns 索引数组
      */
-    getTerrainLayerIndexes(): number[];
+    getTerrainLayerIndexes(): string[];
     /**
      * 获取矢量图层中的全部索引
      * @returns 索引数组
      */
-    getVectorLayerIndexes(): number[];
+    getVectorLayerIndexes(): string[];
     /**
      * 获取b标注图层中的全部索引
      * @returns 索引数组
      */
-    getLabelLayerIndexes(): number[];
+    getLabelLayerIndexes(): string[];
     /**
      * 获取全部 Layers
      */
@@ -26063,7 +26061,7 @@ export class G3DLayer {
      * @param layerIndex - 在G3D服务中的图层序号
      * @returns 获取对应的图层名
      */
-    getLayerName(layerIndex: number): string;
+    getLayerName(layerIndex: string): string;
     /**
      * 获取G3DLayer中图层名数组的长度
      * @returns 获取G3DLayer中图层名数组的长度
@@ -26074,21 +26072,30 @@ export class G3DLayer {
      * @param layerIndex - 图层索引
      * @param info - 图层信息
      */
-    addLayerInfo(layerIndex: number, info: any): void;
+    addLayerInfo(layerIndex: string, info: any): void;
     /**
      * 根据图层索引号获取服务中的图层信息
      * @returns 返回服务中的图层信息
      */
-    getLayerInfo(layerIndex: number): any;
+    getLayerInfo(layerIndex: string): any;
     /**
      * 控制指定序号的图层进行显示或隐藏
      */
-    show(layerIndex: number, isVisible: boolean): void;
+    showByLayerIndex(layerIndex: string, isVisible: boolean): void;
     /**
      * 按照图层序号数组进行控制是否可见
      * @param layerIndexes - 图层序号数组
      */
     showByLayerIndexes(layerIndexes: number[], isVisible: boolean): void;
+    /**
+     * 控制指定序号图层的透明度
+     */
+    translucencyByLayerIndex(layerIndex: number, translucency: number): void;
+    /**
+     * 按照图层序号数组进行控制透明度
+     * @param layerIndexes - 图层序号数组
+     */
+    translucencyByLayerIndexes(layerIndexes: number[], translucency: number): void;
     /**
      * 清理当前 G3DLayer 图层
      * @param [destroy = true] - 是否销毁内存
@@ -27147,6 +27154,7 @@ export class MapGISM3D {
  * @param [options.debugShowMemoryUsage = false] - For debugging only. When true, draws labels to indicate the texture and geometry memory in megabytes used by each tile.
  * @param [options.debugShowUrl = false] - For debugging only. When true, draws labels to indicate the url of each tile.
  * @param [options.password] - M3D 数据密码
+ * @param [options.treeOptions = {}] - 构建树附加参数
  */
 export class MapGISM3DSet {
     constructor(options: {
@@ -27204,6 +27212,7 @@ export class MapGISM3DSet {
         debugShowMemoryUsage?: boolean;
         debugShowUrl?: boolean;
         password?: Uint8Array;
+        treeOptions?: any;
     });
     /**
      * Optimization option. Don't request tiles that will likely be unused when they come back because of the camera's movement. This optimization only applies to stationary tilesets.
@@ -27878,9 +27887,17 @@ export class MapGISM3DSet {
      */
     readonly useRawSaveAtt: boolean;
     /**
+     * 创建构建树的附加参数
+     */
+    treeOptions: any;
+    /**
      * 构建树
      */
     readonly tree: any;
+    /**
+     * m3d 版本号
+     */
+    readonly version: string;
     /**
      * Provides a hook to override the method used to request the tileset json
      * useful when fetching tilesets from remote servers
@@ -30047,6 +30064,27 @@ export class EditTool {
      */
     mouseMoveEvent(): void;
     /**
+     * 平移旋转图元
+     * @param [options.heading = 0.0] - 偏航角，弧度。
+     * @param [options.pitch = 0.0] - 俯仰角，弧度。
+     * @param [options.roll = 0.0] - 翻滚角，弧度。
+     * @param [options.transformX = 0.0] - 局部坐标系X方向平移量，单位米，X方向为纬线方向
+     * @param [options.transformY = 0.0] - 局部坐标系Y方向平移量，单位米，Y方向为经线方向
+     * @param [options.transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
+     */
+    static TransformAndRotationGraphic(graphic: Graphic, options: {
+        heading?: number;
+        pitch?: number;
+        roll?: number;
+        transformX?: number;
+        transformY?: number;
+        transformZ?: number;
+    }): void;
+    /**
+     * 平移旋转图元(通过矩阵)
+     */
+    static GraphicByMatrix(graphic: Graphic, Matrix: Matrix4): void;
+    /**
      * 激活编辑工具
      */
     active(): void;
@@ -30795,6 +30833,10 @@ export class MapGISVectorLayer {
      * {@link ImageryProvider}, only a portion of the imagery provider is shown.
      */
     readonly rectangle: Rectangle;
+    /**
+     * 透明度属性
+     */
+    translucency: number;
     /**
      * This value is used as the default brightness for the imagery layer if one is not provided during construction
      * or by the imagery provider. This value does not modify the brightness of the imagery.
@@ -50301,7 +50343,6 @@ declare module "cesium/Source/MapGIS/Analysis/VisiblityAnalysis" { import { Visi
 declare module "cesium/Source/MapGIS/Entity/AttributeSurfacePrimitive" { import { AttributeSurfacePrimitive } from 'cesium'; export default AttributeSurfacePrimitive; }
 declare module "cesium/Source/MapGIS/Entity/Graphic" { import { Graphic } from 'cesium'; export default Graphic; }
 declare module "cesium/Source/MapGIS/Entity/Style" { import { Style } from 'cesium'; export default Style; }
-declare module "cesium/Source/MapGIS/Entity/TransformAndRotationGraphic" { import { TransformAndRotationGraphic } from 'cesium'; export default TransformAndRotationGraphic; }
 declare module "cesium/Source/MapGIS/IndexedDB/TransactionImplement" { import { TransactionImplement } from 'cesium'; export default TransactionImplement; }
 declare module "cesium/Source/MapGIS/Label/MapGISLabelLayer" { import { MapGISLabelLayer } from 'cesium'; export default MapGISLabelLayer; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3D" { import { MapGISM3D } from 'cesium'; export default MapGISM3D; }

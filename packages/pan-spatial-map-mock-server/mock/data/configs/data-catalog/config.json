@@ -1159,6 +1159,18 @@
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFH",
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/分层分户V12/SceneServer"
+          },
+          {
+            "label": "单体化查询",
+            "describe": "单体化查询",
+            "ip": "192.168.199.71",
+            "port": "6163",
+            "layerServiceType": "DOC3D",
+            "name": "单体化查询",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFI",
+            "serverUrl": ""
           }
         ]
       },
