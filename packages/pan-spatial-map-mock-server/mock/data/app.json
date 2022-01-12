@@ -125,7 +125,8 @@
           },
           {
             "id": "widget_93d895de-f6c5-48c1-bbdc-6b34ab760e37",
-            "uri": "widgets/thematic-map"
+            "uri": "widgets/thematic-map",
+            "config": "configs/thematic-map/config.json"
           },
           {
             "id": "widget_83b272ec-f796-4b1c-a24e-ee04d86d27bf",
