@@ -1073,6 +1073,18 @@
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFB",
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/城市白膜/SceneServer"
+          },
+          {
+            "label": "V2_临海地形",
+            "describe": "V2_临海地形",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFC",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/lh地形/SceneServer"
           }
         ]
       },
