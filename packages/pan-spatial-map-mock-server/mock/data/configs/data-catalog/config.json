@@ -1113,6 +1113,20 @@
         "describe": "IGS图层",
         "children": [
           {
+            "label": "lh专题图WGS84",
+            "describe": "lh专题图WGS84",
+            "ip": "192.168.199.71",
+            "port": "8089",
+            "layerServiceType": "IGSVECTOR",
+            "name": "lh专题图WGS84",
+            "searchName": "",
+            "token": "",
+            "guid": "37ee717c-5f7e-40a9-a45a-55273a7d2fbc",
+            "serverUrl": "gdbp://MapGISLocalPlus/linhai/sfcls/lh专题图WGS84",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
             "label": "中国地级市x",
             "describe": "中国地级市x",
             "ip": "",
