@@ -1061,6 +1061,18 @@
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFA",
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_倾斜摄影_动态单体化/SceneServer"
+          },
+          {
+            "label": "V2_城市白膜",
+            "describe": "V2_城市白膜",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFB",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/城市白膜/SceneServer"
           }
         ]
       },
