@@ -9,6 +9,7 @@
     :enablePopup="true"
     :enableCollapse="false"
     :enableStratifiedHouse="true"
+    :getVideoStatus="getVideoStatus"
   ></mapgis-3d-stratified-household>
 </template>
 
@@ -97,48 +98,63 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   }
 
   handleChangeLayer(layer) {
-    const { title, vueIndex } = layer;
-    this.layerId = vueIndex;
-    this.layerTitle = title;
+    const { title, vueIndex } = layer
+    this.layerId = vueIndex
+    this.layerTitle = title
   }
 
   handleProjectScreen(file) {
-    const { layerId, layerTitle } = this;
-    const {
-      vFOV,
-      orientationHeading,
-      orientationRoll,
-      positionX,
-      positionY,
-      positionZ,
-      hFOV,
-      orientationPitch
-    } = file
-    const cameraPosition = {
-      x: positionX,
-      y: positionY,
-      z: positionZ
+    if (!this.getVideoStatus(file.name)) {
+      const { layerId, layerTitle } = this
+      const {
+        vFOV,
+        orientationHeading,
+        orientationRoll,
+        positionX,
+        positionY,
+        positionZ,
+        hFOV,
+        orientationPitch
+      } = file
+      const cameraPosition = {
+        x: positionX,
+        y: positionY,
+        z: positionZ
+      }
+      const Orientation = {
+        heading: orientationHeading,
+        pitch: orientationPitch,
+        roll: orientationRoll
+      }
+
+      VideoManager.addVideo(
+        layerId, // this.exhibition.id,
+        layerTitle, // this.exhibition.name,
+        file.name,
+        file.url,
+        file.type,
+        file.url,
+        '',
+        true,
+        cameraPosition,
+        Orientation,
+        hFOV,
+        vFOV
+      )
+      this.setVideoStatus(file.name, true)
+    } else {
+      this.setVideoStatus(file.name)
     }
-    const Orientation = {
-      heading: orientationHeading,
-      pitch: orientationPitch,
-      roll: orientationRoll
-    }
-    
-    VideoManager.addVideo(
-      layerId, // this.exhibition.id,
-      layerTitle, // this.exhibition.name,
-      file.url,
-      file.url,
-      file.type,
-      file.url,
-      '',
-      true,
-      cameraPosition,
-      Orientation,
-      hFOV,
-      vFOV
-    )
+  }
+
+  getVideoStatus(videoId) {
+    const { layerId, layerTitle } = this
+    return VideoManager.getVideoStatus(videoId, layerId)
+  }
+
+  setVideoStatus(videoId, isProjected = false) {
+    const { layerId, layerTitle } = this
+    return VideoManager.setVideoStatus(videoId, layerId, isProjected)
   }
 }
 </script>

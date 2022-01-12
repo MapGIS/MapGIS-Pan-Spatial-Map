@@ -138,44 +138,53 @@ export default class LayerTypeUtil extends Mixins(
    * }
    */
   projectScreen(file) {
-    const {
-      vFOV,
-      orientationHeading,
-      orientationRoll,
-      positionX,
-      positionY,
-      positionZ,
-      hFOV,
-      orientationPitch
-    } = file
-    const cameraPosition = {
-      x: positionX,
-      y: positionY,
-      z: positionZ
+    if (!this.getVideoStatus(file.name)) {
+      const {
+        vFOV,
+        orientationHeading,
+        orientationRoll,
+        positionX,
+        positionY,
+        positionZ,
+        hFOV,
+        orientationPitch
+      } = file
+      const cameraPosition = {
+        x: positionX,
+        y: positionY,
+        z: positionZ
+      }
+      const Orientation = {
+        heading: orientationHeading,
+        pitch: orientationPitch,
+        roll: orientationRoll
+      }
+      VideoManager.addVideo(
+        this.exhibition.id,
+        this.exhibition.name,
+        file.name,
+        file.url,
+        file.type,
+        file.url,
+        '',
+        true,
+        cameraPosition,
+        Orientation,
+        hFOV,
+        vFOV
+      )
+      this.setVideoStatus(file.name, true)
+    } else {
+      this.setVideoStatus(file.name)
     }
-    const Orientation = {
-      heading: orientationHeading,
-      pitch: orientationPitch,
-      roll: orientationRoll
-    }
-    VideoManager.addVideo(
-      this.exhibition.id,
-      this.exhibition.name,
-      file.url,
-      file.url,
-      file.type,
-      file.url,
-      '',
-      true,
-      cameraPosition,
-      Orientation,
-      hFOV,
-      vFOV
-    )
   }
 
-  getVideoStatus(url) {
-    return VideoManager.getVideoStatus(url, this.exhibition.id)
+  getVideoStatus(videoId) {
+    return VideoManager.getVideoStatus(videoId, this.exhibition.id)
+  }
+
+  setVideoStatus(videoId, isProjected = false) {
+    return VideoManager.setVideoStatus(videoId, this.exhibition.id, isProjected)
   }
 
   /**
