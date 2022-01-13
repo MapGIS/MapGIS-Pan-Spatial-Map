@@ -27056,11 +27056,11 @@ export class MapGISM3D {
     /**
      * 强制节点不可见
      */
-    forceInvisible: any;
+    forceInvisible: boolean;
     /**
      * 节点颜色
      */
-    nodeColor: any;
+    nodeColor: Color;
     /**
      * Get the Multimodal tile.
      */
@@ -31111,7 +31111,6 @@ export class MapGISVectorLayer {
      * @param primitive - 进行更新的Primitive
      */
     updatePrimitive(primitive: Primitive): void;
-    static TimeControl: any;
     /**
      * 城市生长初始化，数据准备完成后会直接开始展示
      * @example

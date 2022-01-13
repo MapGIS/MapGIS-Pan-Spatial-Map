@@ -1053,14 +1053,14 @@
           {
             "label": "V2_临海道路网",
             "describe": "V2_临海道路网",
-            "ip": "192.168.43.134",
-            "port": "6163",
+            "ip": "192.168.199.71",
+            "port": "8089",
             "layerServiceType": "IGSVECTOR",
             "name": "V2_临海道路网",
             "searchName": "",
             "token": "",
-            "guid": "42649f59-0729-cab2-8a4a-e139c1b6bfae",
-            "serverUrl": "gdbp://MapGISLocalPlus/sample/sfcls/临海市道路网",
+            "guid": "6b79f6d8-9efd-c63a-07c8-a0949b84aebc",
+            "serverUrl": "gdbp://MapGISLocalPlus/linhai/sfcls/lh道路网",
             "wfsUrl": "",
             "extent": ""
           },
@@ -1163,13 +1163,25 @@
           {
             "label": "单体化查询",
             "describe": "单体化查询",
-            "ip": "192.168.199.71",
+            "ip": "192.168.199.75",
             "port": "6163",
             "layerServiceType": "DOC3D",
-            "name": "单体化查询",
+            "name": "单体化查询V2",
             "searchName": "",
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFI",
+            "serverUrl": ""
+          },
+          {
+            "label": "单体化查询_vec-3栋",
+            "describe": "单体化查询_vec-3栋",
+            "ip": "192.168.88.204",
+            "port": "6163",
+            "layerServiceType": "DOC3D",
+            "name": "vec-3栋",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFJ",
             "serverUrl": ""
           }
         ]
