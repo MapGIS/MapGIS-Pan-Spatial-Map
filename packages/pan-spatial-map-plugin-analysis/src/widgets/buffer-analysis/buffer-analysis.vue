@@ -70,11 +70,12 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   isWidgetOpen = false
 
-  colorCopy = "rgba(255,0,0,1)"
-
-  colorCopyLine = "rgba(255,0,0,1)"
-
-  colorLineWidth = 3
+  featureStyle = new FillStyle({
+		color: "rgba(255,0,0,1)",
+		outlineColor: "rgba(255,0,0,1)",
+		outlineWidth: 3,
+		opacity: 1,
+	})
 
   selectLevel = false
 
@@ -191,12 +192,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
    */
   addNewGeoJsonLayer() {
     const resultFeature = this.feature
-    const featureStyle = new FillStyle({
-      color: this.colorCopy,
-      outlineColor: this.colorCopyLine,
-      outlineWidth: this.colorLineWidth,
-      opacity: 1,
-    })
     const data = {
       name: 'GeoJson图层',
       description: '综合分析_结果图层',
@@ -204,7 +199,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
         type: 'GeoJson',
         url: this.destLayer,
         source: resultFeature,
-        featureStyle: featureStyle,
+        featureStyle: this.featureStyle,
         name: this.destLayer,
       }
     }
@@ -237,7 +232,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   }
 
   showFeature(data) {
-    [this.feature, this.destLayer, this.colorCopy, this.colorCopyLine, this.colorLineWidth] = data
+    [this.feature, this.destLayer, this.featureStyle] = data
     this.finishF = true
     if (this.add == true) {
       this.addNewGeoJsonLayer()
