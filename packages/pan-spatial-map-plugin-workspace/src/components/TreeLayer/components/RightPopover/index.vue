@@ -67,9 +67,11 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
     {
       name: '属性设置',
       show:
-        !this.isParentLayer(this.layerItem) && this.isIGSScene(this.layerItem),
-      click: () => this.changeM3DProps()
-    }
+        (!this.isParentLayer(this.layerItem) &&
+          this.isIGSScene(this.layerItem)) ||
+        this.isModelCacheLayer(this.layerItem),
+      click: () => this.changeM3DProps(),
+    },
   ]
 
   metaDataInfo() {

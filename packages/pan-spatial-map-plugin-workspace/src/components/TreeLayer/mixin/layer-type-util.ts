@@ -66,6 +66,15 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
   }
 
   /**
+   * 判断是否是ModelCache图层
+   * @param item layer图层
+   * @returns boolean
+   */
+  isModelCacheLayer({ type }) {
+    return type === LayerType.ModelCache
+  }
+
+  /**
    * 判断是否是矢量瓦片
    * @param item layer图层
    * @returns boolean
