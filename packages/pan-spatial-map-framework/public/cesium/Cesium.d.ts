@@ -25213,9 +25213,8 @@ export class AttributeSurfacePrimitive {
  * 图元
  * @example
  * var graphic = new Graphic({type:label,style:{text:'mapgis'}});
- * @param viewer - 场景视图
  * @param [options.type] - 图元类型{@link Graphic.graphicType}
- * @param [options.id] - 图元ID
+ * //  * @param {String}  [options.id] 图元ID
  * @param [options.positions] - 图元坐标信息,笛卡尔世界坐标为cartesian3,经纬度数组为例如[-115.0, 37.0, 100000.0, -107.0, 33.0, 150000.0]
  * @param [options.style] - 图元样式信息 详情参见{@link Style}
  * @param [options.editPointStyle] - 编辑点样式信息 详情参见{@link Style.EditPointStyle}
@@ -25231,9 +25230,8 @@ export class AttributeSurfacePrimitive {
  * @param [options.transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
  */
 export class Graphic {
-    constructor(viewer: Viewer, options: {
+    constructor(options: {
         type?: string;
-        id?: string;
         positions?: Cartesian3[] | number[];
         style?: any;
         editPointStyle?: any;
@@ -25252,6 +25250,10 @@ export class Graphic {
      * 图元类型 参照{@link Graphic.graphicType}
      */
     readonly type: string;
+    /**
+     * 图元父图层
+     */
+    readonly parentLayer: GraphicsLayer;
     /**
      * 图形ID
      */
@@ -25287,6 +25289,10 @@ export class Graphic {
      * 图形对象名称
      */
     name: number;
+    /**
+     * 图形是否为点，文本或者广告牌
+     */
+    isPoint: boolean;
     /**
      * 图形是否显示
      */
@@ -25338,7 +25344,7 @@ export class Graphic {
      */
     addAttributes(key: string, value: string | any): void;
     /**
-     * 添加到图层上，同 layer.addGraphic （暂未实现）
+     * 添加到图层上，同 layer.addGraphic
      * @param layer - 图层对象
      */
     addTo(layer: GraphicsLayer): void;
@@ -25942,6 +25948,14 @@ export class G3DLayer {
      */
     readonly port: number;
     /**
+     * G3D 可视属性
+     */
+    show: boolean;
+    /**
+     * G3D 透明属性
+     */
+    translucency: number;
+    /**
      * 获取 G3DLayer 中的单个图层对象
      * @param layerIndex - 在G3D服务中的图层序号
      * @returns 获取 图层对象
@@ -26067,12 +26081,21 @@ export class G3DLayer {
     /**
      * 控制指定序号的图层进行显示或隐藏
      */
-    show(layerIndex: string, isVisible: boolean): void;
+    showByLayerIndex(layerIndex: string, isVisible: boolean): void;
     /**
      * 按照图层序号数组进行控制是否可见
      * @param layerIndexes - 图层序号数组
      */
     showByLayerIndexes(layerIndexes: number[], isVisible: boolean): void;
+    /**
+     * 控制指定序号图层的透明度
+     */
+    translucencyByLayerIndex(layerIndex: number, translucency: number): void;
+    /**
+     * 按照图层序号数组进行控制透明度
+     * @param layerIndexes - 图层序号数组
+     */
+    translucencyByLayerIndexes(layerIndexes: number[], translucency: number): void;
     /**
      * 清理当前 G3DLayer 图层
      * @param [destroy = true] - 是否销毁内存
@@ -27033,11 +27056,11 @@ export class MapGISM3D {
     /**
      * 强制节点不可见
      */
-    forceInvisible: any;
+    forceInvisible: boolean;
     /**
      * 节点颜色
      */
-    nodeColor: any;
+    nodeColor: Color;
     /**
      * Get the Multimodal tile.
      */
@@ -30811,6 +30834,10 @@ export class MapGISVectorLayer {
      */
     readonly rectangle: Rectangle;
     /**
+     * 透明度属性
+     */
+    translucency: number;
+    /**
      * This value is used as the default brightness for the imagery layer if one is not provided during construction
      * or by the imagery provider. This value does not modify the brightness of the imagery.
      */
@@ -31084,7 +31111,6 @@ export class MapGISVectorLayer {
      * @param primitive - 进行更新的Primitive
      */
     updatePrimitive(primitive: Primitive): void;
-    static TimeControl: any;
     /**
      * 城市生长初始化，数据准备完成后会直接开始展示
      * @example
