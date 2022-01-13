@@ -95,8 +95,7 @@ const reqCommon = {
         xsrfCookieName &&
         !Cookie.get(xsrfCookieName)
       ) {
-        message.warning('认证 token 已过期，请重新登录')
-        console.log(url.url)
+        // message.warning('认证 token 已过期，请重新登录')
       }
       config.url = `${process.env.VUE_APP_API_BASE_URL}${url.url}`
       return config
@@ -106,8 +105,7 @@ const reqCommon = {
       xsrfCookieName &&
       !Cookie.get(xsrfCookieName)
     ) {
-      message.warning('认证 token 已过期，请重新登录')
-      console.log(url)
+      // message.warning('认证 token 已过期，请重新登录')
     }
     return config
   },
