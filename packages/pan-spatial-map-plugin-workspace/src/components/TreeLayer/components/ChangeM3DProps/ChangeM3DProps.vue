@@ -37,11 +37,19 @@ export default class MpChangeM3DProps extends Vue {
 
   maximumScreenSpaceError = this.layer.maximumScreenSpaceError
 
-  enablePopup = this.layer.layer.popupEnabled
+  enablePopup = this.layer.layer
+    ? this.layer.layer.popupEnabled
+    : this.layer.popupEnabled
 
   submit() {
-    this.layer.maximumScreenSpaceError = this.maximumScreenSpaceError
-    this.layer.layer.popupEnabled = this.enablePopup
+    if (this.layer.maximumScreenSpaceError) {
+      this.layer.maximumScreenSpaceError = this.maximumScreenSpaceError
+    }
+    if (this.layer.layer.popupEnabled) {
+      this.layer.layer.popupEnabled = this.enablePopup
+    } else {
+      this.layer.popupEnabled = this.enablePopup
+    }
     this.$emit('update:layer', this.layer)
   }
 }
