@@ -10,7 +10,8 @@
     :enableCollapse="false"
     :enableStratifiedHouse="true"
     :getVideoStatus="getVideoStatus"
-    :highlightStyleProp="highlightStyle"
+    :layerHighlightColorProp="layerHighlightColor"
+    :featureHighlightColorProp="featureHighlightColor"
   ></mapgis-3d-stratified-household>
 </template>
 
@@ -47,8 +48,16 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   layerTitle = ''
 
   // 颜色配置
-  get highlightStyle() {
+  get featureHighlightColor() {
     return baseConfigInstance.config.colorConfig.feature.reg.color
+  }
+
+  get layerHighlightColor() {
+    let color = 'rgba(255,0,0,0.5)'
+    if (this.widgetInfo.config && this.widgetInfo.config.layerHighlightcolor) {
+      color = this.widgetInfo.config.layerHighlightcolor
+    }
+    return color
   }
 
   /**
