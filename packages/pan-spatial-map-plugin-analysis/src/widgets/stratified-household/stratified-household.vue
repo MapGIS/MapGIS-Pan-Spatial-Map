@@ -10,13 +10,18 @@
     :enableCollapse="false"
     :enableStratifiedHouse="true"
     :getVideoStatus="getVideoStatus"
+    :layerHighlightColorProp="layerHighlightColor"
+    :featureHighlightColorProp="featureHighlightColor"
   ></mapgis-3d-stratified-household>
 </template>
 
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, LayerType, LoadStatus } from '@mapgis/web-app-framework'
-import { VideoManager } from '@mapgis/pan-spatial-map-common'
+import {
+  VideoManager,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpStratifiedHousehold'
@@ -41,6 +46,19 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   layerId = ''
 
   layerTitle = ''
+
+  // 颜色配置
+  get featureHighlightColor() {
+    return baseConfigInstance.config.colorConfig.feature.reg.color
+  }
+
+  get layerHighlightColor() {
+    let color = 'rgba(255,0,0,0.5)'
+    if (this.widgetInfo.config && this.widgetInfo.config.layerHighlightcolor) {
+      color = this.widgetInfo.config.layerHighlightcolor
+    }
+    return color
+  }
 
   /**
    * 动态获取基础目录树上已勾选的三维模型数据

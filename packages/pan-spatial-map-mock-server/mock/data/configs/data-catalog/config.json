@@ -1161,12 +1161,12 @@
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/分层分户V12/SceneServer"
           },
           {
-            "label": "单体化查询",
-            "describe": "单体化查询",
+            "label": "单体化查询new",
+            "describe": "单体化查询new",
             "ip": "192.168.199.75",
             "port": "6163",
             "layerServiceType": "DOC3D",
-            "name": "单体化查询V2",
+            "name": "单体化查询new",
             "searchName": "",
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFI",
@@ -1175,7 +1175,7 @@
           {
             "label": "单体化查询_vec-3栋",
             "describe": "单体化查询_vec-3栋",
-            "ip": "192.168.88.204",
+            "ip": "192.168.88.208",
             "port": "6163",
             "layerServiceType": "DOC3D",
             "name": "vec-3栋",
@@ -1183,6 +1183,18 @@
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFJ",
             "serverUrl": ""
+          },
+          {
+            "label": "倾斜摄影V13",
+            "describe": "倾斜摄影V13",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFK",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/倾斜摄影V13/SceneServer"
           }
         ]
       },
