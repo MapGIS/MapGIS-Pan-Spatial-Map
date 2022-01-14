@@ -713,24 +713,32 @@ export default class MpTreeLayer extends Mixins(
   }
 
   updateM3DProps(val) {
-    const {
-      key,
-      maximumScreenSpaceError,
-      layer: { popupEnabled },
-      id
-    } = val
+    let popupEnabled
+    const { key, maximumScreenSpaceError, layer, id } = val
+    if (layer) {
+      popupEnabled = layer.popupEnabled
+    } else {
+      popupEnabled = val.popupEnabled
+    }
     const indexArr: Array<string> = key.split('-')
     const doc = this.layerDocument.clone()
     const layers: Array<unknown> = doc.defaultMap.layers()
-    if (indexArr.length === 2) {
+    if (indexArr.length === 2 || this.isModelCacheLayer(val)) {
       const [firstIndex, secondIndex] = indexArr
-      const sublayer = layers[firstIndex].activeScene.sublayers[secondIndex]
-      sublayer.maximumScreenSpaceError = maximumScreenSpaceError
-      sublayer.layer.popupEnabled = popupEnabled
-      const m3d = this.sceneController.findSource(id)
-      m3d.maximumScreenSpaceError = maximumScreenSpaceError
-      // m3d.enablePopup = enablePopup
-      this.$emit('update:layerDocument', doc)
+      if (indexArr.length === 2) {
+        const sublayer = layers[firstIndex].activeScene.sublayers[secondIndex]
+        sublayer.maximumScreenSpaceError = maximumScreenSpaceError
+        sublayer.layer.popupEnabled = popupEnabled
+        const m3d = this.sceneController.findSource(id)
+        m3d.maximumScreenSpaceError = maximumScreenSpaceError
+        // m3d.enablePopup = enablePopup
+        this.$emit('update:layerDocument', doc)
+      } else {
+        const MC = layers[firstIndex]
+        MC.maximumScreenSpaceError = maximumScreenSpaceError
+        MC.popupEnabled = popupEnabled
+        this.$emit('update:layerDocument', doc)
+      }
     }
     this.currentLayerInfo = {}
   }
