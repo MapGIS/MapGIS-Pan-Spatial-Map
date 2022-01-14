@@ -1,0 +1,102 @@
+{
+  "models": {
+    "house": [{
+      "img": "/upload/gltf/house/img/house12.png",
+      "model": "/upload/gltf/house/house12.glb",
+      "scale": 60
+    },{
+      "img": "/upload/gltf/house/img/house13.png",
+      "model": "/upload/gltf/house/house13.glb",
+      "scale": 0.6
+    },{
+      "img": "/upload/gltf/house/img/house14.png",
+      "model": "/upload/gltf/house/house14.glb",
+      "scale": 0.5
+    },{
+      "img": "/upload/gltf/house/img/house15.png",
+      "model": "/upload/gltf/house/house15.glb",
+      "scale": 1.4
+    },{
+      "img": "/upload/gltf/house/img/house16.png",
+      "model": "/upload/gltf/house/house16.glb",
+      "scale": 0.9
+    },{
+      "img": "/upload/gltf/house/img/house17.png",
+      "model": "/upload/gltf/house/house17.glb",
+      "scale": 1
+    },{
+      "img": "/upload/gltf/house/img/house18.png",
+      "model": "/upload/gltf/house/house18.glb",
+      "scale": 1
+    }],
+    "tree": [{
+      "img": "/upload/gltf/tree/img/tree.png",
+      "model": "/upload/gltf/tree/tree.glb"
+    },{
+      "img": "/upload/gltf/tree/img/tree11.png",
+      "model": "/upload/gltf/tree/tree11.glb",
+      "scale": 10
+    },{
+      "img": "/upload/gltf/tree/img/tree12.png",
+      "model": "/upload/gltf/tree/tree12.glb",
+      "scale": 0.13
+    },{
+      "img": "/upload/gltf/tree/img/tree13.png",
+      "model": "/upload/gltf/tree/tree13.glb",
+      "scale": 0.12
+    },{
+      "img": "/upload/gltf/tree/img/tree14.png",
+      "model": "/upload/gltf/tree/tree14.glb",
+      "scale": 0.16
+    }],
+    "traffic": [{
+      "img": "/upload/gltf/traffic/img/car.png",
+      "model": "/upload/gltf/traffic/car.glb"
+    }],
+    "ground": [{
+      "img": "/upload/gltf/ground/img/grass.png",
+      "model": "/upload/gltf/ground/grass.glb",
+      "scale": 20
+    },{
+      "img": "/upload/gltf/ground/img/fountain.png",
+      "model": "/upload/gltf/ground/fountain.glb",
+      "scale": 20
+    },{
+      "img": "/upload/gltf/ground/img/fountain2.png",
+      "model": "/upload/gltf/ground/fountain2.glb",
+      "scale": 3
+    },{
+      "img": "/upload/gltf/ground/img/fountain3.png",
+      "model": "/upload/gltf/ground/fountain3.glb"
+    },{
+      "img": "/upload/gltf/ground/img/road.png",
+      "model": "/upload/gltf/ground/road.glb",
+      "scale": 0.1
+    },{
+      "img": "/upload/gltf/ground/img/bench.png",
+      "model": "/upload/gltf/ground/bench.glb",
+      "scale": 6
+    },{
+      "img": "/upload/gltf/ground/img/trash.png",
+      "model": "/upload/gltf/ground/trash.glb",
+      "scale": 0.5
+    }],
+    "lamp": [{
+      "img": "/upload/gltf/lamp/img/lamp.png",
+      "model": "/upload/gltf/lamp/lamp.glb"
+    }],
+    "billboard": [{
+      "img": "/upload/gltf/billboard/img/stop.png",
+      "model": "/upload/gltf/billboard/stop.glb",
+      "scale": 10
+    },{
+      "img": "/upload/gltf/billboard/img/trafficLight.png",
+      "model": "/upload/gltf/billboard/trafficLight.glb",
+      "scale": 0.4
+    },{
+      "img": "/upload/gltf/billboard/img/trafficLight2.png",
+      "model": "/upload/gltf/billboard/trafficLight2.glb",
+      "scale": 0.4
+    }]
+  }
+}
