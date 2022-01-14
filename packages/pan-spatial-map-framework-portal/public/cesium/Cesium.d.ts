@@ -24459,6 +24459,13 @@ export class AlgorithmLib {
      */
     static polygonInterpolate(positions: Cartesian3[], step: number): Cartesian3[];
     /**
+     * 点是否在范围内(多边形)
+     * @param positions - 多边形坐标点序列
+     * @param point - 点
+     * @returns true在范围内，false不在范围内。
+     */
+    static pointIsInPolygon(positions: Cartographic[], point: Cartographic): boolean;
+    /**
      * 化简抽稀(用于折线路绘制)
      * @param positions - 坐标点序列
      * @returns 抽稀后的坐标点序列
@@ -24591,6 +24598,19 @@ export class AlgorithmLib {
      * @returns 经纬度数组
      */
     static Cartesian3ArrayToDegrees(positions: Cartesian3[], result?: number[]): number[];
+    /**
+     * 通过两点确定一个正方形
+     *
+     *  顶点顺序为：
+     *   0---3
+     *   | \ |
+     *   1---2
+     * @param p1 - 起始点, 值类型为世界坐标
+     * @param p2 - 结束点, 值类型为世界坐标
+     * @param result - 返回值
+     * @returns result 正方形四个顶点, 值类型为世界坐标
+     */
+    static GetSquarePointsByLine(p1: Cartesian3, p2: Cartesian3, result: any[]): Cartesian3[];
 }
 
 /**
@@ -25354,6 +25374,10 @@ export class Graphic {
      */
     getDistances(): number[];
     /**
+     * 从图层中移除图元
+     */
+    remove(): void;
+    /**
      * 图元类型
      * @property [point = 'point'] - 点，类型（type）为point时样式参数参照{@link Style.PointStyle}
      * @property [label = 'label'] - 文本,类型（type）为label时样式参数参照{@link Style.LabelStyle}
@@ -26043,7 +26067,7 @@ export class G3DLayer {
      * @returns 返回 单体化对象数组,需要接口层添加到场景中
      */
     Monomerization(options: {
-        layerIndex: number;
+        layerIndex: string;
         position: Cartesian3;
         tolerance: number;
     }): any;
@@ -26252,6 +26276,16 @@ export class GraphicsLayer {
      * @returns json格式的字符串。
      */
     exportToJson(): string;
+    /**
+     * 计算当前图形的外包围球
+     * @returns 外包围球。
+     */
+    caluateBoundingSphere(): BoundingSphere;
+    /**
+     * 跳转到该图层
+     * @param options - 跳转参数，参见{@link Camera#flyToBoundingSphere}
+     */
+    flyTo(options: any): void;
     /**
      * 加载json文件
      * @param json - json格式的字符串。
@@ -27053,14 +27087,6 @@ export class MapGISM3D {
      * Returns <code>undefined</code> if <code>extras</code> does not exist.
      */
     readonly extras: any;
-    /**
-     * 强制节点不可见
-     */
-    forceInvisible: boolean;
-    /**
-     * 节点颜色
-     */
-    nodeColor: Color;
     /**
      * Get the Multimodal tile.
      */
@@ -27956,6 +27982,12 @@ export class MapGISM3DSet {
      * 重置被修改过的节点颜色
      */
     reset(): void;
+    /**
+     * 模型压平
+     * @param positionArray - 压平区域多边形顶点坐标数组，封闭多边形
+     * @param flattenHeight - 压平到指定高度，绝对海拔高度，单位米
+     */
+    modelFlatten(positionArray: any[], flattenHeight: number): void;
 }
 
 export namespace MapGISM3DSet {
@@ -30064,27 +30096,6 @@ export class EditTool {
      */
     mouseMoveEvent(): void;
     /**
-     * 平移旋转图元
-     * @param [options.heading = 0.0] - 偏航角，弧度。
-     * @param [options.pitch = 0.0] - 俯仰角，弧度。
-     * @param [options.roll = 0.0] - 翻滚角，弧度。
-     * @param [options.transformX = 0.0] - 局部坐标系X方向平移量，单位米，X方向为纬线方向
-     * @param [options.transformY = 0.0] - 局部坐标系Y方向平移量，单位米，Y方向为经线方向
-     * @param [options.transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
-     */
-    static TransformAndRotationGraphic(graphic: Graphic, options: {
-        heading?: number;
-        pitch?: number;
-        roll?: number;
-        transformX?: number;
-        transformY?: number;
-        transformZ?: number;
-    }): void;
-    /**
-     * 平移旋转图元(通过矩阵)
-     */
-    static GraphicByMatrix(graphic: Graphic, Matrix: Matrix4): void;
-    /**
      * 激活编辑工具
      */
     active(): void;
@@ -30108,6 +30119,32 @@ export class EditTool {
      * 销毁编辑工具,清除编辑点
      */
     destroy(): void;
+}
+
+/**
+ * 绘制工具
+ * @param graphicsLayer - 编辑的图层对象
+ * @param [options.isContinued = true] - 是否连续绘制
+ */
+export class SelectTool {
+    constructor(viewer: Viewer, graphicsLayer: any, options: {
+        isContinued?: boolean;
+    });
+    /**
+     * 矩形拉框查询
+     * @param [options.getSelectedGraphic] - 选择结果回调函数
+     */
+    selectByRectangle(options: {
+        getSelectedGraphic?: (...params: any[]) => any;
+    }): void;
+    /**
+     * 画圆查询
+     */
+    selectByCircle(options: any): void;
+    /**
+     * 移除所有鼠标事件，停止绘制
+     */
+    stopDrawing(): void;
 }
 
 /**
@@ -50375,8 +50412,6 @@ declare module "cesium/Source/MapGIS/Provider/TiandituImageryProvider" { import 
 declare module "cesium/Source/MapGIS/Tools/AnimationTool" { import { AnimationTool } from 'cesium'; export default AnimationTool; }
 declare module "cesium/Source/MapGIS/Tools/CuttingTool" { import { CuttingTool } from 'cesium'; export default CuttingTool; }
 declare module "cesium/Source/MapGIS/Tools/DrawElement" { import { DrawElement } from 'cesium'; export default DrawElement; }
-declare module "cesium/Source/MapGIS/Tools/DrawTool" { import { DrawTool } from 'cesium'; export default DrawTool; }
-declare module "cesium/Source/MapGIS/Tools/EditTool" { import { EditTool } from 'cesium'; export default EditTool; }
 declare module "cesium/Source/MapGIS/Tools/MeasureAreaTool" { import { MeasureAreaTool } from 'cesium'; export default MeasureAreaTool; }
 declare module "cesium/Source/MapGIS/Tools/MeasureLengthTool" { import { MeasureLengthTool } from 'cesium'; export default MeasureLengthTool; }
 declare module "cesium/Source/MapGIS/Tools/MeasureSlopeTool" { import { MeasureSlopeTool } from 'cesium'; export default MeasureSlopeTool; }
@@ -50423,6 +50458,9 @@ declare module "cesium/Source/Widgets/Viewer/viewerDragDropMixin" { import { vie
 declare module "cesium/Source/Widgets/Viewer/viewerPerformanceWatchdogMixin" { import { viewerPerformanceWatchdogMixin } from 'cesium'; export default viewerPerformanceWatchdogMixin; }
 declare module "cesium/Source/Widgets/VRButton/VRButton" { import { VRButton } from 'cesium'; export default VRButton; }
 declare module "cesium/Source/Widgets/VRButton/VRButtonViewModel" { import { VRButtonViewModel } from 'cesium'; export default VRButtonViewModel; }
+declare module "cesium/Source/MapGIS/Tools/GraphciTool/DrawTool" { import { DrawTool } from 'cesium'; export default DrawTool; }
+declare module "cesium/Source/MapGIS/Tools/GraphciTool/EditTool" { import { EditTool } from 'cesium'; export default EditTool; }
+declare module "cesium/Source/MapGIS/Tools/GraphciTool/SelectTool" { import { SelectTool } from 'cesium'; export default SelectTool; }
 declare module "cesium/Source/MapGIS/Tools/ModelEditor/ModelEditor" { import { ModelEditor } from 'cesium'; export default ModelEditor; }
 declare module "cesium/Source/MapGIS/Tools/Navigation/CesiumNavigation" { import { CesiumNavigation } from 'cesium'; export default CesiumNavigation; }
 declare module "cesium/Source/MapGIS/Tools/Navigation/NavigationControl" { import { NavigationControl } from 'cesium'; export default NavigationControl; }
