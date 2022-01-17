@@ -89,17 +89,6 @@ const reqCommon = {
   onFulfilled(config, options) {
     const { message } = options
     const { url, xsrfCookieName } = config
-    if (Object.prototype.toString.call(url) === '[object Object]') {
-      if (
-        url.url.indexOf('login') === -1 &&
-        xsrfCookieName &&
-        !Cookie.get(xsrfCookieName)
-      ) {
-        // message.warning('认证 token 已过期，请重新登录')
-      }
-      config.url = `${process.env.VUE_APP_API_BASE_URL}${url.url}`
-      return config
-    }
     if (
       url.indexOf('login') === -1 &&
       xsrfCookieName &&
