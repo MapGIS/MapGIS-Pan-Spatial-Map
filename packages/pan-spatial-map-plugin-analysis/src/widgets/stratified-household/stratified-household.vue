@@ -74,8 +74,6 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
         const { id, type, title } = layer
         // if (layer.loadStatus === LoadStatus.loaded) {
         if (type === LayerType.IGSScene) {
-          console.log('layer', layer)
-
           // if (layer.activeScene) {
           let isHousehold
           if (layer.title.indexOf('G3D') >= 0) {
