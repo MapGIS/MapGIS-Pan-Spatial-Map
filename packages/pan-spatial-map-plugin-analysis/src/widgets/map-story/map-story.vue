@@ -78,7 +78,7 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
 
   private width = 263
 
-  private height = 833
+  private height = 0
 
   private previewHeight = 770
 
@@ -98,7 +98,10 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
 
   private storyDataSource = {}
 
-  mounted() {}
+  mounted() {
+    const canvas = document.getElementsByClassName('mapboxgl-canvas');
+    this.height = canvas[0].offsetHeight - 57;
+  }
 
   onOpen() {
     this.showMapStory = true;
