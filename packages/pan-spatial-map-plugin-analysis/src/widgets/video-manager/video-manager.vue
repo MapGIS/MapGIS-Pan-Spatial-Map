@@ -144,7 +144,7 @@ export default class MpVideoManager extends Mixins(WidgetMixin) {
     const config = { videoOverlayLayerList: [...this.videoOverlayLayerList] }
     api
       .saveWidgetConfig({
-        name: 'video',
+        name: 'video-manager',
         config: JSON.stringify(config)
       })
       .then(() => {
