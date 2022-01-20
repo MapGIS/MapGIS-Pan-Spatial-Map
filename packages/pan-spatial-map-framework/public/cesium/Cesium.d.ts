@@ -24550,6 +24550,15 @@ export class AlgorithmLib {
      */
     static getPointOntoLine(ellipsoid: Ellipsoid, pointA: Cartesian3, pointB: Cartesian3, pointP: Cartesian3, result: Cartesian3): Cartesian3;
     /**
+     * 计算三维场景中，直线外一点在直线上的投影点
+     * @param pointA - 直线上一点A，世界坐标
+     * @param pointB - 直线上一点B，世界坐标
+     * @param pointP - 直线外一点P，世界坐标
+     * @param result - 直线外一点，到直线的垂足点，世界坐标
+     * @returns result
+     */
+    static getPointOntoLineByWorldPosition(pointA: Cartesian3, pointB: Cartesian3, pointP: Cartesian3, result: Cartesian3): Cartesian3;
+    /**
      * 计算矩形范围内的随机点
      * @param west - 西向经度数
      * @param south - 南向纬度数
@@ -24610,7 +24619,21 @@ export class AlgorithmLib {
      * @param result - 返回值
      * @returns result 正方形四个顶点, 值类型为世界坐标
      */
-    static GetSquarePointsByLine(p1: Cartesian3, p2: Cartesian3, result: any[]): Cartesian3[];
+    static getSquarePointsByLine(p1: Cartesian3, p2: Cartesian3, result: any[]): Cartesian3[];
+    /**
+     * 根据两点，确定一个平行于视窗的矩形
+     *
+     *  顶点顺序为：
+     *   0---3
+     *   | \ |
+     *   1---2
+     * @param direct - 朝向,使用时一般用相机朝右的朝向
+     * @param p1 - 起始点，世界坐标
+     * @param p2 - 绘制结束点，世界坐标
+     * @param result - 返回值，矩形的4个顶点
+     * @returns result
+     */
+    static getRect3DPointsByLine(direct: Cartesian3, p1: Cartesian3, p2: Cartesian3, result: any[] | undefined): Cartesian3[];
 }
 
 /**
@@ -25381,17 +25404,18 @@ export class Graphic {
      * 图元类型
      * @property [point = 'point'] - 点，类型（type）为point时样式参数参照{@link Style.PointStyle}
      * @property [label = 'label'] - 文本,类型（type）为label时样式参数参照{@link Style.LabelStyle}
-     * @property [billboard = 'billboard'] - 广告牌，图标类型(type)为billboard时样式参数参照{@link Style.BillboardStyle}
-     * @property [polyline = 'polyline'] - 线，图标类型(type)为polyline时样式参数参照{@link Style.PolylineStyle}
-     * @property [polylineVolume = 'polylineVolume'] - 圆管线，图标类型(type)为polylineVolume时样式参数参照{@link Style.PolylineVolumeStyle}
-     * @property [polygon = 'polygon'] - 面（区），图标类型(type)为polygon时样式参数参照{@link Style.PolygonStyle}
-     * @property [rectangle = 'rectangle'] - 矩形，图标类型(type)为rectangle时样式参数参照{@link Style.RectangleStyle}
-     * @property [circle = 'circle'] - 圆，图标类型(type)为circle时样式参数参照{@link Style.CircleStyle}
-     * @property [corridor = 'corridor'] - 方管线，图标类型(type)为corridor时样式参数参照{@link Style.CorridorStyle}
-     * @property [cylinder = 'cylinder'] - 圆台（圆锥），图标类型(type)为cylinder时样式参数参照{@link Style.CylinderStyle}
-     * @property [ellipsoid = 'ellipsoid'] - 椭球，图标类型(type)为ellipsoid时样式参数参照{@link Style.EllipsoidStyle}
-     * @property [sphere = 'sphere'] - 圆球，图标类型(type)为sphere时样式参数参照{@link Style.SphereStyle}
-     * @property [wall = 'wall'] - 墙，图标类型(type)为wall时样式参数参照{@link Style.WallStyle}
+     * @property [billboard = 'billboard'] - 广告牌，类型(type)为billboard时样式参数参照{@link Style.BillboardStyle}
+     * @property [polyline = 'polyline'] - 线，类型(type)为polyline时样式参数参照{@link Style.PolylineStyle}
+     * @property [polylineVolume = 'polylineVolume'] - 圆管线，类型(type)为polylineVolume时样式参数参照{@link Style.PolylineVolumeStyle}
+     * @property [polygon = 'polygon'] - 面（区），类型(type)为polygon时样式参数参照{@link Style.PolygonStyle}
+     * @property [rectangle = 'rectangle'] - 矩形，类型(type)为rectangle时样式参数参照{@link Style.RectangleStyle}
+     * @property [square = 'square'] - 正方形，类型(type)square{@link Style.SquareStyle}
+     * @property [circle = 'circle'] - 圆，类型(type)为circle时样式参数参照{@link Style.CircleStyle}
+     * @property [corridor = 'corridor'] - 方管线，类型(type)为corridor时样式参数参照{@link Style.CorridorStyle}
+     * @property [cylinder = 'cylinder'] - 圆台（圆锥），类型(type)为cylinder时样式参数参照{@link Style.CylinderStyle}
+     * @property [ellipsoid = 'ellipsoid'] - 椭球，类型(type)为ellipsoid时样式参数参照{@link Style.EllipsoidStyle}
+     * @property [sphere = 'sphere'] - 圆球，类型(type)为sphere时样式参数参照{@link Style.SphereStyle}
+     * @property [wall = 'wall'] - 墙，类型(type)为wall时样式参数参照{@link Style.WallStyle}
      * @property [box = 'box'] - 盒子,类型（type）为box时样式参数参照{@link Style.BoxStyle}
      * @property [model = 'model'] - gltf模型,类型（type）为model时样式参数参照{@link Style.ModelStyle}
      */
@@ -25403,6 +25427,7 @@ export class Graphic {
         polylineVolume?: string;
         polygon?: string;
         rectangle?: string;
+        square?: string;
         circle?: string;
         corridor?: string;
         cylinder?: string;
@@ -25569,6 +25594,7 @@ export class Style {
      * @property [colorsPerVertex] - 是否开启线段颜色插值(贴地线无效),，true为按照顶点渐变，false为线段分段着色。
      * @property [translucent = true] - 是否半透明
      * @property [loop = false] - 是否闭环
+     * @property [isHermiteSpline = false] - 是否样条插值曲线
      * @property [options.classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [material] - 材质 材质类型参见{@link Material}
@@ -25582,6 +25608,7 @@ export class Style {
         colorsPerVertex?: boolean;
         translucent?: boolean;
         loop?: boolean;
+        isHermiteSpline?: boolean;
         materialType?: string;
         material?: Material;
         depthTest?: boolean;
@@ -25625,6 +25652,39 @@ export class Style {
      * @property [classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
      */
     static PolygonStyle: {
+        color?: string | Color;
+        stRotation?: number;
+        extrudedHeight?: number;
+        perPositionHeight?: boolean;
+        height?: number;
+        closeTop?: boolean;
+        closeBottom?: boolean;
+        arcType?: ArcType;
+        translucent?: boolean;
+        showOutline?: boolean;
+        materialType?: string;
+        material?: Material;
+        depthTest?: boolean;
+        classificationType?: number;
+    };
+    /**
+     * 正方形图元样式
+     * @property [color = Color.SKYBLUE.withAlpha(0.7)] - 颜色
+     * @property [stRotation = 0.0] - 多边形纹理顺时针旋转角度（弧度值）。
+     * @property [extrudedHeight] - 多边形体拉伸高度。为0时为区，不为0时为多边形体。
+     * @property [perPositionHeight = false] - 是否固定高度，为true时采用边界点的高度，为false时采用height高度。
+     * @property [height = 0.0] - 多边形体底面高度。当perPositionHeight为false时生效。
+     * @property [closeTop = true] - 多边形（体）顶部是否闭合。（当定义extrudedHeight拉伸高度后生效）
+     * @property [closeBottom = true] - 多边形体底部是否闭合。(当定义extrudedHeight拉伸高度后生效)
+     * @property [arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
+     * @property [translucent = false] - 是否半透明
+     * @property [showOutline = false] - 是否显示外边框
+     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
+     * @property [material] - 材质 材质类型参见{@link Material}
+     * @property [depthTest] - 是否启用图元深度检测，设置成false为防止被地形遮挡，不贴地二维图形默认关闭，三维图形默认开启。
+     * @property [classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
+     */
+    static SquareStyle: {
         color?: string | Color;
         stRotation?: number;
         extrudedHeight?: number;
@@ -25949,185 +26009,6 @@ export class Style {
 }
 
 /**
- * G3D 服务图层
- * @param scene - 场景对象
- * @param options - 可选参数
- */
-export class G3DLayer {
-    constructor(scene: Scene, options: any);
-    /**
-     * 版本信息
-     */
-    readonly version: string;
-    /**
-     * G3D服务名
-     */
-    readonly name: string;
-    /**
-     * G3D 服务 ip 地址
-     */
-    readonly ip: string;
-    /**
-     * G3D 服务端口号
-     */
-    readonly port: number;
-    /**
-     * G3D 可视属性
-     */
-    show: boolean;
-    /**
-     * G3D 透明属性
-     */
-    translucency: number;
-    /**
-     * 获取 G3DLayer 中的单个图层对象
-     * @param layerIndex - 在G3D服务中的图层序号
-     * @returns 获取 图层对象
-     */
-    getLayer(layerIndex: string): MapGISM3DSet | MapGISTerrainProvider | MapGISVectorLayer;
-    /**
-     * 获取g3d图层中的全部索引
-     * @returns 索引数组
-     */
-    getAllLayerIndexes(): string[];
-    /**
-     * 获取m3d图层中的全部索引
-     * @returns 索引数组
-     */
-    getM3DLayerIndexes(): string[];
-    /**
-     * 获取地形图层中的全部索引
-     * @returns 索引数组
-     */
-    getTerrainLayerIndexes(): string[];
-    /**
-     * 获取矢量图层中的全部索引
-     * @returns 索引数组
-     */
-    getVectorLayerIndexes(): string[];
-    /**
-     * 获取b标注图层中的全部索引
-     * @returns 索引数组
-     */
-    getLabelLayerIndexes(): string[];
-    /**
-     * 获取全部 Layers
-     */
-    getAllLayers(): (MapGISM3DSet | MapGISTerrainProvider)[];
-    /**
-     * 获取全部 M3DLayers
-     * @returns 返回 G3DLayer 中的所有 M3D 图层
-     */
-    getM3DLayers(): MapGISM3DSet[];
-    /**
-     * 获取全部 TerrainLayers
-     * @returns 返回 G3DLayer 中的所有 地形 图层
-     */
-    getTerrainLayers(): TerrainProvider[];
-    /**
-     * 获取全部 VectorLayers
-     * @returns 返回 G3DLayer 中的所有 矢量 图层
-     */
-    getVectorLayers(): MapGISVectorLayer[];
-    /**
-     * 获取全部 LabelLayers
-     * @returns 返回 G3DLayer 中的所有 矢量 图层
-     */
-    getLabelLayers(): MapGISLabelLayer[];
-    /**
-     * 按照 layerIndex 数组获取，对应的  图层集合
-     * @param layerIndexes - layerIndex 数组
-     * @returns 获取  图层集
-     */
-    getLayersByIndexes(layerIndexes: number[]): (MapGISM3DSet | MapGISTerrainProvider)[];
-    /**
-     * 模型单体化,仅支持get方式查询
-     * @example
-     * var g3dLayer;
-     *         var clickHandler = viewer.screenSpaceEventHandler.getInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
-     *         viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement) {
-     *             g3dLayer = viewer.scene.layers.getLayer(layerIndex);
-     *             g3dLayer.Monomerization(
-     *                 function callback(result) {
-     *                     for(var i=0; i<result.length;i++){
-     *                         viewer.scene.primitives.add(result[i]);
-     *                     }
-     *                 },
-     *                 {
-     *                     position:new Cesium.Cartesian(121.1375,28.8576,21),
-     *                     tolerance:0.0001,
-     *                     layerIndex:modelIndex
-     *                 }
-     *             );
-     *         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-     * @param options - 查询参数
-     * @param options.layerIndex - 模型层索引号
-     * @param options.position - 单体化点位置
-     * @param options.tolerance - 查询单体化容差
-     * @returns 返回 单体化对象数组,需要接口层添加到场景中
-     */
-    Monomerization(options: {
-        layerIndex: string;
-        position: Cartesian3;
-        tolerance: number;
-    }): any;
-    /**
-     * 获取长度
-     * @returns 获取G3DLayer中的数组长度
-     */
-    getLength(): number;
-    /**
-     * 获取M3D图层长度
-     * @returns 获取M3D中的数组长度
-     */
-    getM3DLayersLength(): number;
-    /**
-     * @param layerIndex - 在G3D服务中的图层序号
-     * @returns 获取对应的图层名
-     */
-    getLayerName(layerIndex: string): string;
-    /**
-     * 获取G3DLayer中图层名数组的长度
-     * @returns 获取G3DLayer中图层名数组的长度
-     */
-    getLayerNamesLength(): number;
-    /**
-     * 保存图层信息
-     * @param layerIndex - 图层索引
-     * @param info - 图层信息
-     */
-    addLayerInfo(layerIndex: string, info: any): void;
-    /**
-     * 根据图层索引号获取服务中的图层信息
-     * @returns 返回服务中的图层信息
-     */
-    getLayerInfo(layerIndex: string): any;
-    /**
-     * 控制指定序号的图层进行显示或隐藏
-     */
-    showByLayerIndex(layerIndex: string, isVisible: boolean): void;
-    /**
-     * 按照图层序号数组进行控制是否可见
-     * @param layerIndexes - 图层序号数组
-     */
-    showByLayerIndexes(layerIndexes: number[], isVisible: boolean): void;
-    /**
-     * 控制指定序号图层的透明度
-     */
-    translucencyByLayerIndex(layerIndex: number, translucency: number): void;
-    /**
-     * 按照图层序号数组进行控制透明度
-     * @param layerIndexes - 图层序号数组
-     */
-    translucencyByLayerIndexes(layerIndexes: number[], translucency: number): void;
-    /**
-     * 清理当前 G3DLayer 图层
-     * @param [destroy = true] - 是否销毁内存
-     */
-    remove(destroy?: boolean): void;
-}
-
-/**
  * 标绘管理图层
  * @example
  * var graphicsLayer = new Cesium.GraphicsLayer(viewer);
@@ -26425,7 +26306,7 @@ export class TransactionImplement {
  *             // layerIndex=indexs;
  *         }
  *     };
- *     viewer.scene.layers.appendG3DLayer(url, options);
+ *     viewer.scene.layers.appendSceneLayer(url, options);
  * @param labelUrl - 请求到的注记信息
  * @param scene - 场景对象
  * @param options - Object with the following properties:
@@ -26455,7 +26336,7 @@ export class MapGISLabelLayer {
      *                 pixelOffset:new Cesium.Cartesian2(0, -9)});
      *         }
      *     };
-     *     viewer.scene.layers.appendG3DLayer(url, options);
+     *     viewer.scene.layers.appendSceneLayer(url, options);
      * @param lat - 经度
      * @param lon - 纬度
      * @param height - 高程
@@ -26529,9 +26410,9 @@ export class Layers {
      */
     readonly m3dLayersMap: HashMap;
     /**
-     * G3DLayer 图层管理器
+     * SceneLayer 图层管理器
      */
-    readonly g3dLayerMap: HashMap;
+    readonly sceneLayerMap: HashMap;
     /**
      * 影像图层管理容器
      */
@@ -26622,14 +26503,14 @@ export class Layers {
     /**
      * 添加 G3D 服务数据
      * @example
-     * viewer.scene.layers.appendG3DLayer('http://192.168.90.102:6163/igs/rest/g3d/1218示例', {
+     * viewer.scene.layers.appendSceneLayer('http://192.168.90.102:6163/igs/rest/g3d/1218示例', {
      *      autoReset:false,
      *      synchronous:true,
      *      layers: 'show:0',
      *      loaded:callBackfunction
      *  });
      *
-     *  viewer.scene.layers.appendG3DLayer('http://192.168.90.102:6163/igs/rest/g3d/1218示例', {
+     *  viewer.scene.layers.appendSceneLayer('http://192.168.90.102:6163/igs/rest/g3d/1218示例', {
      *      autoReset:false,
      *      synchronous:true,
      *      layers: 'hide:0',
@@ -26650,7 +26531,7 @@ export class Layers {
      * @param [options.requestVertexNormals = false] - 是否请求法向（地形）
      * @param [options.proxy] - 代理
      */
-    appendG3DLayer(url: string, options: {
+    appendSceneLayer(url: string, options: {
         autoReset?: boolean;
         synchronous?: boolean;
         loaded?: (...params: any[]) => any;
@@ -26667,34 +26548,34 @@ export class Layers {
         proxy?: DefaultProxy;
     }): void;
     /**
-     * 按索引号获取 G3DLayer 图层
+     * 按索引号获取 SceneLayer 图层
      * @param layerIndex - 图层索引号
-     * @returns 返回 G3DLayer 图层
+     * @returns 返回 SceneLayer 图层
      */
-    getG3DLayer(layerIndex: number): G3DLayer;
+    getSceneLayer(layerIndex: number): SceneLayer;
     /**
-     * 获取全部 G3DLayer 图层
-     * @returns 获取全部 G3DLayer 图层
+     * 获取全部 SceneLayer 图层
+     * @returns 获取全部 SceneLayer 图层
      */
-    getAllG3DLayers(): G3DLayer[];
+    getAllSceneLayers(): SceneLayer[];
     /**
-     * 按索引号移除 G3DLayer 图层
+     * 按索引号移除 SceneLayer 图层
      * @param layerIndex - 图层序号
      * @param destroy - 是否销毁内存
      */
-    removeG3DLayerByID(layerIndex: number, destroy: boolean): void;
+    removeSceneLayerByID(layerIndex: number, destroy: boolean): void;
     /**
-     * 移除全部 G3DLayer 图层
+     * 移除全部 SceneLayer 图层
      * @param destroy - 是否清理内存
      */
-    removeAllG3DLayers(destroy: boolean): void;
+    removeAllSceneLayers(destroy: boolean): void;
     /**
      * 图层跳转
      * @param layer - G3D 图层对象
      * @param [options.duration = 0] - 跳转时间，以秒为单位
      * @param [options.orientation = new HeadingPitchRange(0.0, -0.5, boundingSphere.radius * 2.5)] - 镜头朝向
      */
-    zoomToG3DLayer(layer: G3DLayer, options: {
+    zoomToSceneLayer(layer: SceneLayer, options: {
         duration?: number;
         orientation?: HeadingPitchRange;
     }): void;
@@ -26944,7 +26825,7 @@ export class Layers {
      * @param [options.getDocLayerIndexes = function] - 回调函数，用于获取文档中的所有图层对象
      * @param [options.autoReset = true] - 视角是否自动切换到地图文档范围或第一个gdbp图层范围
      * @param [options.loadAll = false] - 是否加载所有数据，默认以矢量瓦片形式动态加载
-     * @param [options.setViewToExisting = false] - 视角是否定位到现存要素的范围，仅当loadAll=true时有效
+     * @param [options.setViewToExisting = false] - 视角是否定位到现存要素的范围，仅当loadAll=true时有效，适用于旧版igs服务
      * @param [options.layers] - 图层id，即要加载哪些图层，分为地图文档加载（layer为0,1,2...）和gdbp地址加载（layer为gdbp1,gdbp2,...），分别对应两种url参数，地图文档加载示例：layers=show:0,1 表示只显示 layerIndex 为 0, 1 的图层，layers=hide:0,1 表示只隐藏 layerIndex 为 0, 1 的图层
      * @param [options.idField = FID] - id字段名
      * @param [options.tileFeaturesCount = 400] - 请求的瓦片矢量要素数量
@@ -27016,7 +26897,7 @@ export class Layers {
      * @param index - 图层索引号
      * @returns 返回图层对象
      */
-    getLayer(index: number): MapGISM3DSet | G3DLayer | Cesium3DTileset | ImageryLayer | TerrainProvider | MapGISVectorLayer;
+    getLayer(index: number): MapGISM3DSet | SceneLayer | Cesium3DTileset | ImageryLayer | TerrainProvider | MapGISVectorLayer;
     /**
      * 按图层索引号删除图层
      * @param index - 图层索引
@@ -29532,6 +29413,185 @@ export class ReImg {
 }
 
 /**
+ * G3D 服务图层
+ * @param scene - 场景对象
+ * @param options - 可选参数
+ */
+export class SceneLayer {
+    constructor(scene: Scene, options: any);
+    /**
+     * 版本信息
+     */
+    readonly version: string;
+    /**
+     * G3D服务名
+     */
+    readonly name: string;
+    /**
+     * G3D 服务 ip 地址
+     */
+    readonly ip: string;
+    /**
+     * G3D 服务端口号
+     */
+    readonly port: number;
+    /**
+     * G3D 可视属性
+     */
+    show: boolean;
+    /**
+     * G3D 透明属性
+     */
+    translucency: number;
+    /**
+     * 获取 SceneLayer 中的单个图层对象
+     * @param layerIndex - 在G3D服务中的图层序号
+     * @returns 获取 图层对象
+     */
+    getLayer(layerIndex: string): MapGISM3DSet | MapGISTerrainProvider | MapGISVectorLayer;
+    /**
+     * 获取g3d图层中的全部索引
+     * @returns 索引数组
+     */
+    getAllLayerIndexes(): string[];
+    /**
+     * 获取m3d图层中的全部索引
+     * @returns 索引数组
+     */
+    getM3DLayerIndexes(): string[];
+    /**
+     * 获取地形图层中的全部索引
+     * @returns 索引数组
+     */
+    getTerrainLayerIndexes(): string[];
+    /**
+     * 获取矢量图层中的全部索引
+     * @returns 索引数组
+     */
+    getVectorLayerIndexes(): string[];
+    /**
+     * 获取b标注图层中的全部索引
+     * @returns 索引数组
+     */
+    getLabelLayerIndexes(): string[];
+    /**
+     * 获取全部 Layers
+     */
+    getAllLayers(): (MapGISM3DSet | MapGISTerrainProvider)[];
+    /**
+     * 获取全部 M3DLayers
+     * @returns 返回 SceneLayer 中的所有 M3D 图层
+     */
+    getM3DLayers(): MapGISM3DSet[];
+    /**
+     * 获取全部 TerrainLayers
+     * @returns 返回 SceneLayer 中的所有 地形 图层
+     */
+    getTerrainLayers(): TerrainProvider[];
+    /**
+     * 获取全部 VectorLayers
+     * @returns 返回 SceneLayer 中的所有 矢量 图层
+     */
+    getVectorLayers(): MapGISVectorLayer[];
+    /**
+     * 获取全部 LabelLayers
+     * @returns 返回 SceneLayer 中的所有 矢量 图层
+     */
+    getLabelLayers(): MapGISLabelLayer[];
+    /**
+     * 按照 layerIndex 数组获取，对应的  图层集合
+     * @param layerIndexes - layerIndex 数组
+     * @returns 获取  图层集
+     */
+    getLayersByIndexes(layerIndexes: number[]): (MapGISM3DSet | MapGISTerrainProvider)[];
+    /**
+     * 模型单体化,仅支持get方式查询
+     * @example
+     * var sceneLayer;
+     *         var clickHandler = viewer.screenSpaceEventHandler.getInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
+     *         viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement) {
+     *             sceneLayer = viewer.scene.layers.getLayer(layerIndex);
+     *             sceneLayer.Monomerization(
+     *                 function callback(result) {
+     *                     for(var i=0; i<result.length;i++){
+     *                         viewer.scene.primitives.add(result[i]);
+     *                     }
+     *                 },
+     *                 {
+     *                     position:new Cesium.Cartesian(121.1375,28.8576,21),
+     *                     tolerance:0.0001,
+     *                     layerIndex:modelIndex
+     *                 }
+     *             );
+     *         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+     * @param options - 查询参数
+     * @param options.layerIndex - 模型层索引号
+     * @param options.position - 单体化点位置
+     * @param options.tolerance - 查询单体化容差
+     * @returns 返回 单体化对象数组,需要接口层添加到场景中
+     */
+    Monomerization(options: {
+        layerIndex: string;
+        position: Cartesian3;
+        tolerance: number;
+    }): any;
+    /**
+     * 获取长度
+     * @returns 获取SceneLayer中的数组长度
+     */
+    getLength(): number;
+    /**
+     * 获取M3D图层长度
+     * @returns 获取M3D中的数组长度
+     */
+    getM3DLayersLength(): number;
+    /**
+     * @param layerIndex - 在G3D服务中的图层序号
+     * @returns 获取对应的图层名
+     */
+    getLayerName(layerIndex: string): string;
+    /**
+     * 获取SceneLayer中图层名数组的长度
+     * @returns 获取SceneLayer中图层名数组的长度
+     */
+    getLayerNamesLength(): number;
+    /**
+     * 保存图层信息
+     * @param layerIndex - 图层索引
+     * @param info - 图层信息
+     */
+    addLayerInfo(layerIndex: string, info: any): void;
+    /**
+     * 根据图层索引号获取服务中的图层信息
+     * @returns 返回服务中的图层信息
+     */
+    getLayerInfo(layerIndex: string): any;
+    /**
+     * 控制指定序号的图层进行显示或隐藏
+     */
+    showByLayerIndex(layerIndex: string, isVisible: boolean): void;
+    /**
+     * 按照图层序号数组进行控制是否可见
+     * @param layerIndexes - 图层序号数组
+     */
+    showByLayerIndexes(layerIndexes: number[], isVisible: boolean): void;
+    /**
+     * 控制指定序号图层的透明度
+     */
+    translucencyByLayerIndex(layerIndex: number, translucency: number): void;
+    /**
+     * 按照图层序号数组进行控制透明度
+     * @param layerIndexes - 图层序号数组
+     */
+    translucencyByLayerIndexes(layerIndexes: number[], translucency: number): void;
+    /**
+     * 清理当前 SceneLayer 图层
+     * @param [destroy = true] - 是否销毁内存
+     */
+    remove(destroy?: boolean): void;
+}
+
+/**
  * 专题图
  * @param viewer - 视图对象
  * @param options - 附加参数
@@ -30416,6 +30476,11 @@ export class ModelExplosion {
      * @param layers - 图层数组
      */
     removeModelExplosion(layers: any[]): void;
+    /**
+     * 将mapgism3d的modelExplosion属性修改为false，确保不对其他功能造成性能影响
+     * @param layers - 图层数组
+     */
+    recover(layers: any[]): void;
 }
 
 /**
@@ -30676,6 +30741,210 @@ export class TriangulationTool {
      * @param endPoint - 终止点
      */
     calculateByTwoPoints(startPoint: any, endPoint: any): void;
+}
+
+/**
+ * MapGIS矢量地图文档
+ * @example
+ * // options.extensions 参数为自定义扩展参数，需要确保服务端支持此类参数生效
+ *        var options = {
+ *                          extensions: [   { key: 'token', value: 'tokentokentokentoken' },
+ *                                          { key: 'filters', value: '1:ID>4,3:ID>1'}
+ *                                      ]
+ *                      };
+ *
+ *        var mapGisVectorLayer = webGlobe.appendMapGISVectorLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量', {
+ *            tileFeaturesCount: 400
+ *        });
+ * @param options - 包含以下属性
+ * @param options.url - 服务地址 默认为二维地图文档 eg:http://localhost:6163/igs/rest/mrms/docs/二维矢量 三维地图文档eg:http://localhost:6163/igs/rest/g3d/三维矢量
+ * @param [options.is3d = false] - 是否为三维地图文档
+ * @param [options.loadAll = flase] - 是否加载该图层所有数据，默认以矢量瓦片形式动态加载
+ * @param [options.maxCount = 100000] - 该图层的矢量最大数量
+ * @param [options.idField = FID] - id字段名
+ * @param [options.tileFeaturesCount = 400] - 请求的瓦片矢量要素数量
+ * @param [options.filter] - 图层过滤条件，具体参数参考MapGISVectorLayer.queryFeatures注释
+ * @param [options.useSystemLib = false] - 是否使用MapGIS桌面端符号系统库
+ * @param [options.systemLib = 'MapGIS 10'] - 符号系统库guid或名称,默认库为'MapGIS 10'
+ * @param [options.clampToGround = false] - 是否贴地，当加载三维地图文档或矢量白模时该属性无效
+ * @param [options.style] - 矢量地图文档的全局style样式对象,或分图层style样式对象数组，样式顺序与图层顺序一致，空对象则使用默认样式
+ * @param [options.style.type] - style样式类型，可选参数为"point|line|polygon|building"，对应点，线，区，区矢量白模
+ * @param [options.style.styleOptions] - style具体参数对象
+ * @param [options.style.styleOptions.color = Cesium.Color.GHOSTWHITE] - 通用参数，颜色
+ * @param [options.style.styleOptions.size] - 点符号大小，仅当options.style.type=point时生效
+ * @param [options.style.styleOptions.outline = false] - 是否启用边框线，仅当options.style.type=point|polygon时生效
+ * @param [options.style.styleOptions.outlineColor] - 边框线颜色，仅当options.style.type=point|polygon|building时生效
+ * @param [options.style.styleOptions.outlineWidth] - 边框线宽度，仅当options.style.type=point|polygon|building时生效
+ * @param [options.style.styleOptions.width] - 线宽，仅当options.style.type=line时生效
+ * @param [options.style.styleOptions.heightField] - 用作区矢量白模高程的属性字段名称，不设置则高程为零，仅当options.style.type=building|cityGrow时生效
+ * @param [options.style.styleOptions.heightRatio] - 区矢量白模高程放缩比例，默认1.0，仅当options.style.type=building|cityGrow时生效
+ * @param [options.style.styleOptions.startTimeField] - 数据的建筑开始时间字段名，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.endTimeField] - 数据的拆除时间字段名，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.displayWithTile = false] - Line|Tile 根据时间线性加载或瓦片动态加载，适用不同的数据量展示,默认为线性加载，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.cityGrowSpeed = 0.5] - 城市生长速度，取值范围 0 ~ 1，速度为0不加载，速度为1时加载全部数据，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.buildingsGrowTime = 10] - 建筑建设时长，默认值为10秒，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.updateInerval = 1] - 更新间隔，默认每秒执行一次更新，间隔越短所需计算量越大，默认值为1秒，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.startTime] - 起始时间，未指定则自动请求，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.endTime] - 结束时间，未指定则自动请求，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.timeAsc = true] - 时间是否为升序，即升序排列第一个为城市建设开始时间，用于未指定起止时间的数据请求，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.buildingsLimit = Number.MAX_VALUE] - 线性加载时每一时段的建筑数量限制，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.colors] - 建筑颜色数组,第一个为开始颜色，数组末为结束颜色，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.onReady] - 回调函数，城市生长准备完成时调用，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.onUpdate] - 时间回调函数，仅当options.style.type=cityGrow时生效
+ * @param [options.tileWidth = 256] - 瓦片宽度
+ * @param [options.tileHeight = 256] - 瓦片高度
+ * @param [options.minimumLevel = 0] - 瓦片最小级别
+ * @param [options.maximumLevel = 0] - 瓦片最大级别
+ * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
+ * @param [options.extensions] - 扩展参数，需要确保服务端支持
+ */
+export class MapGISVectorGeojsonProvider {
+    constructor(options: {
+        url: string;
+        is3d?: boolean;
+        loadAll?: boolean;
+        maxCount?: number;
+        idField?: string;
+        tileFeaturesCount?: number;
+        filter?: any;
+        useSystemLib?: boolean;
+        systemLib?: string;
+        clampToGround?: boolean;
+        style?: {
+            type?: string;
+            styleOptions?: {
+                color?: Color;
+                size?: number;
+                outline?: number;
+                outlineColor?: Color;
+                outlineWidth?: number;
+                width?: number;
+                heightField?: string;
+                heightRatio?: number;
+                startTimeField?: string;
+                endTimeField?: string;
+                displayWithTile?: string;
+                cityGrowSpeed?: number;
+                buildingsGrowTime?: number;
+                updateInerval?: number;
+                startTime?: number;
+                endTime?: number;
+                timeAsc?: boolean;
+                buildingsLimit?: number;
+                colors?: Color[];
+                onReady?: (...params: any[]) => any;
+                onUpdate?: (...params: any[]) => any;
+            };
+        };
+        tileWidth?: number;
+        tileHeight?: number;
+        minimumLevel?: number;
+        maximumLevel?: number;
+        tilingScheme?: any;
+        extensions?: any[];
+    });
+    /**
+     * 服务地址
+     */
+    readonly url: string;
+    /**
+     * 获取代理
+     */
+    readonly proxy: Proxy;
+    /**
+     * 瓦片宽度
+     */
+    readonly tileWidth: number;
+    /**
+     * 瓦片高度
+     */
+    readonly tileHeight: number;
+    /**
+     * 服务请求范围
+     */
+    readonly rectangle: Rectangle;
+    /**
+     * layers参数，用于过滤图层
+     */
+    readonly layers: string;
+    /**
+     * 请求瓦片
+     * @returns 瓦片的Resource对象
+     */
+    requestVector(imageryProvider: any, x: number, y: number, level: number, request: any): any;
+    /**
+     * 原始矢量数据条件查询
+     * @example
+     * var options1 = {
+     *            pageCount: 120,
+     *            where: 'mpArea>20',
+     *            orderField: mpArea,
+     *            isAsc: true
+     *        };
+     *
+     *        var idArray = [1,4,8,36,89];
+     *        var options2 = {
+     *            objectIds: idArray
+     *        };
+     *
+     *        //参照DrawElement对应绘图返回值
+     *        var p = Cartesian3.fromDegrees(120.9804, 31.3443, 0);
+     *        var point = {
+     *            position: p,
+     *            neardistance: 100
+     *        };
+     *        var circle = {
+     *            center: p,
+     *            radius: 1
+     *        };
+     *        var rect = new Cesium.Rectangle(west, south, east, north);
+     *        var polypositions = Cartesian3.fromDegreesArray([120.9804, 31.3443, 121.0682, 31.3604, 121.0682, 31.3443]);
+     *        var polyline = {
+     *            positions: polypositions,
+     *            neardistance: 100
+     *        };
+     *        var polygon = {
+     *            positions: polypositions
+     *        };
+     *        var optionsRect = {
+     *            geometryType: 'rect',
+     *            geometry:      rect
+     *        };
+     *
+     *        var mapGisVectorLayer = webGlobe.appendMapGISVectorLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量',options);
+     *        MapGISVectorLayer.queryFeatures(options1).then(function(data){
+     *            doSomething(data);
+     *        })
+     * @param options - 查询条件参数
+     * @param [options.mapIndex = 0] - 地图在文档下的序号
+     * @param [options.layerIdxs = '0'] - 图层序号，多图层间以“,”号分隔
+     * @param [options.pageCount = 20] - 要素结果集每页的记录数量
+     * @param [options.page = 0] - 返回的要素分页的页数
+     * @param [options.strusts = {IncludeAttribute:true,IncludeGeometry:true,IncludeWebGraphic:true}] - 返回的数据结构
+     * @param [options.orderField] - 排序字段名称，用于对输出结果进行排序
+     * @param [options.isAsc = false] - 按照字段进行排序时，是否升序排列
+     * @param [options.objectIds] - 需要查询的要素的OID值数组,当objectIds有值时，代表基于objectIds查询，Where、geometry、geometryType、orderField、isAsc等查询参数无效.
+     * @param [options.geometryType] - 几何类型，代表空间查询时传入的几何类型
+     * @param [options.geometry] - 几何类型对应的图形信息，也就是构成几何类型的坐标信息
+     * @param [options.where] - 要素过滤条件
+     * @param [options.rule] - 指定查询规则 {CompareRectOnly:true|false,EnableDisplayCondition:true|false,MustInside:true|false,Intersect:true|false}
+     * @param [options.extensions] - 扩展参数，需要确保服务端支持
+     */
+    queryVector(options: {
+        mapIndex?: number;
+        layerIdxs?: string;
+        pageCount?: number;
+        page?: number;
+        strusts?: any;
+        orderField?: string;
+        isAsc?: boolean;
+        objectIds?: any[];
+        geometryType?: string;
+        geometry?: any;
+        where?: string;
+        rule?: string;
+        extensions?: any[];
+    }): void;
 }
 
 /**
@@ -31226,6 +31495,10 @@ export class MapGISVectorLayer {
      */
     cityGrowSetTime(time: number, isPlayTime?: boolean): boolean;
     /**
+     * 城市生长倍速调整
+     */
+    setCityGrowPlayRate(): void;
+    /**
      * 城市生长线性展示更新
      */
     updateTimeLine(): void;
@@ -31277,6 +31550,9 @@ export class MapGISVectorLayer {
  * @param [options.style.styleOptions.timeAsc = true] - 时间是否为升序，即升序排列第一个为城市建设开始时间，用于未指定起止时间的数据请求，仅当options.style.type=cityGrow时生效
  * @param [options.style.styleOptions.buildingsLimit = Number.MAX_VALUE] - 线性加载时每一时段的建筑数量限制，仅当options.style.type=cityGrow时生效
  * @param [options.style.styleOptions.colors] - 建筑颜色数组,第一个为开始颜色，数组末为结束颜色，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.times] - 建筑时间数组,作为颜色数组的间隔，长度为颜色数组长度减一，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.updateColor = true] - 城市生长是否进行颜色演变，仅当options.style.type=cityGrow时生效
+ * @param [options.style.styleOptions.updateHeight = true] - 城市生长是否进行高度演变，仅当options.style.type=cityGrow时生效
  * @param [options.style.styleOptions.onReady] - 回调函数，城市生长准备完成时调用，仅当options.style.type=cityGrow时生效
  * @param [options.style.styleOptions.onUpdate] - 时间回调函数，仅当options.style.type=cityGrow时生效
  * @param [options.tileWidth = 256] - 瓦片宽度
@@ -31320,6 +31596,9 @@ export class MapGISVectorProvider {
                 timeAsc?: boolean;
                 buildingsLimit?: number;
                 colors?: Color[];
+                times?: number[];
+                updateColor?: boolean;
+                updateHeight?: boolean;
                 onReady?: (...params: any[]) => any;
                 onUpdate?: (...params: any[]) => any;
             };
@@ -40416,54 +40695,54 @@ export enum MapMode2D {
  * Base material types and their uniforms:
  * <div id='materialDescriptions'>
  * <ul>
- *  <li>Color</li>
+ *  <li>Color（颜色材质）</li>
  *  <ul>
- *      <li><code>color</code>:  rgba color object.</li>
+ *      <li><code>color</code>:  cesium颜色对象.</li>
  *  </ul>
- *  <li>Image</li>
+ *  <li>Image（图片贴图）</li>
  *  <ul>
- *      <li><code>image</code>:  path to image.</li>
- *      <li><code>repeat</code>:  Object with x and y values specifying the number of times to repeat the image.</li>
+ *      <li><code>image</code>:  图片路径.</li>
+ *      <li><code>repeat</code>:  x,y方向的重复次数.</li>
  *  </ul>
- *  <li>DiffuseMap</li>
+ *  <li>DiffuseMap（颜色贴图）</li>
  *  <ul>
- *      <li><code>image</code>:  path to image.</li>
- *      <li><code>channels</code>:  Three character string containing any combination of r, g, b, and a for selecting the desired image channels.</li>
- *      <li><code>repeat</code>:  Object with x and y values specifying the number of times to repeat the image.</li>
+ *      <li><code>image</code>:  图片路径.</li>
+ *      <li><code>channels</code>:  图像通道，包含r,g,b的字符串，表示使用图像的哪些颜色通道.</li>
+ *      <li><code>repeat</code>:  x,y方向的重复次数.</li>
  *  </ul>
- *  <li>AlphaMap</li>
+ *  <li>AlphaMap（透明贴图）</li>
  *  <ul>
- *      <li><code>image</code>:  path to image.</li>
- *      <li><code>channel</code>:  One character string containing r, g, b, or a for selecting the desired image channel. </li>
- *      <li><code>repeat</code>:  Object with x and y values specifying the number of times to repeat the image.</li>
+ *      <li><code>image</code>:  图片路径.</li>
+ *      <li><code>channel</code>:  图像通道，包含r,g,b的单个字符，表示使用图像的哪个颜色通道. </li>
+ *      <li><code>repeat</code>:  x,y方向的重复次数.</li>
  *  </ul>
- *  <li>SpecularMap</li>
+ *  <li>SpecularMap（高光贴图）</li>
  *  <ul>
- *      <li><code>image</code>: path to image.</li>
- *      <li><code>channel</code>: One character string containing r, g, b, or a for selecting the desired image channel. </li>
- *      <li><code>repeat</code>: Object with x and y values specifying the number of times to repeat the image.</li>
+ *      <li><code>image</code>: 图片路径.</li>
+ *      <li><code>channel</code>: 图像通道，包含r,g,b的单个字符，表示使用图像的哪个颜色通道. </li>
+ *      <li><code>repeat</code>: x,y方向的重复次数.</li>
  *  </ul>
- *  <li>EmissionMap</li>
+ *  <li>EmissionMap（放射光贴图）</li>
  *  <ul>
- *      <li><code>image</code>:  path to image.</li>
- *      <li><code>channels</code>:  Three character string containing any combination of r, g, b, and a for selecting the desired image channels. </li>
- *      <li><code>repeat</code>:  Object with x and y values specifying the number of times to repeat the image.</li>
+ *      <li><code>image</code>:  图片路径.</li>
+ *      <li><code>channels</code>:  图像通道，包含r,g,b的字符串，表示使用图像的哪些颜色通道. </li>
+ *      <li><code>repeat</code>:  x,y方向的重复次数.</li>
  *  </ul>
- *  <li>BumpMap</li>
+ *  <li>BumpMap（凹凸贴图）</li>
  *  <ul>
- *      <li><code>image</code>:  path to image.</li>
- *      <li><code>channel</code>:  One character string containing r, g, b, or a for selecting the desired image channel. </li>
- *      <li><code>repeat</code>:  Object with x and y values specifying the number of times to repeat the image.</li>
- *      <li><code>strength</code>:  Bump strength value between 0.0 and 1.0 where 0.0 is small bumps and 1.0 is large bumps.</li>
+ *      <li><code>image</code>:  图片路径.</li>
+ *      <li><code>channel</code>:  图像通道，包含r,g,b的单个字符，表示使用图像的哪个颜色通道. </li>
+ *      <li><code>repeat</code>:  x,y方向的重复次数.</li>
+ *      <li><code>strength</code>:  凹凸强度，0.0-1.0之间，0表示低强度，1表示高强度.</li>
  *  </ul>
- *  <li>NormalMap</li>
+ *  <li>NormalMap（法向贴图）</li>
  *  <ul>
- *      <li><code>image</code>:  path to image.</li>
- *      <li><code>channels</code>:  Three character string containing any combination of r, g, b, and a for selecting the desired image channels. </li>
- *      <li><code>repeat</code>:  Object with x and y values specifying the number of times to repeat the image.</li>
- *      <li><code>strength</code>:  Bump strength value between 0.0 and 1.0 where 0.0 is small bumps and 1.0 is large bumps.</li>
+ *      <li><code>image</code>:  图片路径.</li>
+ *      <li><code>channels</code>:  图像通道，包含r,g,b的字符串，表示使用图像的哪些颜色通道. </li>
+ *      <li><code>repeat</code>:  x,y方向的重复次数.</li>
+ *      <li><code>strength</code>:  凹凸强度，0.0-1.0之间，0表示低强度，1表示高强度.</li>
  *  </ul>
- *  <li>Grid</li>
+ *  <li>Grid（网格材质）</li>
  *  <ul>
  *      <li><code>color</code>:  rgba color object for the whole material.</li>
  *      <li><code>cellAlpha</code>: Alpha value for the cells between grid lines.  This will be combined with color.alpha.</li>
@@ -40471,7 +40750,7 @@ export enum MapMode2D {
  *      <li><code>lineThickness</code>:  Object with x and y values specifying the thickness of grid lines (in pixels where available).</li>
  *      <li><code>lineOffset</code>:  Object with x and y values specifying the offset of grid lines (range is 0 to 1).</li>
  *  </ul>
- *  <li>Stripe</li>
+ *  <li>Stripe（条纹材质）</li>
  *  <ul>
  *      <li><code>horizontal</code>:  Boolean that determines if the stripes are horizontal or vertical.</li>
  *      <li><code>evenColor</code>:  rgba color object for the stripe's first color.</li>
@@ -40479,19 +40758,19 @@ export enum MapMode2D {
  *      <li><code>offset</code>:  Number that controls at which point into the pattern to begin drawing; with 0.0 being the beginning of the even color, 1.0 the beginning of the odd color, 2.0 being the even color again, and any multiple or fractional values being in between.</li>
  *      <li><code>repeat</code>:  Number that controls the total number of stripes, half light and half dark.</li>
  *  </ul>
- *  <li>Checkerboard</li>
+ *  <li>Checkerboard（棋牌材质）</li>
  *  <ul>
  *      <li><code>lightColor</code>:  rgba color object for the checkerboard's light alternating color.</li>
  *      <li><code>darkColor</code>: rgba color object for the checkerboard's dark alternating color.</li>
  *      <li><code>repeat</code>:  Object with x and y values specifying the number of columns and rows respectively.</li>
  *  </ul>
- *  <li>Dot</li>
+ *  <li>Dot（点材质）</li>
  *  <ul>
  *      <li><code>lightColor</code>:  rgba color object for the dot color.</li>
  *      <li><code>darkColor</code>:  rgba color object for the background color.</li>
  *      <li><code>repeat</code>:  Object with x and y values specifying the number of columns and rows of dots respectively.</li>
  *  </ul>
- *  <li>Water</li>
+ *  <li>Water（水面材质）</li>
  *  <ul>
  *      <li><code>baseWaterColor</code>:  rgba color object base color of the water.</li>
  *      <li><code>blendColor</code>:  rgba color object used when blending from water to non-water areas.</li>
@@ -40502,13 +40781,13 @@ export enum MapMode2D {
  *      <li><code>amplitude</code>:  Number that controls the amplitude of water waves.</li>
  *      <li><code>specularIntensity</code>:  Number that controls the intensity of specular reflections.</li>
  *  </ul>
- *  <li>RimLighting</li>
+ *  <li>RimLighting（边缘光材质）</li>
  *  <ul>
  *      <li><code>color</code>:  diffuse color and alpha.</li>
  *      <li><code>rimColor</code>:  diffuse color and alpha of the rim.</li>
  *      <li><code>width</code>:  Number that determines the rim's width.</li>
  *  </ul>
- *  <li>Fade</li>
+ *  <li>Fade（渐隐材质）</li>
  *  <ul>
  *      <li><code>fadeInColor</code>: diffuse color and alpha at <code>time</code></li>
  *      <li><code>fadeOutColor</code>: diffuse color and alpha at <code>maximumDistance</code> from <code>time</code></li>
@@ -40517,7 +40796,7 @@ export enum MapMode2D {
  *      <li><code>fadeDirection</code>: Object with x and y values specifying if the fade should be in the x and y directions.</li>
  *      <li><code>time</code>: Object with x and y values between 0.0 and 1.0 of the <code>fadeInColor</code> position</li>
  *  </ul>
- *  <li>PolylineArrow</li>
+ *  <li>PolylineArrow（带箭头的线）</li>
  *  <ul>
  *      <li><code>color</code>: diffuse color and alpha.</li>
  *  </ul>
@@ -40528,39 +40807,39 @@ export enum MapMode2D {
  *      <li><code>dashLength</code>: Dash length in pixels.</li>
  *      <li><code>dashPattern</code>: The 16 bit stipple pattern for the line..</li>
  *  </ul>
- *  <li>PolylineGlow</li>
+ *  <li>PolylineGlow（发光线）</li>
  *  <ul>
  *      <li><code>color</code>: color and maximum alpha for the glow on the line.</li>
  *      <li><code>glowPower</code>: strength of the glow, as a percentage of the total line width (less than 1.0).</li>
  *      <li><code>taperPower</code>: strength of the tapering effect, as a percentage of the total line length.  If 1.0 or higher, no taper effect is used.</li>
  *  </ul>
- *  <li>PolylineOutline</li>
+ *  <li>PolylineOutline（外边线）</li>
  *  <ul>
  *      <li><code>color</code>: diffuse color and alpha for the interior of the line.</li>
  *      <li><code>outlineColor</code>: diffuse color and alpha for the outline.</li>
  *      <li><code>outlineWidth</code>: width of the outline in pixels.</li>
  *  </ul>
- *  <li>ElevationContour</li>
+ *  <li>ElevationContour（等高线材质）</li>
  *  <ul>
  *      <li><code>color</code>: color and alpha for the contour line.</li>
  *      <li><code>spacing</code>: spacing for contour lines in meters.</li>
  *      <li><code>width</code>: Number specifying the width of the grid lines in pixels.</li>
  *  </ul>
- *  <li>ElevationRamp</li>
+ *  <li>ElevationRamp（等值面材质）</li>
  *  <ul>
  *      <li><code>image</code>: color ramp image to use for coloring the terrain.</li>
  *      <li><code>minimumHeight</code>: minimum height for the ramp.</li>
  *      <li><code>maximumHeight</code>: maximum height for the ramp.</li>
  *  </ul>
- *  <li>SlopeRamp</li>
+ *  <li>SlopeRamp（坡度材质）</li>
  *  <ul>
  *      <li><code>image</code>: color ramp image to use for coloring the terrain by slope.</li>
  *  </ul>
- *  <li>AspectRamp</li>
+ *  <li>AspectRamp（坡向材质）</li>
  *  <ul>
  *      <li><code>image</code>: color ramp image to use for color the terrain by aspect.</li>
  *  </ul>
- *  <li>ElevationBand</li>
+ *  <li>ElevationBand（高程赋色）</li>
  *  <ul>
  *      <li><code>heights</code>: image of heights sorted from lowest to highest.</li>
  *      <li><code>colors</code>: image of colors at the corresponding heights.</li>
@@ -40780,12 +41059,10 @@ export class Material {
      */
     static readonly ElevationBandType: string;
     /**
-     * 王和安
      * Gets the name of the snow terrain material.
      */
     static readonly SnowMaterialMaterialType: string;
     /**
-     * 王和安
      * Gets the name of the snow terrain material.
      */
     static readonly AspectArrowMaterialType: string;
@@ -50226,11 +50503,11 @@ declare module "cesium/Source/DataSources/Visualizer" { import { Visualizer } fr
 declare module "cesium/Source/DataSources/WallGeometryUpdater" { import { WallGeometryUpdater } from 'cesium'; export default WallGeometryUpdater; }
 declare module "cesium/Source/DataSources/WallGraphics" { import { WallGraphics } from 'cesium'; export default WallGraphics; }
 declare module "cesium/Source/MapGIS/AlgorithmLib" { import { AlgorithmLib } from 'cesium'; export default AlgorithmLib; }
-declare module "cesium/Source/MapGIS/G3DLayer" { import { G3DLayer } from 'cesium'; export default G3DLayer; }
 declare module "cesium/Source/MapGIS/GraphicsLayer" { import { GraphicsLayer } from 'cesium'; export default GraphicsLayer; }
 declare module "cesium/Source/MapGIS/HashMap" { import { HashMap } from 'cesium'; export default HashMap; }
 declare module "cesium/Source/MapGIS/Layers" { import { Layers } from 'cesium'; export default Layers; }
 declare module "cesium/Source/MapGIS/ReImg" { import { ReImg } from 'cesium'; export default ReImg; }
+declare module "cesium/Source/MapGIS/SceneLayer" { import { SceneLayer } from 'cesium'; export default SceneLayer; }
 declare module "cesium/Source/MapGIS/ThemeManager" { import { ThemeManager } from 'cesium'; export default ThemeManager; }
 declare module "cesium/Source/MapGIS/VisualAnalysisManager" { import { VisualAnalysisManager } from 'cesium'; export default VisualAnalysisManager; }
 declare module "cesium/Source/Renderer/PixelDatatype" { import { PixelDatatype } from 'cesium'; export default PixelDatatype; }
@@ -50419,6 +50696,7 @@ declare module "cesium/Source/MapGIS/Tools/ModelExplosion" { import { ModelExplo
 declare module "cesium/Source/MapGIS/Tools/SampleElevationTool" { import { SampleElevationTool } from 'cesium'; export default SampleElevationTool; }
 declare module "cesium/Source/MapGIS/Tools/Tooltip" { import { Tooltip } from 'cesium'; export default Tooltip; }
 declare module "cesium/Source/MapGIS/Tools/TriangulationTool" { import { TriangulationTool } from 'cesium'; export default TriangulationTool; }
+declare module "cesium/Source/MapGIS/Vector/MapGISVectorGeojsonProvider" { import { MapGISVectorGeojsonProvider } from 'cesium'; export default MapGISVectorGeojsonProvider; }
 declare module "cesium/Source/MapGIS/Vector/MapGISVectorLayer" { import { MapGISVectorLayer } from 'cesium'; export default MapGISVectorLayer; }
 declare module "cesium/Source/MapGIS/Vector/MapGISVectorProvider" { import { MapGISVectorProvider } from 'cesium'; export default MapGISVectorProvider; }
 declare module "cesium/Source/MapGIS/Vector/MapGISVectorTilePrimitiveCollection" { import { MapGISVectorTilePrimitiveCollection } from 'cesium'; export default MapGISVectorTilePrimitiveCollection; }
