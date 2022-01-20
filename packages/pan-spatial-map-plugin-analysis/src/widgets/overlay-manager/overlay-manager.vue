@@ -4,6 +4,7 @@
       :models='models'
       :dataSource='dataSource'
       @save='save'
+      ref='graphicLayer'
     />
   </div>
 </template>
@@ -28,28 +29,14 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
 
   private models = {}
 
+  private firstOpen = true
+
   async mounted() {
     let config = await api.getWidgetConfig('overlay-manager')
     if (!config) {
       config = {}
     }
-    if (typeof config === 'string') {
-      config = JSON.parse(config)
-    }
-    const { dataSource, models } = config
-    if (dataSource) {
-      const dataSource = config.dataSource
-      for (let i = 0; i < dataSource.length; i++) {
-        const features = dataSource[i]
-        for (let j = 0; j < features.length; j++) {
-          const { style } = features[j]
-          const { url } = style
-          if (url) {
-            features[j].style.url = this.baseUrl + url;
-          }
-        }
-      }
-    }
+    const { models } = config
     if (models) {
       this.models = config.models
       const vm = this
@@ -62,15 +49,46 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
     }
   }
 
-  save(e) {
-    // let config = await api.getWidgetConfig('overlay-manager')
-    // if (!config) {
-    //   config = {}
-    // }
-    // config.dataSource = e
+  async onOpen() {
+    if (this.firstOpen) {
+      let config = await api.getWidgetConfig('overlay-manager')
+      if (!config) {
+        config = {}
+      }
+      const { dataSource } = config
+      if (dataSource) {
+        const dataSource = config.dataSource
+        for (let i = 0; i < dataSource.length; i++) {
+          const features = dataSource[i]
+          for (let j = 0; j < features.length; j++) {
+            const { style } = features[j]
+            const { url } = style
+            if (url) {
+              features[j].style.url = this.baseUrl + url
+            }
+          }
+        }
+      }
+      this.firstOpen = false;
+      this.dataSource = dataSource
+    } else {
+      this.$refs.graphicLayer.$_showCurrentGraphic()
+    }
+  }
+
+  onClose() {
+    this.$refs.graphicLayer.$_hideAllGraphic()
+  }
+
+  async save(e) {
+    let config = await api.getWidgetConfig('overlay-manager')
+    if (!config) {
+      config = {}
+    }
+    config.dataSource = e
     api.saveWidgetConfig({
-      name: 'overlay-manage',
-      config: '13123123'
+      name: 'overlay-manager',
+      config: config
     })
   }
 }
