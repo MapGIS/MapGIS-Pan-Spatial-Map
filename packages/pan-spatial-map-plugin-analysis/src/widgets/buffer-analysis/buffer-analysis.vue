@@ -192,6 +192,14 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
    */
   addNewGeoJsonLayer() {
     const resultFeature = this.feature
+    const highlightStyle = {
+      polygon: new FillStyle({
+        width: 8,
+        color: "#ffff00",
+        opacity: 0.8,
+        outlineColor: "#ff0000",
+      })
+    }
     const data = {
       name: 'GeoJson图层',
       description: '综合分析_结果图层',
@@ -201,6 +209,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
         source: resultFeature,
         featureStyle: this.featureStyle,
         name: this.destLayer,
+        highlightStyle: highlightStyle
       }
     }
     eventBus.$emit(events.ADD_DATA_EVENT, data)
