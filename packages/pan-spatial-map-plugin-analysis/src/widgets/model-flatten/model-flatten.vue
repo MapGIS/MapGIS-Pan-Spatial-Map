@@ -22,7 +22,7 @@ import {
 export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
   private M3Ds = []
 
-  private heightOffset = -2
+  private heightOffset = 0
 
   @Watch('document', { immediate: true, deep: true })
   getScenes() {
