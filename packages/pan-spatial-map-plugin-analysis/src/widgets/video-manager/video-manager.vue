@@ -21,7 +21,7 @@ import { api, VideoManager } from '@mapgis/pan-spatial-map-common'
   name: 'MpVideoManager'
 })
 export default class MpVideoManager extends Mixins(WidgetMixin) {
-  private modelUrl = './CesiumModels/Cesium_Camera.glb'
+  private modelUrl = `${process.env.BASE_URL}CesiumModels/Cesium_Camera.glb`
 
   private modelOffset = { headingOffset: -90, pitchOffset: 0, rollOffset: 0 }
 
@@ -144,7 +144,7 @@ export default class MpVideoManager extends Mixins(WidgetMixin) {
     const config = { videoOverlayLayerList: [...this.videoOverlayLayerList] }
     api
       .saveWidgetConfig({
-        name: 'video',
+        name: 'video-manager',
         config: JSON.stringify(config)
       })
       .then(() => {

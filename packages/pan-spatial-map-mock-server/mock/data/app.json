@@ -179,7 +179,8 @@
           },
           {
             "id": "widget_05bc8763-837b-4fd4-972e-5d8f49718d44",
-            "uri": "widgets/overlay-manager"
+            "uri": "widgets/overlay-manager",
+            "config": "configs/overlay-manager/config.json"
           },
           {
             "id": "widget_a6885da5-cfc9-40b1-9324-9a1863b05e24",

@@ -3,15 +3,15 @@ import { request, METHOD, removeAuthorization } from '@/utils/request'
 
 // 获取所有的Widgets
 export function getWidgets() {
-  return request(APP_WIDGETS, METHOD.GET)
+  return request({ url: APP_WIDGETS, method: METHOD.GET })
 }
 
 // 获取所有的Themes
 export function getThemes() {
-  return request(APP_THEMES, METHOD.GET)
+  return request({ url: APP_THEMES, method: METHOD.GET })
 }
 
 // 保存应用配置
 export function edit(data) {
-  return request(APP_CONFIG, METHOD.PUT, data)
+  return request({ url: APP_CONFIG, method: METHOD.PUT, params: data })
 }
