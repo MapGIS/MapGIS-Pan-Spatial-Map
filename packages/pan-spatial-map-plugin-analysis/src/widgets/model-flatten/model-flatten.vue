@@ -1,6 +1,6 @@
 <template>
   <div style='height: 210px;width:280px'>
-    <mapgis-3d-model-flatten :M3Ds='M3Ds'/>
+    <mapgis-3d-model-flatten :M3Ds='M3Ds' :heightOffset='heightOffset'/>
   </div>
 </template>
 
@@ -21,6 +21,8 @@ import {
 })
 export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
   private M3Ds = []
+
+  private heightOffset = -2
 
   @Watch('document', { immediate: true, deep: true })
   getScenes() {
