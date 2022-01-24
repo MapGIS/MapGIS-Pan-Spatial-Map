@@ -4,6 +4,6 @@ export function imagesUpload(data) {
   return getRequest()({
     url: '/api/local-storage/pictures',
     method: 'post',
-    data
+    params: data
   })
 }

@@ -17,7 +17,7 @@
         <mp-window-wrapper :visible="showTimeline">
             <template v-slot:default="slotProps">
                 <mp-window
-                    :visible="showTimeline"
+                    :visible.sync="showTimeline"
                     title="积水仿真"
                     :horizontal-offset="28"
                     :vertical-offset="30"
