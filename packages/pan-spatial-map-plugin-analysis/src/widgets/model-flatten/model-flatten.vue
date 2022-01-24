@@ -1,6 +1,6 @@
 <template>
   <div style='height: 210px;width:280px'>
-    <mapgis-3d-model-flatten :M3Ds='M3Ds'/>
+    <mapgis-3d-model-flatten :M3Ds='M3Ds' :heightOffset='heightOffset'/>
   </div>
 </template>
 
@@ -22,37 +22,24 @@ import {
 export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
   private M3Ds = []
 
-  async mounted() {
-    const dataCatalogTreeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
-    for (let i = 0; i < dataCatalogTreeData.length; i++) {
-      const children1 = dataCatalogTreeData[i].children
-      if (children1) {
-        for (let j = 0; j < children1.length; j++) {
-          const { serverType } = children1[j];
-          if(serverType === 22){
-            this.M3Ds.push(children1[j]);
-          }
-          const children2 = children1[j].children
-          if (children2) {
-            for (let k = 0; k < children2.length; k++) {
-              const { serverType } = children2[k];
-              if(serverType === 22){
-                this.M3Ds.push(children2[k]);
-              }
-              const children3 = children2[k].children
-              if (children3) {
-                for (let m = 0; m < children3.length; m++) {
-                  const { serverType } = children3[m];
-                  if(serverType === 22){
-                    this.M3Ds.push(children3[m]);
-                  }
-                }
-              }
-            }
-          }
+  private heightOffset = 0
+
+  @Watch('document', { immediate: true, deep: true })
+  getScenes() {
+    if (!this.document) return
+    this.M3Ds = [];
+    const vm = this;
+    this.document.defaultMap
+      .clone()
+      .getFlatLayers()
+      .forEach((layer, index) => {
+        if(layer.type === 22){
+          vm.M3Ds.push({
+            key: layer.id,
+            value: layer.title
+          });
         }
-      }
-    }
+      })
   }
 }
 </script>
