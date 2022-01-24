@@ -1,0 +1,47 @@
+[
+  {
+    "name": "全球mock",
+    "image": "/upload/globe.jpg",
+    "destination": {
+      "x": 104,
+      "y": 28.011763478186143,
+      "z": 10071759.273162084
+    },
+    "orientation": {
+      "heading": 360,
+      "pitch": -90,
+      "roll": 0
+    },
+    "duration": 0.5
+  },
+  {
+    "name": "中国mock",
+    "image": "/upload/china.jpg",
+    "destination": {
+      "x": 108.91,
+      "y": 32.52,
+      "z": 5000000.0
+    },
+    "orientation": {
+      "heading": 360,
+      "pitch": -90,
+      "roll": 0
+    },
+    "duration": 0.5
+  },
+  {
+    "name": "武汉mock",
+    "image": "/upload/wuhan.jpg",
+    "destination": {
+      "x": 114.21,
+      "y": 30.42,
+      "z": 150000.0
+    },
+    "orientation": {
+      "heading": 360,
+      "pitch": -90,
+      "roll": 0
+    },
+    "duration": 0.5
+  }
+]
