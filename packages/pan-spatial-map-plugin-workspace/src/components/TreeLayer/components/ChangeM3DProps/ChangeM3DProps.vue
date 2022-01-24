@@ -15,6 +15,9 @@
       <a-form-item label="开启拾取">
         <a-switch v-model="enablePopup" />
       </a-form-item>
+      <a-form-item label="开启多模态切换">
+        <a-switch v-model="enableModelSwitch" />
+      </a-form-item>
       <div style="textAlign:right">
         <a-button type="primary" @click="submit">
           确认
@@ -37,6 +40,10 @@ export default class MpChangeM3DProps extends Vue {
 
   maximumScreenSpaceError = this.layer.maximumScreenSpaceError
 
+  enableModelSwitch = this.layer.layer
+    ? this.layer.layer.modelSwitchEnabled
+    : this.layer.modelSwitchEnabled
+
   enablePopup = this.layer.layer
     ? this.layer.layer.popupEnabled
     : this.layer.popupEnabled
@@ -47,8 +54,10 @@ export default class MpChangeM3DProps extends Vue {
     }
     if (this.layer.layer) {
       this.layer.layer.popupEnabled = this.enablePopup
+      this.layer.layer.modelSwitchEnabled = this.enableModelSwitch
     } else {
       this.layer.popupEnabled = this.enablePopup
+      this.layer.modelSwitchEnabled = this.enableModelSwitch
     }
     this.$emit('update:layer', this.layer)
   }

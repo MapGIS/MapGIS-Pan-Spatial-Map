@@ -963,6 +963,18 @@
             "serverUrl": "http://192.168.88.204:8089/M3D/2.0/BIM模型生长time/BIM模型生长time.mcj"
           },
           {
+            "label": "M3D-dynamic",
+            "describe": "M3D-dynamic",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0aa6fe",
+            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/zondy/zondy.mcj"
+          },
+          {
             "label": "3DTileset-大雁塔ModelCache",
             "describe": "3DTileset-大雁塔ModelCache",
             "ip": "",

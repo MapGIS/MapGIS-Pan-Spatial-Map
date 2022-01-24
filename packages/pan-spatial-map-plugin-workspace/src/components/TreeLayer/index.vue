@@ -714,11 +714,13 @@ export default class MpTreeLayer extends Mixins(
 
   updateM3DProps(val) {
     let popupEnabled
+    let modelSwitchEnabled
     const { key, maximumScreenSpaceError, layer, id } = val
     if (layer) {
       popupEnabled = layer.popupEnabled
     } else {
       popupEnabled = val.popupEnabled
+      modelSwitchEnabled = val.modelSwitchEnabled
     }
     const indexArr: Array<string> = key.split('-')
     const doc = this.layerDocument.clone()
@@ -737,6 +739,7 @@ export default class MpTreeLayer extends Mixins(
         const MC = layers[firstIndex]
         MC.maximumScreenSpaceError = maximumScreenSpaceError
         MC.popupEnabled = popupEnabled
+        MC.modelSwitchEnabled = modelSwitchEnabled
         this.$emit('update:layerDocument', doc)
       }
     }
