@@ -1043,12 +1043,30 @@ export class DataCatalogManager {
           if (isLayerValid) {
             this._allLayerConfigItems.push(nodeConverted)
           }
-        } else if (data && data !== '') {
+        } else if (
+          node[
+            this.configConverted.keyConfig.description.includes('非空间数据')
+          ]
+        ) {
+          /**
+           * 修改说明：修改非空间数据的判断
+           * 修改人：龚跃健
+           * 修改时间：2022/1/24
+           */
           // 非空间数据节点
           nodeConverted = { ...commonInfo, data }
         } else {
           nodeConverted = { ...commonInfo }
-          // 组节点
+        }
+        if (
+          node[this.configConverted.keyConfig.children] &&
+          node[this.configConverted.keyConfig.children].length > 0
+        ) {
+          /**
+           * 修改说明：只要存在children，并且children有长度，则需要再次递归
+           * 修改人：龚跃健
+           * 修改时间：2022/1/24
+           */
           nodeConverted.children = this.convertTreeData(
             node[this.configConverted.keyConfig.children],
             nodeLevel + 1

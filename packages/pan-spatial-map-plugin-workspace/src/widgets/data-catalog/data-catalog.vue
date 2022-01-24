@@ -740,8 +740,15 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const treeData = data.map((item: any) => {
       this_.$set(item, 'scopedSlots', { title: 'custom' })
       this_.$set(item, 'disableCheckbox', false)
-
-      if (item.description.includes('非空间数据')) {
+      /**
+       * 修改说明：图层下的节点设置为不可选
+       * 修改人：龚跃健
+       * 修改时间：2022/1/24
+       */
+      if (
+        item.description.includes('非空间数据') ||
+        (!item.children && !item.serverType)
+      ) {
         this_.$set(item, 'checkable', false)
       }
       allTreeDataConfigs.push(item)
