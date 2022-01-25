@@ -332,6 +332,15 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
 
   private async onSelectChange(selectedRowKeys, selectedRows) {
     this.selection = selectedRows
+    if (this.selectedRowKeys.length == 0) {
+      ActiveResultSet.activeResultSet = {}
+    } else {
+      ActiveResultSet.activeResultSet = {
+        type: 'FeatureCollection',
+        features: selectedRows,
+        id: this.optionVal.id
+      }
+    }
     await this.hightlightSelectionMarkers()
   }
 
@@ -443,6 +452,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
 
   private onClearSelection() {
     this.clearSelection()
+    ActiveResultSet.activeResultSet = {}
   }
 
   private onStatistics() {
@@ -598,12 +608,6 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
     }
     this.markers = [...tempMarkers]
 
-    ActiveResultSet.activeResultSet = {
-      type: 'FeatureCollection',
-      features: this.tableData,
-      id: this.optionVal.id
-    }
-    console.log(ActiveResultSet.activeResultSet)
   }
 
   /**

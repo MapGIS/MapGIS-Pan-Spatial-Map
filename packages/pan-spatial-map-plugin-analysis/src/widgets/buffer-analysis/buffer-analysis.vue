@@ -14,7 +14,7 @@
               </mapgis-ui-select>
             </mapgis-ui-col>
           </mapgis-ui-row>
-          <mapgis-ui-checkbox :default-checked="selectLevel" @change="changeSelectLevel">只对选择数据进行操作</mapgis-ui-checkbox>
+          <mapgis-ui-checkbox :checked="selectLevel" @change="changeSelectLevel">只对选择数据进行操作</mapgis-ui-checkbox>
         </mapgis-ui-form-model-item>
       </mapgis-ui-form-model>
     </div>
@@ -85,9 +85,9 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   add = false
 
-  finishL = false
+  finishLayer = false
 
-  finishF = false
+  finishFeature = false
 
   changeSelectLevel() {
     this.selectLevel = !this.selectLevel
@@ -96,6 +96,9 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
     } else {
       this.srcType = "Feature"
       if (JSON.stringify(ActiveResultSet.activeResultSet) == "{}") {
+        this.$message.warn('当前选择要素为空，请重新选择')
+        this.selectLevel = true
+        this.changeSelectLevel()
       } else {
         this.srcFeature = ActiveResultSet.activeResultSet
       }
@@ -233,7 +236,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   }
 
   showLayer(data) {
-    this.finishL = true
+    this.finishLayer = true
     this.destLayer = data
     if (this.add == true) {
       this.addNewLayer()
@@ -242,7 +245,7 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
 
   showFeature(data) {
     [this.feature, this.destLayer, this.featureStyle] = data
-    this.finishF = true
+    this.finishFeature = true
     if (this.add == true) {
       this.addNewGeoJsonLayer()
     }
