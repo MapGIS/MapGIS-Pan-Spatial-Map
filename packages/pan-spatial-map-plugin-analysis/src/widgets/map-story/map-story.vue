@@ -1,13 +1,15 @@
 <template>
   <div id='mapStory' class='mp-widget-map-story'>
-    <mapgis-3d-map-story-layer
+    <mapgis-3d-map-story
       v-if='showMapStory'
-      @projectPreview='projectPreview'
-      @featurePreview='featurePreview'
+      @storyPreview='storyPreview'
+      @chapterPreview='chapterPreview'
       @save='save'
       :height='height'
       :width='width'
+      :enablePreview='enablePreview'
       :enableClose='enableClose'
+      :enableOneMap='enableOneMap'
       :dataSource='dataSource' />
     <mp-window-wrapper :visible='showPreview'>
       <mp-window
@@ -23,7 +25,7 @@
         anchor='top-right'
       >
         <template>
-          <mapgis-3d-preview-map-story-layer
+          <mapgis-3d-preview-map-story
             v-show='showPreview'
             :height='previewHeight'
             :width='previewWidth'
@@ -31,6 +33,7 @@
             :enableFullScreen='enableFullScreen'
             :enableArrow='enableArrow'
             :enablePlay='enablePlay'
+            :enableClose='enableClose'
             ref='preview'
           />
         </template>
@@ -44,7 +47,9 @@ import { Mixins, Component } from 'vue-property-decorator'
 import {
   WidgetMixin
 } from '@mapgis/web-app-framework'
-import { api } from '@mapgis/pan-spatial-map-common'
+import {
+  api, dataCatalogManagerInstance
+} from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpMapStory'
@@ -78,7 +83,7 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
     }]
   }]
 
-  private width = 263
+  private width = 248
 
   private height = 0
 
@@ -98,11 +103,17 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
 
   private enableClose = false
 
+  private enablePreview = false
+
+  private enableOneMap = true
+
   private storyDataSource = {}
+
+  private maps = []
 
   async mounted() {
     const canvas = document.getElementsByClassName('mapboxgl-canvas')
-    this.height = canvas[0].offsetHeight - 57
+    this.height = canvas[0].offsetHeight - 66
     let config = await api.getWidgetConfig('map-story')
     if (!config) {
       config = {
@@ -113,6 +124,51 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
     if (dataSource) {
       this.dataSource = dataSource
     }
+    //获取地图数据
+    // const dataCatalogTreeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
+    // this.maps = this.getMap(dataCatalogTreeData)
+  }
+
+  getMap(dataCatalogTreeData) {
+    let maps = []
+    for (let i = 0; i < dataCatalogTreeData.length; i++) {
+      const { serverType, children } = dataCatalogTreeData[i]
+      if (serverType) {
+        switch (serverType) {
+          case 7:
+            //WMTS
+            // map = {
+            //   type: "WMTS",
+            //   baseUrl: dataCatalogTreeData[i].serverURL,
+            //   layer: dataCatalogTreeData[i].serverName,
+            //   tilingScheme: "EPSG:4326",
+            //   tileMatrixSet: this.mapCopy.tileMatrixSet,
+            // }
+            break
+          case 10:
+            break
+          case 8:
+            break
+          case 5:
+            break
+          case 4:
+            break
+          case 11:
+            break
+          case 6:
+            break
+          case 28:
+            break
+          default:
+            break
+        }
+        maps.push(dataCatalogTreeData[i].description)
+      }
+      if(children && children.length > 0){
+        maps = maps.concat(this.getMap(children));
+      }
+    }
+    return maps;
   }
 
   async save(e) {
@@ -131,21 +187,18 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
     this.showMapStory = true
   }
 
-  featurePreview(features) {
+  chapterPreview(dataSource) {
+    this.storyDataSource = dataSource
     this.showPreview = true
     this.enableArrow = false
     this.enablePlay = false
-    this.storyDataSource = {
-      chapters: features
-    }
   }
 
-  projectPreview(dataSource, enableFullScreen) {
+  storyPreview(dataSource) {
     this.storyDataSource = dataSource
     this.showPreview = true
     this.enableArrow = true
     this.enablePlay = true
-    this.enableFullScreen = enableFullScreen
     this.$refs.preview.projectPreview()
   }
 }
