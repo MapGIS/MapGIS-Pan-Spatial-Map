@@ -27,7 +27,7 @@
     "8": "/upload/8.png"
   },
   "urlConfig": {
-    "nonSpatialUrl": "ftp://192.168.21.192:21"
+    "nonSpatialUrl": "ftp://192.168.21.191:21"
   },
   "otherConfig": {
     "nonSpatial": "非空间数据",
@@ -1360,7 +1360,7 @@
             "searchName": "",
             "token": "",
             "guid": "8baba6b1-7eb9-423f-aefa-cb187bb1d4a9",
-            "serverUrl": "http://192.168.21.192:6163/igs/rest/ogc/doc/北京市0630_hdf/WMSServer",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/doc/北京市0630_hdf/WMSServer",
             "wfsUrl": "",
             "extent": ""
           },
@@ -1374,7 +1374,7 @@
             "searchName": "",
             "token": "",
             "guid": "a96fea53-d97d-401a-a502-f5621f098c14",
-            "serverUrl": "http://192.168.21.192:6163/igs/rest/ogc/OGC_4326_CHINA/WMTSServer",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/OGC_4326_CHINA/WMTSServer",
             "wfsUrl": "",
             "extent": ""
           }

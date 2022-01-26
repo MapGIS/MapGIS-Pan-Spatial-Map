@@ -1,40 +1,41 @@
 <template>
-  <div id='mapStory' class='mp-widget-map-story'>
+  <div id="mapStory" class="mp-widget-map-story">
     <mapgis-3d-map-story
-      v-if='showMapStory'
-      @storyPreview='storyPreview'
-      @chapterPreview='chapterPreview'
-      @save='save'
-      :height='height'
-      :width='width'
-      :enablePreview='enablePreview'
-      :enableClose='enableClose'
-      :enableOneMap='enableOneMap'
-      :dataSource='dataSource' />
-    <mp-window-wrapper :visible='showPreview'>
+      v-if="showMapStory"
+      @storyPreview="storyPreview"
+      @chapterPreview="chapterPreview"
+      @save="save"
+      :height="height"
+      :width="width"
+      :enablePreview="enablePreview"
+      :enableClose="enableClose"
+      :enableOneMap="enableOneMap"
+      :dataSource="dataSource"
+    />
+    <mp-window-wrapper :visible="showPreview">
       <mp-window
-        :visible.sync='showPreview'
-        title='地图故事'
-        :is-full-screen='false'
-        :shrinkAction='false'
-        :fullScreenAction='false'
-        :horizontal-offset='48'
-        :vertical-offset='50'
-        :width='340'
-        :has-padding='false'
-        anchor='top-right'
+        :visible.sync="showPreview"
+        title="地图故事"
+        :is-full-screen="false"
+        :shrinkAction="false"
+        :fullScreenAction="false"
+        :horizontal-offset="48"
+        :vertical-offset="50"
+        :width="340"
+        :has-padding="false"
+        anchor="top-right"
       >
         <template>
           <mapgis-3d-preview-map-story
-            v-show='showPreview'
-            :height='previewHeight'
-            :width='previewWidth'
-            :dataSource='storyDataSource'
-            :enableFullScreen='enableFullScreen'
-            :enableArrow='enableArrow'
-            :enablePlay='enablePlay'
-            :enableClose='enableClose'
-            ref='preview'
+            v-show="showPreview"
+            :height="previewHeight"
+            :width="previewWidth"
+            :dataSource="storyDataSource"
+            :enableFullScreen="enableFullScreen"
+            :enableArrow="enableArrow"
+            :enablePlay="enablePlay"
+            :enableClose="enableClose"
+            ref="preview"
           />
         </template>
       </mp-window>
@@ -42,46 +43,47 @@
   </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import {
-  WidgetMixin
-} from '@mapgis/web-app-framework'
-import {
-  api, dataCatalogManagerInstance
-} from '@mapgis/pan-spatial-map-common'
+import { WidgetMixin } from '@mapgis/web-app-framework'
+import { api, dataCatalogManagerInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpMapStory'
 })
 export default class MpMapStory extends Mixins(WidgetMixin) {
-  private dataSource = [{
-    'title': '时空演变',
-    'description': '',
-    'uuid': '100001',
-    'map': {
-      'type': 'WMTS',
-      'baseUrl': 'http://t4.tianditu.gov.cn/cta_w/wmts?tk=9c157e9585486c02edf817d2ecbc7752',
-      'layer': 'cta',
-      'tilingScheme': 'EPSG:3857',
-      'tileMatrixSet': 'w',
-      'format': 'tiles',
-      'vueKey': 'default',
-      'vueIndex': 1000213213121
-    },
-    'features': [],
-    'chapters': [{
-      'projectUUID': '100001',
-      'uuid': '111',
-      'camera': {
-        'uuid': '111'
+  private dataSource = [
+    {
+      title: '时空演变',
+      description: '',
+      uuid: '100001',
+      map: {
+        type: 'WMTS',
+        baseUrl:
+          'http://t4.tianditu.gov.cn/cta_w/wmts?tk=9c157e9585486c02edf817d2ecbc7752',
+        layer: 'cta',
+        tilingScheme: 'EPSG:3857',
+        tileMatrixSet: 'w',
+        format: 'tiles',
+        vueKey: 'default',
+        vueIndex: 1000213213121
       },
-      'features': [],
-      'title': '章节一',
-      'content': '',
-      'animationTime': '5000'
-    }]
-  }]
+      features: [],
+      chapters: [
+        {
+          projectUUID: '100001',
+          uuid: '111',
+          camera: {
+            uuid: '111'
+          },
+          features: [],
+          title: '章节一',
+          content: '',
+          animationTime: '5000'
+        }
+      ]
+    }
+  ]
 
   private width = 248
 
@@ -124,7 +126,7 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
     if (dataSource) {
       this.dataSource = dataSource
     }
-    //获取地图数据
+    // 获取地图数据
     // const dataCatalogTreeData = await dataCatalogManagerInstance.getDataCatalogTreeData()
     // this.maps = this.getMap(dataCatalogTreeData)
   }
@@ -136,7 +138,7 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
       if (serverType) {
         switch (serverType) {
           case 7:
-            //WMTS
+            // WMTS
             // map = {
             //   type: "WMTS",
             //   baseUrl: dataCatalogTreeData[i].serverURL,
@@ -164,11 +166,11 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
         }
         maps.push(dataCatalogTreeData[i].description)
       }
-      if(children && children.length > 0){
-        maps = maps.concat(this.getMap(children));
+      if (children && children.length > 0) {
+        maps = maps.concat(this.getMap(children))
       }
     }
-    return maps;
+    return maps
   }
 
   async save(e) {
