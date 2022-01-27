@@ -13,6 +13,7 @@
                 }
             "
             :pondingTime="pondingTime"
+            :multiSpeed="multiSpeed"
         />
         <mp-window-wrapper :visible="showTimeline">
             <template v-slot:default="slotProps">
@@ -21,8 +22,8 @@
                     title="积水仿真"
                     :horizontal-offset="28"
                     :vertical-offset="30"
-                    :width="520"
-                    :height="140"
+                    :width="700"
+                    :height="100"
                     :has-padding="false"
                     anchor="bottom-center"
                     v-bind="slotProps"
@@ -31,12 +32,20 @@
                         <mapgis-3d-ponding-simulation-timeline
                             :value="sliderValue"
                             :pond="pond"
+                            :width="680"
+                            :sliderStyle="sliderStyle"
                             @updateTime="
                                 (e) => {
                                     pondingTime = e
                                 }
                             "
+                            @updateSpeed="
+                                (e) => {
+                                    multiSpeed = e
+                                }
+                            "
                             @play="addSimulation"
+                            style="position:absolute;top:10px;left:10px"
                         />
                     </template>
                 </mp-window>
@@ -54,13 +63,20 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 })
 export default class MpPondingSimulation extends Mixins(WidgetMixin) {
 
-    private pondingTime = 4
+    private pondingTime = 24
+
+    private multiSpeed = 1
 
     private pond = false
 
     private sliderValue = 0
 
     private showTimeline = false
+
+    private sliderStyle = {
+        marginLeft: '100px',
+        width: '400px'
+    }
 
     /**
      * 微件打开时
