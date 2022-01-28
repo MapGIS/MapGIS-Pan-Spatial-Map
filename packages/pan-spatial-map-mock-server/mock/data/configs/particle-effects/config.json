@@ -4,19 +4,52 @@
       "guid": "9D09DB87-7955-9295-2E34-61E83C30D3AA",
       "name": "火焰",
       "image": "/upload/fire.png",
-      "iconUrl": "mapgis-huoyan"
+      "iconUrl": "mapgis-huoyan",
+      "config": {
+        "emitterType": "圆形放射",
+        "emissionRate": 13.0,
+        "imageSize": 5.0,
+        "minimumParticleLife": 2.0,
+        "maximumParticleLife": 3.0,
+        "minimumSpeed": 9.0,
+        "maximumSpeed": 10.0,
+        "startScale": 1.0,
+        "endScale": 4.0
+      }
     },
     {
       "guid": "F9FDE880-8F5B-AEDF-CA95-ADC54F02A34F",
       "name": "烟雾",
       "image": "/upload/smoke.png",
-      "iconUrl": "mapgis-yanwu"
+      "iconUrl": "mapgis-yancong",
+      "config": {
+        "emitterType": "盒状放射",
+        "emissionRate": 6.0,
+        "imageSize":7.0,
+        "minimumParticleLife": 2.5,
+        "maximumParticleLife": 2.4,
+        "minimumSpeed": 2.0,
+        "maximumSpeed": 6.0,
+        "startScale": 3,
+        "endScale": 3
+      }
     },
     {
       "guid": "A35C78FF-DD27-66C8-DD61-027CAE317145",
       "name": "喷泉",
       "image": "/upload/fountain.png",
-      "iconUrl": "mapgis-penquan"
+      "iconUrl": "mapgis-penquan",
+      "config": {
+        "emitterType": "锥形放射",
+        "emissionRate": 10.0,
+        "imageSize": 7.0,
+        "minimumParticleLife": 1.5,
+        "maximumParticleLife": 1.8,
+        "minimumSpeed": 1.0,
+        "maximumSpeed": 9.0,
+        "startScale": 2.5,
+        "endScale": 4.0
+      }
     }
   ],
   "particleListConfig": [
