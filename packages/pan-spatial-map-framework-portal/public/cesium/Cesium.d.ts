@@ -25473,7 +25473,7 @@ export class Style {
      * @property [color = Cesium.Color.WHITE] - 点填充颜色
      * @property [outlineColor = Cesium.Color.TRANSPARENT] - 点外边框颜色
      * @property [pixelSize = 10] - 点的像素大小
-     * @property [addHeight = 0.0] - 点的抬升高度
+     * @property [offsetHeight = 0.0] - 点的离地高度
      * @property [scaleByDistance] - 随距离缩放大小,例如var scaleByDistance =  new Cesium.NearFarScalar(10000,0.5,500000,0.1);
      * 表示在视距一万米及50万米以下时图形缩放为0.5倍，50万米及以上时缩放为0.1倍，参数分别代表（第一个距离，第一个距离的缩放比例，第二个距离，第二个距离的缩放比例）。
      * @property [translucencyByDistance] - 随距离透明变化
@@ -25485,7 +25485,7 @@ export class Style {
         color?: Color;
         outlineColor?: Color;
         pixelSize?: number;
-        addHeight?: number;
+        offsetHeight?: number;
         scaleByDistance?: NearFarScalar;
         translucencyByDistance?: NearFarScalar;
         distanceDisplayCondition?: DistanceDisplayCondition;
@@ -25500,7 +25500,7 @@ export class Style {
      * @property [outlineColor = Color.BLACK] - 外边框颜色
      * @property [outlineWidth = 1.0] - 外边框宽度
      * @property [showBackground = false] - 是否显示背景
-     * @property [addHeight = 0.0] - 点的高度
+     * @property [offsetHeight = 0.0] - 离地偏离高度
      * @property [backgroundColor = new Color(0.165, 0.165, 0.165, 0.8)] - 背景颜色
      * @property [backgroundPadding = new Cartesian2(0,0)] - 文本在背景中的偏移量，类似CSS中的padding，x代表水平padding像素值，y代表垂直padding像素值.左上角为原点。
      * @property [pixelOffset = new Cartesian2(0,0)] - 文本屏幕像素偏移量
@@ -25524,7 +25524,7 @@ export class Style {
         outlineColor?: string | Color;
         outlineWidth?: number;
         showBackground?: boolean;
-        addHeight?: number;
+        offsetHeight?: number;
         backgroundColor?: Color;
         backgroundPadding?: Cartesian2;
         pixelOffset?: Cartesian2;
@@ -25547,8 +25547,8 @@ export class Style {
      * @property [alignedAxis = Cartesian3.ZERO] - 设置，示例billboard.alignedAxis = Cesium.Cartesian3.UNIT_Z;
      * @property [width] - 宽度
      * @property [height] - 高度
-     * //  * @property {String|Color}  [outlineColor=Color.BLACK] 外边框颜色
-     * //  * @property {Number}  [outlineWidth=0.0] 外边框宽度
+     * @property [outlineColor = Color.BLACK] - 外边框颜色
+     * @property [outlineWidth = 0.0] - 外边框宽度
      * @property [sizeInMeters = false] - 尺寸是否为米单位的，当为false时尺寸为像素，true时为米
      * @property [pixelOffset = new Cartesian2(0,0)] - 广告牌屏幕像素偏移量
      * @property [eyeOffset = new Cartesian3(0,0,0)] - 广告牌相机坐标下偏移量
@@ -25562,7 +25562,7 @@ export class Style {
      * @property [heightReference = HeightReference.NONE] - 位置高度
      * @property [distanceDisplayCondition] - 按视距是否显示
      * @property [disableDepthTestDistance] - 禁用深度检测的距离，设置为Number.POSITIVE_INFINITY时禁用深度检测，设置为0.0的时候一直开启深度检测
-     * @property [addHeight = 0.0] - 点的高度
+     * @property [offsetHeight = 0.0] - 点的离地高度
      */
     static BillboardStyle: {
         image?: string;
@@ -25571,6 +25571,8 @@ export class Style {
         alignedAxis?: Cartesian3;
         width?: number;
         height?: number;
+        outlineColor?: string | Color;
+        outlineWidth?: number;
         sizeInMeters?: boolean;
         pixelOffset?: Cartesian2;
         eyeOffset?: Cartesian3;
@@ -25583,7 +25585,7 @@ export class Style {
         heightReference?: number;
         distanceDisplayCondition?: DistanceDisplayCondition;
         disableDepthTestDistance?: number;
-        addHeight?: number;
+        offsetHeight?: number;
     };
     /**
      * 线图元样式
@@ -25595,7 +25597,7 @@ export class Style {
      * @property [translucent = true] - 是否半透明
      * @property [loop = false] - 是否闭环
      * @property [isHermiteSpline = false] - 是否样条插值曲线
-     * @property [options.classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
+     * @property [classificationType] - 贴地ClassificationType.TERRAIN，贴模型ClassificationType.CESIUM_3D_TILE，都贴ClassificationType.BOTH，都不贴undefined
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [material] - 材质 材质类型参见{@link Material}
      * @property [depthTest = false] - 是否启用图元深度检测，设置成false为防止被地形遮挡
@@ -25609,6 +25611,7 @@ export class Style {
         translucent?: boolean;
         loop?: boolean;
         isHermiteSpline?: boolean;
+        classificationType?: number;
         materialType?: string;
         material?: Material;
         depthTest?: boolean;
@@ -25645,7 +25648,6 @@ export class Style {
      * @property [closeBottom = true] - 多边形体底部是否闭合。(当定义extrudedHeight拉伸高度后生效)
      * @property [arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
      * @property [translucent = false] - 是否半透明
-     * @property [showOutline = false] - 是否显示外边框
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [material] - 材质 材质类型参见{@link Material}
      * @property [depthTest] - 是否启用图元深度检测，设置成false为防止被地形遮挡，不贴地二维图形默认关闭，三维图形默认开启。
@@ -25661,7 +25663,6 @@ export class Style {
         closeBottom?: boolean;
         arcType?: ArcType;
         translucent?: boolean;
-        showOutline?: boolean;
         materialType?: string;
         material?: Material;
         depthTest?: boolean;
@@ -25678,7 +25679,6 @@ export class Style {
      * @property [closeBottom = true] - 多边形体底部是否闭合。(当定义extrudedHeight拉伸高度后生效)
      * @property [arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
      * @property [translucent = false] - 是否半透明
-     * @property [showOutline = false] - 是否显示外边框
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [material] - 材质 材质类型参见{@link Material}
      * @property [depthTest] - 是否启用图元深度检测，设置成false为防止被地形遮挡，不贴地二维图形默认关闭，三维图形默认开启。
@@ -25694,7 +25694,6 @@ export class Style {
         closeBottom?: boolean;
         arcType?: ArcType;
         translucent?: boolean;
-        showOutline?: boolean;
         materialType?: string;
         material?: Material;
         depthTest?: boolean;
@@ -25702,11 +25701,10 @@ export class Style {
     };
     /**
      * 矩形面图元样式
-     * @property [isSquare = false] - 是否为正方形。
      * @property [stRotation = 0.0] - 多边形纹理顺时针旋转角度（弧度值）。
      * @property [extrudedHeight] - 多边形体拉伸高度。为0时为区，不为0时为多边形体。
      * @property [rotation = 0.0] - 多边形顺时针旋转角度（弧度值）。
-     * @property [height = 0.0] - 多边形体底面高度。当perPositionHeight为false时生效。
+     * @property [height = 0.0] - 多边形体底面高度。
      * @property [color = Color.RED] - 颜色
      * @property [translucent = true] - 是否半透明
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
@@ -25714,28 +25712,10 @@ export class Style {
      * @property [depthTest] - 是否启用图元深度检测，设置成false为防止被地形遮挡
      */
     static RectangleStyle: {
-        isSquare?: boolean;
         stRotation?: number;
         extrudedHeight?: number;
         rotation?: number;
         height?: number;
-        color?: string | Color;
-        translucent?: boolean;
-        materialType?: string;
-        material?: Material;
-        depthTest?: boolean;
-    };
-    /**
-     * 平面面图元样式
-     * @property [isSquare = false] - 是否为正方形。
-     * @property [color = Color.RED] - 颜色
-     * @property [translucent = true] - 是否半透明
-     * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
-     * @property [material] - 材质 材质类型参见{@link Material}
-     * @property [depthTest] - 是否启用图元深度检测，设置成false为防止被地形遮挡
-     */
-    static PlaneStyle: {
-        isSquare?: boolean;
         color?: string | Color;
         translucent?: boolean;
         materialType?: string;
@@ -25928,7 +25908,6 @@ export class Style {
      * @property [silhouetteColor = Color.RED] - 轮廓颜色
      * @property [silhouetteSize = 0.0] - 轮廓宽度
      * @property [distanceDisplayCondition] - 随视距控制显示隐藏。
-     * @property [showOutline = true] - 是否启用模型外边线。
      * @property [heightReference = HeightReference.NONE] - 位置高度相对地面模式。
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
      * @property [depthTest = true] - 是否启用图元深度检测，设置成false为防止被地形遮挡
@@ -25947,7 +25926,6 @@ export class Style {
         silhouetteColor?: Color;
         silhouetteSize?: number;
         distanceDisplayCondition?: DistanceDisplayCondition;
-        showOutline?: boolean;
         heightReference?: number;
         materialType?: string;
         depthTest?: boolean;
@@ -26912,6 +26890,62 @@ export class Layers {
 }
 
 /**
+ * 构建树
+ * @param options - 附加参数
+ * @param options.url - 用于请求数据的url
+ * @param options.m3dtreeParent - 构建过程中用于指定树节点的父节点
+ */
+export class M3DTree {
+    constructor(options: {
+        url: string;
+        m3dtreeParent: any;
+    });
+    /**
+     * 节点在树中的深度值
+     */
+    depth: number;
+    /**
+     * 节点的索引
+     */
+    index: string;
+    /**
+     * 节点索引与对应MapgisM3D节点的映射
+     */
+    indexHashMap: HashMap;
+    /**
+     * 节点的父节点
+     */
+    m3dtreeParent: any;
+    /**
+     * 节点的子节点数组
+     */
+    m3dtreeChildren: any;
+    /**
+     * MapgisM3D叶子节点的属性
+     */
+    attMap: any;
+    /**
+     * 构建树的节点名称
+     */
+    nodeName: string;
+    /**
+     * 根据tileset/layer构建树
+     * @param tileset - 图层
+     * @returns 返回函数是否执行成功
+     */
+    createM3DTreeByTileset(tileset: any): boolean;
+    /**
+     * 根据名称查询得到对应的mapgism3d
+     */
+    getM3DByName(name: string): void;
+    /**
+     * 根据给定的url发请求完成构建树
+     * @param url - 服务地址url
+     */
+    createM3DTreeByRequest(url: string): void;
+}
+
+/**
  * A tile in a {@link Cesium3DTileset}.  When a tile is first created, its content is not loaded;
  * the content is loaded on-demand when needed based on the view.
  * <p>
@@ -27061,7 +27095,7 @@ export class MapGISM3D {
  * @param [options.debugShowMemoryUsage = false] - For debugging only. When true, draws labels to indicate the texture and geometry memory in megabytes used by each tile.
  * @param [options.debugShowUrl = false] - For debugging only. When true, draws labels to indicate the url of each tile.
  * @param [options.password] - M3D 数据密码
- * @param [options.treeOptions = {}] - 构建树附加参数
+ * @param [options.m3dtreeOptions = {}] - 构建树附加参数
  */
 export class MapGISM3DSet {
     constructor(options: {
@@ -27119,7 +27153,7 @@ export class MapGISM3DSet {
         debugShowMemoryUsage?: boolean;
         debugShowUrl?: boolean;
         password?: Uint8Array;
-        treeOptions?: any;
+        m3dtreeOptions?: any;
     });
     /**
      * Optimization option. Don't request tiles that will likely be unused when they come back because of the camera's movement. This optimization only applies to stationary tilesets.
@@ -27796,11 +27830,11 @@ export class MapGISM3DSet {
     /**
      * 创建构建树的附加参数
      */
-    treeOptions: any;
+    m3dtreeOptions: any;
     /**
      * 构建树
      */
-    readonly tree: any;
+    readonly m3dtree: any;
     /**
      * m3d 版本号
      */
@@ -27913,62 +27947,6 @@ export class MapGISM3DTileContent {
      * @returns The corresponding {@link Cesium3DTileFeature} object.
      */
     getFeature(batchId: number): Cesium3DTileFeature;
-}
-
-/**
- * 构建树
- * @param options - 附加参数
- * @param options.url - 用于请求数据的url
- * @param options.treeParent - 构建过程中用于指定树节点的父节点
- */
-export class Tree {
-    constructor(options: {
-        url: string;
-        treeParent: any;
-    });
-    /**
-     * 节点在树中的深度值
-     */
-    depth: number;
-    /**
-     * 节点的索引
-     */
-    index: string;
-    /**
-     * 节点索引与对应MapgisM3D节点的映射
-     */
-    indexHashMap: HashMap;
-    /**
-     * 节点的父节点
-     */
-    treeParent: any;
-    /**
-     * 节点的子节点数组
-     */
-    treeChildren: any;
-    /**
-     * MapgisM3D叶子节点的属性
-     */
-    attMap: any;
-    /**
-     * 构建树的节点名称
-     */
-    nodeName: string;
-    /**
-     * 根据tileset/layer构建树
-     * @param tileset - 图层
-     * @returns 返回函数是否执行成功
-     */
-    createTreeByTileset(tileset: any): boolean;
-    /**
-     * 根据名称查询得到对应的mapgism3d
-     */
-    getM3DByName(name: string): void;
-    /**
-     * 根据给定的url发请求完成构建树
-     * @param url - 服务地址url
-     */
-    createTreeByRequest(url: string): void;
 }
 
 /**
@@ -28819,12 +28797,6 @@ export class WindowLightEffect {
      */
     remove(): void;
 }
-
-/**
- * 渲染到纹理对象
- * @param positions - 位置点
- */
-export function PrimitiveTexture(options: any, positions: Cartesian3[]): void;
 
 /**
  * @param options - 可选参数
@@ -30232,6 +30204,15 @@ export class SelectTool {
  * @param [options.isTerrain = false] - 是否针对地形，为true时对地形数据进行贴地面积测量，为false时进行空间面积测量
  * @param [options.xPaneNum = 32] - 地形贴地面积测量中，向经度方向插入采样点的数量
  * @param [options.yPaneNum = 32] - 地形贴地面积测量中，向纬度方向插入采样点的数量
+ * @param [options.style = LabelStyle.FILL] - label 文字的样式，支持填充、线框。填充和线框， FILL, OUTLINE, FILL_AND_OUTLINE
+ * @param [options.font = '12pt 楷体'] - label 的字体以及大小 @see {@link https://html.spec.whatwg.org/multipage/canvas.html#text-styles}
+ * @param [options.fillColor = Color.WHITE] - label 的字体颜色
+ * @param [options.outlineColor = Color.WHITE] - label 文字线框的颜色
+ * @param [options.outlineWidth = 4.0] - label 的外轮廓边线
+ * @param [options.verticalOrigin = VerticalOrigin.BOTTOM] - label 的摆放位置
+ * @param [options.showBackground = true] - 是否显示 label 的背景
+ * @param [options.backgroundColor = new Color(0, 0, 0, 0.4)] - lable 背景的颜色
+ * @param [options.pixelOffset = new Cartesian2(0, -4)] - label 相对于设定点的偏移位置
  */
 export class MeasureAreaTool {
     constructor(viewer: any, options: {
@@ -30244,6 +30225,15 @@ export class MeasureAreaTool {
         isTerrain?: boolean;
         xPaneNum?: number;
         yPaneNum?: number;
+        style?: LabelStyle;
+        font?: string;
+        fillColor?: Color;
+        outlineColor?: Color;
+        outlineWidth?: number;
+        verticalOrigin?: VerticalOrigin;
+        showBackground?: boolean;
+        backgroundColor?: Color;
+        pixelOffset?: Cartesian2;
     });
 }
 
@@ -30268,6 +30258,15 @@ export class MeasureAreaTool {
  * @param [options.disableDepthTestDistance = Number.POSITIVE_INFINITY] - 只要小于这个距离深度检测就会失效，就会一直显示在最前面 不会被遮挡
  * @param [options.isTerrain = false] - 是否针对地形，为true时对地形数据进行贴地距离测量，为false时进行直线距离测量
  * @param [options.paneNum = 32] - 地形贴地距离测量中，向每段中插入采样点的数量
+ * @param [options.style = LabelStyle.FILL] - label 文字的样式，支持填充、线框。填充和线框， FILL, OUTLINE, FILL_AND_OUTLINE
+ * @param [options.font = '12pt 楷体'] - label 的字体以及大小 @see {@link https://html.spec.whatwg.org/multipage/canvas.html#text-styles}
+ * @param [options.fillColor = Color.WHITE] - label 的字体颜色
+ * @param [options.outlineColor = Color.WHITE] - label 文字线框的颜色
+ * @param [options.outlineWidth = 4.0] - label 的外轮廓边线
+ * @param [options.verticalOrigin = VerticalOrigin.BOTTOM] - label 的摆放位置
+ * @param [options.showBackground = true] - 是否显示 label 的背景
+ * @param [options.backgroundColor = new Color(0, 0, 0, 0.4)] - lable 背景的颜色
+ * @param [options.pixelOffset = new Cartesian2(0, -4)] - label 相对于设定点的偏移位置
  */
 export class MeasureLengthTool {
     constructor(viewer: any, options: {
@@ -30277,6 +30276,15 @@ export class MeasureLengthTool {
         disableDepthTestDistance?: number;
         isTerrain?: boolean;
         paneNum?: number;
+        style?: LabelStyle;
+        font?: string;
+        fillColor?: Color;
+        outlineColor?: Color;
+        outlineWidth?: number;
+        verticalOrigin?: VerticalOrigin;
+        showBackground?: boolean;
+        backgroundColor?: Color;
+        pixelOffset?: Cartesian2;
     });
     /**
      * 开始测量工具
@@ -30319,6 +30327,15 @@ export class MeasureLengthTool {
  * @param [options.disableDepthTestDistance = Number.POSITIVE_INFINITY] - 只要小于这个距离深度检测就会失效，就会一直显示在最前面 不会被遮挡
  * @param [options.lineColor] - 线段颜色
  * @param [options.pointColor] - 点颜色
+ * @param [options.style = LabelStyle.FILL] - label 文字的样式，支持填充、线框。填充和线框， FILL, OUTLINE, FILL_AND_OUTLINE
+ * @param [options.font = '12pt 楷体'] - label 的字体以及大小 @see {@link https://html.spec.whatwg.org/multipage/canvas.html#text-styles}
+ * @param [options.fillColor = Color.WHITE] - label 的字体颜色
+ * @param [options.outlineColor = Color.WHITE] - label 文字线框的颜色
+ * @param [options.outlineWidth = 4.0] - label 的外轮廓边线
+ * @param [options.verticalOrigin = VerticalOrigin.BOTTOM] - label 的摆放位置
+ * @param [options.showBackground = true] - 是否显示 label 的背景
+ * @param [options.backgroundColor = new Color(0, 0, 0, 0.4)] - lable 背景的颜色
+ * @param [options.pixelOffset = new Cartesian2(0, -4)] - label 相对于设定点的偏移位置
  */
 export class MeasureSlopeTool {
     constructor(viewer: any, options: {
@@ -30326,6 +30343,15 @@ export class MeasureSlopeTool {
         disableDepthTestDistance?: number;
         lineColor?: Color;
         pointColor?: Color;
+        style?: LabelStyle;
+        font?: string;
+        fillColor?: Color;
+        outlineColor?: Color;
+        outlineWidth?: number;
+        verticalOrigin?: VerticalOrigin;
+        showBackground?: boolean;
+        backgroundColor?: Color;
+        pixelOffset?: Cartesian2;
     });
     /**
      * 开始测量
@@ -30698,6 +30724,15 @@ export class Tooltip {
  * @param [options.lineColor] - 线颜色
  * @param [options.pointColor] - 点颜色
  * @param [options.lineMaterial] - 线材质
+ * @param [options.style = LabelStyle.FILL] - label 文字的样式，支持填充、线框。填充和线框， FILL, OUTLINE, FILL_AND_OUTLINE
+ * @param [options.font = '12pt 楷体'] - label 的字体以及大小 @see {@link https://html.spec.whatwg.org/multipage/canvas.html#text-styles}
+ * @param [options.fillColor = Color.WHITE] - label 的字体颜色
+ * @param [options.outlineColor = Color.WHITE] - label 文字线框的颜色
+ * @param [options.outlineWidth = 4.0] - label 的外轮廓边线
+ * @param [options.verticalOrigin = VerticalOrigin.BOTTOM] - label 的摆放位置
+ * @param [options.showBackground = true] - 是否显示 label 的背景
+ * @param [options.backgroundColor = new Color(0, 0, 0, 0.4)] - lable 背景的颜色
+ * @param [options.pixelOffset = new Cartesian2(0, -4)] - label 相对于设定点的偏移位置
  */
 export class TriangulationTool {
     constructor(viewer: any, options: {
@@ -30706,6 +30741,15 @@ export class TriangulationTool {
         lineColor?: Color;
         pointColor?: Color;
         lineMaterial?: Material;
+        style?: LabelStyle;
+        font?: string;
+        fillColor?: Color;
+        outlineColor?: Color;
+        outlineWidth?: number;
+        verticalOrigin?: VerticalOrigin;
+        showBackground?: boolean;
+        backgroundColor?: Color;
+        pixelOffset?: Cartesian2;
     });
     /**
      * 开始测量
@@ -40955,6 +40999,10 @@ export class Material {
      */
     static readonly ImageType: string;
     /**
+     * Gets the name of the image material.
+     */
+    static readonly TextImageType: string;
+    /**
      * Gets the name of the diffuce map material.
      */
     static readonly DiffuseMapType: string;
@@ -50658,10 +50706,10 @@ declare module "cesium/Source/MapGIS/Entity/Graphic" { import { Graphic } from '
 declare module "cesium/Source/MapGIS/Entity/Style" { import { Style } from 'cesium'; export default Style; }
 declare module "cesium/Source/MapGIS/IndexedDB/TransactionImplement" { import { TransactionImplement } from 'cesium'; export default TransactionImplement; }
 declare module "cesium/Source/MapGIS/Label/MapGISLabelLayer" { import { MapGISLabelLayer } from 'cesium'; export default MapGISLabelLayer; }
+declare module "cesium/Source/MapGIS/M3dLayer/M3DTree" { import { M3DTree } from 'cesium'; export default M3DTree; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3D" { import { MapGISM3D } from 'cesium'; export default MapGISM3D; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DSet" { import { MapGISM3DSet } from 'cesium'; export default MapGISM3DSet; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DTileContent" { import { MapGISM3DTileContent } from 'cesium'; export default MapGISM3DTileContent; }
-declare module "cesium/Source/MapGIS/M3dLayer/Tree" { import { Tree } from 'cesium'; export default Tree; }
 declare module "cesium/Source/MapGIS/Material/CircleWaveMaterialProperty" { import { CircleWaveMaterialProperty } from 'cesium'; export default CircleWaveMaterialProperty; }
 declare module "cesium/Source/MapGIS/Material/PolylineTrailLinkMaterialProperty" { import { PolylineTrailLinkMaterialProperty } from 'cesium'; export default PolylineTrailLinkMaterialProperty; }
 declare module "cesium/Source/MapGIS/Material/RadarMaterialProperty" { import { RadarMaterialProperty } from 'cesium'; export default RadarMaterialProperty; }
@@ -50676,7 +50724,6 @@ declare module "cesium/Source/MapGIS/PostProcessingEffects/SearchlightEffect" { 
 declare module "cesium/Source/MapGIS/PostProcessingEffects/StableParticle" { import { StableParticle } from 'cesium'; export default StableParticle; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/WeatherEffect" { import { WeatherEffect } from 'cesium'; export default WeatherEffect; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/WindowLightEffect" { import { WindowLightEffect } from 'cesium'; export default WindowLightEffect; }
-declare module "cesium/Source/MapGIS/Primitive/PrimitiveTexture" { import { PrimitiveTexture } from 'cesium'; export default PrimitiveTexture; }
 declare module "cesium/Source/MapGIS/Provider/BaiduMapImagerProvider" { import { BaiduMapImagerProvider } from 'cesium'; export default BaiduMapImagerProvider; }
 declare module "cesium/Source/MapGIS/Provider/GoogleMapImageryProvider" { import { GoogleMapImageryProvider } from 'cesium'; export default GoogleMapImageryProvider; }
 declare module "cesium/Source/MapGIS/Provider/MapGISMapServerImageryProvider" { import { MapGISMapServerImageryProvider } from 'cesium'; export default MapGISMapServerImageryProvider; }
