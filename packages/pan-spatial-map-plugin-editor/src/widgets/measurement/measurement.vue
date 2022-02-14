@@ -1,5 +1,10 @@
 <template>
-  <mapgis-measure ref="mapgisMeasure" v-if="is2DMapMode" />
+  <mapgis-measure
+    ref="mapgisMeasure"
+    v-if="is2DMapMode"
+    enableControl
+    isAdvanceControl
+  />
   <mapgis-3d-measure ref="mapgis3dMeasure" v-else />
 </template>
 

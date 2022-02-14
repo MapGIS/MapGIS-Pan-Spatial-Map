@@ -147,6 +147,9 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
   // 所选行政区的范围
   private geoJSON = {}
 
+  // 行政区要素数据，存储zone所有要素数据，避免重复查询
+  private zoneFeatures = {}
+
   private get highlightStyle() {
     return {
       label: {
@@ -243,54 +246,61 @@ export default class Zone extends Mixins(AppMixin, MapMixin) {
       if (this.currentZoneBreadcrumbItem) {
         const { ip, port, queryWay, docName } = this.defaults
         const { code, level } = this.currentZoneBreadcrumbItem
-        const params: Feature.FeatureQueryParam = {
-          ip,
-          port,
-          f: 'geojson',
-          pageCount: 3000,
-          coordPrecision: 8
-        }
-        if (gdbpInfo) {
-          const { gdbp, layerName, nameField, codeField } = gdbpInfo
-          const filterCode = this.filterCode(level, code)
-          const where = code ? `${codeField} LIKE '${filterCode}%'` : ''
-          params.where = where
-          if (queryWay === 'doc') {
-            params.docName = docName
-            params.layerName = layerName
-            params.layerIdxs = ''
-          } else if (queryWay === 'gdbp') {
-            params.gdbp = gdbp
-          }
-          const info = await Feature.FeatureQuery.query(params, false)
-          this.nextLevelFeatures = {
-            type: 'FeatureCollection',
-            features: info.features
-          }
-        } else if (
-          // 当选中最后一级别的时候
-          this.gdbpInfos.length > 0 &&
-          this.zoneBreadcrumbItems.length > this.gdbpInfos.length
-        ) {
-          const { gdbp, layerName, nameField, codeField } = this.gdbpInfos[
-            this.gdbpInfos.length - 1
-          ]
-          const where = `${codeField} = '${code}'`
-          params.where = where
-          if (queryWay === 'doc') {
-            params.docName = docName
-            params.layerName = layerName
-            params.layerIdxs = ''
-          } else if (queryWay === 'gdbp') {
-            params.gdbp = gdbp
-          }
-          const info = await Feature.FeatureQuery.query(params, false)
-          this.nextLevelFeatures = {
-            type: 'FeatureCollection',
-            features: info.features
-          }
+        if (this.zoneFeatures[code]) {
+          // 如果查询数据已存在，那直接使用已有数据
+          this.nextLevelFeatures = this.zoneFeatures[code]
         } else {
-          throw Error('gdbpInfos配置不正确')
+          const params: Feature.FeatureQueryParam = {
+            ip,
+            port,
+            f: 'geojson',
+            pageCount: 3000,
+            coordPrecision: 8
+          }
+          if (gdbpInfo) {
+            const { gdbp, layerName, nameField, codeField } = gdbpInfo
+            const filterCode = this.filterCode(level, code)
+            const where = code ? `${codeField} LIKE '${filterCode}%'` : ''
+            params.where = where
+            if (queryWay === 'doc') {
+              params.docName = docName
+              params.layerName = layerName
+              params.layerIdxs = ''
+            } else if (queryWay === 'gdbp') {
+              params.gdbp = gdbp
+            }
+            const info = await Feature.FeatureQuery.query(params, false)
+            this.nextLevelFeatures = {
+              type: 'FeatureCollection',
+              features: info.features
+            }
+            this.zoneFeatures[code] = this.nextLevelFeatures
+          } else if (
+            // 当选中最后一级别的时候
+            this.gdbpInfos.length > 0 &&
+            this.zoneBreadcrumbItems.length > this.gdbpInfos.length
+          ) {
+            const { gdbp, layerName, nameField, codeField } = this.gdbpInfos[
+              this.gdbpInfos.length - 1
+            ]
+            const where = `${codeField} = '${code}'`
+            params.where = where
+            if (queryWay === 'doc') {
+              params.docName = docName
+              params.layerName = layerName
+              params.layerIdxs = ''
+            } else if (queryWay === 'gdbp') {
+              params.gdbp = gdbp
+            }
+            const info = await Feature.FeatureQuery.query(params, false)
+            this.nextLevelFeatures = {
+              type: 'FeatureCollection',
+              features: info.features
+            }
+            this.zoneFeatures[code] = this.nextLevelFeatures
+          } else {
+            throw Error('gdbpInfos配置不正确')
+          }
         }
       } else {
         throw Error('暂无数据')
