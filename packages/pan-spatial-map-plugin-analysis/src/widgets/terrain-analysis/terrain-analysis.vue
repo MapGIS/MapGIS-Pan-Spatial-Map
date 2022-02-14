@@ -10,8 +10,7 @@
         <div class="analysis-type-text">{{ type.title }}</div>
       </div>
     </div>
-    <MpSlopeAnalysis v-show="tab === 'slope'" ref="slopeAnalysis" />
-    <MpAspectAnalysis v-show="tab === 'aspect'" ref="aspectAnalysis" />
+    <MpAspectSlope v-show="tab === 'aspectSlope'" ref="aspectSlopeAnalysis" />
     <MpContourAnalysis v-show="tab === 'contour'" ref="contourAnalysis" />
     <MpFlooding v-show="tab === 'flooding'" ref="floodingAnalysis" />
     <MpCutFillAnalysis v-show="tab === 'cut-fill'" ref="cutFillAnalysis" />
@@ -21,8 +20,7 @@
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import MpSlopeAnalysis from './slope-analysis.vue'
-import MpAspectAnalysis from './aspect-analysis.vue'
+import MpAspectSlope from './aspect-slope-analysis.vue'
 import MpFlooding from './flooding.vue'
 import MpCutFillAnalysis from './cut-fill-analysis.vue'
 import MpContourAnalysis from './contour-analysis.vue'
@@ -30,27 +28,21 @@ import MpContourAnalysis from './contour-analysis.vue'
 @Component({
   name: 'MpTerrainAnalysis',
   components: {
-    MpSlopeAnalysis,
-    MpAspectAnalysis,
+    MpAspectSlope,
     MpFlooding,
     MpCutFillAnalysis,
     MpContourAnalysis
   }
 })
 export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
-  private tab = 'slope'
+  private tab = 'aspectSlope'
 
-  private preTab = 'slope'
+  private preTab = 'aspectSlope'
 
   private analysis = [
     {
-      title: '坡度',
-      key: 'slope',
-      image: 'slope.png'
-    },
-    {
-      title: '坡向',
-      key: 'aspect',
+      title: '坡向坡度',
+      key: 'aspectSlope',
       image: 'aspect.png'
     },
     {
@@ -82,10 +74,8 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
   }
 
   getAnalysisComponent(tab: string) {
-    if (tab == 'slope') {
-      return this.$refs.slopeAnalysis
-    } else if (tab == 'aspect') {
-      return this.$refs.aspectAnalysis
+    if (tab == 'aspectSlope') {
+      return this.$refs.aspectSlopeAnalysis
     } else if (tab == 'contour') {
       return this.$refs.contourAnalysis
     } else if (tab == 'flooding') {
