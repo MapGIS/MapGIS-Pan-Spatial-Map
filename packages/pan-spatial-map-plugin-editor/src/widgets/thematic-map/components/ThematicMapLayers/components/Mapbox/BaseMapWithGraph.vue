@@ -1,6 +1,10 @@
 <template>
   <!-- 统计专题图 -->
-  <mp-marker-pro :marker="selfMarker" v-if="selfMarker.fid" />
+  <mp-marker-pro
+    :marker="selfMarker"
+    v-if="selfMarker.fid"
+    :defaultShowPopup="true"
+  />
 </template>
 <script lang="ts">
 import { Component, Mixins, Inject, Watch } from 'vue-property-decorator'
