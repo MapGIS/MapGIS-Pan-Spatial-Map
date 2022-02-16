@@ -31,7 +31,7 @@
                     <template>
                         <mapgis-3d-ponding-simulation-timeline
                             :value="sliderValue"
-                            :pond="pond"
+                            :isPlaying="pond"
                             :width="680"
                             :sliderStyle="sliderStyle"
                             @updateTime="
