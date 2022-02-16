@@ -224,7 +224,7 @@ export class DataCatalogManager {
 
           if (layerConfig.customParameters) {
             modelCacheFormat = this.parseModelCacheFormatType(
-              layerConfig.customParameters.format
+              layerConfig.customParameters[0].format
             )
           }
         }
