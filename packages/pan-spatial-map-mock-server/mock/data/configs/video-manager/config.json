@@ -1,5 +1,6 @@
 {
   "maxProjected": 10,
+  "hideVPInvisible": true,
   "videoOverlayLayerList": [
     {
       "id": "123-345-567-789",

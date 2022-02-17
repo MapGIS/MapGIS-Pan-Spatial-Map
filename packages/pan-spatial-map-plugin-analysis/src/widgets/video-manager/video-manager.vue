@@ -7,6 +7,7 @@
     :currentLayerId="currentLayerId"
     :currentVideoId="currentVideoId"
     :maxProjected="maxProjected"
+    :hideVPInvisible="hideVPInvisible"
     @load="load"
     @update-videoOverlayLayerList="updateVideoOverlayLayerList"
   >
@@ -64,6 +65,8 @@ export default class MpVideoManager extends Mixins(WidgetMixin) {
 
   private maxProjected = 10
 
+  private hideVPInvisible = false
+
   private get videoOverlayLayerList() {
     const videoOverlayLayerList = this.VideoManagerInstance.getVideoOverlayLayerList()
     return videoOverlayLayerList
@@ -118,6 +121,9 @@ export default class MpVideoManager extends Mixins(WidgetMixin) {
       this.videoLayerList
     this.maxProjected =
       (this.widgetInfo.config && this.widgetInfo.config.maxProjected) || 10
+    this.hideVPInvisible =
+      (this.widgetInfo.config && this.widgetInfo.config.hideVPInvisible) ||
+      false
   }
 
   load(videoComponent) {
