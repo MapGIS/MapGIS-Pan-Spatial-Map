@@ -79,6 +79,7 @@ export default class MpBuildingGrow extends Mixins(WidgetMixin) {
   private buildingGrow = null
 
   onLayerChange(value: string){
+      this.deleteBuildingGrow();
       const { viewer, vueKey, vueCesium } = this;
       const find = vueCesium.M3DIgsManager.findSource(vueKey, value);
       const m3ds = find.source;
