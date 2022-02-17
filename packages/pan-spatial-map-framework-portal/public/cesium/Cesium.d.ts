@@ -25643,7 +25643,7 @@ export class Style {
      * @property [stRotation = 0.0] - 多边形纹理顺时针旋转角度（弧度值）。
      * @property [extrudedHeight] - 多边形体拉伸高度。为0时为区，不为0时为多边形体。
      * @property [perPositionHeight = false] - 是否固定高度，为true时采用边界点的高度，为false时采用height高度。
-     * @property [height = 0.0] - 多边形体底面高度。当perPositionHeight为false时生效。
+     * @property [offsetHeight = 0.0] - 多边形体离地高度。当perPositionHeight为false时生效。
      * @property [closeTop = true] - 多边形（体）顶部是否闭合。（当定义extrudedHeight拉伸高度后生效）
      * @property [closeBottom = true] - 多边形体底部是否闭合。(当定义extrudedHeight拉伸高度后生效)
      * @property [arcType = ArcType.GEODESIC] - 多边形边界格式。大地GEODESIC或者恒向线RHUMB。
@@ -25658,7 +25658,7 @@ export class Style {
         stRotation?: number;
         extrudedHeight?: number;
         perPositionHeight?: boolean;
-        height?: number;
+        offsetHeight?: number;
         closeTop?: boolean;
         closeBottom?: boolean;
         arcType?: ArcType;
@@ -25704,7 +25704,7 @@ export class Style {
      * @property [stRotation = 0.0] - 多边形纹理顺时针旋转角度（弧度值）。
      * @property [extrudedHeight] - 多边形体拉伸高度。为0时为区，不为0时为多边形体。
      * @property [rotation = 0.0] - 多边形顺时针旋转角度（弧度值）。
-     * @property [height = 0.0] - 多边形体底面高度。
+     * @property [offsetHeight = 0.0] - 多边形体离地高度。
      * @property [color = Color.RED] - 颜色
      * @property [translucent = true] - 是否半透明
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
@@ -25715,7 +25715,7 @@ export class Style {
         stRotation?: number;
         extrudedHeight?: number;
         rotation?: number;
-        height?: number;
+        offsetHeight?: number;
         color?: string | Color;
         translucent?: boolean;
         materialType?: string;
@@ -25725,7 +25725,7 @@ export class Style {
     /**
      * 圆面(圆柱体)图元样式
      * @property [extrudedHeight] - 圆柱体长度。设置时为体，不定义为圆面
-     * @property [height] - 圆距离地面抬高高度。
+     * @property [offsetHeight] - 圆距离地面抬高高度。
      * @property [radius = 0] - 圆半径。
      * @property [stRotation = 0.0] - 圆纹理顺时针旋转角度（弧度值）。
      * @property [color = Color.RED] - 颜色
@@ -25737,7 +25737,7 @@ export class Style {
      */
     static CircleStyle: {
         extrudedHeight?: number;
-        height?: number;
+        offsetHeight?: number;
         radius?: number;
         stRotation?: number;
         color?: string | Color;
@@ -25751,7 +25751,7 @@ export class Style {
      * 方管图元样式
      * @property [color = Color.RED] - 颜色
      * @property [width = 10.0] - 线段宽度.
-     * @property [height = 0.0] - 方管高度（高于地平面）
+     * @property [offsetHeight = 0.0] - 方管高度（高于地平面）
      * @property [extrudedHeight] - 方管拉伸高度
      * @property [translucent = true] - 是否半透明
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
@@ -25761,7 +25761,7 @@ export class Style {
     static CorridorStyle: {
         color?: string | Color;
         width?: number;
-        height?: number;
+        offsetHeight?: number;
         extrudedHeight?: number;
         translucent?: boolean;
         materialType?: string;
@@ -25771,7 +25771,7 @@ export class Style {
     /**
      * 圆台（圆锥）图元样式
      * @property [extrudedHeight = 100] - 圆台长度。
-     * @property [height = 0] - 圆台距离地面抬高高度。
+     * @property [offsetHeight = 0] - 圆台距离地面抬高高度。
      * @property [topRadius = 0] - 圆台顶半径。
      * @property [bottomRadius = 0] - 圆台底半径。
      * @property [color = Color.RED] - 颜色
@@ -25783,7 +25783,7 @@ export class Style {
      */
     static CylinderStyle: {
         extrudedHeight?: number;
-        height?: number;
+        offsetHeight?: number;
         topRadius?: number;
         bottomRadius?: number;
         color?: string | Color;
@@ -25801,7 +25801,7 @@ export class Style {
      * @property [innerRadiusX] - 内半径x
      * @property [innerRadiusY] - 内半径Y
      * @property [innerRadiusZ] - 内半径Z
-     * @property [height = 0] - 椭球距离地面抬高高度。
+     * @property [offsetHeight = 0] - 椭球离地高度。
      * @property [color = Color.RED] - 颜色
      * @property [translucent = true] - 是否半透明
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
@@ -25815,7 +25815,7 @@ export class Style {
         innerRadiusX?: number;
         innerRadiusY?: number;
         innerRadiusZ?: number;
-        height?: number;
+        offsetHeight?: number;
         color?: string | Color;
         translucent?: boolean;
         materialType?: string;
@@ -25876,7 +25876,7 @@ export class Style {
      * 盒子图元样式
      * @property [isSquare = false] - 是否为正方体。
      * @property [color = Color.RED] - 颜色
-     * @property [height] - 位置高度
+     * @property [offsetHeight] - 盒子离地高度
      * @property [extrudedHeight = 0] - 拉伸长度
      * @property [heightReference = HeightReference.NONE] - 高度类型
      * @property [materialType = 'Color'] - 材质类型 材质类型参见{@link Material}
@@ -25887,7 +25887,7 @@ export class Style {
     static BoxStyle: {
         isSquare?: boolean;
         color?: string | Color;
-        height?: number;
+        offsetHeight?: number;
         extrudedHeight?: number;
         heightReference?: number;
         materialType?: string;
@@ -29571,11 +29571,15 @@ export class SceneLayer {
  * @param options.successCallback - 成功回调函数
  * @param options.errorCallback - 错误回调函数
  * @param options.material - 材质
- * @param options.width - 显示柱状体或饼状的宽度
- * @param options.addExtrudedHeight - 是否为饼状体添加高度
- * @param options.addGeoGeometry - 解析GeoJson数据时，是否绘制polygon的Geometry
+ * @param [options.width = 5000] - 显示柱状体或饼状的宽度
+ * @param [options.addExtrudedHeight = false] - 是否为饼状体添加高度
+ * @param [options.addGeoGeometry = false] - 解析GeoJson数据时，是否绘制polygon的Geometry
  * @param options.attributeName - 用于显示的属性名
  * @param options.attributeColor - 各个属性对应的颜色
+ * @param [options.textFont = '50px Helvetica'] - 标注字体
+ * @param [options.textColor = Color.RED] - 标注颜色
+ * @param [options.nearFarScalar = new NearFarScalar(0, 1, 5000000, 0)] - 在指定距离内是否可见
+ * @param [options.textHeightOffset = 0] - 字体高度的偏移值
  */
 export class ThemeManager {
     constructor(viewer: any, options: {
@@ -29583,11 +29587,15 @@ export class ThemeManager {
         successCallback: (...params: any[]) => any;
         errorCallback: (...params: any[]) => any;
         material: any;
-        width: number;
-        addExtrudedHeight: boolean;
-        addGeoGeometry: boolean;
+        width?: number;
+        addExtrudedHeight?: boolean;
+        addGeoGeometry?: boolean;
         attributeName: any[];
         attributeColor: any[];
+        textFont?: string;
+        textColor?: Color;
+        nearFarScalar?: any;
+        textHeightOffset?: number;
     });
     /**
      * 用于显示的属性名
@@ -29605,6 +29613,22 @@ export class ThemeManager {
      * 解析GeoJson数据时，是否绘制polygon的Geometry
      */
     addGeoGeometry: number;
+    /**
+     * 标注字体
+     */
+    textFont: string;
+    /**
+     * 标注颜色
+     */
+    textColor: Color;
+    /**
+     * 在指定距离内是否可见
+     */
+    nearFarScalar: any;
+    /**
+     * 字体高度的偏移值
+     */
+    textHeightOffset: number;
     /**
      * 查询
      * @param queryUrl - Rest服务查询url
