@@ -141,6 +141,13 @@ export default class MpVideoManager extends Mixins(WidgetMixin) {
     this.videoComponent.unmount()
   }
 
+  // 微件关闭时
+  onClose() {
+    // 微件失活时自动保存配置到后台
+    this.saveConfig()
+    this.videoComponent.unmount()
+  }
+
   updateVideoOverlayLayerList(layerList) {
     this.videoOverlayLayerList = [...layerList]
   }
