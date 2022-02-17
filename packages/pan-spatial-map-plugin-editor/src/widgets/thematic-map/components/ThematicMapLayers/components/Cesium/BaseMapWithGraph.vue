@@ -6,6 +6,10 @@
       :type="type"
       :attributeName="attributeName"
       :attributeColor="attributeColor"
+      :width="width"
+      :textFont="textFont"
+      :textColor="textColor"
+      :textHeightOffset="textHeightOffset"
       @load="load"
     />
     <mp-3d-marker-pro
@@ -34,6 +38,11 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
   private graphThemeLayer: any = null
 
   private typeStr = ''
+
+  // 图标实体颜色
+  get colors() {
+    return this.subjectData?.colors
+  }
 
   get type() {
     let type = ''
@@ -72,14 +81,34 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
     return this.subjectData.graphType
   }
 
+  get setting3D() {
+    return this.subjectData.setting3D
+  }
+
+  get width() {
+    return this.subjectData.setting3D.width
+  }
+
+  get textFont() {
+    return this.subjectData.setting3D.textFont
+  }
+
+  get textHeightOffset() {
+    return this.subjectData.setting3D.textHeightOffset
+  }
+
+  get textColor() {
+    return this.subjectData.setting3D.textColor
+  }
+
   // 图标实体颜色
-  private colors: string[] = [
-    '#FFB980',
-    '#5AB1EF',
-    '#B6A2DE',
-    '#2EC7C9',
-    '#D87A80'
-  ]
+  // private colors: string[] = [
+  //   '#FFB980',
+  //   '#5AB1EF',
+  //   '#B6A2DE',
+  //   '#2EC7C9',
+  //   '#D87A80'
+  // ]
 
   get attributeColor() {
     const cesiumColors = []

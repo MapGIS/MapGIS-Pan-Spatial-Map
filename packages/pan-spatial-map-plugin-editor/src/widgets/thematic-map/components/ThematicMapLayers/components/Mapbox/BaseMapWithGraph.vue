@@ -35,13 +35,13 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
   private selfMarker: IMarker | Record<string, unknown> = {}
 
   // 图标实体颜色
-  private colors: string[] = [
-    '#FFB980',
-    '#5AB1EF',
-    '#B6A2DE',
-    '#2EC7C9',
-    '#D87A80'
-  ]
+  // private colors: string[] = [
+  //   '#FFB980',
+  //   '#5AB1EF',
+  //   '#B6A2DE',
+  //   '#2EC7C9',
+  //   '#D87A80'
+  // ]
 
   // Bar add Bar3D 图表配置
   private chartsSettingForBarAddBar3DCommon = {
@@ -107,6 +107,11 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     opacity: 0.9,
     chartsSetting: {},
     themeFields: []
+  }
+
+  // 图标实体颜色
+  get colors() {
+    return this.subjectData?.colors
   }
 
   // 图表x轴或y轴字段
