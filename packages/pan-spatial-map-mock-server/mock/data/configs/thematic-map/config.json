@@ -47,6 +47,13 @@
                     "codeYear": "",
                     "dataYear": ""
                   },
+                  "colors": ["#FFB980", "#5AB1EF"],
+                  "setting3D": {
+                    "width": 50000,
+                    "textFont": "50px Helvetica",
+                    "textColor": "#008000",
+                    "textHeightOffset": 10000
+                  },
                   "table": {
                     "showFields": [
                       "面积",
@@ -103,6 +110,13 @@
                           "code": "",
                           "codeYear": "",
                           "dataYear": ""
+                        },
+                        "colors": ["#FFB980", "#5AB1EF"],
+                        "setting3D": {
+                          "width": 50000,
+                          "textFont": "50px Helvetica",
+                          "textColor": "#008000",
+                          "textHeightOffset": 10000
                         },
                         "table": {
                           "showFields": [
@@ -280,6 +294,13 @@
                           "code": "",
                           "codeYear": "",
                           "dataYear": ""
+                        },
+                        "colors": ["#FFB980", "#5AB1EF"],
+                        "setting3D": {
+                          "width": 50000,
+                          "textFont": "50px Helvetica",
+                          "textColor": "#008000",
+                          "textHeightOffset": 10000
                         },
                         "table": {
                           "showFields": [
