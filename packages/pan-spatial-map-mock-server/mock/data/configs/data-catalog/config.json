@@ -780,6 +780,18 @@
             "serverUrl": ""
           },
           {
+            "label": "HKMAPX0124new",
+            "describe": "HKMAPX0124new",
+            "ip": "192.168.199.67",
+            "port": "8089",
+            "layerServiceType": "DOC3D",
+            "name": "HKMAPX0124new",
+            "searchName": "",
+            "model": "globe",
+            "guid": "FB0E5340-3537-965B-622A-C4DDA57FFKCD",
+            "serverUrl": ""
+          },
+          {
             "label": "武汉市地形",
             "describe": "武汉市地形",
             "ip": "",
