@@ -53,7 +53,7 @@
             :horizontal-offset='28'
             :vertical-offset='30'
             :width='playWidth'
-            :height='100'
+            :height='80'
             :has-padding='false'
             anchor='bottom-center'
             v-bind='slotProps'
@@ -205,7 +205,9 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
     if (this.cityGrow) {
       this.cityGrow.unmount()
     }
-    this.$refs.cityGrowOptions.remove()
+
+    this.cityGrowOptions = {}
+    this.$refs.cityGrowOptions.unmount()
     this.selectResult = ''
   }
 

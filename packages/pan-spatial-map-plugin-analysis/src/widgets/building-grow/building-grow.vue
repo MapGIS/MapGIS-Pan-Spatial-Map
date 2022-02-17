@@ -27,7 +27,7 @@
           v-bind='slotProps'
         >
           <template>
-            <mapgis-3d-building-glow
+            <mapgis-3d-building-grow
               v-if='startBuildingGrow'
               :vueIndex='vueIndex'
               :enableSteps='false'
