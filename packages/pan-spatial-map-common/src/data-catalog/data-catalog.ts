@@ -222,7 +222,10 @@ export class DataCatalogManager {
         if (layerConfig.serverURL && layerConfig.serverURL !== '') {
           url = layerConfig.serverURL
 
-          if (layerConfig.customParameters) {
+          if (
+            layerConfig.customParameters &&
+            layerConfig.customParameters.length > 0
+          ) {
             modelCacheFormat = this.parseModelCacheFormatType(
               layerConfig.customParameters[0].format
             )
