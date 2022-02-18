@@ -27,7 +27,7 @@
         </mapgis-ui-form-model-item>
       </mapgis-ui-form-model>
     </div>
-    <mapgis-3d-overlay-analysis
+    <mapgis-3d-analysis-overlay
       :layout='layout'
       :baseUrl='baseOverlayUrl'
       :srcType='srcType'
@@ -38,7 +38,7 @@
       @listenLayer='showLayer'
       @listenOverlayAdd='showAdd'
       @load='load'
-    ></mapgis-3d-overlay-analysis>
+    ></mapgis-3d-analysis-overlay>
   </div>
 </template>
 
