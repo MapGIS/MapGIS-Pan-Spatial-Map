@@ -22,8 +22,8 @@
                     title="积水仿真"
                     :horizontal-offset="28"
                     :vertical-offset="30"
-                    :width="700"
-                    :height="100"
+                    :width="580"
+                    :height="80"
                     :has-padding="false"
                     anchor="bottom-center"
                     v-bind="slotProps"
@@ -32,7 +32,7 @@
                         <mapgis-3d-ponding-simulation-timeline
                             :value="sliderValue"
                             :isPlaying="pond"
-                            :width="680"
+                            :width="560"
                             :sliderStyle="sliderStyle"
                             @updateTime="
                                 (e) => {
