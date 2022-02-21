@@ -176,6 +176,7 @@ import {
   ExhibitionControllerMixin,
   Exhibition,
   LayerType,
+  ModelCacheFormat,
   IGSMapImageLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
@@ -189,7 +190,8 @@ import {
 } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
-  dataCatalogManagerInstance
+  dataCatalogManagerInstance,
+  events
 } from '@mapgis/pan-spatial-map-common'
 import MpMetadataInfo from '../MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../CustomQuery/CustomQuery.vue'
@@ -362,6 +364,10 @@ export default class MpTreeLayer extends Mixins(
       this.vueCesium,
       this.viewer
     )
+  }
+
+  mounted() {
+    this.$root.$on(events.SCENE_LOADEN_ON_MAP, this.sceneLoadedCallback)
   }
 
   /**
@@ -595,6 +601,93 @@ export default class MpTreeLayer extends Mixins(
         this.setSublayers(item.sublayers, item.key, arr)
       }
     }
+  }
+
+  /**
+   * 三维模型缓存加载完后的回调
+   */
+  sceneLoadedCallback(id) {
+    console.log(this.layers)
+    const layers = [...this.layers]
+    const vm = this
+    for (let i = 0; i < this.layers.length; i++) {
+      const layer = this.layers[i]
+      if (layer.id === id && layer.type === LayerType.ModelCache) {
+        let source
+        if (layer.format === ModelCacheFormat.m3d) {
+          source = vm.sceneController.findM3DIgsSource(id)
+        } else if (layer.format === ModelCacheFormat.cesium3dTileset) {
+          source = vm.sceneController.findTileset3DSource(id)
+        }
+        console.log(source)
+        source.readyPromise.then(() => {
+          console.log(source)
+          const extent = vm._getM3DSetRange(source)
+          console.log(extent)
+          for (let j = 0; j < vm.layers.length; j++) {
+            if (vm.layers[j].id === id) {
+              vm.layers[j].fullExtent.xmin = extent.xmin
+              vm.layers[j].fullExtent.ymin = extent.ymin
+              vm.layers[j].fullExtent.xmax = extent.xmax
+              vm.layers[j].fullExtent.ymax = extent.ymax
+            }
+          }
+        })
+        break
+      }
+    }
+  }
+
+  /**
+   * 获取m3d经纬度包围盒
+   */
+  _getM3DSetRange(m3dSet) {
+    const { Cesium } = this
+    // 如果模型未加载完，这里transform为undefined
+    const transform = m3dSet._transform
+    if (!transform) {
+      return null
+    }
+    const inverseMatrix = Cesium.Matrix4.inverse(
+      transform,
+      new Cesium.Matrix4()
+    )
+    // 东北角
+    const northeastCornerCartesian =
+      m3dSet._root.boundingVolume.northeastCornerCartesian
+    const northeastCornerDegree = this._degreeFromCartesian(
+      northeastCornerCartesian
+    )
+    const xmax = northeastCornerDegree.longitude
+    const ymax = northeastCornerDegree.latitude
+
+    // 西南角
+    const southwestCornerCartesian =
+      m3dSet._root.boundingVolume.southwestCornerCartesian
+    const southwestCornerDegree = this._degreeFromCartesian(
+      southwestCornerCartesian
+    )
+
+    const xmin = southwestCornerDegree.longitude
+    const ymin = southwestCornerDegree.latitude
+
+    const zmin = m3dSet._root.boundingVolume.minimumHeight
+    const zmax = m3dSet._root.boundingVolume.maximumHeight
+    return { xmin, ymin, xmax, ymax, zmin, zmax }
+  }
+
+  /**
+   * 笛卡尔坐标转世界坐标
+   */
+  _degreeFromCartesian(p) {
+    if (!p) return
+    const { Cesium } = this
+    const point = {}
+    const cartographic = Cesium.Cartographic.fromCartesian(p)
+    point.longitude = Cesium.Math.toDegrees(cartographic.longitude)
+    point.latitude = Cesium.Math.toDegrees(cartographic.latitude)
+    point.height = cartographic.height // 模型高度
+    return point
   }
 
   fitBounds(item, layeExtent) {
