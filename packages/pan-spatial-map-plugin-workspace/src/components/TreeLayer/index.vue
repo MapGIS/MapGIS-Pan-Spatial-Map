@@ -607,7 +607,6 @@ export default class MpTreeLayer extends Mixins(
    * 三维模型缓存加载完后的回调
    */
   sceneLoadedCallback(id) {
-    console.log(this.layers)
     const layers = [...this.layers]
     const vm = this
     for (let i = 0; i < this.layers.length; i++) {
@@ -619,11 +618,11 @@ export default class MpTreeLayer extends Mixins(
         } else if (layer.format === ModelCacheFormat.cesium3dTileset) {
           source = vm.sceneController.findTileset3DSource(id)
         }
-        console.log(source)
+        // console.log(source)
         source.readyPromise.then(() => {
-          console.log(source)
+          // console.log(source)
           const extent = vm._getM3DSetRange(source)
-          console.log(extent)
+          // console.log(extent)
           for (let j = 0; j < vm.layers.length; j++) {
             if (vm.layers[j].id === id) {
               vm.layers[j].fullExtent.xmin = extent.xmin
