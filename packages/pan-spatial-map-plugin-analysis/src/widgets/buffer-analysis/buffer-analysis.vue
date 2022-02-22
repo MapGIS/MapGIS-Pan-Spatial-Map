@@ -19,7 +19,7 @@
       </mapgis-ui-form-model>
     </div>
     <!-- 使用缓冲区分析组件 -->
-    <mapgis-3d-buffer-analysis
+    <mapgis-3d-analysis-buffer
       :layout='layout'
       :baseUrl='baseBufferUrl'
       :srcType='srcType'
@@ -29,7 +29,7 @@
       @listenFeature='showFeature(arguments)'
       @listenBufferAdd='showAdd'
       @load='load'
-    ></mapgis-3d-buffer-analysis>
+    ></mapgis-3d-analysis-buffer>
   </div>
 </template>
 
