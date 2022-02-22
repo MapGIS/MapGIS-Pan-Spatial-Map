@@ -53,7 +53,7 @@
             :horizontal-offset='28'
             :vertical-offset='30'
             :width='playWidth'
-            :height='80'
+            :height='60'
             :has-padding='false'
             anchor='bottom-center'
             v-bind='slotProps'
@@ -63,7 +63,6 @@
                 v-if='startCityGrow'
                 :baseUrl='url'
                 :featureStyle='featureStyle'
-                :width='playWidth - 20'
                 ref='cityGrow'
                 @loaded='load'
               ></mapgis-3d-city-grow>
@@ -102,7 +101,7 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
 
   private startCityGrow = false
 
-  private playWidth = 720
+  private playWidth = 715
 
   // 城市生长对象
   private cityGrow = null
@@ -220,7 +219,7 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
 
 <style lang='less' scoped>
 .mp-widget-city-grow {
-  margin: 10px;
+  margin: 0px 5px;
 }
 
 .mp-row-style {
