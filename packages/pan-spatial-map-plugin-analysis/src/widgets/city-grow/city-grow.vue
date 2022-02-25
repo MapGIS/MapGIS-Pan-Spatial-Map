@@ -1,7 +1,7 @@
 <template>
   <div class='mp-widget-city-grow'>
     <a-row>
-      <label class='mp-widget-label'>MapGIS文档地址设置</label>
+      <label class='mp-widget-label'>数据源设置</label>
     </a-row>
     <div>
       <a-row class='mp-row-style'>
@@ -11,7 +11,7 @@
           :not-found-content='null'
           :filter-option='true'
           :allowClear='true'
-          placeholder='请选择或输入文档地址'
+          placeholder='请选择或输入地址'
           @change='onUrlChange'
           @search='handleSearch'
           @blur='handleBlur'
@@ -26,7 +26,7 @@
         </a-select>
 
       </a-row>
-      <a-row style='height: 42px'>
+      <a-row style='height:40px'>
         <a-textarea
           class='url-example'
           disabled
@@ -95,7 +95,7 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
 
   private cityGrowOptions = { }
 
-  private urlExample = 'http://192.168.21.191:6163/igs/rest/mrfs/docs/shengZhenBaiMo/0/0'
+  private urlExample = 'http://<server>:<port>/igs/rest/mrfs/docs/{docName}/{mapIndex}/{layerIndex}'
 
   private featureStyle = {}
 
@@ -219,7 +219,7 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
 
 <style lang='less' scoped>
 .mp-widget-city-grow {
-  margin: 0px 5px;
+  margin: 0px 5px 5px 5px;
 }
 
 .mp-row-style {
