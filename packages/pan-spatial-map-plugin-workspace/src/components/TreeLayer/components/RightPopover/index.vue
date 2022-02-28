@@ -21,8 +21,9 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
   listData = [
     {
       name: '图层元数据',
-      show: this.isMetaData(this.layerItem),
-      click: () => this.metaDataInfo()
+      show:
+        this.isMetaData(this.layerItem) && this.isParentLayer(this.layerItem),
+      click: () => this.metaDataInfo(),
     },
     {
       name: '查看属性',
@@ -31,7 +32,10 @@ export default class RightPopover extends Mixins(layerTypeUtil) {
     },
     {
       name: '自定义查询',
-      show: this.isMetaData(this.layerItem) && !this.isDataFlow(this.layerItem),
+      show:
+        this.isMetaData(this.layerItem) &&
+        !this.isDataFlow(this.layerItem) &&
+        !this.isParentLayer(this.layerItem),
       click: () => this.customQuery()
     },
     {
