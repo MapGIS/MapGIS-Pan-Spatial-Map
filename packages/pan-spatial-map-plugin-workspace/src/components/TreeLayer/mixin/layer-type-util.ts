@@ -5,7 +5,7 @@ const { FeatureQuery } = Feature
 
 import {
   baseConfigInstance,
-  dataCatalogManagerInstance
+  dataCatalogManagerInstance,
 } from '@mapgis/pan-spatial-map-common'
 
 @Component({})
@@ -153,7 +153,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
    */
   showPopover(item) {
     if (
-      this.isMetaData(item) ||
+      (this.isParentLayer(item) && this.isMetaData(item)) ||
       this.isAttributes(item) ||
       this.isParentLayer(item) ||
       this.isIGSScene(item) ||
@@ -212,16 +212,16 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
    */
   isMetaData(item) {
     const bool =
-      this.isParentLayer(item) &&
-      (this.isIGSScene(item) ||
-        this.isIgsDocLayer(item) ||
-        this.isIgsVectorLayer(item) ||
-        this.isIgsTileLayer(item) ||
-        this.isWMTSLayer(item) ||
-        this.isWMSLayer(item) ||
-        this.isArcGISMapImage(item) ||
-        this.isArcGISTile(item) ||
-        this.isVectorTile(item))
+      // this.isParentLayer(item) &&
+      this.isIGSScene(item) ||
+      this.isIgsDocLayer(item) ||
+      this.isIgsVectorLayer(item) ||
+      this.isIgsTileLayer(item) ||
+      this.isWMTSLayer(item) ||
+      this.isWMSLayer(item) ||
+      this.isArcGISMapImage(item) ||
+      this.isArcGISTile(item) ||
+      this.isVectorTile(item)
     return bool
   }
 
