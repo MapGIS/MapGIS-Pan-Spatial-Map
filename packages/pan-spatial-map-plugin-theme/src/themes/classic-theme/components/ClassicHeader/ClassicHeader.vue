@@ -14,6 +14,9 @@
       </a-menu>
     </div>
     <template #header-right>
+      <a :href="application.links[0].url" target="_blank">{{
+        application.links[0].label
+      }}</a>
       <mp-pan-spatial-map-header-avatar
         v-if="isHeaderAvatarComponentExist"
         class="header-item"
@@ -54,22 +57,22 @@ import { ThemeContentMixin, WidgetManager } from '@mapgis/web-app-framework'
 import { mapState } from 'vuex'
 import {
   MpPanSpatialMapHeader,
-  isExternalLayoutElementComponentExist
+  isExternalLayoutElementComponentExist,
 } from '../../../../components'
 
 export default {
   name: 'MpPanSpatialMapClassicHeader',
   components: {
-    MpPanSpatialMapHeader
+    MpPanSpatialMapHeader,
   },
   mixins: [ThemeContentMixin],
   data() {
     return {
-      aboutWindowVisible: false
+      aboutWindowVisible: false,
     }
   },
   computed: {
-    ...mapState('setting', { themeMode: state => state.theme.mode }),
+    ...mapState('setting', { themeMode: (state) => state.theme.mode }),
     menuTheme() {
       return this.themeMode == 'light' ? this.themeMode : 'dark'
     },
@@ -80,20 +83,20 @@ export default {
     },
     isAboutComponentExist() {
       return isExternalLayoutElementComponentExist('MpPanSpatialMapAbout')
-    }
+    },
   },
   methods: {
     onSelect({ item, key, selectedKeys }) {
       WidgetManager.getInstance().triggerWidgetOpen(
-        this.widgets.find(val => {
+        this.widgets.find((val) => {
           return val.id === key
         })
       )
     },
     onShowAboutInfo() {
       this.aboutWindowVisible = true
-    }
-  }
+    },
+  },
 }
 </script>
 
