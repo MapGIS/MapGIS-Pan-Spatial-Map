@@ -30,9 +30,9 @@ export default {
     themeMode: {
       type: String,
       required: false,
-      default: 'dark'
-    }
-  }
+      default: 'dark',
+    },
+  },
 }
 </script>
 
@@ -52,20 +52,23 @@ export default {
   }
   .header-wide {
     display: flex;
-    height: 100%;
+    height: 48px;
     padding-left: 8px;
     .header-left {
       display: flex;
       min-width: 240px;
       .logo {
         position: relative;
-        height: 100%;
+        height: 48px;
         overflow: hidden;
         .icon {
           color: @primary-color;
           font-size: 32px;
           margin-right: 8px;
-          vertical-align: middle;
+          position: relative;
+          /deep/img {
+            vertical-align: unset !important;
+          }
         }
         h1 {
           display: inline-block;
@@ -110,9 +113,9 @@ export default {
         color: inherit;
         padding: 0 12px;
         cursor: pointer;
-        a{
+        a {
           color: inherit;
-          i{
+          i {
             font-size: 16px;
           }
         }
@@ -124,7 +127,7 @@ export default {
             background-color: @@class;
           }
         }
-      })
+      });
     }
   }
 }

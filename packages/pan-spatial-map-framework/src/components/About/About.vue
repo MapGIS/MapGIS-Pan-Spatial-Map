@@ -49,6 +49,10 @@ export default {
       img {
         width: 32px !important;
       }
+      .icon > svg {
+        width: 32px !important;
+        height: 32px !important;
+      }
     }
     .title {
       font-size: 20px;
