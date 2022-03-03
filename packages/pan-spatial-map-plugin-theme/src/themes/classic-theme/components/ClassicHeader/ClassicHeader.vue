@@ -14,9 +14,12 @@
       </a-menu>
     </div>
     <template #header-right>
-      <a :href="application.links[0].url" target="_blank">{{
-        application.links[0].label
-      }}</a>
+      <a
+        :href="application.links[0].url"
+        target="_blank"
+        class="header-links"
+        >{{ application.links[0].label }}</a
+      >
       <mp-pan-spatial-map-header-avatar
         v-if="isHeaderAvatarComponentExist"
         class="header-item"
@@ -113,6 +116,10 @@ export default {
           margin-right: 10px;
         }
       }
+    }
+    .header-links {
+      font-size: 500;
+      color: #2d82ff;
     }
   }
 }
