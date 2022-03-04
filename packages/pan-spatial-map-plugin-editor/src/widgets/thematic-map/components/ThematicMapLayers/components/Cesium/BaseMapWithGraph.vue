@@ -41,7 +41,15 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
 
   // 图标实体颜色
   get colors() {
-    return this.subjectData?.colors
+    return (
+      this.subjectData.colors || [
+        '#FFB980',
+        '#5AB1EF',
+        '#B6A2DE',
+        '#2EC7C9',
+        '#D87A80'
+      ]
+    )
   }
 
   get type() {
