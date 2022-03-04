@@ -5,6 +5,7 @@
     :theme-options="themeOptions"
     :show-panel="false"
     :enable-tips="true"
+    :tips-options="tipsOptions"
     :layer-id="id"
     :field="field"
     :data-source="geojson"
@@ -19,6 +20,11 @@ import BaseMixin from '../../mixins/base'
 
 @Component
 export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
+  private tipsOptions = {
+    enableHighlight: true,
+    type: 'point'
+  }
+
   get themeOptions() {
     if (!this.subjectData) {
       return {}

@@ -47,6 +47,21 @@ export default class BaseMixin extends Vue {
     return this.subjectData?.field
   }
 
+  get popup() {
+    return this.subjectData ? this.subjectData.popup : undefined
+  }
+
+  get propertiesOption() {
+    let propertiesOption
+    if (this.popup) {
+      const { showFields, showFieldsTitle } = this.popup
+      if (showFields && showFields.length > 0) {
+        propertiesOption = { fields: showFields, fieldsTitle: showFieldsTitle }
+      }
+    }
+    return propertiesOption
+  }
+
   /**
    * 专题图鼠标移入高亮
    * @param {string} fid 要素fid
