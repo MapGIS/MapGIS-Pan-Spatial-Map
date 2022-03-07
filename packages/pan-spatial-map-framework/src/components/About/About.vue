@@ -9,7 +9,7 @@
     </div>
     <div class="footer">
       <div class="copyright">
-        Copyright<a-icon type="copyright" />{{ copyright }}
+        Copyright<a-icon type="copyright" />{{ application.copyright }}
       </div>
     </div>
   </div>
