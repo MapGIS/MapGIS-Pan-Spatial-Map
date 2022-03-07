@@ -36,6 +36,7 @@
             style="width:100%"
             :min="item.min"
             :max="item.max"
+            :step="item.step"
           />
           <mapgis-ui-sketch-color-picker
             v-else
@@ -161,7 +162,9 @@ export default class MpEditDataFlowStyle extends Vue {
             type: 'number',
             value: 1,
             label: '描边透明度',
-            min: 0
+            min: 0,
+            max: 1,
+            step: 0.1
           }
         ]
         if (type === 'point') {
