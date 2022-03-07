@@ -30,9 +30,11 @@
   "dependencies": {
     "vue-color": "^2.8.1",
     "json2csv": "^5.0.6",
-    "@mapgis/webclient-es6-service": "^10.5.5",
-    "@mapgis/webclient-es6-mapboxgl": "link:../WebClient-JavaScript/src/mapboxgl",
-    "@mapgis/webclient-vue-ui": "link:../WebClient-Vue/ui",
+    "@mapgis/webclient-es6-service": "^10.5.13",
+    "@mapgis/webclient-es6-mapboxgl": "^10.5.13",
+    "@mapgis/webclient-vue-ui": "^10.5.12",
+    "@mapgis/webclient-vue-mapboxgl": "^10.5.12",
+    "@mapgis/webclient-vue-cesium": "^10.5.12",
     "@mapgis/web-app-framework": "link:../MapGIS-Web-App-Framework"
   },
   "devDependencies": {
