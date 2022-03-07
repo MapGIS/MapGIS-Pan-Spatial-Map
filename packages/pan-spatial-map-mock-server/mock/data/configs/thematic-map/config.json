@@ -177,6 +177,7 @@
                           "codeYear": "",
                           "dataYear": ""
                         },
+                        "colors": ["#FFB980", "#5AB1EF"],
                         "table": {
                           "showFields": [
                             "面积",
@@ -236,6 +237,7 @@
                           "codeYear": "",
                           "dataYear": ""
                         },
+                        "colors": ["#FFB980", "#5AB1EF"],
                         "table": {
                           "showFields": [
                             "面积",
@@ -361,6 +363,7 @@
                           "codeYear": "",
                           "dataYear": ""
                         },
+                        "colors": ["#FFB980", "#5AB1EF"],
                         "table": {
                           "showFields": [
                             "面积",
@@ -379,7 +382,10 @@
                         },
                         "popup": {
                           "showFields": ["GDP_2007", "GDP_2008"],
-                          "showFieldsTitle": {},
+                          "showFieldsTitle": {
+                            "gdb2007": "GDP_2007",
+                            "gdb2008": "GDP_2008"
+                          },
                           "title": ""
                         }
                       }
@@ -400,7 +406,7 @@
             "type": "gdbp",
             "data": [
               {
-                "time": "2008",
+                "time": "2006",
                 "subData": [
                   {
                     "minZoom": "0",
@@ -408,6 +414,7 @@
                     "queryFeatureNum": "10000+",
                     "ip": "",
                     "port": "",
+                    "src": "",
                     "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
                     "docName": "",
                     "layerIndex": "",
@@ -427,7 +434,7 @@
                       "lineType": "走廊状",
                       "sides": 5,
                       "useHeightScale": true,
-                      "heightScale": 0.000001,
+                      "heightScale": 1.0e-6,
                       "classificationType": "both"
                     },
                     "color": [
@@ -453,7 +460,7 @@
                       },
                       {
                         "min": "80000000",
-                        "max": "100000000",
+                        "max": "110000000",
                         "sectionColor": "#FF3399"
                       }
                     ],
@@ -463,15 +470,173 @@
                         "周长",
                         "省名",
                         "人口数",
-                        "GDP_2007",
-                        "GDP_2008"
+                        "GDP_2011",
+                        "GDP_2012",
+                        "GDP_2013"
                       ],
                       "showFieldsTitle": {}
                     },
                     "graph": {
                       "showFields": ["人口数"],
                       "showFieldsTitle": {},
-                      "field": "省名"
+                      "field": "省名",
+                      "target": []
+                    },
+                    "popup": {
+                      "showFields": ["省名", "人口数"],
+                      "showFieldsTitle": {
+                        "省": "省名"
+                      },
+                      "title": ""
+                    }
+                  }
+                ]
+              },
+              {
+                "time": "2007",
+                "subData": [
+                  {
+                    "minZoom": "0",
+                    "maxZoom": "10",
+                    "queryFeatureNum": "10000+",
+                    "ip": "",
+                    "port": "",
+                    "src": "",
+                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
+                    "docName": "",
+                    "layerIndex": "",
+                    "layerName": "undefined",
+                    "showLegend": "true",
+                    "field": "人口数",
+                    "webglTextField": "省名",
+                    "dataBase": {
+                      "code": "",
+                      "codeYear": "",
+                      "dataYear": ""
+                    },
+                    "isShow3D": true,
+                    "setting3D": {
+                      "radius": 6,
+                      "strokeWidth": 1,
+                      "lineType": "走廊状",
+                      "sides": 5,
+                      "useHeightScale": true,
+                      "heightScale": 1.0e-6,
+                      "classificationType": "both"
+                    },
+                    "color": [
+                      {
+                        "min": "0",
+                        "max": "20000000",
+                        "sectionColor": "#FF66CC"
+                      },
+                      {
+                        "min": "20000000",
+                        "max": "40000000",
+                        "sectionColor": "#FFCC66"
+                      },
+                      {
+                        "min": "40000000",
+                        "max": "60000000",
+                        "sectionColor": "#FF3399"
+                      },
+                      {
+                        "min": "60000000",
+                        "max": "80000000",
+                        "sectionColor": "#FFFF66"
+                      },
+                      {
+                        "min": "80000000",
+                        "max": "110000000",
+                        "sectionColor": "#FF9999"
+                      }
+                    ],
+                    "table": {
+                      "showFields": ["面积", "周长", "省名", "人口数"],
+                      "showFieldsTitle": {}
+                    },
+                    "graph": {
+                      "showFields": ["人口数"],
+                      "showFieldsTitle": {},
+                      "field": "省名",
+                      "target": []
+                    },
+                    "popup": {
+                      "showFields": ["省名", "人口数"],
+                      "showFieldsTitle": {},
+                      "title": ""
+                    }
+                  }
+                ]
+              },
+              {
+                "time": "2008",
+                "subData": [
+                  {
+                    "minZoom": "0",
+                    "maxZoom": "10",
+                    "queryFeatureNum": "10000+",
+                    "ip": "",
+                    "port": "",
+                    "src": "",
+                    "gdbp": "gdbp://MapGISLocal/专题图数据/sfcls/省级行政区x",
+                    "docName": "",
+                    "layerIndex": "",
+                    "layerName": "undefined",
+                    "showLegend": "true",
+                    "field": "人口数",
+                    "webglTextField": "省名",
+                    "dataBase": {
+                      "code": "",
+                      "codeYear": "",
+                      "dataYear": ""
+                    },
+                    "isShow3D": true,
+                    "setting3D": {
+                      "radius": 6,
+                      "strokeWidth": 1,
+                      "lineType": "走廊状",
+                      "sides": 5,
+                      "useHeightScale": true,
+                      "heightScale": 1.0e-6,
+                      "classificationType": "both"
+                    },
+                    "color": [
+                      {
+                        "min": "0",
+                        "max": "20000000",
+                        "sectionColor": "#FF3399"
+                      },
+                      {
+                        "min": "20000000",
+                        "max": "40000000",
+                        "sectionColor": "#FF66CC"
+                      },
+                      {
+                        "min": "40000000",
+                        "max": "60000000",
+                        "sectionColor": "#FF9999"
+                      },
+                      {
+                        "min": "60000000",
+                        "max": "80000000",
+                        "sectionColor": "#FFCC66"
+                      },
+                      {
+                        "min": "80000000",
+                        "max": "110000000",
+                        "sectionColor": "#FFFF66"
+                      }
+                    ],
+                    "table": {
+                      "showFields": ["面积", "周长", "省名", "人口数"],
+                      "showFieldsTitle": {}
+                    },
+                    "graph": {
+                      "showFields": ["人口数"],
+                      "showFieldsTitle": {},
+                      "field": "省名",
+                      "target": []
                     },
                     "popup": {
                       "showFields": ["省名", "人口数"],

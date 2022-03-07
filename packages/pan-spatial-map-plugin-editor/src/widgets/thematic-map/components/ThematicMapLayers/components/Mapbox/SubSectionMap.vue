@@ -2,7 +2,7 @@
   <!-- 分段专题图 -->
   <mapgis-theme-layer-custom
     @highlightChanged="emitHighlight"
-    :theme-option="themeOptions"
+    :theme-options="themeOptions"
     :show-panel="false"
     :enable-tips="true"
     :layer-id="id"
