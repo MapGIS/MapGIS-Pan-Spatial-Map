@@ -69,7 +69,8 @@
       "name": "toolbar",
       "description": "工具条",
       "component": "MpPanSpatialMapClassicToolbar",
-      "maxWidgets": 6
+      "maxWidgets": 6,
+      "subNodeMaxDepth": 2
     },
     {
       "name": "left",
