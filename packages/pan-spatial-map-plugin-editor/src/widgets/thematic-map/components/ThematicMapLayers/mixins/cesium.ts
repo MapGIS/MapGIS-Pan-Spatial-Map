@@ -118,7 +118,7 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
    * 点击显示实体弹框
    */
   showPopupWin() {
-    const { viewer } = this
+    const { viewer, propertiesOption } = this
     let { sceneOverlays } = this
     if (!sceneOverlays) {
       sceneOverlays = Overlay.SceneOverlays.getInstance(
@@ -135,7 +135,9 @@ export default class CesiumMixin extends Mixins(BaseMixin) {
       if (pick && pick.id) {
         const { geojsonFeature } = pick.id
         const { fid } = geojsonFeature.properties
-        getMarker(geojsonFeature, fid).then(this.setSelfMarker)
+        getMarker(geojsonFeature, fid, propertiesOption).then(
+          this.setSelfMarker
+        )
         this.emitHighlight(fid)
       }
     })
