@@ -1047,9 +1047,9 @@ export class DataCatalogManager {
             this._allLayerConfigItems.push(nodeConverted)
           }
         } else if (
-          node[
-            this.configConverted.keyConfig.description.includes('非空间数据')
-          ]
+          node[this.configConverted.keyConfig.description].includes(
+            '非空间数据'
+          )
         ) {
           /**
            * 修改说明：修改非空间数据的判断

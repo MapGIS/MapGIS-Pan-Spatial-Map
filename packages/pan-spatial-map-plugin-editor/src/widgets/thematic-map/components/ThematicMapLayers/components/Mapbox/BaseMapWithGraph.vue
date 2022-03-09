@@ -315,7 +315,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     if (!target || !target.dataInfo) return
     const fid = target.refDataID + 1
     this.emitHighlight(fid)
-    getMarker(this.geojson, fid).then(
+    getMarker(this.geojson, fid, this.propertiesOption).then(
       marker => (this.selfMarker = marker || {})
     )
   }
