@@ -59,6 +59,21 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
     return subjectTypeList.map(({ value }) => `${this.prefix}${value}`)
   }
 
+  get popup() {
+    return this.subjectData ? this.subjectData.popup : undefined
+  }
+
+  get propertiesOption() {
+    let propertiesOption
+    if (this.popup) {
+      const { showFields, showFieldsTitle } = this.popup
+      if (showFields && showFields.length > 0) {
+        propertiesOption = { fields: showFields, fieldsTitle: showFieldsTitle }
+      }
+    }
+    return propertiesOption
+  }
+
   /**
    * 设置初始范围
    */
@@ -79,7 +94,9 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    * @param {string} fid 要素fid
    */
   onHighlight(fid: string) {
-    getMarker(this.geojson, fid).then(marker => (this.marker = marker))
+    getMarker(this.geojson, fid, this.propertiesOption).then(marker => {
+      this.marker = marker
+    })
   }
 
   /**

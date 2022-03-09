@@ -149,7 +149,7 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
   }
 
   mouseEvent() {
-    const { Cesium, viewer } = this
+    const { Cesium, viewer, propertiesOption } = this
     const vm = this
     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
     handler.setInputAction(function(movement) {
@@ -158,9 +158,11 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
         const pickedFeature = pickedPrimitive.primitive.feature
         if (pickedFeature) {
           vm.closePopupWin()
-          getMarker(pickedFeature, pickedFeature.properties.fid).then(
-            vm.setSelfMarker
-          )
+          getMarker(
+            pickedFeature,
+            pickedFeature.properties.fid,
+            propertiesOption
+          ).then(vm.setSelfMarker)
           vm.emitHighlight(pickedFeature.properties.fid)
         }
       }
