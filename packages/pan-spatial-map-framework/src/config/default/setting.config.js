@@ -7,7 +7,7 @@ module.exports = {
     mode: 'dark', // 主题模式 可选 dark、 light 和 night
     success: '#52c41a', // 成功色
     warning: '#faad14', // 警告色
-    error: '#f5222f' // 错误色
+    error: '#f5222f', // 错误色
   },
   weekMode: false, // 色弱模式，true:开启，false:不开启
   systemName: '全空间一张图', // 系统名称
@@ -17,5 +17,5 @@ module.exports = {
   filterMenu: true, // 根据权限过滤菜单，true:过滤，false:不过滤
   footerLinks: [
     // 页面底部链接，{link: '链接地址', name: '名称/显示文字', icon: '图标，支持 ant design vue 图标库'}
-  ]
+  ],
 }
