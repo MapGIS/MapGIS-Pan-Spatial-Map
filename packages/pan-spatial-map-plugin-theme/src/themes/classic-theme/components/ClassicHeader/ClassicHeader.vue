@@ -119,7 +119,7 @@ export default {
     }
     .header-links {
       font-size: 500;
-      color: #2d82ff;
+      color: unset;
     }
   }
 }
