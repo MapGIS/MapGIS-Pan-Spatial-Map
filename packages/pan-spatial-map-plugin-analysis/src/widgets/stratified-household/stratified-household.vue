@@ -9,7 +9,7 @@
     :enablePopup="true"
     :enableCollapse="false"
     :enableStratifiedHouse="true"
-    :getVideoStatus="getVideoStatus"
+    :getProjectorStatus="getProjectorStatus"
     :layerHighlightColorProp="layerHighlightColor"
     :featureHighlightColorProp="featureHighlightColor"
   ></mapgis-3d-stratified-household>
@@ -19,7 +19,7 @@
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { WidgetMixin, LayerType, LoadStatus } from '@mapgis/web-app-framework'
 import {
-  VideoManager,
+  ProjectorManager,
   baseConfigInstance
 } from '@mapgis/pan-spatial-map-common'
 
@@ -120,7 +120,7 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
   }
 
   handleProjectScreen(file) {
-    if (!this.getVideoStatus(file.name)) {
+    if (!this.getProjectorStatus(file.name)) {
       const { layerId, layerTitle } = this
       const {
         vFOV,
@@ -143,13 +143,15 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
         roll: orientationRoll
       }
 
-      VideoManager.addVideo(
+      ProjectorManager.addProjector(
         layerId, // this.exhibition.id,
         layerTitle, // this.exhibition.name,
         file.name,
         file.url,
+        'video',
         file.type,
         file.url,
+        '',
         '',
         true,
         cameraPosition,
@@ -157,20 +159,24 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
         hFOV,
         vFOV
       )
-      this.setVideoStatus(file.name, true)
+      this.setProjectorStatus(file.name, true)
     } else {
-      this.setVideoStatus(file.name)
+      this.setProjectorStatus(file.name)
     }
   }
 
-  getVideoStatus(videoId) {
+  getProjectorStatus(projectorId) {
     const { layerId, layerTitle } = this
-    return VideoManager.getVideoStatus(videoId, layerId)
+    return ProjectorManager.getProjectorStatus(projectorId, layerId)
   }
 
-  setVideoStatus(videoId, isProjected = false) {
+  setProjectorStatus(projectorId, isProjected = false) {
     const { layerId, layerTitle } = this
-    return VideoManager.setVideoStatus(videoId, layerId, isProjected)
+    return ProjectorManager.setProjectorStatus(
+      projectorId,
+      layerId,
+      isProjected
+    )
   }
 }
 </script>

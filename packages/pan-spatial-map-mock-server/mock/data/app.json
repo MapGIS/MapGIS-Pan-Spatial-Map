@@ -284,8 +284,8 @@
           },
           {
             "id": "widget_6defe53e-5265-d56f-cd73-ae2d293e47bc",
-            "uri": "widgets/video-manager",
-            "config": "configs/video-manager/config.json"
+            "uri": "widgets/projector-manager",
+            "config": "configs/projector-manager/config.json"
           },
           {
             "id": "widget_0d7ba772-07ed-2e35-6069-f62cbd591f02",

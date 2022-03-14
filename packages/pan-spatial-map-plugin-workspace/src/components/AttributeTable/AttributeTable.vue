@@ -134,7 +134,7 @@
           :properties="properties"
           :dataStoreIp="dataStoreIp"
           :dataStorePort="dataStorePort"
-          :getVideoStatus="getVideoStatus"
+          :getProjectorStatus="getProjectorStatus"
           @project-screen="projectScreen"
         />
       </template>
@@ -607,7 +607,6 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       }
     }
     this.markers = [...tempMarkers]
-
   }
 
   /**

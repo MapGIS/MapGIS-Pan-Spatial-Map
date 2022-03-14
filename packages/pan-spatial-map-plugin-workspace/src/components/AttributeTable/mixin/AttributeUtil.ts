@@ -12,7 +12,7 @@ import {
   Objects,
   Exhibition
 } from '@mapgis/web-app-framework'
-import { VideoManager } from '@mapgis/pan-spatial-map-common'
+import { ProjectorManager } from '@mapgis/pan-spatial-map-common'
 import moment from 'moment'
 
 const { GFeature, FeatureQuery, ArcGISFeatureQuery } = Feature
@@ -138,7 +138,7 @@ export default class LayerTypeUtil extends Mixins(
    * }
    */
   projectScreen(file) {
-    if (!this.getVideoStatus(file.name)) {
+    if (!this.getProjectorStatus(file.name)) {
       const {
         vFOV,
         orientationHeading,
@@ -159,13 +159,15 @@ export default class LayerTypeUtil extends Mixins(
         pitch: orientationPitch,
         roll: orientationRoll
       }
-      VideoManager.addVideo(
+      ProjectorManager.addProjector(
         this.exhibition.id,
         this.exhibition.name,
         file.name,
         file.url,
+        'video',
         file.type,
         file.url,
+        '',
         '',
         true,
         cameraPosition,
@@ -173,18 +175,22 @@ export default class LayerTypeUtil extends Mixins(
         hFOV,
         vFOV
       )
-      this.setVideoStatus(file.name, true)
+      this.setProjectorStatus(file.name, true)
     } else {
-      this.setVideoStatus(file.name)
+      this.setProjectorStatus(file.name)
     }
   }
 
-  getVideoStatus(videoId) {
-    return VideoManager.getVideoStatus(videoId, this.exhibition.id)
+  getProjectorStatus(projectorId) {
+    return ProjectorManager.getProjectorStatus(projectorId, this.exhibition.id)
   }
 
-  setVideoStatus(videoId, isProjected = false) {
-    return VideoManager.setVideoStatus(videoId, this.exhibition.id, isProjected)
+  setProjectorStatus(projectorId, isProjected = false) {
+    return ProjectorManager.setProjectorStatus(
+      projectorId,
+      this.exhibition.id,
+      isProjected
+    )
   }
 
   /**

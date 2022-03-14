@@ -1,39 +1,45 @@
 <template>
-  <mapgis-3d-video-manager
-    class="video-manager"
-    :videoOverlayLayerList="videoOverlayLayerList"
+  <mapgis-3d-projector-manager
+    class="projector-manager"
+    :projectorOverlayLayerList="projectorOverlayLayerList"
     :modelUrl="modelUrl"
     :modelOffset="modelOffset"
     :currentLayerId="currentLayerId"
-    :currentVideoId="currentVideoId"
+    :currentProjectorId="currentProjectorId"
     :maxProjected="maxProjected"
     :hideVPInvisible="hideVPInvisible"
     @load="load"
-    @update-videoOverlayLayerList="updateVideoOverlayLayerList"
+    @update-projectorOverlayLayerList="updateProjectorOverlayLayerList"
   >
-  </mapgis-3d-video-manager>
+    <template slot="imgUpload" slot-scope="{ click }">
+      <mp-upload-image
+        :uploadUrl="`${baseUrl}/api/local-storage/pictures`"
+        :click="click"
+      ></mp-upload-image>
+    </template>
+  </mapgis-3d-projector-manager>
 </template>
 <script lang="ts">
 import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
-import { api, VideoManager } from '@mapgis/pan-spatial-map-common'
+import { api, ProjectorManager } from '@mapgis/pan-spatial-map-common'
 
 @Component({
-  name: 'MpVideoManager'
+  name: 'MpProjectorManager'
 })
-export default class MpVideoManager extends Mixins(WidgetMixin) {
+export default class MpProjectorManager extends Mixins(WidgetMixin) {
   private modelUrl = `${process.env.BASE_URL}CesiumModels/Cesium_Camera.glb`
 
   private modelOffset = { headingOffset: -90, pitchOffset: 0, rollOffset: 0 }
 
-  private videoLayerList = [
+  private projectorLayerList = [
     {
       id: '123-345-567-789',
       name: 'test',
-      videoList: [
+      projectorList: [
         {
           id: '987-765-543-321',
-          name: 'testVideo1',
+          name: 'testProjector1',
           description: '',
           isProjected: false,
           params: {
@@ -61,29 +67,31 @@ export default class MpVideoManager extends Mixins(WidgetMixin) {
     }
   ]
 
-  private VideoManagerInstance = VideoManager
+  private ProjectorManagerInstance = ProjectorManager
 
   private maxProjected = 10
 
   private hideVPInvisible = false
 
-  private get videoOverlayLayerList() {
-    const videoOverlayLayerList = this.VideoManagerInstance.getVideoOverlayLayerList()
-    return videoOverlayLayerList
+  private get projectorOverlayLayerList() {
+    const projectorOverlayLayerList = this.ProjectorManagerInstance.getProjectorOverlayLayerList()
+    return projectorOverlayLayerList
   }
 
-  private set videoOverlayLayerList(videoOverlayLayerList) {
-    this.VideoManagerInstance.setVideoOverlayLayerList(videoOverlayLayerList)
+  private set projectorOverlayLayerList(projectorOverlayLayerList) {
+    this.ProjectorManagerInstance.setProjectorOverlayLayerList(
+      projectorOverlayLayerList
+    )
   }
 
   private get currentLayerId() {
-    const layerId = this.VideoManagerInstance.getCurrentLayerId()
+    const layerId = this.ProjectorManagerInstance.getCurrentLayerId()
     return layerId
   }
 
-  private get currentVideoId() {
-    const videoId = this.VideoManagerInstance.getCurrentVideoId()
-    return videoId
+  private get currentProjectorId() {
+    const projectorId = this.ProjectorManagerInstance.getCurrentProjectorId()
+    return projectorId
   }
 
   @Watch('currentLayerId', {
@@ -94,31 +102,31 @@ export default class MpVideoManager extends Mixins(WidgetMixin) {
     console.log(this.currentLayerId)
   }
 
-  @Watch('currentVideoId', {
+  @Watch('currentProjectorId', {
     deep: true,
     immediate: true
   })
-  changeCurrentVideoId() {
-    console.log(this.currentVideoId)
+  changeCurrentProjectorId() {
+    console.log(this.currentProjectorId)
   }
 
-  @Watch('videoOverlayLayerList', {
+  @Watch('projectorOverlayLayerList', {
     deep: true,
     immediate: true
   })
-  changeVideoOverlayLayerList() {
-    console.log(this.videoOverlayLayerList)
+  changeProjectorOverlayLayerList() {
+    console.log(this.projectorOverlayLayerList)
   }
 
   private config
 
-  private videoComponent = null
+  private projectorComponent = null
 
   mounted() {
-    this.videoOverlayLayerList =
+    this.projectorOverlayLayerList =
       (this.widgetInfo.config &&
-        this.widgetInfo.config.videoOverlayLayerList) ||
-      this.videoLayerList
+        this.widgetInfo.config.projectorOverlayLayerList) ||
+      this.projectorLayerList
     this.maxProjected =
       (this.widgetInfo.config && this.widgetInfo.config.maxProjected) || 10
     this.hideVPInvisible =
@@ -126,53 +134,59 @@ export default class MpVideoManager extends Mixins(WidgetMixin) {
       false
   }
 
-  load(videoComponent) {
-    this.videoComponent = videoComponent
+  load(projectorComponent) {
+    this.projectorComponent = projectorComponent
   }
 
   onActive() {
-    this.videoComponent.mount()
+    this.projectorComponent.mount()
   }
 
   // 微件失活时
   onDeActive() {
     // 微件失活时自动保存配置到后台
     this.saveConfig()
-    this.videoComponent.unmount()
+    this.projectorComponent.unmount()
   }
 
   // 微件关闭时
   onClose() {
     // 微件失活时自动保存配置到后台
     this.saveConfig()
-    this.videoComponent.unmount()
+    this.projectorComponent.unmount()
   }
 
-  updateVideoOverlayLayerList(layerList) {
-    this.videoOverlayLayerList = [...layerList]
+  imgUpload(e) {
+    console.log(e)
+  }
+
+  updateProjectorOverlayLayerList(layerList) {
+    this.projectorOverlayLayerList = [...layerList]
   }
 
   saveConfig() {
-    console.log(this.videoOverlayLayerList)
-    const config = { videoOverlayLayerList: [...this.videoOverlayLayerList] }
+    console.log(this.projectorOverlayLayerList)
+    const config = {
+      projectorOverlayLayerList: [...this.projectorOverlayLayerList]
+    }
     api
       .saveWidgetConfig({
-        name: 'video-manager',
+        name: 'projector-manager',
         config: JSON.stringify(config)
       })
       .then(() => {
-        // this.$message.success('更新video配置成功')
-        console.log('更新video配置成功')
+        // this.$message.success('更新projector配置成功')
+        console.log('更新projector配置成功')
       })
       .catch(() => {
-        // this.$message.error('更新video配置失败')
-        console.log('更新video配置失败')
+        // this.$message.error('更新projector配置失败')
+        console.log('更新projector配置失败')
       })
   }
 }
 </script>
 <style lang="less">
-.video-manager {
+.projector-manager {
   width: 310px;
   max-width: 100%;
 }
