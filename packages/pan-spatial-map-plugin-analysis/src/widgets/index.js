@@ -24,3 +24,4 @@ export { default as MpProjectorManager } from './projector-manager/projector-man
 export { default as MpStratifiedHousehold } from './stratified-household/stratified-household.vue'
 export { default as MpBuildingGrow } from './building-grow/building-grow.vue'
 export { default as MpBimComponent } from './bim-component/bim-component.vue'
+export { default as MpOutputImage } from './output-image/output-image.vue'
