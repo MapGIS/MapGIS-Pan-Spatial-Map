@@ -1231,7 +1231,7 @@
     lodash.isequal "^4.4.0"
     randomcolor "^0.4.4"
 
-"@mapgis/mapbox-gl@^1.9.12":
+"@mapgis/mapbox-gl@^1.9.12", "@mapgis/mapbox-gl@^1.9.3":
   version "1.9.12"
   resolved "http://192.168.82.89:4873/@mapgis%2fmapbox-gl/-/mapbox-gl-1.9.12.tgz#187fe752c61eba10c5ffb5e0f36053b628a77c42"
   integrity sha512-KnmWX0kH/MPkGq1O7RMoQJ+9g4Q8upg/Mz3J4x62sG67vHOspDTYKleayN88gYSPdqAWIzHuSHqKhpi22kVpnw==
@@ -1245,11 +1245,32 @@
   version "0.0.0"
   uid ""
 
-"@mapgis/webclient-es6-mapboxgl@link:../WebClient-JavaScript/src/mapboxgl":
-  version "0.0.0"
-  uid ""
+"@mapgis/webclient-es6-mapboxgl@^10.5.13":
+  version "10.5.13"
+  resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-es6-mapboxgl/-/webclient-es6-mapboxgl-10.5.13.tgz#570583dba8cac2456919db906deef78ffc38b667"
+  integrity sha512-AVi+3f5QJ5L+TpMNpx+ESlJjHcKN/6nAZZf9hBXOfB59rnlYOiF98jcE5qS7xNQKWkKZ/YvwSJ0ukwpSlkxEFw==
+  dependencies:
+    "@mapgis/mapbox-gl" "^1.9.9"
+    "@mapgis/webclient-es6-service" "^10.5.7"
+    core-js "^3.21.1"
+    echarts "^4.8.0"
+    mapv "^2.0.56"
 
-"@mapgis/webclient-es6-service@^10.5.10", "@mapgis/webclient-es6-service@^10.5.7":
+"@mapgis/webclient-es6-service@^10.5.13":
+  version "10.5.13"
+  resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-es6-service/-/webclient-es6-service-10.5.13.tgz#c657dfeba62adb8c277bf8ba1a846834623f447d"
+  integrity sha512-+RE0sNdYivHBf057PfaXoxUbY7yin2H+q3M92YqYVfZZGItkbqWalbg0ALPDW0slOAIJHTOsc2E8NwnT7OVdwQ==
+  dependencies:
+    "@turf/turf" "^6.5.0"
+    axios "^0.26.0"
+    core-js "^3.21.1"
+    fast-xml-parser "^3.17.6"
+    fetch-ie8 "^1.5.0"
+    proj4 "^2.7.5"
+    promise-polyfill "^8.2.1"
+    qs "^6.9.4"
+
+"@mapgis/webclient-es6-service@^10.5.7":
   version "10.5.10"
   resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-es6-service/-/webclient-es6-service-10.5.10.tgz#941cd587414187b858b6957210b4e4f54cfe2437"
   integrity sha512-uDQEmUEuNqFXX8baQELcYhUODFA8h4r0EjliFmAW8LQqw4NL5SRNibV5PhAmJGVEj35a8YwbM0G07O9LVvvQwA==
@@ -1258,15 +1279,6 @@
     fast-xml-parser "^3.17.6"
     fetch-ie8 "^1.5.0"
     promise-polyfill "^8.2.1"
-    qs "^6.9.4"
-
-"@mapgis/webclient-es6-service@^10.5.5":
-  version "10.5.5"
-  resolved "https://registry.npmmirror.com/@mapgis/webclient-es6-service/-/webclient-es6-service-10.5.5.tgz#5766b4923fccd4472354321b775c4959a9ca35b7"
-  integrity sha512-jGlXJvqzpqZhg9258hktSVpRBQd1BQTECicTUxdOah2aQdWRQInQ5j0ualON4ihxiMDaho5Tr/3uIazSRp3vOg==
-  dependencies:
-    "@turf/turf" "^6.3.0"
-    fast-xml-parser "^3.17.6"
     qs "^6.9.4"
 
 "@mapgis/webclient-store@^10.5.5":
@@ -1296,44 +1308,106 @@
     vuepress "^1.3.1"
     webpack-bundle-analyzer "^4.4.0"
 
-"@mapgis/webclient-vue-cesium@link:../WebClient-Vue/cesium":
-  version "0.0.0"
-  uid ""
+"@mapgis/webclient-vue-cesium@^10.5.12":
+  version "10.5.12"
+  resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-vue-cesium/-/webclient-vue-cesium-10.5.12.tgz#19cb97772336e8b9538106dd1b7f113179743384"
+  integrity sha512-Hj7Ja1mnAkoOQiXAS+Z703LFkOsj4GYWk99PaCiIFoDhnr8fLgRi3sc2IcA8rvUbInQNbo7FUw+8q59W3E6y0g==
+  dependencies:
+    "@mapgis/cesium" "1.59.4"
+    "@mapgis/webclient-es6-service" "^10.5.13"
+    "@mapgis/webclient-store" "^10.5.5"
+    "@mapgis/webclient-vue-ui" "^10.5.11"
+    "@turf/turf" "^5.1.6"
+    "@vuepress/plugin-active-header-links" "^1.7.1"
+    "@vuepress/plugin-nprogress" "^1.7.1"
+    compression-webpack-plugin "^6.1.1"
+    core-js "2"
+    echarts "^5.0.2"
+    echarts-gl "^2.0.9"
+    file-saver "^2.0.5"
+    html2canvas "^1.3.3"
+    mapv "^2.0.62"
+    moment "^2.29.1"
+    node-sass "^4.14.0"
+    ol "5.3.3"
+    sass-loader "^8.0.2"
+    tiptap "1.32.2"
+    tiptap-extensions "^1.35.2"
+    uglifyjs-webpack-plugin "^2.2.0"
+    vcolorpicker "^1.1.0"
+    vuepress "^1.8.2"
+    wangeditor-antd "^1.0.7"
+    webfont-matcher "1.1.0"
 
-"@mapgis/webclient-vue-mapboxgl@link:../WebClient-Vue/mapboxgl":
-  version "0.0.0"
-  uid ""
+"@mapgis/webclient-vue-mapboxgl@^10.5.12":
+  version "10.5.12"
+  resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-vue-mapboxgl/-/webclient-vue-mapboxgl-10.5.12.tgz#5701b20965aba9d14642024faa91038f0e859ca6"
+  integrity sha512-+IUAhDOuDpNEq9jSZ2DYTZTHVUnX9R6YxP/EQHvwtyE2nsViwNmlbe3lvCwk39Ftw7O2e2wQw9ekHn0e6LtlsA==
+  dependencies:
+    "@mapbox/mapbox-gl-draw" "^1.3.0"
+    "@mapbox/mapbox-gl-draw-static-mode" "^1.0.1"
+    "@mapgis/mapbox-gl" "^1.9.12"
+    "@mapgis/mapbox-gl-compare" "^0.4.0"
+    "@mapgis/mapbox-gl-draw-circle" "^10.5.5"
+    "@mapgis/mapbox-gl-draw-radius" "^1.0.0"
+    "@mapgis/mapbox-gl-inspect" "^10.5.6"
+    "@mapgis/webclient-es6-service" "^10.5.13"
+    "@mapgis/webclient-store" "^10.5.5"
+    "@mapgis/webclient-vue-ui" "^10.5.11"
+    "@turf/turf" "^6.5.0"
+    echarts "^5.3.0"
+    file-saver "^2.0.5"
+    html2canvas "^1.4.1"
+    map-promisified "^0.4.0"
+    mapbox-gl "^2.7.0"
+    mapbox-gl-draw-circle "^1.1.2"
+    mapbox-gl-draw-rectangle-mode "^1.0.4"
+    mapv "^2.0.62"
+    moment "^2.29.1"
+    node-sql-parser "^4.1.1"
+    postcss-inline-svg "4.1.0"
+    resize-detector "^0.3.0"
+    v-contextmenu "^2.9.0"
+    v-jsoneditor "^1.4.5"
+    vcolorpicker "^1.1.0"
+    vue-runtime-helpers "^1.1.2"
+    vuepress "^1.9.7"
 
-"@mapgis/webclient-vue-ui@^10.5.10":
-  version "10.5.5"
-  resolved "https://registry.npmmirror.com/@mapgis/webclient-vue-ui/-/webclient-vue-ui-10.5.5.tgz#883392c354b552019511df7582c02c76cc3da9cc"
-  integrity sha512-Iar957gObifEe8VoyRkMnqraZSilyQ2pIMxqfokK/mUQrqqaUKLHLfMAKwFIJCNnUc+ZYQz1urlkiYsIaR/4Vg==
+"@mapgis/webclient-vue-ui@^10.5.11", "@mapgis/webclient-vue-ui@^10.5.12":
+  version "10.5.12"
+  resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-vue-ui/-/webclient-vue-ui-10.5.12.tgz#e2068a6f8a2eb7887c73894b19e87897c3a3759d"
+  integrity sha512-Tyoha3vyVojD/OIRdAQqGcOtyerka9MhifdH4yeoUZoseVnbMGCN/wcIeHgkI27yyC4fJu6kk/5MEsF1YhXNHA==
   dependencies:
     "@ant-design/icons" "2.1.1"
-    "@mapgis/webclient-es6-service" "^10.5.5"
+    "@mapgis/webclient-es6-service" "^10.5.13"
+    "@mapgis/webclient-store" "^10.5.5"
     "@vue/composition-api" "^1.0.0-rc.13"
     "@vuepress/plugin-active-header-links" "^1.8.2"
     "@vuepress/plugin-nprogress" "^1.8.2"
-    ant-design-vue "^1.7.5"
+    ant-design-vue "^1.7.8"
     axios "^0.21.1"
     clone "^2.1.2"
     css-vars-ponyfill "^2.4.5"
+    d3 "5.16.0"
     echarts "^5.1.2"
     js-md5 "^0.7.3"
+    jsoneditor "^9.5.6"
     lodash "^4.17.21"
     lodash.uniqueid "^4.0.1"
-    qs "^6.10.1"
+    proj4 "^2.7.5"
+    qs "^6.9.0"
     resize-detector "^0.3.0"
     simple-uploader.js "^0.5.6"
     spark-md5 "^3.0.1"
     tinycolor2 "^1.4.2"
+    vcolorpicker "^1.1.0"
+    video.js "^7.17.0"
+    videojs-contrib-hls "^5.15.0"
+    vue-color "^2.8.1"
+    vue-infinite-scroll "^2.0.2"
     vuepress "^1.8.2"
     vuepress-plugin-demo-block "^0.7.2"
     vuepress-plugin-demo-code "^0.6.0"
-
-"@mapgis/webclient-vue-ui@link:../WebClient-Vue/ui":
-  version "0.0.0"
-  uid ""
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -3478,7 +3552,7 @@
     "@turf/unkink-polygon" "5.1.x"
     "@turf/voronoi" "5.1.x"
 
-"@turf/turf@^6.3.0", "@turf/turf@^6.5.0":
+"@turf/turf@^6.5.0":
   version "6.5.0"
   resolved "https://registry.npmmirror.com/@turf/turf/-/turf-6.5.0.tgz#49cd07b942a757f3ebbdba6cb294bbb864825a83"
   integrity sha512-ipMCPnhu59bh92MNt8+pr1VZQhHVuTMHklciQURo54heoxRzt1neNYZOBR6jdL+hNsbDGAECMuIpAutX+a3Y+w==
@@ -4854,7 +4928,7 @@ ant-design-vue@1.7.2:
     vue-ref "^2.0.0"
     warning "^4.0.0"
 
-ant-design-vue@^1.7.5, ant-design-vue@^1.7.8:
+ant-design-vue@^1.7.8:
   version "1.7.8"
   resolved "https://registry.npmmirror.com/ant-design-vue/-/ant-design-vue-1.7.8.tgz#1abbf86b68a4f5b1000bea0487b8031dc0001661"
   integrity sha512-F1hmiS9vwbyfuFvlamdW5l9bHKqRlj9wHaGDIE41NZMWXyWy8qL0UFa/+I0Wl8gQWZCqODW5pN6Yfoyn85At3A==
@@ -5131,6 +5205,13 @@ axios@^0.21.1:
   integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
   dependencies:
     follow-redirects "^1.14.0"
+
+axios@^0.26.0:
+  version "0.26.1"
+  resolved "http://192.168.82.89:4873/axios/-/axios-0.26.1.tgz#1ede41c51fcf51bbbd6fd43669caaa4f0495aaa9"
+  integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
+  dependencies:
+    follow-redirects "^1.14.8"
 
 babel-code-frame@^6.22.0:
   version "6.26.0"
@@ -5955,6 +6036,11 @@ classnames@^2.2.5:
   resolved "https://registry.npmmirror.com/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
   integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
 
+claygl@^1.2.1:
+  version "1.3.0"
+  resolved "http://192.168.82.89:4873/claygl/-/claygl-1.3.0.tgz#7a6e2903210519ac358848f5d78070ed211685f3"
+  integrity sha512-+gGtJjT6SSHD2l2yC3MCubW/sCV40tZuSs5opdtn79vFSGUgp/lH139RNEQ6Jy078/L0aV8odCw8RSrUcMfLaQ==
+
 clean-css@4.2.x:
   version "4.2.4"
   resolved "https://registry.npmmirror.com/clean-css/-/clean-css-4.2.4.tgz#733bf46eba4e607c6891ea57c24a989356831178"
@@ -6433,24 +6519,19 @@ core-js-compat@^3.20.2, core-js-compat@^3.21.0, core-js-compat@^3.6.5:
     browserslist "^4.19.1"
     semver "7.0.0"
 
-core-js@3.15.0:
-  version "3.15.0"
-  resolved "https://registry.npmmirror.com/core-js/-/core-js-3.15.0.tgz#db9554ebce0b6fd90dc9b1f2465c841d2d055044"
-  integrity sha512-GUbtPllXMYRzIgHNZ4dTYTcUemls2cni83Q4Q/TrFONHfhcg9oEGOtaGHfb0cpzec60P96UKPvMkjX1jET8rUw==
+core-js@2, core-js@^2.4.0, core-js@^2.5.0:
+  version "2.6.12"
+  resolved "https://registry.npmmirror.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
+  integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
 core-js@3.6.5:
   version "3.6.5"
   resolved "https://registry.npmmirror.com/core-js/-/core-js-3.6.5.tgz#7395dc273af37fb2e50e9bd3d9fe841285231d1a"
   integrity sha512-vZVEEwZoIsI+vPEuoF9Iqf5H7/M3eeQqWlQnYa8FSKKePuYTf5MWnxb5SDAzCa60b3JBRS5g9b+Dq7b1y/RCrA==
 
-core-js@^2.4.0, core-js@^2.5.0:
-  version "2.6.12"
-  resolved "https://registry.npmmirror.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
-  integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
-
-core-js@^3.6.4, core-js@^3.6.5:
+core-js@^3.21.1, core-js@^3.6.4, core-js@^3.6.5:
   version "3.21.1"
-  resolved "https://registry.npmmirror.com/core-js/-/core-js-3.21.1.tgz#f2e0ddc1fc43da6f904706e8e955bc19d06a0d94"
+  resolved "http://192.168.82.89:4873/core-js/-/core-js-3.21.1.tgz#f2e0ddc1fc43da6f904706e8e955bc19d06a0d94"
   integrity sha512-FRq5b/VMrWlrmCzwRrpDYNxyHP9BcAZC+xHJaqTgIE5091ZV1NTmyh0sGOg5XqpnHvR0svdy0sv1gWA1zmhxig==
 
 core-util-is@1.0.2:
@@ -7615,6 +7696,14 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
+echarts-gl@^2.0.9:
+  version "2.0.9"
+  resolved "http://192.168.82.89:4873/echarts-gl/-/echarts-gl-2.0.9.tgz#ee228a6c7520a6fb7bbb71ea94394f3637ade033"
+  integrity sha512-oKeMdkkkpJGWOzjgZUsF41DOh6cMsyrGGXimbjK2l6Xeq/dBQu4ShG2w2Dzrs/1bD27b2pLTGSaUzouY191gzA==
+  dependencies:
+    claygl "^1.2.1"
+    zrender "^5.1.1"
+
 echarts@^4.8.0:
   version "4.9.0"
   resolved "https://registry.npmmirror.com/echarts/-/echarts-4.9.0.tgz#a9b9baa03f03a2a731e6340c55befb57a9e1347d"
@@ -8610,9 +8699,9 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-follow-redirects@^1.0.0, follow-redirects@^1.14.0:
+follow-redirects@^1.0.0, follow-redirects@^1.14.0, follow-redirects@^1.14.8:
   version "1.14.9"
-  resolved "https://registry.npmmirror.com/follow-redirects/-/follow-redirects-1.14.9.tgz#dd4ea157de7bfaf9ea9b3fbd85aa16951f78d8d7"
+  resolved "http://192.168.82.89:4873/follow-redirects/-/follow-redirects-1.14.9.tgz#dd4ea157de7bfaf9ea9b3fbd85aa16951f78d8d7"
   integrity sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==
 
 for-in@^1.0.2:
@@ -13096,7 +13185,7 @@ qs@6.9.7:
   resolved "https://registry.npmmirror.com/qs/-/qs-6.9.7.tgz#4610846871485e1e048f44ae3b94033f0e675afe"
   integrity sha512-IhMFgUmuNpyRfxA90umL7ByLlgRXu6tIfKPpF5TmcfRLlLCckfP/g3IQmju6jjpu+Hh8rA+2p6A27ZSPOOHdKw==
 
-qs@^6.10.1, qs@^6.9.0, qs@^6.9.4:
+qs@^6.9.0, qs@^6.9.4:
   version "6.10.3"
   resolved "https://registry.npmmirror.com/qs/-/qs-6.10.3.tgz#d6cde1b2ffca87b5aa57889816c5f81535e22e8e"
   integrity sha512-wr7M2E0OFRfIfJZjKGieI8lBKb7fRCH4Fv5KNPEs7gJ8jadvotdsS08PzOKR7opXhZ/Xkjtt3WF9g38drmyRqQ==
@@ -16519,5 +16608,12 @@ zrender@5.3.0:
   version "5.3.0"
   resolved "https://registry.npmmirror.com/zrender/-/zrender-5.3.0.tgz#297c05dc2521362816c4ddced10a1e306646bbc8"
   integrity sha512-Ln2QB5uqI1ftNYMtCRxd+XDq6MOttLgam2tmhKAVA+j0ko47UT+VNlDvKTkqe4K2sJhBvB0EhYNLebqlCTjatQ==
+  dependencies:
+    tslib "2.3.0"
+
+zrender@^5.1.1:
+  version "5.3.1"
+  resolved "http://192.168.82.89:4873/zrender/-/zrender-5.3.1.tgz#fa8e63ac7e719cfd563831fe8c42a9756c5af384"
+  integrity sha512-7olqIjy0gWfznKr6vgfnGBk7y4UtdMvdwFmK92vVQsQeDPyzkHW1OlrLEKg6GHz1W5ePf0FeN1q2vkl/HFqhXw==
   dependencies:
     tslib "2.3.0"
