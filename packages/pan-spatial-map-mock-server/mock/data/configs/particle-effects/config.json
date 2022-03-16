@@ -25,7 +25,7 @@
       "config": {
         "emitterType": "盒状放射",
         "emissionRate": 6.0,
-        "imageSize":7.0,
+        "imageSize": 7.0,
         "minimumParticleLife": 2.5,
         "maximumParticleLife": 2.4,
         "minimumSpeed": 2.0,
@@ -60,7 +60,7 @@
       "param": {
         "emitterType": "锥形放射",
         "emissionRate": 10.0,
-        "imageSize":25.0,
+        "imageSize": 25.0,
         "minimumParticleLife": 1.5,
         "maximumParticleLife": 1.8,
         "minimumSpeed": 0.0,

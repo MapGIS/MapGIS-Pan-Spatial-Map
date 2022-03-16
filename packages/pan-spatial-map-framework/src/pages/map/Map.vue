@@ -8,15 +8,16 @@ import { AppManager } from '@mapgis/web-app-framework'
 import { getAppInfo } from '@/services/user'
 import { BASE_URL } from '@/services/api'
 import { request } from '@/utils/request'
+import mapgisui from '@mapgis/webclient-vue-ui'
 
 export default {
   data() {
     return {
-      application: {}
+      application: {},
     }
   },
   computed: {
-    ...mapState('setting', ['theme'])
+    ...mapState('setting', ['theme']),
   },
   async created() {
     try {
@@ -32,6 +33,14 @@ export default {
       const style = this.themeStyle()
 
       this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
+
+      // 切换mapgisUI的主题
+      // 一张图 light，dark 白底黑字，night 黑底白字
+      if (style.theme === 'dark' || style.theme === 'light') {
+        mapgisui.setTheme('light')
+      } else {
+        mapgisui.setTheme('dark')
+      }
     } catch (error) {
       this.$message.warning('认证 token 已过期，请重新登录')
       this.$router.replace('/login')
@@ -52,7 +61,7 @@ export default {
             if (style) {
               return {
                 color: style.color,
-                theme: style.theme
+                theme: style.theme,
               }
             }
           }
@@ -61,7 +70,7 @@ export default {
         }
       }
       return { theme: 'dark', color: '#1890ff' }
-    }
-  }
+    },
+  },
 }
 </script>
