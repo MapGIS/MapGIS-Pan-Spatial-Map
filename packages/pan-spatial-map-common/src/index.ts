@@ -16,4 +16,4 @@ export { ActiveResultSet } from './active-result-set'
 
 export { DataStoreCatalog } from './data-store-catalog'
 
-export { VideoManager } from './video-manager'
+export { ProjectorManager } from './projector-manager'
