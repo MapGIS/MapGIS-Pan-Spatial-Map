@@ -16,6 +16,7 @@ import { mapState, mapMutations } from 'vuex'
 import { getAppInfo } from '@/services/user'
 import { getThemes, getWidgets, edit } from '@/services/app'
 import { BASE_URL } from '@/services/api'
+import mapgisui from '@mapgis/webclient-vue-ui'
 
 export default {
   data() {
@@ -25,11 +26,11 @@ export default {
       appConfigPath: '',
       appAssetsPath: '',
       themes: [],
-      widgets: []
+      widgets: [],
     }
   },
   computed: {
-    ...mapState('setting', ['theme'])
+    ...mapState('setting', ['theme']),
   },
   async created() {
     try {
@@ -57,16 +58,23 @@ export default {
     ...mapMutations('setting', ['setTheme']),
     onThemeChange({ theme, color }) {
       this.setTheme({ ...this.theme, mode: theme, color: color })
+      // 切换mapgisUI的主题
+      // 一张图 light，dark 白底黑字，night 黑底白字
+      if (theme === 'dark' || theme === 'light') {
+        mapgisui.setTheme('light')
+      } else {
+        mapgisui.setTheme('dark')
+      }
     },
     onSaveApp(appConfig) {
       edit({ config: JSON.stringify(appConfig) })
         .then(() => {
           this.$message.success('保存成功')
         })
-        .catch(err => {
+        .catch((err) => {
           this.$message.error(err.response.data.message)
         })
-    }
-  }
+    },
+  },
 }
 </script>

@@ -4,7 +4,7 @@ const {
   getMenuColors,
   getAntdColors,
   getThemeToggleColors,
-  getFunctionalColors
+  getFunctionalColors,
 } = require('./colors')
 const { ANTD } = require('../config/default')
 
@@ -20,14 +20,14 @@ function getThemeColors(color, $theme) {
     ...replaceColors.rgbColors,
     ...replaceColors.functionalColors.success,
     ...replaceColors.functionalColors.warning,
-    ...replaceColors.functionalColors.error
+    ...replaceColors.functionalColors.error,
   ]
   return themeColors
 }
 
 function changeThemeColor(newColor, $theme) {
   const promise = client.changer.changeColor({
-    newColors: getThemeColors(newColor, $theme)
+    newColors: getThemeColors(newColor, $theme),
   })
   return promise
 }
@@ -68,7 +68,7 @@ function modifyVars(color) {
     'layout-trigger-background': menuColors[2],
     'btn-danger-bg': error[4],
     'btn-danger-border': error[4],
-    ...ANTD.theme[theme.mode]
+    ...ANTD.theme[theme.mode],
   }
 }
 
@@ -107,5 +107,5 @@ module.exports = {
   changeThemeColor,
   modifyVars,
   loadLocalTheme,
-  getLocalSetting
+  getLocalSetting,
 }

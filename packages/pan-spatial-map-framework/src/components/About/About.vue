@@ -50,6 +50,7 @@ export default {
         width: 32px !important;
       }
       .icon > svg {
+        color: @primary-color;
         width: 32px !important;
         height: 32px !important;
       }
