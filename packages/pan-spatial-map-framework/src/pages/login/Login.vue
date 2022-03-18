@@ -102,7 +102,7 @@ export default {
           data.logo = BASE_URL + data.logo
         }
         this.loginConfig = data
-        console.log(data)
+        this.setLoginConfig(data)
       }
     )
   },
@@ -121,6 +121,7 @@ export default {
   },
   methods: {
     ...mapMutations('account', ['setUser']),
+    ...mapMutations('setting', ['setLoginConfig']),
     onSubmit(e) {
       e.preventDefault()
       const self = this
