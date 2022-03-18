@@ -22,11 +22,11 @@ import {
   UUID,
   LayerType,
   LoadStatus,
-  FitBound
+  FitBound,
 } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
-  DataCatalogManager
+  DataCatalogManager,
 } from '@mapgis/pan-spatial-map-common'
 import MpBasemapItem from './components/BasemapItem/BasemapItem.vue'
 
@@ -37,7 +37,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
   private isInitMapRange = false // 是否已初始化地图范围,只有初次进入程序，才会初始化地图范围
 
   get imageUrl() {
-    return function(image) {
+    return function (image) {
       if (image.startsWith('http') || image.startsWith('https')) {
         return image
       }
@@ -57,9 +57,9 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
 
     // 将配置转换成可用于添加到map中的配置
     return basemapList
-      .map(basemap => {
+      .map((basemap) => {
         const { children } = basemap
-        const layers = children.map(layer => {
+        const layers = children.map((layer) => {
           // 如果要兼容老版格式，可以在这里进行升级，转换成新的数据结构（数据与添加数据配置一致）
           layer = this.updateLayer(layer)
           const layerConfig = {
@@ -67,7 +67,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
             guid: UUID.uuid(),
             description: layer.description || '',
             serverURL: layer.url,
-            serverType: this.parseLayerType(layer.type)
+            serverType: this.parseLayerType(layer.type),
           }
           if (layer.token) {
             layerConfig.tokenValue = layer.token
@@ -78,10 +78,10 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
         })
         return {
           ...basemap,
-          children: layers
+          children: layers,
         }
       })
-      .filter(basemap => {
+      .filter((basemap) => {
         const { visible = 'true' } = basemap
         return visible === 'true'
       })
@@ -91,7 +91,9 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     const defaultBasemap = this.getDefaultBasemap()
 
     if (defaultBasemap) {
-      this.onSelect(defaultBasemap.name)
+      this.onSelect(defaultBasemap.name, true)
+    } else {
+      if (this.basemaps.length > 0) this.onSelect(this.basemaps[0].name)
     }
   }
 
@@ -103,7 +105,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
         Cesium,
         map,
         webGlobe,
-        CesiumZondy
+        CesiumZondy,
       },
       this.is2DMapMode === true
     )
@@ -112,21 +114,19 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     }
   }
 
-  onSelect(name) {
+  onSelect(name, isZoomTo = false) {
     this.basemapNames.push(name)
 
-    const info = this.basemaps.find(basemap => basemap.name === name)
+    const info = this.basemaps.find((basemap) => basemap.name === name)
     if (info) {
-      info.children.forEach(async layer => {
+      info.children.forEach(async (layer) => {
         const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
         mapLayer.description = layer.description
         if (mapLayer.loadStatus === LoadStatus.notLoaded) {
           await mapLayer.load()
           this.document.baseLayerMap.add(mapLayer)
-          if (!this.isInitMapRange) {
-            // 未初始化地图范围,进行初始化操作,自适应配置的底图范围
+          if (isZoomTo) {
             this.fitBounds(mapLayer)
-            this.isInitMapRange = true
           }
         } else {
           this.document.baseLayerMap.add(mapLayer)
@@ -137,13 +137,13 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
 
   onUnSelect(name) {
     this.basemapNames.splice(
-      this.basemapNames.findIndex(basemapName => basemapName === name),
+      this.basemapNames.findIndex((basemapName) => basemapName === name),
       1
     )
 
-    const info = this.basemaps.find(basemap => basemap.name === name)
+    const info = this.basemaps.find((basemap) => basemap.name === name)
     if (info) {
-      info.children.forEach(layer => {
+      info.children.forEach((layer) => {
         const maplayer = this.document.baseLayerMap.findLayerById(layer.guid)
         this.document.baseLayerMap.remove(maplayer)
       })
@@ -158,17 +158,17 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
       ip,
       port,
       defaultMapType,
-      defaultMapName
+      defaultMapName,
     } = baseConfigInstance.config
 
     const defaultBasemap = {
       name,
       image,
-      children: []
+      children: [],
     }
 
     const defaultBasemapLayer = {
-      description: '索引底图'
+      description: '索引底图',
     }
 
     // 根据服务类型初始化图层信息
@@ -219,7 +219,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
         layerName,
         projection,
         tokenKey,
-        token
+        token,
       } = layer
       const newLayer = { name: layerName, url: serverUrl }
       // 类型映射表
@@ -236,7 +236,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
               // 天地图矢量底图
               'Zondy.Enum.Map.TiandituType.VEC': 'vec',
               // 天地图矢量注记
-              'Zondy.Enum.Map.TiandituType.CVA': 'cia'
+              'Zondy.Enum.Map.TiandituType.CVA': 'cia',
             }
             const type = map[layerType] || layerType
             const tilematrixSet = projection.includes('EPSG:4326') ? 'c' : 'w'
@@ -259,7 +259,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
               'Zondy.Enum.Map.ArcGISLayerType.StreetMapWorld2D':
                 'ESRI_StreetMap_World_2D',
               // ArcGIS地形图
-              'Zondy.Enum.Map.ArcGISLayerType.TopoUS2D': 'NGS_Topo_US_2D'
+              'Zondy.Enum.Map.ArcGISLayerType.TopoUS2D': 'NGS_Topo_US_2D',
             }
             const type = map[layerType] || layerType
             newLayer.url = `http://services.arcgisonline.com/ArcGIS/rest/services/${type}/MapServer`
@@ -317,13 +317,13 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
       return {
         width: 'calc(50% - 5px)',
         marginRight: '10px',
-        marginTop: isMarginTop ? '10px' : 0
+        marginTop: isMarginTop ? '10px' : 0,
       }
     }
     return {
       width: 'calc(50% - 5px)',
       marginRigh: '10px',
-      marginTop: isMarginTop ? '10px' : 0
+      marginTop: isMarginTop ? '10px' : 0,
     }
   }
 }
