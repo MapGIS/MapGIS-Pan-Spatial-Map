@@ -6,7 +6,7 @@
     </div>
     <a-menu :class="['avatar-menu']" slot="overlay">
       <a-menu-item @click="logout">
-        <a-icon style="margin-right: 8px;" type="poweroff" />
+        <a-icon style="margin-right: 8px" type="poweroff" />
         <span>退出登录</span>
       </a-menu-item>
     </a-menu>
@@ -14,20 +14,24 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { logout } from '@/services/user'
 
 export default {
   name: 'HeaderAvatar',
   computed: {
-    ...mapGetters('account', ['user'])
+    ...mapState('setting', ['loginConfig']),
+    ...mapGetters('account', ['user']),
   },
   methods: {
     logout() {
       logout()
-      this.$router.push('/login')
-    }
-  }
+      this.$router.push('/login', {
+        name: 'login',
+        loginConfig: this.loginConfig,
+      })
+    },
+  },
 }
 </script>
 
