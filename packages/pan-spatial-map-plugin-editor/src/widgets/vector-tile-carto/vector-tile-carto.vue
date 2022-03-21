@@ -5,6 +5,7 @@
       :widgetInfo="widgetInfo"
       :layerDocument.sync="vectorTileDocument"
       @click-item="changeNode"
+      @changed="getChanged"
     >
     </mp-tree-layer>
     <div v-show="showStyleSetting">
@@ -61,6 +62,47 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
           this.vectorTileDocument.defaultMap.add(layer)
         }
       })
+  }
+
+  /**
+   * 图层树选择同步到全局的document
+   */
+  getChanged(layerIds) {
+    // console.log(layerIds)
+    const doc = this.document.clone()
+    const layers: Array<unknown> = doc.defaultMap.layers()
+    layerIds.forEach(item => {
+      if (item.split('-').length > 1) {
+        const parentIndex: string = item.split('-')[0]
+        const childrenArr: Array<string> = item.split('-')
+        let layerItem = layers[parentIndex]
+        childrenArr.forEach((i, index) => {
+          if (index === 0) {
+            return
+          }
+          if (index === childrenArr.length - 1) {
+            // 这里的图层只有矢量瓦片
+            const layer = layerItem.currentStyle.layers[i]
+            const visible =
+              layer.layout === undefined ||
+              layer.layout.visibility === undefined ||
+              layer.layout.visibility === 'visible'
+            if (layer.layout) {
+              layer.layout.visibility = visible ? 'none' : 'visible'
+            } else {
+              layer.layout = {
+                visibility: visible ? 'none' : 'visible'
+              }
+            }
+          } else {
+            layerItem = layerItem.sublayers[i]
+          }
+        })
+      } else {
+        layers[item].isVisible = !layers[item].isVisible
+      }
+    })
+    this.document = doc
   }
 
   changeNode(node) {
