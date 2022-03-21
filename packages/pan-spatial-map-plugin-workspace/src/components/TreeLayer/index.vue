@@ -513,6 +513,7 @@ export default class MpTreeLayer extends Mixins(
       .filter(function(v, i, arr) {
         return arr.indexOf(v) === arr.lastIndexOf(v)
       })
+    this.$emit('changed', diffArr)
     diffArr.forEach(item => {
       if (item.split('-').length > 1) {
         const parentIndex: string = item.split('-')[0]
