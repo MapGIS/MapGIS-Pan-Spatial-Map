@@ -1,17 +1,19 @@
 {
   "maxProjected": 10,
   "hideVPInvisible": true,
-  "videoOverlayLayerList": [
+  "projectorOverlayLayerList": [
     {
       "id": "123-345-567-789",
       "name": "中地景观模型",
-      "videoList": [
+      "projectorList": [
         {
           "id": "987-765-543-321",
-          "name": "testVideo1",
+          "name": "testProjector1",
           "description": "",
           "isProjected": false,
           "params": {
+            "projectorType": "video",
+            "imgUrl": "",
             "videoSource": {
               "protocol": "m3u8",
               "videoUrl": "http://192.168.91.123:10008/record/video1/20211221/out.m3u8"
@@ -33,10 +35,12 @@
         },
         {
           "id": "987-765-543-123",
-          "name": "testVideo2",
+          "name": "testProjector2",
           "description": "",
           "isProjected": false,
           "params": {
+            "projectorType": "video",
+            "imgUrl": "",
             "videoSource": {
               "protocol": "m3u8",
               "videoUrl": "http://192.168.91.123:10008/record/video2/20211221/out.m3u8"
@@ -58,10 +62,12 @@
         },
         {
           "id": "987-765-543-124",
-          "name": "testVideo3",
+          "name": "testProjector3",
           "description": "",
           "isProjected": false,
           "params": {
+            "projectorType": "video",
+            "imgUrl": "",
             "videoSource": {
               "protocol": "m3u8",
               "videoUrl": "http://192.168.91.123:10008/record/video3/20211221/out.m3u8"
@@ -86,13 +92,15 @@
     {
       "id": "123-345-567-789",
       "name": "V2_分层分户-静态单体化",
-      "videoList": [
+      "projectorList": [
         {
           "id": "987-765-543-521",
-          "name": "V2testVideo1",
+          "name": "V2testProjector1",
           "description": "",
           "isProjected": false,
           "params": {
+            "projectorType": "video",
+            "imgUrl": "",
             "videoSource": {
               "protocol": "m3u8",
               "videoUrl": "http://192.168.91.123:10008/record/video1/20211221/out.m3u8"
@@ -114,10 +122,12 @@
         },
         {
           "id": "987-765-543-623",
-          "name": "V2testVideo2",
+          "name": "V2testProjector2",
           "description": "",
           "isProjected": false,
           "params": {
+            "projectorType": "video",
+            "imgUrl": "",
             "videoSource": {
               "protocol": "m3u8",
               "videoUrl": "http://192.168.91.123:10008/record/video2/20211221/out.m3u8"
@@ -139,10 +149,12 @@
         },
         {
           "id": "987-765-543-724",
-          "name": "V2testVideo3",
+          "name": "V2testProjector3",
           "description": "",
           "isProjected": false,
           "params": {
+            "projectorType": "video",
+            "imgUrl": "",
             "videoSource": {
               "protocol": "m3u8",
               "videoUrl": "http://192.168.91.123:10008/record/video3/20211221/out.m3u8"
@@ -167,13 +179,15 @@
     {
       "id": "567-789-123-345",
       "name": "layer2",
-      "videoList": [
+      "projectorList": [
         {
           "id": "765-987-543-321",
-          "name": "layer2Video1",
+          "name": "layer2Projector1",
           "description": "",
           "isProjected": false,
           "params": {
+            "projectorType": "video",
+            "imgUrl": "",
             "videoSource": {
               "protocol": "m3u8",
               "videoUrl": "http://192.168.91.123:10008/record/video1/20211221/out.m3u8"
@@ -195,10 +209,12 @@
         },
         {
           "id": "765-987-543-123",
-          "name": "layer2Video2",
+          "name": "layer2Projector2",
           "description": "",
           "isProjected": false,
           "params": {
+            "projectorType": "video",
+            "imgUrl": "",
             "videoSource": {
               "protocol": "m3u8",
               "videoUrl": "http://192.168.91.123:10008/record/video2/20211221/out.m3u8"
