@@ -25,3 +25,4 @@ export { default as MpStratifiedHousehold } from './stratified-household/stratif
 export { default as MpBuildingGrow } from './building-grow/building-grow.vue'
 export { default as MpBimComponent } from './bim-component/bim-component.vue'
 export { default as MpOutputImage } from './output-image/output-image.vue'
+export { default as MpRotate } from './rotate/rotate.vue'
