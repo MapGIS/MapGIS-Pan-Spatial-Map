@@ -139,12 +139,15 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
       this.url = val
     } else if (val === undefined) {
       this.cityGrowOptions = {}
+      this.selectResult = ""
     }
   }
 
   handleBlur(value) {
-    if (value == undefined){
-      this.selectResult = this.cityGrowOptions
+    if (value == undefined || value == ""){
+      if (typeof this.cityGrowOptions === 'string'){
+        this.selectResult = this.cityGrowOptions
+      }
     }
   }
 
