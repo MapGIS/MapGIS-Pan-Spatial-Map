@@ -112,11 +112,10 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
     this.layerArrOption = []
     const arr = []
     val.layers().forEach(data => {
-      if (
-        data.type === LayerType.IGSMapImage ||
-        data.type === LayerType.IGSVector
-      ) {
+      if (data.type === LayerType.IGSVector) {
         arr.push(data)
+      } else if (data.type === LayerType.IGSMapImage) {
+        arr.push(...data.sublayers)
       }
     })
     if (arr.length > 0) {
@@ -140,14 +139,6 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
    */
   onOpen() {
     this.isWidgetOpen = true
-    if (this.layerArrOption.length != 0) {
-      this.baseBufferUrl = this.layerArrOption[0].url
-      this.srcLayer = this.layerArrOption[0].gdbps
-      const layerObj = this.layerArrOption
-      const layerUrl = layerObj.map((item, index, layerObj) => {
-        return item.gdbps
-      })
-    }
     this.buffer.mount()
   }
 
@@ -161,13 +152,20 @@ export default class MpBufferAnalysis extends Mixins(WidgetMixin) {
   tchangeTarget(event) {
     const layerCurrent = this.tData
     if (layerCurrent != null) {
-      this.baseBufferUrl = layerCurrent.url
-      this.srcLayer = layerCurrent.gdbps
-    }
+      if (layerCurrent.type == 6) {
+        this.baseBufferUrl = layerCurrent.url
+        this.srcLayer = layerCurrent.gdbps
+      } else {
+        this.baseBufferUrl = layerCurrent.layer.url
+        this.srcLayer = layerCurrent.url
+      }
+    } 
   }
 
   getResultLayer() {
-    const url = `${this.baseBufferUrl}?gdbps=${this.destLayer}`
+    const ip = (this.baseBufferUrl || "").split('/')[2].split(':')[0]
+		const port = (this.baseBufferUrl || "").split('/')[2].split(':')[1]
+    const url = `http://${ip}:${port}/igs/rest/mrms/layers?gdbps=${this.destLayer}`
     const index = url.lastIndexOf("/")
     const layerName = url.substring(index + 1, url.length)
     return [url, layerName]
