@@ -119,11 +119,10 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
     this.layerArrOption = []
     const arr = []
     val.layers().forEach(data => {
-      if (
-        data.type === LayerType.IGSMapImage ||
-        data.type === LayerType.IGSVector
-      ) {
+      if (data.type === LayerType.IGSVector) {
         arr.push(data)
+      } else if (data.type === LayerType.IGSMapImage) {
+        arr.push(...data.sublayers)
       }
     })
     if (arr.length > 0) {
@@ -149,10 +148,6 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
    */
   onOpen() {
     this.isWidgetOpen = true
-    const layerObj = this.layerArrOption
-    const layerUrl = layerObj.map((item, index, layerObj) => {
-      return item.gdbps
-    })
     this.overlay.mount()
   }
 
@@ -174,15 +169,26 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
   tchangeTarget() {
     const tlayerCurrent = this.tData
     if (tlayerCurrent != null) {
-      this.baseOverlayUrl = tlayerCurrent.url
-      this.srcALayer = tlayerCurrent.gdbps
+      if (tlayerCurrent.type == 6) {
+        this.baseOverlayUrl = tlayerCurrent.url
+        this.srcALayer = tlayerCurrent.gdbps
+      } else {
+        this.baseOverlayUrl = tlayerCurrent.layer.url
+        this.srcALayer = tlayerCurrent.url
+      }
     }
   }
 
   dchangeTarget() {
     const dlayerCurrent = this.dData
     if (dlayerCurrent != null) {
-      this.srcBLayer = dlayerCurrent.gdbps
+      if (dlayerCurrent.type == 6) {
+        this.baseOverlayUrl = dlayerCurrent.url
+        this.srcBLayer = dlayerCurrent.gdbps
+      } else {
+        this.baseOverlayUrl = dlayerCurrent.layer.url
+        this.srcBLayer = dlayerCurrent.url
+      }
     }
   }
 
@@ -199,7 +205,11 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
   }
 
   addNewLayer() {
-    const url = `${this.baseOverlayUrl}?gdbps=${this.destLayer}`
+    const ip = (this.baseOverlayUrl || "").split('/')[2].split(':')[0]
+		const port = (this.baseOverlayUrl || "").split('/')[2].split(':')[1]
+    console.log(ip, port)
+    // const url = `${this.baseOverlayUrl}?gdbps=${this.destLayer}`
+    const url = `http://${ip}:${port}/igs/rest/mrms/layers?gdbps=${this.destLayer}`
     const index = url.lastIndexOf("/")
     const layerName = url.substring(index + 1, url.length)
     const data = {
