@@ -330,7 +330,18 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   }
 
   created() {
-    const { baseConfig, subjectConfig = [] } = this.widgetInfo.config
+    const { subjectConfig = [] } = this.widgetInfo.config
+    let { baseConfig } = this.widgetInfo.config
+    if (!baseConfig) {
+      // 防止后面因为baseconfig未定义导致进程中断
+      baseConfig = {
+        baseIp: '',
+        basePort: '',
+        isOverlay: true,
+        isLocation: true,
+        startZindex: 3000
+      }
+    }
     this.setBaseConfig(baseConfig)
     this.setSubjectConfig(subjectConfig)
   }
