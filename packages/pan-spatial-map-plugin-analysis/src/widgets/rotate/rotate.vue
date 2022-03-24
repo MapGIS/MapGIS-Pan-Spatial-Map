@@ -20,11 +20,6 @@ export default class MpRotate extends Mixins(WidgetMixin) {
     this.rotate = e;
   }
 
-  // 微件失活时
-  onDeActive() {
-    this.rotate.unmount()
-  }
-
 }
 
 </script>
