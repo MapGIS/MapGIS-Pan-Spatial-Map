@@ -90,23 +90,30 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
   }
 
   get setting3D() {
-    return this.subjectData.setting3D
+    return (
+      this.subjectData.setting3D || {
+        width: 50000,
+        textFont: '50px Helvetica',
+        textColor: '#008000',
+        textHeightOffset: 10000
+      }
+    )
   }
 
   get width() {
-    return this.subjectData.setting3D.width
+    return this.setting3D.width
   }
 
   get textFont() {
-    return this.subjectData.setting3D.textFont
+    return this.setting3D.textFont
   }
 
   get textHeightOffset() {
-    return this.subjectData.setting3D.textHeightOffset
+    return this.setting3D.textHeightOffset
   }
 
   get textColor() {
-    return this.subjectData.setting3D.textColor
+    return this.setting3D.textColor
   }
 
   // 图标实体颜色

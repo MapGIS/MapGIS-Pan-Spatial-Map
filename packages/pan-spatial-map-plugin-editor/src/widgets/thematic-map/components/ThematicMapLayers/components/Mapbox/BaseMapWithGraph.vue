@@ -111,7 +111,15 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
 
   // 图标实体颜色
   get colors() {
-    return this.subjectData?.colors
+    return (
+      this.subjectData?.colors || [
+        '#FFB980',
+        '#5AB1EF',
+        '#B6A2DE',
+        '#2EC7C9',
+        '#D87A80'
+      ]
+    )
   }
 
   // 图表x轴或y轴字段

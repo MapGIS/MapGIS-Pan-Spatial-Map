@@ -19,8 +19,31 @@ import BaseMixin from '../../mixins/base'
 
 @Component
 export default class MapboxStatisticLabel extends Mixins(BaseMixin) {
+  // get themeOptions() {
+  //   return this.subjectData?.themeStyle || {}
+  // }
+
   get themeOptions() {
-    return this.subjectData?.themeStyle || {}
+    if (!this.subjectData) {
+      return {}
+    } else {
+      const { labelStyle, themeStyle } = this.subjectData
+      // 兼容旧配置
+      return labelStyle && labelStyle.radius
+        ? {
+            styleGroups: [
+              {
+                start: labelStyle.radius.min,
+                end: labelStyle.radius.max,
+                style: {
+                  radius: labelStyle.radius.radiu,
+                  color: labelStyle.radius.sectionColor
+                }
+              }
+            ]
+          }
+        : themeStyle || {}
+    }
   }
 
   removeLayer() {

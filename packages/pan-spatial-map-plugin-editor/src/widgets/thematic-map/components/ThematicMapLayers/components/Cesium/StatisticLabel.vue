@@ -20,10 +20,33 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
   // 等级符号图配置项
   // 新旧版本的样式设置对比参照 https://shimowendang.com/docs/gO3oxMwgNmHJddqD
   // 此处只对新版的样式兼容，旧版的每个字段没有具体说明，无法和新版对应起来
-  get options() {
-    return this.subjectData
-      ? this.subjectData.themeStyle || this.subjectData.labelStyle
-      : null
+  // get options() {
+  //   return this.subjectData
+  //     ? this.subjectData.themeStyle || this.subjectData.labelStyle
+  //     : null
+  // }
+
+  get themeOptions() {
+    if (!this.subjectData) {
+      return {}
+    } else {
+      const { labelStyle, themeStyle } = this.subjectData
+      // 兼容旧配置
+      return labelStyle && labelStyle.radius
+        ? {
+            styleGroups: [
+              {
+                start: labelStyle.radius.min,
+                end: labelStyle.radius.max,
+                style: {
+                  radius: labelStyle.radius.radiu,
+                  color: labelStyle.radius.sectionColor
+                }
+              }
+            ]
+          }
+        : themeStyle || {}
+    }
   }
 
   /**
@@ -36,13 +59,23 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
       const value = feature.properties[this.field]
       const center = Feature.getGeoJSONFeatureCenter(feature)
       let cylinder
-      if (this.options) {
-        const { textStyle, radius } = this.options
-        const { min, max, radiu } = Array.isArray(radius) ? radius[0] : radius
-        const plus = max - min
-        const maxR = Number(radiu)
-        const _radius = value * 150 * (max && plus > 0 ? maxR / plus : maxR)
-        const material = this.getColor(textStyle.fillColor)
+      if (this.themeOptions) {
+        console.log(this.themeOptions)
+        const { styleGroups } = this.themeOptions
+        // debugger
+        const styleGroup = Array.isArray(styleGroups)
+          ? styleGroups[0]
+          : styleGroups
+        const { start, style } = styleGroup
+        const { radius, color } = style
+        let { end } = styleGroup
+        if (Array.isArray(styleGroups)) {
+          end = styleGroups[styleGroups.length - 1].end
+        }
+        const plus = end - start
+        const maxR = Number(radius)
+        const _radius = value * 150 * (end && plus > 0 ? maxR / plus : maxR)
+        const material = this.getColor(color)
         cylinder = {
           material,
           length: 0.001, // 圆柱体高度
