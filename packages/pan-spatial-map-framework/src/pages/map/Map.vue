@@ -4,20 +4,21 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { AppManager } from '@mapgis/web-app-framework'
+import { AppManager, MapRender } from '@mapgis/web-app-framework'
 import { getAppInfo } from '@/services/user'
 import { BASE_URL } from '@/services/api'
 import { request } from '@/utils/request'
 import mapgisui from '@mapgis/webclient-vue-ui'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 export default {
   data() {
     return {
-      application: {},
+      application: {}
     }
   },
   computed: {
-    ...mapState('setting', ['theme']),
+    ...mapState('setting', ['theme'])
   },
   async created() {
     try {
@@ -29,6 +30,20 @@ export default {
         request
       )
       this.application = AppManager.getInstance().getApplication()
+      /**
+       * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
+       * 修改人：龚跃健
+       * 修改时间：2022/3/25
+       */
+      const initMode =
+        baseConfigInstance.config && baseConfigInstance.config.initMode
+          ? baseConfigInstance.config.initMode
+          : undefined
+      if (!initMode || initMode === 'map') {
+        this.application.document.maprender = MapRender.MAPBOXGL
+      } else if (initMode === 'globe') {
+        this.application.document.maprender = MapRender.CESIUM
+      }
 
       const style = this.themeStyle()
 
@@ -52,16 +67,14 @@ export default {
       if (this.application.theme) {
         if (this.application.theme.style) {
           if (this.application.theme.manifest) {
-            const style = this.application.theme.manifest.styles.find(
-              (item) => {
-                return item.name === this.application.theme.style
-              }
-            )
+            const style = this.application.theme.manifest.styles.find(item => {
+              return item.name === this.application.theme.style
+            })
 
             if (style) {
               return {
                 color: style.color,
-                theme: style.theme,
+                theme: style.theme
               }
             }
           }
@@ -70,7 +83,7 @@ export default {
         }
       }
       return { theme: 'dark', color: '#1890ff' }
-    },
-  },
+    }
+  }
 }
 </script>
