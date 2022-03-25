@@ -307,6 +307,10 @@
           {
             "id": "widget_36150f72-0612-4c58-a990-e4e19cf57dd0",
             "uri": "widgets/output-image"
+          },
+          {
+            "id": "widget_ec89068b-ec5f-7cb6-c198-7d32141d1967",
+            "uri": "widgets/rotate"
           }
         ],
         "widgetStructure": [
@@ -443,6 +447,16 @@
               },
               {
                 "id": "widget_d1a46c04-3a62-92e1-24d5-909bc46ccaa6"
+              }
+            ]
+          },
+          {
+            "id": "folder_25da4e23-ad4a-e0ab-a4d9-5ce97b9106d0",
+            "type": "folder",
+            "label": "可视化控制",
+            "children": [
+              {
+                "id": "widget_ec89068b-ec5f-7cb6-c198-7d32141d1967"
               }
             ]
           }

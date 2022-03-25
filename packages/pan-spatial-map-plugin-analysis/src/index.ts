@@ -25,7 +25,8 @@ import {
   MpBuildingGrow,
   MpOverlayManager,
   MpModelFlatten,
-  MpOutputImage
+  MpOutputImage,
+  MpRotate
 } from './widgets'
 
 const components = [
@@ -55,7 +56,8 @@ const components = [
   MpBuildingGrow,
   MpOverlayManager,
   MpModelFlatten,
-  MpOutputImage
+  MpOutputImage,
+  MpRotate
 ]
 
 const install = Vue => {
