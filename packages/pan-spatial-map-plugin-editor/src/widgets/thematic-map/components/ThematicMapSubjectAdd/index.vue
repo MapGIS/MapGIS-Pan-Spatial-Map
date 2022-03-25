@@ -175,15 +175,24 @@ export default class ThematicMapSubjectAdd extends Vue {
       this.$message.warning('请填写专题配置')
     } else {
       const subjectStyleComps = dep.getSub() // 获取专题图样式配置组件
-      const configs = _uniqBy(this.subjectNodeConfig, ({ time }) => time)
+      let configs = _uniqBy(this.subjectNodeConfig, ({ time }) => time)
+      const { type } = this.subjectNodeBase
+      if (type === 'SubSectionMap' || type === 'StatisticLabel') {
+        // 分段专题图\等级符号专题图
+        if (subjectStyleComps.length >= configs.length) {
+          configs = configs.map((c, i) => ({
+            ...c,
+            themeStyle: {
+              styleGroups: subjectStyleComps[i].getFormResult().themeStyle[
+                subjectStyleComps[i].id
+              ] // 获取样式配置结果
+            }
+          }))
+        }
+      }
       this.createSubjectConfigNode({
         ...this.subjectNodeBase,
-        config: subjectStyleComps.length
-          ? configs.map((c, i) => ({
-              ...c,
-              ...subjectStyleComps[i].getFormResult() // 获取样式配置结果
-            }))
-          : configs
+        config: configs
       })
     }
   }

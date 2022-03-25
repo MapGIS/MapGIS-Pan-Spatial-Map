@@ -16,9 +16,9 @@ import { Layer, Feature } from '@mapgis/web-app-framework'
 import CesiumMixin from '../../mixins/cesium'
 
 interface ISectionColor {
-  min: number
-  max: number
-  sectionColor: string
+  start: number
+  end: number
+  style: object
 }
 
 @Component()
@@ -30,17 +30,47 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
 
   // 3D设置
   get setting3D() {
-    return this.subjectData?.setting3D || {}
+    return (
+      this.subjectData?.setting3D || {
+        radius: 6,
+        strokeWidth: 1,
+        lineType: '走廊状',
+        sides: 5,
+        useHeightScale: true,
+        heightScale: 0.000001,
+        classificationType: 'both'
+      }
+    )
+  }
+
+  get themeOptions() {
+    if (!this.subjectData) {
+      return {}
+    } else {
+      const { color, themeStyle } = this.subjectData
+      // 兼容旧配置
+      return color && color.length
+        ? {
+            styleGroups: color.map(({ min, max, sectionColor }) => ({
+              start: min,
+              end: max,
+              style: {
+                color: sectionColor
+              }
+            }))
+          }
+        : themeStyle || { styleGroups: [] }
+    }
   }
 
   // 分段值设置
-  get colors() {
-    return this.subjectData?.color || []
+  get styleGroups() {
+    return this.themeOptions.styleGroups || []
   }
 
   get classificationType() {
     let type
-    const configType = this.subjectData.setting3D.classificationType
+    const configType = this.setting3D.classificationType
     if (configType === 'terrain') {
       type = this.Cesium.ClassificationType.TERRAIN
     } else if (configType === '3DTiles') {
@@ -74,28 +104,28 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
 
   /**
    * 获取分段样式
-   * @param colors 样式配置数据
+   * @param styleGroups 样式配置数据
    * @param value 数据
    */
-  getSegmentstyle(colors: ISectionColor[], value: any) {
+  getSegmentstyle(styleGroups: ISectionColor[], value: any) {
     let color
     let noSegColor
-    if (colors.length) {
-      for (let i = 0; i < colors.length; i += 1) {
-        const { min, max, sectionColor } = colors[i]
+    if (styleGroups.length) {
+      for (let i = 0; i < styleGroups.length; i += 1) {
+        const { start, end, style } = styleGroups[i]
         if (!value || value === null) {
-          noSegColor = sectionColor
+          noSegColor = style.color
         } else if (
-          Number(value) >= Number(min) &&
-          Number(value) <= Number(max)
+          Number(value) >= Number(start) &&
+          Number(value) <= Number(end)
         ) {
-          color = sectionColor
+          color = style.color
           break
         }
         if (noSegColor && value === '未参与分段的值') {
-          noSegColor = sectionColor
+          noSegColor = style.color
         }
-        if (!color && i === colors.length - 1 && noSegColor) {
+        if (!color && i === styleGroups.length - 1 && noSegColor) {
           color = noSegColor
           break
         }
@@ -222,7 +252,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
         geometry: { type, coordinates }
       } = feature
       const value = properties[this.field]
-      const featureColor = this.getSegmentstyle(this.colors, value)
+      const featureColor = this.getSegmentstyle(this.styleGroups, value)
       if (featureColor) {
         const material = this.getColor(featureColor)
         const heightScaleValue = this.isShow3D
