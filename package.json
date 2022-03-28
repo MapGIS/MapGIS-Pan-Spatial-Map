@@ -28,14 +28,14 @@
     "limit-portal": "cd packages/pan-spatial-map-framework-portal && yarn fix-memory-limit"
   },
   "dependencies": {
-    "vue-color": "^2.8.1",
+    "@mapgis/web-app-framework": "link:../MapGIS-Web-App-Framework",
+    "@mapgis/webclient-es6-mapboxgl": "^10.5.15",
+    "@mapgis/webclient-es6-service": "^10.5.15",
+    "@mapgis/webclient-vue-cesium": "^10.5.15",
+    "@mapgis/webclient-vue-mapboxgl": "^10.5.15",
+    "@mapgis/webclient-vue-ui": "^10.5.15",
     "json2csv": "^5.0.6",
-    "@mapgis/webclient-es6-service": "^10.5.13",
-    "@mapgis/webclient-es6-mapboxgl": "^10.5.13",
-    "@mapgis/webclient-vue-ui": "^10.5.12",
-    "@mapgis/webclient-vue-mapboxgl": "^10.5.12",
-    "@mapgis/webclient-vue-cesium": "^10.5.12",
-    "@mapgis/web-app-framework": "link:../MapGIS-Web-App-Framework"
+    "vue-color": "^2.8.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.17.0",
