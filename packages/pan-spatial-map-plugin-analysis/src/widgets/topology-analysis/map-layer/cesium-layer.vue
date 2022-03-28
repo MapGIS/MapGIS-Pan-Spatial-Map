@@ -75,12 +75,15 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     if (type === 'Point') {
       const fillColor = this.Cesium.Color.fromCssColorString(color)
       const outLineColor = this.Cesium.Color.WHITE
-      const entity = this.sceneOverlays.addPoint({
-        lon: coordinates[0],
-        lat: coordinates[1],
+      const entity = this.sceneOverlays.addPoint(
+        coordinates[0],
+        coordinates[1],
+        0,
+        'source-point',
+        6,
         fillColor,
         outLineColor
-      })
+      )
       this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           center[0],
@@ -96,12 +99,18 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
           lineArr = lineArr.concat(lines)
         })
         const fillColor = this.Cesium.Color.fromCssColorString(color)
-        const entity = this.sceneOverlays.addLine({
-          name: `sourceArr-${index}`,
-          pointsArray: lineArr,
-          width: 3,
-          color: fillColor
-        })
+        const entity = this.sceneOverlays.addLine(
+          `sourceArr-${index}`,
+          lineArr,
+          3,
+          fillColor,
+          // 是否识别带高度的坐标
+          false,
+          // 是否贴地形
+          true,
+          // 附加属性
+          {}
+        )
         this.viewer.camera.flyTo({
           destination: this.Cesium.Rectangle.fromDegrees(
             bound[0][0],
