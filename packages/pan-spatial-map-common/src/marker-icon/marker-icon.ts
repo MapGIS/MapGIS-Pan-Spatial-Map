@@ -15,9 +15,9 @@ class MarkerIcon {
   public async selectIcon() {
     // 获取未选中图标
     if (!this._selectIcon) {
-      this._selectIcon = await this.setBase64(
+      this._selectIcon = (await this.setBase64(
         baseConfigInstance.config.colorConfig.label.image.selectedImg
-      )
+      )) as string
     }
     return this._selectIcon
   }
@@ -25,9 +25,9 @@ class MarkerIcon {
   public async unSelectIcon() {
     // 获取未选中图标
     if (!this._unselectIcon) {
-      this._unselectIcon = await this.setBase64(
+      this._unselectIcon = (await this.setBase64(
         baseConfigInstance.config.colorConfig.label.image.defaultImg
-      )
+      )) as string
     }
     return this._unselectIcon
   }
@@ -54,7 +54,7 @@ class MarkerIcon {
     canvas.width = img.width
     canvas.height = img.height
     const ctx = canvas.getContext('2d')
-    ctx.drawImage(img, 0, 0, img.width, img.height)
+    if (ctx) ctx.drawImage(img, 0, 0, img.width, img.height)
     const dataURL = canvas.toDataURL('image/png')
     return dataURL
   }
