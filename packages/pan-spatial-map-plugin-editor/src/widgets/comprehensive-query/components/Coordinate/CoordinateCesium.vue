@@ -142,6 +142,7 @@ export default class CoordinateCesium extends Mixins(MapMixin, AppMixin) {
             .map(Number),
           fillColor,
           fillOutlineColor,
+          false,
           { drawOutLine: true, outlineWidth: width }
         )
         const center = Feature.getGeoJSONFeatureCenter(features[i])

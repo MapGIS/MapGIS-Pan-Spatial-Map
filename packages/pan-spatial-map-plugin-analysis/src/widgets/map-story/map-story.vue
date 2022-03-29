@@ -206,7 +206,7 @@ export default class MpMapStory extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style>
+<style scoped>
 .mp-widget-map-story {
   position: absolute;
   top: -4px;

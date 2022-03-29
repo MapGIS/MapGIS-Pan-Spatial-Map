@@ -116,6 +116,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
             .map(Number),
           fillColor,
           fillOutlineColor,
+          false,
           { drawOutLine: true, outlineWidth: width }
         )
         if (this.center && this.center.length === 2) {

@@ -28883,16 +28883,16 @@ export class GoogleMapImageryProvider {
  * MapGIS地图文档
  * @example
  * // options.extensions 参数为自定义扩展参数，需要确保服务端支持此类参数生效
- *        var options = {
- *                          extensions: [   { key: 'token', value: 'tokentokentokentoken' },
- *                                          { key: 'filters', value: '1:ID>4,3:ID>1' },
- *                                          { key: 'proj', value: 'Web墨卡托_WGS1984' }
- *                                      ]
- *                      };
- *        //二维地图文档加载
- *        var mapGIS2DLayer = viewer.scene.layers.appendImageryLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量',otherOptions);
- *        //三维地图文档加载
- *        var mapGIS3DLayer = viewer.scene.layers.appendImageryLayer('http://54.222.218.173:6163/igs/rest/g3d/lcmap/',0,0,otherOptions);
+       var options = {
+                         extensions: [   { key: 'token', value: 'tokentokentokentoken' },
+                                         { key: 'filters', value: '1:ID>4,3:ID>1' },
+                                         { key: 'proj', value: 'Web墨卡托_WGS1984' }
+                                     ]
+                     };
+       //二维地图文档加载
+       var mapGIS2DLayer = viewer.scene.layers.appendImageryLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量',otherOptions);
+       //三维地图文档加载
+       var mapGIS3DLayer = viewer.scene.layers.appendImageryLayer('http://54.222.218.173:6163/igs/rest/g3d/lcmap/',0,0,otherOptions);
  * @param options - 包含以下属性
  * @param options.url - 服务地址 eg:http://localhost:6163/igs/rest/mrms/docs/地图文档名
  * @param [sceneIndex] - 三维地图文档图层所在场景索引，当加载三维地图文档时为必需参数
@@ -29080,17 +29080,17 @@ export class MapGISTerrainProvider {
  * MapGIS瓦片服务
  * @example
  * //如果裁瓦片的时候是按照经纬度裁剪的瓦片则只设置最大级数即可
- *    // var otherOptions ={
- *    //  maxLevel:10
- *    //};
- *   var otherOptions ={
- *       tileRange:Cesium.Rectangle.fromDegrees(73.4625656504558,9.7218626686719958,139.249771965239,53.5800002118608),
- *       colNum:3,
- *       rowNum:2,
- *       maxLevel:10,
- *       proxy:'/Handler.ashx'//不存在跨域可不设置
- *     };
- *   var mapGisTile = viewer.scene.layers.appendImageryLayer('http://54.222.218.173:6163/igs/rest/mrms/tile/YX_TILE',otherOptions);
+   // var otherOptions ={
+   //  maxLevel:10
+   //};
+  var otherOptions ={
+      tileRange:Cesium.Rectangle.fromDegrees(73.4625656504558,9.7218626686719958,139.249771965239,53.5800002118608),
+      colNum:3,
+      rowNum:2,
+      maxLevel:10,
+      proxy:'/Handler.ashx'//不存在跨域可不设置
+    };
+  var mapGisTile = viewer.scene.layers.appendImageryLayer('http://54.222.218.173:6163/igs/rest/mrms/tile/YX_TILE',otherOptions);
  * @param options - 包含以下属性
  * @param options.url - 服务地址
  * @param [options.headers] - Http Headers
@@ -29172,9 +29172,9 @@ export class OpenWeatherImageryProvider {
  * TerrainAnalyse 地形分析功能的主要类
  * @example
  * var viewer = new Cesium.Viewer('cesiumContainer', {});
- * var terrainAnalyse = new Cesium.TerrainAnalyse(viewer, {});
- * terrainAnalyse.selectedShading='elevation';
- * terrainAnalyse.enableContour(enableContour);
+var terrainAnalyse = new Cesium.TerrainAnalyse(viewer, {});
+terrainAnalyse.selectedShading='elevation';
+terrainAnalyse.enableContour(enableContour);
  * @param viewer - 场景视图对象
  * @param [options] - 包含以下属性的对象
  * @param [options.contourColor = Color.RED.clone()] - 等高线颜色默认为红色
@@ -29221,7 +29221,7 @@ export class TerrainAnalyse {
      * 更新色表
      * @example
      * var defaultColor = ['#000000', '#2747E0', '#D33B7D', '#D33038', '#FF9742', '#ffd700', '#FFFFFF'];
-     * terrainAnalyse.changeColorTable(defaultColor,'elevation');
+    terrainAnalyse.changeColorTable(defaultColor,'elevation');
      * @param colorTable - 色表
      * @param ShadingType - 渲染类型，高程赋色'elevation'、坡度分析'slope'、坡向分析'aspect'。
      */
@@ -29230,7 +29230,7 @@ export class TerrainAnalyse {
      * 更新色表间距值
      * @example
      * var defaultColor = [0, 0.2, 0.3,0.4, 0.5, 0.6, 1];
-     * terrainAnalyse.changeColorTableDis(defaultColor,'elevation');
+    terrainAnalyse.changeColorTableDis(defaultColor,'elevation');
      * @param colorTableDis - 色表间距值
      * @param ShadingType - 渲染类型，高程赋色'elevation'、坡度分析'slope'、坡向分析'aspect'。
      */
@@ -29239,7 +29239,7 @@ export class TerrainAnalyse {
      * 修改坡向箭头密度
      * @example
      * var  cartesian2= new Cesium.Cartesian2(3.0,3.0);
-     * changeArrowAspectRepeat(cartesian2);
+    changeArrowAspectRepeat(cartesian2);
      * @param cartesian2 - x,y方向上的重复次数
      */
     changeArrowAspectRepeat(cartesian2: Cartesian2): void;
@@ -29254,10 +29254,10 @@ export class TerrainAnalyse {
      * 开启地形等值面分析
      * @example
      * var bandPositions = [400,800,1300];
-     * var terrainA = new Cesium.TerrainAnalyse(viewer);
-     *
-     * var colorsArray =[Cesium.Color.RED,Cesium.Color.BLUE,Cesium.Color.GREEN];
-     * terrainAnalyse.updateElevationBandMaterial(bandPositions,false,100,1.0,0.0,colorsArray);
+    var terrainA = new Cesium.TerrainAnalyse(viewer);
+    
+    var colorsArray =[Cesium.Color.RED,Cesium.Color.BLUE,Cesium.Color.GREEN];
+    terrainAnalyse.updateElevationBandMaterial(bandPositions,false,100,1.0,0.0,colorsArray);
      * @param bandPositions - 等值面数组，高度，单位米
      * @param gradient - 是否渐变
      * @param bandThickness - 等值面宽度
@@ -29270,8 +29270,8 @@ export class TerrainAnalyse {
      * 右键点击查询坡度坡向值
      * @example
      * var getResult = function(e){console.log(e)};
-     * var terrainAnalyse = new Cesium.TerrainAnalyse(viewer, {});
-     * terrainAnalyse.queryInfo(getResult);
+    var terrainAnalyse = new Cesium.TerrainAnalyse(viewer, {});
+    terrainAnalyse.queryInfo(getResult);
      * @param getResult - 回调返回结果
      */
     queryInfo(getResult: (...params: any[]) => any): void;
@@ -40201,15 +40201,15 @@ export class Label {
      */
     totalScale: number;
     /**
-     * Gets or sets the uniform angle that is multiplied with the label's angle in pixels.
-    A angle of <code>0.0</code> does not change the angle of the label; a angle greater than
-    <code>0.0</code> clockwise the label; a nagetive angle less than <code>0.0</code>
+     * Gets or sets the uniform rotation that is multiplied with the label's rotation in pixels.
+    A rotation of <code>0.0</code> does not change the rotation of the label; a rotation greater than
+    <code>0.0</code> clockwise the label; a nagetive rotation less than <code>0.0</code>
     anticlockwise the label.
     <br /><br />
     <div align='center'>
     </div>
      */
-    angle: number;
+    rotation: number;
     /**
      * Gets or sets the condition specifying at what distance from the camera that this label will be displayed.
     决定在某个相机视角高度范围内图元是否可见。

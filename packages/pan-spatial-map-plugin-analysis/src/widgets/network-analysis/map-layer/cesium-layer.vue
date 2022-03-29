@@ -85,12 +85,18 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         const fillColor = this.Cesium.Color.fromCssColorString(
           this.circleColor['circle-color']
         )
-        const entity = this.sceneOverlays.addLine({
-          name: `entityLineResultArray-${index}`,
-          pointsArray: lineArr,
-          width: 3,
-          color: fillColor
-        })
+        const entity = this.sceneOverlays.addLine(
+          `entityLineResultArray-${index}`,
+          lineArr,
+          3,
+          fillColor,
+          // 是否识别带高度的坐标
+          false,
+          // 是否贴地形
+          true,
+          // 附加属性
+          {}
+        )
         this.entityLineResultArray.push(entity)
       })
     }
@@ -105,12 +111,14 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         )
 
         const outLineColor = this.Cesium.Color.WHITE
-        const entity = this.sceneOverlays.addPoint({
-          lon: item[0],
-          lat: item[1],
-          fillColor,
-          font: 9
-        })
+        const entity = this.sceneOverlays.addPoint(
+          item[0],
+          item[1],
+          0,
+          `entityPointResultArray-${index}`,
+          9,
+          fillColor
+        )
         this.entityPointResultArray.push(entity)
       })
     }
@@ -151,12 +159,18 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     //   })
     //   const fillColor = this.Cesium.Color.fromCssColorString('#CC01AD')
 
-    //   const entity = this.sceneOverlays.addLine({
-    //     name: 'entityHighResultArray',
-    //     pointsArray: arr,
-    //     width: 5,
-    //     color: fillColor
-    //   })
+    // const entity = this.sceneOverlays.addLine(
+    //   'entityHighResultArray',
+    //   arr,
+    //   5,
+    //   fillColor,
+    //   // 是否识别带高度的坐标
+    //   false,
+    //   // 是否贴地形
+    //   true,
+    //   // 附加属性
+    //   {}
+    // )
     //   this.entityHighResultArray.push(entity)
     // }
   }
@@ -172,14 +186,16 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         )
 
         const outLineColor = this.Cesium.Color.WHITE
-        const entity = this.sceneOverlays.addPoint({
-          lon: coordinates[0],
-          lat: coordinates[1],
-          font: 11,
+        const entity = this.sceneOverlays.addPoint(
+          coordinates[0],
+          coordinates[1],
+          0,
+          null,
+          11,
           fillColor,
           outLineColor,
-          outlineWidth: 1
-        })
+          1
+        )
         this.entityCoordinateArray.push(entity)
       })
     }
@@ -194,14 +210,16 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         const fillColor = this.Cesium.Color.RED
 
         const outLineColor = this.Cesium.Color.WHITE
-        const entity = this.sceneOverlays.addPoint({
-          lon: coordinates[0],
-          lat: coordinates[1],
+        const entity = this.sceneOverlays.addPoint(
+          coordinates[0],
+          coordinates[1],
+          0,
+          null,
+          11,
           fillColor,
-          font: 11,
           outLineColor,
-          outlineWidth: 1
-        })
+          1
+        )
         this.entityBarrierArray.push(entity)
       })
     }
