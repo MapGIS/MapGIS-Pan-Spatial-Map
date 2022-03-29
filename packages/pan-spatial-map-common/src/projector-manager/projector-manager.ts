@@ -93,7 +93,7 @@ class ProjectorOverlayLayerList {
    */
   public getProjectorLayerById(layerId: string) {
     const projectorOverlayLayer = this._projectorOverlayLayerList.find(
-      layer => layer.id === layerId
+      (layer) => layer.id === layerId
     )
     if (projectorOverlayLayer) {
       return projectorOverlayLayer
@@ -112,7 +112,7 @@ class ProjectorOverlayLayerList {
     let projector
     if (projectorOverlayLayer) {
       projector = projectorOverlayLayer.projectorList.find(
-        projector => projector.id === projectorId
+        (projector) => projector.id === projectorId
       )
       if (projector) {
         return projector
@@ -178,15 +178,15 @@ class ProjectorOverlayLayerList {
               imgUrl,
               videoSource: {
                 protocol,
-                videoUrl
+                videoUrl,
               },
               cameraPosition: cameraPosition || projector.params.cameraPosition,
               orientation: orientation || projector.params.orientation,
               hFOV: hFOV || projector.params.hFOV,
               vFOV: vFOV || projector.params.vFOV,
               hintLineVisible:
-                hintLineVisible || projector.params.hintLineVisible
-            }
+                hintLineVisible || projector.params.hintLineVisible,
+            },
           }
           projector = { ...newProjector }
         }
@@ -201,28 +201,28 @@ class ProjectorOverlayLayerList {
             imgUrl,
             videoSource: {
               protocol,
-              videoUrl
+              videoUrl,
             },
             cameraPosition: cameraPosition || {
               x: 0,
               y: 0,
-              z: 0
+              z: 0,
             },
             orientation: orientation || {
               heading: 0,
               pitch: 0,
-              roll: 0
+              roll: 0,
             },
             hFOV: hFOV || 15,
             vFOV: vFOV || 15,
-            hintLineVisible: hintLineVisible || true
-          }
+            hintLineVisible: hintLineVisible || true,
+          },
         }
         projectorOverlayLayer.projectorList.push(newProjector)
       }
     } else {
       // 未找到overlayLayerName对应的图层，新建图层
-      const newProjectorOverlayLayer = {
+      const newProjectorOverlayLayer: ProjectorOverlayLayer = {
         id: layerId,
         name: layerName,
         projectorList: [
@@ -233,27 +233,27 @@ class ProjectorOverlayLayerList {
             isProjected: isProjected || false,
             params: {
               projectorType,
-              imgUrl,
+              imgUrl: imgUrl || '',
               videoSource: {
-                protocol,
-                videoUrl
+                protocol: protocol || '',
+                videoUrl: videoUrl || '',
               },
               cameraPosition: cameraPosition || {
                 x: 0,
                 y: 0,
-                z: 0
+                z: 0,
               },
               orientation: orientation || {
                 heading: 0,
                 pitch: 0,
-                roll: 0
+                roll: 0,
               },
               hFOV: hFOV || 15,
               vFOV: vFOV || 15,
-              hintLineVisible: hintLineVisible || true
-            }
-          }
-        ]
+              hintLineVisible: hintLineVisible || true,
+            },
+          },
+        ],
       }
       this._projectorOverlayLayerList.push(newProjectorOverlayLayer)
     }
