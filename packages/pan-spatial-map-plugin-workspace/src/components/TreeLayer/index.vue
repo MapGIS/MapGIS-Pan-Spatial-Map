@@ -920,9 +920,9 @@ export default class MpTreeLayer extends Mixins(
       this.currentLayerInfo = layer
     }
     // 复位当前选择的图层
-    this.$nextTick(() => {
-      this.currentLayerInfo = {}
-    })
+    // this.$nextTick(() => {
+    //   this.currentLayerInfo = {}
+    // })
     this.clickPopover(node, false)
   }
 
