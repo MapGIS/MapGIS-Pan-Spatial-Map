@@ -603,9 +603,11 @@ export default class LayerTypeUtil extends Mixins(
       let boundObj = null
       if (source) {
         const tranform = source.root.transform
+        const offset = source._asset.offset
         boundObj = this.sceneController.localExtentToGlobelExtent(
           bound,
-          tranform
+          tranform,
+          offset
         )
       }
       const properties = {

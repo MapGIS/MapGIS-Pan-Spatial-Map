@@ -1,25 +1,18 @@
 <template>
-  <div style='height: 900px;width:332px'>
+  <div style="max-height: 530px">
     <mapgis-3d-graphic-layer
-      :models='models'
-      :dataSource='dataSource'
-      @save='save'
-      ref='graphicLayer'
+      :models="models"
+      :dataSource="dataSource"
+      @save="save"
+      ref="graphicLayer"
     />
   </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
-import {
-  LayerType,
-  WidgetMixin
-} from '@mapgis/web-app-framework'
-import {
-  eventBus,
-  events,
-  api
-} from '@mapgis/pan-spatial-map-common'
+import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
+import { eventBus, events, api } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpOverlayManager'
@@ -69,7 +62,7 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
           }
         }
       }
-      this.firstOpen = false;
+      this.firstOpen = false
       this.dataSource = dataSource
     } else {
       this.$refs.graphicLayer.$_showCurrentGraphic()
@@ -94,5 +87,4 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang='less' scoped>
-</style>
+<style lang="less" scoped></style>
