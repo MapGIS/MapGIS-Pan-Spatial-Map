@@ -88,6 +88,7 @@ function removeAuthorization(authType = AUTH_TYPE.BEARER) {
     default:
       break
   }
+  location.reload(true)
 }
 
 /**
