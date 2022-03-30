@@ -21,17 +21,14 @@ export default {
   name: 'HeaderAvatar',
   computed: {
     ...mapState('setting', ['loginConfig']),
-    ...mapGetters('account', ['user']),
+    ...mapGetters('account', ['user'])
   },
   methods: {
     logout() {
       logout()
-      this.$router.push('/login', {
-        name: 'login',
-        loginConfig: this.loginConfig,
-      })
-    },
-  },
+      this.$router.push('/login')
+    }
+  }
 }
 </script>
 
