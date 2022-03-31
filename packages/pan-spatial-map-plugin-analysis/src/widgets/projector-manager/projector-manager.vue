@@ -14,6 +14,7 @@
     <template slot="imgUpload" slot-scope="{ click }">
       <mp-upload-image
         :uploadUrl="`${baseUrl}/api/local-storage/pictures`"
+        :showUploadList="false"
         :click="click"
       ></mp-upload-image>
     </template>
@@ -43,6 +44,8 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
           description: '',
           isProjected: false,
           params: {
+            projectorType: 'video',
+            imgUrl: '',
             videoSource: {
               protocol: 'm3u8',
               videoUrl:
