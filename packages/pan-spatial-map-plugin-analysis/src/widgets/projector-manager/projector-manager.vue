@@ -8,6 +8,7 @@
     :currentProjectorId="currentProjectorId"
     :maxProjected="maxProjected"
     :hideVPInvisible="hideVPInvisible"
+    :disabledImageUrlInput="true"
     @load="load"
     @update-projectorOverlayLayerList="updateProjectorOverlayLayerList"
   >
