@@ -14,7 +14,12 @@
         properly without JavaScript enabled. Please enable it to continue.
       </strong>
     </noscript>
-    <div id="popContainer" class="beauty-scroll" style="height: 100vh;">
+    <!-- 这里隐藏y方向的滑动条，防止一触发cesium内核自带的气泡样式，右侧出现滑动条，界面会闪一下的问题 -->
+    <div
+      id="popContainer"
+      class="beauty-scroll"
+      style="height: 100vh;overflow-y: hidden;"
+    >
       <div id="app"></div>
     </div>
     <!-- built files will be auto injected -->
