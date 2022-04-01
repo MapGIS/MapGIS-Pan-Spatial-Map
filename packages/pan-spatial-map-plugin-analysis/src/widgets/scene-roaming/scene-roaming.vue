@@ -58,6 +58,10 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
     {
       label: '飞机',
       value: './CesiumModels/Cesium_Air.gltf'
+    },
+    {
+      label: '无',
+      value: ''
     }
   ]
 
