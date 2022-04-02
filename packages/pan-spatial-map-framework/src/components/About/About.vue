@@ -47,7 +47,6 @@ export default {
   methods: {
     async getbase64(url) {
       await request({ url, method: 'get' }).then((data) => {
-        console.log(data)
         this.tempbase64 = data
       })
     },
