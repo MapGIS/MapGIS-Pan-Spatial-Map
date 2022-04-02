@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" />
+    <!-- <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" /> -->
   </div>
 </template>
 
@@ -27,15 +27,11 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   // 点集资源ID
   sourceAnalysisArr = []
 
-  get drawComponent() {
-    return this.$refs.draw3d
-  }
-
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
+      this.vueCesium,
+      this.viewer
     )
     this.geoJSONChange('Analysis')
     this.geoJSONChange('Target')
@@ -79,17 +75,20 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     if (type === 'Point') {
       const fillColor = this.Cesium.Color.fromCssColorString(color)
       const outLineColor = this.Cesium.Color.WHITE
-      const entity = this.sceneOverlays.addPoint({
-        lon: coordinates[0],
-        lat: coordinates[1],
+      const entity = this.sceneOverlays.addPoint(
+        coordinates[0],
+        coordinates[1],
+        0,
+        'source-point',
+        6,
         fillColor,
         outLineColor
-      })
-      this.webGlobe.viewer.camera.flyTo({
+      )
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           center[0],
           center[1],
-          this.webGlobe.viewer.camera.positionCartographic.height
+          this.viewer.camera.positionCartographic.height
         )
       })
       sourceArr.push(entity)
@@ -100,13 +99,19 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
           lineArr = lineArr.concat(lines)
         })
         const fillColor = this.Cesium.Color.fromCssColorString(color)
-        const entity = this.sceneOverlays.addLine({
-          name: `sourceArr-${index}`,
-          pointsArray: lineArr,
-          width: 3,
-          color: fillColor
-        })
-        this.webGlobe.viewer.camera.flyTo({
+        const entity = this.sceneOverlays.addLine(
+          `sourceArr-${index}`,
+          lineArr,
+          3,
+          fillColor,
+          // 是否识别带高度的坐标
+          false,
+          // 是否贴地形
+          true,
+          // 附加属性
+          {}
+        )
+        this.viewer.camera.flyTo({
           destination: this.Cesium.Rectangle.fromDegrees(
             bound[0][0],
             bound[0][1],
@@ -130,7 +135,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
           fillColor,
           outlineColor
         )
-        this.webGlobe.viewer.camera.flyTo({
+        this.viewer.camera.flyTo({
           destination: this.Cesium.Rectangle.fromDegrees(
             bound[0][0],
             bound[0][1],
@@ -141,23 +146,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         sourceArr.push(entity)
       })
     }
-  }
-
-  // 打开绘制，点击图标激活对应类型的绘制功能
-  private onOpenDraw() {
-    this.drawComponent && this.drawComponent.openDraw('draw-rectangle')
-  }
-
-  private stopDraw() {
-    this.drawComponent && this.drawComponent.closeDraw()
-  }
-
-  @Emit()
-  finishDraw(e) {}
-
-  onDrawFinished(e) {
-    this.finishDraw(e)
-    this.stopDraw()
   }
 
   clearDataTargetArr() {
@@ -173,7 +161,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   }
 
   clear() {
-    this.stopDraw()
     this.clearDataTargetArr()
     this.clearDataAnalysisArr()
   }

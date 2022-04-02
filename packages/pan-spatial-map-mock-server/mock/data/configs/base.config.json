@@ -4,7 +4,7 @@
   "globeIp": "192.168.21.191",
   "globePort": "6163",
   "DataStoreIp": "192.168.96.101",
-  "DataStorePort": "9091",
+  "DataStorePort": "9014",
   "IGServerXIp": "192.168.91.123",
   "IGServerXPort": "9381",
   "serverType": "IGServer",

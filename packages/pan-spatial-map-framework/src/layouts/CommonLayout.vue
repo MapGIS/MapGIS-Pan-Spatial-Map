@@ -12,9 +12,10 @@ import { mapState } from 'vuex'
 export default {
   name: 'CommonLayout',
   components: { PageFooter },
+  props: ['copyright'],
   computed: {
-    ...mapState('setting', ['footerLinks', 'copyright'])
-  }
+    ...mapState('setting', ['footerLinks']),
+  },
 }
 </script>
 

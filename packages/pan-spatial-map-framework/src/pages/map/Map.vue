@@ -4,9 +4,12 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { AppManager } from '@mapgis/web-app-framework'
+import { AppManager, MapRender } from '@mapgis/web-app-framework'
 import { getAppInfo } from '@/services/user'
 import { BASE_URL } from '@/services/api'
+import { request } from '@/utils/request'
+import mapgisui from '@mapgis/webclient-vue-ui'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 export default {
   data() {
@@ -20,18 +23,39 @@ export default {
   async created() {
     try {
       const appInfo = await getAppInfo()
-
       await AppManager.getInstance().loadConfig(
         BASE_URL,
         appInfo.data.configPath,
-        appInfo.data.assetsPath
+        appInfo.data.assetsPath,
+        request
       )
-
       this.application = AppManager.getInstance().getApplication()
+      /**
+       * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
+       * 修改人：龚跃健
+       * 修改时间：2022/3/25
+       */
+      const initMode =
+        baseConfigInstance.config && baseConfigInstance.config.initMode
+          ? baseConfigInstance.config.initMode
+          : undefined
+      if (!initMode || initMode === 'map') {
+        this.application.document.maprender = MapRender.MAPBOXGL
+      } else if (initMode === 'globe') {
+        this.application.document.maprender = MapRender.CESIUM
+      }
 
       const style = this.themeStyle()
 
       this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
+
+      // 切换mapgisUI的主题
+      // 一张图 light，dark 白底黑字，night 黑底白字
+      if (style.theme === 'dark' || style.theme === 'light') {
+        mapgisui.setTheme('light')
+      } else {
+        mapgisui.setTheme('dark')
+      }
     } catch (error) {
       this.$message.warning('认证 token 已过期，请重新登录')
       this.$router.replace('/login')

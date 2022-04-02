@@ -1,24 +1,26 @@
 <template>
   <div class="editable-field-table">
-    <a-empty :image-style="emptyImageStyle" v-if="!visible">
+    <a-empty v-if="!visible" :image-style="emptyImageStyle">
       <span slot="description" @click="showTable" class="description">
         点击开始配置
       </span>
     </a-empty>
-    <template v-else>
-      <slot name="top" />
-      <mp-editable-table
-        :columns="tableColumns"
-        :data.sync="tableData"
-        :tools="tools"
-        :title="title"
-      />
-    </template>
+    <mp-editable-table
+      v-else
+      :columns="tableColumns"
+      :data.sync="tableData"
+      :tools="tools"
+      :title="title"
+    >
+      <template #top>
+        <slot name="top" />
+      </template>
+    </mp-editable-table>
   </div>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { NewSubjectConfig } from '../../../store'
+import { INewSubjectConfig } from '../../../store'
 import FieldInstance from '../store/fields'
 
 interface IColumn extends ColumnProps {
@@ -38,19 +40,11 @@ export default class EditableFieldTable extends Vue {
   >
 
   @Prop({ type: Object, default: () => ({}) })
-  readonly subjectConfig!: NewSubjectConfig
+  readonly subjectConfig!: INewSubjectConfig
 
   visible = false
 
   fieldList = []
-
-  get viewTool() {
-    return {
-      title: '预览',
-      icon: 'eye',
-      method: this.onView
-    }
-  }
 
   get closeTool() {
     return {
@@ -62,7 +56,11 @@ export default class EditableFieldTable extends Vue {
 
   get tools() {
     return (add, batchDel) => {
-      return [add, this.viewTool, batchDel, this.closeTool]
+      const _tools = [add, this.closeTool]
+      if (this.tableData.length) {
+        _tools.splice(1, 0, batchDel)
+      }
+      return _tools
     }
   }
 
@@ -119,10 +117,16 @@ export default class EditableFieldTable extends Vue {
   }
 
   /**
-   * 预览
+   * 设置属性列表
    */
-  onView() {
-    this.$emit('view')
+  setFields() {
+    FieldInstance.getFields(this.subjectConfig).then(fields => {
+      this.fieldList = fields.map(({ value }) => ({
+        label: value,
+        value
+      }))
+      this.$emit('fields-loaded', this.fieldList)
+    })
   }
 
   /**
@@ -133,11 +137,11 @@ export default class EditableFieldTable extends Vue {
     this.hideTable()
   }
 
-  created() {
-    FieldInstance.getFields(this.subjectConfig).then(list => {
-      this.fieldList = list
-      this.$emit('fields-loaded', list)
-    })
+  @Watch('subjectConfig.field', { immediate: true })
+  fieldChanged(nV) {
+    if (nV) {
+      this.setFields()
+    }
   }
 }
 </script>

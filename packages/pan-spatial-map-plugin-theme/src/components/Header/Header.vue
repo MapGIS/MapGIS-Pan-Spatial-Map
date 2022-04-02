@@ -4,7 +4,7 @@
       <div class="header-left">
         <slot name="header-left">
           <div :class="['logo', themeMode]">
-            <mp-icon :icon="appLogo" class="icon" />
+            <mp-icon :icon="computedAppLogo" class="icon" />
             <h1>{{ application.title }}</h1>
             <h2>{{ application.subtitle }}</h2>
           </div>
@@ -22,6 +22,8 @@
 
 <script>
 import { AppMixin } from '@mapgis/web-app-framework'
+import { request } from '../../../../pan-spatial-map-framework/src/utils/request'
+import axios from '../../../../../node_modules/axios'
 
 export default {
   name: 'MpPanSpatialMapHeader',
@@ -30,9 +32,31 @@ export default {
     themeMode: {
       type: String,
       required: false,
-      default: 'dark'
+      default: 'dark',
+    },
+  },
+  data() {
+    return {
+      tempbase64: '',
     }
-  }
+  },
+  computed: {
+    computedAppLogo() {
+      const url = this.appLogo
+      if (this.appLogo.indexOf('svg+xml') !== -1) {
+        this.getbase64(url)
+        return this.tempbase64
+      }
+      return this.appLogo
+    },
+  },
+  methods: {
+    async getbase64(url) {
+      await request({ url, method: 'get' }).then((data) => {
+        this.tempbase64 = data
+      })
+    },
+  },
 }
 </script>
 
@@ -52,20 +76,23 @@ export default {
   }
   .header-wide {
     display: flex;
-    height: 100%;
+    height: 48px;
     padding-left: 8px;
     .header-left {
       display: flex;
       min-width: 240px;
       .logo {
         position: relative;
-        height: 100%;
+        height: 48px;
         overflow: hidden;
         .icon {
           color: @primary-color;
           font-size: 32px;
           margin-right: 8px;
-          vertical-align: middle;
+          position: relative;
+          /deep/img {
+            vertical-align: unset !important;
+          }
         }
         h1 {
           display: inline-block;
@@ -110,9 +137,9 @@ export default {
         color: inherit;
         padding: 0 12px;
         cursor: pointer;
-        a{
+        a {
           color: inherit;
-          i{
+          i {
             font-size: 16px;
           }
         }
@@ -124,7 +151,7 @@ export default {
             background-color: @@class;
           }
         }
-      })
+      });
     }
   }
 }

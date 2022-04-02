@@ -36,6 +36,7 @@
       <mp-map-container
         v-if="configInitialized"
         class="map-wrapper"
+        :dataFlowList="dataFlowList"
         :cesium-lib-path="publicPath + 'cesium/Cesium.js'"
         :cesium-plugin-path="publicPath + 'cesium/webclient-cesium-plugin.js'"
         :map-options="mapOptions"
@@ -46,7 +47,11 @@
 
 <script>
 import { ThemeMixin } from '@mapgis/web-app-framework'
-import { baseConfigInstance, loadConfigs } from '@mapgis/pan-spatial-map-common'
+import {
+  baseConfigInstance,
+  loadConfigs,
+  DataFlowList
+} from '@mapgis/pan-spatial-map-common'
 import { mapState } from 'vuex'
 import MpPanSpatialMapSidePanel from '../../components/SidePanel/SidePanel.vue'
 
@@ -72,6 +77,10 @@ export default {
   },
   computed: {
     ...mapState('setting', ['hideSetting']),
+
+    dataFlowList() {
+      return DataFlowList
+    },
     headerContentComponent() {
       return this.parseContentComponent('header')
     },

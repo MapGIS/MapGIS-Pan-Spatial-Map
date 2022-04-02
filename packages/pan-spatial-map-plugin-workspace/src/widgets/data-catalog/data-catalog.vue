@@ -33,45 +33,59 @@
             :src="baseUrl + widgetInfo.config.iconConfig[nodeLevel(item)]"
             class="tree-item-icon"
           />
-          <span
+          <a-dropdown
             v-if="item.children && item.children.length > 0"
-            class="tree-node"
-            :id="`tree_${item.guid}`"
+            :trigger="['contextmenu']"
           >
-            <span
-              v-if="
-                searchValue !== '' &&
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
-                    -1
-              "
-            >
-              <span class="unfilter-words" :title="item.description">
-                {{
-                  item.name.substr(
-                    0,
-                    item.name.toUpperCase().indexOf(searchValue.toUpperCase())
-                  )
-                }}
-              </span>
-              <span class="filter-words" :title="item.description">
-                {{
-                  item.name.substr(
-                    item.name.toUpperCase().indexOf(searchValue.toUpperCase()),
-                    searchValue.length
-                  )
-                }}
-              </span>
-              <span class="unfilter-words" :title="item.description">
-                {{
-                  item.name.substr(
-                    item.name.toUpperCase().indexOf(searchValue.toUpperCase()) +
+            <a-menu slot="overlay">
+              <a-menu-item
+                v-if="item.metaData"
+                key="1"
+                @click="showMetaDataInfo(item)"
+              >
+                元数据信息
+              </a-menu-item>
+            </a-menu>
+            <span class="tree-node" :id="`tree_${item.guid}`">
+              <span
+                v-if="
+                  searchValue !== '' &&
+                    item.name
+                      .toUpperCase()
+                      .indexOf(searchValue.toUpperCase()) !== -1
+                "
+              >
+                <span class="unfilter-words" :title="item.description">
+                  {{
+                    item.name.substr(
+                      0,
+                      item.name.toUpperCase().indexOf(searchValue.toUpperCase())
+                    )
+                  }}
+                </span>
+                <span class="filter-words" :title="item.description">
+                  {{
+                    item.name.substr(
+                      item.name
+                        .toUpperCase()
+                        .indexOf(searchValue.toUpperCase()),
                       searchValue.length
-                  )
-                }}
+                    )
+                  }}
+                </span>
+                <span class="unfilter-words" :title="item.description">
+                  {{
+                    item.name.substr(
+                      item.name
+                        .toUpperCase()
+                        .indexOf(searchValue.toUpperCase()) + searchValue.length
+                    )
+                  }}
+                </span>
               </span>
+              <span v-else :title="item.description">{{ item.name }}</span>
             </span>
-            <span v-else :title="item.description">{{ item.name }}</span>
-          </span>
+          </a-dropdown>
           <a-dropdown
             v-else
             :trigger="['contextmenu']"
@@ -120,7 +134,9 @@
             }}</span>
             <a-menu slot="overlay">
               <a-menu-item
-                v-if="!isNonSpatial(item)"
+                v-if="
+                  item.serverType && !isNonSpatial(item) && !isDataFlow(item)
+                "
                 key="1"
                 @click="showMetaDataInfo(item)"
               >
@@ -128,7 +144,9 @@
               </a-menu-item>
               <a-menu-item key="2" @click="addToMark(item)">收藏</a-menu-item>
               <a-menu-item
-                v-if="hasLegend(item) && !isNonSpatial(item)"
+                v-if="
+                  hasLegend(item) && !isNonSpatial(item) && !isDataFlow(item)
+                "
                 key="3"
                 @click="onUploadLegend(item)"
               >
@@ -216,7 +234,7 @@ import {
   LayerType,
   LoadStatus,
   Metadata,
-  IGSSceneSublayerRenderType,
+  Layer3D,
   FitBound
 } from '@mapgis/web-app-framework'
 import {
@@ -462,7 +480,6 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
             const layer = DataCatalogManager.generateLayerByConfig(
               layerConfigNode
             )
-
             layer.description = this.setDescription(layer)
             // 2.将图层添加到全局的document中。
             if (layer) {
@@ -476,10 +493,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
               } finally {
                 // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
                 if (layer.loadStatus === LoadStatus.loaded) {
-                  if (
-                    layer.type === LayerType.IGSScene &&
-                    this.is2DMapMode === true
-                  ) {
+                  if (this.is3DLayer(layer) && this.is2DMapMode === true) {
                     this.switchMapMode()
                   }
 
@@ -488,7 +502,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                   this.$message.error(`图层:${layer.title}加载失败`)
                   checkedNodeKeys.splice(layer.id)
                 }
-                if (!this.isM3D(layer)) {
+                if (!this.is3DLayer(layer)) {
                   // 图层加载完毕，恢复checkbox可选状态
                   this.setCheckBoxEnable(recordCheckLayer, false)
                 }
@@ -507,9 +521,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     }
   }
 
-  // 判断是不是三维模型类型
-  isM3D(layer) {
-    if (layer.type === LayerType.IGSScene) {
+  // 判断是不是三维图层类型
+  is3DLayer(layer) {
+    if (layer instanceof Layer3D) {
       return true
     }
     return false
@@ -726,8 +740,15 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const treeData = data.map((item: any) => {
       this_.$set(item, 'scopedSlots', { title: 'custom' })
       this_.$set(item, 'disableCheckbox', false)
-
-      if (item.description.includes('非空间数据')) {
+      /**
+       * 修改说明：图层下的节点设置为不可选
+       * 修改人：龚跃健
+       * 修改时间：2022/1/24
+       */
+      if (
+        item.description.includes('非空间数据') ||
+        (!item.children && !item.serverType)
+      ) {
         this_.$set(item, 'checkable', false)
       }
       allTreeDataConfigs.push(item)
@@ -865,7 +886,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 监听服务叠加事件
   imposeService(params) {
     this.imposeNode = {}
-    const { Cesium, map, webGlobe, CesiumZondy } = this
+    const { Cesium, map, viewer, vueCesium } = this
     let node = {}
 
     if (params.type === 'WMS' || params.type === 'WMTS') {
@@ -900,8 +921,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                 {
                   Cesium,
                   map,
-                  webGlobe,
-                  CesiumZondy
+                  viewer,
+                  vueCesium
                 },
                 this.is2DMapMode === true
               )
@@ -961,6 +982,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   isNonSpatial(item) {
     return item.description.indexOf('非空间数据') > -1
+  }
+
+  isDataFlow(item) {
+    return item.serverType === LayerType.DataFlow
   }
 }
 </script>

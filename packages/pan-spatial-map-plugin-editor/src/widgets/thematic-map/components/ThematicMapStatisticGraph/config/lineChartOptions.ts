@@ -32,7 +32,7 @@ export const lineChartOptions = ({ color, title, x, y }) => {
       height: 8,
       fillerColor: color,
       start: 0,
-      end: 14,
+      end: 70,
       showDetail: false,
       zoomLock: true
     },

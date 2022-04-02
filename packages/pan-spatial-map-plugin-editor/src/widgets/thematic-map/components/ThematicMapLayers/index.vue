@@ -1,28 +1,23 @@
 <template>
   <div>
-    <!-- 加载专题图层 -->
     <template v-for="t in subjectLayers">
       <component
         v-if="subjectType === t"
-        @highlight="setLinkageItem"
+        @highlight="setLinkage"
         @clear-highlight="resetLinkage"
         :key="t"
         :is="t"
-        :vue-key="vueKey"
-        :dataSet="dataSet"
+        :marker="marker"
+        :geojson="geojson"
         :subject-data="subjectData"
       />
-    </template>
-    <!-- 高亮属性表或者统计表某个选项时使用标注点 -->
-    <template v-if="marker">
-      <mp-marker-pro :marker="marker" v-if="is2DMapMode" />
-      <mp-3d-marker-pro :marker="marker" v-else />
     </template>
   </div>
 </template>
 <script lang="ts">
 import { Mixins, Component, Watch, Inject } from 'vue-property-decorator'
 import { Feature, AppMixin } from '@mapgis/web-app-framework'
+import { getMarker, IMarker } from '../../utils'
 import { subjectTypeList, mapGetters, mapMutations } from '../../store'
 import mapboxLayers from './components/Mapbox'
 import CesiumLayers from './components/Cesium'
@@ -33,23 +28,20 @@ import CesiumLayers from './components/Cesium'
     ...CesiumLayers
   },
   computed: {
-    ...mapGetters(['loading', 'subjectData', 'linkageItem'])
+    ...mapGetters(['loading', 'subjectData', 'linkageFid'])
   },
   methods: {
-    ...mapMutations(['setFeaturesQuery', 'setLinkageItem', 'resetLinkage'])
+    ...mapMutations(['setFeaturesQuery', 'setLinkage', 'resetLinkage'])
   }
 })
 export default class ThematicMapLayers extends Mixins(AppMixin) {
-  @Inject('map') map!: any
-
-  // 组件唯一值
-  vueKey = 'map'
+  @Inject('map') map
 
   // 高亮选项的标注点
-  marker = null
+  private marker: IMarker | Record<string, unknown> = {}
 
   // 要素数据
-  dataSet: Feature.FeatureIGS | null = null
+  private geojson: Feature.FeatureIGSGeoJSON | null = null
 
   get prefix() {
     return this.is2DMapMode ? 'Mapbox' : 'Cesium'
@@ -58,7 +50,7 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   // 获取专题类别
   get subjectType() {
     return this.subjectData
-      ? `${this.prefix}${this.subjectData.subjectType}`
+      ? `${this.prefix}${this.subjectData?.subjectType}`
       : ''
   }
 
@@ -67,34 +59,53 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
     return subjectTypeList.map(({ value }) => `${this.prefix}${value}`)
   }
 
+  get popup() {
+    return this.subjectData ? this.subjectData.popup : undefined
+  }
+
+  get propertiesOption() {
+    let propertiesOption
+    if (this.popup) {
+      const { showFields, showFieldsTitle } = this.popup
+      if (showFields && showFields.length > 0) {
+        propertiesOption = { fields: showFields, fieldsTitle: showFieldsTitle }
+      }
+    }
+    return propertiesOption
+  }
+
+  /**
+   * 设置初始范围
+   */
+  initBound() {
+    this.map.setCenter([105, 36])
+    this.map.setZoom(3)
+  }
+
   /**
    * 清除高亮
    */
-  clearHighlight() {
-    this.marker = null
+  onClearHighlight() {
+    this.marker = {}
+  }
+
+  /**
+   * 高亮
+   * @param {string} fid 要素fid
+   */
+  onHighlight(fid: string) {
+    getMarker(this.geojson, fid, this.propertiesOption).then(marker => {
+      this.marker = marker
+    })
   }
 
   /**
    * 设置高亮
-   * xmin: 25.859588307966845,
-   * ymin: 3.1473739454943654,
-   * xmax: 167.62576717829563,
-   * ymax: 70.47116294961994
+   * @param {string} fid 要素fid
    */
-  setHighlight(marker) {
-    this.marker = marker
-    if (this.map) {
-      const { xmin, xmax, ymin, ymax } = marker.feature.bound
-      this.map.fitBounds(
-        [
-          [xmax, ymin],
-          [xmin, ymax]
-        ],
-        {
-          animate: false
-        }
-      )
-    }
+  setHighlight(fid: string) {
+    this.onClearHighlight()
+    this.onHighlight(fid)
   }
 
   /**
@@ -102,14 +113,11 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
    */
   @Watch('subjectData', { deep: true })
   subjectDataChanged(nV) {
-    if (!nV) {
-      this.dataSet = null
-    } else {
+    this.geojson = null
+    if (nV) {
       this.setFeaturesQuery({
-        isPage: false,
-        onSuccess: dataSet => {
-          this.dataSet = dataSet
-        }
+        isCache: false,
+        onSuccess: geojson => (this.geojson = geojson)
       })
     }
   }
@@ -117,13 +125,17 @@ export default class ThematicMapLayers extends Mixins(AppMixin) {
   /**
    * 监听: 联动项变化
    */
-  @Watch('linkageItem', { deep: true })
-  watchHighlightItem(nV) {
-    if (!nV) {
-      this.clearHighlight()
-    } else if (nV.from !== this.vueKey) {
-      this.setHighlight(nV.marker)
-    }
+  @Watch('linkageFid')
+  linkageFidChanged(nV) {
+    this.setHighlight(nV)
+  }
+
+  created() {
+    this.initBound()
+  }
+
+  beforeDestroy() {
+    this.resetLinkage()
   }
 }
 </script>

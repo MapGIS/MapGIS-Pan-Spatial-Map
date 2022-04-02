@@ -1,0 +1,15 @@
+{
+  "name": "BIM构建树",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpBimComponent",
+  "icon": "<svg class=\"icon\" viewBox=\"0 0 1024 1024\" xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"><defs><style/></defs><path d=\"M605.09 870.959h217.523V490.992l-217.522-109.94V870.96zm-31.03 0v-477.65L450.25 462.91V870.96h123.81zm279.584 0h61.75v31.03H77.576v-31.03h62.06V220.16L371.464 93.09 698.492 254.2v139.295l155.152 78.414v399.05zm-434.425 0V444.757l180.224-101.314 68.019 34.382V273.501L387.879 135.758v735.2h31.34zm-248.552 0h186.181V136.47l-186.181 102.09v632.398zM605.09 473.46l217.212 108.606v34.723L605.091 508.183v-34.692zm0 124.122l217.212 108.606v34.723L605.091 632.304v-34.691zm0 124.12L822.303 830.31v34.723L605.091 756.426v-34.692z\"/></svg>",
+  "properties": {
+    "2D": false,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": false,
+    "hasSettingPage": false,
+    "settingUiComponent": ""
+  }
+}

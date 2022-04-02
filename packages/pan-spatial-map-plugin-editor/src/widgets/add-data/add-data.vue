@@ -49,14 +49,14 @@ import {
   LayerType,
   LoadStatus,
   Document,
-  FitBound
+  FitBound,
 } from '@mapgis/web-app-framework'
 import {
   api,
   dataCatalogManagerInstance,
   DataCatalogManager,
   eventBus,
-  events
+  events,
 } from '@mapgis/pan-spatial-map-common'
 
 import AddDataList from './components/AddDataList.vue'
@@ -68,8 +68,8 @@ import AddDataFile from './components/AddDataFile.vue'
   components: {
     AddDataList,
     AddDataUrl,
-    AddDataFile
-  }
+    AddDataFile,
+  },
 })
 export default class MpAddData extends Mixins(WidgetMixin) {
   private tab = 'list'
@@ -77,7 +77,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   private tabs = [
     { key: 'list', label: '数据列表' },
     { key: 'url', label: 'URL' },
-    { key: 'file', label: '文件' }
+    { key: 'file', label: '文件' },
   ]
 
   private config
@@ -88,46 +88,46 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     {
       text: 'OGC WMS 服务',
       value: 'OGCWMS',
-      example: 'http://<server>:<port>/igs/rest/ogc/doc/beijing/WMSServer'
+      example: 'http://<server>:<port>/igs/rest/ogc/doc/beijing/WMSServer',
     },
     {
       text: 'OGC WMTS 服务',
       value: 'OGCWMTS',
-      example: 'http://<server>:<port>/igs/rest/ogc/beijing/WMTSServer'
+      example: 'http://<server>:<port>/igs/rest/ogc/beijing/WMTSServer',
     },
     {
-      text: '矢量瓦片地图服务',
+      text: 'MapGIS 矢量瓦片地图服务',
       value: 'VectorTile',
       example:
-        'http://<server>:<port>/igs/rest/mrms/vtiles/styles/街道-墨卡托.json'
+        'http://<server>:<port>/igs/rest/mrms/vtiles/styles/街道-墨卡托.json',
     },
     {
-      text: 'ArcGIS REST 动态地图服务',
+      text: 'ArcGIS 地图服务',
       value: 'ArcGISMapImage',
       example:
-        'http://<server>:<port>/arcgis/rest/services/ServiceRequest/MapServer'
+        'http://<server>:<port>/arcgis/rest/services/ServiceRequest/MapServer',
     },
     {
-      text: 'ArcGIS REST 瓦片地图服务',
+      text: 'ArcGIS 瓦片服务',
       value: 'ArcGISTile',
       example:
-        'http://<server>:<port>/arcgis/rest/services/ServiceRequest/MapServer'
+        'http://<server>:<port>/arcgis/rest/services/ServiceRequest/MapServer',
     },
     {
-      text: 'MapGIS REST 瓦片地图服务',
+      text: 'MapGIS 瓦片服务',
       value: 'IGSTile',
-      example: 'http://<server>:<port>/igs/rest/mrms/tile/{tileName}'
+      example: 'http://<server>:<port>/igs/rest/mrms/tile/{tileName}',
     },
     {
-      text: 'MapGIS REST 动态地图服务',
+      text: 'MapGIS 地图服务',
       value: 'IGSMapImage',
-      example: 'http://<server>:<port>/igs/rest/mrms/docs/{docName}'
+      example: 'http://<server>:<port>/igs/rest/mrms/docs/{docName}',
     },
     {
-      text: 'MapGIS REST 图层地图服务',
+      text: 'MapGIS 图层地图服务',
       value: 'IGSVector',
-      example: 'http://<server>:<port>/igs/rest/mrms/layers?gdbps={gdbps}'
-    }
+      example: 'http://<server>:<port>/igs/rest/mrms/layers?gdbps={gdbps}',
+    },
   ]
 
   private isZoomLayer = false
@@ -142,7 +142,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     return [
       { text: 'GeoTIFF 数据', value: 'TIF' },
       { text: 'Esri Shapefile', value: 'SHP' },
-      { text: 'MapGIS 6X 工作区文件', value: '6X' }
+      { text: 'MapGIS 6X 工作区文件', value: '6X' },
     ]
   }
 
@@ -158,17 +158,17 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     return [
       { text: 'KML', value: 'KML' },
       { text: 'KMZ', value: 'KMZ' },
-      { text: 'CZML', value: 'CZML' }
+      { text: 'CZML', value: 'CZML' },
     ]
   }
 
   get cesiumDataTypes3D() {
     return [
       {
-        text: 'MapGIS REST 三维服务',
+        text: 'MapGIS 三维场景服务',
         value: 'IGSScene',
-        example: 'http://<server>:<port>/igs/rest/g3d/{modelName}'
-      }
+        example: 'http://<server>:<port>/igs/rest/g3d/{modelName}',
+      },
     ]
   }
 
@@ -195,15 +195,15 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   }
 
   get categories() {
-    return this.dataList.map(item => {
+    return this.dataList.map((item) => {
       return { name: item.name, description: item.description }
     })
   }
 
   mounted() {
     if (this.widgetInfo.config.data) {
-      this.widgetInfo.config.data.forEach(category => {
-        category.children.forEach(item => {
+      this.widgetInfo.config.data.forEach((category) => {
+        category.children.forEach((item) => {
           item.id = UUID.uuid()
           item.visible = false
         })
@@ -233,7 +233,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     }
 
     let categoryDataList = this.dataList.find(
-      category => category.name === name
+      (category) => category.name === name
     )
 
     if (!categoryDataList) {
@@ -242,14 +242,14 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     }
 
     // 检查是否存在相同URL的数据
-    if (categoryDataList.children.some(val => val.url === data.url)) {
+    if (categoryDataList.children.some((val) => val.url === data.url)) {
       this.$message.warn('当前分类中已存在相同地址的数据')
       return
     }
     data.id = UUID.uuid()
     data.visible = false
     categoryDataList.children.unshift({
-      ...data
+      ...data,
     })
     // 跳转到数据列表
     this.tab = 'list'
@@ -260,8 +260,8 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     const this_ = this
 
     const savedConfig = ObjectUtil.deepClone(this.config)
-    savedConfig.data.forEach(category => {
-      category.children.forEach(item => {
+    savedConfig.data.forEach((category) => {
+      category.children.forEach((item) => {
         this.$delete(item, 'id')
         this.$delete(item, 'visible')
       })
@@ -270,7 +270,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
     api
       .saveWidgetConfig({
         name: 'add-data',
-        config: JSON.stringify(savedConfig)
+        config: JSON.stringify(savedConfig),
       })
       .then(() => {
         this_.$message.success('保存成功')
@@ -281,12 +281,13 @@ export default class MpAddData extends Mixins(WidgetMixin) {
   }
 
   async onAddLayer(data) {
-    const { Cesium, map, webGlobe, CesiumZondy } = this
+    const { Cesium, map, viewer, vueCesium } = this
     const layerConfig = {
       name: data.name,
       guid: data.id,
       serverURL: data.url,
-      serverType: this.parseIssueType(data.type)
+      serverType: this.parseIssueType(data.type),
+      ...data,
     }
     if (data.token) {
       layerConfig.tokenKey = data.tokenKey ? data.tokenKey : 'token'
@@ -315,8 +316,8 @@ export default class MpAddData extends Mixins(WidgetMixin) {
                 {
                   Cesium,
                   map,
-                  webGlobe,
-                  CesiumZondy
+                  viewer,
+                  vueCesium,
                 },
                 this.is2DMapMode === true
               )

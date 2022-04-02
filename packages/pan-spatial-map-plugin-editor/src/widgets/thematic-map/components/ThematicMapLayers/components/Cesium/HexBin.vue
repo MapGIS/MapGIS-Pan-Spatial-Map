@@ -1,23 +1,21 @@
 <template>
   <!-- 蜂窝图 -->
   <mapgis-3d-mapv-layer
-    :geojson="geojsonPoint"
+    v-if="geojson && geojson.features && !!geojson.features.length"
+    :geojson="geojson"
     :options="options"
-    :count-field="countField"
+    :count-field="field"
   />
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
-import BaseMinxin from '../../mixins/base'
+import BaseMixin from '../../mixins/base'
 
 @Component
-export default class CesiumHexBin extends Mixins(BaseMinxin) {
-  geojsonPoint = {}
-
-  get countField() {
-    return 'count'
-  }
-
+export default class CesiumHexBin extends Mixins(BaseMixin) {
+  // 蜂窝图配置项
+  // 新旧版本的样式设置对比参照 https://shimowendang.com/docs/gO3oxMwgNmHJddqD
+  // 此处只对新版的样式兼容，旧版的每个字段没有具体说明，无法和新版对应起来
   get options() {
     return {
       cesium: {
@@ -26,28 +24,8 @@ export default class CesiumHexBin extends Mixins(BaseMinxin) {
       },
       context: '2d',
       draw: 'honeycomb',
-      max: 100,
-      ...(this.subjectData.style || {})
-    }
-  }
-
-  /**
-   * 展示图层
-   */
-  showLayer() {
-    if (this.geojson) {
-      this.geojsonPoint = this.geojson
-    }
-  }
-
-  /**
-   * 移除图层
-   */
-  removeLayer() {
-    if (this.geojsonPoint) {
-      this.geojsonPoint.features = []
+      ...(this.subjectData?.themeStyle || {})
     }
   }
 }
 </script>
-<style lang="less" scoped></style>

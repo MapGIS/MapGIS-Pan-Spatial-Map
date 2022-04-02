@@ -112,20 +112,22 @@
           分析
         </a-button>
       </div>
-      <mapbox-layer
-        v-if="is2DMapMode"
-        ref="mapboxLayer"
-        @finish-draw="clickFunciton"
-        :geoJSONTarget="geoJSONTarget"
-        :geoJSONAnalysis="geoJSONAnalysis"
-      />
-      <cesium-layer
-        v-else
-        ref="cesiumLayer"
-        @finish-draw="clickFunciton"
-        :geoJSONTarget="geoJSONTarget"
-        :geoJSONAnalysis="geoJSONAnalysis"
-      ></cesium-layer>
+      <template v-if="isWidgetOpen">
+        <mapbox-layer
+          v-if="is2DMapMode"
+          ref="mapboxLayer"
+          :geoJSONTarget="geoJSONTarget"
+          :geoJSONAnalysis="geoJSONAnalysis"
+        />
+        <cesium-layer
+          v-else
+          ref="cesiumLayer"
+          :geoJSONTarget="geoJSONTarget"
+          :geoJSONAnalysis="geoJSONAnalysis"
+        ></cesium-layer>
+      </template>
+      <mp-draw-pro ref="draw" @finished="clickFunciton" />
+      <mp-3d-draw-pro ref="draw3d" @finished="clickFunciton" />
     </div>
   </a-spin>
 </template>
@@ -178,7 +180,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
 
   geoJSONAnalysis = null
 
-  // isWidgetOpen = false
+  isWidgetOpen = false
 
   // 微件窗口模式切换时回调
   onWindowSize(mode) {
@@ -186,11 +188,15 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
   }
 
   onOpen() {
-    // this.isWidgetOpen = true
+    this.isWidgetOpen = true
+  }
+
+  get drawLayer() {
+    return this.is2DMapMode ? this.$refs.mapboxLayer : this.$refs.cesiumLayer
   }
 
   get drawComponent() {
-    return this.is2DMapMode ? this.$refs.mapboxLayer : this.$refs.cesiumLayer
+    return this.is2DMapMode ? this.$refs.draw : this.$refs.draw3d
   }
 
   // 目标类
@@ -237,7 +243,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
     this.geoJSONAnalysis = null
   }
 
-  @Watch('document.defaultMap', { deep: true, immediate: true })
+  @Watch('document.defaultMap', { immediate: true, deep: true })
   documentChange(val: Array<unknown>) {
     this.aDataIndex = null
     this.tDataIndex = null
@@ -262,7 +268,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
 
   draw(type) {
     this.queryType = type
-    this.drawComponent && this.drawComponent.onOpenDraw()
+    this.drawComponent && this.drawComponent.openDraw('draw-rectangle')
   }
 
   clickFunciton(e) {
@@ -413,7 +419,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
 
   // 面板关闭时候触发函数
   onClose() {
-    // this.isWidgetOpen = false
+    this.isWidgetOpen = false
     this.drawComponent.clear()
     this.reset()
   }

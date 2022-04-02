@@ -55,8 +55,8 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
+      this.vueCesium,
+      this.viewer
     )
     this.featureChange()
     this.timer = window.setTimeout(() => {
@@ -116,6 +116,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
             .map(Number),
           fillColor,
           fillOutlineColor,
+          false,
           { drawOutLine: true, outlineWidth: width }
         )
         if (this.center && this.center.length === 2) {
@@ -126,7 +127,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
             rgba.b / 255,
             rgba.a
           )
-          const text = this.webGlobe.appendLabel(
+          const text = this.sceneOverlays.addLabel(
             // 经度、纬度、高程
             this.center[0],
             this.center[1],
@@ -159,11 +160,11 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
   @Watch('center', { deep: true })
   centerChange() {
     if (this.center && this.center.length > 0) {
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           this.center[0],
           this.center[1],
-          this.webGlobe.viewer.camera.positionCartographic.height
+          this.viewer.camera.positionCartographic.height
         )
       })
     }
@@ -179,7 +180,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
         xmax,
         ymax
       )
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: rectangle
       })
     }
@@ -196,7 +197,7 @@ export default class ZoneFramCesium extends Mixins(MapMixin) {
       this.entityNames.pop()
     }
     for (let i = this.entityTextNames.length - 1; i >= 0; i -= 1) {
-      this.webGlobe.viewer.entities.remove(this.entityTextNames[i])
+      this.viewer.entities.remove(this.entityTextNames[i])
       this.entityTextNames.pop()
     }
   }

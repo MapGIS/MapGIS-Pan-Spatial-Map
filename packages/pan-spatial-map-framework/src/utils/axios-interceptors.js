@@ -1,4 +1,33 @@
 import Cookie from 'js-cookie'
+import apis from '@/services/api'
+
+// 兼容Web-App-FrameWork中解构axios返回的data数据
+const respCommon = {
+  /**
+   * 响应数据之前做点什么
+   * @param response 响应对象
+   * @param options 应用配置 包含: {router, i18n, store, message}
+   * @returns {*}
+   */
+  onFulfilled(response, options) {
+    const apisList = Object.values(apis)
+    if (apisList.includes(response.config.url)) {
+      return response
+    } else {
+      return response.data
+    }
+  },
+  /**
+   * 响应出错时执行
+   * @param error 错误对象
+   * @param options 应用配置 包含: {router, i18n, store, message}
+   * @returns {Promise<never>}
+   */
+  onRejected(error, options) {
+    return Promise.reject(error)
+  }
+}
+
 // 401拦截
 const resp401 = {
   /**
@@ -8,9 +37,10 @@ const resp401 = {
    * @returns {*}
    */
   onFulfilled(response, options) {
-    const { message } = options
+    const { message, router } = options
     if (response.code === 401) {
       message.error('无此权限')
+      router.push('/login')
     }
     return response
   },
@@ -21,10 +51,11 @@ const resp401 = {
    * @returns {Promise<never>}
    */
   onRejected(error, options) {
-    const { message } = options
+    const { message, router } = options
     const { response } = error
     if (response.status === 401) {
       message.error('无此权限')
+      router.push('/login')
     }
     return Promise.reject(error)
   }
@@ -63,7 +94,7 @@ const reqCommon = {
       xsrfCookieName &&
       !Cookie.get(xsrfCookieName)
     ) {
-      message.warning('认证 token 已过期，请重新登录')
+      // message.warning('认证 token 已过期，请重新登录')
     }
     return config
   },
@@ -82,5 +113,5 @@ const reqCommon = {
 
 export default {
   request: [reqCommon], // 请求拦截
-  response: [resp401, resp403] // 响应拦截
+  response: [resp401, resp403, respCommon] // 响应拦截
 }

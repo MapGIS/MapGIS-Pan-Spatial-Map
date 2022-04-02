@@ -20,3 +20,5 @@ export const DATA_CATALOG_ON_IMPOSE_SERVICE_EVENT =
   'data-catalog-on-impose-service'
 // 监听三维图层是否加载到地图上
 export const SCENE_LOADEN_ON_MAP = 'scene-loaded-on-map'
+// 监听数据流数据动态数据更新
+export const DATA_FLOW_LAYER_UPDATE = 'data-flow-layer-update'

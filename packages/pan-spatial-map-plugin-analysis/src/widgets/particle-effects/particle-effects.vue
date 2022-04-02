@@ -1,458 +1,135 @@
 <template>
-  <div class="mp-widget-particle-effects">
-    <mp-toolbar>
-      <mp-toolbar-command-group>
-        <mp-toolbar-command
-          title="火焰"
-          icon="fire"
-          :active="particleMode === 'fire'"
-          @click="onCreateParticle('fire')"
-        />
-        <mp-toolbar-command
-          title="烟雾"
-          icon="cloud"
-          :active="particleMode === 'smoke'"
-          @click="onCreateParticle('smoke')"
-        />
-      </mp-toolbar-command-group>
-      <mp-toolbar-space />
-      <mp-toolbar-command-group>
-        <mp-toolbar-command
-          title="清除"
-          icon="delete"
-          @click="onClearParticle"
-        />
-      </mp-toolbar-command-group>
-    </mp-toolbar>
-    <mp-setting-form class="particle-effects-setting">
-      <a-form-item label="发射速率(个/秒)">
-        <a-row>
-          <a-col :span="15">
-            <a-slider
-              class="slider-body"
-              v-model="emissionRate"
-              :min="0"
-              :max="100"
-              @change="val => onChangeEffect(val, 'emissionRate')"
-            />
-          </a-col>
-          <a-col :span="9">
-            <a-input-number
-              class="slider-number"
-              v-model="emissionRate"
-              :min="0"
-              :max="100"
-              @change="val => onChangeEffect(val, 'emissionRate')"
-            />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="尺寸(像素)">
-        <a-row>
-          <a-col :span="15">
-            <a-slider
-              class="slider-body"
-              v-model="imageSize"
-              :min="2"
-              :max="60"
-              @change="val => onChangeEffect(val, 'imageSize')"
-            />
-          </a-col>
-          <a-col :span="9">
-            <a-input-number
-              class="slider-number"
-              v-model="imageSize"
-              :min="2"
-              :max="60"
-              @change="val => onChangeEffect(val, 'imageSize')"
-            />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="最小存在时间">
-        <a-row>
-          <a-col :span="15">
-            <a-slider
-              class="slider-body"
-              v-model="minimumParticleLife"
-              :min="0.1"
-              :max="30.0"
-              :step="0.1"
-              @change="val => onChangeEffect(val, 'minimumParticleLife')"
-            />
-          </a-col>
-          <a-col :span="9">
-            <a-input-number
-              class="slider-number"
-              v-model="minimumParticleLife"
-              :min="0.1"
-              :max="30.0"
-              :step="0.1"
-              @change="val => onChangeEffect(val, 'minimumParticleLife')"
-            />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="最大存在时间">
-        <a-row>
-          <a-col :span="15">
-            <a-slider
-              class="slider-body"
-              v-model="maximumParticleLife"
-              :min="0.1"
-              :max="30.0"
-              :step="0.1"
-              @change="val => onChangeEffect(val, 'maximumParticleLife')"
-            />
-          </a-col>
-          <a-col :span="9">
-            <a-input-number
-              class="slider-number"
-              v-model="maximumParticleLife"
-              :min="0.1"
-              :max="30.0"
-              :step="0.1"
-              @change="val => onChangeEffect(val, 'maximumParticleLife')"
-            />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="最小速度">
-        <a-row>
-          <a-col :span="15">
-            <a-slider
-              class="slider-body"
-              v-model="minimumSpeed"
-              :min="0"
-              :max="30"
-              @change="val => onChangeEffect(val, 'minimumSpeed')"
-            />
-          </a-col>
-          <a-col :span="9">
-            <a-input-number
-              class="slider-number"
-              v-model="minimumSpeed"
-              :min="0"
-              :max="30"
-              @change="val => onChangeEffect(val, 'minimumSpeed')"
-            />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="最大速度">
-        <a-row>
-          <a-col :span="15">
-            <a-slider
-              class="slider-body"
-              v-model="maximumSpeed"
-              :min="0"
-              :max="30"
-              @change="val => onChangeEffect(val, 'maximumSpeed')"
-            />
-          </a-col>
-          <a-col :span="9">
-            <a-input-number
-              class="slider-number"
-              v-model="maximumSpeed"
-              :min="0"
-              :max="30"
-              @change="val => onChangeEffect(val, 'maximumSpeed')"
-            />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="初始比例">
-        <a-row>
-          <a-col :span="15">
-            <a-slider
-              class="slider-body"
-              v-model="startScale"
-              :min="0.0"
-              :max="10.0"
-              :step="0.5"
-              @change="val => onChangeEffect(val, 'startScale')"
-            />
-          </a-col>
-          <a-col :span="9">
-            <a-input-number
-              class="slider-number"
-              v-model="startScale"
-              :min="0.0"
-              :max="10.0"
-              :step="0.5"
-              @change="val => onChangeEffect(val, 'startScale')"
-            />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="结束比例">
-        <a-row>
-          <a-col :span="15">
-            <a-slider
-              class="slider-body"
-              v-model="endScale"
-              :min="0.0"
-              :max="10.0"
-              :step="0.5"
-              @change="val => onChangeEffect(val, 'endScale')"
-            />
-          </a-col>
-          <a-col :span="9">
-            <a-input-number
-              class="slider-number"
-              v-model="endScale"
-              :min="0.0"
-              :max="10.0"
-              :step="0.5"
-              @change="val => onChangeEffect(val, 'endScale')"
-            />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="发射类型">
-        <a-select v-model="emitterValue" @change="onEmitterChange">
-          <a-select-option v-for="item in emitterOptions" :key="item">
-            {{ item }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-    </mp-setting-form>
+  <div>
+    <mapgis-3d-particle-effects-manager
+      id="mp-3d-particle-effects"
+      :symbolList="symbolList"
+      :particleList="particleList"
+      ref="particleEffect"
+      @changeParticle="changeParticle"
+      @load="load"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin, Objects } from '@mapgis/web-app-framework'
-import fireImg from './images/fire.png'
-import smokeImg from './images/smoke.png'
+import { api } from '@mapgis/pan-spatial-map-common'
+
+declare function require(string): string
 
 @Component({ name: 'MpParticleEffects' })
 export default class MpParticleEffects extends Mixins(WidgetMixin) {
-  // 粒子特效的模式
-  private particleMode = ''
+  private particleEffects = null
 
-  // 发射速率
-  private emissionRate = 20.0
+  private particleListArray = []
 
-  // 尺寸
-  private imageSize = 5.0
+  private particleList = []
 
-  // 粒子最小存在时间
-  private minimumParticleLife = 2.0
+  private symbolList = []
 
-  // 粒子最大存在时间
-  private maximumParticleLife = 3.0
+  private particleChangedList = []
 
-  // 最小速度
-  private minimumSpeed = 9.0
+  async mounted() {
+    const config = await api.getWidgetConfig('particle-effects')
+    this.symbolList = config.symbolList.map(item => {
+      return {
+        guid: item.guid,
+        name: item.name,
+        image: `${this.baseUrl}${item.image}`,
+        iconUrl: item.iconUrl,
+        config: item.config
+      }
+    })
+    this.particleListArray = config.particleListConfig
+  }
 
-  // 最大速度
-  private maximumSpeed = 9.5
-
-  // 初始比例
-  private startScale = 1.0
-
-  // 结束比例
-  private endScale = 4.0
-
-  // 发射类型
-  private emitterType
-
-  // 发射类型下拉值
-  private emitterValue = ''
-
-  // 发射类型下拉项
-  private emitterOptions = ['盒状放射', '圆形放射', '锥形放射', '球形放射']
-
-  // 粒子特效集
-  private particleArr = []
-
-  // 记录对数深度缓冲区状态
-  private isLogarithmicDepthBufferEnable = false
-
-  get sceneControllerInstance() {
-    return Objects.SceneController.getInstance(
-      this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
-    )
+  load(particleEffects) {
+    this.particleEffects = particleEffects
   }
 
   onOpen() {
-    this.emitterValue = '圆形放射'
-
-    this.isLogarithmicDepthBufferEnable = this.sceneControllerInstance.isLogarithmicDepthBufferEnable()
-    if (this.isLogarithmicDepthBufferEnable === true) {
-      this.sceneControllerInstance.setLogarithmicDepthBufferEnable(false)
-    }
+    this.particleEffects.mount()
+    this.particleList = this.particleListArray
   }
 
   onClose() {
-    this.onClearParticle()
-
-    if (
-      this.isLogarithmicDepthBufferEnable !==
-      this.sceneControllerInstance.isLogarithmicDepthBufferEnable()
-    ) {
-      this.sceneControllerInstance.setLogarithmicDepthBufferEnable(
-        this.isLogarithmicDepthBufferEnable
-      )
-    }
+    // 微件关闭时自动保存配置到后台
+    this.saveConfig()
+    this.particleEffects.unmount()
   }
 
-  // 点击删除图标按钮回调
-  private onClearParticle() {
-    if (this.particleArr.length > 0) {
-      this.particleArr.forEach(item => {
-        item.remove()
-      })
-    }
-    this.webGlobe.unRegisterMouseEvent('LEFT_CLICK')
-    this.particleMode = ''
-    this.particleArr = []
+  changeParticle(particleList) {
+    this.particleChangedList = particleList
   }
 
-  // 点击对应粒子特效图标按钮回调
-  private onCreateParticle(type) {
-    this.particleMode = type
-    this.addEventListener()
-  }
-
-  // 为鼠标的各种行为注册监听事件
-  private addEventListener() {
-    this.webGlobe.registerMouseEvent('LEFT_CLICK', event => {
-      this.registerMouseLClickEvent(event)
-    })
-  }
-
-  // 注册鼠标左键点击事件
-  private registerMouseLClickEvent(event) {
-    // 获取点击点的笛卡尔坐标
-    const cartesian = this.webGlobe.viewer.getCartesian3Position(event.position)
-    // 获取当前坐标系标准
-    const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
-    // 根据坐标系标准，将笛卡尔坐标转换为地理坐标
-    const cartographic = ellipsoid.cartesianToCartographic(cartesian)
-
-    // 获取该位置的经纬度坐标
-    const centerLon = parseFloat(
-      this.Cesium.Math.toDegrees(cartographic.longitude).toFixed(8)
-    )
-    const centerLat = parseFloat(
-      this.Cesium.Math.toDegrees(cartographic.latitude).toFixed(8)
-    )
-
-    // 初始化高级分析功能管理类
-    const advancedAnalysisManager = new window.CesiumZondy.Manager.AdvancedAnalysisManager(
-      {
-        viewer: this.webGlobe.viewer
+  // 微件窗口模式切换时回调
+  onWindowSize(mode) {
+    this.isFullScreen = mode === 'max'
+    this.$nextTick(() => {
+      const el = document.getElementById('mp-3d-particle-effects')
+      if (el) {
+        el.style.width = `${mode === 'max' ? this.$el.clientWidth : 300}px`
       }
-    )
-
-    const options = {
-      startColor: new this.Cesium.Color(1, 1, 1, 1),
-      emissionRate: this.emissionRate,
-      imageSize: new this.Cesium.Cartesian2(this.imageSize, this.imageSize),
-      minimumParticleLife: this.minimumParticleLife,
-      maximumParticleLife: this.maximumParticleLife,
-      minimumSpeed: this.minimumSpeed,
-      maximumSpeed: this.maximumSpeed,
-      startScale: this.startScale,
-      endScale: this.endScale,
-      emitter: this.emitterType,
-      gravity: 0.5,
-      heading: 0.0,
-      pitch: 0.0,
-      roll: 0.0
-    }
-
-    // 创建粒子特效
-    const particle = advancedAnalysisManager.createStableParticle(
-      this.particleMode === 'fire' ? fireImg : smokeImg,
-      [centerLon, centerLat, cartographic.height],
-      options
-    )
-
-    this.particleArr.push(particle)
-
-    // 开启计时
-    this.webGlobe.viewer.clock.shouldAnimate = true
-    // 粒子特效初始参数
-    const viewModel = {
-      emissionRate: this.emissionRate,
-      minimumParticleLife: this.minimumParticleLife,
-      maximumParticleLife: this.maximumParticleLife,
-      minimumSpeed: this.minimumSpeed,
-      maximumSpeed: this.maximumSpeed,
-      startScale: this.startScale,
-      endScale: this.endScale,
-      imageSize: new this.Cesium.Cartesian2(this.imageSize, this.imageSize)
-    }
-    // 粒子参数设置绑定UI
-    this.Cesium.knockout.track(viewModel)
-
-    // 注销鼠标的各项监听事件
-    this.webGlobe.unRegisterMouseEvent('LEFT_CLICK')
-
-    this.particleMode = ''
-  }
-
-  // 粒子特效发射类型变化回调
-  private onEmitterChange(value) {
-    let emitter
-    switch (value) {
-      case '盒状放射':
-        emitter = new this.Cesium.BoxEmitter(
-          new this.Cesium.Cartesian3(5.0, 5.0, 5.0)
-        )
-        break
-      case '圆形放射':
-        emitter = new this.Cesium.CircleEmitter(5.0)
-        break
-      case '锥形放射':
-        emitter = new this.Cesium.ConeEmitter(this.Cesium.Math.toRadians(30.0))
-        break
-      case '球形放射':
-        emitter = new this.Cesium.SphereEmitter(5.0)
-        break
-
-      default:
-        break
-    }
-
-    this.particleArr.forEach(item => {
-      item.emitter = emitter
     })
-
-    this.emitterType = emitter
   }
 
-  // 粒子特效属性改变回调
-  private onChangeEffect(val, key) {
-    if (this.particleArr.length > 0) {
-      this.particleArr.forEach(item => {
-        if (key === 'imageSize') {
-          item.maximumImageSize = new this.Cesium.Cartesian2(val, val)
-          item.minimumImageSize = new this.Cesium.Cartesian2(val, val)
+  // 微件失活时
+  onDeActive() {
+    // 微件失活时自动保存配置到后台
+    this.saveConfig()
+  }
+
+  async saveConfig() {
+    const originConfig = await api.getWidgetConfig('particle-effects')
+    originConfig.particleListConfig = this.recursion(this.particleChangedList)
+    api
+      .saveWidgetConfig({
+        name: 'particle-effects',
+        config: JSON.stringify(originConfig)
+      })
+      .then(() => {
+        console.log('更新particle配置成功')
+      })
+      .catch(() => {
+        console.log('更新particle配置失败')
+      })
+  }
+
+  // 递归删除对象数组中的__ob__属性
+  recursion(obj) {
+    const vm = this
+    if (obj instanceof Array) {
+      const newOnj = []
+      for (let i = 0; i < obj.length; i++) {
+        if (obj[i] instanceof Object) {
+          newOnj.push(vm.recursion(obj[i]))
         } else {
-          item[key] = val
+          newOnj.push(obj[i])
+        }
+      }
+      return newOnj
+    } else if (obj instanceof Object) {
+      const newOnj = {}
+      Object.keys(obj).forEach(function(key) {
+        if (obj[key] instanceof Object) {
+          if (key !== '__ob__') {
+            newOnj[key] = vm.recursion(obj[key])
+          }
+        } else {
+          newOnj[key] = obj[key]
         }
       })
+      return newOnj
+    } else {
+      return obj
     }
   }
 }
 </script>
-
-<style lang="less" scoped>
-.mp-widget-particle-effects {
-  .particle-effects-setting {
-    padding-top: 8px;
-    .slider-body {
-      margin-right: 10px;
-    }
-    .slider-number {
-      width: 100%;
-    }
-  }
+<style lang="less">
+#mp-3d-particle-effects {
+  width: 300px;
+  max-width: 100%;
 }
 </style>

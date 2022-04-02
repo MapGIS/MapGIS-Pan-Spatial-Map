@@ -4,8 +4,12 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { AppManager } from '@mapgis/web-app-framework'
-import { eventBus, events } from '@mapgis/pan-spatial-map-common'
+import { AppManager, MapRender } from '@mapgis/web-app-framework'
+import {
+  eventBus,
+  events,
+  baseConfigInstance
+} from '@mapgis/pan-spatial-map-common'
 
 import { BASE_URL } from '@/services/api'
 import { request } from '@/utils/request'
@@ -28,6 +32,20 @@ export default {
     )
 
     this.application = AppManager.getInstance().getApplication()
+    /**
+     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
+     * 修改人：龚跃健
+     * 修改时间：2022/3/25
+     */
+    const initMode =
+      baseConfigInstance.config && baseConfigInstance.config.initMode
+        ? baseConfigInstance.config.initMode
+        : undefined
+    if (!initMode || initMode === 'map') {
+      this.application.document.maprender = MapRender.MAPBOXGL
+    } else if (initMode === 'globe') {
+      this.application.document.maprender = MapRender.CESIUM
+    }
 
     const style = this.themeStyle()
 

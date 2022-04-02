@@ -3,7 +3,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { NewSubjectConfig } from '../../../../../../store'
+import { INewSubjectConfig } from '../../../../../../store'
 import SubSectionMap from './SubSectionMap.vue' // 分段专题图
 import BaseMapWithGraph from './BaseMapWithGraph.vue' // 统计专题图
 import StatisticLabel from './StatisticLabel.vue' // 等级符号专题图
@@ -24,7 +24,7 @@ import HexBin from './HexBin.vue' // 蜂窝图
 export default class SubjectStyles extends Vue {
   @Prop() readonly subjectType!: string
 
-  @Prop({ default: () => ({}) }) readonly subjectConfig!: NewSubjectConfig
+  @Prop({ default: () => ({}) }) readonly subjectConfig!: INewSubjectConfig
 
   get subject() {
     return this.subjectConfig

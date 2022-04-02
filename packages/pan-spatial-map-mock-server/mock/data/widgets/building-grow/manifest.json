@@ -1,0 +1,15 @@
+{
+  "name": "单体建筑生长",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpBuildingGrow",
+  "icon": "<svg t=\"1640672644769\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"42614\" width=\"16\" height=\"16\"><path d=\"M832.092605 959.571968V0H192.107352v959.741931l-127.997251-0.168963v64.280064h895.979755l-0.627864-64.280064H832.092605zM448.100853 831.762676H256.105477V703.952385h191.995376v127.810291z m0-255.619582H256.105477V448.333803h192.11735l-0.121974 127.809291z m0-255.994501H256.105477V191.964383h191.995376v128.18421z m319.992627 511.614083H640.096229V191.964383h127.997251v639.798293z m-53.171473-12.491291\" p-id=\"42615\"></path></svg>",
+  "properties": {
+    "2D": false,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": false,
+    "hasSettingPage": false,
+    "settingUiComponent": ""
+  }
+}

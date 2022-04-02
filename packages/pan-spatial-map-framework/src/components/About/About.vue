@@ -1,28 +1,56 @@
 <template>
   <div class="about">
     <div class="header">
-      <img alt="logo" class="logo" src="@/assets/img/logo-blue.png" />
-      <span class="title">{{ systemName }}</span>
+      <!-- <img alt="logo" class="logo" src="@/assets/img/logo-earth-blue.png" />
+      <span class="title">{{ systemName }}</span> -->
+      <!-- <mp-icon :icon="appLogo" class="logo" /> -->
+      <mp-icon :icon="computedAppLogo" class="logo" />
+      <h1 class="title">{{ application.title }}</h1>
+      <!-- <h2>{{ application.subtitle }}</h2> -->
     </div>
     <div class="footer">
       <div class="copyright">
-        Copyright<a-icon type="copyright" />{{ copyright }}
+        Copyright<a-icon type="copyright" />{{ application.copyright }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { AppMixin } from '@mapgis/web-app-framework'
+import { request } from '@/utils/request'
+
 export default {
   name: 'About',
+  mixins: [AppMixin],
+  data() {
+    return {
+      tempbase64: '',
+    }
+  },
   computed: {
     systemName() {
       return this.$store.state.setting.systemName
     },
     copyright() {
       return this.$store.state.setting.copyright
-    }
-  }
+    },
+    computedAppLogo() {
+      const url = this.appLogo
+      if (this.appLogo.indexOf('svg+xml') !== -1) {
+        this.getbase64(url)
+        return this.tempbase64
+      }
+      return this.appLogo
+    },
+  },
+  methods: {
+    async getbase64(url) {
+      await request({ url, method: 'get' }).then((data) => {
+        this.tempbase64 = data
+      })
+    },
+  },
 }
 </script>
 
@@ -40,12 +68,21 @@ export default {
     .logo {
       height: 32px;
       margin-right: 10px;
+      img {
+        width: 32px !important;
+      }
+      .icon > svg {
+        color: @primary-color;
+        width: 32px !important;
+        height: 32px !important;
+      }
     }
     .title {
       font-size: 20px;
       color: @title-color;
       font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
       font-weight: 400;
+      top: 6px;
       position: relative;
     }
   }

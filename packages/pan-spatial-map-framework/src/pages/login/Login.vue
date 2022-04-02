@@ -1,9 +1,9 @@
 <template>
-  <common-layout class="login-wrapper">
+  <common-layout class="login-wrapper" :copyright="loginConfig.copyright">
     <div class="top">
       <div class="header">
-        <img alt="logo" class="logo" src="@/assets/img/logo.png" />
-        <span class="title">{{ systemName }}</span>
+        <img alt="logo" class="logo" :src="loginConfig.logo" />
+        <span class="title">{{ loginConfig.title }}</span>
       </div>
       <div class="desc"></div>
     </div>
@@ -30,10 +30,10 @@
                   {
                     required: true,
                     message: '请输入用户名',
-                    whitespace: true
-                  }
-                ]
-              }
+                    whitespace: true,
+                  },
+                ],
+              },
             ]"
           >
             <a-icon slot="prefix" type="user" />
@@ -52,10 +52,10 @@
                   {
                     required: true,
                     message: '请输入密码',
-                    whitespace: true
-                  }
-                ]
-              }
+                    whitespace: true,
+                  },
+                ],
+              },
             ]"
           >
             <a-icon slot="prefix" type="lock" />
@@ -79,7 +79,8 @@
 <script>
 import CommonLayout from '@/layouts/CommonLayout'
 import { login } from '@/services/user'
-import { setAuthorization } from '@/utils/request'
+import { BASE_URL } from '@/services/api'
+import { setAuthorization, request } from '@/utils/request'
 import { mapMutations } from 'vuex'
 
 export default {
@@ -90,35 +91,48 @@ export default {
       logging: false,
       error: '',
       form: this.$form.createForm(this),
-      redirect: undefined
+      redirect: undefined,
+      loginConfig: {},
     }
+  },
+  async created() {
+    await request({ url: 'prefab/frontsite.json', method: 'get' }).then(
+      (data) => {
+        if (data.logo.indexOf('data:image') < 0) {
+          data.logo = BASE_URL + data.logo
+        }
+        this.loginConfig = data
+        this.setLoginConfig(data)
+      }
+    )
   },
   computed: {
     systemName() {
       return this.$store.state.setting.systemName
-    }
+    },
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     ...mapMutations('account', ['setUser']),
+    ...mapMutations('setting', ['setLoginConfig']),
     onSubmit(e) {
       e.preventDefault()
       const self = this
-      this.form.validateFields(err => {
+      this.form.validateFields((err) => {
         if (!err) {
           this.logging = true
           const name = this.form.getFieldValue('name')
           const password = this.form.getFieldValue('password')
           login(name, password)
             .then(this.afterLogin)
-            .catch(error => {
+            .catch((error) => {
               this.logging = false
               this.error = error.response.data.message
             })
@@ -132,14 +146,14 @@ export default {
       this.setUser(user.user)
       setAuthorization({
         token: loginRes.token,
-        expireAt: new Date(new Date().getTime() + 30 * 60 * 1000)
+        expireAt: new Date(new Date().getTime() + 30 * 60 * 1000),
       })
       this.$router.push({ path: this.redirect || '/map' })
     },
     onClose() {
       this.error = false
-    }
-  }
+    },
+  },
 }
 </script>
 

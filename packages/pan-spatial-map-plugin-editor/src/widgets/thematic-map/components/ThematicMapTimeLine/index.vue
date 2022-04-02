@@ -52,13 +52,13 @@ import { chartOption } from './config/timeLineChartOption'
 })
 export default class ThematicMapTimeLine extends Vue {
   // 图表
-  chart: any = null
+  private chart: any = null
 
   // 播放开关
-  isPlay = false
+  private isPlay = false
 
   // 当前播放的数据索引
-  currentIndex = 0
+  private currentIndex = 0
 
   // 时间轴的列表数据
   get timeList() {
@@ -123,6 +123,7 @@ export default class ThematicMapTimeLine extends Vue {
 
   /**
    * 时间轴变化
+   * @param {object} param
    */
   onTimelinechanged({ currentIndex }) {
     this.currentIndex = currentIndex

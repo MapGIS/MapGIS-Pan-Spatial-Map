@@ -1,0 +1,14 @@
+[
+  {
+    "baseUrl": "http://192.168.21.191:6163/igs/rest/mrfs/docs/shengZhenBaiMo/0/0",
+    "startTimeField": "startTime",
+    "endTimeField": "endTime",
+    "heightField": "height"
+  },
+  {
+    "baseUrl": "http://192.168.21.191:8089/igs/rest/mrfs/docs/shengZhenBaiMo/0/0",
+    "startTimeField": "startTime",
+    "endTimeField": "endTime",
+    "heightField": "height"
+  }
+]

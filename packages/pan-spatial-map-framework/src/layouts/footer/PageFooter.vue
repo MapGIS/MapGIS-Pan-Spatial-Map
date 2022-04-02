@@ -10,8 +10,11 @@
         <a-icon v-if="item.icon" :type="item.icon" />{{ item.name }}
       </a>
     </div>
-    <div class="copyright">
+    <!-- <div class="copyright">
       Copyright<a-icon type="copyright" />{{ copyright }}
+    </div> -->
+    <div class="copyright">
+      {{ copyright }}
     </div>
   </div>
 </template>
@@ -19,7 +22,7 @@
 <script>
 export default {
   name: 'PageFooter',
-  props: ['copyright', 'linkList']
+  props: ['copyright', 'linkList'],
 }
 </script>
 

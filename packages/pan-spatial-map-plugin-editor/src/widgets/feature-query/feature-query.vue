@@ -50,7 +50,9 @@
 import { Component, Vue, Mixins, Watch, Inject } from 'vue-property-decorator'
 import {
   baseConfigInstance,
-  dataCatalogManagerInstance
+  dataCatalogManagerInstance,
+  ActiveResultSet,
+  DataStoreCatalog,
 } from '@mapgis/pan-spatial-map-common'
 import {
   WidgetMixin,
@@ -63,7 +65,8 @@ import {
   Rectangle3D,
   Point3D,
   Objects,
-  Exhibition
+  Exhibition,
+  Feature,
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import {
@@ -73,13 +76,13 @@ import {
   booleanCrosses,
   booleanPointInPolygon,
   booleanDisjoint,
-  booleanContains
+  booleanContains,
 } from '@turf/turf'
 
-const {
-  IAttributeTableListExhibition,
-  AttributeTableListExhibition
-} = Exhibition
+const { IAttributeTableListExhibition, AttributeTableListExhibition } =
+  Exhibition
+
+const { FeatureQuery } = Feature
 
 enum QueryType {
   Point = 'Point',
@@ -87,11 +90,12 @@ enum QueryType {
   Rectangle = 'Rectangle',
   Polygon = 'Polygon',
   LineString = 'LineString',
-  PickModel = 'PickModel'
+  PickModel = 'PickModel',
+  Cube = 'Cube',
 }
 
 @Component({
-  name: 'MpFeatureQuery'
+  name: 'MpFeatureQuery',
 })
 export default class MpFeatureQuery extends Mixins(
   WidgetMixin,
@@ -110,14 +114,15 @@ export default class MpFeatureQuery extends Mixins(
     QueryType.Circle,
     QueryType.Rectangle,
     QueryType.Polygon,
-    QueryType.LineString
+    QueryType.LineString,
   ]
 
   private defaultQueryTypes3d = [
     QueryType.Point,
     QueryType.Polygon,
     QueryType.LineString,
-    QueryType.Rectangle
+    // QueryType.Rectangle,
+    QueryType.Cube,
   ]
 
   private queryTypes2DrawModes = {
@@ -125,12 +130,13 @@ export default class MpFeatureQuery extends Mixins(
     Circle: 'draw-circle',
     Rectangle: 'draw-rectangle',
     Polygon: 'draw-polygon',
-    LineString: 'draw-polyline'
+    LineString: 'draw-polyline',
+    Cube: 'draw-cube',
   }
 
   private get marks() {
     return {
-      ...this.limitsArray
+      ...this.limitsArray,
     }
   }
 
@@ -139,13 +145,13 @@ export default class MpFeatureQuery extends Mixins(
   }
 
   private get queryTypes2d() {
-    return this.widgetInfo.config.queryType.filter(type => {
+    return this.widgetInfo.config.queryType.filter((type) => {
       return this.defaultQueryTypes2d.includes(type.id)
     })
   }
 
   private get queryTypes3d() {
-    return this.widgetInfo.config.queryType.filter(type => {
+    return this.widgetInfo.config.queryType.filter((type) => {
       return this.defaultQueryTypes3d.includes(type.id)
     })
   }
@@ -165,18 +171,15 @@ export default class MpFeatureQuery extends Mixins(
   }
 
   created() {
-    this.widgetInfo.config.queryType.forEach(type => {
+    this.widgetInfo.config.queryType.forEach((type) => {
       if (type.id === '') {
         type.id = QueryType.Rectangle
       }
     })
-  }
-
-  created() {
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
+      this.vueCesium,
+      this.viewer
     )
   }
 
@@ -234,7 +237,7 @@ export default class MpFeatureQuery extends Mixins(
 
     const layers = this.document.defaultMap.layers()
 
-    layers.forEach(layer => {
+    layers.forEach((layer) => {
       if (!this.isCrossWithLayer(layer, shape)) {
         return
       }
@@ -270,14 +273,14 @@ export default class MpFeatureQuery extends Mixins(
       id: `${layer.id}`,
       name: `${layer.title} 查询结果`,
       description: '',
-      options: []
+      options: [],
     }
     const {
-      activeScene: { sublayers }
+      activeScene: { sublayers },
     } = layer
     const layerConfig = dataCatalogManagerInstance.getLayerConfigByID(layer.id)
     if (layerConfig && layerConfig.bindData) {
-      sublayers.forEach(item => {
+      sublayers.forEach((item) => {
         if (!item.visible) {
           return
         }
@@ -288,7 +291,7 @@ export default class MpFeatureQuery extends Mixins(
           port: Number(port || baseConfigInstance.config.port),
           serverType: layer.type,
           gdbp: layerConfig.bindData.gdbps,
-          geometry: geometry
+          geometry: geometry,
         })
       })
 
@@ -297,7 +300,21 @@ export default class MpFeatureQuery extends Mixins(
     }
   }
 
-  private queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
+  getIpPort({ isDataStoreQuery, ip, port }) {
+    const ipPortObj = isDataStoreQuery
+      ? {
+          ip: baseConfigInstance.config.DataStoreIp,
+          port: Number(baseConfigInstance.config.DataStorePort),
+        }
+      : {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+        }
+
+    return ipPortObj
+  }
+
+  private async queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
     if (!layer.isVisible) {
       return
     }
@@ -307,49 +324,81 @@ export default class MpFeatureQuery extends Mixins(
       id: `${layer.id}`,
       name: `${layer.title} 查询结果`,
       description: '',
-      options: []
+      options: [],
     }
 
     const sublayers = layer.allSublayers
-    sublayers.forEach(sublayer => {
-      if (!sublayer.visible) {
+    for (let index = 0; index < sublayers.length; index++) {
+      const sublayer = sublayers[index]
+      if (!sublayer.visible && sublayer.sublayers.length > 0) {
         return
       }
+      const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery(
+        {
+          ip: ip || baseConfigInstance.config.ip,
+          port: Number(port || baseConfigInstance.config.port),
+          gdbp: sublayer.url,
+        }
+      )
+      const ipPortObj = this.getIpPort({
+        isDataStoreQuery,
+        ip: ip || baseConfigInstance.config.ip,
+        port: Number(port || baseConfigInstance.config.port),
+      })
       exhibition.options.push({
         id: sublayer.id,
         name: sublayer.title,
-        ip: ip || baseConfigInstance.config.ip,
-        port: Number(port || baseConfigInstance.config.port),
+        DNSName,
+        isDataStoreQuery,
+        // ip: ip || baseConfigInstance.config.ip,
+        // port: Number(port || baseConfigInstance.config.port),
+        ...ipPortObj,
         serverType: layer.type,
+        gdbp: sublayer.url,
         layerIndex: sublayer.id,
         serverName: docName,
         serverUrl: layer.url,
-        geometry: geometry
+        geometry: geometry,
       })
-    })
+    }
 
     this.addExhibition(new AttributeTableListExhibition(exhibition))
     this.openExhibitionPanel()
   }
 
-  private quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
+  private async quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
     if (!layer.isVisible) {
       return
     }
     const { ip, port, docName } = layer._parseUrl(layer.url)
+
+    const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery({
+      ip: ip || baseConfigInstance.config.ip,
+      port: Number(port || baseConfigInstance.config.port),
+      gdbp: layer.gdbps,
+    })
+    const ipPortObj = this.getIpPort({
+      isDataStoreQuery,
+      ip: ip || baseConfigInstance.config.ip,
+      port: Number(port || baseConfigInstance.config.port),
+    })
 
     const exhibition: IAttributeTableListExhibition = {
       id: `${layer.id}`,
       name: `${layer.title} 查询结果`,
       options: [
         {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
+          id: layer.id,
+          // ip: ip || baseConfigInstance.config.ip,
+          // port: Number(port || baseConfigInstance.config.port),
+          DNSName,
+          isDataStoreQuery,
+          ...ipPortObj,
           serverType: layer.type,
           gdbp: layer.gdbps,
-          geometry: geometry
-        }
-      ]
+          geometry: geometry,
+        },
+      ],
     }
 
     this.addExhibition(new AttributeTableListExhibition(exhibition))
@@ -365,11 +414,11 @@ export default class MpFeatureQuery extends Mixins(
       id: `${layer.id}`,
       name: `${layer.title} 查询结果`,
       description: '',
-      options: []
+      options: [],
     }
 
     const sublayers = layer.allSublayers
-    sublayers.forEach(sublayer => {
+    sublayers.forEach((sublayer) => {
       if (!sublayer.visible) {
         return
       }
@@ -379,7 +428,7 @@ export default class MpFeatureQuery extends Mixins(
         serverType: layer.type,
         layerIndex: sublayer.id,
         serverUrl: layer.url,
-        geometry: geometry
+        geometry: geometry,
       })
     })
 
@@ -399,15 +448,14 @@ export default class MpFeatureQuery extends Mixins(
         if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
           // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
           const transform = this.getLayerTranform(layer)
+          const offset = this.getLayerOffset(layer)
           if (transform) {
-            const {
-              x,
-              y,
-              z
-            } = this.sceneController.globelPositionToLocalPosition(
-              shape,
-              transform
-            )
+            const { x, y, z } =
+              this.sceneController.globelPositionToLocalPosition(
+                shape,
+                transform,
+                offset
+              )
             geometry = new Point3D(x, y, shape.z)
           }
         } else {
@@ -418,10 +466,12 @@ export default class MpFeatureQuery extends Mixins(
         if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
           // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
           const transform = this.getLayerTranform(layer)
+          const offset = this.getLayerOffset(layer)
           if (transform) {
             const { xmin, ymin, xmax, ymax, zmin, zmax } = this.toQueryRect3D(
               shape,
-              transform
+              transform,
+              offset
             )
 
             geometry = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
@@ -438,10 +488,12 @@ export default class MpFeatureQuery extends Mixins(
         if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
           // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
           const transform = this.getLayerTranform(layer)
+          const offset = this.getLayerOffset(layer)
           if (transform) {
             const { xmin, ymin, xmax, ymax, zmin, zmax } = this.toQueryRect3D(
               shape,
-              transform
+              transform,
+              offset
             )
 
             geometry = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
@@ -454,17 +506,20 @@ export default class MpFeatureQuery extends Mixins(
           geometry = new Zondy.Common.Polygon(pointArray)
         }
         break
+      case QueryType.Cube:
       case QueryType.Circle:
       case QueryType.Rectangle:
         if (!this.is2DMapMode && layer.type === LayerType.IGSScene) {
           // 三维查询需要用到局部坐标，这里把经纬度转换成局部坐标,这里z轴不做转换
           const transform = this.getLayerTranform(layer)
+          const offset = this.getLayerOffset(layer)
           if (transform) {
             const { xmin, ymin, xmax, ymax, zmin, zmax } = shape
 
             geometry = this.transQueryRect3D(
-              { xmin, ymin, xmax, ymax, zmin: -100000, zmax: 100000 },
-              transform
+              { xmin, ymin, xmax, ymax, zmin, zmax },
+              transform,
+              offset
             )
           }
         } else {
@@ -479,15 +534,21 @@ export default class MpFeatureQuery extends Mixins(
     return geometry
   }
 
-  private transQueryRect3D({ xmin, ymin, xmax, ymax, zmin, zmax }, transform) {
+  private transQueryRect3D(
+    { xmin, ymin, xmax, ymax, zmin, zmax },
+    transform,
+    offset
+  ) {
     if (transform) {
       const minPosition = this.sceneController.globelPositionToLocalPosition(
         { x: xmin, y: ymin, z: zmin },
-        transform
+        transform,
+        offset
       )
       const maxPosition = this.sceneController.globelPositionToLocalPosition(
         { x: xmax, y: ymax, z: zmax },
-        transform
+        transform,
+        offset
       )
       return new Rectangle3D(
         minPosition.x,
@@ -501,16 +562,17 @@ export default class MpFeatureQuery extends Mixins(
     return undefined
   }
 
-  private toQueryRect3D(shape, transform) {
-    const positions = shape.map(item => {
+  private toQueryRect3D(shape, transform, offset) {
+    const positions = shape.map((item) => {
       const { x, y, z } = this.sceneController.globelPositionToLocalPosition(
         item,
-        transform
+        transform,
+        offset
       )
       return {
         x,
         y,
-        z: item.z
+        z: item.z,
       }
     })
     let xmin = 0
@@ -542,19 +604,19 @@ export default class MpFeatureQuery extends Mixins(
       xmax,
       ymax,
       zmin,
-      zmax
+      zmax,
     }
   }
 
   private getLayerTranform(layer) {
     let tranform = null
     const {
-      activeScene: { sublayers }
+      activeScene: { sublayers },
     } = layer
     let visibleSublayerId = ''
 
     if (sublayers) {
-      sublayers.forEach(sublayer => {
+      sublayers.forEach((sublayer) => {
         if (sublayer.visible) {
           visibleSublayerId = sublayer.id
         }
@@ -568,6 +630,30 @@ export default class MpFeatureQuery extends Mixins(
       }
     }
     return tranform
+  }
+
+  private getLayerOffset(layer) {
+    let offset = null
+    const {
+      activeScene: { sublayers },
+    } = layer
+    let visibleSublayerId = ''
+
+    if (sublayers) {
+      sublayers.forEach((sublayer) => {
+        if (sublayer.visible) {
+          visibleSublayerId = sublayer.id
+        }
+      })
+    }
+
+    if (visibleSublayerId !== '') {
+      const source = this.sceneController.findSource(visibleSublayerId)
+      if (source) {
+        offset = source._asset.offset
+      }
+    }
+    return offset
   }
 
   private isCrossWithLayer(layer, shape): boolean {
@@ -589,8 +675,8 @@ export default class MpFeatureQuery extends Mixins(
             [Number(extent.xmax), Number(extent.ymin)],
             [Number(extent.xmax), Number(extent.ymax)],
             [Number(extent.xmin), Number(extent.ymax)],
-            [Number(extent.xmin), Number(extent.ymin)]
-          ]
+            [Number(extent.xmin), Number(extent.ymin)],
+          ],
         ])
       }
     } else {
@@ -600,8 +686,8 @@ export default class MpFeatureQuery extends Mixins(
           [Number(xmax), Number(ymin)],
           [Number(xmax), Number(ymax)],
           [Number(xmin), Number(ymax)],
-          [Number(xmin), Number(ymin)]
-        ]
+          [Number(xmin), Number(ymin)],
+        ],
       ])
     }
     switch (this.queryType) {
@@ -609,11 +695,12 @@ export default class MpFeatureQuery extends Mixins(
         geometry = point([shape.x, shape.y])
         break
       case QueryType.LineString:
-        geometry = lineString(shape.map(point => [point.x, point.y]))
+        geometry = lineString(shape.map((point) => [point.x, point.y]))
         break
       case QueryType.Polygon:
-        geometry = polygon([shape.map(point => [point.x, point.y])])
+        geometry = polygon([shape.map((point) => [point.x, point.y])])
         break
+      case QueryType.Cube:
       case QueryType.Circle:
       case QueryType.Rectangle:
         const { ymax, ymin, xmax, xmin } = shape
@@ -623,8 +710,8 @@ export default class MpFeatureQuery extends Mixins(
             [xmax, ymin],
             [xmax, ymax],
             [xmin, ymax],
-            [xmin, ymin]
-          ]
+            [xmin, ymin],
+          ],
         ])
         break
       default:

@@ -1,6 +1,10 @@
 <template>
   <ul class=" beauty-scroll">
-    <li v-for="item in layers" v-show="isIgsTerrainLayer(item)" :key="item.id">
+    <li
+      v-for="item in layers"
+      v-show="isIgsTerrainLayer(item) && !isDataFlow(item)"
+      :key="item.id"
+    >
       <a-tooltip>
         <template slot="title">
           {{ item.description }}
@@ -23,7 +27,7 @@
 import { Component, Vue, Prop, Mixins, Watch } from 'vue-property-decorator'
 import {
   AppMixin,
-  IGSSceneSublayerRenderType,
+  IGSSceneSublayerType,
   LayerType
 } from '@mapgis/web-app-framework'
 
@@ -62,15 +66,19 @@ export default class LayerOpacity extends Mixins(AppMixin) {
   isIgsTerrainLayer(layer) {
     let elevation = false
     if (layer.type === LayerType.IGSScene) {
-      layer.activeScene.sublayers.forEach(igsSceneSublayer => {
-        if (
-          igsSceneSublayer.renderType === IGSSceneSublayerRenderType.elevation
-        ) {
-          elevation = true
-        }
-      })
+      if (layer.activeScene) {
+        layer.activeScene.sublayers.forEach(igsSceneSublayer => {
+          if (igsSceneSublayer.type === IGSSceneSublayerType.elevation) {
+            elevation = true
+          }
+        })
+      }
     }
     return !elevation
+  }
+
+  isDataFlow(layer) {
+    return layer.type === LayerType.DataFlow
   }
 }
 </script>

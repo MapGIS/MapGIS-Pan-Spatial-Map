@@ -190,7 +190,7 @@ export default class MapView extends Mixins(MapViewMixin) {
   /**
    * 三维地图初始化
    */
-  onCesiumLoaded(webGlobe, sceneController) {
+  onCesiumLoaded(viewer, sceneController) {
     this.sceneController = sceneController
     this.isMapLoaded = true
     this.zoomTo({ ...this.initBound })

@@ -1,4 +1,8 @@
-import { MpAttributeTable, MpAttributeTableList } from './components'
+import {
+  MpAttributeTable,
+  MpAttributeTableList,
+  MpTreeLayer
+} from './components'
 
 import {
   MpZoom,
@@ -8,7 +12,8 @@ import {
   MpDataCatalog,
   MpLayerList,
   MpBasemapManager,
-  MpLegend
+  MpLegend,
+  MpLayerListContainer
 } from './widgets'
 
 const components = [
@@ -21,7 +26,9 @@ const components = [
   MpAttributeTable,
   MpAttributeTableList,
   MpBasemapManager,
-  MpLegend
+  MpLegend,
+  MpTreeLayer,
+  MpLayerListContainer,
 ]
 
 const install = Vue => {

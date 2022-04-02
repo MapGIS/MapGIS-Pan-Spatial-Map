@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" />
+    <!-- <mp-3d-draw-pro ref="draw3d" @finished="onDrawFinished" /> -->
   </div>
 </template>
 
@@ -47,15 +47,11 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     'circle-opacity': 1 // 透明度
   }
 
-  get drawComponent() {
-    return this.$refs.draw3d
-  }
-
   mounted() {
     this.sceneOverlays = Overlay.SceneOverlays.getInstance(
       this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
+      this.vueCesium,
+      this.viewer
     )
     this.dataCoordinateArrChange()
     this.dataBarrierArrChange()
@@ -89,12 +85,18 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         const fillColor = this.Cesium.Color.fromCssColorString(
           this.circleColor['circle-color']
         )
-        const entity = this.sceneOverlays.addLine({
-          name: `entityLineResultArray-${index}`,
-          pointsArray: lineArr,
-          width: 3,
-          color: fillColor
-        })
+        const entity = this.sceneOverlays.addLine(
+          `entityLineResultArray-${index}`,
+          lineArr,
+          3,
+          fillColor,
+          // 是否识别带高度的坐标
+          false,
+          // 是否贴地形
+          true,
+          // 附加属性
+          {}
+        )
         this.entityLineResultArray.push(entity)
       })
     }
@@ -109,12 +111,14 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         )
 
         const outLineColor = this.Cesium.Color.WHITE
-        const entity = this.sceneOverlays.addPoint({
-          lon: item[0],
-          lat: item[1],
-          fillColor,
-          font: 9
-        })
+        const entity = this.sceneOverlays.addPoint(
+          item[0],
+          item[1],
+          0,
+          `entityPointResultArray-${index}`,
+          9,
+          fillColor
+        )
         this.entityPointResultArray.push(entity)
       })
     }
@@ -155,12 +159,18 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     //   })
     //   const fillColor = this.Cesium.Color.fromCssColorString('#CC01AD')
 
-    //   const entity = this.sceneOverlays.addLine({
-    //     name: 'entityHighResultArray',
-    //     pointsArray: arr,
-    //     width: 5,
-    //     color: fillColor
-    //   })
+    // const entity = this.sceneOverlays.addLine(
+    //   'entityHighResultArray',
+    //   arr,
+    //   5,
+    //   fillColor,
+    //   // 是否识别带高度的坐标
+    //   false,
+    //   // 是否贴地形
+    //   true,
+    //   // 附加属性
+    //   {}
+    // )
     //   this.entityHighResultArray.push(entity)
     // }
   }
@@ -176,14 +186,16 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         )
 
         const outLineColor = this.Cesium.Color.WHITE
-        const entity = this.sceneOverlays.addPoint({
-          lon: coordinates[0],
-          lat: coordinates[1],
-          font: 11,
+        const entity = this.sceneOverlays.addPoint(
+          coordinates[0],
+          coordinates[1],
+          0,
+          null,
+          11,
           fillColor,
           outLineColor,
-          outlineWidth: 1
-        })
+          1
+        )
         this.entityCoordinateArray.push(entity)
       })
     }
@@ -198,14 +210,16 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         const fillColor = this.Cesium.Color.RED
 
         const outLineColor = this.Cesium.Color.WHITE
-        const entity = this.sceneOverlays.addPoint({
-          lon: coordinates[0],
-          lat: coordinates[1],
+        const entity = this.sceneOverlays.addPoint(
+          coordinates[0],
+          coordinates[1],
+          0,
+          null,
+          11,
           fillColor,
-          font: 11,
           outLineColor,
-          outlineWidth: 1
-        })
+          1
+        )
         this.entityBarrierArray.push(entity)
       })
     }
@@ -244,35 +258,16 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     this.entityHighResultIndex = undefined
   }
 
-  // 打开绘制，点击图标激活对应类型的绘制功能
-  private onOpenDraw() {
-    this.drawComponent && this.drawComponent.openDraw('draw-point')
-  }
-
-  private stopDraw() {
-    this.drawComponent && this.drawComponent.closeDraw()
-  }
-
-  @Emit()
-  finishDraw(e) {}
-
   flyToHigh(center) {
     if (center && center.length > 0) {
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           center[0],
           center[1],
-          this.webGlobe.viewer.camera.positionCartographic.height
+          this.viewer.camera.positionCartographic.height
         )
       })
     }
-  }
-
-  onDrawFinished(e) {
-    this.finishDraw(e)
-    window.setTimeout(() => {
-      this.onOpenDraw()
-    })
   }
 
   clearMark() {
@@ -283,7 +278,6 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   }
 
   beforeDestroy() {
-    this.stopDraw()
     this.clearDataBarrierArr()
     this.clearDataCoordinateArr()
     this.clearResultLayer()

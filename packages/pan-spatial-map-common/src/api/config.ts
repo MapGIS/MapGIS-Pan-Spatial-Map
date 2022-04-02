@@ -23,6 +23,6 @@ export function saveWidgetConfig(data: WidgetConfigData) {
   return getRequest()({
     url: '/api/app/widget-config',
     method: 'put',
-    data
+    params: data
   })
 }

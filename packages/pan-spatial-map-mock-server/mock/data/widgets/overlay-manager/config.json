@@ -1,0 +1,20 @@
+{
+  "models": {
+    "tree": [{
+      "img": "/upload/gltf/tree/img/tree.png",
+      "model": "/upload/gltf/tree/tree.glb"
+    }],
+    "traffic": [{
+      "img": "/upload/gltf/traffic/img/car.png",
+      "model": "/upload/gltf/traffic/car.glb"
+    }],
+    "ground": [{
+      "img": "/upload/gltf/ground/img/grass.png",
+      "model": "/upload/gltf/ground/grass.glb"
+    }],
+    "lamp": [{
+      "img": "/upload/gltf/lamp/img/lamp.png",
+      "model": "/upload/gltf/lamp/lamp.glb"
+    }]
+  }
+}

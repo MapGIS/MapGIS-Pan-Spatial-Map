@@ -687,6 +687,21 @@
         "describe": "矢量文档",
         "children": [
           {
+            "label": "城市中心线",
+            "describe": "城市中心线",
+            "ip": "192.168.23.84",
+            "port": "6163",
+            "layerServiceType": "IGSIMAGE",
+            "name": "城市中心线",
+            "searchName": "",
+            "token": "",
+            "guid": "d3ac0679-e009-4e87-93ab-7181378efbbwwww",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": "Local,Local,Local"
+          },
+          {
             "label": "湖北省行政区划图",
             "describe": "湖北省行政区划图",
             "ip": "",
@@ -765,26 +780,14 @@
             "serverUrl": ""
           },
           {
-            "label": "hongkong",
-            "describe": "hongkong",
+            "label": "武汉市地形",
+            "describe": "武汉市地形",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
-            "name": "hongkong",
+            "name": "武汉地形",
             "searchName": "",
-            "model": "globe",
-            "guid": "68744fd8-61be-400d-a861-4a0415a339cc",
-            "serverUrl": ""
-          },
-          {
-            "label": "全国地形",
-            "describe": "全国地形",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "DEM250_3D",
-            "searchName": "",
-            "model": "globe",
+            "model": "",
             "guid": "68744fd8-61be-400d-a861-4a0415a339c2",
             "serverUrl": ""
           },
@@ -813,18 +816,6 @@
             "serverUrl": ""
           },
           {
-            "label": "地质体",
-            "describe": "地质体",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "M3D",
-            "searchName": "",
-            "model": "surface",
-            "guid": "5d600334-c7c8-4194-ac0f-965093fd4635",
-            "serverUrl": ""
-          },
-          {
             "label": "中地景观模型",
             "describe": "中地景观模型",
             "ip": "",
@@ -834,18 +825,6 @@
             "searchName": "",
             "model": "surface",
             "guid": "79edf234-3187-442e-9162-96335bb90b25",
-            "serverUrl": ""
-          },
-          {
-            "label": "大楼",
-            "describe": "大楼",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "DOC3D",
-            "name": "大楼",
-            "searchName": "",
-            "model": "surface",
-            "guid": "79edf234-3187-442e-9162-96335bb90b25ccccc",
             "serverUrl": ""
           },
           {
@@ -861,15 +840,15 @@
             "serverUrl": ""
           },
           {
-            "label": "信创BIM数据",
-            "describe": "信创BIM数据",
+            "label": "ks_buildings_result",
+            "describe": "ks_buildings_result",
             "ip": "",
             "port": "",
             "layerServiceType": "DOC3D",
-            "name": "m3d_bim",
+            "name": "ks_buildings_result",
             "searchName": "",
             "model": "surface",
-            "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01e7489",
+            "guid": "bfcaf781-6c9d-4f96-85b4-f9aee01dsadsa79",
             "serverUrl": ""
           },
           {
@@ -909,16 +888,337 @@
             "serverUrl": ""
           },
           {
-            "label": "地质体网格",
-            "describe": "地质体网格",
-            "ip": "",
-            "port": "",
+            "label": "场景文档扩展属性测试",
+            "describe": "场景文档扩展属性测试",
+            "ip": "192.168.199.71",
+            "port": "8089",
             "layerServiceType": "DOC3D",
-            "name": "地质体网格2",
+            "name": "G3D_分层分户",
+            "searchName": "",
+            "model": "",
+            "guid": "a2ee2b40-14fd-4104-a05f-d8e77e54f1bc",
+            "serverUrl": "",
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,InitOpenView"
+              }
+            ]
+          },
+          {
+            "label": "M3D-1.0模型拾取",
+            "describe": "M3D-1.0模型拾取",
+            "ip": "192.168.88.204",
+            "port": "6163",
+            "layerServiceType": "DOC3D",
+            "name": "汉阳BIM",
             "searchName": "",
             "model": "surface",
-            "guid": "45d4c3ba-7865-44d2-8858-153fb7b9f8dd",
+            "guid": "a1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
             "serverUrl": ""
+          },
+          {
+            "label": "G3D-1.0-分层分户",
+            "describe": "G3D-分层分户",
+            "ip": "192.168.88.204",
+            "port": "6163",
+            "layerServiceType": "DOC3D",
+            "name": "大楼",
+            "searchName": "",
+            "model": "surface",
+            "guid": "b1ee2b60-14fd-4104-a05f-d8e77e54f1b2",
+            "serverUrl": "",
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,IsStratified"
+              }
+            ]
+          },
+          {
+            "label": "M3D-楼栋构建树",
+            "describe": "M3D-楼栋构建树",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "surface",
+            "guid": "6058684b-b4b3-46a1-9b59-1057dbe00c04",
+            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/3栋/3栋.mcj",
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,IsBimComponent"
+              }
+            ]
+          },
+          {
+            "label": "M3D-单体建筑生长",
+            "describe": "M3D-单体建筑生长",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fe",
+            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/BIM模型生长time/BIM模型生长time.mcj"
+          },
+          {
+            "label": "M3D-dynamic",
+            "describe": "M3D-dynamic",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0aa6fe",
+            "serverUrl": "http://192.168.88.204:8089/M3D/2.0/zondy/zondy.mcj"
+          },
+          {
+            "label": "3DTileset-大雁塔ModelCache",
+            "describe": "3DTileset-大雁塔ModelCache",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fg",
+            "serverUrl": "http://192.168.88.204:8089/3DTileset/dayantaresult/tileset.json",
+            "customParameters": [
+              {
+                "format": "cesium3dTileset"
+              }
+            ]
+          },
+          {
+            "label": "3DTileset-大雁塔TILE3D",
+            "describe": "3DTileset-大雁塔TILE3D",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILE3D",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "78258ff8-7cca-2209-e3c6-6e24ab0ff6fh",
+            "serverUrl": "http://192.168.88.204:8089/3DTileset/dayantaresult/tileset.json"
+          },
+          {
+            "label": "V2_M3D-单体建筑生长",
+            "describe": "V2_M3D-单体建筑生长",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "9201A5DE-3C8F-D388-9EA3-88CB701583CF",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_单体建筑生长/M3dServer"
+          },
+          {
+            "label": "V2_M3D-BIM构建树",
+            "describe": "M3D-BIM构建树",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "surface",
+            "guid": "99BA5433-DF5F-A898-C8E0-78B8BA55F251",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_BIM构建树/M3dServer",
+            "customParameters": [
+              {
+                "extendedPropKeys": "Expand,IsBimComponent"
+              }
+            ]
+          },
+          {
+            "label": "V2_分层分户-静态单体化",
+            "describe": "V2_分层分户-静态单体化",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "73CBB58E-C31B-2C50-08F3-DBD70DDED1BCi",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_分层分户-静态单体化/SceneServer"
+          },
+          {
+            "label": "V2_倾斜摄影-动态单体化",
+            "describe": "V2_倾斜摄影-动态单体化",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFA",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_倾斜摄影_动态单体化/SceneServer"
+          }
+        ]
+      },
+      {
+        "label": "深圳录屏演示",
+        "describe": "深圳录屏演示",
+        "children": [
+          {
+            "label": "V2_临海道路网",
+            "describe": "V2_临海道路网",
+            "ip": "192.168.199.71",
+            "port": "8089",
+            "layerServiceType": "IGSVECTOR",
+            "name": "V2_临海道路网",
+            "searchName": "",
+            "token": "",
+            "guid": "6b79f6d8-9efd-c63a-07c8-a0949b84aebc",
+            "serverUrl": "gdbp://MapGISLocalPlus/linhai/sfcls/lh道路网",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
+            "label": "V2_城市白模",
+            "describe": "V2_城市白模",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFB",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/城市白膜/SceneServer"
+          },
+          {
+            "label": "V2_临海倾斜摄影数据",
+            "describe": "V2_临海倾斜摄影数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFZ",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/倾斜临时/SceneServer"
+          },
+          {
+            "label": "V2_临海地形",
+            "describe": "V2_临海地形",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFC",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/lh地形/SceneServer"
+          },
+          {
+            "label": "V2_临海地下空间数据_地质体模型",
+            "describe": "V2_临海地下空间数据_地质体模型",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFD",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/地质体模型/SceneServer"
+          },
+          {
+            "label": "V2_临海地下空间数据_管线模型",
+            "describe": "V2_临海地下空间数据_管线模型",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFE",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/管线模型V12/SceneServer"
+          },
+          {
+            "label": "V2_单体建筑生长",
+            "describe": "V2_单体建筑生长",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFF",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/BIM单体建筑生长V11/M3dServer"
+          },
+          {
+            "label": "V2_BIM构建树",
+            "describe": "V2_BIM构建树",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "ModelCache",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFG",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/BIM构建树V11/M3dServer"
+          },
+          {
+            "label": "V2_分层分户",
+            "describe": "V2_分层分户",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFH",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/分层分户V12/SceneServer"
+          },
+          {
+            "label": "单体化查询new",
+            "describe": "单体化查询new",
+            "ip": "192.168.199.75",
+            "port": "6163",
+            "layerServiceType": "DOC3D",
+            "name": "单体化查询new",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFI",
+            "serverUrl": ""
+          },
+          {
+            "label": "单体化查询_vec-3栋",
+            "describe": "单体化查询_vec-3栋",
+            "ip": "192.168.88.208",
+            "port": "6163",
+            "layerServiceType": "DOC3D",
+            "name": "vec-3栋",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFJ",
+            "serverUrl": ""
+          },
+          {
+            "label": "倾斜摄影V13",
+            "describe": "倾斜摄影V13",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFK",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/CIMyanshi/倾斜摄影V13/SceneServer"
+          },
+          {
+            "label": "ChinaOnlineStreetPurplishBlue",
+            "describe": "ChinaOnlineStreetPurplishBlue",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "TILEARCGIS",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFL",
+            "serverUrl": "http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer"
           }
         ]
       },
@@ -939,20 +1239,6 @@
             "serverUrl": "",
             "wfsUrl": "",
             "extent": ""
-          },
-          {
-            "label": "luzhouwp_level16",
-            "describe": "luzhouwp_level16",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "IGSTILED",
-            "name": "luzhouwp_level16",
-            "searchName": "",
-            "token": "",
-            "guid": "1c3bd807-52c5-42d5-bdcb-08234af8b4ff",
-            "serverUrl": "",
-            "wfsUrl": "",
-            "extent": ""
           }
         ]
       },
@@ -960,6 +1246,20 @@
         "label": "IGS图层",
         "describe": "IGS图层",
         "children": [
+          {
+            "label": "lh专题图WGS84",
+            "describe": "lh专题图WGS84",
+            "ip": "192.168.199.71",
+            "port": "8089",
+            "layerServiceType": "IGSVECTOR",
+            "name": "lh专题图WGS84",
+            "searchName": "",
+            "token": "",
+            "guid": "37ee717c-5f7e-40a9-a45a-55273a7d2fbc",
+            "serverUrl": "gdbp://MapGISLocalPlus/linhai/sfcls/lh专题图WGS84",
+            "wfsUrl": "",
+            "extent": ""
+          },
           {
             "label": "中国地级市x",
             "describe": "中国地级市x",
@@ -971,6 +1271,20 @@
             "token": "",
             "guid": "37ee717c-5f7e-40a9-a45a-55273a7d2fca",
             "serverUrl": "gdbp://MapGisLocal/专题图数据/sfcls/中国地级市x",
+            "wfsUrl": "",
+            "extent": ""
+          },
+          {
+            "label": "行政区",
+            "describe": "行政区",
+            "ip": "192.168.23.84",
+            "port": "6163",
+            "layerServiceType": "IGSVECTOR",
+            "name": "中国",
+            "searchName": "",
+            "token": "",
+            "guid": "37ee717c-5f7e-40a9-a45a-55273a7cccfca",
+            "serverUrl": "gdbp://gtcs@192.168.96.10130001gtcs/gtcs/sfcls/行政区",
             "wfsUrl": "",
             "extent": ""
           },
@@ -1017,20 +1331,6 @@
             "extent": ""
           },
           {
-            "label": "信创BIM图层热力图测试数据",
-            "describe": "信创BIM图层热力图测试数据",
-            "ip": "",
-            "port": "",
-            "layerServiceType": "IGSVECTOR",
-            "name": "信创BIM图层热力图测试数据",
-            "searchName": "",
-            "token": "",
-            "guid": "e76f9c13-0fcb-8537-96ab-daa533bf5de9",
-            "serverUrl": "gdbp://MapGISLocalPlus/示例数据/sfcls/信创BIM图层热力图测试数据.json_Pnt",
-            "wfsUrl": "",
-            "extent": ""
-          },
-          {
             "label": "景观_建筑物",
             "describe": "景观_建筑物",
             "ip": "",
@@ -1065,30 +1365,36 @@
             "extent": ""
           },
           {
-            "label": "WORLDMKTTILE2",
-            "describe": "WORLDMKTTILE2",
+            "label": "OGC_4326_CHINA",
+            "describe": "OGC_4326_CHINA",
             "ip": "",
             "port": "",
             "layerServiceType": "WMTS",
-            "name": "WORLDMKTTILE2",
+            "name": "OGC_4326_CHINA",
             "searchName": "",
             "token": "",
             "guid": "a96fea53-d97d-401a-a502-f5621f098c14",
-            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/WORLDMKTTILE2/WMTSServer",
+            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/OGC_4326_CHINA/WMTSServer",
             "wfsUrl": "",
             "extent": ""
-          },
+          }
+        ]
+      },
+      {
+        "label": "数据流",
+        "describe": "数据流",
+        "children": [
           {
-            "label": "luzhouwp_level16",
-            "describe": "luzhouwp_level16",
+            "label": "数据流",
+            "describe": "数据流",
             "ip": "",
             "port": "",
-            "layerServiceType": "WMTS",
-            "name": "luzhouwp_level16",
+            "layerServiceType": "DataFlow",
+            "name": "数据流",
             "searchName": "",
             "token": "",
-            "guid": "a96fea53-d97d-401a-a502-f5621f098c24",
-            "serverUrl": "http://192.168.21.191:6163/igs/rest/ogc/luzhouwp_level16/WMTSServer",
+            "guid": "5ABC33D2-E1A5-1761-5B31-730CDBC0F96D",
+            "serverUrl": "ws://192.168.199.65:9382/dataflow/cars_xian/subscribe",
             "wfsUrl": "",
             "extent": ""
           }
@@ -1109,6 +1415,26 @@
             "token": "",
             "guid": "8c74f367-191a-458c-946f-de1cd3778537",
             "serverUrl": "http://192.168.21.191:6163/igs/rest/mrcs/vtiles/styles/OSM全中国经纬度.json",
+            "wfsUrl": "",
+            "extent": ""
+          }
+        ]
+      },
+      {
+        "label": "geoJson",
+        "describe": "geoJson",
+        "children": [
+          {
+            "label": "earthquake",
+            "describe": "earthquake",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "GEOJSON",
+            "name": "",
+            "searchName": "",
+            "token": "",
+            "guid": "5ABC33D2-E1A5-1761-5B31-730CDBC012345D",
+            "serverUrl": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson",
             "wfsUrl": "",
             "extent": ""
           }

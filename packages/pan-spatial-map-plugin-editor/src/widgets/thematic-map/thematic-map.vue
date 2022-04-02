@@ -1,7 +1,7 @@
 <template>
-  <div class="mp-widget-thematic-map">
+  <div class="mp-widget-thematic-map" v-if="!flag">
     <!-- 专题图树 -->
-    <!-- <mp-group-tab
+    <mp-group-tab
       :has-top-margin="false"
       :has-bottom-margin="false"
       size="default"
@@ -14,7 +14,7 @@
           icon="plus"
         />
       </mp-toolbar-command-group>
-    </mp-group-tab> -->
+    </mp-group-tab>
     <a-spin :spinning="loading">
       <a-empty v-if="!thematicMapTree.length" />
       <a-tree
@@ -30,12 +30,16 @@
           <a-dropdown :trigger="['contextmenu']">
             <span>{{ node.title }}</span>
             <a-menu slot="overlay" @click="onTreeNodeMenuClick($event, node)">
-              <!-- <a-menu-item v-show="!node.checkable" :key="thematicMapNodeHandles.CREATE"
+              <a-menu-item
+                v-show="!node.checkable"
+                :key="thematicMapNodeHandles.CREATE"
                 >新建</a-menu-item
-              > -->
-              <!-- <a-menu-item v-show="node.checkable" :key="thematicMapNodeHandles.EDIT"
+              >
+              <a-menu-item
+                v-show="node.checkable"
+                :key="thematicMapNodeHandles.EDIT"
                 >编辑</a-menu-item
-              > -->
+              >
               <a-menu-item :key="thematicMapNodeHandles.REMOVE"
                 >删除</a-menu-item
               >
@@ -55,7 +59,7 @@
     <!-- 工具栏 -->
     <thematic-map-manage-tools />
     <!-- 新建专题图 -->
-    <!-- <thematic-map-subject-add :node="currentThematicMapNode" /> -->
+    <thematic-map-subject-add :node="currentThematicMapNode" />
   </div>
 </template>
 
@@ -65,7 +69,7 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import _cloneDeep from 'lodash/cloneDeep'
 import {
   ModuleType,
-  NewSubjectConfig,
+  INewSubjectConfig,
   mapGetters,
   mapMutations,
   moduleTypeList
@@ -74,7 +78,7 @@ import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
 import ThematicMapStatisticGraph from './components/ThematicMapStatisticGraph'
 import ThematicMapTimeLine from './components/ThematicMapTimeLine'
 import ThematicMapManageTools from './components/ThematicMapManageTools'
-// import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
+import ThematicMapSubjectAdd from './components/ThematicMapSubjectAdd'
 import ThematicMapLayers from './components/ThematicMapLayers'
 
 enum ThematicMapNodeHandles {
@@ -95,8 +99,7 @@ enum ThematicMapNodeHandles {
       'setSubjectConfig',
       'updateSubjectConfig',
       'setSelectedSubjectList',
-      'resetVisible',
-      'resetLinkage'
+      'resetVisible'
     ])
   },
   components: {
@@ -104,7 +107,7 @@ enum ThematicMapNodeHandles {
     ThematicMapStatisticGraph,
     ThematicMapTimeLine,
     ThematicMapManageTools,
-    // ThematicMapSubjectAdd,
+    ThematicMapSubjectAdd,
     ThematicMapLayers
   }
 })
@@ -116,16 +119,16 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   loading = false
 
   // 专题图树
-  thematicMapTree: Array<ThematicMapSubjectConfigNode> = []
+  thematicMapTree: Array<ISubjectConfigNode> = []
 
   // 专题图节点的操作按钮
   thematicMapNodeHandles = ThematicMapNodeHandles
 
   // 选中的专题图树节点集合
-  checkedThematicMapNodes: Array<ThematicMapSubjectConfigNode> = []
+  checkedThematicMapNodes: Array<ISubjectConfigNode> = []
 
   // 当前操作的专题图节点
-  currentThematicMapNode: NewSubjectConfig = {}
+  currentThematicMapNode: INewSubjectConfig = {}
 
   // 选中的专题图树节点key集合
   get checkedThematicMapKeys() {
@@ -171,7 +174,6 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    */
   setModulesHide(exclude: ModuleType) {
     moduleTypeList.forEach(t => t !== exclude && this.resetVisible(t))
-    this.resetLinkage()
   }
 
   /**
@@ -185,7 +187,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    * 格式化专题图树
    * @param tree
    */
-  normalizeThematicMapTree(tree: Array<ThematicMapSubjectConfigNode>) {
+  normalizeThematicMapTree(tree: Array<ISubjectConfigNode>) {
     return tree.map(node => {
       this.$set(node, 'checkable', node.nodeType === 'subject')
       this.$set(node, 'scopedSlots', { title: 'custom' })
@@ -199,14 +201,14 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * todo 创建节点
    */
-  onTreeNodeCreate(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeCreate(nodeData: ISubjectConfigNode) {
     this.setModulesShow(ModuleType.CREATE)
   }
 
   /**
    * todo 编辑节点, 需要兼容新旧配置
    */
-  onTreeNodeEdit(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeEdit(nodeData: ISubjectConfigNode) {
     if (nodeData.parentId) {
       // 新的专题配置
       this.currentThematicMapNode = nodeData
@@ -219,13 +221,13 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * 移除节点
    */
-  onTreeNodeRemove(nodeData: ThematicMapSubjectConfigNode) {
+  onTreeNodeRemove(nodeData: ISubjectConfigNode) {
     this.setSelectedSubjectList(
       this.checkedThematicMapNodes.filter(s => s.id !== nodeData.id)
     )
     const recursion = (
-      tree: Array<ThematicMapSubjectConfigNode>,
-      node: ThematicMapSubjectConfigNode
+      tree: Array<ISubjectConfigNode>,
+      node: ISubjectConfigNode
     ) => {
       for (let i = 0; i < tree.length; i++) {
         const n = tree[i]
@@ -287,6 +289,20 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   }
 
   /**
+   * 清除
+   */
+  onClear() {
+    this.flag = true
+    this.checkedThematicMapNodes = []
+    this.setLoadingHide()
+    // 重置缓存
+    this.setModulesHide()
+    this.setBaseConfig(null)
+    this.setSubjectConfig([])
+    this.setSelectedSubjectList([])
+  }
+
+  /**
    * 专题图面板打开
    * fixme 未对接服务，取store里缓存的配置
    */
@@ -301,15 +317,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   /**
    * 专题图面板关闭
    */
-  onClose() {
-    this.flag = true
-    this.checkedThematicMapNodes = []
-    this.setSelectedSubjectList([])
-    this.setModulesHide()
-    this.setLoadingHide()
-    // this.setBaseConfig(null)
-    // this.setSubjectConfig([])
-  }
+  onClose() {}
 
   /**
    * 保存后更新了store里的subjectConfig后需要更新专题配置树
@@ -322,9 +330,24 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
   }
 
   created() {
-    const { baseConfig, subjectConfig = [] } = this.widgetInfo.config
+    const { subjectConfig = [] } = this.widgetInfo.config
+    let { baseConfig } = this.widgetInfo.config
+    if (!baseConfig) {
+      // 防止后面因为baseconfig未定义导致进程中断
+      baseConfig = {
+        baseIp: '',
+        basePort: '',
+        isOverlay: true,
+        isLocation: true,
+        startZindex: 3000
+      }
+    }
     this.setBaseConfig(baseConfig)
     this.setSubjectConfig(subjectConfig)
+  }
+
+  beforeDestroy() {
+    this.onClear()
   }
 }
 </script>

@@ -15,9 +15,15 @@ import {
   ArcGISMapImageLayer,
   VectorTileLayer,
   IGSSceneLayer,
+  DataFlowLayer,
+  IGSFeatureLayer,
+  GeoJsonLayer,
+  ModelCacheLayer,
+  ModelCacheFormat,
+  GraphicsLayer,
   UUID,
   Catalog,
-  UrlUtil
+  UrlUtil,
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
 import axios from 'axios'
@@ -47,6 +53,26 @@ export class DataCatalogManager {
     return this._instance
   }
 
+  public static parseModelCacheFormatType(
+    typeString: string
+  ): ModelCacheFormat {
+    const type = ModelCacheFormat[typeString]
+    if (type === undefined) {
+      return LayerType.m3d
+    }
+
+    return type
+  }
+
+  public static parseLayerType(typeString: string): LayerType {
+    const type = LayerType[typeString]
+    if (type === undefined) {
+      return LayerType.Unknown
+    }
+
+    return type
+  }
+
   /**
    * 根据数据目录中图层节点的配置信息生成webclient-store对应的图层
    * 注意：当前webClient-store中图层类型和图层对象的定义不够规范和成熟，如:LayerType和SubLayerType的划分标准不统一。图层类型对象不全面、
@@ -72,6 +98,7 @@ export class DataCatalogManager {
     let serverName = ''
     let url = ''
     let gdbps = ''
+    let modelCacheFormat = ModelCacheFormat.m3d
     const layerID = layerConfig.guid
     const layerTitle = layerConfig.name
     const tokenKey = layerConfig.tokenKey ? layerConfig.tokenKey : ''
@@ -147,6 +174,10 @@ export class DataCatalogManager {
         url = layerConfig.serverURL
         layer = new VectorTileLayer({ url })
         break
+      case LayerType.DataFlow:
+        url = layerConfig.serverURL
+        layer = new DataFlowLayer({ url })
+        break
       case LayerType.IGSScene:
         if (layerConfig.serverURL && layerConfig.serverURL !== '') {
           url = layerConfig.serverURL
@@ -157,7 +188,56 @@ export class DataCatalogManager {
 
           url = `http://${ip}:${port}/igs/rest/g3d/${serverName}`
         }
+
         layer = new IGSSceneLayer({ url })
+
+        if (layerConfig.customParameters) {
+          layerConfig.customParameters.forEach((param) => {
+            const extendedPropKeys = param.extendedPropKeys
+
+            if (extendedPropKeys) {
+              layer.extendedPropKeys = extendedPropKeys
+            }
+          })
+        }
+        break
+      case LayerType.IGSFeature:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        }
+
+        layer = new IGSFeatureLayer({ url })
+        break
+      case LayerType.GeoJson:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          layer = new GeoJsonLayer({ ...layerConfig, url })
+        } else {
+          layer = new GeoJsonLayer(layerConfig)
+        }
+
+        break
+      case LayerType.ModelCache:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          if (
+            layerConfig.customParameters &&
+            layerConfig.customParameters.length > 0
+          ) {
+            modelCacheFormat = this.parseModelCacheFormatType(
+              layerConfig.customParameters[0].format
+            )
+          }
+        }
+
+        layer = new ModelCacheLayer({ url, format: modelCacheFormat })
+
+        break
+      case LayerType.Graphics:
+        layer = new GeoJsonLayer(layerConfig)
+
         break
       default:
         break
@@ -215,7 +295,7 @@ export class DataCatalogManager {
    */
   public getLayerConfigByID(id: string): Record<string, any> | undefined {
     let ret: Record<string, any> | undefined
-    this._allLayerConfigItems.forEach(element => {
+    this._allLayerConfigItems.forEach((element) => {
       if (element.guid === id) ret = element
     })
 
@@ -232,7 +312,7 @@ export class DataCatalogManager {
    */
   public getLayerConfigByName(name: string): Record<string, any> | undefined {
     let ret: Record<string, any> | undefined
-    this._allLayerConfigItems.forEach(element => {
+    this._allLayerConfigItems.forEach((element) => {
       if (element.name === name) ret = element
     })
 
@@ -254,7 +334,7 @@ export class DataCatalogManager {
   ): Record<string, any> | undefined {
     let ret: Record<string, any> | undefined
     const serverType = this.convertLayerServiceType(type)
-    this._allLayerConfigItems.forEach(element => {
+    this._allLayerConfigItems.forEach((element) => {
       if (element.serverURL === url && element.serverType === serverType)
         ret = element
     })
@@ -276,7 +356,7 @@ export class DataCatalogManager {
   ): Record<string, any> | undefined {
     let ret: Record<string, any> | undefined
     const serverType = this.convertLayerServiceType(type)
-    this._allLayerConfigItems.forEach(element => {
+    this._allLayerConfigItems.forEach((element) => {
       if (
         element.serverName === serverName &&
         element.serverType === serverType
@@ -298,7 +378,7 @@ export class DataCatalogManager {
     let isRepeated = false
 
     if (
-      this._allLayerConfigItems.some(item => {
+      this._allLayerConfigItems.some((item) => {
         const layer = DataCatalogManager.generateLayerByConfig(item)
         return layer.url === data.url
       })
@@ -342,7 +422,19 @@ export class DataCatalogManager {
           this.config.urlConfig.treeDataUrl.includes('https') ||
           this.config.urlConfig.treeDataUrl.includes('http')
         ) {
-          res = await axios.get(this.config.urlConfig.treeDataUrl)
+          const { treeDataUrl } = this.config.urlConfig
+          const Authorization = this.getQueryString(
+            'Authorization',
+            treeDataUrl
+          )
+          res = await axios.get(
+            this.config.urlConfig.treeDataUrl.split('?')[0],
+            {
+              headers: {
+                Authorization,
+              },
+            }
+          )
         } else {
           const protocol = window.location.protocol
           const host = window.location.host
@@ -351,8 +443,8 @@ export class DataCatalogManager {
           res = await axios.get(url)
         }
 
-        if (res.data.data && res.data.data.treeData) {
-          this.serviceTreeData = res.data.data.treeData
+        if (res.data.data) {
+          this.serviceTreeData = res.data.data
         } else {
           this.serviceTreeData = res.data.treeData
         }
@@ -381,16 +473,16 @@ export class DataCatalogManager {
         Promise.all([
           Catalog.DocumentCatalog.getTiles({
             ip: defaultIp,
-            port: defaultPort
+            port: defaultPort,
           }),
           Catalog.DocumentCatalog.getDocs({
             ip: defaultIp,
-            port: defaultPort
+            port: defaultPort,
           }),
-          axios.get(url)
-        ])
+          axios.get(url),
+        ]),
       ])
-        .then(resArr => {
+        .then((resArr: any) => {
           tileServiceInfo = resArr[0]
           docServiceInfo = resArr[1]
           // const url = `http://${defaultIp}:${defaultPort}/igs/rest/g3d/GetDocList`
@@ -492,7 +584,13 @@ export class DataCatalogManager {
   // 是否过滤不可用的图层节点
   private isFilterInvalidLayerConfig = true
 
-  // 老版数据目录配置中记录的地图服务类型
+  /**
+   * 数据目录配置中记录的地图服务类型,兼容jquery版一张图中的配置
+   *
+   * @date 10/01/2022
+   * @private
+   * @memberof DataCatalogManager
+   */
   private readonly layerServiceType = {
     /**
      * 地图文档
@@ -550,6 +648,7 @@ export class DataCatalogManager {
     TERRAINCACHE: 'TERRAINCACHE',
     /**
      * 模型缓存或倾斜摄影
+     * jquery版一张图中使用，特指cesium3dTileset模型缓存类型已废弃。建议使用ModelCache。
      * @type {string}
      */
     TILE3D: 'TILE3D',
@@ -612,7 +711,35 @@ export class DataCatalogManager {
      * 视频
      * @type {string}
      */
-    VIDEO: 'VIDEO'
+    VIDEO: 'VIDEO',
+
+    /**
+     * 数据流
+     * 10.5.6.10版本中新增，与LayerType的枚举名保持一致。
+     * @type {string}
+     */
+    DataFlow: 'DataFlow',
+
+    /**
+     * 模型缓存图层
+     * 10.5.6.10版本中新增，与LayerType的枚举名保持一致。
+     * 支持cesium3dTileset、m3d等模型缓存类型，可通过配置项中的customParameters，指定具体的格式类型。不指定时，默认为m3d类型。
+     * 如：
+            "customParameters": [
+              {
+                "format": "cesium3dTileset"
+              }
+            ]
+     * @type {string}
+     */
+    ModelCache: 'ModelCache',
+
+    /**
+     * IGS的三维场景服务
+     * 10.5.6.10版本中新增，与LayerType的枚举名保持一致。
+     * @type {string}
+     */
+    IGSScene: 'IGSScene',
   }
 
   // 将老版本的配置转换为新版本的配置
@@ -628,13 +755,14 @@ export class DataCatalogManager {
       serverName: this.config.paramConfig.SERVERNAME, // 服务名(可选)
       serverType: 'serverType', // 服务类型
       serverURL: this.config.paramConfig.SERVERURL, // 服务URL(可选)
-      tokenName: 'tokenName', // token名称(可选)
-      tokenValue: this.config.paramConfig.TOKEN, // token值(可选)
+      tokenName: 'tokenName', // token名称(可选),已废弃,请使用customParameters记录该信息
+      tokenValue: this.config.paramConfig.TOKEN, // token值(可选),已废弃,请使用customParameters记录该信息
       ip: this.config.paramConfig.SERVERIP, // 服务ip(可选)
       port: this.config.paramConfig.SERVERPORT, // 服务端口(可选)
       bindData: 'bindData', // 绑定数据：与该服务图层相关联的服务信息,比如：与该瓦片服务对应的地图服务。应用中利用该字段可实现对瓦片服务的查询功能
       gdbps: 'gdbps', // 图层的gdbp地址，允许多个图层
-      data: 'data' // 非空间数据节点中用于记录数据在ftp服务器上的目录名
+      data: 'data', // 非空间数据节点中用于记录数据在ftp服务器上的目录名,
+      customParameters: 'customParameters', // 自定义请求参数(可选),类型：数组，以key,value列表的形式记录的服务的额外请求参数。如场景服务的extendedPropKeys等。
     }
 
     this.configConverted.keyConfig = keyConfig
@@ -655,23 +783,176 @@ export class DataCatalogManager {
     ) {
       treeData = this.convertTreeData(this.config.treeConfig.treeData, 0)
     } else {
-      treeData = this.convertTreeData(this.serviceTreeData, 0)
+      const treeArr = []
+      this.convertCloudToTreeData(this.serviceTreeData, treeArr)
+      debugger
+      treeData = this.convertTreeData(treeArr, 0)
     }
 
     const treeConfig: any = {
       isShowIcon: false, // 是否显示基础数据目录节点图标
       // isShowIcon: this.config.paramConfig.SHOWICON, // 是否显示基础数据目录节点图标
-      treeData // 数据目录配置
+      treeData, // 数据目录配置
     }
 
     this.configConverted.treeConfig = treeConfig
+  }
+
+  /**
+   * 将云管数据目录转换为一张图的treeData
+   */
+  private convertCloudToTreeData(serviceTreeData, treeArr) {
+    serviceTreeData.forEach((treeData) => {
+      const { name, type, children, resource, treeInfo } = treeData
+      const treeChildren = []
+      if (!resource && (children || treeInfo)) {
+        this.convertCloudToTreeData(children || treeInfo, treeChildren)
+        treeArr.push({
+          label: name,
+          describe: type || '',
+          children: treeChildren,
+        })
+      } else if (
+        resource &&
+        resource.services &&
+        resource.services.length > 0
+      ) {
+        // 存储云管目录树里面  服务列表
+        const serverArr: Array<any> = []
+        resource.services.forEach((service) => {
+          const { protocolTypes, name, proto, ip, port } = service
+          // 将同一数据支持多种类型构造成多个子节点
+          if (protocolTypes && protocolTypes.length > 1) {
+            const cloudLeafNodes: Array<any> = []
+            protocolTypes.forEach((protocolType) => {
+              const cloudLeaf = {
+                label: `${name}-${protocolType}`,
+                name,
+                protocolTypes: [protocolType],
+                proto,
+                ip,
+                port,
+              }
+              // 转换成一张图的叶子节点
+              const dataCatalogLeaf =
+                this.convertTreeDataByProtocolTypes(cloudLeaf)
+              if (dataCatalogLeaf) {
+                cloudLeafNodes.push(dataCatalogLeaf)
+              }
+            })
+            serverArr.push({
+              label: name,
+              describe: type || '',
+              children: cloudLeafNodes,
+            })
+          } else {
+            // 转换成一张图的叶子节点
+            const dataCatalogLeaf = this.convertTreeDataByProtocolTypes(service)
+            if (dataCatalogLeaf) {
+              serverArr.push(dataCatalogLeaf)
+            }
+          }
+        })
+        // 将服务列表存储在 资源目录中，资源目录是可以查看云管元数据的
+        treeArr.push({
+          label: name,
+          describe: type || '',
+          metaData: resource.metaData || '',
+          children: serverArr,
+        })
+      }
+    })
+  }
+
+  /**
+   * 通过ProtocolTypes转成一张图数据目录的叶子节点
+   * @param service 云管叶子节点
+   */
+  convertTreeDataByProtocolTypes(service) {
+    const {
+      label,
+      protocolTypes: [cloudDataType],
+      name,
+      proto,
+      ip,
+      port,
+    } = service
+    const commonData = {
+      label: label || name,
+      describe: label || name,
+      ip,
+      port,
+      name,
+      guid: UUID.uuid(),
+      searchName: '',
+    }
+    let leafData
+    switch (cloudDataType) {
+      case 'IGSRestTile':
+        leafData = {
+          layerServiceType: this.layerServiceType.IGSTILE,
+          token: '',
+          serverUrl: '',
+          wfsUrl: '',
+          extent: '',
+        }
+        break
+      case 'IGSRestScene':
+        leafData = {
+          layerServiceType: this.layerServiceType.IGSDOC3D,
+          model: '',
+          serverUrl: '',
+        }
+        break
+      case 'IGSRestMap':
+        leafData = {
+          layerServiceType: this.layerServiceType.IGSDOC,
+          token: '',
+          serverUrl: '',
+          wfsUrl: '',
+          extent: '',
+          gdbTypeList: '',
+        }
+        break
+      case 'WMS':
+        leafData = {
+          layerServiceType: this.layerServiceType.WMS,
+          token: '',
+          serverUrl: `${proto}://${ip}:${port}/igs/rest/ogc/doc/${name}/WMSServer`,
+          wfsUrl: '',
+          extent: '',
+        }
+        break
+      case 'WFS':
+        break
+
+      case 'IGSRestVectorTile':
+        leafData = {
+          layerServiceType: this.layerServiceType.VECTORTILE,
+          token: '',
+          serverUrl: `${proto}://${ip}:${port}/igs/rest/mrcs/vtiles/0/${name}`,
+          wfsUrl: '',
+          extent: '',
+        }
+        break
+
+      default:
+        break
+    }
+    if (leafData) {
+      return {
+        ...commonData,
+        ...leafData,
+      }
+    }
+    return undefined
   }
 
   // 转换数据目录配置信息
   private convertTreeData(nodeArray: any[], nodeLevel: number) {
     const nodeArrayConverted: Array<any> = []
     if (nodeArray && nodeArray.length > 0) {
-      nodeArray.forEach(node => {
+      nodeArray.forEach((node) => {
         let nodeConverted: any = {}
         let isLayerValid = true
 
@@ -680,7 +961,11 @@ export class DataCatalogManager {
           name: node[this.configConverted.keyConfig.name] || '', // 节点名称
           description: node[this.configConverted.keyConfig.description] || '', // 节点描述
           icon: node[this.configConverted.keyConfig.icon] || '', // 节点的图标(可选)
-          level: nodeLevel
+          level: nodeLevel,
+        }
+        // 如果该节点有元数据信息，则将元数据信息存储起来
+        if (node.metaData) {
+          commonInfo.metaData = node.metaData
         }
 
         const guid: string = node[this.configConverted.keyConfig.guid]
@@ -710,11 +995,19 @@ export class DataCatalogManager {
             port: node[this.configConverted.keyConfig.port] || '', // 服务端口(可选)
             gdbps:
               node[this.configConverted.keyConfig.gdbps] ||
-              node[this.configConverted.keyConfig.serverURL] // 图层的gdbp地址，允许多个图层
+              node[this.configConverted.keyConfig.serverURL], // 图层的gdbp地址，允许多个图层
+            customParameters:
+              node[this.configConverted.keyConfig.customParameters] || [], // 服务额外请求参数。
           }
 
           // 根据layerServiceType计算serverType
           const serverType = this.convertLayerServiceType(layerServeiceType)
+
+          // 修改说明：兼容jquery版TILE3D类型的配置。类型对应于新版配置中的ModelCache类型，需要增加format为cesium3dTileset的参数。
+          // 修改人：马原野 2022年01月10日
+          if (layerServeiceType === 'TILE3D') {
+            serverLayerInfo.customParameters.push({ format: 'cesium3dTileset' })
+          }
 
           serverLayerInfo.serverType = serverType // 服务类型
 
@@ -752,12 +1045,30 @@ export class DataCatalogManager {
           if (isLayerValid) {
             this._allLayerConfigItems.push(nodeConverted)
           }
-        } else if (data && data !== '') {
+        } else if (
+          node[this.configConverted.keyConfig.description].includes(
+            '非空间数据'
+          )
+        ) {
+          /**
+           * 修改说明：修改非空间数据的判断
+           * 修改人：龚跃健
+           * 修改时间：2022/1/24
+           */
           // 非空间数据节点
           nodeConverted = { ...commonInfo, data }
         } else {
           nodeConverted = { ...commonInfo }
-          // 组节点
+        }
+        if (
+          node[this.configConverted.keyConfig.children] &&
+          node[this.configConverted.keyConfig.children].length > 0
+        ) {
+          /**
+           * 修改说明：只要存在children，并且children有长度，则需要再次递归
+           * 修改人：龚跃健
+           * 修改时间：2022/1/24
+           */
           nodeConverted.children = this.convertTreeData(
             node[this.configConverted.keyConfig.children],
             nodeLevel + 1
@@ -773,10 +1084,26 @@ export class DataCatalogManager {
     return nodeArrayConverted
   }
 
-  // 根据layerServiceType计算serverType
+  /**
+   * 将layerServiceType中记录的服务类型字符串，转换成serverType类型的枚举。serverType的定义采用LayerType的定义。
+   *
+   * @date 10/01/2022
+   * @private
+   * @param {string} layerServiceType
+   * @return {*}
+   * @memberof DataCatalogManager
+   */
   private convertLayerServiceType(layerServiceType: string) {
     let serverType = LayerType.Unknown
 
+    // 1.先处理新增的类型，新增的服务类型直接采用LayerType中的定义。
+    serverType = DataCatalogManager.parseLayerType(layerServiceType)
+
+    if (serverType !== LayerType.Unknown) {
+      return serverType
+    }
+
+    // 2.处理jquery版中定义的服务类型。
     switch (layerServiceType) {
       case this.layerServiceType.IGSDOC:
         serverType = LayerType.IGSMapImage
@@ -804,6 +1131,7 @@ export class DataCatalogManager {
         serverType = LayerType.IGSScene
         break
       case this.layerServiceType.TILE3D:
+        serverType = LayerType.ModelCache
         break
       case this.layerServiceType.POINTCLOUD:
         break
@@ -811,6 +1139,9 @@ export class DataCatalogManager {
         serverType = LayerType.VectorTile
         break
       case this.layerServiceType.TERRAIN:
+        break
+      case this.layerServiceType.GEOJSON:
+        serverType = LayerType.GeoJson
         break
       default:
         break
@@ -822,14 +1153,18 @@ export class DataCatalogManager {
   // 判断服务是否可用.当前,只有服务类型为IGSDoc、IGSTile,且ip和port为空时,才能支持过滤。
   private isServiceVaild(layerConfig: any) {
     let isServiceVaild = true
-    const { ip, port, serverName, serverType } = layerConfig
+    const { ip, port, serverName, serverType, serverURL } = layerConfig
     let serverList: string[] = []
+
+    if (serverURL !== '') {
+      return true
+    }
 
     switch (serverType) {
       case LayerType.IGSMapImage:
         serverList = this.defaultServerList.docList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -837,7 +1172,7 @@ export class DataCatalogManager {
       case LayerType.IGSTile:
         serverList = this.defaultServerList.tileList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -846,7 +1181,7 @@ export class DataCatalogManager {
       case LayerType.IGSScene:
         serverList = this.defaultServerList.sceneList
         if (ip === '' && port === '') {
-          if (!serverList.includes(serverName)) {
+          if (serverList && !serverList.includes(serverName)) {
             isServiceVaild = false
           }
         }
@@ -881,7 +1216,7 @@ export class DataCatalogManager {
 
       const dirList: [] = serviceInfo[dirKey]
       if (dirList) {
-        dirList.forEach(dirItem => {
+        dirList.forEach((dirItem) => {
           const dirServiceList: [] = dirItem[serviceListKey]
           serviceList = [...serviceList, ...dirServiceList]
         })
@@ -911,9 +1246,9 @@ export class DataCatalogManager {
   private getQueryString(name, searchString) {
     const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
 
-    if (searchString) {
+    if (searchString && searchString.split('?').length > 1) {
       // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
-      const r = searchString.match(reg)
+      const r = searchString.split('?')[1].match(reg)
       if (r !== null) {
         return decodeURIComponent(r[2])
       }

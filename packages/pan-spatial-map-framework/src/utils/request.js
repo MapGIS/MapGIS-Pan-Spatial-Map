@@ -1,11 +1,13 @@
 import axios from 'axios'
 import Cookie from 'js-cookie'
+import { BASE_URL } from '@/services/api'
 
 // 跨域认证信息 header 名
 const xsrfHeaderName = 'mapgis_pan_spatial_map_access_token'
 
 // 创建axios实例
 const service = axios.create({
+  baseURL: BASE_URL,
   timeout: 5000
 })
 
@@ -36,7 +38,7 @@ const METHOD = {
  * @param params 请求参数
  * @returns {Promise<AxiosResponse<T>>}
  */
-function request(url, method, params, config) {
+function request({ url, method, params, config }) {
   switch (method) {
     case METHOD.GET:
       return service.get(url, { params, ...config })
@@ -86,6 +88,7 @@ function removeAuthorization(authType = AUTH_TYPE.BEARER) {
     default:
       break
   }
+  location.reload(true)
 }
 
 /**

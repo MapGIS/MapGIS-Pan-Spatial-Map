@@ -21,7 +21,7 @@
 <script lang="ts">
 import { Mixins, Component, Watch } from 'vue-property-decorator'
 import { Objects, WidgetMixin } from '@mapgis/web-app-framework'
-import _last from 'lodash/last'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component({ name: 'MpZoom' })
 export default class MpZoom extends Mixins(WidgetMixin) {
@@ -50,9 +50,9 @@ export default class MpZoom extends Mixins(WidgetMixin) {
   @Watch('is2DMapMode', { immediate: true })
   is2DMapModeChange(mode2D) {
     if (!mode2D) {
-      if (this.webGlobe && !this.cameraView) {
+      if (this.viewer && !this.cameraView) {
         // fixme 目前的首次加载的初始视角效果不好，先使用defaultCameraView视角做重置视角
-        // this.cameraView = this.webGlobe.viewer.camera.getView()
+        // this.cameraView = this.viewer.camera.getView()
         this.cameraView = this.defaultCameraView
       }
     } else if (this.map && !this.mapBounds) {
@@ -63,20 +63,33 @@ export default class MpZoom extends Mixins(WidgetMixin) {
   created() {
     this.sceneController = Objects.SceneController.getInstance(
       this.Cesium,
-      this.CesiumZondy,
-      this.webGlobe
+      this.vueCesium,
+      this.viewer
     )
   }
 
   onRestore() {
+    /**
+     * 修改说明：重置范围使用索引底图的范围
+     * 修改人：龚跃健
+     * 修改日期：2021/12/23
+     */
+    const { xmin, ymin, xmax, ymax } = baseConfigInstance.config
     if (!this.is2DMapMode) {
-      this.sceneController.cameraFlyTo(this.cameraView)
+      const destination = this.Cesium.Rectangle.fromDegrees(
+        Number(xmin),
+        Number(ymin),
+        Number(xmax),
+        Number(ymax)
+      )
+      this.viewer.camera.flyTo({
+        destination
+      })
     } else if (this.map) {
-      const { _ne, _sw } = this.mapBounds
       this.map.setPitch(0)
       this.map.fitBounds([
-        [_sw.lng, _sw.lat],
-        [_ne.lng, _ne.lat]
+        [Number(xmin), Number(ymin)],
+        [Number(xmax), Number(ymax)]
       ])
     }
   }
@@ -104,9 +117,9 @@ export default class MpZoom extends Mixins(WidgetMixin) {
   // 三维视图的缩放功能
   ZoomCesiumView(type) {
     // 获取当前镜头位置的笛卡尔坐标
-    const cameraPos = this.webGlobe.viewer.camera.position
+    const cameraPos = this.viewer.camera.position
     // 获取当前坐标系标准
-    const ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid
+    const ellipsoid = this.viewer.scene.globe.ellipsoid
     // 根据坐标系标准，将笛卡尔坐标转换为地理坐标
     const cartographic = ellipsoid.cartesianToCartographic(cameraPos)
     // 获取镜头的高度
@@ -120,7 +133,7 @@ export default class MpZoom extends Mixins(WidgetMixin) {
       this.Cesium.Math.toDegrees(cartographic.latitude).toFixed(8)
     )
     if (type === 'zoomIn') {
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           centerLon,
           centerLat,
@@ -129,7 +142,7 @@ export default class MpZoom extends Mixins(WidgetMixin) {
         duration: 1.0
       })
     } else if (type === 'zoomOut') {
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           centerLon,
           centerLat,

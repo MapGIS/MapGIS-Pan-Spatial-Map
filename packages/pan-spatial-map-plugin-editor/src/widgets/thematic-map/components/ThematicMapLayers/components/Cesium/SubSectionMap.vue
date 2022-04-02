@@ -1,50 +1,84 @@
 <template>
-  <!-- 分段专题图图层 -->
-  <mapgis-3d-popup
-    v-model="showPopup"
-    :position="popupPosition"
-    :forceRender="true"
+  <!-- 分段专题图-->
+  <mp-3d-marker-pro
+    ref="marker3dProRef"
+    :marker="selfMarker"
+    v-if="selfMarker.fid"
   >
-    <span class="popup-fontsize" v-if="!popupProperties">暂无数据</span>
-    <div v-else>
-      <div
-        v-for="(v, k) in popupProperties"
-        :key="`sub-section-map-properties-${v}`"
-        class="popup-row popup-fontsize"
-      >
-        <span>{{ `${k}：` }}</span>
-        <span>{{ v }}</span>
-      </div>
-    </div>
-  </mapgis-3d-popup>
+    <template slot="popup" slot-scope="{ properties }">
+      <mp-popup-attribute :properties="properties" />
+    </template>
+  </mp-3d-marker-pro>
 </template>
 <script lang="ts">
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer, Feature } from '@mapgis/web-app-framework'
-import CesiumMinxin from '../../mixins/cesium'
+import CesiumMixin from '../../mixins/cesium'
 
 interface ISectionColor {
-  min: number
-  max: number
-  sectionColor: string
+  start: number
+  end: number
+  style: object
 }
 
-@Component
-export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
+@Component()
+export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
+  // 是否展示3D效果
   get isShow3D() {
     return this.subjectData?.isShow3D
   }
 
+  // 3D设置
   get setting3D() {
-    return this.subjectData?.setting3D || {}
+    return (
+      this.subjectData?.setting3D || {
+        radius: 6,
+        strokeWidth: 1,
+        lineType: '走廊状',
+        sides: 5,
+        useHeightScale: true,
+        heightScale: 0.000001,
+        classificationType: 'both'
+      }
+    )
   }
 
-  get colors() {
-    return this.subjectData?.color
+  get themeOptions() {
+    if (!this.subjectData) {
+      return {}
+    } else {
+      const { color, themeStyle } = this.subjectData
+      // 兼容旧配置
+      return color && color.length
+        ? {
+            styleGroups: color.map(({ min, max, sectionColor }) => ({
+              start: min,
+              end: max,
+              style: {
+                color: sectionColor
+              }
+            }))
+          }
+        : themeStyle || { styleGroups: [] }
+    }
   }
 
-  get field() {
-    return this.subjectData.field
+  // 分段值设置
+  get styleGroups() {
+    return this.themeOptions.styleGroups || []
+  }
+
+  get classificationType() {
+    let type
+    const configType = this.setting3D.classificationType
+    if (configType === 'terrain') {
+      type = this.Cesium.ClassificationType.TERRAIN
+    } else if (configType === '3DTiles') {
+      type = this.Cesium.ClassificationType.CESIUM_3D_TILE
+    } else if (configType === 'both') {
+      type = this.Cesium.ClassificationType.BOTH
+    }
+    return type
   }
 
   /**
@@ -70,28 +104,34 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
 
   /**
    * 获取分段样式
-   * @param colors 样式配置数据
+   * @param styleGroups 样式配置数据
    * @param value 数据
    */
-  getSegmentstyle(colors: ISectionColor[], value: any) {
+  getSegmentstyle(styleGroups: ISectionColor[], value: any) {
     let color
     let noSegColor
-    for (let i = 0; i < colors.length; i += 1) {
-      const { min, max, sectionColor } = colors[i]
-      if (!value || value === null) {
-        noSegColor = sectionColor
-      } else if (Number(value) >= Number(min) && Number(value) <= Number(max)) {
-        color = sectionColor
-        break
-      }
-      if (noSegColor && value === '未参与分段的值') {
-        noSegColor = sectionColor
-      }
-      if (!color && i === colors.length - 1 && noSegColor) {
-        color = noSegColor
-        break
+    if (styleGroups.length) {
+      for (let i = 0; i < styleGroups.length; i += 1) {
+        const { start, end, style } = styleGroups[i]
+        if (!value || value === null) {
+          noSegColor = style.color
+        } else if (
+          Number(value) >= Number(start) &&
+          Number(value) <= Number(end)
+        ) {
+          color = style.color
+          break
+        }
+        if (noSegColor && value === '未参与分段的值') {
+          noSegColor = style.color
+        }
+        if (!color && i === styleGroups.length - 1 && noSegColor) {
+          color = noSegColor
+          break
+        }
       }
     }
+
     return color
   }
 
@@ -134,6 +174,12 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
     let option: any = {
       positions,
       material
+    }
+    if (this.classificationType) {
+      option = {
+        ...option,
+        classificationType: this.classificationType
+      }
     }
     if (this.isShow3D) {
       switch (lineType) {
@@ -178,13 +224,19 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
     const hierarchy = this.Cesium.Cartesian3.fromDegreesArray(
       coordinates[0].flat()
     )
-    return {
+    let option: any = {
       polygon: {
         hierarchy,
-        extrudedHeight,
         material
       }
     }
+    if (this.classificationType) {
+      option = {
+        ...option,
+        classificationType: this.classificationType
+      }
+    }
+    return option
   }
 
   /**
@@ -200,7 +252,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMinxin) {
         geometry: { type, coordinates }
       } = feature
       const value = properties[this.field]
-      const featureColor = this.getSegmentstyle(this.colors, value)
+      const featureColor = this.getSegmentstyle(this.styleGroups, value)
       if (featureColor) {
         const material = this.getColor(featureColor)
         const heightScaleValue = this.isShow3D

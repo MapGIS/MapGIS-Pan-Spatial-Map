@@ -123,7 +123,6 @@
         :result="result"
         :highResultSource="highResultSource"
         :color="color"
-        @finish-draw="clickFunciton"
       />
       <cesium-layer
         v-else
@@ -134,9 +133,10 @@
         :result="result"
         :highResultSource="highResultSource"
         :color="color"
-        @finish-draw="clickFunciton"
       ></cesium-layer>
     </template>
+    <mp-draw-pro ref="draw" @finished="clickFunciton" />
+    <mp-3d-draw-pro ref="draw3d" @finished="clickFunciton" />
     <a-modal v-model="settingDialog" title="设置参数" centered :footer="null">
       <setting v-model="settingForm" />
     </a-modal>
@@ -249,8 +249,12 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     layerLine: { type: 'FeatureCollection', features: [] }
   }
 
-  get drawComponent() {
+  get drawLayer() {
     return this.is2DMapMode ? this.$refs.mapboxLayer : this.$refs.cesiumLayer
+  }
+
+  get drawComponent() {
+    return this.is2DMapMode ? this.$refs.draw : this.$refs.draw3d
   }
 
   onOpen() {
@@ -399,7 +403,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     })
   }
 
-  @Watch('document.defaultMap', { deep: true, immediate: true })
+  @Watch('document.defaultMap', { immediate: true, deep: true })
   documentChange(val: Array<unknown>) {
     this.layerSelectIndex = null
     this.layerArrOption = []
@@ -586,16 +590,16 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
 
   dealWithExecuteRes(result) {
     if (this.$refs.MpNetworkAnalysis) {
-      this.drawComponent && this.drawComponent.clearHighLayer()
-      this.drawComponent && this.drawComponent.clearResultLayer()
+      this.drawLayer && this.drawLayer.clearHighLayer()
+      this.drawLayer && this.drawLayer.clearResultLayer()
       this.$refs.MpNetworkAnalysis.clearLayer()
       this.$refs.MpNetworkAnalysis.onValueChange(result)
     }
   }
 
   clearResult() {
-    this.drawComponent && this.drawComponent.clearHighLayer()
-    this.drawComponent && this.drawComponent.clearResultLayer()
+    this.drawLayer && this.drawLayer.clearHighLayer()
+    this.drawLayer && this.drawLayer.clearResultLayer()
     this.$refs.MpNetworkAnalysis && this.$refs.MpNetworkAnalysis.clearLayer()
   }
 
@@ -608,7 +612,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
   }
 
   flyToHigh(val) {
-    this.drawComponent && this.drawComponent.flyToHigh(val)
+    this.drawLayer && this.drawLayer.flyToHigh(val)
   }
 
   resetLayer() {
@@ -682,11 +686,11 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     if (this.is2DMapMode) {
       this.map.panTo(row.geometry.coordinates)
     } else {
-      this.webGlobe.viewer.camera.flyTo({
+      this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(
           row.geometry.coordinates[0],
           row.geometry.coordinates[1],
-          this.webGlobe.viewer.camera.positionCartographic.height
+          this.viewer.camera.positionCartographic.height
         )
       })
     }
@@ -700,11 +704,11 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     } else {
       this.tab = 'coordinateArr'
     }
-    this.drawComponent && this.drawComponent.onOpenDraw()
+    this.drawComponent && this.drawComponent.openDraw('draw-point')
   }
 
   clearClick() {
-    this.drawComponent && this.drawComponent.stopDraw()
+    this.drawComponent && this.drawComponent.closeDraw()
   }
 
   clickFunciton(e) {
@@ -723,6 +727,9 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
     } else {
       this.dataCoordinateArr.features.push(data)
     }
+    window.setTimeout(() => {
+      this.drawComponent && this.drawComponent.openDraw('draw-point')
+    })
   }
 
   clearMarker() {
@@ -735,8 +742,8 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
       features: []
     }
     this.centerMarker = null
-    this.drawComponent && this.drawComponent.clearDataBarrierArr()
-    this.drawComponent && this.drawComponent.clearDataCoordinateArr()
+    this.drawLayer && this.drawLayer.clearDataBarrierArr()
+    this.drawLayer && this.drawLayer.clearDataCoordinateArr()
   }
 }
 </script>
