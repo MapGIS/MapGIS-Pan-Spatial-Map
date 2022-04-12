@@ -1,7 +1,22 @@
 [
   {
+    "name": "索引底图",
+    "image": "/upload/basemap.png",
+    "select": true,
+    "children": [
+      {
+        "description": "索引底图",
+        "type": "IGSTile",
+        "url": "http://192.168.21.191:6163/igs/rest/mrms/tile/北京市",
+        "name": "北京市"
+      }
+    ]
+  },
+  {
     "name": "天地图影像",
     "image": "/upload/basemap-tianditu-img.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "OGCWMTS",
@@ -22,6 +37,8 @@
   {
     "name": "天地图矢量",
     "image": "/upload/basemap-tianditu-vec.png",
+    "visible": "true",
+    "select": true,
     "children": [
       {
         "type": "OGCWMTS",
@@ -42,6 +59,8 @@
   {
     "name": "天地图地形",
     "image": "/upload/basemap-tianditu-terrain.png",
+    "visible": "true",
+    "select": true,
     "children": [
       {
         "type": "OGCWMTS",
@@ -62,6 +81,8 @@
   {
     "name": "天地图影像2",
     "image": "/upload/basemap-tianditu-img.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "serverType": "tdt",
@@ -80,6 +101,8 @@
   {
     "name": "天地图矢量2",
     "image": "/upload/basemap-tianditu-vec.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "serverType": "tdt",
@@ -98,6 +121,8 @@
   {
     "name": "ArcGIS影像图",
     "image": "/upload/basemap-arcgis-img.jpg",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "ArcGISTile",
@@ -109,6 +134,8 @@
   {
     "name": "ArcGIS街道图",
     "image": "/upload/basemap-arcgis-street.jpg",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "ArcGISTile",
@@ -120,6 +147,8 @@
   {
     "name": "ArcGIS影像图2",
     "image": "/upload/basemap-arcgis-img.jpg",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "serverType": "arcgis",
@@ -131,6 +160,8 @@
   {
     "name": "ArcGIS街道图2",
     "image": "/upload/basemap-arcgis-street.jpg",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "serverType": "arcgis",
@@ -142,6 +173,8 @@
   {
     "name": "MapGIS文档",
     "image": "/upload/basemap.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "IGSMapImage",
@@ -152,6 +185,8 @@
   {
     "name": "MapGIS瓦片",
     "image": "/upload/basemap.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "IGSTile",
@@ -162,6 +197,8 @@
   {
     "name": "MapGIS图层",
     "image": "/upload/basemap.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "IGSVector",
@@ -172,6 +209,8 @@
   {
     "name": "OGCWMS",
     "image": "/upload/basemap.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "OGCWMS",
@@ -182,6 +221,8 @@
   {
     "name": "OGCWMTS",
     "image": "/upload/basemap.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "OGCWMTS",
@@ -194,6 +235,8 @@
   {
     "name": "ArcGIS文档",
     "image": "/upload/basemap.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "ArcGISMapImage",
@@ -204,6 +247,8 @@
   {
     "name": "ArcGIS瓦片",
     "image": "/upload/basemap.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "ArcGISTile",
@@ -214,6 +259,8 @@
   {
     "name": "矢量瓦片",
     "image": "/upload/basemap.png",
+    "visible": "true",
+    "select": false,
     "children": [
       {
         "type": "VectorTile",

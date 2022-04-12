@@ -10,10 +10,20 @@
       <a-icon slot="switcherIcon" type="down" />
       <template #custom="item">
         <div v-if="item.children && item.children.length > 0">
-          {{ item.name }}
+          <a-tooltip>
+            <template v-if="item.description" slot="title">
+              {{ item.description }}
+            </template>
+            <span>{{ item.name }}</span>
+          </a-tooltip>
         </div>
         <a-dropdown v-else :trigger="['contextmenu']">
-          <div @click="onClickBookmark(item)">{{ item.name }}</div>
+          <a-tooltip>
+            <template v-if="item.description" slot="title">
+              {{ item.description }}
+            </template>
+            <div @click="onClickBookmark(item)">{{ item.name }}</div>
+          </a-tooltip>
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="onDeleteBookmark(item)">
               删除该项
@@ -83,7 +93,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
   // 右键删除该项响应事件
   onDeleteBookmark(node) {
     const index = this.treeData[0].children.findIndex(
-      item =>
+      (item) =>
         item[TreeConfig.getInstance().config.GUID] ===
         node[TreeConfig.getInstance().config.GUID]
     )
@@ -93,7 +103,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
 
   // 遍历所勾选节点中所有的叶子节点
   private addAllSelectedToMark(type, checkedKeys, treeData) {
-    treeData.forEach(item => {
+    treeData.forEach((item) => {
       if (item.children && item.children.length > 0) {
         this.addAllSelectedToMark(type, checkedKeys, item.children)
       } else {
@@ -124,20 +134,20 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
     if (this.nodeParentLevel.length > 0) {
       this.getNodeLabel(baseTreeData, 0, labelArr)
     }
-    const treeNodeLabel = labelArr.join(' ')
-    copyParams.name = treeNodeLabel
+    const treeNodeLabel = labelArr.join('-')
+    copyParams.description = treeNodeLabel
 
-    if (this.treeData.some(item => item.name === type)) {
+    if (this.treeData.some((item) => item.name === type)) {
       const childrenArr = this.treeData[0].children
       if (
         childrenArr.some(
-          item =>
+          (item) =>
             item[TreeConfig.getInstance().config.GUID] ===
             params[TreeConfig.getInstance().config.GUID]
         )
       ) {
         const index = childrenArr.find(
-          item =>
+          (item) =>
             item[TreeConfig.getInstance().config.GUID] ===
             params[TreeConfig.getInstance().config.GUID]
         )
@@ -148,7 +158,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
             this_.$set(childrenArr, index, copyParams)
             this_.showMessage()
           },
-          onCancel() {}
+          onCancel() {},
         })
       } else {
         this.treeData[0].children.push(copyParams)
@@ -158,7 +168,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
       this.treeData.push({
         name: type,
         guid: UUID.uuid(),
-        children: [copyParams]
+        children: [copyParams],
       })
       this.showMessage()
     }
@@ -172,16 +182,16 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
     this.$message.config({
       top: '100px',
       duration: 1,
-      maxCount: 3
+      maxCount: 3,
     })
     this.$message.success({
-      content: '收藏成功，通过书签功能查看'
+      content: '收藏成功，通过书签功能查看',
     })
   }
 
   // 串联该节点所在层级的label(去除首层节点的label)
   private getNodeLabel(node, index, labelArr) {
-    if (index >= 1) {
+    if (index >= 0) {
       labelArr.push(node[this.nodeParentLevel[index]].name)
     }
     if (
@@ -202,7 +212,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
     this.nodeParentLevel = node.pos
       .split('-')
       .slice(1)
-      .map(item => +item)
+      .map((item) => +item)
   }
 
   // 获取该节点在目录树中的层级(节点中无pos属性)
@@ -230,13 +240,13 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
     api
       .saveWidgetConfig({
         name: 'Bookmark',
-        config: JSON.stringify(this.treeData)
+        config: JSON.stringify(this.treeData),
       })
       .catch(() => {
         this.$message.config({
           top: '100px',
           duration: 1,
-          maxCount: 3
+          maxCount: 3,
         })
         this.$message.error('配置文件更新失败')
       })
