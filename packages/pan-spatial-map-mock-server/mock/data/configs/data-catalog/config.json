@@ -760,6 +760,36 @@
             "wfsUrl": "",
             "extent": "",
             "gdbTypeList": "Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local"
+          },
+          {
+            "label": "全景测试",
+            "describe": "全景测试",
+            "ip": "192.168.21.193",
+            "port": "8089",
+            "layerServiceType": "IGSPanoramic",
+            "name": "全景测试",
+            "searchName": "",
+            "token": "",
+            "guid": "d3ac0679-e019-4e87-93ab-7181378efbb8",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": "Local,Local,Local"
+          },
+          {
+            "label": "全景测试doc",
+            "describe": "全景测试doc",
+            "ip": "192.168.21.193",
+            "port": "8089",
+            "layerServiceType": "IGSIMAGE",
+            "name": "全景测试",
+            "searchName": "",
+            "token": "",
+            "guid": "d3ac0679-e019-4e87-93ab-7181378efc1",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": "Local,Local,Local"
           }
         ]
       },
