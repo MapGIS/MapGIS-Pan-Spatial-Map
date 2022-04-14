@@ -4,6 +4,8 @@
     :marker="selfMarker"
     v-if="selfMarker.fid"
     :defaultShowPopup="true"
+    :popup-anchor="popupAnchor"
+    :popup-toggle-type="popupToggleType"
   />
 </template>
 <script lang="ts">
@@ -13,6 +15,7 @@ import { getMarker, IMarker } from '../../../../utils'
 import { Feature } from '@mapgis/web-app-framework'
 import _debounce from 'lodash/debounce'
 import BaseMixin from '../../mixins/base'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component
 export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
@@ -53,8 +56,8 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
       fillColor: '#d1eeee',
       shadowBlur: 12,
       shadowColor: '#d1eeee',
-      fillOpacity: 0
-    }
+      fillOpacity: 0,
+    },
   }
 
   // Point add Line 图表配置
@@ -64,7 +67,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     xShapeBlank: [10, 10],
     backgroundStyle: {
       fillColor: '#d1eeee',
-      fillOpacity: 0
+      fillOpacity: 0,
     },
     backgroundRadius: [5, 5, 5, 5],
     useXReferenceLine: true,
@@ -72,15 +75,15 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
       pointRadius: 5,
       shadowBlur: 12,
       shadowColor: '#D8361B',
-      fillOpacity: 0.8
+      fillOpacity: 0.8,
     },
     pointHoverStyle: {
       stroke: true,
       strokeColor: '#D8361B',
       strokeWidth: 2,
       fillColor: '#ffffff',
-      pointRadius: 4
-    }
+      pointRadius: 4,
+    },
   }
 
   // Pie add Ring 图表配置
@@ -88,14 +91,14 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     width: 240,
     height: 100,
     sectorStyle: {
-      fillOpacity: 0.8
+      fillOpacity: 0.8,
     },
     sectorHoverStyle: {
-      fillOpacity: 1
+      fillOpacity: 1,
     },
     xShapeBlank: [10, 10, 10],
     backgroundStyle: { fillColor: '#CCE8CF' },
-    backgroundRadius: [5, 5, 5, 5]
+    backgroundRadius: [5, 5, 5, 5],
   }
 
   // 设置专题图层 option参数
@@ -106,7 +109,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     attributions: ' ',
     opacity: 0.9,
     chartsSetting: {},
-    themeFields: []
+    themeFields: [],
   }
 
   // 图标实体颜色
@@ -117,7 +120,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
         '#5AB1EF',
         '#B6A2DE',
         '#2EC7C9',
-        '#D87A80'
+        '#D87A80',
       ]
     )
   }
@@ -134,7 +137,15 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
 
   // 图表填充色
   get faceStyleByFields() {
-    return this.colors.map(v => ({ fillColor: v }))
+    return this.colors.map((v) => ({ fillColor: v }))
+  }
+
+  private get popupAnchor() {
+    return baseConfigInstance.config.colorConfig.label.image.popupAnchor
+  }
+
+  private get popupToggleType() {
+    return baseConfigInstance.config.colorConfig.label.image.popupToggleType
   }
 
   /**
@@ -145,7 +156,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     const axisYTick = 4
     const codomain = [0, 30922]
     const interval = Math.ceil((codomain[1] - codomain[0]) / axisYTick)
-    const axisXLabels = showFields.map(v =>
+    const axisXLabels = showFields.map((v) =>
       showFieldsTitle && showFieldsTitle[v] ? showFieldsTitle[v] : v
     )
     const axisYLabels = axisXLabels
@@ -155,24 +166,24 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
       axisYTick,
       codomain,
       axisXLabels,
-      axisYLabels
+      axisYLabels,
     }
     this.chartsSettingForBarAddBar3DCommon = {
       ...this.chartsSettingForBarAddBar3DCommon,
-      ...axisObj
+      ...axisObj,
     }
     this.chartsSettingForPointOrLine = {
       ...this.chartsSettingForPointOrLine,
-      ...axisObj
+      ...axisObj,
     }
     this.chartsSettingForPieOrRing = {
       sectorStyleByFields: this.faceStyleByFields,
       ...this.chartsSettingForPieOrRing,
-      ...axisObj
+      ...axisObj,
     }
     this.thematicMapLayerOptions = {
       ...this.thematicMapLayerOptions,
-      themeFields: showFields
+      themeFields: showFields,
     }
   }
 
@@ -187,9 +198,9 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
       shadowBlur: 8,
       shadowOffsetX: 2,
       shadowOffsetY: 2,
-      shadowColor: 'rgba(100,100,100,0.8)'
+      shadowColor: 'rgba(100,100,100,0.8)',
     }
-    chartsSettingForBar.barLinearGradient = this.colors.map(v => [v, v])
+    chartsSettingForBar.barLinearGradient = this.colors.map((v) => [v, v])
     return chartsSettingForBar
   }
 
@@ -201,14 +212,14 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     chartsSettingForBar3D.useXReferenceLine = true
     chartsSettingForBar3D.xReferenceLineStyle = {
       strokeColor: '#008acd',
-      strokeOpacity: 0.4
+      strokeOpacity: 0.4,
     }
     chartsSettingForBar3D.barFaceStyle = { stroke: true }
     chartsSettingForBar3D.barFaceStyleByFields = this.faceStyleByFields
     chartsSettingForBar3D.barFaceHoverStyle = {
       stroke: true,
       strokeWidth: 1,
-      strokeColor: '#ffff00'
+      strokeColor: '#ffff00',
     }
     return chartsSettingForBar3D
   }
@@ -306,7 +317,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     this.thematicMapLayer = new GraphThemeLayer(`${type}Layer`, type, {
       ...this.thematicMapLayerOptions,
       map: this.map,
-      chartsSetting
+      chartsSetting,
     })
     if (!this.thematicMapLayer) return
     this.thematicMapLayer.addFeatures(
@@ -324,7 +335,7 @@ export default class MapboxBaseMapWithGraph extends Mixins(BaseMixin) {
     const fid = target.refDataID + 1
     this.emitHighlight(fid)
     getMarker(this.geojson, fid, this.propertiesOption).then(
-      marker => (this.selfMarker = marker || {})
+      (marker) => (this.selfMarker = marker || {})
     )
   }
 
