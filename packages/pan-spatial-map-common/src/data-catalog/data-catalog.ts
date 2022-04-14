@@ -8,6 +8,7 @@ import {
   MapImageLayer,
   IGSTileLayer,
   IGSMapImageLayer,
+  IGSPanoramicLayer,
   IGSVectorLayer,
   OGCWMTSLayer,
   OGCWMSLayer,
@@ -132,6 +133,20 @@ export class DataCatalogManager {
 
         layer = new IGSMapImageLayer({ url })
         break
+      case LayerType.IGSPanoramic:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+        } else {
+          ip = layerConfig.ip || defaultIp
+          port = layerConfig.port || defaultPort
+          serverName = layerConfig.serverName
+
+          url = `http://${ip}:${port}/igs/rest/mrms/docs/${serverName}`
+        }
+
+        layer = new IGSPanoramicLayer({ url })
+        console.log(layer)
+        break
       case LayerType.IGSVector:
         // 在老的图层配置中serverURL存的是gdbps。
         if (
@@ -249,7 +264,6 @@ export class DataCatalogManager {
       layer.tokenKey = tokenKey
       layer.tokenValue = tokenValue
     }
-
     return layer
   }
 
@@ -385,7 +399,6 @@ export class DataCatalogManager {
     ) {
       isRepeated = true
     }
-
     return isRepeated
   }
 
