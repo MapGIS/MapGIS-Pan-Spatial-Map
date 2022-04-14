@@ -49,7 +49,9 @@
       },
       "image": {
         "defaultImg": "/upload/marker.png",
-        "selectedImg": "/upload/marker-selected.png"
+        "selectedImg": "/upload/marker-selected.png",
+        "popupAnchor": { "x": 0.5, "y": 0 },
+        "popupToggleType": "click"
       }
     },
     "feature": {

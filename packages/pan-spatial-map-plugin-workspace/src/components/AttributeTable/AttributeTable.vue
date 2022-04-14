@@ -73,20 +73,20 @@
         onChange: onSelectChange,
         type: 'checkbox',
         fixed: true,
-        columnWidth: '50px'
+        columnWidth: '50px',
       }"
-      :rowKey="row => row.properties[rowKey]"
+      :rowKey="(row) => row.properties[rowKey]"
       :scroll="{
         x: useScrollX ? '100%' : false,
-        y: scrollY
+        y: scrollY,
       }"
       :pagination="false"
       :customRow="
-        record => ({
+        (record) => ({
           on: {
             click: () => onRowClick(record),
-            dblclick: () => onRowDblclick(record)
-          }
+            dblclick: () => onRowDblclick(record),
+          },
         })
       "
     >
@@ -117,6 +117,8 @@
       :fit-bound="fitBound"
       :selection-bound="selectionBound"
       :highlight-style="highlightStyle"
+      :popup-anchor="popupAnchor"
+      :popup-toggle-type="popupToggleType"
       @map-bound-change="onGetGeometry"
     />
     <mp-3d-marker-plotting
@@ -192,7 +194,7 @@ import {
   markerIconInstance,
   events,
   DataFlowList,
-  ActiveResultSet
+  ActiveResultSet,
 } from '@mapgis/pan-spatial-map-common'
 import {
   DomUtil,
@@ -204,7 +206,7 @@ import {
   Rectangle3D,
   Feature,
   Objects,
-  Exhibition
+  Exhibition,
 } from '@mapgis/web-app-framework'
 import * as Zondy from '@mapgis/webclient-es6-service'
 import MpAttributeTableColumnSetting from './AttributeTableColumnSetting.vue'
@@ -220,8 +222,8 @@ const { IAttributeTableOption, IAttributeTableExhibition } = Exhibition
 @Component({
   name: 'MpAttributeTable',
   components: {
-    MpAttributeTableColumnSetting
-  }
+    MpAttributeTableColumnSetting,
+  },
 })
 export default class MpAttributeTable extends Mixins(AttributeUtil) {
   // 属性表选项
@@ -232,7 +234,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
 
   private get selectedRowKeys() {
     return this.selection.map(
-      item => (item as GFeature).properties[this.rowKey]
+      (item) => (item as GFeature).properties[this.rowKey]
     )
   }
 
@@ -242,6 +244,14 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
 
   private get dataStorePort() {
     return baseConfigInstance.config.DataStorePort
+  }
+
+  private get popupAnchor() {
+    return baseConfigInstance.config.colorConfig.label.image.popupAnchor
+  }
+
+  private get popupToggleType() {
+    return baseConfigInstance.config.colorConfig.label.image.popupToggleType
   }
 
   private get selectedDescription() {
@@ -255,7 +265,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
   }
 
   private get visibleColumns() {
-    return this.tableColumns.filter(col => col.visible)
+    return this.tableColumns.filter((col) => col.visible)
   }
 
   private get highlightStyle() {
@@ -338,7 +348,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       ActiveResultSet.activeResultSet = {
         type: 'FeatureCollection',
         features: selectedRows,
-        id: this.optionVal.id
+        id: this.optionVal.id,
       }
     }
     await this.hightlightSelectionMarkers()
@@ -369,7 +379,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
     const height = bound.ymax - bound.ymin
     const center = {
       x: (bound.xmin + bound.xmax) / 2,
-      y: (bound.ymin + bound.ymax) / 2
+      y: (bound.ymin + bound.ymax) / 2,
     }
     /**
      * 当缩放的范围为点时，跳转过去，会导致标注点消失，
@@ -381,7 +391,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       xmin: center.x - (width || 0.1),
       ymin: center.y - (height || 0.1),
       xmax: center.x + (width || 0.1),
-      ymax: center.y + (height || 0.1)
+      ymax: center.y + (height || 0.1),
     }
     this.fitBound = { ...(bound as Record<string, number>) }
   }
@@ -429,7 +439,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
     const parser = new this.Json2csvParser()
     const csvData = parser.parse(data)
     const blob = new Blob([`\uFEFF${csvData}`], {
-      type: 'text/plain;charset=utf-8;'
+      type: 'text/plain;charset=utf-8;',
     })
     const datetime = Date.now()
     await FileSaver.saveAs(blob, `attrData_${datetime}.csv`)
@@ -480,7 +490,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       zmin: -100000,
       xmax,
       ymax,
-      zmax: 100000
+      zmax: 100000,
     }
     // 分页初始化到第一页
     this.pagination.current = 1
@@ -525,7 +535,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
   private async hightlightSelectionMarkers() {
     const selectIcon = await markerIconInstance.selectIcon()
     const unSelectIcon = await markerIconInstance.unSelectIcon()
-    this.markers.forEach(marker => {
+    this.markers.forEach((marker) => {
       if (this.selectedRowKeys.includes(marker.fid)) {
         marker.img = selectIcon
       } else {
@@ -550,14 +560,14 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
           xmin: bound.xmin < prev.xmin ? bound.xmin : prev.xmin,
           ymin: bound.ymin < prev.ymin ? bound.ymin : prev.ymin,
           xmax: bound.xmax > prev.xmax ? bound.xmax : prev.xmax,
-          ymax: bound.ymax > prev.ymax ? bound.ymax : prev.ymax
+          ymax: bound.ymax > prev.ymax ? bound.ymax : prev.ymax,
         }
       },
       {
         xmin: Number.MAX_VALUE,
         ymin: Number.MAX_VALUE,
         xmax: Number.MIN_VALUE,
-        ymax: Number.MIN_VALUE
+        ymax: Number.MIN_VALUE,
       }
     )
   }
@@ -592,7 +602,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
           fid: feature.properties[this.rowKey],
           img: unSelectIcon,
           properties: this.setPropertiesAlias(feature.properties),
-          feature: feature
+          feature: feature,
         }
         tempMarkers.push(marker)
       }
@@ -618,7 +628,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
     for (const key in properties) {
       if (Object.prototype.hasOwnProperty.call(properties, key)) {
         const value = properties[key]
-        const column = this.tableColumns.find(item => item.key === key)
+        const column = this.tableColumns.find((item) => item.key === key)
         if (column && key !== 'images') {
           obj[column.title] = value
         } else {
@@ -631,7 +641,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
 
   getModelHeight(tempMarkers: Array<unknown>) {
     return new Promise((resolve, reject) => {
-      const positions = tempMarkers.map(item => {
+      const positions = tempMarkers.map((item) => {
         return new this.Cesium.Cartesian3.fromDegrees(
           item.coordinates[0],
           item.coordinates[1]
@@ -641,7 +651,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
         this.viewer,
         positions,
         'model',
-        elevationPosition => {
+        (elevationPosition) => {
           if (elevationPosition && elevationPosition.length > 0) {
             resolve(elevationPosition)
           } else {
@@ -680,14 +690,14 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
         serverName: this.optionVal.serverName,
         layerIndex: this.currentTableParams.layerIndex,
         serverType,
-        gdbp
+        gdbp,
       }
     } else if (serverType === LayerType.ArcGISMapImage) {
       this.statisticAndFilterParamas = {
         serverName: this.optionVal.serverName,
         layerIndex: this.currentTableParams.layerIndex,
         serverType,
-        serverUrl
+        serverUrl,
       }
     }
   }
