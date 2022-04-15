@@ -91,6 +91,8 @@
       :markers="shownMarkers"
       :center="currentMarkerCenter"
       :highlight-style="highlightStyle"
+      :popup-anchor="popupAnchor"
+      :popup-toggle-type="popupToggleType"
       @popupload="popupLoad"
     >
       <template slot="popup" slot-scope="{ marker }">

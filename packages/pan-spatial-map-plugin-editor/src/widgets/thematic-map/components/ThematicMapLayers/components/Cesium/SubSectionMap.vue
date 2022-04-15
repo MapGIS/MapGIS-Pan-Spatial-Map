@@ -3,6 +3,8 @@
   <mp-3d-marker-pro
     ref="marker3dProRef"
     :marker="selfMarker"
+    :popup-anchor="popupAnchor"
+    :popup-toggle-type="popupToggleType"
     v-if="selfMarker.fid"
   >
     <template slot="popup" slot-scope="{ properties }">
@@ -14,6 +16,7 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer, Feature } from '@mapgis/web-app-framework'
 import CesiumMixin from '../../mixins/cesium'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 interface ISectionColor {
   start: number
@@ -38,7 +41,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
         sides: 5,
         useHeightScale: true,
         heightScale: 0.000001,
-        classificationType: 'both'
+        classificationType: 'both',
       }
     )
   }
@@ -55,9 +58,9 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
               start: min,
               end: max,
               style: {
-                color: sectionColor
-              }
-            }))
+                color: sectionColor,
+              },
+            })),
           }
         : themeStyle || { styleGroups: [] }
     }
@@ -79,6 +82,14 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
       type = this.Cesium.ClassificationType.BOTH
     }
     return type
+  }
+
+  private get popupAnchor() {
+    return baseConfigInstance.config.colorConfig.label.image.popupAnchor
+  }
+
+  private get popupToggleType() {
+    return baseConfigInstance.config.colorConfig.label.image.popupToggleType
   }
 
   /**
@@ -150,8 +161,8 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
         length,
         material,
         topRadius: strokeWidth, // 圆柱体的顶部半径。
-        bottomRadius: strokeWidth // 圆柱体底部的半径。
-      }
+        bottomRadius: strokeWidth, // 圆柱体底部的半径。
+      },
     }
   }
 
@@ -173,12 +184,12 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
     )
     let option: any = {
       positions,
-      material
+      material,
     }
     if (this.classificationType) {
       option = {
         ...option,
-        classificationType: this.classificationType
+        classificationType: this.classificationType,
       }
     }
     if (this.isShow3D) {
@@ -188,8 +199,8 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
             corridor: {
               ...option,
               width: strokeWidth,
-              extrudedHeight
-            }
+              extrudedHeight,
+            },
           }
           break
         case '多边形柱': {
@@ -197,8 +208,8 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
           option = {
             polylineVolume: {
               shape,
-              ...option
-            }
+              ...option,
+            },
           }
           break
         }
@@ -206,8 +217,8 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
           option = {
             polyline: {
               ...option,
-              width: strokeWidth
-            }
+              width: strokeWidth,
+            },
           }
           break
       }
@@ -227,13 +238,13 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
     let option: any = {
       polygon: {
         hierarchy,
-        material
-      }
+        material,
+      },
     }
     if (this.classificationType) {
       option = {
         ...option,
-        classificationType: this.classificationType
+        classificationType: this.classificationType,
       }
     }
     return option
@@ -249,7 +260,7 @@ export default class CesiumSubSectionMap extends Mixins(CesiumMixin) {
     this.geojson.features.forEach((feature: Feature.GFeature) => {
       const {
         properties,
-        geometry: { type, coordinates }
+        geometry: { type, coordinates },
       } = feature
       const value = properties[this.field]
       const featureColor = this.getSegmentstyle(this.styleGroups, value)
