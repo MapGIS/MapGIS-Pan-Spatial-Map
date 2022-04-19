@@ -47,7 +47,10 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     let defaultBasemap
     for (let i = 0; i < basemapList.length; i++) {
       const basemap = basemapList[i]
-      if (basemap.name == '索引底图') {
+      if (
+        basemap.description == '索引底图' ||
+        basemap.children[0].description == '索引底图'
+      ) {
         basemapList.splice(i, 1)
         defaultBasemap = basemap
         break
@@ -74,7 +77,10 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
           layer = this.updateLayer(layer)
           // 索引底图只有一个图层，图层的描述必须为 "索引底图"，不然不会显示在其他底图上层
           let description = layer.description || ''
-          if (basemap.name === '索引底图') {
+          if (
+            description !== '索引底图' &&
+            basemap.description === '索引底图'
+          ) {
             description = '索引底图'
           }
           const layerConfig = {
