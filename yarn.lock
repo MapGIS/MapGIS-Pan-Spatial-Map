@@ -1195,10 +1195,10 @@
   resolved "https://registry.npmmirror.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==
 
-"@mapgis/cesium@^1.84.2":
-  version "1.84.2"
-  resolved "http://192.168.11.130:4873/@mapgis%2fcesium/-/cesium-1.84.2.tgz#9f6be260d6a9b77185207ace472986aee549f7fd"
-  integrity sha512-L1FQ/hHn8pQiA1KCui0XwEmGYW4ikWKWYZLq9D2V0bTNH69w7t7tGJuMAfme0M+S+o/s2VON7FGcwSGW81W+Uw==
+"@mapgis/cesium@^1.84.0":
+  version "1.84.5"
+  resolved "http://192.168.11.130:4873/@mapgis%2fcesium/-/cesium-1.84.5.tgz#158ed9d64cefc2669af1a6b363853a68d180603c"
+  integrity sha512-pbUsB7ISrx4Y0D0cekCeNiDCoisQbJpH0C1EeKY6vo8yWhg4iDy9JDqDzjbObKZy4CWcs/AOrHSoe9ZjwIyX6w==
 
 "@mapgis/mapbox-gl-compare@^0.4.0":
   version "0.4.0"
@@ -1252,44 +1252,16 @@
   version "0.0.0"
   uid ""
 
-"@mapgis/webclient-es6-mapboxgl@^10.5.15":
-  version "10.5.15"
-  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-es6-mapboxgl/-/webclient-es6-mapboxgl-10.5.15.tgz#c01cbc3c40807a2d27a95dda1868fdcbcddc8c7f"
-  integrity sha512-v+lDmopNVeTarwiUwlSbzXgfblyGy1GONCDRiib2USkxgJgZyZU4CQjwatNpE9sZ6xhvI7GkfxfbiSluGzPehQ==
+"@mapgis/webclient-es6-mapboxgl@^15.6.0":
+  version "15.6.2"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-es6-mapboxgl/-/webclient-es6-mapboxgl-15.6.2.tgz#73e8aabb1bffd7e035a32bb562bb2d0ba297ea16"
+  integrity sha512-ZdqPR5YL4Xvi9ms3jJKMIS9QP+Z+ZBo5fOhHLQyIY8y7z5nCICkQGsU9efzl7qEaP9u4/8XzO6gF+0n1G9Mxcg==
   dependencies:
     "@mapgis/mapbox-gl" "^1.9.9"
     "@mapgis/webclient-es6-service" "^10.5.7"
     core-js "^3.21.1"
     echarts "^4.8.0"
     mapv "^2.0.56"
-
-"@mapgis/webclient-es6-service@^10.5.13":
-  version "10.5.13"
-  resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-es6-service/-/webclient-es6-service-10.5.13.tgz#c657dfeba62adb8c277bf8ba1a846834623f447d"
-  integrity sha512-+RE0sNdYivHBf057PfaXoxUbY7yin2H+q3M92YqYVfZZGItkbqWalbg0ALPDW0slOAIJHTOsc2E8NwnT7OVdwQ==
-  dependencies:
-    "@turf/turf" "^6.5.0"
-    axios "^0.26.0"
-    core-js "^3.21.1"
-    fast-xml-parser "^3.17.6"
-    fetch-ie8 "^1.5.0"
-    proj4 "^2.7.5"
-    promise-polyfill "^8.2.1"
-    qs "^6.9.4"
-
-"@mapgis/webclient-es6-service@^10.5.15":
-  version "10.5.15"
-  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-es6-service/-/webclient-es6-service-10.5.15.tgz#bb96399d4e6900cdfa4319e49d828b9aba047b8d"
-  integrity sha512-+nmpCXGyIRvi86++vP40NLsAevS8N/cyeXnCdn5Fqpt8LeTvcwkg4Aepwh1CAnpTmz8ULB6RgWgoAm0MeLsnkw==
-  dependencies:
-    "@turf/turf" "^6.5.0"
-    axios "^0.26.0"
-    core-js "^3.21.1"
-    fast-xml-parser "^3.17.6"
-    fetch-ie8 "^1.5.0"
-    proj4 "^2.7.5"
-    promise-polyfill "^8.2.1"
-    qs "^6.9.4"
 
 "@mapgis/webclient-es6-service@^10.5.7":
   version "10.5.10"
@@ -1299,6 +1271,20 @@
     "@turf/turf" "^6.5.0"
     fast-xml-parser "^3.17.6"
     fetch-ie8 "^1.5.0"
+    promise-polyfill "^8.2.1"
+    qs "^6.9.4"
+
+"@mapgis/webclient-es6-service@^15.6.0":
+  version "15.6.2"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-es6-service/-/webclient-es6-service-15.6.2.tgz#f36537fbf73a57e3f483731c9ffaa3b6876995ab"
+  integrity sha512-+7JEIu4vImxrf7WpDfdtlhkpNMIRxPOhl+PlynyvkixDFQi5/dnzIMLAIdkNBWqGDb+53UQ5RWfkTyD+xCvOag==
+  dependencies:
+    "@turf/turf" "^6.5.0"
+    axios "^0.26.0"
+    core-js "^3.21.1"
+    fast-xml-parser "^3.17.6"
+    fetch-ie8 "^1.5.0"
+    proj4 "^2.7.5"
     promise-polyfill "^8.2.1"
     qs "^6.9.4"
 
@@ -1329,15 +1315,15 @@
     vuepress "^1.3.1"
     webpack-bundle-analyzer "^4.4.0"
 
-"@mapgis/webclient-vue-cesium@10.5.15", "@mapgis/webclient-vue-cesium@^10.5.15":
-  version "10.5.15"
-  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-cesium/-/webclient-vue-cesium-10.5.15.tgz#0024348f44850d77786a26ac43215cc5a5240093"
-  integrity sha512-9SHAVLoZLyGgajBZ4kSFbEUbKt5JBDEf3yDGP2MXt4Ukw/kw8vit2in8aYiwNGpkwIYDy7ujuaPqlh7p3DrpfA==
+"@mapgis/webclient-vue-cesium@^15.6.0":
+  version "15.6.2"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-cesium/-/webclient-vue-cesium-15.6.2.tgz#bd600a6811132b2803fc96d48ec22cb2accc5c99"
+  integrity sha512-34x6LECdHHIZkgT5SU9vB5EeCaSxE7RBCxWWdfxLeIIxxBQL4EdTZpNcpTQQFcOGt40rW4BLqdfb0ALi8+Ih9Q==
   dependencies:
-    "@mapgis/cesium" "^1.84.2"
-    "@mapgis/webclient-es6-service" "^10.5.13"
+    "@mapgis/cesium" "^1.84.0"
+    "@mapgis/webclient-es6-service" "^15.6.0"
     "@mapgis/webclient-store" "^10.5.5"
-    "@mapgis/webclient-vue-ui" "^10.5.11"
+    "@mapgis/webclient-vue-ui" "^15.6.0"
     "@turf/turf" "^5.1.6"
     "@vuepress/plugin-active-header-links" "^1.7.1"
     "@vuepress/plugin-nprogress" "^1.7.1"
@@ -1361,10 +1347,10 @@
     wangeditor-antd "^1.0.7"
     webfont-matcher "1.1.0"
 
-"@mapgis/webclient-vue-mapboxgl@^10.5.15":
-  version "10.5.15"
-  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-mapboxgl/-/webclient-vue-mapboxgl-10.5.15.tgz#ad3ff267deba0094eb1be88a40143c73f8c88693"
-  integrity sha512-rjGoNZkCoF05xOhQQpGA5sFPU3oBXGb+2v4InCZWVgbq+IFCkoU6S26GDBfyMFdfR5GVVzXmQD9cqOHUu7J3sA==
+"@mapgis/webclient-vue-mapboxgl@^15.6.0":
+  version "15.6.2"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-mapboxgl/-/webclient-vue-mapboxgl-15.6.2.tgz#2cd39044784a81eba6a7aa63405a9dcb70c57aac"
+  integrity sha512-sBbmkUJq3REJir4OY1kYeECmyf9ehrrcjUy2IzfRoL/FKbBWzKtEZDFSYfWM9FeTEHK1F7yvCVVTLgSLJlkbsQ==
   dependencies:
     "@mapbox/mapbox-gl-draw" "^1.3.0"
     "@mapbox/mapbox-gl-draw-static-mode" "^1.0.1"
@@ -1373,9 +1359,9 @@
     "@mapgis/mapbox-gl-draw-circle" "^10.5.5"
     "@mapgis/mapbox-gl-draw-radius" "^1.0.0"
     "@mapgis/mapbox-gl-inspect" "^10.5.6"
-    "@mapgis/webclient-es6-service" "^10.5.13"
+    "@mapgis/webclient-es6-service" "^15.6.0"
     "@mapgis/webclient-store" "^10.5.5"
-    "@mapgis/webclient-vue-ui" "^10.5.11"
+    "@mapgis/webclient-vue-ui" "^15.6.0"
     "@turf/turf" "^6.5.0"
     echarts "^5.3.0"
     file-saver "^2.0.5"
@@ -1395,49 +1381,13 @@
     vue-runtime-helpers "^1.1.2"
     vuepress "^1.9.7"
 
-"@mapgis/webclient-vue-ui@^10.5.11":
-  version "10.5.12"
-  resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-vue-ui/-/webclient-vue-ui-10.5.12.tgz#e2068a6f8a2eb7887c73894b19e87897c3a3759d"
-  integrity sha512-Tyoha3vyVojD/OIRdAQqGcOtyerka9MhifdH4yeoUZoseVnbMGCN/wcIeHgkI27yyC4fJu6kk/5MEsF1YhXNHA==
+"@mapgis/webclient-vue-ui@^15.6.0":
+  version "15.6.2"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-ui/-/webclient-vue-ui-15.6.2.tgz#9b13fc7851fcc8ee07892494e2ebd3d7a7e528d4"
+  integrity sha512-z+5qmFGeY1pe19K1UEdH/HPp399Ab7ctxSNnxhLuwY2qbwuBl0Y6xGCfePPYasEjc0kCVDlDyBQjZvG7j/rmIQ==
   dependencies:
     "@ant-design/icons" "2.1.1"
-    "@mapgis/webclient-es6-service" "^10.5.13"
-    "@mapgis/webclient-store" "^10.5.5"
-    "@vue/composition-api" "^1.0.0-rc.13"
-    "@vuepress/plugin-active-header-links" "^1.8.2"
-    "@vuepress/plugin-nprogress" "^1.8.2"
-    ant-design-vue "^1.7.8"
-    axios "^0.21.1"
-    clone "^2.1.2"
-    css-vars-ponyfill "^2.4.5"
-    d3 "5.16.0"
-    echarts "^5.1.2"
-    js-md5 "^0.7.3"
-    jsoneditor "^9.5.6"
-    lodash "^4.17.21"
-    lodash.uniqueid "^4.0.1"
-    proj4 "^2.7.5"
-    qs "^6.9.0"
-    resize-detector "^0.3.0"
-    simple-uploader.js "^0.5.6"
-    spark-md5 "^3.0.1"
-    tinycolor2 "^1.4.2"
-    vcolorpicker "^1.1.0"
-    video.js "^7.17.0"
-    videojs-contrib-hls "^5.15.0"
-    vue-color "^2.8.1"
-    vue-infinite-scroll "^2.0.2"
-    vuepress "^1.8.2"
-    vuepress-plugin-demo-block "^0.7.2"
-    vuepress-plugin-demo-code "^0.6.0"
-
-"@mapgis/webclient-vue-ui@^10.5.15":
-  version "10.5.15"
-  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-ui/-/webclient-vue-ui-10.5.15.tgz#0f2f54fb1e46d4ffd2e7eaf0530805f779335f14"
-  integrity sha512-SQCe72qvlmMWsZS6JhdiCdfJj+zcTZmoj/W7vj1ObM6xFqH4D1L9Lt5x0VlRtftNTzQXSPnn33ChiGzbsSiowQ==
-  dependencies:
-    "@ant-design/icons" "2.1.1"
-    "@mapgis/webclient-es6-service" "^10.5.13"
+    "@mapgis/webclient-es6-service" "^15.6.0"
     "@mapgis/webclient-store" "^10.5.5"
     "@vue/composition-api" "^1.0.0-rc.13"
     "@vuepress/plugin-active-header-links" "^1.8.2"
