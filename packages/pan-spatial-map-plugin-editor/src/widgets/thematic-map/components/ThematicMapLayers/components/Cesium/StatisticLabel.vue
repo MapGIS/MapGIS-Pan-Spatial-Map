@@ -3,6 +3,8 @@
   <mp-3d-marker-pro
     ref="marker3dProRef"
     :marker="selfMarker"
+    :popup-anchor="popupAnchor"
+    :popup-toggle-type="popupToggleType"
     v-if="selfMarker.fid"
   >
     <template slot="popup" slot-scope="{ properties }">
@@ -14,6 +16,7 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer, Feature } from '@mapgis/web-app-framework'
 import CesiumMixin from '../../mixins/cesium'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component
 export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
@@ -40,13 +43,21 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
                 end: labelStyle.radius.max,
                 style: {
                   radius: labelStyle.radius.radiu,
-                  color: labelStyle.radius.sectionColor
-                }
-              }
-            ]
+                  color: labelStyle.radius.sectionColor,
+                },
+              },
+            ],
           }
         : themeStyle || {}
     }
+  }
+
+  private get popupAnchor() {
+    return baseConfigInstance.config.colorConfig.label.image.popupAnchor
+  }
+
+  private get popupToggleType() {
+    return baseConfigInstance.config.colorConfig.label.image.popupToggleType
   }
 
   /**
@@ -80,13 +91,13 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
           material,
           length: 0.001, // 圆柱体高度
           topRadius: _radius, // 圆柱体顶部半径
-          bottomRadius: _radius // 圆柱体底部半径
+          bottomRadius: _radius, // 圆柱体底部半径
         }
       }
       const position = this.getPosition(center[0], center[1])
       this.addEntityToLayer(layer, feature, {
         position,
-        cylinder
+        cylinder,
       })
     })
   }

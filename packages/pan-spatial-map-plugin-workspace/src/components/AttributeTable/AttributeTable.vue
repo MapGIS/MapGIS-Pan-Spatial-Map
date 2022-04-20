@@ -129,6 +129,8 @@
       :fit-bound="fitBound"
       :selection-bound="selectionBound"
       :highlight-style="highlightStyle"
+      :popup-anchor="popupAnchor"
+      :popup-toggle-type="popupToggleType"
       @map-bound-change="onGetGeometry"
     >
       <template slot="popup" slot-scope="{ properties }">

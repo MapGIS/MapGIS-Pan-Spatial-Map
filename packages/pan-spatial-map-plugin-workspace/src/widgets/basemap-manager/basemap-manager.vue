@@ -47,7 +47,10 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     let defaultBasemap
     for (let i = 0; i < basemapList.length; i++) {
       const basemap = basemapList[i]
-      if (basemap.name == '索引底图') {
+      if (
+        basemap.description == '索引底图' ||
+        basemap.children[0].description == '索引底图'
+      ) {
         basemapList.splice(i, 1)
         defaultBasemap = basemap
         break
@@ -62,19 +65,14 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
       .map((basemap) => {
         const { children } = basemap
         const layers = children.map((layer) => {
-          if (
-            layer.serverType &&
-            typeof layer.serverType === 'number' &&
-            !isNaN(layer.serverType)
-          ) {
-            // 通过内部保存获取的配置
-            return layer
-          }
           // 如果要兼容老版格式，可以在这里进行升级，转换成新的数据结构（数据与添加数据配置一致）
           layer = this.updateLayer(layer)
           // 索引底图只有一个图层，图层的描述必须为 "索引底图"，不然不会显示在其他底图上层
           let description = layer.description || ''
-          if (basemap.name === '索引底图') {
+          if (
+            description !== '索引底图' &&
+            basemap.description === '索引底图'
+          ) {
             description = '索引底图'
           }
           const layerConfig = {
@@ -116,7 +114,10 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     if (this.defaultSelect && this.defaultSelect.length > 0) {
       for (let i = 0; i < this.defaultSelect.length; i++) {
         let isZoomTo = false
-        if (this.defaultSelect[i].name === '索引底图') {
+        if (
+          this.defaultSelect[i].description == '索引底图' ||
+          this.defaultSelect[i].children[0].description == '索引底图'
+        ) {
           isZoomTo = true
         }
         this.onSelect(this.defaultSelect[i].name, isZoomTo)
@@ -292,6 +293,35 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     return type
   }
 
+  private getLayerTypeString(type: number) {
+    return LayerType[type]
+  }
+
+  private getSaveConfig() {
+    const configs = this.basemaps.map((basemap) => {
+      const { children } = basemap
+      const layers = children.map((layer) => {
+        const description = layer.description || ''
+        const layerConfig = {
+          name: layer.name,
+          description,
+          url: layer.serverURL,
+          type: this.getLayerTypeString(layer.serverType),
+        }
+        if (layer.tokenValue) {
+          layerConfig.token = layer.tokenValue
+          layerConfig.tokenKey = layer.tokenKey ? layer.tokenKey : 'token'
+        }
+        return layerConfig
+      })
+      return {
+        ...basemap,
+        children: layers,
+      }
+    })
+    return configs
+  }
+
   // 微件失活时
   onDeActive() {
     // 微件失活时自动保存配置到后台
@@ -305,11 +335,11 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
   }
 
   saveConfig() {
-    console.log(this.basemaps)
+    const config = this.getSaveConfig(this.basemaps)
     api
       .saveWidgetConfig({
         name: 'basemap-manager',
-        config: JSON.stringify(this.basemaps),
+        config: JSON.stringify(config),
       })
       .then(() => {
         console.log('更新底图配置成功')

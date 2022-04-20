@@ -15,6 +15,8 @@
     <mp-3d-marker-pro
       ref="marker3dProRef"
       :marker="selfMarker"
+      :popup-anchor="popupAnchor"
+      :popup-toggle-type="popupToggleType"
       v-if="selfMarker.fid"
     >
       <template slot="popup" slot-scope="{ properties }">
@@ -27,6 +29,7 @@
 import { Component, Mixins, Watch, Inject } from 'vue-property-decorator'
 import CesiumMixin from '../../mixins/cesium'
 import { getMarker, IMarker } from '../../../../utils'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component()
 export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
@@ -47,7 +50,7 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
         '#5AB1EF',
         '#B6A2DE',
         '#2EC7C9',
-        '#D87A80'
+        '#D87A80',
       ]
     )
   }
@@ -95,7 +98,7 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
         width: 50000,
         textFont: '50px Helvetica',
         textColor: '#008000',
-        textHeightOffset: 10000
+        textHeightOffset: 10000,
       }
     )
   }
@@ -138,6 +141,14 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
     return attributeColors
   }
 
+  private get popupAnchor() {
+    return baseConfigInstance.config.colorConfig.label.image.popupAnchor
+  }
+
+  private get popupToggleType() {
+    return baseConfigInstance.config.colorConfig.label.image.popupToggleType
+  }
+
   load(graphThemeLayer) {
     this.graphThemeLayer = graphThemeLayer
     this.showLayer()
@@ -159,7 +170,7 @@ export default class CesiumBaseMapWithGraph extends Mixins(CesiumMixin) {
     const { Cesium, viewer, propertiesOption } = this
     const vm = this
     const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
-    handler.setInputAction(function(movement) {
+    handler.setInputAction(function (movement) {
       const pickedPrimitive = viewer.scene.pick(movement.endPosition)
       if (pickedPrimitive) {
         const pickedFeature = pickedPrimitive.primitive.feature
