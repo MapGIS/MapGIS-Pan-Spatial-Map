@@ -114,7 +114,10 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     if (this.defaultSelect && this.defaultSelect.length > 0) {
       for (let i = 0; i < this.defaultSelect.length; i++) {
         let isZoomTo = false
-        if (this.defaultSelect[i].name === '索引底图') {
+        if (
+          this.defaultSelect[i].description == '索引底图' ||
+          this.defaultSelect[i].children[0].description == '索引底图'
+        ) {
           isZoomTo = true
         }
         this.onSelect(this.defaultSelect[i].name, isZoomTo)
