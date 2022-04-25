@@ -805,12 +805,17 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       this.showMetaData = false
       const url = item.serverURL
       let getCapabilitiesURL = ''
+      let tempUrl = url
+      if (item.tokenValue && item.tokenValue.length > 0) {
+        const tokenKey = item.tokenKey ? item.tokenKey : 'token'
+        tempUrl += `?${item.tokenKey}=${item.tokenValue}`
+      }
       if (item.serverType === LayerType.OGCWMS) {
         getCapabilitiesURL =
-          Metadata.OGCMetadataQuery.generateWMSGetCapabilitiesURL(url)
+          Metadata.OGCMetadataQuery.generateWMSGetCapabilitiesURL(tempUrl)
       } else if (item.serverType === LayerType.OGCWMTS) {
         getCapabilitiesURL =
-          Metadata.OGCMetadataQuery.generateWMTSGetCapabilitiesURL(url)
+          Metadata.OGCMetadataQuery.generateWMTSGetCapabilitiesURL(tempUrl)
       }
       window.open(getCapabilitiesURL)
     } else {
