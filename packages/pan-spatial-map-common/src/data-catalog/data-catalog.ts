@@ -102,7 +102,7 @@ export class DataCatalogManager {
     let modelCacheFormat = ModelCacheFormat.m3d
     const layerID = layerConfig.guid
     const layerTitle = layerConfig.name
-    const tokenKey = layerConfig.tokenKey ? layerConfig.tokenKey : ''
+    const tokenKey = layerConfig.tokenKey ? layerConfig.tokenKey : 'token'
     const tokenValue = layerConfig.tokenValue ? layerConfig.tokenValue : ''
 
     switch (layerConfig.serverType) {
@@ -767,8 +767,8 @@ export class DataCatalogManager {
       serverName: this.config.paramConfig.SERVERNAME, // 服务名(可选)
       serverType: 'serverType', // 服务类型
       serverURL: this.config.paramConfig.SERVERURL, // 服务URL(可选)
-      tokenName: 'tokenName', // token名称(可选),已废弃,请使用customParameters记录该信息
-      tokenValue: this.config.paramConfig.TOKEN, // token值(可选),已废弃,请使用customParameters记录该信息
+      tokenKey: this.config.paramConfig.TOKENKEY, // tokenKey(可选)
+      tokenValue: this.config.paramConfig.TOKEN, // token值(可选)
       ip: this.config.paramConfig.SERVERIP, // 服务ip(可选)
       port: this.config.paramConfig.SERVERPORT, // 服务端口(可选)
       bindData: 'bindData', // 绑定数据：与该服务图层相关联的服务信息,比如：与该瓦片服务对应的地图服务。应用中利用该字段可实现对瓦片服务的查询功能
@@ -1001,7 +1001,7 @@ export class DataCatalogManager {
               node[this.configConverted.keyConfig.children] || undefined, // 子节点数组
             serverName: node[this.configConverted.keyConfig.serverName] || '', // 服务名(可选)
             serverURL: node[this.configConverted.keyConfig.serverURL] || '', // 服务URL(可选)
-            tokenName: node[this.configConverted.keyConfig.tokenName] || '', // token名称(可选)
+            tokenKey: node[this.configConverted.keyConfig.tokenKey] || '', // token名称(可选)
             tokenValue: node[this.configConverted.keyConfig.tokenValue] || '', // token值(可选)
             ip: node[this.configConverted.keyConfig.ip] || '', // 服务ip(可选)
             port: node[this.configConverted.keyConfig.port] || '', // 服务端口(可选)

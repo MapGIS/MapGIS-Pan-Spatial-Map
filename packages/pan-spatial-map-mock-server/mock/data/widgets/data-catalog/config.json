@@ -9,6 +9,7 @@
     "SERVERNAME": "name",
     "SEARCHNAME": "searchName",
     "SERVERURL": "serverUrl",
+    "TOKENKEY": "tokenKey",
     "TOKEN": "token",
     "WFSURL": "wfsUrl",
     "SCENEMODEL": "model",
