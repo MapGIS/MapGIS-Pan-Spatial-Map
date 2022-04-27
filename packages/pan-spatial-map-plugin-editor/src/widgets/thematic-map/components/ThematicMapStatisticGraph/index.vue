@@ -1,51 +1,78 @@
 <template>
   <!-- 统计表 -->
   <transition name="fade">
-    <mp-window-wrapper :visible="visible">
-      <mp-window
-        @window-size="onWindowSize"
-        :visible.sync="visible"
-        :horizontal-offset="48"
-        :vertical-offset="50"
-        :width="chartWidth"
-        :has-padding="false"
-        title="统计表"
-        anchor="bottom-right"
-      >
-        <a-spin :spinning="loading">
-          <div ref="statisticGraph" class="thematic-map-statistic-graph">
-            <!-- 指标和图表切换 -->
-            <mp-row-flex class="target" :span="[16, 8]" content-align="right">
-              <mp-row-flex slot="label" :label-width="44" label="指标">
-                <a-select
-                  @change="onTargetChange"
-                  :value="target"
-                  :options="targetList"
-                  size="small"
-                />
+    <diV>
+      <mp-window-wrapper :visible="false">
+        <mp-window
+          @window-size="onWindowSize"
+          :visible="false"
+          :horizontal-offset="48"
+          :vertical-offset="50"
+          :width="chartWidth"
+          :has-padding="false"
+          title="统计表"
+          anchor="bottom-right"
+        >
+          <a-spin :spinning="loading">
+            <div ref="statisticGraph" class="thematic-map-statistic-graph">
+              <!-- 指标和图表切换 -->
+              <mp-row-flex class="target" :span="[16, 8]" content-align="right">
+                <mp-row-flex slot="label" :label-width="44" label="指标">
+                  <a-select
+                    @change="onTargetChange"
+                    :value="target"
+                    :options="targetList"
+                    size="small"
+                  />
+                </mp-row-flex>
+                <a-tooltip
+                  v-for="item in chartConfig"
+                  :key="item.type"
+                  :title="item.tooltip"
+                >
+                  <a-icon
+                    :type="item.iconType"
+                    :class="{ active: item.type === activeChart }"
+                    @click="onChartTypeChange(item.type)"
+                  />
+                </a-tooltip>
               </mp-row-flex>
-              <a-tooltip
-                v-for="item in chartConfig"
-                :key="item.type"
-                :title="item.tooltip"
-              >
-                <a-icon
-                  :type="item.iconType"
-                  :class="{ active: item.type === activeChart }"
-                  @click="onChartTypeChange(item.type)"
-                />
-              </a-tooltip>
-            </mp-row-flex>
-            <!-- 图表 -->
-            <div id="thematic-map-graph-chart" v-show="showChart" />
-            <!-- 空数据提示 -->
-            <div class="empty-tip" v-show="!showChart">
-              <a-empty />
+              <!-- 图表 -->
+              <div id="thematic-map-graph-chart" v-show="showChart" />
+              <!-- 空数据提示 -->
+              <div class="empty-tip" v-show="!showChart">
+                <a-empty />
+              </div>
             </div>
-          </div>
-        </a-spin>
-      </mp-window>
-    </mp-window-wrapper>
+          </a-spin>
+        </mp-window>
+      </mp-window-wrapper>
+
+      <mp-window-wrapper :visible="visible">
+        <mp-window
+          :id="statisticsId"
+          @window-size="onWindowSize"
+          :visible.sync="visible"
+          :horizontal-offset="48"
+          :vertical-offset="50"
+          :width="chartWidth"
+          :height="chartHeight"
+          :has-padding="false"
+          title="统计表"
+          anchor="bottom-right"
+        >
+          <template>
+            <mp-attribute-statistics
+              v-if="statisticParamas"
+              :queryParams="statisticParamas"
+              :groupFieldProp="graph.field"
+              :statisticsFieldProp="graph.showFields"
+              :statisticsTypeProp="'sum'"
+            />
+          </template>
+        </mp-window>
+      </mp-window-wrapper>
+    </diV>
   </transition>
 </template>
 <script lang="ts">
@@ -55,20 +82,22 @@ import {
   ModuleType,
   mapGetters,
   mapMutations,
-  hasHighlightSubjectList
+  hasHighlightSubjectList,
 } from '../../store'
 import { barChartOptions } from './config/barChartOptions'
 import { lineChartOptions } from './config/lineChartOptions'
 import { pieChartOptions } from './config/pieChartOptions'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
+import { LayerType } from '@mapgis/web-app-framework'
 
 enum windowMode {
   max = 'max',
-  normal = 'normal'
+  normal = 'normal',
 }
 enum ChartType {
   BAR = 'BAR',
   LINE = 'LINE',
-  PIE = 'PIE'
+  PIE = 'PIE',
 }
 
 interface IChartConfig {
@@ -91,12 +120,12 @@ interface IChartOption {
       'isVisible',
       'pageGeojson',
       'subjectData',
-      'linkageFid'
-    ])
+      'linkageFid',
+    ]),
   },
   methods: {
-    ...mapMutations(['setLinkage', 'resetVisible', 'resetLinkage'])
-  }
+    ...mapMutations(['setLinkage', 'resetVisible', 'resetLinkage']),
+  },
 })
 export default class ThematicMapStatisticGraph extends Vue {
   // 当前活动的图标
@@ -114,12 +143,14 @@ export default class ThematicMapStatisticGraph extends Vue {
   // 图表宽度
   private chartWidth = 360
 
+  private chartHeight = 300
+
   // 图表配置
   private chartOption: IChartOption = {
     title: '',
     color: '',
     x: [],
-    y: []
+    y: [],
   }
 
   // 3种图表配置
@@ -127,18 +158,18 @@ export default class ThematicMapStatisticGraph extends Vue {
     {
       iconType: 'bar-chart',
       tooltip: '柱状图',
-      type: ChartType.BAR
+      type: ChartType.BAR,
     },
     {
       iconType: 'line-chart',
       tooltip: '折线图',
-      type: ChartType.LINE
+      type: ChartType.LINE,
     },
     {
       iconType: 'pie-chart',
       tooltip: '饼图',
-      type: ChartType.PIE
-    }
+      type: ChartType.PIE,
+    },
   ]
 
   get visible() {
@@ -178,7 +209,7 @@ export default class ThematicMapStatisticGraph extends Vue {
           width:
             mode === windowMode.MAX
               ? this.$refs.statisticGraph.clientWidth
-              : this.chartWidth
+              : this.chartWidth,
         })
       }
     })
@@ -211,12 +242,12 @@ export default class ThematicMapStatisticGraph extends Vue {
       return
     }
     const { fieldColors, showFields, showFieldsTitle } = this.graph
-    this.targetList = showFields.map(value => ({
+    this.targetList = showFields.map((value) => ({
       label:
         showFieldsTitle && showFieldsTitle[value]
           ? showFieldsTitle[value]
           : value,
-      value
+      value,
     }))
     if (this.targetList.length) {
       const { label, value } = this.targetList[0]
@@ -276,11 +307,11 @@ export default class ThematicMapStatisticGraph extends Vue {
   onClearHighlight(dataIndex) {
     this.chart.dispatchAction({
       type: 'downplay',
-      dataIndex
+      dataIndex,
     })
     this.chart.dispatchAction({
       type: 'hideTip',
-      dataIndex
+      dataIndex,
     })
   }
 
@@ -292,11 +323,11 @@ export default class ThematicMapStatisticGraph extends Vue {
     this.chart.dispatchAction({
       type: 'showTip',
       seriesIndex: 0,
-      dataIndex
+      dataIndex,
     })
     this.chart.dispatchAction({
       type: 'highlight',
-      dataIndex
+      dataIndex,
     })
   }
 
@@ -347,6 +378,31 @@ export default class ThematicMapStatisticGraph extends Vue {
   @Watch('linkageFid')
   linkageFidChanged(nV) {
     this.setHighlight(nV)
+  }
+
+  private statisticsId = `${new Date().getTime()}-${Math.floor(
+    Math.random() * 10
+  )}-statistics`
+
+  get statisticParamas() {
+    console.log(baseConfigInstance.config)
+    const { ip: baseConfigIp, port: baseConfigPort } = baseConfigInstance.config
+    if (!this.subjectData) {
+      return null
+    }
+    const { ip, port, docName, layerName, layerIndex, gdbp } = this.subjectData
+    const paramIp = ip && ip !== '' ? ip : baseConfigIp
+    const paramPort = port && port !== '' ? port : baseConfigPort
+    const serverType =
+      gdbp && gdbp.length > 0 ? LayerType.IGSVector : LayerType.IGSMapImage
+    return {
+      ip: paramIp,
+      port: paramPort,
+      serverName: docName,
+      layerIndex,
+      serverType,
+      gdbp,
+    }
   }
 
   mounted() {
