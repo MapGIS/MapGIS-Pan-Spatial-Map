@@ -12,6 +12,9 @@ import Plugins from '@/plugins'
 import { initI18n } from '@/utils/i18n'
 import bootstrap from '@/bootstrap'
 import 'moment/locale/zh-cn'
+import 'three'
+import 'pannellum'
+import 'pannellum/build/pannellum.css'
 
 import HeaderAvatar from '@/layouts/header/HeaderAvatar'
 import About from '@/components/About'
@@ -35,8 +38,8 @@ Vue.use(WebAppFrameworkUI)
 Vue.use(Theme, {
   components: {
     MpPanSpatialMapHeaderAvatar: HeaderAvatar,
-    MpPanSpatialMapAbout: About
-  }
+    MpPanSpatialMapAbout: About,
+  },
 })
 Vue.use(Workspace)
 Vue.use(Editor)
@@ -49,5 +52,5 @@ new Vue({
   router,
   store,
   i18n,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount('#app')

@@ -6,17 +6,18 @@ import * as mapSheetService from './map-sheet'
 
 const apiTable = {
   getConfig: configService.getConfig,
+  saveConfig: configService.saveConfig,
   getWidgetConfig: configService.getWidgetConfig,
   saveWidgetConfig: configService.saveWidgetConfig,
   imagesUpload: uploadService.imagesUpload,
   getFrameNoByCoord: mapSheetService.getFrameNoByCoord,
   getFrameExtentByNo: mapSheetService.getFrameExtentByNo,
   getFrameNoList: mapSheetService.getFrameNoList,
-  setApiProxy
+  setApiProxy,
 }
 
 function setApiProxy(apiProxyTable) {
-  Object.keys(apiProxyTable).forEach(api => {
+  Object.keys(apiProxyTable).forEach((api) => {
     const proxy = apiProxyTable[api]
     apiTable[api] = proxy
   })
