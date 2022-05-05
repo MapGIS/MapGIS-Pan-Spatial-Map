@@ -148,7 +148,8 @@
         <mp-window
           :id="statisticsId"
           title="属性统计"
-          :width="720"
+          :width="500"
+          :height="330"
           :bottom="10"
           :verticalOffset="10"
           :visible.sync="showAttrStatistics"
