@@ -10,7 +10,7 @@
       :layer-id="id"
       :field="field"
       :data-source="geojson"
-      :highlight-feature="marker.feature"
+      :highlight-feature="selfMarker.feature"
       type="range"
       ref="customRangeThemeLayer"
       @rangeLayer="getRangeLayer"
@@ -80,7 +80,7 @@ export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
   }
 
   getRangeLayer(layer) {
-    console.log(layer)
+    // console.log(layer)
     const { map } = this
     map.on(
       'mousemove',
