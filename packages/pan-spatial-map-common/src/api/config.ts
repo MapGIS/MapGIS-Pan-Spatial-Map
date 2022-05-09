@@ -11,7 +11,7 @@ export function saveConfig(data) {
   return getRequest()({
     url: '/api/config',
     method: 'put',
-    data,
+    params: data,
   })
 }
 export interface WidgetConfigData {
