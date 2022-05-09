@@ -5131,8 +5131,7 @@ export class DefaultProxy extends Proxy {
 }
 
 /**
- * Returns the first parameter if not undefined, otherwise the second parameter.
-Useful for setting a default value for a parameter.
+ * 如果第一个值有值则返回第一个，否则返回第二个
  * @example
  * param = Cesium.defaultValue(param, 'default');
  * @returns Returns the first parameter if not undefined, otherwise the second parameter.
@@ -26022,15 +26021,15 @@ export class Style {
  * @example
  * var graphicsLayer = new Cesium.GraphicsLayer(viewer);
 viewer.scene.layers.appendGraphicsLayer(graphicsLayer);
- * @param [options.finishEdit = function] - 回调函数，每次编辑结束后的回调.返回编辑的对象
- * @param [options.getGraphic = function] - 回调函数，返回绘制对象。
- * @param [options.getViewModel = function] - 回调函数，返回模型编辑参数对象。
+ * @param [options.getGraphic = function] - 添加标绘对象成功后的回调函数。
+ * @param [options.revokeModel = function] - 撤销添加模型的回调函数。
+ * @param [options.revokePoint = function] - 撤销添加点，广告牌，文字框的回调函数。
  */
 export class GraphicsLayer {
     constructor(viewer: Viewer, options: {
-        finishEdit?: (...params: any[]) => any;
         getGraphic?: (...params: any[]) => any;
-        getViewModel?: (...params: any[]) => any;
+        revokeModel?: (...params: any[]) => any;
+        revokePoint?: (...params: any[]) => any;
     });
     /**
      * 图形集合，包含该图层内所有图形对象的键值对
@@ -26319,9 +26318,6 @@ on a {@link Globe}.
  * @param labelUrl - 请求到的注记信息
  * @param scene - 场景对象
  * @param options - Object with the following properties:
- * @param [option.show = true] - 注记可配置参数 显示性控制
- * @param option.translucency - 注记可配置参数 相机高度-透明度控制
- * @param option.distanceDisplayCondition - 注记可配置参数 相机高度-可见性控制
  * @param option.labelExtend - 注记可配置参数 注记对象参数 {@link Label}
  * @param layerInfo - 从IGS查询到的图层的信息，如最大最小比例尺，避让等
  */
@@ -26330,8 +26326,6 @@ export class MapGISLabelLayer {
     readonly readyPromise: Promise<MapGISLabelLayer>;
     readonly labels: LabelCollection;
     readonly show: boolean;
-    translucency: NearFarScalar;
-    distanceDisplayCondition: DistanceDisplayCondition;
     /**
      * @example
      * {layerIndex: 0, layerName: "构造名称_经纬度", layerType: "4", beginLevel: 0, endLevel: 20}
@@ -28964,8 +28958,8 @@ export class MapGISTerrainProvider {
     });
     /**
      * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
-     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
-     * are passed an instance of {@link TileProviderError}.
+    to the event, you will be notified of the error and can potentially recover from it.  Event listeners
+    are passed an instance of {@link TileProviderError}.
      */
     errorEvent: Event;
     /**
@@ -28974,12 +28968,12 @@ export class MapGISTerrainProvider {
     showSkirt: boolean;
     /**
      * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
-     * the source of the terrain.  This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
+    the source of the terrain.  This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
      */
     credit: Credit;
     /**
      * Gets the tiling scheme used by this provider.  This function should
-     * not be called before {@link MapGISTerrainProvider#ready} returns true.
+    not be called before {@link MapGISTerrainProvider#ready} returns true.
      */
     tilingScheme: GeographicTilingScheme;
     /**
@@ -28992,25 +28986,25 @@ export class MapGISTerrainProvider {
     readonly readyPromise: Promise<boolean>;
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
-     * indicates which areas of the globe are water rather than land, so they can be rendered
-     * as a reflective surface with animated waves.  This function should not be
-     * called before {@link MapGISTerrainProvider#ready} returns true.
+    indicates which areas of the globe are water rather than land, so they can be rendered
+    as a reflective surface with animated waves.  This function should not be
+    called before {@link MapGISTerrainProvider#ready} returns true.
      */
     hasWaterMask: boolean;
     /**
      * Gets a value indicating whether or not the requested tiles include vertex normals.
-     * This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
+    This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
      */
     hasVertexNormals: boolean;
     /**
      * Gets a value indicating whether or not the requested tiles include metadata.
-     * This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
+    This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
      */
     hasMetadata: boolean;
     /**
      * Boolean flag that indicates if the client should request vertex normals from the server.
-     * Vertex normals data is appended to the standard tile mesh data only if the client requests the vertex normals and
-     * if the server provides vertex normals.
+    Vertex normals data is appended to the standard tile mesh data only if the client requests the vertex normals and
+    if the server provides vertex normals.
      */
     requestVertexNormals: boolean;
     /**
@@ -29031,21 +29025,21 @@ export class MapGISTerrainProvider {
     terrainColorTblMinHeight: number;
     /**
      * Boolean flag that indicates if the client should request a watermask from the server.
-     * Watermask data is appended to the standard tile mesh data only if the client requests the watermask and
-     * if the server provides a watermask.
+    Watermask data is appended to the standard tile mesh data only if the client requests the watermask and
+    if the server provides a watermask.
      */
     requestWaterMask: boolean;
     /**
      * Boolean flag that indicates if the client should request metadata from the server.
-     * Metadata is appended to the standard tile mesh data only if the client requests the metadata and
-     * if the server provides a metadata.
+    Metadata is appended to the standard tile mesh data only if the client requests the metadata and
+    if the server provides a metadata.
      */
     requestMetadata: boolean;
     /**
      * Gets an object that can be used to determine availability of terrain from this provider, such as
-     * at points and in rectangles.  This function should not be called before
-     * {@link MapGISTerrainProvider#ready} returns true.  This property may be undefined if availability
-     * information is not available.
+    at points and in rectangles.  This function should not be called before
+    {@link MapGISTerrainProvider#ready} returns true.  This property may be undefined if availability
+    information is not available.
      */
     availability: TileAvailability;
     /**
@@ -29488,7 +29482,7 @@ export class SceneLayer {
      */
     getVectorLayerIndexes(): string[];
     /**
-     * 获取标注图层中的全部索引
+     * 获取b标注图层中的全部索引
      * @returns 索引数组
      */
     getLabelLayerIndexes(): string[];
@@ -40200,16 +40194,6 @@ export class Label {
     of the desired font compared to the generated glyph size.
      */
     totalScale: number;
-    /**
-     * Gets or sets the uniform rotation that is multiplied with the label's rotation in pixels.
-    A rotation of <code>0.0</code> does not change the rotation of the label; a rotation greater than
-    <code>0.0</code> clockwise the label; a nagetive rotation less than <code>0.0</code>
-    anticlockwise the label.
-    <br /><br />
-    <div align='center'>
-    </div>
-     */
-    rotation: number;
     /**
      * Gets or sets the condition specifying at what distance from the camera that this label will be displayed.
     决定在某个相机视角高度范围内图元是否可见。

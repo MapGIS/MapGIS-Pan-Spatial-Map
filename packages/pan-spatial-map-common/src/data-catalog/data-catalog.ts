@@ -22,6 +22,7 @@ import {
   ModelCacheLayer,
   ModelCacheFormat,
   GraphicsLayer,
+  STKTerrainLayer,
   UUID,
   Catalog,
   UrlUtil,
@@ -251,6 +252,17 @@ export class DataCatalogManager {
         break
       case LayerType.Graphics:
         layer = new GeoJsonLayer(layerConfig)
+
+        break
+
+      case LayerType.STKTerrain:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          layer = new STKTerrainLayer({ ...layerConfig, url })
+        } else {
+          layer = new STKTerrainLayer(layerConfig)
+        }
 
         break
       default:
@@ -752,6 +764,13 @@ export class DataCatalogManager {
      * @type {string}
      */
     IGSScene: 'IGSScene',
+
+    /**
+     * Cesium的STK地形
+     * 10.5.6.13版本中新增，与LayerType的枚举名保持一致。
+     * @type {string}
+     */
+    STKTERRAIN: 'STKTerrain',
   }
 
   // 将老版本的配置转换为新版本的配置
@@ -1154,6 +1173,9 @@ export class DataCatalogManager {
         break
       case this.layerServiceType.GEOJSON:
         serverType = LayerType.GeoJson
+        break
+      case this.layerServiceType.STKTERRAIN:
+        serverType = LayerType.STKTerrain
         break
       default:
         break
