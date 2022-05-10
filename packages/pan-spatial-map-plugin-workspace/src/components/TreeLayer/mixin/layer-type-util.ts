@@ -312,6 +312,11 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
           //   port,
           //   gdbp: layer.url
           // })
+          /**
+           * 修改说明：IGS地图文档和图层服务全部都走IGS的接口，不再判断是否为pg数据
+           * 修改人：龚跃健
+           * 日期：2022-5-10
+           */
           const isDataStoreQuery = false
           const DNSName = undefined
           const ipPortObj = this.getIpPort({ isDataStoreQuery, ip, port })
