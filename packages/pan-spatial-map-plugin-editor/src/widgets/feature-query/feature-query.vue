@@ -314,7 +314,7 @@ export default class MpFeatureQuery extends Mixins(
     return ipPortObj
   }
 
-  private async queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
+  private queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
     if (!layer.isVisible) {
       return
     }
@@ -333,13 +333,15 @@ export default class MpFeatureQuery extends Mixins(
       if (!sublayer.visible && sublayer.sublayers.length > 0) {
         return
       }
-      const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery(
-        {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          gdbp: sublayer.url,
-        }
-      )
+      // const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery(
+      //   {
+      //     ip: ip || baseConfigInstance.config.ip,
+      //     port: Number(port || baseConfigInstance.config.port),
+      //     gdbp: sublayer.url,
+      //   }
+      // )
+      const isDataStoreQuery = false
+      const DNSName = undefined
       const ipPortObj = this.getIpPort({
         isDataStoreQuery,
         ip: ip || baseConfigInstance.config.ip,
@@ -366,17 +368,19 @@ export default class MpFeatureQuery extends Mixins(
     this.openExhibitionPanel()
   }
 
-  private async quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
+  private quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
     if (!layer.isVisible) {
       return
     }
     const { ip, port, docName } = layer._parseUrl(layer.url)
 
-    const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery({
-      ip: ip || baseConfigInstance.config.ip,
-      port: Number(port || baseConfigInstance.config.port),
-      gdbp: layer.gdbps,
-    })
+    // const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery({
+    //   ip: ip || baseConfigInstance.config.ip,
+    //   port: Number(port || baseConfigInstance.config.port),
+    //   gdbp: layer.gdbps,
+    // })
+    const isDataStoreQuery = false
+    const DNSName = undefined
     const ipPortObj = this.getIpPort({
       isDataStoreQuery,
       ip: ip || baseConfigInstance.config.ip,

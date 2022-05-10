@@ -283,11 +283,11 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
     const ipPortObj = isDataStoreQuery
       ? {
           ip: baseConfigInstance.config.DataStoreIp,
-          port: Number(baseConfigInstance.config.DataStorePort)
+          port: Number(baseConfigInstance.config.DataStorePort),
         }
       : {
           ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port)
+          port: Number(port || baseConfigInstance.config.port),
         }
 
     return ipPortObj
@@ -296,22 +296,24 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
   /**
    * 获取结果集查询参数
    */
-  async getExhibition(layer, titleType) {
+  getExhibition(layer, titleType) {
     const parent = layer.layer
     let exhibition: Record<string, any> | null = null
     const arr: Array<Record<string, any>> = [
       {
         type: parent && this.isIgsDocLayer(parent),
-        setValue: async () => {
+        setValue: () => {
           const { ip, port, docName } = parent._parseUrl(parent.url)
-          const {
-            isDataStoreQuery,
-            DNSName
-          } = await FeatureQuery.isDataStoreQuery({
-            ip,
-            port,
-            gdbp: layer.url
-          })
+          // const {
+          //   isDataStoreQuery,
+          //   DNSName
+          // } = await FeatureQuery.isDataStoreQuery({
+          //   ip,
+          //   port,
+          //   gdbp: layer.url
+          // })
+          const isDataStoreQuery = false
+          const DNSName = undefined
           const ipPortObj = this.getIpPort({ isDataStoreQuery, ip, port })
           exhibition = {
             id: `${parent.title} ${layer.title} ${layer.id}`,
@@ -329,24 +331,24 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
               layerIndex: layer.id,
               gdbp: layer.url,
               serverName: docName,
-              serverUrl: parent.url
-            }
+              serverUrl: parent.url,
+            },
           }
-        }
+        },
       },
       {
         type: this.isIgsVectorLayer(layer),
-        setValue: async () => {
+        setValue: () => {
           const igsVectorLayer = layer.dataRef
           const { ip, port, docName } = igsVectorLayer._parseUrl(layer.url)
-          const {
-            isDataStoreQuery,
-            DNSName
-          } = await FeatureQuery.isDataStoreQuery({
-            ip,
-            port,
-            gdbp: igsVectorLayer.gdbps
-          })
+          // const { isDataStoreQuery, DNSName } =
+          //   await FeatureQuery.isDataStoreQuery({
+          //     ip,
+          //     port,
+          //     gdbp: igsVectorLayer.gdbps,
+          //   })
+          const isDataStoreQuery = false
+          const DNSName = undefined
           const ipPortObj = this.getIpPort({ isDataStoreQuery, ip, port })
           exhibition = {
             id: `${igsVectorLayer.title} ${igsVectorLayer.id}`,
@@ -359,10 +361,10 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
               isDataStoreQuery,
               DNSName,
               serverType: igsVectorLayer.type,
-              gdbp: igsVectorLayer.gdbps
-            }
+              gdbp: igsVectorLayer.gdbps,
+            },
           }
-        }
+        },
       },
       {
         type: this.isArcGISMapImage(layer),
@@ -376,10 +378,10 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
               name: layer.title,
               serverType: parent.type,
               layerIndex: layer.id,
-              serverUrl: parent.url
-            }
+              serverUrl: parent.url,
+            },
           }
-        }
+        },
       },
       {
         type: this.isIGSScene(layer),
@@ -399,11 +401,11 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
                 ip: ip || baseConfigInstance.config.ip,
                 port: Number(port || baseConfigInstance.config.port),
                 serverType: parent.type,
-                gdbp: layerConfig.bindData.gdbps
-              }
+                gdbp: layerConfig.bindData.gdbps,
+              },
             }
           }
-        }
+        },
       },
       {
         type: this.isDataFlow(layer),
@@ -414,11 +416,11 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
             option: {
               id: layer.id,
               name: layer.title,
-              serverType: layer.type
-            }
+              serverType: layer.type,
+            },
           }
-        }
-      }
+        },
+      },
     ]
     // arr.forEach(item => {
     //   if (item.type) {
@@ -429,7 +431,7 @@ export default class LayerTypeUtil extends Mixins(AppMixin) {
     for (let index = 0; index < arr.length; index++) {
       const item = arr[index]
       if (item.type) {
-        await item.setValue()
+        item.setValue()
       }
     }
     return exhibition
