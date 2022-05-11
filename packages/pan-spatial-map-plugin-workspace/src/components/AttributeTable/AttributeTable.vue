@@ -752,7 +752,7 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
 <style lang="less" scoped>
 .mp-attribute-table {
   height: 100%;
-  background-color: @base-bg-color;
+  background-color: transparent;
   .header-bar {
     padding: 0 10px 0 17px;
     .columns {
@@ -760,5 +760,21 @@ export default class MpAttributeTable extends Mixins(AttributeUtil) {
       cursor: pointer;
     }
   }
+}
+::v-deep
+  .ant-table-fixed-header
+  > .ant-table-content
+  > .ant-table-scroll
+  > .ant-table-body {
+  background: transparent;
+}
+
+::v-deep .ant-table-fixed-left table,
+.ant-table-fixed-right table {
+  background: transparent;
+}
+
+::v-deep .ant-btn {
+  background: transparent;
 }
 </style>
