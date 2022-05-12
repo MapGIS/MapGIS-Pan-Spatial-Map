@@ -27,7 +27,7 @@ function getFunctionalColors(mode) {
   return {
     success: successColors,
     warning: warningColors,
-    error: errorColors
+    error: errorColors,
   }
 }
 
@@ -35,14 +35,18 @@ function getFunctionalColors(mode) {
 function getMenuColors(color, mode) {
   if (mode == themeMode.NIGHT) {
     return ANTD.primary.night.menuColors
-  }
-  if (color == ANTD.primary.color) {
+  } else if (mode == themeMode.DARK) {
     return ANTD.primary.dark.menuColors
+  } else if (mode == themeMode.LIGHT) {
+    return ANTD.primary.light.menuColors
   }
+  // if (color == ANTD.primary.color) {
+  //   return ANTD.primary.dark.menuColors
+  // }
   return [
     varyColor.darken(color, 0.93),
     varyColor.darken(color, 0.83),
-    varyColor.darken(color, 0.73)
+    varyColor.darken(color, 0.73),
   ]
 }
 
@@ -58,8 +62,8 @@ function getThemeToggleColors(color, mode) {
   // 内容色系（包含背景色、文字颜色等）
   const themeCfg = ANTD.theme[mode]
   let contentColors = Object.keys(themeCfg)
-    .map(key => themeCfg[key])
-    .map(color => (isHex(color) ? color : toNum3(color).join(',')))
+    .map((key) => themeCfg[key])
+    .map((color) => (isHex(color) ? color : toNum3(color).join(',')))
   // 内容色去重
   contentColors = [...new Set(contentColors)]
   // rgb 格式的主题色
@@ -72,7 +76,7 @@ function getThemeToggleColors(color, mode) {
     menuColors,
     contentColors,
     rgbColors,
-    functionalColors
+    functionalColors,
   }
 }
 
@@ -113,5 +117,5 @@ module.exports = {
   getAntdColors,
   getMenuColors,
   getThemeToggleColors,
-  getFunctionalColors
+  getFunctionalColors,
 }
