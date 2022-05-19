@@ -776,6 +776,22 @@
             "wfsUrl": "",
             "extent": "",
             "gdbTypeList": "Local,Local,Local"
+          },
+          {
+            "label": "街景示例数据",
+            "describe": "街景示例数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSPanoramic",
+            "name": "街景示例数据",
+            "searchName": "",
+            "serverUrl": "",
+            "tokenKey": "",
+            "token": "",
+            "wfsUrl": "",
+            "extent": "",
+            "guid": "e8402909-8631-4d74-9188-6a7f26d7e872",
+            "gdbTypeList": "LocalPlus,LocalPlus"
           }
         ]
       },
