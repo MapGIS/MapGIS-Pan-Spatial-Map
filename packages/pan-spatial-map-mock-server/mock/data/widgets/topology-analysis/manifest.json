@@ -10,6 +10,7 @@
     "inPanel": true,
     "hasConfig": false,
     "hasSettingPage": false,
-    "settingUiComponent": ""
+    "settingUiComponent": "",
+    "hasPadding": false
   }
 }
