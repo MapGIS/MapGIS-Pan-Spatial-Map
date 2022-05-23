@@ -33,8 +33,8 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
     zIndex: 1000,
     padding: '0px',
     margin: '0px',
-    height: '460px',
-    width: '270px',
+    height: '450px',
+    width: '296px',
     top: '0px',
     left: '0px'
   }
@@ -184,6 +184,6 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 <style lang="less" scoped>
 .mapgis-3d-stratified-household-wrapper {
   height: 450px;
-  width: 260px;
+  // width: 260px;
 }
 </style>

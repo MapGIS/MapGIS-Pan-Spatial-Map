@@ -372,7 +372,8 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
   display: flex;
   justify-content: center;
   .basemap-wrapper {
-    width: 220px;
+    // width: 220px;
+    padding: 8px;
     display: flex;
     flex-wrap: wrap;
   }

@@ -22,8 +22,8 @@
                     title="积水仿真"
                     :horizontal-offset="28"
                     :vertical-offset="30"
-                    :width="580"
-                    :height="80"
+                    :width="560"
+                    :height="74"
                     :has-padding="false"
                     anchor="bottom-center"
                     v-bind="slotProps"
@@ -45,7 +45,7 @@
                                 }
                             "
                             @play="addSimulation"
-                            style="position:absolute;top:10px;left:10px"
+                            style="position:absolute;"
                         />
                     </template>
                 </mp-window>

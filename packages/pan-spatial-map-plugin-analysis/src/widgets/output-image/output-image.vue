@@ -1,6 +1,6 @@
 <template>
   <div class="mp-widget-output-image">
-    <mapgis-3d-output-image />
+    <mapgis-3d-output-image style="padding:8px 16px;"/>
   </div>
 </template>
 <script lang="ts">

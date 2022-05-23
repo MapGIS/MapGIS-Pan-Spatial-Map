@@ -24,8 +24,8 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
     zIndex: 1000,
     padding: '0px',
     margin: '0px',
-    height: '460px',
-    width: '400px',
+    height: '450px',
+    width: '296px',
     top: '0px',
     left: '0px'
   }
@@ -81,9 +81,9 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 <style lang="less">
 .mapgis-3d-bim-component-wrapper {
   height: 450px;
-  width: 400px;
+  // width: 400px;
   .mapgis-3d-bim-component {
-    width: 400px;
+    // width: 400px;
   }
 }
 </style>

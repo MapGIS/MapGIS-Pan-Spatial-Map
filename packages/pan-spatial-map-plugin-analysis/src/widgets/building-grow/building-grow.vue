@@ -1,10 +1,11 @@
 <template>
   <div class='mp-widget-building-grow'>
-    <mapgis-ui-row style='margin: 5px 0px'>
-      <label class='mp-widget-label'>选择m3d图层</label>
+    <mapgis-ui-row>
+      <!-- <label class='mp-widget-label'>选择m3d图层</label> -->
+      <mapgis-ui-group-tab title="选择m3d图层" :hasBottomMargin="false"/>
     </mapgis-ui-row>
         <mapgis-ui-row>
-          <mapgis-ui-select  :default-value="selectDefaultVal" @change="onLayerChange" style='width: 215px'>
+          <mapgis-ui-select  :default-value="selectDefaultVal" @change="onLayerChange" style='width: 100%'>
             <mapgis-ui-select-option
               v-for="m3dLayer in m3dLayers"
               :key="m3dLayer.vueIndex"
@@ -21,7 +22,7 @@
           :horizontal-offset='28'
           :vertical-offset='30'
           :width='playWidth'
-          :height='100'
+          :height='114'
           :has-padding='false'
           anchor='bottom-center'
           v-bind='slotProps'
@@ -67,7 +68,7 @@ export default class MpBuildingGrow extends Mixins(WidgetMixin) {
 
   private startBuildingGrow = false
 
-  private playWidth = 520
+  private playWidth = 500
 
   private vueIndex = undefined
 
