@@ -1,5 +1,5 @@
 <template>
-  <a-spin :spinning="loading">
+  <a-spin :spinning="loading" style="padding:8px 16px;">
     <div class="mp-widget-topology-analysis">
       <mp-group-tab
         slot="label"
@@ -455,7 +455,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
 <style lang="less">
 .mp-widget-topology-analysis {
   .fixed-table {
-    width: 360px;
+    // width: 360px;
   }
   .tab-list-container {
     border-radius: 4px;
@@ -483,7 +483,7 @@ export default class MpTopologyAnalysis extends Mixins(WidgetMixin) {
   .layer-select-container {
     display: flex;
     .ant-select {
-      width: 160px;
+      width: 108px;
     }
     .ant-btn {
       margin-left: 10px;

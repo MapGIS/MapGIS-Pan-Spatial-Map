@@ -26,8 +26,8 @@ export default class MpRotate extends Mixins(WidgetMixin) {
 
 <style scoped>
 .mp-rotate {
-  width: 300px;
+  /* width: 300px;
   max-width: 100%;
-  margin: 0px 5px 5px 5px;
+  margin: 0px 5px 5px 5px; */
 }
 </style>

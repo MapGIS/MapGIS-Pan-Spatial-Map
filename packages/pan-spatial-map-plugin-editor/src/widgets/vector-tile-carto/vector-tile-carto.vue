@@ -122,6 +122,7 @@ export default class MpVectorTileCarto extends Mixins(WidgetMixin) {
 </script>
 <style lang="less" scoped>
 .mp-widget-vector-tile-carto {
+  padding: 8px 16px;
   ::v-deep .mapgis-ui-radio-group {
     font-size: 12px;
   }

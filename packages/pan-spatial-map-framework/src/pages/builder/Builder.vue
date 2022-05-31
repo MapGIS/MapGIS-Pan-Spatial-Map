@@ -61,9 +61,24 @@ export default {
       // 切换mapgisUI的主题
       // 一张图 light，dark 白底黑字，night 黑底白字
       if (theme === 'dark' || theme === 'light') {
-        mapgisui.setTheme('light')
+        const payload = {
+          background: '#fff',
+          cardBackground: '#fff',
+          panelBackground: "#fff",
+          divShadow: "#fff",
+          divBackground: "#fff",
+        }
+        mapgisui.setTheme('light', payload)
       } else {
-        mapgisui.setTheme('dark')
+        const payload = {
+          background: '#141414',
+          cardBackground: '#14141400',
+          panelBackground: "#14141400",
+          divShadow: "#14141400",
+          divBackground: "#14141400",
+          dataCardBackground: "#141414",
+        }
+        mapgisui.setTheme('dark', payload)
       }
     },
     onSaveApp(appConfig) {
