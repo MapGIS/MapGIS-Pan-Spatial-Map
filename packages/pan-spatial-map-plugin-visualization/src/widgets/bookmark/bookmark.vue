@@ -239,7 +239,7 @@ export default class MpBookmark extends Mixins(WidgetMixin) {
   private saveBookmarks() {
     api
       .saveWidgetConfig({
-        name: 'Bookmark',
+        name: 'bookmark',
         config: JSON.stringify(this.treeData),
       })
       .catch(() => {
