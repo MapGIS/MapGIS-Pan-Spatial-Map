@@ -47,29 +47,20 @@
         ref='cityGrowOptions'
       ></mapgis-3d-city-grow-options>
       <mp-window-wrapper :visible='startCityGrow'>
-        <template v-slot:default='slotProps'>
-          <mp-window
-            title='城市生长'
-            :visible.sync='startCityGrow'
-            :horizontal-offset='28'
-            :vertical-offset='30'
-            :width='playWidth'
-            :height='75'
-            :has-padding='false'
-            anchor='bottom-center'
-            v-bind='slotProps'
-          >
-            <template>
-              <mapgis-3d-city-grow
-                v-if='startCityGrow'
-                :baseUrl='url'
-                :featureStyle='featureStyle'
-                ref='cityGrow'
-                @loaded='load'
-              ></mapgis-3d-city-grow>
-            </template>
-          </mp-window>
-        </template>
+        <mp-placement
+          :position="'bottom-left'"
+          v-show="startCityGrow"
+          :offset="[52, 60]"
+          style="right: 0px;"
+        >
+          <mapgis-3d-city-grow
+            v-if='startCityGrow'
+            :baseUrl='url'
+            :featureStyle='featureStyle'
+            ref='cityGrow'
+            @loaded='load'
+          ></mapgis-3d-city-grow>
+        </mp-placement>
       </mp-window-wrapper>
     </div>
   </div>

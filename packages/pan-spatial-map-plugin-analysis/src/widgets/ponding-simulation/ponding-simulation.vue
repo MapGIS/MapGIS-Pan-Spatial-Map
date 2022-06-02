@@ -20,9 +20,10 @@
         :position="'bottom-left'"
         v-show="showTimeline"
         :offset="[52, 60]"
-        style="right:0px;margin-right:0px"
+        style="right:0px;"
       >
         <mapgis-3d-ponding-simulation-timeline
+          v-if='showTimeline'
           :costTime="sliderValue"
           :isPlaying="pond"
           @updateTime="
@@ -36,6 +37,7 @@
             }
           "
           @play="addSimulation"
+          @loaded="handleLoaded"
         />
       </mp-placement>
     </mp-window-wrapper>
@@ -78,6 +80,10 @@ export default class MpPondingSimulation extends Mixins(WidgetMixin) {
 
   loaded(ponding) {
     this.ponding = ponding
+  }
+
+  handleLoaded(timeline){
+    this.timeline = timeline;
   }
 
   addSimulation() {
