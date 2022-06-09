@@ -431,6 +431,7 @@ export default class MpRetrospect extends Mixins(WidgetMixin) {
 
 <style lang="less" scoped>
 .mp-widget-retrospect {
+  padding: 8px 16px;
   .retrospect-row {
     margin-bottom: 8px;
     &:last-child {

@@ -127,6 +127,7 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    margin: 4px 0;
     .analysis-type {
       .analysis-type-img {
         height: 48px;
