@@ -10,7 +10,7 @@ import {
   Rectangle3D,
   Feature,
   Objects,
-  Exhibition
+  Exhibition,
 } from '@mapgis/web-app-framework'
 import { ProjectorManager } from '@mapgis/pan-spatial-map-common'
 import moment from 'moment'
@@ -73,7 +73,7 @@ export default class LayerTypeUtil extends Mixins(
     current: 1,
     pageSize: 10,
     total: 0,
-    pageSizeOptions: ['5', '10', '20', '30', '50'] // 这里注意只能是字符串，不能是数字
+    pageSizeOptions: ['5', '10', '20', '30', '50'], // 这里注意只能是字符串，不能是数字
   }
 
   private id = `${new Date().getTime()}-${Math.floor(
@@ -147,17 +147,17 @@ export default class LayerTypeUtil extends Mixins(
         positionY,
         positionZ,
         hFOV,
-        orientationPitch
+        orientationPitch,
       } = file
       const cameraPosition = {
         x: positionX,
         y: positionY,
-        z: positionZ
+        z: positionZ,
       }
       const Orientation = {
         heading: orientationHeading,
         pitch: orientationPitch,
-        roll: orientationRoll
+        roll: orientationRoll,
       }
       ProjectorManager.addProjector(
         this.exhibition.id,
@@ -210,7 +210,7 @@ export default class LayerTypeUtil extends Mixins(
       return {
         lon: center.geometry.coordinates[0],
         lat: center.geometry.coordinates[1],
-        dis: distance / 2
+        dis: distance / 2,
       }
     }
     return {}
@@ -224,15 +224,8 @@ export default class LayerTypeUtil extends Mixins(
   ) {
     this.rowKey = this.setRowKey()
     this.currentTableParams = { ...this.optionVal }
-    const {
-      ip,
-      port,
-      serverName,
-      serverType,
-      serverUrl,
-      layerIndex,
-      gdbp
-    } = this.optionVal
+    const { ip, port, serverName, serverType, serverUrl, layerIndex, gdbp } =
+      this.optionVal
     const { current, pageSize } = this.pagination
     let geojson
     const queryWhere = where || this.optionVal.where
@@ -242,15 +235,17 @@ export default class LayerTypeUtil extends Mixins(
       case LayerType.IGSVector:
         const { isDataStoreQuery, DNSName } = this.optionVal
         if (!isDataStoreQuery) {
-          const { AttStruct, TotalCount } = await this.queryCount(
-            queryGeometry,
-            queryWhere
-          )
-          if (!(this.tableColumns && this.tableColumns.length > 0)) {
-            const columns = this.setTableScroll(AttStruct)
-            this.tableColumns = columns
+          if (this.pagination.total === 0) {
+            const { AttStruct, TotalCount } = await this.queryCount(
+              queryGeometry,
+              queryWhere
+            )
+            if (!(this.tableColumns && this.tableColumns.length > 0)) {
+              const columns = this.setTableScroll(AttStruct)
+              this.tableColumns = columns
+            }
+            this.pagination.total = TotalCount
           }
-          this.pagination.total = TotalCount
         }
         const page = isDataStoreQuery ? current : current - 1
         geojson = await FeatureQuery.query({
@@ -266,7 +261,8 @@ export default class LayerTypeUtil extends Mixins(
           DNSName,
           docName: serverName,
           layerIdxs: layerIndex,
-          coordPrecision: 8
+          coordPrecision: 8,
+          rtnLabel: false,
         })
         if (val === '1') {
           this.attrTableToJsonData = geojson.features
@@ -285,14 +281,18 @@ export default class LayerTypeUtil extends Mixins(
         break
 
       case LayerType.ArcGISMapImage:
-        const { count: totalCount } = await ArcGISFeatureQuery.getTotal({
-          f: 'pjson',
-          where: queryWhere,
-          geometry: queryGeometry,
-          serverUrl,
-          layerIndex
-        })
-        this.pagination.total = totalCount
+        if (this.pagination.total === 0) {
+          const { count } = await ArcGISFeatureQuery.getTotal({
+            f: 'pjson',
+            where: queryWhere,
+            geometry: queryGeometry,
+            serverUrl,
+            layerIndex,
+          })
+
+          this.pagination.total = count
+        }
+
         geojson = await ArcGISFeatureQuery.query({
           f: 'pjson',
           where: queryWhere,
@@ -301,8 +301,9 @@ export default class LayerTypeUtil extends Mixins(
           pageCount: val === '1' ? this.pagination.total : pageSize,
           serverUrl,
           layerIndex,
-          totalCount
+          totalCount: this.pagination.total,
         })
+
         if (val === '1') {
           this.attrTableToJsonData = geojson.feature
           return
@@ -328,7 +329,7 @@ export default class LayerTypeUtil extends Mixins(
               key: name,
               dataIndex: `properties.${name}`,
               align: 'left',
-              ellipsis: true
+              ellipsis: true,
             }
             if (this.useScrollX) {
               obj.width = 180
@@ -343,7 +344,6 @@ export default class LayerTypeUtil extends Mixins(
           }
           this.tableColumns = columns
         }
-        this.pagination.total = totalCount
         this.removeMarkers()
         // 如果当前是激活状态，则添加markers
         if (this.isExhibitionActive) {
@@ -367,7 +367,7 @@ export default class LayerTypeUtil extends Mixins(
             pageCount: pageSize,
             gdbp,
             coordPrecision: 8,
-            rtnLabel: false
+            rtnLabel: false,
           },
           false,
           serverType === LayerType.IGSScene
@@ -385,7 +385,7 @@ export default class LayerTypeUtil extends Mixins(
               pageCount: this.pagination.total,
               gdbp,
               coordPrecision: 8,
-              rtnLabel: false
+              rtnLabel: false,
             },
             false,
             serverType === LayerType.IGSScene
@@ -449,7 +449,7 @@ export default class LayerTypeUtil extends Mixins(
           lon,
           lat,
           dis,
-          isEsGeoCode: true
+          isEsGeoCode: true,
         }
         const geoCode = await FeatureQuery.query(datastoreParams)
         // 将地理编码查询返回结果转换为GEOJSON格式
@@ -463,15 +463,15 @@ export default class LayerTypeUtil extends Mixins(
               ...feature.detail,
               ...feature.areaAddr,
               // 由于没有返回唯一标识，这里自定义下标为唯一标识
-              customerId: j
+              customerId: j,
             }
             markerCoords.push({
               type: 'Feature',
               properties,
               geometry: {
                 type: 'Point',
-                coordinates
-              }
+                coordinates,
+              },
             })
           }
           geojson = { type: 'FeatureCollection', features: markerCoords }
@@ -500,14 +500,14 @@ export default class LayerTypeUtil extends Mixins(
         align: 'left',
         // 超过宽度将自动省略
         ellipsis: true,
-        width: 180
-      }
+        width: 180,
+      },
     ]
     const {
       FldNumber = 0,
       FldName = [],
       FldAlias = [],
-      FldType = []
+      FldType = [],
     } = AttStruct
     // 根据字段数计算useScrollX
     if (FldNumber <= 10) {
@@ -528,7 +528,7 @@ export default class LayerTypeUtil extends Mixins(
         dataIndex: `properties.${name}`,
         align: 'left',
         // 超过宽度将自动省略
-        ellipsis: true
+        ellipsis: true,
       }
       if (this.useScrollX) {
         obj.width = 180
@@ -542,7 +542,7 @@ export default class LayerTypeUtil extends Mixins(
                   a.properties[name],
                   b.properties[name],
                   type
-                )
+                ),
             }
           : obj
       )
@@ -560,7 +560,7 @@ export default class LayerTypeUtil extends Mixins(
       'LONG',
       'FLOAT',
       'DOUBLE',
-      'BINARY'
+      'BINARY',
     ]
     const timeArr: Array<string> = ['TIME', 'DATE', 'TIMESTAMP']
     if (numberArr.includes(type.toUpperCase())) {
@@ -613,7 +613,7 @@ export default class LayerTypeUtil extends Mixins(
       const properties = {
         FID,
         specialLayerId: this.optionVal.id,
-        specialLayerBound: boundObj
+        specialLayerBound: boundObj,
       }
       for (let index = 0; index < FldNumber; index++) {
         const name = FldName[index]
@@ -623,9 +623,9 @@ export default class LayerTypeUtil extends Mixins(
       return {
         geometry: {
           coordinates: [],
-          type: '3DPolygon'
+          type: '3DPolygon',
         },
-        properties
+        properties,
       }
     })
   }
@@ -646,7 +646,8 @@ export default class LayerTypeUtil extends Mixins(
       where,
       gdbp,
       docName: serverName,
-      layerIdxs: layerIndex
+      layerIdxs: layerIndex,
+      rtnLabel: false,
     })
     return featureSet
   }
@@ -667,8 +668,8 @@ export default class LayerTypeUtil extends Mixins(
             [xmax, ymax],
             [xmax, ymin],
             [xmin, ymin],
-            [xmin, ymax]
-          ]
+            [xmin, ymax],
+          ],
         ],
         { name: 'bounds' }
       )
@@ -685,8 +686,8 @@ export default class LayerTypeUtil extends Mixins(
             [xmax, ymax],
             [xmax, ymin],
             [xmin, ymin],
-            [xmin, ymax]
-          ]
+            [xmin, ymax],
+          ],
         ],
         { name: 'bounds' }
       )
@@ -720,7 +721,7 @@ export default class LayerTypeUtil extends Mixins(
           key: name,
           dataIndex: `properties.${name}`,
           align: 'left',
-          ellipsis: true
+          ellipsis: true,
         }
         if (this.useScrollX) {
           obj.width = 180
