@@ -468,7 +468,15 @@ export default class MpFeatureQuery extends Mixins(
             geometry = new Point3D(x, y, shape.z)
           }
         } else {
-          geometry = new Zondy.Common.Point2D(shape.x, shape.y, { nearDis })
+          let pointNearDis = nearDis
+          if (!pointNearDis) {
+            // 如果nearDis为0，需要重置nearDis为0.0000001之类的，小数位数与坐标位数保持一致。igs接口这个参数不能直接设置为0
+            const xStr = shape.x.toString().split('.')[1]
+            pointNearDis = Number(`0.${xStr}`) / Number(xStr)
+          }
+          geometry = new Zondy.Common.Point2D(shape.x, shape.y, {
+            nearDis: pointNearDis,
+          })
         }
         break
       case QueryType.LineString:
@@ -486,11 +494,21 @@ export default class MpFeatureQuery extends Mixins(
             geometry = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
           }
         } else {
+          let lineNearDis = nearDis
           const pointArray = shape.map((item: Record<string, number>) => {
-            return new Zondy.Common.Point2D(item.x, item.y, { nearDis })
+            if (!lineNearDis) {
+              // 如果nearDis为0，需要重置nearDis为0.0000001之类的，小数位数与坐标位数保持一致。igs接口这个参数不能直接设置为0
+              const xStr = item.x.toString().split('.')[1]
+              lineNearDis = Number(`0.${xStr}`) / Number(xStr)
+            }
+            return new Zondy.Common.Point2D(item.x, item.y, {
+              nearDis: lineNearDis,
+            })
           })
 
-          geometry = new Zondy.Common.PolyLine(pointArray, { nearDis })
+          geometry = new Zondy.Common.PolyLine(pointArray, {
+            nearDis: lineNearDis,
+          })
         }
         break
       case QueryType.Polygon:
@@ -508,8 +526,16 @@ export default class MpFeatureQuery extends Mixins(
             geometry = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
           }
         } else {
+          let polyNearDis = nearDis
           const pointArray = shape.map((item: Record<string, number>) => {
-            return new Zondy.Common.Point2D(item.x, item.y, { nearDis })
+            if (!polyNearDis) {
+              // 如果nearDis为0，需要重置nearDis为0.0000001之类的，小数位数与坐标位数保持一致。igs接口这个参数不能直接设置为0
+              const xStr = item.x.toString().split('.')[1]
+              polyNearDis = Number(`0.${xStr}`) / Number(xStr)
+            }
+            return new Zondy.Common.Point2D(item.x, item.y, {
+              nearDis: polyNearDis,
+            })
           })
 
           geometry = new Zondy.Common.Polygon(pointArray)

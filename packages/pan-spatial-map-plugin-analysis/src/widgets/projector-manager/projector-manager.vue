@@ -170,7 +170,7 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
   }
 
   saveConfig() {
-    console.log(this.projectorOverlayLayerList)
+    // console.log(this.projectorOverlayLayerList)
     const config = {
       projectorOverlayLayerList: [...this.projectorOverlayLayerList],
     }
@@ -181,11 +181,11 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
       })
       .then(() => {
         // this.$message.success('更新projector配置成功')
-        console.log('更新projector配置成功')
+        // console.log('更新projector配置成功')
       })
       .catch(() => {
         // this.$message.error('更新projector配置失败')
-        console.log('更新projector配置失败')
+        // console.log('更新projector配置失败')
       })
   }
 }
