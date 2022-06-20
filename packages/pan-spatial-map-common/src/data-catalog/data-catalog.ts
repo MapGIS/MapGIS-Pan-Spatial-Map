@@ -26,6 +26,7 @@ import {
   UUID,
   Catalog,
   UrlUtil,
+  PlotLayer
 } from '@mapgis/web-app-framework'
 import baseConfigInstance from '../config/base'
 import axios from 'axios'
@@ -230,6 +231,16 @@ export class DataCatalogManager {
           layer = new GeoJsonLayer({ ...layerConfig, url })
         } else {
           layer = new GeoJsonLayer(layerConfig)
+        }
+
+        break
+      case LayerType.Plot:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          layer = new PlotLayer({ ...layerConfig, url })
+        } else {
+          layer = new PlotLayer(layerConfig)
         }
 
         break

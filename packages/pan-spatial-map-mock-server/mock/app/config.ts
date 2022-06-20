@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import { Response, Request, json } from 'express'
 
-const configs: string[] = ['base', 'district', 'sheet', 'pano', 'panomult']
+const configs: string[] = ['base', 'district', 'sheet', 'pano', 'panomult', 'plot']
 
 export const saveConfig = (req: Request, res: Response) => {
   return res.json({})

@@ -1,0 +1,153 @@
+{
+  "name": "图标配置",
+  "children": [
+    {
+      "name": "常用",
+      "children": [
+        {
+          "id": 101,
+          "name": "",
+          "type": "simpleline",
+          "src": "标绘/icon/常用/工具线.svg"
+        }
+      ]
+    },
+    {
+      "name": "算法符号",
+      "children": [
+        {
+          "name": "其他",
+          "children": [
+            {
+              "id": 2,
+              "name": "",
+              "type": "combinationcircle",
+              "src": "标绘/icon/算法符号/其他/cannonGroup.svg"
+            },
+            {
+              "id": 3,
+              "name": "",
+              "type": "sector",
+              "src": "标绘/icon/算法符号/其他/figureFan.svg"
+            },
+            {
+              "id": 4,
+              "name": "",
+              "type": "kidney",
+              "src": "标绘/icon/算法符号/其他/kidneyArea.svg"
+            },
+            {
+              "id": 5,
+              "name": "",
+              "type": "tailedsquadarrow",
+              "src": "标绘/icon/算法符号/其他/燕尾.svg"
+            }
+          ]
+        },
+        {
+          "name": "箭头符号",
+          "children": [
+            {
+              "id": 6,
+              "name": "",
+              "type": "doublearrow",
+              "src": "标绘/icon/算法符号/箭头符号/multiArrow.svg"
+            },
+            {
+              "id": 7,
+              "name": "",
+              "type": "multiarrow",
+              "src": "标绘/icon/算法符号/箭头符号/multiArrow3.svg"
+            },
+            {
+              "id": 8,
+              "name": "",
+              "type": "multiarrow",
+              "src": "标绘/icon/算法符号/箭头符号/multiArrow4.svg"
+            },
+            {
+              "id": 9,
+              "name": "",
+              "type": "multiarrow",
+              "src": "标绘/icon/算法符号/箭头符号/multiArrow5.svg"
+            },
+            {
+              "id": 10,
+              "name": "",
+              "type": "singlearrow",
+              "src": "标绘/icon/算法符号/箭头符号/singleArrow1.svg"
+            },
+            {
+              "id": 11,
+              "name": "",
+              "type": "squadarrow",
+              "src": "标绘/icon/算法符号/箭头符号/singleArrow2.svg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "规则符号",
+      "children": [
+        {
+          "name": "常规点",
+          "children": [
+            {
+              "id": 12,
+              "name": "",
+              "type": "simplepoint",
+              "src": "标绘/icon/规则符号/常规点/新修规则点.svg"
+            },
+            {
+              "id": 13,
+              "name": "",
+              "type": "simplepoint",
+              "src": "标绘/icon/规则符号/常规点/武警.svg"
+            }
+          ]
+        },
+        {
+          "name": "常规线",
+          "children": [
+            {
+              "id": 14,
+              "name": "",
+              "type": "simpleline",
+              "src": "标绘/icon/规则符号/常规线/撤离线.svg"
+            },
+            {
+              "id": 15,
+              "name": "",
+              "type": "simpleline",
+              "src": "标绘/icon/规则符号/常规线/新修规则线.svg"
+            },
+            {
+              "id": 16,
+              "name": "",
+              "type": "simpleline",
+              "src": "标绘/icon/规则符号/常规线/新修规则线填充.svg"
+            }
+          ]
+        },
+        {
+          "name": "常规面",
+          "children": [
+            {
+              "id": 17,
+              "name": "",
+              "type": "simplearea",
+              "src": "标绘/icon/规则符号/常规面/新修规则面.svg"
+            },
+            {
+              "id": 18,
+              "name": "",
+              "type": "simplearea",
+              "src": "标绘/icon/规则符号/常规面/贴地区.svg"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

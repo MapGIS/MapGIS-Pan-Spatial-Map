@@ -182,6 +182,14 @@
             "uri": "widgets/feature-query"
           },
           {
+            "id": "widget_ac20c8de-b087-48e4-90ee-e9e6925ea5bf",
+            "uri": "widgets/plot-manager"
+          },
+          {
+            "id": "widget_cc4b2d79-5e88-4f10-894b-c3362a35348d",
+            "uri": "widgets/plot-animation"
+          },
+          {
             "id": "widget_05bc8763-837b-4fd4-972e-5d8f49718d44",
             "uri": "widgets/overlay-manager",
             "config": "configs/overlay-manager/config.json"
@@ -334,6 +342,12 @@
           },
           {
             "id": "widget_9e4f4ab9-8ab6-400d-ba01-7adab2963fcc"
+          },
+          {
+            "id": "widget_ac20c8de-b087-48e4-90ee-e9e6925ea5bf"
+          },
+          {
+            "id": "widget_cc4b2d79-5e88-4f10-894b-c3362a35348d"
           },
           {
             "id": "widget_05bc8763-837b-4fd4-972e-5d8f49718d44"

@@ -1,0 +1,16 @@
+{
+  "name": "行业标绘管理",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpPlotManager",
+  "icon": "<svg t=\"1654499253813\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"59022\" width=\"200\" height=\"200\"><path d=\"M157.696 770.304h181.056a32 32 0 0 0 22.592-9.408l362.048-362.048a32 32 0 0 0 0-45.248L542.4 172.608a32 32 0 0 0-45.248 0L135.04 534.656a32 32 0 0 0-9.408 22.592v181.056a32 32 0 0 0 32 32z m32-64V570.496l330.048-330.048 135.808 135.808-330.112 330.048h-135.68zM896 864v64H128v-64z\" p-id=\"59023\"></path></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "hasPadding":false,
+    "settingUiComponent": ""
+  }
+}

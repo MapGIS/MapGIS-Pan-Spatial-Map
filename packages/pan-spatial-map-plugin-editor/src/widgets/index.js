@@ -5,3 +5,6 @@ export { default as MpComprehensiveQuery } from './comprehensive-query/comprehen
 export { default as MpThematicMap } from './thematic-map/thematic-map.vue'
 export { default as MpVectorTileCarto } from './vector-tile-carto/vector-tile-carto.vue'
 export { default as MpFeatureQuery } from './feature-query/feature-query.vue'
+export { default as MpPlotManager } from './plot/plot-manager.vue'
+// export { default as MpSymbolLibrary } from './plot/symbol-library.vue'
+export { default as MpPlotAnimation } from './plot/plot-animation.vue'
