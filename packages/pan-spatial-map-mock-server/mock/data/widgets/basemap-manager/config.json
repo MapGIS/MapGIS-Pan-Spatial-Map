@@ -1,84 +1,97 @@
-[
-  {
-    "name": "天地图影像",
-    "image": "/upload/basemap-tianditu-img.png",
-    "children": [
-      {
-        "type": "OGCWMTS",
-        "url": "http://t0.tianditu.gov.cn/img_c/wmts",
-        "name": "天地图影像底图",
-        "tokenKey": "tk",
-        "token": "2ddaabf906d4b5418aed0078e1657029"
-      },
-      {
-        "type": "OGCWMTS",
-        "url": "http://t0.tianditu.gov.cn/cia_c/wmts",
-        "name": "天地图影像注记",
-        "tokenKey": "tk",
-        "token": "2ddaabf906d4b5418aed0078e1657029"
-      }
-    ]
-  },
-  {
-    "name": "天地图矢量",
-    "image": "/upload/basemap-tianditu-vec.png",
-    "children": [
-      {
-        "type": "OGCWMTS",
-        "url": "http://t0.tianditu.gov.cn/vec_c/wmts",
-        "name": "天地图矢量底图",
-        "tokenKey": "tk",
-        "token": "2ddaabf906d4b5418aed0078e1657029"
-      },
-      {
-        "type": "OGCWMTS",
-        "url": "http://t0.tianditu.gov.cn/cva_c/wmts",
-        "name": "天地图矢量注记",
-        "tokenKey": "tk",
-        "token": "2ddaabf906d4b5418aed0078e1657029"
-      }
-    ]
-  },
-  {
-    "name": "天地图地形",
-    "image": "/upload/basemap-tianditu-terrain.png",
-    "children": [
-      {
-        "type": "OGCWMTS",
-        "url": "http://t0.tianditu.gov.cn/ter_c/wmts",
-        "name": "天地图地形晕渲",
-        "tokenKey": "tk",
-        "token": "2ddaabf906d4b5418aed0078e1657029"
-      },
-      {
-        "type": "OGCWMTS",
-        "url": "http://t0.tianditu.gov.cn/cta_c/wmts",
-        "name": "天地图地形注记",
-        "tokenKey": "tk",
-        "token": "2ddaabf906d4b5418aed0078e1657029"
-      }
-    ]
-  },
-  {
-    "name": "ArcGIS影像图",
-    "image": "/upload/basemap-arcgis-img.jpg",
-    "children": [
-      {
-        "type": "ArcGISTile",
-        "url": "http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer",
-        "name": "Imagery"
-      }
-    ]
-  },
-  {
-    "name": "ArcGIS街道图",
-    "image": "/upload/basemap-arcgis-street.jpg",
-    "children": [
-      {
-        "type": "ArcGISTile",
-        "url": "http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer",
-        "name": "Streets"
-      }
-    ]
-  }
-]
+{
+  "baseMapList": [
+    {
+      "name": "天地图影像",
+      "image": "/upload/basemap-tianditu-img.png",
+      "visible": "true",
+      "select": false,
+      "children": [
+        {
+          "type": "OGCWMTS",
+          "url": "http://t0.tianditu.gov.cn/img_c/wmts",
+          "name": "天地图影像底图",
+          "tokenKey": "tk",
+          "token": "2ddaabf906d4b5418aed0078e1657029"
+        },
+        {
+          "type": "OGCWMTS",
+          "url": "http://t0.tianditu.gov.cn/cia_c/wmts",
+          "name": "天地图影像注记",
+          "tokenKey": "tk",
+          "token": "2ddaabf906d4b5418aed0078e1657029"
+        }
+      ]
+    },
+    {
+      "name": "天地图矢量",
+      "image": "/upload/basemap-tianditu-vec.png",
+      "visible": "true",
+      "select": false,
+      "children": [
+        {
+          "type": "OGCWMTS",
+          "url": "http://t0.tianditu.gov.cn/vec_c/wmts",
+          "name": "天地图矢量底图",
+          "tokenKey": "tk",
+          "token": "2ddaabf906d4b5418aed0078e1657029"
+        },
+        {
+          "type": "OGCWMTS",
+          "url": "http://t0.tianditu.gov.cn/cva_c/wmts",
+          "name": "天地图矢量注记",
+          "tokenKey": "tk",
+          "token": "2ddaabf906d4b5418aed0078e1657029"
+        }
+      ]
+    },
+    {
+      "name": "天地图地形",
+      "image": "/upload/basemap-tianditu-terrain.png",
+      "visible": "true",
+      "select": false,
+      "children": [
+        {
+          "type": "OGCWMTS",
+          "url": "http://t0.tianditu.gov.cn/ter_c/wmts",
+          "name": "天地图地形晕渲",
+          "tokenKey": "tk",
+          "token": "2ddaabf906d4b5418aed0078e1657029"
+        },
+        {
+          "type": "OGCWMTS",
+          "url": "http://t0.tianditu.gov.cn/cta_c/wmts",
+          "name": "天地图地形注记",
+          "tokenKey": "tk",
+          "token": "2ddaabf906d4b5418aed0078e1657029"
+        }
+      ]
+    },
+    {
+      "name": "ArcGIS影像图",
+      "image": "/upload/basemap-arcgis-img.jpg",
+      "visible": "true",
+      "select": false,
+      "children": [
+        {
+          "type": "ArcGISTile",
+          "url": "http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer",
+          "name": "Imagery"
+        }
+      ]
+    },
+    {
+      "name": "ArcGIS街道图",
+      "image": "/upload/basemap-arcgis-street.jpg",
+      "visible": "true",
+      "select": false,
+      "children": [
+        {
+          "type": "ArcGISTile",
+          "url": "http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer",
+          "name": "Streets"
+        }
+      ]
+    }
+  ],
+  "indexBaseMapGUID": ""
+}
