@@ -11,7 +11,8 @@
           "url": "http://t0.tianditu.gov.cn/img_c/wmts",
           "name": "天地图影像底图",
           "tokenKey": "tk",
-          "token": "2ddaabf906d4b5418aed0078e1657029"
+          "token": "2ddaabf906d4b5418aed0078e1657029",
+          "description": ""
         },
         {
           "type": "OGCWMTS",
@@ -20,13 +21,14 @@
           "tokenKey": "tk",
           "token": "2ddaabf906d4b5418aed0078e1657029"
         }
-      ]
+      ],
+      "guid": "790d84a0-8810-4f83-a895-1cfefebd84e2"
     },
     {
       "name": "天地图矢量",
       "image": "/upload/basemap-tianditu-vec.png",
       "visible": "true",
-      "select": false,
+      "select": true,
       "children": [
         {
           "type": "OGCWMTS",
@@ -42,13 +44,14 @@
           "tokenKey": "tk",
           "token": "2ddaabf906d4b5418aed0078e1657029"
         }
-      ]
+      ],
+      "guid": "7bcba0c2-366d-43a8-90c3-41169d5701e3"
     },
     {
       "name": "天地图地形",
       "image": "/upload/basemap-tianditu-terrain.png",
       "visible": "true",
-      "select": false,
+      "select": true,
       "children": [
         {
           "type": "OGCWMTS",
@@ -64,7 +67,8 @@
           "tokenKey": "tk",
           "token": "2ddaabf906d4b5418aed0078e1657029"
         }
-      ]
+      ],
+      "guid": "724079fb-d7f9-4dc4-9a2b-db55519ea747"
     },
     {
       "name": "ArcGIS影像图",
@@ -77,7 +81,8 @@
           "url": "http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer",
           "name": "Imagery"
         }
-      ]
+      ],
+      "guid": "1975533e-426a-468c-b1af-ff4c1de0b4c6"
     },
     {
       "name": "ArcGIS街道图",
@@ -90,7 +95,8 @@
           "url": "http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer",
           "name": "Streets"
         }
-      ]
+      ],
+      "guid": "56d790bf-ffb0-455c-abc3-ed1d7ef8e239"
     }
   ],
   "indexBaseMapGUID": ""
