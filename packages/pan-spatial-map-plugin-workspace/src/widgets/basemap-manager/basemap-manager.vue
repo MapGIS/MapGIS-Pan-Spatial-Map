@@ -43,36 +43,32 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
   }
 
   get basemaps() {
-    const basemapList = [...this.widgetInfo.config]
+    const { baseMapList, indexBaseMapGUID } = { ...this.widgetInfo.config }
     let defaultBasemap
-    for (let i = 0; i < basemapList.length; i++) {
-      const basemap = basemapList[i]
-      if (
-        basemap.description == '索引底图' ||
-        basemap.children[0].description == '索引底图'
-      ) {
-        basemapList.splice(i, 1)
+    for (let i = 0; i < baseMapList.length; i++) {
+      const basemap = baseMapList[i]
+      if (basemap.guid == indexBaseMapGUID) {
+        baseMapList.splice(i, 1)
         defaultBasemap = basemap
         break
       }
     }
     if (defaultBasemap) {
-      basemapList.push(defaultBasemap)
+      baseMapList.push(defaultBasemap)
     }
 
     // 将配置转换成可用于添加到map中的配置
-    return basemapList
+    return baseMapList
       .map((basemap) => {
         const { children } = basemap
-        const layers = children.map((layer) => {
+        const layers = []
+        for (let i = 0; i < children.length; i++) {
+          let layer = children[i]
           // 如果要兼容老版格式，可以在这里进行升级，转换成新的数据结构（数据与添加数据配置一致）
           layer = this.updateLayer(layer)
           // 索引底图只有一个图层，图层的描述必须为 "索引底图"，不然不会显示在其他底图上层
           let description = layer.description || ''
-          if (
-            description !== '索引底图' &&
-            basemap.description === '索引底图'
-          ) {
+          if (basemap.guid == indexBaseMapGUID && i == 0) {
             description = '索引底图'
           }
           const layerConfig = {
@@ -86,8 +82,8 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
             layerConfig.tokenValue = layer.token
             layerConfig.tokenKey = layer.tokenKey ? layer.tokenKey : 'token'
           }
-          return layerConfig
-        })
+          layers.push(layerConfig)
+        }
         return {
           ...basemap,
           children: layers,
@@ -110,14 +106,12 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
   }
 
   mounted() {
+    const { indexBaseMapGUID } = { ...this.widgetInfo.config }
     // 加载显示配置里已设置默认选中的底图
     if (this.defaultSelect && this.defaultSelect.length > 0) {
       for (let i = 0; i < this.defaultSelect.length; i++) {
         let isZoomTo = false
-        if (
-          this.defaultSelect[i].description == '索引底图' ||
-          this.defaultSelect[i].children[0].description == '索引底图'
-        ) {
+        if (this.defaultSelect[i].guid == indexBaseMapGUID) {
           isZoomTo = true
         }
         this.onSelect(this.defaultSelect[i].name, isZoomTo)
