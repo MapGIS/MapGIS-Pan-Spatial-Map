@@ -11,7 +11,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator'
 
 @Component({
-  name: 'MpBasemapItem'
+  name: 'MpBasemapItem',
 })
 export default class MpBasemapItem extends Vue {
   @Prop({ type: String }) name
@@ -35,7 +35,7 @@ export default class MpBasemapItem extends Vue {
   display: inline-block;
   vertical-align: top;
   margin: 8px;
-  width: 134px;
+  width: 120px;
   text-align: center;
   cursor: pointer;
   .item-image {
