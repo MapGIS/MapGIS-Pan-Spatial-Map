@@ -26,6 +26,7 @@
               @click="slotProps.click"
               @search="slotProps.search"
               :baseUrl="slotProps.baseUrl"
+              :format="slotProps.format"
             ></mapgis-ui-plot-symbol>
           </mp-window>
         </mp-window-wrapper>
@@ -59,6 +60,7 @@
               @click="slotProps.click"
               @search="slotProps.search"
               :baseUrl="slotProps.baseUrl"
+              :format="slotProps.format"
             ></mapgis-ui-plot-symbol>
           </mp-window>
         </mp-window-wrapper>
