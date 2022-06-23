@@ -292,7 +292,7 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
   }
 
   private getSaveConfig() {
-    const configs = this.basemaps.map((basemap) => {
+    const baseMapList = this.basemaps.map((basemap) => {
       const { children } = basemap
       const layers = children.map((layer) => {
         const description = layer.description || ''
@@ -313,7 +313,12 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
         children: layers,
       }
     })
-    return configs
+    const { indexBaseMapGUID } = { ...this.widgetInfo.config }
+    const config = {
+      baseMapList,
+      indexBaseMapGUID,
+    }
+    return config
   }
 
   // 微件失活时
