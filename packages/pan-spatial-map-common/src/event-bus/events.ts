@@ -1,3 +1,7 @@
+const ev = require('@mapgis/web-app-framework/src/event-bus/events')
+
+export const SCENE_LOADEN_ON_MAP = ev.SCENE_LOADEN_ON_MAP
+export const PLOT_LAYER_LOADED = ev.PLOT_LAYER_LOADED
 // 添加数据
 export const ADD_DATA_EVENT = 'add-data'
 // 数据选择项改变
@@ -18,7 +22,5 @@ export const IMPOSE_SERVICE_PREVIEW_EVENT = 'impose-service-preview'
 // 目录树注册了服务叠加事件
 export const DATA_CATALOG_ON_IMPOSE_SERVICE_EVENT =
   'data-catalog-on-impose-service'
-// 监听三维图层是否加载到地图上
-export const SCENE_LOADEN_ON_MAP = 'scene-loaded-on-map'
 // 监听数据流数据动态数据更新
 export const DATA_FLOW_LAYER_UPDATE = 'data-flow-layer-update'

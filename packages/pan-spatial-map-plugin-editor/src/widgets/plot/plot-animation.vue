@@ -5,7 +5,7 @@
       :vueKey="vueKey"
       :vueIndex="vueIndex"
       v-if="vueKey && vueIndex && data"
-      @loaded="e=>animation=e"
+      @loaded="(e) => (animation = e)"
       @export="saveConfig"
     >
       <template #timeline="slotProps">
@@ -39,7 +39,7 @@
       :vueKey="vueKey"
       :vueIndex="vueIndex"
       v-if="vueKey && vueIndex && data"
-      @loaded="e=>animation=e"
+      @loaded="(e) => (animation = e)"
       @export="saveConfig"
     >
       <template #timeline="slotProps">
@@ -94,7 +94,7 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
   private animation = undefined
 
   created() {
-    this.$root.$on('plot-layer-loaded', this.handleLoad.bind(this))
+    this.$root.$on(events.PLOT_LAYER_LOADED, this.handleLoad.bind(this))
   }
 
   async mounted() {
@@ -107,7 +107,7 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
     // this.plot.mount()
     this.showSymbol = true
     this.showTimeline = true
-    this.animation && this.animation.setPick();
+    this.animation && this.animation.setPick()
   }
 
   onClose() {
