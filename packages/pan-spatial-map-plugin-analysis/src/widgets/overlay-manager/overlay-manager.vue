@@ -75,7 +75,7 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
   }
 
   onClose() {
-    this.$refs.graphicLayer.$_hideAllGraphic()
+    // this.$refs.graphicLayer.$_hideAllGraphic()
   }
 
   async save(e) {
