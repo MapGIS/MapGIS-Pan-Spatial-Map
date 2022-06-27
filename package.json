@@ -29,14 +29,14 @@
   },
   "dependencies": {
     "@mapgis/web-app-framework": "link:../MapGIS-Web-App-Framework",
-    "@mapgis/webclient-es6-mapboxgl": "^15.6.0",
-    "@mapgis/webclient-es6-service": "^15.6.0",
-    "@mapgis/webclient-vue-cesium": "^15.6.0",
-    "@mapgis/webclient-vue-mapboxgl": "^15.6.0",
-    "@mapgis/webclient-vue-ui": "^15.6.0",
+    "@mapgis/webclient-es6-mapboxgl": "^15.6.3",
+    "@mapgis/webclient-es6-service": "^15.6.4",
+    "@mapgis/webclient-vue-cesium": "^15.6.9",
+    "@mapgis/webclient-vue-mapboxgl": "^15.6.9",
+    "@mapgis/webclient-vue-ui": "^15.6.8",
     "json2csv": "^5.0.6",
-    "three": "^0.130.1",
     "pannellum": "^2.5.6",
+    "three": "^0.130.1",
     "vue-color": "^2.8.1"
   },
   "devDependencies": {
