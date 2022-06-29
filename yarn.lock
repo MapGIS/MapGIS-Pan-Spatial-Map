@@ -299,6 +299,11 @@
   resolved "https://registry.npmmirror.com/@babel/parser/-/parser-7.17.3.tgz#b07702b982990bf6fdc1da5049a23fece4c5c3d0"
   integrity sha512-7yJPvPV+ESz2IUTPbOL+YkIGyCqOyNIzdguKQuJGnH7bg1WTIifuM21YqokFt/THWh1AkCRn9IgoykTRCBVpzA==
 
+"@babel/parser@^7.4.4":
+  version "7.18.5"
+  resolved "https://registry.npmmirror.com/@babel/parser/-/parser-7.18.5.tgz#337062363436a893a2d22faa60be5bb37091c83c"
+  integrity sha512-YZWVaglMiplo7v8f1oMQ5ZPQr0vn7HPeZXxXWsxXJRjGVrzUFn9OxFQl1sb5wzfootjA/yChhW84BV+383FSOw==
+
 "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@^7.16.7":
   version "7.16.7"
   resolved "https://registry.npmmirror.com/@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression/-/plugin-bugfix-safari-id-destructuring-collision-in-function-expression-7.16.7.tgz#4eda6d6c2a0aa79c70fa7b6da67763dfe2141050"
@@ -1238,7 +1243,7 @@
     lodash.isequal "^4.4.0"
     randomcolor "^0.4.4"
 
-"@mapgis/mapbox-gl@^1.9.12", "@mapgis/mapbox-gl@^1.9.3":
+"@mapgis/mapbox-gl@^1.9.12":
   version "1.9.12"
   resolved "http://192.168.82.89:4873/@mapgis%2fmapbox-gl/-/mapbox-gl-1.9.12.tgz#187fe752c61eba10c5ffb5e0f36053b628a77c42"
   integrity sha512-KnmWX0kH/MPkGq1O7RMoQJ+9g4Q8upg/Mz3J4x62sG67vHOspDTYKleayN88gYSPdqAWIzHuSHqKhpi22kVpnw==
@@ -1263,6 +1268,17 @@
     echarts "^4.8.0"
     mapv "^2.0.56"
 
+"@mapgis/webclient-es6-mapboxgl@^15.6.3":
+  version "15.6.3"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-es6-mapboxgl/-/webclient-es6-mapboxgl-15.6.3.tgz#2a95534f1b2d53eb0482291e1ed34de941915380"
+  integrity sha512-d0qUVSC23a5QKSgi8VFccDmJ0e/NCXyKnFz5gyI8dEQzarWhJBOH+/OaIwW/A5yF1bYYhEuv4sOnpiY0FsK41Q==
+  dependencies:
+    "@mapgis/mapbox-gl" "^1.9.9"
+    "@mapgis/webclient-es6-service" "^10.5.7"
+    core-js "^3.21.1"
+    echarts "^4.8.0"
+    mapv "^2.0.56"
+
 "@mapgis/webclient-es6-service@^10.5.7":
   version "10.5.10"
   resolved "http://192.168.82.89:4873/@mapgis%2fwebclient-es6-service/-/webclient-es6-service-10.5.10.tgz#941cd587414187b858b6957210b4e4f54cfe2437"
@@ -1278,6 +1294,20 @@
   version "15.6.2"
   resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-es6-service/-/webclient-es6-service-15.6.2.tgz#f36537fbf73a57e3f483731c9ffaa3b6876995ab"
   integrity sha512-+7JEIu4vImxrf7WpDfdtlhkpNMIRxPOhl+PlynyvkixDFQi5/dnzIMLAIdkNBWqGDb+53UQ5RWfkTyD+xCvOag==
+  dependencies:
+    "@turf/turf" "^6.5.0"
+    axios "^0.26.0"
+    core-js "^3.21.1"
+    fast-xml-parser "^3.17.6"
+    fetch-ie8 "^1.5.0"
+    proj4 "^2.7.5"
+    promise-polyfill "^8.2.1"
+    qs "^6.9.4"
+
+"@mapgis/webclient-es6-service@^15.6.4":
+  version "15.6.4"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-es6-service/-/webclient-es6-service-15.6.4.tgz#936411a96cb1ec548012e29d26f77a52ae6ad9fc"
+  integrity sha512-l7ww36igJWax2OB2jMhQK0D6gL/sxIrNbOVvsph605ovz9lbdXj9wAWamSKN3zp9hFLjgRMUbmzuzPnuCREQ1Q==
   dependencies:
     "@turf/turf" "^6.5.0"
     axios "^0.26.0"
@@ -1315,10 +1345,10 @@
     vuepress "^1.3.1"
     webpack-bundle-analyzer "^4.4.0"
 
-"@mapgis/webclient-vue-cesium@^15.6.0":
-  version "15.6.2"
-  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-cesium/-/webclient-vue-cesium-15.6.2.tgz#bd600a6811132b2803fc96d48ec22cb2accc5c99"
-  integrity sha512-34x6LECdHHIZkgT5SU9vB5EeCaSxE7RBCxWWdfxLeIIxxBQL4EdTZpNcpTQQFcOGt40rW4BLqdfb0ALi8+Ih9Q==
+"@mapgis/webclient-vue-cesium@15.6.9", "@mapgis/webclient-vue-cesium@^15.6.9":
+  version "15.6.9"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-cesium/-/webclient-vue-cesium-15.6.9.tgz#2bca75e85ad4c5205b20a74e51714afe670e1f31"
+  integrity sha512-2VBk6JM0Wt/IrhQL+UuBtRrAzf8z7jwFK8qMi2kzugbSZPk/YWJvtK0e5S3x+RplPR7Ej6jiFYjG/4QYXe0UUw==
   dependencies:
     "@mapgis/cesium" "^1.84.0"
     "@mapgis/webclient-es6-service" "^15.6.0"
@@ -1347,10 +1377,10 @@
     wangeditor-antd "^1.0.7"
     webfont-matcher "1.1.0"
 
-"@mapgis/webclient-vue-mapboxgl@^15.6.0":
-  version "15.6.2"
-  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-mapboxgl/-/webclient-vue-mapboxgl-15.6.2.tgz#2cd39044784a81eba6a7aa63405a9dcb70c57aac"
-  integrity sha512-sBbmkUJq3REJir4OY1kYeECmyf9ehrrcjUy2IzfRoL/FKbBWzKtEZDFSYfWM9FeTEHK1F7yvCVVTLgSLJlkbsQ==
+"@mapgis/webclient-vue-mapboxgl@^15.6.9":
+  version "15.6.9"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-mapboxgl/-/webclient-vue-mapboxgl-15.6.9.tgz#257bd541813bc3a6a4ccd190cca4b2a11d2e078a"
+  integrity sha512-P0n6vb0zvQQZDi92lsZxBsLYtLuNHcJ7q8KwC5gw6s0y+TZvJSNGejMGFoFUdj3Orl47oLximynNiP8GPuNerQ==
   dependencies:
     "@mapbox/mapbox-gl-draw" "^1.3.0"
     "@mapbox/mapbox-gl-draw-static-mode" "^1.0.1"
@@ -1395,6 +1425,43 @@
     ant-design-vue "^1.7.8"
     axios "^0.21.1"
     clone "^2.1.2"
+    css-vars-ponyfill "^2.4.5"
+    d3 "5.16.0"
+    echarts "^5.1.2"
+    js-md5 "^0.7.3"
+    jsoneditor "^9.5.6"
+    lodash "^4.17.21"
+    lodash.uniqueid "^4.0.1"
+    proj4 "^2.7.5"
+    qs "^6.9.0"
+    resize-detector "^0.3.0"
+    simple-uploader.js "^0.5.6"
+    spark-md5 "^3.0.1"
+    tinycolor2 "^1.4.2"
+    vcolorpicker "^1.1.0"
+    video.js "^7.17.0"
+    videojs-contrib-hls "^5.15.0"
+    vue-color "^2.8.1"
+    vue-infinite-scroll "^2.0.2"
+    vuepress "^1.8.2"
+    vuepress-plugin-demo-block "^0.7.2"
+    vuepress-plugin-demo-code "^0.6.0"
+
+"@mapgis/webclient-vue-ui@^15.6.8":
+  version "15.6.8"
+  resolved "http://192.168.11.130:4873/@mapgis%2fwebclient-vue-ui/-/webclient-vue-ui-15.6.8.tgz#a755a477ac7249c613e0bf731ab521e7fe2797f5"
+  integrity sha512-fukfD/L0IVOHPQljJHjSbqRsNpAYJ7XLn26q89QXSHSz7hMktzpl6y5ZgrLXuah1V/hy7+mjyvFnZr17UZDr0w==
+  dependencies:
+    "@ant-design/icons" "2.1.1"
+    "@mapgis/webclient-es6-service" "^15.6.0"
+    "@mapgis/webclient-store" "^10.5.5"
+    "@vue/composition-api" "^1.0.0-rc.13"
+    "@vuepress/plugin-active-header-links" "^1.8.2"
+    "@vuepress/plugin-nprogress" "^1.8.2"
+    ant-design-vue "^1.7.8"
+    axios "^0.21.1"
+    clone "^2.1.2"
+    core-js "3.21.1"
     css-vars-ponyfill "^2.4.5"
     d3 "5.16.0"
     echarts "^5.1.2"
@@ -5428,7 +5495,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^3.1.1, bluebird@^3.5.5:
+bluebird@^3.1.1, bluebird@^3.5.4, bluebird@^3.5.5:
   version "3.7.2"
   resolved "https://registry.npmmirror.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
@@ -5906,6 +5973,13 @@ caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.npmmirror.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==
+
+catharsis@^0.8.11:
+  version "0.8.11"
+  resolved "https://registry.npmmirror.com/catharsis/-/catharsis-0.8.11.tgz#d0eb3d2b82b7da7a3ce2efb1a7b00becc6643468"
+  integrity sha512-a+xUyMV7hD1BrDQA/3iPV7oc+6W26BgVJO05PGEoatMyIuPScQKsde6i3YorWX1qs+AZjnJ18NqdKoCtKiNh1g==
+  dependencies:
+    lodash "^4.17.14"
 
 cfb@^1.1.4:
   version "1.2.1"
@@ -6551,6 +6625,11 @@ core-js-compat@^3.20.2, core-js-compat@^3.21.0, core-js-compat@^3.6.5:
     browserslist "^4.19.1"
     semver "7.0.0"
 
+core-js@3.21.1, core-js@^3.21.1, core-js@^3.6.0, core-js@^3.6.4, core-js@^3.6.5, core-js@^3.8.3:
+  version "3.21.1"
+  resolved "http://192.168.82.89:4873/core-js/-/core-js-3.21.1.tgz#f2e0ddc1fc43da6f904706e8e955bc19d06a0d94"
+  integrity sha512-FRq5b/VMrWlrmCzwRrpDYNxyHP9BcAZC+xHJaqTgIE5091ZV1NTmyh0sGOg5XqpnHvR0svdy0sv1gWA1zmhxig==
+
 core-js@3.6.5:
   version "3.6.5"
   resolved "https://registry.npmmirror.com/core-js/-/core-js-3.6.5.tgz#7395dc273af37fb2e50e9bd3d9fe841285231d1a"
@@ -6560,11 +6639,6 @@ core-js@^2.4.0, core-js@^2.5.0:
   version "2.6.12"
   resolved "https://registry.npmmirror.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
-
-core-js@^3.21.1, core-js@^3.6.0, core-js@^3.6.4, core-js@^3.6.5, core-js@^3.8.3:
-  version "3.21.1"
-  resolved "http://192.168.82.89:4873/core-js/-/core-js-3.21.1.tgz#f2e0ddc1fc43da6f904706e8e955bc19d06a0d94"
-  integrity sha512-FRq5b/VMrWlrmCzwRrpDYNxyHP9BcAZC+xHJaqTgIE5091ZV1NTmyh0sGOg5XqpnHvR0svdy0sv1gWA1zmhxig==
 
 core-util-is@1.0.2:
   version "1.0.2"
@@ -9265,6 +9339,11 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.npmmirror.com/graceful-fs/-/graceful-fs-4.2.9.tgz#041b05df45755e587a24942279b9d113146e1c96"
   integrity sha512-NtNxqUcXgpW2iMrfqSfR73Glt39K+BLwWsPs94yR63v45T0Wbej7eRmL5cWfwEgqXnmjQp3zaJTshdRW/qC2ZQ==
 
+graceful-fs@^4.1.9:
+  version "4.2.10"
+  resolved "https://registry.npmmirror.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
+  integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
+
 gray-matter@^4.0.1:
   version "4.0.3"
   resolved "https://registry.npmmirror.com/gray-matter/-/gray-matter-4.0.3.tgz#e893c064825de73ea1f5f7d88c7a9f7274288798"
@@ -10418,10 +10497,37 @@ js-yaml@^3.12.0, js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
+js2xmlparser@^4.0.0:
+  version "4.0.2"
+  resolved "https://registry.npmmirror.com/js2xmlparser/-/js2xmlparser-4.0.2.tgz#2a1fdf01e90585ef2ae872a01bc169c6a8d5e60a"
+  integrity sha512-6n4D8gLlLf1n5mNLQPRfViYzu9RATblzPEtm1SthMX1Pjao0r9YI9nw7ZIfRxQMERS87mcswrg+r/OYrPRX6jA==
+  dependencies:
+    xmlcreate "^2.0.4"
+
 jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.npmmirror.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==
+
+jsdoc@3.6.3:
+  version "3.6.3"
+  resolved "https://registry.npmmirror.com/jsdoc/-/jsdoc-3.6.3.tgz#dccea97d0e62d63d306b8b3ed1527173b5e2190d"
+  integrity sha512-Yf1ZKA3r9nvtMWHO1kEuMZTlHOF8uoQ0vyo5eH7SQy5YeIiHM+B0DgKnn+X6y6KDYZcF7G2SPkKF+JORCXWE/A==
+  dependencies:
+    "@babel/parser" "^7.4.4"
+    bluebird "^3.5.4"
+    catharsis "^0.8.11"
+    escape-string-regexp "^2.0.0"
+    js2xmlparser "^4.0.0"
+    klaw "^3.0.0"
+    markdown-it "^8.4.2"
+    markdown-it-anchor "^5.0.2"
+    marked "^0.7.0"
+    mkdirp "^0.5.1"
+    requizzle "^0.2.3"
+    strip-json-comments "^3.0.1"
+    taffydb "2.6.2"
+    underscore "~1.9.1"
 
 jsesc@^2.5.1:
   version "2.5.2"
@@ -10640,6 +10746,13 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.3"
   resolved "https://registry.npmmirror.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
+
+klaw@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmmirror.com/klaw/-/klaw-3.0.0.tgz#b11bec9cf2492f06756d6e809ab73a2910259146"
+  integrity sha512-0Fo5oir+O9jnXu5EefYbVK+mHMBeEVEy2cmctR1O1NECcCkPRreJKrS6Qt/j3KC2C148Dfo9i3pCmCMsdqGr0g==
+  dependencies:
+    graceful-fs "^4.1.9"
 
 klona@^2.0.4:
   version "2.0.5"
@@ -11142,7 +11255,7 @@ markdown-it-table-of-contents@^0.4.0:
   resolved "https://registry.npmmirror.com/markdown-it-table-of-contents/-/markdown-it-table-of-contents-0.4.4.tgz#3dc7ce8b8fc17e5981c77cc398d1782319f37fbc"
   integrity sha512-TAIHTHPwa9+ltKvKPWulm/beozQU41Ab+FIefRaQV1NRnpzwcV9QOe6wXQS5WLivm5Q/nlo0rl6laGkMDZE7Gw==
 
-markdown-it@^8.4.1:
+markdown-it@^8.4.1, markdown-it@^8.4.2:
   version "8.4.2"
   resolved "https://registry.npmmirror.com/markdown-it/-/markdown-it-8.4.2.tgz#386f98998dc15a37722aa7722084f4020bdd9b54"
   integrity sha512-GcRz3AWTqSUphY3vsUqQSFMbgR38a4Lh3GWlHRh/7MRwz8mcu9n2IO7HOh+bXHrR9kOPDl5RNCaEsrneb+xhHQ==
@@ -11152,6 +11265,11 @@ markdown-it@^8.4.1:
     linkify-it "^2.0.0"
     mdurl "^1.0.1"
     uc.micro "^1.0.5"
+
+marked@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.npmmirror.com/marked/-/marked-0.7.0.tgz#b64201f051d271b1edc10a04d1ae9b74bb8e5c0e"
+  integrity sha512-c+yYdCZJQrsRjTPhUx7VKkApw9bwDkNbHUKo1ovgcfDjb2kc8rLuRbIFyXL5WOEUwzSSKo3IXpph2K6DqB/KZg==
 
 material-colors@^1.0.0:
   version "1.2.6"
@@ -12239,6 +12357,11 @@ pako@~1.0.5:
   version "1.0.11"
   resolved "https://registry.npmmirror.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
+
+pannellum@^2.5.6:
+  version "2.5.6"
+  resolved "https://registry.npmmirror.com/pannellum/-/pannellum-2.5.6.tgz#13bfec43ec272a70b729f20f70f9c34d05b25264"
+  integrity sha512-R4kSPpj36wQPlyIi9ZftxPfVYF11DEbNBATUEI+pkMGZDFYBV5Jxi6tYFVDdmxA2xaTeKZQHMIuIIj7njVSTQQ==
 
 parallel-transform@^1.1.0:
   version "1.2.0"
@@ -13643,6 +13766,13 @@ requires-port@^1.0.0:
   resolved "https://registry.npmmirror.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==
 
+requizzle@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.npmmirror.com/requizzle/-/requizzle-0.2.3.tgz#4675c90aacafb2c036bd39ba2daa4a1cb777fded"
+  integrity sha512-YanoyJjykPxGHii0fZP0uUPEXpvqfBDxWV7s6GKAiiOsiqhX6vHNyW3Qzdmqp/iq/ExbhaGbVrjB4ruEVSM4GQ==
+  dependencies:
+    lodash "^4.17.14"
+
 resize-detector@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npmmirror.com/resize-detector/-/resize-detector-0.3.0.tgz#fe495112e184695500a8f51e0389f15774cb1cfc"
@@ -14879,6 +15009,11 @@ table@^5.2.3:
     slice-ansi "^2.1.0"
     string-width "^3.0.0"
 
+taffydb@2.6.2:
+  version "2.6.2"
+  resolved "https://registry.npmmirror.com/taffydb/-/taffydb-2.6.2.tgz#7cbcb64b5a141b6a2efc2c5d2c67b4e150b2a268"
+  integrity sha512-y3JaeRSplks6NYQuCOj3ZFMO3j60rTwbuKCvZxsAraGYH2epusatvZ0baZYA01WsGqJBq/Dl6vOrMUJqyMj8kA==
+
 tapable@^1.0.0, tapable@^1.1.3:
   version "1.1.3"
   resolved "https://registry.npmmirror.com/tapable/-/tapable-1.1.3.tgz#a1fccc06b58db61fd7a45da2da44f5f3a3e67ba2"
@@ -14973,6 +15108,11 @@ thread-loader@^2.1.3:
     loader-runner "^2.3.1"
     loader-utils "^1.1.0"
     neo-async "^2.6.0"
+
+three@^0.130.1:
+  version "0.130.1"
+  resolved "https://registry.npmmirror.com/three/-/three-0.130.1.tgz#797588b2877ace31603bbbc864eb2e3022f0b3b4"
+  integrity sha512-OSPPKcGvFSiGkG3jFrwwC76PBV/ZSrGxpBbg28bW8s9GU8r/y2spNGtEXHEb/CVqo0Ctf5Lx2rVaxQZB6OasaA==
 
 through2@^2.0.0:
   version "2.0.5"
@@ -15473,6 +15613,11 @@ underscore@~1.6.0:
   version "1.6.0"
   resolved "https://registry.npmmirror.com/underscore/-/underscore-1.6.0.tgz#8b38b10cacdef63337b8b24e4ff86d45aea529a8"
   integrity sha512-z4o1fvKUojIWh9XuaVLUDdf86RQiq13AC1dmHbTpoyuu+bquHms76v16CjycCbec87J7z0k//SiQVk0sMdFmpQ==
+
+underscore@~1.9.1:
+  version "1.9.2"
+  resolved "https://registry.npmmirror.com/underscore/-/underscore-1.9.2.tgz#0c8d6f536d6f378a5af264a72f7bec50feb7cf2f"
+  integrity sha512-D39qtimx0c1fI3ya1Lnhk3E9nONswSKhnffBI0gME9C99fYOkNi04xs8K6pePLhvl1frbDemkaBQ5ikWllR2HQ==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
@@ -16565,6 +16710,11 @@ xlsx@^0.17.1:
     ssf "~0.11.2"
     wmf "~1.0.1"
     word "~0.3.0"
+
+xmlcreate@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.npmmirror.com/xmlcreate/-/xmlcreate-2.0.4.tgz#0c5ab0f99cdd02a81065fa9cd8f8ae87624889be"
+  integrity sha512-nquOebG4sngPmGPICTS5EnxqhKbCmz5Ox5hsszI2T6U5qdrJizBc+0ilYSEjTSzU0yZcmvppztXe/5Al5fUwdg==
 
 xtend@^4.0.0, xtend@^4.0.1, xtend@^4.0.2, xtend@~4.0.1:
   version "4.0.2"

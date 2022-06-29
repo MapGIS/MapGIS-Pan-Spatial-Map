@@ -4,7 +4,7 @@
       :symbolUrl="symbolUrl"
       :vueKey="vueKey"
       :vueIndex="vueIndex"
-      @loaded="e=>plot=e"
+      @loaded="(e) => (plot = e)"
       v-if="vueKey && vueIndex && showSymbol"
       :fontUrl="font"
       :baseUrl="font"
@@ -26,6 +26,7 @@
               @click="slotProps.click"
               @search="slotProps.search"
               :baseUrl="slotProps.baseUrl"
+              :format="slotProps.format"
             ></mapgis-ui-plot-symbol>
           </mp-window>
         </mp-window-wrapper>
@@ -37,7 +38,7 @@
       :symbolUrl="symbolUrl"
       :vueKey="vueKey"
       :vueIndex="vueIndex"
-      @loaded="e=>plot=e"
+      @loaded="(e) => (plot = e)"
       v-if="vueKey && vueIndex && showSymbol"
       :fontUrl="font"
       :baseUrl="font"
@@ -59,6 +60,7 @@
               @click="slotProps.click"
               @search="slotProps.search"
               :baseUrl="slotProps.baseUrl"
+              :format="slotProps.format"
             ></mapgis-ui-plot-symbol>
           </mp-window>
         </mp-window-wrapper>
@@ -108,19 +110,19 @@ export default class MpPlotManager extends Mixins(WidgetMixin) {
   //     })
   // }
   created() {
-    this.$root.$on('plot-layer-loaded', this.handleLoad.bind(this))
+    this.$root.$on(events.PLOT_LAYER_LOADED, this.handleLoad.bind(this))
   }
 
   onOpen() {
-    this.font =  `${process.env.VUE_APP_API_BASE_URL}/upload/`
-    this.symbolUrl =  `${process.env.VUE_APP_API_BASE_URL}/upload/标绘/symbols.json`
+    this.font = `${process.env.VUE_APP_API_BASE_URL}/upload/`
+    this.symbolUrl = `${process.env.VUE_APP_API_BASE_URL}/upload/标绘/symbols.json`
     this.showSymbol = true
-    this.plot && this.plot.setPick();
+    this.plot && this.plot.setPick()
   }
 
   onClose() {
     this.showSymbol = false
-    const newConfig = this.plot && this.plot.toJSON();
+    const newConfig = this.plot && this.plot.toJSON()
     // console.log('plotConfig',newConfig)
     api.saveConfig({
       name: 'plot',
@@ -129,8 +131,8 @@ export default class MpPlotManager extends Mixins(WidgetMixin) {
   }
 
   handleLoad(vueIndex, vueKey) {
-    this.vueIndex = vueIndex;
-    this.vueKey = vueKey;
+    this.vueIndex = vueIndex
+    this.vueKey = vueKey
 
     // console.log('vueIndex, vueKey', vueIndex, vueKey)
   }
