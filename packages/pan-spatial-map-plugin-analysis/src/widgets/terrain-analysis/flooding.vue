@@ -28,7 +28,7 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
 
   private floodColor = 'rgba(149,232,249,0.5)'
 
-  private floodSpeed = 500
+  private floodSpeed = 80
 
   private specularIntensity = 2
 
