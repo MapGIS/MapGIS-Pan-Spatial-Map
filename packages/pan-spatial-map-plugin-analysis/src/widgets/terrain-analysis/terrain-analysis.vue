@@ -24,6 +24,7 @@ import MpAspectSlope from './aspect-slope-analysis.vue'
 import MpFlooding from './flooding.vue'
 import MpCutFillAnalysis from './cut-fill-analysis.vue'
 import MpContourAnalysis from './contour-analysis.vue'
+import { api } from '@mapgis/pan-spatial-map-common'
 
 @Component({
   name: 'MpTerrainAnalysis',
@@ -94,6 +95,9 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
       preAnalysisComponent.onDeActive()
       this.preTab = this.tab
     }
+    if(this.tab === 'flooding'){
+      this.setFloodConfig()
+    }
     if (this.currentAnalysisComponent) {
       this.currentAnalysisComponent.onActive()
     }
@@ -102,6 +106,13 @@ export default class MpTerrainAnalysis extends Mixins(WidgetMixin) {
   // 微件打开时
   onOpen() {
     this.currentAnalysisComponent.onActive()
+  }
+
+  async setFloodConfig() {
+    let config = await api.getWidgetConfig('terrain-analysis')
+    config = config || {}
+    const {floodAnalysis} = config
+    this.$refs.floodingAnalysis.setConfig(floodAnalysis)
   }
 
   // 微件激活时
