@@ -2,7 +2,10 @@
   <common-layout class="login-wrapper" :copyright="loginConfig.copyright">
     <div class="top">
       <div class="header">
-        <img alt="logo" class="logo" :src="loginConfig.logo" />
+        <img v-if="!isSvg" alt="logo" class="logo" :src="loginConfig.logo" />
+        <span v-else class="iconLogo">
+          <i class="iconI" v-html="loginConfig.logo"> </i>
+        </span>
         <span class="title">{{ loginConfig.title }}</span>
       </div>
       <div class="desc"></div>
@@ -93,13 +96,18 @@ export default {
       form: this.$form.createForm(this),
       redirect: undefined,
       loginConfig: {},
+      isSvg: false,
     }
   },
   async created() {
     await request({ url: 'prefab/frontsite.json', method: 'get' }).then(
       (data) => {
-        if (data.logo.indexOf('data:image') < 0) {
+        if (data.logo.indexOf('data:image') < 0 && data.logo.indexOf('<svg')) {
           data.logo = BASE_URL + data.logo
+        }
+        if (data.logo.indexOf('<svg') === 0) {
+          this.isSvg = true
+          this.loginConfig = data
         }
         this.loginConfig = data
         this.setLoginConfig(data)
@@ -198,6 +206,13 @@ export default {
         height: 44px;
         vertical-align: top;
         margin-right: 16px;
+      }
+      .iconLogo {
+        display: inline-block;
+        width: 44px;
+        position: relative;
+        top: 10px;
+        right: 10px;
       }
       .title {
         font-size: 33px;
