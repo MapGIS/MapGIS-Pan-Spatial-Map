@@ -14,12 +14,15 @@
       </a-menu>
     </div>
     <template #header-right>
-      <a
-        :href="application.links[0].url"
-        target="_blank"
-        class="header-links"
-        >{{ application.links[0].label }}</a
+      <div
+        v-for="(item, index) in application.links"
+        :key="index"
+        class="linkItem"
       >
+        <a :href="item.url" target="_blank" class="header-links">{{
+          item.label
+        }}</a>
+      </div>
       <mp-pan-spatial-map-header-avatar
         v-if="isHeaderAvatarComponentExist"
         class="header-item"
@@ -106,8 +109,12 @@ export default {
 <style lang="less" scoped>
 .header-wrapper {
   .header-wide {
+    .linkItem {
+      padding: 0 4px;
+    }
     .header-menu {
       height: 100%;
+
       .menu {
         height: 100%;
         border: none;
