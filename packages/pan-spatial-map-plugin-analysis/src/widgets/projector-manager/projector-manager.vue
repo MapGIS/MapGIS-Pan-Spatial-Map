@@ -27,7 +27,7 @@ import { WidgetMixin } from '@mapgis/web-app-framework'
 import { api, ProjectorManager } from '@mapgis/pan-spatial-map-common'
 
 @Component({
-  name: 'MpProjectorManager',
+  name: 'MpProjectorManager'
 })
 export default class MpProjectorManager extends Mixins(WidgetMixin) {
   private modelUrl = `${process.env.BASE_URL}CesiumModels/Cesium_Camera.glb`
@@ -50,25 +50,25 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
             videoSource: {
               protocol: 'm3u8',
               videoUrl:
-                'http://192.168.91.123:10008/record/video1/20211221/out.m3u8',
+                'http://192.168.91.123:10008/record/video1/20211221/out.m3u8'
             },
             cameraPosition: {
               x: 114.401228136856,
               y: 30.467421377675457,
-              z: 84.94989410478892,
+              z: 84.94989410478892
             },
             orientation: {
               heading: 6.053866507322313,
               pitch: -73.6,
-              roll: 354.1,
+              roll: 354.1
             },
             hFOV: 34.6,
             vFOV: 18.9,
-            hintLineVisible: true,
-          },
-        },
-      ],
-    },
+            hintLineVisible: true
+          }
+        }
+      ]
+    }
   ]
 
   private ProjectorManagerInstance = ProjectorManager
@@ -101,27 +101,21 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
 
   @Watch('currentLayerId', {
     deep: true,
-    immediate: true,
+    immediate: true
   })
-  changeCurrentLayerId() {
-    console.log(this.currentLayerId)
-  }
+  changeCurrentLayerId() {}
 
   @Watch('currentProjectorId', {
     deep: true,
-    immediate: true,
+    immediate: true
   })
-  changeCurrentProjectorId() {
-    console.log(this.currentProjectorId)
-  }
+  changeCurrentProjectorId() {}
 
   @Watch('projectorOverlayLayerList', {
     deep: true,
-    immediate: true,
+    immediate: true
   })
-  changeProjectorOverlayLayerList() {
-    console.log(this.projectorOverlayLayerList)
-  }
+  changeProjectorOverlayLayerList() {}
 
   private config
 
@@ -161,23 +155,20 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
     this.projectorComponent.unmount()
   }
 
-  imgUpload(e) {
-    console.log(e)
-  }
+  imgUpload(e) {}
 
   updateProjectorOverlayLayerList(layerList) {
     this.projectorOverlayLayerList = [...layerList]
   }
 
   saveConfig() {
-    // console.log(this.projectorOverlayLayerList)
     const config = {
-      projectorOverlayLayerList: [...this.projectorOverlayLayerList],
+      projectorOverlayLayerList: [...this.projectorOverlayLayerList]
     }
     api
       .saveWidgetConfig({
         name: 'projector-manager',
-        config: JSON.stringify(config),
+        config: JSON.stringify(config)
       })
       .then(() => {
         // this.$message.success('更新projector配置成功')

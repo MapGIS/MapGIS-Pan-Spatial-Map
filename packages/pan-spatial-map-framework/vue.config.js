@@ -15,7 +15,7 @@ console.log(`NODE_ENV=${process.env.NODE_ENV}`)
 module.exports = {
   devServer: {
     hot: true,
-    open: true,
+    open: true
     // proxy: {
     //   '/api': { //此处要与 /services/api.js 中的 API_PROXY_PREFIX 值保持一致
     //     target: process.env.VUE_APP_API_BASE_URL,
@@ -29,21 +29,21 @@ module.exports = {
   pluginOptions: {
     'style-resources-loader': {
       preProcessor: 'less',
-      patterns: [path.resolve(__dirname, './src/theme/theme.less')],
-    },
+      patterns: [path.resolve(__dirname, './src/theme/theme.less')]
+    }
   },
   configureWebpack: (config) => {
     config.name = name
     config.entry.app = ['babel-polyfill', 'whatwg-fetch', './src/main.js']
     config.performance = {
-      hints: false,
+      hints: false
     }
     config.plugins.push(
       new ThemeColorReplacer({
         fileName: 'css/theme-colors-[contenthash:8].css',
         matchColors: getThemeColors(),
         injectCss: true,
-        resolveCss,
+        resolveCss
       })
     )
     // Ignore all locale files of moment.js
@@ -56,7 +56,7 @@ module.exports = {
           algorithm: 'gzip',
           test: new RegExp(`\\.(${productionGzipExtensions.join('|')})$`),
           threshold: 10240,
-          minRatio: 0.8,
+          minRatio: 0.8
         })
       )
     }
@@ -78,7 +78,7 @@ module.exports = {
         Object.assign(options, { limit: 2000, esModule: false })
       )
     config.plugin('fork-ts-checker').tap((args) => {
-      args[0].memoryLimit = 12288
+      args[0].memoryLimit = 14336
       return args
     })
   },
@@ -87,13 +87,13 @@ module.exports = {
       less: {
         lessOptions: {
           modifyVars: modifyVars(),
-          javascriptEnabled: true,
-        },
-      },
-    },
+          javascriptEnabled: true
+        }
+      }
+    }
   },
   publicPath: process.env.VUE_APP_PUBLIC_PATH,
   outputDir: 'dist',
   assetsDir: 'static',
-  productionSourceMap: false,
+  productionSourceMap: false
 }

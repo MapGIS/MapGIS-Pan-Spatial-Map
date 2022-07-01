@@ -1,9 +1,12 @@
 <template>
   <div class="mp-handler-window">
     <template v-if="funcParamCopy.Parameters">
-      <mapgis-ui-group-tab title="参数" :has-top-margin="false"></mapgis-ui-group-tab>
+      <mapgis-ui-group-tab
+        title="参数"
+        :has-top-margin="false"
+      ></mapgis-ui-group-tab>
       <mapgis-ui-clouddisk-model-fields
-        style="width:350px;"
+        style="width: 350px"
         ref="fieldsData"
         v-if="hackReset"
         :isOneMap="true"
@@ -95,7 +98,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
   public DirectionMap = {
     0: 'IN',
     1: 'OUT',
-    2: 'INOUT',
+    2: 'INOUT'
   }
 
   // 类型为igs
@@ -131,7 +134,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
    */
   formatParams(item) {
     if (item.Parameters && item.Parameters.length > 0) {
-      item.Parameters.forEach(ele => {
+      item.Parameters.forEach((ele) => {
         ele.briefDescp = null
         ele.dataSourceType = null
         ele.descp = null
@@ -139,12 +142,16 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
         ele.need = null
         ele.xattrs = null
         if (!ele.value) {
-          ele.value = (ele.DefaultValue === 'true' || ele.DefaultValue === 'false') ? JSON.parse(ele.DefaultValue) : ele.DefaultValue
+          ele.value =
+            ele.DefaultValue === 'true' || ele.DefaultValue === 'false'
+              ? JSON.parse(ele.DefaultValue)
+              : ele.DefaultValue
         }
         ele.Direction = this.DirectionMap[ele.Direction]
         ele.DataType = this.DataTypeMap[ele.DataType]
-        for (const key in ele) { // 首字母小写
-          const newKey = key.slice(0,1).toLowerCase() + key.slice(1)
+        for (const key in ele) {
+          // 首字母小写
+          const newKey = key.slice(0, 1).toLowerCase() + key.slice(1)
           ele[newKey] = ele[key]
         }
       })
@@ -152,7 +159,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
     return item
   }
 
-  handleParams (params) {
+  handleParams(params) {
     this.funcParamCopy.Parameters = params
   }
 
@@ -160,7 +167,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
    * 点击清空按钮的回调
    * 王魁帅
    */
-  handleClearParams () {
+  handleClearParams() {
     this.$refs.fieldsData.clearParams()
     this.hackReset = false
     this.$nextTick(() => {
@@ -173,7 +180,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
    */
   doExecuteWorkflow() {
     const params = []
-    this.funcParamCopy.Parameters.forEach(item => {
+    this.funcParamCopy.Parameters.forEach((item) => {
       const value = item.value
       const id = item.Name
       params.push({
@@ -197,7 +204,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
       param: params,
       isAsy: false
     })
-      .then(guid => {
+      .then((guid) => {
         this.getStatus(guid)
       })
       .catch(() => {
@@ -214,13 +221,13 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
       id: guid,
       ip: this.ip || baseConfigInstance.config.ip,
       port: this.port || baseConfigInstance.config.port
-    }).then(status => {
+    }).then((status) => {
       if (status === 'Succeeded') {
         Analysis.WorkflowAnalysis.getWorkflowResult({
           id: guid,
           ip: this.ip || baseConfigInstance.config.ip,
           port: this.port || baseConfigInstance.config.port
-        }).then(res => {
+        }).then((res) => {
           this.showLoading = false
           this.$message.success('工作流执行成功,可至图层树功能查看结果')
           this.dealWithExecuteRes(res)
@@ -240,7 +247,6 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
    * 处理功能执行结果
    */
   dealWithExecuteRes(result) {
-    console.log(result)
     if (result.results && result.results.length > 0) {
       const res = result.results[0]
       if (res.DataType === 1) {
@@ -248,7 +254,7 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
         if (res.ParaName && res.Value) {
           const paramName = res.ParaName
           const value = res.Value
-          this.funcParamCopy.Parameters.forEach(item => {
+          this.funcParamCopy.Parameters.forEach((item) => {
             if (item.Name === paramName) {
               item.DefaultValue = value
               item.value = value
@@ -285,7 +291,9 @@ export default class MpHandlerWindow extends Mixins(WidgetMixin) {
     const ip = this.ip || baseConfigInstance.config.ip
     const port = this.port || baseConfigInstance.config.port
 
-    const url = `http://${ip}:${port}/igs/rest/mrms/layers?gdbps=${gdbp as string}`
+    const url = `http://${ip}:${port}/igs/rest/mrms/layers?gdbps=${
+      gdbp as string
+    }`
 
     const data = {
       name: 'IGS图层',

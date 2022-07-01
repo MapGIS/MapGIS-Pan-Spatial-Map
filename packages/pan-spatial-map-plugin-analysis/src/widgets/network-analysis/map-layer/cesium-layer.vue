@@ -79,7 +79,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
     ) {
       layerLine.features[0].geometry.coordinates.forEach((item, index) => {
         let lineArr = []
-        item.forEach(lines => {
+        item.forEach((lines) => {
           lineArr = lineArr.concat(lines)
         })
         const fillColor = this.Cesium.Color.fromCssColorString(
@@ -133,15 +133,13 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
         this.entityHighResultIndex !== null
       ) {
         const entityOld = this.entityLineResultArray[this.entityHighResultIndex]
-        entityOld.polyline.material.color = this.Cesium.Color.fromCssColorString(
-          this.circleColor['circle-color']
-        )
+        entityOld.polyline.material.color =
+          this.Cesium.Color.fromCssColorString(this.circleColor['circle-color'])
         const entityNew = this.entityLineResultArray[highLine[0].properties.id]
         entityNew.polyline.material.color = this.Cesium.Color.BLUE
         this.entityHighResultIndex = highLine[0].properties.id
       } else {
         const entity = this.entityLineResultArray[highLine[0].properties.id]
-        console.log(entity)
         entity.polyline.material.color = this.Cesium.Color.BLUE
         this.entityHighResultIndex = highLine[0].properties.id
       }
@@ -179,7 +177,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   dataCoordinateArrChange() {
     this.clearDataCoordinateArr()
     if (this.dataCoordinateArr.features.length > 0) {
-      this.dataCoordinateArr.features.forEach(item => {
+      this.dataCoordinateArr.features.forEach((item) => {
         const { coordinates } = item.geometry
         const fillColor = this.Cesium.Color.fromCssColorString(
           this.circleColor['circle-color']
@@ -205,7 +203,7 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   dataBarrierArrChange() {
     this.clearDataBarrierArr()
     if (this.dataBarrierArr.features.length > 0) {
-      this.dataBarrierArr.features.forEach(item => {
+      this.dataBarrierArr.features.forEach((item) => {
         const { coordinates } = item.geometry
         const fillColor = this.Cesium.Color.RED
 
@@ -226,25 +224,25 @@ export default class CesiumLayer extends Mixins(WidgetMixin) {
   }
 
   clearDataBarrierArr() {
-    this.entityBarrierArray.forEach(entity => {
+    this.entityBarrierArray.forEach((entity) => {
       this.sceneOverlays.removeEntity(entity)
     })
     this.entityBarrierArray = []
   }
 
   clearDataCoordinateArr() {
-    this.entityCoordinateArray.forEach(entity => {
+    this.entityCoordinateArray.forEach((entity) => {
       this.sceneOverlays.removeEntity(entity)
     })
     this.entityCoordinateArray = []
   }
 
   clearResultLayer() {
-    this.entityPointResultArray.forEach(entity => {
+    this.entityPointResultArray.forEach((entity) => {
       this.sceneOverlays.removeEntity(entity)
     })
     this.entityPointResultArray = []
-    this.entityLineResultArray.forEach(entity => {
+    this.entityLineResultArray.forEach((entity) => {
       this.sceneOverlays.removeEntity(entity)
     })
     this.entityLineResultArray = []

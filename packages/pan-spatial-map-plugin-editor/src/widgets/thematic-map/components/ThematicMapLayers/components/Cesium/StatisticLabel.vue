@@ -43,10 +43,10 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
                 end: labelStyle.radius.max,
                 style: {
                   radius: labelStyle.radius.radiu,
-                  color: labelStyle.radius.sectionColor,
-                },
-              },
-            ],
+                  color: labelStyle.radius.sectionColor
+                }
+              }
+            ]
           }
         : themeStyle || {}
     }
@@ -73,7 +73,6 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
       if (this.themeOptions) {
         console.log(this.themeOptions)
         const { styleGroups } = this.themeOptions
-        // debugger
         const styleGroup = Array.isArray(styleGroups)
           ? styleGroups[0]
           : styleGroups
@@ -91,13 +90,13 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
           material,
           length: 0.001, // 圆柱体高度
           topRadius: _radius, // 圆柱体顶部半径
-          bottomRadius: _radius, // 圆柱体底部半径
+          bottomRadius: _radius // 圆柱体底部半径
         }
       }
       const position = this.getPosition(center[0], center[1])
       this.addEntityToLayer(layer, feature, {
         position,
-        cylinder,
+        cylinder
       })
     })
   }

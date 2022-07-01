@@ -466,8 +466,8 @@ export class DataCatalogManager {
             this.config.urlConfig.treeDataUrl.split('?')[0],
             {
               headers: {
-                Authorization,
-              },
+                Authorization
+              }
             }
           )
         } else {
@@ -508,14 +508,14 @@ export class DataCatalogManager {
         Promise.all([
           Catalog.DocumentCatalog.getTiles({
             ip: defaultIp,
-            port: defaultPort,
+            port: defaultPort
           }),
           Catalog.DocumentCatalog.getDocs({
             ip: defaultIp,
-            port: defaultPort,
+            port: defaultPort
           }),
-          axios.get(url),
-        ]),
+          axios.get(url)
+        ])
       ])
         .then((resArr: any) => {
           tileServiceInfo = resArr[0]
@@ -781,7 +781,7 @@ export class DataCatalogManager {
      * 10.5.6.13版本中新增，与LayerType的枚举名保持一致。
      * @type {string}
      */
-    STKTERRAIN: 'STKTerrain',
+    STKTERRAIN: 'STKTerrain'
   }
 
   // 将老版本的配置转换为新版本的配置
@@ -804,7 +804,7 @@ export class DataCatalogManager {
       bindData: 'bindData', // 绑定数据：与该服务图层相关联的服务信息,比如：与该瓦片服务对应的地图服务。应用中利用该字段可实现对瓦片服务的查询功能
       gdbps: 'gdbps', // 图层的gdbp地址，允许多个图层
       data: 'data', // 非空间数据节点中用于记录数据在ftp服务器上的目录名,
-      customParameters: 'customParameters', // 自定义请求参数(可选),类型：数组，以key,value列表的形式记录的服务的额外请求参数。如场景服务的extendedPropKeys等。
+      customParameters: 'customParameters' // 自定义请求参数(可选),类型：数组，以key,value列表的形式记录的服务的额外请求参数。如场景服务的extendedPropKeys等。
     }
 
     this.configConverted.keyConfig = keyConfig
@@ -827,14 +827,13 @@ export class DataCatalogManager {
     } else {
       const treeArr = []
       this.convertCloudToTreeData(this.serviceTreeData, treeArr)
-      debugger
       treeData = this.convertTreeData(treeArr, 0)
     }
 
     const treeConfig: any = {
       isShowIcon: false, // 是否显示基础数据目录节点图标
       // isShowIcon: this.config.paramConfig.SHOWICON, // 是否显示基础数据目录节点图标
-      treeData, // 数据目录配置
+      treeData // 数据目录配置
     }
 
     this.configConverted.treeConfig = treeConfig
@@ -852,7 +851,7 @@ export class DataCatalogManager {
         treeArr.push({
           label: name,
           describe: type || '',
-          children: treeChildren,
+          children: treeChildren
         })
       } else if (
         resource &&
@@ -873,7 +872,7 @@ export class DataCatalogManager {
                 protocolTypes: [protocolType],
                 proto,
                 ip,
-                port,
+                port
               }
               // 转换成一张图的叶子节点
               const dataCatalogLeaf =
@@ -885,7 +884,7 @@ export class DataCatalogManager {
             serverArr.push({
               label: name,
               describe: type || '',
-              children: cloudLeafNodes,
+              children: cloudLeafNodes
             })
           } else {
             // 转换成一张图的叶子节点
@@ -900,7 +899,7 @@ export class DataCatalogManager {
           label: name,
           describe: type || '',
           metaData: resource.metaData || '',
-          children: serverArr,
+          children: serverArr
         })
       }
     })
@@ -917,7 +916,7 @@ export class DataCatalogManager {
       name,
       proto,
       ip,
-      port,
+      port
     } = service
     const commonData = {
       label: label || name,
@@ -926,7 +925,7 @@ export class DataCatalogManager {
       port,
       name,
       guid: UUID.uuid(),
-      searchName: '',
+      searchName: ''
     }
     let leafData
     switch (cloudDataType) {
@@ -936,14 +935,14 @@ export class DataCatalogManager {
           token: '',
           serverUrl: '',
           wfsUrl: '',
-          extent: '',
+          extent: ''
         }
         break
       case 'IGSRestScene':
         leafData = {
           layerServiceType: this.layerServiceType.IGSDOC3D,
           model: '',
-          serverUrl: '',
+          serverUrl: ''
         }
         break
       case 'IGSRestMap':
@@ -953,7 +952,7 @@ export class DataCatalogManager {
           serverUrl: '',
           wfsUrl: '',
           extent: '',
-          gdbTypeList: '',
+          gdbTypeList: ''
         }
         break
       case 'WMS':
@@ -962,7 +961,7 @@ export class DataCatalogManager {
           token: '',
           serverUrl: `${proto}://${ip}:${port}/igs/rest/ogc/doc/${name}/WMSServer`,
           wfsUrl: '',
-          extent: '',
+          extent: ''
         }
         break
       case 'WFS':
@@ -974,7 +973,7 @@ export class DataCatalogManager {
           token: '',
           serverUrl: `${proto}://${ip}:${port}/igs/rest/mrcs/vtiles/0/${name}`,
           wfsUrl: '',
-          extent: '',
+          extent: ''
         }
         break
 
@@ -984,7 +983,7 @@ export class DataCatalogManager {
     if (leafData) {
       return {
         ...commonData,
-        ...leafData,
+        ...leafData
       }
     }
     return undefined
@@ -1003,7 +1002,7 @@ export class DataCatalogManager {
           name: node[this.configConverted.keyConfig.name] || '', // 节点名称
           description: node[this.configConverted.keyConfig.description] || '', // 节点描述
           icon: node[this.configConverted.keyConfig.icon] || '', // 节点的图标(可选)
-          level: nodeLevel,
+          level: nodeLevel
         }
         // 如果该节点有元数据信息，则将元数据信息存储起来
         if (node.metaData) {
@@ -1039,7 +1038,7 @@ export class DataCatalogManager {
               node[this.configConverted.keyConfig.gdbps] ||
               node[this.configConverted.keyConfig.serverURL], // 图层的gdbp地址，允许多个图层
             customParameters:
-              node[this.configConverted.keyConfig.customParameters] || [], // 服务额外请求参数。
+              node[this.configConverted.keyConfig.customParameters] || [] // 服务额外请求参数。
           }
 
           // 根据layerServiceType计算serverType
