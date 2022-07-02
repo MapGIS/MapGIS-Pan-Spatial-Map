@@ -1,6 +1,6 @@
 <template>
   <mapgis-3d-analysis-flood
-    v-if='loaded'
+    v-if="loaded"
     :startHeight="startHeight"
     :minHeight="minHeight"
     :maxHeight="maxHeight"
@@ -55,31 +55,30 @@ export default class MpFlooding extends Mixins(WidgetMixin) {
       animationSpeed = 0.01,
       frequency = 500
     } = config
-    this.startHeight = startHeight;
-    this.minHeight = minHeight;
-    this.maxHeight = maxHeight;
-    this.floodColor = floodColor;
-    this.floodSpeed = floodSpeed;
-    this.specularIntensity = specularIntensity;
-    this.amplitude = amplitude;
-    this.animationSpeed = animationSpeed;
-    this.frequency = frequency;
+    this.startHeight = startHeight
+    this.minHeight = minHeight
+    this.maxHeight = maxHeight
+    this.floodColor = floodColor
+    this.floodSpeed = floodSpeed
+    this.specularIntensity = specularIntensity
+    this.amplitude = amplitude
+    this.animationSpeed = animationSpeed
+    this.frequency = frequency
 
-    this.loaded = true;
+    this.loaded = true
   }
 
-
   load(floodAnalysis) {
-    this.floodAnalysis && this.floodAnalysis = floodAnalysis
+    this.floodAnalysis = floodAnalysis
   }
 
   onActive() {
-    this.floodAnalysis && this.floodAnalysis.mount()
+    this.floodAnalysis.mount()
   }
 
   // 微件失活时
   onDeActive() {
-    this.floodAnalysis && this.floodAnalysis.unmount()
+    this.floodAnalysis.unmount()
   }
 }
 </script>
