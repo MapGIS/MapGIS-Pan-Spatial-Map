@@ -6,6 +6,8 @@ const { getThemeColors, modifyVars } = require('./src/utils/themeUtil')
 const { resolveCss } = require('./src/utils/theme-color-replacer-extend')
 const defaultSettings = require('./src/config/default/setting.config.js')
 
+const TerserPlugin = require('terser-webpack-plugin')
+
 const productionGzipExtensions = ['js', 'css']
 const isProd = process.env.NODE_ENV === 'production'
 const name = defaultSettings.title
@@ -59,6 +61,14 @@ module.exports = {
           minRatio: 0.8
         })
       )
+
+      let optimization = {
+        minimize: false
+      }
+
+      Object.assign(config, {
+        optimization
+      })
     }
   },
   chainWebpack: (config) => {
