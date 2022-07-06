@@ -4,11 +4,13 @@
       :data="data"
       :vueKey="vueKey"
       :vueIndex="vueIndex"
-      v-if="vueKey && vueIndex && data"
+      v-if="dataLoaded"
       @loaded="(e) => (animation = e)"
       @export="saveConfig"
+      @play="timelinePlay"
+      @reset="timelineReset"
     >
-      <template #timeline="slotProps">
+      <template #timeline="slotProps" v-if="is2DMapMode">
         <mp-window-wrapper :visible="showTimeline">
           <mp-placement
             :position="'bottom-left'"
@@ -17,15 +19,15 @@
             style="right: 0px"
           >
             <mapgis-ui-plot-timeline
+              ref="timeline"
               :value="slotProps.value"
               @change="slotProps.change"
-              :forwardActive="slotProps.forwardActive"
-              :duration="10"
+              :enableEnd="slotProps.enableEnd"
+              :duration="slotProps.duration"
               @start="slotProps.start"
               @backward="slotProps.backward"
               @pause="slotProps.pause"
               @forward="slotProps.forward"
-              @end="slotProps.end"
               @speedChange="slotProps.speedChange"
             ></mapgis-ui-plot-timeline>
           </mp-placement>
@@ -38,11 +40,13 @@
       :data="data"
       :vueKey="vueKey"
       :vueIndex="vueIndex"
-      v-if="vueKey && vueIndex && data"
+      v-if="dataLoaded"
       @loaded="(e) => (animation = e)"
       @export="saveConfig"
+      @play="timelinePlay"
+      @reset="timelineReset"
     >
-      <template #timeline="slotProps">
+      <template #timeline="slotProps" v-if="!is2DMapMode">
         <mp-window-wrapper :visible="showTimeline">
           <mp-placement
             :position="'bottom-left'"
@@ -51,15 +55,15 @@
             style="right: 0px"
           >
             <mapgis-ui-plot-timeline
+              ref="timeline"
               :value="slotProps.value"
               @change="slotProps.change"
-              :forwardActive="slotProps.forwardActive"
-              :duration="10"
+              :enableEnd="slotProps.enableEnd"
+              :duration="slotProps.duration"
               @start="slotProps.start"
               @backward="slotProps.backward"
               @pause="slotProps.pause"
               @forward="slotProps.forward"
-              @end="slotProps.end"
               @speedChange="slotProps.speedChange"
             ></mapgis-ui-plot-timeline>
           </mp-placement>
@@ -83,11 +87,9 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
 
   public vueKey = ''
 
-  private symbolUrl = `${this.baseUrl}/upload/标绘/symbols.json`
+  private data = ''
 
-  private showSymbol = false
-
-  private data = {}
+  private dataLoaded = false
 
   private showTimeline = false
 
@@ -97,32 +99,24 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
     this.$root.$on(events.PLOT_LAYER_LOADED, this.handleLoad.bind(this))
   }
 
-  async mounted() {
-    const config = await api.getWidgetConfig('plot-animation')
-    this.data = JSON.parse(JSON.stringify(config))
-    // console.log('plot-animation-config',config)
-  }
-
   onOpen() {
-    // this.plot.mount()
-    this.showSymbol = true
     this.showTimeline = true
     this.animation && this.animation.setPick()
   }
 
   onClose() {
-    this.showSymbol = false
     this.showTimeline = false
   }
 
-  handleLoad(vueIndex, vueKey) {
-    const vm = this
-    const manager = new SymbolManager(this.symbolUrl)
-    manager.getSymbols().then(function () {
-      vm.vueIndex = vueIndex
-      vm.vueKey = vueKey
-      // console.log('vueIndex, vueKey---animation', vueIndex, vueKey)
-    })
+  async handleLoad(vueIndex, vueKey) {
+    const config = await api.getWidgetConfig('plot-animation')
+    this.data = JSON.parse(JSON.stringify(config))
+    this.dataLoaded = true
+    console.log('plot-animation-config', config)
+
+    this.vueIndex = vueIndex
+    this.vueKey = vueKey
+    // console.log('vueIndex, vueKey---animation', vueIndex, vueKey)
   }
 
   saveConfig(newConfig) {
@@ -131,6 +125,14 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
       name: 'plot-animation',
       config: JSON.parse(JSON.stringify(newConfig)),
     })
+  }
+
+  timelineReset() {
+    this.$refs.timeline.stopPlay()
+  }
+
+  timelinePlay() {
+    this.$refs.timeline.forward()
   }
 }
 </script>
