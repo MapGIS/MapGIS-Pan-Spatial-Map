@@ -53,7 +53,7 @@ export default {
       // 一张图 light，dark 白底黑字，night 黑底白字
       if (style.theme === 'dark' || style.theme === 'light') {
         const payload = {
-          background: '#fff',
+          background: '#fff', // 根据项目需求修改该样式
           cardBackground: '#fff',
           panelBackground: "#fff",
           divShadow: "#fff",
@@ -62,7 +62,7 @@ export default {
         mapgisui.setTheme('light', payload)
       } else {
         const payload = {
-          background: '#141414',
+          background: '#141414', // 根据项目需求修改该样式
           cardBackground: '#14141400',
           panelBackground: "#14141400",
           divShadow: "#14141400",
