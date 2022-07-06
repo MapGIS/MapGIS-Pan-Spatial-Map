@@ -5,3 +5,4 @@ node_modules/
 dist/
 out/
 packages/pan-spatial-map-framework/node_modules/
+.eslintrc.js
