@@ -45729,11 +45729,6 @@ export class PerInstanceColorAppearance {
         renderState?: any;
     });
     /**
-     * This property is part of the {@link Appearance} interface, but is not
-    used by {@link PerInstanceColorAppearance} since a fully custom fragment shader is used.
-     */
-    material: Material;
-    /**
      * When <code>true</code>, the geometry is expected to appear translucent so
     {@link PerInstanceColorAppearance#renderState} has alpha blending enabled.
      */

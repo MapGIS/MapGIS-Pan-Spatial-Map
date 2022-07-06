@@ -1,15 +1,15 @@
 <template>
   <div style="max-height: 530px" v-if="is2DMapMode">
     <mapgis-2d-plot
+      v-if="symbolUrl !== ''"
       :symbolUrl="symbolUrl"
       :vueKey="vueKey"
       :vueIndex="vueIndex"
       @loaded="(e) => (plot = e)"
-      v-if="vueKey && vueIndex && showSymbol"
       :fontUrl="font"
-      :baseUrl="font"
+      :baseUrl="base"
     >
-      <template #symbol="slotProps">
+      <template #symbol="slotProps" v-if="is2DMapMode">
         <mp-window-wrapper :visible="showSymbol">
           <mp-window
             :visible.sync="showSymbol"
@@ -27,6 +27,7 @@
               @search="slotProps.search"
               :baseUrl="slotProps.baseUrl"
               :format="slotProps.format"
+              v-if="slotProps.data"
             ></mapgis-ui-plot-symbol>
           </mp-window>
         </mp-window-wrapper>
@@ -35,16 +36,16 @@
   </div>
   <div style="max-height: 530px" v-else>
     <mapgis-3d-plot
+      v-if="symbolUrl !== ''"
       :symbolUrl="symbolUrl"
       :vueKey="vueKey"
       :vueIndex="vueIndex"
       @loaded="(e) => (plot = e)"
-      v-if="vueKey && vueIndex && showSymbol"
       :fontUrl="font"
-      :baseUrl="font"
+      :baseUrl="base"
     >
-      <template #symbol="slotProps">
-        <mp-window-wrapper :visible="showSymbol">
+      <template #symbol="slotProps" v-if="!is2DMapMode">
+        <mp-window-wrapper :visible.sync="showSymbol">
           <mp-window
             :visible.sync="showSymbol"
             title="符号库"
@@ -61,6 +62,7 @@
               @search="slotProps.search"
               :baseUrl="slotProps.baseUrl"
               :format="slotProps.format"
+              v-if="slotProps.data"
             ></mapgis-ui-plot-symbol>
           </mp-window>
         </mp-window-wrapper>
@@ -84,9 +86,14 @@ export default class MpPlotManager extends Mixins(WidgetMixin) {
 
   public vueKey = ''
 
+  /** 符号库Url */
   private symbolUrl = ''
 
+  /** 字体基地址 */
   private font = ''
+
+  /** 符号基地址 */
+  private base = ''
 
   private showSymbol = false
 
@@ -109,13 +116,16 @@ export default class MpPlotManager extends Mixins(WidgetMixin) {
   //       }
   //     })
   // }
-  created() {
+  async created() {
+    const config = await api.getWidgetConfig('plot-manager')
+    this.font = config.fontUrl
+    this.base = config.baseUrl
+    this.symbolUrl = config.symbolUrl
+
     this.$root.$on(events.PLOT_LAYER_LOADED, this.handleLoad.bind(this))
   }
 
   onOpen() {
-    this.font = `${process.env.VUE_APP_API_BASE_URL}/upload/`
-    this.symbolUrl = `${process.env.VUE_APP_API_BASE_URL}/upload/标绘/symbols.json`
     this.showSymbol = true
     this.plot && this.plot.setPick()
   }
@@ -134,6 +144,7 @@ export default class MpPlotManager extends Mixins(WidgetMixin) {
     this.vueIndex = vueIndex
     this.vueKey = vueKey
 
+    this.plot && this.plot.setPick()
     // console.log('vueIndex, vueKey', vueIndex, vueKey)
   }
 }
