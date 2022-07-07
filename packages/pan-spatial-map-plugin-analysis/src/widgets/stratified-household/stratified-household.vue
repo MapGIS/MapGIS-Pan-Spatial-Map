@@ -12,6 +12,9 @@
     :getProjectorStatus="getProjectorStatus"
     :layerHighlightColorProp="layerHighlightColor"
     :featureHighlightColorProp="featureHighlightColor"
+    :dataStoreIp="dataStoreIp"
+    :dataStorePort="dataStorePort"
+    :dataStoreDataset="dataStoreDataset"
   ></mapgis-3d-stratified-household>
 </template>
 
@@ -58,6 +61,18 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
       color = this.widgetInfo.config.layerHighlightcolor
     }
     return color
+  }
+
+  get dataStoreIp() {
+    return baseConfigInstance.config.DataStoreIp
+  }
+
+  get dataStorePort() {
+    return baseConfigInstance.config.DataStorePort
+  }
+
+  get dataStoreDataset() {
+    return baseConfigInstance.config.DataStoreRelationDataset
   }
 
   /**

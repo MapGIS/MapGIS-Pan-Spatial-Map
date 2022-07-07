@@ -1077,6 +1077,18 @@
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_分层分户-静态单体化/SceneServer"
           },
           {
+            "label": "分层分户-知识图谱",
+            "describe": "V2_分层分户-关系查询",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "E1C9544C-20AC-465A-8178-752D88983004",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/图数据/分层分户0629/SceneServer"
+          },
+          {
             "label": "V2_倾斜摄影-动态单体化",
             "describe": "V2_倾斜摄影-动态单体化",
             "ip": "",
