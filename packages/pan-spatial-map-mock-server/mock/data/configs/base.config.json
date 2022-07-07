@@ -5,6 +5,7 @@
   "globePort": "6163",
   "DataStoreIp": "192.168.83.188",
   "DataStorePort": "9091",
+  "DataStoreRelationDataset": "Graph3/GraphDataset1",
   "IGServerXIp": "192.168.91.123",
   "IGServerXPort": "9381",
   "serverType": "IGServer",
