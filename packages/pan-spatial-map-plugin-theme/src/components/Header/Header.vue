@@ -32,12 +32,12 @@ export default {
     themeMode: {
       type: String,
       required: false,
-      default: 'dark',
-    },
+      default: 'dark'
+    }
   },
   data() {
     return {
-      tempbase64: '',
+      tempbase64: ''
     }
   },
   computed: {
@@ -48,15 +48,15 @@ export default {
         return this.tempbase64
       }
       return this.appLogo
-    },
+    }
   },
   methods: {
     async getbase64(url) {
       await request({ url, method: 'get' }).then((data) => {
         this.tempbase64 = data
       })
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -92,6 +92,9 @@ export default {
           position: relative;
           /deep/img {
             vertical-align: unset !important;
+          }
+          /deep/i {
+            font-size: 32px;
           }
         }
         h1 {
