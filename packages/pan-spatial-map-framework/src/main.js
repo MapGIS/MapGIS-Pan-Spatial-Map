@@ -4,6 +4,7 @@ import { initRouter } from './router'
 // fixme 暂时这样引入, 后期提供了未压缩的css文件会在theme文件下@import引入
 import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css'
 import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css'
+import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
 import './theme/index.less'
 import MapgisUi from '@mapgis/webclient-vue-ui'
 import Antd from 'ant-design-vue'
@@ -38,8 +39,8 @@ Vue.use(WebAppFrameworkUI)
 Vue.use(Theme, {
   components: {
     MpPanSpatialMapHeaderAvatar: HeaderAvatar,
-    MpPanSpatialMapAbout: About,
-  },
+    MpPanSpatialMapAbout: About
+  }
 })
 Vue.use(Workspace)
 Vue.use(Editor)
@@ -52,5 +53,5 @@ new Vue({
   router,
   store,
   i18n,
-  render: (h) => h(App),
+  render: (h) => h(App)
 }).$mount('#app')

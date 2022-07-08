@@ -792,6 +792,22 @@
             "extent": "",
             "guid": "e8402909-8631-4d74-9188-6a7f26d7e872",
             "gdbTypeList": "LocalPlus,LocalPlus"
+          },
+          {
+            "label": "北京中地-街景",
+            "describe": "北京中地-街景",
+            "ip": "192.168.21.192",
+            "port": "6163",
+            "layerServiceType": "IGSPanoramic",
+            "name": "北京中地-街景",
+            "searchName": "",
+            "serverUrl": "",
+            "tokenKey": "",
+            "token": "",
+            "wfsUrl": "",
+            "extent": "",
+            "guid": "e8402909-8631-4d74-9188-6a7f26d7e873",
+            "gdbTypeList": "LocalPlus,LocalPlus"
           }
         ]
       },
