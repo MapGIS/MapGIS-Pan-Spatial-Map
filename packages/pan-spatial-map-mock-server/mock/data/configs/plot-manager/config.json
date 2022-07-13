@@ -1,5 +1,5 @@
 {
   "symbolUrl": "http://localhost:8015/upload/标绘/symbols.json",
   "fontUrl": "http://localhost:8015/upload/",
-  "baseUrl": "http://localhost:8015/upload/"
+  "baseUrl": "http://localhost:8015/upload/标绘/"
 }

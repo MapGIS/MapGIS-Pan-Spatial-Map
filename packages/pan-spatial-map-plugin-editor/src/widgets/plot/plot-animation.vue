@@ -21,14 +21,20 @@
             <mapgis-ui-plot-timeline
               ref="timeline"
               :value="slotProps.value"
+              :min="slotProps.min"
+              :max="slotProps.max"
               @change="slotProps.change"
               :enableEnd="slotProps.enableEnd"
+              :speed="slotProps.speed"
+              :interval="slotProps.interval"
+              :intervalOptions="slotProps.intervalOptions"
               :duration="slotProps.duration"
               @start="slotProps.start"
               @backward="slotProps.backward"
               @pause="slotProps.pause"
               @forward="slotProps.forward"
               @speedChange="slotProps.speedChange"
+              @intervalChange="slotProps.intervalChange"
             ></mapgis-ui-plot-timeline>
           </mp-placement>
         </mp-window-wrapper>
@@ -57,14 +63,20 @@
             <mapgis-ui-plot-timeline
               ref="timeline"
               :value="slotProps.value"
+              :min="slotProps.min"
+              :max="slotProps.max"
               @change="slotProps.change"
               :enableEnd="slotProps.enableEnd"
+              :speed="slotProps.speed"
+              :interval="slotProps.interval"
+              :intervalOptions="slotProps.intervalOptions"
               :duration="slotProps.duration"
               @start="slotProps.start"
               @backward="slotProps.backward"
               @pause="slotProps.pause"
               @forward="slotProps.forward"
               @speedChange="slotProps.speedChange"
+              @intervalChange="slotProps.intervalChange"
             ></mapgis-ui-plot-timeline>
           </mp-placement>
         </mp-window-wrapper>
@@ -80,7 +92,7 @@ import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
 import { eventBus, events, api } from '@mapgis/pan-spatial-map-common'
 
 @Component({
-  name: 'MpPlotAnimation',
+  name: 'MpPlotAnimation'
 })
 export default class MpPlotAnimation extends Mixins(WidgetMixin) {
   public vueIndex = ''
@@ -95,7 +107,11 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
 
   private animation = undefined
 
-  created() {
+  async created() {
+    const config = await api.getWidgetConfig('plot-animation')
+    // console.log('plot-animation-config', config)
+    this.data = JSON.parse(JSON.stringify(config))
+
     this.$root.$on(events.PLOT_LAYER_LOADED, this.handleLoad.bind(this))
   }
 
@@ -108,14 +124,10 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
     this.showTimeline = false
   }
 
-  async handleLoad(vueIndex, vueKey) {
-    const config = await api.getWidgetConfig('plot-animation')
-    this.data = JSON.parse(JSON.stringify(config))
-    this.dataLoaded = true
-    console.log('plot-animation-config', config)
-
+  handleLoad(vueIndex, vueKey) {
     this.vueIndex = vueIndex
     this.vueKey = vueKey
+    this.dataLoaded = true
     // console.log('vueIndex, vueKey---animation', vueIndex, vueKey)
   }
 
@@ -123,7 +135,7 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
     // console.log('plotANIMATIONConfig', newConfig)
     api.saveWidgetConfig({
       name: 'plot-animation',
-      config: JSON.parse(JSON.stringify(newConfig)),
+      config: JSON.parse(JSON.stringify(newConfig))
     })
   }
 
@@ -132,6 +144,7 @@ export default class MpPlotAnimation extends Mixins(WidgetMixin) {
   }
 
   timelinePlay() {
+    this.$refs.timeline.getWindowWidth()
     this.$refs.timeline.forward()
   }
 }
