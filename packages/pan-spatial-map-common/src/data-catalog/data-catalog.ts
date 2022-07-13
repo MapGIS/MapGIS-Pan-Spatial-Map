@@ -23,6 +23,9 @@ import {
   ModelCacheFormat,
   GraphicsLayer,
   STKTerrainLayer,
+  KMLLayer,
+  KMZLayer,
+  CZMLLayer,
   UUID,
   Catalog,
   UrlUtil,
@@ -273,6 +276,36 @@ export class DataCatalogManager {
           layer = new STKTerrainLayer({ ...layerConfig, url })
         } else {
           layer = new STKTerrainLayer(layerConfig)
+        }
+
+        break
+      case LayerType.KML:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          layer = new KMLLayer({ ...layerConfig, url })
+        } else {
+          layer = new KMLLayer(layerConfig)
+        }
+
+        break
+      case LayerType.KMZ:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          layer = new KMZLayer({ ...layerConfig, url })
+        } else {
+          layer = new KMZLayer(layerConfig)
+        }
+
+        break
+      case LayerType.CZML:
+        if (layerConfig.serverURL && layerConfig.serverURL !== '') {
+          url = layerConfig.serverURL
+
+          layer = new CZMLLayer({ ...layerConfig, url })
+        } else {
+          layer = new CZMLLayer(layerConfig)
         }
 
         break
@@ -1186,6 +1219,15 @@ export class DataCatalogManager {
         break
       case this.layerServiceType.STKTERRAIN:
         serverType = LayerType.STKTerrain
+        break
+      case this.layerServiceType.KML:
+        serverType = LayerType.KML
+        break
+      case this.layerServiceType.KMZ:
+        serverType = LayerType.KMZ
+        break
+      case this.layerServiceType.CZML:
+        serverType = LayerType.CZML
         break
       default:
         break
