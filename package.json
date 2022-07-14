@@ -13,7 +13,7 @@
     "dev": "cd packages/pan-spatial-map-framework && yarn serve",
     "dev:mock": "concurrently \"yarn mock\" \"yarn dev\"",
     "build": "cd packages/pan-spatial-map-framework && yarn build",
-    "build:portal": "cd packages/pan-spatial-map-framework && yarn build:portal",
+    "build:prod": "cd packages/pan-spatial-map-framework && yarn build:prod",
     "serve": "cd packages/pan-spatial-map-framework && serve dist",
     "serve:mock": "concurrently \"yarn mock\" \"yarn serve\"",
     "dev-portal": "cd packages/pan-spatial-map-framework-portal && yarn serve",
