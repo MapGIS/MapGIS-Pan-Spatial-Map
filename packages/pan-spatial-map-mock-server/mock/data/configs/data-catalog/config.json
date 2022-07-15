@@ -1560,7 +1560,7 @@
             "searchName": "",
             "token": "",
             "guid": "9F569E7E-6CBB-479F-B2D3-EFF5B844CAB9",
-            "serverUrl": "http://localhost:8015/api/config/plot",
+            "serverUrl": "api/config/plot",
             "wfsUrl": "",
             "extent": ""
           }
