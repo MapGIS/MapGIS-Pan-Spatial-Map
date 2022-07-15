@@ -1,1 +1,5 @@
-{}
+{
+  "symbolUrl": "/upload/plotdata/symbols.json",
+  "fontUrl": "/upload/",
+  "baseUrl": "/upload/plotdata/"
+}
