@@ -77,7 +77,7 @@ import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
 import { eventBus, events, api } from '@mapgis/pan-spatial-map-common'
 
 @Component({
-  name: 'MpPlotManager',
+  name: 'MpPlotManager'
 })
 export default class MpPlotManager extends Mixins(WidgetMixin) {
   // private plotLayer = []
@@ -136,7 +136,7 @@ export default class MpPlotManager extends Mixins(WidgetMixin) {
     // console.log('plotConfig',newConfig)
     api.saveConfig({
       name: 'plot',
-      config: JSON.parse(JSON.stringify(newConfig)),
+      config: JSON.parse(JSON.stringify(newConfig))
     })
   }
 
@@ -150,4 +150,8 @@ export default class MpPlotManager extends Mixins(WidgetMixin) {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.mp-window-wrapper {
+  white-space: unset;
+}
+</style>
