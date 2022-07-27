@@ -19,7 +19,7 @@
         block-node
         :selectedKeys="selectedKeys"
         :replaceFields="{
-          children: 'sublayers',
+          children: 'sublayers'
         }"
       >
         <div slot="custom" slot-scope="item" class="tree-item-handle">
@@ -168,7 +168,7 @@ import {
   Prop,
   Watch,
   Inject,
-  Mixins,
+  Mixins
 } from 'vue-property-decorator'
 import {
   MapMixin,
@@ -186,12 +186,12 @@ import {
   CoordinateTransformation,
   CoordinateSystemType,
   Objects,
-  FitBound,
+  FitBound
 } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
   dataCatalogManagerInstance,
-  events,
+  events
 } from '@mapgis/pan-spatial-map-common'
 import MpMetadataInfo from '../MetadataInfo/MetadataInfo.vue'
 import MpCustomQuery from '../CustomQuery/CustomQuery.vue'
@@ -207,8 +207,8 @@ const { IAttributeTableExhibition, AttributeTableExhibition } = Exhibition
     MpMetadataInfo,
     MpCustomQuery,
     MpUnifyModify,
-    RightPopover,
-  },
+    RightPopover
+  }
 })
 export default class MpTreeLayer extends Mixins(
   MapMixin,
@@ -280,7 +280,7 @@ export default class MpTreeLayer extends Mixins(
         if (this.isIGSScene(item)) {
           if (item.activeScene) {
             item.sublayers = item.activeScene.sublayers.map((row) => ({
-              ...row,
+              ...row
             }))
           }
         }
@@ -298,7 +298,7 @@ export default class MpTreeLayer extends Mixins(
               row.layout.visibility === undefined ||
               row.layout.visibility === 'visible',
             id: `${item.id}~${row.id}`,
-            title: row.description || row.id,
+            title: row.description || row.id
           }))
         }
         if (this.isWMTSLayer(item)) {
@@ -447,7 +447,7 @@ export default class MpTreeLayer extends Mixins(
       item.key === this.searchkeyArr[this.searchIndex]
     ) {
       return {
-        backgroundColor: 'yellow',
+        backgroundColor: 'yellow'
       }
     }
     return null
@@ -544,7 +544,7 @@ export default class MpTreeLayer extends Mixins(
                 layer.layout.visibility = visible ? 'none' : 'visible'
               } else {
                 layer.layout = {
-                  visibility: visible ? 'none' : 'visible',
+                  visibility: visible ? 'none' : 'visible'
                 }
               }
             } else {
@@ -698,7 +698,7 @@ export default class MpTreeLayer extends Mixins(
         Cesium,
         map,
         viewer,
-        vueCesium,
+        vueCesium
       },
       this.is2DMapMode === true,
       layeExtent
@@ -718,11 +718,11 @@ export default class MpTreeLayer extends Mixins(
       component: () =>
         import('./components/SelectTilematrixSet/SelectTilematrixSet.vue'),
       props: {
-        layer: this.currentLayerInfo,
+        layer: this.currentLayerInfo
       },
       listeners: {
-        'update:layer': this.refreshCurrentWmts,
-      },
+        'update:layer': this.refreshCurrentWmts
+      }
     })
   }
 
@@ -735,11 +735,11 @@ export default class MpTreeLayer extends Mixins(
       component: () => import('./components/EditDataFlowStyle'),
       props: {
         layer: this.currentLayerInfo,
-        baseUrl: this.baseUrl,
+        baseUrl: this.baseUrl
       },
       listeners: {
-        'update:layer': this.updateDataFlowStyle,
-      },
+        'update:layer': this.updateDataFlowStyle
+      }
     })
   }
 
@@ -756,11 +756,16 @@ export default class MpTreeLayer extends Mixins(
       name: 'MpChangeM3DProps',
       component: () => import('./components/ChangeM3DProps/ChangeM3DProps.vue'),
       props: {
-        layer: this.currentLayerInfo,
+        layer: this.currentLayerInfo
       },
       listeners: {
-        'update:layer': this.updateM3DProps,
-      },
+        'update:layer': (val) => {
+          this.updateM3DProps(val, false)
+        },
+        'update:luminanceAtZenith': (val) => {
+          this.updateM3DProps(val, true)
+        }
+      }
     })
   }
 
@@ -776,11 +781,11 @@ export default class MpTreeLayer extends Mixins(
       component: () =>
         import('./components/ChangeActiveLayer/ChangeActiveLayer.vue'),
       props: {
-        layer: this.currentLayerInfo,
+        layer: this.currentLayerInfo
       },
       listeners: {
-        'update:layer': this.updateActiveLayer,
-      },
+        'update:layer': this.updateActiveLayer
+      }
     })
   }
 
@@ -806,15 +811,19 @@ export default class MpTreeLayer extends Mixins(
     this.currentLayerInfo = {}
   }
 
-  updateM3DProps(val) {
+  updateM3DProps(val, onlyUpdateLuminanceAtZenith) {
+    debugger
     let popupEnabled
     let modelSwitchEnabled
+    let luminanceAtZenith
     const { key, maximumScreenSpaceError, layer, id } = val
     if (layer) {
       popupEnabled = layer.popupEnabled
+      luminanceAtZenith = layer.luminanceAtZenith
     } else {
       popupEnabled = val.popupEnabled
       modelSwitchEnabled = val.modelSwitchEnabled
+      luminanceAtZenith = val.luminanceAtZenith
     }
     const indexArr: Array<string> = key.split('-')
     const doc = this.layerDocument.clone()
@@ -822,19 +831,32 @@ export default class MpTreeLayer extends Mixins(
     if (indexArr.length === 2 || this.isModelCacheLayer(val)) {
       const [firstIndex, secondIndex] = indexArr
       if (indexArr.length === 2) {
-        const sublayer = layers[firstIndex].activeScene.sublayers[secondIndex]
+        const { sublayers } = layers[firstIndex].activeScene
+        const sublayer = sublayers[secondIndex]
         sublayer.maximumScreenSpaceError = maximumScreenSpaceError
         sublayer.layer.popupEnabled = popupEnabled
         const m3d = this.sceneController.findSource(id)
         m3d.maximumScreenSpaceError = maximumScreenSpaceError
         // m3d.enablePopup = enablePopup
-        this.$emit('update:layerDocument', doc)
+        if (onlyUpdateLuminanceAtZenith) {
+          // 模型阴影区亮度设置，如果是g3d，则对里面的图层都进行设置
+          for (let i = 0; i < sublayers.length; i++) {
+            const sublayerId = sublayers[i].id
+            const sublayerM3d = this.sceneController.findSource(sublayerId)
+            sublayerM3d.luminanceAtZenith = luminanceAtZenith
+          }
+        } else {
+          this.$emit('update:layerDocument', doc)
+        }
       } else {
         const MC = layers[firstIndex]
         MC.maximumScreenSpaceError = maximumScreenSpaceError
         MC.popupEnabled = popupEnabled
         MC.modelSwitchEnabled = modelSwitchEnabled
-        this.$emit('update:layerDocument', doc)
+        MC.luminanceAtZenith = luminanceAtZenith
+        if (!onlyUpdateLuminanceAtZenith) {
+          this.$emit('update:layerDocument', doc)
+        }
       }
     }
     this.currentLayerInfo = {}
@@ -843,7 +865,7 @@ export default class MpTreeLayer extends Mixins(
   updateActiveLayer(val: OGCWMTSLayer) {
     const {
       key,
-      activeLayer: { id },
+      activeLayer: { id }
     } = val
     const indexArr: Array<string> = key.split('-')
     const doc = this.layerDocument.clone()
