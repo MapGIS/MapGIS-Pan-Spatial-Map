@@ -232,7 +232,8 @@
           },
           {
             "id": "widget_ebc4e6c1-e17a-8c5a-6d65-d7f35f1f88c4",
-            "uri": "widgets/scene-setting"
+            "uri": "widgets/scene-setting",
+            "config": "configs/scene-setting/config.json"
           },
           {
             "id": "widget_fa2ea6fd-c838-46bc-9b89-de82fc102e67",
