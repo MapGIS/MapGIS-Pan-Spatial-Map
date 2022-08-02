@@ -1,21 +1,47 @@
 <template>
-  <mapgis-3d-stratified-household
-    v-if="show"
-    @loaded="load"
-    @project-screen="handleProjectScreen"
-    @change-layer="handleChangeLayer"
-    :outStyle="outStyle"
-    :layers="layers"
-    :enablePopup="true"
-    :enableCollapse="false"
-    :enableStratifiedHouse="true"
-    :getProjectorStatus="getProjectorStatus"
-    :layerHighlightColorProp="layerHighlightColor"
-    :featureHighlightColorProp="featureHighlightColor"
-    :dataStoreIp="dataStoreIp"
-    :dataStorePort="dataStorePort"
-    :dataStoreDataset="dataStoreDataset"
-  ></mapgis-3d-stratified-household>
+  <div>
+    <mapgis-3d-stratified-household
+      v-if="show"
+      ref="stratifiedHousehold"
+      @loaded="load"
+      @project-screen="handleProjectScreen"
+      @change-layer="handleChangeLayer"
+      @show-relationship-graph="showRelationshipGraph"
+      :outStyle="outStyle"
+      :layers="layers"
+      :enablePopup="true"
+      :enableCollapse="false"
+      :enableStratifiedHouse="true"
+      :getProjectorStatus="getProjectorStatus"
+      :layerHighlightColorProp="layerHighlightColor"
+      :featureHighlightColorProp="featureHighlightColor"
+      :dataStoreIp="dataStoreIp"
+      :dataStorePort="dataStorePort"
+      :dataStoreDataset="dataStoreDataset"
+    ></mapgis-3d-stratified-household>
+    <!-- 关系图谱 -->
+    <mp-window-wrapper :visible="relationshipGraphShow">
+      <mapgis-ui-window
+        class="relationship-graph-wrapper"
+        @window-size="() => {}"
+        @update:visible="closeRelationshipGraph"
+        :visible.sync="relationshipGraphShow"
+        :min-width="1000"
+        :mix-height="720"
+        anchor="bottom-center"
+        title="关系图谱"
+      >
+        <div v-if="relationshipGraphShow">
+          <mapgis-3d-relationship-graph
+            ref="mapgisRelationshipGraph"
+            :info="relationshipInfo"
+            @floor-highlight="floorHighlight"
+            @house-highlight="houseHighlight"
+          />
+        </div>
+      </mapgis-ui-window>
+    </mp-window-wrapper>
+  </div>
 </template>
 
 <script lang="ts">
@@ -30,6 +56,12 @@ import {
   name: 'MpStratifiedHousehold'
 })
 export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
+  relationshipGraphShow = false
+
+  relationshipGraphLoad = false
+
+  relationshipInfo = undefined
+
   outStyle = {
     position: 'absolute',
     // position: 'relative',
@@ -193,6 +225,43 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
       isProjected
     )
   }
+
+  showRelationshipGraph(info) {
+    this.$nextTick(() => {
+      this.relationshipInfo = info
+      // 重新渲染
+      if (this.relationshipGraphShow) {
+        this.$refs.mapgisRelationshipGraph.init()
+      } else {
+        this.relationshipGraphShow = true
+      }
+
+      // 如果是楼层则展示当前层并高亮，否则还原回楼栋
+      if (info.isFloor) {
+        this.$refs.stratifiedHousehold.lockFloor(info.layerIndex)
+      } else {
+        this.$refs.stratifiedHousehold.restoreOrigindVisible()
+      }
+    })
+  }
+
+  floorHighlight(data) {
+    this.$nextTick(() => {
+      this.$refs.stratifiedHousehold.floorHighlight(data)
+    })
+  }
+
+  houseHighlight(data) {
+    this.$nextTick(() => {
+      this.$refs.stratifiedHousehold.houseHighlight(data)
+    })
+  }
+
+  closeRelationshipGraph() {
+    this.$nextTick(() => {
+      this.$refs.stratifiedHousehold.resizeGraph()
+    })
+  }
 }
 </script>
 
@@ -200,5 +269,11 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 .mapgis-3d-stratified-household-wrapper {
   height: 450px;
   // width: 260px;
+}
+</style>
+<style lang="less">
+.relationship-graph-wrapper {
+  background-color: rgba(20, 20, 20, 0.3) !important;
+  left: 45% !important;
 }
 </style>
