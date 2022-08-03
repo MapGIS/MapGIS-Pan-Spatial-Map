@@ -17,11 +17,11 @@
         "showName": "地址"
       },
       {
-        "attr": "TELEPHONE",
+        "fieldName": "TELEPHONE",
         "showName": "联系方式"
       },
       {
-        "attr": "PAC",
+        "fieldName": "PAC",
         "showName": "邮政编码"
       }
     ],
@@ -35,15 +35,15 @@
         "searchField": "NAME",
         "showField": [
           {
-            "attr": "NAME",
+            "fieldName": "NAME",
             "showName": "名称"
           },
           {
-            "attr": "ADDRESS",
+            "fieldName": "ADDRESS",
             "showName": "地址"
           },
           {
-            "attr": "TELEPHONE",
+            "fieldName": "TELEPHONE",
             "showName": "联系方式"
           }
         ]
@@ -65,15 +65,15 @@
         "searchField": "NAME",
         "showField": [
           {
-            "attr": "NAME",
+            "fieldName": "NAME",
             "showName": "名称"
           },
           {
-            "attr": "ADDRESS",
+            "fieldName": "ADDRESS",
             "showName": "地址"
           },
           {
-            "attr": "TELEPHONE",
+            "fieldName": "TELEPHONE",
             "showName": "联系方式"
           }
         ]
