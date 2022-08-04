@@ -236,11 +236,18 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
         this.relationshipGraphShow = true
       }
 
-      // 如果是楼层则展示当前层并高亮，否则还原回楼栋
+      // 还原
+      // this.$refs.stratifiedHousehold.resizeGraph()
+      // 如果是楼层则展示当前层,楼栋则还原
       if (info.isFloor) {
+        if (this.$refs.stratifiedHousehold.prevFloorId) {
+          this.$refs.stratifiedHousehold.resizeGraph()
+          this.$refs.stratifiedHousehold.prevFloorId = undefined
+        }
         this.$refs.stratifiedHousehold.lockFloor(info.layerIndex)
       } else {
         this.$refs.stratifiedHousehold.restoreOrigindVisible()
+        this.$refs.stratifiedHousehold.resizeGraph()
       }
     })
   }
@@ -274,6 +281,6 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 <style lang="less">
 .relationship-graph-wrapper {
   background-color: rgba(20, 20, 20, 0.3) !important;
-  left: 45% !important;
+  // left: 45% !important;
 }
 </style>
