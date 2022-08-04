@@ -121,11 +121,12 @@ export default {
     },
     onMoreButtonClick() {
       this.morePanel = !this.morePanel
-      this.widgets.forEach(widget => {
-        if (WidgetManager.getInstance().isWidgetVisible(widget)) {
-          WidgetManager.getInstance().closeWidget(widget)
-        }
-      })
+      // // 内容区域微件面板的mode属性设为multi时需屏蔽下方代码，反之mode属性设为single时打开下方代码
+      // this.widgets.forEach(widget => {
+      //   if (WidgetManager.getInstance().isWidgetVisible(widget)) {
+      //     WidgetManager.getInstance().closeWidget(widget)
+      //   }
+      // })
     },
     onUpdateWidgetState({ widget, newState, oldState }) {
       if (newState !== WidgetState.CLOSED) {
