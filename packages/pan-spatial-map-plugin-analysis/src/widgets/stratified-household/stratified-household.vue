@@ -23,7 +23,8 @@
     <mp-window-wrapper :visible="relationshipGraphShow">
       <mapgis-ui-window
         class="relationship-graph-wrapper"
-        @window-size="() => {}"
+        ref="relationshipGraphWindow"
+        @window-size="onResize"
         @update:visible="closeRelationshipGraph"
         :visible.sync="relationshipGraphShow"
         :min-width="1000"
@@ -237,17 +238,30 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
       }
 
       // 还原
-      // this.$refs.stratifiedHousehold.resizeGraph()
+      // !info.isFloor && this.$refs.stratifiedHousehold.restoreOrigindVisible()
+      // this.$refs.stratifiedHousehold.resizeGraph().then(() => {
+      //   if (info.isFloor) {
+      //     this.$refs.stratifiedHousehold.restoreFloor().then(() => {
+      //       this.$refs.stratifiedHousehold.lockFloor(info.layerIndex)
+      //     })
+      //   } else {
+      //     this.$refs.stratifiedHousehold.restoreFloor()
+      //   }
+      // })
       // 如果是楼层则展示当前层,楼栋则还原
       if (info.isFloor) {
         if (this.$refs.stratifiedHousehold.prevFloorId) {
-          this.$refs.stratifiedHousehold.resizeGraph()
-          this.$refs.stratifiedHousehold.prevFloorId = undefined
+          this.$refs.stratifiedHousehold.resizeGraph().then(() => {
+            this.$refs.stratifiedHousehold.lockFloor(info.layerIndex)
+          })
+        } else {
+          this.$refs.stratifiedHousehold.lockFloor(info.layerIndex)
         }
-        this.$refs.stratifiedHousehold.lockFloor(info.layerIndex)
       } else {
         this.$refs.stratifiedHousehold.restoreOrigindVisible()
-        this.$refs.stratifiedHousehold.resizeGraph()
+        this.$refs.stratifiedHousehold.resizeGraph().then(() => {
+          this.$refs.stratifiedHousehold.restoreFloor()
+        })
       }
     })
   }
@@ -266,7 +280,17 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 
   closeRelationshipGraph() {
     this.$nextTick(() => {
-      this.$refs.stratifiedHousehold.resizeGraph()
+      this.$refs.stratifiedHousehold.resizeGraph().then(() => {
+        this.$refs.stratifiedHousehold.restoreFloor()
+      })
+      // 窗口退出全屏
+      this.$refs.relationshipGraphWindow.fullScreen = false
+    })
+  }
+
+  onResize() {
+    this.$nextTick(() => {
+      this.$refs.mapgisRelationshipGraph.resizeGraph()
     })
   }
 }
