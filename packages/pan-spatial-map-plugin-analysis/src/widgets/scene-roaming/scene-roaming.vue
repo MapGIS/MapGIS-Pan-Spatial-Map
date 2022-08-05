@@ -49,15 +49,15 @@ export default class MpSceneRoaming extends Mixins(WidgetMixin) {
   private models = [
     {
       label: '人',
-      value: './CesiumModels/Cesium_Man.glb'
+      value: `${process.env.VUE_APP_PUBLIC_PATH}CesiumModels/Cesium_Man.glb`
     },
     {
       label: '卡车',
-      value: './CesiumModels/CesiumMilkTruck.glb'
+      value: `${process.env.VUE_APP_PUBLIC_PATH}CesiumModels/CesiumMilkTruck.glb`
     },
     {
       label: '飞机',
-      value: './CesiumModels/Cesium_Air.gltf'
+      value: `${process.env.VUE_APP_PUBLIC_PATH}CesiumModels/Cesium_Air.gltf`
     },
     {
       label: '无',
