@@ -304,7 +304,7 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 </style>
 <style lang="less">
 .relationship-graph-wrapper {
-  background-color: rgba(20, 20, 20, 0.3) !important;
+  background-color: rgba(20, 20, 20, 0.4) !important;
   // left: 45% !important;
 }
 </style>
