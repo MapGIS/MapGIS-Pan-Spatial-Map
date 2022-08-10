@@ -18,6 +18,7 @@
       :dataStoreIp="dataStoreIp"
       :dataStorePort="dataStorePort"
       :dataStoreDataset="dataStoreDataset"
+      :dataStoreStep="dataStoreStep"
     ></mapgis-3d-stratified-household>
     <!-- 关系图谱 -->
     <mp-window-wrapper :visible="relationshipGraphShow">
@@ -106,6 +107,10 @@ export default class MpStratifiedHousehold extends Mixins(WidgetMixin) {
 
   get dataStoreDataset() {
     return baseConfigInstance.config.DataStoreRelationDataset
+  }
+
+  get dataStoreStep() {
+    return baseConfigInstance.config.DataStoreStep
   }
 
   /**
