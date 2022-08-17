@@ -12,6 +12,6 @@
     "hasSettingPage": true,
     "settingUiComponent": "",
     "hasPadding": false,
-    "width": 420
+    "customWidth": 420
   }
 }

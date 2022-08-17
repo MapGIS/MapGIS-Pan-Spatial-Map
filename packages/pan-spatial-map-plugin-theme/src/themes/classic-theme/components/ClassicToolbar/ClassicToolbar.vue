@@ -108,25 +108,36 @@ export default {
       }
 
       return widgets.concat(this.currentNoPopularWidgets)
+    },
+    singleWidgetsMode() {
+      // 与PanelMixin逻辑保持一致
+      return this.panel && (!this.panel.mode || this.panel.mode === 'single')
     }
   },
   methods: {
     onWidgetClick(widget) {
-      this.morePanel = false
+      if (this.singleWidgetsMode) {
+        this.morePanel = false
+      }
       WidgetManager.getInstance().triggerWidgetOpen(widget)
     },
     onMoreWidgetClick(widget) {
-      this.morePanel = false
+      if (this.singleWidgetsMode) {
+        this.morePanel = false
+      }
       WidgetManager.getInstance().triggerWidgetOpen(widget)
     },
     onMoreButtonClick() {
       this.morePanel = !this.morePanel
-      // // 内容区域微件面板的mode属性设为multi时需屏蔽下方代码，反之mode属性设为single时打开下方代码
-      // this.widgets.forEach(widget => {
-      //   if (WidgetManager.getInstance().isWidgetVisible(widget)) {
-      //     WidgetManager.getInstance().closeWidget(widget)
-      //   }
-      // })
+      console.warn('点击更多', this.application, this.singleWidgetsMode, this.$props)
+      if (this.singleWidgetsMode) {
+        // 内容区域微件面板的mode属性设为single时启用下方代码
+        this.widgets.forEach(widget => {
+          if (WidgetManager.getInstance().isWidgetVisible(widget)) {
+            WidgetManager.getInstance().closeWidget(widget)
+          }
+        })
+      }
     },
     onUpdateWidgetState({ widget, newState, oldState }) {
       if (newState !== WidgetState.CLOSED) {

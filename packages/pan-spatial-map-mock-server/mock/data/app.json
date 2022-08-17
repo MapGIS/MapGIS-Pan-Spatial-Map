@@ -482,6 +482,7 @@
           }
         ],
         "panel": {
+          "mode": "multi",
           "position": {
             "anchor": "top-right",
             "horizontalOffset": 10,
