@@ -22,7 +22,7 @@
         size="large"
         label="模型阴影区域亮度调节"
         v-model="luminanceAtZenith"
-        :range="[1, 200]"
+        :range="[0, 200]"
         :step="0.2"
         @change="luminanceAtZenithChange"
       />
@@ -54,39 +54,40 @@ export default class MpChangeM3DProps extends Vue {
 
   @Watch('layer', { immediate: true, deep: true })
   initParams() {
+    debugger
     const layer = this.layer.layer ? this.layer.layer : this.layer
-
-    this.enableModelSwitch =
-      layer && layer.modelSwitchEnabled ? layer.modelSwitchEnabled : false
-
     this.enablePopup = layer && layer.popupEnabled ? layer.popupEnabled : false
+    this.enableModelSwitch =
+      this.layer && this.layer.modelSwitchEnabled
+        ? this.layer.modelSwitchEnabled
+        : false
 
     this.luminanceAtZenith =
-      layer && layer.luminanceAtZenith ? layer.luminanceAtZenith : 10
+      this.layer && this.layer.luminanceAtZenith
+        ? this.layer.luminanceAtZenith
+        : 10
   }
 
   submit() {
-    if (this.layer.maximumScreenSpaceError) {
+    if (this.layer.maximumScreenSpaceError !== undefined) {
       this.layer.maximumScreenSpaceError = this.maximumScreenSpaceError
+    }
+    if (this.layer.modelSwitchEnabled !== undefined) {
+      this.layer.modelSwitchEnabled = this.modelSwitchEnabled
+    }
+    if (this.layer.luminanceAtZenith !== undefined) {
+      this.layer.luminanceAtZenith = this.luminanceAtZenith
     }
     if (this.layer.layer) {
       this.layer.layer.popupEnabled = this.enablePopup
-      this.layer.layer.modelSwitchEnabled = this.enableModelSwitch
-      this.layer.layer.luminanceAtZenith = this.luminanceAtZenith
     } else {
       this.layer.popupEnabled = this.enablePopup
-      this.layer.modelSwitchEnabled = this.enableModelSwitch
-      this.layer.luminanceAtZenith = this.luminanceAtZenith
     }
     this.$emit('update:layer', this.layer)
   }
 
   luminanceAtZenithChange() {
-    if (this.layer.layer) {
-      this.layer.layer.luminanceAtZenith = this.luminanceAtZenith
-    } else {
-      this.layer.luminanceAtZenith = this.luminanceAtZenith
-    }
+    this.layer.luminanceAtZenith = this.luminanceAtZenith
     this.$emit('update:luminanceAtZenith', this.layer)
   }
 }

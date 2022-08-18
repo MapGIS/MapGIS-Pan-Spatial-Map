@@ -814,16 +814,18 @@ export default class MpTreeLayer extends Mixins(
   updateM3DProps(val, onlyUpdateLuminanceAtZenith) {
     debugger
     let popupEnabled
-    let modelSwitchEnabled
-    let luminanceAtZenith
-    const { key, maximumScreenSpaceError, layer, id } = val
+    const {
+      key,
+      maximumScreenSpaceError,
+      layer,
+      id,
+      modelSwitchEnabled,
+      luminanceAtZenith
+    } = val
     if (layer) {
       popupEnabled = layer.popupEnabled
-      luminanceAtZenith = layer.luminanceAtZenith
     } else {
       popupEnabled = val.popupEnabled
-      modelSwitchEnabled = val.modelSwitchEnabled
-      luminanceAtZenith = val.luminanceAtZenith
     }
     const indexArr: Array<string> = key.split('-')
     const doc = this.layerDocument.clone()
@@ -834,6 +836,7 @@ export default class MpTreeLayer extends Mixins(
         const { sublayers } = layers[firstIndex].activeScene
         const sublayer = sublayers[secondIndex]
         sublayer.maximumScreenSpaceError = maximumScreenSpaceError
+        sublayer.luminanceAtZenith = luminanceAtZenith
         sublayer.layer.popupEnabled = popupEnabled
         const m3d = this.sceneController.findSource(id)
         m3d.maximumScreenSpaceError = maximumScreenSpaceError
@@ -850,10 +853,13 @@ export default class MpTreeLayer extends Mixins(
         }
       } else {
         const MC = layers[firstIndex]
-        MC.maximumScreenSpaceError = maximumScreenSpaceError
         MC.popupEnabled = popupEnabled
         MC.modelSwitchEnabled = modelSwitchEnabled
+        MC.maximumScreenSpaceError = maximumScreenSpaceError
         MC.luminanceAtZenith = luminanceAtZenith
+        const m3d = this.sceneController.findM3DIgsSource(MC.id)
+        m3d.maximumScreenSpaceError = maximumScreenSpaceError
+        m3d.luminanceAtZenith = luminanceAtZenith
         if (!onlyUpdateLuminanceAtZenith) {
           this.$emit('update:layerDocument', doc)
         }
