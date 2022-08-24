@@ -50,9 +50,8 @@
               <span
                 v-if="
                   searchValue !== '' &&
-                    item.name
-                      .toUpperCase()
-                      .indexOf(searchValue.toUpperCase()) !== -1
+                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
+                    -1
                 "
               >
                 <span class="unfilter-words" :title="item.description">
@@ -83,7 +82,12 @@
                   }}
                 </span>
               </span>
-              <span v-else :title="item.description">{{ item.name }}</span>
+              <span v-else :title="item.description"
+                >{{ item.name
+                }}<span class="total-text">{{
+                  `${getLeafStatus(item)}`
+                }}</span></span
+              >
             </span>
           </a-dropdown>
           <a-dropdown
@@ -100,8 +104,8 @@
             <span
               v-if="
                 searchValue !== '' &&
-                  item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
-                    -1
+                item.name.toUpperCase().indexOf(searchValue.toUpperCase()) !==
+                  -1
               "
             >
               <span class="unfilter-words" :title="item.description">
@@ -235,14 +239,14 @@ import {
   LoadStatus,
   Metadata,
   Layer3D,
-  FitBound
+  FitBound,
 } from '@mapgis/web-app-framework'
 import {
   dataCatalogManagerInstance,
   DataCatalogManager,
   eventBus,
   events,
-  api
+  api,
 } from '@mapgis/pan-spatial-map-common'
 
 import MpMetadataInfo from '../../components/MetadataInfo/MetadataInfo.vue'
@@ -252,8 +256,8 @@ import NonSpatial from './non-spatial.vue'
   name: 'MpDataCatalog',
   components: {
     MpMetadataInfo,
-    NonSpatial
-  }
+    NonSpatial,
+  },
 })
 export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 搜索框输入值
@@ -280,7 +284,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   // 替换treeNode中的title、key字段为treeData中对应的字段
   private replaceFields: object = {
     title: 'name',
-    key: 'guid'
+    key: 'guid',
   }
 
   // 目录树中选中的节点的id列表。
@@ -332,7 +336,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   }
 
   get nodeLevel() {
-    return function(node) {
+    return function (node) {
       return node.pos.split('-').length - 1
     }
   }
@@ -341,7 +345,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     this.$message.config({
       top: '100px',
       duration: 2,
-      maxCount: 1
+      maxCount: 1,
     })
 
     this.widgetConfig = this.widgetInfo.config
@@ -351,9 +355,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     this.uploadUrl = `${this.baseUrl}/api/local-storage/pictures`
 
     this.dataCatalogManager.init(this.widgetInfo.config)
-    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData(
-      true
-    )
+    this.dataCatalogTreeData =
+      await this.dataCatalogManager.getDataCatalogTreeData(true)
     const _allTreeDataConfigs = []
     const { treeData, allTreeDataConfigs } = this.handleTreeData(
       this.dataCatalogTreeData,
@@ -450,7 +453,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   private getCheckedLayerConfigIDs(): string[] {
     const checkedLayerConfigIDs = []
-    this.checkedNodeKeys.forEach(key => {
+    this.checkedNodeKeys.forEach((key) => {
       const layerConfig = this.dataCatalogManager.getLayerConfigByID(key)
 
       if (layerConfig) checkedLayerConfigIDs.push(key)
@@ -462,7 +465,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   private modifyDocument(nodekeys: [], isChecked: boolean) {
     // 获取选中节点中的图层节点。
     const layerConfigNodeList: [] = []
-    nodekeys.forEach(key => {
+    nodekeys.forEach((key) => {
       const layerConfig = this.dataCatalogManager.getLayerConfigByID(key)
       if (layerConfig) {
         layerConfigNodeList.push(layerConfig)
@@ -472,52 +475,49 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       // 选中节点中保含有图层节点
       const doc: Document = this.document
       const checkedNodeKeys: string[] = this.checkedNodeKeys
-      layerConfigNodeList.forEach(
-        async (layerConfigNode): Layer => {
-          if (isChecked) {
-            // 如果是选中了节点
-            // 1.根据图层节点的配置,生成webclient-store中定义的图层.
-            const layer = DataCatalogManager.generateLayerByConfig(
-              layerConfigNode
-            )
-            layer.description = this.setDescription(layer)
-            // 2.将图层添加到全局的document中。
-            if (layer) {
-              const recordCheckLayer = this.disableTreeNodeCheckBox(layer.id)
-              // 2.1加载图层
-              try {
-                if (layer.loadStatus === LoadStatus.notLoaded) {
-                  await layer.load()
+      layerConfigNodeList.forEach(async (layerConfigNode): Layer => {
+        if (isChecked) {
+          // 如果是选中了节点
+          // 1.根据图层节点的配置,生成webclient-store中定义的图层.
+          const layer =
+            DataCatalogManager.generateLayerByConfig(layerConfigNode)
+          layer.description = this.setDescription(layer)
+          // 2.将图层添加到全局的document中。
+          if (layer) {
+            const recordCheckLayer = this.disableTreeNodeCheckBox(layer.id)
+            // 2.1加载图层
+            try {
+              if (layer.loadStatus === LoadStatus.notLoaded) {
+                await layer.load()
+              }
+            } catch (error) {
+            } finally {
+              // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
+              if (layer.loadStatus === LoadStatus.loaded) {
+                if (this.is3DLayer(layer) && this.is2DMapMode === true) {
+                  this.switchMapMode()
                 }
-              } catch (error) {
-              } finally {
-                // 2.2判断图层是否载成功。如果成功则将图层添加到documet中。否则，给出提示，并将数据目录树中对应的节点设为未选中状态。
-                if (layer.loadStatus === LoadStatus.loaded) {
-                  if (this.is3DLayer(layer) && this.is2DMapMode === true) {
-                    this.switchMapMode()
-                  }
 
-                  doc.defaultMap.add(layer)
-                } else {
-                  this.$message.error(`图层:${layer.title}加载失败`)
-                  checkedNodeKeys.splice(layer.id)
-                }
-                if (!this.is3DLayer(layer)) {
-                  // 图层加载完毕，恢复checkbox可选状态
-                  this.setCheckBoxEnable(recordCheckLayer, false)
-                }
+                doc.defaultMap.add(layer)
+              } else {
+                this.$message.error(`图层:${layer.title}加载失败`)
+                checkedNodeKeys.splice(layer.id)
+              }
+              if (!this.is3DLayer(layer)) {
+                // 图层加载完毕，恢复checkbox可选状态
+                this.setCheckBoxEnable(recordCheckLayer, false)
               }
             }
-          } else {
-            // 如果是取消选中了节点
-            // 1.通过节点的key,将图层从document中移除。
-            doc.defaultMap.remove(
-              doc.defaultMap.findLayerById(layerConfigNode.guid)
-            )
           }
-          eventBus.$emit(events.DATA_SELECTION_CHANGE_EVENT)
+        } else {
+          // 如果是取消选中了节点
+          // 1.通过节点的key,将图层从document中移除。
+          doc.defaultMap.remove(
+            doc.defaultMap.findLayerById(layerConfigNode.guid)
+          )
         }
-      )
+        eventBus.$emit(events.DATA_SELECTION_CHANGE_EVENT)
+      })
     }
   }
 
@@ -585,7 +585,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   }
 
   findParentName(id, parentName, dataCatalog, arr) {
-    dataCatalog.forEach(item => {
+    dataCatalog.forEach((item) => {
       let copy = parentName
       if (item.guid === id) {
         parentName += item.name
@@ -635,7 +635,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         const arr = this.getAllKeys(node.children)
         if (
           node.children.some(
-            item => this.expandedKeys.includes(item.guid) === true
+            (item) => this.expandedKeys.includes(item.guid) === true
           ) ||
           arr.length > 0
         ) {
@@ -662,7 +662,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       }
     } else {
       this.searchIndex = -1
-      this.timer = setTimeout(_ => {
+      this.timer = setTimeout((_) => {
         this.setSearchIndex()
       }, 700)
     }
@@ -691,9 +691,8 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   async refreshTree() {
     const config = await api.getWidgetConfig('data-catalog')
     this.dataCatalogManager.init(config)
-    this.dataCatalogTreeData = await this.dataCatalogManager.getDataCatalogTreeData(
-      true
-    )
+    this.dataCatalogTreeData =
+      await this.dataCatalogManager.getDataCatalogTreeData(true)
     const _allTreeDataConfigs = []
     const { treeData, allTreeDataConfigs } = this.handleTreeData(
       this.dataCatalogTreeData,
@@ -759,7 +758,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     })
     return {
       treeData,
-      allTreeDataConfigs
+      allTreeDataConfigs,
     }
   }
 
@@ -768,10 +767,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
     const nodeParentLevel = node.pos
       .split('-')
       .slice(1)
-      .map(item => +item)
+      .map((item) => +item)
     const LabelArr = []
     this.getNodeLabel(this.dataCatalogTreeData, 0, LabelArr, nodeParentLevel)
-    if (LabelArr.some(item => item.indexOf('专题') !== -1)) {
+    if (LabelArr.some((item) => item.indexOf('专题') !== -1)) {
       return true
     } else {
       return false
@@ -806,20 +805,23 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
       this.showMetaData = false
       const url = item.serverURL
       let getCapabilitiesURL = ''
+      let tempUrl = url
+      if (item.tokenValue && item.tokenValue.length > 0) {
+        const tokenKey = item.tokenKey ? item.tokenKey : 'token'
+        tempUrl += `?${item.tokenKey}=${item.tokenValue}`
+      }
       if (item.serverType === LayerType.OGCWMS) {
-        getCapabilitiesURL = Metadata.OGCMetadataQuery.generateWMSGetCapabilitiesURL(
-          url
-        )
+        getCapabilitiesURL =
+          Metadata.OGCMetadataQuery.generateWMSGetCapabilitiesURL(tempUrl)
       } else if (item.serverType === LayerType.OGCWMTS) {
-        getCapabilitiesURL = Metadata.OGCMetadataQuery.generateWMTSGetCapabilitiesURL(
-          url
-        )
+        getCapabilitiesURL =
+          Metadata.OGCMetadataQuery.generateWMTSGetCapabilitiesURL(tempUrl)
       }
       window.open(getCapabilitiesURL)
     } else {
       const layer = {
         ...item,
-        type: item.serverType
+        type: item.serverType,
       }
       this.showMetaData = true
       this.currentConfig = layer
@@ -839,7 +841,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
   bookMarkClick(node) {
     if (this.dataCatalogManager.checkedLayerConfigIDs.includes(node.guid)) {
       const index = this.dataCatalogManager.checkedLayerConfigIDs.findIndex(
-        item => item === node.guid
+        (item) => item === node.guid
       )
       this.dataCatalogManager.checkedLayerConfigIDs.splice(index, 1)
     } else {
@@ -875,7 +877,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         legendConfig[key] = url
         const res = await api.saveWidgetConfig({
           name: 'legend',
-          config: JSON.stringify(legendConfig)
+          config: JSON.stringify(legendConfig),
         })
         eventBus.$emit(events.UPLOAD_LEGEND_SUCCESS_EVENT)
         this.showUploader = false
@@ -912,7 +914,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
           if (doc.defaultMap && doc.defaultMap.allLayers.length > 0) {
             const imposeLayer = doc.defaultMap.allLayers.find(
-              item => item.id === node.guid
+              (item) => item.id === node.guid
             )
 
             if (imposeLayer.type !== LayerType.IGSScene) {
@@ -922,7 +924,7 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
                   Cesium,
                   map,
                   viewer,
-                  vueCesium
+                  vueCesium,
                 },
                 this.is2DMapMode === true
               )
@@ -971,9 +973,9 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
         data: {
           type: type,
           url: url,
-          name: params.name || 'OGCWMTS/OGCWMS'
+          name: params.name || 'OGCWMTS/OGCWMS',
         },
-        isZoom: true
+        isZoom: true,
       }
 
       eventBus.$emit(events.ADD_DATA_EVENT, data)
@@ -986,6 +988,38 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 
   isDataFlow(item) {
     return item.serverType === LayerType.DataFlow
+  }
+
+  /**
+   * 获取叶子节点的总数和被选中数
+   */
+  getLeafStatus(item) {
+    const status = this.getLeafStatusRecursion(item)
+    return `(${status.leafChecked}/${status.leafTotal})`
+  }
+
+  /**
+   * 获取叶子节点的总数和被选中数递归函数
+   */
+  getLeafStatusRecursion(item) {
+    let leafTotal = 0
+    let leafChecked = 0
+    for (let i = 0; i < item.children.length; i++) {
+      const children = item.children[i]
+      if (!children.children || children.children.length === 0) {
+        leafTotal++
+        const id = children.guid
+        if (this.dataCatalogManager.checkedLayerConfigIDs.includes(id)) {
+          leafChecked++
+        }
+      } else {
+        const childrenStatus = this.getLeafStatusRecursion(children)
+        leafTotal += childrenStatus.leafTotal
+        leafChecked += childrenStatus.leafChecked
+      }
+    }
+    // console.log(item)
+    return { leafTotal, leafChecked }
   }
 }
 </script>
@@ -1050,5 +1084,10 @@ export default class MpDataCatalog extends Mixins(WidgetMixin) {
 }
 .filter-words {
   color: @primary-color !important;
+}
+
+.total-text {
+  font-size: xx-small;
+  color: gray;
 }
 </style>

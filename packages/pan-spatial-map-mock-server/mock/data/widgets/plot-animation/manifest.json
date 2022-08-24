@@ -1,0 +1,16 @@
+{
+  "name": "态势推演",
+  "author": "MapGIS",
+  "description": "",
+  "component": "MpPlotAnimation",
+  "icon": "<svg t=\"1655342258905\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"9264\" width=\"200\" height=\"200\"><path d=\"M480 96l128.576 273.92L896 413.76l-208 213.12 49.088 301.056L480 785.92 222.912 928l49.088-300.992L64 413.824l287.424-43.968L480 96z m448 672v64H768v-64h160z m-448-521.408L394.88 427.968l-198.144 30.272 143.616 147.2-33.152 202.752 172.8-95.424 172.736 95.424-33.088-202.816 143.552-147.136-198.08-30.272L480 246.592zM928 576v64H768V576h160z m0-320v64H768V256h160z\" p-id=\"9265\"></path></svg>",
+  "properties": {
+    "2D": true,
+    "3D": true,
+    "inPanel": true,
+    "hasConfig": true,
+    "hasSettingPage": true,
+    "hasPadding": false,
+    "settingUiComponent": ""
+  }
+}

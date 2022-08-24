@@ -1,57 +1,47 @@
 <template>
-    <div>
-        <mapgis-3d-ponding-simulation
-            @loaded="loaded"
-            @isPonding="
-                (e) => {
-                    pond = e
-                }
-            "
-            @updateValue="
-                (e) => {
-                    sliderValue = e
-                }
-            "
-            :pondingTime="pondingTime"
-            :multiSpeed="multiSpeed"
+  <div>
+    <mapgis-3d-ponding-simulation
+      @loaded="loaded"
+      @isPonding="
+        (e) => {
+          pond = e
+        }
+      "
+      @costTime="
+        (e) => {
+          sliderValue = e
+        }
+      "
+      :pondingTime="pondingTime"
+      :multiSpeed="multiSpeed"
+    />
+    <mp-window-wrapper :visible="showTimeline">
+      <mp-placement
+        :position="'bottom-left'"
+        v-show="showTimeline"
+        :offset="[52, 60]"
+        style="right:0px;"
+      >
+        <mapgis-3d-ponding-simulation-timeline
+          v-if='showTimeline'
+          :costTime="sliderValue"
+          :isPlaying="pond"
+          @updateTime="
+            (e) => {
+              pondingTime = e
+            }
+          "
+          @updateSpeed="
+            (e) => {
+              multiSpeed = e
+            }
+          "
+          @play="addSimulation"
+          @loaded="handleLoaded"
         />
-        <mp-window-wrapper :visible="showTimeline">
-            <template v-slot:default="slotProps">
-                <mp-window
-                    :visible.sync="showTimeline"
-                    title="积水仿真"
-                    :horizontal-offset="28"
-                    :vertical-offset="30"
-                    :width="580"
-                    :height="80"
-                    :has-padding="false"
-                    anchor="bottom-center"
-                    v-bind="slotProps"
-                >
-                    <template>
-                        <mapgis-3d-ponding-simulation-timeline
-                            :value="sliderValue"
-                            :isPlaying="pond"
-                            :width="560"
-                            :sliderStyle="sliderStyle"
-                            @updateTime="
-                                (e) => {
-                                    pondingTime = e
-                                }
-                            "
-                            @updateSpeed="
-                                (e) => {
-                                    multiSpeed = e
-                                }
-                            "
-                            @play="addSimulation"
-                            style="position:absolute;top:10px;left:10px"
-                        />
-                    </template>
-                </mp-window>
-            </template>
-        </mp-window-wrapper>
-    </div>
+      </mp-placement>
+    </mp-window-wrapper>
+  </div>
 </template>
 
 <script lang="ts">
@@ -59,49 +49,46 @@ import { Mixins, Component } from 'vue-property-decorator'
 import { WidgetMixin } from '@mapgis/web-app-framework'
 
 @Component({
-    name: 'MpPondingSimulation',
+  name: 'MpPondingSimulation',
 })
 export default class MpPondingSimulation extends Mixins(WidgetMixin) {
+  private pondingTime = 24
 
-    private pondingTime = 24
+  private multiSpeed = 1
 
-    private multiSpeed = 1
+  private pond = false
 
-    private pond = false
+  private sliderValue = 0
 
-    private sliderValue = 0
+  private showTimeline = false
 
-    private showTimeline = false
+  /**
+   * 微件打开时
+   */
+  onOpen() {
+    this.ponding.mounted()
+    this.showTimeline = true
+  }
 
-    private sliderStyle = {
-        marginLeft: '100px',
-        width: '400px'
-    }
+  /**
+   * 微件关闭时
+   */
+  onClose() {
+    this.ponding.destroyed()
+    this.showTimeline = false
+  }
 
-    /**
-     * 微件打开时
-     */
-    onOpen() {
-        this.ponding.mounted()
-        this.showTimeline = true
-    }
+  loaded(ponding) {
+    this.ponding = ponding
+  }
 
-    /**
-     * 微件关闭时
-     */
-    onClose() {
-        this.ponding.destroyed()
-        this.showTimeline = false
+  handleLoaded(timeline){
+    this.timeline = timeline;
+  }
 
-    }
-
-    loaded(ponding) {
-        this.ponding = ponding
-    }
-
-    addSimulation() {
-        this.ponding.addSimulation()
-    }
+  addSimulation() {
+    this.ponding.addSimulation()
+  }
 }
 </script>
 

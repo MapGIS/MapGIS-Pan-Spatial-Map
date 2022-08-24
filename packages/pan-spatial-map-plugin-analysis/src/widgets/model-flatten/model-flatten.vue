@@ -1,5 +1,5 @@
 <template>
-  <div style='height: 210px;width:280px'>
+  <div>
     <mapgis-3d-model-flatten :M3Ds='M3Ds' :heightOffset='heightOffset'/>
   </div>
 </template>

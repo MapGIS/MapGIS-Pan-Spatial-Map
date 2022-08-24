@@ -29,7 +29,7 @@ function setAppOptions(options) {
  */
 function parseRoutes(routesConfig, routerMap) {
   const routes = []
-  routesConfig.forEach(item => {
+  routesConfig.forEach((item) => {
     // 获取注册在 routerMap 中的 router，初始化 routeCfg
     let router
     let routeCfg = {}
@@ -41,9 +41,6 @@ function parseRoutes(routesConfig, routerMap) {
       routeCfg = item
     }
     if (!router) {
-      console.warn(
-        `can't find register for router ${routeCfg.router}, please register it in advance.`
-      )
       router = typeof item === 'string' ? { path: item, name: item } : item
     }
     // 从 router 和 routeCfg 解析路由
@@ -98,12 +95,6 @@ function loadRoutes(routesConfig) {
     const arg0 = arguments[0]
     if (arg0.router || arg0.i18n || arg0.store) {
       routesConfig = arguments[1]
-      console.error(
-        'the usage of signature loadRoutes({router, store, i18n}, routesConfig) is out of date, please use the new signature: loadRoutes(routesConfig).'
-      )
-      console.error(
-        '方法签名 loadRoutes({router, store, i18n}, routesConfig) 的用法已过时, 请使用新的方法签名 loadRoutes(routesConfig)。'
-      )
     }
   }
   // ************** 兼容 version < v0.6.1 *****************
@@ -132,7 +123,7 @@ function loadRoutes(routesConfig) {
   // 提取路由国际化数据
   mergeI18nFromRoutes(i18n, router.options.routes)
   // 初始化Admin后台菜单数据
-  const rootRoute = router.options.routes.find(item => item.path === '/')
+  const rootRoute = router.options.routes.find((item) => item.path === '/')
   const menuRoutes = rootRoute && rootRoute.children
   if (menuRoutes) {
     store.commit('setting/setMenuData', menuRoutes)
@@ -147,8 +138,8 @@ function loadRoutes(routesConfig) {
  */
 function mergeRoutes(target, source) {
   const routesMap = {}
-  target.forEach(item => (routesMap[item.path] = item))
-  source.forEach(item => (routesMap[item.path] = item))
+  target.forEach((item) => (routesMap[item.path] = item))
+  source.forEach((item) => (routesMap[item.path] = item))
   return Object.values(routesMap)
 }
 
@@ -160,9 +151,9 @@ function mergeRoutes(target, source) {
  */
 function deepMergeRoutes(target, source) {
   // 映射路由数组
-  const mapRoutes = routes => {
+  const mapRoutes = (routes) => {
     const routesMap = {}
-    routes.forEach(item => {
+    routes.forEach((item) => {
       routesMap[item.path] = {
         ...item,
         children: item.children ? mapRoutes(item.children) : undefined
@@ -177,8 +168,8 @@ function deepMergeRoutes(target, source) {
   const merge = deepMerge(tarMap, srcMap)
 
   // 转换为 routes 数组
-  const parseRoutesMap = routesMap => {
-    return Object.values(routesMap).map(item => {
+  const parseRoutesMap = (routesMap) => {
+    return Object.values(routesMap).map((item) => {
       if (item.children) {
         item.children = parseRoutesMap(item.children)
       } else {
@@ -195,7 +186,7 @@ function deepMergeRoutes(target, source) {
  * @param routes 路由配置
  */
 function formatRoutes(routes) {
-  routes.forEach(route => {
+  routes.forEach((route) => {
     const { path } = route
     if (!path.startsWith('/') && path !== '*') {
       route.path = `/${path}`
@@ -210,7 +201,7 @@ function formatRoutes(routes) {
  * @param pAuthorities 父级路由权限配置集合
  */
 function formatAuthority(routes, pAuthorities = []) {
-  routes.forEach(route => {
+  routes.forEach((route) => {
     const meta = route.meta
     const defaultAuthority = pAuthorities[pAuthorities.length - 1] || {
       permission: '*'
@@ -251,7 +242,7 @@ function formatAuthority(routes, pAuthorities = []) {
 function getI18nKey(path) {
   const keys = path
     .split('/')
-    .filter(item => !item.startsWith(':') && item != '')
+    .filter((item) => !item.startsWith(':') && item != '')
   keys.push('name')
   return keys.join('.')
 }
@@ -264,12 +255,12 @@ function getI18nKey(path) {
 function loadGuards(guards, options) {
   const { beforeEach, afterEach } = guards
   const { router } = options
-  beforeEach.forEach(guard => {
+  beforeEach.forEach((guard) => {
     if (guard && typeof guard === 'function') {
       router.beforeEach((to, from, next) => guard(to, from, next, options))
     }
   })
-  afterEach.forEach(guard => {
+  afterEach.forEach((guard) => {
     if (guard && typeof guard === 'function') {
       router.afterEach((to, from) => guard(to, from, options))
     }

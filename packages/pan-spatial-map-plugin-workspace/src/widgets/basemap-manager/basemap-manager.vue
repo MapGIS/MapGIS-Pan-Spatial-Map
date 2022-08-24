@@ -24,10 +24,7 @@ import {
   LoadStatus,
   FitBound,
 } from '@mapgis/web-app-framework'
-import {
-  baseConfigInstance,
-  DataCatalogManager,
-} from '@mapgis/pan-spatial-map-common'
+import { api, DataCatalogManager } from '@mapgis/pan-spatial-map-common'
 import MpBasemapItem from './components/BasemapItem/BasemapItem.vue'
 
 @Component({ name: 'MpBasemapManager', components: { MpBasemapItem } })
@@ -46,26 +43,38 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
   }
 
   get basemaps() {
-    const basemapList = [...this.widgetInfo.config]
-
-    // 获取默认底图
-    const defaultBasemap = this.getDefaultBasemap()
-
+    const { baseMapList, indexBaseMapGUID } = { ...this.widgetInfo.config }
+    let defaultBasemap
+    for (let i = 0; i < baseMapList.length; i++) {
+      const basemap = baseMapList[i]
+      if (basemap.guid == indexBaseMapGUID) {
+        baseMapList.splice(i, 1)
+        defaultBasemap = basemap
+        break
+      }
+    }
     if (defaultBasemap) {
-      basemapList.push(defaultBasemap)
+      baseMapList.push(defaultBasemap)
     }
 
     // 将配置转换成可用于添加到map中的配置
-    return basemapList
+    return baseMapList
       .map((basemap) => {
         const { children } = basemap
-        const layers = children.map((layer) => {
+        const layers = []
+        for (let i = 0; i < children.length; i++) {
+          let layer = children[i]
           // 如果要兼容老版格式，可以在这里进行升级，转换成新的数据结构（数据与添加数据配置一致）
           layer = this.updateLayer(layer)
+          // 索引底图只有一个图层，图层的描述必须为 "索引底图"，不然不会显示在其他底图上层
+          let description = layer.description || ''
+          if (basemap.guid == indexBaseMapGUID && i == 0) {
+            description = '索引底图'
+          }
           const layerConfig = {
             name: layer.name,
             guid: UUID.uuid(),
-            description: layer.description || '',
+            description,
             serverURL: layer.url,
             serverType: this.parseLayerType(layer.type),
           }
@@ -73,9 +82,8 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
             layerConfig.tokenValue = layer.token
             layerConfig.tokenKey = layer.tokenKey ? layer.tokenKey : 'token'
           }
-
-          return layerConfig
-        })
+          layers.push(layerConfig)
+        }
         return {
           ...basemap,
           children: layers,
@@ -87,13 +95,27 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
       })
   }
 
-  mounted() {
-    const defaultBasemap = this.getDefaultBasemap()
+  /**
+   * 获取默认选中的底图
+   */
+  get defaultSelect() {
+    return this.basemaps.filter((basemap) => {
+      const { select = false } = basemap
+      return select
+    })
+  }
 
-    if (defaultBasemap) {
-      this.onSelect(defaultBasemap.name, true)
-    } else {
-      if (this.basemaps.length > 0) this.onSelect(this.basemaps[0].name)
+  mounted() {
+    const { indexBaseMapGUID } = { ...this.widgetInfo.config }
+    // 加载显示配置里已设置默认选中的底图
+    if (this.defaultSelect && this.defaultSelect.length > 0) {
+      for (let i = 0; i < this.defaultSelect.length; i++) {
+        let isZoomTo = false
+        if (this.defaultSelect[i].guid == indexBaseMapGUID) {
+          isZoomTo = true
+        }
+        this.onSelect(this.defaultSelect[i].name, isZoomTo)
+      }
     }
   }
 
@@ -116,22 +138,27 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
 
   onSelect(name, isZoomTo = false) {
     this.basemapNames.push(name)
-
-    const info = this.basemaps.find((basemap) => basemap.name === name)
-    if (info) {
-      info.children.forEach(async (layer) => {
-        const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
-        mapLayer.description = layer.description
-        if (mapLayer.loadStatus === LoadStatus.notLoaded) {
-          await mapLayer.load()
-          this.document.baseLayerMap.add(mapLayer)
-          if (isZoomTo) {
-            this.fitBounds(mapLayer)
+    for (let i = 0; i < this.basemaps.length; i++) {
+      const basemap = this.basemaps[i]
+      if (basemap.name === name) {
+        basemap.children.forEach(async (layer) => {
+          const mapLayer = DataCatalogManager.generateLayerByConfig(layer)
+          mapLayer.description = layer.description
+          if (mapLayer.loadStatus === LoadStatus.notLoaded) {
+            await mapLayer.load()
+            this.document.baseLayerMap.add(mapLayer)
+            if (isZoomTo) {
+              this.fitBounds(mapLayer)
+            }
+          } else {
+            this.document.baseLayerMap.add(mapLayer)
           }
-        } else {
-          this.document.baseLayerMap.add(mapLayer)
+        })
+        if (!basemap.select) {
+          basemap.select = true
         }
-      })
+        break
+      }
     }
   }
 
@@ -140,70 +167,19 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
       this.basemapNames.findIndex((basemapName) => basemapName === name),
       1
     )
-
-    const info = this.basemaps.find((basemap) => basemap.name === name)
-    if (info) {
-      info.children.forEach((layer) => {
-        const maplayer = this.document.baseLayerMap.findLayerById(layer.guid)
-        this.document.baseLayerMap.remove(maplayer)
-      })
-    }
-  }
-
-  private getDefaultBasemap() {
-    const {
-      name,
-      image,
-      serverType,
-      ip,
-      port,
-      defaultMapType,
-      defaultMapName,
-    } = baseConfigInstance.config
-
-    const defaultBasemap = {
-      name,
-      image,
-      children: [],
-    }
-
-    const defaultBasemapLayer = {
-      description: '索引底图',
-    }
-
-    // 根据服务类型初始化图层信息
-    switch (serverType) {
-      case 'IGServer':
-        defaultBasemapLayer.name = defaultMapName
-        switch (defaultMapType) {
-          case 'doc':
-            defaultBasemapLayer.type = 'IGSMapImage'
-            defaultBasemapLayer.url = `http://${ip}:${port}/igs/rest/mrms/docs/${defaultMapName}`
-            break
-          case 'tile':
-            defaultBasemapLayer.type = 'IGSTile'
-            defaultBasemapLayer.url = `http://${ip}:${port}/igs/rest/mrms/tile/${defaultMapName}`
-            break
-          default:
-            break
+    for (let i = 0; i < this.basemaps.length; i++) {
+      const basemap = this.basemaps[i]
+      if (basemap.name === name) {
+        basemap.children.forEach((layer) => {
+          const maplayer = this.document.baseLayerMap.findLayerById(layer.guid)
+          this.document.baseLayerMap.remove(maplayer)
+        })
+        if (basemap.select) {
+          basemap.select = false
         }
-        defaultBasemap.children.push(defaultBasemapLayer)
         break
-      case 'OGCServer':
-        // 默认底图需要实现对OGCServer的支持
-        // OGCServerTypeName: WMS、WMTS
-        // OGCServerUrl
-        // TileMatrixSetLink
-        break
-      default:
-        break
+      }
     }
-
-    if (defaultBasemap.children.length > 0) {
-      return defaultBasemap
-    }
-
-    return null
   }
 
   private updateLayer(layer) {
@@ -311,6 +287,67 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
     return type
   }
 
+  private getLayerTypeString(type: number) {
+    return LayerType[type]
+  }
+
+  private getSaveConfig() {
+    const baseMapList = this.basemaps.map((basemap) => {
+      const { children } = basemap
+      const layers = children.map((layer) => {
+        const description = layer.description || ''
+        const layerConfig = {
+          name: layer.name,
+          description,
+          url: layer.serverURL,
+          type: this.getLayerTypeString(layer.serverType),
+        }
+        if (layer.tokenValue) {
+          layerConfig.token = layer.tokenValue
+          layerConfig.tokenKey = layer.tokenKey ? layer.tokenKey : 'token'
+        }
+        return layerConfig
+      })
+      return {
+        ...basemap,
+        children: layers,
+      }
+    })
+    const { indexBaseMapGUID } = { ...this.widgetInfo.config }
+    const config = {
+      baseMapList,
+      indexBaseMapGUID,
+    }
+    return config
+  }
+
+  // 微件失活时
+  onDeActive() {
+    // 微件失活时自动保存配置到后台
+    this.saveConfig()
+  }
+
+  // 微件关闭时
+  onClose() {
+    // 微件失活时自动保存配置到后台
+    this.saveConfig()
+  }
+
+  saveConfig() {
+    const config = this.getSaveConfig(this.basemaps)
+    api
+      .saveWidgetConfig({
+        name: 'basemap-manager',
+        config: JSON.stringify(config),
+      })
+      .then(() => {
+        console.log('更新底图配置成功')
+      })
+      .catch(() => {
+        console.log('更新底图配置失败')
+      })
+  }
+
   private getBasemapMarginStyle(index) {
     const isMarginTop = index / 2 >= 1
     if (index % 2 === 0) {
@@ -334,7 +371,8 @@ export default class MpBasemapManager extends Mixins(WidgetMixin) {
   display: flex;
   justify-content: center;
   .basemap-wrapper {
-    width: 220px;
+    // width: 220px;
+    padding: 8px;
     display: flex;
     flex-wrap: wrap;
   }

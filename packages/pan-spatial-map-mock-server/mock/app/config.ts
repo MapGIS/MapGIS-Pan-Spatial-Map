@@ -3,7 +3,18 @@ import path from 'path'
 import fs from 'fs'
 import { Response, Request, json } from 'express'
 
-const configs: string[] = ['base', 'district', 'sheet']
+const configs: string[] = [
+  'base',
+  'district',
+  'sheet',
+  'pano',
+  'panomult',
+  'plot'
+]
+
+export const saveConfig = (req: Request, res: Response) => {
+  return res.json({})
+}
 
 export const getConfig = (req: Request, res: Response) => {
   const { name } = req.params
@@ -13,7 +24,6 @@ export const getConfig = (req: Request, res: Response) => {
       const configFileName = `../data/configs/${name}.config.json`
 
       const file = path.join(__dirname, configFileName)
-
       let data = fs.readFileSync(file)
 
       if (data[0] === 0xef && data[1] === 0xbb && data[2] === 0xbf) {

@@ -72,7 +72,7 @@ import {
   INewSubjectConfig,
   mapGetters,
   mapMutations,
-  moduleTypeList
+  moduleTypeList,
 } from './store'
 import ThematicMapAttributeTable from './components/ThematicMapAttributeTable'
 import ThematicMapStatisticGraph from './components/ThematicMapStatisticGraph'
@@ -84,13 +84,13 @@ import ThematicMapLayers from './components/ThematicMapLayers'
 enum ThematicMapNodeHandles {
   CREATE = 'CREATE',
   EDIT = 'EDIT',
-  REMOVE = 'REMOVE'
+  REMOVE = 'REMOVE',
 }
 
 @Component({
   name: 'MpThematicMap',
   computed: {
-    ...mapGetters(['subjectConfig'])
+    ...mapGetters(['subjectConfig']),
   },
   methods: {
     ...mapMutations([
@@ -99,8 +99,8 @@ enum ThematicMapNodeHandles {
       'setSubjectConfig',
       'updateSubjectConfig',
       'setSelectedSubjectList',
-      'resetVisible'
-    ])
+      'resetVisible',
+    ]),
   },
   components: {
     ThematicMapAttributeTable,
@@ -108,8 +108,8 @@ enum ThematicMapNodeHandles {
     ThematicMapTimeLine,
     ThematicMapManageTools,
     ThematicMapSubjectAdd,
-    ThematicMapLayers
-  }
+    ThematicMapLayers,
+  },
 })
 export default class MpThematicMap extends Mixins(WidgetMixin) {
   // 放置面板打开时多次触发更新
@@ -162,7 +162,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
     if (type) {
       this.setVisible(type)
     } else {
-      moduleTypeList.forEach(v => v !== exclude && this.setVisible(v))
+      moduleTypeList.forEach((v) => v !== exclude && this.setVisible(v))
     }
   }
 
@@ -173,7 +173,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    * 若无参数则隐藏所有默认配置的面板
    */
   setModulesHide(exclude: ModuleType) {
-    moduleTypeList.forEach(t => t !== exclude && this.resetVisible(t))
+    moduleTypeList.forEach((t) => t !== exclude && this.resetVisible(t))
   }
 
   /**
@@ -188,7 +188,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    * @param tree
    */
   normalizeThematicMapTree(tree: Array<ISubjectConfigNode>) {
-    return tree.map(node => {
+    return tree.map((node) => {
       this.$set(node, 'checkable', node.nodeType === 'subject')
       this.$set(node, 'scopedSlots', { title: 'custom' })
       if (node.children && node.children.length) {
@@ -223,7 +223,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
    */
   onTreeNodeRemove(nodeData: ISubjectConfigNode) {
     this.setSelectedSubjectList(
-      this.checkedThematicMapNodes.filter(s => s.id !== nodeData.id)
+      this.checkedThematicMapNodes.filter((s) => s.id !== nodeData.id)
     )
     const recursion = (
       tree: Array<ISubjectConfigNode>,
@@ -247,7 +247,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
       .then(() => {
         this.$message.success('删除成功')
       })
-      .catch(err => {
+      .catch((err) => {
         this.$message.error('删除失败')
       })
   }
@@ -339,7 +339,7 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
         basePort: '',
         isOverlay: true,
         isLocation: true,
-        startZindex: 3000
+        startZindex: 3000,
       }
     }
     this.setBaseConfig(baseConfig)
@@ -364,5 +364,9 @@ export default class MpThematicMap extends Mixins(WidgetMixin) {
 }
 ::v-deep .ant-empty {
   margin-top: 20%;
+}
+
+::v-deep .ant-tree.ant-tree-show-line li span.ant-tree-switcher {
+  background: transparent;
 }
 </style>

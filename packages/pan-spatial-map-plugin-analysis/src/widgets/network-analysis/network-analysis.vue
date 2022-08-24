@@ -752,6 +752,7 @@ export default class MpNetworkAnalysis extends Mixins(WidgetMixin) {
 .mp-widget-network-analysis {
   display: flex;
   flex-direction: column;
+  padding: 8px 16px;
   #network-analysis-el {
     width: 300px;
     max-width: 100%;

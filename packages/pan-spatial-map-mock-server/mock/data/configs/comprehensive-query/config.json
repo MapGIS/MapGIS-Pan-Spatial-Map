@@ -1,65 +1,152 @@
 {
-  "dataStore": {
-    "ip": "192.168.80.105",
-    "port": "9091",
-    "libsName": "",
+  "placeName": {
+    "ip": "192.168.21.192",
+    "port": "6163",
+    "combine": "true",
+    "queryWay": "gdbp",
+    "docName": "",
     "showType": "normal",
-    "clusterMaxCount": "10000",
-    "allShows": "formatAddress:详细地址,name:名称,lat:纬度,lon:经度",
+    "clusterMaxCount": "1000",
+    "defaultShowField": [
+      {
+        "fieldName": "NAME",
+        "showName": "名称"
+      },
+      {
+        "fieldName": "ADDRESS",
+        "showName": "地址"
+      },
+      {
+        "fieldName": "TELEPHONE",
+        "showName": "联系方式"
+      },
+      {
+        "fieldName": "PAC",
+        "showName": "邮政编码"
+      }
+    ],
     "queryTable": [
       {
-        "mLibsName": "wuhan_poi",
-        "dataType": "政府机构",
-        "placeName": "武汉市POI",
-        "color": "#FFE5B4",
-        "titleAttr": "name",
-        "attrs": [
-          "formatAddress",
-          "province",
-          "city",
-          "country",
-          "town",
-          "street",
-          "streetNo",
-          "code",
-          "marker",
-          "interestpoint",
-          "identifier",
-          "name",
-          "attrList",
-          "RESIDENT",
-          "LON",
-          "DOORPN",
-          "hotGroup",
-          "ADDNAME",
-          "COUNTRY",
-          "BUILDING",
-          "CLASID",
-          "CITYCODENE",
-          "DATASOURCE",
-          "LAT",
-          "lat",
-          "lon"
-        ],
-        "showAttrsAndTitle": [
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015LYJD",
+        "placeName": "旅游景点",
+        "color": "#FF8C69",
+        "LayerName": "",
+        "LayerIndex": "",
+        "searchField": "NAME",
+        "showField": [
           {
-            "attr": "formatAddress",
-            "showName": "详细地址"
-          },
-          {
-            "attr": "name",
+            "fieldName": "NAME",
             "showName": "名称"
           },
           {
-            "attr": "lat",
-            "showName": "纬度"
+            "fieldName": "ADDRESS",
+            "showName": "地址"
           },
           {
-            "attr": "lon",
-            "showName": "经度"
+            "fieldName": "TELEPHONE",
+            "showName": "联系方式"
           }
-        ],
-        "allUse": true
+        ]
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GGSS",
+        "placeName": "公共设施",
+        "color": "#FFE5B4",
+        "LayerName": "",
+        "searchField": "NAME",
+        "showField": []
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015CYMS",
+        "placeName": "餐饮美食",
+        "color": "#DA70D6",
+        "LayerName": "",
+        "LayerIndex": "",
+        "searchField": "NAME",
+        "showField": [
+          {
+            "fieldName": "NAME",
+            "showName": "名称"
+          },
+          {
+            "fieldName": "ADDRESS",
+            "showName": "地址"
+          },
+          {
+            "fieldName": "TELEPHONE",
+            "showName": "联系方式"
+          }
+        ]
+      },
+      {
+        "gdbp": "gdbp://sys:sa@ORCL/HN/ds/地名地址/sfcls/D430000DM2015YDXX",
+        "placeName": "运动休闲",
+        "color": "#CC5500",
+        "LayerName": "",
+        "searchField": "NAME",
+        "showField": []
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GW",
+        "placeName": "购物",
+        "color": "#50C878",
+        "LayerName": "",
+        "searchField": "NAME",
+        "showField": []
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015BGJD",
+        "placeName": "宾馆酒店",
+        "color": "#556B2F",
+        "LayerName": "",
+        "LayerIndex": "",
+        "searchField": "NAME",
+        "showField": []
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JRHY",
+        "placeName": "金融行业",
+        "color": "#8A2BE2",
+        "LayerName": "",
+        "LayerIndex": "",
+        "searchField": "NAME",
+        "showField": []
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015GSQY",
+        "placeName": "公司企业",
+        "color": "#FF1493",
+        "LayerName": "",
+        "LayerIndex": "",
+        "searchField": "NAME",
+        "showField": []
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015DCXQ",
+        "placeName": "地产小区",
+        "color": "#E32636",
+        "LayerName": "",
+        "LayerIndex": "",
+        "searchField": "NAME",
+        "showField": []
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTSS",
+        "placeName": "交通设施",
+        "color": "#DA70D6",
+        "LayerName": "",
+        "LayerIndex": "",
+        "searchField": "NAME",
+        "showField": []
+      },
+      {
+        "gdbp": "gdbp://MapGISLocalPlus/comprehensive-query/sfcls/D430000DM2015JTDM",
+        "placeName": "交通地名",
+        "color": "#FFCC00",
+        "LayerName": "",
+        "LayerIndex": "",
+        "searchField": "NAME",
+        "showField": []
       }
     ]
   }

@@ -6,11 +6,13 @@ const { getThemeColors, modifyVars } = require('./src/utils/themeUtil')
 const { resolveCss } = require('./src/utils/theme-color-replacer-extend')
 const defaultSettings = require('./src/config/default/setting.config.js')
 
+const TerserPlugin = require('terser-webpack-plugin')
+
 const productionGzipExtensions = ['js', 'css']
 const isProd = process.env.NODE_ENV === 'production'
 const name = defaultSettings.title
 
-console.log('NODE_ENV=' + process.env.NODE_ENV)
+console.log(`NODE_ENV=${process.env.NODE_ENV}`)
 
 module.exports = {
   devServer: {
@@ -32,7 +34,7 @@ module.exports = {
       patterns: [path.resolve(__dirname, './src/theme/theme.less')]
     }
   },
-  configureWebpack: config => {
+  configureWebpack: (config) => {
     config.name = name
     config.entry.app = ['babel-polyfill', 'whatwg-fetch', './src/main.js']
     config.performance = {
@@ -59,18 +61,34 @@ module.exports = {
           minRatio: 0.8
         })
       )
+
+      let optimization = {
+        minimize: false
+      }
+
+      Object.assign(config, {
+        optimization
+      })
     }
   },
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     // 生产环境下关闭css压缩的 colormin 项，因为此项优化与主题色替换功能冲突
     if (isProd) {
-      config.plugin('optimize-css').tap(args => {
+      config.plugin('optimize-css').tap((args) => {
         args[0].cssnanoOptions.preset[1].colormin = false
         return args
       })
     }
-    config.plugin('fork-ts-checker').tap(args => {
-      args[0].memoryLimit = 12288
+    config.module
+      .rule('images')
+      .test(/\.(png|jpe?g|gif|ico)$/i)
+      .use('url-loader')
+      .loader('url-loader')
+      .tap((options) =>
+        Object.assign(options, { limit: 2000, esModule: false })
+      )
+    config.plugin('fork-ts-checker').tap((args) => {
+      args[0].memoryLimit = 14336
       return args
     })
   },

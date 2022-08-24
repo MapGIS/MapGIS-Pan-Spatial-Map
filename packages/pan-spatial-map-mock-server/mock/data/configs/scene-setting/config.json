@@ -1,0 +1,72 @@
+{
+  "basicSetting": {
+    "earth": true,
+    "skyAtmosphere": true,
+    "shadow": false,
+    "depthTest": false,
+    "FPS": false,
+    "timeline": false,
+    "compass": false,
+    "zoom": false,
+    "statebar": true,
+    "sceneMode": false,
+    "layerbrightness": 1.0,
+    "layercontrast": 1.0,
+    "layerhue": 0.0,
+    "layersaturation": 1.0
+  },
+  "cameraSetting": {
+    "undgrd": false,
+    "undgrdParams": {
+      "groundAlpha": 0.5
+    },
+    "fov": 60
+  },
+  "lightSetting": {
+    "sunlight": false,
+    "sunlightParams": {
+      "lightColor": "rgba(255,255,255,255)"
+    },
+    "lightIntensity": 10
+  },
+  "weatherSetting": {
+    "sun": true,
+    "moon": true,
+    "sceneSkybox": true,
+    "skybox": false,
+    "clouds": false,
+    "cloudsParams": {
+      "cloudsduration": 5
+    },
+    "rain": false,
+    "rainParams": {
+      "speed": 18,
+      "rainOpacity": 0.6,
+      "angle": -30,
+      "length": 1
+    },
+    "snow": false,
+    "snowParams": {
+      "size": 5,
+      "density": 5
+    },
+    "fog": false,
+    "fogParams": {
+      "fogOpacity": 0.5,
+      "color": "#FFFFFF"
+    },
+    "surficialFog": true,
+    "surfFogParams": {
+      "surfFogDst": 0.0002
+    }
+  },
+  "effectSetting": {
+    "blckWhite": false,
+    "ntVision": false,
+    "bloom": false,
+    "bloomParams": {
+      "bloomBrt": -0.3,
+      "bloomCtrst": 128
+    }
+  }
+}

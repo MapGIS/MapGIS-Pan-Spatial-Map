@@ -42,7 +42,7 @@
           <a-tooltip
             v-if="
               filter !== '' &&
-                item.title.toUpperCase().indexOf(filter.toUpperCase()) > -1
+              item.title.toUpperCase().indexOf(filter.toUpperCase()) > -1
             "
           >
             <template v-if="item.description" slot="title">
@@ -86,7 +86,7 @@
             arrow-point-at-center
             :visible="item.visiblePopover"
             trigger="click"
-            @visibleChange="visible => clickPopover(item, visible)"
+            @visibleChange="(visible) => clickPopover(item, visible)"
             overlayClassName="layer-list-popover"
           >
             <template slot="content">
@@ -279,7 +279,7 @@ export default class MpTreeLayer extends Mixins(
         item.visiblePopover = false
         if (this.isIGSScene(item)) {
           if (item.activeScene) {
-            item.sublayers = item.activeScene.sublayers.map(row => ({
+            item.sublayers = item.activeScene.sublayers.map((row) => ({
               ...row
             }))
           }
@@ -291,7 +291,7 @@ export default class MpTreeLayer extends Mixins(
            * 修改人：龚跃健
            * 修改日期：2021/11/25
            */
-          item.sublayers = item.currentStyle.layers.map(row => ({
+          item.sublayers = item.currentStyle.layers.map((row) => ({
             ...row,
             visible:
               row.layout === undefined ||
@@ -338,7 +338,7 @@ export default class MpTreeLayer extends Mixins(
       this.filterTreeNode(this.layers, arr)
       this.searchkeyArr = arr
       const parentArr = []
-      arr.forEach(key => {
+      arr.forEach((key) => {
         const keyArr = key.split('-')
         keyArr.forEach((item, i) => {
           const keys = []
@@ -424,7 +424,7 @@ export default class MpTreeLayer extends Mixins(
   }
 
   filterTreeNode(layers, arr) {
-    layers.forEach(item => {
+    layers.forEach((item) => {
       if (item.title.toUpperCase().indexOf(this.filter.toUpperCase()) > -1) {
         arr.push(item.key)
       }
@@ -510,11 +510,11 @@ export default class MpTreeLayer extends Mixins(
     // 查找出与前一次check不同的数据，相同数据则不用处理提升效率
     const diffArr: Array<string> = includeHanlfCheckArrNew
       .concat(includeHanlfCheckArrOld)
-      .filter(function(v, i, arr) {
+      .filter(function (v, i, arr) {
         return arr.indexOf(v) === arr.lastIndexOf(v)
       })
     this.$emit('changed', diffArr)
-    diffArr.forEach(item => {
+    diffArr.forEach((item) => {
       if (item.split('-').length > 1) {
         const parentIndex: string = item.split('-')[0]
         const childrenArr: Array<string> = item.split('-')
@@ -526,8 +526,8 @@ export default class MpTreeLayer extends Mixins(
           if (index === childrenArr.length - 1) {
             if (this.isIGSScene(layerItem)) {
               if (layerItem.activeScene) {
-                layerItem.activeScene.sublayers[i].visible = !layerItem
-                  .activeScene.sublayers[i].visible
+                layerItem.activeScene.sublayers[i].visible =
+                  !layerItem.activeScene.sublayers[i].visible
               }
             } else if (this.isVectorTile(layers[parentIndex])) {
               /**
@@ -734,7 +734,8 @@ export default class MpTreeLayer extends Mixins(
       name: 'MpEditDataFlowStyle',
       component: () => import('./components/EditDataFlowStyle'),
       props: {
-        layer: this.currentLayerInfo
+        layer: this.currentLayerInfo,
+        baseUrl: this.baseUrl
       },
       listeners: {
         'update:layer': this.updateDataFlowStyle
@@ -758,7 +759,12 @@ export default class MpTreeLayer extends Mixins(
         layer: this.currentLayerInfo
       },
       listeners: {
-        'update:layer': this.updateM3DProps
+        'update:layer': (val) => {
+          this.updateM3DProps(val, false)
+        },
+        'update:luminanceAtZenith': (val) => {
+          this.updateM3DProps(val, true)
+        }
       }
     })
   }
@@ -805,15 +811,21 @@ export default class MpTreeLayer extends Mixins(
     this.currentLayerInfo = {}
   }
 
-  updateM3DProps(val) {
+  updateM3DProps(val, onlyUpdateLuminanceAtZenith) {
+    debugger
     let popupEnabled
-    let modelSwitchEnabled
-    const { key, maximumScreenSpaceError, layer, id } = val
+    const {
+      key,
+      maximumScreenSpaceError,
+      layer,
+      id,
+      modelSwitchEnabled,
+      luminanceAtZenith
+    } = val
     if (layer) {
       popupEnabled = layer.popupEnabled
     } else {
       popupEnabled = val.popupEnabled
-      modelSwitchEnabled = val.modelSwitchEnabled
     }
     const indexArr: Array<string> = key.split('-')
     const doc = this.layerDocument.clone()
@@ -821,19 +833,36 @@ export default class MpTreeLayer extends Mixins(
     if (indexArr.length === 2 || this.isModelCacheLayer(val)) {
       const [firstIndex, secondIndex] = indexArr
       if (indexArr.length === 2) {
-        const sublayer = layers[firstIndex].activeScene.sublayers[secondIndex]
+        const { sublayers } = layers[firstIndex].activeScene
+        const sublayer = sublayers[secondIndex]
         sublayer.maximumScreenSpaceError = maximumScreenSpaceError
+        sublayer.luminanceAtZenith = luminanceAtZenith
         sublayer.layer.popupEnabled = popupEnabled
         const m3d = this.sceneController.findSource(id)
         m3d.maximumScreenSpaceError = maximumScreenSpaceError
         // m3d.enablePopup = enablePopup
-        this.$emit('update:layerDocument', doc)
+        if (onlyUpdateLuminanceAtZenith) {
+          // 模型阴影区亮度设置，如果是g3d，则对里面的图层都进行设置
+          for (let i = 0; i < sublayers.length; i++) {
+            const sublayerId = sublayers[i].id
+            const sublayerM3d = this.sceneController.findSource(sublayerId)
+            sublayerM3d.luminanceAtZenith = luminanceAtZenith
+          }
+        } else {
+          this.$emit('update:layerDocument', doc)
+        }
       } else {
         const MC = layers[firstIndex]
-        MC.maximumScreenSpaceError = maximumScreenSpaceError
         MC.popupEnabled = popupEnabled
         MC.modelSwitchEnabled = modelSwitchEnabled
-        this.$emit('update:layerDocument', doc)
+        MC.maximumScreenSpaceError = maximumScreenSpaceError
+        MC.luminanceAtZenith = luminanceAtZenith
+        const m3d = this.sceneController.findM3DIgsSource(MC.id)
+        m3d.maximumScreenSpaceError = maximumScreenSpaceError
+        m3d.luminanceAtZenith = luminanceAtZenith
+        if (!onlyUpdateLuminanceAtZenith) {
+          this.$emit('update:layerDocument', doc)
+        }
       }
     }
     this.currentLayerInfo = {}

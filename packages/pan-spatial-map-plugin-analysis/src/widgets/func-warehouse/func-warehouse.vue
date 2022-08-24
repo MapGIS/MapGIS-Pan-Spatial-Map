@@ -254,6 +254,7 @@ export default class MpFuncWarehouse extends Mixins(WidgetMixin) {
 
 <style lang="less" scoped>
 .mp-widget-func-warehouse {
+  padding: 8px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;

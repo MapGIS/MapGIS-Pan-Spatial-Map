@@ -3,8 +3,10 @@
   "port": "6163",
   "globeIp": "192.168.21.191",
   "globePort": "6163",
-  "DataStoreIp": "192.168.96.101",
+  "DataStoreIp": "192.168.199.50",
   "DataStorePort": "9014",
+  "DataStoreRelationDataset": "Graph3/GraphDataset11",
+  "DataStoreStep": 2,
   "IGServerXIp": "192.168.91.123",
   "IGServerXPort": "9381",
   "serverType": "IGServer",
@@ -49,7 +51,9 @@
       },
       "image": {
         "defaultImg": "/upload/marker.png",
-        "selectedImg": "/upload/marker-selected.png"
+        "selectedImg": "/upload/marker-selected.png",
+        "popupAnchor": { "x": 0.5, "y": 0 },
+        "popupToggleType": "click"
       }
     },
     "feature": {

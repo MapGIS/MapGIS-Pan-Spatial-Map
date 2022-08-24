@@ -9,6 +9,7 @@
     "SERVERNAME": "name",
     "SEARCHNAME": "searchName",
     "SERVERURL": "serverUrl",
+    "TOKENKEY": "tokenKey",
     "TOKEN": "token",
     "WFSURL": "wfsUrl",
     "SCENEMODEL": "model",
@@ -760,6 +761,53 @@
             "wfsUrl": "",
             "extent": "",
             "gdbTypeList": "Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local,Local"
+          },
+          {
+            "label": "全景测试",
+            "describe": "全景测试",
+            "ip": "192.168.21.191",
+            "port": "8089",
+            "layerServiceType": "IGSPanoramic",
+            "name": "全景图层-测试",
+            "searchName": "",
+            "token": "",
+            "guid": "d3ac0679-e019-4e87-93ab-7181378efbb8",
+            "serverUrl": "",
+            "wfsUrl": "",
+            "extent": "",
+            "gdbTypeList": "Local,Local,Local"
+          },
+          {
+            "label": "街景示例数据",
+            "describe": "街景示例数据",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSPanoramic",
+            "name": "街景示例数据",
+            "searchName": "",
+            "serverUrl": "",
+            "tokenKey": "",
+            "token": "",
+            "wfsUrl": "",
+            "extent": "",
+            "guid": "e8402909-8631-4d74-9188-6a7f26d7e872",
+            "gdbTypeList": "LocalPlus,LocalPlus"
+          },
+          {
+            "label": "北京中地-街景",
+            "describe": "北京中地-街景",
+            "ip": "192.168.21.192",
+            "port": "6163",
+            "layerServiceType": "IGSPanoramic",
+            "name": "北京中地-街景",
+            "searchName": "",
+            "serverUrl": "",
+            "tokenKey": "",
+            "token": "",
+            "wfsUrl": "",
+            "extent": "",
+            "guid": "e8402909-8631-4d74-9188-6a7f26d7e873",
+            "gdbTypeList": "LocalPlus,LocalPlus"
           }
         ]
       },
@@ -1033,8 +1081,8 @@
             ]
           },
           {
-            "label": "V2_分层分户-静态单体化",
-            "describe": "V2_分层分户-静态单体化",
+            "label": "分层分户10层",
+            "describe": "分层分户10层",
             "ip": "",
             "port": "",
             "layerServiceType": "IGSScene",
@@ -1042,11 +1090,23 @@
             "searchName": "",
             "model": "",
             "guid": "73CBB58E-C31B-2C50-08F3-DBD70DDED1BCi",
-            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_分层分户-静态单体化/SceneServer"
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/分层分户10层/SceneServer"
           },
           {
-            "label": "V2_倾斜摄影-动态单体化",
-            "describe": "V2_倾斜摄影-动态单体化",
+            "label": "分层分户-知识图谱",
+            "describe": "V2_分层分户-关系查询",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "IGSScene",
+            "name": "",
+            "searchName": "",
+            "model": "",
+            "guid": "E1C9544C-20AC-465A-8178-752D88983004",
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/图数据/分层分户0629/SceneServer"
+          },
+          {
+            "label": "临海osgb",
+            "describe": "临海osgb",
             "ip": "",
             "port": "",
             "layerServiceType": "IGSScene",
@@ -1054,7 +1114,7 @@
             "searchName": "",
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFA",
-            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_倾斜摄影_动态单体化/SceneServer"
+            "serverUrl": "http://192.168.199.71:6163/igs/rest/g3d/临海osgb"
           }
         ]
       },
@@ -1483,6 +1543,26 @@
                 "type": "normal"
               }
             ]
+          }
+        ]
+      },
+      {
+        "label": "标绘图层",
+        "describe": "行业标绘图层",
+        "children": [
+          {
+            "label": "测试数据",
+            "describe": "",
+            "ip": "",
+            "port": "",
+            "layerServiceType": "Plot",
+            "name": "",
+            "searchName": "",
+            "token": "",
+            "guid": "9F569E7E-6CBB-479F-B2D3-EFF5B844CAB9",
+            "serverUrl": "api/config/plot",
+            "wfsUrl": "",
+            "extent": ""
           }
         ]
       }

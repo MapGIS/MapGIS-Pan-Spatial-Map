@@ -357,6 +357,7 @@ export default class MpAddData extends Mixins(WidgetMixin) {
 
 <style lang="less" scoped>
 .mp-widget-add-data {
+  padding: 8px 16px;
   flex: 1 1 0%;
   min-height: 76px;
   display: flex;

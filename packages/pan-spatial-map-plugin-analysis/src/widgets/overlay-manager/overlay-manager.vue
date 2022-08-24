@@ -10,14 +10,19 @@
 </template>
 
 <script lang="ts">
-import { Mixins, Component, Watch } from 'vue-property-decorator'
+import { Mixins, Component, Watch, Provide } from 'vue-property-decorator'
 import { LayerType, WidgetMixin } from '@mapgis/web-app-framework'
 import { eventBus, events, api } from '@mapgis/pan-spatial-map-common'
 
 @Component({
-  name: 'MpOverlayManager'
+  name: 'MpOverlayManager',
 })
 export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
+  @Provide()
+  get uploadUrl() {
+    return `${this.baseUrl}/api/local-storage/pictures`
+  }
+
   private dataSource = []
 
   private models = {}
@@ -33,7 +38,7 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
     if (models) {
       this.models = config.models
       const vm = this
-      Object.keys(vm.models).forEach(function(key) {
+      Object.keys(vm.models).forEach(function (key) {
         for (let i = 0; i < vm.models[key].length; i++) {
           vm.models[key][i].img = vm.baseUrl + vm.models[key][i].img
           vm.models[key][i].model = vm.baseUrl + vm.models[key][i].model
@@ -70,7 +75,7 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
   }
 
   onClose() {
-    this.$refs.graphicLayer.$_hideAllGraphic()
+    // this.$refs.graphicLayer.$_hideAllGraphic()
   }
 
   async save(e) {
@@ -81,7 +86,7 @@ export default class MpOverlayAnalysis extends Mixins(WidgetMixin) {
     config.dataSource = e
     api.saveWidgetConfig({
       name: 'overlay-manager',
-      config: config
+      config: config,
     })
   }
 }

@@ -5,7 +5,10 @@ import {
   MpComprehensiveQuery,
   MpThematicMap,
   MpVectorTileCarto,
-  MpFeatureQuery
+  MpFeatureQuery,
+  MpPlotManager,
+  // MpSymbolLibrary,
+  MpPlotAnimation
 } from './widgets'
 
 const components = [
@@ -15,7 +18,10 @@ const components = [
   MpComprehensiveQuery,
   MpThematicMap,
   MpVectorTileCarto,
-  MpFeatureQuery
+  MpFeatureQuery,
+  MpPlotManager,
+  // MpSymbolLibrary,
+  MpPlotAnimation
 ]
 
 const install = Vue => {

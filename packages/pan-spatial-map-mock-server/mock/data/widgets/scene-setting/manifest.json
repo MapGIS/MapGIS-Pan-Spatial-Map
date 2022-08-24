@@ -8,8 +8,8 @@
     "2D": false,
     "3D": true,
     "inPanel": true,
-    "hasConfig": false,
-    "hasPadding": false,
+    "hasConfig": true,
+    "hasPadding": true,
     "hasSettingPage": false,
     "settingUiComponent": ""
   }

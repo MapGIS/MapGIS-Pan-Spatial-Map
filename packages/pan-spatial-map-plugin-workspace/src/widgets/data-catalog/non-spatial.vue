@@ -42,7 +42,7 @@
         :data-source="tableData"
         :pagination="pagination"
         :rowKey="
-          record => {
+          (record) => {
             return record.id
           }
         "
@@ -77,8 +77,8 @@
             <img
               v-if="
                 item.type === 'ppt' ||
-                  item.type === 'pptx' ||
-                  item.type === 'pdf'
+                item.type === 'pptx' ||
+                item.type === 'pdf'
               "
               src="./images/pdf.png"
               alt=""
@@ -86,9 +86,9 @@
             <img
               v-if="
                 item.type === 'mp4' ||
-                  item.type === 'avi' ||
-                  item.type === 'pcx' ||
-                  item.type === 'ogg'
+                item.type === 'avi' ||
+                item.type === 'pcx' ||
+                item.type === 'ogg'
               "
               src="./images/video.png"
               alt=""
@@ -152,13 +152,14 @@
         width="752"
         height="632"
       ></video>
-      <img
-        v-if="showFileType === 'img'"
-        :src="imgUrl"
-        alt=""
-        width="752"
-        height="632"
-      />
+      <div style="width: 752px; height: 632px">
+        <img
+          v-if="showFileType === 'img'"
+          :src="imgUrl"
+          alt=""
+          style="width: 100%; height: 100%; object-fit: scale-down"
+        />
+      </div>
     </a-modal>
   </div>
 </template>
@@ -193,24 +194,24 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     {
       label: '全部',
       value:
-        'doc、docx、xls、xlsx、ppt、pptx、jpg、png、mp4、avi、pcx、ogg、pdf'
+        'doc、docx、xls、xlsx、ppt、pptx、jpg、png、mp4、avi、pcx、ogg、pdf',
     },
     {
       label: '图片',
-      value: 'jpg、png'
+      value: 'jpg、png',
     },
     {
       label: '文档',
-      value: 'doc、docx'
+      value: 'doc、docx',
     },
     {
       label: '表格',
-      value: 'xls、xlsx'
+      value: 'xls、xlsx',
     },
     {
       label: '视频',
-      value: 'mp4、avi、pcx、ogg'
-    }
+      value: 'mp4、avi、pcx、ogg',
+    },
   ]
 
   // 表格数据
@@ -222,20 +223,20 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      scopedSlots: { customRender: 'name' }
+      scopedSlots: { customRender: 'name' },
     },
     {
       title: '类型',
       dataIndex: 'type',
       key: 'type',
-      scopedSlots: { customRender: 'type' }
+      scopedSlots: { customRender: 'type' },
     },
     {
       title: '下载',
       dataIndex: 'action',
       key: 'action',
-      scopedSlots: { customRender: 'action' }
-    }
+      scopedSlots: { customRender: 'action' },
+    },
   ]
 
   // 数据是否加载中
@@ -253,7 +254,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     current: 1,
     total: this.tableData.length,
     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-    pageSize: 8
+    pageSize: 8,
   }
 
   // 分页器总数
@@ -284,7 +285,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   @Watch('url')
   onUrlChange(newVal) {
     this.loading = true
-    this.getUrlData(newVal).then(res => {
+    this.getUrlData(newVal).then((res) => {
       this.loading = false
       this.tableData = res.content
       this.pageTotal = res.totalElements
@@ -306,7 +307,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     this.$message.config({
       top: '100px',
       duration: 2,
-      maxCount: 1
+      maxCount: 1,
     })
   }
 
@@ -315,7 +316,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
     const this_ = this
     return new Promise((resolve, reject) => {
       const request = new XMLHttpRequest()
-      request.ontimeout = function(e) {
+      request.ontimeout = function (e) {
         this_.$message.error('请求超时，数据加载失败')
         this_.loading = false
       }
@@ -383,7 +384,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 可能同时存在搜索值与下拉项值，所以筛选数据都放在一块处理
   private onFilterData() {
     this.loading = true
-    this.getUrlData(this.url).then(res => {
+    this.getUrlData(this.url).then((res) => {
       this.loading = false
       this.tableData = res.content
 
@@ -423,7 +424,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
   // 点击下载图标回调
   private onClickDownLoad(record) {
     const downLoadUrl = `${this.baseUrl}/api/non-spatial/download/url?name=${record.name}&path=${this.type}&protocol=ftp&type=${record.type}&url=${this.nonSpatialUrl}`
-    this.getUrlData(downLoadUrl).then(res => {
+    this.getUrlData(downLoadUrl).then((res) => {
       const downLoadPath = this.baseUrl + res.path
 
       const xhr = new XMLHttpRequest()
@@ -431,11 +432,11 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
       xhr.responseType = 'blob'
       xhr.withCredentials = true
       xhr.send()
-      xhr.onload = function() {
+      xhr.onload = function () {
         if (this.status === 200 || this.status === 304) {
           const fileReader = new FileReader()
           fileReader.readAsDataURL(this.response)
-          fileReader.onload = function() {
+          fileReader.onload = function () {
             const a = document.createElement('a')
             a.style.display = 'none'
             a.href = this.result
@@ -457,7 +458,7 @@ export default class MpNonSpatial extends Mixins(WidgetMixin) {
       this.$message.warning('该类型文件暂不支持预览')
       return false
     } else {
-      this.getUrlData(downLoadUrl).then(res => {
+      this.getUrlData(downLoadUrl).then((res) => {
         this.fileUrl = this.baseUrl + res.path
 
         switch (record.type) {

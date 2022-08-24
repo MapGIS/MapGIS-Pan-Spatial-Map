@@ -314,7 +314,7 @@ export default class MpFeatureQuery extends Mixins(
     return ipPortObj
   }
 
-  private async queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
+  private queryFeaturesByDoc(layer: IGSMapImageLayer, geometry) {
     if (!layer.isVisible) {
       return
     }
@@ -333,13 +333,20 @@ export default class MpFeatureQuery extends Mixins(
       if (!sublayer.visible && sublayer.sublayers.length > 0) {
         return
       }
-      const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery(
-        {
-          ip: ip || baseConfigInstance.config.ip,
-          port: Number(port || baseConfigInstance.config.port),
-          gdbp: sublayer.url,
-        }
-      )
+      // const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery(
+      //   {
+      //     ip: ip || baseConfigInstance.config.ip,
+      //     port: Number(port || baseConfigInstance.config.port),
+      //     gdbp: sublayer.url,
+      //   }
+      // )
+      /**
+       * 修改说明：IGS地图文档和图层服务全部都走IGS的接口，不再判断是否为pg数据
+       * 修改人：龚跃健
+       * 日期：2022-5-10
+       */
+      const isDataStoreQuery = false
+      const DNSName = undefined
       const ipPortObj = this.getIpPort({
         isDataStoreQuery,
         ip: ip || baseConfigInstance.config.ip,
@@ -366,17 +373,19 @@ export default class MpFeatureQuery extends Mixins(
     this.openExhibitionPanel()
   }
 
-  private async quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
+  private quertFeatruesByVector(layer: IGSVectorLayer, geometry) {
     if (!layer.isVisible) {
       return
     }
     const { ip, port, docName } = layer._parseUrl(layer.url)
 
-    const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery({
-      ip: ip || baseConfigInstance.config.ip,
-      port: Number(port || baseConfigInstance.config.port),
-      gdbp: layer.gdbps,
-    })
+    // const { isDataStoreQuery, DNSName } = await FeatureQuery.isDataStoreQuery({
+    //   ip: ip || baseConfigInstance.config.ip,
+    //   port: Number(port || baseConfigInstance.config.port),
+    //   gdbp: layer.gdbps,
+    // })
+    const isDataStoreQuery = false
+    const DNSName = undefined
     const ipPortObj = this.getIpPort({
       isDataStoreQuery,
       ip: ip || baseConfigInstance.config.ip,
@@ -459,7 +468,15 @@ export default class MpFeatureQuery extends Mixins(
             geometry = new Point3D(x, y, shape.z)
           }
         } else {
-          geometry = new Zondy.Common.Point2D(shape.x, shape.y, { nearDis })
+          let pointNearDis = nearDis
+          if (!pointNearDis) {
+            // 如果nearDis为0，需要重置nearDis为0.0000001之类的，小数位数与坐标位数保持一致。igs接口这个参数不能直接设置为0
+            const xStr = shape.x.toString().split('.')[1]
+            pointNearDis = Number(`0.${xStr}`) / Number(xStr)
+          }
+          geometry = new Zondy.Common.Point2D(shape.x, shape.y, {
+            nearDis: pointNearDis,
+          })
         }
         break
       case QueryType.LineString:
@@ -477,11 +494,21 @@ export default class MpFeatureQuery extends Mixins(
             geometry = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
           }
         } else {
+          let lineNearDis = nearDis
           const pointArray = shape.map((item: Record<string, number>) => {
-            return new Zondy.Common.Point2D(item.x, item.y, { nearDis })
+            if (!lineNearDis) {
+              // 如果nearDis为0，需要重置nearDis为0.0000001之类的，小数位数与坐标位数保持一致。igs接口这个参数不能直接设置为0
+              const xStr = item.x.toString().split('.')[1]
+              lineNearDis = Number(`0.${xStr}`) / Number(xStr)
+            }
+            return new Zondy.Common.Point2D(item.x, item.y, {
+              nearDis: lineNearDis,
+            })
           })
 
-          geometry = new Zondy.Common.PolyLine(pointArray, { nearDis })
+          geometry = new Zondy.Common.PolyLine(pointArray, {
+            nearDis: lineNearDis,
+          })
         }
         break
       case QueryType.Polygon:
@@ -499,8 +526,16 @@ export default class MpFeatureQuery extends Mixins(
             geometry = new Rectangle3D(xmin, ymin, zmin, xmax, ymax, zmax)
           }
         } else {
+          let polyNearDis = nearDis
           const pointArray = shape.map((item: Record<string, number>) => {
-            return new Zondy.Common.Point2D(item.x, item.y, { nearDis })
+            if (!polyNearDis) {
+              // 如果nearDis为0，需要重置nearDis为0.0000001之类的，小数位数与坐标位数保持一致。igs接口这个参数不能直接设置为0
+              const xStr = item.x.toString().split('.')[1]
+              polyNearDis = Number(`0.${xStr}`) / Number(xStr)
+            }
+            return new Zondy.Common.Point2D(item.x, item.y, {
+              nearDis: polyNearDis,
+            })
           })
 
           geometry = new Zondy.Common.Polygon(pointArray)

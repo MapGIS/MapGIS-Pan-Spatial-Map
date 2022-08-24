@@ -10,7 +10,7 @@
       :layer-id="id"
       :field="field"
       :data-source="geojson"
-      :highlight-feature="marker.feature"
+      :highlight-feature="selfMarker.feature"
       type="range"
       ref="customRangeThemeLayer"
       @rangeLayer="getRangeLayer"
@@ -19,6 +19,8 @@
       :marker="selfMarker"
       v-if="selfMarker.fid"
       :defaultShowPopup="true"
+      :popup-anchor="popupAnchor"
+      :popup-toggle-type="popupToggleType"
     />
   </div>
 </template>
@@ -27,6 +29,7 @@ import { Mixins, Component, Inject, Watch } from 'vue-property-decorator'
 import BaseMixin from '../../mixins/base'
 import { getMarker, IMarker } from '../../../../utils'
 import _debounce from 'lodash/debounce'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component
 export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
@@ -45,7 +48,7 @@ export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
 
   private tipsOptions = {
     enableHighlight: true,
-    type: 'point'
+    type: 'point',
   }
 
   get themeOptions() {
@@ -60,27 +63,35 @@ export default class MapboxSubSectionMap extends Mixins(BaseMixin) {
               start: min,
               end: max,
               style: {
-                color: sectionColor
-              }
-            }))
+                color: sectionColor,
+              },
+            })),
           }
         : themeStyle || {}
     }
   }
 
+  private get popupAnchor() {
+    return baseConfigInstance.config.colorConfig.label.image.popupAnchor
+  }
+
+  private get popupToggleType() {
+    return baseConfigInstance.config.colorConfig.label.image.popupToggleType
+  }
+
   getRangeLayer(layer) {
-    console.log(layer)
+    // console.log(layer)
     const { map } = this
     map.on(
       'mousemove',
-      _debounce(e => {
+      _debounce((e) => {
         const f = map.queryRenderedFeatures(e.point, {
-          layers: [layer.id]
+          layers: [layer.id],
         })
         if (!f || f.length < 1) return
         const fid = f[0].id
         getMarker(this.geojson, fid, this.propertiesOption).then(
-          marker => (this.selfMarker = marker || {})
+          (marker) => (this.selfMarker = marker || {})
         )
       }, 200)
     )

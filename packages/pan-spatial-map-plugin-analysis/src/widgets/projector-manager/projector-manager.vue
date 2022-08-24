@@ -13,11 +13,11 @@
     @update-projectorOverlayLayerList="updateProjectorOverlayLayerList"
   >
     <template slot="imgUpload" slot-scope="{ click }">
-      <mp-upload-image
+      <mapgis-ui-upload-image
         :uploadUrl="`${baseUrl}/api/local-storage/pictures`"
         :showUploadList="false"
         :click="click"
-      ></mp-upload-image>
+      ></mapgis-ui-upload-image>
     </template>
   </mapgis-3d-projector-manager>
 </template>
@@ -78,7 +78,8 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
   private hideVPInvisible = false
 
   private get projectorOverlayLayerList() {
-    const projectorOverlayLayerList = this.ProjectorManagerInstance.getProjectorOverlayLayerList()
+    const projectorOverlayLayerList =
+      this.ProjectorManagerInstance.getProjectorOverlayLayerList()
     return projectorOverlayLayerList
   }
 
@@ -102,25 +103,19 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
     deep: true,
     immediate: true
   })
-  changeCurrentLayerId() {
-    console.log(this.currentLayerId)
-  }
+  changeCurrentLayerId() {}
 
   @Watch('currentProjectorId', {
     deep: true,
     immediate: true
   })
-  changeCurrentProjectorId() {
-    console.log(this.currentProjectorId)
-  }
+  changeCurrentProjectorId() {}
 
   @Watch('projectorOverlayLayerList', {
     deep: true,
     immediate: true
   })
-  changeProjectorOverlayLayerList() {
-    console.log(this.projectorOverlayLayerList)
-  }
+  changeProjectorOverlayLayerList() {}
 
   private config
 
@@ -160,16 +155,13 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
     this.projectorComponent.unmount()
   }
 
-  imgUpload(e) {
-    console.log(e)
-  }
+  imgUpload(e) {}
 
   updateProjectorOverlayLayerList(layerList) {
     this.projectorOverlayLayerList = [...layerList]
   }
 
   saveConfig() {
-    console.log(this.projectorOverlayLayerList)
     const config = {
       projectorOverlayLayerList: [...this.projectorOverlayLayerList]
     }
@@ -180,11 +172,11 @@ export default class MpProjectorManager extends Mixins(WidgetMixin) {
       })
       .then(() => {
         // this.$message.success('更新projector配置成功')
-        console.log('更新projector配置成功')
+        // console.log('更新projector配置成功')
       })
       .catch(() => {
         // this.$message.error('更新projector配置失败')
-        console.log('更新projector配置失败')
+        // console.log('更新projector配置失败')
       })
   }
 }

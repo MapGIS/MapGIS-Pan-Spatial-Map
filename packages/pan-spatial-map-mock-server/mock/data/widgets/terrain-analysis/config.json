@@ -1,0 +1,13 @@
+{
+  "floodAnalysis": {
+    "startHeight": 0,
+    "minHeight": 0,
+    "maxHeight": 2000,
+    "floodColor": "rgba(149,232,249,0.5)",
+    "floodSpeed": 80,
+    "specularIntensity": 2,
+    "amplitude": 10,
+    "animationSpeed": 0.01,
+    "frequency": 500
+  }
+}

@@ -11,6 +11,6 @@
     "hasConfig": true,
     "hasSettingPage": true,
     "settingUiComponent": "",
-    "hasPadding": false
+    "hasPadding": true
   }
 }

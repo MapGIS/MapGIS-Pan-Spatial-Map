@@ -3,6 +3,8 @@
   <mp-3d-marker-pro
     ref="marker3dProRef"
     :marker="selfMarker"
+    :popup-anchor="popupAnchor"
+    :popup-toggle-type="popupToggleType"
     v-if="selfMarker.fid"
   >
     <template slot="popup" slot-scope="{ properties }">
@@ -14,6 +16,7 @@
 import { Mixins, Component } from 'vue-property-decorator'
 import { Layer, Feature } from '@mapgis/web-app-framework'
 import CesiumMixin from '../../mixins/cesium'
+import { baseConfigInstance } from '@mapgis/pan-spatial-map-common'
 
 @Component
 export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
@@ -49,6 +52,14 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
     }
   }
 
+  private get popupAnchor() {
+    return baseConfigInstance.config.colorConfig.label.image.popupAnchor
+  }
+
+  private get popupToggleType() {
+    return baseConfigInstance.config.colorConfig.label.image.popupToggleType
+  }
+
   /**
    * 获取图层geo要素数据存入实体中
    * @param layer 图层
@@ -62,7 +73,6 @@ export default class CesiumStatisticLabel extends Mixins(CesiumMixin) {
       if (this.themeOptions) {
         console.log(this.themeOptions)
         const { styleGroups } = this.themeOptions
-        // debugger
         const styleGroup = Array.isArray(styleGroups)
           ? styleGroups[0]
           : styleGroups

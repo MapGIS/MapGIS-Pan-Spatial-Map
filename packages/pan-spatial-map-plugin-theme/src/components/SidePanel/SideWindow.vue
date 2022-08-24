@@ -45,11 +45,11 @@ export default {
     // 是否有边距
     hasPadding: { type: Boolean, default: true },
     // 最大宽度，支持数值和函数，函数必须返回数值
-    maxWidth: { type: [Number, Function] }
+    maxWidth: { type: [Number, Function] },
   },
   data() {
     return {
-      resizeWidth: this.width
+      resizeWidth: this.width,
     }
   },
   computed: {
@@ -64,7 +64,7 @@ export default {
       },
       set(value) {
         this.$emit('update:visible', value)
-      }
+      },
     },
     currentWidth() {
       if (this.isFullScreen) {
@@ -79,9 +79,9 @@ export default {
     bodyStyle() {
       return {
         height: 'calc(100% - 36px)',
-        padding: this.hasPadding ? '12px' : '0px'
+        padding: this.hasPadding ? '12px' : '0px',
       }
-    }
+    },
   },
   methods: {
     // 获取地图容器元素
@@ -111,15 +111,15 @@ export default {
     // 关闭事件
     onClose() {
       this.syncedVisible = false
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="less">
 .side-panel-wrapper {
   &.ant-layout-sider-light {
-    background-color: @base-bg-color;
+    background-color: transparent;
   }
   .ant-layout-sider-children {
     display: flex;

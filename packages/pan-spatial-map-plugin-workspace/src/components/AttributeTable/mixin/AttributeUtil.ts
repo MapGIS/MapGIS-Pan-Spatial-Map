@@ -224,15 +224,8 @@ export default class LayerTypeUtil extends Mixins(
   ) {
     this.rowKey = this.setRowKey()
     this.currentTableParams = { ...this.optionVal }
-    const {
-      ip,
-      port,
-      serverName,
-      serverType,
-      serverUrl,
-      layerIndex,
-      gdbp
-    } = this.optionVal
+    const { ip, port, serverName, serverType, serverUrl, layerIndex, gdbp } =
+      this.optionVal
     const { current, pageSize } = this.pagination
     let geojson
     const queryWhere = where || this.optionVal.where
@@ -242,15 +235,17 @@ export default class LayerTypeUtil extends Mixins(
       case LayerType.IGSVector:
         const { isDataStoreQuery, DNSName } = this.optionVal
         if (!isDataStoreQuery) {
-          const { AttStruct, TotalCount } = await this.queryCount(
-            queryGeometry,
-            queryWhere
-          )
-          if (!(this.tableColumns && this.tableColumns.length > 0)) {
-            const columns = this.setTableScroll(AttStruct)
-            this.tableColumns = columns
+          if (this.pagination.total === 0) {
+            const { AttStruct, TotalCount } = await this.queryCount(
+              queryGeometry,
+              queryWhere
+            )
+            if (!(this.tableColumns && this.tableColumns.length > 0)) {
+              const columns = this.setTableScroll(AttStruct)
+              this.tableColumns = columns
+            }
+            this.pagination.total = TotalCount
           }
-          this.pagination.total = TotalCount
         }
         const page = isDataStoreQuery ? current : current - 1
         geojson = await FeatureQuery.query({
@@ -266,7 +261,8 @@ export default class LayerTypeUtil extends Mixins(
           DNSName,
           docName: serverName,
           layerIdxs: layerIndex,
-          coordPrecision: 8
+          coordPrecision: 8,
+          rtnLabel: false
         })
         if (val === '1') {
           this.attrTableToJsonData = geojson.features
@@ -285,14 +281,18 @@ export default class LayerTypeUtil extends Mixins(
         break
 
       case LayerType.ArcGISMapImage:
-        const { count: totalCount } = await ArcGISFeatureQuery.getTotal({
-          f: 'pjson',
-          where: queryWhere,
-          geometry: queryGeometry,
-          serverUrl,
-          layerIndex
-        })
-        this.pagination.total = totalCount
+        if (this.pagination.total === 0) {
+          const { count } = await ArcGISFeatureQuery.getTotal({
+            f: 'pjson',
+            where: queryWhere,
+            geometry: queryGeometry,
+            serverUrl,
+            layerIndex
+          })
+
+          this.pagination.total = count
+        }
+
         geojson = await ArcGISFeatureQuery.query({
           f: 'pjson',
           where: queryWhere,
@@ -301,8 +301,9 @@ export default class LayerTypeUtil extends Mixins(
           pageCount: val === '1' ? this.pagination.total : pageSize,
           serverUrl,
           layerIndex,
-          totalCount
+          totalCount: this.pagination.total
         })
+
         if (val === '1') {
           this.attrTableToJsonData = geojson.feature
           return
@@ -343,7 +344,6 @@ export default class LayerTypeUtil extends Mixins(
           }
           this.tableColumns = columns
         }
-        this.pagination.total = totalCount
         this.removeMarkers()
         // 如果当前是激活状态，则添加markers
         if (this.isExhibitionActive) {
@@ -646,7 +646,8 @@ export default class LayerTypeUtil extends Mixins(
       where,
       gdbp,
       docName: serverName,
-      layerIdxs: layerIndex
+      layerIdxs: layerIndex,
+      rtnLabel: false
     })
     return featureSet
   }

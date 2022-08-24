@@ -3,10 +3,17 @@ import { getRequest } from '../utils/request'
 export function getConfig(name) {
   return getRequest()({
     url: `/api/config/${name}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
+export function saveConfig(data) {
+  return getRequest()({
+    url: '/api/config',
+    method: 'put',
+    params: data,
+  })
+}
 export interface WidgetConfigData {
   name: string
   config: string
@@ -15,7 +22,7 @@ export interface WidgetConfigData {
 export function getWidgetConfig(name) {
   return getRequest()({
     url: `/api/app/widget-config?name=${name}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -23,6 +30,6 @@ export function saveWidgetConfig(data: WidgetConfigData) {
   return getRequest()({
     url: '/api/app/widget-config',
     method: 'put',
-    params: data
+    params: data,
   })
 }

@@ -7,7 +7,7 @@ import { Vue, Component, Prop, Watch, Inject } from 'vue-property-decorator'
 import { Feature } from '@mapgis/web-app-framework'
 import {
   baseConfigInstance,
-  markerIconInstance
+  markerIconInstance,
 } from '@mapgis/pan-spatial-map-common'
 import dep from '../store/map-view-dep'
 
@@ -61,14 +61,29 @@ export default class FeatureHighlight extends Vue {
     return baseConfigInstance.config.colorConfig
   }
 
+  private get popupAnchor() {
+    return baseConfigInstance.config.colorConfig.label.image.popupAnchor
+  }
+
+  private get popupToggleType() {
+    return baseConfigInstance.config.colorConfig.label.image.popupToggleType
+  }
+
   // 二三维marker组件绑定的属性
   get bindProps() {
-    const { vueKey, markers, selectedMarkers, highlightStyle } = this
+    const {
+      vueKey,
+      markers,
+      selectedMarkers,
+      highlightStyle,
+      popupAnchor,
+      popupToggleType,
+    } = this
     return {
       vueKey,
       markers,
       selectedMarkers,
-      highlightStyle
+      highlightStyle,
     }
   }
 
@@ -91,7 +106,7 @@ export default class FeatureHighlight extends Vue {
         viewer,
         positions,
         'model',
-        positions => {
+        (positions) => {
           resolve(positions && positions.length ? positions : [])
         }
       )
@@ -122,14 +137,14 @@ export default class FeatureHighlight extends Vue {
           coordinates = Feature.getGeoJSONFeatureCenter(feature)
         }
 
-        if (coordinates.every(v => !Number.isNaN(v))) {
+        if (coordinates.every((v) => !Number.isNaN(v))) {
           result.push({
             coordinates,
             feature,
             properties,
             markerId: key,
             fid: properties.fid,
-            img: this.defaultIcon
+            img: this.defaultIcon,
           })
         }
         return result
@@ -144,7 +159,7 @@ export default class FeatureHighlight extends Vue {
             this.$set(tempMarkers[index], 'coordinates', [
               longitude,
               latitude,
-              height
+              height,
             ])
           })
         }
@@ -173,7 +188,7 @@ export default class FeatureHighlight extends Vue {
       vueKey: this.vueKey,
       selectedMarkers: this.markers.filter(({ markerId }) =>
         this.selectedKeys.includes(markerId)
-      )
+      ),
     })
     dep.notify()
   }
@@ -184,7 +199,7 @@ export default class FeatureHighlight extends Vue {
   update() {
     const { selectedMarkers } = dep.getState()
     // 设置高亮标注状态
-    this.markers.forEach(marker => {
+    this.markers.forEach((marker) => {
       this.$set(
         marker,
         'img',
@@ -205,7 +220,7 @@ export default class FeatureHighlight extends Vue {
   destroy() {
     dep.setState({
       vueKey: this.vueKey,
-      selectedMarkers: []
+      selectedMarkers: [],
     })
     dep.notify()
   }

@@ -1,7 +1,8 @@
 <template>
   <div class='mp-widget-city-grow'>
     <a-row>
-      <label class='mp-widget-label'>数据源设置</label>
+      <!-- <label class='mp-widget-label'>数据源设置</label> -->
+      <mapgis-ui-group-tab title="数据源设置"/>
     </a-row>
     <div>
       <a-row class='mp-row-style'>
@@ -15,7 +16,7 @@
           @change='onUrlChange'
           @search='handleSearch'
           @blur='handleBlur'
-          style='width: 360px'
+          style='width: 100%'
         >
           <a-select-option
             v-for='item in urlOptions'
@@ -35,40 +36,31 @@
         ></a-textarea>
       </a-row>
       <a-row>
-        <label class='mp-widget-label'>参数设置</label>
+        <!-- <label class='mp-widget-label'>参数设置</label> -->
+        <mapgis-ui-group-tab title="参数设置"/>
       </a-row>
       <mapgis-3d-city-grow-options
         v-if='radioVal === 1'
         :cityGrowOptions='cityGrowOptions'
-        style='width: 360px'
         @commitOptions='getCityGrowOptions'
         @saveConfig='saveConfig'
         ref='cityGrowOptions'
       ></mapgis-3d-city-grow-options>
       <mp-window-wrapper :visible='startCityGrow'>
-        <template v-slot:default='slotProps'>
-          <mp-window
-            title='城市生长'
-            :visible.sync='startCityGrow'
-            :horizontal-offset='28'
-            :vertical-offset='30'
-            :width='playWidth'
-            :height='60'
-            :has-padding='false'
-            anchor='bottom-center'
-            v-bind='slotProps'
-          >
-            <template>
-              <mapgis-3d-city-grow
-                v-if='startCityGrow'
-                :baseUrl='url'
-                :featureStyle='featureStyle'
-                ref='cityGrow'
-                @loaded='load'
-              ></mapgis-3d-city-grow>
-            </template>
-          </mp-window>
-        </template>
+        <mp-placement
+          :position="'bottom-left'"
+          v-show="startCityGrow"
+          :offset="[52, 60]"
+          style="right: 0px;"
+        >
+          <mapgis-3d-city-grow
+            v-if='startCityGrow'
+            :baseUrl='url'
+            :featureStyle='featureStyle'
+            ref='cityGrow'
+            @loaded='load'
+          ></mapgis-3d-city-grow>
+        </mp-placement>
       </mp-window-wrapper>
     </div>
   </div>
@@ -101,7 +93,7 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
 
   private startCityGrow = false
 
-  private playWidth = 715
+  private playWidth = 711
 
   // 城市生长对象
   private cityGrow = null
@@ -222,12 +214,12 @@ export default class MpCityGrow extends Mixins(WidgetMixin) {
 
 <style lang='less' scoped>
 .mp-widget-city-grow {
-  margin: 0px 5px 5px 5px;
+  // margin: 0px 5px 5px 5px;
 }
 
 .mp-row-style {
-  width: 360px;
-  margin: 8px 0;
+  // width: 360px;
+  margin-bottom: 8px;
 }
 
 .mp-widget-label {
