@@ -6,7 +6,7 @@ MapGIS全空间一张图（MapGIS Pan-Spatial Map）是以全空间信息模型�
 
 ## 线上文档
 
-[文档](https://mapgis.github.io/mapgis-pan-spatial-map-docs/zh)
+[文档](http://www.smaryun.com/mapgis-pan-spatial-map-docs/zh)
 
 ## 特性
 
@@ -41,6 +41,7 @@ MapGIS全空间一张图（MapGIS Pan-Spatial Map）是以全空间信息模型�
 
 - **主库**: https://github.com/MapGIS/MapGIS-Pan-Spatial-Map
 - **码云**: https://gitee.com/osmapgis/MapGIS-Pan-Spatial-Map
+- **分支**: 推荐切换至最新主分支（如：10.6.x.x）
 
 ## 开始
 
@@ -53,10 +54,10 @@ yarn install
 ### 运行项目（开发）
 
 ```bash
-# develop
-yarn dev
 # develop with mock
 yarn dev:mock
+# develop
+yarn dev
 ```
 
 ### 打包项目
@@ -68,10 +69,10 @@ yarn build
 ### 运行项目（正式）
 
 ```bash
-# start an server on App's distributables
-yarn serve
 # start an server on App's distributables with mock
 yarn serve:mock
+# start an server on App's distributables
+yarn serve
 ```
 
 ## 在线服务
@@ -80,4 +81,4 @@ yarn serve:mock
 
 ## 在线资源
 
-[MapGIS-Pan-Spatial-Map](http://www.smaryun.com/dev/resource_center.html#/type27/tag204/page1)
+[MapGIS-Pan-Spatial-Map](http://www.smaryun.com/dev/service-space/resource#/node_id230)
