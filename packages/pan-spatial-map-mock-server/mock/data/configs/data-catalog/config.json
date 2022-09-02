@@ -1081,8 +1081,8 @@
             ]
           },
           {
-            "label": "V2_分层分户-静态单体化",
-            "describe": "V2_分层分户-静态单体化",
+            "label": "分层分户10层",
+            "describe": "分层分户10层",
             "ip": "",
             "port": "",
             "layerServiceType": "IGSScene",
@@ -1090,7 +1090,7 @@
             "searchName": "",
             "model": "",
             "guid": "73CBB58E-C31B-2C50-08F3-DBD70DDED1BCi",
-            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_分层分户-静态单体化/SceneServer"
+            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/分层分户10层/SceneServer"
           },
           {
             "label": "分层分户-知识图谱",
@@ -1105,8 +1105,8 @@
             "serverUrl": "http://192.168.199.71:8089/igs/rest/services/图数据/分层分户0629/SceneServer"
           },
           {
-            "label": "V2_倾斜摄影-动态单体化",
-            "describe": "V2_倾斜摄影-动态单体化",
+            "label": "临海osgb",
+            "describe": "临海osgb",
             "ip": "",
             "port": "",
             "layerServiceType": "IGSScene",
@@ -1114,7 +1114,7 @@
             "searchName": "",
             "model": "",
             "guid": "FB0E5340-3537-965B-902A-C4DDA57FCDFA",
-            "serverUrl": "http://192.168.199.71:8089/igs/rest/services/V2_倾斜摄影_动态单体化/SceneServer"
+            "serverUrl": "http://192.168.199.71:6163/igs/rest/g3d/临海osgb"
           }
         ]
       },
