@@ -1,0 +1,36 @@
+{
+  // Prettier配置
+  // 保存时是否自动格式化
+  "editor.formatOnSave": true,
+  // 默认的格式化工具
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // vue文件的格式化配置
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // js文件的格式化配置
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // ESLint配置
+  "editor.codeActionsOnSave": {
+    // 保存时是否自动eslint修复
+    "source.fixAll.eslint": true
+  },
+  // ESLint校验的文件格式
+  "eslint.validate": ["javascript", "javascriptreact", "vue-html", "vue", "html", "typescript", "typescriptreact"],
+  // Vetux配置
+  "vetur.format.defaultFormatter.html": "prettyhtml",
+  "vetur.format.defaultFormatter.js": "prettier-eslint",
+  "search.followSymlinks": false,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.showUnused": false,
+  "vetur.validation.interpolation": false,
+  "vetur.validation.script": false,
+  "[dotenv]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[hosts]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  }
+}
