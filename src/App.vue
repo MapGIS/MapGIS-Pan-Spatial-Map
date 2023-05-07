@@ -1,9 +1,9 @@
 <template>
-  <a-config-provider :locale="locale">
+  <mapgis-ui-config-provider :locale="locale">
     <div id="main-app">
       <router-view v-if="initialized" />
     </div>
-  </a-config-provider>
+  </mapgis-ui-config-provider>
 </template>
 
 <script>

@@ -1,7 +1,7 @@
 <template>
   <div class="main user-layout-login">
-    <a-form-model id="formLogin" ref="form" :model="form" :rules="rules">
-      <a-alert
+    <mapgis-ui-form-model id="formLogin" ref="form" :model="form" :rules="rules">
+      <mapgis-ui-alertmapgis-ui
         v-if="isLoginError"
         type="error"
         showIcon
@@ -10,40 +10,40 @@
         closable
         :after-close="handleCloseLoginError"
       />
-      <a-form-model-item prop="username">
-        <a-input v-model="form.username" size="large" autocomplete="off" :placeholder="$t('username')">
-          <a-icon slot="prefix" type="user" />
-        </a-input>
-      </a-form-model-item>
-      <a-form-model-item prop="password">
-        <a-input-password
+      <mapgis-ui-form-model-item prop="username">
+        <mapgis-ui-input v-model="form.username" size="large" autocomplete="off" :placeholder="$t('username')">
+          <mapgis-ui-icon slot="prefix" type="user" />
+        </mapgis-ui-input>
+      </mapgis-ui-form-model-item>
+      <mapgis-ui-form-model-item prop="password">
+        <mapgis-ui-input-password
           v-model="form.password"
           size="large"
           autocomplete="new-password"
           :placeholder="$t('password')"
         >
-          <a-icon slot="prefix" type="lock" />
-        </a-input-password>
-      </a-form-model-item>
-      <a-row :gutter="16" v-if="captchaEnabled">
-        <a-col class="gutter-row" :span="16">
-          <a-form-model-item prop="code">
-            <a-input v-model="form.code" size="large" type="text" autocomplete="off" :placeholder="$t('captcha')">
-              <a-icon slot="prefix" type="security-scan" />
-            </a-input>
-          </a-form-model-item>
-        </a-col>
-        <a-col class="gutter-row" :span="8">
+          <mapgis-ui-icon slot="prefix" type="lock" />
+        </mapgis-ui-input-password>
+      </mapgis-ui-form-model-item>
+      <mapgis-ui-row :gutter="16" v-if="captchaEnabled">
+        <mapgis-ui-col class="gutter-row" :span="16">
+          <mapgis-ui-form-model-item prop="code">
+            <mapgis-ui-input v-model="form.code" size="large" type="text" autocomplete="off" :placeholder="$t('captcha')">
+              <mapgis-ui-icon slot="prefix" type="security-scan" />
+            </mapgis-ui-input>
+          </mapgis-ui-form-model-item>
+        </mapgis-ui-col>
+        <mapgis-ui-col class="gutter-row" :span="8">
           <img class="getCaptcha" :src="codeUrl" @click="getCode" />
-        </a-col>
-      </a-row>
-      <a-form-model-item v-if="rememberMeItemEnabled" prop="rememberMe">
-        <a-checkbox v-if="rememberMeConfigEnabled" :checked="form.rememberMe" @change="rememberMe" class="remember">
+        </mapgis-ui-col>
+      </mapgis-ui-row>
+      <mapgis-ui-form-model-item v-if="rememberMeItemEnabled" prop="rememberMe">
+        <mapgis-ui-checkbox v-if="rememberMeConfigEnabled" :checked="form.rememberMe" @change="rememberMe" class="remember">
           {{ $t('user.login.password.remember') }}
-        </a-checkbox>
-      </a-form-model-item>
-      <a-form-item :style="{ marginTop: rememberMeItemEnabled ? '24px' : '0' }">
-        <a-button
+        </mapgis-ui-checkbox>
+      </mapgis-ui-form-model-item>
+      <mapgis-ui-form-item :style="{ marginTop: rememberMeItemEnabled ? '24px' : '0' }">
+        <mapgis-ui-button
           size="large"
           type="primary"
           htmlType="submit"
@@ -53,14 +53,14 @@
           @click="handleSubmit"
         >
           {{ $t('login') }}
-        </a-button>
-      </a-form-item>
+        </mapgis-ui-button>
+      </mapgis-ui-form-item>
       <div v-if="otherLoginItemEnabled" class="user-login-other">
         <span v-if="otherLoginValid">{{ $t('user.login.others') }}</span>
         <cas-login :config="casConfig"></cas-login>
         <third-login :config="oauthConfig" ref="thirdLogin"></third-login>
       </div>
-    </a-form-model>
+    </mapgis-ui-button></mapgis-ui-form-item></mapgis-ui-checkbox></mapgis-ui-form-model-item></mapgis-ui-col></mapgis-ui-input></mapgis-ui-form-model-item></mapgis-ui-col></mapgis-ui-row></mapgis-ui-input-password></mapgis-ui-form-model-item></mapgis-ui-form-model>
   </div>
 </template>
 

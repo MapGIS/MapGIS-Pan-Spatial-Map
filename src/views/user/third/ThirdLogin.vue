@@ -4,18 +4,18 @@
       <img :src="type.icon" class="item-icon" />
     </a>
     <!-- 第三方登录绑定账号密码输入弹框 -->
-    <a-modal
+    <mapgis-ui-modal
       :title="$t('please.input.password')"
       :visible="thirdPasswordShow"
       @ok="thirdLoginCheckPassword"
       @cancel="thirdLoginNoPassword"
       :maskClosable="false"
     >
-      <a-input-password :placeholder="$t('please.input.password')" v-model="thirdLoginPassword" />
-    </a-modal>
+      <mapgis-ui-input-password :placeholder="$t('please.input.password')" v-model="thirdLoginPassword" />
+    </mapgis-ui-modal>
 
     <!-- 第三方登录提示是否绑定账号弹框 -->
-    <a-modal
+    <mapgis-ui-modal
       :footer="null"
       :visible="thirdConfirmShow"
       :class="'ant-modal-confirm'"
@@ -24,7 +24,7 @@
     >
       <div class="ant-modal-confirm-body-wrapper">
         <div class="ant-modal-confirm-body">
-          <a-icon type="question-circle" style="color: #faad14" />
+          <mapgis-ui-icon type="question-circle" style="color: #faad14" />
           <span class="ant-modal-confirm-title">{{ this.$t('tip') }}</span>
           <div v-if="thirdLoginUserId" class="ant-modal-confirm-content">
             {{ $t('user.login.bind.tip', { username: this.thirdLoginUsername }) }}
@@ -32,20 +32,20 @@
           <div v-else class="ant-modal-confirm-content">{{ $t('user.login.auto.create') }}</div>
         </div>
         <div class="ant-modal-confirm-btns">
-          <a-button
+          <mapgis-ui-button
             @click="thirdLoginUserCreate"
             :loading="thirdCreateUserLoding"
             :type="thirdLoginUserId ? 'default' : 'primary'"
           >
             {{ $t('user.login.create.new.account') }}
-          </a-button>
-          <a-button v-if="thirdLoginUserId" @click="thirdLoginUserBind" type="primary">
+          </mapgis-ui-button>
+          <mapgis-ui-button v-if="thirdLoginUserId" @click="thirdLoginUserBind" type="primary">
             {{ $t('user.login.confirm.bind') }}
-          </a-button>
-        </div>
+          </mapgis-ui-button>
+        </mapgis-ui-button></mapgis-ui-button></div>div>
       </div>
-    </a-modal>
-  </div>
+    </mapgis-ui-modal>
+  </mapgis-ui-modal></mapgis-ui-modal></div>
 </template>
 
 <script>

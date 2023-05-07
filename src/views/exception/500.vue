@@ -1,9 +1,9 @@
 <template>
-  <a-result status="500" title="500" :sub-title="$t('exception.500')">
+  <mapgis-ui-result status="500" title="500" :sub-title="$t('exception.500')">
     <template #extra>
-      <a-button type="primary" @click="toHome">{{ $t('back.home') }}</a-button>
+      <mapgis-ui-button type="primary" @click="toHome">{{ $t('back.home') }}</mapgis-ui-button>
     </template>
-  </a-result>
+  </mapgis-ui-result>
 </template>
 
 <script>

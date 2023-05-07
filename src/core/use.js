@@ -1,9 +1,9 @@
 import Vue from 'vue'
 
 // base library
-import Antd from 'ant-design-vue/es'
-import 'ant-design-vue/dist/antd.less'
+import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css'
+import MapgisUi from '@mapgis/webclient-vue-ui'
 
-Vue.use(Antd)
+Vue.use(MapgisUi)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')

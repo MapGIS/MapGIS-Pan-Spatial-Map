@@ -16,7 +16,7 @@
     "lint:nofix": "vue-cli-service lint --no-fix"
   },
   "dependencies": {
-    "ant-design-vue": "^1.7.8",
+    "@mapgis/webclient-vue-ui": "^16.0.0",
     "axios": "^0.24.0",
     "core-js": "^3.25.3",
     "file-saver": "^2.0.5",
