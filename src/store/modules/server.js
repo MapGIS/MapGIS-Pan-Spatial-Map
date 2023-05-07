@@ -1,4 +1,5 @@
-import { getSystemConfig, getAppBaseConfig } from '@/api/system/config'
+import { getSystemConfig } from '@/api/system/config'
+import { getAppBaseConfig } from '@/api/app/webConfig'
 
 export default {
   state: {

@@ -3,7 +3,6 @@ import request from '@/utils/request'
 const userApi = {
   Login: `${window._CONFIG['apiPathManagerPrefix']}/auth/login`,
   Logout: `${window._CONFIG['apiPathManagerPrefix']}/auth/logout`,
-  Register: `${window._CONFIG['apiPathManagerPrefix']}/auth/register`,
   // get my info
   UserInfo: `${window._CONFIG['apiPathManagerPrefix']}/system/user/getInfo`
 }
@@ -18,18 +17,6 @@ export function login(parameter) {
     url: userApi.Login,
     method: 'post',
     data: parameter
-  })
-}
-
-// 注册方法
-export function register(data) {
-  return request({
-    url: userApi.Register,
-    headers: {
-      isToken: false
-    },
-    method: 'post',
-    data: data
   })
 }
 

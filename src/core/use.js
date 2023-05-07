@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 // base library
-import Antd from 'ant-design-vue'
+import Antd from 'ant-design-vue/es'
 import 'ant-design-vue/dist/antd.less'
 
 Vue.use(Antd)

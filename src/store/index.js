@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 import app from './modules/app'
 import user from './modules/user'
-import permission from './modules/async-router'
+import permission from './modules/router'
 import cas from './modules/cas'
 import server from './modules/server'
 
