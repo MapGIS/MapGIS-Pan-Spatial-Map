@@ -29,26 +29,34 @@ const vueConfig = {
       patterns: [path.resolve(__dirname, './src/theme/theme.less')]
     }
   },
-  configureWebpack: {
+  configureWebpack: config => {
+    config.entry.app = ['babel-polyfill', './src/main.js']
+
     // webpack plugins
-    plugins: [
+    config.plugins.push(
       new ThemeColorReplacer({
         fileName: 'css/theme-colors-[contenthash:8].css',
         matchColors: getThemeColors(),
         injectCss: true,
         resolveCss
-      }),
-      // Ignore all locale files of moment.js
+      })
+    )
+
+    // Ignore all locale files of moment.js
+    config.plugins.push(
       new webpack.IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,
         contextRegExp: /moment$/
-      }),
+      })
+    )
+
+    config.plugins.push(
       new webpack.DefinePlugin({
         APP_VERSION: `"${require('./package.json').version}"`,
         GIT_HASH: JSON.stringify(getGitHash()),
         BUILD_DATE: buildDate
       })
-    ]
+    )
   },
 
   chainWebpack: config => {
@@ -77,6 +85,12 @@ const vueConfig = {
         return args
       })
     }
+    config.module
+      .rule('images')
+      .test(/\.(png|jpe?g|gif|ico)$/i)
+      .use('url-loader')
+      .loader('url-loader')
+      .tap(options => Object.assign(options, { limit: 2000, esModule: false }))
   },
 
   css: {
@@ -91,6 +105,9 @@ const vueConfig = {
           },
           javascriptEnabled: true
         }
+      },
+      scss: {
+        additionalData: `@import "./src/theme/mapgis-ui/index.scss";`
       }
     }
   },
@@ -114,7 +131,7 @@ const vueConfig = {
   productionSourceMap: false,
   lintOnSave: undefined,
   // babel-loader no-ignore node_modules/*
-  transpileDependencies: ['vue-echarts'],
+  transpileDependencies: [],
   publicPath: process.env.VUE_APP_CONTEXT_PATH
 }
 
