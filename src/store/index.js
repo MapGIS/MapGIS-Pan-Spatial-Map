@@ -6,6 +6,7 @@ import user from './modules/user'
 import permission from './modules/router'
 import cas from './modules/cas'
 import server from './modules/server'
+import setting from './modules/setting'
 
 import getters from './getters'
 
@@ -17,7 +18,8 @@ export default new Vuex.Store({
     user,
     permission,
     cas,
-    server
+    server,
+    setting
   },
   state: {},
   mutations: {},

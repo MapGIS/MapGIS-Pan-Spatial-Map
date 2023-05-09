@@ -12,8 +12,10 @@ import MapgisUi from '@mapgis/webclient-vue-ui'
 import WebAppFrameworkUI from '@mapgis/web-app-framework'
 import Theme from '@mapgis/mapgis-pan-spatial-map-theme'
 import WebAppWidget from '@mapgis/mapgis-pan-spatial-map-widgets'
+import Antd from 'ant-design-vue/es'
 
 Vue.use(MapgisUi)
+Vue.use(Antd)
 Vue.use(WebAppFrameworkUI)
 Vue.use(Theme, {
   components: {}
