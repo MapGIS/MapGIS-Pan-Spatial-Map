@@ -1,0 +1,3122 @@
+﻿{
+  "110101_大地原点": {
+    "x": 136,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "110102_三角点": {
+    "x": 562,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "110103_图根点": {
+    "x": 102,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "110201_水准原点": {
+    "x": 344,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "110202_水准点": {
+    "x": 472,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "110301_卫星定位连续运行站点": {
+    "x": 106,
+    "y": 0,
+    "width": 34,
+    "height": 40,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "110302_卫星定位等级点": {
+    "x": 52,
+    "y": 0,
+    "width": 36,
+    "height": 42,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "110401_重力点": {
+    "x": 614,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "110402_独立天文点": {
+    "x": 438,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "210103_地下河段出入口": {
+    "x": 398,
+    "y": 348,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220202_高于地面干渠": {
+    "x": 320,
+    "y": 418,
+    "width": 4,
+    "height": 12,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220202_高于地面干渠1": {
+    "x": 170,
+    "y": 398,
+    "width": 4,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220304_地下渠出水口": {
+    "x": 34,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220400_坎儿井": {
+    "x": 630,
+    "y": 288,
+    "width": 34,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220500_渠首": {
+    "x": 364,
+    "y": 418,
+    "width": 4,
+    "height": 10,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220500_渠首1": {
+    "x": 364,
+    "y": 418,
+    "width": 4,
+    "height": 10,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220600_输水渡槽": {
+    "x": 400,
+    "y": 418,
+    "width": 34,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220600_输水渡槽1": {
+    "x": 450,
+    "y": 398,
+    "width": 4,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220600/输水渡槽2": {
+    "x": 450,
+    "y": 398,
+    "width": 4,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220600_输水渡槽3": {
+    "x": 434,
+    "y": 418,
+    "width": 34,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220700_输水隧道": {
+    "x": 510,
+    "y": 348,
+    "width": 18,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220800_倒吸虹": {
+    "x": 532,
+    "y": 88,
+    "width": 22,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220900_涵洞": {
+    "x": 594,
+    "y": 158,
+    "width": 22,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "220900_涵洞1": {
+    "x": 574,
+    "y": 124,
+    "width": 40,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "221000_干沟": {
+    "x": 492,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "221000_干沟1": {
+    "x": 488,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "240103_废弃的水库": {
+    "x": 476,
+    "y": 158,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "240200_溢洪道": {
+    "x": 500,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "240200_溢洪道1": {
+    "x": 500,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "240300_泄洪洞、出水口": {
+    "x": 194,
+    "y": 418,
+    "width": 34,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "250300_干出线": {
+    "x": 298,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "250409_狭窄干出滩": {
+    "x": 116,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "250501_危险暗区": {
+    "x": 140,
+    "y": 0,
+    "width": 42,
+    "height": 40,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "250601_明礁": {
+    "x": 100,
+    "y": 288,
+    "width": 34,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "250602_暗礁": {
+    "x": 66,
+    "y": 288,
+    "width": 34,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "250603_干出礁": {
+    "x": 654,
+    "y": 158,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "250604_适淹礁": {
+    "x": 418,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "260100_水系交汇处": {
+    "x": 134,
+    "y": 348,
+    "width": 36,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "260700_泉": {
+    "x": 542,
+    "y": 158,
+    "width": 20,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "260800_水井": {
+    "x": 442,
+    "y": 158,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "260900_地热井": {
+    "x": 326,
+    "y": 320,
+    "width": 32,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "261100_瀑布、跌水": {
+    "x": 390,
+    "y": 398,
+    "width": 34,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "261301_河流流向": {
+    "x": 68,
+    "y": 374,
+    "width": 38,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "261304_海流流向": {
+    "x": 596,
+    "y": 348,
+    "width": 38,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270101_干堤": {
+    "x": 446,
+    "y": 398,
+    "width": 4,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270201_水闸": {
+    "x": 396,
+    "y": 52,
+    "width": 34,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270202_船闸": {
+    "x": 446,
+    "y": 320,
+    "width": 32,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270300_扬水站": {
+    "x": 578,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270500_滚水坝": {
+    "x": 472,
+    "y": 418,
+    "width": 4,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270600_拦水坝": {
+    "x": 98,
+    "y": 348,
+    "width": 36,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270700_制水坝": {
+    "x": 446,
+    "y": 398,
+    "width": 4,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270802_无防洪墙加固岸": {
+    "x": 484,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "270801_有防洪墙加固岸": {
+    "x": 484,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "310300_单幢房屋、普通房屋": {
+    "x": 364,
+    "y": 348,
+    "width": 34,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "310400_突出房屋": {
+    "x": 498,
+    "y": 374,
+    "width": 34,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "310600_棚房": {
+    "x": 26,
+    "y": 348,
+    "width": 36,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "310700_破坏房屋": {
+    "x": 62,
+    "y": 348,
+    "width": 36,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "311001_地面窑洞": {
+    "x": 326,
+    "y": 256,
+    "width": 28,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "311002_地下窑洞": {
+    "x": 302,
+    "y": 256,
+    "width": 24,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "311003_蒙古包、放牧点": {
+    "x": 134,
+    "y": 398,
+    "width": 36,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "311004_晾房": {
+    "x": 32,
+    "y": 320,
+    "width": 34,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "311102_省级政府": {
+    "x": 0,
+    "y": 348,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "311103_地级政府": {
+    "x": 424,
+    "y": 398,
+    "width": 18,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "311104_县级政府、市辖区": {
+    "x": 378,
+    "y": 418,
+    "width": 10,
+    "height": 10,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320101_发电厂（站）": {
+    "x": 514,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320102_水厂": {
+    "x": 478,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320103_污水处理厂": {
+    "x": 610,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320104_生物制剂厂": {
+    "x": 0,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320200_矿井": {
+    "x": 32,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320201_矿井竖井井口": {
+    "x": 642,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320202_矿井斜井井口": {
+    "x": 64,
+    "y": 256,
+    "width": 30,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320203_矿井平峒洞口": {
+    "x": 376,
+    "y": 288,
+    "width": 32,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320500_管道井（油、气）": {
+    "x": 508,
+    "y": 52,
+    "width": 20,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320600_盐井": {
+    "x": 158,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320700_废弃矿井": {
+    "x": 198,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320800_海上平台": {
+    "x": 508,
+    "y": 52,
+    "width": 20,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320901_探井; 探槽": {
+    "x": 0,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "320903_钻孔": {
+    "x": 610,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321000_液、气储存设备": {
+    "x": 126,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321101_散热塔;": {
+    "x": 184,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321104_水塔": {
+    "x": 528,
+    "y": 52,
+    "width": 26,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321105_水塔烟囱": {
+    "x": 488,
+    "y": 224,
+    "width": 26,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321106_烟囱": {
+    "x": 462,
+    "y": 224,
+    "width": 26,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321108_放空火炬": {
+    "x": 218,
+    "y": 256,
+    "width": 20,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321200_盐田、盐场": {
+    "x": 158,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321300_窑": {
+    "x": 660,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321400_露天设备": {
+    "x": 94,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321501_传送带": {
+    "x": 416,
+    "y": 374,
+    "width": 16,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321501_传送带1": {
+    "x": 446,
+    "y": 348,
+    "width": 18,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321502_起重机": {
+    "x": 606,
+    "y": 224,
+    "width": 24,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321503_吊车": {
+    "x": 438,
+    "y": 224,
+    "width": 24,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321504_装卸漏斗": {
+    "x": 646,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321505_滑槽": {
+    "x": 610,
+    "y": 320,
+    "width": 18,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321506_地磅": {
+    "x": 488,
+    "y": 52,
+    "width": 20,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "321600_露天货栈": {
+    "x": 240,
+    "y": 374,
+    "width": 32,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "330101_抽水站": {
+    "x": 360,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "330200_饲养场": {
+    "x": 220,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "330500_粮仓（库）": {
+    "x": 290,
+    "y": 320,
+    "width": 36,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "330601_水磨坊、水车": {
+    "x": 76,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "330602_风磨坊、风车": {
+    "x": 348,
+    "y": 158,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "330603_打谷场": {
+    "x": 212,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "330605_药浴池": {
+    "x": 0,
+    "y": 320,
+    "width": 32,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "330606_积肥池": {
+    "x": 546,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340101_学校": {
+    "x": 482,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340102_医院": {
+    "x": 68,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340103_馆（科技馆、博物馆、展览馆）": {
+    "x": 0,
+    "y": 374,
+    "width": 36,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340201_宾馆饭店": {
+    "x": 354,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340202_超市": {
+    "x": 406,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340301_游乐场": {
+    "x": 550,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340302_公园": {
+    "x": 140,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340303_陵园": {
+    "x": 386,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340304_动物园": {
+    "x": 176,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340305_植物园": {
+    "x": 0,
+    "y": 192,
+    "width": 34,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340306_剧场、电影院": {
+    "x": 112,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340401_露天体育场": {
+    "x": 554,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340402_高尔夫球场": {
+    "x": 376,
+    "y": 158,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340403_体育馆": {
+    "x": 0,
+    "y": 88,
+    "width": 40,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340404_游泳场、池": {
+    "x": 256,
+    "y": 0,
+    "width": 42,
+    "height": 38,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340405_跳伞塔": {
+    "x": 148,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340406_露天舞台": {
+    "x": 34,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340407_健身馆": {
+    "x": 648,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340408_滑雪场": {
+    "x": 264,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340409_篮球场": {
+    "x": 328,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340501_电视台": {
+    "x": 0,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340502_电信局": {
+    "x": 656,
+    "y": 88,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340503_邮局": {
+    "x": 36,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340504_电视发射塔;": {
+    "x": 622,
+    "y": 88,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340601_厕所": {
+    "x": 546,
+    "y": 224,
+    "width": 30,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340602_垃圾台（场）": {
+    "x": 514,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340701_公墓": {
+    "x": 270,
+    "y": 158,
+    "width": 24,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340702_坟地": {
+    "x": 208,
+    "y": 374,
+    "width": 32,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340703_独立大坟": {
+    "x": 26,
+    "y": 398,
+    "width": 32,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340704_殡葬场所": {
+    "x": 322,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "340801_专用供氧点": {
+    "x": 666,
+    "y": 348,
+    "width": 36,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350100_古迹、遗址": {
+    "x": 646,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350101_烽火台": {
+    "x": 290,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350102_旧碉堡、旧地堡": {
+    "x": 450,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350201_纪念碑、柱、墩": {
+    "x": 324,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350204_钟鼓楼、城楼、古关塞": {
+    "x": 648,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350203_牌楼、牌坊、彩门": {
+    "x": 258,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350205_亭": {
+    "x": 226,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350206_文物碑石": {
+    "x": 194,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350207_旗杆": {
+    "x": 162,
+    "y": 158,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "350208_塑像": {
+    "x": 162,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "360100_庙宇;": {
+    "x": 130,
+    "y": 158,
+    "width": 32,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "360200_清真寺": {
+    "x": 106,
+    "y": 158,
+    "width": 24,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "360300_教堂": {
+    "x": 350,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "360400_宝塔、经塔": {
+    "x": 0,
+    "y": 158,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "360500_敖包、经堆": {
+    "x": 554,
+    "y": 88,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "360600_晒佛台": {
+    "x": 190,
+    "y": 256,
+    "width": 28,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "370101_气象台": {
+    "x": 130,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "370102_水文站": {
+    "x": 510,
+    "y": 158,
+    "width": 32,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "370103_地震台": {
+    "x": 66,
+    "y": 224,
+    "width": 34,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "370104_天文台": {
+    "x": 318,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "370105_环保监测站": {
+    "x": 0,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "370200_卫星地面站": {
+    "x": 98,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "370300_科学试验站": {
+    "x": 256,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380101_砖石城墙、长城(完好)": {
+    "x": 478,
+    "y": 320,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380102_砖石城墙、长城(破坏)": {
+    "x": 504,
+    "y": 320,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380201_围墙": {
+    "x": 102,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380202_栅栏;": {
+    "x": 442,
+    "y": 398,
+    "width": 4,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380205_铁丝网、电网": {
+    "x": 618,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380301_地下建筑物-出入口": {
+    "x": 136,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380302_地下建筑物天窗": {
+    "x": 228,
+    "y": 398,
+    "width": 36,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380303_地下建筑物通风口": {
+    "x": 248,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380406_院门": {
+    "x": 338,
+    "y": 374,
+    "width": 34,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380407_门墩": {
+    "x": 162,
+    "y": 418,
+    "width": 32,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380408_支柱、墩": {
+    "x": 308,
+    "y": 374,
+    "width": 30,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380501_路灯": {
+    "x": 364,
+    "y": 88,
+    "width": 28,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380502_照射灯": {
+    "x": 196,
+    "y": 158,
+    "width": 24,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380503_岗亭、岗楼": {
+    "x": 630,
+    "y": 224,
+    "width": 30,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380504_宣传橱窗、广告牌": {
+    "x": 576,
+    "y": 224,
+    "width": 30,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "380600_避雷针": {
+    "x": 216,
+    "y": 0,
+    "width": 18,
+    "height": 38,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "311105_乡级政府、街道": {
+    "x": 368,
+    "y": 418,
+    "width": 10,
+    "height": 10,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "410301_火车站": {
+    "x": 72,
+    "y": 52,
+    "width": 32,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "410302_机车转盘": {
+    "x": 418,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "410303_车档": {
+    "x": 430,
+    "y": 52,
+    "width": 38,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "410304_信号灯柱": {
+    "x": 468,
+    "y": 52,
+    "width": 20,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "420701_高速公路入口": {
+    "x": 340,
+    "y": 288,
+    "width": 36,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "420702_高速公路出口": {
+    "x": 304,
+    "y": 288,
+    "width": 36,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "420703_高速公路临时停车点": {
+    "x": 396,
+    "y": 320,
+    "width": 22,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "420704_高速公路服务区": {
+    "x": 588,
+    "y": 88,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "440400_时令路": {
+    "x": 336,
+    "y": 418,
+    "width": 12,
+    "height": 12,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "440500_山隘": {
+    "x": 106,
+    "y": 374,
+    "width": 22,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450101地铁站": {
+    "x": 270,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450103_长途汽车站": {
+    "x": 104,
+    "y": 52,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450104_加油（气）站": {
+    "x": 354,
+    "y": 256,
+    "width": 30,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450105_停车场": {
+    "x": 292,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450106_收费站": {
+    "x": 0,
+    "y": 288,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450107_公交车站": {
+    "x": 238,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450200_门洞、下跨道": {
+    "x": 100,
+    "y": 224,
+    "width": 36,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450301_车行单层桥": {
+    "x": 298,
+    "y": 348,
+    "width": 32,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450302_双层桥": {
+    "x": 266,
+    "y": 348,
+    "width": 32,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450303_并行桥": {
+    "x": 498,
+    "y": 288,
+    "width": 36,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450400_桥墩、柱": {
+    "x": 634,
+    "y": 348,
+    "width": 32,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450501_过街天桥": {
+    "x": 234,
+    "y": 348,
+    "width": 32,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450502_人行桥": {
+    "x": 372,
+    "y": 374,
+    "width": 44,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450503_缆索桥": {
+    "x": 130,
+    "y": 418,
+    "width": 32,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450504_级面桥、人行拱桥": {
+    "x": 34,
+    "y": 158,
+    "width": 36,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450505_亭桥、廊桥": {
+    "x": 354,
+    "y": 398,
+    "width": 36,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450507_栈桥": {
+    "x": 36,
+    "y": 374,
+    "width": 32,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450800_地下人行通道": {
+    "x": 484,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450900_道路交汇处": {
+    "x": 514,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "451002_路标": {
+    "x": 590,
+    "y": 52,
+    "width": 20,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "451003_里程碑": {
+    "x": 310,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460104_栈桥式码头/浮码头": {
+    "x": 382,
+    "y": 224,
+    "width": 24,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460106_干船坞": {
+    "x": 410,
+    "y": 158,
+    "width": 32,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460200_防波堤": {
+    "x": 578,
+    "y": 320,
+    "width": 32,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460300_停泊场": {
+    "x": 294,
+    "y": 158,
+    "width": 26,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460401/灯塔": {
+    "x": 392,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460402_灯桩": {
+    "x": 464,
+    "y": 256,
+    "width": 20,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460403_灯船": {
+    "x": 588,
+    "y": 256,
+    "width": 28,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460404_浮标": {
+    "x": 616,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460405_岸标、立标": {
+    "x": 448,
+    "y": 256,
+    "width": 16,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460406_信号杆": {
+    "x": 320,
+    "y": 158,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460407_系船浮筒": {
+    "x": 70,
+    "y": 158,
+    "width": 36,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460408_过江管线标": {
+    "x": 516,
+    "y": 256,
+    "width": 24,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460501_沉船（露出）": {
+    "x": 170,
+    "y": 348,
+    "width": 32,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460502_沉船（淹没）": {
+    "x": 272,
+    "y": 374,
+    "width": 36,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460503_急流区域": {
+    "x": 0,
+    "y": 418,
+    "width": 36,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460504_漩涡区域": {
+    "x": 406,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "470100_通航河段起迄点": {
+    "x": 168,
+    "y": 224,
+    "width": 30,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "480100_飞机场": {
+    "x": 66,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "490100_缆车道": {
+    "x": 504,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "490200_简易轨道": {
+    "x": 496,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "490300_架空索道": {
+    "x": 36,
+    "y": 418,
+    "width": 16,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "490301_索道": {
+    "x": 36,
+    "y": 418,
+    "width": 16,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "490302_架空索道端点、转折点支架": {
+    "x": 34,
+    "y": 0,
+    "width": 18,
+    "height": 42,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "490400_滑道": {
+    "x": 120,
+    "y": 398,
+    "width": 14,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "490500_渡口": {
+    "x": 276,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "490506_跳墩": {
+    "x": 228,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "410306_水鹤": {
+    "x": 586,
+    "y": 0,
+    "width": 24,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "450700_汽车明峒": {
+    "x": 284,
+    "y": 52,
+    "width": 40,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "451001_中国公路零公里标识": {
+    "x": 610,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460101_水运港客运站": {
+    "x": 40,
+    "y": 88,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "460600_港口": {
+    "x": 442,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510101_高压输电线-架空线": {
+    "x": 52,
+    "y": 418,
+    "width": 34,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510102_高压输电线地下线": {
+    "x": 570,
+    "y": 398,
+    "width": 54,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510103_高压输电线入地口": {
+    "x": 628,
+    "y": 320,
+    "width": 22,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510201_配电线架空线": {
+    "x": 0,
+    "y": 0,
+    "width": 34,
+    "height": 52,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510202_配电线地下线": {
+    "x": 300,
+    "y": 398,
+    "width": 54,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510203_配电线入地口": {
+    "x": 248,
+    "y": 124,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510301_电杆": {
+    "x": 264,
+    "y": 398,
+    "width": 18,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510302_电线架": {
+    "x": 88,
+    "y": 0,
+    "width": 18,
+    "height": 40,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510302_电线架1": {
+    "x": 624,
+    "y": 398,
+    "width": 48,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510303_电线塔(铁塔)": {
+    "x": 592,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510304_输电线电缆标": {
+    "x": 464,
+    "y": 348,
+    "width": 20,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510305_输电线检修井孔": {
+    "x": 262,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510401_变电所": {
+    "x": 506,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "510402_变压器": {
+    "x": 616,
+    "y": 158,
+    "width": 18,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "520101_陆地通信线-地上": {
+    "x": 454,
+    "y": 398,
+    "width": 34,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "520102_陆地通信线-地下": {
+    "x": 324,
+    "y": 418,
+    "width": 12,
+    "height": 12,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "520103_陆地通信线入地口": {
+    "x": 628,
+    "y": 320,
+    "width": 22,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "520104_陆地通信线电缆标": {
+    "x": 464,
+    "y": 348,
+    "width": 20,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "520105_陆地通信线检修井孔": {
+    "x": 234,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "520200_通信线海底光缆": {
+    "x": 174,
+    "y": 398,
+    "width": 54,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "520200_通信线海底光缆1": {
+    "x": 530,
+    "y": 320,
+    "width": 22,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530101_油管道-地上管道": {
+    "x": 552,
+    "y": 320,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530101_油管道-地上管道1": {
+    "x": 488,
+    "y": 398,
+    "width": 16,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530102_油管道-地下管道": {
+    "x": 552,
+    "y": 320,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530103_油管道出入口": {
+    "x": 628,
+    "y": 320,
+    "width": 22,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530104_油管道-架空管道": {
+    "x": 552,
+    "y": 320,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530104_油管道-架空管道1": {
+    "x": 86,
+    "y": 418,
+    "width": 16,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530201_天然气主管道-地上管道": {
+    "x": 154,
+    "y": 374,
+    "width": 26,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530201_天然气主管道-地上管道1": {
+    "x": 488,
+    "y": 398,
+    "width": 16,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530202_天然气主管道-地下管道": {
+    "x": 128,
+    "y": 374,
+    "width": 26,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530203_天然气主管道出入口": {
+    "x": 628,
+    "y": 320,
+    "width": 22,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530204_天然气主管道-架空管道": {
+    "x": 128,
+    "y": 374,
+    "width": 26,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530204_天然气主管道-架空管道1": {
+    "x": 86,
+    "y": 418,
+    "width": 16,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530301_水主管道-地上管道": {
+    "x": 664,
+    "y": 288,
+    "width": 26,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530301_水主管道-地上管道1": {
+    "x": 488,
+    "y": 398,
+    "width": 16,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530302_水主管道-地下管道": {
+    "x": 664,
+    "y": 288,
+    "width": 26,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530303_水主管道出入口": {
+    "x": 628,
+    "y": 320,
+    "width": 22,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530304_水主管道-架空管道": {
+    "x": 664,
+    "y": 288,
+    "width": 26,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "530304_水主管道-架空管道1": {
+    "x": 86,
+    "y": 418,
+    "width": 16,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "540002_燃气管线": {
+    "x": 134,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "540100_不明管线": {
+    "x": 478,
+    "y": 288,
+    "width": 20,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "540100_不明管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "541001_电信线": {
+    "x": 408,
+    "y": 288,
+    "width": 22,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "541000_电力线": {
+    "x": 454,
+    "y": 288,
+    "width": 24,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "541000_电力线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "541300_电车线": {
+    "x": 430,
+    "y": 288,
+    "width": 24,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "541300_电车线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "542000_电信线": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543001_给水管线一地上管线": {
+    "x": 298,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543001_给水管线一地上管线1": {
+    "x": 458,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543002_给水管线一地下管线出入口": {
+    "x": 248,
+    "y": 124,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543003_给水管线一架空管道": {
+    "x": 298,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543003_给水管线一架空管道1": {
+    "x": 432,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543004_给水管线墩架": {
+    "x": 566,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543005_给水管线检修井": {
+    "x": 206,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543006_水龙头": {
+    "x": 230,
+    "y": 124,
+    "width": 18,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "543007_消火栓": {
+    "x": 204,
+    "y": 124,
+    "width": 26,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544000_排水管线": {
+    "x": 298,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544000_排水管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544100_雨水管线": {
+    "x": 528,
+    "y": 348,
+    "width": 34,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544100_雨水管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544101_雨水管线检修井": {
+    "x": 66,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544200_污水管线": {
+    "x": 528,
+    "y": 348,
+    "width": 34,
+    "height": 24,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544200_污水管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544201_污水管线检查井": {
+    "x": 66,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544300_合流管线": {
+    "x": 334,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "544301_合流管线检查井": {
+    "x": 650,
+    "y": 320,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545000_燃气管线": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545103_煤气管线一架空管线": {
+    "x": 134,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545103_煤气管线一架空管线1": {
+    "x": 432,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545101_煤气管线一地上管线": {
+    "x": 134,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545101_煤气管线一地上管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545102_煤气管线一地下管线出入口": {
+    "x": 248,
+    "y": 124,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545104_煤气管线墩架": {
+    "x": 566,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545105_煤气管线检修井": {
+    "x": 150,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545201_天然气管线一地上管线": {
+    "x": 202,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545201_天然气管线一地上管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545203_天然气管线一架空管线": {
+    "x": 168,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545203_天然气管线一架空管线1": {
+    "x": 432,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545205_天然气管线检修井": {
+    "x": 178,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545301_液化气管线一地上管线": {
+    "x": 270,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545301_液化气管线一地上管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545302_液化气管线一地下管线出人口": {
+    "x": 248,
+    "y": 124,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545303_液化气管线一架空管线": {
+    "x": 236,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545304_液化气管线墩架": {
+    "x": 566,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545303_液化气管线一架空管线1": {
+    "x": 432,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "545305_液化气管线检修井": {
+    "x": 178,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "546001_热力管线一地上管线": {
+    "x": 370,
+    "y": 0,
+    "width": 36,
+    "height": 36,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "546001_热力管线一地上管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "546002_热力管线一地下管线出入口": {
+    "x": 248,
+    "y": 124,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "546003_热力管线一架空管线": {
+    "x": 496,
+    "y": 88,
+    "width": 36,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "546003_热力管线一架空管线1": {
+    "x": 432,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "546004_热力管线墩架": {
+    "x": 566,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "546005_热力管线检修井": {
+    "x": 122,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "547001_工业管线一地上管线": {
+    "x": 182,
+    "y": 0,
+    "width": 34,
+    "height": 38,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "547001_工业管线一地上管线1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "547002_工业管线一地下管线出入口": {
+    "x": 248,
+    "y": 124,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "547003_工业管线一架空管线": {
+    "x": 428,
+    "y": 88,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "547003_工业管线一架空管线1": {
+    "x": 432,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "547004_工业管线墩架": {
+    "x": 566,
+    "y": 374,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "547005_工业管线检修井": {
+    "x": 94,
+    "y": 320,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "548000_综合管廊": {
+    "x": 462,
+    "y": 88,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "548000_综合管廊1": {
+    "x": 478,
+    "y": 374,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "548001_综合管廊检查井": {
+    "x": 282,
+    "y": 398,
+    "width": 18,
+    "height": 18,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "620201_已定国界": {
+    "x": 58,
+    "y": 398,
+    "width": 62,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "620202_未定国界": {
+    "x": 526,
+    "y": 398,
+    "width": 28,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750101_岩峰": {
+    "x": 634,
+    "y": 158,
+    "width": 20,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750102_黄土柱": {
+    "x": 378,
+    "y": 124,
+    "width": 26,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750103_独立石": {
+    "x": 540,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750104_土堆": {
+    "x": 32,
+    "y": 224,
+    "width": 34,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750105_石堆": {
+    "x": 562,
+    "y": 158,
+    "width": 32,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750201_岩溶漏斗": {
+    "x": 32,
+    "y": 288,
+    "width": 34,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750202_黄土漏斗": {
+    "x": 32,
+    "y": 288,
+    "width": 34,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750203_坑穴": {
+    "x": 404,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750300_山洞、溶洞": {
+    "x": 596,
+    "y": 288,
+    "width": 34,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750400_火山口": {
+    "x": 170,
+    "y": 124,
+    "width": 34,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750906_冰塔": {
+    "x": 380,
+    "y": 320,
+    "width": 16,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "720100_高程点": {
+    "x": 242,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "720200_比高点": {
+    "x": 256,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "740300_干出高度点": {
+    "x": 256,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "740100_水深点": {
+    "x": 270,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "740200_水下高程点": {
+    "x": 270,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750602_石质陡崖、石质有滩陡岸": {
+    "x": 424,
+    "y": 348,
+    "width": 22,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750604_石质无滩陡岸": {
+    "x": 424,
+    "y": 348,
+    "width": 22,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "760301_石垄": {
+    "x": 180,
+    "y": 374,
+    "width": 28,
+    "height": 22,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "760302_土垄": {
+    "x": 644,
+    "y": 374,
+    "width": 38,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750502_地裂缝": {
+    "x": 504,
+    "y": 398,
+    "width": 6,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "760102_已加固斜坡": {
+    "x": 508,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750904_冰陡崖": {
+    "x": 316,
+    "y": 418,
+    "width": 4,
+    "height": 12,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750907_雪域范围线": {
+    "x": 348,
+    "y": 418,
+    "width": 12,
+    "height": 12,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "760101_未加固斜坡": {
+    "x": 388,
+    "y": 418,
+    "width": 4,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750501_冲沟": {
+    "x": 392,
+    "y": 418,
+    "width": 4,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750703_岩墙": {
+    "x": 396,
+    "y": 418,
+    "width": 4,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750703_岩墙1": {
+    "x": 396,
+    "y": 418,
+    "width": 4,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750601_土质陡崖、土质有滩陡岸": {
+    "x": 468,
+    "y": 418,
+    "width": 4,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "750603_土质无滩陡岸": {
+    "x": 476,
+    "y": 418,
+    "width": 4,
+    "height": 8,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "760202_田坎、路堑、沟堑、路堤(已加固)": {
+    "x": 480,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "760201_田坎、路堑、沟堑、路堤(未加固)": {
+    "x": 480,
+    "y": 418,
+    "width": 4,
+    "height": 6,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810100_地类界": {
+    "x": 284,
+    "y": 418,
+    "width": 14,
+    "height": 14,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810400_园地": {
+    "x": 534,
+    "y": 288,
+    "width": 28,
+    "height": 30,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810501_成林": {
+    "x": 416,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810503_灌木林": {
+    "x": 230,
+    "y": 224,
+    "width": 34,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810503_灌木林1": {
+    "x": 0,
+    "y": 398,
+    "width": 26,
+    "height": 20,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810504_竹林": {
+    "x": 358,
+    "y": 320,
+    "width": 22,
+    "height": 28,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810509_零星树木": {
+    "x": 484,
+    "y": 348,
+    "width": 26,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810510_行树": {
+    "x": 554,
+    "y": 398,
+    "width": 16,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810511_独立树": {
+    "x": 564,
+    "y": 256,
+    "width": 24,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810512_独立树丛": {
+    "x": 384,
+    "y": 256,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810513_特殊树1": {
+    "x": 564,
+    "y": 256,
+    "width": 24,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810513_特殊树2": {
+    "x": 248,
+    "y": 158,
+    "width": 22,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810513_特殊树3": {
+    "x": 220,
+    "y": 158,
+    "width": 28,
+    "height": 34,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810513_特殊树4": {
+    "x": 540,
+    "y": 256,
+    "width": 24,
+    "height": 32,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "830302_白板地": {
+    "x": 202,
+    "y": 348,
+    "width": 32,
+    "height": 26,
+    "pixelRatio": 2,
+    "sdf": false
+  },
+  "810300_带状绿化树": {
+    "x": 510,
+    "y": 398,
+    "width": 16,
+    "height": 16,
+    "pixelRatio": 2,
+    "sdf": false
+  }
+}
