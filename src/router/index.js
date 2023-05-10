@@ -15,6 +15,6 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  base: `/${window._CONFIG['productName']}/`,
+  base: `${window._CONFIG['routerBase']}`,
   routes: constantRouterMap
 })
