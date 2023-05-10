@@ -25,7 +25,7 @@ export default {
     handleLogout(e) {
       this.$store.dispatch('logout').then(() => {
         if (!this.$store.getters.casInfo.enabled) {
-          location.href = '/'
+          location.href = `${window._CONFIG['routerBase']}`
         }
       })
     }

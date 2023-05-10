@@ -203,9 +203,16 @@ export default {
     loginSuccess(res) {
       const redirect = this.$route.query.redirect
       if (redirect) {
-        location.href = decodeURIComponent(redirect)
+        let decodeRedirect = decodeURIComponent(redirect)
+
+        if (decodeRedirect.startsWith('/')) {
+          decodeRedirect = decodeRedirect.slice(1)
+          location.href = `${window._CONFIG['routerBase']}${decodeRedirect}`
+        } else {
+          location.href = decodeRedirect
+        }
       } else {
-        location.href = '/'
+        location.href = `${window._CONFIG['routerBase']}`
       }
       this.handleCloseLoginError()
     },
