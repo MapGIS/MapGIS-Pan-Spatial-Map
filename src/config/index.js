@@ -15,3 +15,5 @@ Vue.prototype.API_BASE_URL = window._CONFIG.VUE_APP_API_BASE_URL
   ? window._CONFIG.VUE_APP_API_BASE_URL
   : process.env.VUE_APP_API_BASE_URL
 window._CONFIG['domainURL'] = Vue.prototype.API_BASE_URL
+// 设置全局路由BASE
+window._CONFIG['routerBase'] = `/${window._CONFIG['productName']}/web/`
