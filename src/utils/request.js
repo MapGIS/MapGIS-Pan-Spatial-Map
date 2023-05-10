@@ -47,10 +47,11 @@ const errorHandler = error => {
     const code = message.substr(message.length - 3)
     message = '系统接口' + code + '异常'
   }
-  notification.error({
-    message: message,
-    duration: 5 * 1000
-  })
+  // There's no pop-up here
+  // notification.error({
+  //   message: message,
+  //   duration: 5 * 1000
+  // })
   return Promise.reject(error)
 }
 

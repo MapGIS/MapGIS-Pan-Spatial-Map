@@ -16,9 +16,9 @@
     "lint:nofix": "vue-cli-service lint --no-fix"
   },
   "dependencies": {
-    "@mapgis/web-app-framework": "link:../MapGIS-Web-App-Framework",
-    "@mapgis/mapgis-pan-spatial-map-widgets": "link:../mapgis-pan-spatial-map-widgets",
-    "@mapgis/mapgis-pan-spatial-map-theme": "link:../mapgis-pan-spatial-map-theme",
+    "@mapgis/mapgis-pan-spatial-map-theme": "^16.0.0",
+    "@mapgis/mapgis-pan-spatial-map-widgets": "^16.0.0",
+    "@mapgis/web-app-framework": "^16.0.0",
     "@mapgis/webclient-es6-mapboxgl": "^16.0.0",
     "@mapgis/webclient-es6-service": "^16.0.0",
     "@mapgis/webclient-vue-cesium": "^16.0.0",

@@ -1,7 +1,7 @@
 <template>
   <div class="main user-layout-login">
     <mapgis-ui-form-model id="formLogin" ref="form" :model="form" :rules="rules">
-      <mapgis-ui-alertmapgis-ui
+      <mapgis-ui-alert
         v-if="isLoginError"
         type="error"
         showIcon
@@ -28,7 +28,13 @@
       <mapgis-ui-row :gutter="16" v-if="captchaEnabled">
         <mapgis-ui-col class="gutter-row" :span="16">
           <mapgis-ui-form-model-item prop="code">
-            <mapgis-ui-input v-model="form.code" size="large" type="text" autocomplete="off" :placeholder="$t('captcha')">
+            <mapgis-ui-input
+              v-model="form.code"
+              size="large"
+              type="text"
+              autocomplete="off"
+              :placeholder="$t('captcha')"
+            >
               <mapgis-ui-icon slot="prefix" type="security-scan" />
             </mapgis-ui-input>
           </mapgis-ui-form-model-item>
@@ -38,7 +44,12 @@
         </mapgis-ui-col>
       </mapgis-ui-row>
       <mapgis-ui-form-model-item v-if="rememberMeItemEnabled" prop="rememberMe">
-        <mapgis-ui-checkbox v-if="rememberMeConfigEnabled" :checked="form.rememberMe" @change="rememberMe" class="remember">
+        <mapgis-ui-checkbox
+          v-if="rememberMeConfigEnabled"
+          :checked="form.rememberMe"
+          @change="rememberMe"
+          class="remember"
+        >
           {{ $t('user.login.password.remember') }}
         </mapgis-ui-checkbox>
       </mapgis-ui-form-model-item>
@@ -60,7 +71,7 @@
         <cas-login :config="casConfig"></cas-login>
         <third-login :config="oauthConfig" ref="thirdLogin"></third-login>
       </div>
-    </mapgis-ui-button></mapgis-ui-form-item></mapgis-ui-checkbox></mapgis-ui-form-model-item></mapgis-ui-col></mapgis-ui-input></mapgis-ui-form-model-item></mapgis-ui-col></mapgis-ui-row></mapgis-ui-input-password></mapgis-ui-form-model-item></mapgis-ui-form-model>
+    </mapgis-ui-form-model>
   </div>
 </template>
 
