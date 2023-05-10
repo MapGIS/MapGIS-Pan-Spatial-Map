@@ -105,7 +105,7 @@ request.interceptors.response.use(res => {
                   store.dispatch('logout').then(() => {
                     isReloginShow = false
                     if (!store.getters.casInfo.enabled) {
-                      location.href = '/'
+                      location.href = `${window._CONFIG['routerBase']}`
                     }
                   })
                 }
