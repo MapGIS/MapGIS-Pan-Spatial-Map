@@ -23,6 +23,7 @@ const isProd = process.env.NODE_ENV === 'production'
 
 // vue.config.js
 const vueConfig = {
+  parallel: false,
   pluginOptions: {
     'style-resources-loader': {
       preProcessor: 'less',
