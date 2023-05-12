@@ -20,6 +20,7 @@ export default {
   async created() {
     await AppManager.getInstance().loadConfig(
       window._CONFIG['domainURL'],
+      process.env.VUE_APP_CONTEXT_PATH,
       `${window._CONFIG['apiPathServicesPrefix']}/system/AppResourceServer/app/config`,
       `${window._CONFIG['apiPathServicesPrefix']}/system/AppResourceServer/`,
       request
