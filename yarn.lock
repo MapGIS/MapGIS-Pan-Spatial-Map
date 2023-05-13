@@ -1561,13 +1561,33 @@
   resolved "http://192.168.11.130:4873/@mapgis%2fmapbox-gl/-/mapbox-gl-1.9.12.tgz#e95d4e23fc8b529d93793fda800f86d6eb983b9b"
   integrity sha512-HbNE/MLjEPH9NdTkNlZ1/Mo8Q+x3WNgBBnmElrXimdqqfQyWlDevdp/hLS4qKGhlsyBYyyZpym7wqpwCf0l++g==
 
-"@mapgis/mapgis-pan-spatial-map-theme@link:../mapgis-pan-spatial-map-theme":
-  version "0.0.0"
-  uid ""
+"@mapgis/mapgis-pan-spatial-map-theme@^16.0.0":
+  version "16.3.4"
+  resolved "http://192.168.11.130:4873/@mapgis%2fmapgis-pan-spatial-map-theme/-/mapgis-pan-spatial-map-theme-16.3.4.tgz#fe3899f828d0125f0deeefca067d0faca5e8cfc0"
+  integrity sha512-7Y0pHgiKX8k20SlDe4VoWnb0/sXDDfvjKLszLBMf6ZlzfWVw4YP2dcHqhXScd0dJVgCVCUP0x9QfGBBxq6sARg==
+  dependencies:
+    "@mapgis/web-app-framework" "^16.0.0"
+    ant-design-vue "1.7.2"
+    core-js "^3.8.3"
+    vue "^2.6.14"
+    vuex "^3.4.0"
 
-"@mapgis/mapgis-pan-spatial-map-widgets@link:../mapgis-pan-spatial-map-widgets":
-  version "0.0.0"
-  uid ""
+"@mapgis/mapgis-pan-spatial-map-widgets@^16.0.0":
+  version "16.3.4"
+  resolved "http://192.168.11.130:4873/@mapgis%2fmapgis-pan-spatial-map-widgets/-/mapgis-pan-spatial-map-widgets-16.3.4.tgz#324d3d08664b5cc544a43cb223f40ced1b5d6204"
+  integrity sha512-fmugO2VxxmqmDHpsBznM3sC8ikyrz4ATJXI9MHXejCWkOfj6GkgwbHktUH4xIOmuEoB2i6pke58PQznh9aOdTQ==
+  dependencies:
+    "@mapgis/web-app-framework" "^16.0.0"
+    "@mapgis/webclient-es6-mapboxgl" "^16.0.0"
+    "@mapgis/webclient-es6-service" "^16.0.0"
+    "@mapgis/webclient-vue-cesium" "^16.0.0"
+    "@mapgis/webclient-vue-mapboxgl" "^16.0.0"
+    "@mapgis/webclient-vue-ui" "^16.0.0"
+    ant-design-vue "1.7.2"
+    json2csv "^5.0.6"
+    vue "2.6.14"
+    vue-color "^2.8.1"
+    vue-property-decorator "^8.3.0"
 
 "@mapgis/supercluster@^16.0.0":
   version "16.0.0"
@@ -1577,12 +1597,28 @@
     kdbush "^3.0.0"
 
 "@mapgis/web-app-framework@^16.0.0":
-  version "0.0.0"
-  uid ""
-
-"@mapgis/web-app-framework@link:../MapGIS-Web-App-Framework":
-  version "0.0.0"
-  uid ""
+  version "16.3.6"
+  resolved "http://192.168.11.130:4873/@mapgis%2fweb-app-framework/-/web-app-framework-16.3.6.tgz#74a0964c4ce7cf1c21a81745d7bea6bfd96d3df9"
+  integrity sha512-HLaQARLsMCuI79JcUFXS0yfG7WuUPWD4y3Qspa4xhANu/QUKL3iX+NgFTmlvoGhKJVLHEwPPyX54aeCyyy+8Kw==
+  dependencies:
+    "@mapgis/mapbox-gl" "^16.0.0"
+    "@mapgis/webclient-es6-mapboxgl" "^16.0.0"
+    "@mapgis/webclient-es6-service" "^16.0.0"
+    "@mapgis/webclient-vue-cesium" "^16.0.0"
+    "@mapgis/webclient-vue-mapboxgl" "^16.0.0"
+    "@mapgis/webclient-vue-ui" "^16.0.0"
+    ant-design-vue "1.7.2"
+    codemirror "^5.49.2"
+    element-resize-detector "^1.2.1"
+    jsdoc "3.6.3"
+    json2csv "^5.0.6"
+    jsonlint "1.6.3"
+    pannellum "^2.5.6"
+    three "^0.130.1"
+    vue "2.6.14"
+    vue-color "^2.8.1"
+    vue-server-renderer "2.6.14"
+    vuedraggable "^2.23.2"
 
 "@mapgis/webclient-es6-mapboxgl@^16.0.0":
   version "16.3.2"
