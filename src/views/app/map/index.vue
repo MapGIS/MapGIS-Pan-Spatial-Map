@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+// import { mapState, mapMutations } from 'vuex'
 import { AppManager, MapRender, baseConfigInstance, eventBus, events, LayerType, addLayer, removeLayer } from '@mapgis/web-app-framework'
 import request from '@/utils/request'
 import mapgisui from '@mapgis/webclient-vue-ui'
@@ -15,7 +15,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('setting', ['theme'])
+    // ...mapState('setting', ['theme'])
   },
   async created() {
     await AppManager.getInstance().loadConfig(
@@ -27,9 +27,9 @@ export default {
     )
     this.application = AppManager.getInstance().getApplication()
     /**
-     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
-     * 修改人：龚跃健
-     * 修改时间：2022/3/25
+     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的�
+     * 修改人：龚跃�
+     * 修改时间�022/3/25
      */
     const initMode =
       baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
@@ -42,42 +42,47 @@ export default {
     const style = this.themeStyle()
     const opacity = this.themeOpacity()
 
-    // this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
-    // 切换mapgisUI的主题
-    // 一张图 light，dark 白底黑字，night 黑底白字
-    if (style.theme === 'dark' || style.theme === 'light') {
-      const payload = {
-        // background: '#fff', // 根据项目需求修改该样式
-        // cardBackground: '#fff',
-        // panelBackground: '#fff',
-        // divShadow: '#fff',
-        // divBackground: '#fff'
-        opacity: opacity
-      }
-      this.setTheme({ mode: 'light', color: style.color })
-      mapgisui.setTheme('light', payload)
-    } else if (style.theme === 'night') {
-      const payload = {
-        // selectedColor: '#fff', // 根据项目需求修改该样式
-        // hoverColor: '#141414',
-        // clickColor: '#fff',
-        // primaryColor: '#fff',
-        // dangerColor: '#081a37'
-        opacity: opacity
-      }
-      this.setTheme({ mode: 'dark', color: style.color })
-      mapgisui.setTheme('dark', payload)
-    } else {
-      const payload = {
-        opacity: opacity
-      }
-      this.setTheme({ mode: 'technology', color: style.color })
-      mapgisui.setTheme('technology', payload)
+    const payload = {
+      opacity: opacity
     }
+    mapgisui.setTheme(style.theme, payload)
+
+    // this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
+    // 切换mapgisUI的主�
+    // 一张图 light，dark 白底黑字，night 黑底白字
+    // if (style.theme === 'dark' || style.theme === 'light') {
+    //   const payload = {
+    // background: '#fff', // 根据项目需求修改该样式
+    // cardBackground: '#fff',
+    // panelBackground: '#fff',
+    // divShadow: '#fff',
+    // divBackground: '#fff'
+    //   opacity: opacity
+    // }
+    // this.setTheme({ mode: 'light', color: style.color })
+    //   mapgisui.setTheme('light', payload)
+    // } else if (style.theme === 'night') {
+    //   const payload = {
+    // selectedColor: '#fff', // 根据项目需求修改该样式
+    // hoverColor: '#141414',
+    // clickColor: '#fff',
+    // primaryColor: '#fff',
+    // dangerColor: '#081a37'
+    //   opacity: opacity
+    // }
+    // this.setTheme({ mode: 'dark', color: style.color })
+    //   mapgisui.setTheme('dark', payload)
+    // } else {
+    //   const payload = {
+    //     opacity: opacity
+    //   }
+    // this.setTheme({ mode: 'technology', color: style.color })
+    //   mapgisui.setTheme('technology', payload)
+    // }
     // cesium 加载完成回调
 		this.$root.$on('cesium-load', (obj) => {
       debugger
-      // obj 包含 Cesium、vueCesium 和 viewer 对象。将 doc 对象
+      // obj 包含 Cesium、vueCesium �viewer 对象。将 doc 对象
       obj.document = this.application.document
       // 图层相关信息
       obj.LayerHelper = {
@@ -85,7 +90,7 @@ export default {
       }
 			// new 地矿三维 GmSceneContainer 对象
 			const container = new window.GmSceneContainer(obj)
-			// 将 containerId 挂到 application 对象的地矿配置中
+			// �containerId 挂到 application 对象的地矿配置中
 			this.application.gmConfig = {
         containerId: container.containerId
       }
@@ -93,14 +98,14 @@ export default {
       console.log('obj', obj)
       console.log('this.application', this.application)
 
-      // 监听地矿 GMLAYER 自定义图层 check 事件
+      // 监听地矿 GMLAYER 自定义图�check 事件
       eventBus.$on(events.DATA_CATALOG_EXTEND_DATA_CHECK, (nodeCfg) => {
         if (nodeCfg.extend && nodeCfg.extend.isGmLayer) {
           container.addLayer(nodeCfg)
         }
       })
 
-      // 监听地矿 GMLAYER 自定义图层 uncheck 事件
+      // 监听地矿 GMLAYER 自定义图�uncheck 事件
       eventBus.$on(events.DATA_CATALOG_EXTEND_DATA_UNCHECK, (nodeCfg) => {
         if (nodeCfg.extend && nodeCfg.extend.isGmLayer) {
           container.removeLayer(nodeCfg)
@@ -109,7 +114,7 @@ export default {
 		})
   },
   methods: {
-    ...mapMutations('setting', ['setTheme']),
+    // ...mapMutations('setting', ['setTheme']),
     themeStyle() {
       if (this.application.theme) {
         if (this.application.theme.style) {
