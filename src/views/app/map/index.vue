@@ -4,7 +4,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { AppManager, MapRender, baseConfigInstance } from '@mapgis/web-app-framework'
+import { AppManager, MapRender, baseConfigInstance, eventBus, events, LayerType, addLayer, removeLayer } from '@mapgis/web-app-framework'
 import request from '@/utils/request'
 import mapgisui from '@mapgis/webclient-vue-ui'
 
@@ -74,6 +74,39 @@ export default {
       this.setTheme({ mode: 'technology', color: style.color })
       mapgisui.setTheme('technology', payload)
     }
+    // cesium 加载完成回调
+		this.$root.$on('cesium-load', (obj) => {
+      debugger
+      // obj 包含 Cesium、vueCesium 和 viewer 对象。将 doc 对象
+      obj.document = this.application.document
+      // 图层相关信息
+      obj.LayerHelper = {
+        LayerType, addLayer, removeLayer
+      }
+			// new 地矿三维 GmSceneContainer 对象
+			const container = new window.GmSceneContainer(obj)
+			// 将 containerId 挂到 application 对象的地矿配置中
+			this.application.gmConfig = {
+        containerId: container.containerId
+      }
+
+      console.log('obj', obj)
+      console.log('this.application', this.application)
+
+      // 监听地矿 GMLAYER 自定义图层 check 事件
+      eventBus.$on(events.DATA_CATALOG_EXTEND_DATA_CHECK, (nodeCfg) => {
+        if (nodeCfg.extend && nodeCfg.extend.isGmLayer) {
+          container.addLayer(nodeCfg)
+        }
+      })
+
+      // 监听地矿 GMLAYER 自定义图层 uncheck 事件
+      eventBus.$on(events.DATA_CATALOG_EXTEND_DATA_UNCHECK, (nodeCfg) => {
+        if (nodeCfg.extend && nodeCfg.extend.isGmLayer) {
+          container.removeLayer(nodeCfg)
+        }
+      })
+		})
   },
   methods: {
     ...mapMutations('setting', ['setTheme']),

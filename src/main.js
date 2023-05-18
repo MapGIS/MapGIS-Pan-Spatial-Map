@@ -16,7 +16,8 @@ import bootstrap from './core/bootstrap'
 import './core/use' // load components
 import './permission' // permission control
 import './global.less' // global style
-
+import GmOnemap from '@mapgis/mapgis-pan-spatial-map-widgets-gm'
+Vue.use(GmOnemap)
 // 全局方法挂载
 Vue.config.productionTip = false
 
