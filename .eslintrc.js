@@ -60,7 +60,8 @@ module.exports = {
     'camelcase': [0, {properties: 'always'}]
   },
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: 'babel-eslint',
+    "ecmaVersion": 6
   },
   overrides: [
     {
