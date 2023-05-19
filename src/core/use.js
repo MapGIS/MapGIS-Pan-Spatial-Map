@@ -8,6 +8,7 @@ import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
 import '@mapgis/mapgis-pan-spatial-map-widgets/dist-libs/mapgis-pan-spatial-map-widgets.css'
 import '@mapgis/mapgis-pan-spatial-map-widgets-civ/dist-libs/mapgis-pan-spatial-map-widgets-civ.css'
 import '@mapgis/mapgis-pan-spatial-map-theme/dist-libs/mapgis-pan-spatial-map-theme.css'
+import GmOnemap from '@mapgis/mapgis-pan-spatial-map-widgets-gm'
 
 import MapgisUi from '@mapgis/webclient-vue-ui'
 import WebAppFrameworkUI from '@mapgis/web-app-framework'
@@ -29,5 +30,6 @@ Vue.use(Theme, {
 })
 Vue.use(WebAppWidget)
 Vue.use(WebAppWidget_civ)
+Vue.use(GmOnemap)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')
