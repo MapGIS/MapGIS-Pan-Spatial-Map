@@ -18,7 +18,7 @@
   "dependencies": {
     "@mapgis/mapgis-pan-spatial-map-theme": "^16.0.0",
     "@mapgis/mapgis-pan-spatial-map-widgets": "^16.0.0",
-    "@mapgis/mapgis-pan-spatial-map-widgets-gm": "1.1.14",
+    "@mapgis/mapgis-pan-spatial-map-widgets-gm": "1.1.16",
     "@mapgis/web-app-framework": "^16.0.0",
     "@mapgis/webclient-es6-mapboxgl": "^16.0.0",
     "@mapgis/webclient-es6-service": "^16.0.0",
