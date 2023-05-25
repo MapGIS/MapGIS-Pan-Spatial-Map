@@ -76,6 +76,7 @@
     <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.css) { %>
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" />
     <% } %>
+    <link rel="stylesheet" href="<%= BASE_URL %>static/config.css" />
     <!-- 全局配置 -->
     <script src="<%= BASE_URL %>static/config.js"></script>
   </head>

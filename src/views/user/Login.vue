@@ -115,7 +115,7 @@ export default {
         captchaEnabled: false,
         maxRetryCount: 1
       },
-      rememberMeConfigEnabled: true,
+      rememberMeConfigEnabled: false,
       adminDefaultInfo: {
         username: 'admin',
         password: 'cloud123.mapgis'
