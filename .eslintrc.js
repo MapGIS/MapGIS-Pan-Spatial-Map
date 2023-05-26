@@ -61,7 +61,7 @@ module.exports = {
   },
   parserOptions: {
     // parser: 'babel-eslint',
-    "ecmaVersion": 6
+    // "ecmaVersion": 6
   },
   overrides: [
     {

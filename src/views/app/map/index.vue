@@ -78,6 +78,20 @@ export default {
     // }
     // cesium 加载完成回调
 		this.$root.$on('cesium-load', (obj) => {
+      // 应用配置 - 服务器配置
+      const cfg = this.application.baseConfig.extendedConfigs
+      // GMServer ip
+      const gmsIp = parseGmIpPort(cfg, 'GmServerIp') || '127.0.0.1'
+      // GMServer port
+      const gmsPort = parseGmIpPort(cfg, 'GmServerPort')
+      // IGServer ip
+      const igsIp = parseGmIpPort(cfg, 'IGServerIp_Gm') || '127.0.0.1'
+      // IGServer port
+      const igsPort = parseGmIpPort(cfg, 'IGServerPort_Gm')
+      // 初始化 IGS 和 GMS 配置信息
+      window.GBase.initServer(gmsIp, gmsPort, igsIp, igsPort)
+      console.log(gmsIp, gmsPort, igsIp, igsPort)
+
       debugger
       // obj 包含 Cesium、vueCesium、viewer 对象。将 doc 对象
       obj.document = this.application.document
@@ -109,6 +123,18 @@ export default {
         }
       })
 		})
+    // 解析后台管理配置信息
+    function parseGmIpPort(arr, key) {
+      let value = ''
+      for (let i = 0; i < arr.length; i++) {
+        const element = arr[i]
+        if (element.name === key) {
+          value = element.value
+          break
+        }
+      }
+      return value
+    }
   },
   methods: {
     // ...mapMutations('setting', ['setTheme']),
