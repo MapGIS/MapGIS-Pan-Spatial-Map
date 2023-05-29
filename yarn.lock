@@ -1572,14 +1572,14 @@
     vue "^2.6.14"
     vuex "^3.4.0"
 
-"@mapgis/mapgis-pan-spatial-map-widgets-gm@1.1.16":
-  version "1.1.16"
-  resolved "http://192.168.11.130:4873/@mapgis%2fmapgis-pan-spatial-map-widgets-gm/-/mapgis-pan-spatial-map-widgets-gm-1.1.16.tgz#c8d5b04c1580ac634ae01700b436d65fd79ae1af"
-  integrity sha512-aZaag/eX4yNoRqsz2SRuxAjSQiSl5BM8rYyesd7x2eH6M6BYGJfeh5jYTD71/ldeXhnI3wU2PO4koBFl2JVLfg==
+"@mapgis/mapgis-pan-spatial-map-widgets-gm@1.1.18":
+  version "1.1.18"
+  resolved "http://192.168.11.130:4873/@mapgis%2fmapgis-pan-spatial-map-widgets-gm/-/mapgis-pan-spatial-map-widgets-gm-1.1.18.tgz#3329f6107543118dc02179829cd6910764be564c"
+  integrity sha512-NTfod7irSvwDtCJQltE763HhNF3Pt7brHSxV5fcuoBC/y6HyNWHywSXBn0Da1slkWYD7KThdp2FiSlMRkNQM4g==
   dependencies:
     "@mapgis/web-app-framework" "^16.3.1"
     "@mapgis/webclient-vue-ui" "16.3.7"
-    mapgis-gm-webcomponents-base-plat "1.1.16"
+    mapgis-gm-webcomponents-base-plat "1.1.18"
     vue "2.6.14"
 
 "@mapgis/mapgis-pan-spatial-map-widgets@^16.0.0":
@@ -13020,10 +13020,10 @@ mapbox-gl@^2.7.0:
     tinyqueue "^2.0.3"
     vt-pbf "^3.1.3"
 
-mapgis-gm-webcomponents-base-plat@1.1.16:
-  version "1.1.16"
-  resolved "http://192.168.11.130:4873/mapgis-gm-webcomponents-base-plat/-/mapgis-gm-webcomponents-base-plat-1.1.16.tgz#0d58a1930fea3402a610d45d3468628618a50756"
-  integrity sha512-/NDFT3rvIgs7+H+cBQ1LuBTXhxPFdN+y8ajL9D0jLjbHkqGHKx1avdO9vwuHe+gfYnhGvDmfGzMIttJ9rwns6w==
+mapgis-gm-webcomponents-base-plat@1.1.18:
+  version "1.1.18"
+  resolved "http://192.168.11.130:4873/mapgis-gm-webcomponents-base-plat/-/mapgis-gm-webcomponents-base-plat-1.1.18.tgz#f831dab18a62f1af2f649e19676f87b030f572ff"
+  integrity sha512-mfNdvmv3f+MnLfhEsEJa+QS/kfHCPivFIECxCj58R+xOApdNR1y+jCT/aFEQ0rOYUpk8yGdWUsesKJDqyjSBRw==
   dependencies:
     "@turf/turf" "6.5.0"
     axios "^0.21.1"
