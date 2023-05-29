@@ -12,7 +12,7 @@
       />
       <mapgis-ui-form-model-item prop="username">
         <mapgis-ui-input v-model="form.username" size="large" autocomplete="off" :placeholder="$t('username')">
-          <mapgis-ui-icon slot="prefix" type="user" />
+          <mapgis-ui-ant-icon slot="prefix" type="user" />
         </mapgis-ui-input>
       </mapgis-ui-form-model-item>
       <mapgis-ui-form-model-item prop="password">
@@ -22,7 +22,7 @@
           autocomplete="new-password"
           :placeholder="$t('password')"
         >
-          <mapgis-ui-icon slot="prefix" type="lock" />
+          <mapgis-ui-ant-icon slot="prefix" type="lock" />
         </mapgis-ui-input-password>
       </mapgis-ui-form-model-item>
       <mapgis-ui-row :gutter="16" v-if="captchaEnabled">
@@ -115,7 +115,7 @@ export default {
         captchaEnabled: false,
         maxRetryCount: 1
       },
-      rememberMeConfigEnabled: true,
+      rememberMeConfigEnabled: false,
       adminDefaultInfo: {
         username: 'admin',
         password: 'cloud123.mapgis'

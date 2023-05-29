@@ -1572,14 +1572,14 @@
     vue "^2.6.14"
     vuex "^3.4.0"
 
-"@mapgis/mapgis-pan-spatial-map-widgets-gm@1.1.18":
-  version "1.1.18"
-  resolved "http://192.168.11.130:4873/@mapgis%2fmapgis-pan-spatial-map-widgets-gm/-/mapgis-pan-spatial-map-widgets-gm-1.1.18.tgz#3329f6107543118dc02179829cd6910764be564c"
-  integrity sha512-NTfod7irSvwDtCJQltE763HhNF3Pt7brHSxV5fcuoBC/y6HyNWHywSXBn0Da1slkWYD7KThdp2FiSlMRkNQM4g==
+"@mapgis/mapgis-pan-spatial-map-widgets-gm@1.1.19":
+  version "1.1.19"
+  resolved "http://192.168.11.130:4873/@mapgis%2fmapgis-pan-spatial-map-widgets-gm/-/mapgis-pan-spatial-map-widgets-gm-1.1.19.tgz#8a8bde998f6416c271a680017948a334a8e401fa"
+  integrity sha512-6m+dyEHEc8o5E/p3xbZ6K6PtFNoNg28KiQptJjvXFQdxGQPjunQjGPaf8uCNF3yALhsoaQAJG2QW5qQIy03wNA==
   dependencies:
     "@mapgis/web-app-framework" "^16.3.1"
     "@mapgis/webclient-vue-ui" "16.3.7"
-    mapgis-gm-webcomponents-base-plat "1.1.18"
+    mapgis-gm-webcomponents-base-plat "1.1.19"
     vue "2.6.14"
 
 "@mapgis/mapgis-pan-spatial-map-widgets@^16.0.0":
@@ -7657,7 +7657,7 @@ cross-spawn@^7.0.0:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-crypto-browserify@^3.11.0:
+crypto-browserify@3.12.0, crypto-browserify@^3.11.0:
   version "3.12.0"
   resolved "http://192.168.11.130:4873/crypto-browserify/-/crypto-browserify-3.12.0.tgz#396cf9f3137f03e4b8e532c58f698254e00f80ec"
   integrity sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg==
@@ -13020,14 +13020,15 @@ mapbox-gl@^2.7.0:
     tinyqueue "^2.0.3"
     vt-pbf "^3.1.3"
 
-mapgis-gm-webcomponents-base-plat@1.1.18:
-  version "1.1.18"
-  resolved "http://192.168.11.130:4873/mapgis-gm-webcomponents-base-plat/-/mapgis-gm-webcomponents-base-plat-1.1.18.tgz#f831dab18a62f1af2f649e19676f87b030f572ff"
-  integrity sha512-mfNdvmv3f+MnLfhEsEJa+QS/kfHCPivFIECxCj58R+xOApdNR1y+jCT/aFEQ0rOYUpk8yGdWUsesKJDqyjSBRw==
+mapgis-gm-webcomponents-base-plat@1.1.19:
+  version "1.1.19"
+  resolved "http://192.168.11.130:4873/mapgis-gm-webcomponents-base-plat/-/mapgis-gm-webcomponents-base-plat-1.1.19.tgz#bee35fff110cc66cbd70dac1c0d207df4d0ee201"
+  integrity sha512-pgGmeADIUKOzkOj3Z6l2x2evi7l/ArKyPz9N4ZwaKhhksL41wvWkHVjATspaEHwozL8jFnSJZpQZjG5TjTZV7w==
   dependencies:
     "@turf/turf" "6.5.0"
     axios "^0.21.1"
     babel-loader "8.0.5"
+    crypto-browserify "3.12.0"
     turf "3.0.14"
     url-loader "^0.6.2"
     vue "2.6.14"
