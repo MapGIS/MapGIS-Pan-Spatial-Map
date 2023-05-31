@@ -89,13 +89,12 @@ export default {
       // IGServer port
       const igsPort = parseGmIpPort(cfg, 'IGServerPort_Gm')
       // IGServer token key
-      const appKey = parseGmIpPort(cfg, 'GmServer_key') || "3dc10e5c-cb29-4bdd-a494-9899cc4a8f4c"
-      const appSecret = parseGmIpPort(cfg, 'GmServer_secret') || "711911a6-583a-4867-b47d-ca3ae04eeefd"
+      const appKey = parseGmIpPort(cfg, 'GmServer_key') || '3dc10e5c-cb29-4bdd-a494-9899cc4a8f4c'
+      const appSecret = parseGmIpPort(cfg, 'GmServer_secret') || '711911a6-583a-4867-b47d-ca3ae04eeefd'
       // 初始化 IGS 和 GMS 配置信息
       window.GBase.initServer(gmsIp, gmsPort, igsIp, igsPort, appKey, appSecret);
       console.log(gmsIp, gmsPort, igsIp, igsPort)
 
-      debugger
       // obj 包含 Cesium、vueCesium、viewer 对象。将 doc 对象
       obj.document = this.application.document
       // 图层相关信息
