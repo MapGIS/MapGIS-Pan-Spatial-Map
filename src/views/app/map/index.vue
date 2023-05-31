@@ -3,7 +3,6 @@
 </template>
 
 <script>
-// import { mapState, mapMutations } from 'vuex'
 import {
   AppManager,
   MapRender,
@@ -23,9 +22,7 @@ export default {
       application: {}
     }
   },
-  computed: {
-    // ...mapState('setting', ['theme'])
-  },
+  computed: {},
   async created() {
     await AppManager.getInstance().loadConfig(
       window._CONFIG['domainURL'],
@@ -56,41 +53,8 @@ export default {
     }
     mapgisui.setTheme(style.theme, payload)
 
-    // this.setTheme({ ...this.theme, mode: style.theme, color: style.color })
-    // 切换mapgisUI的主题
-    // 一张图 light，dark 白底黑字，night 黑底白字
-    // if (style.theme === 'dark' || style.theme === 'light') {
-    //   const payload = {
-    // background: '#fff', // 根据项目需求修改该样式
-    // cardBackground: '#fff',
-    // panelBackground: '#fff',
-    // divShadow: '#fff',
-    // divBackground: '#fff'
-    //   opacity: opacity
-    // }
-    // this.setTheme({ mode: 'light', color: style.color })
-    //   mapgisui.setTheme('light', payload)
-    // } else if (style.theme === 'night') {
-    //   const payload = {
-    // selectedColor: '#fff', // 根据项目需求修改该样式
-    // hoverColor: '#141414',
-    // clickColor: '#fff',
-    // primaryColor: '#fff',
-    // dangerColor: '#081a37'
-    //   opacity: opacity
-    // }
-    // this.setTheme({ mode: 'dark', color: style.color })
-    //   mapgisui.setTheme('dark', payload)
-    // } else {
-    //   const payload = {
-    //     opacity: opacity
-    //   }
-    // this.setTheme({ mode: 'technology', color: style.color })
-    //   mapgisui.setTheme('technology', payload)
-    // }
     // cesium 加载完成回调
     this.$root.$on('cesium-load', obj => {
-      debugger
       // obj 包含 Cesium、vueCesium、viewer 对象。将 doc 对象
       obj.document = this.application.document
       // 图层相关信息
@@ -125,7 +89,6 @@ export default {
     })
   },
   methods: {
-    // ...mapMutations('setting', ['setTheme']),
     themeStyle() {
       if (this.application.theme) {
         if (this.application.theme.style) {
