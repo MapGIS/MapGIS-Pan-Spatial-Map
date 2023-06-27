@@ -79,7 +79,11 @@ export default {
     // cesium 加载完成回调
 		this.$root.$on('cesium-load', (obj) => {
       // 应用配置 - 服务器配置
-      const cfg = this.application.baseConfig.extendedConfigs
+      const cfg = this.application.baseConfig.extendedConfigs || [
+        {name:"GmServerIp",value:"192.168.182.13"},
+        {name:"GmServerPort",value:"7003"},
+        {name:"IGServerIp_Gm",value:"192.168.182.13"},
+        {name:"IGServerPort_Gm",value:"6163"}];
       // GMServer ip
       const gmsIp = parseGmIpPort(cfg, 'GmServerIp') || '127.0.0.1'
       // GMServer port
