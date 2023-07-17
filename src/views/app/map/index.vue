@@ -85,10 +85,9 @@ export default {
 
       
       // 监听任何事件
-      // eventBus.$on(events.DATA_SELECTION_CHANGE_EVENT, (nodeCfg, isChecked) => {
-      //   console.log('测试', nodeCfg, isChecked);
-      // })
-      eventBus.$on(events.DATA_SELECTION_CHANGE_EVENT, this.nodeSelected)
+      eventBus.$on(events.DATA_SELECTION_CHANGE_EVENT, (nodeCfg, isChecked) => {
+        console.log('测试', nodeCfg, isChecked);
+      })
 
       // 监听地矿 GMLAYER 自定义图 check 事件
       eventBus.$on(events.DATA_CATALOG_EXTEND_DATA_CHECK, (nodeCfg) => {
@@ -118,22 +117,6 @@ export default {
     }
   },
   methods: {
-		nodeSelected(node,checked){
-			console.log('测试2', node,checked);
-			// if(node && node.extend && node.extend.isGmLayer ){
-			// 	if(checked){
-			// 		this.curlayer = {
-			// 			serviceId:node.extend.serviceId,
-			// 			name:node.name
-			// 		}
-			// 	}else{
-			// 		if(this.curlayer.serviceId == node.extend.serviceId){
-			// 			this.closeLegend()
-			// 		}
-					
-			// 	} 	
-			// }  
-		},
     themeStyle() {
       if (this.application.theme) {
         if (this.application.theme.style) {
