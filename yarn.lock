@@ -1582,10 +1582,10 @@
     mapgis-gm-webcomponents-base-plat "1.1.21"
     vue "2.6.14"
 
-"@mapgis/mapgis-pan-spatial-map-widgets@^16.0.0":
-  version "16.3.4"
-  resolved "http://192.168.11.130:4873/@mapgis%2fmapgis-pan-spatial-map-widgets/-/mapgis-pan-spatial-map-widgets-16.3.4.tgz#324d3d08664b5cc544a43cb223f40ced1b5d6204"
-  integrity sha512-fmugO2VxxmqmDHpsBznM3sC8ikyrz4ATJXI9MHXejCWkOfj6GkgwbHktUH4xIOmuEoB2i6pke58PQznh9aOdTQ==
+"@mapgis/mapgis-pan-spatial-map-widgets@16.3.1":
+  version "16.3.1"
+  resolved "http://192.168.11.130:4873/@mapgis%2fmapgis-pan-spatial-map-widgets/-/mapgis-pan-spatial-map-widgets-16.3.1.tgz#1db6ad07c561162481d2d72557661ac4bc294434"
+  integrity sha512-IF/6xP0fNForLKDmslME3NOczrGtJ7lHwhZW5GMRGy71ticbskMb4/8eRNmIkmfrYkdyCdJqLv+mq3QH7TqygA==
   dependencies:
     "@mapgis/web-app-framework" "^16.0.0"
     "@mapgis/webclient-es6-mapboxgl" "^16.0.0"

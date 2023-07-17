@@ -25,9 +25,9 @@ export default {
     )
     this.application = AppManager.getInstance().getApplication()
     /**
-     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的�
-     * 修改人：龚跃�
-     * 修改时间�022/3/25
+     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
+     * 修改人：龚跃健
+     * 修改时间：2022/3/25
      */
     const initMode =
       baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
@@ -46,7 +46,7 @@ export default {
     mapgisui.setTheme(style.theme, payload)
     // cesium 加载完成回调
 		this.$root.$on('cesium-load', (obj) => {
-      // 应用配置 - 服务器配�
+      // 应用配置 - 服务器配置
       const cfg = this.application.baseConfig.extendedConfigs || [
         {name:"GmServerIp",value:"192.168.182.13"},
         {name:"GmServerPort",value:"7003"},
@@ -63,7 +63,7 @@ export default {
       // IGServer token key
       const appKey = parseGmIpPort(cfg, 'GmServer_key') || '3dc10e5c-cb29-4bdd-a494-9899cc4a8f4c'
       const appSecret = parseGmIpPort(cfg, 'GmServer_secret') || '711911a6-583a-4867-b47d-ca3ae04eeefd'
-      // 初始�IGS �GMS 配置信息
+      // 初始化 IGS 和 GMS 配置信息
       window.GBase.initServer(gmsIp, gmsPort, igsIp, igsPort, appKey, appSecret);
       console.log(gmsIp, gmsPort, igsIp, igsPort)
 
@@ -82,6 +82,13 @@ export default {
 
       console.log('obj', obj)
       console.log('this.application', this.application)
+
+      
+      // 监听任何事件
+      // eventBus.$on(events.DATA_SELECTION_CHANGE_EVENT, (nodeCfg, isChecked) => {
+      //   console.log('测试', nodeCfg, isChecked);
+      // })
+      eventBus.$on(events.DATA_SELECTION_CHANGE_EVENT, this.nodeSelected)
 
       // 监听地矿 GMLAYER 自定义图 check 事件
       eventBus.$on(events.DATA_CATALOG_EXTEND_DATA_CHECK, (nodeCfg) => {
@@ -111,6 +118,22 @@ export default {
     }
   },
   methods: {
+		nodeSelected(node,checked){
+			console.log('测试2', node,checked);
+			// if(node && node.extend && node.extend.isGmLayer ){
+			// 	if(checked){
+			// 		this.curlayer = {
+			// 			serviceId:node.extend.serviceId,
+			// 			name:node.name
+			// 		}
+			// 	}else{
+			// 		if(this.curlayer.serviceId == node.extend.serviceId){
+			// 			this.closeLegend()
+			// 		}
+					
+			// 	} 	
+			// }  
+		},
     themeStyle() {
       if (this.application.theme) {
         if (this.application.theme.style) {
