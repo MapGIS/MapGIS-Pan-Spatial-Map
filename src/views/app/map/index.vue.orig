@@ -3,7 +3,21 @@
 </template>
 
 <script>
+<<<<<<< HEAD
+// import { mapState, mapMutations } from 'vuex'
 import { AppManager, MapRender, baseConfigInstance, eventBus, events, LayerType, addLayer, removeLayer } from '@mapgis/web-app-framework'
+=======
+import {
+  AppManager,
+  MapRender,
+  baseConfigInstance,
+  eventBus,
+  events,
+  LayerType,
+  addLayer,
+  removeLayer
+} from '@mapgis/web-app-framework'
+>>>>>>> origin/dev-cim
 import request from '@/utils/request'
 import mapgisui from '@mapgis/webclient-vue-ui'
 
@@ -24,9 +38,9 @@ export default {
     )
     this.application = AppManager.getInstance().getApplication()
     /**
-     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的�
-     * 修改人：龚跃�
-     * 修改时间�022/3/25
+     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
+     * 修改人：龚跃健
+     * 修改时间：2022/3/25
      */
     const initMode =
       baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
@@ -43,14 +57,22 @@ export default {
       opacity: opacity
     }
     mapgisui.setTheme(style.theme, payload)
+<<<<<<< HEAD
     // cesium 加载完成回调
 		this.$root.$on('cesium-load', (obj) => {
-      // 应用配置 - 服务器配�
+      // 应用配置 - 服务器配置
       const cfg = this.application.baseConfig.extendedConfigs || [
         {name:"GmServerIp",value:"192.168.182.13"},
         {name:"GmServerPort",value:"7003"},
         {name:"IGServerIp_Gm",value:"192.168.182.13"},
         {name:"IGServerPort_Gm",value:"6163"}];
+=======
+
+    // cesium 加载完成回调
+    this.$root.$on('cesium-load', obj => {
+      // 应用配置 - 服务器配置
+      const cfg = this.application.baseConfig.extendedConfigs
+>>>>>>> origin/dev-cim
       // GMServer ip
       const gmsIp = parseGmIpPort(cfg, 'GmServerIp') || '127.0.0.1'
       // GMServer port
@@ -62,8 +84,12 @@ export default {
       // IGServer token key
       const appKey = parseGmIpPort(cfg, 'GmServer_key') || '3dc10e5c-cb29-4bdd-a494-9899cc4a8f4c'
       const appSecret = parseGmIpPort(cfg, 'GmServer_secret') || '711911a6-583a-4867-b47d-ca3ae04eeefd'
-      // 初始�IGS �GMS 配置信息
+      // 初始化 IGS 和 GMS 配置信息
+<<<<<<< HEAD
       window.GBase.initServer(gmsIp, gmsPort, igsIp, igsPort, appKey, appSecret);
+=======
+      window.GBase.initServer(gmsIp, gmsPort, igsIp, igsPort, appKey, appSecret)
+>>>>>>> origin/dev-cim
       console.log(gmsIp, gmsPort, igsIp, igsPort)
 
       // obj 包含 Cesium、vueCesium、viewer 对象。将 doc 对象
@@ -101,7 +127,11 @@ export default {
           container.removeLayer(nodeCfg)
         }
       })
+<<<<<<< HEAD
 		})
+=======
+    })
+>>>>>>> origin/dev-cim
     // 解析后台管理配置信息
     function parseGmIpPort(arr, key) {
       let value = ''

@@ -57,7 +57,7 @@ module.exports = {
     indent: 'off',
     'no-eval': 'off',
     'vue/html-indent': 'off',
-    'camelcase': [0, {properties: 'always'}]
+    camelcase: [0, { properties: 'always' }]
   },
   parserOptions: {
     parser: 'babel-eslint',
