@@ -33,6 +33,8 @@ router.beforeEach((to, from, next) => {
         store
           .dispatch('getInfo')
           .then(async res => {
+            // generate micro apps
+            await store.dispatch('generateMicroApps')
             // get cas info
             await store.dispatch('getCasInfo')
             // const roles = res.result && res.result.role

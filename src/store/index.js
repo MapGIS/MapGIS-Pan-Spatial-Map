@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import app from './modules/app'
 import user from './modules/user'
 import permission from './modules/router'
+import microApps from './modules/micro-app'
 import cas from './modules/cas'
 import server from './modules/server'
 import setting from './modules/setting'
@@ -17,6 +18,7 @@ export default new Vuex.Store({
     app,
     user,
     permission,
+    microApps,
     cas,
     server,
     setting
