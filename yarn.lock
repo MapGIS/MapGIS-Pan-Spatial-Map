@@ -995,6 +995,13 @@
   resolved "http://192.168.11.130:4873/@babel%2fregjsgen/-/regjsgen-0.8.0.tgz#f0ba69b075e1f05fb2825b7fad991e7adbb18310"
   integrity sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==
 
+"@babel/runtime@^7.10.5", "@babel/runtime@^7.7.2":
+  version "7.22.6"
+  resolved "http://192.168.11.130:4873/@babel%2fruntime/-/runtime-7.22.6.tgz#57d64b9ae3cff1d67eb067ae117dac087f5bd438"
+  integrity sha512-wDb5pWm4WDdF6LFUde3Jl8WzPA+3ZbxYqkC6xAXuD3irdEHN1k0NfTRrJD8ZD378SJ61miMLCqIOXYhd8x+AJQ==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
 "@babel/runtime@^7.11.0", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.4":
   version "7.21.5"
   resolved "http://192.168.11.130:4873/@babel%2fruntime/-/runtime-7.21.5.tgz#8492dddda9644ae3bda3b45eabe87382caee7200"
@@ -10866,6 +10873,13 @@ import-from@^2.1.0:
   dependencies:
     resolve-from "^3.0.0"
 
+import-html-entry@^1.14.5:
+  version "1.15.0"
+  resolved "http://192.168.11.130:4873/import-html-entry/-/import-html-entry-1.15.0.tgz#3cd41c723a688a699a61ca6ffaf1b50cc065a245"
+  integrity sha512-ZVj8sqSuJV0O8cdzyNU8RLrVzO5+nIySxAZuG/rJtmdQ4GOPqiu+frbVR29EFusDTs0JZ+m+cxwjMToEMZvv3A==
+  dependencies:
+    "@babel/runtime" "^7.7.2"
+
 import-lazy@^2.1.0:
   version "2.1.0"
   resolved "http://192.168.11.130:4873/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
@@ -15140,6 +15154,16 @@ q@^1.1.2:
   resolved "http://192.168.11.130:4873/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
   integrity sha1-fjL3W0E4EpHQRhHxvxQQmsAGUdc=
 
+qiankun@^2.8.0:
+  version "2.10.11"
+  resolved "http://192.168.11.130:4873/qiankun/-/qiankun-2.10.11.tgz#8876e10b8ed49102a40d547d30b0325d7ddd0551"
+  integrity sha512-lKXZ3TFgKpeTC3kQQrZZUm5jb2d+MkHbPGW05rdVel72FwagZVlcXIrCNkn1lY7Ng8cnGJUsqYIX4exKf5PLuA==
+  dependencies:
+    "@babel/runtime" "^7.10.5"
+    import-html-entry "^1.14.5"
+    lodash "^4.17.11"
+    single-spa "^5.9.2"
+
 qs@6.11.0:
   version "6.11.0"
   resolved "http://192.168.11.130:4873/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"
@@ -16183,6 +16207,11 @@ simple-uploader.js@^0.5.6:
   version "0.5.6"
   resolved "http://192.168.11.130:4873/simple-uploader.js/-/simple-uploader.js-0.5.6.tgz#d37b8c0238348b3993541c7293ae9de5658b23a0"
   integrity sha512-ukjL0wZhK1dNMaQa6sd+UpCSmnUjblaUGbAd/B8f5IFrChMzDsC/7eFSK4bs4BS5NPJFSZVLI+l6Ri7THTkQtw==
+
+single-spa@^5.9.2:
+  version "5.9.5"
+  resolved "http://192.168.11.130:4873/single-spa/-/single-spa-5.9.5.tgz#f47b3c91b009ebc3b224dd1086ef2b2dac524373"
+  integrity sha512-9SQdmsyz4HSP+3gs6PJzhkaMEg+6zTlu9oxIghnwUX3eq+ajq4ft5egl0iyR55LAmO/UwvU8NgIWs/ZyQMa6dw==
 
 sirv@^1.0.7:
   version "1.0.19"
