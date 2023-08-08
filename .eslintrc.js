@@ -56,8 +56,7 @@ module.exports = {
     'template-curly-spacing': 'off',
     indent: 'off',
     'no-eval': 'off',
-    'vue/html-indent': 'off',
-    'camelcase': [0, {properties: 'always'}]
+    'vue/html-indent': 'off'
   },
   parserOptions: {
     parser: 'babel-eslint'
