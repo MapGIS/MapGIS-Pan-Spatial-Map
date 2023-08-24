@@ -21,7 +21,7 @@
     "@mapgis/mapgis-pan-spatial-map-widgets": "~16.5.0",
     "@mapgis/web-app-framework": "~16.5.0",
     "@mapgis/webclient-es6-mapboxgl": "^16.4.0",
-    "@mapgis/webclient-es6-service": "^16.4.0",
+    "@mapgis/webclient-es6-service": "~16.2.0",
     "@mapgis/webclient-vue-cesium": "~16.5.0",
     "@mapgis/webclient-vue-mapboxgl": "~16.5.0",
     "@mapgis/webclient-vue-ui": "~16.5.0",
