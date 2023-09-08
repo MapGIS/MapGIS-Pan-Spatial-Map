@@ -5,6 +5,11 @@
       <span class="name">{{ nickname }}</span>
     </div>
     <mapgis-ui-menu :class="['avatar-menu']" slot="overlay">
+      <mapgis-ui-menu-item @click="handleManager">
+        <mapgis-ui-iconfont style="margin-right: 8px" type="mapgis-setting" />
+        <span>管理平台</span>
+      </mapgis-ui-menu-item>
+      <mapgis-ui-menu-divider />
       <mapgis-ui-menu-item @click="handleLogout">
         <mapgis-ui-iconfont style="margin-right: 8px" type="mapgis-poweroff" />
         <span>退出登录</span>
@@ -28,6 +33,9 @@ export default {
           location.href = `${window._CONFIG['routerBase']}`
         }
       })
+    },
+    handleManager(e) {
+      window.open(`/${window._CONFIG['productName']}/manager/`, '_blank')
     }
   }
 }
