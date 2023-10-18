@@ -38,5 +38,11 @@ export const constantRouterMap = [
     name: 'Map',
     component: () => import(/* webpackChunkName: "map" */ '@/views/app/map/index'),
     meta: { title: '地图' }
+  },
+  {
+    path: '/app/*',
+    name: 'App',
+    component: () => import('@/views/app/microPage/index'),
+    meta: { title: '应用' }
   }
 ]
