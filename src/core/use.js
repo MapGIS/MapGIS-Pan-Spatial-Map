@@ -1,12 +1,12 @@
 import Vue from 'vue'
 
 // base library
-// import '@mapgis/webclient-vue-mapboxgl/dist-libs/webclient-vue-mapboxgl.css'
-// import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css'
-// import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css'
-// import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
-// import '@mapgis/mapgis-pan-spatial-map-widgets/dist-libs/mapgis-pan-spatial-map-widgets.css'
-// import '@mapgis/mapgis-pan-spatial-map-theme/dist-libs/mapgis-pan-spatial-map-theme.css'
+import '@mapgis/webclient-vue-mapboxgl/dist-libs/webclient-vue-mapboxgl.css'
+import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css'
+import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css'
+import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
+import '@mapgis/mapgis-pan-spatial-map-widgets/dist-libs/mapgis-pan-spatial-map-widgets.css'
+import '@mapgis/mapgis-pan-spatial-map-theme/dist-libs/mapgis-pan-spatial-map-theme.css'
 
 import MapgisUi from '@mapgis/webclient-vue-ui'
 import WebAppFrameworkUI from '@mapgis/web-app-framework'
@@ -15,8 +15,6 @@ import WebAppWidget from '@mapgis/mapgis-pan-spatial-map-widgets'
 import Antd from 'ant-design-vue/es'
 import HeaderAvatar from '@/components/HeaderAvatar'
 import About from '@/components/About'
-
-const WAF = require('@mapgis/web-app-framework')
 
 Vue.use(MapgisUi)
 Vue.use(Antd)
@@ -28,9 +26,5 @@ Vue.use(Theme, {
   }
 })
 Vue.use(WebAppWidget)
-Vue.component('MpPanSpatialMapHeaderAvatar', HeaderAvatar)
-Vue.component('MpPanSpatialMapAbout', About)
-
-window['@mapgis/web-app-framework'] = WAF
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')
