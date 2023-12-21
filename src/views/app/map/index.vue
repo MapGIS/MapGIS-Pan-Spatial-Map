@@ -28,6 +28,7 @@ export default {
      * 修改人：龚跃健
      * 修改时间：2022/3/25
      */
+    console.log('baseConfigInstance.config---------------------', baseConfigInstance.config)
     const initMode =
       baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
     if (!initMode || initMode === 'map') {
