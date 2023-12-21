@@ -1,0 +1,6 @@
+{
+  "MapgisWindowGlobalVueRuntime": "MapgisApplicationVueRuntime",
+  "MapgisPluginWindowExportComponents": "MapboxPluginComponents",
+  "MapgisPluginComponentCssUrl": "plugins/mapgis-2d-plugin-status.css",
+  "MapgisPluginComponentUmdJsUrl": "plugins/mapgis-2d-plugin-status.umd.js"
+}
