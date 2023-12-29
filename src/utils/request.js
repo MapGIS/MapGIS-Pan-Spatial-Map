@@ -37,7 +37,6 @@ const request = axios.create({
 
 // 异常拦截处理器
 const errorHandler = error => {
-  console.log('err' + error)
   let { message } = error
   if (message === 'Network Error') {
     message = '后端接口连接异常'
@@ -46,6 +45,45 @@ const errorHandler = error => {
   } else if (message.includes('Request failed with status code')) {
     const code = message.substr(message.length - 3)
     message = '系统接口' + code + '异常'
+    if (error?.response?.data?.msg) {
+      message = error?.response?.data?.msg
+      if (code === '401') {
+        if (!isReloginShow) {
+          isReloginShow = true
+          notification.open({
+            message: '系统提示',
+            description: '登录状态已过期，请重新登录',
+            btn: h => {
+              return h(
+                'a-button',
+                {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  on: {
+                    click: () => {
+                      store.dispatch('logout').then(() => {
+                        isReloginShow = false
+                        if (!store.getters.casInfo.enabled) {
+                          location.href = `${window._CONFIG['routerBase']}`
+                        }
+                      })
+                    }
+                  }
+                },
+                '确认'
+              )
+            },
+            duration: 0,
+            onClose: () => {
+              isReloginShow = false
+            }
+          })
+        }
+        return Promise.reject(error)
+      }
+    }
   }
   // There's no pop-up here
   // notification.error({

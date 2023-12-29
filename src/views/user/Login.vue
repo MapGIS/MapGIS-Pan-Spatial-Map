@@ -218,7 +218,7 @@ export default {
     },
     requestFailed(err) {
       this.isLoginError = true
-      this.loginErrorInfo = err
+      this.loginErrorInfo = err?.response?.data?.msg || err
       this.form.code = undefined
       getIsNeedCode(this.form.username).then(res => {
         this.isNeedCaptcha = res.isNeedCaptcha
