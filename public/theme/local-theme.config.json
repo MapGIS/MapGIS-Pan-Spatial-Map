@@ -1,0 +1,5 @@
+{
+  "usage": true,
+  "useConfig": true,
+  "MapgisConfigUrl": "theme/one-map-default-theme/mapgis-2d-plugin-status.config.json"
+}
