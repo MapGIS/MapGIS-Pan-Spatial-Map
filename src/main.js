@@ -17,16 +17,6 @@ import './core/use' // load components
 import './permission' // permission control
 import './global.less' // global style
 
-// import {
-//   WidgetMixin,
-//   WidgetInfoMixin,
-//   PanelMixin,
-//   ThemeContentMixin,
-//   AppMixin,
-//   ThemeMixin
-// } from '@mapgis/web-app-framework'
-// import { MapgisEventBusOneMapMixin, events } from '@mapgis/webclient-vue-eventbus'
-
 // 全局方法挂载
 Vue.config.productionTip = false
 
@@ -43,12 +33,3 @@ new Vue({
 }).$mount('#main-app')
 window.MapgisApplicationVueRuntime = Vue
 window.MapgisApplicationVuexRuntime = store
-// window.MapgisEventBusOneMapMixin = MapgisEventBusOneMapMixin
-// window.events = events
-
-// window.WidgetMixin = WidgetMixin
-// window.WidgetInfoMixin = WidgetInfoMixin
-// window.PanelMixin = PanelMixin
-// window.ThemeContentMixin = ThemeContentMixin
-// window.AppMixin = AppMixin
-// window.ThemeMixin = ThemeMixin
