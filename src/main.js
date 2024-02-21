@@ -32,4 +32,3 @@ new Vue({
   render: h => h(App)
 }).$mount('#main-app')
 window.MapgisApplicationVueRuntime = Vue
-window.MapgisApplicationVuexRuntime = store

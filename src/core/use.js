@@ -18,7 +18,6 @@ import About from '@/components/About'
 // import widgetsFrame from '@mapgis/mapgis-pan-spatial-map-widgets-frame'
 
 const WAF = require('@mapgis/web-app-framework')
-const EVENT_BUS = require('@mapgis/webclient-vue-eventbus')
 
 Vue.use(MapgisUi)
 Vue.use(Antd)
@@ -35,6 +34,5 @@ Vue.use(WebAppWidget)
 // Vue.component('MpPanSpatialMapAbout', About)
 
 window['@mapgis/web-app-framework'] = WAF
-window['@mapgis/webclient-vue-eventbus'] = EVENT_BUS
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')
