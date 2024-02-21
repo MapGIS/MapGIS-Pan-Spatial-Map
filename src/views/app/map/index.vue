@@ -1,5 +1,5 @@
 <template>
-  <mp-app-loader :application="application" />
+  <mp-app-loader v-if="themeLoaded" :application="application" />
 </template>
 
 <script>
@@ -10,7 +10,8 @@ import mapgisui from '@mapgis/webclient-vue-ui'
 export default {
   data() {
     return {
-      application: {}
+      application: {},
+      themeLoaded: false
     }
   },
   computed: {},
@@ -38,11 +39,11 @@ export default {
 
     const style = this.themeStyle()
     const opacity = this.themeOpacity()
-
     const payload = {
       opacity: opacity
     }
     mapgisui.setTheme(style.theme, payload)
+    this.themeLoaded = true
   },
   methods: {
     themeStyle() {
