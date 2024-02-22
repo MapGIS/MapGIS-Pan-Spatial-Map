@@ -17,10 +17,14 @@ import WebAppWidgetPro from '@mapgis/mapgis-pan-spatial-map-widgets-pro'
 import Antd from 'ant-design-vue/es'
 import HeaderAvatar from '@/components/HeaderAvatar'
 import About from '@/components/About'
+// import widgetsFrame from '@mapgis/mapgis-pan-spatial-map-widgets-frame'
+
+const WAF = require('@mapgis/web-app-framework')
 
 Vue.use(MapgisUi)
 Vue.use(Antd)
 Vue.use(WebAppFrameworkUI)
+// Vue.use(widgetsFrame)
 Vue.use(Theme, {
   components: {
     MpPanSpatialMapHeaderAvatar: HeaderAvatar,
@@ -29,5 +33,9 @@ Vue.use(Theme, {
 })
 Vue.use(WebAppWidget)
 Vue.use(WebAppWidgetPro)
+// Vue.component('MpPanSpatialMapHeaderAvatar', HeaderAvatar)
+// Vue.component('MpPanSpatialMapAbout', About)
+
+window['@mapgis/web-app-framework'] = WAF
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')

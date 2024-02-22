@@ -31,3 +31,4 @@ new Vue({
   created: bootstrap,
   render: h => h(App)
 }).$mount('#main-app')
+window.MapgisApplicationVueRuntime = Vue
