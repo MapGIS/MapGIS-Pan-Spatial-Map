@@ -17,8 +17,6 @@ import HeaderAvatar from '@/components/HeaderAvatar'
 import About from '@/components/About'
 // import widgetsFrame from '@mapgis/mapgis-pan-spatial-map-widgets-frame'
 
-const WAF = require('@mapgis/web-app-framework')
-
 Vue.use(MapgisUi)
 Vue.use(Antd)
 Vue.use(WebAppFrameworkUI)
@@ -33,6 +31,7 @@ Vue.use(WebAppWidget)
 // Vue.component('MpPanSpatialMapHeaderAvatar', HeaderAvatar)
 // Vue.component('MpPanSpatialMapAbout', About)
 
-window['@mapgis/web-app-framework'] = WAF
+window['@mapgis/web-app-framework'] = require('@mapgis/web-app-framework')
+window['@mapgis/webclient-vue-ui'] = require('@mapgis/webclient-vue-ui')
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')
