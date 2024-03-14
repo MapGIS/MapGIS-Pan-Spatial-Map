@@ -4,7 +4,8 @@ const userApi = {
   Login: `${window._CONFIG['apiPathManagerPrefix']}/auth/login`,
   Logout: `${window._CONFIG['apiPathManagerPrefix']}/auth/logout`,
   // get my info
-  UserInfo: `${window._CONFIG['apiPathManagerPrefix']}/system/user/getInfo`
+  UserInfo: `${window._CONFIG['apiPathManagerPrefix']}/system/user/getInfo`,
+  CustomLogin: `${window._CONFIG['apiPathManagerPrefix']}/auth/customLogin`
 }
 
 /**
@@ -27,6 +28,17 @@ export function getInfo() {
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
     }
+  })
+}
+
+export function customLogin(parameter) {
+  const params = new URLSearchParams()
+  for (const key in parameter) {
+    params.append(key, parameter[key])
+  }
+  return request({
+    url: userApi.CustomLogin + `?${params.toString()}`,
+    method: 'post'
   })
 }
 
