@@ -1,5 +1,5 @@
 import storage from 'store'
-import { login, getInfo, logout, thirdLogin, casLogin } from '@/api/login'
+import { login, getInfo, logout, thirdLogin, casLogin, customLogin } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 const user = {
@@ -67,6 +67,19 @@ const user = {
             commit('SET_NAME', user.nickName)
             commit('SET_AVATAR', avatar)
             resolve(res)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    customLogin({ commit }, queryParams) {
+      return new Promise((resolve, reject) => {
+        customLogin(queryParams)
+          .then(res => {
+            storage.set(ACCESS_TOKEN, res.token, 7 * 24 * 60 * 60 * 1000)
+            commit('SET_TOKEN', res.token)
+            resolve()
           })
           .catch(error => {
             reject(error)

@@ -21,8 +21,14 @@ router.beforeEach((to, from, next) => {
   if (to.meta && typeof to.meta.title !== 'undefined') {
     setDocumentTitle(`${i18nRender(to.meta.title)} - ${store.getters.domTitle}`)
   }
-  /* has token */
-  if (storage.get(ACCESS_TOKEN)) {
+  if (to.query.loginType === 'custom') {
+    const queryParams = { ...to.query }
+    delete queryParams.loginType
+    store.dispatch('customLogin', queryParams).then(() => {
+      next('/')
+    })
+  } else if (storage.get(ACCESS_TOKEN)) {
+    /* has token */
     if (to.path === loginRoutePath || to.path === '/') {
       next({ path: defaultRoutePath })
       NProgress.done()
