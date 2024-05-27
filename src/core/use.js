@@ -33,5 +33,6 @@ Vue.use(WebAppWidget)
 
 window['@mapgis/web-app-framework'] = require('@mapgis/web-app-framework')
 window['@mapgis/webclient-vue-ui'] = require('@mapgis/webclient-vue-ui')
+window['@mapgis/webclient-es6-service'] = require('@mapgis/webclient-es6-service')
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')
