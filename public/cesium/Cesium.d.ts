@@ -2029,7 +2029,6 @@ export class Cartesian3 {
     static dot(left: Cartesian3, right: Cartesian3): number;
     /**
      * Computes the componentwise product of two Cartesians.
-    计算向量left在right上的投影
      * @param left - The first Cartesian.
      * @param right - The second Cartesian.
      * @param result - The object onto which to store the result.
@@ -5685,6 +5684,10 @@ export class Ellipsoid {
      * An Ellipsoid instance initialized to the WGS84 standard.
      */
     static readonly WGS84: Ellipsoid;
+    /**
+     * An Ellipsoid instance initialized to the CGCS2000 standard.
+     */
+    static readonly CGCS2000: Ellipsoid;
     /**
      * An Ellipsoid instance initialized to radii of (1.0, 1.0, 1.0).
      */
@@ -12670,6 +12673,8 @@ var geometry = Cesium.PolygonGeometry.createGeometry(extrudedPolygon);
  * @param [options.height = 0.0] - The distance in meters between the polygon and the ellipsoid surface.
  * @param [options.extrudedHeight] - The distance in meters between the polygon's extruded face and the ellipsoid surface.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
+ * @param [options.indices] - 自定义顶点索引
+ * @param [options.st] - 自定义UV坐标
  * @param [options.stRotation = 0.0] - The rotation of the texture coordinates, in radians. A positive rotation is counter-clockwise.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
  * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
@@ -12684,6 +12689,8 @@ export class PolygonGeometry {
         height?: number;
         extrudedHeight?: number;
         vertexFormat?: VertexFormat;
+        indices?: number[];
+        st?: Float32Array;
         stRotation?: number;
         ellipsoid?: Ellipsoid;
         granularity?: number;
@@ -12692,6 +12699,12 @@ export class PolygonGeometry {
         closeBottom?: boolean;
         arcType?: ArcType;
     });
+    /**
+     * feat:2106 河流覆盖物类型
+    传入自定义顶点indices
+    传入自定义UV坐标
+     */
+    _indices: any;
     /**
      * The number of elements used to pack the object into an array.
      */
@@ -12715,6 +12728,8 @@ export class PolygonGeometry {
      * @param [options.height = 0.0] - The height of the polygon.
      * @param [options.extrudedHeight] - The height of the polygon extrusion.
      * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
+     * @param [options.indices] - 自定义顶点索引
+     * @param [options.st] - 自定义UV坐标
      * @param [options.stRotation = 0.0] - The rotation of the texture coordinates, in radians. A positive rotation is counter-clockwise.
      * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
      * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
@@ -12728,6 +12743,8 @@ export class PolygonGeometry {
         height?: number;
         extrudedHeight?: number;
         vertexFormat?: VertexFormat;
+        indices?: number[];
+        st?: Float32Array;
         stRotation?: number;
         ellipsoid?: Ellipsoid;
         granularity?: number;
@@ -19348,6 +19365,14 @@ export class CzmlDataSource {
      */
     credit: Credit;
     /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
+    /**
      * Gets the array of CZML processing functions.
      */
     static updaters: any[];
@@ -21251,6 +21276,14 @@ export class KmlDataSource {
      * Gets the KML Tours that are used to guide the camera to specified destinations on given time intervals.
      */
     kmlTours: KmlTour[];
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
     /**
      * Asynchronously loads the provided KML data, replacing any existing data.
      * @param data - A url, parsed KML document, or Blob containing binary KMZ data or a parsed KML document.
@@ -24546,8 +24579,9 @@ export class AlgorithmLib {
     static getCenterOfGravityPoint(points: Cartesian3[]): Cartesian3;
     /**
      * 计算Cartesian3数组的中心
+     * @param useHeight - 是否使用高度
      */
-    static getCenterOfCartesian3Points(points: Cartesian3[]): Cartesian3;
+    static getCenterOfCartesian3Points(points: Cartesian3[], useHeight: boolean): Cartesian3;
     /**
      * 计算矩阵
      * @param longitude - 角度制经度
@@ -24679,6 +24713,12 @@ export class AlgorithmLib {
      * @returns result 0：数量小于2；-1：凹多边形；1：凸多边形；
      */
     static isConvex(points: Cartesian3[]): number;
+    /**
+     * 根据输入笛卡尔坐标数组，计算中心点
+     * @param positions - 坐标点序列
+     * @returns 根据坐标点序列计算出的中心点
+     */
+    static getCenterFromPoints(positions: Cartesian3[]): Cartesian3[];
 }
 
 /**
@@ -24737,6 +24777,222 @@ export class CesiumHeatmap {
      p: the mercator lcation like {x, y}
      */
     static mercatorToWgs84(): void;
+}
+
+/**
+ * 碰撞检测分析
+<br/><br/>
+此碰撞检测分析方案适用于室内，小场景下的慢速碰撞检测分析。对以下几种情况的支持存在不足。<br/>
+
+1. 高速物体做碰撞检测容易出现穿隧问题。所谓高速物体指一帧中移动的步长大于碰撞检测盒的检测范围。<br/>
+2. 场景相机无法观察到的位置，容易出现碰撞检测失效问题。原因是Cesium内部为了性能优化做了视锥体剔除操作，对不可见的物体不会渲染。这样就导致不可见的物体也无法获取其深度信息。使用相机做碰撞体时，后退操作容易出现此问题。<br/>
+3. 对锥型物体的检测容易失效。为了尽可能的减少碰撞检测的分析数据量，在实际分析时只取碰撞盒边框所覆盖到的深度数据做计算，所以对于锥形的物体，当碰撞体从上方落下时，因为碰撞盒的边框无法覆盖到此锥形物体，故也就无法识别出发生了碰撞。为了处理这种情况可使用高精度模式，但这样就牺牲了较大的性能。<br/>
+ * @example
+ * // 1. 默认使用相机做为碰撞检测对象
+var collisionDetection;
+collisionDetection = new Cesium.CollisionDetectionByRender(viewer, viewer.camera);
+// 对目标位置进行碰撞检测
+var result = collisionDetection.checkCollision(targetPosition, 0);
+// 未碰撞移动到该位置
+if (result.result !== 'collided') {
+    camera.setView({
+        destination: result.computedPosition,
+        orientation: {
+            heading: camera.heading,
+            pitch: camera.pitch,
+            roll: 0.0
+        }
+    });
+}
+
+// 2. 使用M3D做为碰撞检测对象
+var m3d;
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/2.0/wujiangdizhiti/wujiangdizhiti.mcj';
+var options = {
+    maximumScreenSpaceError: 0,
+    autoReset: false,
+    loaded: function(layer) {
+        m3d = layer;
+        collisionDetection = new Cesium.CollisionDetectionByRender(viewer, layer._root, {
+            colliderLength: 0.8, // 设置碰撞盒长
+            colliderWidth: 0.6, // 设置碰撞盒宽
+            colliderHeight: 1, // 设置碰撞盒高
+            colliderPositionOffset: new Cesium.Cartesian3(0, 0, 0.5), // 设置碰撞盒偏移
+            debugShowCollider: true, // 打开debug模式，碰撞盒检查
+            debugShowDepthMap: true // 打开debug模式，深度图检查
+        });
+    }
+};
+viewer.scene.layers.appendM3DLayer(url, options);
+// 对目标位置进行碰撞检测
+var result = collisionDetection.checkCollision(targetPosition, 0);
+// 获取M3D模型在笛卡尔空间的变换矩阵
+var transform = m3d.computedTransform;
+var newTransform = new Cesium.Matrix4();
+var invModelMat = new Cesium.Matrix4();
+if (result.result !== 'collided') {
+     // 获取模型变换矩阵
+     var modelMatrix = m3d.tileset.modelMatrix;
+     // 求模型变换矩阵的逆
+     Cesium.Matrix4.inverse(modelMatrix, invModelMat);
+     // 未碰撞移动到该位置
+     Cesium.Matrix4.setTranslation(transform, result.computedPosition, newTransform);
+     // 乘上模型变换矩阵的逆矩阵
+     Cesium.Matrix4.multiply(invModelMat, newTransform, newTransform);
+     // 设置新的变换矩阵
+     m3d.transform = Matrix4.clone(newTransform);
+}
+
+// 3. 使用Entity做为碰撞检测对象
+var url = '../../SampleData/models/GroundVehicle/GroundVehicle.glb';
+var position = Cesium.Cartesian3.fromDegrees(108.9594, 34.2186, 5);
+var hpr = new Cesium.HeadingPitchRoll(0, 0, 0);
+var orientation = Cesium.Transforms.headingPitchRollQuaternion(position, hpr);
+var entity = viewer.entities.add({
+    name: url,
+    position: position,
+    orientation: orientation,
+    model: {
+        uri: url,
+        minimumPixelSize: 32,
+        maximumScale: 20000,
+    },
+});
+collisionDetection = new Cesium.CollisionDetectionByRender(viewer, entity, {
+    colliderLength: 2,
+    colliderWidth: 0.6,
+    colliderHeight: 0.6,
+    colliderPositionOffset: new Cesium.Cartesian3(0, 0, 0.6)
+});
+// 对目标位置进行碰撞检测
+var result = collisionDetection.checkCollision(positionWC, 0);
+// 未碰撞移动到该位置
+if (result.result !== 'collided') {
+    entity.position = result.computedPosition;
+}
+
+// 4. 打开调试模式
+collisionDetection = new Cesium.CollisionDetectionByRender(viewer, viewer.camera, {
+    debugShowCollider: false, // 相机做为碰撞检测对象时不打开碰撞盒检查
+    debugShowDepthMap: true, // 打开debug模式，深度图检查
+});
+ * @param viewer - 场景视图
+ * @param collider - 做碰撞检测的对象
+ * @param [options] - 可选参数
+ * @param [options.colliderLength = 0.4] - 碰撞盒的长(单位米)
+ * @param [options.colliderWidth = 0.4] - 碰撞盒的宽(单位米)
+ * @param [options.colliderHeight = 1.7] - 碰撞盒的高(单位米)
+<br/><br/>
+原点高度属性用于通知碰撞检测实例碰撞对象的坐标原点所在的高度，如单体模型的坐标原点有的在其底部，有的在其中间。<br/>
+默认值设为1.7是因为默认的碰撞对象是相机。
+ * @param [options.colliderPositionOffset = (0,0,0)] - 碰撞盒的位置偏移(单位米)
+ * @param [options.maxPassableHeight = 0.5] - 最大可通过高度(单位米)
+ * @param [options.highPrecision = false] - 是否开启高精度碰撞检测
+<br/><br/>
+基于性能考虑默认不开启高精度碰撞检测。非高精度状态下只检测碰撞盒的边框所覆盖的区域，高精度状态下对碰撞盒覆盖的整个区域做检测。
+ * @param [options.debugShowDepthMap = false] - 检查深度图(debug模式)
+ * @param [options.debugShowCollider = false] - 检查碰撞盒(debug模式)
+<br/><br/>
+debug模式生成的碰撞盒所使用的位置是上一帧的碰撞检测结果，所以并不能精确的表示碰撞盒与场景的碰撞关系。<br/>
+深度图中可查看到较为精确的碰撞关系。<br/>
+开启碰撞盒检查主要是为了方便调整碰撞盒与模型相匹配。<br/>
+相机做为碰撞对象时，开启碰撞盒检查，相机会被碰撞盒包在里面。
+ */
+export class CollisionDetectionByRender {
+    constructor(viewer: Viewer, collider: Camera | MapGISM3D | Entity, options?: {
+        colliderLength?: number;
+        colliderWidth?: number;
+        colliderHeight?: number;
+        colliderPositionOffset?: Cartesian3;
+        maxPassableHeight?: number;
+        highPrecision?: boolean;
+        debugShowDepthMap?: boolean;
+        debugShowCollider?: boolean;
+    });
+    /**
+     * 碰撞检测对象
+     */
+    readonly collider: Camera | MapGISM3D | Entity;
+    /**
+     * 碰撞盒长
+     */
+    colliderLength: number;
+    /**
+     * 碰撞盒宽
+     */
+    colliderWidth: number;
+    /**
+     * 碰撞盒高
+     */
+    colliderHeight: number;
+    /**
+     * 碰撞盒位置偏移
+     */
+    colliderPositionOffset: Cartesian3;
+    /**
+     * 最大可通过高度
+     */
+    maxPassableHeight: number;
+    /**
+     * 是否开启高精度模式
+    <br/>
+    <table>
+      <tr>
+        <td>
+          <img src="Images/defaultPrecision.jpg" alt="defaultPrecision" />
+          <br />
+          默认模式下只检测碰撞盒的边框部分
+        </td>
+        <td>
+          <img src="Images/highPrecision.jpg" alt="highPrecision" />
+          <br />
+          高精度模式下对整个碰撞盒做检测
+        </td>
+      </tr>
+    </table>
+     */
+    highPrecision: boolean;
+    /**
+     * 销毁碰撞检测
+     */
+    destory(): void;
+    /**
+     * 检测目标位置是否会碰撞，需要在场景渲染完成后即postRender事件中做检查。
+     * @param targetPosition - 目标位置
+     * @param heading - 碰撞体航向
+    <br/><br/>
+    置空时只做俯视图的检查。<br/>
+     * @param [options = {}] - 可选参数
+     * @param [options.colliderLength] - 碰撞盒长，默认值取实例的同名属性值
+     * @param [options.colliderWidth] - 碰撞盒宽，默认值取实例的同名属性值
+     * @param [options.colliderHeight] - 碰撞盒高，默认值取实例的同名属性值
+     * @param [options.colliderPositionOffset = (0,0,0)] - 碰撞盒的位置偏移，默认值取实例的同名属性值
+     * @param [options.maxPassableHeight] - 最大可通过高度，默认值取实例的同名属性值
+     * @param [options.highPrecision = false] - 是否开启高精度碰撞检测，默认值取实例的同名属性值
+     * @returns 碰撞检测结果数据结构说明：
+     <table>
+      <tr>
+        <td>result</td>         <td>computedPosition</td>  <td></td>
+      </tr>
+      <tr>
+        <td>'collided'</td>     <td>targetPosition</td>    <td>发生了碰撞，返回传入的位置。</td>
+      </tr>
+      <tr>
+        <td>'noCollision'</td>  <td>targetPosition</td>    <td>没有发生碰撞，返回传入的位置。</td>
+      </tr>
+      <tr>
+        <td>'passable'</td>     <td>碰撞后抬高的位置</td>   <td>发生了碰撞但可以通过，计算新的位置。</td>
+      </tr>
+    </table>
+     */
+    checkCollision(targetPosition: Cartesian3, heading: number | undefined, options?: {
+        colliderLength?: number;
+        colliderWidth?: number;
+        colliderHeight?: number;
+        colliderPositionOffset?: Cartesian3;
+        maxPassableHeight?: number;
+        highPrecision?: boolean;
+    }): any;
 }
 
 /**
@@ -24933,31 +25189,235 @@ export class FloodAnalysis {
 }
 
 /**
+ * 创建反射水面淹没分析的实例化对象
+ * @example
+ * // 初始化视图对象
+var viewer = new Cesium.Viewer("cesiumContainer");
+// 加载模型
+var url = 'http://develop.smaryun.com:6163/igs/rest/g3d/ZondyModels';
+var index = viewer.scene.layers.appendSceneLayer(url, { duration: 1, maximumScreenSpaceError: 8 });
+// 创建反射水面的范围
+var positions = [
+  Cesium.Cartographic.fromDegrees(114.3972, 30.4710, 0.0),
+  Cesium.Cartographic.fromDegrees(114.4053, 30.4710, 0.0),
+  Cesium.Cartographic.fromDegrees(114.4053, 30.4638, 0.0),
+  Cesium.Cartographic.fromDegrees(114.3972, 30.4638, 0.0),
+];
+// 实例化反射水面的对象
+var water = new Cesium.WaterReflection({
+  viewer: viewer,
+  positions: positions,
+  distortionScale: 2.0,
+});
+// 实例化反射水面淹没分析的对象
+var flood = new Cesium.FloodAnalysisReflection({
+  viewer: viewer,
+  water: water,
+  minHeight: 0,
+  maxHeight: 70,
+  floodSpeed: 0.05,
+  closeBorder: true
+});
+// 开启淹没分析
+flood.start();
+ * @param options - 创建反射水面淹没分析的参数
+ * @param options.viewer - 显示三维地球场景的对象
+ * @param options.water - 反射水面对象
+ * @param options.minHeight - 水面的起始高度
+ * @param options.maxHeight - 水面的淹没高度
+ * @param [options.floodSpeed = 1.0] - 水面的淹没速度
+ * @param [options.closeBorder = false] - 是否为水面创建边界面
+ */
+export class FloodAnalysisReflection {
+    constructor(options: {
+        viewer: Viewer;
+        water: WaterReflection;
+        minHeight: number;
+        maxHeight: number;
+        floodSpeed?: number;
+        closeBorder?: boolean;
+    });
+    /**
+     * 获取或设置水面的起始高度
+     */
+    minHeight: number;
+    /**
+     * 获取或设置水面的淹没高度
+     */
+    maxHeight: number;
+    /**
+     * 获取或设置水面的淹没速度
+     */
+    floodSpeed: number;
+    /**
+     * 获取水面当前的淹没高度
+     */
+    currentWaterHeight: number;
+    /**
+     * 开始执行淹没分析
+     */
+    start(): void;
+    /**
+     * 暂停执行淹没分析
+     */
+    pause(): void;
+    /**
+     * 销毁反射水面的边界面，在淹没分析时创建水面边界面时使用
+     */
+    destroyWaterCloseBorder(): void;
+    /**
+     * 销毁反射水面的实例化对象，若包含水面边界面，同时也会将其销毁
+     */
+    destroy(): void;
+}
+
+/**
  * 场景投影
- * @param type - 投影类型
+ * @example
+ * var viewer = new Cesium.Viewer('cesiumContainer', {});
+var scene = viewer.scene;
+
+// 1. 通过viewPosition + targetPosition创建视频投影
+var type = Cesium.SceneProjectorType.VIDEO;
+var scenePro = new Cesium.SceneProjector({
+     scene: scene,// 开启自定义渲染通道功能
+     pass: Cesium.Pass.AFTER_TILE, // 自定义渲染通道瓦片渲染后，视频投放将绘制在M3D模型之上，贴模型覆盖物之下
+     viewPosition: new Cesium.Carteaian3(
+         -2340650.4879239253,
+         4555000.890380713,
+         3789431.271813441
+     ),
+     targetPosition: new Cesium.Carteaian3(
+         -2340573.747400027,
+         4554853.496182831,
+         3789311.823992698
+     ),
+     source: '../videos/DJI_0008.mp4'
+})
+
+// 2. 通过viewPosition + heading,pitch,roll创建视频投影
+var scenePro = new Cesium.SceneProjector({
+     scene: scene,
+     viewPosition: new Cesium.Carteaian3(
+         -2340650.4879239253,
+         4555000.890380713,
+         3789431.271813441
+     ),
+     heading: 40,
+     pitch: -40
+     roll: 0,
+     source: '../videos/DJI_0008.mp4'
+})
+
+// 3. 通过viewPosition + direction,up创建视频投影
+var direction = new Cesium.Cartesian3(1, 0, 0);
+var up = new Cesium.Cartesian3(0, 0, 1);
+
+var scenePro = new Cesium.SceneProjector({
+     scene: scene,
+     viewPosition: new Cesium.Carteaian3(
+         -2340650.4879239253,
+         4555000.890380713,
+         3789431.271813441
+     ),
+     direction: direction,
+     up: up,
+     source: '../videos/DJI_0008.mp4'
+})
+
+// 4. 外部传入video标签
+var scenePro;
+var externalVideo = document.createElement('video');
+document.body.append(externalVideo);
+externalVideo.style.position = 'absolute';
+externalVideo.style.bottom = '75px';
+externalVideo.style.right = '0';
+externalVideo.style.width = '320px';
+externalVideo.style.height = '180px';
+externalVideo.crossOrigin = 'anonymous';
+externalVideo.play();
+externalVideo.src = "../videos/DJI_0008.mp4";
+scenePro = new Cesium.SceneProjector({
+     scene: scene,
+     viewPosition: new Cesium.Carteaian3(
+         -2340650.4879239253,
+         4555000.890380713,
+         3789431.271813441
+     ),
+     heading: 40,
+     pitch: -40
+     roll: 0,
+     source: externalVideo
+})
+ * @param options.scene - 场景对象 启用自定义渲染通道功能必须传入场景对象
+ * @param [options.pass = Cesium.Pass.ANALYSIS] - 渲染通道 自定义渲染通道只可设置 {@link Pass.AFTER_GLOBE}，{@link Pass.AFTER_TILE}，{@link Pass.AFTER_TILE_CLASSIFICATION}，{@link Pass.ANALYSIS} 四个通道
+ * @param options.source - 投影资源 图片支持".png/.jpg/.jpeg" 视频支持".mp4/.m3u8"
+ * @param options.viewPosition - 观察点
+ * @param options.targetPosition - 目标点
+ * @param options.direction - 投影相机的朝向
+ * @param options.up - 投影相机的上方向
+ * @param options.heading - 投影相机的偏向角度 角度制
+ * @param options.pitch - 投影相机的俯仰角度 角度制
+ * @param options.roll - 投影相机的翻滚角度 角度制
+ * @param options.showLine - 视锥体是否显示
+ * @param options.hideVPInvisible - 观察点(viewPosition)不可见时隐藏视频投影
  */
 export class SceneProjector {
-    constructor(type: number);
+    constructor(options: {
+        scene: Scene;
+        pass?: Pass;
+        source: Color | string | HTMLVideoElement;
+        viewPosition: Cartesian3;
+        targetPosition: Cartesian3;
+        direction: Cartesian3;
+        up: Cartesian3;
+        heading: number;
+        pitch: number;
+        roll: number;
+        showLine: boolean;
+        hideVPInvisible: boolean;
+    });
     /**
-     * 观察点
+     * 投影相机观察点
      */
     viewPosition: Cartesian3;
     /**
-     * 目标点
+     * 投影相机观察的目标点
      */
     targetPosition: Cartesian3;
     /**
-     * 投影文件路径
+     * 投影文件资源
      */
     textureSource: string;
     /**
+     * 投影资源 图片支持".png/.jpg/.jpeg" 视频支持".mp4/.m3u8"
+     * @example
+     * // 动态替换HTMLVideoElement时要特别注意停下旧video标签
+    // 否则旧的HTMLVideoElement标签的'canplay'事件在循环时会持续回调
+    // 导致videoReady在不合适的时机变为true
+    if(externalVideo){ // 旧的HTMLVideoElement
+         externalVideo.pause();
+         externalVideo.removeAttribute('src');
+         externalVideo.load();
+    }
+    var outVideo = document.createElement('video');
+    outVideo.crossOrigin = 'anonymous';
+    outVideo.loop = true;
+    scenePro.projectionSource = outVideo;
+     */
+    projectionSource: Color | string | HTMLVideoElement;
+    /**
      * 投影类型
      */
-    projectorType: number;
+    readonly projectorType: number;
+    /**
+     * 投影相机
+     */
+    readonly projectionCamera: Camera;
     /**
      * 返回视频的总时长 单位为秒 如果视频异常则返回-1
      */
-    videoDuration: number;
+    readonly videoDuration: number;
     /**
      * 设置或返回 视频当前播放的时间位置 单位为秒 如果视频异常则返回-1
      */
@@ -24987,19 +25447,20 @@ export class SceneProjector {
      */
     showLine: boolean;
     /**
-     * 当视点不可见时是否隐藏投影
+     * 当viewPosition不在屏幕内时是否隐藏投影
      */
     hideVPInvisible: boolean;
     /**
-     * 投影矩形
+     * 传入一个矩形区域，基于这个区域创建视频投放，不能保证投放结果与传入的矩形区域一致
      */
     rectangle: Cartesian3[];
     /**
-     * 视点高度
+     * 观察点同目标点的距离
+    配合{@link SceneProjector#rectangle}和{@link SceneProjector#polygon}使用
      */
     heightViewPosition: number;
     /**
-     * 投影多边形
+     * 传入一个多边形区域，基于这个区域创建视频投放，不能保证投放结果与传入的多边形区域一致
      */
     polygon: Cartesian3[];
     /**
@@ -25022,7 +25483,43 @@ export class SceneProjector {
      * 竖直广角
      */
     verticalAngle: number;
+    /**
+     * 视频投放近裁剪平面
+    最小被限制为0.01,最大值被限制为(farClipPlane - 1)。
+     */
+    nearClipPlane: number;
+    /**
+     * 视频投放远裁剪平面
+    最小值被限制为(nearClipPlane + 1)。
+     */
+    farClipPlane: number;
+    /**
+     * 获取投影纹理视频流的HTMLVideo标签
+     */
+    readonly videoHTML: HTMLVideoElement;
+    /**
+     * 是否显示视频投放
+     */
+    visible: boolean;
+    /**
+     * 投影纹理背后剔除
+     */
+    culled: boolean;
+    /**
+     * 销毁视频投放
+     */
+    destroy(): void;
 }
+
+/**
+ * 地质体剖切绘制类
+ * @param options.geometry - 剖面几何对象.
+ * @param options.clippingType - 裁剪类型.
+ */
+export function SectionRender(options: {
+    geometry: any;
+    clippingType: any;
+}): void;
 
 /**
  * 阴影分析
@@ -25188,11 +25685,80 @@ export class ViewshedAnalysis {
 
 /**
  * 通视分析
+ * @example
+ * // 1. 给定观察点与目标点进行通视分析
+var visiblity = new Cesium.VisiblityAnalysis({ scene: scene });
+scene.visualAnalysisManager.add(visiblity);
+visiblity.viewPosition = new Cesium.Cartesian3(6378138.905101178, 22.20128910645181, 16.69161471354458);
+visiblity.targetPosition = new Cesium.Cartesian3(6378158.153515804, 47.68794749465568, 34.93181937554349);
+
+// 2. 监听鼠标事件进行通视分析
+var visiblityAction = true;
+var visiblitying = false;
+var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+// 左键开始
+handler.setInputAction(function (movement) {
+    if (visiblity !== undefined) {
+        if (visiblityAction) {
+            var cartesian = viewer.scene.pickPosition(movement.position);
+            var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+            cartographic.height += 1.0; //避免埋入模型中
+            cartesian = Cesium.Cartographic.toCartesian(cartographic);
+            if (cartesian !== undefined && !visiblitying) {
+                visiblity.viewPosition = cartesian;
+            } else {
+                visiblity.targetPosition = cartesian;
+                visiblityAction = false;
+            }
+            visiblitying = true;
+        }
+        console.log(visiblity.viewPosition);
+    }
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+//鼠标右键结束
+handler.setInputAction(function (movement) {
+    if (visiblitying) {
+        var cartesian = viewer.scene.pickPosition(movement.position);
+        if (cartesian !== undefined) {
+            visiblity.targetPosition = cartesian;
+        }
+        visiblityAction = false;
+        visiblitying = false;
+    }
+}, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+handler.setInputAction(function (movement) {
+    if (visiblitying) {
+        var cartesian = viewer.scene.pickPosition(movement.endPosition);
+        if (cartesian) {
+            visiblity.targetPosition = cartesian;
+        }
+    }
+}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+// 3. 创建环形通视分析
+var drawElement = new Cesium.DrawElement(viewer);
+drawElement.startDrawingCircle({
+    color: new Cesium.Color(0.2, 0.4, 0.3, 1.0),
+    callback: function (result) {
+        drawElement.stopDrawing();
+        visiblity.lookAroundAnalysis({
+            viewPosition: result.center,
+            radius: result.radius,
+            percentCallback: function (percent) {
+                console.log(percent);
+            }
+        });
+    }
+});
+
+// 4. 移除通视分析
+scene.visualAnalysisManager.remove(visiblity);
+visiblity.destroy();
  * @param options - 附加参数
  * @param options.scene - Cesium 场景对象
  * @param [options.visibleColor = new Color(0, 1, 0, 0.5)] - 设置可视段颜色
  * @param [options.unvisibleColor = new Color(1, 0, 0, 0.5)] - 设置不可视段颜色
- * @param [options.exHeight = 0.01] - 设置视点附加高度
+ * @param [options.exHeight = 0] - 设置视点附加高度
  * @param [options.fanColor = new Color(79 / 255, 238 / 255, 215 / 255, 0.2)] - 环型通视分析视窗颜色
  * @param [options.fanGridColor = Cesium.Color.WHITE] - 环型通视分析视窗网格颜色
  */
@@ -25242,7 +25808,7 @@ export class VisiblityAnalysis {
      */
     fanGridColor: Color;
     /**
-     * 设置视点附加高度
+     * 设置视点附加高度，需要在分析前设置
      */
     exHeight: number;
     /**
@@ -25256,8 +25822,8 @@ export class VisiblityAnalysis {
      * 环形通视分析
      * @param options.viewPosition - 视点
      * @param options.radius - 环形通视分析半径
-     * @param [options.verticalAngle] - 垂直视角，默认为60°
-     * @param [options.divideAngle] - 等分角度，默认为10°
+     * @param [options.verticalAngle = 60] - 垂直视角，默认为60°
+     * @param [options.divideAngle = 10] - 等分角度，默认为10°
      * @param [options.percentCallback] - 计算进度回调
      */
     lookAroundAnalysis(options: {
@@ -25267,6 +25833,141 @@ export class VisiblityAnalysis {
         divideAngle?: number;
         percentCallback?: (...params: any[]) => any;
     }): void;
+}
+
+/**
+ * <p>场景相机漫游工具，可以实现沉浸式的鼠标键盘漫游功能，具体操作方法如下：</p>
+<p>1. 相机平移操作，这类操作不会改变相机的朝向，只会改变相机的位置：</p>
+<ul>
+<li><code>W</code>：相机位置向前移动</li>
+<li><code>S</code>：相机位置向后移动</li>
+<li><code>A</code>：相机位置向左移动</li>
+<li><code>D</code>：相机位置向右移动</li>
+<li><code>Q</code>：相机位置升高</li>
+<li><code>E</code>：相机位置降低</li>
+</ul>
+<p>2. 相对于相机视点操作，其中<code>U</code>，<code>O</code>，<code>J</code>，<code>L</code>操作会改变相机的位置，也会改变相机的朝向，而<code>I</code>，<code>K</code>操作只会改变相机相较视点的距离（在执行<code>U</code>，<code>O</code>，<code>J</code>，<code>L</code>操作时请勿同时执行其他按键操作）：</p>
+<ul>
+<li><code>I</code>：相机视角靠近屏幕中心点</li>
+<li><code>K</code>：相机视角远离屏幕中心点</li>
+<li><code>J</code>：绕屏幕中心点向左旋转</li>
+<li><code>L</code>：绕屏幕中心点向右旋转</li>
+<li><code>U</code>：绕屏幕中心点向上旋转</li>
+<li><code>O</code>：绕屏幕中心点向下旋转</li>
+</ul>
+<p>3. 相机自身操作，这类操作不会改变相机的位置，只会改变相机的朝向（在全屏状态下可使用鼠标调整相机视角）：</p>
+<ul>
+<li><code>↑</code>：向上抬高视角</li>
+<li><code>↓</code>：向下降低视角</li>
+<li><code>←</code>：向左移动视角</li>
+<li><code>→</code>：向右移动视角</li>
+</ul>
+<p>4. 鼠标操作：</p>
+<ul>
+<li>开启鼠标操作功能后，页面将进入全屏模式，此时相机视角可通过鼠标移动进行操作</li>
+</ul>
+<p>5. 辅助操作：</p>
+<ul>
+<li><code>Shift</code>：加速相机平移操作，调整移动步长为原来的两倍</li>
+<li><code>R</code>：重置视角到初始视角，仅在参数<code>initView</code>定义时有效</li>
+</ul>
+ * @example
+ * // 初始化视图对象
+var viewer = new Cesium.Viewer("cesiumContainer");
+
+// 加载模型
+var tilesetModel = viewer.scene.primitives.add(
+  new Cesium.Cesium3DTileset({
+    url: 'http://192.168.82.89:8200/3DData/ModelCache/3DTileset/1.0/dayantaresult/tileset.json'
+  })
+);
+
+// 视角定位到模型
+viewer.zoomTo(tilesetModel);
+
+// 实例化CameraRoamingTool对象
+var cameraRoaming = new Cesium.KeyboardCameraController(viewer, {
+  enableMouseLook: false,
+  enableDynamicMoveStep: false,
+  moveStep: 0.2,
+  initView: {
+    destination: Cesium.Cartesian3.fromDegrees(108.9594, 34.2184, 8),
+    orientation: {
+      heading: 0,
+      pitch: 0,
+      roll: 0
+    }
+  }
+});
+
+// 开启碰撞检测
+cameraRoaming.enableCollisionDetection = true;
+
+// 说明：当enableMouseLook参数为true时，开启漫游后页面将进入全屏模式，由于浏览器安全策
+// 略的限制，此时start()方法必需由一个用户手势触发（如主动点击按钮），而不能由程序被动触发
+
+// 开始漫游
+cameraRoaming.start();
+
+// 停止漫游
+cameraRoaming.stop();
+ * @param viewer - 三维地球场景的视图对象
+ * @param options - 场景相机漫游工具的配置项
+ * @param [options.enableMouseLook = true] - 是否开启鼠标控制模式，开启后将进入全屏模式，此时相机视角可通过鼠标移动进行操作
+ * @param [options.enableDynamicMoveStep = true] - 是否开启动态移动步长，开启后将根据视角距离地面高度动态计算移动步长，<code>moveStep</code>参数将不再生效
+ * @param [options.enableCollisionDetection = false] - 是否开启碰撞检测
+ * @param [options.mouseSensitivity = 10] - 鼠标灵敏度，该参数仅在鼠标控制模式下有效
+ * @param [options.moveStep = 5] - 移动步长，单位为米
+ * @param [options.rotateStep = 1] - 旋转步长，单位为度
+ * @param [options.initView] - 初始视角，参数与{@link Camera#setView}方法相同，开始漫游时视角将重置到该视角，若不设置则默认从当前视角开始漫游
+ */
+export class KeyboardCameraController {
+    constructor(viewer: any, options: {
+        enableMouseLook?: boolean;
+        enableDynamicMoveStep?: boolean;
+        enableCollisionDetection?: boolean;
+        mouseSensitivity?: number;
+        moveStep?: number;
+        rotateStep?: number;
+        initView?: any;
+    });
+    /**
+     * 获取或设置当前是否开启鼠标操作功能，当该参数为true时，开启漫游后页面将进入全屏模式，由于浏览器安全策略
+    的限制，此时<code>start()</code>方法必需由一个用户手势触发（如主动点击按钮），而不能由程序被动触发
+     */
+    enableMouseLook: boolean;
+    /**
+     * 获取或设置当前是否开启动态移动步长
+     */
+    enableDynamicMoveStep: boolean;
+    /**
+     * 获取或设置当前是否开启碰撞检测
+     */
+    enableCollisionDetection: boolean;
+    /**
+     * 获取或设置鼠标灵敏度
+     */
+    mouseSensitivity: number;
+    /**
+     * 获取或设置移动步长
+     */
+    moveStep: number;
+    /**
+     * 获取或设置旋转角度
+     */
+    rotateStep: number;
+    /**
+     * 获取或设置初始视角
+     */
+    initView: any;
+    /**
+     * 开始场景相机漫游
+     */
+    start(): void;
+    /**
+     * 停止场景相机漫游，若在全屏状态下，则无需调用该方法停止场景相机漫游，只需要按下<code>ESC</code>或<code>F11</code>
+     */
+    stop(): void;
 }
 
 /**
@@ -25317,7 +26018,109 @@ export class AttributeSurfacePrimitive {
 /**
  * 图元
  * @example
- * var graphic = new Graphic({type:label,style:{text:'mapgis'}});
+ * //初始化一个标绘图层
+var graphicsLayer = new Cesium.GraphicsLayer(viewer, {});
+viewer.scene.layers.appendGraphicsLayer(graphicsLayer);
+//添加一个Marker基础标绘对象
+var marker = new Cesium.Graphic({
+  //类型
+  type: 'marker',
+  //位置点
+  positions: [new Cesium.Cartesian3(-1160028.4895404815, 5443801.569087819, 3103982.2120705717)],
+  //样式
+  style: {
+      labelStyle: {
+          //字体
+         font: '30px sans-serif',
+         //文字内容
+         text: '这是Marker',
+         //文字颜色
+         fillColor: Cesium.Color.RED
+      },
+      billboardStyle: {
+          //billboard图片链接
+          image: 'http://webclient.smaryun.com:8200/NoneSpatialData/image/icon.png'
+      },
+      //文字相对于图片方位
+      labelPlaceType: 'topCenter',
+      //文字相对于图片间距
+      labelPadding: 20,
+      //离地高度
+      offsetHeight: 100,
+      //marker的屏幕像素偏移
+      pixelOffset: new Cesium.Cartesian2(0, 0)
+  },
+});
+//添加Marker
+graphicsLayer.addGraphic(marker);
+//修改样式
+marker.style.labelPlaceType = "leftCenter";
+marker.style.labelStyle.fillColor = Cesium.Color.BLUE;
+marker.style.billboardStyle.width = 100;
+-----------------------------------------------------------------------------
+//添加一个多边形图元
+var polygonGraphic = new Cesium.Graphic({
+  type: 'polygon',
+  positions: [
+      Cesium.Cartesian3.fromDegrees(113.9514, 30.0129, 0),
+      Cesium.Cartesian3.fromDegrees(113.964, 30.0219, 0),
+      Cesium.Cartesian3.fromDegrees(113.9753, 30.015, 0),
+      Cesium.Cartesian3.fromDegrees(113.9624, 30.0075, 0),
+      Cesium.Cartesian3.fromDegrees(113.9514, 30.0129, 0)
+  ],
+  style: {
+      color: Cesium.Color.AQUA
+  }
+});
+//将标绘点添加入标绘图层
+graphicsLayer.addGraphic(polygonGraphic);
+//平移多边形，修改transformX、transformY、transformZ，三个值组成一个平移向量，朝这个方向平移，笛卡尔坐标
+polygonGraphic.transformX += 100;
+polygonGraphic.transformY += 2000;
+polygonGraphic.transformZ += 300;
+//通过经纬度计算笛卡尔平移向量
+var position1 = new Cesium.Cartographic(114.103, 30.25, 100);
+var position2 = new Cesium.Cartographic(114.211, 30.46, 100);
+position1 = Cesium.Cartesian3.fromDegrees(position1.longitude, position1.latitude, position1.height);
+position2 = Cesium.Cartesian3.fromDegrees(position2.longitude, position2.latitude, position2.height);
+var translate = Cesium.Cartesian3.subtract(position2, position1);
+polygonGraphic.transformX += translate.x;
+polygonGraphic.transformY += translate.y;
+polygonGraphic.transformZ += translate.z;
+//旋转多边形，修改heading、pitch、roll来实现三个轴向旋转，弧度值
+polygonGraphic.heading += 0.1;
+polygonGraphic.pitch += 0.1;
+polygonGraphic.roll += 0.1;
+--------------------------------------------------------------------------------------
+//新增一个类型为div的标绘对象
+//创建一个html字符串或者一个html标签对象
+var html = "<div style='width: 100px;height: 100px;background-color: #00A7AA;'>";
+//创建一个标绘对象
+var graphic = new Cesium.Graphic({
+   //标绘类型
+   type: 'div',
+   //标绘位置
+   positions: [Cesium.Cartesian3.fromDegrees(114.285992, 30.585234, 0)],
+   //标绘样式
+   style: {
+       //html字符串或标签对象
+       html: html,
+       //html相对原始位置的屏幕像素偏移
+       pixelOffset: new Cesium.Cartesian2(0, 0),
+       //额外抬升高度
+       offsetHeight: 0
+   },
+   //开启时，当对象在模型内部时，会隐藏，开启此功能会有性能损耗
+   enableVFC: false,
+   //当div对象和主相机的距离超过20000000米时，隐藏div对象
+   disappearByDistance: 20000000
+});
+//将标绘添加入标绘图层
+graphicsLayer.addGraphic(graphic);
+//创建完成后，实时修改
+graphic.style.html = "新的html";
+graphic.style.pixelOffset = new Cesium.Cartesian2(0, 156);
+graphic.style.offsetHeight = 2000;
  * @param [options.type] - 图元类型{@link Graphic.graphicType}
  * //  * @param {String}  [options.id] 图元ID
  * @param [options.positions] - 图元坐标信息,笛卡尔世界坐标为cartesian3,经纬度数组为例如[-115.0, 37.0, 100000.0, -107.0, 33.0, 150000.0]
@@ -25333,6 +26136,8 @@ export class AttributeSurfacePrimitive {
  * @param [options.transformX = 0.0] - 局部坐标系X方向平移量，单位米，X方向为纬线方向
  * @param [options.transformY = 0.0] - 局部坐标系Y方向平移量，单位米，Y方向为经线方向
  * @param [options.transformZ = 0.0] - 局部坐标系Z方向平移量，单位米，Z方向为垂直地表方向
+ * @param [options.enableVFC = false] - 是否开启模型内部的视锥体检测，即标绘在模型内部是否隐藏，仅当类型为div时生效
+ * @param [options.disappearByDistance = 20000000] - 根据div对象和主相机的距离，显示或隐藏div对象
  */
 export class Graphic {
     constructor(options: {
@@ -25350,6 +26155,8 @@ export class Graphic {
         transformX?: number;
         transformY?: number;
         transformZ?: number;
+        enableVFC?: number;
+        disappearByDistance?: number;
     });
     /**
      * 图元类型 参照{@link Graphic.graphicType}
@@ -25443,6 +26250,22 @@ export class Graphic {
      */
     readonly primitive: Primitive;
     /**
+     * 图形更新后的回调，请在这个回调里面获取图形参数，不要在vue上绑定图形对象
+     */
+    updated: (...params: any[]) => any;
+    /**
+     * 是否开启视锥体检测，仅当类型为div时生效
+     */
+    enableVFC: boolean;
+    /**
+     * 更新整个标绘对象，包括位置、矩阵、样式等
+     * @param style - 标绘对象的style
+     * @param name - 标绘对象的样式名
+     * @param value - 标绘对象的样式值(新)
+     * @param oldValue - 标绘对象的样式值(旧)
+     */
+    updateGraphic(style: any, name: any, value: any, oldValue: any): void;
+    /**
      * 给图元添加属性字段
      * @param key - 关键字
      * @param value - 值
@@ -25465,6 +26288,7 @@ export class Graphic {
     /**
      * 图元类型
      * @property [point = 'point'] - 点，类型（type）为point时样式参数参照{@link Style.PointStyle}
+     * @property [marker = 'marker'] - marker，类型（type）为marker时样式参数参照{@link Style.MarkerStyle}
      * @property [label = 'label'] - 文本,类型（type）为label时样式参数参照{@link Style.LabelStyle}
      * @property [billboard = 'billboard'] - 广告牌，类型(type)为billboard时样式参数参照{@link Style.BillboardStyle}
      * @property [polyline = 'polyline'] - 线，类型(type)为polyline时样式参数参照{@link Style.PolylineStyle}
@@ -25480,9 +26304,11 @@ export class Graphic {
      * @property [wall = 'wall'] - 墙，类型(type)为wall时样式参数参照{@link Style.WallStyle}
      * @property [box = 'box'] - 盒子,类型（type）为box时样式参数参照{@link Style.BoxStyle}
      * @property [model = 'model'] - gltf模型,类型（type）为model时样式参数参照{@link Style.ModelStyle}
+     * @property [dynamicRiver = 'dynamicRiver'] - 河流,类型（type）为dynamicRiver时样式参数参照{@link Style.RiverStyle}
      */
     static graphicType: {
         point?: string;
+        marker?: string;
         label?: string;
         billboard?: string;
         polyline?: string;
@@ -25498,6 +26324,7 @@ export class Graphic {
         wall?: string;
         box?: string;
         model?: string;
+        dynamicRiver?: string;
     };
 }
 
@@ -25596,6 +26423,28 @@ export class Style {
         disableDepthTestDistance?: number;
     };
     /**
+     * Marker样式
+     * @property [labelPlaceType = 'topCenter'] - 文字相对图片位置，可选值：topLeft：靠上靠左，topCenter：靠上居中，topRight：靠上靠右，
+    centerLeft：垂直居中靠左，center：垂直水平居中，centerRight：垂直居中靠右，bottomLeft：底部靠左，bottomCenter：底部居中，
+    bottomRight：底部靠右，leftTop：左边靠上：leftCenter：左边居中，leftBottom：左边靠下，rightTop：右边靠上，rightCenter：右边居中，
+    rightBottom：右边考下
+     * @property [labelPadding = 20] - label与billboard之间的间隔
+     * @property [offsetHeight = 0] - marker的离地高度
+     * @property [pixelOffset = new Cartesian2(0,0)] - marker的像素偏移
+     * @property [disableDepthTestDistance] - 在某个相机视角高度下（例如10000米），禁用深度检测。当设置值为Number.POSITIVE_INFINITY时，深度检测被一直禁用。
+     * @property [labelStyle] - label样式，详见{@link Style.LabelStyle}
+     * @property [billboardStyle] - billboard样式，详见{@link Style.BillboardStyle}
+     */
+    static MarkerStyle: {
+        labelPlaceType?: string;
+        labelPadding?: number;
+        offsetHeight?: number;
+        pixelOffset?: Cartesian2;
+        disableDepthTestDistance?: number;
+        labelStyle?: any;
+        billboardStyle?: any;
+    };
+    /**
      * 广告牌样式
      * @property [image] - 图片路径
      * @property [color = Color.WHITE] - 广告牌颜色
@@ -25670,6 +26519,29 @@ export class Style {
         materialType?: string;
         material?: Material;
         depthTest?: boolean;
+    };
+    /**
+     * 河流样式
+     * @property [image = 'Assets/Images/poly-rivers.jpg'] - 河流图片 该图片资源必须使用2的次幂大小如：64*64、512*512
+     * @property [width = 1.0] - 河流宽度
+     * @property [height = 0.0] - 河流高度
+     * @property [heightReference = 0] - 高度模式 0：使用坐标点的绝对高度；1：固定高度模式，使用height做为高度值
+     * @property [offsetHeight = 0.0] - 河流高度偏移
+     * @property [alpha = true] - 河流透明度
+     * @property [speed = 10.0] - 流动速度
+     * @property [isLerpKeySpot = false] - 是否对关键点做插值
+     * @property [lerpPrecision = 2] - 插值精度(单位：米) 当插值精度小于河流宽度时会使用河流宽度做为插值精度
+     */
+    static RiverStyle: {
+        image?: string;
+        width?: number;
+        height?: number;
+        heightReference?: number;
+        offsetHeight?: number;
+        alpha?: number;
+        speed?: number;
+        isLerpKeySpot?: boolean;
+        lerpPrecision?: number;
     };
     /**
      * 圆管线图元样式
@@ -25988,6 +26860,182 @@ export class Style {
         flat?: boolean;
     };
     /**
+     * Div图元样式
+     * @property [html = ''] - div字符串或者dom元素
+     * @property [pixelOffset = Cartesian2(0, 0)] - 屏幕像素偏移
+     * @property [offsetHeight = 0] - 抬高高度
+     * @property [distanceDisplayCondition = DistanceDisplayCondition(0, 20000000)] - 在最小和最大的相机距离内，才显示图元
+     * @property [translucencyByDistance = NearFarScalar(0, 1,  20000000, 1)] - 在最小距离内，透明度恒定为nearValue，在最小距离和最大距离内，透明度从nearValue到farValue，在最大范围外透明度恒定为farValue
+     * @property [scaleByDistance = NearFarScalar(0, 1,  20000000,  1)] - 在最小距离内，缩放系数恒定为nearValue，在最小距离和最大距离内，缩放系数从nearValue到farValue，在最大范围外缩放系数度恒定为farValue
+     */
+    static DivStyle: {
+        html?: string | any;
+        pixelOffset?: Cartesian2;
+        offsetHeight?: number;
+        distanceDisplayCondition?: DistanceDisplayCondition;
+        translucencyByDistance?: NearFarScalar;
+        scaleByDistance?: NearFarScalar;
+    };
+    /**
+     * 动态注记样式
+     * @example
+     * const  symbol = {
+     *                     // 填充颜色 rgba or 16进制颜色
+     *                     color: 'rgba(255,255,255,1)',
+     *                     // 描边颜色
+     *                     haloColor: 'rgba(0,0,0,1)',
+     *                     // 描边宽度
+     *                     haloSize: 1,
+     *                     // 行高
+     *                     lineHeight: 1.1,
+     *                     // 行宽
+     *                     lineWidth: 80,
+     *                     // 最大行数
+     *                     lineMaxNum: 3,
+     *                     // 换行
+     *                     textWraps: true,
+     *                     // 文本间距
+     *                     letterSpacing: '1px',
+     *                     // x方向偏移
+     *                     xoffset: 0,
+     *                     // y方向偏移
+     *                     yoffset: 0,
+     *                     // 字体样式 参考css
+     *                     font: {
+     *                         size: 15,
+     *                         family: 'simHei',
+     *                         weight: 'normal',
+     *                         style: 'normal'
+     *                     },
+     *                     // 是否开启填充背景
+     *                     showBackground: true,
+     *                     // 背景填充色
+     *                     backgroundColor: 'rgba(42,42,42,0.8)',
+     *                     // 背景边距 number or array（测试接口）
+     *                     backgroundPadding: [5,5],
+     *                     // 背景图片 支持image对象、function（测试接口）
+     *                     backgroundImage:undefined,
+     *                     // 是否开启图标（测试接口）
+     *                     showTextExtraIcon:true,
+     *                     // 图标图片 支持image对象（测试接口）
+     *                     textExtraIcon:image,
+     *                     // 图标方位 "left" "right" "top" "bottom"（测试接口）
+     *                     textExtraIconAnchor:"left",
+     *                     // 图标大小（测试接口）
+     *                     textExtraIconSize:12,
+     *                     // 是否开启阴影
+     *                     showTextShadow: false,
+     *                     textShadowOffsetX: 1,
+     *                     textShadowOffsetY: 1,
+     *                     textShadowColor: '#ffffff',
+     *                     textShadowBlur: 2,
+     *                     // 文字删除线
+     *                     showTextDecorationThroughline: false,
+     *                     textDecorationThroughlineColor: 'rgba(255,255,255,1)',
+     *                     textDecorationThroughlineWidth: 1,
+     *                     // 文字下划线
+     *                     showTextDecorationUnderline: false,
+     *                     textDecorationUnderlineColor: 'rgba(255,255,255,1)',
+     *                     textDecorationUnderlineWidth: 1
+     *                 };
+     *                 相关扩展，绘制圆角矩形背景
+     *                 const symbol = {
+     *                                 ...
+     *                                 // 是否开启填充背景
+     *                                 showBackground: true,
+     *                                 // 背景填充色
+     *                                 backgroundColor: 'rgba(42,42,42,0.8)',
+     *                                 // 背景边距 number or array
+     *                                 backgroundPadding: [5,5],
+     *                                 // 背景图片 支持image对象、function
+     *                                 backgroundImage:function(ctx,x,y,width,height){
+     *                                     ctx.save()
+     *                                     drawArcRect(ctx,x,y,radius,width,height);
+     *                                     ctx.fillStyle = "#183f7d"
+     *                                     ctx.fill()
+     *                                     ctx.restore()
+     *
+     *                                     ctx.save()
+     *                                     drawArcRect(ctx,x+2,y+2,radius,width-4,height-4);
+     *                                     ctx.strokeStyle = "rgba(255,255,255,1)"
+     *                                     ctx.lineWidth =2
+     *                                     ctx.stroke()
+     *                                     ctx.restore()
+     *                                 }
+     *                                 ...
+     *                     }
+     * @property [symbol] - 文本符号
+     * @property [renderMode] - 渲染模式,可选canvas/label/ground（贴地注记）。
+     * @property [groundScale] - 渲染模式为ground时，设置像素与实际单位米之间的比例关系。测试接口。假设groundScale为10，20*20px的逻辑范围贴地时会被渲染为200*200m的注记
+     * @property [maxScale] - 最大可见范围。单位米
+     * @property [minScale] - 最小可见范围。单位米
+     * @property [labelHeight] - 相对于几何数据的高度。单位米
+     * @property [labelPlacement] - 布局位置，描述注记和几何之间的关系。针对于点类型可选项1.above-left 2.above-center 3.above-right 4.center-left 5.center-center 6.center-right 7.below-left 8.below-center 9.below-right 针对于线类型 1.'on-line' 压线 2.'above-line' 线上 3.'under-line' 线下 针对于面类型1.'parallel' 平行 2.'outside' 区外 3.'bottom' 底部 4.'skeleton' 骨架线
+     * @property [currentAttributeName] - 当前属性字段
+     * @property [repeatLabel] - 重复类型，限制线类型使用
+     * @property [repeatLabelDistance] - 重复步长，限制线类型使用
+     * @property [repeatStartRate] - 开始步长比例，限制线、面类型使用
+     * @property [repeatEndRate] - 结束步长比例，限制线、面类型使用
+     * @property [lineLabelSpread] - 线注记分布方式  1.'auto-spread' 字母集中，汉字分散 2.'centralization-spread'集中 3.'decentralize-spread' 分散，限制线使用
+     * @property [labelPositionAlong] - 线文字与线关系 仅集中注记时生效  1.'start' 线头 2.'middle' 线中点 3.'end' 线尾，限制线使用
+     * @property [text] - 文本内容
+     * @property [font] - 字体类型(参照 CSS 的字体样式属性)
+     * @property [fillColor] - 字体颜色
+     * @property [outlineColor] - 外边框颜色
+     * @property [outlineWidth] - 外边框宽度
+     * @property [showBackground] - 是否显示背景
+     * @property [offsetHeight] - 文本离地高度
+     * @property [backgroundColor] - 背景颜色
+     * @property [backgroundPadding] - 文本在背景中的偏移量，类似CSS中的padding，x代表水平padding像素值，y代表垂直padding像素值.左上角为原点。
+     * @property [pixelOffset] - 文本屏幕像素偏移量
+     * @property [eyeOffset] - 文本相机坐标下偏移量
+     * @property [horizontalOrigin] - 文本水平方向放置位置
+     * @property [verticalOrigin] - 文本垂直方向放置位置
+     * @property [scale] - 文本比例尺
+     * @property [translucencyByDistance] - 文本的透明度随相机高度变化。用法详见{@link Label#translucencyByDistance}。
+     * @property [pixelOffsetScaleByDistance] - 文本的屏幕像素偏移随相机高度变化。用法详见{@link Label#pixelOffsetScaleByDistance}。
+     * @property [scaleByDistance] - 文本的大小随相机高度变化。用法详见{@link Label#scaleByDistance}。
+     * @property [heightReference] - 如何摆放在地形上。NONE：使用绝对高度、CLAMP_TO_GROUND：贴在地形上、RELATIVE_TO_GROUND：相对地形抬高一定高度。
+     * @property [distanceDisplayCondition] - 决定在某个相机视角高度范围内图元是否可见。
+     * @property [disableDepthTestDistance] - 在某个相机视角高度下（例如10000米），禁用深度检测。当设置值为Number.POSITIVE_INFINITY时，深度检测被一直禁用。
+     */
+    static LabelNoteStyle: {
+        symbol?: any;
+        renderMode?: string;
+        groundScale?: number;
+        maxScale?: number;
+        minScale?: number;
+        labelHeight?: number;
+        labelPlacement?: string;
+        currentAttributeName?: string;
+        repeatLabel?: boolean;
+        repeatLabelDistance?: number;
+        repeatStartRate?: number;
+        repeatEndRate?: number;
+        lineLabelSpread?: number;
+        labelPositionAlong?: number;
+        text?: string;
+        font?: string;
+        fillColor?: string | Color;
+        outlineColor?: string | Color;
+        outlineWidth?: number;
+        showBackground?: boolean;
+        offsetHeight?: number;
+        backgroundColor?: Color;
+        backgroundPadding?: Cartesian2;
+        pixelOffset?: Cartesian2;
+        eyeOffset?: Cartesian3;
+        horizontalOrigin?: number;
+        verticalOrigin?: number;
+        scale?: number;
+        translucencyByDistance?: NearFarScalar;
+        pixelOffsetScaleByDistance?: NearFarScalar;
+        scaleByDistance?: NearFarScalar;
+        heightReference?: number;
+        distanceDisplayCondition?: DistanceDisplayCondition;
+        disableDepthTestDistance?: number;
+    };
+    /**
      * 将Style对象转换成与cesium无关的对象
      * @example
      * var options = new  Cesium.Style('label', {text:'mapgis',color:#ffffff});
@@ -26096,6 +27144,9 @@ export class Style {
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
  * @param [options.renderer] - 专题图渲染规则，用于提供专题图服务
+ * @param [options.isDrawLabels] - 是否开启动态注记（需要属性字段支持）
+ * @param [options.labelsOption] - 动态注记选项，参考{@link Style.LabelNoteStyle}。
+ * @param [options.labelDynamicEntityVisualizer] - 动态注记视图类，处理动态注记
  */
 export class MapGISFeatureGeojsonProvider {
     constructor(options: {
@@ -26142,6 +27193,9 @@ export class MapGISFeatureGeojsonProvider {
         tilingScheme?: any;
         extensions?: any[];
         renderer?: any;
+        isDrawLabels?: boolean;
+        labelsOption?: any;
+        labelDynamicEntityVisualizer?: any;
     });
     /**
      * 服务地址
@@ -26331,6 +27385,8 @@ on a {@link Globe}.
  * @param [options.cutoutRectangle] - Cartographic rectangle for cutting out a portion of this MapGISFeatureLayer.
  * @param [options.colorToAlpha] - Color to be used as alpha.
  * @param [options.colorToAlphaThreshold = 0.004] - Threshold for color-to-alpha.
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
 export class MapGISFeatureLayer {
     constructor(imageryProvider: ImageryProvider, options?: {
@@ -26353,6 +27409,8 @@ export class MapGISFeatureLayer {
         cutoutRectangle?: Rectangle;
         colorToAlpha?: Color;
         colorToAlphaThreshold?: number;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
     });
     /**
      * The alpha blending value of this layer, with 0.0 representing fully transparent and
@@ -26443,6 +27501,14 @@ export class MapGISFeatureLayer {
      * 透明度属性
      */
     translucency: number;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
     /**
      * This value is used as the default brightness for the imagery layer if one is not provided during construction
     or by the imagery provider. This value does not modify the brightness of the imagery.
@@ -26862,6 +27928,9 @@ export class MapGISFeatureLayer {
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
  * @param [options.renderer] - 专题图渲染规则，用于提供专题图服务
+ * @param [options.isDrawLabels] - 是否开启动态注记（需要属性字段支持）
+ * @param [options.labelsOption] - 动态注记选项，参考{@link Style.LabelNoteStyle}。
+ * @param [options.labelDynamicEntityVisualizer] - 动态注记视图类，处理动态注记
  */
 export class MapGISFeatureProvider {
     constructor(options: {
@@ -26911,6 +27980,9 @@ export class MapGISFeatureProvider {
         tilingScheme?: any;
         extensions?: any[];
         renderer?: any;
+        isDrawLabels?: boolean;
+        labelsOption?: any;
+        labelDynamicEntityVisualizer?: any;
     });
     /**
      * 服务地址
@@ -27243,6 +28315,8 @@ on a {@link Globe}.
  * @param [options.cutoutRectangle] - Cartographic rectangle for cutting out a portion of this MapGISGeojsonLayer.
  * @param [options.colorToAlpha] - Color to be used as alpha.
  * @param [options.colorToAlphaThreshold = 0.004] - Threshold for color-to-alpha.
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
 export class MapGISGeojsonLayer {
     constructor(imageryProvider: ImageryProvider, options?: {
@@ -27265,6 +28339,8 @@ export class MapGISGeojsonLayer {
         cutoutRectangle?: Rectangle;
         colorToAlpha?: Color;
         colorToAlphaThreshold?: number;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
     });
     /**
      * The alpha blending value of this layer, with 0.0 representing fully transparent and
@@ -27355,6 +28431,14 @@ export class MapGISGeojsonLayer {
      * 透明度属性
      */
     translucency: number;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
     /**
      * This value is used as the default brightness for the imagery layer if one is not provided during construction
     or by the imagery provider. This value does not modify the brightness of the imagery.
@@ -27494,7 +28578,6 @@ export class MapGISGeojsonLayer {
        });
  * @param options - 包含以下属性
  * @param options.url - 发布的Geojson数据服务地址
- * @param [options.loadAll = true] - 是否加载该图层所有数据
  * @param [options.maxCount = 1000000] - 该图层的矢量最大数量
  * @param [options.idField = FID] - id字段名
  * @param [options.tileFeaturesCount = 400] - 请求的瓦片矢量要素数量
@@ -27506,11 +28589,13 @@ export class MapGISGeojsonLayer {
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
  * @param [options.renderer] - 专题图渲染规则，用于提供专题图服务
+ * @param [options.isDrawLabels] - 是否开启动态注记（需要属性字段支持）
+ * @param [options.labelsOption] - 动态注记选项，参考{@link Style.LabelNoteStyle}。
+ * @param [options.labelDynamicEntityVisualizer] - 动态注记视图类，处理动态注记
  */
 export class MapGISGeojsonProvider {
     constructor(options: {
         url: string;
-        loadAll?: boolean;
         maxCount?: number;
         idField?: string;
         tileFeaturesCount?: number;
@@ -27522,6 +28607,9 @@ export class MapGISGeojsonProvider {
         tilingScheme?: any;
         extensions?: any[];
         renderer?: any;
+        isDrawLabels?: boolean;
+        labelsOption?: any;
+        labelDynamicEntityVisualizer?: any;
     });
     /**
      * 服务地址
@@ -27704,19 +28792,169 @@ export class MapGISGeojsonTilePrimitiveCollection {
 }
 
 /**
+ * 带顶点动画的圆管体积线几何体
+<br/><br/>
+1. 此几何体是继承于{@link PolylineVolumeGeometry}圆管几何体。<br/>
+2. 顶点动画运动方式是沿着圆管的绘制方向运动。
+ * @example
+ * // 1. 创建带顶点动画的圆管
+function computeCircle(radius) {
+  var positions = [];
+  for (var i = 0; i < 360; i++) {
+    var radians = Cesium.Math.toRadians(i);
+    positions.push(new Cesium.Cartesian2(radius * Math.cos(radians), radius * Math.sin(radians)));
+  }
+  return positions;
+}
+
+var volume = new Cesium.PolylineVolumeAnimationGeometry({
+  animationDuration: 3, // 动画持续时间
+  vertexFormat : Cesium.VertexFormat.POSITION_ONLY,
+  polylinePositions : Cesium.Cartesian3.fromDegreesArray([
+    -72.0, 40.0,
+    -70.0, 35.0
+  ]),
+  shapePositions : computeCircle(100000.0)
+});
+
+// 2. 顶点动画
+// 2.1 从头开始播放
+volume.playAnimation();
+// 2.2 从1秒处开始播放
+volume.playAnimation(1);
+// 2.3 停止动画
+volume.stopAnimation();
+// 2.4 监听动画更新事件
+volume.animationUpdateEvent.addEventListener((position, time)=>{
+     console.log('动画当前播放的时间：', time);
+     console.log('当前的位置：', position);
+})
+// 2.5 监听动画结束事件
+volume.animationStopEvent.addEventListener((position, time)=>{
+     console.log('动画当前播放的时间：', time);
+     console.log('当前的位置：', position);
+})
+ * @param options - Object with the following properties:
+ * @param options.polylinePositions - An array of {@link Cartesian3} positions that define the center of the polyline volume.
+ * @param options.shapePositions - An array of {@link Cartesian2} positions that define the shape to be extruded along the polyline
+ * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
+ * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
+ * @param [options.cornerType = CornerType.ROUNDED] - Determines the style of the corners.
+ * @param [options.animationDuration = 3] - 动画的持续时间。
+ */
+export class PolylineVolumeAnimationGeometry extends PolylineVolumeGeometry {
+    constructor(options: {
+        polylinePositions: Cartesian3[];
+        shapePositions: Cartesian2[];
+        ellipsoid?: Ellipsoid;
+        granularity?: number;
+        vertexFormat?: VertexFormat;
+        cornerType?: CornerType;
+        animationDuration?: number;
+    });
+    /**
+     * 动画是否停止
+     */
+    readonly isAnimationStop: boolean;
+    /**
+     * 动画的播放时间(单位：秒)
+     */
+    readonly animationCurrentTime: number;
+    /**
+     * 动画时长(单位：秒)
+     */
+    animationDuration: number;
+    /**
+     * 动画更新回调
+     */
+    readonly animationUpdateEvent: Event;
+    /**
+     * 动画停止回调
+     */
+    readonly animationStopEvent: Event;
+    /**
+     * 播放顶点动画
+     * @param time - 动画播放的开始时间点，当播放时间大于持续时间时，顶点动画会直接结束。
+     */
+    playAnimation(time: number): void;
+    /**
+     * 停止顶点动画，顶点动画跳到播放完毕的状态
+     */
+    stopAnimation(): void;
+    /**
+     * 暂停播放顶点动画
+     */
+    pauseAnimation(): void;
+    /**
+     * 继续或重播顶点动画
+     */
+    continueAnimation(): void;
+    /**
+     * 获取动画播放过程中的顶点数据，动画未播放或动画播放结束后获取的是动画结束的顶点数据
+     */
+    getAnimatedMesh(): Geometry;
+}
+
+/**
  * 标绘管理图层
  * @example
- * var graphicsLayer = new Cesium.GraphicsLayer(viewer);
+ * ---------------------------------------------------------------------
+//初始化标绘图层
+var graphicsLayer = new Cesium.GraphicsLayer(viewer, {
+  //添加标绘对象成功后的回调函数
+  getGraphic: function(e) {},
+  //撤销添加模型的回调函数
+  revokeModel: function(e) {},
+  //撤销添加点，广告牌，文字框，div，marker的回调函数
+  revokePoint: function(e) {},
+  //点击标绘对象的回调函数
+  clickGraphic: function(e) {},
+  //是否启用标绘对象的点击事件
+  enableClickGraphic: true,
+  //是否启用右键撤销绘制
+  enableRightRevoke: true,
+  //重写鼠标移动提示事件
+  mouseMoveShowAt: function(position, tipDom, tittleDom, arrowDom){
+      tittleDom.innerHTML = "你的提示";
+      tipDom.style.left = position.x + 10 + 'px';
+      tipDom.style.top = position.y - tipDom.clientHeight / 2 + 'px';
+  },
+  //是否显示提示框
+  enableToolTip: true
+});
+//添加标绘图层到图层管理器中
 viewer.scene.layers.appendGraphicsLayer(graphicsLayer);
+--------------------------------------------------------------------
+//完全重写提示框对象
+var graphicsLayer = new Cesium.GraphicsLayer(viewer, {
+  //重写鼠标移动提示事件，当toolTipDom存在时，只有两个回调参数
+  mouseMoveShowAt: function(position, tipDom){
+     //你的提示事件
+  },
+  toolTipDom: "你的toolTipDom的DOM对象"
+});
  * @param [options.getGraphic = function] - 添加标绘对象成功后的回调函数。
  * @param [options.revokeModel = function] - 撤销添加模型的回调函数。
  * @param [options.revokePoint = function] - 撤销添加点，广告牌，文字框的回调函数。
+ * @param [options.clickGraphic = function] - 点击标绘对象的回调函数。
+ * @param [options.enableClickGraphic = true] - 是否启用标绘对象的点击事件。
+ * @param [options.enableRightRevoke = true] - 是否启用右键撤销绘制。
+ * @param [options.mouseMoveShowAt = function(position, tipDom, tittleDom, arrowDom)] - 重写鼠标移动时的提示函数，position：当前鼠标的屏幕像素坐标, tittleDom：提示内容的dom元素对象, arrowDom：提示左箭头的dom元素对象, tipDom：整个提示框的dom元素对象。
+ * @param [options.toolTipDom] - 重写整个提示框dom对象
+ * @param [options.enableToolTip = true] - 是否显示提示框
  */
 export class GraphicsLayer {
     constructor(viewer: Viewer, options: {
         getGraphic?: (...params: any[]) => any;
         revokeModel?: (...params: any[]) => any;
         revokePoint?: (...params: any[]) => any;
+        clickGraphic?: (...params: any[]) => any;
+        enableClickGraphic?: boolean;
+        enableRightRevoke?: boolean;
+        mouseMoveShowAt?: (...params: any[]) => any;
+        toolTipDom?: any;
+        enableToolTip?: boolean;
     });
     /**
      * 图形集合，包含该图层内所有图形对象的键值对
@@ -27729,9 +28967,48 @@ export class GraphicsLayer {
     /**
      * 开始绘制图形 (注意：内部会开始地形深度检测功能)
      * @example
-     * var graphicsLayer = new Cesium.GraphicsLayer(viewer,{getGraphic:getGraphic});
-    graphicsLayer.graphicsLayer.startDrawing({type: Cesium.Graphic.graphicType.box,style: { color: Cesium.color.BLUE,  extrudedHeight: 100 },name: 'box1',attributes: { key: 'www', map: 4645 }});
-    function getGraphic(e) {console.log(e);}
+     * //初始化标绘图层
+    var graphicsLayer = new Cesium.GraphicsLayer(viewer, {});
+    viewer.scene.layers.appendGraphicsLayer(graphicsLayer);
+    //开始绘制Marker
+    graphicsLayer.startDrawing({
+        type: 'marker',
+        style: {
+          //文字相对于图片方位
+          labelPlaceType: 'topCenter',
+          //文字相对于图片间距
+          labelPadding: 20,
+          //字体
+          font: '30px sans-serif',
+          //文字内容
+          text: '这是Marker',
+          //文字颜色
+          fillColor: Cesium.Color.RED,
+          //billboard图片链接
+          image: 'http://webclient.smaryun.com:8200/NoneSpatialData/image/icon.png',
+          //离地高度
+          offsetHeight: 100
+        }
+    });
+    -----------------------------------------------------------------------------------
+    //绘制div
+    graphicsLayer.startDrawing({
+        //类型
+        type: 'div',
+        //样式
+        style: {
+           //html字符串或标签对象
+           html: "你的html",
+           //html相对原始位置的屏幕像素偏移
+           pixelOffset: new Cesium.Cartesian2(0, 0),
+           //额外抬升高度
+           offsetHeight: 0
+        },
+        //开启时，当对象在模型内部时，会隐藏，开启此功能会有性能损耗
+        enableVFC: false,
+        //当div对象和主相机的距离超过20000000米时，隐藏div对象
+        disappearByDistance: 20000000
+    });
      * @param [options.type = 'none'] - 绘制类型：参照{@link Graphic.graphicType}
      * @param [options.isContinued = true] - 是否连续绘制
      * @param [options.drawWithHeight = false] - 是否绘制高度，当为true时使用鼠标绘制高度，当为false时使用参数设置的统一高度
@@ -27778,9 +29055,10 @@ export class GraphicsLayer {
                                       name: 'box1',attributes: { key: 'www', map: 4645 },getGraphic: getGraphic);
     graphicsLayer.addGraphic(graphic);
      * @param graphic - 不同类型实体参考：参见{@link Graphic.graphicType}
+     * @param options - 额外参数
      * @returns 放回回添加的图形
      */
-    addGraphic(graphic: any): Graphic;
+    addGraphic(graphic: any, options: any): Graphic;
     /**
      * 添加模型
      */
@@ -27840,10 +29118,10 @@ export class GraphicsLayer {
     getTransformEditor(Graphic: any, getViewModel: (...params: any[]) => any): any;
     /**
      * 根据ID移除标绘图形
-     * @param ID - 图形ID
+     * @param id - 图形ID
      * @param noRemove - 不使用自带的remove
      */
-    removeGraphicByID(ID: string, noRemove: boolean): void;
+    removeGraphicByID(id: string, noRemove: boolean): void;
     /**
      * 根据GroupName移除一组标绘图形
      * @param name - 组名
@@ -27974,6 +29252,7 @@ export class HashMap {
  * @param [options.nameDB] - Name of IDBDatabase.
  * @param [options.storeHouse] - Name of IDBObjectStore.
  * @param [options.attNameStore] - Name of IDBObjectStore for atrribute.
+ * @param [options.keyPath] - keyPath of an IDBObjectStore.
  * @param [options.transaction] - A Transaction object that will be used.{@ Link Transaction} Intended for internal use only.
  * @param [options.debugShowLog = false] - For debugging only.
  */
@@ -27983,6 +29262,7 @@ export class TransactionImplement {
         nameDB?: string;
         storeHouse?: string;
         attNameStore?: string;
+        keyPath?: string;
         transaction?: any;
         debugShowLog?: boolean;
     });
@@ -28008,20 +29288,108 @@ export class TransactionImplement {
  * An imagery layer that displays tiled image data from a single imagery provider
 on a {@link Globe}.
  * @example
- * var url = 'http://localhost:6163/igs/rest/g3d/label88204';
-    var options = {
-        labelExtend: { scale: 2.0 },
-        getDocLayerIndexes: function (indexs) {
-            console.log(indexs);
-            // 存储单图层
-            layerIndex = indexs[0];
-            layer = viewer.scene.layers.getLayer(layerIndex);
-            console.log(layer);
-            // 存储图层索引数组
-            // layerIndex=indexs;
-        }
-    };
-    viewer.scene.layers.appendSceneLayer(url, options);
+ * var url = 'http://webclient.smaryun.com:6163/igs/rest/g3d/HkPOI';
+ *             viewer.scene.layers.appendSceneLayer(url, {
+ *                 autoReset: false,
+ *                 synchronous: true,
+ *                 // label选项
+ *                 labelExtend: new Cesium.Style.LabelNoteStyle({
+ *                     symbol: {
+ *                         type: 'label-symbol',
+ *                         // 填充颜色 rgba or 16进制颜色
+ *                         color: 'rgba(255,255,255,1)',
+ *                         // 描边颜色
+ *                         haloColor: 'rgba(0,0,0,0.5)',
+ *                         // 描边宽度
+ *                         haloSize: 1,
+ *                         // 行高
+ *                         lineHeight: 1.1,
+ *                         // 行宽
+ *                         lineWidth: 150,
+ *                         // 最大行数
+ *                         lineMaxNum: 3,
+ *                         // 换行
+ *                         textWraps: true,
+ *                         // 文本间距
+ *                         letterSpacing: '2px',
+ *                         // x方向偏移
+ *                         xoffset: 0,
+ *                         // y方向偏移
+ *                         yoffset: 0,
+ *                         // 字体样式 参考css
+ *                         font: {
+ *                             size: 12,
+ *                             family: '微软雅黑',
+ *                             weight: 'normal',
+ *                             style: 'normal'
+ *                         },
+ *                         // 是否开启填充背景
+ *                         showBackground: false,
+ *                         // 背景填充色
+ *                         backgroundColor: 'rgba(42,42,42,1)',
+ *                         // 背景边距 number or array
+ *                         backgroundPadding: [5, 7],
+ *                         // 背景图片 支持image对象、function
+ *                         backgroundImage: undefined,
+ *                         // 是否开启图标
+ *                         showTextExtraIcon: false,
+ *                         // 图标图片 支持image对象
+ *                         textExtraIcon: undefined,
+ *                         // 图标方位 "left" "right" "top" "bottom"
+ *                         textExtraIconAnchor: 'top',
+ *                         // 图标大小
+ *                         textExtraIconSize: 14,
+ *                         // 是否开启阴影
+ *                         showTextShadow: false,
+ *                         textShadowOffsetX: 1,
+ *                         textShadowOffsetY: 1,
+ *                         textShadowColor: '#ffffff',
+ *                         textShadowBlur: 2,
+ *                         // 文字删除线
+ *                         showTextDecorationThroughline: false,
+ *                         textDecorationThroughlineColor: 'rgba(255,255,255,1)',
+ *                         textDecorationThroughlineWidth: 1,
+ *                         // 文字下划线
+ *                         showTextDecorationUnderline: false,
+ *                         textDecorationUnderlineColor: 'rgba(255,255,255,1)',
+ *                         textDecorationUnderlineWidth: 1
+ *                     },
+ *                     // 渲染类型
+ *                     renderMode: 'canvas',
+ *                     // 注记位置
+ *                     labelPlacement: 'above-center',
+ *                     // 缩放
+ *                     scale: 1,
+ *                     // 高度索引参考
+ *                     heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND
+ *                 }),
+ *                 // 是否允许注记覆盖
+ *                 isAllowTextOverlap: false,
+ *                 getDocLayerIndexes: function (indexs) {
+ *                     sceneIndex = indexs[0];
+ *                     // 获取图层
+ *                     var labelLayer = viewer.scene.layers.getLayer(sceneIndex).getLabelLayers()[0];
+ *                     // 添加注记
+ *                     labelLayer.appendLabel(114.2, 31, 200, '这是一个标签', {
+ *                         symbol: {
+ *                             font: {
+ *                                 size: 20,
+ *                                 family: '微软雅黑',
+ *                                 weight: 'normal',
+ *                                 style: 'normal'
+ *                             }
+ *                         },
+ *                         // 渲染类型
+ *                         renderMode: 'ground',
+ *                         // 注记位置
+ *                         labelPlacement: 'above-center',
+ *                         // 缩放
+ *                         scale: 100
+ *                     });
+ *                     // 图层删除方法
+ *                     // viewer.scene.layers.removeLayerByID(sceneIndex, true);
+ *                 }
+ *             });
  * @param labelUrl - 请求到的注记信息
  * @param scene - 场景对象
  * @param options - Object with the following properties:
@@ -28029,11 +29397,14 @@ on a {@link Globe}.
  * @param option.translucency - 注记可配置参数 相机高度-透明度控制
  * @param option.distanceDisplayCondition - 注记可配置参数 相机高度-可见性控制
  * @param [option.maxTextLength = 255] - 注记最大显示长度,默认255
- * @param option.labelExtend - 注记可配置参数 注记对象参数 {@link Label}
+ * @param [option.isAllowTextOverlap = true] - 是否允许注记压盖
+ * @param [option.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [option.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  * @param layerInfo - 从IGS查询到的图层的信息，如最大最小比例尺，避让等
+ * @param labelExtend - 参考{@link Style.LabelNoteStyle}
  */
 export class MapGISLabelLayer {
-    constructor(labelUrl: string, scene: Scene, options: any, layerInfo: any);
+    constructor(labelUrl: string, scene: Scene, options: any, layerInfo: any, labelExtend: any);
     readonly readyPromise: Promise<MapGISLabelLayer>;
     readonly labels: LabelCollection;
     readonly show: boolean;
@@ -28049,66 +29420,61 @@ export class MapGISLabelLayer {
      */
     readonly layerInfo: any;
     /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
+    /**
      * 添加文字标签
      * @example
-     * var url = 'http://localhost:6163/igs/rest/g3d/label88204';
-        var options = {
-            labelExtend: { scale: 2.0 },
-            getDocLayerIndexes: function (indexs) {
-                console.log(indexs);
-                // 存储单图层
-                layerIndex = indexs[0];
-                layer = viewer.scene.layers.getLayer(layerIndex);
-                console.log(layer);
-                var label = layer.appendLabel(114.2, 31, 200, '这是一个标签', {
-                    font:'14pt 楷体',
-                    style:Cesium.LabelStyle.FILL_AND_OUTLINE,
-                    verticalOrigin:Cesium.VerticalOrigin.BOTTOM,
-                    pixelOffset:new Cesium.Cartesian2(0, -9)});
-            }
-        };
-        viewer.scene.layers.appendSceneLayer(url, options);
+     * labelLayer.appendLabel(114.2, 31, 200, '这是一个标签', {
+     *                 symbol: {
+     *                     font: {
+     *                         size: 20,
+     *                         family: '微软雅黑',
+     *                         weight: 'normal',
+     *                         style: 'normal'
+     *                     }
+     *                 },
+     *                 // 渲染类型
+     *                 renderMode: 'ground',
+     *                 // 注记位置
+     *                 labelPlacement: 'above-center',
+     *                 // 缩放
+     *                 scale: 100
+     *             });
      * @param lat - 经度
      * @param lon - 纬度
      * @param height - 高程
      * @param lText - 标签内容
-     * @param [options.id] - 标签id，不设置则使用默认顺序id
-     * @param [options.font = '14pt monospace'] - 字体
-     * @param [options.fillColor = Cesium.Color.WHITE] - 字体的填充色
-     * @param [options.outlineColor = Cesium.Color.WHITE] - 字体的填充色
-     * @param [options.style = Cesium.LabelStyle.FILL_AND_OUTLINE] - 样式
-     * @param [options.outlineWidth = 1] - 外边线宽度
-     * @param [options.heightReference = Cesium.HeightReference.NONE] - 外边线宽度
-     * @param [options.verticalOrigin = Cesium.VerticalOrigin.CENTER] - 标签位置 Cesium.VerticalOrigin.Cesium.VerticalOrigin.LEFT Cesium.VerticalOrigin.RIGHT
-     * @param [options.horizontalOrigin = Cesium.HorizontalOrigin.CENTER] - 标签位置 Cesium.HorizontalOrigin.Cesium.HorizontalOrigin.LEFT Cesium.HorizontalOrigin.RIGHT
-     * @param [options.description] - 属性描述
+     * @param options - 参考{@link Style.LabelNoteStyle}
      * @returns 标签对象 (Label)
      */
-    appendLabel(lat: number, lon: number, height: number, lText: string, options: {
-        id?: string;
-        font?: string;
-        fillColor?: Color;
-        outlineColor?: Color;
-        style?: LabelStyle;
-        outlineWidth?: number;
-        heightReference?: number;
-        verticalOrigin?: VerticalOrigin;
-        horizontalOrigin?: HorizontalOrigin;
-        description?: string;
-    }): Label;
+    appendLabel(lat: number, lon: number, height: number, lText: string, options: any): Label;
     /**
      * 查询Label是否在图层中
      */
-    contains(label: Label): boolean;
+    contains(label: Label | Billboard | Primitive): boolean;
     /**
      * 通过Id获取图层中的Label
      */
     getLabelById(id: string): Label;
     /**
+     * 通过Id获取图层中的Label
+     */
+    getPrimitiveLabelById(id: string): Primitive;
+    /**
+     * 通过Id获取图层中的Label
+     */
+    getCanvasLabelById(id: string): Billboard;
+    /**
      * 移除图层中的Label
      * @returns true为成功移除 false为label不存在
      */
-    removeLabel(label: Label): boolean;
+    removeLabel(label: Label | Billboard | Primitive): boolean;
     /**
      * Returns true if this object was destroyed; otherwise, false.
     <br /><br />
@@ -28188,6 +29554,10 @@ export class Layers {
      * @param [options.headers] - 数据请求头
      * @param [options.loaded] - 回调函数
      * @param [options.errorCallback] - 异常回调函数
+     * @param [options.gltfParsedCallback] - gltf解析完成回调，提供修改gltf对象能力,一个M3D图层包含多个gltf,对所有的gltf应用同一个回调可能不合适
+     * @param [options.fillClip = false] - 是否需要填充M3D2.0数据剖面，在appendM3DLayer函数中给而不是设置裁剪面给的原因是，要想支持剖面选取高亮必须统计primitive的oid列表,为了节省内存,原始数据在加载完成后就会释放，后续没有时机统计oid列表
+     * @param [options.hasSectionGeometry = false] - 是否会存在剖面几何，如果后续该图层通过{@link MapGISM3DSet#addSectionGeometry}接口给m3d图层添加了剖切面则此属性设置为true,同时设置{@link MapGISM3DSet#sectionOnly}为true时，则会只显示剖面。
+     * @param [options.translucency = 1] - {@link MapGISM3DSet}的透明度参数
      * @returns 返回图层序号
      */
     appendM3DLayer(url: string | Resource, options: {
@@ -28202,6 +29572,10 @@ export class Layers {
         headers?: any;
         loaded?: (...params: any[]) => any;
         errorCallback?: (...params: any[]) => any;
+        gltfParsedCallback?: (...params: any[]) => any;
+        fillClip?: boolean;
+        hasSectionGeometry?: boolean;
+        translucency?: number;
     }): number;
     /**
      * 根据图层索引号，获取 M3D 图层对象
@@ -28240,7 +29614,7 @@ export class Layers {
         orientation?: HeadingPitchRange;
     }): void;
     /**
-     * 添加 G3D 服务数据
+     * 添加场景图层
      * @example
      * viewer.scene.layers.appendSceneLayer('http://192.168.90.102:6163/igs/rest/g3d/1218示例', {
          autoReset:false,
@@ -28255,6 +29629,128 @@ export class Layers {
          layers: 'hide:0',
          getDocLayerIndexes: function (indexes) { console.log(indexes); }
      });
+    
+     
+     * @example
+     * // 单值专题图
+     var uniqueRenderer = {
+         // 字段名
+        "field": "OID",
+        // 专题图类型
+        "type": "unique-value",
+        // 专题图参数
+        "uniqueValueInfos": [
+          {
+            // 单值
+            "value": 1,
+            // 符号样式
+            "symbol": {
+              // 符号类型
+              "type": "mesh-3d",
+              // 可添加的符号图层，暂时仅支持fill类型
+              "symbolLayers": [
+                  {
+                    // 符号图层类型
+                    "type": "fill",
+                    // 材质信息
+                    "material": {
+                         // 颜色参数
+                        "color": {
+                            "red": 0,
+                            "green": 0,
+                            "blue": 1,
+                            "alpha": 0.5
+                        }
+                    }
+                  }
+              ]
+            }
+          }
+        ]
+     }
+     // 添加场景图层
+     viewer.scene.layers.appendSceneLayer('服务基地址', {
+       // 设置专题图参数
+       renderer: uniqueRenderer
+     });
+     * @example
+     * // 分段专题图
+    renderer_range = {
+      //专题图字段
+      field: '体积',
+      //专题图类型
+      type: 'class-breaks',
+      //专题图参数
+      classBreakInfos: [
+        {
+          // 最大分段值
+          maxValue: 0.5,
+          // 最小分段值
+          minValue: 0.1,
+          // 符号样式
+          symbol: {
+            // 符号类型
+            type: 'mesh-3d',
+            // 可添加的符号图层，暂时仅支持fill类型
+            symbolLayers: [
+              {
+                // 符号图层类型
+                type: 'fill',
+                // 材质信息
+                material: {
+                  // 颜色参数
+                  color: new Cesium.Color(1.0, 0.0, 1.0, 0.7)
+                }
+              }
+            ]
+          }
+        },
+        {
+          // 最大分段值
+          maxValue: 1.0,
+          // 最小分段值
+          minValue: 0.5,
+          // 符号样式
+          symbol: {
+            // 符号类型
+            type: 'mesh-3d',
+            // 可添加的符号图层，暂时仅支持fill类型
+            symbolLayers: [
+              {
+                // 符号图层类型
+                type: 'fill',
+                // 材质信息
+                material: {
+                  // 颜色参数
+                  color: new Cesium.Color(0.0, 1.0, 0.0, 0.7)
+                }
+              }
+            ]
+          }
+        }
+      ]
+    };
+    // 添加场景图层
+    viewer.scene.layers.appendSceneLayer('服务基地址', {
+      // 设置专题图参数
+      renderer: uniqueRenderer
+    });
+     * @example
+     * // 根据M3DSet的id设置专题图
+    var renderer = [
+      {
+        // 根据M3DSet的id指定要生效的专题图
+        layerId: 'M3DSet的id，即IGS提供的layerIndex参数',
+        // 专题图参数
+        renderer: {}
+      }
+    ]
+    // 添加场景图层
+    viewer.scene.layers.appendSceneLayer('服务基地址', {
+      // 设置专题图参数
+      renderer: renderer
+    });
+     * @param options - 针对不同的图层，有不同的传入参数options。具体可参考{@link MapGISLabelLayer} {@link MapGISM3DSet} {@link MapGISTerrainProvider}等
      * @param [options.autoReset = true] - 是否自动定位
      * @param [options.synchronous = true] - 是否异步请求
      * @param [options.loaded = function] - 回调函数，获取单图层信息
@@ -28269,6 +29765,9 @@ export class Layers {
      * @param [options.orientation = new HeadingPitchRange(0.0, -0.5, mergeBoundingSphere.radius * 2.5] - 镜头朝向
      * @param [options.requestVertexNormals = false] - 是否请求法向（地形）
      * @param [options.proxy] - 代理
+     * @param [options.fillClip = false] - 是否需要填充M3D2.0数据剖面，在appendM3DLayer函数中给而不是设置裁剪面给的原因是，要想支持剖面选取高亮必须统计primitive的oid列表,为了节省内存,原始数据在加载完成后就会释放，后续没有时机统计oid列表
+     * @param [options.hasSectionGeometry = false] - 是否会存在剖面几何，如果后续该图层通过{@link MapGISM3DSet#addSectionGeometry}接口给m3d图层添加了剖切面则此属性设置为true,同时设置{@link MapGISM3DSet#sectionOnly}为true时，则会只显示剖面。
+     * @param [options.renderer] - 场景图层专题图，当专题图参数为对象时，表示将专题图应用再场景图层中的所有M3DSet对象上；当专题图参数为数组时，则可以根据M3DSet的id指定专题图
      */
     appendSceneLayer(url: string, options: {
         autoReset?: boolean;
@@ -28285,6 +29784,9 @@ export class Layers {
         orientation?: HeadingPitchRange;
         requestVertexNormals?: boolean;
         proxy?: DefaultProxy;
+        fillClip?: boolean;
+        hasSectionGeometry?: boolean;
+        renderer?: any;
     }): void;
     /**
      * 按索引号获取 SceneLayer 图层
@@ -28374,6 +29876,14 @@ export class Layers {
     removeAllCesium3DTilesetLayers(destroy?: boolean): void;
     /**
      * 添加影像图层
+     * @example
+     * //添加影像图层，仅支持旧版IGS的.net服务
+    //返回图层序号
+    var layerIndex = viewer.scene.layers.appendImageryLayer("http://webclient.smaryun.com:6163/igs/rest/mrms/tile/北京市Tile");
+    //根据index获取图层
+    var layer =  viewer.scene.layers.getImageryLayer(index);
+    //根据序号删除图层，并销毁内存
+    viewer.scene.layers.removeLayerByID(layerIndex , true);
      * @param url - 服务地址
      * @param options - 可选参数
      * @returns layerIndex 返回图层序号
@@ -28884,7 +30394,7 @@ export class Layers {
      * @example
      * //Geojson数据加载示例
        var layerIndexs;
-       url = 'http://localhost:8895/buildings.geojson';
+       data = 'http://localhost:8895/buildings.geojson';
        var options1 = {
            autoReset: true,
            getDocLayerIndexes: function (indexs) {
@@ -28905,7 +30415,7 @@ export class Layers {
                  label: "svg点符号"
            }
        }
-       viewer.scene.layers.appendFeatureLayer(url, options);
+       viewer.scene.layers.appendFeatureLayer(data, options);
        //通过ID获取MapGISGeojsonLayer图层
        var layerIndexs;
        for(var i = 0; i < layerIndexs; i++){
@@ -28916,10 +30426,12 @@ export class Layers {
        for(var i = 0; i < layerIndexs; i++){
            viewer.scene.layers.removeFeatureLayerByID(layerIndexs[i]);
        }
-     * @param url - 发布的Geojson数据服务地址
+     * @param data - 数据类型,可选 url | GeoJSON Object | TopoJSON Object
      * @param options - 其他附加属性包含以下属性的对象
      * @param [options.getDocLayerIndexes = function] - 回调函数，用于获取文档中的所有图层对象索引
      * @param [options.loaded = function] - 回调函数，用于获取文档中的图层对象
+     * @param [options.proxy] - 转发代理
+     * @param [options.setViewToExisting = true] - 是否视图跳转
      * @param [options.autoReset = true] - 视角是否自动切换到geojson数据的中心
      * @param [options.clampToGround = false] - 是否贴地
      * @param [options.renderer] - 专题图渲染规则，该属性用于提供专题服务
@@ -28961,9 +30473,11 @@ export class Layers {
      * @param [options.minimumLevel = 0] - 瓦片最小级别
      * @param [options.maximumLevel = 0] - 瓦片最大级别
      */
-    appendGeojsonLayer(url: string, options: {
+    appendGeojsonLayer(data: string | any, options: {
         getDocLayerIndexes?: (...params: any[]) => any;
         loaded?: (...params: any[]) => any;
+        proxy?: string;
+        setViewToExisting?: boolean;
         autoReset?: boolean;
         clampToGround?: boolean;
         renderer?: {
@@ -29029,6 +30543,1037 @@ export class Layers {
      * @param [destroy = true] - 是否销毁内存
      */
     removeAllLayers(destroy?: boolean): void;
+}
+
+/**
+ * A tile in a {@link M3DTileset}.  When a tile is first created, its content is not loaded;
+the content is loaded on-demand when needed based on the view.
+<p>
+Do not construct this directly, instead access tiles through {@link M3DTileset#tileVisible}.
+</p>
+ */
+export class M3DTile {
+    constructor();
+    /**
+     * The local transform of this tile.
+     */
+    transform: Matrix4;
+    /**
+     * The final computed transform of this tile.
+     */
+    readonly computedTransform: Matrix4;
+    /**
+     * The error, in meters, introduced if this tile is rendered and its children are not.
+    This is used to compute screen space error, i.e., the error measured in pixels.
+     */
+    readonly geometricError: number;
+    /**
+     * Gets the tile's children.
+     */
+    readonly children: M3DTile[];
+    /**
+     * This tile's parent or <code>undefined</code> if this tile is the root.
+    <p>
+    When a tile's content points to an external tileset JSON file, the external tileset's
+    root tile's parent is not <code>undefined</code>; instead, the parent references
+    the tile (with its content pointing to an external tileset JSON file) as if the two tilesets were merged.
+    </p>
+     */
+    readonly parent: M3DTile;
+    /**
+     * The time in seconds after the tile's content is ready when the content expires and new content is requested.
+     */
+    expireDuration: number;
+    /**
+     * The date when the content expires and new content is requested.
+     */
+    expireDate: JulianDate;
+    /**
+     * The tileset containing this tile.
+     */
+    readonly tileset: M3DTileset;
+    /**
+     * The tile's content.  This represents the actual tile's payload,
+    not the content's metadata in the tileset JSON file.
+     */
+    readonly content: Cesium3DTileContent;
+    /**
+     * Get the bounding sphere derived from the tile's bounding volume.
+     */
+    readonly boundingSphere: BoundingSphere;
+    /**
+     * Returns the <code>extras</code> property in the tileset JSON for this tile, which contains application specific metadata.
+    Returns <code>undefined</code> if <code>extras</code> does not exist.
+     */
+    readonly extras: any;
+}
+
+/**
+ * A feature of a {@link Cesium3DTileset}.
+<p>
+Provides access to a feature's properties stored in the tile's batch table, as well
+as the ability to show/hide a feature and change its highlight color via
+{@link M3DTileFeature#show} and {@link M3DTileFeature#color}, respectively.
+</p>
+<p>
+Modifications to a <code>M3DTileFeature</code> object have the lifetime of the tile's
+content.  If the tile's content is unloaded, e.g., due to it going out of view and needing
+to free space in the cache for visible tiles, listen to the {@link Cesium3DTileset#tileUnload} event to save any
+modifications. Also listen to the {@link Cesium3DTileset#tileVisible} event to reapply any modifications.
+</p>
+<p>
+Do not construct this directly.  Access it through {@link Cesium3DTileContent#getFeature}
+or picking using {@link Scene#pick} and {@link Scene#pickPosition}.
+</p>
+ * @example
+ * // On mouse over, display all the properties for a feature in the console log.
+handler.setInputAction(function(movement) {
+    var feature = scene.pick(movement.endPosition);
+    if (feature instanceof Cesium.M3DTileFeature) {
+        var propertyNames = feature.getPropertyNames();
+        var length = propertyNames.length;
+        for (var i = 0; i < length; ++i) {
+            var propertyName = propertyNames[i];
+            console.log(propertyName + ': ' + feature.getProperty(propertyName));
+        }
+    }
+}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+ */
+export class M3DTileFeature {
+    constructor();
+    /**
+     * Gets or sets if the feature will be shown. This is set for all features
+    when a style's show is evaluated.
+     */
+    show: boolean;
+    /**
+     * Gets or sets the highlight color multiplied with the feature's color.  When
+    this is white, the feature's color is not changed. This is set for all features
+    when a style's color is evaluated.
+     */
+    color: Color;
+    /**
+     * Gets a typed array containing the ECEF positions of the polyline.
+    Returns undefined if {@link Cesium3DTileset#vectorKeepDecodedPositions} is false
+    or the feature is not a polyline in a vector tile.
+     */
+    polylinePositions: Float64Array;
+    /**
+     * Gets the tileset containing the feature.
+     */
+    readonly tileset: Cesium3DTileset;
+    /**
+     * All objects returned by {@link Scene#pick} have a <code>primitive</code> property. This returns
+    the tileset containing the feature.
+     */
+    readonly primitive: Cesium3DTileset;
+    /**
+     * Returns whether the feature contains this property. This includes properties from this feature's
+    class and inherited classes when using a batch table hierarchy.
+     * @param name - The case-sensitive name of the property.
+     * @returns Whether the feature contains this property.
+     */
+    hasProperty(name: string): boolean;
+    /**
+     * Returns an array of property names for the feature. This includes properties from this feature's
+    class and inherited classes when using a batch table hierarchy.
+     * @param [results] - An array into which to store the results.
+     * @returns The names of the feature's properties.
+     */
+    getPropertyNames(results?: string[]): string[];
+    /**
+     * Returns a copy of the value of the feature's property with the given name. This includes properties from this feature's
+    class and inherited classes when using a batch table hierarchy.
+     * @example
+     * // Display all the properties for a feature in the console log.
+    var propertyNames = feature.getPropertyNames();
+    var length = propertyNames.length;
+    for (var i = 0; i < length; ++i) {
+        var propertyName = propertyNames[i];
+        console.log(propertyName + ': ' + feature.getProperty(propertyName));
+    }
+     * @param name - The case-sensitive name of the property.
+     * @returns The value of the property or <code>undefined</code> if the feature does not have this property.
+     */
+    getProperty(name: string): any;
+    /**
+     * Sets the value of the feature's property with the given name.
+    <p>
+    If a property with the given name doesn't exist, it is created.
+    </p>
+     * @example
+     * var height = feature.getProperty('Height'); // e.g., the height of a building
+     * @example
+     * var name = 'clicked';
+    if (feature.getProperty(name)) {
+        console.log('already clicked');
+    } else {
+        feature.setProperty(name, true);
+        console.log('first click');
+    }
+     * @param name - The case-sensitive name of the property.
+     * @param value - The value of the property that will be copied.
+     */
+    setProperty(name: string, value: any): void;
+}
+
+/**
+ * A {@link https://github.com/CesiumGS/3d-tiles/tree/main/specification|3D Tiles tileset},
+used for streaming massive heterogeneous 3D geospatial datasets.
+ * @example
+ * var tileset = scene.primitives.add(new Cesium.M3DTileset({
+     url : 'http://localhost:8002/tilesets/Seattle/tileset.json'
+}));
+ * @example
+ * // Common setting for the skipLevelOfDetail optimization
+var tileset = scene.primitives.add(new Cesium.M3DTileset({
+     url : 'http://localhost:8002/tilesets/Seattle/tileset.json',
+     skipLevelOfDetail : true,
+     baseScreenSpaceError : 1024,
+     skipScreenSpaceErrorFactor : 16,
+     skipLevels : 1,
+     immediatelyLoadDesiredLevelOfDetail : false,
+     loadSiblings : false,
+     cullWithChildrenBounds : true
+}));
+ * @example
+ * // Common settings for the dynamicScreenSpaceError optimization
+var tileset = scene.primitives.add(new Cesium.M3DTileset({
+     url : 'http://localhost:8002/tilesets/Seattle/tileset.json',
+     dynamicScreenSpaceError : true,
+     dynamicScreenSpaceErrorDensity : 0.00278,
+     dynamicScreenSpaceErrorFactor : 4.0,
+     dynamicScreenSpaceErrorHeightFalloff : 0.25
+}));
+ * @param options - Object with the following properties:
+ * @param options.url - The url to a tileset JSON file.
+ * @param [options.show = true] - Determines if the tileset will be shown.
+ * @param [options.modelMatrix = Matrix4.IDENTITY] - A 4x4 transformation matrix that transforms the tileset's root tile.
+ * @param [options.shadows = ShadowMode.ENABLED] - Determines whether the tileset casts or receives shadows from light sources.
+ * @param [options.maximumScreenSpaceError = 16] - The maximum screen space error used to drive level of detail refinement.
+ * @param [options.maximumMemoryUsage = 512] - The maximum amount of memory in MB that can be used by the tileset.
+ * @param [options.cullWithChildrenBounds = true] - Optimization option. Whether to cull tiles using the union of their children bounding volumes.
+ * @param [options.cullRequestsWhileMoving = true] - Optimization option. Don't request tiles that will likely be unused when they come back because of the camera's movement. This optimization only applies to stationary tilesets.
+ * @param [options.cullRequestsWhileMovingMultiplier = 60.0] - Optimization option. Multiplier used in culling requests while moving. Larger is more aggressive culling, smaller less aggressive culling.
+ * @param [options.preloadWhenHidden = false] - Preload tiles when <code>tileset.show</code> is <code>false</code>. Loads tiles as if the tileset is visible but does not render them.
+ * @param [options.preloadFlightDestinations = true] - Optimization option. Preload tiles at the camera's flight destination while the camera is in flight.
+ * @param [options.preferLeaves = false] - Optimization option. Prefer loading of leaves first.
+ * @param [options.dynamicScreenSpaceError = false] - Optimization option. Reduce the screen space error for tiles that are further away from the camera.
+ * @param [options.dynamicScreenSpaceErrorDensity = 0.00278] - Density used to adjust the dynamic screen space error, similar to fog density.
+ * @param [options.dynamicScreenSpaceErrorFactor = 4.0] - A factor used to increase the computed dynamic screen space error.
+ * @param [options.dynamicScreenSpaceErrorHeightFalloff = 0.25] - A ratio of the tileset's height at which the density starts to falloff.
+ * @param [options.progressiveResolutionHeightFraction = 0.3] - Optimization option. If between (0.0, 0.5], tiles at or above the screen space error for the reduced screen resolution of <code>progressiveResolutionHeightFraction*screenHeight</code> will be prioritized first. This can help get a quick layer of tiles down while full resolution tiles continue to load.
+ * @param [options.foveatedScreenSpaceError = true] - Optimization option. Prioritize loading tiles in the center of the screen by temporarily raising the screen space error for tiles around the edge of the screen. Screen space error returns to normal once all the tiles in the center of the screen as determined by the {@link M3DTileset#foveatedConeSize} are loaded.
+ * @param [options.foveatedConeSize = 0.1] - Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control the cone size that determines which tiles are deferred. Tiles that are inside this cone are loaded immediately. Tiles outside the cone are potentially deferred based on how far outside the cone they are and their screen space error. This is controlled by {@link M3DTileset#foveatedInterpolationCallback} and {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation}. Setting this to 0.0 means the cone will be the line formed by the camera position and its view direction. Setting this to 1.0 means the cone encompasses the entire field of view of the camera, disabling the effect.
+ * @param [options.foveatedMinimumScreenSpaceErrorRelaxation = 0.0] - Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control the starting screen space error relaxation for tiles outside the foveated cone. The screen space error will be raised starting with tileset value up to {@link M3DTileset#maximumScreenSpaceError} based on the provided {@link M3DTileset#foveatedInterpolationCallback}.
+ * @param [options.foveatedInterpolationCallback = Math.lerp] - Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone, interpolating between {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link M3DTileset#maximumScreenSpaceError}
+ * @param [options.foveatedTimeDelay = 0.2] - Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control how long in seconds to wait after the camera stops moving before deferred tiles start loading in. This time delay prevents requesting tiles around the edges of the screen when the camera is moving. Setting this to 0.0 will immediately request all tiles in any given view.
+ * @param [options.skipLevelOfDetail = false] - Optimization option. Determines if level of detail skipping should be applied during the traversal.
+ * @param [options.baseScreenSpaceError = 1024] - When <code>skipLevelOfDetail</code> is <code>true</code>, the screen space error that must be reached before skipping levels of detail.
+ * @param [options.skipScreenSpaceErrorFactor = 16] - When <code>skipLevelOfDetail</code> is <code>true</code>, a multiplier defining the minimum screen space error to skip. Used in conjunction with <code>skipLevels</code> to determine which tiles to load.
+ * @param [options.skipLevels = 1] - When <code>skipLevelOfDetail</code> is <code>true</code>, a constant defining the minimum number of levels to skip when loading tiles. When it is 0, no levels are skipped. Used in conjunction with <code>skipScreenSpaceErrorFactor</code> to determine which tiles to load.
+ * @param [options.immediatelyLoadDesiredLevelOfDetail = false] - When <code>skipLevelOfDetail</code> is <code>true</code>, only tiles that meet the maximum screen space error will ever be downloaded. Skipping factors are ignored and just the desired tiles are loaded.
+ * @param [options.loadSiblings = false] - When <code>skipLevelOfDetail</code> is <code>true</code>, determines whether siblings of visible tiles are always downloaded during traversal.
+ * @param [options.clippingPlanes] - The {@link ClippingPlaneCollection} used to selectively disable rendering the tileset.
+ * @param [options.classificationType] - Determines whether terrain, 3D Tiles or both will be classified by this tileset. See {@link M3DTileset#classificationType} for details about restrictions and limitations.
+ * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid determining the size and shape of the globe.
+ * @param [options.pointCloudShading] - Options for constructing a {@link PointCloudShading} object to control point attenuation based on geometric error and lighting.
+ * @param [options.imageBasedLightingFactor = new Cartesian2(1.0, 1.0)] - Scales the diffuse and specular image-based lighting from the earth, sky, atmosphere and star skybox.
+ * @param [options.lightColor] - The light color when shading models. When <code>undefined</code> the scene's light color is used instead.
+ * @param [options.luminanceAtZenith = 0.2] - The sun's luminance at the zenith in kilo candela per meter squared to use for this model's procedural environment map.
+ * @param [options.sphericalHarmonicCoefficients] - The third order spherical harmonic coefficients used for the diffuse color of image-based lighting.
+ * @param [options.specularEnvironmentMaps] - A URL to a KTX2 file that contains a cube map of the specular lighting and the convoluted specular mipmaps.
+ * @param [options.backFaceCulling = true] - Whether to cull back-facing geometry. When true, back face culling is determined by the glTF material's doubleSided property; when false, back face culling is disabled.
+ * @param [options.showOutline = true] - Whether to display the outline for models using the {@link https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/CESIUM_primitive_outline|CESIUM_primitive_outline} extension. When true, outlines are displayed. When false, outlines are not displayed.
+ * @param [options.vectorClassificationOnly = false] - Indicates that only the tileset's vector tiles should be used for classification.
+ * @param [options.vectorKeepDecodedPositions = false] - Whether vector tiles should keep decoded positions in memory. This is used with {@link M3DTileFeature.getPolylinePositions}.
+ * @param [options.debugHeatmapTilePropertyName] - The tile variable to colorize as a heatmap. All rendered tiles will be colorized relative to each other's specified variable value.
+ * @param [options.debugFreezeFrame = false] - For debugging only. Determines if only the tiles from last frame should be used for rendering.
+ * @param [options.debugColorizeTiles = false] - For debugging only. When true, assigns a random color to each tile.
+ * @param [options.debugWireframe = false] - For debugging only. When true, render's each tile's content as a wireframe.
+ * @param [options.debugShowBoundingVolume = false] - For debugging only. When true, renders the bounding volume for each tile.
+ * @param [options.debugShowContentBoundingVolume = false] - For debugging only. When true, renders the bounding volume for each tile's content.
+ * @param [options.debugShowViewerRequestVolume = false] - For debugging only. When true, renders the viewer request volume for each tile.
+ * @param [options.debugShowGeometricError = false] - For debugging only. When true, draws labels to indicate the geometric error of each tile.
+ * @param [options.debugShowRenderingStatistics = false] - For debugging only. When true, draws labels to indicate the number of commands, points, triangles and features for each tile.
+ * @param [options.debugShowMemoryUsage = false] - For debugging only. When true, draws labels to indicate the texture and geometry memory in megabytes used by each tile.
+ * @param [options.debugShowUrl = false] - For debugging only. When true, draws labels to indicate the url of each tile.
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+ */
+export class M3DTileset {
+    constructor(options: {
+        url: Resource | string | Promise<Resource> | Promise<string>;
+        show?: boolean;
+        modelMatrix?: Matrix4;
+        shadows?: ShadowMode;
+        maximumScreenSpaceError?: number;
+        maximumMemoryUsage?: number;
+        cullWithChildrenBounds?: boolean;
+        cullRequestsWhileMoving?: boolean;
+        cullRequestsWhileMovingMultiplier?: number;
+        preloadWhenHidden?: boolean;
+        preloadFlightDestinations?: boolean;
+        preferLeaves?: boolean;
+        dynamicScreenSpaceError?: boolean;
+        dynamicScreenSpaceErrorDensity?: number;
+        dynamicScreenSpaceErrorFactor?: number;
+        dynamicScreenSpaceErrorHeightFalloff?: number;
+        progressiveResolutionHeightFraction?: number;
+        foveatedScreenSpaceError?: boolean;
+        foveatedConeSize?: number;
+        foveatedMinimumScreenSpaceErrorRelaxation?: number;
+        foveatedInterpolationCallback?: M3DTileset.foveatedInterpolationCallback;
+        foveatedTimeDelay?: number;
+        skipLevelOfDetail?: boolean;
+        baseScreenSpaceError?: number;
+        skipScreenSpaceErrorFactor?: number;
+        skipLevels?: number;
+        immediatelyLoadDesiredLevelOfDetail?: boolean;
+        loadSiblings?: boolean;
+        clippingPlanes?: ClippingPlaneCollection;
+        classificationType?: ClassificationType;
+        ellipsoid?: Ellipsoid;
+        pointCloudShading?: any;
+        imageBasedLightingFactor?: Cartesian2;
+        lightColor?: Cartesian3;
+        luminanceAtZenith?: number;
+        sphericalHarmonicCoefficients?: Cartesian3[];
+        specularEnvironmentMaps?: string;
+        backFaceCulling?: boolean;
+        showOutline?: boolean;
+        vectorClassificationOnly?: boolean;
+        vectorKeepDecodedPositions?: boolean;
+        debugHeatmapTilePropertyName?: string;
+        debugFreezeFrame?: boolean;
+        debugColorizeTiles?: boolean;
+        debugWireframe?: boolean;
+        debugShowBoundingVolume?: boolean;
+        debugShowContentBoundingVolume?: boolean;
+        debugShowViewerRequestVolume?: boolean;
+        debugShowGeometricError?: boolean;
+        debugShowRenderingStatistics?: boolean;
+        debugShowMemoryUsage?: boolean;
+        debugShowUrl?: boolean;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
+    });
+    /**
+     * Optimization option. Don't request tiles that will likely be unused when they come back because of the camera's movement. This optimization only applies to stationary tilesets.
+     */
+    cullRequestsWhileMoving: boolean;
+    /**
+     * Optimization option. Multiplier used in culling requests while moving. Larger is more aggressive culling, smaller less aggressive culling.
+     */
+    cullRequestsWhileMovingMultiplier: number;
+    /**
+     * Optimization option. If between (0.0, 0.5], tiles at or above the screen space error for the reduced screen resolution of <code>progressiveResolutionHeightFraction*screenHeight</code> will be prioritized first. This can help get a quick layer of tiles down while full resolution tiles continue to load.
+     */
+    progressiveResolutionHeightFraction: number;
+    /**
+     * Optimization option. Prefer loading of leaves first.
+     */
+    preferLeaves: boolean;
+    /**
+     * Preload tiles when <code>tileset.show</code> is <code>false</code>. Loads tiles as if the tileset is visible but does not render them.
+     */
+    preloadWhenHidden: boolean;
+    /**
+     * Optimization option. Fetch tiles at the camera's flight destination while the camera is in flight.
+     */
+    preloadFlightDestinations: boolean;
+    /**
+     * Optimization option. Whether the tileset should refine based on a dynamic screen space error. Tiles that are further
+    away will be rendered with lower detail than closer tiles. This improves performance by rendering fewer
+    tiles and making less requests, but may result in a slight drop in visual quality for tiles in the distance.
+    The algorithm is biased towards "street views" where the camera is close to the ground plane of the tileset and looking
+    at the horizon. In addition results are more accurate for tightly fitting bounding volumes like box and region.
+     */
+    dynamicScreenSpaceError: boolean;
+    /**
+     * Optimization option. Prioritize loading tiles in the center of the screen by temporarily raising the
+    screen space error for tiles around the edge of the screen. Screen space error returns to normal once all
+    the tiles in the center of the screen as determined by the {@link M3DTileset#foveatedConeSize} are loaded.
+     */
+    foveatedScreenSpaceError: boolean;
+    /**
+     * Gets or sets a callback to control how much to raise the screen space error for tiles outside the foveated cone,
+    interpolating between {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link M3DTileset#maximumScreenSpaceError}.
+     */
+    foveatedInterpolationCallback: M3DTileset.foveatedInterpolationCallback;
+    /**
+     * Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control
+    how long in seconds to wait after the camera stops moving before deferred tiles start loading in.
+    This time delay prevents requesting tiles around the edges of the screen when the camera is moving.
+    Setting this to 0.0 will immediately request all tiles in any given view.
+     */
+    foveatedTimeDelay: number;
+    /**
+     * A scalar that determines the density used to adjust the dynamic screen space error, similar to {@link Fog}. Increasing this
+    value has the effect of increasing the maximum screen space error for all tiles, but in a non-linear fashion.
+    The error starts at 0.0 and increases exponentially until a midpoint is reached, and then approaches 1.0 asymptotically.
+    This has the effect of keeping high detail in the closer tiles and lower detail in the further tiles, with all tiles
+    beyond a certain distance all roughly having an error of 1.0.
+    <p>
+    The dynamic error is in the range [0.0, 1.0) and is multiplied by <code>dynamicScreenSpaceErrorFactor</code> to produce the
+    final dynamic error. This dynamic error is then subtracted from the tile's actual screen space error.
+    </p>
+    <p>
+    Increasing <code>dynamicScreenSpaceErrorDensity</code> has the effect of moving the error midpoint closer to the camera.
+    It is analogous to moving fog closer to the camera.
+    </p>
+     */
+    dynamicScreenSpaceErrorDensity: number;
+    /**
+     * A factor used to increase the screen space error of tiles for dynamic screen space error. As this value increases less tiles
+    are requested for rendering and tiles in the distance will have lower detail. If set to zero, the feature will be disabled.
+     */
+    dynamicScreenSpaceErrorFactor: number;
+    /**
+     * A ratio of the tileset's height at which the density starts to falloff. If the camera is below this height the
+    full computed density is applied, otherwise the density falls off. This has the effect of higher density at
+    street level views.
+    <p>
+    Valid values are between 0.0 and 1.0.
+    </p>
+     */
+    dynamicScreenSpaceErrorHeightFalloff: number;
+    /**
+     * Determines whether the tileset casts or receives shadows from light sources.
+    <p>
+    Enabling shadows has a performance impact. A tileset that casts shadows must be rendered twice, once from the camera and again from the light's point of view.
+    </p>
+    <p>
+    Shadows are rendered only when {@link Viewer#shadows} is <code>true</code>.
+    </p>
+     */
+    shadows: ShadowMode;
+    /**
+     * Determines if the tileset will be shown.
+     */
+    show: boolean;
+    /**
+     * 指定瓦片的透明度
+     */
+    _alpha: number;
+    /**
+     * Defines how per-feature colors set from the Cesium API or declarative styling blend with the source colors from
+    the original feature, e.g. glTF material or per-point color in the tile.
+     */
+    colorBlendMode: Cesium3DTileColorBlendMode;
+    /**
+     * Defines the value used to linearly interpolate between the source color and feature color when the {@link M3DTileset#colorBlendMode} is <code>MIX</code>.
+    A value of 0.0 results in the source color while a value of 1.0 results in the feature color, with any value in-between
+    resulting in a mix of the source color and feature color.
+     */
+    colorBlendAmount: number;
+    /**
+     * Options for controlling point size based on geometric error and eye dome lighting.
+     */
+    pointCloudShading: PointCloudShading;
+    /**
+     * The event fired to indicate progress of loading new tiles.  This event is fired when a new tile
+    is requested, when a requested tile is finished downloading, and when a downloaded tile has been
+    processed and is ready to render.
+    <p>
+    The number of pending tile requests, <code>numberOfPendingRequests</code>, and number of tiles
+    processing, <code>numberOfTilesProcessing</code> are passed to the event listener.
+    </p>
+    <p>
+    This event is fired at the end of the frame after the scene is rendered.
+    </p>
+     * @example
+     * tileset.loadProgress.addEventListener(function(numberOfPendingRequests, numberOfTilesProcessing) {
+        if ((numberOfPendingRequests === 0) && (numberOfTilesProcessing === 0)) {
+            console.log('Stopped loading');
+            return;
+        }
+    
+        console.log('Loading: requests: ' + numberOfPendingRequests + ', processing: ' + numberOfTilesProcessing);
+    });
+     */
+    loadProgress: Event;
+    /**
+     * The event fired to indicate that all tiles that meet the screen space error this frame are loaded. The tileset
+    is completely loaded for this view.
+    <p>
+    This event is fired at the end of the frame after the scene is rendered.
+    </p>
+     * @example
+     * tileset.allTilesLoaded.addEventListener(function() {
+        console.log('All tiles are loaded');
+    });
+     */
+    allTilesLoaded: Event;
+    /**
+     * The event fired to indicate that all tiles that meet the screen space error this frame are loaded. This event
+    is fired once when all tiles in the initial view are loaded.
+    <p>
+    This event is fired at the end of the frame after the scene is rendered.
+    </p>
+     * @example
+     * tileset.initialTilesLoaded.addEventListener(function() {
+        console.log('Initial tiles are loaded');
+    });
+     */
+    initialTilesLoaded: Event;
+    /**
+     * The event fired to indicate that a tile's content was loaded.
+    <p>
+    The loaded {@link M3DTile} is passed to the event listener.
+    </p>
+    <p>
+    This event is fired during the tileset traversal while the frame is being rendered
+    so that updates to the tile take effect in the same frame.  Do not create or modify
+    Cesium entities or primitives during the event listener.
+    </p>
+     * @example
+     * tileset.tileLoad.addEventListener(function(tile) {
+        console.log('A tile was loaded.');
+    });
+     */
+    tileLoad: Event;
+    /**
+     * The event fired to indicate that a tile's content was unloaded.
+    <p>
+    The unloaded {@link M3DTile} is passed to the event listener.
+    </p>
+    <p>
+    This event is fired immediately before the tile's content is unloaded while the frame is being
+    rendered so that the event listener has access to the tile's content.  Do not create
+    or modify Cesium entities or primitives during the event listener.
+    </p>
+     * @example
+     * tileset.tileUnload.addEventListener(function(tile) {
+        console.log('A tile was unloaded from the cache.');
+    });
+     */
+    tileUnload: Event;
+    /**
+     * The event fired to indicate that a tile's content failed to load.
+    <p>
+    If there are no event listeners, error messages will be logged to the console.
+    </p>
+    <p>
+    The error object passed to the listener contains two properties:
+    <ul>
+    <li><code>url</code>: the url of the failed tile.</li>
+    <li><code>message</code>: the error message.</li>
+    </ul>
+    <p>
+    If the <code>3DTILES_multiple_contents</code> extension is used, this event is raised once per inner content with errors.
+    </p>
+     * @example
+     * tileset.tileFailed.addEventListener(function(error) {
+        console.log('An error occurred loading tile: ' + error.url);
+        console.log('Error: ' + error.message);
+    });
+     */
+    tileFailed: Event;
+    /**
+     * This event fires once for each visible tile in a frame.  This can be used to manually
+    style a tileset.
+    <p>
+    The visible {@link M3DTile} is passed to the event listener.
+    </p>
+    <p>
+    This event is fired during the tileset traversal while the frame is being rendered
+    so that updates to the tile take effect in the same frame.  Do not create or modify
+    Cesium entities or primitives during the event listener.
+    </p>
+     * @example
+     * tileset.tileVisible.addEventListener(function(tile) {
+        if (tile.content instanceof Cesium.Batched3DModel3DTileContent) {
+            console.log('A Batched 3D Model tile is visible.');
+        }
+    });
+     * @example
+     * // Apply a red style and then manually set random colors for every other feature when the tile becomes visible.
+    tileset.style = new Cesium.Cesium3DTileStyle({
+        color : 'color("red")'
+    });
+    tileset.tileVisible.addEventListener(function(tile) {
+        var content = tile.content;
+        var featuresLength = content.featuresLength;
+        for (var i = 0; i < featuresLength; i+=2) {
+            content.getFeature(i).color = Cesium.Color.fromRandom();
+        }
+    });
+     */
+    tileVisible: Event;
+    /**
+     * Optimization option. Determines if level of detail skipping should be applied during the traversal.
+    <p>
+    The common strategy for replacement-refinement traversal is to store all levels of the tree in memory and require
+    all children to be loaded before the parent can refine. With this optimization levels of the tree can be skipped
+    entirely and children can be rendered alongside their parents. The tileset requires significantly less memory when
+    using this optimization.
+    </p>
+     */
+    skipLevelOfDetail: boolean;
+    /**
+     * The screen space error that must be reached before skipping levels of detail.
+    <p>
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
+    </p>
+     */
+    baseScreenSpaceError: number;
+    /**
+     * Multiplier defining the minimum screen space error to skip.
+    For example, if a tile has screen space error of 100, no tiles will be loaded unless they
+    are leaves or have a screen space error <code><= 100 / skipScreenSpaceErrorFactor</code>.
+    <p>
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
+    </p>
+     */
+    skipScreenSpaceErrorFactor: number;
+    /**
+     * Constant defining the minimum number of levels to skip when loading tiles. When it is 0, no levels are skipped.
+    For example, if a tile is level 1, no tiles will be loaded unless they are at level greater than 2.
+    <p>
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
+    </p>
+     */
+    skipLevels: number;
+    /**
+     * When true, only tiles that meet the maximum screen space error will ever be downloaded.
+    Skipping factors are ignored and just the desired tiles are loaded.
+    <p>
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
+    </p>
+     */
+    immediatelyLoadDesiredLevelOfDetail: boolean;
+    /**
+     * Determines whether siblings of visible tiles are always downloaded during traversal.
+    This may be useful for ensuring that tiles are already available when the viewer turns left/right.
+    <p>
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
+    </p>
+     */
+    loadSiblings: boolean;
+    /**
+     * The light color when shading models. When <code>undefined</code> the scene's light color is used instead.
+    <p>
+    For example, disabling additional light sources by setting <code>model.imageBasedLightingFactor = new Cartesian2(0.0, 0.0)</code> will make the
+    model much darker. Here, increasing the intensity of the light source will make the model brighter.
+    </p>
+     */
+    lightColor: Cartesian3;
+    /**
+     * The sun's luminance at the zenith in kilo candela per meter squared to use for this model's procedural environment map.
+    This is used when {@link M3DTileset#specularEnvironmentMaps} and {@link M3DTileset#sphericalHarmonicCoefficients} are not defined.
+     */
+    luminanceAtZenith: number;
+    /**
+     * The third order spherical harmonic coefficients used for the diffuse color of image-based lighting. When <code>undefined</code>, a diffuse irradiance
+    computed from the atmosphere color is used.
+    <p>
+    There are nine <code>Cartesian3</code> coefficients.
+    The order of the coefficients is: L<sub>00</sub>, L<sub>1-1</sub>, L<sub>10</sub>, L<sub>11</sub>, L<sub>2-2</sub>, L<sub>2-1</sub>, L<sub>20</sub>, L<sub>21</sub>, L<sub>22</sub>
+    </p>
+    
+    These values can be obtained by preprocessing the environment map using the <code>cmgen</code> tool of
+    {@link https://github.com/google/filament/releases|Google's Filament project}. This will also generate a KTX file that can be
+    supplied to {@link M3DTileset#specularEnvironmentMaps}.
+     */
+    sphericalHarmonicCoefficients: Cartesian3[];
+    /**
+     * A URL to a KTX file that contains a cube map of the specular lighting and the convoluted specular mipmaps.
+     */
+    specularEnvironmentMaps: string;
+    /**
+     * Whether to cull back-facing geometry. When true, back face culling is determined
+    by the glTF material's doubleSided property; when false, back face culling is disabled.
+     */
+    backFaceCulling: boolean;
+    /**
+     * Whether to display the outline for models using the
+    {@link https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/CESIUM_primitive_outline|CESIUM_primitive_outline} extension.
+    When true, outlines are displayed. When false, outlines are not displayed.
+     */
+    readonly showOutline: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    Determines if only the tiles from last frame should be used for rendering.  This
+    effectively "freezes" the tileset to the previous frame so it is possible to zoom
+    out and see what was rendered.
+    </p>
+     */
+    debugFreezeFrame: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, assigns a random color to each tile.  This is useful for visualizing
+    what features belong to what tiles, especially with additive refinement where features
+    from parent tiles may be interleaved with features from child tiles.
+    </p>
+     */
+    debugColorizeTiles: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, renders each tile's content as a wireframe.
+    </p>
+     */
+    debugWireframe: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, renders the bounding volume for each visible tile.  The bounding volume is
+    white if the tile has a content bounding volume or is empty; otherwise, it is red.  Tiles that don't meet the
+    screen space error and are still refining to their descendants are yellow.
+    </p>
+     */
+    debugShowBoundingVolume: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, renders the bounding volume for each visible tile's content. The bounding volume is
+    blue if the tile has a content bounding volume; otherwise it is red.
+    </p>
+     */
+    debugShowContentBoundingVolume: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, renders the viewer request volume for each tile.
+    </p>
+     */
+    debugShowViewerRequestVolume: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, draws labels to indicate the geometric error of each tile.
+    </p>
+     */
+    debugShowGeometricError: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, draws labels to indicate the number of commands, points, triangles and features of each tile.
+    </p>
+     */
+    debugShowRenderingStatistics: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, draws labels to indicate the geometry and texture memory usage of each tile.
+    </p>
+     */
+    debugShowMemoryUsage: boolean;
+    /**
+     * This property is for debugging only; it is not optimized for production use.
+    <p>
+    When true, draws labels to indicate the url of each tile.
+    </p>
+     */
+    debugShowUrl: boolean;
+    /**
+     * Function for examining vector lines as they are being streamed.
+     */
+    examineVectorLinesFunction: (...params: any[]) => any;
+    /**
+     * Gets the tileset's asset object property, which contains metadata about the tileset.
+    <p>
+    See the {@link https://github.com/CesiumGS/3d-tiles/tree/main/specification#reference-asset|asset schema reference}
+    in the 3D Tiles spec for the full set of properties.
+    </p>
+     */
+    readonly asset: any;
+    /**
+     * Gets the tileset's extensions object property.
+     */
+    readonly extensions: any;
+    /**
+     * The {@link ClippingPlaneCollection} used to selectively disable rendering the tileset.
+     */
+    clippingPlanes: ClippingPlaneCollection;
+    /**
+     * Gets the tileset's properties dictionary object, which contains metadata about per-feature properties.
+    <p>
+    See the {@link https://github.com/CesiumGS/3d-tiles/tree/main/specification#reference-properties|properties schema reference}
+    in the 3D Tiles spec for the full set of properties.
+    </p>
+     * @example
+     * console.log('Maximum building height: ' + tileset.properties.height.maximum);
+    console.log('Minimum building height: ' + tileset.properties.height.minimum);
+     */
+    readonly properties: any;
+    /**
+     * When <code>true</code>, the tileset's root tile is loaded and the tileset is ready to render.
+    This is set to <code>true</code> right before {@link M3DTileset#readyPromise} is resolved.
+     */
+    readonly ready: boolean;
+    /**
+     * Gets the promise that will be resolved when the tileset's root tile is loaded and the tileset is ready to render.
+    <p>
+    This promise is resolved at the end of the frame before the first frame the tileset is rendered in.
+    </p>
+     * @example
+     * tileset.readyPromise.then(function(tileset) {
+        // tile.properties is not defined until readyPromise resolves.
+        var properties = tileset.properties;
+        if (Cesium.defined(properties)) {
+            for (var name in properties) {
+                console.log(properties[name]);
+            }
+        }
+    });
+     */
+    readonly readyPromise: Promise<M3DTileset>;
+    /**
+     * When <code>true</code>, all tiles that meet the screen space error this frame are loaded. The tileset is
+    completely loaded for this view.
+     */
+    readonly tilesLoaded: boolean;
+    /**
+     * The resource used to fetch the tileset JSON file
+     */
+    readonly resource: Resource;
+    /**
+     * The base path that non-absolute paths in tileset JSON file are relative to.
+     */
+    readonly basePath: string;
+    /**
+     * The style, defined using the
+    {@link https://github.com/CesiumGS/3d-tiles/tree/main/specification/Styling|3D Tiles Styling language},
+    applied to each feature in the tileset.
+    <p>
+    Assign <code>undefined</code> to remove the style, which will restore the visual
+    appearance of the tileset to its default when no style was applied.
+    </p>
+    <p>
+    The style is applied to a tile before the {@link M3DTileset#tileVisible}
+    event is raised, so code in <code>tileVisible</code> can manually set a feature's
+    properties (e.g. color and show) after the style is applied. When
+    a new style is assigned any manually set properties are overwritten.
+    </p>
+    <p>
+    Use an always "true" condition to specify the Color for all objects that are not
+    overridden by pre-existing conditions. Otherwise, the default color Cesium.Color.White
+    will be used. Similarly, use an always "true" condition to specify the show property
+    for all objects that are not overridden by pre-existing conditions. Otherwise, the
+    default show value true will be used.
+    </p>
+     * @example
+     * tileset.style = new Cesium.Cesium3DTileStyle({
+       color : {
+           conditions : [
+               ['${Height} >= 100', 'color("purple", 0.5)'],
+               ['${Height} >= 50', 'color("red")'],
+               ['true', 'color("blue")']
+           ]
+       },
+       show : '${Height} > 0',
+       meta : {
+           description : '"Building id ${id} has height ${Height}."'
+       }
+    });
+     */
+    style: Cesium3DTileStyle | undefined;
+    /**
+     * 获取或设置瓦片集的透明度
+     */
+    alpha: number;
+    /**
+     * The maximum screen space error used to drive level of detail refinement.  This value helps determine when a tile
+    refines to its descendants, and therefore plays a major role in balancing performance with visual quality.
+    <p>
+    A tile's screen space error is roughly equivalent to the number of pixels wide that would be drawn if a sphere with a
+    radius equal to the tile's <b>geometric error</b> were rendered at the tile's position. If this value exceeds
+    <code>maximumScreenSpaceError</code> the tile refines to its descendants.
+    </p>
+    <p>
+    Depending on the tileset, <code>maximumScreenSpaceError</code> may need to be tweaked to achieve the right balance.
+    Higher values provide better performance but lower visual quality.
+    </p>
+     */
+    maximumScreenSpaceError: number;
+    /**
+     * The maximum amount of GPU memory (in MB) that may be used to cache tiles. This value is estimated from
+    geometry, textures, and batch table textures of loaded tiles. For point clouds, this value also
+    includes per-point metadata.
+    <p>
+    Tiles not in view are unloaded to enforce this.
+    </p>
+    <p>
+    If decreasing this value results in unloading tiles, the tiles are unloaded the next frame.
+    </p>
+    <p>
+    If tiles sized more than <code>maximumMemoryUsage</code> are needed
+    to meet the desired screen space error, determined by {@link M3DTileset#maximumScreenSpaceError},
+    for the current view, then the memory usage of the tiles loaded will exceed
+    <code>maximumMemoryUsage</code>.  For example, if the maximum is 256 MB, but
+    300 MB of tiles are needed to meet the screen space error, then 300 MB of tiles may be loaded.  When
+    these tiles go out of view, they will be unloaded.
+    </p>
+     */
+    maximumMemoryUsage: number;
+    /**
+     * The root tile.
+     */
+    readonly root: M3DTile;
+    /**
+     * The tileset's bounding sphere.
+     * @example
+     * var tileset = viewer.scene.primitives.add(new Cesium.M3DTileset({
+        url : 'http://localhost:8002/tilesets/Seattle/tileset.json'
+    }));
+    
+    tileset.readyPromise.then(function(tileset) {
+        // Set the camera to view the newly added tileset
+        viewer.camera.viewBoundingSphere(tileset.boundingSphere, new Cesium.HeadingPitchRange(0, -0.5, 0));
+    });
+     */
+    readonly boundingSphere: BoundingSphere;
+    /**
+     * A 4x4 transformation matrix that transforms the entire tileset.
+     * @example
+     * // Adjust a tileset's height from the globe's surface.
+    var heightOffset = 20.0;
+    var boundingSphere = tileset.boundingSphere;
+    var cartographic = Cesium.Cartographic.fromCartesian(boundingSphere.center);
+    var surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+    var offset = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, heightOffset);
+    var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+    tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+     */
+    modelMatrix: Matrix4;
+    /**
+     * Returns the time, in milliseconds, since the tileset was loaded and first updated.
+     */
+    readonly timeSinceLoad: number;
+    /**
+     * The total amount of GPU memory in bytes used by the tileset. This value is estimated from
+    geometry, texture, and batch table textures of loaded tiles. For point clouds, this value also
+    includes per-point metadata.
+     */
+    readonly totalMemoryUsageInBytes: number;
+    /**
+     * Determines whether terrain, 3D Tiles or both will be classified by this tileset.
+    <p>
+    This option is only applied to tilesets containing batched 3D models, geometry data, or vector data. Even when undefined, vector data and geometry data
+    must render as classifications and will default to rendering on both terrain and other 3D Tiles tilesets.
+    </p>
+    <p>
+    When enabled for batched 3D model tilesets, there are a few requirements/limitations on the glTF:
+    <ul>
+        <li>POSITION and _BATCHID semantics are required.</li>
+        <li>All indices with the same batch id must occupy contiguous sections of the index buffer.</li>
+        <li>All shaders and techniques are ignored. The generated shader simply multiplies the position by the model-view-projection matrix.</li>
+        <li>The only supported extensions are CESIUM_RTC and WEB3D_quantized_attributes.</li>
+        <li>Only one node is supported.</li>
+        <li>Only one mesh per node is supported.</li>
+        <li>Only one primitive per mesh is supported.</li>
+    </ul>
+    </p>
+     */
+    readonly classificationType: ClassificationType;
+    /**
+     * Gets an ellipsoid describing the shape of the globe.
+     */
+    readonly ellipsoid: Ellipsoid;
+    /**
+     * Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control the cone size that determines which tiles are deferred.
+    Tiles that are inside this cone are loaded immediately. Tiles outside the cone are potentially deferred based on how far outside the cone they are and {@link M3DTileset#foveatedInterpolationCallback} and {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation}.
+    Setting this to 0.0 means the cone will be the line formed by the camera position and its view direction. Setting this to 1.0 means the cone encompasses the entire field of view of the camera, essentially disabling the effect.
+     */
+    foveatedConeSize: number;
+    /**
+     * Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control the starting screen space error relaxation for tiles outside the foveated cone.
+    The screen space error will be raised starting with this value up to {@link M3DTileset#maximumScreenSpaceError} based on the provided {@link M3DTileset#foveatedInterpolationCallback}.
+     */
+    foveatedMinimumScreenSpaceErrorRelaxation: number;
+    /**
+     * Returns the <code>extras</code> property at the top-level of the tileset JSON, which contains application specific metadata.
+    Returns <code>undefined</code> if <code>extras</code> does not exist.
+     */
+    readonly extras: any;
+    /**
+     * Cesium adds lighting from the earth, sky, atmosphere, and star skybox. This cartesian is used to scale the final
+    diffuse and specular lighting contribution from those sources to the final color. A value of 0.0 will disable those light sources.
+     */
+    imageBasedLightingFactor: Cartesian2;
+    /**
+     * Indicates that only the tileset's vector tiles should be used for classification.
+     */
+    vectorClassificationOnly: boolean;
+    /**
+     * Whether vector tiles should keep decoded positions in memory.
+    This is used with {@link M3DTileFeature.getPolylinePositions}.
+     */
+    vectorKeepDecodedPositions: boolean;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
+    /**
+     * 自定义着色器
+     */
+    customShader: CustomShader;
+    /**
+     * Provides a hook to override the method used to request the tileset json
+    useful when fetching tilesets from remote servers
+     * @param tilesetUrl - The url of the json file to be fetched
+     * @returns A promise that resolves with the fetched json data
+     */
+    static loadJson(tilesetUrl: Resource | string): Promise<object>;
+    /**
+     * Marks the tileset's {@link M3DTileset#style} as dirty, which forces all
+    features to re-evaluate the style in the next frame each is visible.
+     */
+    makeStyleDirty(): void;
+    /**
+     * Unloads all tiles that weren't selected the previous frame.  This can be used to
+    explicitly manage the tile cache and reduce the total number of tiles loaded below
+    {@link M3DTileset#maximumMemoryUsage}.
+    <p>
+    Tile unloads occur at the next frame to keep all the WebGL delete calls
+    within the render loop.
+    </p>
+     */
+    trimLoadedTiles(): void;
+    /**
+     * <code>true</code> if the tileset JSON file lists the extension in extensionsUsed; otherwise, <code>false</code>.
+     * @param extensionName - The name of the extension to check.
+     * @returns <code>true</code> if the tileset JSON file lists the extension in extensionsUsed; otherwise, <code>false</code>.
+     */
+    hasExtension(extensionName: string): boolean;
+    /**
+     * Returns true if this object was destroyed; otherwise, false.
+    <br /><br />
+    If this object was destroyed, it should not be used; calling any function other than
+    <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
+     * @returns <code>true</code> if this object was destroyed; otherwise, <code>false</code>.
+     */
+    isDestroyed(): boolean;
+    /**
+     * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
+    release of WebGL resources, instead of relying on the garbage collector to destroy this object.
+    <br /><br />
+    Once an object is destroyed, it should not be used; calling any function other than
+    <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
+    assign the return value (<code>undefined</code>) to the object as done in the example.
+     * @example
+     * tileset = tileset && tileset.destroy();
+     */
+    destroy(): void;
+}
+
+export namespace M3DTileset {
+    /**
+     * Optimization option. Used as a callback when {@link M3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
+    interpolating between {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link M3DTileset#maximumScreenSpaceError}.
+     * @param p - The start value to interpolate.
+     * @param q - The end value to interpolate.
+     * @param time - The time of interpolation generally in the range <code>[0.0, 1.0]</code>.
+     */
+    type foveatedInterpolationCallback = (p: number, q: number, time: number) => number;
 }
 
 /**
@@ -29238,6 +31783,17 @@ var tileset = scene.primitives.add(new Cesium.MapGISM3DSet({
  * @param [options.debugShowUrl = false] - For debugging only. When true, draws labels to indicate the url of each tile.
  * @param [options.password] - M3D 数据密码
  * @param [options.m3dtreeOptions = {}] - 构建树附加参数
+ * @param [options.callback] - MapGISM3DSet的每帧回调函数
+ * @param [options.gltfParsedCallback] - gltf解析完成回调，提供修改gltf对象能力，MapGISM3DSet中包含多个gltf,对所有的gltf应用同一个回调可能不合适
+ * @param [options.fillClip = false] - 是否需要填充M3D数据剖面，在MapGISM3DSet构造函数中给的原因是，要想支持剖面选取高亮必须统计primitive的oid列表,为了节省内存,原始数据在加载完成后就会释放，后续没有时机统计oid列表
+ * @param [options.hasSectionGeometry = false] - 是否会存在剖面几何，如果后续会addSectionGeometry方法给m3d图层设置剖切面设置为true
+ * @param [options.textureCoordScale] - 模型纹理拉伸比例，默认不发生变化
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+ * @param [options.translucency = 1] - MapGISM3DSet 透明度属性
+ * @param [options.enableStretch = false] - 是否开启模型向下拉伸
+ * @param [options.stretchReferenceHeight = 0] - 模型向下拉伸的参考高度
+ * @param [options.stretchFactor = 0] - 模型向下拉伸的系数
  */
 export class MapGISM3DSet {
     constructor(options: {
@@ -29296,6 +31852,17 @@ export class MapGISM3DSet {
         debugShowUrl?: boolean;
         password?: Uint8Array;
         m3dtreeOptions?: any;
+        callback?: (...params: any[]) => any;
+        gltfParsedCallback?: (...params: any[]) => any;
+        fillClip?: boolean;
+        hasSectionGeometry?: boolean;
+        textureCoordScale?: Cartesian2;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
+        translucency?: number;
+        enableStretch?: boolean;
+        stretchReferenceHeight?: number;
+        stretchFactor?: number;
     });
     /**
      * Optimization option. Don't request tiles that will likely be unused when they come back because of the camera's movement. This optimization only applies to stationary tilesets.
@@ -29890,6 +32457,15 @@ export class MapGISM3DSet {
      */
     readonly ellipsoid: Ellipsoid;
     /**
+     * M3D专题图渲染参数 <br /><br />
+    M3D 1.0模型的填充颜色的混合模式默认为{@link Cesium3DTileColorBlendMode.HIGHLIGHT},修改颜色混合模式请使用{@link MapGISM3DSet#colorBlendMode}接口。<br />
+    M3D 2.0模型的填充颜色的混合模式只支持"REPLACE"模式
+     * @example
+     * // 恢复模型默认颜色
+    m3dSet.renderer = null;
+     */
+    renderer: any;
+    /**
      * Optimization option. Used when {@link MapGISM3DSet#foveatedScreenSpaceError} is true to control the cone size that determines which tiles are deferred.
     Tiles that are inside this cone are loaded immediately. Tiles outside the cone are potentially deferred based on how far outside the cone they are and {@link MapGISM3DSet#foveatedInterpolationCallback} and {@link MapGISM3DSet#foveatedMinimumScreenSpaceErrorRelaxation}.
     Setting this to 0.0 means the cone will be the line formed by the camera position and its view direction. Setting this to 1.0 means the cone encompasses the entire field of view of the camera, essentially disabling the effect.
@@ -29982,6 +32558,105 @@ export class MapGISM3DSet {
      */
     readonly version: string;
     /**
+     * 卷帘范围
+     */
+    rollerShutterRegion: Cartesian4;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
+    /**
+     * MapGISM3DSet 透明度属性
+     */
+    translucency: number;
+    /**
+     * 是否开启几何体裁剪 <br/>
+    需要配合{@link ClippingGeometry}使用
+     */
+    clippingGeometries: ClippingGeometry;
+    /**
+     * 设置显示模式
+     */
+    renderMode: number;
+    /**
+     * 纹理拉伸
+     */
+    textureCoordScale: Cartesian2;
+    /**
+     * 自定义着色器
+     */
+    customShader: CustomShader;
+    /**
+     * 是否开启模型向下拉伸
+     * @example
+     * var tileset = scene.primitives.add(new Cesium.MapGISM3DSet({
+      url: 'http://localhost:8002/M3D/layer/layer.mcj',
+    }));
+    // 开启模型向下拉伸
+    tileset.enableStretch = true;
+     */
+    enableStretch: boolean;
+    /**
+     * 模型向下拉伸的参考高度
+     * @example
+     * var tileset = scene.primitives.add(new Cesium.MapGISM3DSet({
+      url: 'http://localhost:8002/M3D/layer/layer.mcj',
+    }));
+    // 开启模型向下拉伸
+    tileset.enableStretch = true;
+    // 设置模型向下拉伸的参考高度
+    tileset.stretchReferenceHeight = -20.0;
+     */
+    stretchReferenceHeight: number;
+    /**
+     * 模型向下拉伸的系数
+     * @example
+     * var tileset = scene.primitives.add(new Cesium.MapGISM3DSet({
+      url: 'http://localhost:8002/M3D/layer/layer.mcj',
+    }));
+    // 开启模型向下拉伸
+    tileset.enableStretch = true;
+    // 设置模型向下拉伸的参考高度
+    tileset.stretchReferenceHeight = -20.0;
+    // 设置模型向下拉伸的系数
+    tileset.stretchFactor = 2.0;
+     */
+    stretchFactor: number;
+    /**
+     * 亮度<br/>
+    取值范围[-1, 1]
+     */
+    brightness: number;
+    /**
+     * 曝光度<br/>
+    取值范围[-1, +∞]
+     */
+    exposure: number;
+    /**
+     * 对比度<br/>
+    值要求大于0
+     */
+    contrast: number;
+    /**
+     * 色相 <br/>
+    值要求大于0
+     */
+    hue: number;
+    /**
+     * 饱和度<br/>
+    取值范围[-1, +1]
+     */
+    saturation: number;
+    /**
+     * 伽马 <br/>
+    伽马值必须大于0
+     */
+    gamma: number;
+    /**
      * Provides a hook to override the method used to request the tileset json
     useful when fetching tilesets from remote servers
      * @param tilesetUrl - The url of the json file to be fetched
@@ -30043,9 +32718,61 @@ export class MapGISM3DSet {
      * 模型压平
      * @param positionArray - 压平区域多边形顶点坐标数组，封闭多边形
      * @param flattenHeight - 压平到指定高度，绝对海拔高度，单位米
+     * @param flattenIDs - 要不压平的模型pickID
      */
-    modelFlatten(positionArray: any[], flattenHeight: number): void;
+    modelFlatten(positionArray: any[], flattenHeight: number, flattenIDs: Color[]): void;
+    /**
+     * 添加剖面几何，只支持m3d2.0数据
+     * @example
+     * var m3dLayer,layerList = [];
+    viewer.scene.layers.appendM3DLayer(url, {
+        duration: 2,
+        hasSectionGeometry: true,
+        autoReset: true,
+        loaded: function(layer) {
+            layer.maximumScreenSpaceError = 0;
+            m3dLayer = layer;
+            layerList.push(m3dLayer);
+        }
+    });
+    var drawElement = new Cesium.DrawElement(viewer);
+    var cutTool = new Cesium.CuttingTool(viewer, layerList);
+    drawElement.startDrawingPolyline({
+        callback: function(result) {
+            var positions = result.positions;
+            for (var i = 0; i < positions.length - 1; ++i) {
+                var geom = new Cesium.SectionPlaneGeometry({
+                    positions: [positions[i], positions[i + 1]],
+                    topHeight: 100,
+                    bottomHeight: 1200,
+                })
+                // 设置只显示剖面
+                m3dLayer.sectionOnly(true);
+                m3dLayer.addSectionGeometry({ geometry: geom });
+            }
+            drawElement.stopDrawing();
+        }
+    });
+     * @param options.geometry - 剖面几何
+     */
+    addSectionGeometry(options: {
+        geometry: any;
+    }): void;
+    /**
+     * 是否只显示模型剖面，仅当通过{@link MapGISM3DSet#addSectionGeometry}接口传入剖面几何时，该接口才有效。
+     * @param sectionOnly - 是否只显示模型剖面
+     */
+    sectionOnly(sectionOnly: boolean): void;
+    /**
+     * 移除所有的剖面几何
+     */
+    removeAllSectionGeometry(): void;
 }
+
+/**
+ * feat:2105 模型剖切纹理封边
+ */
+export var clippingFillImage: any;
 
 export namespace MapGISM3DSet {
     /**
@@ -30108,6 +32835,358 @@ export class CircleWaveMaterialProperty {
 }
 
 /**
+ * 自定义着色器对象，允许自定义M3D缓存图层的顶点着色器和片元着色器代码
+ * @example
+ * -------------使用viewer.scene.layers.appendM3DLayer添加图层---------------------------
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/2.0/武汉建筑轮廓白/武汉建筑轮廓白.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({})
+});
+-------------使用viewer.scene.layers.appendSceneLayer添加图层---------------------------
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+index = viewer.scene.layers.appendSceneLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({})
+})
+-------------当数据被切块时，在callback函数中实时更新shader---------------------------
+//M3DServer服务
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //在callback中更新shader
+    callback: function() {
+        //根据index获取M3D对象
+        var tileSet = viewer.scene.layers.getM3DLayer(index);
+        //确保对象存在
+        if(tileSet) {
+             //更新你的shader
+             tileSet.customShader = new Cesium.CustomShader({})
+        }
+    }
+});
+//SceneServer服务或G3DServer服务
+var tileSet;
+viewer.scene.layers.appendSceneLayer('http://webclient.smaryun.com:8089/igs/rest/g3d/Scene:DaYanTa-M3D', {
+    //在loaded中获取M3D对像
+    loaded: function (layer) {
+        layerScene = layer;
+    },
+    //在callback中更新shader
+    callback: function() {
+        //确保对象存在
+        if(layerScene) {
+            //更新你的shader
+            layerScene.customShader = new Cesium.CustomShader({});
+        }
+     }
+});
+-------------传入uniform变量---------------------------
+//加载M3D模型
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+//必须在模型初始化时，给uniform变量赋值
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({
+        //传入uniform变量
+        uniforms: {
+            //第一个变量
+            u_uniform1: {
+                //类型，必须为Cesium.WebGLConstants里的类型
+                type: Cesium.WebGLConstants.FLOAT,
+                //值
+                value: -100.0
+            },
+            //第二个变量
+            u_uniform2: {
+                //类型，必须为Cesium.WebGLConstants里的类型
+                type: Cesium.WebGLConstants.FLOAT,
+                //值
+                value: -100.0
+            }
+        }
+    })
+});
+-------------传入varying变量，并在顶点和片元着色器中使用---------------------------
+//加载M3D模型
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+     //设置自定义着色器
+     customShader: new Cesium.CustomShader({
+         //传入varying变量
+         varyings: {
+             //设置一个变量，注意varying变量仅用于顶点着色器像片元着色器传值，因此没有初始值
+             u_test: {
+                 //类型，必须为Cesium.WebGLConstants里的类型
+                 type: Cesium.WebGLConstants.FLOAT
+             }
+         },
+         //顶点着色器代码
+         vertexShaderText:
+         //在顶点着色器中，将当前顶点的y值赋给u_test
+         'void vertexMain(float frameNumber, vec4 oid, inout vec4 position){\n' +
+         '  u_test = position.y;\n' +
+         '}\n',
+         //片元着色器代码
+         fragmentShaderText:
+         //在片元着色器中，使用u_test的值
+         'void fragmentMain(vec4 position, float frameNumber, vec4 oid, inout vec4 fragColor){\n' +
+         //设置渐变颜色
+         '   vec4 gradiantColor = vec4(0.0, 0.0, 1.0, 0.0);\n' +
+         //获取当前顶点高度，注意这里的高度是相对于模型原点的，具体高度范围请从外包盒中获取
+         //该模型地下有34米，为方便计算，抬高34米
+         //在这里使用了varying变量
+         '   float currentHeight = u_test + 34.0;\n' +
+         //颜色从140到0进行渐变
+         '   if(currentHeight > 0.0) {\n' +
+         '       gradiantColor *= currentHeight / 140.0;\n' +
+         //注意改变颜色是加法/减法，改变亮度是乘法
+         '       fragColor += gradiantColor;\n' +
+         '   }\n' +
+         '}\n'
+     })
+});
+-------------传入顶点着色器代码---------------------------
+//加载M3D模型
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({
+         //顶点着色器代码
+         vertexShaderText:
+         //参考1.87以上版本写法，必须重写vertexMain方法
+         //frameNumber：帧时间，顶点的oid，position：顶点坐标
+         'void vertexMain(float frameNumber, vec4 oid, inout vec4 position){\n' +
+          //如果高度超过0米，抬高100米
+          '  if(position.y > 0.0) {\n' +
+          //抬高100米
+          '    position.y += 100.0;\n' +
+          '  }\n' +
+         '}\n'
+    })
+});
+-------------传入片元着色器代码---------------------------
+//加载M3D模型
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({
+         //设置片元着色器代码
+         fragmentShaderText:
+         //参考1.87以上版本写法，必须重写fragmentMain方法
+         //position：顶点坐标，frameNumber：帧时间，顶点的oid，fragColor：顶点颜色
+         'void fragmentMain(vec4 position, float frameNumber, vec4 oid, inout vec4 fragColor){\n' +
+         //给一个蓝色的覆盖物颜色
+         '  fragColor += vec4(0.0, 0.0, 0.3, 0.0);\n' +
+         '}\n',
+    })
+});
+-------------动态修改着色器---------------------------
+//添加M3D数据
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+//在初始化时，传入uniform变量
+index = viewer.scene.layers.appendM3DLayer(url, {
+    duration: 1,
+    customShader: new Cesium.CustomShader({
+        uniforms: {
+            u_testHeight: {
+                type: Cesium.WebGLConstants.FLOAT,
+                value: -100.0
+            }
+        }
+    })
+});
+//获取M3D对象
+var tileSet = viewer.scene.layers.getM3DLayer(index);
+//动态修改片元着色器
+tileSet.customShader = new Cesium.CustomShader({
+   fragmentShaderText:
+   //参考1.87以上版本写法，必须重写fragmentMain方法
+   //position：顶点坐标，frameNumber：帧时间，顶点的oid，fragColor：顶点颜色
+   'void fragmentMain(vec4 position, float frameNumber, vec4 oid, inout vec4 fragColor){\n' +
+    //给一个蓝色的覆盖物颜色
+     '  fragColor += vec4(0.0, 0.0, 0.3, 0.0);\n' +
+   '}\n'
+});
+//动态修顶点着色器
+tileSet.customShader = new Cesium.CustomShader({
+    //顶点着色器代码
+    vertexShaderText:
+    //参考1.87以上版本写法，必须重写vertexMain方法
+    //frameNumber：帧时间，顶点的oid，position：顶点坐标
+    'void vertexMain(float frameNumber, vec4 oid, inout vec4 position){\n' +
+    //抬高100米
+    'position.y += 100.0;\n' +
+    '}\n'
+});
+-------------按高度进行颜色渐变---------------------------
+//加载M3D模型
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({
+         fragmentShaderText:
+         //参考1.87以上版本写法，必须重写fragmentMain方法
+         //position：顶点坐标，frameNumber：帧时间，顶点的oid，fragColor：顶点颜色
+         'void fragmentMain(vec4 position, float frameNumber, vec4 oid, inout vec4 fragColor){\n' +
+         //设置渐变颜色
+         '   vec4 gradiantColor = vec4(0.0, 0.0, 1.0, 0.0);\n' +
+         //获取当前顶点高度，注意这里的高度是相对于模型原点的，具体高度范围，请从模型的外包盒中获取
+         //此处的最大高度为110，也是从外包盒里获取的
+         '   float maxHeight = 110.0;\n' +
+          //颜色从maxHeight到0进行渐变
+          '   if(position.y > 0.0) {\n' +
+          '       gradiantColor *= position.y / maxHeight;\n' +
+         //注意改变颜色是加法/减法，改变亮度是乘法
+         '       fragColor += gradiantColor;\n' +
+         '   }\n' +
+         '}\n'
+    })
+});
+-------------呼吸灯效果---------------------------
+//加载M3D模型
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({
+         fragmentShaderText:
+         //参考1.87以上版本写法，必须重写fragmentMain方法
+         //position：顶点坐标，frameNumber：帧时间，顶点的oid，fragColor：顶点颜色
+         'void fragmentMain(vec4 position, float frameNumber, vec4 oid, inout vec4 fragColor){\n' +
+         //根据当前帧时间(czm_frameNumber)获取周期变化的亮度值，fract即webgl里面的取小数函数
+         '   float currentLight = fract(frameNumber / 120.0) * 3.14159265;\n' +
+         //根据亮度和高度过去呼吸灯颜色
+         '   float breathLampColor = position.y / 320.0 / 2.0 + sin(currentLight) * 0.1;\n' +
+         //修改当前颜色
+         '   fragColor += vec4(51.0 / 255.0 * breathLampColor, 153.0 / 255.0 * breathLampColor, breathLampColor, 0.0);\n' +
+         '}\n'
+    })
+});
+-------------光圈效果---------------------------
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/1.0/ZondyFaceModels/ZondyFaceModels.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({
+         fragmentShaderText:
+         //参考1.87以上版本写法，必须重写fragmentMain方法
+         //position：顶点坐标，frameNumber：帧时间，顶点的oid，fragColor：顶点颜色
+         'void fragmentMain(vec4 position, float frameNumber, vec4 oid, inout vec4 fragColor){\n' +
+         //获取当前顶点高度，注意这里的高度是相对于模型原点的，具体高度范围，请从模型的外包盒中获取
+         //此处的最大高度为110米，最小高度为-34米，也是从外包盒里获取的
+         '   float currentHeight = position.y + 34.0;\n' +
+         //根据当前帧时间(czm_frameNumber)，获取当前顶点所处的周期
+         '   float time = fract(frameNumber / 360.0);\n' +
+         //获取当前高度占整体高度的百分比，0到1之间的值
+         //clamp参考https://learn.microsoft.com/zh-cn/previous-versions/hh308289(v=vs.120)
+         '   currentHeight = clamp(currentHeight / (110.0 + 34.0), 0.0, 1.0);\n' +
+         //处理周期
+         '   time = abs(time - 0.5) * 2.0;\n' +
+         //根据高度和周期计算光圈
+         '   float circle = step(0.005, abs(currentHeight - time));\n' +
+         //更新颜色
+         '   fragColor.rgb += fragColor.rgb * (1.0 - circle);\n' +
+         '}\n'
+    })
+});
+-------------渐变+光圈+高亮---------------------------
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/2.0/武汉建筑轮廓白/武汉建筑轮廓白.mcj';
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({
+         fragmentShaderText:
+         //参考1.87以上版本写法，必须重写fragmentMain方法
+         //position：顶点坐标，frameNumber：帧时间，顶点的oid，fragColor：顶点颜色
+         'void fragmentMain(vec4 position, float frameNumber, vec4 oid, inout vec4 fragColor){\n' +
+         //获取当前顶点高度，注意这里的高度是相对于模型原点的，具体高度范围，请从模型的外包盒中获取
+         //这份数据最低点距离制图原点有180米，最高点离原点有140米，因此加上180，使最小值为0
+         '   float currentHeight = position.y + 180.0;\n' +
+         //更新渐变颜色
+         '   fragColor += vec4(51.0 / 255.0, 153.0 / 255.0, 1.0, 1.0) * currentHeight / 320.0;\n' +
+         //高度在260到320之间，增加高亮
+         '   if(currentHeight > 260.0) {\n' +
+         '       fragColor *= 1.0 + 0.75 * (currentHeight - 260.0) / 60.0;\n' +
+         '   }\n' +
+         //根据当前帧时间(czm_frameNumber)，获取当前顶点所处的周期
+         '   float time = fract(frameNumber / 360.0);\n' +
+         //获取当前高度占整体高度的百分比，0到1之间的值
+         //clamp参考https://learn.microsoft.com/zh-cn/previous-versions/hh308289(v=vs.120)
+         '   currentHeight = clamp(currentHeight / 320.0, 0.0, 1.0);\n' +
+         //处理周期
+         '   time = abs(time - 0.5) * 2.0;\n' +
+         //根据高度和周期计算光圈
+         '   float circle = step(0.005, abs(currentHeight - time));\n' +
+         //更新颜色
+         '   fragColor.rgb += fragColor .rgb * (1.0 - circle);\n' +
+         '}\n'
+    })
+});
+-------------通过OID进行高亮---------------------------
+//注意必须是M3D2.0数据，且带有OID
+var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D//2.0/M3DAttributeTest_BIN/zondy.mcj';
+//指定一个OID，并将其转为颜色
+var id = Cesium.Color.fromRgba(511);
+//拼装相关shader代码，数值为float类型
+var OIDToColor = "";
+if(id.red.toString().indexOf('.') < 0) {
+    OIDToColor += id.red + '.0';
+}else {
+    OIDToColor += id.red;
+}
+OIDToColor += ',';
+if(id.green.toString().indexOf('.') < 0) {
+    OIDToColor += id.green + '.0';
+}else {
+    OIDToColor += id.green;
+}
+OIDToColor += ',';
+if(id.blue.toString().indexOf('.') < 0) {
+    OIDToColor += id.blue + '.0';
+}else {
+    OIDToColor += id.blue;
+}
+OIDToColor += ',';
+if(id.alpha.toString().indexOf('.') < 0) {
+    OIDToColor += id.alpha + '.0';
+}else {
+    OIDToColor += id.alpha;
+}
+index = viewer.scene.layers.appendM3DLayer(url, {
+    //设置自定义着色器
+    customShader: new Cesium.CustomShader({
+         fragmentShaderText:
+         //参考1.87以上版本写法，必须重写fragmentMain方法
+         //position：顶点坐标，frameNumber：帧时间，顶点的oid，fragColor：顶点颜色
+          'void fragmentMain(vec4 position, float frameNumber, vec4 oid, inout vec4 fragColor){\n' +
+         //设置外部传入的OID
+         '   vec4 outOID = vec4(' + OIDToColor + ');\n' +
+         //与当前OID相减
+         '   vec4 oidResult =  oid.rgba - outOID.rgba; \n' +
+         //相减后的rgba值小于0.0039(相当于1/255)，就认为是一样的id
+         '   if(abs(oidResult).r < 0.0039 && abs(oidResult).g < 0.0039 && abs(oidResult).b < 0.0039 && abs(oidResult).a < 0.0039){' +
+         //oid相同，改变颜色
+         '       fragColor.r += 1.0;' +
+         '   }' +
+         '}\n'
+    })
+});
+ * @param [options] - 初始化参数
+ * @param [options.uniforms = {}] - 传入的uniform变量，类型必须为Cesium.WebGLConstants里的类型，
+建议如果是非纹理类型的数据不要使用uniform变量传入，因为uniform变量必须在模型加载时赋值，后面无法修改，如果是想要实时变化，
+可以在shader里面实时赋值；注意这里说的uniform变量必须在模型加载时赋值是因为，uniform变量是随着顶点传入webgl中的，
+如果要修改必须将模型重新加载，并将数据传入webgl，使用这种方式会导致性能会下降很多；
+ * @param [options.varyings = {}] - 传入的varying变量
+ * @param [options.vertexShaderText = ''] - 传入的顶点着色器代码，必须重写fragmentMain方法
+ * @param [options.fragmentShaderText = ''] - 传入的片元着色器代码，必须重写vertexMain方法
+ */
+export class CustomShader {
+    constructor(options?: {
+        uniforms?: any[];
+        varyings?: any[];
+        vertexShaderText?: string;
+        fragmentShaderText?: string;
+    });
+}
+
+/**
  * 流动纹理线
  * @param options - 包含以下属性
  * @param [options.image] - 图片路径
@@ -30135,6 +33214,92 @@ export class RadarMaterialProperty {
     constructor(options: {
         color?: Color;
     });
+}
+
+/**
+ * 创建反射水面的实例化对象
+ * @example
+ * // 初始化视图对象
+var viewer = new Cesium.Viewer("cesiumContainer");
+// 加载模型
+var url = 'http://develop.smaryun.com:6163/igs/rest/g3d/ZondyModels';
+var index = viewer.scene.layers.appendSceneLayer(url, { duration: 1, maximumScreenSpaceError: 8 });
+// 创建反射水面的范围
+var positions = [
+  Cesium.Cartographic.fromDegrees(114.3972, 30.4710, 0.0),
+  Cesium.Cartographic.fromDegrees(114.4053, 30.4710, 0.0),
+  Cesium.Cartographic.fromDegrees(114.4053, 30.4638, 0.0),
+  Cesium.Cartographic.fromDegrees(114.3972, 30.4638, 0.0),
+];
+// 实例化反射水面的对象
+var water = new Cesium.WaterReflection({
+  viewer: viewer,
+  positions: positions,
+  distortionScale: 2.0,
+});
+ * @param options - 创建反射水面的参数
+ * @param options.viewer - 显示三维地球场景的对象
+ * @param options.positions - 构成水面的若干个坐标点
+ * @param [options.rippleSize = 100.0] - 水面的波纹大小
+ * @param [options.flowDegrees = 0] - 水流方向的角度，表示纹理坐标的旋转，以弧度为单位
+ * @param [options.height = 0.0] - 水面的高度
+ * @param [options.normalMapUrl = buildModuleUrl('Assets/Textures/waterNormalsSmall.jpg')] - 水面的法线贴图
+ * @param [options.waterColor = Color(0.2, 0.3, 0.6, 1.0)] - 水面的颜色
+ * @param [options.waterAlpha = 0.9] - 水面的透明度
+ * @param [options.reflectivity = 0.35] - 水面的反射率
+ * @param [options.lightDirection = Cartesian3(0, 0, 1)] - 反射光线的方向
+ * @param [options.sunShiny = 100.0] - 反射光线的强度
+ * @param [options.distortionScale = 25.0] - 水面反射的扭曲尺度
+ * @param [options.flowSpeed = 10.0] - 水流的速度
+ */
+export class WaterReflection {
+    constructor(options: {
+        viewer: Viewer;
+        positions: Cartographic[];
+        rippleSize?: number;
+        flowDegrees?: number;
+        height?: number;
+        normalMapUrl?: string;
+        waterColor?: Color;
+        waterAlpha?: number;
+        reflectivity?: number;
+        lightDirection?: Cartesian3;
+        sunShiny?: number;
+        distortionScale?: number;
+        flowSpeed?: number;
+    });
+    /**
+     * 获取或设置反射水面的波纹大小，数值越大波纹则波纹越密集
+     */
+    rippleSize: number;
+    /**
+     * 获取或设置反射水面的透明度，取值范围为[0,1]，0表示全透明，1表示不透明
+     */
+    waterAlpha: number;
+    /**
+     * 获取或设置反射水面的颜色
+     */
+    waterColor: Color;
+    /**
+     * 获取或设置反射水面的反射率，取值范围为[0,1]，值越大则反射率越高
+     */
+    reflectivity: number;
+    /**
+     * 获取或设置反射水面的扭曲尺度，值越大则反射贴图的扭曲程度越高
+     */
+    distortionScale: number;
+    /**
+     * 获取或设置反射水面的水流速度，值越大则水流速度越快，该参数仅表示视觉上的水流速度，并不与物理世界的速度相关联
+     */
+    flowSpeed: number;
+    /**
+     * 获取或设置反射水面的高度
+     */
+    height: number;
+    /**
+     * 销毁反射水面的实例化对象
+     */
+    destroy(): void;
 }
 
 /**
@@ -31045,6 +34210,38 @@ export class BaiduProjection {
 export var CoordnateTransform: any;
 
 /**
+ * 实现自定义投影坐标系与地理坐标系经纬度（弧度表示）之间的投影变换
+ * @param [ellipsoid = Ellipsoid.WGS84] - 参考椭球体对象
+ * @param [wkt = 'EPSG:3857'] - 投影坐标系的通识文本（Well Known Text）
+ * @param [proj4] - 投影变换对象
+ */
+export class CustomProjection {
+    constructor(ellipsoid?: Ellipsoid, wkt?: string, proj4?: any);
+    /**
+     * 参考椭球体对象
+     */
+    readonly ellipsoid: Ellipsoid;
+    /**
+     * 投影坐标系的通识文本
+     */
+    readonly wkt: string;
+    /**
+     * 将地理坐标（弧度表示）投影到目标投影坐标系中，其高度保持不变，投影坐标以{@link Cartesian3}对象返回
+     * @param cartographic - 用于投影变换的地理坐标（弧度表示）
+     * @param [result] - 保存结果的{@link Cartesian3}对象，若未定义则创建新的{@link Cartesian3}对象并返回
+     * @returns 返回指定的'result'，如果'result'未定义，则为包含矩形的{@link Cartesian3}新对象
+     */
+    project(cartographic: Cartographic, result?: Cartesian3): Cartesian3;
+    /**
+     * 将投影坐标投影到地理坐标系中，其高度保持不变，投影坐标以{@link Cartographic}对象（以弧度为单位）返回
+     * @param cartesian - 用于反投影变换的投影坐标
+     * @param [result] - 保存结果的{@link Cartographic}对象，若未定义则创建新的{@link Cartographic}对象并返回
+     * @returns 返回指定的'result'，如果'result'未定义，则为包含矩形的{@link Cartographic}新对象
+     */
+    unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
+}
+
+/**
  * @param [ellipsoid = Ellipsoid.WGS84] - 默认采取WGS椭球.
  */
 export class GaodeProjection {
@@ -31662,6 +34859,14 @@ export class MapGISCustomImageryProvider {
 /**
  * MapGIS地图文档
  * @example
+ * // options.headers 参数为HTTP请求头，请严格按照HTTP请求头属性填写
+       var options = {
+                         headers: {
+ *                                'Content-Type': 'text/plain',
+ *                                'Accept-Language': 'zh-cn,zh;q=0.5'
+ *                             }
+                     };
+ * @example
  * // options.extensions 参数为自定义扩展参数，需要确保服务端支持此类参数生效
        var options = {
                          extensions: [   { key: 'token', value: 'tokentokentokentoken' },
@@ -31677,6 +34882,8 @@ export class MapGISCustomImageryProvider {
  * @param options.url - 服务地址 eg:http://localhost:6163/igs/rest/mrms/docs/地图文档名
  * @param [sceneIndex] - 三维地图文档图层所在场景索引，当加载三维地图文档时为必需参数
  * @param [layerIndex] - 三维地图文档图层索引，当加载三维地图文档时为必需参数
+ * @param [options.httpMethod] - Http请求方式，"GET"、"POST"，默认为GET请求
+ * @param [options.headers] - HTTP请求头，传入方式见下方示例，请严格按照HTTP请求头属性填写，可传入请求方式为POST时的编码方式，默认方式为"text/plain"，请注意IGS.NET版本服务目前只支持"text/plain"的编码方式
  * @param [options.enablePickFeatures = false] - 是否启用瓦片要素获取
  * @param [options.tileWidth = 256] - 瓦片宽度
  * @param [options.tileHeight = 256] - 瓦片高度
@@ -31686,14 +34893,20 @@ export class MapGISCustomImageryProvider {
  * @param [options.rowNum = 1] - 瓦片初始级的列数 默认为1
  * @param [options.gdbps] - gdbps地址数组
  * @param [options.layers] - layers参数，用于过滤图层
+ * @param [options.filters] - 用户指定的图层过滤条件，它由多个键值对组成，值为过滤条件。1:ID>4,3:ID>1
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
  * @param [options.mapgisOffset] - 瓦片错级参数，默认为0
  * @param [options.proxy] - 转发代理
+ * @param [options.rectangle = Rectangle.fromDegrees(-180, -90, 180, 90)] - 指定瓦片加载范围，默认Rectangle.fromDegrees(-180, -90, 180, 90)，{@link Rectangle}
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
+ * @param [options.dynamicLayers] - 设置动态图层信息
+ * @param [options.build2DImageResource] - 重载build2DImageResource方法，来重载瓦片的请求逻辑
  */
 export class MapGISMapServerImageryProvider {
     constructor(options: {
         url: string;
+        httpMethod?: string;
+        headers?: any;
         enablePickFeatures?: boolean;
         tileWidth?: number;
         tileHeight?: number;
@@ -31703,10 +34916,14 @@ export class MapGISMapServerImageryProvider {
         rowNum?: number;
         gdbps?: any[];
         layers?: string;
+        filters?: string;
         tilingScheme?: any;
         mapgisOffset?: string;
         proxy?: string;
+        rectangle?: any;
         extensions?: any[];
+        dynamicLayers?: any[];
+        build2DImageResource?: (...params: any[]) => any;
     }, sceneIndex?: number, layerIndex?: number);
     /**
      * @returns 凭证对象(暂时不需要)
@@ -31879,6 +35096,7 @@ export class MapGISTerrainProvider {
  * @param [options.mapgisOffset = 0] - 瓦片错级参数，默认为0
  * @param [options.proxy] - 转发代理
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
+ * @param [options.buildImageResource] - 重载buildImageResource方法，来重载瓦片的请求逻辑
  */
 export class MapGISTileServerImageProvider {
     constructor(options: {
@@ -31897,6 +35115,7 @@ export class MapGISTileServerImageProvider {
         mapgisOffset?: number;
         proxy?: string;
         extensions?: any[];
+        buildImageResource?: (...params: any[]) => any;
     });
     /**
      * 获取代理.
@@ -31945,10 +35164,31 @@ export class OpenWeatherImageryProvider {
 /**
  * TerrainAnalyse 地形分析功能的主要类
  * @example
- * var viewer = new Cesium.Viewer('cesiumContainer', {});
-var terrainAnalyse = new Cesium.TerrainAnalyse(viewer, {});
-terrainAnalyse.selectedShading='elevation';
-terrainAnalyse.enableContour(enableContour);
+ * var drawElement = new Cesium.DrawElement(viewer);
+var terrainAnalyse = new Cesium.TerrainAnalyse(viewer);
+// 1. 坡度分析
+drawElement.startDrawingPolygon({
+    callback: function (reslut) {
+        terrainAnalyse.changeAnalyseArea(reslut.positions);
+        terrainAnalyse.selectedShading = 'slope';
+    }
+});
+// 2. 坡向分析
+drawElement.startDrawingPolygon({
+    callback: function (result) {
+        terrainAnalyse.changeAnalyseArea(result.positions);
+        terrainAnalyse.selectedShading = 'aspectArrow';
+    }
+});
+// 3. 坡度坡向分析
+drawElement.startDrawingPolygon({
+    callback: function (result) {
+        terrainAnalyse.changeAnalyseArea(result.positions);
+        terrainAnalyse.selectedShading = 'arrowAspectSlope';
+    }
+});
+// 4. 结束分析
+terrainAnalyse.destroy();
  * @param viewer - 场景视图对象
  * @param [options] - 包含以下属性的对象
  * @param [options.contourColor = Color.RED.clone()] - 等高线颜色默认为红色
@@ -32043,6 +35283,21 @@ export class TerrainAnalyse {
      */
     updateElevationBandMaterial(bandPositions: any[], gradient: boolean, bandThickness: number, bandTransparency: number, backgroundTransparency: number, colorsArray: any[]): void;
     /**
+     * 根据输入屏幕坐标查询坡度坡向值
+     * @example
+     * var terrainAnalyse = new Cesium.TerrainAnalyse(viewer, {});
+    result = terrainAnalyse.calculateSlopeAndAspect(screenPoint);
+    // 坡度值，单位度，范围0-90°
+    slopeAngle = result.slope
+    // 坡向值，单位度，范围0-360°
+    aspectAngle = result.aspect
+    // 坡向的8方位描述。可能的取值为N、NE、E、SE、S、SW、W、NW
+    aspectDescription = result.aspectDescription
+     * @param screenPoint - 查询坡度坡向值的屏幕坐标
+     * @returns result 返回查询结果
+     */
+    calculateSlopeAndAspect(screenPoint: Cartesian2): any;
+    /**
      * 右键点击查询坡度坡向值
      * @example
      * var getResult = function(e){console.log(e)};
@@ -32118,6 +35373,12 @@ export class TerrainProfile {
      */
     profile(callback: (...params: any[]) => any): void;
     /**
+     * 停止绘制
+    解决绘制一半后需要停止绘制问题
+    wanghan 20231010
+     */
+    stopDrawing(): void;
+    /**
      * 结束剖面分析，清除场景对象
      */
     destroy(): void;
@@ -32191,6 +35452,115 @@ export class TiandituImageryProvider {
 }
 
 /**
+ * wfs矢量
+ * @example
+ * // options.extensions 参数为自定义扩展参数，需要确保服务端支持此类参数生效
+       var options = {
+                         extensions: [   { key: 'token', value: 'tokentokentokentoken' },
+                                         { key: 'filters', value: '1:ID>4,3:ID>1'}
+                                     ]
+                     };
+
+       var mapGisVectorLayer = webGlobe.appendMapGISVectorLayer('http://localhost:6163/igs/rest/mrms/docs/二维矢量', {
+           tileFeaturesCount: 400 ,
+           heightAttributeName: 'HEIGHT',
+           heightRatio: 10,
+           primitiveColor:[[193, 191, 227, 1.0],[97, 114, 144, 1.0],[215, 104, 134, 1.0],[51,174,204,1.0],[196,60,141,1.0]]
+       });
+ * @param options - 包含以下属性
+ * @param options.url - 服务地址
+ * @param options.typeName - 要素数据名
+ * @param options.version - 服务版本可选 1.0.0 1.1.0 2.0.0
+ * @param [options.srsName = 'EPSG:4326'] - 坐标系
+ * @param [options.maxFeatures = 500] - 请求的瓦片矢量要素数量 1.0.0支持
+ * @param [options.count = 500] - 请求的要素条数wfs 2.0.0支持
+ * @param [options.clampToGround = false] - 是否贴地，当加载三维地图文档或矢量白模时该属性无效
+ * @param [options.style] - 矢量数据的style样式
+ * @param [options.style.type] - style样式类型，可选参数为"point|line|polygon|building"，对应点，线，区，区矢量白模
+ * @param [options.style.styleOptions] - style具体参数对象
+ * @param [options.style.styleOptions.color = Cesium.Color.GHOSTWHITE] - 通用参数，颜色
+ * @param [options.style.styleOptions.size] - 点符号大小，仅当options.style.type=point时生效
+ * @param [options.style.styleOptions.outline = false] - 是否启用边框线，仅当options.style.type=point|polygon时生效
+ * @param [options.style.styleOptions.outlineColor] - 边框线颜色，仅当options.style.type=point|polygon|building时生效
+ * @param [options.style.styleOptions.outlineWidth] - 边框线宽度，仅当options.style.type=point|polygon|building时生效
+ * @param [options.style.styleOptions.width] - 线宽，仅当options.style.type=line时生效
+ * @param [options.style.styleOptions.heightField] - 用作区矢量白模高程的属性字段名称，不设置则高程为零，仅当options.style.type=building时生效
+ * @param [options.style.styleOptions.heightRatio] - 区矢量白模高程放缩比例，默认1.0，仅当options.style.type=building时生效
+ * @param [options.tileWidth = 256] - 瓦片宽度
+ * @param [options.tileHeight = 256] - 瓦片高度
+ * @param [options.minimumLevel = 0] - 瓦片最小级别
+ * @param [options.maximumLevel = 0] - 瓦片最大级别
+ * @param [options.gdbps] - gdbps地址数组
+ * @param [options.layers] - layers参数，用于过滤图层
+ * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
+ * @param [options.extensions] - 扩展参数，需要确保服务端支持
+ */
+export class WfsProvider {
+    constructor(options: {
+        url: string;
+        typeName: string;
+        version: string;
+        srsName?: string;
+        maxFeatures?: number;
+        count?: number;
+        clampToGround?: boolean;
+        style?: {
+            type?: string;
+            styleOptions?: {
+                color?: Color;
+                size?: number;
+                outline?: number;
+                outlineColor?: Color;
+                outlineWidth?: number;
+                width?: number;
+                heightField?: number | string;
+                heightRatio?: number;
+            };
+        };
+        tileWidth?: number;
+        tileHeight?: number;
+        minimumLevel?: number;
+        maximumLevel?: number;
+        gdbps?: any[];
+        layers?: string;
+        tilingScheme?: any;
+        extensions?: any[];
+    });
+    /**
+     * 样式
+     */
+    layerExtendHeight: any;
+    /**
+     * 服务地址
+     */
+    readonly url: string;
+    /**
+     * 获取代理
+     */
+    readonly proxy: Proxy;
+    /**
+     * 瓦片宽度
+     */
+    readonly tileWidth: number;
+    /**
+     * 瓦片高度
+     */
+    readonly tileHeight: number;
+    /**
+     * 服务请求范围
+     */
+    readonly rectangle: Rectangle;
+    /**
+     * gdbps地址数组
+     */
+    readonly gdbps: any[];
+    /**
+     * layers参数，用于过滤图层
+     */
+    readonly layers: string;
+}
+
+/**
  * 用于保存图片
  */
 export class ReImg {
@@ -32208,6 +35578,511 @@ export class ReImg {
      * @returns 返回对象组 {toBase64, toImg, toCanvas, toPng, toJpeg, downloadPng}
      */
     static fromCanvas(canvasElement: any): any;
+}
+
+/**
+ * 几何体裁剪
+ * @example
+ * var geometryClipper = new Cesium.ClippingGeometry(viewer);
+var geometryOption = {
+    type: Cesium.ClippingGeometryType.BOX,
+    dimensions: new Cesium.Cartesian3(1000.0, 1000.0, 1000.0)
+}
+geometryClipper.addClipGeometry({
+    geometry: geometryOption,
+    position: Cesium.Cartesian3.fromDegrees(113.0538, 30.001, -400.0)
+});
+// 给M3D添加几何体裁剪
+M3DSet.geometryClipper = geometryClipper;
+// 给地形添加几何体裁剪
+viewer.scene.globe.geometryClipper = geometryClipper;
+ */
+export class ClippingGeometry {
+    constructor(viewer: Viewer);
+    /**
+     * 裁剪几何
+     */
+    readonly clippingGeometry: Geometry | Model;
+    /**
+     * 添加一个裁剪几何体
+     * @example
+     * // 1. 圆台、圆锥、圆柱几何体
+    var geometryOption = {
+        type: Cesium.ClippingGeometryType.CYLINDER,
+        length: 1000,
+        topRadius: 500,
+        bottomRadius: 500,
+        slices: 128
+    }
+    geometryClipper.addClipGeometry({
+        geometry: geometryOption,
+        position: Cesium.Cartesian3.fromDegrees(113.0538, 30.001, -400.0)
+    });
+    
+    // 2. 盒子几何体
+    var geometryOption = {
+        type: Cesium.ClippingGeometryType.BOX,
+        dimensions: new Cesium.Cartesian3(1000.0, 1000.0, 1000.0)
+    }
+    geometryClipper.addClipGeometry({
+        geometry: geometryOption,
+        position: Cesium.Cartesian3.fromDegrees(113.0538, 30.001, -400.0)
+    });
+    
+    // 3. 椭球、球几何体
+    var geometryOption = {
+        type: Cesium.ClippingGeometryType.ELLIPSOID,
+        radii: new Cesium.Cartesian3(1000, 500, 500)
+    }
+    geometryClipper.addClipGeometry({
+        geometry: geometryOption,
+        position: Cesium.Cartesian3.fromDegrees(113.0538, 30.001, -400.0)
+    });
+    
+    // 4. 通道几何体
+    var positions = Cesium.Cartesian3.fromDegreesArray([113.05, 30, 113.0538, 30.05])
+    var geometryOption = {
+        type:Cesium.ClippingGeometryType.CORRIDOR,
+        cornerType:Cesium.CornerType.MITERED,
+        positions: positions,
+        extrudedHeight: 500,
+        height: -1000,
+        width: 1000
+    }
+    geometryClipper.addClipGeometry({
+        geometry: geometryOption
+    });
+    
+    // 5. 多边形几何体
+    var geometryOption = {
+        type: Cesium.ClippingGeometryType.POLYGON,
+        positions: [
+            113.0405, 30.0171,
+            113.0426, 30.0172,
+            113.0576, 30.0088,
+            113.0540, 30.0,
+            113.0513, 29.9885
+        ],
+        height: -1000,
+        extrudedHeight: 500
+    }
+    geometryClipper.addClipGeometry({
+        geometry: geometryOption
+    });
+    
+    // 6. 圆管几何体
+    var geometryOption = {
+        type: Cesium.ClippingGeometryType.POLYLINEVOLUME,
+        radius: 500.0,
+        positions: [
+            Cesium.Cartesian3.fromDegrees(113.0308, 30.0174, -800.0),
+            Cesium.Cartesian3.fromDegrees(113.0513, 30.0174, -800.0),
+            Cesium.Cartesian3.fromDegrees(113.0807, 29.99, -800.0)
+        ]
+    }
+    geometryClipper.addClipGeometry({
+        geometry: geometryOption
+    });
+    
+    // 7. 带顶点动画的圆管几何体
+    var geometryOption = {
+        type: Cesium.ClippingGeometryType.POLYLINEVOLUMEANIMATION,
+        radius: 500.0,
+        animationDuration: 5,//动画持续时间
+        positions: [
+            Cesium.Cartesian3.fromDegrees(113.0308, 30.0174, -800.0),
+            Cesium.Cartesian3.fromDegrees(113.0513, 30.0174, -800.0),
+            Cesium.Cartesian3.fromDegrees(113.0807, 29.99, -800.0)
+        ]
+    }
+    var geometry = geometryClipper.addClipGeometry({
+        geometry: geometryOption
+    });
+    geometry.playAnimation() // 播放顶点动画
+    
+    // 8. 外部glb
+    var url = "../../SampleData/models/test.glb";
+    geometryClipper.addClipGeometry({
+        geometry: url,
+        position: Cesium.Cartesian3.fromDegrees(113.0538, 30.001, -400.0)
+    });
+     * @param options - 裁剪几何体参数
+     * @param options.geometry - 裁剪几何体<br/>
+    裁剪几何体支持内置几何类型{@link ClippingGeometryType}和外部的glb类型
+     * @param [options.position] - 设置裁剪几何体的位置<br/>
+    {@link ClippingGeometryType.POLYLINEVOLUMEANIMATION},<br/>
+    {@link ClippingGeometryType.POLYLINEVOLUME},<br/>
+    {@link ClippingGeometryType.POLYGON},<br/>
+    {@link ClippingGeometryType.CORRIDOR}<br/>
+    这几种类型，由于其顶点数据是世界坐标，所以此属性不会起作用。
+     */
+    addClipGeometry(options: {
+        geometry: any | string;
+        position?: Cartesian3;
+    }): Geometry | Model;
+}
+
+/**
+ * 裁剪几何体类型
+ */
+export enum ClippingGeometryType {
+    /**
+     * 盒子几何体
+     */
+    BOX = "Box",
+    /**
+     * 圆台、圆柱、圆锥几何体
+     */
+    CYLINDER = "Cylinder",
+    /**
+     * 通道几何体
+     */
+    CORRIDOR = "Corridor",
+    /**
+     * 椭球、球几何体
+     */
+    ELLIPSOID = "Ellipsoid",
+    /**
+     * 多边形几何体
+     */
+    POLYGON = "Polygon",
+    /**
+     * 圆管几何体
+     */
+    POLYLINEVOLUME = "PolylineVolume",
+    /**
+     * 带顶点动画的圆管几何体
+     */
+    POLYLINEVOLUMEANIMATION = "PolylineVolumeAnimation"
+}
+
+/**
+ * 动态实体视图类封装
+1、支持BillBoard、Label、GroundPrimitive等动态显示，处理覆盖问题
+2、动态显隐效果
+3、视窗内性能优化
+ * @example
+ * var dynamicEntityVisualizer = new Cesium.DynamicEntityVisualizer(viewer.scene,{
+      });
+      // 作用BillBoardCollection
+      var billBoardCollection = dynamicEntityVisualizer.add(
+ *             new BillboardCollection({
+ *                 blendOption: BlendOption.OPAQUE
+ *             })
+ *         );
+ *         // 作用 LabelCollection
+      var labelCollection = dynamicEntityVisualizer.add(
+ *             new BillboardCollection({
+ *                 blendOption: BlendOption.OPAQUE
+ *             })
+ *         );
+ *         // 作用 PrimitiveCollection (目前仅支持GroundPrimitive)
+      var primitiveCollection = dynamicEntityVisualizer.add(
+ *             new PrimitiveCollection({
+ *             })
+ *         );
+ * @param scene - 场景对象
+ * @param options - 对象
+ * @param [option.show = true] - 是否显示视图
+ */
+export class DynamicEntityVisualizer {
+    constructor(scene: Scene, options: any);
+}
+
+/**
+ * <p>单独控制地表透明度和影像图层的透明度，能够在开启地表透明后使部分影像图层不受地表透明的影响。</p>
+
+<p>实例化该类的对象同时也能够使用原生的地表透明参数，能够直接在实例化对象上修改 {@link GlobeTranslucency} 的参数（原生的
+viewer.scene.globe.translucency依然能够使用，但两者同时使用时会造成相互干扰，推荐仅使用GlobeIndependentTranslucency来实现地表透明），
+使用原生的地表透明方式还是该类的地表透明方式由 {@link GlobeIndependentTranslucency#imageryLayers} 数组是否为空来区分。</p>
+
+<p>1. 当 {@link GlobeIndependentTranslucency#imageryLayers} 不为空数组时，使用该类的地表透明方式，此时能够设置并生效的地表透明参数如下：</p>
+<ul>
+<li><code>globeFaceAlpha</code>：地表的透明度，若设置该参数则<code>globeFaceAlphaByDistance</code>不生效；</li>
+<li><code>globeFaceAlphaByDistance</code>：地表的透明度根据视点距离的变化范围，当<code>globeFaceAlpha</code>为<code>undefined</code>时生效；</li>
+</ul>
+
+<p>2. 当 {@link GlobeIndependentTranslucency#imageryLayers} 为空数组时，使用原生的地表透明方式，此时能够设置并生效的地表透明参数如下：</p>
+<ul>
+<li><code>frontFaceAlpha</code>：地表正面的透明度；</li>
+<li><code>frontFaceAlphaByDistance </code>：地表正面的透明度根据视点距离的变化范围；</li>
+<li><code>backFaceAlpha</code>：地表背面的透明度；</li>
+<li><code>backFaceAlphaByDistance</code>：地表背面的透明度根据视点距离的变化范围；</li>
+<li><code>rectangle</code>：将地表透明的区域限制在一个矩形范围内。</li>
+</ul>
+ * @example
+ * // 初始化视图对象，若不指定影像图层则会默认使用SingleTileImageryProvider加载一张地表影像图
+var viewer = new Cesium.Viewer("cesiumContainer");
+
+// 添加影像图层
+var hubei_4326 = viewer.imageryLayers.addImageryProvider(
+    new Cesium.SingleTileImageryProvider({
+        url: 'http://192.168.82.89:8089/igs/rest/services/Tile/湖北省_4326_custom_1-8/TileServer/tileImage/2/0/0?f=image',
+        rectangle: Cesium.Rectangle.fromDegrees(108.34522, 25.48750, 116.13094, 33.27322)
+    })
+);
+
+// 实例化地表透明对象
+var independentTranslucency = new Cesium.GlobeIndependentTranslucency(viewer);
+// 以数组的形式添加需要单独控制透明度的影像图层
+independentTranslucency.imageryLayers = [hubei_4326];
+// 开启地表透明
+independentTranslucency.enabled = true;
+
+// 注意：以下内容非必需，在此仅用于在示例中展示开启地表透明后的影像图层地上地下效果
+// 开启地形深度测试
+viewer.scene.globe.depthTestAgainstTerrain = true;
+// 隐藏地表大气层
+viewer.scene.globe.showGroundAtmosphere = false;
+// 隐藏天空盒
+viewer.scene.skyBox.show = false;
+// 隐藏天空大气层
+viewer.scene.skyAtmosphere.show = false;
+// 隐藏太阳
+viewer.scene.sun.show = false;
+// 隐藏月亮
+viewer.scene.moon.show = false;
+
+// 加载地下实体
+viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(114.0, 30.5, -40000),
+    box: {
+        dimensions: new Cesium.Cartesian3(4.0e5, 4.0e5, 3.0e4),
+        material: Cesium.Color.RED,
+        outline: true,
+        outlineColor: Cesium.Color.BLACK
+    }
+});
+
+// 加载地上实体
+viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(114.0, 30.5, 40000),,
+    box: {
+        dimensions: new Cesium.Cartesian3(2.0e5, 2.0e5, 3.0e4),
+        material: Cesium.Color.GREEN.withAlpha(0.5),
+        outline: true,
+        outlineColor: Cesium.Color.BLACK
+    }
+});
+
+// 关闭地表透明
+independentTranslucency.enabled = false;
+ * @param viewer - 显示三维地球场景的对象
+ */
+export class GlobeIndependentTranslucency {
+    constructor(viewer: Viewer);
+    /**
+     * 是否开启地表透明
+     */
+    enabled: boolean;
+    /**
+     * 需要单独控制透明度的影像图层，可以通过数组的形式传入一个或多个影像图层对象
+     * @example
+     * var independentTranslucency = new Cesium.GlobeIndependentTranslucency(viewer);
+    
+    // 当imageryLayers数组不为空时，使用的是单独控制地表透明的方式，layer1和layer2将不受地表透明的影响
+    independentTranslucency.imageryLayers = [layer1, layer2];
+    
+    // 当imageryLayers数组为空时，使用的是原生的控制地表透明的方式，所有的影像图层都会参与地表透明混合计算
+    independentTranslucency.imageryLayers = [];
+     */
+    imageryLayers: ImageryLayer[];
+    /**
+     * 地表的透明度，若设置该参数则<code>globeFaceAlphaByDistance</code>不生效
+     * @example
+     * var independentTranslucency = new Cesium.GlobeIndependentTranslucency(viewer);
+    
+    // 设置不受地表透明影响的影像图层
+    independentTranslucency.imageryLayers = [layer1, layer2];
+    
+    // 设置地表透明度为0.5，layer1和layer2不受影响
+    independentTranslucency.globeFaceAlpha = 0.5;
+    
+    // 当globeFaceAlpha不为undefined时，globeFaceAlphaByDistance将不再生效
+    independentTranslucency.globeFaceAlphaByDistance = new Cesium.NearFarScalar(3.0e5, 0.0, 5.0e6, 1.0);
+     */
+    globeFaceAlpha: number;
+    /**
+     * 地表的透明度根据视点距离的变化范围，在<code>globeFaceAlpha</code>为<code>undefined</code>时生效
+     * @example
+     * var independentTranslucency = new Cesium.GlobeIndependentTranslucency(viewer);
+    
+    // 使用globeFaceAlphaByDistance时要确保globeFaceAlpha的值为undefined
+    independentTranslucency.globeFaceAlpha = undefined;
+    independentTranslucency.globeFaceAlphaByDistance = new Cesium.NearFarScalar(3.0e5, 0.0, 5.0e6, 1.0);
+     */
+    globeFaceAlphaByDistance: NearFarScalar;
+    /**
+     * 地表正面的透明度
+     */
+    frontFaceAlpha: number;
+    /**
+     * 地表正面的透明度根据视点距离的变化范围
+     */
+    frontFaceAlphaByDistance: NearFarScalar;
+    /**
+     * 地表背面的透明度
+     */
+    backFaceAlpha: number;
+    /**
+     * 地表背面的透明度根据视点距离的变化范围
+     */
+    backFaceAlphaByDistance: NearFarScalar;
+    /**
+     * 限制地表透明在一个矩形范围内
+     */
+    rectangle: Rectangle;
+}
+
+/**
+ * 光源id
+ */
+export var id: any;
+
+/**
+ * 光源方向
+ */
+export var direction: any;
+
+/**
+ * 光源颜色
+ */
+export var color: any;
+
+/**
+ * 光源强度
+ */
+export var intensity: any;
+
+/**
+ * 点光源,从一个点向各个方向发射的光源
+ * @param options.position - 光源位置
+ * @param options.color - 光源颜色
+ * @param options.intensity - 光源强度
+ * @param options.decay - 衰减量
+ * @param options.distance - 光照距离
+ */
+export function PointLight(options: {
+    position: Cartesian3;
+    color: Color;
+    intensity: number;
+    decay: number;
+    distance: number;
+}): void;
+
+/**
+ * 光源id
+ */
+export var id: any;
+
+/**
+ * 点光源位置
+ */
+export var position: any;
+
+/**
+ * 光源颜色
+ */
+export var color: any;
+
+/**
+ * 光源强度
+ */
+export var intensity: any;
+
+/**
+ * 衰减量
+ */
+export var decay: any;
+
+/**
+ * 光照距离，表示从光源到关照强度为0的距离
+ */
+export var distance: any;
+
+/**
+ * 聚光灯
+ * @param options.position - 聚光灯位置
+ * @param options.direction - 聚光灯方向
+ * @param [options.color = WHITE] - 光源颜色
+ * @param [options.angle = PI/3] - 光源散射角度,最大为Math.PI/2
+ * @param [options.distance = 0.0] - 光源覆盖距离
+ * @param [options.intensity = 1.0] - 光源强度
+ * @param [options.decay = 2.0] - 衰减因子
+ * @param [options.penumbra = 0.0] - 聚光锥的半影衰减百分比,在0和1之间的值
+ */
+export function SpotLight(options: {
+    position: Cartesian3;
+    direction: Cartesian3;
+    color?: Color;
+    angle?: number;
+    distance?: number;
+    intensity?: number;
+    decay?: number;
+    penumbra?: number;
+}): void;
+
+/**
+ * 光源id
+ */
+export var id: any;
+
+/**
+ * 点光源位置
+ */
+export var position: any;
+
+/**
+ * 光源方向
+ */
+export var direction: any;
+
+/**
+ * 光线散射角度，最大为Math.PI/2
+ */
+export var angle: any;
+
+/**
+ * 光源颜色
+ */
+export var color: any;
+
+/**
+ * 光源强度
+ */
+export var intensity: any;
+
+/**
+ * 衰减量
+ */
+export var decay: any;
+
+/**
+ * 光照距离，表示从光源到关照强度为0的距离
+ */
+export var distance: any;
+
+/**
+ * 聚光锥的半影衰减百分比
+ */
+export var penumbra: any;
+
+/**
+ * 轮廓显示模式
+ */
+export enum OutlineRenderMode {
+    /**
+     * 填充模式
+     */
+    FILL = 0,
+    /**
+     * 轮廓模式
+     */
+    SILHOUETTE = 1,
+    /**
+     * 填充加轮廓模式
+     */
+    ALL = 2
 }
 
 /**
@@ -32486,6 +36361,162 @@ export class ThemeManager {
 }
 
 /**
+ * 引用{@link CustomProjection}的几何图形自定义瓦片平铺方案
+ * @example
+ * // 瓦片的属性信息
+const tileInfo = {
+  dpi: 0,
+  format: 'PNG',
+  size: [256, 256], // 瓦片宽高的像素大小
+  origin: {
+    coordinates: [471388.6716802692, 3471062.732487645], // 裁图原点
+    type: 'Point', // 裁图原点类型
+  },
+  lods: [
+    {
+      level: 0,
+      resolution: 661.4583333333334,
+      scale: 2500000,
+    },
+    {
+      level: 1,
+      resolution: 330.7291666666667,
+      scale: 1250000,
+    },
+    {
+      level: 2,
+      resolution: 165.36458333333334,
+      scale: 625000,
+    },
+    {
+      level: 3,
+      resolution: 82.68229166666667,
+      scale: 312500,
+    },
+    {
+      level: 4,
+      resolution: 41.341145833333336,
+      scale: 156250,
+    },
+    {
+      level: 5,
+      resolution: 20.670572916666668,
+      scale: 78125,
+    }
+  ]
+}
+
+// 瓦片的四至范围
+const extent = {
+  xmin: 471388.6716802692,
+  ymin: 3316805.3361792937,
+  xmax: 603520.9945763454,
+  ymax: 3471062.732487645,
+}
+
+// 创建自定义瓦片切分规则
+const tilingScheme = new Cesium.CustomTilingScheme({
+  ellipsoid: Cesium.Ellipsoid.WGS84,
+  wkid: 4547,
+  wkt: '+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs', // https://epsg.io/4547
+  tileInfo, // 瓦片的属性信息，地图服务可以不提供该参数
+  numberOfLevelZeroTilesX: 1, // 瓦片树第0级的X方向所包含的瓦片个数
+  numberOfLevelZeroTilesY: 1, // 瓦片树第0级的Y方向所包含的瓦片个数
+  rectangleSouthwest: new Cesium.Cartesian2(extent.xmin, extent.ymin), // 投影矩形范围的西南角
+  rectangleNortheast: new Cesium.Cartesian2(extent.xmax, extent.ymax), // 投影矩形范围的东北角
+  proj4, // 投影变换对象
+})
+ * @param [options] - 构造函数的参数对象，包含的属性如下：
+ * @param [options.ellipsoid = Ellipsoid.WGS84] - 表面被瓦片平铺的参考椭球体，默认为WGS84椭球体
+ * @param [options.wkt] - 投影坐标系的通识文本（Well Known Text）
+ * @param [options.wkid] - 投影坐标系的通识编码（Well Known ID）
+ * @param [options.tileInfo] - 瓦片的属性信息，地图服务可以不提供该参数，该参数有固定的格式要求，详见下方示例
+ * @param [options.numberOfLevelZeroTilesX = 1] - 瓦片树第0级的X方向所包含的瓦片个数
+ * @param [options.numberOfLevelZeroTilesY = 1] - 瓦片树第0级的Y方向所包含的瓦片个数
+ * @param [options.rectangleSouthwest] - 投影矩形范围的西南角
+ * @param [options.rectangleNortheast] - 投影矩形范围的东北角
+ * @param [options.proj4] - 投影变换对象
+ */
+export class CustomTilingScheme {
+    constructor(options?: {
+        ellipsoid?: Ellipsoid;
+        wkt?: string;
+        wkid?: string;
+        tileInfo?: any;
+        numberOfLevelZeroTilesX?: number;
+        numberOfLevelZeroTilesY?: number;
+        rectangleSouthwest?: Cartesian2;
+        rectangleNortheast?: Cartesian2;
+        proj4?: any;
+    });
+    /**
+     * 获取此瓦片平铺方案所使用的参考椭球体
+     */
+    ellipsoid: Ellipsoid;
+    /**
+     * 获取此瓦片平铺方案所覆盖的矩形范围
+     */
+    rectangle: Rectangle;
+    /**
+     * 获取此瓦片平铺方案所对应的投影方式
+     */
+    projection: CustomProjection;
+    /**
+     * 获取此瓦片平铺方案所对应的投影方式的wkid
+     */
+    wkid: string;
+    /**
+     * 获取此瓦片平铺方案所对应的投影方式的wkt
+     */
+    wkt: string;
+    /**
+     * 获取指定详细级别X方向上的瓦片总数
+     * @param level - 详细级别
+     * @returns 给定level详细级别中X方向的瓦片数量
+     */
+    getNumberOfXTilesAtLevel(level: number): number;
+    /**
+     * 获取指定详细级别Y方向上的瓦片总数
+     * @param level - 详细级别
+     * @returns 给定level详细级别中Y方向的瓦片数量
+     */
+    getNumberOfYTilesAtLevel(level: number): number;
+    /**
+     * 将以地理坐标经纬度弧度指定的矩形转换到此瓦片平铺方案的投影坐标系
+     * @param rectangle - 要进行投影转换的矩形范围
+     * @param [result] - 保存结果的{@link Rectangle}对象，若未定义则创建新的{@link Rectangle}对象并返回
+     * @returns 返回指定的'result'，如果'result'未定义，则为包含矩形的{@link Rectangle}新对象
+     */
+    rectangleToNativeRectangle(rectangle: Rectangle, result?: Rectangle): Rectangle;
+    /**
+     * 将瓦片平铺的X、Y坐标和详细级别转换为以此瓦片平铺方案的投影坐标系表示的矩形
+     * @param x - 瓦片在X方向上的坐标
+     * @param y - 瓦片在Y方向上的坐标
+     * @param level - 详细级别
+     * @param [result] - 保存结果的{@link Rectangle}对象，若未定义则创建新的{@link Rectangle}对象并返回
+     * @returns 返回指定的'result'，如果'result'未定义，则为包含矩形的{@link Rectangle}新对象
+     */
+    tileXYToNativeRectangle(x: number, y: number, level: number, result?: Rectangle): Rectangle;
+    /**
+     * 将瓦片平铺的X、Y坐标和高度转换为以弧度表示的矩形范围
+     * @param x - 瓦片在X方向上的坐标
+     * @param y - 瓦片在Y方向上的坐标
+     * @param level - 详细级别
+     * @param [result] - 返回指定的'result'，如果'result'未定义，则为包含矩形的{@link Rectangle}新对象
+     * @returns 返回指定的'result'，如果'result'未定义，则为包含矩形的{@link Rectangle}新对象
+     */
+    tileXYToRectangle(x: number, y: number, level: number, result?: Rectangle): Rectangle;
+    /**
+     * 计算一个坐标点在某一详细级别中位于某一瓦片的X、Y坐标
+     * @param position - 坐标点
+     * @param level - 详细级别
+     * @param [result] - 保存结果的{@link Cartesian2}对象，若未定义则创建新的{@link Cartesian2}对象并返回
+     * @returns 返回指定的'result'，如果'result'未定义，则为包含矩形的{@link Cartesian2}新对象
+     */
+    positionToTileXY(position: Cartographic, level: number, result?: Cartesian2): Cartesian2;
+}
+
+/**
  * @param options - 配置参数
  * @param [options.epsg = 'EPSG:4490'] - 默认采用经纬度投影,目前支持utm lonlat webmercator,传入EPSG:编号
  * @param [options.resolutions] - 瓦片各级分辨率
@@ -32576,7 +36607,7 @@ export class AngulationTool {
  *                         alert('完毕');
  *                     },
  *                     //绕点旋转时，每一帧的回调函数，暂停同时暂停返回结果
- *                     onPositionCallback: function (result) {
+ *                     callback: function (result) {
  *                         console.log('heading:' + result.heading + '，pitch：' + result.pitch);
  *                     },
  *                 }
@@ -32597,11 +36628,82 @@ export class AngulationTool {
  *  rotatePointTool.pause();
  *  //结束
  *  rotatePointTool.stop();
+//动画漫游
+ *          var options = {
+ *             //类型指定为routes
+ *             toolType: 'routes',
+ *             //航向角（相机视角），绕Z轴旋转,在第一人称视角，上帝视角下支持设置
+ *             heading: 0,
+ *             //俯仰角（相机视角），绕Y轴旋转。在第一人称视角支持设置
+ *             pitch: 0,
+ *             //距离：单位是米，在第一人称视角，上帝视角下支持设置
+ *             range:100000,
+ *             //漫游路径点，初始化可以不设置 但一定要在开始前设置好
+ *             positions:[],
+ *             // 视角类型 0：一般场景，不操作相机；1：跟随；2：锁定第一视角；3：上帝视角
+ *             animationType:1,
+ *             //回调函数传回一组动画信息
+ *             callback: function (result) {
+ *                         console.log('动画信息：' + result);
+ *                         //需要在模型运动到点索引为1，和点索引为5的分段改变姿态
+ *                         if (result.routePointIndex===1||result.routePointIndex===5 ) {
+ *                              animation.modelHeading = 45;
+ *                              animation.modelPitch = 45;
+ *                              animation.modelRoll = 45;
+ *                          } else {
+ *                              //其他分段还原姿态默认值
+ *                              animation.modelHeading = 0;
+ *                              animation.modelPitch = 0;
+ *                              animation.modelRoll = 0;
+ *                          }
+ *                     },
+ *             //是否设置模型运动姿态，保持朝向与运动方向一致，默认为true，设置为false时，模型姿态不改变
+ *             //isSetModelPosture:true,
+ *             //是否循环动画，true：一直循环，false：到结束时间就停止动画
+ *             isLoop: false,
+ *             //加速因子
+ *             speedupFactor: 5,
+ *             //模型路径 默认为空不显示
+ *             modelUrl: '../../SampleData/models/CesiumMan/Cesium_Man.glb',
+ *             model: {
+ *                 //放大比例
+ *                 scale: 10000,
+ *                 //固定大小设为0
+ *                 minimumPixelSize : 0
+ *             },
+ *             //开始路径漫游跳转点的上一个路径点的索引
+ *             startPositionIndex:0,
+ *             //距离索引点的距离，单位是meter
+ *             offsetStartPositionDistance:0,
+ *             //是否需要将较大转弯点处理为圆弧
+ *             //isProcessCorner: false,
+ *
+ *             //设置判断为转弯点的角度的最大值，不超过150的转角会被执行插值，处理为圆弧
+ *             //maxAngle: 150.0,
+ *             //转弯处往圆弧曲线上插值点的步长，点个数=1/curveStep
+ *             //curveStep: 0.01,
+ *             complete: function () {
+ *                 alert('完毕');
+ *             }
+ *         }
+ *  // 示例：路径漫游
+ *  options.positions = Cesium.Cartesian3.fromDegreesArray([
+ *                 117.213063, 31.812956, 117.213162, 31.812389, 117.212929, 31.812056, 117.213275, 31.811582,
+ *                 117.21348, 31.811513, 117.214141, 31.811682, 117.21497, 31.811691, 117.216318, 31.811454
+ *             ]);
+ *  var animation = new Cesium.AnimationTool(viewer, options);
+ * //开始
+ *  animation.start();
+ *  //暂停
+ *  //animation.pause();
+ *  //结束
+ *  //animation.stop();
  * @param viewer - 场景视图
  * @param options - 附加选项
- * @param [options.toolType = routes] - 工具类型，routes：动画漫游，point：绕点旋转
- * @param [options.heading = 0] - 航向角（相机视角），绕Z轴旋转。弧度值。绕视点旋转时，这个值是自增的，因此只有初始化时生效，不可实时修改
- * @param [options.pitch = 0] - 俯仰角（相机视角），绕Y轴旋转。弧度值。绕视点旋转时，这个值可实时修改。
+ * @param [options.toolType = 'routes'] - 工具类型，routes：动画漫游，point：绕点旋转
+ * @param [options.heading = 90] - 航向角（相机视角），绕Z轴旋转的弧度值。路径漫游时:跟随视角、第一视角、上帝视角下实时生效；绕视点旋转时:这个值是自增的，因此只有初始化时生效，不可实时修改
+ * @param [options.pitch = 0] - 俯仰角（相机视角），绕Y轴旋转的弧度值。路径漫游时:跟随视角，第一视角实时生效；绕视点旋转时:这个值可实时修改。
+ * @param [options.range = 0] - 相机距离，相机距离视点的距离，单位米。路径漫游时:跟随视角，上帝视角实时生效
  * @param [options.distance = 0] - 绕点旋转时，相机定位点的平移距离（沿着相机视角的相反方向），米。绕视点旋转时，这个值可实时修改。不能为空或者是0。
  * @param [options.duration = 8] - 绕点旋转时，动画持续时间
  * @param [options.moveToStop = true] - 绕点旋转时，移动鼠标，停止旋转。true激活该特性，false，不激活该特性。
@@ -32618,8 +36720,6 @@ export class AngulationTool {
  * @param [options.model] - 动画漫游中的模型对象参数，详见{@link ModelGraphics}
  * @param options.complete - 完成回调   完成后的回调函数
  * @param [options.interpolationAlgorithm = LagrangePolynomialApproximation] - 插值算法 默认拉格朗日 还有线性插值 Cesium.LinearApproximation(埃尔米特插值插值)Cesium.HermitePolynomialApproximation
- * @param [options.callBack] - 回调函数，返回当前所在点坐标
- * @param [options.isGetPositionNow = false] - 是否获取当前点坐标，默认为false，为true时，需配合返回当前点坐标的回调函数一起使用
  * @param [options.isProcessCorner = false] - 是否需要将较大转弯点处理为圆弧
  * @param [options.maxAngle = 150.0] - 设置判断为转弯点的角度的最大值，不超过150的转角会被执行插值，处理为圆弧
  * @param [options.curveStep = 0.05] - 转弯处往圆弧曲线上插值点的步长，点个数=1/curveStep
@@ -32629,21 +36729,37 @@ export class AngulationTool {
  * @param [options.rangeTargetPosition = 1.0] - 视点与目标点距离按照倍数增加
  * @param [options.isAddScanEffect = false] - 是否挂载动态扫描特效
  * @param [options.scanEffect] - 扫描特效实例，可以是动态圆，也可以是雷达扫描
- * @param [options.isGetRealHeight] - 是否获取路径点的真实高程
- * @param [options.speedArray] - 速度不同时，各个路径点的对应速度
- * @param [options.timeArray] - 路径点与时间相对应
- * @param [options.accelerationArray] - 加速度数组
- * @param [option.onPositionTag = false] - 是否执行经过路径点返回回调函数的功能，默认为false不执行
- * @param [options.onPositionCallback] - 当点经过设置的路径点时，返回路径点坐标和index索引号
- * @param [options.disFactor = 0.01] - 用于判断当前点是否在路径点所在位置附近的精度
+ * @param [options.isGetRealHeight = false] - 是否获取路径点的真实高程
+ * @param [options.speedArray = [this._speed]] - 速度不同时，各个路径点的对应速度
+ * @param [options.timeArray = []] - 路径点与时间相对应
+ * @param [options.accelerationArray = [0]] - 加速度数组
+ * @param [options.callback] - 运动过程中的回调函数
+ * @param [options.callback.result] - 回调结果：对应的运动动画信息
+ * @param [options.callback.result.routePointIndex] - 模型在路径点哪个分段，是当前分段的第一个点的索引
+ * @param [options.callback.result.currenPositionStatus] - 当前点状态:0代表点在线上，1代表点在拐点处
+ * @param [options.callback.result.position] - 实时位置
+ * @param [options.callback.result.startTime] - 运动开始时间
+ * @param [options.callback.result.currentTime] - 当前时间
+ * @param [options.callback.result.stopTime] - 运动结束时间
+ * @param [options.callback.result.remainDistance] - 剩余运动距离
+ * @param [options.callback.result.totalDistance] - 运动总距离
+ * @param [options.callback.result.speed] - 运动速度
  * @param [options.isSetModelPosture = true] - 是否设置模型运动姿态，保持朝向与运动方向一致，默认为true，设置为false时，模型姿态不改变
  * @param [options.startTime] - Date类型，用于设置漫游开始时间
+ * @param [options.startPositionIndex = 0] - Number类型，默认是0，是开始路径漫游跳转点的上一个路径点的索引，和offestStartPositionDistance一起用于判断漫游的具体跳转点位
+ * @param [options.offsetStartPositionDistance = 0] - Number类型，默认是0，是距离startPositionIndex索引点的距离，单位是meter
+ * @param [options.modelHeading = 0] - Number类型,默认是0，模型的方位角
+ * @param [options.modelPitch = 0] - Number类型,默认是0，模型的俯仰角
+ * @param [options.modelRoll = 0] - Number类型,默认是0，模型的倾斜角
+ * @param [options.firstPersonCameraFocusOffset = {offsetX: 0,offsetY: 0,offsetZ: 0}] - 第一人称视角下，相机焦点的偏移值。向前：offsetX；向左：offsetY；向上:offsetZ
+ * @param [options.modelOffset = {offsetX: 0,offsetY: 0,offsetZ: 0}] - 模型相对自身的平移值，单位为米。向前：offsetX；向左：offsetY；向上:offsetZ
  */
 export class AnimationTool {
     constructor(viewer: any, options: {
-        toolType?: number;
+        toolType?: string;
         heading?: number;
         pitch?: number;
+        range?: number;
         distance?: number;
         duration?: number;
         moveToStop?: number;
@@ -32659,8 +36775,6 @@ export class AnimationTool {
         model?: any;
         complete: (...params: any[]) => any;
         interpolationAlgorithm?: any;
-        callBack?: (...params: any[]) => any;
-        isGetPositionNow?: boolean;
         isProcessCorner?: boolean;
         maxAngle?: number;
         curveStep?: number;
@@ -32674,15 +36788,76 @@ export class AnimationTool {
         speedArray?: any[];
         timeArray?: any[];
         accelerationArray?: any[];
-        onPositionCallback?: any;
-        disFactor?: number;
+        callback?: {
+            result?: {
+                routePointIndex?: number;
+                currenPositionStatus?: number;
+                position?: Cartesian3;
+                startTime?: JulianDate;
+                currentTime?: JulianDate;
+                stopTime?: JulianDate;
+                remainDistance?: number;
+                totalDistance?: number;
+                speed?: number;
+            };
+        };
         isSetModelPosture?: boolean;
         startTime?: any;
+        startPositionIndex?: number;
+        offsetStartPositionDistance?: number;
+        modelHeading?: number;
+        modelPitch?: number;
+        modelRoll?: number;
+        firstPersonCameraFocusOffset?: any;
+        modelOffset?: any;
     });
+    /**
+     * 是否获取当前点坐标，默认为false，为true时，需配合返回当前点坐标的回调函数一起使用
+     */
+    isGetPositionNow: boolean;
+    /**
+     * 是否执行回调函数的功能，默认为false不执行
+     */
+    onPositionTag: boolean;
+    /**
+     * 用于判断当前点是否到达路径点
+     */
+    disFactor: number;
+    /**
+     * 布尔类型，默认为false，切换跟随视角下的鼠标点击事件
+     */
+    followSwitchMouseEvent: boolean;
     /**
      * 坐标点
      */
     positions: any[];
+    /**
+     * 模型的方位角
+     */
+    modelHeading: number;
+    /**
+     * 回调函数，返回一组动画信息
+     * @example
+     * callback: function (result) {
+         console.log('到达站点' + result.index + '，站点坐标：' + result.position);
+         console.log('当前点状态' + result.currenPositionStatus);
+         console.log('实时位置' + result.position);
+         console.log('运动开始时间' + result.startTime);
+         console.log('当前时间' + result.currentTime);
+         console.log('剩余运动距离' + result.remainDistance);
+         console.log('运动总距离' + result.totalDistance);
+         console.log('运动速度' + result.speed);
+     }
+     */
+    callback: (...params: any[]) => any;
+    /**
+     * 模型的俯仰角
+     */
+    modelPitch: number;
+    /**
+     * 模型的倾斜角
+     */
+    modelRoll: number;
     /**
      * 漫游速度
      */
@@ -32704,7 +36879,7 @@ export class AnimationTool {
      */
     isShowPath: boolean;
     /**
-     * 漫游类型
+     * 动画模型
      */
     readonly animationModel: number;
     /**
@@ -32732,9 +36907,17 @@ export class AnimationTool {
      */
     range: number;
     /**
-     * 是否获取当前点
+     * 第一人称视角下，相机焦点的偏移值。向前：offsetX；向左：offsetX；向上:offsetZ
      */
-    isGetPositionNow: boolean;
+    firstPersonCameraFocusOffset: any;
+    /**
+     * 模型相对自身的平移值，单位为米。向前：offsetX；向左：offsetY；向上:offsetZ
+     */
+    modelOffset: any;
+    /**
+     * 跟随视角下，相机的初始heading，pitch，range
+     */
+    readonly followViewCameraHPR: any;
     /**
      * 是否挂载动态可视域
      */
@@ -32776,6 +36959,18 @@ export class AnimationTool {
      */
     isSetModelPosture: boolean;
     /**
+     * 控制动画的暂停
+     */
+    pause: boolean;
+    /**
+     * 用于记录开始路径漫游跳转点的上一个路径点的索引
+     */
+    startPositionIndex: number;
+    /**
+     * 距离startPositionIndex索引点在当前分段线上的距离,单位是meter
+     */
+    offsetStartPositionDistance: number;
+    /**
      * 开始
      * @returns True
      */
@@ -32802,14 +36997,20 @@ export class CuttingTool {
         onErrorCallback?: (...params: any[]) => any;
     });
     /**
+     * 是否支持开挖地形 打开后通过{@link CuttingTool#createModelCuttingVolume} 和 {@link CuttingTool#createModelCuttingPlaneFromPolyline} 创建的裁剪体会同时对地形做裁剪。
+    {@link CuttingTool#createModelCuttingPlaneFromPolyline} 添加地形支持时由于缺少高度所以不会开启剖切面封边
+     */
+    isCuttingTerrain: boolean;
+    /**
      * 创建模型裁剪面
      * @param normal - 裁剪面的法线
      * @param [options] - 可选参数
      * @param [options.distance = 0] - 裁剪面的初始距离
      * @param [options.scaleWidth = 2.5] - 辅助面宽度缩放比例
      * @param [options.scaleHeight = 2.5] - 辅助面高度缩放比例
-     * @param [options.unionClippingRegions = false] - 裁剪方向
+     * @param [options.unionClippingRegions = false] - 裁剪方向，false：原方向，true：反向
      * @param [options.color = Color.WHITE.withAlpha(0.5)] - 辅助面颜色
+     * @param [options.showCuttingPlane = true] - 是否显示辅助面
      */
     createModelCuttingPlane(normal: Cartesian3, options?: {
         distance?: any;
@@ -32817,6 +37018,7 @@ export class CuttingTool {
         scaleHeight?: number;
         unionClippingRegions?: boolean;
         color?: Color;
+        showCuttingPlane?: boolean;
     }): void;
     /**
      * 修改辅助剖切面颜色
@@ -32828,51 +37030,54 @@ export class CuttingTool {
      * @param pointA - 直线起始点 A，必须为角度制的经纬度值
      * @param pointB - 直线终止点 B，必须为角度制的经纬度值
      * @param [options] - 可选参数
-     * @param [options.distance = 0] - 裁剪面的初始距离
      * @param [options.scaleWidth = 2.5] - 辅助面宽度缩放比例
      * @param [options.scaleHeight = 2.5] - 辅助面高度缩放比例
-     * @param [options.unionClippingRegions = false] - 裁剪方向
+     * @param [options.unionClippingRegions = false] - 裁剪方向，false为原方向，true为反方向
      * @param [options.color = Color.WHITE.withAlpha(0.5)] - 辅助面颜色
+     * @param [options.showCuttingPlane = true] - 是否显示辅助面
      */
     createModelCuttingPlaneFromLine(pointA: Cartesian3, pointB: Cartesian3, options?: {
-        distance?: any;
         scaleWidth?: number;
         scaleHeight?: number;
         unionClippingRegions?: boolean;
         color?: Color;
+        showCuttingPlane?: boolean;
     }): void;
     /**
      * 通过折线，绘制模型裁剪面，请提两个以上的点，否则不执行剖切分析。
      * @param positions - 折线的点坐标
      * @param [options] - 可选参数
-     * @param [options.distance = 0] - 裁剪面的初始距离
-     * @param [options.unionClippingRegions = true] - 裁剪方向，true为向外剖切，false为向内剖切
+     * @param [options.unionClippingRegions = false] - 裁剪方向，true为原方向，false为反方向
      */
     createModelCuttingPlaneFromPolyline(positions: Cartesian3[], options?: {
-        distance?: any;
         unionClippingRegions?: boolean;
     }): void;
     /**
      * 通过包围面，创建裁剪体
      * @param normals - 面法线数组
      * @param originalPoints - 面中心点数组
-     * @param minHeight - 裁剪区域的最小高程
-     * @param maxHeight - 裁剪区域的最大高程
+     * @param layer - 要裁剪的M3D
      * @param options - 可选参数
      */
-    createModelCuttingPlanes(normals: Cartesian3[], originalPoints: Cartesian3[], minHeight: number, maxHeight: number, options: any): void;
+    _createVolumeCuttingPlanes(normals: Cartesian3[], originalPoints: Cartesian3[], layer: MapGISM3DSet, options: any): void;
     /**
      * 通过边界区域，以及最小最大高程，构建裁剪体
-     * @param positions - 区域边界点数组
+     * @param positions - 区域边界点数组,点需要按照顺时针方向选取
      * @param minHeight - 最小高程
      * @param maxHeight - 最大高程
      * @param options - 可选参数
      * @param [options.color = new Color.WIHTE.withAlpha(0.2)] - 可选参数，配置裁剪体的颜色，以及透明度
-     * @param [options.unionClippingRegions = true] - 可选参数，配置切割方向
+     * @param [options.unionClippingRegions = false] - 可选参数，裁剪方向，false：原方向，true反方向
+     * @param [options.showCuttingPlane = true] - 是否显示辅助面
+     * @param [options.terrainGroundFillImage = 'Assets/Images/sandydrysoil-albedo2b.jpg'] - 地形封边底面颜色纹理资源路径
+     * @param [options.terrainWallFillImage = 'Assets/Images/wall-texture-default.jpg'] - 地形封边剖面颜色纹理资源路径
      */
     createModelCuttingVolume(positions: Cartesian3[], minHeight: number, maxHeight: number, options: {
         color?: Color;
         unionClippingRegions?: boolean;
+        showCuttingPlane?: boolean;
+        terrainGroundFillImage?: string;
+        terrainWallFillImage?: string;
     }): void;
     /**
      * 移除所有裁剪面
@@ -32882,6 +37087,10 @@ export class CuttingTool {
     cutTool.removeAll();
      */
     removeAll(): void;
+    /**
+     * 开关当前被CuttingTool管理的裁剪体
+     */
+    enabled(value: boolean): void;
 }
 
 /**
@@ -33042,6 +37251,43 @@ export class DrawElement {
 }
 
 /**
+ * 压平工具
+ */
+export class FlattenTool {
+    constructor(scene: Scene);
+    /**
+     * 模型压平
+     * @example
+     * var flattenTool = new Cesium.FlattenTool(viewer.scene);
+    var positions;
+    // 绘制压平区域
+    var drawElement = new Cesium.DrawElement(viewer);
+    drawElement.startDrawingPolygon({
+        callback: function (result) {
+            positions = result.positions;
+            var polygon = new Cesium.DrawElement.PolygonPrimitive({
+                positions: positions,
+                allowPicking: false,
+                material: Cesium.Material.fromType('Color', {
+                    color: new Cesium.Color(249 / 255, 177 / 255, 27 / 255, 0.5)
+                })
+            });
+            viewer.scene.primitives.add(polygon);
+        }
+    });
+    flattenTool.modelFlatten(positions, 10, tileSetList);
+     * @param positionArray - 压平区域多边形顶点坐标数组，封闭多边形
+     * @param flattenHeight - 压平到指定高度，绝对海拔高度，单位米
+     * @param [tileSetList] - 参与压平的MapGISM3DSet列表
+     */
+    modelFlatten(positionArray: any[], flattenHeight: number, tileSetList?: MapGISM3DSet[]): void;
+    /**
+     * 移除模型压平
+     */
+    removeModelFlatten(): void;
+}
+
+/**
  * 绘制工具
  * @param graphicsLayer - 编辑的图层对象
  * @param [options.isContinued = true] - 是否连续绘制
@@ -33143,8 +37389,10 @@ export class EditTool {
     toggleNonUniformScaling(): void;
     /**
      * 鼠标拖动更新图形事件
+     * @param pickingGraphic - 要移动的graphic对象
+     * @param event - 鼠标移动事件返回对象
      */
-    mouseMoveEvent(): void;
+    mouseMoveEvent(pickingGraphic: any, event: any): void;
     /**
      * 激活编辑工具
      */
@@ -33200,6 +37448,46 @@ export class SelectTool {
      * 移除所有鼠标事件，停止绘制
      */
     stopDrawing(): void;
+}
+
+/**
+ * 基础标绘变换工具集
+ * @param graphic - 标绘对象对象，详见{@link Graphic}
+ * @param [options.mouseUp] - 鼠标左键抬起事件
+ * @param [options.mouseMove] - 鼠标移动事件
+ * @param [options.mouseDown] - 鼠标左键按下事件
+ */
+export class GraphicTransformTool {
+    constructor(graphic: Graphic, options: {
+        mouseUp?: any;
+        mouseMove?: any;
+        mouseDown?: any;
+    });
+    /**
+     * 设置要变换的标会对象
+     * @param graphic - 标绘对象对象，详见{@link Graphic}
+     */
+    setGraphic(graphic: Graphic): void;
+    /**
+     * 可视化旋转工具
+     */
+    initEditor(): void;
+    /**
+     * 激活可视化旋转工具
+     */
+    activeRotationEditor(): void;
+    /**
+     * 激活可视化平移工具
+     */
+    activeTranslationEditor(): void;
+    /**
+     * 隐藏可视化工具
+     */
+    deactivate(): void;
+    /**
+     * 销毁可视化工具
+     */
+    destroy(): void;
 }
 
 /**
@@ -33583,68 +37871,98 @@ export class ModelExplosion {
     constructor(viewer: Viewer);
     /**
      * 单图层-中心点爆炸-有动画
-     * @param layer - 图层
      * @param options - 附加参数
      * @param options.center - 中心点坐标
      * @param [options.expDistance = 1] - 爆炸间隔距离
      * @param [options.speed = 1] - 动画中移动速度
      */
-    singleLayerCenterExplosionWithAnimate(layer: any, options: {
+    singleLayerCenterExplosionWithAnimate(MapGISM3DSet: MapGISM3DSet, options: {
         center: Cartesian3;
         expDistance?: number;
         speed?: number;
     }): void;
     /**
      * 单图层-中心点爆炸-无动画
-     * @param layer - 图层
      * @param options - 附加参数
      * @param options.center - 中心点坐标
      * @param [options.expDistance = 1] - 爆炸间隔距离
      */
-    singleLayerCenterExplosionNoAnimate(layer: any, options: {
+    singleLayerCenterExplosionNoAnimate(MapGISM3DSet: MapGISM3DSet, options: {
         center: Cartesian3;
         expDistance?: number;
     }): void;
     /**
      * 单图层-轴向爆炸-有动画
-     * @param layer - 图层
      * @param options - 附加参数
      * @param [options.direction = new Cartesian3(0,0,1)] - 爆炸方向
      * @param [options.expDistance = 1] - 爆炸间距
      * @param [options.speed = 1] - 动画中移动速度
      */
-    singleLayerAxisExplosionWithAnimate(layer: any, options: {
+    singleLayerAxisExplosionWithAnimate(MapGISM3DSet: MapGISM3DSet, options: {
         direction?: Cartesian3;
         expDistance?: number;
         speed?: number;
     }): void;
     /**
      * 单图层-轴向爆炸-无动画
-     * @param layer - 图层
      * @param options - 附加参数
      * @param [options.direction = new Cartesian3(0,0,1)] - 爆炸方向
      * @param [options.expDistance = 100] - 爆炸间距
      */
-    singleLayerAxisExplosionNoAnimate(layer: any, options: {
+    singleLayerAxisExplosionNoAnimate(MapGISM3DSet: MapGISM3DSet, options: {
         direction?: Cartesian3;
         expDistance?: number;
     }): void;
     /**
      * 多图层-轴向爆炸-有动画
-     * @param layerList - 图层数组
+     * @param M3DSets - M3DSet数组
      * @param [options.moveDirection = new Cartesian3(1, 0, 0)] - 爆炸方向
      * @param [options.expDistance = 1] - 爆炸间距
      * @param [options.speed = 1] - 爆炸动画速度
      */
-    multiLayerAxisExplosionWithAnimate(layerList: any[]): void;
+    multiLayerAxisExplosionWithAnimate(M3DSets: MapGISM3DSet[]): void;
     /**
-     * 多图层-轴向爆炸-无动画
+     * 根据图层的属性，进行模型爆炸，1.0模型仅支持针对oid的属性爆炸，2.0的模型可支持模型的任意自带属性
+     * @param M3DSets - M3DSet数组
+     * @param options - 附加参数
+     * @param [options.moveDirection = new Cartesian3(1, 0, 0)] - 爆炸方向，可以任意设置
+     * @param [options.field = 'oid'] - 过滤字段名，默认oid
+     * @param [options.valueGroups = []] - 爆炸过滤参数
+     * @param [options.type = unique] - 过滤方式，unique：单值，range：分段，contain：包含
+     * @param [options.singleDirection = true] - 是否单向爆炸，true：单向爆炸，false：多向爆炸
+     * @param [options.enableFrameFunction = false] - 启用帧函数，即每一帧执行过滤操作，针对lod的模型实时过滤
+     */
+    explosionByField(M3DSets: MapGISM3DSet[], options: {
+        moveDirection?: Cartesian3;
+        field?: string;
+        valueGroups?: any;
+        type?: string;
+        singleDirection?: boolean;
+        enableFrameFunction?: boolean;
+    }): void;
+    /**
+     * 多图层-轴向爆炸-ID爆炸
      * @param layers - 图层数组
      * @param options - 附加参数
      * @param [options.moveDirection = new Cartesian3(1, 0, 0)] - 爆炸方向
      * @param [options.expDistance = 1] - 爆炸间距
+     * @param [options.isSingleLayer = false] - 是否是单图层
+     * @param [options.version = 1.0] - 模型版本号
      */
-    multiLayerAxisExplosionNoAnimate(layers: any[], options: {
+    modelExplosion(layers: any[], options: {
+        moveDirection?: Cartesian3;
+        expDistance?: number;
+        isSingleLayer?: number;
+        version?: number;
+    }): void;
+    /**
+     * 多图层-轴向爆炸-无动画
+     * @param M3DSets - M3DSet数组
+     * @param options - 附加参数
+     * @param [options.moveDirection = new Cartesian3(1, 0, 0)] - 爆炸方向
+     * @param [options.expDistance = 1] - 爆炸间距
+     */
+    multiLayerAxisExplosionNoAnimate(M3DSets: MapGISM3DSet[], options: {
         moveDirection?: Cartesian3;
         expDistance?: number;
     }): void;
@@ -33656,25 +37974,25 @@ export class ModelExplosion {
     transformTileset(tileset: any, options: any): void;
     /**
      * 多图层-中心点爆炸-有动画
-     * @param layers - 图层数组
+     * @param M3DSets - M3DSet数组
      * @param options - 附加属性
      * @param options.center - 中心点坐标
      * @param [options.expDistance = 1] - 爆炸间隔距离
      * @param [options.speed = 1] - 动画中移动速度
      */
-    multiLayerCenterExplosionWithAnimate(layers: any[], options: {
+    multiLayerCenterExplosionWithAnimate(M3DSets: MapGISM3DSet[], options: {
         center: Cartesian3;
         expDistance?: number;
         speed?: number;
     }): void;
     /**
      * 多图层-中心点爆炸-无动画
-     * @param layers - 图层数组
+     * @param M3DSets - M3DSet数组
      * @param options - 附加属性
      * @param options.center - 中心点坐标
      * @param [options.expDistance = 1] - 爆炸间隔距离
      */
-    multiLayerCenterExplosionNoAnimate(layers: any[], options: {
+    multiLayerCenterExplosionNoAnimate(M3DSets: MapGISM3DSet[], options: {
         center: Cartesian3;
         expDistance?: number;
     }): void;
@@ -33688,6 +38006,10 @@ export class ModelExplosion {
      * @param layers - 图层数组
      */
     recover(layers: any[]): void;
+    /**
+     * 还原爆炸
+     */
+    resetExplosionByField(): void;
 }
 
 /**
@@ -33710,6 +38032,200 @@ export enum ModelExplosionType {
      * 爆炸结束，还原矩阵
      */
     END = 3
+}
+
+/**
+ * 模型过滤工具集
+ * @param [layer = {}] - 模型对象
+ * @param [options = {}] - 额外参数
+ * @param [options.enableFrameFunction = true] - 启用帧函数，即每一帧执行过滤操作，针对lod的模型实时过滤
+ * @param [options.enableCartesian = false] - 是否使用笛卡尔坐标,[cartesian3,cartesian3,cartesian3,...]
+ */
+export class ModelFilterTool {
+    constructor(layer?: any, options?: {
+        enableFrameFunction?: any;
+        enableCartesian?: any;
+    });
+    /**
+     * 给定范围，如果模型的BoundingVolume和给定范围相交，则显示模型，否则不显示
+     * @param [positions = []] - 给定过滤范围，默认经纬度高程坐标点数组，[Cartographic, Cartographic, Cartographic, ...]
+     * @param [minHeight = 0] - 过滤最小高度，如果最大或最小高度未传，则不进行高度过滤
+     * @param [maxHeight = 0] - 过滤最大高度，如果最大或最小高度未传，则不进行高度过滤
+     */
+    filterWithBoundingVolume(positions?: any[], minHeight?: number, maxHeight?: number): void;
+    /**
+     * 给定范围，如果模型的中心点在给定范围内，则显示模型，否则不显示
+     * @param [positions = []] - 给定过滤范围，默认经纬度高程坐标点数组，[Cartographic, Cartographic, Cartographic, ...]
+     * @param [minHeight = 0] - 过滤最小高度，如果最大或最小高度未传，则不进行高度过滤
+     * @param [maxHeight = 0] - 过滤最大高度，如果最大或最小高度未传，则不进行高度过滤
+     */
+    filterWithCenter(positions?: any[], minHeight?: number, maxHeight?: number): void;
+    /**
+     * 撤销过滤
+     */
+    removeFilter(): void;
+    /**
+     * 销毁工具
+     */
+    destroy(): void;
+}
+
+/**
+ * 模型变换工具集
+ * @param [layer] - 模型对象
+模型对象为空时，需要在调用具体的变换接口时指定要变换的模型。
+推荐在调用变换接口时指定模型。
+ */
+export class ModelTransformTool {
+    constructor(layer?: SceneLayer | MapGISM3DSet | Cesium3DTileset | undefined);
+    /**
+     * 模型旋转
+     * @param [degree = 0] - 旋转角度，单位度
+     * @param [axis = 'Z'] - 旋转轴，X：X轴，Y：Y轴，Z：Z轴
+     */
+    setRotation(degree?: number, axis?: string): void;
+    /**
+     * 模型平移
+     * @param [longitude = 0] - 经度
+     * @param [latitude = 0] - 纬度
+     * @param [height = 0] - 高度
+     */
+    setTranslation(longitude?: number, latitude?: number, height?: number): void;
+    /**
+     * 控制模型在本地空间下做旋转变换
+     * @example
+     * var modelTransformTool = new Cesium.ModelTransformTool();
+    // 从SceneLayer图层中获取MapGISM3DSet
+    var model = layer._m3dLayerMap.values()[0];
+    modelTransformTool.initModelEditor(viewer);
+    // 通过角度控制
+    modelTransformTool.rotateLocal({
+        // 绕Z轴旋转90度
+        rotation: new Cesium.Cartesian3(0, 0, 90),
+        model: model,
+        rotationPoint: model.boundingSphere.center
+    })
+    // 通过headingpitchroll控制
+    modelTransformTool.rotateLocal({
+        // 绕Z轴旋转90度
+        rotation: new Cesium.HeadingPitchRoll(Math.toRadians(90), 0, 0),
+        model: model,
+        rotationPoint: model.boundingSphere.center
+    })
+     * @param [options.rotation] - 旋转角度；
+    HeadingPitchRoll类型为弧度制，Cartesian3类型为角度制。
+     * @param [options.model] - 要被旋转的模型；
+    置空时将从构造函数的layer中取M3D模型。不推荐置空。
+     * @param [options.rotationPoint] - 旋转中心；
+    缺省时绕模型自身的原点旋转;旋转的是SceneLayer图层时，SceneLayer下的所有图层绕第一个MapGISM3DSet的boundingSphere.center旋转。
+     */
+    rotateLocal(options: {
+        rotation?: Cartesian3 | HeadingPitchRoll;
+        model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset | SceneLayer;
+        rotationPoint?: Cartesian3;
+    }): void;
+    /**
+     * 设置M3D模型在笛卡尔世界坐标系下位置
+     * @example
+     * var modelTransformTool = new Cesium.ModelTransformTool();
+    modelTransformTool.initModelEditor(viewer);
+    modelTransformTool.setPositionWorld({
+        position: Cesium.Cartesian3.fromDegrees(113.0750, 30, 100),
+        // 从SceneLayer图层中获取MapGISM3DSet
+        model: layer._m3dLayerMap.values()[0]
+    })
+     * @param [options.position] - 位置 笛卡尔坐标系
+     * @param [options.model] - 要被设置的模型，
+    置空时将从构造函数的layer中取M3D模型。不推荐置空。
+     */
+    setPositionWorld(options: {
+        position?: Cartesian3;
+        model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset | SceneLayer;
+    }): void;
+    /**
+     * 设置M3D模型在笛卡尔世界坐标系下平移
+     * @example
+     * var modelTransformTool = new Cesium.ModelTransformTool();
+    modelTransformTool.initModelEditor(viewer);
+    modelTransformTool.translateWorld({
+        vector: new Cesium.Cartesian3(5000, 0, 1000),
+        // 从SceneLayer图层中获取MapGISM3DSet
+        model: layer._m3dLayerMap.values()[0]
+    })
+     * @param [options.vector] - 平移矢量 笛卡尔坐标系
+     * @param [options.model] - 要被平移的模型，
+    置空时将从构造函数的layer中取M3D模型。不推荐置空。
+     */
+    translateWorld(options: {
+        vector?: Cartesian3;
+        model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset | SceneLayer;
+    }): void;
+    /**
+     * 模型缩放
+     * @param [x = 1] - x轴放大
+     * @param [y = 1] - y轴放大
+     * @param [z = 1] - z轴放大
+     */
+    setScala(x?: number, y?: number, z?: number): void;
+    /**
+     * 设置模型缩放
+     * @example
+     * var modelTransformTool = new Cesium.ModelTransformTool();
+    modelTransformTool.initModelEditor(viewer);
+    modelTransformTool.setLocalScala({
+        size: new Cesium.Cartesian3(2, 2, 2),
+        // 从SceneLayer图层中获取MapGISM3DSet
+        model: layer._m3dLayerMap.values()[0]
+    })
+     * @param [options.size] - 缩放矢量
+     * @param [options.model] - 要被平移的模型,
+    置空时将从构造函数的layer中取M3D模型。不推荐置空。
+     */
+    setLocalScala(options: {
+        size?: Cartesian3;
+        model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset | SceneLayer;
+    }): void;
+    /**
+     * 初始化可视化模型变换工具
+     * @param viewer - Cesium的viewer对象
+     */
+    initModelEditor(viewer: Viewer): void;
+    /**
+     * 可视化旋转工具
+     * @param [options.model] - 要控制的模型
+     */
+    activeRotationEditor(options: {
+        model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset | SceneLayer;
+    }): void;
+    /**
+     * 可视化平移工具
+     * @param [options.model] - 要控制的模型
+     */
+    activeTranslationEditor(options: {
+        model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset | SceneLayer;
+    }): void;
+    /**
+     * 可视化缩放工具
+     * @param [options = {}] - 工具参数
+     * @param [options.singleScale = false] - 是否单轴缩放，true：单轴缩放，false：三轴同时缩放
+     * @param [options.model] - 要控制的模型
+     */
+    activeScaleEditor(options?: {
+        singleScale?: boolean;
+        model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset | SceneLayer;
+    }): void;
+    /**
+     * 取消激活可视化工具
+     */
+    deactivate(): void;
+    /**
+     * 销毁工具
+     */
+    destroy(): void;
+    /**
+     * 重置模型位置到初始状态,只会重置通过构造函数传入的模型。
+     */
+    reset(): void;
 }
 
 /**
@@ -33879,16 +38395,22 @@ export class SampleElevationTool {
     constructor(viewer: any, positions: any[], type: string, callBackFuntion: (...params: any[]) => any);
     /**
      * 采样高程
+     * @param [options.level] - 采样精度，暂时仅支持地形采样精度设置
      */
-    start(): void;
+    start(options: {
+        level?: number;
+    }): void;
 }
 
 /**
  * 气泡提示（一般用于跟随鼠标的提示气泡）
  * @param div - HTML elements  一般传Viewer.container
+ * @param [options.toolTipDom] - 重写整个提示框dom对象
  */
 export class Tooltip {
-    constructor(div: Element);
+    constructor(div: Element, options: {
+        toolTipDom?: any;
+    });
     /**
      * 设置可见
      * @param visible - 是否可见
@@ -34041,6 +38563,26 @@ export class TriangulationTool {
      */
     calculateByTwoPoints(startPoint: any, endPoint: any): void;
 }
+
+/**
+ * Interceptors拦截器工具类封装
+ */
+export function InterceptorsUtil(): void;
+
+/**
+ * Topo工具类封装
+ */
+export function TopoJSONUtil(): void;
+
+/**
+ * UrlUtil工具类封装
+ */
+export function UrlUtil(): void;
+
+/**
+ * Topo工具类封装
+ */
+export function XmlUtil(): void;
 
 /**
  * MapGIS矢量地图文档
@@ -34830,7 +39372,7 @@ export class MapGISVectorLayer {
  * @param [options.style] - 矢量地图文档的全局style样式对象,或分图层style样式对象数组，样式顺序与图层顺序一致，空对象则使用默认样式
  * @param [options.style.type] - style样式类型，可选参数为"point|line|polygon|building"，对应点，线，区，区矢量白模
  * @param [options.style.styleOptions] - style具体参数对象
- * @param [options.style.styleOptions.color = Cesium.Color.GHOSTWHITE] - 通用参数，颜色
+ * @param [options.style.styleOptions.color = Cesium.Color.GHOSTWHITE] - 通用参数，颜色。当Alpha小于1.0时会开启透明渲染
  * @param [options.style.styleOptions.size] - 点符号大小，仅当options.style.type=point时生效
  * @param [options.style.styleOptions.outline = false] - 是否启用边框线，仅当options.style.type=point|polygon时生效
  * @param [options.style.styleOptions.outlineColor] - 边框线颜色，仅当options.style.type=point|polygon|building时生效
@@ -35194,6 +39736,83 @@ export class VisualAnalysisManager {
 }
 
 /**
+ * 伯灵噪声算法，参考地址： https://cs.nyu.edu/~perlin/noise/
+ */
+export class ImprovedNoise {
+    constructor();
+}
+
+/**
+ * The render pass for a command.
+ */
+export enum Pass {
+    /**
+     * 环境渲染通道(绘制大气，天空盒等)
+     */
+    ENVIRONMENT = 0,
+    /**
+     * 计算通道(GPU计算使用)
+     */
+    COMPUTE = 1,
+    /**
+     * 地球渲染通道(绘制地图影像和地形)
+     */
+    GLOBE = 2,
+    /**
+     * 地球渲染后通道,只对视频投放有效(调整视频投放不遮挡贴地的覆盖物)
+     */
+    AFTER_GLOBE = 12,
+    /**
+     * 地球覆盖物通道(绘制贴地的覆盖物)
+     */
+    TERRAIN_CLASSIFICATION = 3,
+    /**
+     * 瓦片渲染通道(绘制3DTile或M3D模型)
+     */
+    CESIUM_3D_TILE = 4,
+    /**
+     * 瓦片渲染后通道,只对视频投放有效(调整视频投放不遮挡贴模型的覆盖物)
+     */
+    AFTER_TILE = 13,
+    /**
+     * 瓦片覆盖物通道(绘制贴模型的覆盖物)
+     */
+    CESIUM_3D_TILE_CLASSIFICATION = 5,
+    /**
+     * 瓦片覆盖物忽视显示通道(修改屏幕像素的模板测试值)
+     */
+    CESIUM_3D_TILE_CLASSIFICATION_IGNORE_SHOW = 6,
+    /**
+     * 瓦片覆盖物渲染后通道,只对视频投放有效(调整视频投放在瓦片及覆盖物之后绘制)
+     */
+    AFTER_TILE_CLASSIFICATION = 14,
+    /**
+     * 不透明通道(绘制不透明物体)
+     */
+    OPAQUE = 7,
+    /**
+     * 透明通道(绘制透明物体)
+     */
+    TRANSLUCENT = 8,
+    /**
+     * 覆盖通道(场景绘制完成后绘制)
+     */
+    OVERLAY = 9,
+    /**
+     * 可视化分析通道,只对视频投放有效(视频投放自定义渲染功能默认的绘制通道)
+     */
+    ANALYSIS = 10,
+    /**
+     * M3D数据通道 不参与渲染
+     */
+    ATAD_D3M = 11,
+    /**
+     * 通道总数 不参与渲染
+     */
+    NUMBER_OF_PASSES = 15
+}
+
+/**
  * The data type of a pixel.
  */
 export enum PixelDatatype {
@@ -35206,6 +39825,53 @@ export enum PixelDatatype {
     UNSIGNED_SHORT_4_4_4_4 = WebGLConstants.UNSIGNED_SHORT_4_4_4_4,
     UNSIGNED_SHORT_5_5_5_1 = WebGLConstants.UNSIGNED_SHORT_5_5_5_1,
     UNSIGNED_SHORT_5_6_5 = WebGLConstants.UNSIGNED_SHORT_5_6_5
+}
+
+/**
+ * 创建三维纹理对象
+ * @example
+ * var texture = new Cesium.Texture3D({
+  width: 128,  // 纹理的宽度
+  height: 128,  // 纹理的高度
+  depth: 128,  // 纹理的深度
+  context: context,  // 纹理所属的上下文，类型为 WebGLRenderingContext
+  flipY: false,  // 是否翻转纹理的 Y 轴
+  pixelFormat: Cesium.PixelFormat.ALPHA,  // 像素格式，类型为 PixelFormat 枚举值
+  pixelDataType: Cesium.ComponentDatatype.fromTypedArray(data),  // 像素数据类型，类型为 ComponentDatatype 枚举值
+  // 纹理的数据源对象
+  source: {
+      width: texture_size,  // 数据源的宽度
+      height: texture_size,  // 数据源的高度
+      arrayBufferView: data  // 数据源的数组缓冲视图
+  },
+  // 采样器对象
+  sampler: new Cesium.Sampler({
+      minificationFilter: Cesium.TextureMinificationFilter.LINEAR,  // 缩小过滤器，类型为 TextureMinificationFilter 枚举值
+      magnificationFilter: Cesium.TextureMagnificationFilter.LINEAR  // 放大过滤器，类型为 TextureMagnificationFilter 枚举值
+  })
+});
+ * @param [options.width] - 纹理的宽度
+ * @param [options.height] - 纹理的高度
+ * @param [options.depth] - 纹理的深度
+ * @param [options.context] - 纹理所属的上下文，类型为WebGLRenderingContext
+ * @param [options.flipY] - 是否翻转纹理的 Y 轴
+ * @param [options.pixelFormat] - 像素格式，为Cesium.PixelFormat 枚举值
+ * @param [options.pixelDataType] - 像素数据类型,为Cesium.ComponentDatatype 枚举值
+ * @param [options.source] - 纹理的数据源对象
+ * @param [options.sampler] - 采样器对象
+ */
+export class Texture3D {
+    constructor(options: {
+        width?: number;
+        height?: number;
+        depth?: number;
+        context?: any;
+        flipY?: boolean;
+        pixelFormat?: number;
+        pixelDataType?: number;
+        source?: any;
+        sampler?: any;
+    });
 }
 
 /**
@@ -35612,6 +40278,47 @@ Example billboards
 export class Billboard {
     constructor();
     /**
+     * 获取帧率（每秒钟播放的帧图片数量），该参数仅在使用GIF和APNG时生效。
+     * @example
+     * var billboards = viewer.scene.primitives.add(new Cesium.BillboardCollection());
+    billboards.add({
+      position: Cesium.Cartesian3.fromDegrees(110, 32),
+      image: '../images/example.gif',
+      frameRate: 92, // 设置帧率
+    });
+     */
+    frameRate: number;
+    /**
+     * 获取循环次数，该参数仅在使用GIF和APNG时生效。需要注意的是：在进行有限次循环后，动态图片将不会显
+    示，但这不代表Billboard被移除或销毁，该参数仅控制帧图片内容的显示行为，并不会操作Billboard本
+    身。当有限次循环结束后，Billboard中的内容会被清空，同时会将其隐藏以提高渲染性能，其仍然存在于
+    BillboardCollection中，若要删除该Billboard，可以使用{@link BillboardCollection#remove}方法。
+     * @example
+     * var billboards = viewer.scene.primitives.add(new Cesium.BillboardCollection());
+    billboards.add({
+      position: Cesium.Cartesian3.fromDegrees(110, 32),
+      image: '../images/example.gif',
+      cycles: 1, // 循环次数
+    });
+     */
+    cycles: number;
+    /**
+     * 获取动态图片播放结束时的回调。
+     * @example
+     * // 使用BillboardCollection添加一张动态图片
+    var billboards = viewer.scene.primitives.add(new Cesium.BillboardCollection());
+    var b = billboards.add({
+      position: Cesium.Cartesian3.fromDegrees(110, 32),
+      image: '../images/example.gif', // 传入.gif文件
+      cycles: 1, // 循环次数
+    });
+    // 添加播放结束时的回调
+    b.playEnd.addEventListener(() => {
+      console.log('播放结束');
+    });
+     */
+    playEnd: Event;
+    /**
      * Determines if this billboard will be shown.  Use this to hide or show a billboard, instead
     of removing it and re-adding it to the collection.
      */
@@ -35960,6 +40667,8 @@ billboards.add({
 is used for rendering both opaque and translucent billboards. However, if either all of the billboards are completely opaque or all are completely translucent,
 setting the technique to BlendOption.OPAQUE or BlendOption.TRANSLUCENT can improve performance by up to 2x.
  * @param [options.show = true] - Determines if the billboards in the collection will be shown.
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
 export class BillboardCollection {
     constructor(options?: {
@@ -35968,6 +40677,8 @@ export class BillboardCollection {
         scene?: Scene;
         blendOption?: BlendOption;
         show?: boolean;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
     });
     /**
      * Determines if billboards in this collection will be shown.
@@ -36027,6 +40738,14 @@ export class BillboardCollection {
      */
     length: number;
     /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
+    /**
      * Creates and adds a billboard with the specified initial properties to the collection.
     The added billboard is returned so it can be modified or removed from the collection later.
      * @example
@@ -36058,6 +40777,33 @@ export class BillboardCollection {
      * // Example 2:  Specify only the billboard's cartographic position.
     var b = billboards.add({
       position : Cesium.Cartesian3.fromDegrees(longitude, latitude, height)
+    });
+     * @example
+     * // Example 3:  添加GIF和APNG格式的动态图片
+    // 当需要创建大量相同的动态Billboard时，建议将其添加到同一个BillboardCollection以提高性能
+    var b1 = viewer.scene.primitives.add(new Cesium.BillboardCollection());
+    var billboard = b1.add({
+      position: Cesium.Cartesian3.fromDegrees(110, 32),
+      image: '../images/example.gif', // 传入GIF文件
+      cycles: 1, // 循环次数
+    });
+    // 添加播放结束时的回调
+    billboard.playEnd.addEventListener(() => {
+      console.log('播放结束');
+    });
+    
+    // APNG文件格式介绍：
+    //   1.https://wiki.mozilla.org/APNG_Specification
+    //   2.https://en.wikipedia.org/wiki/APNG
+    //   3.https://docs.fileformat.com/image/apng/
+    // 生成APNG文件的工具：
+    //   1.iSparta：http://isparta.github.io/
+    //   2.Adobe After Effects：https://www.adobe.com/cn/products/aftereffects.html
+    var b2 = viewer.scene.primitives.add(new Cesium.BillboardCollection());
+    b2.add({
+      position: Cesium.Cartesian3.fromDegrees(110, 32),
+      image: '../images/test.png', // 传入APNG文件（APNG和PNG格式的图片后缀名都是.png）
+      frameRate: 92, // 设置帧率
     });
      * @param [options] - A template describing the billboard's properties as shown in Example 1.
      * @returns The billboard that was added to the collection.
@@ -37505,6 +42251,34 @@ export class Cesium3DTileContent {
 }
 
 /**
+ * 2023/12/05 wanghan  feat:2266 三维钻孔分析下沉，提供接口支持渲染地矿自定义瓦片类型
+自定义渲染类型
+ * @example
+ * var tileset = scene.primitives.add(new Cesium.Cesium3DTileset({
+     url : 'http://localhost:8002/tilesets/Seattle/tileset.json',
+     customContentRegister:{
+          DRILL: new Cesium.Cesium3DTileCustomContent {
+                    key: 'drll',
+                    binaryFormat: true,
+                    parseContentFunction: function (tileset, tile, resource, arrayBuffer, byteOffset) {
+                        return new GM3DTileDrillContent(tileset, tile, resource, arrayBuffer, byteOffset, Cesium.Cesium3DTileContentFactory);
+                 }
+          },
+     }
+}));
+ * @param options - Object with the following properties:
+ * @param [options.key] - 自定义content类型的关键字，也是要注册到Cesium3DTileContent类型的枚举值，对于二进制文件，枚举值就是header中的magic number值，对于 JSON 文件，枚举值是供内部使用的唯一名称，如钻孔类型的key为”drll”。
+ * @param [options.binaryFormat] - 自定义content是否支持二进制格式。
+ * @param [option.parseContentFunction] - 根据当前自定义content类型创建对应Content内容的方法，需提供解析对应类型的方法。
+ */
+export class Cesium3DTileCustomContent {
+    constructor(options: {
+        key?: string;
+        binaryFormat?: boolean;
+    });
+}
+
+/**
  * A feature of a {@link Cesium3DTileset}.
 <p>
 Provides access to a feature's properties stored in the tile's batch table, as well
@@ -37863,6 +42637,19 @@ used for streaming massive heterogeneous 3D geospatial datasets.
      url : 'http://localhost:8002/tilesets/Seattle/tileset.json'
 }));
  * @example
+ * var tileset = scene.primitives.add(new Cesium.Cesium3DTileset({
+     url : 'http://localhost:8002/tilesets/Seattle/tileset.json',
+     customContentRegister:{
+          DRILL: new Cesium.Cesium3DTileCustomContent {
+                    key: 'drll',
+                    binaryFormat: true,
+                    parseContentFunction: function (tileset, tile, resource, arrayBuffer, byteOffset) {
+                        return new GM3DTileDrillContent(tileset, tile, resource, arrayBuffer, byteOffset, Cesium.Cesium3DTileContentFactory);
+                 }
+          },
+     }
+}));
+ * @example
  * // Common setting for the skipLevelOfDetail optimization
 var tileset = scene.primitives.add(new Cesium.Cesium3DTileset({
      url : 'http://localhost:8002/tilesets/Seattle/tileset.json',
@@ -37936,6 +42723,9 @@ var tileset = scene.primitives.add(new Cesium.Cesium3DTileset({
  * @param [options.debugShowRenderingStatistics = false] - For debugging only. When true, draws labels to indicate the number of commands, points, triangles and features for each tile.
  * @param [options.debugShowMemoryUsage = false] - For debugging only. When true, draws labels to indicate the texture and geometry memory in megabytes used by each tile.
  * @param [options.debugShowUrl = false] - For debugging only. When true, draws labels to indicate the url of each tile.
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+ * @param [option.customContentRegister] - 传入自定义渲染类型，示例如下：
  */
 export class Cesium3DTileset {
     constructor(options: {
@@ -37991,6 +42781,8 @@ export class Cesium3DTileset {
         debugShowRenderingStatistics?: boolean;
         debugShowMemoryUsage?: boolean;
         debugShowUrl?: boolean;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
     });
     /**
      * Optimization option. Don't request tiles that will likely be unused when they come back because of the camera's movement. This optimization only applies to stationary tilesets.
@@ -38630,6 +43422,48 @@ export class Cesium3DTileset {
     This is used with {@link Cesium3DTileFeature.getPolylinePositions}.
      */
     vectorKeepDecodedPositions: boolean;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
+    /**
+     * 自定义着色器
+     */
+    customShader: CustomShader;
+    /**
+     * 亮度<br/>
+    取值范围[-1, 1]
+     */
+    brightness: number;
+    /**
+     * 曝光度<br/>
+    取值范围[-1, +∞]
+     */
+    exposure: number;
+    /**
+     * 对比度<br/>
+    值要求大于0
+     */
+    contrast: number;
+    /**
+     * 色相 <br/>
+    值要求大于0
+     */
+    hue: number;
+    /**
+     * 饱和度<br/>
+    取值范围[-1, +1]
+     */
+    saturation: number;
+    /**
+     * 伽马 <br/>
+    伽马值必须大于0
+     */
+    gamma: number;
     /**
      * Provides a hook to override the method used to request the tileset json
     useful when fetching tilesets from remote servers
@@ -39433,6 +44267,8 @@ are also valid if they are extruded volumes; otherwise, they will not be rendere
  * @param [options.debugShowBoundingVolume = false] - For debugging only. Determines if this primitive's commands' bounding spheres are shown.
  * @param [options.debugShowShadowVolume = false] - For debugging only. Determines if the shadow volume for each geometry in the primitive is drawn. Must be <code>true</code> on
                  creation for the volumes to be created before the geometry is released or options.releaseGeometryInstance must be <code>false</code>.
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
 export class ClassificationPrimitive {
     constructor(options?: {
@@ -39448,6 +44284,8 @@ export class ClassificationPrimitive {
         classificationType?: ClassificationType;
         debugShowBoundingVolume?: boolean;
         debugShowShadowVolume?: boolean;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
     });
     /**
      * The geometry instance rendered with this primitive.  This may
@@ -39520,6 +44358,14 @@ export class ClassificationPrimitive {
      * Gets a promise that resolves when the primitive is ready to render.
      */
     readonly readyPromise: Promise<ClassificationPrimitive>;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
     /**
      * Determines if ClassificationPrimitive rendering is supported.
      * @param scene - The scene.
@@ -40924,6 +45770,11 @@ export class Globe {
      */
     clippingPlanes: ClippingPlaneCollection;
     /**
+     * 是否开启几何体裁剪 <br/>
+    此属性需要配合{@link ClippingGeometry}使用
+     */
+    clippingGeometries: ClippingGeometry;
+    /**
      * A property specifying a {@link Rectangle} used to limit globe rendering to a cartographic area.
     Defaults to the maximum extent of cartographic coordinates.
      */
@@ -41998,6 +46849,8 @@ scene.primitives.add(new Cesium.GroundPrimitive({
  * @param [options.debugShowBoundingVolume = false] - For debugging only. Determines if this primitive's commands' bounding spheres are shown.
  * @param [options.debugShowShadowVolume = false] - For debugging only. Determines if the shadow volume for each geometry in the primitive is drawn. Must be <code>true</code> on
                  creation for the volumes to be created before the geometry is released or options.releaseGeometryInstance must be <code>false</code>.
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
 export class GroundPrimitive {
     constructor(options?: {
@@ -42013,6 +46866,8 @@ export class GroundPrimitive {
         classificationType?: ClassificationType;
         debugShowBoundingVolume?: boolean;
         debugShowShadowVolume?: boolean;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
     });
     /**
      * The {@link Appearance} used to shade this primitive. Each geometry
@@ -42087,6 +46942,14 @@ export class GroundPrimitive {
      * Gets a promise that resolves when the primitive is ready to render.
      */
     readonly readyPromise: Promise<GroundPrimitive>;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
     /**
      * Determines if GroundPrimitive rendering is supported.
      * @param scene - The scene.
@@ -42255,6 +47118,7 @@ on a {@link Globe}.
                          the gamma value to use for the tile.  The function is executed for every
                          frame and for every tile, so it must be fast.
  * @param [options.splitDirection = ImagerySplitDirection.NONE] - The {@link ImagerySplitDirection} split to apply to this layer.
+ * @param [options.swipeEnabled = false] - 是否开启卷帘分析
  * @param [options.minificationFilter = TextureMinificationFilter.LINEAR] - The
                                    texture minification filter to apply to this layer. Possible values
                                    are <code>TextureMinificationFilter.LINEAR</code> and
@@ -42288,6 +47152,7 @@ export class ImageryLayer {
         saturation?: number | ((...params: any[]) => any);
         gamma?: number | ((...params: any[]) => any);
         splitDirection?: ImagerySplitDirection | ((...params: any[]) => any);
+        swipeEnabled?: boolean;
         minificationFilter?: TextureMinificationFilter;
         magnificationFilter?: TextureMagnificationFilter;
         show?: boolean;
@@ -42341,6 +47206,14 @@ export class ImageryLayer {
      */
     splitDirection: ImagerySplitDirection;
     /**
+     * 该图层是否开启卷帘分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
+    /**
      * The {@link TextureMinificationFilter} to apply to this layer.
     Possible values are {@link TextureMinificationFilter.LINEAR} (the default)
     and {@link TextureMinificationFilter.NEAREST}.
@@ -42374,6 +47247,21 @@ export class ImageryLayer {
      * Normalized (0-1) threshold for color-to-alpha.
      */
     colorToAlphaThreshold: number;
+    /**
+     * 设置当前影像图层分类,贴地、贴模型、都贴。
+     * @example
+     * var options = {
+        //天地图URL
+        url: "",
+        layer: "img",
+        style: "default",
+        tileMatrixSetID: "w",
+        format: "tiles"
+    }
+    var imageLayer = viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider(options));
+    imageLayer.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+     */
+    classificationType: ClassificationType;
     /**
      * Gets the imagery provider for this layer.
      */
@@ -42510,11 +47398,28 @@ export class ImageryLayerCollection {
      */
     add(layer: ImageryLayer, index?: number): void;
     /**
-     * Creates a new layer using the given ImageryProvider and adds it to the collection.
-     * @param imageryProvider - the imagery provider to create a new layer for.
-     * @param [index] - the index to add the layer at.  If omitted, the layer will
-                            added on top of all existing layers.
-     * @returns The newly created layer.
+     * 创建一个影像图层用添加到影像图层集合中去
+     * @example
+     * //创建provider
+    //老版本IGS服务
+    var provider = new Cesium.MapGISTileServerImageProvider({
+        url: 'http://webclient.smaryun.com:6163/igs/rest/mrms/tile/北京市Tile/{level}/{row}/{col}',
+    });
+    //新版本IGS服务
+    var provider = new Cesium.MapGISTileServerImageProvider({
+        url: 'http://192.168.82.89:8089/igs/rest/services/Tile/北京市/TileServer/tileImage/{level}/{row}/{col}?f=image',
+    });
+    //创建并添加影像图层
+    var layer = viewer.imageryLayers.addImageryProvider(provider);
+    //获取图层id
+    var layerId = layer.id;
+    //根据id获取影像图层
+    var layer=viewer.imageryLayers.findLayerById(layerId)
+    //删除影像图层
+    viewer.imageryLayers.remove(layer);
+     * @param imageryProvider - 影像图层的imageryProvider
+     * @param [index] - 该影像图层的序号
+     * @returns 影像图层
      */
     addImageryProvider(imageryProvider: ImageryProvider, index?: number): ImageryLayer;
     /**
@@ -42549,6 +47454,12 @@ export class ImageryLayerCollection {
                        false if the layer was not in the collection.
      */
     remove(layer: ImageryLayer, destroy?: boolean): boolean;
+    /**
+     * Find a layer from this collection by the given id
+     * @param id - id of a layer want to be removed.
+     * @returns The imagery layer at the given id.
+     */
+    findLayerById(id: string): ImageryLayer;
     /**
      * Removes all layers from this collection.
      * @param [destroy = true] - whether to destroy the layers in addition to removing them.
@@ -43401,6 +48312,8 @@ labels.add({
 is used for rendering both opaque and translucent labels. However, if either all of the labels are completely opaque or all are completely translucent,
 setting the technique to BlendOption.OPAQUE or BlendOption.TRANSLUCENT can improve performance by up to 2x.
  * @param [options.show = true] - Determines if the labels in the collection will be shown.
+ * @param [options.swipeEnabled = false] - 开启卷帘对比分析
+ * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
 export class LabelCollection {
     constructor(options?: {
@@ -43409,6 +48322,8 @@ export class LabelCollection {
         scene?: Scene;
         blendOption?: BlendOption;
         show?: boolean;
+        swipeEnabled?: boolean;
+        swipeInverse?: number;
     });
     /**
      * Determines if labels in this collection will be shown.
@@ -43460,6 +48375,14 @@ export class LabelCollection {
     in the collection.
      */
     length: number;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
     /**
      * Creates and adds a label with the specified initial properties to the collection.
     The added label is returned so it can be modified or removed from the collection later.
@@ -44436,6 +49359,10 @@ export class Material {
      * Gets the name of the snow terrain material.
      */
     static readonly AspectArrowMaterialType: string;
+    /**
+     * 河流材质
+     */
+    static readonly RiverCoveringMaterialType: string;
 }
 
 /**
@@ -44676,6 +49603,10 @@ relative to a local origin.
  * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
  * @param [options.backFaceCulling = true] - Whether to cull back-facing geometry. When true, back face culling is determined by the material's doubleSided property; when false, back face culling is disabled. Back faces are not culled if {@link Model#color} is translucent or {@link Model#silhouetteSize} is greater than 0.0.
  * @param [options.showOutline = true] - Whether to display the outline for models using the {@link https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/CESIUM_primitive_outline|CESIUM_primitive_outline} extension. When true, outlines are displayed. When false, outlines are not displayed.
+ * @param [options.gltfParsedCallback] - gltf解析完成回调，提供修改gltf对象能力,目前用于给材质添加法向贴图
+ * @param [options.fillClip = false] - 是否需要填充M3D数据剖面，在model构造函数中给的原因是，要想支持剖面选取高亮必须统计primitive的oid列表,为了节省内存,原始数据在加载完成后就会释放，后续没有时机统计oid列表
+ * @param [options.hasSectionGeometry = false] - 是否会存在剖面几何，如果后续会addSectionGeometry方法给m3d图层设置剖切面设置为true
+ * @param [options.textureCoordScale] - 模型纹理拉伸比例，默认不发生变化
  */
 export class Model {
     constructor(options?: {
@@ -44712,6 +49643,10 @@ export class Model {
         credit?: Credit | string;
         backFaceCulling?: boolean;
         showOutline?: boolean;
+        gltfParsedCallback?: (...params: any[]) => any;
+        fillClip?: boolean;
+        hasSectionGeometry?: boolean;
+        textureCoordScale?: Cartesian2;
     });
     /**
      * Determines if the model primitive will be shown.
@@ -44787,6 +49722,15 @@ export class Model {
     any value in-between resulting in a mix of the two.
      */
     colorBlendAmount: number;
+    /**
+     * feat:2105 模型纹理封边
+     */
+    _clippingFillImage: any;
+    /**
+     * 修改说明：feat:2291 隧道开挖需求 model支持隧道开挖
+    修改人：廖文涛 2023/10/13
+     */
+    _clippingGeometries: any;
     /**
      * Whether to cull back-facing geometry. When true, back face culling is
     determined by the material's doubleSided property; when false, back face
@@ -44923,6 +49867,11 @@ export class Model {
      * Gets the credit that will be displayed for the model
      */
     credit: Credit;
+    /**
+     * 是否开启几何体裁剪 <br/>
+    此属性需要配合{@link ClippingGeometry}使用
+     */
+    clippingGeometries: ClippingGeometry;
     /**
      * Determines if silhouettes are supported.
      * @param scene - The scene.
@@ -45920,6 +50869,13 @@ export class ParticleSystem {
     destroy(): void;
 }
 
+/**
+ * fix:4244 打开地下模式，粒子特效异常
+修改说明：更新粒子池时使新添加的公告牌不可见
+修改人：孙永政 2023年10月8日
+ */
+export var show: any;
+
 export namespace ParticleSystem {
     /**
      * A function used to modify attributes of the particle at each time step. This can include force modifications,
@@ -46003,6 +50959,11 @@ export class PerInstanceColorAppearance {
         fragmentShaderSource?: string;
         renderState?: any;
     });
+    /**
+     * This property is part of the {@link Appearance} interface, but is not
+    used by {@link PerInstanceColorAppearance} since a fully custom fragment shader is used.
+     */
+    material: Material;
     /**
      * When <code>true</code>, the geometry is expected to appear translucent so
     {@link PerInstanceColorAppearance#renderState} has alpha blending enabled.
@@ -46363,6 +51324,14 @@ export class PointPrimitiveCollection {
      */
     length: number;
     /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
+    /**
      * Creates and adds a point with the specified initial properties to the collection.
     The added point is returned so it can be modified or removed from the collection later.
      * @example
@@ -46571,6 +51540,14 @@ export class PolylineCollection {
     in the collection.
      */
     length: number;
+    /**
+     * 开启卷帘对比分析
+     */
+    swipeEnabled: boolean;
+    /**
+     * 单独控制该图层是否进行反转，小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
+     */
+    swipeInverse: number;
     /**
      * Creates and adds a polyline with the specified initial properties to the collection.
     The added polyline is returned so it can be modified or removed from the collection later.
@@ -47455,6 +52432,47 @@ export namespace PostProcessStageLibrary {
      * @returns A post-process stage for applying a lens flare effect.
      */
     function createLensFlareStage(): PostProcessStage;
+    /**
+     * 创建一个后处理阶段，用于显示指定OID的模型轮廓<br/>
+    目前只支持M3D2.0的数据
+     * @example
+     * var stages = viewer.scene.postProcessStages;
+    var outlineStage = stages.add(Cesium.PostProcessStageLibrary.createOutlineStage(2, Cesium.Color.LIME));
+    // 1. 传入模型OID
+    outlineStage.selected = [56, 57, 58, 59];
+    // 2. 修改轮廓线颜色
+    outlineStage.uniforms.color = Cesium.Color.BLUE;
+    // 3. 修改轮廓线宽度
+    // 删除旧的stage
+    stages.remove(outlineStage);
+    // 重新创建新的stage
+    outlineStage = stages.add(Cesium.PostProcessStageLibrary.createOutlineStage(3, Cesium.Color.LIME));
+     * @param size - 轮廓线的大小(单位：像素)<br/>
+    不可以使用uniforms修改值。若要修改轮廓线宽度，需要重新创建此后处理stage。
+     * @param color - 轮廓线的颜色
+     */
+    function createOutlineStage(size: number, color: Color): PostProcessStage;
+    /**
+     * 创建一个后处理阶段，用于渲染MapGISM3D的轮廓<br/>
+     * @example
+     * var url = 'http://192.168.82.89:8200/3DData/ModelCache/M3D/2.0/高级住所模型/高级住所模型.mcj';
+    var options = {
+        renderMode: Cesium.OutlineRenderMode.ALL // 设置此M3D模型的轮廓渲染模式
+    };
+    viewer.scene.layers.appendM3DLayer(url, options);
+    
+    var stages = viewer.scene.postProcessStages;
+    var outlineStage = stages.add(Cesium.PostProcessStageLibrary.createOutlineForPrimitivesStage(2, Cesium.Color.LIME));
+    // 1. 修改轮廓线颜色
+    outlineStage.uniforms.color = Cesium.Color.BLUE;
+    // 2. 修改轮廓线宽度
+    stages.remove(outlineStage);
+    outlineStage = stages.add(Cesium.PostProcessStageLibrary.createOutlineForPrimitivesStage(3, Cesium.Color.LIME));
+     * @param size - 轮廓线的大小(单位：像素)<br/>
+    不可以使用uniforms修改值。若要修改轮廓线宽度，需要重新创建此后处理stage。
+     * @param color - 轮廓线的颜色
+     */
+    function createOutlineForPrimitivesStage(size: number, color: Color): PostProcessStage;
 }
 
 /**
@@ -48182,6 +53200,11 @@ export class Scene {
      */
     light: Light;
     /**
+     * 修改说明：feat:2266 多视图漫游
+    修改人：夏琨 2023年12月12日
+     */
+    _useMultiViewports: any;
+    /**
      * Gets the canvas element to which this scene is bound.
      */
     readonly canvas: HTMLCanvasElement;
@@ -48326,6 +53349,10 @@ export class Scene {
      */
     mode: SceneMode;
     /**
+     * Gets or sets the scalar used to exaggerate the terrain.
+     */
+    terrainExaggeration: number;
+    /**
      * When <code>true</code>, splits the scene into two viewports with steroscopic views for the left and right eyes.
     Used for cardboard and WebVR.
      */
@@ -48338,6 +53365,84 @@ export class Scene {
      * Gets or sets the position of the Imagery splitter within the viewport.  Valid values are between 0.0 and 1.0.
      */
     imagerySplitPosition: number;
+    /**
+     * 卷帘对比分析控制器
+     * @example
+     * const baiduProvider = viewer.imageryLayers.addImageryProvider(
+        new Cesium.BaiduMapImagerProvider({
+            ptype: 'tile',
+        })
+    );
+    baiduProvider.swipeEnabled = true;
+    // 若开启图层自身的反转控制属性，则scene.swipeController中的inverse属性将对其无效。
+    baiduProvider.swipeInverse = false;
+    
+    // 1. 屏蔽左侧
+    viewer.scene.swipeController = {
+       region: 0.3,
+       type: Cesium.SwipeModeType.HORIZONTAL,
+       inverse: false
+    }
+    
+    // 2. 屏蔽右侧
+    viewer.scene.swipeController = {
+       region: 0.3,
+       type: Cesium.SwipeModeType.HORIZONTAL,
+       inverse: true
+    }
+    
+    // 3. 屏蔽上方
+    viewer.scene.swipeController = {
+       region: 0.3,
+       type: Cesium.SwipeModeType.VERTICAL,
+       inverse: false
+    }
+    
+    // 4. 屏蔽下方
+    viewer.scene.swipeController = {
+       region: 0.3,
+       type: Cesium.SwipeModeType.VERTICAL,
+       inverse: true
+    }
+    
+    // 5. 矩形屏蔽
+    viewer.scene.swipeController = {
+       region: new Cesium.Cartesian4(0.3, 0.1, 0.8, 1),
+       type: Cesium.SwipeModeType.RECTANGLE,
+       inverse: false
+    }
+    
+    // 6. 矩形屏蔽反转
+    viewer.scene.swipeController = {
+       region: new Cesium.Cartesian4(0.3, 0.1, 0.8, 1),
+       type: Cesium.SwipeModeType.RECTANGLE,
+       inverse: true
+    }
+    
+    // 7. 小望远镜模式
+    viewer.scene.swipeController = {
+        region: {
+            center: new Cesium.Cartesian2(0.5, 0.5),
+            radius: 0.5,
+        },
+        type: Cesium.SwipeModeType.SPYGLASS,
+        inverse: false
+    }
+    
+    // 8. 多边形模式
+    viewer.scene.swipeController = {
+        region: [
+            new Cesium.Cartesian2(0.3, 0.5),
+            new Cesium.Cartesian2(0.5, 0.75),
+            new Cesium.Cartesian2(0.7, 0.5),
+            new Cesium.Cartesian2(0.6, 0.2),
+            new Cesium.Cartesian2(0.4, 0.2)
+        ],
+        type: Cesium.SwipeModeType.POLYGON,
+        inverse: false
+    }
+     */
+    swipeController: SwiperController;
     /**
      * The distance from the camera at which to disable the depth test of billboards, labels and points
     to, for example, prevent clipping against terrain. When set to zero, the depth test should always
@@ -48370,6 +53475,99 @@ export class Scene {
      * 图层管理对象
      */
     layers: Layers;
+    /**
+     * 多视图参数数组
+     * @example
+     * viewer.scene.useMultiViewports=true;
+    viewer.scene.multiViewports = [
+      {
+          //视图一
+          //设置视图左下角的x坐标
+          x: 0,
+          //设置视图左下角的y坐标
+          y: 0,
+          //设置视口相对屏幕的宽度比
+          w: 0.5,
+          //设置视口相对屏幕的高度比
+          h: 0.5,
+          //相机控制 设置当前视图的camera参数，参考地址:https://cesium.com/learn/cesiumjs/ref-doc/Camera.html
+          cameraControl: function (camera) {
+              camera.moveUp(0);
+              var backDirection = Cesium.Cartesian3.negate(viewer.scene.camera.direction, new Cesium.Cartesian3());
+              camera.lookDown(Cesium.Math.toRadians(10));
+              camera.lookRight(Cesium.Math.toRadians(-60));
+              camera.move(backDirection, 200 / Math.tan(20));
+              camera.moveBackward(470);
+          }
+          cameraControl: function () {}
+      },
+      {
+          //视图二
+          x: 0,
+          y: 0.5,
+          w: 0.5,
+          h: 0.5,
+          cameraControl: function () {}
+      },
+      {
+          //视图三
+          x: 0.5,
+          y: 0,
+          w: 0.5,
+          h: 1.0,
+          cameraControl: function (camera) {
+              camera.moveUp(2000);
+              var backDirection = Cesium.Cartesian3.negate(viewer.scene.camera.direction, new Cesium.Cartesian3());
+              camera.lookDown(Cesium.Math.toRadians(90));
+              camera.move(backDirection, 50 / Math.tan(20));
+          }
+      }
+     ];
+     */
+    multiViewports: any[];
+    /**
+     * 是否使用多视图功能
+     * @example
+     * viewer.scene.useMultiViewports=true;
+     */
+    useMultiViewports: boolean;
+    /**
+     * 颜色校正
+     * @example
+     * // 开启场景颜色校正
+    viewer.scene.colorCorrection.enabled = true;
+     */
+    readonly colorCorrection: any;
+    /**
+     * 场景亮度<br/>
+    当{@link Scene#colorCorrection}开启时有效
+    取值范围[-1, 1]
+     */
+    brightness: number;
+    /**
+     * 场景曝光度<br/>
+    当{@link Scene#colorCorrection}开启时有效
+    取值范围[-1, +∞]
+     */
+    exposure: number;
+    /**
+     * 场景对比度<br/>
+    当{@link Scene#colorCorrection}开启时有效
+    值要求大于0
+     */
+    contrast: number;
+    /**
+     * 场景饱和度<br/>
+    当{@link Scene#colorCorrection}开启时有效
+    取值范围[-1, +1]
+     */
+    saturation: number;
+    /**
+     * 场景色调<br/>
+    当{@link Scene#colorCorrection}开启时有效
+    取值要求大于0
+     */
+    hue: number;
     /**
      * Determines if a compressed texture format is supported.
      * @param format - The texture format. May be the name of the format or the WebGL extension name, e.g. s3tc or WEBGL_compressed_texture_s3tc.
@@ -48408,6 +53606,19 @@ export class Scene {
      * @returns Object containing the picked primitive.
      */
     pick(windowPosition: Cartesian2, width?: number, height?: number): any;
+    /**
+     * 范围拾取
+     * @example
+     * var result = scene.pickIdsInRange(positionArray, tileSetList);
+    tileSetList.forEach(tileSet => {
+     // 获取对应图层的id
+     var ids = result.get(tileSet);
+    })
+     * @param worldPositions - 世界坐标系下的范围点
+     * @param [tileSetList = []] - 参与范围拾取的图层
+     * @returns 被选中的要素的pickID
+     */
+    pickIdsInRange(worldPositions: Cartesian3[], tileSetList?: MapGISM3DSet[]): any;
     /**
      * @param windowPosition - Window coordinates to perform picking on.
      * @param [width = 3] - Width of the pick rectangle.
@@ -48636,7 +53847,35 @@ export class Scene {
      * @param idList - id列表
      */
     stopCustomDisplayByIds(layerList: MapGISM3DSet[], idList: number[]): void;
+    /**
+     * 添加光源
+     */
+    addLight(light: any): void;
+    /**
+     * 移除光源
+     */
+    removeLight(light: any): void;
 }
+
+/**
+ * @property center - 圆心位置
+ * @property radius - 半径
+ */
+export type Spyglass = {
+    center: Cartesian2;
+    radius: number;
+};
+
+/**
+ * @property region - 卷帘对比分析的范围
+ * @property type - 卷帘对比分析模式
+ * @property inverse - 是否反转分析范围
+ */
+export type SwiperController = {
+    region: number | Cartesian4 | Spyglass | Cartesian2[];
+    type: SwipeModeType;
+    inverse: boolean;
+};
 
 /**
  * Indicates if the scene is viewed in 3D, 2D, or 2.5D Columbus view.
@@ -49445,6 +54684,33 @@ export class SunLight {
      * The intensity of the light.
      */
     intensity: number;
+}
+
+/**
+ * 卷帘对比分析模式 {@link Scene#swipeController}.
+ */
+export enum SwipeModeType {
+    NONE = -1,
+    /**
+     * 水平模式
+     */
+    HORIZONTAL = 0,
+    /**
+     * 垂直模式
+     */
+    VERTICAL = 1,
+    /**
+     * 矩形模式
+     */
+    RECTANGLE = 2,
+    /**
+     * 圆形模式
+     */
+    SPYGLASS = 3,
+    /**
+     * 多边形模式
+     */
+    POLYGON = 4
 }
 
 export namespace TileCoordinatesImageryProvider {
@@ -50401,6 +55667,9 @@ export namespace WebMapServiceImageryProvider {
                              an array, each element in the array is a subdomain.
      * @property [clock] - A Clock instance that is used when determining the value for the time dimension. Required when `times` is specified.
      * @property [times] - TimeIntervalCollection with its data property being an object containing time dynamic dimension and their values.
+     * @property [isReverseBBOX] - 是否反转bbox的坐标点顺序，是否反转取决于不同公司的后端出图接口对于出图范围(bbox)坐标点顺序的定义;<br/>
+    MapGIS和GeoServer：1.1.1版本的WMS服务中，bbox的坐标顺序是XY，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
+    ArcGIS：1.1.1：无此版本出图服务，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
      */
     type ConstructorOptions = {
         url: Resource | string;
@@ -50422,6 +55691,7 @@ export namespace WebMapServiceImageryProvider {
         subdomains?: string | string[];
         clock?: Clock;
         times?: TimeIntervalCollection;
+        isReverseBBOX?: boolean;
     };
 }
 
@@ -50485,6 +55755,12 @@ export class WebMapServiceImageryProvider {
      * The default texture magnification filter to apply to this provider.
      */
     defaultMagnificationFilter: TextureMagnificationFilter;
+    /**
+     * 是否反转bbox的坐标点顺序，是否反转取决于不同公司的后端出图接口对于出图范围(bbox)坐标点顺序的定义;<br/>
+    MapGIS和GeoServer：1.1.1版本的WMS服务中，bbox的坐标顺序是XY，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
+    ArcGIS：1.1.1：无此版本出图服务，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
+     */
+    isReverseBBOX: boolean;
     /**
      * Gets the URL of the WMS server.
      */
@@ -53422,6 +58698,10 @@ export class Viewer {
         showViewLevelInfo?: boolean;
     }): Element;
     /**
+     * 隐藏经纬度 高程 视角高度
+     */
+    hidePosition(): void;
+    /**
      * 创建导航控件
      * @param options - 导航控件参数
     example：
@@ -53885,7 +59165,10 @@ declare module "cesium/Source/MapGIS/ReImg" { import { ReImg } from 'cesium'; ex
 declare module "cesium/Source/MapGIS/SceneLayer" { import { SceneLayer } from 'cesium'; export default SceneLayer; }
 declare module "cesium/Source/MapGIS/ThemeManager" { import { ThemeManager } from 'cesium'; export default ThemeManager; }
 declare module "cesium/Source/MapGIS/VisualAnalysisManager" { import { VisualAnalysisManager } from 'cesium'; export default VisualAnalysisManager; }
+declare module "cesium/Source/Renderer/ImprovedNoise" { import { ImprovedNoise } from 'cesium'; export default ImprovedNoise; }
+declare module "cesium/Source/Renderer/Pass" { import { Pass } from 'cesium'; export default Pass; }
 declare module "cesium/Source/Renderer/PixelDatatype" { import { PixelDatatype } from 'cesium'; export default PixelDatatype; }
+declare module "cesium/Source/Renderer/Texture3D" { import { Texture3D } from 'cesium'; export default Texture3D; }
 declare module "cesium/Source/Renderer/TextureMagnificationFilter" { import { TextureMagnificationFilter } from 'cesium'; export default TextureMagnificationFilter; }
 declare module "cesium/Source/Renderer/TextureMinificationFilter" { import { TextureMinificationFilter } from 'cesium'; export default TextureMinificationFilter; }
 declare module "cesium/Source/Scene/Appearance" { import { Appearance } from 'cesium'; export default Appearance; }
@@ -53906,6 +59189,7 @@ declare module "cesium/Source/Scene/CameraEventType" { import { CameraEventType 
 declare module "cesium/Source/Scene/Cesium3DTile" { import { Cesium3DTile } from 'cesium'; export default Cesium3DTile; }
 declare module "cesium/Source/Scene/Cesium3DTileColorBlendMode" { import { Cesium3DTileColorBlendMode } from 'cesium'; export default Cesium3DTileColorBlendMode; }
 declare module "cesium/Source/Scene/Cesium3DTileContent" { import { Cesium3DTileContent } from 'cesium'; export default Cesium3DTileContent; }
+declare module "cesium/Source/Scene/Cesium3DTileCustomContent" { import { Cesium3DTileCustomContent } from 'cesium'; export default Cesium3DTileCustomContent; }
 declare module "cesium/Source/Scene/Cesium3DTileFeature" { import { Cesium3DTileFeature } from 'cesium'; export default Cesium3DTileFeature; }
 declare module "cesium/Source/Scene/Cesium3DTilePointFeature" { import { Cesium3DTilePointFeature } from 'cesium'; export default Cesium3DTilePointFeature; }
 declare module "cesium/Source/Scene/Cesium3DTileset" { import { Cesium3DTileset } from 'cesium'; export default Cesium3DTileset; }
@@ -54006,6 +59290,7 @@ declare module "cesium/Source/Scene/StencilOperation" { import { StencilOperatio
 declare module "cesium/Source/Scene/StyleExpression" { import { StyleExpression } from 'cesium'; export default StyleExpression; }
 declare module "cesium/Source/Scene/Sun" { import { Sun } from 'cesium'; export default Sun; }
 declare module "cesium/Source/Scene/SunLight" { import { SunLight } from 'cesium'; export default SunLight; }
+declare module "cesium/Source/Scene/SwipeModeType" { import { SwipeModeType } from 'cesium'; export default SwipeModeType; }
 declare module "cesium/Source/Scene/TileCoordinatesImageryProvider" { import { TileCoordinatesImageryProvider } from 'cesium'; export default TileCoordinatesImageryProvider; }
 declare module "cesium/Source/Scene/TileDiscardPolicy" { import { TileDiscardPolicy } from 'cesium'; export default TileDiscardPolicy; }
 declare module "cesium/Source/Scene/TileMapServiceImageryProvider" { import { TileMapServiceImageryProvider } from 'cesium'; export default TileMapServiceImageryProvider; }
@@ -54022,13 +59307,16 @@ declare module "cesium/Source/Widgets/createCommand" { import { createCommand } 
 declare module "cesium/Source/Widgets/SvgPathBindingHandler" { import { SvgPathBindingHandler } from 'cesium'; export default SvgPathBindingHandler; }
 declare module "cesium/Source/Widgets/ToggleButtonViewModel" { import { ToggleButtonViewModel } from 'cesium'; export default ToggleButtonViewModel; }
 declare module "cesium/Source/MapGIS/Analysis/CesiumHeatmap" { import { CesiumHeatmap } from 'cesium'; export default CesiumHeatmap; }
+declare module "cesium/Source/MapGIS/Analysis/CollisionDetectionByRender" { import { CollisionDetectionByRender } from 'cesium'; export default CollisionDetectionByRender; }
 declare module "cesium/Source/MapGIS/Analysis/CutFillAnalysis" { import { CutFillAnalysis } from 'cesium'; export default CutFillAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/FloodAnalysis" { import { FloodAnalysis } from 'cesium'; export default FloodAnalysis; }
+declare module "cesium/Source/MapGIS/Analysis/FloodAnalysisReflection" { import { FloodAnalysisReflection } from 'cesium'; export default FloodAnalysisReflection; }
 declare module "cesium/Source/MapGIS/Analysis/SceneProjector" { import { SceneProjector } from 'cesium'; export default SceneProjector; }
 declare module "cesium/Source/MapGIS/Analysis/ShadowAnalysis" { import { ShadowAnalysis } from 'cesium'; export default ShadowAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/SkyLineAnalysis" { import { SkyLineAnalysis } from 'cesium'; export default SkyLineAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/ViewshedAnalysis" { import { ViewshedAnalysis } from 'cesium'; export default ViewshedAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/VisiblityAnalysis" { import { VisiblityAnalysis } from 'cesium'; export default VisiblityAnalysis; }
+declare module "cesium/Source/MapGIS/Controller/KeyboardCameraController" { import { KeyboardCameraController } from 'cesium'; export default KeyboardCameraController; }
 declare module "cesium/Source/MapGIS/Entity/AttributeSurfacePrimitive" { import { AttributeSurfacePrimitive } from 'cesium'; export default AttributeSurfacePrimitive; }
 declare module "cesium/Source/MapGIS/Entity/Graphic" { import { Graphic } from 'cesium'; export default Graphic; }
 declare module "cesium/Source/MapGIS/Entity/Style" { import { Style } from 'cesium'; export default Style; }
@@ -54039,15 +59327,21 @@ declare module "cesium/Source/MapGIS/Feature/MapGISFeatureTilePrimitiveCollectio
 declare module "cesium/Source/MapGIS/Geojson/MapGISGeojsonLayer" { import { MapGISGeojsonLayer } from 'cesium'; export default MapGISGeojsonLayer; }
 declare module "cesium/Source/MapGIS/Geojson/MapGISGeojsonProvider" { import { MapGISGeojsonProvider } from 'cesium'; export default MapGISGeojsonProvider; }
 declare module "cesium/Source/MapGIS/Geojson/MapGISGeojsonTilePrimitiveCollection" { import { MapGISGeojsonTilePrimitiveCollection } from 'cesium'; export default MapGISGeojsonTilePrimitiveCollection; }
+declare module "cesium/Source/MapGIS/Geometry/PolylineVolumeAnimationGeometry" { import { PolylineVolumeAnimationGeometry } from 'cesium'; export default PolylineVolumeAnimationGeometry; }
 declare module "cesium/Source/MapGIS/IndexedDB/TransactionImplement" { import { TransactionImplement } from 'cesium'; export default TransactionImplement; }
 declare module "cesium/Source/MapGIS/Label/MapGISLabelLayer" { import { MapGISLabelLayer } from 'cesium'; export default MapGISLabelLayer; }
+declare module "cesium/Source/MapGIS/M3D/M3DTile" { import { M3DTile } from 'cesium'; export default M3DTile; }
+declare module "cesium/Source/MapGIS/M3D/M3DTileFeature" { import { M3DTileFeature } from 'cesium'; export default M3DTileFeature; }
+declare module "cesium/Source/MapGIS/M3D/M3DTileset" { import { M3DTileset } from 'cesium'; export default M3DTileset; }
 declare module "cesium/Source/MapGIS/M3dLayer/M3DTree" { import { M3DTree } from 'cesium'; export default M3DTree; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3D" { import { MapGISM3D } from 'cesium'; export default MapGISM3D; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DSet" { import { MapGISM3DSet } from 'cesium'; export default MapGISM3DSet; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DTileContent" { import { MapGISM3DTileContent } from 'cesium'; export default MapGISM3DTileContent; }
 declare module "cesium/Source/MapGIS/Material/CircleWaveMaterialProperty" { import { CircleWaveMaterialProperty } from 'cesium'; export default CircleWaveMaterialProperty; }
+declare module "cesium/Source/MapGIS/Material/CustomShader" { import { CustomShader } from 'cesium'; export default CustomShader; }
 declare module "cesium/Source/MapGIS/Material/PolylineTrailLinkMaterialProperty" { import { PolylineTrailLinkMaterialProperty } from 'cesium'; export default PolylineTrailLinkMaterialProperty; }
 declare module "cesium/Source/MapGIS/Material/RadarMaterialProperty" { import { RadarMaterialProperty } from 'cesium'; export default RadarMaterialProperty; }
+declare module "cesium/Source/MapGIS/Material/WaterReflection" { import { WaterReflection } from 'cesium'; export default WaterReflection; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/BloomEffect" { import { BloomEffect } from 'cesium'; export default BloomEffect; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/CircleScanEffect" { import { CircleScanEffect } from 'cesium'; export default CircleScanEffect; }
 declare module "cesium/Source/MapGIS/PostProcessingEffects/DynamicLightLineEffect" { import { DynamicLightLineEffect } from 'cesium'; export default DynamicLightLineEffect; }
@@ -54063,6 +59357,7 @@ declare module "cesium/Source/MapGIS/PostProcessingEffects/WeatherEffect" { impo
 declare module "cesium/Source/MapGIS/PostProcessingEffects/WindowLightEffect" { import { WindowLightEffect } from 'cesium'; export default WindowLightEffect; }
 declare module "cesium/Source/MapGIS/Project/BaiduProject" { import { BaiduProject } from 'cesium'; export default BaiduProject; }
 declare module "cesium/Source/MapGIS/Project/BaiduProjection" { import { BaiduProjection } from 'cesium'; export default BaiduProjection; }
+declare module "cesium/Source/MapGIS/Project/CustomProjection" { import { CustomProjection } from 'cesium'; export default CustomProjection; }
 declare module "cesium/Source/MapGIS/Project/GaodeProjection" { import { GaodeProjection } from 'cesium'; export default GaodeProjection; }
 declare module "cesium/Source/MapGIS/Project/LonlatProjection" { import { LonlatProjection } from 'cesium'; export default LonlatProjection; }
 declare module "cesium/Source/MapGIS/Provider/BaiduImageryProvider" { import { BaiduImageryProvider } from 'cesium'; export default BaiduImageryProvider; }
@@ -54077,19 +59372,34 @@ declare module "cesium/Source/MapGIS/Provider/OpenWeatherImageryProvider" { impo
 declare module "cesium/Source/MapGIS/Provider/TerrainAnalyse" { import { TerrainAnalyse } from 'cesium'; export default TerrainAnalyse; }
 declare module "cesium/Source/MapGIS/Provider/TerrainProfile" { import { TerrainProfile } from 'cesium'; export default TerrainProfile; }
 declare module "cesium/Source/MapGIS/Provider/TiandituImageryProvider" { import { TiandituImageryProvider } from 'cesium'; export default TiandituImageryProvider; }
+declare module "cesium/Source/MapGIS/Provider/WfsProvider" { import { WfsProvider } from 'cesium'; export default WfsProvider; }
+declare module "cesium/Source/MapGIS/Scene/ClippingGeometry" { import { ClippingGeometry } from 'cesium'; export default ClippingGeometry; }
+declare module "cesium/Source/MapGIS/Scene/ClippingGeometryType" { import { ClippingGeometryType } from 'cesium'; export default ClippingGeometryType; }
+declare module "cesium/Source/MapGIS/Scene/DynamicEntityVisualizer" { import { DynamicEntityVisualizer } from 'cesium'; export default DynamicEntityVisualizer; }
+declare module "cesium/Source/MapGIS/Scene/GlobeIndependentTranslucency" { import { GlobeIndependentTranslucency } from 'cesium'; export default GlobeIndependentTranslucency; }
+declare module "cesium/Source/MapGIS/Scene/OutlineRenderMode" { import { OutlineRenderMode } from 'cesium'; export default OutlineRenderMode; }
+declare module "cesium/Source/MapGIS/TilingScheme/CustomTilingScheme" { import { CustomTilingScheme } from 'cesium'; export default CustomTilingScheme; }
 declare module "cesium/Source/MapGIS/TilingScheme/MapGISCustomTilingScheme" { import { MapGISCustomTilingScheme } from 'cesium'; export default MapGISCustomTilingScheme; }
 declare module "cesium/Source/MapGIS/Tools/AngulationTool" { import { AngulationTool } from 'cesium'; export default AngulationTool; }
 declare module "cesium/Source/MapGIS/Tools/AnimationTool" { import { AnimationTool } from 'cesium'; export default AnimationTool; }
 declare module "cesium/Source/MapGIS/Tools/CuttingTool" { import { CuttingTool } from 'cesium'; export default CuttingTool; }
 declare module "cesium/Source/MapGIS/Tools/DrawElement" { import { DrawElement } from 'cesium'; export default DrawElement; }
+declare module "cesium/Source/MapGIS/Tools/FlattenTool" { import { FlattenTool } from 'cesium'; export default FlattenTool; }
+declare module "cesium/Source/MapGIS/Tools/GraphicTransformTool" { import { GraphicTransformTool } from 'cesium'; export default GraphicTransformTool; }
 declare module "cesium/Source/MapGIS/Tools/MeasureAreaTool" { import { MeasureAreaTool } from 'cesium'; export default MeasureAreaTool; }
 declare module "cesium/Source/MapGIS/Tools/MeasureLengthTool" { import { MeasureLengthTool } from 'cesium'; export default MeasureLengthTool; }
 declare module "cesium/Source/MapGIS/Tools/MeasureSlopeTool" { import { MeasureSlopeTool } from 'cesium'; export default MeasureSlopeTool; }
 declare module "cesium/Source/MapGIS/Tools/ModelExplosion" { import { ModelExplosion } from 'cesium'; export default ModelExplosion; }
 declare module "cesium/Source/MapGIS/Tools/ModelExplosionType" { import { ModelExplosionType } from 'cesium'; export default ModelExplosionType; }
+declare module "cesium/Source/MapGIS/Tools/ModelFilterTool" { import { ModelFilterTool } from 'cesium'; export default ModelFilterTool; }
+declare module "cesium/Source/MapGIS/Tools/ModelTransformTool" { import { ModelTransformTool } from 'cesium'; export default ModelTransformTool; }
 declare module "cesium/Source/MapGIS/Tools/SampleElevationTool" { import { SampleElevationTool } from 'cesium'; export default SampleElevationTool; }
 declare module "cesium/Source/MapGIS/Tools/Tooltip" { import { Tooltip } from 'cesium'; export default Tooltip; }
 declare module "cesium/Source/MapGIS/Tools/TriangulationTool" { import { TriangulationTool } from 'cesium'; export default TriangulationTool; }
+declare module "cesium/Source/MapGIS/Util/InterceptorsUtil" { import { InterceptorsUtil } from 'cesium'; export default InterceptorsUtil; }
+declare module "cesium/Source/MapGIS/Util/TopoJSONUtil" { import { TopoJSONUtil } from 'cesium'; export default TopoJSONUtil; }
+declare module "cesium/Source/MapGIS/Util/UrlUtil" { import { UrlUtil } from 'cesium'; export default UrlUtil; }
+declare module "cesium/Source/MapGIS/Util/XmlUtil" { import { XmlUtil } from 'cesium'; export default XmlUtil; }
 declare module "cesium/Source/MapGIS/Vector/MapGISVectorGeojsonProvider" { import { MapGISVectorGeojsonProvider } from 'cesium'; export default MapGISVectorGeojsonProvider; }
 declare module "cesium/Source/MapGIS/Vector/MapGISVectorLayer" { import { MapGISVectorLayer } from 'cesium'; export default MapGISVectorLayer; }
 declare module "cesium/Source/MapGIS/Vector/MapGISVectorProvider" { import { MapGISVectorProvider } from 'cesium'; export default MapGISVectorProvider; }
@@ -54130,6 +59440,9 @@ declare module "cesium/Source/Widgets/Viewer/viewerDragDropMixin" { import { vie
 declare module "cesium/Source/Widgets/Viewer/viewerPerformanceWatchdogMixin" { import { viewerPerformanceWatchdogMixin } from 'cesium'; export default viewerPerformanceWatchdogMixin; }
 declare module "cesium/Source/Widgets/VRButton/VRButton" { import { VRButton } from 'cesium'; export default VRButton; }
 declare module "cesium/Source/Widgets/VRButton/VRButtonViewModel" { import { VRButtonViewModel } from 'cesium'; export default VRButtonViewModel; }
+declare module "cesium/Source/MapGIS/Analysis/SectionAnalysis/SectionRender" { import { SectionRender } from 'cesium'; export default SectionRender; }
+declare module "cesium/Source/MapGIS/Scene/Light/PointLight" { import { PointLight } from 'cesium'; export default PointLight; }
+declare module "cesium/Source/MapGIS/Scene/Light/SpotLight" { import { SpotLight } from 'cesium'; export default SpotLight; }
 declare module "cesium/Source/MapGIS/Tools/GraphciTool/DrawTool" { import { DrawTool } from 'cesium'; export default DrawTool; }
 declare module "cesium/Source/MapGIS/Tools/GraphciTool/EditTool" { import { EditTool } from 'cesium'; export default EditTool; }
 declare module "cesium/Source/MapGIS/Tools/GraphciTool/SelectTool" { import { SelectTool } from 'cesium'; export default SelectTool; }
