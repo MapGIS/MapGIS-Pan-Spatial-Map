@@ -41,7 +41,8 @@ export default {
   },
   computed: {
     backgourndImageUrl() {
-      return `url('${process.env.BASE_URL}login-bg.png')`
+      // eslint-disable-next-line camelcase, no-undef
+      return `url('${__webpack_public_path__}login-bg.png')`
     },
     supportInternationalization() {
       return window._CONFIG['supportInternationalization '] === 'true'

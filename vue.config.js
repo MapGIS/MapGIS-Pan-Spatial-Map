@@ -6,6 +6,7 @@ const buildDate = JSON.stringify(new Date().toLocaleString())
 const ThemeColorReplacer = require('webpack-theme-color-replacer')
 const { getThemeColors, modifyVars } = require('./src/utils/themeUtil')
 const { resolveCss } = require('./src/utils/theme-color-replacer-extend')
+const WebpackDynamicPublicPathPlugin = require('webpack-dynamic-public-path')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -20,6 +21,31 @@ function getGitHash() {
 }
 
 const isProd = process.env.NODE_ENV === 'production'
+
+function filterArgs(str) {
+  const argv = process.argv
+  const result = argv.find(item => item.match(str))
+  if (result) {
+    return result.split('=')[1]
+  }
+  return null
+}
+
+function getPublicPath() {
+  const customPrefix = filterArgs('prefix')
+  const initPublicPath = process.env.VUE_APP_CONTEXT_PATH
+
+  if (!isProd || !customPrefix) {
+    return initPublicPath
+  }
+
+  const firstSlashIndex = initPublicPath.indexOf('/')
+  const secondSlashIndex = initPublicPath.indexOf('/', firstSlashIndex + 1)
+  const oldPrefix = initPublicPath.substring(firstSlashIndex + 1, secondSlashIndex)
+  const publicPath = initPublicPath.replace(oldPrefix, customPrefix)
+
+  return publicPath
+}
 
 // vue.config.js
 const vueConfig = {
@@ -108,6 +134,11 @@ const vueConfig = {
           }
         }
       })
+
+      // 支持运行时设置publicPath
+      config
+        .plugin('dynamicPublicPathPlugin')
+        .use(WebpackDynamicPublicPathPlugin, [{ externalPublicPath: 'window.externalPublicPath' }])
     }
     config.module
       .rule('images')
@@ -156,7 +187,7 @@ const vueConfig = {
   lintOnSave: undefined,
   // babel-loader no-ignore node_modules/*
   transpileDependencies: [],
-  publicPath: process.env.VUE_APP_CONTEXT_PATH
+  publicPath: getPublicPath()
 }
 
 module.exports = vueConfig
