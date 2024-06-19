@@ -18409,7 +18409,7 @@ webpack-dev-server@^3.11.0, webpack-dev-server@^3.5.1:
 
 webpack-dynamic-public-path@^1.0.8:
   version "1.0.8"
-  resolved "http://192.168.11.130:4873/webpack-dynamic-public-path/-/webpack-dynamic-public-path-1.0.8.tgz#2b207f6b122775185d3c2de7a9626734d6ce0e7c"
+  resolved "https://registry.npmmirror.com/webpack-dynamic-public-path/-/webpack-dynamic-public-path-1.0.8.tgz#2b207f6b122775185d3c2de7a9626734d6ce0e7c"
   integrity sha512-AF6onorpvmiC+I/dQ19SOi+oN66oEy9h4deam7gPs1Qa1mOQ9i7IRsOahaukohKAciys7NfX+YFboRn4rmpuKw==
 
 webpack-log@^2.0.0:
