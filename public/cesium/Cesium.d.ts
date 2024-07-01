@@ -5861,13 +5861,6 @@ export class Ellipsoid {
      * @returns The approximate area of the rectangle on the surface of this ellipsoid.
      */
     surfaceArea(rectangle: Rectangle): number;
-    /**
-     * Computes the ellipsoid curvatures at a given position on the surface.
-     * @param surfacePosition - The position on the ellipsoid surface where curvatures will be calculated.
-     * @param [result] - The cartesian to which to copy the result, or undefined to create and return a new instance.
-     * @returns The local curvature of the ellipsoid surface at the provided position, in east and north directions.
-     */
-    getLocalCurvature(surfacePosition: Cartesian3, result?: Cartesian2): Cartesian2;
 }
 
 /**
@@ -21213,7 +21206,6 @@ viewer.dataSources.add(Cesium.KmlDataSource.load('../../SampleData/facilities.km
  * @param options.canvas - The canvas that is used for sending viewer properties to network links.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The global ellipsoid used for geographical calculations.
  * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
- * @param [options.classificationType] - An enum Property specifying whether this polyline will classify terrain, 3D Tiles, or both when on the ground.
  */
 export class KmlDataSource {
     constructor(options: {
@@ -21221,7 +21213,6 @@ export class KmlDataSource {
         canvas: HTMLCanvasElement;
         ellipsoid?: Ellipsoid;
         credit?: Credit | string;
-        classificationType?: ClassificationType;
     });
     /**
      * Creates a Promise to a new instance loaded with the provided KML data.
@@ -21299,14 +21290,12 @@ export class KmlDataSource {
      * @param [options] - An object with the following properties:
      * @param [options.sourceUri] - Overrides the url to use for resolving relative links and other KML network features.
      * @param [options.clampToGround = false] - true if we want the geometry features (Polygons, LineStrings and LinearRings) clamped to the ground. If true, lines will use corridors so use Entity.corridor instead of Entity.polyline.
-     * @param [options.classificationType = ClassificationType.BOTH] - An enum Property specifying whether this polyline will classify terrain, 3D Tiles, or both when on the ground.
      * @param [options.ellipsoid = Ellipsoid.WGS84] - The global ellipsoid used for geographical calculations.
      * @returns A promise that will resolve to this instances once the KML is loaded.
      */
     load(data: Resource | string | Document | Blob, options?: {
         sourceUri?: Resource | string;
         clampToGround?: boolean;
-        classificationType?: boolean;
         ellipsoid?: Ellipsoid;
     }): Promise<KmlDataSource>;
     /**
@@ -25523,149 +25512,6 @@ export class SceneProjector {
 }
 
 /**
- * 场景投放(新)
- * @example
- * // 1. 添加新版场景投放
-var scenePro = new Cesium.SceneProjectorEx({
-    scene: viewer.scene,
-    source: '../videos/DJI_0008.mp4',
-    pass: Cesium.Pass.AFTER_TILE
-});
-// 直接添加到primitives中
-scene.primitives.add(scenePro);
-
-// 2. 移除场景投放
-scene.primitives.remove(scenePro);
- * @param options.scene - 场景对象
- * @param [options.pass = Cesium.Pass.ANALYSIS] - 渲染通道 自定义渲染通道只可设置 {@link Pass.AFTER_GLOBE}，{@link Pass.AFTER_TILE}，{@link Pass.AFTER_TILE_CLASSIFICATION}，{@link Pass.ANALYSIS} 四个通道
- * @param [options.source = new Color(0, 0, 0, 1)] - 投影资源 图片支持".png/.jpg/.jpeg" 视频支持".mp4/.m3u8"
- * @param [options.viewPosition = Cartesian3.fromDegrees(0, 0, 100)] - 观察点
- * @param options.targetPosition - 目标点
- * @param [options.heading = 0] - 投影相机的偏向角度 弧度制
- * @param [options.pitch = -Math.PI/2] - 投影相机的俯仰角度 弧度制
- * @param [options.roll = 0] - 投影相机的翻滚角度 弧度制
- * @param [options.nearClipPlane = 1] - 近裁面距离
- * @param [options.farClipPlane = 1000] - 远裁面距离
- * @param [options.horizontAngle = = Math.PI/] - 水平角 弧度制
- * @param [options.verticalAngle = Math.PI/6] - 垂直角 弧度制
- * @param [options.show = true] - 是否显示场景投放
- * @param [options.showLine = true] - 视锥体是否显示
- * @param [options.biasRatio = 5] - 投影层深度偏移倍率
- * @param [options.caculateProjectedData = false] - 是否计算投影帧数据
- * @param options.onCanplay - 场景投放可以投放的回调事件
- */
-export class SceneProjectorEx {
-    constructor(options: {
-        scene: Scene;
-        pass?: Pass;
-        source?: Color | string | HTMLVideoElement;
-        viewPosition?: Cartesian3;
-        targetPosition: Cartesian3;
-        heading?: number;
-        pitch?: number;
-        roll?: number;
-        nearClipPlane?: number;
-        farClipPlane?: number;
-        horizontAngle?: number;
-        verticalAngle?: number;
-        show?: boolean;
-        showLine?: boolean;
-        biasRatio?: number;
-        caculateProjectedData?: number;
-        onCanplay: (...params: any[]) => any;
-    });
-    /**
-     * 投影相机观察点
-     */
-    viewPosition: Cartesian3;
-    /**
-     * 投影相机观察的目标点
-     */
-    targetPosition: Cartesian3;
-    /**
-     * 投影资源 图片支持".png/.jpg/.jpeg" 视频支持".mp4/.m3u8"
-     * @example
-     * // 释放旧的HTMLVideoElement资源要注意使用以下的方式@see https://blog.csdn.net/qq_31851435/article/details/132801525
-    if(externalVideo){ // 旧的HTMLVideoElement
-         externalVideo.pause();
-         externalVideo.removeAttribute('src');
-         externalVideo.load();
-    }
-    var outVideo = document.createElement('video');
-    outVideo.crossOrigin = 'anonymous';
-    outVideo.loop = true;
-    scenePro.source = outVideo;
-     */
-    source: Color | string | HTMLVideoElement;
-    /**
-     * 投影相机
-     */
-    readonly projectionCamera: Camera;
-    /**
-     * 是否显示椎体线
-     */
-    showLine: boolean;
-    /**
-     * 方位角 弧度制
-     */
-    heading: number;
-    /**
-     * 俯仰角 弧度制
-     */
-    pitch: number;
-    /**
-     * 翻滚角 弧度制
-     */
-    roll: number;
-    /**
-     * 水平广角 弧度表示
-     */
-    horizontAngle: number;
-    /**
-     * 竖直广角 弧度表示
-     */
-    verticalAngle: number;
-    /**
-     * 视频投放近裁剪平面
-    最小被限制为0.01,最大值被限制为(farClipPlane - 1)。
-     */
-    nearClipPlane: number;
-    /**
-     * 视频投放远裁剪平面
-    最小值被限制为(nearClipPlane + 1)。
-     */
-    farClipPlane: number;
-    /**
-     * 获取播放投影源的HTMLVideo标签<br/>
-    仅当投影源是视频时有效
-     */
-    readonly videoHTML: HTMLVideoElement;
-    /**
-     * 场景投放开始投放的回调事件
-     */
-    onCanplay: (...params: any[]) => any;
-    /**
-     * 是否显示视频投放
-     */
-    show: boolean;
-    /**
-     * 投影层深度偏移倍率，用于调节z-fighting<br/>
-    在固定偏移值的基础上乘以此倍数得到最终的偏移值
-     */
-    biasRatio: number;
-    /**
-     * 是否计算投影帧数据<br/>
-    开启计算投影帧数据后从{@link SceneProjectorEx#projectedFrameData}中获取数据<br/>
-    计算过程中会消耗一定的性能，仅在需要获取数据时才开启
-     */
-    caculateProjectedData: boolean;
-    /**
-     * 获取投影帧数据
-     */
-    readonly projectedFrameData: any;
-}
-
-/**
  * 地质体剖切绘制类
  * @param options.geometry - 剖面几何对象.
  * @param options.clippingType - 裁剪类型.
@@ -25692,6 +25538,7 @@ export function SectionRender(options: {
  * @param [options.pointSize = 5] - 用于配置绘制顶点的大小
  * @param [options.drawPoint = true] - 固定时间分析中是否绘制结果点，默认绘制
  * @param [options.intervalTime = 20] - 动画中每次分析的时间间隔，单位为分钟
+ * @param [options.showAnimatePoint = true] - 是否绘制动画过程示意点，为true时绘制，否则不绘制，默认为true
  * @param [options.removeAnimatePoint = false] - 是否移除动画效果最后的绘制结果，默认不移除
  */
 export class ShadowAnalysis {
@@ -25709,6 +25556,7 @@ export class ShadowAnalysis {
         pointSize?: number;
         drawPoint?: boolean;
         intervalTime?: number;
+        showAnimatePoint?: boolean;
         removeAnimatePoint?: boolean;
     });
     /**
@@ -25740,177 +25588,21 @@ export class ShadowAnalysis {
      */
     percent: number;
     /**
-     * 开始阴影率分析
-     * @param pointsArray - 点序列,世界坐标Cartesian3数组
-     * @param minHeight - 插值点最小高度
-     * @param maxHeight - 插值点最大高度
-     * @param startTime - 时间段开始时间
-     * @param endTime - 时间段结束时间
+     * 点序列在指定时间段内各个点在阴影下的时间与在太阳下的时间数组
+     * @param pointsArray - 点序列
+     * @param minHeight - 最小高度
+     * @param maxHeight - 最大高度
+     * @param startTime - 起始时间（零时区）
+     * @param endTime - 结束时间（零时区）
+     * @returns 返回是否成功执行
      */
-    calcPointsArrayInShadowTime(pointsArray: Cartesian3[], minHeight: number, maxHeight: number, startTime: JulianDate, endTime: JulianDate): void;
+    calcPointsArrayInShadowTime(pointsArray: Cartesian3[], minHeight: number, maxHeight: number, startTime: any, endTime: any): boolean;
     /**
-     * 绘制结果
-     */
-    _drawResult(): void;
-    /**
-     * 清空绘制结果
+     * 移除绘制结果
      */
     remove(): void;
     /**
      * 移除并销毁阴影分析
-     */
-    destory(): void;
-}
-
-/**
- * 阴影率分析
- * @example
- * // 阴影率分析类依赖场景的shdows，必须设置开启。
-viewer.shadows = true;
-
-// 新建阴影率分析类
-var startTimeDate = new Date('2024/4/01 05:00:00');
-var endTimeDate = new Date('2024/4/01 15:00:00');
-var ShadowRateAnalysis = new Cesium.ShadowRateAnalysis(viewer, {
-          startTime: Cesium.JulianDate.fromDate(startTimeDate),
-          endTime: Cesium.JulianDate.fromDate(endTimeDate),
-          spacing: 5,
-          pointSize: 10,
-          minHeight: 10,
-          maxHeight: 50,
-   });
-
-// 加载模型数据：支持M3D、3DTiles、glb等。
-var entity = viewer.entities.add({
-         name: 'build',
-         position: Cesium.Cartesian3.fromDegrees(115.1771, 20.2834, 500),
-         model: {
-          uri: '../../SampleData/models/Building/build.glb',
-          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-          minimumPixelSize: 10,
-          scale: 200
-      }
-   });
-viewer.camera.flyTo({
-         destination: Cesium.Cartesian3.fromDegrees(115.1771, 20.2834, 1000), //经度，纬度，视角高度
-         duration: 0
-   });
-
-
-// 阴影率分析
-// 分析区域几何顶点，可直接使用交互绘制的回调结果
-var points=[
-  {
-      "x": -2545958.6505201817,
-      "y": 5416460.046735503,
-      "z": 2197304.570977404
-  },
-  {
-      "x": -2546028.547171191,
-      "y": 5416621.283669859,
-      "z": 2196829.2727668337
-  },
-  {
-      "x": -2546502.8935825536,
-      "y": 5416402.67652554,
-      "z": 2196818.5454125707
-  },
-  {
-      "x": -2546411.1078572497,
-      "y": 5416239.747866453,
-      "z": 2197323.1835109163
-  },
-  {
-      "x": -2545958.6505201817,
-      "y": 5416460.046735503,
-      "z": 2197304.570977404
-  }
-];
-ShadowRateAnalysis.pointsArray = points;
-ShadowRateAnalysis.shadowRate();
-
-// 播放日照效果
-// ShadowRateAnalysis.sunLightEffect();
- * @param viewer - 场景视图
- * @param options - 附加选项
- * @param [options.pointsArray] - 点序列,世界坐标Cartesian3数组，可直接使用交互绘制的回调结果,必选
- * @param [options.startTime] - 时间段开始时间,必选
- * @param [options.endTime] - 时间段结束时间,必选
- * @param [options.multiplier = 14400] - 时间倍率，用于控制时间流逝速度；数值越小得到的分析结果越精确，消耗时间越长，反之同理
- * @param [options.spacing = 4] - 配置绘制点的间隔，单位米
- * @param [options.pointSize = 5] - 配置绘制顶点的大小，单位像素
- * @param [options.colorScheme] - 颜色表,默认色表：http://192.168.82.91:8200/NoneSpatialData/image/阴影率分析色表.png
-，将阴影率与点元颜色映射，传入方式举例：<br/>
-colorScheme=[<br/>
-             &nbsp;&nbsp;&nbsp;&nbsp;{color:'rgba(0, 255, 0, 1)',rate:0},<br/>
-             &nbsp;&nbsp;&nbsp;&nbsp;{color:'rgba(255, 255, 0, 1)',rate:0.5},<br/>
-             &nbsp;&nbsp;&nbsp;&nbsp;{color:'rgba(255, 0, 0, 1)',rate:1}<br/>
-            ]
- * @param [options.minHeight = 1] - 插值点最小高度，单位米
- * @param [options.maxHeight = 10] - 插值点最大高度，单位米
- */
-export class ShadowRateAnalysis {
-    constructor(viewer: any, options: {
-        pointsArray?: Cartesian3[];
-        startTime?: JulianDate;
-        endTime?: JulianDate;
-        multiplier?: number;
-        spacing?: number;
-        pointSize?: number;
-        colorScheme?: any[];
-        minHeight?: number;
-        maxHeight?: number;
-    });
-    /**
-     * 点坐标数组
-     */
-    pointsArray: any[];
-    /**
-     * 时间段开始时间
-     */
-    startTime: JulianDate;
-    /**
-     * 时间段结束时间
-     */
-    endTime: JulianDate;
-    /**
-     * 时间倍率
-     */
-    multiplier: number;
-    /**
-     * 绘制点的间隔
-     */
-    spacing: number;
-    /**
-     * 颜色表
-     */
-    colorScheme: any[];
-    /**
-     * 绘制点大小
-     */
-    pointSize: number;
-    /**
-     * 绘制点最小高度
-     */
-    minHeight: number;
-    /**
-     * 绘制点最大高度
-     */
-    maxHeight: number;
-    /**
-     * 开始阴影率分析
-     */
-    shadowRate(): void;
-    /**
-     * 开始播放日照效果
-     */
-    sunLightEffect(): void;
-    /**
-     * 清空绘制结果
-     */
-    clear(): void;
-    /**
-     * 销毁
      */
     destroy(): void;
 }
@@ -26141,88 +25833,6 @@ export class VisiblityAnalysis {
         divideAngle?: number;
         percentCallback?: (...params: any[]) => any;
     }): void;
-}
-
-/**
- * 风场系统
- * @example
- * loadNetCDF('http://127.0.0.1:5500/demo.nc').then((data) => {
-     var userInput = {
-         particlesNumber: particlesNumber,
-         fadeOpacity: fadeOpacity,
-         speedFactor: speedFactor,
-         lineWidth: lineWidth
-     };
-     particleObj = new Cesium.Wind3D(viewer, data, userInput);
-     particleObj.init();
- });
- * @param viewer - 视图对象
- * @param data - 由nc数据解析后的风场数据
- * @param options - 附加粒子配置参数
- * @param [options.particlesNumber = 150000] - 最大粒子数
- * @param [options.fadeOpacity = 0.950] - 拖尾透明度，控制每帧粒子轨迹消失的速度，透明度越高，消失得越快，粒子呈现出的轨迹越短
- * @param [options.speedFactor = 0.5] - 粒子速度，决定了粒子移动的速度有多快
- * @param [options.lineWidth = 2] - 线宽
- */
-export class Wind3D {
-    constructor(viewer: any, data: any, options: {
-        particlesNumber?: number;
-        fadeOpacity?: number;
-        speedFactor?: number;
-        lineWidth?: number;
-    });
-    /**
-     * 最大粒子数
-     */
-    particlesNumber: number;
-    /**
-     * 拖尾透明度，控制每帧粒子轨迹消失的速度，透明度越高，消失得越快，粒子呈现出的轨迹越短
-     */
-    fadeOpacity: number;
-    /**
-     * 粒子速度，决定了粒子移动的速度有多快
-     */
-    speedFactor: number;
-    /**
-     * 线宽
-     */
-    lineWidth: number;
-    /**
-     * 风场系统初始化
-     */
-    init(): void;
-    /**
-     * 添加风场粒子系统的渲染命令到场景中的渲染列表
-    依次添加计算速度、更新位置、后处理位置、绘制粒子段、绘制拖尾和屏幕显示的渲染命令。
-     */
-    addPrimitives(): any;
-    /**
-     * 更新视图参数，包括经纬度范围和像素大小
-     */
-    updateViewerParameters(): any;
-    /**
-     * 添加监听
-    设置事件监听器，包括相机移动开始、移动结束、场景渲染前和窗口大小改变事件。
-    在相机移动开始时隐藏风场粒子系统，移动结束时更新视图参数并显示风场粒子系统。
-    在场景渲染前处理窗口大小改变事件，重新调整风场粒子系统的大小并重新添加渲染命令。
-     */
-    setupEventListeners(): void;
-    /**
-     * 移除监听
-     */
-    removeEventListeners(): void;
-    /**
-     * 配置项改变后触发更新事件，重新应用用户输入的参数。
-     */
-    optionsChange(userInput: any): any;
-    /**
-     * 隐藏风场系统
-     */
-    hide(): void;
-    /**
-     * 移除风场
-     */
-    remove(): any;
 }
 
 /**
@@ -29224,8 +28834,6 @@ volume.animationStopEvent.addEventListener((position, time)=>{
      console.log('动画当前播放的时间：', time);
      console.log('当前的位置：', position);
 })
-// 2.6 设置动画播放进度
-volume.animationProgress = 0.5;
  * @param options - Object with the following properties:
  * @param options.polylinePositions - An array of {@link Cartesian3} positions that define the center of the polyline volume.
  * @param options.shapePositions - An array of {@link Cartesian2} positions that define the shape to be extruded along the polyline
@@ -29234,7 +28842,6 @@ volume.animationProgress = 0.5;
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  * @param [options.cornerType = CornerType.ROUNDED] - Determines the style of the corners.
  * @param [options.animationDuration = 3] - 动画的持续时间。
- * @param [options.animationRate = 1] - 动画的播放速率。
  */
 export class PolylineVolumeAnimationGeometry extends PolylineVolumeGeometry {
     constructor(options: {
@@ -29245,7 +28852,6 @@ export class PolylineVolumeAnimationGeometry extends PolylineVolumeGeometry {
         vertexFormat?: VertexFormat;
         cornerType?: CornerType;
         animationDuration?: number;
-        animationRate?: number;
     });
     /**
      * 动画是否停止
@@ -29255,14 +28861,6 @@ export class PolylineVolumeAnimationGeometry extends PolylineVolumeGeometry {
      * 动画的播放时间(单位：秒)
      */
     readonly animationCurrentTime: number;
-    /**
-     * 动画的播放进度
-     */
-    animationProgress: number;
-    /**
-     * 动画的播放速率
-     */
-    animationRate: number;
     /**
      * 动画时长(单位：秒)
      */
@@ -30668,9 +30266,6 @@ export class Layers {
      * @param [options.renderer.symbol] - 统一专题图符号样式
      * @param [options.renderer.symbol.type] - 专题图符号样式类型，可选 "point-3d"|"line-3d"|"polygon-3d"
      * @param [options.renderer.symbol.symbolLayers] - 专题图符号图层，可选 "icon"|"line"|"fill"|"extrude"
-     * @param [options.renderer.symbol.symbolLayers.material] - 专题图符号图层材质设置
-     * @param [options.renderer.symbol.symbolLayers.material.opacity] - 专题图符号图层材质设置,控制模型透明度
-     * @param [options.renderer.symbol.symbolLayers.material.color] - 专题图符号图层材质设置,控制专题图颜色,alpha值控制专题颜色权重
      * @param [options.renderer.label] - 统一专题图标签
      * @param [options.renderer.defaultSymbol] - 单值|分段专题图默认符号样式，用来绘制具有与给定中断值不匹配的要素
      * @param [options.renderer.defaultLabel] - 单值|分段专题图默认标签，用来描述分配了默认符号的元素
@@ -30742,12 +30337,7 @@ export class Layers {
             field?: string;
             symbol?: {
                 type?: string;
-                symbolLayers?: {
-                    material?: {
-                        opacity?: number;
-                        color?: Color;
-                    };
-                };
+                symbolLayers?: string;
             };
             label?: string;
             defaultSymbol?: any;
@@ -30852,9 +30442,6 @@ export class Layers {
      * @param [options.renderer.symbol] - 统一专题图符号样式
      * @param [options.renderer.symbol.type] - 专题图符号样式类型，可选 "point-3d"|"line-3d"|"polygon-3d"
      * @param [options.renderer.symbol.symbolLayers] - 专题图符号图层，可选 "icon"|"line"|"fill"|"extrude"
-     * @param [options.renderer.symbol.symbolLayers.material] - 专题图符号图层材质设置
-     * @param [options.renderer.symbol.symbolLayers.material.opacity] - 专题图符号图层材质设置,控制模型透明度
-     * @param [options.renderer.symbol.symbolLayers.material.color] - 专题图符号图层材质设置,控制专题图颜色,alpha值控制专题颜色权重
      * @param [options.renderer.label] - 统一专题图标签
      * @param [options.renderer.defaultSymbol] - 单值|分段专题图默认符号样式，用来绘制具有与给定中断值不匹配的要素
      * @param [options.renderer.defaultLabel] - 单值|分段专题图默认标签，用来描述分配了默认符号的元素
@@ -30901,12 +30488,7 @@ export class Layers {
             field?: string;
             symbol?: {
                 type?: string;
-                symbolLayers?: {
-                    material?: {
-                        opacity?: number;
-                        color?: Color;
-                    };
-                };
+                symbolLayers?: string;
             };
             label?: string;
             defaultSymbol?: any;
@@ -30964,13 +30546,13 @@ export class Layers {
 }
 
 /**
- * A tile in a {@link MapGIS3DTileset}.  When a tile is first created, its content is not loaded;
+ * A tile in a {@link M3DTileset}.  When a tile is first created, its content is not loaded;
 the content is loaded on-demand when needed based on the view.
 <p>
-Do not construct this directly, instead access tiles through {@link MapGIS3DTileset#tileVisible}.
+Do not construct this directly, instead access tiles through {@link M3DTileset#tileVisible}.
 </p>
  */
-export class MapGIS3DTile {
+export class M3DTile {
     constructor();
     /**
      * The local transform of this tile.
@@ -30988,7 +30570,7 @@ export class MapGIS3DTile {
     /**
      * Gets the tile's children.
      */
-    readonly children: MapGIS3DTile[];
+    readonly children: M3DTile[];
     /**
      * This tile's parent or <code>undefined</code> if this tile is the root.
     <p>
@@ -30997,7 +30579,7 @@ export class MapGIS3DTile {
     the tile (with its content pointing to an external tileset JSON file) as if the two tilesets were merged.
     </p>
      */
-    readonly parent: MapGIS3DTile;
+    readonly parent: M3DTile;
     /**
      * The time in seconds after the tile's content is ready when the content expires and new content is requested.
      */
@@ -31009,7 +30591,7 @@ export class MapGIS3DTile {
     /**
      * The tileset containing this tile.
      */
-    readonly tileset: MapGIS3DTileset;
+    readonly tileset: M3DTileset;
     /**
      * The tile's content.  This represents the actual tile's payload,
     not the content's metadata in the tileset JSON file.
@@ -31031,10 +30613,10 @@ export class MapGIS3DTile {
 <p>
 Provides access to a feature's properties stored in the tile's batch table, as well
 as the ability to show/hide a feature and change its highlight color via
-{@link MapGIS3DTileFeature#show} and {@link MapGIS3DTileFeature#color}, respectively.
+{@link M3DTileFeature#show} and {@link M3DTileFeature#color}, respectively.
 </p>
 <p>
-Modifications to a <code>MapGIS3DTileFeature</code> object have the lifetime of the tile's
+Modifications to a <code>M3DTileFeature</code> object have the lifetime of the tile's
 content.  If the tile's content is unloaded, e.g., due to it going out of view and needing
 to free space in the cache for visible tiles, listen to the {@link Cesium3DTileset#tileUnload} event to save any
 modifications. Also listen to the {@link Cesium3DTileset#tileVisible} event to reapply any modifications.
@@ -31047,7 +30629,7 @@ or picking using {@link Scene#pick} and {@link Scene#pickPosition}.
  * // On mouse over, display all the properties for a feature in the console log.
 handler.setInputAction(function(movement) {
     var feature = scene.pick(movement.endPosition);
-    if (feature instanceof Cesium.MapGIS3DTileFeature) {
+    if (feature instanceof Cesium.M3DTileFeature) {
         var propertyNames = feature.getPropertyNames();
         var length = propertyNames.length;
         for (var i = 0; i < length; ++i) {
@@ -31057,7 +30639,7 @@ handler.setInputAction(function(movement) {
     }
 }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
  */
-export class MapGIS3DTileFeature {
+export class M3DTileFeature {
     constructor();
     /**
      * Gets or sets if the feature will be shown. This is set for all features
@@ -31139,12 +30721,12 @@ export class MapGIS3DTileFeature {
  * A {@link https://github.com/CesiumGS/3d-tiles/tree/main/specification|3D Tiles tileset},
 used for streaming massive heterogeneous 3D geospatial datasets.
  * @example
- * var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
+ * var tileset = scene.primitives.add(new Cesium.M3DTileset({
      url : 'http://localhost:8002/tilesets/Seattle/tileset.json'
 }));
  * @example
  * // Common setting for the skipLevelOfDetail optimization
-var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
+var tileset = scene.primitives.add(new Cesium.M3DTileset({
      url : 'http://localhost:8002/tilesets/Seattle/tileset.json',
      skipLevelOfDetail : true,
      baseScreenSpaceError : 1024,
@@ -31156,7 +30738,7 @@ var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
 }));
  * @example
  * // Common settings for the dynamicScreenSpaceError optimization
-var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
+var tileset = scene.primitives.add(new Cesium.M3DTileset({
      url : 'http://localhost:8002/tilesets/Seattle/tileset.json',
      dynamicScreenSpaceError : true,
      dynamicScreenSpaceErrorDensity : 0.00278,
@@ -31181,11 +30763,11 @@ var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
  * @param [options.dynamicScreenSpaceErrorFactor = 4.0] - A factor used to increase the computed dynamic screen space error.
  * @param [options.dynamicScreenSpaceErrorHeightFalloff = 0.25] - A ratio of the tileset's height at which the density starts to falloff.
  * @param [options.progressiveResolutionHeightFraction = 0.3] - Optimization option. If between (0.0, 0.5], tiles at or above the screen space error for the reduced screen resolution of <code>progressiveResolutionHeightFraction*screenHeight</code> will be prioritized first. This can help get a quick layer of tiles down while full resolution tiles continue to load.
- * @param [options.foveatedScreenSpaceError = true] - Optimization option. Prioritize loading tiles in the center of the screen by temporarily raising the screen space error for tiles around the edge of the screen. Screen space error returns to normal once all the tiles in the center of the screen as determined by the {@link MapGIS3DTileset#foveatedConeSize} are loaded.
- * @param [options.foveatedConeSize = 0.1] - Optimization option. Used when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control the cone size that determines which tiles are deferred. Tiles that are inside this cone are loaded immediately. Tiles outside the cone are potentially deferred based on how far outside the cone they are and their screen space error. This is controlled by {@link MapGIS3DTileset#foveatedInterpolationCallback} and {@link MapGIS3DTileset#foveatedMinimumScreenSpaceErrorRelaxation}. Setting this to 0.0 means the cone will be the line formed by the camera position and its view direction. Setting this to 1.0 means the cone encompasses the entire field of view of the camera, disabling the effect.
- * @param [options.foveatedMinimumScreenSpaceErrorRelaxation = 0.0] - Optimization option. Used when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control the starting screen space error relaxation for tiles outside the foveated cone. The screen space error will be raised starting with tileset value up to {@link MapGIS3DTileset#maximumScreenSpaceError} based on the provided {@link MapGIS3DTileset#foveatedInterpolationCallback}.
- * @param [options.foveatedInterpolationCallback = Math.lerp] - Optimization option. Used when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone, interpolating between {@link MapGIS3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link MapGIS3DTileset#maximumScreenSpaceError}
- * @param [options.foveatedTimeDelay = 0.2] - Optimization option. Used when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control how long in seconds to wait after the camera stops moving before deferred tiles start loading in. This time delay prevents requesting tiles around the edges of the screen when the camera is moving. Setting this to 0.0 will immediately request all tiles in any given view.
+ * @param [options.foveatedScreenSpaceError = true] - Optimization option. Prioritize loading tiles in the center of the screen by temporarily raising the screen space error for tiles around the edge of the screen. Screen space error returns to normal once all the tiles in the center of the screen as determined by the {@link M3DTileset#foveatedConeSize} are loaded.
+ * @param [options.foveatedConeSize = 0.1] - Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control the cone size that determines which tiles are deferred. Tiles that are inside this cone are loaded immediately. Tiles outside the cone are potentially deferred based on how far outside the cone they are and their screen space error. This is controlled by {@link M3DTileset#foveatedInterpolationCallback} and {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation}. Setting this to 0.0 means the cone will be the line formed by the camera position and its view direction. Setting this to 1.0 means the cone encompasses the entire field of view of the camera, disabling the effect.
+ * @param [options.foveatedMinimumScreenSpaceErrorRelaxation = 0.0] - Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control the starting screen space error relaxation for tiles outside the foveated cone. The screen space error will be raised starting with tileset value up to {@link M3DTileset#maximumScreenSpaceError} based on the provided {@link M3DTileset#foveatedInterpolationCallback}.
+ * @param [options.foveatedInterpolationCallback = Math.lerp] - Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone, interpolating between {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link M3DTileset#maximumScreenSpaceError}
+ * @param [options.foveatedTimeDelay = 0.2] - Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control how long in seconds to wait after the camera stops moving before deferred tiles start loading in. This time delay prevents requesting tiles around the edges of the screen when the camera is moving. Setting this to 0.0 will immediately request all tiles in any given view.
  * @param [options.skipLevelOfDetail = false] - Optimization option. Determines if level of detail skipping should be applied during the traversal.
  * @param [options.baseScreenSpaceError = 1024] - When <code>skipLevelOfDetail</code> is <code>true</code>, the screen space error that must be reached before skipping levels of detail.
  * @param [options.skipScreenSpaceErrorFactor = 16] - When <code>skipLevelOfDetail</code> is <code>true</code>, a multiplier defining the minimum screen space error to skip. Used in conjunction with <code>skipLevels</code> to determine which tiles to load.
@@ -31193,7 +30775,7 @@ var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
  * @param [options.immediatelyLoadDesiredLevelOfDetail = false] - When <code>skipLevelOfDetail</code> is <code>true</code>, only tiles that meet the maximum screen space error will ever be downloaded. Skipping factors are ignored and just the desired tiles are loaded.
  * @param [options.loadSiblings = false] - When <code>skipLevelOfDetail</code> is <code>true</code>, determines whether siblings of visible tiles are always downloaded during traversal.
  * @param [options.clippingPlanes] - The {@link ClippingPlaneCollection} used to selectively disable rendering the tileset.
- * @param [options.classificationType] - Determines whether terrain, 3D Tiles or both will be classified by this tileset. See {@link MapGIS3DTileset#classificationType} for details about restrictions and limitations.
+ * @param [options.classificationType] - Determines whether terrain, 3D Tiles or both will be classified by this tileset. See {@link M3DTileset#classificationType} for details about restrictions and limitations.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid determining the size and shape of the globe.
  * @param [options.pointCloudShading] - Options for constructing a {@link PointCloudShading} object to control point attenuation based on geometric error and lighting.
  * @param [options.imageBasedLightingFactor = new Cartesian2(1.0, 1.0)] - Scales the diffuse and specular image-based lighting from the earth, sky, atmosphere and star skybox.
@@ -31204,7 +30786,7 @@ var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
  * @param [options.backFaceCulling = true] - Whether to cull back-facing geometry. When true, back face culling is determined by the glTF material's doubleSided property; when false, back face culling is disabled.
  * @param [options.showOutline = true] - Whether to display the outline for models using the {@link https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/CESIUM_primitive_outline|CESIUM_primitive_outline} extension. When true, outlines are displayed. When false, outlines are not displayed.
  * @param [options.vectorClassificationOnly = false] - Indicates that only the tileset's vector tiles should be used for classification.
- * @param [options.vectorKeepDecodedPositions = false] - Whether vector tiles should keep decoded positions in memory. This is used with {@link MapGIS3DTileFeature.getPolylinePositions}.
+ * @param [options.vectorKeepDecodedPositions = false] - Whether vector tiles should keep decoded positions in memory. This is used with {@link M3DTileFeature.getPolylinePositions}.
  * @param [options.debugHeatmapTilePropertyName] - The tile variable to colorize as a heatmap. All rendered tiles will be colorized relative to each other's specified variable value.
  * @param [options.debugFreezeFrame = false] - For debugging only. Determines if only the tiles from last frame should be used for rendering.
  * @param [options.debugColorizeTiles = false] - For debugging only. When true, assigns a random color to each tile.
@@ -31219,7 +30801,7 @@ var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
  * @param [options.swipeEnabled = false] - 开启卷帘对比分析
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
  */
-export class MapGIS3DTileset {
+export class M3DTileset {
     constructor(options: {
         url: Resource | string | Promise<Resource> | Promise<string>;
         show?: boolean;
@@ -31241,7 +30823,7 @@ export class MapGIS3DTileset {
         foveatedScreenSpaceError?: boolean;
         foveatedConeSize?: number;
         foveatedMinimumScreenSpaceErrorRelaxation?: number;
-        foveatedInterpolationCallback?: MapGIS3DTileset.foveatedInterpolationCallback;
+        foveatedInterpolationCallback?: M3DTileset.foveatedInterpolationCallback;
         foveatedTimeDelay?: number;
         skipLevelOfDetail?: boolean;
         baseScreenSpaceError?: number;
@@ -31311,16 +30893,16 @@ export class MapGIS3DTileset {
     /**
      * Optimization option. Prioritize loading tiles in the center of the screen by temporarily raising the
     screen space error for tiles around the edge of the screen. Screen space error returns to normal once all
-    the tiles in the center of the screen as determined by the {@link MapGIS3DTileset#foveatedConeSize} are loaded.
+    the tiles in the center of the screen as determined by the {@link M3DTileset#foveatedConeSize} are loaded.
      */
     foveatedScreenSpaceError: boolean;
     /**
      * Gets or sets a callback to control how much to raise the screen space error for tiles outside the foveated cone,
-    interpolating between {@link MapGIS3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link MapGIS3DTileset#maximumScreenSpaceError}.
+    interpolating between {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link M3DTileset#maximumScreenSpaceError}.
      */
-    foveatedInterpolationCallback: MapGIS3DTileset.foveatedInterpolationCallback;
+    foveatedInterpolationCallback: M3DTileset.foveatedInterpolationCallback;
     /**
-     * Optimization option. Used when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control
+     * Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control
     how long in seconds to wait after the camera stops moving before deferred tiles start loading in.
     This time delay prevents requesting tiles around the edges of the screen when the camera is moving.
     Setting this to 0.0 will immediately request all tiles in any given view.
@@ -31380,7 +30962,7 @@ export class MapGIS3DTileset {
      */
     colorBlendMode: Cesium3DTileColorBlendMode;
     /**
-     * Defines the value used to linearly interpolate between the source color and feature color when the {@link MapGIS3DTileset#colorBlendMode} is <code>MIX</code>.
+     * Defines the value used to linearly interpolate between the source color and feature color when the {@link M3DTileset#colorBlendMode} is <code>MIX</code>.
     A value of 0.0 results in the source color while a value of 1.0 results in the feature color, with any value in-between
     resulting in a mix of the source color and feature color.
      */
@@ -31438,7 +31020,7 @@ export class MapGIS3DTileset {
     /**
      * The event fired to indicate that a tile's content was loaded.
     <p>
-    The loaded {@link MapGIS3DTile} is passed to the event listener.
+    The loaded {@link M3DTile} is passed to the event listener.
     </p>
     <p>
     This event is fired during the tileset traversal while the frame is being rendered
@@ -31454,7 +31036,7 @@ export class MapGIS3DTileset {
     /**
      * The event fired to indicate that a tile's content was unloaded.
     <p>
-    The unloaded {@link MapGIS3DTile} is passed to the event listener.
+    The unloaded {@link M3DTile} is passed to the event listener.
     </p>
     <p>
     This event is fired immediately before the tile's content is unloaded while the frame is being
@@ -31492,7 +31074,7 @@ export class MapGIS3DTileset {
      * This event fires once for each visible tile in a frame.  This can be used to manually
     style a tileset.
     <p>
-    The visible {@link MapGIS3DTile} is passed to the event listener.
+    The visible {@link M3DTile} is passed to the event listener.
     </p>
     <p>
     This event is fired during the tileset traversal while the frame is being rendered
@@ -31532,7 +31114,7 @@ export class MapGIS3DTileset {
     /**
      * The screen space error that must be reached before skipping levels of detail.
     <p>
-    Only used when {@link MapGIS3DTileset#skipLevelOfDetail} is <code>true</code>.
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
     </p>
      */
     baseScreenSpaceError: number;
@@ -31541,7 +31123,7 @@ export class MapGIS3DTileset {
     For example, if a tile has screen space error of 100, no tiles will be loaded unless they
     are leaves or have a screen space error <code><= 100 / skipScreenSpaceErrorFactor</code>.
     <p>
-    Only used when {@link MapGIS3DTileset#skipLevelOfDetail} is <code>true</code>.
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
     </p>
      */
     skipScreenSpaceErrorFactor: number;
@@ -31549,7 +31131,7 @@ export class MapGIS3DTileset {
      * Constant defining the minimum number of levels to skip when loading tiles. When it is 0, no levels are skipped.
     For example, if a tile is level 1, no tiles will be loaded unless they are at level greater than 2.
     <p>
-    Only used when {@link MapGIS3DTileset#skipLevelOfDetail} is <code>true</code>.
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
     </p>
      */
     skipLevels: number;
@@ -31557,7 +31139,7 @@ export class MapGIS3DTileset {
      * When true, only tiles that meet the maximum screen space error will ever be downloaded.
     Skipping factors are ignored and just the desired tiles are loaded.
     <p>
-    Only used when {@link MapGIS3DTileset#skipLevelOfDetail} is <code>true</code>.
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
     </p>
      */
     immediatelyLoadDesiredLevelOfDetail: boolean;
@@ -31565,7 +31147,7 @@ export class MapGIS3DTileset {
      * Determines whether siblings of visible tiles are always downloaded during traversal.
     This may be useful for ensuring that tiles are already available when the viewer turns left/right.
     <p>
-    Only used when {@link MapGIS3DTileset#skipLevelOfDetail} is <code>true</code>.
+    Only used when {@link M3DTileset#skipLevelOfDetail} is <code>true</code>.
     </p>
      */
     loadSiblings: boolean;
@@ -31579,7 +31161,7 @@ export class MapGIS3DTileset {
     lightColor: Cartesian3;
     /**
      * The sun's luminance at the zenith in kilo candela per meter squared to use for this model's procedural environment map.
-    This is used when {@link MapGIS3DTileset#specularEnvironmentMaps} and {@link MapGIS3DTileset#sphericalHarmonicCoefficients} are not defined.
+    This is used when {@link M3DTileset#specularEnvironmentMaps} and {@link M3DTileset#sphericalHarmonicCoefficients} are not defined.
      */
     luminanceAtZenith: number;
     /**
@@ -31592,7 +31174,7 @@ export class MapGIS3DTileset {
     
     These values can be obtained by preprocessing the environment map using the <code>cmgen</code> tool of
     {@link https://github.com/google/filament/releases|Google's Filament project}. This will also generate a KTX file that can be
-    supplied to {@link MapGIS3DTileset#specularEnvironmentMaps}.
+    supplied to {@link M3DTileset#specularEnvironmentMaps}.
      */
     sphericalHarmonicCoefficients: Cartesian3[];
     /**
@@ -31720,7 +31302,7 @@ export class MapGIS3DTileset {
     readonly properties: any;
     /**
      * When <code>true</code>, the tileset's root tile is loaded and the tileset is ready to render.
-    This is set to <code>true</code> right before {@link MapGIS3DTileset#readyPromise} is resolved.
+    This is set to <code>true</code> right before {@link M3DTileset#readyPromise} is resolved.
      */
     readonly ready: boolean;
     /**
@@ -31739,7 +31321,7 @@ export class MapGIS3DTileset {
         }
     });
      */
-    readonly readyPromise: Promise<MapGIS3DTileset>;
+    readonly readyPromise: Promise<M3DTileset>;
     /**
      * When <code>true</code>, all tiles that meet the screen space error this frame are loaded. The tileset is
     completely loaded for this view.
@@ -31762,7 +31344,7 @@ export class MapGIS3DTileset {
     appearance of the tileset to its default when no style was applied.
     </p>
     <p>
-    The style is applied to a tile before the {@link MapGIS3DTileset#tileVisible}
+    The style is applied to a tile before the {@link M3DTileset#tileVisible}
     event is raised, so code in <code>tileVisible</code> can manually set a feature's
     properties (e.g. color and show) after the style is applied. When
     a new style is assigned any manually set properties are overwritten.
@@ -31820,7 +31402,7 @@ export class MapGIS3DTileset {
     </p>
     <p>
     If tiles sized more than <code>maximumMemoryUsage</code> are needed
-    to meet the desired screen space error, determined by {@link MapGIS3DTileset#maximumScreenSpaceError},
+    to meet the desired screen space error, determined by {@link M3DTileset#maximumScreenSpaceError},
     for the current view, then the memory usage of the tiles loaded will exceed
     <code>maximumMemoryUsage</code>.  For example, if the maximum is 256 MB, but
     300 MB of tiles are needed to meet the screen space error, then 300 MB of tiles may be loaded.  When
@@ -31831,11 +31413,11 @@ export class MapGIS3DTileset {
     /**
      * The root tile.
      */
-    readonly root: MapGIS3DTile;
+    readonly root: M3DTile;
     /**
      * The tileset's bounding sphere.
      * @example
-     * var tileset = viewer.scene.primitives.add(new Cesium.MapGIS3DTileset({
+     * var tileset = viewer.scene.primitives.add(new Cesium.M3DTileset({
         url : 'http://localhost:8002/tilesets/Seattle/tileset.json'
     }));
     
@@ -31893,14 +31475,14 @@ export class MapGIS3DTileset {
      */
     readonly ellipsoid: Ellipsoid;
     /**
-     * Optimization option. Used when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control the cone size that determines which tiles are deferred.
-    Tiles that are inside this cone are loaded immediately. Tiles outside the cone are potentially deferred based on how far outside the cone they are and {@link MapGIS3DTileset#foveatedInterpolationCallback} and {@link MapGIS3DTileset#foveatedMinimumScreenSpaceErrorRelaxation}.
+     * Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control the cone size that determines which tiles are deferred.
+    Tiles that are inside this cone are loaded immediately. Tiles outside the cone are potentially deferred based on how far outside the cone they are and {@link M3DTileset#foveatedInterpolationCallback} and {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation}.
     Setting this to 0.0 means the cone will be the line formed by the camera position and its view direction. Setting this to 1.0 means the cone encompasses the entire field of view of the camera, essentially disabling the effect.
      */
     foveatedConeSize: number;
     /**
-     * Optimization option. Used when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control the starting screen space error relaxation for tiles outside the foveated cone.
-    The screen space error will be raised starting with this value up to {@link MapGIS3DTileset#maximumScreenSpaceError} based on the provided {@link MapGIS3DTileset#foveatedInterpolationCallback}.
+     * Optimization option. Used when {@link M3DTileset#foveatedScreenSpaceError} is true to control the starting screen space error relaxation for tiles outside the foveated cone.
+    The screen space error will be raised starting with this value up to {@link M3DTileset#maximumScreenSpaceError} based on the provided {@link M3DTileset#foveatedInterpolationCallback}.
      */
     foveatedMinimumScreenSpaceErrorRelaxation: number;
     /**
@@ -31919,7 +31501,7 @@ export class MapGIS3DTileset {
     vectorClassificationOnly: boolean;
     /**
      * Whether vector tiles should keep decoded positions in memory.
-    This is used with {@link MapGIS3DTileFeature.getPolylinePositions}.
+    This is used with {@link M3DTileFeature.getPolylinePositions}.
      */
     vectorKeepDecodedPositions: boolean;
     /**
@@ -31942,14 +31524,14 @@ export class MapGIS3DTileset {
      */
     static loadJson(tilesetUrl: Resource | string): Promise<object>;
     /**
-     * Marks the tileset's {@link MapGIS3DTileset#style} as dirty, which forces all
+     * Marks the tileset's {@link M3DTileset#style} as dirty, which forces all
     features to re-evaluate the style in the next frame each is visible.
      */
     makeStyleDirty(): void;
     /**
      * Unloads all tiles that weren't selected the previous frame.  This can be used to
     explicitly manage the tile cache and reduce the total number of tiles loaded below
-    {@link MapGIS3DTileset#maximumMemoryUsage}.
+    {@link M3DTileset#maximumMemoryUsage}.
     <p>
     Tile unloads occur at the next frame to keep all the WebGL delete calls
     within the render loop.
@@ -31983,10 +31565,10 @@ export class MapGIS3DTileset {
     destroy(): void;
 }
 
-export namespace MapGIS3DTileset {
+export namespace M3DTileset {
     /**
-     * Optimization option. Used as a callback when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
-    interpolating between {@link MapGIS3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link MapGIS3DTileset#maximumScreenSpaceError}.
+     * Optimization option. Used as a callback when {@link M3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
+    interpolating between {@link M3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link M3DTileset#maximumScreenSpaceError}.
      * @param p - The start value to interpolate.
      * @param q - The end value to interpolate.
      * @param time - The time of interpolation generally in the range <code>[0.0, 1.0]</code>.
@@ -32211,7 +31793,7 @@ var tileset = scene.primitives.add(new Cesium.MapGISM3DSet({
  * @param [options.translucency = 1] - MapGISM3DSet 透明度属性
  * @param [options.enableStretch = false] - 是否开启模型向下拉伸
  * @param [options.stretchReferenceHeight = 0] - 模型向下拉伸的参考高度
- * @param [options.stretchFactor = 1] - 模型向下拉伸的系数
+ * @param [options.stretchFactor = 0] - 模型向下拉伸的系数
  */
 export class MapGISM3DSet {
     constructor(options: {
@@ -32876,7 +32458,8 @@ export class MapGISM3DSet {
     readonly ellipsoid: Ellipsoid;
     /**
      * M3D专题图渲染参数 <br /><br />
-    模型填充颜色的混合模式默认为{@link Cesium3DTileColorBlendMode.HIGHLIGHT},修改颜色混合模式请使用{@link MapGISM3DSet#colorBlendMode}接口。修改混合权重请使用{@link MapGISM3DSet#colorBlendAmount}<br />
+    M3D 1.0模型的填充颜色的混合模式默认为{@link Cesium3DTileColorBlendMode.HIGHLIGHT},修改颜色混合模式请使用{@link MapGISM3DSet#colorBlendMode}接口。<br />
+    M3D 2.0模型的填充颜色的混合模式只支持"REPLACE"模式
      * @example
      * // 恢复模型默认颜色
     m3dSet.renderer = null;
@@ -33185,11 +32768,6 @@ export class MapGISM3DSet {
      */
     removeAllSectionGeometry(): void;
 }
-
-/**
- * feat:2897 要素合并模型爆炸分析 孙永政 2024.5.30
- */
-export var enableExplosion: any;
 
 /**
  * feat:2105 模型剖切纹理封边
@@ -36003,9 +35581,7 @@ export class ReImg {
 }
 
 /**
- * 几何体裁剪<br/>
-几何体裁剪可以裁剪出凹多边形形状<br/>
-模型的剖切封边功能同时支持对几何体裁剪做封边，但对凹多边形形状的封边效果支持不好。
+ * 几何体裁剪
  * @example
  * var geometryClipper = new Cesium.ClippingGeometry(viewer);
 var geometryOption = {
@@ -36027,11 +35603,6 @@ export class ClippingGeometry {
      * 裁剪几何
      */
     readonly clippingGeometry: Geometry | Model;
-    /**
-     * 反转裁剪几何区域<br/>
-    只对模型裁剪有效，对地形裁剪无效
-     */
-    inverse: boolean;
     /**
      * 添加一个裁剪几何体
      * @example
@@ -36364,65 +35935,6 @@ export class GlobeIndependentTranslucency {
 }
 
 /**
- * @example
- * // 1. 创建一个矩形GroundPrimitive生成器
-var generater = new Cesium.GroundPrimitiveRectangleGenerater(scene);
-// 2. 创建新版场景投放对象
-var sceneProject = new Cesium.SceneProjectorEx({
-    scene: viewer.scene,
-    biasRatio: 10,
-    heading: 0,
-    pitch: Cesium.Math.toRadians(-90),
-    roll: 0,
-    nearClipPlane: 10,
-    farClipPlane: 500,
-    horizontAngle: Cesium.Math.toRadians(70),
-    verticalAngle: Cesium.Math.toRadians(55)
-});
-viewer.scene.primitives.add(sceneProject);
-// 3. 获取投影帧数据
-var videoFrameData = sceneProject.projectedFrameData;
-const projectedFrameData = {
-    frameData: {
-        width: videoFrameData.frameData.width,
-        height: videoFrameData.frameData.height,
-        data: videoFrameData.frameData.data
-    },
-    leftTopCorner: videoFrameData.leftTopCorner,
-    leftBottomCorner: videoFrameData.leftBottomCorner,
-    rightTopCorner: videoFrameData.rightTopCorner,
-    rightBottomCorner: videoFrameData.rightBottomCorner
-}
-// 4. 使用投影帧数据生成一个GroundPrimitive
-var groundPrimitive = generater.generateGroundPrimitive(projectedFrameData, projectedFrameData.frameData);
-// 5. 添加到场景中
-viewer.scene.primitives.add(groundPrimitive);
- * @param scene - 场景对象
- */
-export class GroundPrimitiveRectangleGenerater {
-    constructor(scene: Scene);
-    /**
-     * 使用GroundPrimitive渲染一帧投影
-     * @param quadrangle - 投影的四边形
-     * @param source - 源数据
-     */
-    generateGroundPrimitive(quadrangle: {
-        leftTopCorner: Cartographic;
-        leftBottomCorner: Cartographic;
-        rightTopCorner: Cartographic;
-        rightBottomCorner: Cartographic;
-    }, source: {
-        width: number;
-        height: number;
-        data: Uint8Array | HTMLImageElement;
-    }): GroundPrimitive;
-    /**
-     * 销毁生成的GroundPrimitive及纹理数据
-     */
-    destroy(): void;
-}
-
-/**
  * 光源id
  */
 export var id: any;
@@ -36571,83 +36083,6 @@ export enum OutlineRenderMode {
      * 填充加轮廓模式
      */
     ALL = 2
-}
-
-/**
- * 栅格体元数据图元
- * @example
- * var volxel = new Cesium.VoxelPrimitive(url, {
-    heightScale : 100,
-    loaded : function() {}
-});
- * @param [options.show = true] - 是否显示
- * @param [options.minThreshold = 0] - 属性过滤最小阈值
- * @param [options.maxThreshold = 1] - 属性过滤最大阈值
- * @param [options.opacity = 1] - 不透明度
- * @param [options.steps = 200] - 采样步长
- * @param [options.heightScale = 1] - 高度缩放
- * @param [options.colorScheme] - 配色方案
- * @param [options.loaded] - 加载完成回调函数
- */
-export class VoxelPrimitive {
-    constructor(url: string, options: {
-        show?: boolean;
-        minThreshold?: number;
-        maxThreshold?: number;
-        opacity?: number;
-        steps?: number;
-        heightScale?: number;
-        colorScheme?: HTMLCanvasElement;
-        loaded?: (...params: any[]) => any;
-    });
-    /**
-     * 不透明度
-     */
-    opacity: number;
-    /**
-     * 步长
-     */
-    steps: number;
-    /**
-     * 高度缩放
-     */
-    heightScale: number;
-    /**
-     * 是否显示
-     */
-    show: boolean;
-    /**
-     * 设置配色方案
-     * @example
-     * var canvas2d = document.createElement('canvas');
-    canvas2d.width = 100;
-    canvas2d.height = 1;
-    var ctx = canvas2d.getContext("2d");
-    var gradient = ctx.createLinearGradient(0, 0, canvas2d.width, 0);
-    gradient.addColorStop(0, "rgba(254, 35, 10, 1)");
-    gradient.addColorStop(0.33, "rgba(242, 254, 30, 1)");
-    gradient.addColorStop(0.67, "rgba(22, 253, 255, 1)");
-    gradient.addColorStop(1, "rgba(92, 9, 252, 1)");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas2d.width, canvas2d.height);
-    volxel.setColorScheme(canvas2d);
-     */
-    setColorScheme(canvas2d: HTMLCanvasElement): void;
-    /**
-     * 设置过滤范围
-     * @param minValue - 最小值
-     * @param [maxValue] - 最大值
-     */
-    setFilterRange(minValue: number, maxValue?: number): void;
-    /**
-     * 设置播放帧
-     * @param frameIndex - 数据的帧索引
-     */
-    setPlaybackFrame(frameIndex: number): void;
-    /**
-     * 属性值查询
-     */
-    queryPropertyValue(screenCoordinates: Cartesian2): any;
 }
 
 /**
@@ -37643,42 +37078,6 @@ export class CuttingTool {
         showCuttingPlane?: boolean;
         terrainGroundFillImage?: string;
         terrainWallFillImage?: string;
-    }): void;
-    /**
-     * 多边形几何裁剪<br/>
-    通过边界区域，以及高程，构建裁剪几何体。支持凹多边形裁剪，但对封边效果支持不好
-     * @example
-     * var cutTool = new Cesium.CuttingTool(viewer, layerList);
-    var positions = [
-        113.0406, 30.0378,
-        113.0595, 30.0378,
-        113.0595, 30.0297,
-        113.0762, 30.0297,
-        113.0762, 30.0179,
-        113.0595, 30.0179,
-        113.0595, 30.0099,
-        113.0406, 30.0099
-    ];
-    cutTool.createModelCuttingPolygon(positions, -1000, 500, {
-        //裁剪方向，false：原方向，true反方向
-        unionClippingRegions: false,
-        //配置裁剪体的颜色，以及透明度
-        color: new Cesium.Color(1, 1, 1, 0.2),
-        //是否显示裁剪体
-        showCuttingPlane: true
-    })
-     * @param positions - 区域边界点数组,点需要按照顺时针方向选取。要求是经纬度坐标
-     * @param minHeight - 最小高程
-     * @param maxHeight - 最大高程
-     * @param options - 可选参数
-     * @param [options.color = new Color.WIHTE.withAlpha(0.2)] - 可选参数，配置裁剪体的颜色，以及透明度
-     * @param [options.unionClippingRegions = false] - 可选参数，裁剪方向，false：原方向，true反方向
-     * @param [options.showCuttingPlane = true] - 是否显示辅助面
-     */
-    createModelCuttingPolygon(positions: any[], minHeight: number, maxHeight: number, options: {
-        color?: Color;
-        unionClippingRegions?: boolean;
-        showCuttingPlane?: boolean;
     }): void;
     /**
      * 移除所有裁剪面
@@ -39169,12 +38568,6 @@ export class TriangulationTool {
  * Interceptors拦截器工具类封装
  */
 export function InterceptorsUtil(): void;
-
-/**
- * 基于GPU加速的阴影计算工具封装
- * @param positions - 需要分析的顶点
- */
-export function ShadowRateDrawCommand(scene: Scene, positions: Cartesian3): void;
 
 /**
  * Topo工具类封装
@@ -44071,10 +43464,6 @@ export class Cesium3DTileset {
     伽马值必须大于0
      */
     gamma: number;
-    /**
-     * 纹理拉伸
-     */
-    textureCoordScale: Cartesian2;
     /**
      * Provides a hook to override the method used to request the tileset json
     useful when fetching tilesets from remote servers
@@ -50483,10 +49872,6 @@ export class Model {
     此属性需要配合{@link ClippingGeometry}使用
      */
     clippingGeometries: ClippingGeometry;
-    /**
-     * 设置显示模式
-     */
-    renderMode: number;
     /**
      * Determines if silhouettes are supported.
      * @param scene - The scene.
@@ -59927,13 +59312,10 @@ declare module "cesium/Source/MapGIS/Analysis/CutFillAnalysis" { import { CutFil
 declare module "cesium/Source/MapGIS/Analysis/FloodAnalysis" { import { FloodAnalysis } from 'cesium'; export default FloodAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/FloodAnalysisReflection" { import { FloodAnalysisReflection } from 'cesium'; export default FloodAnalysisReflection; }
 declare module "cesium/Source/MapGIS/Analysis/SceneProjector" { import { SceneProjector } from 'cesium'; export default SceneProjector; }
-declare module "cesium/Source/MapGIS/Analysis/SceneProjectorEx" { import { SceneProjectorEx } from 'cesium'; export default SceneProjectorEx; }
 declare module "cesium/Source/MapGIS/Analysis/ShadowAnalysis" { import { ShadowAnalysis } from 'cesium'; export default ShadowAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/ShadowRateAnalysis" { import { ShadowRateAnalysis } from 'cesium'; export default ShadowRateAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/SkyLineAnalysis" { import { SkyLineAnalysis } from 'cesium'; export default SkyLineAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/ViewshedAnalysis" { import { ViewshedAnalysis } from 'cesium'; export default ViewshedAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/VisiblityAnalysis" { import { VisiblityAnalysis } from 'cesium'; export default VisiblityAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/Wind3D" { import { Wind3D } from 'cesium'; export default Wind3D; }
 declare module "cesium/Source/MapGIS/Controller/KeyboardCameraController" { import { KeyboardCameraController } from 'cesium'; export default KeyboardCameraController; }
 declare module "cesium/Source/MapGIS/Entity/AttributeSurfacePrimitive" { import { AttributeSurfacePrimitive } from 'cesium'; export default AttributeSurfacePrimitive; }
 declare module "cesium/Source/MapGIS/Entity/Graphic" { import { Graphic } from 'cesium'; export default Graphic; }
@@ -59948,9 +59330,9 @@ declare module "cesium/Source/MapGIS/Geojson/MapGISGeojsonTilePrimitiveCollectio
 declare module "cesium/Source/MapGIS/Geometry/PolylineVolumeAnimationGeometry" { import { PolylineVolumeAnimationGeometry } from 'cesium'; export default PolylineVolumeAnimationGeometry; }
 declare module "cesium/Source/MapGIS/IndexedDB/TransactionImplement" { import { TransactionImplement } from 'cesium'; export default TransactionImplement; }
 declare module "cesium/Source/MapGIS/Label/MapGISLabelLayer" { import { MapGISLabelLayer } from 'cesium'; export default MapGISLabelLayer; }
-declare module "cesium/Source/MapGIS/M3D/MapGIS3DTile" { import { MapGIS3DTile } from 'cesium'; export default MapGIS3DTile; }
-declare module "cesium/Source/MapGIS/M3D/MapGIS3DTileFeature" { import { MapGIS3DTileFeature } from 'cesium'; export default MapGIS3DTileFeature; }
-declare module "cesium/Source/MapGIS/M3D/MapGIS3DTileset" { import { MapGIS3DTileset } from 'cesium'; export default MapGIS3DTileset; }
+declare module "cesium/Source/MapGIS/M3D/M3DTile" { import { M3DTile } from 'cesium'; export default M3DTile; }
+declare module "cesium/Source/MapGIS/M3D/M3DTileFeature" { import { M3DTileFeature } from 'cesium'; export default M3DTileFeature; }
+declare module "cesium/Source/MapGIS/M3D/M3DTileset" { import { M3DTileset } from 'cesium'; export default M3DTileset; }
 declare module "cesium/Source/MapGIS/M3dLayer/M3DTree" { import { M3DTree } from 'cesium'; export default M3DTree; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3D" { import { MapGISM3D } from 'cesium'; export default MapGISM3D; }
 declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DSet" { import { MapGISM3DSet } from 'cesium'; export default MapGISM3DSet; }
@@ -59995,9 +59377,7 @@ declare module "cesium/Source/MapGIS/Scene/ClippingGeometry" { import { Clipping
 declare module "cesium/Source/MapGIS/Scene/ClippingGeometryType" { import { ClippingGeometryType } from 'cesium'; export default ClippingGeometryType; }
 declare module "cesium/Source/MapGIS/Scene/DynamicEntityVisualizer" { import { DynamicEntityVisualizer } from 'cesium'; export default DynamicEntityVisualizer; }
 declare module "cesium/Source/MapGIS/Scene/GlobeIndependentTranslucency" { import { GlobeIndependentTranslucency } from 'cesium'; export default GlobeIndependentTranslucency; }
-declare module "cesium/Source/MapGIS/Scene/GroundPrimitiveRectangleGenerater" { import { GroundPrimitiveRectangleGenerater } from 'cesium'; export default GroundPrimitiveRectangleGenerater; }
 declare module "cesium/Source/MapGIS/Scene/OutlineRenderMode" { import { OutlineRenderMode } from 'cesium'; export default OutlineRenderMode; }
-declare module "cesium/Source/MapGIS/Scene/VoxelPrimitive" { import { VoxelPrimitive } from 'cesium'; export default VoxelPrimitive; }
 declare module "cesium/Source/MapGIS/TilingScheme/CustomTilingScheme" { import { CustomTilingScheme } from 'cesium'; export default CustomTilingScheme; }
 declare module "cesium/Source/MapGIS/TilingScheme/MapGISCustomTilingScheme" { import { MapGISCustomTilingScheme } from 'cesium'; export default MapGISCustomTilingScheme; }
 declare module "cesium/Source/MapGIS/Tools/AngulationTool" { import { AngulationTool } from 'cesium'; export default AngulationTool; }
@@ -60017,7 +59397,6 @@ declare module "cesium/Source/MapGIS/Tools/SampleElevationTool" { import { Sampl
 declare module "cesium/Source/MapGIS/Tools/Tooltip" { import { Tooltip } from 'cesium'; export default Tooltip; }
 declare module "cesium/Source/MapGIS/Tools/TriangulationTool" { import { TriangulationTool } from 'cesium'; export default TriangulationTool; }
 declare module "cesium/Source/MapGIS/Util/InterceptorsUtil" { import { InterceptorsUtil } from 'cesium'; export default InterceptorsUtil; }
-declare module "cesium/Source/MapGIS/Util/ShadowRateDrawCommand" { import { ShadowRateDrawCommand } from 'cesium'; export default ShadowRateDrawCommand; }
 declare module "cesium/Source/MapGIS/Util/TopoJSONUtil" { import { TopoJSONUtil } from 'cesium'; export default TopoJSONUtil; }
 declare module "cesium/Source/MapGIS/Util/UrlUtil" { import { UrlUtil } from 'cesium'; export default UrlUtil; }
 declare module "cesium/Source/MapGIS/Util/XmlUtil" { import { XmlUtil } from 'cesium'; export default XmlUtil; }
