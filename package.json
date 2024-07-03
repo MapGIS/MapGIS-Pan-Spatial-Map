@@ -1,6 +1,6 @@
 {
   "name": "@mapgis/pan-spatial-map-app",
-  "version": "16.8.0",
+  "version": "17.0.0",
   "description": "全空间一张图应用",
   "productName": "MapGIS全空间一张图",
   "author": "MapGIS",
@@ -16,15 +16,15 @@
     "lint:nofix": "vue-cli-service lint --no-fix"
   },
   "dependencies": {
-    "@mapgis/mapbox-gl": "^16.6.0",
-    "@mapgis/mapgis-pan-spatial-map-theme": "^16.6.0",
-    "@mapgis/mapgis-pan-spatial-map-widgets": "^16.6.0",
-    "@mapgis/web-app-framework": "^16.6.0",
+    "@mapgis/mapbox-gl": "~17.0.0",
+    "@mapgis/mapgis-pan-spatial-map-theme": "~17.0.0",
+    "@mapgis/mapgis-pan-spatial-map-widgets": "~17.0.0",
+    "@mapgis/web-app-framework": "~17.0.0",
     "@mapgis/webclient-es6-mapboxgl": "~16.2.0",
     "@mapgis/webclient-es6-service": "~16.2.0",
-    "@mapgis/webclient-vue-cesium": "^16.6.0",
-    "@mapgis/webclient-vue-mapboxgl": "^16.6.0",
-    "@mapgis/webclient-vue-ui": "^16.6.0",
+    "@mapgis/webclient-vue-cesium": "~17.0.0",
+    "@mapgis/webclient-vue-mapboxgl": "~17.0.0",
+    "@mapgis/webclient-vue-ui": "~17.0.0",
     "axios": "^0.24.0",
     "core-js": "^3.25.3",
     "file-saver": "^2.0.5",
@@ -72,6 +72,7 @@
     "vue-svg-icon-loader": "^2.1.1",
     "vue-template-compiler": "2.6.14",
     "webpack": "^4.46.0",
+    "webpack-dynamic-public-path": "^1.0.8",
     "webpack-theme-color-replacer": "1.3.18"
   }
 }

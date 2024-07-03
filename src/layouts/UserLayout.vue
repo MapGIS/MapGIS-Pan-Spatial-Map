@@ -41,7 +41,8 @@ export default {
   },
   computed: {
     backgourndImageUrl() {
-      return `url('${process.env.BASE_URL}login-bg.png')`
+      // eslint-disable-next-line camelcase, no-undef
+      return `url('${__webpack_public_path__}login-bg.png')`
     },
     supportInternationalization() {
       return window._CONFIG['supportInternationalization '] === 'true'
@@ -100,7 +101,10 @@ export default {
     }
 
     .user-layout-content {
-      padding: 110px 0 144px;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
 
       .top {
         text-align: center;
@@ -128,7 +132,7 @@ export default {
 
           .title {
             font-size: 33px;
-            color: rgba(255, 255, 255, 0.65);
+            color: @heading-color;
             font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
             font-weight: 600;
             position: relative;
@@ -137,7 +141,7 @@ export default {
         }
         .desc {
           font-size: 14px;
-          color: rgba(255, 255, 255, 0.65);
+          color: @text-color;
           margin-top: 12px;
           margin-bottom: 40px;
         }
@@ -162,7 +166,7 @@ export default {
         margin-bottom: 8px;
         font-size: 14px;
         a {
-          color: rgba(255, 255, 255, 0.65);
+          color: @text-color;
           transition: all 0.3s;
           &:not(:last-child) {
             margin-right: 40px;
@@ -170,7 +174,7 @@ export default {
         }
       }
       .copyright {
-        color: rgba(255, 255, 255, 0.65);
+        color: @text-color;
         font-size: 14px;
       }
     }

@@ -1,5 +1,5 @@
 <template>
-  <mp-app-loader :application="application" />
+  <mp-app-loader v-if="themeLoaded" :application="application" />
 </template>
 
 <script>
@@ -10,17 +10,22 @@ import mapgisui from '@mapgis/webclient-vue-ui'
 export default {
   data() {
     return {
-      application: {}
+      application: {},
+      themeLoaded: false
     }
   },
   computed: {},
   async created() {
+    const isDefaultAppProductName = window._CONFIG.productName === 'psmap'
+    const publicPath = isDefaultAppProductName
+      ? process.env.VUE_APP_CONTEXT_PATH
+      : process.env.VUE_APP_CONTEXT_PATH.replace('psmap', window._CONFIG.productName)
     await AppManager.getInstance().loadConfig(
       window._CONFIG['domainURL'],
       `${window._CONFIG['apiPathServicesPrefix']}/system/AppResourceServer/app/config`,
       `${window._CONFIG['apiPathServicesPrefix']}/system/AppResourceServer/`,
       request,
-      process.env.VUE_APP_CONTEXT_PATH
+      publicPath
     )
     this.application = AppManager.getInstance().getApplication()
     /**
@@ -38,11 +43,11 @@ export default {
 
     const style = this.themeStyle()
     const opacity = this.themeOpacity()
-
     const payload = {
       opacity: opacity
     }
     mapgisui.setTheme(style.theme, payload)
+    this.themeLoaded = true
   },
   methods: {
     themeStyle() {
