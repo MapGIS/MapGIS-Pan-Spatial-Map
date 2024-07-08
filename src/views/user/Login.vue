@@ -83,6 +83,7 @@ import { LOGIN_USERNAME, LOGIN_PASSWORD, LOGIN_REMEMBERME } from '@/store/mutati
 import storage from 'store'
 import ThirdLogin from './third/ThirdLogin'
 import CasLogin from './cas/CasLogin'
+import { encrypt, decrypt } from '@/utils/jsencrypt'
 
 export default {
   components: {
@@ -165,7 +166,7 @@ export default {
       if (username) {
         this.form = {
           username: username,
-          password: password,
+          password: decrypt(password) || '',
           rememberMe: rememberMe
         }
       }
@@ -180,14 +181,14 @@ export default {
         if (valid) {
           if (this.form.rememberMe) {
             storage.set(LOGIN_USERNAME, this.form.username)
-            storage.set(LOGIN_PASSWORD, this.form.password)
+            storage.set(LOGIN_PASSWORD, encrypt(this.form.password))
             storage.set(LOGIN_REMEMBERME, this.form.rememberMe)
           } else {
             storage.remove(LOGIN_USERNAME)
             storage.remove(LOGIN_PASSWORD)
             storage.remove(LOGIN_REMEMBERME)
           }
-          this.login(this.form)
+          this.login({ ...this.form, password: encrypt(this.form.password) })
             .then(res => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))
             .finally(() => {
