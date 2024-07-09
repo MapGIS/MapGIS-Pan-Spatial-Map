@@ -47,6 +47,62 @@ function getPublicPath() {
   return publicPath
 }
 
+const searchList = [
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/calcChain',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/table',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/header',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+  'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties',
+  'http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes',
+  'http://schemas.openxmlformats.org/officeDocument/2006/math',
+  'http://schemas.openxmlformats.org/spreadsheetml/2006/main',
+  'http://schemas.openxmlformats.org/markup-compatibility/2006',
+  'http://schemas.openxmlformats.org/drawingml/2006/main',
+  'http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing',
+  'http://schemas.openxmlformats.org/drawingml/2006/picture',
+  'http://schemas.openxmlformats.org/package/2006/content-types',
+  'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
+  'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties',
+  'http://schemas.openxmlformats.org/package/2006/relationships/metadata/custom-properties',
+  'http://schemas.openxmlformats.org/package/2006/relationships',
+  'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+  'http://www.xfa.org/schema/xci/',
+  'http://www.xfa.org/schema/xfa-connection-set/',
+  'http://www.xfa.org/schema/xfa-data/1.0/',
+  'http://www.xfa.org/schema/xfa-data/',
+  'http://www.xfa.org/schema/xfa-form/',
+  'http://www.xfa.org/schema/xfa-locale-set/',
+  'http://www.xfa.org/schema/xfa-source-set/',
+  'http://www.xfa.org/schema/xfa-template/',
+  'http://www.xfa.org/schema/xdc/'
+]
+
+const strReplaceRules = searchList.map(search => {
+  return {
+    search,
+    replace: '',
+    flags: 'g'
+  }
+})
+
 // vue.config.js
 const vueConfig = {
   parallel: false,
@@ -146,6 +202,13 @@ const vueConfig = {
       .use('url-loader')
       .loader('url-loader')
       .tap(options => Object.assign(options, { limit: 2000, esModule: false }))
+
+    config.module
+      .rule('links')
+      .test(/\.js$/)
+      .use('string-replace-loader')
+      .loader('string-replace-loader')
+      .tap(options => Object.assign(options, { multiple: strReplaceRules }))
   },
 
   css: {
