@@ -208,7 +208,7 @@ const vueConfig = {
       .test(/\.js$/)
       .use('string-replace-loader')
       .loader('string-replace-loader')
-      .tap(options => Object.assign(options, { multiple: strReplaceRules }))
+      .options({ multiple: strReplaceRules })
   },
 
   css: {
