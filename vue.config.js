@@ -73,6 +73,7 @@ const searchList = [
   'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties',
   'http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes',
   'http://schemas.openxmlformats.org/officeDocument/2006/math',
+  'http://schemas.openxmlformats.org/officeDocument/2006/custom-properties',
   'http://schemas.openxmlformats.org/spreadsheetml/2006/main',
   'http://schemas.openxmlformats.org/markup-compatibility/2006',
   'http://schemas.openxmlformats.org/drawingml/2006/main',
@@ -83,6 +84,7 @@ const searchList = [
   'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties',
   'http://schemas.openxmlformats.org/package/2006/relationships/metadata/custom-properties',
   'http://schemas.openxmlformats.org/package/2006/relationships',
+  'http://schemas.openxmlformats.org/package/2006/sheetjs/core-properties',
   'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
   'http://www.xfa.org/schema/xci/',
   'http://www.xfa.org/schema/xfa-connection-set/',
@@ -92,14 +94,30 @@ const searchList = [
   'http://www.xfa.org/schema/xfa-locale-set/',
   'http://www.xfa.org/schema/xfa-source-set/',
   'http://www.xfa.org/schema/xfa-template/',
-  'http://www.xfa.org/schema/xdc/'
+  'http://www.xfa.org/schema/xdc/',
+  {
+    search: 'https://api.mapbox.cn',
+    replace: 'https://api.mapbox.com'
+  },
+  {
+    search: 'https://events.mapbox.cn/events/v2',
+    replace: 'https://events.mapbox.com/events/v2'
+  }
 ]
 
 const strReplaceRules = searchList.map(search => {
-  return {
-    search,
-    replace: '',
-    flags: 'g'
+  if (typeof search === 'object') {
+    return {
+      search: search.search,
+      replace: search.replace,
+      flags: 'g'
+    }
+  } else {
+    return {
+      search,
+      replace: '',
+      flags: 'g'
+    }
   }
 })
 
