@@ -11913,7 +11913,7 @@ jsdom@^15.2.1:
 
 jsencrypt@3.0.0-rc.1:
   version "3.0.0-rc.1"
-  resolved "http://192.168.11.130:4873/jsencrypt/-/jsencrypt-3.0.0-rc.1.tgz#0e0a4744ba43cc557fb5cf62fe8646bceb561b1c"
+  resolved "https://registry.npmmirror.com/jsencrypt/-/jsencrypt-3.0.0-rc.1.tgz#0e0a4744ba43cc557fb5cf62fe8646bceb561b1c"
   integrity sha512-gcvGaqerlUJy1Kq6tNgPYteVEoWNemu+9hBe2CdsCIz4rVcwjoTQ72iD1W76/PRMlnkzG0yVh7nwOOMOOUfKmg==
 
 jsesc@^2.5.1:
@@ -16459,7 +16459,7 @@ string-length@^3.1.0:
 
 string-replace-loader@^3.1.0:
   version "3.1.0"
-  resolved "http://192.168.11.130:4873/string-replace-loader/-/string-replace-loader-3.1.0.tgz#11ac6ee76bab80316a86af358ab773193dd57a4f"
+  resolved "https://registry.npmmirror.com/string-replace-loader/-/string-replace-loader-3.1.0.tgz#11ac6ee76bab80316a86af358ab773193dd57a4f"
   integrity sha512-5AOMUZeX5HE/ylKDnEa/KKBqvlnFmRZudSOjVJHxhoJg9QYTwl1rECx7SLR8BBH7tfxb4Rp7EM2XVfQFxIhsbQ==
   dependencies:
     loader-utils "^2.0.0"
