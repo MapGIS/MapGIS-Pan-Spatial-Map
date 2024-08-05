@@ -1,5 +1,6 @@
 <template>
-  <mp-app-loader v-if="themeLoaded" :application="application" />
+  <!-- <mp-app-loader v-if="themeLoaded" :application="application" /> -->
+  <mp-app-builder v-if="themeLoaded" :appConfig="application" @theme-change="themeChange" />
 </template>
 
 <script>
@@ -27,25 +28,18 @@ export default {
       request,
       publicPath
     )
-    const appConfig = localStorage.getItem('appConfig')
-    if (appConfig) {
-      this.application = JSON.parse(appConfig)
-      localStorage.removeItem('appConfig')
-      this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
-    } else {
-      this.application = AppManager.getInstance().getApplication()
-      /**
-       * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
-       * 修改人：龚跃健
-       * 修改时间：2022/3/25
-       */
-      const initMode =
-        baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
-      if (!initMode || initMode === 'map') {
-        this.application.document.maprender = MapRender.MAPBOXGL
-      } else if (initMode === 'globe') {
-        this.application.document.maprender = MapRender.CESIUM
-      }
+    this.application = AppManager.getInstance().getApplication()
+    /**
+     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
+     * 修改人：龚跃健
+     * 修改时间：2022/3/25
+     */
+    const initMode =
+      baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
+    if (!initMode || initMode === 'map') {
+      this.application.document.maprender = MapRender.MAPBOXGL
+    } else if (initMode === 'globe') {
+      this.application.document.maprender = MapRender.CESIUM
     }
 
     const style = this.themeStyle()
