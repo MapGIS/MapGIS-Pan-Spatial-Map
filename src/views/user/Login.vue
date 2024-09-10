@@ -116,11 +116,7 @@ export default {
         captchaEnabled: false,
         maxRetryCount: 1
       },
-      rememberMeConfigEnabled: false,
-      adminDefaultInfo: {
-        username: 'admin',
-        password: 'cloud123.mapgis'
-      }
+      rememberMeConfigEnabled: false
     }
   },
   computed: {
@@ -231,11 +227,6 @@ export default {
     handleCloseLoginError() {
       this.isLoginError = false
       this.loginErrorInfo = ''
-    },
-    handleAutoInputAccount() {
-      this.form.username = this.adminDefaultInfo.username
-      this.form.password = this.adminDefaultInfo.password
-      this.$refs.form.clearValidate()
     }
   }
 }
