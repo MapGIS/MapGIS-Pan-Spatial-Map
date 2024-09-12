@@ -54,7 +54,7 @@ export default {
   methods: {
     themeChange(themeStyle) {
       console.log('themeStyle--------------', themeStyle)
-      mapgisui.setTheme(themeStyle.theme, { primaryColor: themeStyle.color })
+      mapgisui.setTheme(themeStyle.theme, themeStyle)
     },
     themeStyle() {
       if (this.application.theme) {
