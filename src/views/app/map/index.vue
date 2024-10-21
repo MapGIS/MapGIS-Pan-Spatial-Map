@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { AppManager, MapRender, baseConfigInstance } from '@mapgis/web-app-framework'
+import { AppManager, MapRender, baseConfigInstance, loadConfigs } from '@mapgis/web-app-framework'
 import request from '@/utils/request'
 import mapgisui from '@mapgis/webclient-vue-ui'
 
@@ -27,6 +27,7 @@ export default {
       request,
       publicPath
     )
+    await loadConfigs()
     const appConfig = localStorage.getItem('appConfig')
     if (appConfig) {
       this.application = JSON.parse(appConfig)
@@ -92,4 +93,4 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss"></style>
