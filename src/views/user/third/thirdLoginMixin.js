@@ -11,7 +11,7 @@ const thirdLoginMixin = {
       thirdType: '',
       thirdLoginInfo: '',
       thirdPasswordShow: false,
-      thirdLoginPassword: '',
+      thirdLoginSecretKey: '',
       thirdLoginUsername: '',
       thirdLoginUserId: '',
       thirdConfirmShow: false,
@@ -72,7 +72,7 @@ const thirdLoginMixin = {
     },
     // 绑定已有账号 需要输入密码
     thirdLoginUserBind() {
-      this.thirdLoginPassword = ''
+      this.thirdLoginSecretKey = ''
       this.thirdConfirmShow = false
       this.thirdPasswordShow = true
     },
@@ -96,7 +96,8 @@ const thirdLoginMixin = {
     },
     // 核实密码
     thirdLoginCheckPassword() {
-      const param = Object.assign({}, this.thirdLoginInfo, { password: this.thirdLoginPassword })
+      const param = Object.assign({}, this.thirdLoginInfo)
+      param['password'] = this.thirdLoginSecretKey
       thirdLoginCheckPassword(param)
         .then(res => {
           this.doThirdLogin(res.token)
@@ -108,7 +109,7 @@ const thirdLoginMixin = {
     // 没有密码 取消操作
     thirdLoginNoPassword() {
       this.thirdPasswordShow = false
-      this.thirdLoginPassword = ''
+      this.thirdLoginSecretKey = ''
       this.thirdLoginUserName = ''
     },
     loginSuccess(res) {
