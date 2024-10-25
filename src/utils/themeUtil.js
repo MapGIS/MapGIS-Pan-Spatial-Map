@@ -5,7 +5,7 @@ const { ANTD } = require('../config/default')
 
 function getThemeColors(color, $theme) {
   const _color = color || defaultSettings.primaryColor
-  const mode = $theme || defaultSettings.navTheme
+  const mode = $theme || 'dark'
   const replaceColors = getThemeToggleColors(_color, mode)
   const themeColors = [
     ...replaceColors.mainColors,
@@ -27,9 +27,9 @@ function changeThemeColor(newColor, $theme) {
 
 function modifyVars(color) {
   const _color = color || defaultSettings.primaryColor
-  const palettes = getAntdColors(_color, defaultSettings.navTheme)
-  const menuColors = getMenuColors(_color, defaultSettings.navTheme)
-  const { success, warning, error } = getFunctionalColors(defaultSettings.navTheme)
+  const palettes = getAntdColors(_color, 'dark')
+  const menuColors = getMenuColors(_color, 'dark')
+  const { success, warning, error } = getFunctionalColors('dark')
   const primary = palettes[5]
   return {
     'primary-color': primary,
@@ -61,7 +61,7 @@ function modifyVars(color) {
     'layout-trigger-background': menuColors[2],
     'btn-danger-bg': error[4],
     'btn-danger-border': error[4],
-    ...ANTD.theme[defaultSettings.navTheme]
+    ...ANTD.theme['dark']
   }
 }
 
@@ -70,7 +70,7 @@ function loadLocalTheme(localSetting) {
     let color = localSetting.primaryColor
     let mode = localSetting.navTheme
     color = color || defaultSettings.primaryColor
-    mode = mode || defaultSettings.navTheme
+    mode = mode || 'dark'
     changeThemeColor(color, mode)
   }
 }
