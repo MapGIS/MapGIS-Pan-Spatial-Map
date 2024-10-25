@@ -5,13 +5,13 @@
     </a>
     <!-- 第三方登录绑定账号密码输入弹框 -->
     <mapgis-ui-modal
-      :title="$t('please.input.password')"
+      :title="$t('please.input.sk')"
       :visible="thirdPasswordShow"
       @ok="thirdLoginCheckPassword"
       @cancel="thirdLoginNoPassword"
       :maskClosable="false"
     >
-      <mapgis-ui-input-password :placeholder="$t('please.input.password')" v-model="thirdLoginPassword" />
+      <mapgis-ui-input-password :placeholder="$t('please.input.sk')" v-model="thirdLoginSecretKey" />
     </mapgis-ui-modal>
 
     <!-- 第三方登录提示是否绑定账号弹框 -->
