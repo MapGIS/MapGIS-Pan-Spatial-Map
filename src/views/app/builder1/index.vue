@@ -1,12 +1,13 @@
 <template>
   <!-- <mp-app-loader v-if="themeLoaded" :application="application" /> -->
-  <mp-app-builder1
-    v-if="themeLoaded"
-    :appConfig="application"
-    :previewData="previewData"
-    @theme-change="themeChange"
-    @app-builder-info-improt="appBuilderInfoImprot"
-  />
+  <mapgis-ui-spin :spinning="!themeLoaded" tip="加载中..." class="app-builder-load">
+    <mp-app-builder1
+      v-if="themeLoaded"
+      :appConfig="application"
+      :previewData="previewData"
+      @theme-change="themeChange"
+      @app-builder-info-improt="appBuilderInfoImprot"
+  /></mapgis-ui-spin>
 </template>
 
 <script>
@@ -30,7 +31,7 @@ export default {
       immediate: true,
       handler(val) {
         this.appBuilderPreviewId = val.appId
-        this.portalPath = val.portalPath || 'http://192.168.11.172:6260'
+        this.portalPath = val.portalPath
         if (val.token) {
           storage.set('app_builder_token', val.token)
         } else {
@@ -61,14 +62,19 @@ export default {
     await loadConfigs()
     if (!this.appBuilderPreviewId) {
       this.application = AppManager.getInstance().getApplication()
+      // 获取云门户应用搭建配置信息
       const baseConfigData = await api.getPortalAppBuilderConfig()
-      const {
-        data: { configValue }
-      } = baseConfigData
-      const baseConfig = JSON.parse(configValue)
-      Object.assign(this.application.baseConfig, baseConfig)
-      Object.assign(baseConfigInstance.config, baseConfig)
-      this.application.portalPath = this.portalPath
+      if (baseConfigData) {
+        const { data } = baseConfigData
+        const portalBaseConfig = {}
+        Object.keys(data).forEach(item => {
+          const config = data[item]
+          Object.assign(portalBaseConfig, JSON.parse(config.configValue))
+        })
+        portalBaseConfig.portalPath = this.portalPath
+        Object.assign(this.application.baseConfig, portalBaseConfig)
+        Object.assign(baseConfigInstance.config, portalBaseConfig)
+      }
 
       /**
        * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
@@ -107,13 +113,19 @@ export default {
   },
   methods: {
     appBuilderInfoImprot(appConfig) {
+      this.themeLoaded = false
       const { baseConfig } = appConfig
       this.application = appConfig
-      Object.assign(baseConfigInstance.config, baseConfig)
       this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
+      Object.assign(baseConfigInstance.config, baseConfig)
+      // this.$nextTick(() => {
+      //   this.themeLoaded = true
+      // })
+      setTimeout(() => {
+        this.themeLoaded = true
+      }, 2000)
     },
     themeChange(themeStyle) {
-      console.log('themeStyle--------------', themeStyle)
       mapgisui.setTheme(themeStyle.theme, themeStyle)
     },
     themeStyle() {
@@ -147,4 +159,9 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.app-builder-load {
+  height: 100%;
+  width: 100%;
+}
+</style>
