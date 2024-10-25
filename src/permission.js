@@ -121,7 +121,7 @@ function validateToken(casInfo, token, to, from, next) {
     .dispatch('validateLogin', token)
     .then(res => {
       const url = document.location.toString().split('?')[0]
-      window.location.href = url
+      window.location.replace(encodeURI(url))
     })
     .catch(() => {
       nextToLogin(casInfo, to, from, next)

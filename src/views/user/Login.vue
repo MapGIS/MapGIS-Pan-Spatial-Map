@@ -20,7 +20,7 @@
           v-model="form.password"
           size="large"
           autocomplete="new-password"
-          :placeholder="$t('password')"
+          :placeholder="$t('sk')"
         >
           <mapgis-ui-ant-icon slot="prefix" type="lock" />
         </mapgis-ui-input-password>
@@ -50,7 +50,7 @@
           @change="rememberMe"
           class="remember"
         >
-          {{ $t('user.login.password.remember') }}
+          {{ $t('user.login.sk.remember') }}
         </mapgis-ui-checkbox>
       </mapgis-ui-form-model-item>
       <mapgis-ui-form-item :style="{ marginTop: rememberMeItemEnabled ? '24px' : '0' }">
@@ -79,7 +79,7 @@
 import { mapActions } from 'vuex'
 import { getIsNeedCode, getCodeImg } from '@/api/login'
 import { serverMixin } from '@/store/server-mixin'
-import { LOGIN_USERNAME, LOGIN_PASSWORD, LOGIN_REMEMBERME } from '@/store/mutation-types'
+import { LOGIN_USERNAME, LOGIN_SECRET_KEY, LOGIN_REMEMBERME } from '@/store/mutation-types'
 import storage from 'store'
 import ThirdLogin from './third/ThirdLogin'
 import CasLogin from './cas/CasLogin'
@@ -105,7 +105,7 @@ export default {
       },
       rules: {
         username: [{ required: true, message: this.$t('please.input.username'), trigger: 'blur' }],
-        password: [{ required: true, message: this.$t('please.input.password'), trigger: 'blur' }],
+        password: [{ required: true, message: this.$t('please.input.sk'), trigger: 'blur' }],
         code: [{ required: true, message: this.$t('please.input.captcha'), trigger: 'blur' }]
       },
       logining: false,
@@ -157,7 +157,7 @@ export default {
     },
     getStorage() {
       const username = storage.get(LOGIN_USERNAME)
-      const password = storage.get(LOGIN_PASSWORD)
+      const password = storage.get(LOGIN_SECRET_KEY)
       const rememberMe = storage.get(LOGIN_REMEMBERME)
       if (username) {
         this.form = {
@@ -177,11 +177,11 @@ export default {
         if (valid) {
           if (this.form.rememberMe) {
             storage.set(LOGIN_USERNAME, this.form.username)
-            storage.set(LOGIN_PASSWORD, encrypt(this.form.password))
+            storage.set(LOGIN_SECRET_KEY, encrypt(this.form.password))
             storage.set(LOGIN_REMEMBERME, this.form.rememberMe)
           } else {
             storage.remove(LOGIN_USERNAME)
-            storage.remove(LOGIN_PASSWORD)
+            storage.remove(LOGIN_SECRET_KEY)
             storage.remove(LOGIN_REMEMBERME)
           }
           this.login({ ...this.form, password: encrypt(this.form.password) })
