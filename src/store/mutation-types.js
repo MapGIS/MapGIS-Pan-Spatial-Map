@@ -1,4 +1,6 @@
-export const ACCESS_TOKEN = 'access_token'
+export const ACCESS_TOKEN = window._CONFIG['productName']
+  ? `access_token_${window._CONFIG['productName']}`
+  : 'access_token'
 
 export const TOGGLE_MOBILE_TYPE = 'is_mobile'
 export const APP_LANGUAGE = 'app_language'
