@@ -26,14 +26,12 @@
 <script>
 import { deviceMixin } from '@/store/device-mixin'
 import { serverMixin } from '@/store/server-mixin'
-import { baseMixin } from '@/store/app-mixin'
 import SelectLang from '@/components/SelectLang'
 import VariableIcon from '@/components/VariableIcon'
-import { updateTheme } from '@/components/SettingDrawer/settingConfig'
 
 export default {
   name: 'UserLayout',
-  mixins: [deviceMixin, serverMixin, baseMixin],
+  mixins: [deviceMixin, serverMixin],
   components: {
     SelectLang,
     VariableIcon
@@ -52,8 +50,6 @@ export default {
   },
   mounted() {
     document.body.classList.add('userLayout')
-
-    updateTheme(this.navTheme, this.primaryColor)
   },
   beforeDestroy() {
     document.body.classList.remove('userLayout')
