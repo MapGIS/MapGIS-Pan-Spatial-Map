@@ -7,6 +7,7 @@ import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css'
 import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
 import '@mapgis/mapgis-pan-spatial-map-widgets/dist-libs/mapgis-pan-spatial-map-widgets.css'
 import '@mapgis/mapgis-pan-spatial-map-theme/dist-libs/mapgis-pan-spatial-map-theme.css'
+import '@mapgis/mapgis-pan-spatial-map-widgets-config-ui/dist-libs/mapgis-pan-spatial-map-widgets-config-ui.css'
 
 import MapgisUi from '@mapgis/webclient-vue-ui'
 import WebAppFrameworkUI from '@mapgis/web-app-framework'
