@@ -1,9 +1,10 @@
 <template>
-  <mp-app-loader v-if="themeLoaded" :application="application" />
+  <!-- <mp-app-loader v-if="themeLoaded" :application="application" /> -->
+  <mp-app-builder v-if="themeLoaded" :appConfig="application" @theme-change="themeChange" />
 </template>
 
 <script>
-import { AppManager, MapRender, baseConfigInstance, loadConfigs } from '@mapgis/web-app-framework'
+import { AppManager, MapRender, baseConfigInstance } from '@mapgis/web-app-framework'
 import request from '@/utils/request'
 import mapgisui from '@mapgis/webclient-vue-ui'
 
@@ -27,26 +28,18 @@ export default {
       request,
       publicPath
     )
-    await loadConfigs()
-    const appConfig = localStorage.getItem('appConfig')
-    if (appConfig) {
-      this.application = JSON.parse(appConfig)
-      localStorage.removeItem('appConfig')
-      this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
-    } else {
-      this.application = AppManager.getInstance().getApplication()
-      /**
-       * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
-       * 修改人：龚跃健
-       * 修改时间：2022/3/25
-       */
-      const initMode =
-        baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
-      if (!initMode || initMode === 'map') {
-        this.application.document.maprender = MapRender.MAPBOXGL
-      } else if (initMode === 'globe') {
-        this.application.document.maprender = MapRender.CESIUM
-      }
+    this.application = AppManager.getInstance().getApplication()
+    /**
+     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
+     * 修改人：龚跃健
+     * 修改时间：2022/3/25
+     */
+    const initMode =
+      baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
+    if (!initMode || initMode === 'map') {
+      this.application.document.maprender = MapRender.MAPBOXGL
+    } else if (initMode === 'globe') {
+      this.application.document.maprender = MapRender.CESIUM
     }
 
     const style = this.themeStyle()
@@ -60,7 +53,7 @@ export default {
   },
   methods: {
     themeChange(themeStyle) {
-      mapgisui.setTheme(themeStyle.theme, { primaryColor: themeStyle.color })
+      mapgisui.setTheme(themeStyle.theme, themeStyle)
     },
     themeStyle() {
       if (this.application.theme) {
@@ -93,4 +86,4 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style></style>

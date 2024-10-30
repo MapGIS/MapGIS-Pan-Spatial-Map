@@ -12,10 +12,13 @@ import MapgisUi from '@mapgis/webclient-vue-ui'
 import WebAppFrameworkUI from '@mapgis/web-app-framework'
 import Theme from '@mapgis/mapgis-pan-spatial-map-theme'
 import WebAppWidget from '@mapgis/mapgis-pan-spatial-map-widgets'
+import WidgetConfigUi from '@mapgis/mapgis-pan-spatial-map-widgets-config-ui'
 import Antd from 'ant-design-vue/es'
 import HeaderAvatar from '@/components/HeaderAvatar'
 import About from '@/components/About'
 // import widgetsFrame from '@mapgis/mapgis-pan-spatial-map-widgets-frame'
+
+import draggable from 'vuedraggable'
 
 Vue.use(MapgisUi)
 Vue.use(Antd)
@@ -28,8 +31,10 @@ Vue.use(Theme, {
   }
 })
 Vue.use(WebAppWidget)
+Vue.use(WidgetConfigUi)
 // Vue.component('MpPanSpatialMapHeaderAvatar', HeaderAvatar)
 // Vue.component('MpPanSpatialMapAbout', About)
+Vue.component('draggable', draggable)
 
 window['@mapgis/web-app-framework'] = require('@mapgis/web-app-framework')
 window['@mapgis/webclient-vue-ui'] = require('@mapgis/webclient-vue-ui')

@@ -25,7 +25,7 @@ router.beforeEach((to, from, next) => {
     const queryParams = { ...to.query }
     delete queryParams.loginType
     store.dispatch('customLogin', queryParams).then(() => {
-      next('/')
+      next()
     })
   } else if (storage.get(ACCESS_TOKEN)) {
     /* has token */
