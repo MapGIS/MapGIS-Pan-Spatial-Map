@@ -26,7 +26,6 @@ router.beforeEach((to, from, next) => {
     const loginType = to.query.loginType
     delete queryParams.loginType
     store.dispatch('customLogin', queryParams).then(() => {
-      next('/')
       if (loginType === 'custom') {
         next('/')
       } else if (loginType === 'portal') {
