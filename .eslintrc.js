@@ -5,6 +5,8 @@ module.exports = {
   },
   extends: ['plugin:vue/strongly-recommended', '@vue/standard'],
   rules: {
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    'no-undef': 'off',
     'no-console': 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'generator-star-spacing': 'off',

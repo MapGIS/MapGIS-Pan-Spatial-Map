@@ -14,8 +14,7 @@
   },
   // ESLint配置
   "editor.codeActionsOnSave": {
-    // 保存时是否自动eslint修复
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   // ESLint校验的文件格式
   "eslint.validate": ["javascript", "javascriptreact", "vue-html", "vue", "html", "typescript", "typescriptreact"],

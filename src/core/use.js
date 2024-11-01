@@ -2,10 +2,10 @@ import Vue from 'vue'
 
 // base library
 import '@mapgis/webclient-vue-mapboxgl/dist-libs/webclient-vue-mapboxgl.css'
-import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css'
+// import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css'
 import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css'
-import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
-import '@mapgis/mapgis-pan-spatial-map-widgets/dist-libs/mapgis-pan-spatial-map-widgets.css'
+// import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
+// import '@mapgis/mapgis-pan-spatial-map-widgets/dist-libs/mapgis-pan-spatial-map-widgets.css'
 import '@mapgis/mapgis-pan-spatial-map-widgets-pro/dist-libs/mapgis-pan-spatial-map-widgets-pro.css'
 import '@mapgis/mapgis-pan-spatial-map-theme/dist-libs/mapgis-pan-spatial-map-theme.css'
 
