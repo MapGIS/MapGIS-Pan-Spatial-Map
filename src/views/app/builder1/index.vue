@@ -101,6 +101,8 @@ export default {
       // 构造document对象
       this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
     }
+    // 处理widgetStructure,默认带上未分组，方便应用搭建后续处理
+    this.formatContentWidgetStructure()
 
     const style = this.themeStyle()
     const opacity = this.themeOpacity()
@@ -154,6 +156,20 @@ export default {
         return this.application.theme.opacity || 1
       }
       return 1
+    },
+    formatContentWidgetStructure() {
+      const {
+        contentWidgets: { groups }
+      } = this.application
+      groups.forEach(item => {
+        const { widgetStructure } = item
+        if (widgetStructure && widgetStructure.length >= 0) {
+          const hasUnGroup = widgetStructure.find(group => !group.id)
+          if (!hasUnGroup) {
+            widgetStructure.push({ label: '未分组', children: [] })
+          }
+        }
+      })
     }
   }
 }
