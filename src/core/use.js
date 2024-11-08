@@ -2,10 +2,11 @@ import Vue from 'vue'
 
 // base library
 import '@mapgis/webclient-vue-mapboxgl/dist-libs/webclient-vue-mapboxgl.css'
-import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css'
+// import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css'
 import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css'
-import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
-import '@mapgis/mapgis-pan-spatial-map-widgets/dist-libs/mapgis-pan-spatial-map-widgets.css'
+// import '@mapgis/web-app-framework/dist-libs/web-app-framework.css'
+// import '@mapgis/mapgis-pan-spatial-map-widgets/dist-libs/mapgis-pan-spatial-map-widgets.css'
+import '@mapgis/mapgis-pan-spatial-map-widgets-pro/dist-libs/mapgis-pan-spatial-map-widgets-pro.css'
 import '@mapgis/mapgis-pan-spatial-map-theme/dist-libs/mapgis-pan-spatial-map-theme.css'
 import '@mapgis/mapgis-pan-spatial-map-widgets-config-ui/dist-libs/mapgis-pan-spatial-map-widgets-config-ui.css'
 
@@ -13,6 +14,7 @@ import MapgisUi from '@mapgis/webclient-vue-ui'
 import WebAppFrameworkUI from '@mapgis/web-app-framework'
 import Theme from '@mapgis/mapgis-pan-spatial-map-theme'
 import WebAppWidget from '@mapgis/mapgis-pan-spatial-map-widgets'
+import WebAppWidgetPro from '@mapgis/mapgis-pan-spatial-map-widgets-pro'
 import WidgetConfigUi from '@mapgis/mapgis-pan-spatial-map-widgets-config-ui'
 import Antd from 'ant-design-vue/es'
 import HeaderAvatar from '@/components/HeaderAvatar'
@@ -32,6 +34,7 @@ Vue.use(Theme, {
   }
 })
 Vue.use(WebAppWidget)
+Vue.use(WebAppWidgetPro)
 Vue.use(WidgetConfigUi)
 // Vue.component('MpPanSpatialMapHeaderAvatar', HeaderAvatar)
 // Vue.component('MpPanSpatialMapAbout', About)
