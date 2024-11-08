@@ -21,11 +21,16 @@ router.beforeEach((to, from, next) => {
   if (to.meta && typeof to.meta.title !== 'undefined') {
     setDocumentTitle(`${i18nRender(to.meta.title)} - ${store.getters.domTitle}`)
   }
-  if (to.query.loginType === 'custom') {
+  if (['custom', 'portal'].includes(to.query.loginType)) {
     const queryParams = { ...to.query }
+    const loginType = to.query.loginType
     delete queryParams.loginType
     store.dispatch('customLogin', queryParams).then(() => {
-      next('/')
+      if (loginType === 'custom') {
+        next('/')
+      } else if (loginType === 'portal') {
+        next()
+      }
     })
   } else if (storage.get(ACCESS_TOKEN)) {
     /* has token */
@@ -121,7 +126,7 @@ function validateToken(casInfo, token, to, from, next) {
     .dispatch('validateLogin', token)
     .then(res => {
       const url = document.location.toString().split('?')[0]
-      window.location.href = url
+      window.location.replace(encodeURI(url))
     })
     .catch(() => {
       nextToLogin(casInfo, to, from, next)
