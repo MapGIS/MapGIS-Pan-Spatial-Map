@@ -1,606 +1,3 @@
-declare module "cesium" {
-
-/**
- * Private interfaces to support PropertyBag being a dictionary-like object.
- */
-interface DictionaryLike {
-    [index: string]: any;
-}
-
-/**
- * Enum containing WebGL Constant values by name.
-for use without an active WebGL context, or in cases where certain constants are unavailable using the WebGL context
-(For example, in [Safari 9]{@link https://github.com/CesiumGS/cesium/issues/2989}).
-
-These match the constants from the [WebGL 1.0]{@link https://www.khronos.org/registry/webgl/specs/latest/1.0/}
-and [WebGL 2.0]{@link https://www.khronos.org/registry/webgl/specs/latest/2.0/}
-specifications.
- */
-export enum WebGLConstants {
-    DEPTH_BUFFER_BIT = 256,
-    STENCIL_BUFFER_BIT = 1024,
-    COLOR_BUFFER_BIT = 16384,
-    POINTS = 0,
-    LINES = 1,
-    LINE_LOOP = 2,
-    LINE_STRIP = 3,
-    TRIANGLES = 4,
-    TRIANGLE_STRIP = 5,
-    TRIANGLE_FAN = 6,
-    ZERO = 0,
-    ONE = 1,
-    SRC_COLOR = 768,
-    ONE_MINUS_SRC_COLOR = 769,
-    SRC_ALPHA = 770,
-    ONE_MINUS_SRC_ALPHA = 771,
-    DST_ALPHA = 772,
-    ONE_MINUS_DST_ALPHA = 773,
-    DST_COLOR = 774,
-    ONE_MINUS_DST_COLOR = 775,
-    SRC_ALPHA_SATURATE = 776,
-    FUNC_ADD = 32774,
-    BLEND_EQUATION = 32777,
-    BLEND_EQUATION_RGB = 32777,
-    BLEND_EQUATION_ALPHA = 34877,
-    FUNC_SUBTRACT = 32778,
-    FUNC_REVERSE_SUBTRACT = 32779,
-    BLEND_DST_RGB = 32968,
-    BLEND_SRC_RGB = 32969,
-    BLEND_DST_ALPHA = 32970,
-    BLEND_SRC_ALPHA = 32971,
-    CONSTANT_COLOR = 32769,
-    ONE_MINUS_CONSTANT_COLOR = 32770,
-    CONSTANT_ALPHA = 32771,
-    ONE_MINUS_CONSTANT_ALPHA = 32772,
-    BLEND_COLOR = 32773,
-    ARRAY_BUFFER = 34962,
-    ELEMENT_ARRAY_BUFFER = 34963,
-    ARRAY_BUFFER_BINDING = 34964,
-    ELEMENT_ARRAY_BUFFER_BINDING = 34965,
-    STREAM_DRAW = 35040,
-    STATIC_DRAW = 35044,
-    DYNAMIC_DRAW = 35048,
-    BUFFER_SIZE = 34660,
-    BUFFER_USAGE = 34661,
-    CURRENT_VERTEX_ATTRIB = 34342,
-    FRONT = 1028,
-    BACK = 1029,
-    FRONT_AND_BACK = 1032,
-    CULL_FACE = 2884,
-    BLEND = 3042,
-    DITHER = 3024,
-    STENCIL_TEST = 2960,
-    DEPTH_TEST = 2929,
-    SCISSOR_TEST = 3089,
-    POLYGON_OFFSET_FILL = 32823,
-    SAMPLE_ALPHA_TO_COVERAGE = 32926,
-    SAMPLE_COVERAGE = 32928,
-    NO_ERROR = 0,
-    INVALID_ENUM = 1280,
-    INVALID_VALUE = 1281,
-    INVALID_OPERATION = 1282,
-    OUT_OF_MEMORY = 1285,
-    CW = 2304,
-    CCW = 2305,
-    LINE_WIDTH = 2849,
-    ALIASED_POINT_SIZE_RANGE = 33901,
-    ALIASED_LINE_WIDTH_RANGE = 33902,
-    CULL_FACE_MODE = 2885,
-    FRONT_FACE = 2886,
-    DEPTH_RANGE = 2928,
-    DEPTH_WRITEMASK = 2930,
-    DEPTH_CLEAR_VALUE = 2931,
-    DEPTH_FUNC = 2932,
-    STENCIL_CLEAR_VALUE = 2961,
-    STENCIL_FUNC = 2962,
-    STENCIL_FAIL = 2964,
-    STENCIL_PASS_DEPTH_FAIL = 2965,
-    STENCIL_PASS_DEPTH_PASS = 2966,
-    STENCIL_REF = 2967,
-    STENCIL_VALUE_MASK = 2963,
-    STENCIL_WRITEMASK = 2968,
-    STENCIL_BACK_FUNC = 34816,
-    STENCIL_BACK_FAIL = 34817,
-    STENCIL_BACK_PASS_DEPTH_FAIL = 34818,
-    STENCIL_BACK_PASS_DEPTH_PASS = 34819,
-    STENCIL_BACK_REF = 36003,
-    STENCIL_BACK_VALUE_MASK = 36004,
-    STENCIL_BACK_WRITEMASK = 36005,
-    VIEWPORT = 2978,
-    SCISSOR_BOX = 3088,
-    COLOR_CLEAR_VALUE = 3106,
-    COLOR_WRITEMASK = 3107,
-    UNPACK_ALIGNMENT = 3317,
-    PACK_ALIGNMENT = 3333,
-    MAX_TEXTURE_SIZE = 3379,
-    MAX_VIEWPORT_DIMS = 3386,
-    SUBPIXEL_BITS = 3408,
-    RED_BITS = 3410,
-    GREEN_BITS = 3411,
-    BLUE_BITS = 3412,
-    ALPHA_BITS = 3413,
-    DEPTH_BITS = 3414,
-    STENCIL_BITS = 3415,
-    POLYGON_OFFSET_UNITS = 10752,
-    POLYGON_OFFSET_FACTOR = 32824,
-    TEXTURE_BINDING_2D = 32873,
-    SAMPLE_BUFFERS = 32936,
-    SAMPLES = 32937,
-    SAMPLE_COVERAGE_VALUE = 32938,
-    SAMPLE_COVERAGE_INVERT = 32939,
-    COMPRESSED_TEXTURE_FORMATS = 34467,
-    DONT_CARE = 4352,
-    FASTEST = 4353,
-    NICEST = 4354,
-    GENERATE_MIPMAP_HINT = 33170,
-    BYTE = 5120,
-    UNSIGNED_BYTE = 5121,
-    SHORT = 5122,
-    UNSIGNED_SHORT = 5123,
-    INT = 5124,
-    UNSIGNED_INT = 5125,
-    FLOAT = 5126,
-    DEPTH_COMPONENT = 6402,
-    ALPHA = 6406,
-    RGB = 6407,
-    RGBA = 6408,
-    LUMINANCE = 6409,
-    LUMINANCE_ALPHA = 6410,
-    UNSIGNED_SHORT_4_4_4_4 = 32819,
-    UNSIGNED_SHORT_5_5_5_1 = 32820,
-    UNSIGNED_SHORT_5_6_5 = 33635,
-    FRAGMENT_SHADER = 35632,
-    VERTEX_SHADER = 35633,
-    MAX_VERTEX_ATTRIBS = 34921,
-    MAX_VERTEX_UNIFORM_VECTORS = 36347,
-    MAX_VARYING_VECTORS = 36348,
-    MAX_COMBINED_TEXTURE_IMAGE_UNITS = 35661,
-    MAX_VERTEX_TEXTURE_IMAGE_UNITS = 35660,
-    MAX_TEXTURE_IMAGE_UNITS = 34930,
-    MAX_FRAGMENT_UNIFORM_VECTORS = 36349,
-    SHADER_TYPE = 35663,
-    DELETE_STATUS = 35712,
-    LINK_STATUS = 35714,
-    VALIDATE_STATUS = 35715,
-    ATTACHED_SHADERS = 35717,
-    ACTIVE_UNIFORMS = 35718,
-    ACTIVE_ATTRIBUTES = 35721,
-    SHADING_LANGUAGE_VERSION = 35724,
-    CURRENT_PROGRAM = 35725,
-    NEVER = 512,
-    LESS = 513,
-    EQUAL = 514,
-    LEQUAL = 515,
-    GREATER = 516,
-    NOTEQUAL = 517,
-    GEQUAL = 518,
-    ALWAYS = 519,
-    KEEP = 7680,
-    REPLACE = 7681,
-    INCR = 7682,
-    DECR = 7683,
-    INVERT = 5386,
-    INCR_WRAP = 34055,
-    DECR_WRAP = 34056,
-    VENDOR = 7936,
-    RENDERER = 7937,
-    VERSION = 7938,
-    NEAREST = 9728,
-    LINEAR = 9729,
-    NEAREST_MIPMAP_NEAREST = 9984,
-    LINEAR_MIPMAP_NEAREST = 9985,
-    NEAREST_MIPMAP_LINEAR = 9986,
-    LINEAR_MIPMAP_LINEAR = 9987,
-    TEXTURE_MAG_FILTER = 10240,
-    TEXTURE_MIN_FILTER = 10241,
-    TEXTURE_WRAP_S = 10242,
-    TEXTURE_WRAP_T = 10243,
-    TEXTURE_2D = 3553,
-    TEXTURE = 5890,
-    TEXTURE_CUBE_MAP = 34067,
-    TEXTURE_BINDING_CUBE_MAP = 34068,
-    TEXTURE_CUBE_MAP_POSITIVE_X = 34069,
-    TEXTURE_CUBE_MAP_NEGATIVE_X = 34070,
-    TEXTURE_CUBE_MAP_POSITIVE_Y = 34071,
-    TEXTURE_CUBE_MAP_NEGATIVE_Y = 34072,
-    TEXTURE_CUBE_MAP_POSITIVE_Z = 34073,
-    TEXTURE_CUBE_MAP_NEGATIVE_Z = 34074,
-    MAX_CUBE_MAP_TEXTURE_SIZE = 34076,
-    TEXTURE0 = 33984,
-    TEXTURE1 = 33985,
-    TEXTURE2 = 33986,
-    TEXTURE3 = 33987,
-    TEXTURE4 = 33988,
-    TEXTURE5 = 33989,
-    TEXTURE6 = 33990,
-    TEXTURE7 = 33991,
-    TEXTURE8 = 33992,
-    TEXTURE9 = 33993,
-    TEXTURE10 = 33994,
-    TEXTURE11 = 33995,
-    TEXTURE12 = 33996,
-    TEXTURE13 = 33997,
-    TEXTURE14 = 33998,
-    TEXTURE15 = 33999,
-    TEXTURE16 = 34000,
-    TEXTURE17 = 34001,
-    TEXTURE18 = 34002,
-    TEXTURE19 = 34003,
-    TEXTURE20 = 34004,
-    TEXTURE21 = 34005,
-    TEXTURE22 = 34006,
-    TEXTURE23 = 34007,
-    TEXTURE24 = 34008,
-    TEXTURE25 = 34009,
-    TEXTURE26 = 34010,
-    TEXTURE27 = 34011,
-    TEXTURE28 = 34012,
-    TEXTURE29 = 34013,
-    TEXTURE30 = 34014,
-    TEXTURE31 = 34015,
-    ACTIVE_TEXTURE = 34016,
-    REPEAT = 10497,
-    CLAMP_TO_EDGE = 33071,
-    MIRRORED_REPEAT = 33648,
-    FLOAT_VEC2 = 35664,
-    FLOAT_VEC3 = 35665,
-    FLOAT_VEC4 = 35666,
-    INT_VEC2 = 35667,
-    INT_VEC3 = 35668,
-    INT_VEC4 = 35669,
-    BOOL = 35670,
-    BOOL_VEC2 = 35671,
-    BOOL_VEC3 = 35672,
-    BOOL_VEC4 = 35673,
-    FLOAT_MAT2 = 35674,
-    FLOAT_MAT3 = 35675,
-    FLOAT_MAT4 = 35676,
-    SAMPLER_2D = 35678,
-    SAMPLER_CUBE = 35680,
-    VERTEX_ATTRIB_ARRAY_ENABLED = 34338,
-    VERTEX_ATTRIB_ARRAY_SIZE = 34339,
-    VERTEX_ATTRIB_ARRAY_STRIDE = 34340,
-    VERTEX_ATTRIB_ARRAY_TYPE = 34341,
-    VERTEX_ATTRIB_ARRAY_NORMALIZED = 34922,
-    VERTEX_ATTRIB_ARRAY_POINTER = 34373,
-    VERTEX_ATTRIB_ARRAY_BUFFER_BINDING = 34975,
-    IMPLEMENTATION_COLOR_READ_TYPE = 35738,
-    IMPLEMENTATION_COLOR_READ_FORMAT = 35739,
-    COMPILE_STATUS = 35713,
-    LOW_FLOAT = 36336,
-    MEDIUM_FLOAT = 36337,
-    HIGH_FLOAT = 36338,
-    LOW_INT = 36339,
-    MEDIUM_INT = 36340,
-    HIGH_INT = 36341,
-    FRAMEBUFFER = 36160,
-    RENDERBUFFER = 36161,
-    RGBA4 = 32854,
-    RGB5_A1 = 32855,
-    RGB565 = 36194,
-    DEPTH_COMPONENT16 = 33189,
-    STENCIL_INDEX = 6401,
-    STENCIL_INDEX8 = 36168,
-    DEPTH_STENCIL = 34041,
-    RENDERBUFFER_WIDTH = 36162,
-    RENDERBUFFER_HEIGHT = 36163,
-    RENDERBUFFER_INTERNAL_FORMAT = 36164,
-    RENDERBUFFER_RED_SIZE = 36176,
-    RENDERBUFFER_GREEN_SIZE = 36177,
-    RENDERBUFFER_BLUE_SIZE = 36178,
-    RENDERBUFFER_ALPHA_SIZE = 36179,
-    RENDERBUFFER_DEPTH_SIZE = 36180,
-    RENDERBUFFER_STENCIL_SIZE = 36181,
-    FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE = 36048,
-    FRAMEBUFFER_ATTACHMENT_OBJECT_NAME = 36049,
-    FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL = 36050,
-    FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = 36051,
-    COLOR_ATTACHMENT0 = 36064,
-    DEPTH_ATTACHMENT = 36096,
-    STENCIL_ATTACHMENT = 36128,
-    DEPTH_STENCIL_ATTACHMENT = 33306,
-    NONE = 0,
-    FRAMEBUFFER_COMPLETE = 36053,
-    FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 36054,
-    FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = 36055,
-    FRAMEBUFFER_INCOMPLETE_DIMENSIONS = 36057,
-    FRAMEBUFFER_UNSUPPORTED = 36061,
-    FRAMEBUFFER_BINDING = 36006,
-    RENDERBUFFER_BINDING = 36007,
-    MAX_RENDERBUFFER_SIZE = 34024,
-    INVALID_FRAMEBUFFER_OPERATION = 1286,
-    UNPACK_FLIP_Y_WEBGL = 37440,
-    UNPACK_PREMULTIPLY_ALPHA_WEBGL = 37441,
-    CONTEXT_LOST_WEBGL = 37442,
-    UNPACK_COLORSPACE_CONVERSION_WEBGL = 37443,
-    BROWSER_DEFAULT_WEBGL = 37444,
-    COMPRESSED_RGB_S3TC_DXT1_EXT = 33776,
-    COMPRESSED_RGBA_S3TC_DXT1_EXT = 33777,
-    COMPRESSED_RGBA_S3TC_DXT3_EXT = 33778,
-    COMPRESSED_RGBA_S3TC_DXT5_EXT = 33779,
-    COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 35840,
-    COMPRESSED_RGB_PVRTC_2BPPV1_IMG = 35841,
-    COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = 35842,
-    COMPRESSED_RGBA_PVRTC_2BPPV1_IMG = 35843,
-    COMPRESSED_RGBA_ASTC_4x4_WEBGL = 37808,
-    COMPRESSED_RGB_ETC1_WEBGL = 36196,
-    COMPRESSED_RGBA_BPTC_UNORM = 36492,
-    HALF_FLOAT_OES = 36193,
-    DOUBLE = 5130,
-    READ_BUFFER = 3074,
-    UNPACK_ROW_LENGTH = 3314,
-    UNPACK_SKIP_ROWS = 3315,
-    UNPACK_SKIP_PIXELS = 3316,
-    PACK_ROW_LENGTH = 3330,
-    PACK_SKIP_ROWS = 3331,
-    PACK_SKIP_PIXELS = 3332,
-    COLOR = 6144,
-    DEPTH = 6145,
-    STENCIL = 6146,
-    RED = 6403,
-    RGB8 = 32849,
-    RGBA8 = 32856,
-    RGB10_A2 = 32857,
-    TEXTURE_BINDING_3D = 32874,
-    UNPACK_SKIP_IMAGES = 32877,
-    UNPACK_IMAGE_HEIGHT = 32878,
-    TEXTURE_3D = 32879,
-    TEXTURE_WRAP_R = 32882,
-    MAX_3D_TEXTURE_SIZE = 32883,
-    UNSIGNED_INT_2_10_10_10_REV = 33640,
-    MAX_ELEMENTS_VERTICES = 33000,
-    MAX_ELEMENTS_INDICES = 33001,
-    TEXTURE_MIN_LOD = 33082,
-    TEXTURE_MAX_LOD = 33083,
-    TEXTURE_BASE_LEVEL = 33084,
-    TEXTURE_MAX_LEVEL = 33085,
-    MIN = 32775,
-    MAX = 32776,
-    DEPTH_COMPONENT24 = 33190,
-    MAX_TEXTURE_LOD_BIAS = 34045,
-    TEXTURE_COMPARE_MODE = 34892,
-    TEXTURE_COMPARE_FUNC = 34893,
-    CURRENT_QUERY = 34917,
-    QUERY_RESULT = 34918,
-    QUERY_RESULT_AVAILABLE = 34919,
-    STREAM_READ = 35041,
-    STREAM_COPY = 35042,
-    STATIC_READ = 35045,
-    STATIC_COPY = 35046,
-    DYNAMIC_READ = 35049,
-    DYNAMIC_COPY = 35050,
-    MAX_DRAW_BUFFERS = 34852,
-    DRAW_BUFFER0 = 34853,
-    DRAW_BUFFER1 = 34854,
-    DRAW_BUFFER2 = 34855,
-    DRAW_BUFFER3 = 34856,
-    DRAW_BUFFER4 = 34857,
-    DRAW_BUFFER5 = 34858,
-    DRAW_BUFFER6 = 34859,
-    DRAW_BUFFER7 = 34860,
-    DRAW_BUFFER8 = 34861,
-    DRAW_BUFFER9 = 34862,
-    DRAW_BUFFER10 = 34863,
-    DRAW_BUFFER11 = 34864,
-    DRAW_BUFFER12 = 34865,
-    DRAW_BUFFER13 = 34866,
-    DRAW_BUFFER14 = 34867,
-    DRAW_BUFFER15 = 34868,
-    MAX_FRAGMENT_UNIFORM_COMPONENTS = 35657,
-    MAX_VERTEX_UNIFORM_COMPONENTS = 35658,
-    SAMPLER_3D = 35679,
-    SAMPLER_2D_SHADOW = 35682,
-    FRAGMENT_SHADER_DERIVATIVE_HINT = 35723,
-    PIXEL_PACK_BUFFER = 35051,
-    PIXEL_UNPACK_BUFFER = 35052,
-    PIXEL_PACK_BUFFER_BINDING = 35053,
-    PIXEL_UNPACK_BUFFER_BINDING = 35055,
-    FLOAT_MAT2x3 = 35685,
-    FLOAT_MAT2x4 = 35686,
-    FLOAT_MAT3x2 = 35687,
-    FLOAT_MAT3x4 = 35688,
-    FLOAT_MAT4x2 = 35689,
-    FLOAT_MAT4x3 = 35690,
-    SRGB = 35904,
-    SRGB8 = 35905,
-    SRGB8_ALPHA8 = 35907,
-    COMPARE_REF_TO_TEXTURE = 34894,
-    RGBA32F = 34836,
-    RGB32F = 34837,
-    RGBA16F = 34842,
-    RGB16F = 34843,
-    VERTEX_ATTRIB_ARRAY_INTEGER = 35069,
-    MAX_ARRAY_TEXTURE_LAYERS = 35071,
-    MIN_PROGRAM_TEXEL_OFFSET = 35076,
-    MAX_PROGRAM_TEXEL_OFFSET = 35077,
-    MAX_VARYING_COMPONENTS = 35659,
-    TEXTURE_2D_ARRAY = 35866,
-    TEXTURE_BINDING_2D_ARRAY = 35869,
-    R11F_G11F_B10F = 35898,
-    UNSIGNED_INT_10F_11F_11F_REV = 35899,
-    RGB9_E5 = 35901,
-    UNSIGNED_INT_5_9_9_9_REV = 35902,
-    TRANSFORM_FEEDBACK_BUFFER_MODE = 35967,
-    MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS = 35968,
-    TRANSFORM_FEEDBACK_VARYINGS = 35971,
-    TRANSFORM_FEEDBACK_BUFFER_START = 35972,
-    TRANSFORM_FEEDBACK_BUFFER_SIZE = 35973,
-    TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN = 35976,
-    RASTERIZER_DISCARD = 35977,
-    MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS = 35978,
-    MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS = 35979,
-    INTERLEAVED_ATTRIBS = 35980,
-    SEPARATE_ATTRIBS = 35981,
-    TRANSFORM_FEEDBACK_BUFFER = 35982,
-    TRANSFORM_FEEDBACK_BUFFER_BINDING = 35983,
-    RGBA32UI = 36208,
-    RGB32UI = 36209,
-    RGBA16UI = 36214,
-    RGB16UI = 36215,
-    RGBA8UI = 36220,
-    RGB8UI = 36221,
-    RGBA32I = 36226,
-    RGB32I = 36227,
-    RGBA16I = 36232,
-    RGB16I = 36233,
-    RGBA8I = 36238,
-    RGB8I = 36239,
-    RED_INTEGER = 36244,
-    RGB_INTEGER = 36248,
-    RGBA_INTEGER = 36249,
-    SAMPLER_2D_ARRAY = 36289,
-    SAMPLER_2D_ARRAY_SHADOW = 36292,
-    SAMPLER_CUBE_SHADOW = 36293,
-    UNSIGNED_INT_VEC2 = 36294,
-    UNSIGNED_INT_VEC3 = 36295,
-    UNSIGNED_INT_VEC4 = 36296,
-    INT_SAMPLER_2D = 36298,
-    INT_SAMPLER_3D = 36299,
-    INT_SAMPLER_CUBE = 36300,
-    INT_SAMPLER_2D_ARRAY = 36303,
-    UNSIGNED_INT_SAMPLER_2D = 36306,
-    UNSIGNED_INT_SAMPLER_3D = 36307,
-    UNSIGNED_INT_SAMPLER_CUBE = 36308,
-    UNSIGNED_INT_SAMPLER_2D_ARRAY = 36311,
-    DEPTH_COMPONENT32F = 36012,
-    DEPTH32F_STENCIL8 = 36013,
-    FLOAT_32_UNSIGNED_INT_24_8_REV = 36269,
-    FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING = 33296,
-    FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE = 33297,
-    FRAMEBUFFER_ATTACHMENT_RED_SIZE = 33298,
-    FRAMEBUFFER_ATTACHMENT_GREEN_SIZE = 33299,
-    FRAMEBUFFER_ATTACHMENT_BLUE_SIZE = 33300,
-    FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE = 33301,
-    FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE = 33302,
-    FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE = 33303,
-    FRAMEBUFFER_DEFAULT = 33304,
-    UNSIGNED_INT_24_8 = 34042,
-    DEPTH24_STENCIL8 = 35056,
-    UNSIGNED_NORMALIZED = 35863,
-    DRAW_FRAMEBUFFER_BINDING = 36006,
-    READ_FRAMEBUFFER = 36008,
-    DRAW_FRAMEBUFFER = 36009,
-    READ_FRAMEBUFFER_BINDING = 36010,
-    RENDERBUFFER_SAMPLES = 36011,
-    FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER = 36052,
-    MAX_COLOR_ATTACHMENTS = 36063,
-    COLOR_ATTACHMENT1 = 36065,
-    COLOR_ATTACHMENT2 = 36066,
-    COLOR_ATTACHMENT3 = 36067,
-    COLOR_ATTACHMENT4 = 36068,
-    COLOR_ATTACHMENT5 = 36069,
-    COLOR_ATTACHMENT6 = 36070,
-    COLOR_ATTACHMENT7 = 36071,
-    COLOR_ATTACHMENT8 = 36072,
-    COLOR_ATTACHMENT9 = 36073,
-    COLOR_ATTACHMENT10 = 36074,
-    COLOR_ATTACHMENT11 = 36075,
-    COLOR_ATTACHMENT12 = 36076,
-    COLOR_ATTACHMENT13 = 36077,
-    COLOR_ATTACHMENT14 = 36078,
-    COLOR_ATTACHMENT15 = 36079,
-    FRAMEBUFFER_INCOMPLETE_MULTISAMPLE = 36182,
-    MAX_SAMPLES = 36183,
-    HALF_FLOAT = 5131,
-    RG = 33319,
-    RG_INTEGER = 33320,
-    R8 = 33321,
-    RG8 = 33323,
-    R16F = 33325,
-    R32F = 33326,
-    RG16F = 33327,
-    RG32F = 33328,
-    R8I = 33329,
-    R8UI = 33330,
-    R16I = 33331,
-    R16UI = 33332,
-    R32I = 33333,
-    R32UI = 33334,
-    RG8I = 33335,
-    RG8UI = 33336,
-    RG16I = 33337,
-    RG16UI = 33338,
-    RG32I = 33339,
-    RG32UI = 33340,
-    VERTEX_ARRAY_BINDING = 34229,
-    R8_SNORM = 36756,
-    RG8_SNORM = 36757,
-    RGB8_SNORM = 36758,
-    RGBA8_SNORM = 36759,
-    SIGNED_NORMALIZED = 36764,
-    COPY_READ_BUFFER = 36662,
-    COPY_WRITE_BUFFER = 36663,
-    COPY_READ_BUFFER_BINDING = 36662,
-    COPY_WRITE_BUFFER_BINDING = 36663,
-    UNIFORM_BUFFER = 35345,
-    UNIFORM_BUFFER_BINDING = 35368,
-    UNIFORM_BUFFER_START = 35369,
-    UNIFORM_BUFFER_SIZE = 35370,
-    MAX_VERTEX_UNIFORM_BLOCKS = 35371,
-    MAX_FRAGMENT_UNIFORM_BLOCKS = 35373,
-    MAX_COMBINED_UNIFORM_BLOCKS = 35374,
-    MAX_UNIFORM_BUFFER_BINDINGS = 35375,
-    MAX_UNIFORM_BLOCK_SIZE = 35376,
-    MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS = 35377,
-    MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS = 35379,
-    UNIFORM_BUFFER_OFFSET_ALIGNMENT = 35380,
-    ACTIVE_UNIFORM_BLOCKS = 35382,
-    UNIFORM_TYPE = 35383,
-    UNIFORM_SIZE = 35384,
-    UNIFORM_BLOCK_INDEX = 35386,
-    UNIFORM_OFFSET = 35387,
-    UNIFORM_ARRAY_STRIDE = 35388,
-    UNIFORM_MATRIX_STRIDE = 35389,
-    UNIFORM_IS_ROW_MAJOR = 35390,
-    UNIFORM_BLOCK_BINDING = 35391,
-    UNIFORM_BLOCK_DATA_SIZE = 35392,
-    UNIFORM_BLOCK_ACTIVE_UNIFORMS = 35394,
-    UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES = 35395,
-    UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER = 35396,
-    UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 35398,
-    INVALID_INDEX = 4294967295,
-    MAX_VERTEX_OUTPUT_COMPONENTS = 37154,
-    MAX_FRAGMENT_INPUT_COMPONENTS = 37157,
-    MAX_SERVER_WAIT_TIMEOUT = 37137,
-    OBJECT_TYPE = 37138,
-    SYNC_CONDITION = 37139,
-    SYNC_STATUS = 37140,
-    SYNC_FLAGS = 37141,
-    SYNC_FENCE = 37142,
-    SYNC_GPU_COMMANDS_COMPLETE = 37143,
-    UNSIGNALED = 37144,
-    SIGNALED = 37145,
-    ALREADY_SIGNALED = 37146,
-    TIMEOUT_EXPIRED = 37147,
-    CONDITION_SATISFIED = 37148,
-    WAIT_FAILED = 37149,
-    SYNC_FLUSH_COMMANDS_BIT = 1,
-    VERTEX_ATTRIB_ARRAY_DIVISOR = 35070,
-    ANY_SAMPLES_PASSED = 35887,
-    ANY_SAMPLES_PASSED_CONSERVATIVE = 36202,
-    SAMPLER_BINDING = 35097,
-    RGB10_A2UI = 36975,
-    INT_2_10_10_10_REV = 36255,
-    TRANSFORM_FEEDBACK = 36386,
-    TRANSFORM_FEEDBACK_PAUSED = 36387,
-    TRANSFORM_FEEDBACK_ACTIVE = 36388,
-    TRANSFORM_FEEDBACK_BINDING = 36389,
-    COMPRESSED_R11_EAC = 37488,
-    COMPRESSED_SIGNED_R11_EAC = 37489,
-    COMPRESSED_RG11_EAC = 37490,
-    COMPRESSED_SIGNED_RG11_EAC = 37491,
-    COMPRESSED_RGB8_ETC2 = 37492,
-    COMPRESSED_SRGB8_ETC2 = 37493,
-    COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 = 37494,
-    COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 = 37495,
-    COMPRESSED_RGBA8_ETC2_EAC = 37496,
-    COMPRESSED_SRGB8_ALPHA8_ETC2_EAC = 37497,
-    TEXTURE_IMMUTABLE_FORMAT = 37167,
-    MAX_ELEMENT_INDEX = 36203,
-    TEXTURE_IMMUTABLE_LEVELS = 33503,
-    MAX_TEXTURE_MAX_ANISOTROPY_EXT = 34047
-}
-
 /**
  * A {@link TerrainProvider} that produces terrain geometry by tessellating height maps
 retrieved from Elevation Tiles of an an ArcGIS ImageService.
@@ -619,9 +16,9 @@ viewer.terrainProvider = terrainProvider;
                    this parameter is ignored and the tiling scheme's ellipsoid is used instead.
                    If neither parameter is specified, the WGS84 ellipsoid is used.
  */
-export class ArcGISTiledElevationTerrainProvider {
+declare class ArcGISTiledElevationTerrainProvider {
     constructor(options: {
-        url: Resource | string | Promise<Resource> | Promise<string>;
+        url: Resource | string | Promise<Resource> | Promise<String>;
         token?: string;
         ellipsoid?: Ellipsoid;
     });
@@ -648,7 +45,7 @@ export class ArcGISTiledElevationTerrainProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
     indicates which areas of the globe are water rather than land, so they can be rendered
@@ -708,7 +105,7 @@ export class ArcGISTiledElevationTerrainProvider {
 /**
  * ArcType defines the path that should be taken connecting vertices.
  */
-export enum ArcType {
+declare enum ArcType {
     /**
      * Straight line that does not conform to the surface of the ellipsoid.
      */
@@ -727,7 +124,7 @@ export enum ArcType {
  * A collection of key-value pairs that is stored as a hash for easy
 lookup but also provides an array for fast iteration.
  */
-export class AssociativeArray {
+declare class AssociativeArray {
     constructor();
     /**
      * Gets the number of items in the collection.
@@ -776,7 +173,7 @@ export class AssociativeArray {
  * @param [maximum = Cartesian3.ZERO] - The maximum point along the x, y, and z axes.
  * @param [center] - The center of the box; automatically computed if not supplied.
  */
-export class AxisAlignedBoundingBox {
+declare class AxisAlignedBoundingBox {
     constructor(minimum?: Cartesian3, maximum?: Cartesian3, center?: Cartesian3);
     /**
      * The minimum point defining the bounding box.
@@ -866,7 +263,7 @@ var b = Cesium.barycentricCoordinates(p,
  * @param [result] - The object onto which to store the result.
  * @returns The modified result parameter or a new Cartesian3 instance if one was not provided. If the triangle is degenerate the function will return undefined.
  */
-export function barycentricCoordinates(point: Cartesian2 | Cartesian3, p0: Cartesian2 | Cartesian3, p1: Cartesian2 | Cartesian3, p2: Cartesian2 | Cartesian3, result?: Cartesian3): Cartesian3 | undefined;
+declare function barycentricCoordinates(point: Cartesian2 | Cartesian3, p0: Cartesian2 | Cartesian3, p1: Cartesian2 | Cartesian3, p2: Cartesian2 | Cartesian3, result?: Cartesian3): Cartesian3 | undefined;
 
 /**
  * Finds an item in a sorted array.
@@ -886,7 +283,7 @@ var index = Cesium.binarySearch(numbers, 6, comparator); // 3
        of the index before which the itemToFind should be inserted in order to maintain the
        sorted order of the array.
  */
-export function binarySearch(array: any[], itemToFind: any, comparator: binarySearchComparator): number;
+declare function binarySearch(array: any[], itemToFind: any, comparator: binarySearchComparator): number;
 
 /**
  * A function used to compare two items while performing a binary search.
@@ -897,14 +294,14 @@ export function binarySearch(array: any[], itemToFind: any, comparator: binarySe
  * @param a - An item in the array.
  * @param b - The item being searched for.
  */
-export type binarySearchComparator = (a: any, b: any) => number;
+declare type binarySearchComparator = (a: any, b: any) => number;
 
 /**
  * Provides geocoding through Bing Maps.
  * @param options - Object with the following properties:
  * @param options.key - A key to use with the Bing Maps geocoding service
  */
-export class BingMapsGeocoderService {
+declare class BingMapsGeocoderService {
     constructor(options: {
         key: string;
     });
@@ -929,7 +326,7 @@ export class BingMapsGeocoderService {
  * @param [width = 0.0] - The width of the rectangle.
  * @param [height = 0.0] - The height of the rectangle.
  */
-export class BoundingRectangle {
+declare class BoundingRectangle {
     constructor(x?: number, y?: number, width?: number, height?: number);
     /**
      * The x coordinate of the rectangle.
@@ -958,7 +355,7 @@ export class BoundingRectangle {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: BoundingRectangle, array: number[], startingIndex?: number): number[];
+    static pack(value: BoundingRectangle, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -966,7 +363,7 @@ export class BoundingRectangle {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new BoundingRectangle instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: BoundingRectangle): BoundingRectangle;
+    static unpack(array: Number[], startingIndex?: number, result?: BoundingRectangle): BoundingRectangle;
     /**
      * Computes a bounding rectangle enclosing the list of 2D points.
     The rectangle is oriented with the corner at the bottom left.
@@ -1047,7 +444,7 @@ export class BoundingRectangle {
  * @param [center = Cartesian3.ZERO] - The center of the bounding sphere.
  * @param [radius = 0.0] - The radius of the bounding sphere.
  */
-export class BoundingSphere {
+declare class BoundingSphere {
     constructor(center?: Cartesian3, radius?: number);
     /**
      * The center point of the sphere.
@@ -1123,7 +520,7 @@ export class BoundingSphere {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new BoundingSphere instance if one was not provided.
      */
-    static fromVertices(positions?: number[], center?: Cartesian3, stride?: number, result?: BoundingSphere): BoundingSphere;
+    static fromVertices(positions?: Number[], center?: Cartesian3, stride?: number, result?: BoundingSphere): BoundingSphere;
     /**
      * Computes a tight-fitting bounding sphere enclosing a list of EncodedCartesian3s, where the points are
     stored in parallel flat arrays in X, Y, Z, order.  The bounding sphere is computed by running two
@@ -1136,7 +533,7 @@ export class BoundingSphere {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new BoundingSphere instance if one was not provided.
      */
-    static fromEncodedCartesianVertices(positionsHigh?: number[], positionsLow?: number[], result?: BoundingSphere): BoundingSphere;
+    static fromEncodedCartesianVertices(positionsHigh?: Number[], positionsLow?: Number[], result?: BoundingSphere): BoundingSphere;
     /**
      * Computes a bounding sphere from the corner points of an axis-aligned bounding box.  The sphere
     tighly and fully encompases the box.
@@ -1190,7 +587,7 @@ export class BoundingSphere {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: BoundingSphere, array: number[], startingIndex?: number): number[];
+    static pack(value: BoundingSphere, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1198,7 +595,7 @@ export class BoundingSphere {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new BoundingSphere instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: BoundingSphere): BoundingSphere;
+    static unpack(array: Number[], startingIndex?: number, result?: BoundingSphere): BoundingSphere;
     /**
      * Computes a bounding sphere that contains both the left and right bounding spheres.
      * @param left - A sphere to enclose in a bounding sphere.
@@ -1367,7 +764,7 @@ var geometry = Cesium.BoxGeometry.createGeometry(box);
  * @param options.maximum - The maximum x, y, and z coordinates of the box.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  */
-export class BoxGeometry {
+declare class BoxGeometry {
     constructor(options: {
         minimum: Cartesian3;
         maximum: Cartesian3;
@@ -1414,7 +811,7 @@ export class BoxGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: BoxGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: BoxGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1422,7 +819,7 @@ export class BoxGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new BoxGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: BoxGeometry): BoxGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: BoxGeometry): BoxGeometry;
     /**
      * Computes the geometric representation of a box, including its vertices, indices, and a bounding sphere.
      * @param boxGeometry - A description of the box.
@@ -1443,7 +840,7 @@ var geometry = Cesium.BoxOutlineGeometry.createGeometry(box);
  * @param options.minimum - The minimum x, y, and z coordinates of the box.
  * @param options.maximum - The maximum x, y, and z coordinates of the box.
  */
-export class BoxOutlineGeometry {
+declare class BoxOutlineGeometry {
     constructor(options: {
         minimum: Cartesian3;
         maximum: Cartesian3;
@@ -1488,7 +885,7 @@ export class BoxOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: BoxOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: BoxOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1496,7 +893,7 @@ export class BoxOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new BoxOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: BoxOutlineGeometry): BoxOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: BoxOutlineGeometry): BoxOutlineGeometry;
     /**
      * Computes the geometric representation of an outline of a box, including its vertices, indices, and a bounding sphere.
      * @param boxGeometry - A description of the box outline.
@@ -1517,20 +914,20 @@ export class BoxOutlineGeometry {
  * @param relativeUrl - The relative path.
  * @returns The absolutely URL representation of the provided path.
  */
-export function buildModuleUrl(relativeUrl: string): string;
+declare function buildModuleUrl(relativeUrl: string): string;
 
 /**
  * A browser-independent function to cancel an animation frame requested using {@link requestAnimationFrame}.
  * @param requestID - The value returned by {@link requestAnimationFrame}.
  */
-export function cancelAnimationFrame(requestID: number): void;
+declare function cancelAnimationFrame(requestID: number): void;
 
 /**
  * A 2D Cartesian point.
  * @param [x = 0.0] - The X component.
  * @param [y = 0.0] - The Y component.
  */
-export class Cartesian2 {
+declare class Cartesian2 {
     constructor(x?: number, y?: number);
     /**
      * The X component.
@@ -1582,7 +979,7 @@ export class Cartesian2 {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian2, array: number[], startingIndex?: number): number[];
+    static pack(value: Cartesian2, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1590,21 +987,21 @@ export class Cartesian2 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Cartesian2): Cartesian2;
+    static unpack(array: Number[], startingIndex?: number, result?: Cartesian2): Cartesian2;
     /**
      * Flattens an array of Cartesian2s into and array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 2 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 2) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian2[], result?: number[]): number[];
+    static packArray(array: Cartesian2[], result?: Number[]): Number[];
     /**
      * Unpacks an array of cartesian components into and array of Cartesian2s.
      * @param array - The array of components to unpack.
      * @param [result] - The array onto which to store the result.
      * @returns The unpacked array.
      */
-    static unpackArray(array: number[], result?: Cartesian2[]): Cartesian2[];
+    static unpackArray(array: Number[], result?: Cartesian2[]): Cartesian2[];
     /**
      * Creates a Cartesian2 from two consecutive elements in an array.
      * @example
@@ -1620,7 +1017,7 @@ export class Cartesian2 {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
      */
-    static fromArray(array: number[], startingIndex?: number, result?: Cartesian2): Cartesian2;
+    static fromArray(array: Number[], startingIndex?: number, result?: Cartesian2): Cartesian2;
     /**
      * Computes the value of the maximum component for the supplied Cartesian.
      * @param cartesian - The cartesian to use.
@@ -1855,7 +1252,7 @@ export class Cartesian2 {
  * @param [y = 0.0] - The Y component.
  * @param [z = 0.0] - The Z component.
  */
-export class Cartesian3 {
+declare class Cartesian3 {
     constructor(x?: number, y?: number, z?: number);
     /**
      * The X component.
@@ -1911,7 +1308,7 @@ export class Cartesian3 {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian3, array: number[], startingIndex?: number): number[];
+    static pack(value: Cartesian3, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1919,21 +1316,21 @@ export class Cartesian3 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Cartesian3): Cartesian3;
+    static unpack(array: Number[], startingIndex?: number, result?: Cartesian3): Cartesian3;
     /**
      * Flattens an array of Cartesian3s into an array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 3 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 3) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian3[], result?: number[]): number[];
+    static packArray(array: Cartesian3[], result?: Number[]): Number[];
     /**
      * Unpacks an array of cartesian components into an array of Cartesian3s.
      * @param array - The array of components to unpack.
      * @param [result] - The array onto which to store the result.
      * @returns The unpacked array.
      */
-    static unpackArray(array: number[], result?: Cartesian3[]): Cartesian3[];
+    static unpackArray(array: Number[], result?: Cartesian3[]): Cartesian3[];
     /**
      * Creates a Cartesian3 from three consecutive elements in an array.
      * @example
@@ -1949,7 +1346,7 @@ export class Cartesian3 {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    static fromArray(array: number[], startingIndex?: number, result?: Cartesian3): Cartesian3;
+    static fromArray(array: Number[], startingIndex?: number, result?: Cartesian3): Cartesian3;
     /**
      * Computes the value of the maximum component for the supplied Cartesian.
      * @param cartesian - The cartesian to use.
@@ -2191,7 +1588,7 @@ export class Cartesian3 {
      * @param [result] - An array of Cartesian3 objects to store the result.
      * @returns The array of positions.
      */
-    static fromDegreesArray(coordinates: number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
+    static fromDegreesArray(coordinates: Number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
     /**
      * Returns an array of Cartesian3 positions given an array of longitude and latitude values given in radians.
      * @example
@@ -2201,7 +1598,7 @@ export class Cartesian3 {
      * @param [result] - An array of Cartesian3 objects to store the result.
      * @returns The array of positions.
      */
-    static fromRadiansArray(coordinates: number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
+    static fromRadiansArray(coordinates: Number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
     /**
      * Returns an array of Cartesian3 positions given an array of longitude, latitude and height values where longitude and latitude are given in degrees.
      * @example
@@ -2211,7 +1608,7 @@ export class Cartesian3 {
      * @param [result] - An array of Cartesian3 objects to store the result.
      * @returns The array of positions.
      */
-    static fromDegreesArrayHeights(coordinates: number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
+    static fromDegreesArrayHeights(coordinates: Number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
     /**
      * Returns an array of Cartesian3 positions given an array of longitude, latitude and height values where longitude and latitude are given in radians.
      * @example
@@ -2221,7 +1618,7 @@ export class Cartesian3 {
      * @param [result] - An array of Cartesian3 objects to store the result.
      * @returns The array of positions.
      */
-    static fromRadiansArrayHeights(coordinates: number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
+    static fromRadiansArrayHeights(coordinates: Number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
     /**
      * An immutable Cartesian3 instance initialized to (0.0, 0.0, 0.0).
      */
@@ -2275,7 +1672,7 @@ export class Cartesian3 {
  * @param [z = 0.0] - The Z component.
  * @param [w = 0.0] - The W component.
  */
-export class Cartesian4 {
+declare class Cartesian4 {
     constructor(x?: number, y?: number, z?: number, w?: number);
     /**
      * The X component.
@@ -2329,7 +1726,7 @@ export class Cartesian4 {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian4, array: number[], startingIndex?: number): number[];
+    static pack(value: Cartesian4, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -2337,21 +1734,21 @@ export class Cartesian4 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian4 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Cartesian4): Cartesian4;
+    static unpack(array: Number[], startingIndex?: number, result?: Cartesian4): Cartesian4;
     /**
      * Flattens an array of Cartesian4s into and array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 4 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 4) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian4[], result?: number[]): number[];
+    static packArray(array: Cartesian4[], result?: Number[]): Number[];
     /**
      * Unpacks an array of cartesian components into and array of Cartesian4s.
      * @param array - The array of components to unpack.
      * @param [result] - The array onto which to store the result.
      * @returns The unpacked array.
      */
-    static unpackArray(array: number[], result?: Cartesian4[]): Cartesian4[];
+    static unpackArray(array: Number[], result?: Cartesian4[]): Cartesian4[];
     /**
      * Creates a Cartesian4 from four consecutive elements in an array.
      * @example
@@ -2367,7 +1764,7 @@ export class Cartesian4 {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Cartesian4 instance if one was not provided.
      */
-    static fromArray(array: number[], startingIndex?: number, result?: Cartesian4): Cartesian4;
+    static fromArray(array: Number[], startingIndex?: number, result?: Cartesian4): Cartesian4;
     /**
      * Computes the value of the maximum component for the supplied Cartesian.
      * @param cartesian - The cartesian to use.
@@ -2607,7 +2004,7 @@ export class Cartesian4 {
  * @param [latitude = 0.0] - The latitude, in radians.
  * @param [height = 0.0] - The height, in meters, above the ellipsoid.
  */
-export class Cartographic {
+declare class Cartographic {
     constructor(longitude?: number, latitude?: number, height?: number);
     /**
      * The longitude, in radians.
@@ -2722,7 +2119,7 @@ export class Cartographic {
  * Geocodes queries containing longitude and latitude coordinates and an optional height.
 Query format: `longitude latitude (height)` with longitude/latitude in degrees and height in meters.
  */
-export class CartographicGeocoderService {
+declare class CartographicGeocoderService {
     constructor();
     /**
      * @param query - The query to be sent to the geocoder service
@@ -2758,9 +2155,9 @@ var p1 = spline.evaluate(times[i] + delta); // interpolated value when delta < t
  * @param [options.lastTangent] - The tangent of the curve at the last control point.
                     If the tangent is not given, it will be estimated.
  */
-export class CatmullRomSpline {
+declare class CatmullRomSpline {
     constructor(options: {
-        times: number[];
+        times: Number[];
         points: Cartesian3[];
         firstTangent?: Cartesian3;
         lastTangent?: Cartesian3;
@@ -2768,7 +2165,7 @@ export class CatmullRomSpline {
     /**
      * An array of times for the control points.
      */
-    readonly times: number[];
+    readonly times: Number[];
     /**
      * An array of {@link Cartesian3} control points.
      */
@@ -2827,9 +2224,9 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
  * @param [options.ellipsoid] - The ellipsoid.  If not specified, the WGS84 ellipsoid is used.
  * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
  */
-export class CesiumTerrainProvider {
+declare class CesiumTerrainProvider {
     constructor(options: {
-        url: Resource | string | Promise<Resource> | Promise<string>;
+        url: Resource | string | Promise<Resource> | Promise<String>;
         requestVertexNormals?: boolean;
         requestWaterMask?: boolean;
         requestMetadata?: boolean;
@@ -2872,7 +2269,7 @@ export class CesiumTerrainProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
     indicates which areas of the globe are water rather than land, so they can be rendered
@@ -2961,7 +2358,7 @@ var geometry = Cesium.CircleGeometry.createGeometry(circle);
  * @param [options.extrudedHeight = 0.0] - The distance in meters between the circle's extruded face and the ellipsoid surface.
  * @param [options.stRotation = 0.0] - The rotation of the texture coordinates, in radians. A positive rotation is counter-clockwise.
  */
-export class CircleGeometry {
+declare class CircleGeometry {
     constructor(options: {
         center: Cartesian3;
         radius: number;
@@ -2983,7 +2380,7 @@ export class CircleGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: CircleGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: CircleGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -2991,7 +2388,7 @@ export class CircleGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new CircleGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: CircleGeometry): CircleGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: CircleGeometry): CircleGeometry;
     /**
      * Computes the geometric representation of a circle on an ellipsoid, including its vertices, indices, and a bounding sphere.
      * @param circleGeometry - A description of the circle.
@@ -3018,7 +2415,7 @@ var geometry = Cesium.CircleOutlineGeometry.createGeometry(circle);
  * @param [options.extrudedHeight = 0.0] - The distance in meters between the circle's extruded face and the ellipsoid surface.
  * @param [options.numberOfVerticalLines = 16] - Number of lines to draw between the top and bottom of an extruded circle.
  */
-export class CircleOutlineGeometry {
+declare class CircleOutlineGeometry {
     constructor(options: {
         center: Cartesian3;
         radius: number;
@@ -3039,7 +2436,7 @@ export class CircleOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: CircleOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: CircleOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -3047,7 +2444,7 @@ export class CircleOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new CircleOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: CircleOutlineGeometry): CircleOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: CircleOutlineGeometry): CircleOutlineGeometry;
     /**
      * Computes the geometric representation of an outline of a circle on an ellipsoid, including its vertices, indices, and a bounding sphere.
      * @param circleGeometry - A description of the circle.
@@ -3077,7 +2474,7 @@ var clock = new Cesium.Clock({
  * @param [options.canAnimate = true] - Indicates whether {@link Clock#tick} can advance time.  This could be false if data is being buffered, for example.  The clock will only tick when both {@link Clock#canAnimate} and {@link Clock#shouldAnimate} are true.是都运行时间
  * @param [options.shouldAnimate = false] - Indicates whether {@link Clock#tick} should attempt to advance time.  The clock will only tick when both {@link Clock#canAnimate} and {@link Clock#shouldAnimate} are true.是都运行时间
  */
-export class Clock {
+declare class Clock {
     constructor(options?: {
         startTime?: JulianDate;
         stopTime?: JulianDate;
@@ -3162,7 +2559,7 @@ export class Clock {
  * Constants used by {@link Clock#tick} to determine behavior
 when {@link Clock#startTime} or {@link Clock#stopTime} is reached.
  */
-export enum ClockRange {
+declare enum ClockRange {
     /**
      * {@link Clock#tick} will always advances the clock in its current direction.
      */
@@ -3185,7 +2582,7 @@ export enum ClockRange {
  * Constants to determine how much time advances with each call
 to {@link Clock#tick}.
  */
-export enum ClockStep {
+declare enum ClockStep {
     /**
      * {@link Clock#tick} advances the current time by a fixed step,
     which is the number of seconds specified by {@link Clock#multiplier}.
@@ -3209,7 +2606,7 @@ export enum ClockStep {
  * @param [deep = false] - If true, all properties will be deep cloned recursively.
  * @returns The cloned object.
  */
-export function clone(object: any, deep?: boolean): any;
+declare function clone(object: any, deep?: boolean): any;
 
 /**
  * A color, specified using red, green, blue, and alpha values,
@@ -3219,7 +2616,7 @@ which range from <code>0</code> (no intensity) to <code>1.0</code> (full intensi
  * @param [blue = 1.0] - The blue component.
  * @param [alpha = 1.0] - The alpha component.
  */
-export class Color {
+declare class Color {
     constructor(red?: number, green?: number, blue?: number, alpha?: number);
     /**
      * The red component.
@@ -3289,7 +2686,7 @@ export class Color {
     static fromHsl(hue?: number, saturation?: number, lightness?: number, alpha?: number, result?: Color): Color;
     /**
      * Creates a random color using the provided options. For reproducible random colors, you should
-    call {@link Math#setRandomNumberSeed} once at the beginning of your application.
+    call {@link CesiumMath#setRandomNumberSeed} once at the beginning of your application.
      * @example
      * //Create a completely random color
     var color = Cesium.Color.fromRandom();
@@ -3359,7 +2756,7 @@ export class Color {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Color, array: number[], startingIndex?: number): number[];
+    static pack(value: Color, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -3367,7 +2764,7 @@ export class Color {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Color instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Color): Color;
+    static unpack(array: Number[], startingIndex?: number, result?: Color): Color;
     /**
      * Converts a 'byte' color component in the range of 0 to 255 into
     a 'float' color component in the range of 0 to 1.0.
@@ -3436,7 +2833,7 @@ export class Color {
      * @param [result] - The array to store the result in, if undefined a new instance will be created.
      * @returns The modified result parameter or a new instance if result was undefined.
      */
-    toBytes(result?: number[]): number[];
+    toBytes(result?: Number[]): Number[];
     /**
      * Converts this color to a single numeric unsigned 32-bit RGBA value, using the endianness
     of the system.
@@ -4294,7 +3691,7 @@ export class Color {
  * @param [blue = 1.0] - The blue component.
  * @param [alpha = 1.0] - The alpha component.
  */
-export class ColorGeometryInstanceAttribute {
+declare class ColorGeometryInstanceAttribute {
     constructor(red?: number, green?: number, blue?: number, alpha?: number);
     /**
      * The values for the attributes stored in a typed array.
@@ -4375,54 +3772,54 @@ var final = Cesium.combine(object1, object2);
  * @param [deep = false] - Perform a recursive merge.
  * @returns The combined object containing all properties from both objects.
  */
-export function combine(object1?: any, object2?: any, deep?: boolean): any;
+declare function combine(object1?: any, object2?: any, deep?: boolean): any;
 
 /**
  * WebGL component datatypes.  Components are intrinsics,
 which form attributes, which form vertices.
  */
-export enum ComponentDatatype {
+declare enum ComponentDatatype {
     /**
      * 8-bit signed byte corresponding to <code>gl.BYTE</code> and the type
     of an element in <code>Int8Array</code>.
      */
-    BYTE = WebGLConstants.BYTE,
+    BYTE = "WebGLConstants.BYTE",
     /**
      * 8-bit unsigned byte corresponding to <code>UNSIGNED_BYTE</code> and the type
     of an element in <code>Uint8Array</code>.
      */
-    UNSIGNED_BYTE = WebGLConstants.UNSIGNED_BYTE,
+    UNSIGNED_BYTE = "WebGLConstants.UNSIGNED_BYTE",
     /**
      * 16-bit signed short corresponding to <code>SHORT</code> and the type
     of an element in <code>Int16Array</code>.
      */
-    SHORT = WebGLConstants.SHORT,
+    SHORT = "WebGLConstants.SHORT",
     /**
      * 16-bit unsigned short corresponding to <code>UNSIGNED_SHORT</code> and the type
     of an element in <code>Uint16Array</code>.
      */
-    UNSIGNED_SHORT = WebGLConstants.UNSIGNED_SHORT,
+    UNSIGNED_SHORT = "WebGLConstants.UNSIGNED_SHORT",
     /**
      * 32-bit signed int corresponding to <code>INT</code> and the type
     of an element in <code>Int32Array</code>.
      */
-    INT = WebGLConstants.INT,
+    INT = "WebGLConstants.INT",
     /**
      * 32-bit unsigned int corresponding to <code>UNSIGNED_INT</code> and the type
     of an element in <code>Uint32Array</code>.
      */
-    UNSIGNED_INT = WebGLConstants.UNSIGNED_INT,
+    UNSIGNED_INT = "WebGLConstants.UNSIGNED_INT",
     /**
      * 32-bit floating-point corresponding to <code>FLOAT</code> and the type
     of an element in <code>Float32Array</code>.
      */
-    FLOAT = WebGLConstants.FLOAT,
+    FLOAT = "WebGLConstants.FLOAT",
     /**
      * 64-bit floating-point corresponding to <code>gl.DOUBLE</code> (in Desktop OpenGL;
     this is not supported in WebGL, and is emulated in Cesium via {@link GeometryPipeline.encodeAttribute})
     and the type of an element in <code>Float64Array</code>.
      */
-    DOUBLE = WebGLConstants.DOUBLE
+    DOUBLE = "WebGLConstants.DOUBLE"
 }
 
 /**
@@ -4433,7 +3830,7 @@ export enum ComponentDatatype {
  * @param height - The height of the texture.
  * @param buffer - The compressed texture buffer.
  */
-export class CompressedTextureBuffer {
+declare class CompressedTextureBuffer {
     constructor(internalFormat: PixelFormat, pixelDatatype: PixelDatatype, width: number, height: number, buffer: Uint8Array);
     /**
      * The format of the compressed texture.
@@ -4486,7 +3883,7 @@ export class CompressedTextureBuffer {
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
  */
-export class CoplanarPolygonGeometry {
+declare class CoplanarPolygonGeometry {
     constructor(options: {
         polygonHierarchy: PolygonHierarchy;
         stRotation?: number;
@@ -4530,7 +3927,7 @@ export class CoplanarPolygonGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: CoplanarPolygonGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: CoplanarPolygonGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -4538,7 +3935,7 @@ export class CoplanarPolygonGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new CoplanarPolygonGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: CoplanarPolygonGeometry): CoplanarPolygonGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: CoplanarPolygonGeometry): CoplanarPolygonGeometry;
     /**
      * Computes the geometric representation of an arbitrary coplanar polygon, including its vertices, indices, and a bounding sphere.
      * @param polygonGeometry - A description of the polygon.
@@ -4562,7 +3959,7 @@ var geometry = Cesium.CoplanarPolygonOutlineGeometry.createGeometry(polygonOutli
  * @param options - Object with the following properties:
  * @param options.polygonHierarchy - A polygon hierarchy that can include holes.
  */
-export class CoplanarPolygonOutlineGeometry {
+declare class CoplanarPolygonOutlineGeometry {
     constructor(options: {
         polygonHierarchy: PolygonHierarchy;
     });
@@ -4585,7 +3982,7 @@ export class CoplanarPolygonOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: CoplanarPolygonOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: CoplanarPolygonOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -4593,7 +3990,7 @@ export class CoplanarPolygonOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new CoplanarPolygonOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: CoplanarPolygonOutlineGeometry): CoplanarPolygonOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: CoplanarPolygonOutlineGeometry): CoplanarPolygonOutlineGeometry;
     /**
      * Computes the geometric representation of an arbitrary coplanar polygon, including its vertices, indices, and a bounding sphere.
      * @param polygonGeometry - A description of the polygon.
@@ -4605,7 +4002,7 @@ export class CoplanarPolygonOutlineGeometry {
 /**
  * Style options for corners.
  */
-export enum CornerType {
+declare enum CornerType {
     /**
      * <img src="Images/CornerTypeRounded.png" style="vertical-align: middle;" width="186" height="189" />
     
@@ -4638,13 +4035,13 @@ export enum CornerType {
  * @param options.positions - An array of positions that define the center of the corridor.
  * @param options.width - The distance between the edges of the corridor in meters.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.height = 0] - The distance in meters between the ellipsoid surface and the positions.
  * @param [options.extrudedHeight] - The distance in meters between the ellipsoid surface and the extruded face.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  * @param [options.cornerType = CornerType.ROUNDED] - Determines the style of the corners.
  */
-export class CorridorGeometry {
+declare class CorridorGeometry {
     constructor(options: {
         positions: Cartesian3[];
         width: number;
@@ -4666,7 +4063,7 @@ export class CorridorGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: CorridorGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: CorridorGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -4674,7 +4071,7 @@ export class CorridorGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new CorridorGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: CorridorGeometry): CorridorGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: CorridorGeometry): CorridorGeometry;
     /**
      * Computes the bounding rectangle given the provided options
      * @param options - Object with the following properties:
@@ -4710,12 +4107,12 @@ export class CorridorGeometry {
  * @param options.positions - An array of positions that define the center of the corridor outline.
  * @param options.width - The distance between the edges of the corridor outline.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.height = 0] - The distance in meters between the positions and the ellipsoid surface.
  * @param [options.extrudedHeight] - The distance in meters between the extruded face and the ellipsoid surface.
  * @param [options.cornerType = CornerType.ROUNDED] - Determines the style of the corners.
  */
-export class CorridorOutlineGeometry {
+declare class CorridorOutlineGeometry {
     constructor(options: {
         positions: Cartesian3[];
         width: number;
@@ -4736,7 +4133,7 @@ export class CorridorOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: CorridorOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: CorridorOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -4744,7 +4141,7 @@ export class CorridorOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new CorridorOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: CorridorOutlineGeometry): CorridorOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: CorridorOutlineGeometry): CorridorOutlineGeometry;
     /**
      * Computes the geometric representation of a corridor, including its vertices, indices, and a bounding sphere.
      * @param corridorOutlineGeometry - A description of the corridor.
@@ -4758,7 +4155,7 @@ export class CorridorOutlineGeometry {
  * @example
  * this.guid = Cesium.createGuid();
  */
-export function createGuid(): string;
+declare function createGuid(): string;
 
 /**
  * Creates a {@link CesiumTerrainProvider} instance for the {@link https://cesium.com/content/#cesium-world-terrain|Cesium World Terrain}.
@@ -4779,7 +4176,7 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
  * @param [options.requestVertexNormals = false] - Flag that indicates if the client should request additional lighting information from the server if available.
  * @param [options.requestWaterMask = false] - Flag that indicates if the client should request per tile water masks from the server if available.
  */
-export function createWorldTerrain(options?: {
+declare function createWorldTerrain(options?: {
     requestVertexNormals?: boolean;
     requestWaterMask?: boolean;
 }): CesiumTerrainProvider;
@@ -4792,7 +4189,7 @@ var credit = new Cesium.Credit('<a href="https://cesium.com/" target="_blank"><i
  * @param html - An string representing an html code snippet
  * @param [showOnScreen = false] - If true, the credit will be visible in the main credit container.  Otherwise, it will appear in a popover
  */
-export class Credit {
+declare class Credit {
     constructor(html: string, showOnScreen?: boolean);
     /**
      * The credit content
@@ -4830,7 +4227,7 @@ export class Credit {
 /**
  * Defines functions for 3rd order polynomial functions of one variable with only real coefficients.
  */
-export namespace CubicRealPolynomial {
+declare namespace CubicRealPolynomial {
     /**
      * Provides the discriminant of the cubic equation from the supplied coefficients.
      * @param a - The coefficient of the 3rd order monomial.
@@ -4848,14 +4245,14 @@ export namespace CubicRealPolynomial {
      * @param d - The coefficient of the 0th order monomial.
      * @returns The real valued roots.
      */
-    function computeRealRoots(a: number, b: number, c: number, d: number): number[];
+    function computeRealRoots(a: number, b: number, c: number, d: number): Number[];
 }
 
 /**
  * The culling volume defined by planes.
  * @param [planes] - An array of clipping planes.
  */
-export class CullingVolume {
+declare class CullingVolume {
     constructor(planes?: Cartesian4[]);
     /**
      * Each plane is represented by a Cartesian4 object, where the x, y, and z components
@@ -4879,13 +4276,13 @@ export class CullingVolume {
     computeVisibility(boundingVolume: any): Intersect;
 }
 
-export namespace CustomHeightmapTerrainProvider {
+declare namespace CustomHeightmapTerrainProvider {
     /**
      * @param x - The X coordinate of the tile for which to request geometry.
      * @param y - The Y coordinate of the tile for which to request geometry.
      * @param level - The level of the tile for which to request geometry.
      */
-    type GeometryCallback = (x: number, y: number, level: number) => Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | number[] | Promise<Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | number[]> | undefined;
+    type GeometryCallback = (x: number, y: number, level: number) => Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | Number[] | Promise<Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | Number[]> | undefined;
 }
 
 /**
@@ -4918,7 +4315,7 @@ this parameter is ignored and the tiling scheme's ellipsoid is used instead. If 
 parameter is specified, the WGS84 ellipsoid is used.
  * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
  */
-export class CustomHeightmapTerrainProvider {
+declare class CustomHeightmapTerrainProvider {
     constructor(options: {
         callback: CustomHeightmapTerrainProvider.GeometryCallback;
         width: number;
@@ -4949,7 +4346,7 @@ export class CustomHeightmapTerrainProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets a value indicating whether or not the provider includes a water mask. The water mask
     indicates which areas of the globe are water rather than land, so they can be rendered
@@ -5025,7 +4422,7 @@ var geometry = Cesium.CylinderGeometry.createGeometry(cylinder);
  * @param [options.slices = 128] - The number of edges around the perimeter of the cylinder.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  */
-export class CylinderGeometry {
+declare class CylinderGeometry {
     constructor(options: {
         length: number;
         topRadius: number;
@@ -5044,7 +4441,7 @@ export class CylinderGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: CylinderGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: CylinderGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -5052,7 +4449,7 @@ export class CylinderGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new CylinderGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: CylinderGeometry): CylinderGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: CylinderGeometry): CylinderGeometry;
     /**
      * Computes the geometric representation of a cylinder, including its vertices, indices, and a bounding sphere.
      * @param cylinderGeometry - A description of the cylinder.
@@ -5078,7 +4475,7 @@ var geometry = Cesium.CylinderOutlineGeometry.createGeometry(cylinder);
  * @param [options.slices = 128] - The number of edges around the perimeter of the cylinder.
  * @param [options.numberOfVerticalLines = 16] - Number of lines to draw between the top and bottom surfaces of the cylinder.
  */
-export class CylinderOutlineGeometry {
+declare class CylinderOutlineGeometry {
     constructor(options: {
         length: number;
         topRadius: number;
@@ -5097,7 +4494,7 @@ export class CylinderOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: CylinderOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: CylinderOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -5105,7 +4502,7 @@ export class CylinderOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new CylinderOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: CylinderOutlineGeometry): CylinderOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: CylinderOutlineGeometry): CylinderOutlineGeometry;
     /**
      * Computes the geometric representation of an outline of a cylinder, including its vertices, indices, and a bounding sphere.
      * @param cylinderGeometry - A description of the cylinder outline.
@@ -5119,7 +4516,7 @@ export class CylinderOutlineGeometry {
 to the given proxy URL.
  * @param proxy - The proxy URL that will be used to requests all resources.
  */
-export class DefaultProxy extends Proxy {
+declare class DefaultProxy extends Proxy {
     constructor(proxy: string);
     /**
      * Get the final URL to use to request a given resource.
@@ -5136,7 +4533,7 @@ Useful for setting a default value for a parameter.
  * param = Cesium.defaultValue(param, 'default');
  * @returns Returns the first parameter if not undefined, otherwise the second parameter.
  */
-export function defaultValue(a: any, b: any): any;
+declare function defaultValue(a: any, b: any): any;
 
 /**
  * @example
@@ -5148,7 +4545,7 @@ export function defaultValue(a: any, b: any): any;
  * @param value - The object.
  * @returns Returns true if the object is defined, returns false otherwise.
  */
-export function defined(value: any): boolean;
+declare function defined(value: any): boolean;
 
 /**
  * Destroys an object.  Each of the object's functions, including functions in its prototype,
@@ -5170,7 +4567,7 @@ this.destroy = function () {
  * @param [message] - The message to include in the exception that is thrown if
                           a destroyed object's function is called.
  */
-export function destroyObject(object: any, message?: string): void;
+declare function destroyObject(object: any, message?: string): void;
 
 /**
  * Constructs an exception object that is thrown due to a developer error, e.g., invalid argument,
@@ -5183,7 +4580,7 @@ be thrown at runtime, e.g., out of memory, that the calling code should be prepa
 to catch.
  * @param [message] - The error message for this exception.
  */
-export class DeveloperError extends Error {
+declare class DeveloperError extends Error {
     constructor(message?: string);
     /**
      * 'DeveloperError' indicating that this exception was thrown due to a developer error.
@@ -5209,7 +4606,7 @@ billboard.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(10.0, 2
  * @param [near = 0.0] - 最小的物体可见高度。The smallest distance in the interval where the object is visible.
  * @param [far = Number.MAX_VALUE] - 最大的物体可见高度。The largest distance in the interval where the object is visible.
  */
-export class DistanceDisplayCondition {
+declare class DistanceDisplayCondition {
     constructor(near?: number, far?: number);
     /**
      * The smallest distance in the interval where the object is visible.
@@ -5230,7 +4627,7 @@ export class DistanceDisplayCondition {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: DistanceDisplayCondition, array: number[], startingIndex?: number): number[];
+    static pack(value: DistanceDisplayCondition, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -5238,7 +4635,7 @@ export class DistanceDisplayCondition {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new DistanceDisplayCondition instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: DistanceDisplayCondition): DistanceDisplayCondition;
+    static unpack(array: Number[], startingIndex?: number, result?: DistanceDisplayCondition): DistanceDisplayCondition;
     /**
      * Determines if two distance display conditions are equal.
      * @param left - A distance display condition.
@@ -5286,7 +4683,7 @@ export class DistanceDisplayCondition {
  * @param [near = 0.0] - The near distance.
  * @param [far = Number.MAX_VALUE] - The far distance.
  */
-export class DistanceDisplayConditionGeometryInstanceAttribute {
+declare class DistanceDisplayConditionGeometryInstanceAttribute {
     constructor(near?: number, far?: number);
     /**
      * The values for the attributes stored in a typed array.
@@ -5338,7 +4735,7 @@ export class DistanceDisplayConditionGeometryInstanceAttribute {
 {@link https://github.com/sole/tween.js/|Tween.js} and Robert Penner.  See the
 {@link http://sole.github.io/tween.js/examples/03_graphs.html|Tween.js graphs for each function}.
  */
-export namespace EasingFunction {
+declare namespace EasingFunction {
     /**
      * Linear easing.
      */
@@ -5498,10 +4895,10 @@ var geometry = Cesium.EllipseGeometry.createGeometry(ellipse);
  * @param [options.extrudedHeight] - The distance in meters between the ellipse's extruded face and the ellipsoid surface.
  * @param [options.rotation = 0.0] - The angle of rotation counter-clockwise from north.
  * @param [options.stRotation = 0.0] - The rotation of the texture coordinates counter-clockwise from north.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The angular distance between points on the ellipse in radians.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The angular distance between points on the ellipse in radians.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  */
-export class EllipseGeometry {
+declare class EllipseGeometry {
     constructor(options: {
         center: Cartesian3;
         semiMajorAxis: number;
@@ -5525,7 +4922,7 @@ export class EllipseGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: EllipseGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: EllipseGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -5533,7 +4930,7 @@ export class EllipseGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new EllipseGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: EllipseGeometry): EllipseGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: EllipseGeometry): EllipseGeometry;
     /**
      * Computes the bounding rectangle based on the provided options
      * @param options - Object with the following properties:
@@ -5542,7 +4939,7 @@ export class EllipseGeometry {
      * @param options.semiMinorAxis - The length of the ellipse's semi-minor axis in meters.
      * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid the ellipse will be on.
      * @param [options.rotation = 0.0] - The angle of rotation counter-clockwise from north.
-     * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The angular distance between points on the ellipse in radians.
+     * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The angular distance between points on the ellipse in radians.
      * @param [result] - An object in which to store the result
      * @returns The result rectangle
      */
@@ -5583,7 +4980,7 @@ var geometry = Cesium.EllipseOutlineGeometry.createGeometry(ellipse);
  * @param [options.granularity = 0.02] - The angular distance between points on the ellipse in radians.
  * @param [options.numberOfVerticalLines = 16] - Number of lines to draw between the top and bottom surface of an extruded ellipse.
  */
-export class EllipseOutlineGeometry {
+declare class EllipseOutlineGeometry {
     constructor(options: {
         center: Cartesian3;
         semiMajorAxis: number;
@@ -5606,7 +5003,7 @@ export class EllipseOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: EllipseOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: EllipseOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -5614,7 +5011,7 @@ export class EllipseOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new EllipseOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: EllipseOutlineGeometry): EllipseOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: EllipseOutlineGeometry): EllipseOutlineGeometry;
     /**
      * Computes the geometric representation of an outline of an ellipse on an ellipsoid, including its vertices, indices, and a bounding sphere.
      * @param ellipseGeometry - A description of the ellipse.
@@ -5634,7 +5031,7 @@ constants is normally used.
  * @param [y = 0] - The radius in the y direction.
  * @param [z = 0] - The radius in the z direction.
  */
-export class Ellipsoid {
+declare class Ellipsoid {
     constructor(x?: number, y?: number, z?: number);
     /**
      * Gets the radii of the ellipsoid.
@@ -5714,7 +5111,7 @@ export class Ellipsoid {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Ellipsoid, array: number[], startingIndex?: number): number[];
+    static pack(value: Ellipsoid, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -5722,7 +5119,7 @@ export class Ellipsoid {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Ellipsoid instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Ellipsoid): Ellipsoid;
+    static unpack(array: Number[], startingIndex?: number, result?: Ellipsoid): Ellipsoid;
     /**
      * Computes the unit vector directed from the center of this ellipsoid toward the provided Cartesian position.
      * @param cartesian - The Cartesian for which to to determine the geocentric normal.
@@ -5876,7 +5273,7 @@ export class Ellipsoid {
  * @param [end] - The final planetodetic point on the path.
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid on which the geodesic lies.
  */
-export class EllipsoidGeodesic {
+declare class EllipsoidGeodesic {
     constructor(start?: Cartographic, end?: Cartographic, ellipsoid?: Ellipsoid);
     /**
      * Gets the ellipsoid.
@@ -5943,7 +5340,7 @@ var geometry = Cesium.EllipsoidGeometry.createGeometry(ellipsoid);
  * @param [options.slicePartitions = 64] - The number of times to partition the ellipsoid into radial slices.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  */
-export class EllipsoidGeometry {
+declare class EllipsoidGeometry {
     constructor(options?: {
         radii?: Cartesian3;
         innerRadii?: Cartesian3;
@@ -5966,7 +5363,7 @@ export class EllipsoidGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: EllipsoidGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: EllipsoidGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -5974,7 +5371,7 @@ export class EllipsoidGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new EllipsoidGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: EllipsoidGeometry): EllipsoidGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: EllipsoidGeometry): EllipsoidGeometry;
     /**
      * Computes the geometric representation of an ellipsoid, including its vertices, indices, and a bounding sphere.
      * @param ellipsoidGeometry - A description of the ellipsoid.
@@ -6003,7 +5400,7 @@ var geometry = Cesium.EllipsoidOutlineGeometry.createGeometry(ellipsoid);
  * @param [options.slicePartitions = 8] - The count of slices for the ellipsoid (Equal to the number of radial lines).
  * @param [options.subdivisions = 128] - The number of points per line, determining the granularity of the curvature.
  */
-export class EllipsoidOutlineGeometry {
+declare class EllipsoidOutlineGeometry {
     constructor(options?: {
         radii?: Cartesian3;
         innerRadii?: Cartesian3;
@@ -6026,7 +5423,7 @@ export class EllipsoidOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: EllipsoidOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: EllipsoidOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -6034,7 +5431,7 @@ export class EllipsoidOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new EllipsoidOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: EllipsoidOutlineGeometry): EllipsoidOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: EllipsoidOutlineGeometry): EllipsoidOutlineGeometry;
     /**
      * Computes the geometric representation of an outline of an ellipsoid, including its vertices, indices, and a bounding sphere.
      * @param ellipsoidGeometry - A description of the ellipsoid outline.
@@ -6049,7 +5446,7 @@ export class EllipsoidOutlineGeometry {
  * @param [end] - The final planetodetic point on the path.
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid on which the rhumb line lies.
  */
-export class EllipsoidRhumbLine {
+declare class EllipsoidRhumbLine {
     constructor(start?: Cartographic, end?: Cartographic, ellipsoid?: Ellipsoid);
     /**
      * Gets the ellipsoid.
@@ -6126,7 +5523,7 @@ If origin is at the center of the ellipsoid, an exception will be thrown.
  * @param origin - The point on the surface of the ellipsoid where the tangent plane touches.
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid to use.
  */
-export class EllipsoidTangentPlane {
+declare class EllipsoidTangentPlane {
     constructor(origin: Cartesian3, ellipsoid?: Ellipsoid);
     /**
      * Gets the ellipsoid.
@@ -6216,7 +5613,7 @@ is used.
 this parameter is ignored and the tiling scheme's ellipsoid is used instead. If neither
 parameter is specified, the WGS84 ellipsoid is used.
  */
-export class EllipsoidTerrainProvider {
+declare class EllipsoidTerrainProvider {
     constructor(options?: {
         tilingScheme?: TilingScheme;
         ellipsoid?: Ellipsoid;
@@ -6244,7 +5641,7 @@ export class EllipsoidTerrainProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
     indicates which areas of the globe are water rather than land, so they can be rendered
@@ -6317,7 +5714,7 @@ evt.addEventListener(MyObject.prototype.myListener, myObjectInstance);
 evt.raiseEvent('1', '2');
 evt.removeEventListener(MyObject.prototype.myListener);
  */
-export class Event {
+declare class Event {
     constructor();
     /**
      * The number of listeners currently subscribed to the event.
@@ -6347,7 +5744,7 @@ export class Event {
     raiseEvent(...arguments: any[]): void;
 }
 
-export namespace Event {
+declare namespace Event {
     /**
      * A function that removes a listener.
      */
@@ -6367,7 +5764,7 @@ helper.add(otherObject.event, listener2, this);
 // later...
 helper.removeAll();
  */
-export class EventHelper {
+declare class EventHelper {
     constructor();
     /**
      * Adds a listener to an event, and records the registration to be cleaned up later.
@@ -6384,7 +5781,7 @@ export class EventHelper {
     removeAll(): void;
 }
 
-export namespace EventHelper {
+declare namespace EventHelper {
     /**
      * A function that removes a listener.
      */
@@ -6395,7 +5792,7 @@ export namespace EventHelper {
  * Constants to determine how an interpolated value is extrapolated
 when querying outside the bounds of available data.
  */
-export enum ExtrapolationType {
+declare enum ExtrapolationType {
     /**
      * No extrapolation occurs.
      */
@@ -6414,7 +5811,7 @@ export enum ExtrapolationType {
  * A set of functions to detect whether the current browser supports
 various features.
  */
-export namespace FeatureDetection {
+declare namespace FeatureDetection {
     /**
      * Detects whether the current browser supports Basis Universal textures and the web assembly modules needed to transcode them.
      * @returns true if the browser supports web assembly modules and the scene supports Basis Universal textures, false if not.
@@ -6463,7 +5860,7 @@ properties, otherwise, falls back on toString().
  * @param object - The item to find in the array.
  * @returns A string containing the formatted error.
  */
-export function formatError(object: any): string;
+declare function formatError(object: any): string;
 
 /**
  * Describes a frustum at the given the origin and orientation.
@@ -6473,7 +5870,7 @@ export function formatError(object: any): string;
  * @param options.orientation - The orientation of the frustum.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  */
-export class FrustumGeometry {
+declare class FrustumGeometry {
     constructor(options: {
         frustum: PerspectiveFrustum | OrthographicFrustum;
         origin: Cartesian3;
@@ -6491,14 +5888,14 @@ export class FrustumGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: FrustumGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: FrustumGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
      * @param [startingIndex = 0] - The starting index of the element to be unpacked.
      * @param [result] - The object into which to store the result.
      */
-    static unpack(array: number[], startingIndex?: number, result?: FrustumGeometry): void;
+    static unpack(array: Number[], startingIndex?: number, result?: FrustumGeometry): void;
     /**
      * Computes the geometric representation of a frustum, including its vertices, indices, and a bounding sphere.
      * @param frustumGeometry - A description of the frustum.
@@ -6514,7 +5911,7 @@ export class FrustumGeometry {
  * @param options.origin - The origin of the frustum.
  * @param options.orientation - The orientation of the frustum.
  */
-export class FrustumOutlineGeometry {
+declare class FrustumOutlineGeometry {
     constructor(options: {
         frustum: PerspectiveFrustum | OrthographicFrustum;
         origin: Cartesian3;
@@ -6531,14 +5928,14 @@ export class FrustumOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: FrustumOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: FrustumOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
      * @param [startingIndex = 0] - The starting index of the element to be unpacked.
      * @param [result] - The object into which to store the result.
      */
-    static unpack(array: number[], startingIndex?: number, result?: FrustumOutlineGeometry): void;
+    static unpack(array: Number[], startingIndex?: number, result?: FrustumOutlineGeometry): void;
     /**
      * Computes the geometric representation of a frustum outline, including its vertices, indices, and a bounding sphere.
      * @param frustumGeometry - A description of the frustum.
@@ -6550,7 +5947,7 @@ export class FrustumOutlineGeometry {
 /**
  * Browser-independent functions for working with the standard fullscreen API.
  */
-export namespace Fullscreen {
+declare namespace Fullscreen {
     /**
      * The element that is currently fullscreen, if any.  To simply check if the
     browser is in fullscreen mode or not, use {@link Fullscreen#fullscreen}.
@@ -6604,7 +6001,7 @@ export namespace Fullscreen {
     function exitFullscreen(): void;
 }
 
-export namespace GeocoderService {
+declare namespace GeocoderService {
     /**
      * @property displayName - The display name for a location
      * @property destination - The bounding box for a location
@@ -6619,7 +6016,7 @@ export namespace GeocoderService {
  * Provides geocoding through an external service. This type describes an interface and
 is not intended to be used.
  */
-export class GeocoderService {
+declare class GeocoderService {
     constructor();
     /**
      * @param query - The query to be sent to the geocoder service
@@ -6631,7 +6028,7 @@ export class GeocoderService {
 /**
  * The type of geocoding to be performed by a {@link GeocoderService}.
  */
-export enum GeocodeType {
+declare enum GeocodeType {
     /**
      * Perform a search where the input is considered complete.
      */
@@ -6650,7 +6047,7 @@ is commonly known as geographic, equirectangular, equidistant cylindrical, or pl
 is also known as EPSG:4326.
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid.
  */
-export class GeographicProjection {
+declare class GeographicProjection {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * Gets the {@link Ellipsoid}.
@@ -6680,6 +6077,11 @@ export class GeographicProjection {
              created and returned.
      */
     unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
+    /**
+     * 表示该对象是经纬度坐标系
+     * @returns 是经纬度坐标系
+     */
+    isGeographic(): boolean;
 }
 
 /**
@@ -6695,7 +6097,7 @@ the tile tree.
  * @param [options.numberOfLevelZeroTilesY = 1] - The number of tiles in the Y direction at level zero of
 the tile tree.
  */
-export class GeographicTilingScheme {
+declare class GeographicTilingScheme {
     constructor(options?: {
         ellipsoid?: Ellipsoid;
         rectangle?: Rectangle;
@@ -6806,7 +6208,7 @@ var geometry = new Cesium.Geometry({
  * @param [options.indices] - Optional index data that determines the primitives in the geometry.
  * @param [options.boundingSphere] - An optional bounding sphere that fully enclosed the geometry.
  */
-export class Geometry {
+declare class Geometry {
     constructor(options: {
         attributes: GeometryAttributes;
         primitiveType?: PrimitiveType;
@@ -6902,7 +6304,7 @@ the geometry's vertices.
  * @param [options.normalize = false] - When <code>true</code> and <code>componentDatatype</code> is an integer format, indicate that the components should be mapped to the range [0, 1] (unsigned) or [-1, 1] (signed) when they are accessed as floating-point for rendering.
  * @param [options.values] - The values for the attributes stored in a typed array.
  */
-export class GeometryAttribute {
+declare class GeometryAttribute {
     constructor(options?: {
         componentDatatype?: ComponentDatatype;
         componentsPerAttribute?: number;
@@ -6970,7 +6372,7 @@ export class GeometryAttribute {
 Attributes are always stored non-interleaved in a Geometry.
 </p>
  */
-export class GeometryAttributes {
+declare class GeometryAttributes {
     constructor();
     /**
      * The 3D position attribute.
@@ -7020,7 +6422,7 @@ export class GeometryAttributes {
  * Base class for all geometry creation utility classes that can be passed to {@link GeometryInstance}
 for asynchronous geometry creation.
  */
-export class GeometryFactory {
+declare class GeometryFactory {
     constructor();
     /**
      * Returns a geometry.
@@ -7067,7 +6469,7 @@ var instanceTop = new Cesium.GeometryInstance({
  * @param [options.id] - A user-defined object to return when the instance is picked with {@link Scene#pick} or get/set per-instance attributes with {@link Primitive#getGeometryInstanceAttributes}.
  * @param [options.attributes] - Per-instance attributes like a show or color attribute shown in the example below.
  */
-export class GeometryInstance {
+declare class GeometryInstance {
     constructor(options: {
         geometry: Geometry | GeometryFactory;
         modelMatrix?: Matrix4;
@@ -7121,12 +6523,12 @@ export class GeometryInstance {
  * @param [options.normalize = false] - When <code>true</code> and <code>componentDatatype</code> is an integer format, indicate that the components should be mapped to the range [0, 1] (unsigned) or [-1, 1] (signed) when they are accessed as floating-point for rendering.
  * @param options.value - The value for the attribute.
  */
-export class GeometryInstanceAttribute {
+declare class GeometryInstanceAttribute {
     constructor(options: {
         componentDatatype: ComponentDatatype;
         componentsPerAttribute: number;
         normalize?: boolean;
-        value: number[];
+        value: Number[];
     });
     /**
      * The datatype of each component in the attribute, e.g., individual elements in
@@ -7177,13 +6579,13 @@ export class GeometryInstanceAttribute {
       value : [1.0]
     })
      */
-    value: number[];
+    value: Number[];
 }
 
 /**
  * Content pipeline functions for geometries.
  */
-export namespace GeometryPipeline {
+declare namespace GeometryPipeline {
     /**
      * Converts a geometry's triangle indices to line indices.  If the geometry has an <code>indices</code>
     and its <code>primitiveType</code> is <code>TRIANGLES</code>, <code>TRIANGLE_STRIP</code>,
@@ -7340,7 +6742,7 @@ var absoluteUri = Cesium.getAbsoluteUri('awesome.png', 'https://test.com');
  * @param [base] - The base Uri.
  * @returns The absolute Uri of the given relative Uri.
  */
-export function getAbsoluteUri(relative: string, base?: string): string;
+declare function getAbsoluteUri(relative: string, base?: string): string;
 
 /**
  * Given a URI, returns the base path of the URI.
@@ -7354,7 +6756,7 @@ var basePath = Cesium.getBaseUri('/Gallery/simple.czml?value=true&example=false'
  * @param [includeQuery = false] - Whether or not to include the query string and fragment form the uri
  * @returns The base path of the Uri.
  */
-export function getBaseUri(uri: string, includeQuery?: boolean): string;
+declare function getBaseUri(uri: string, includeQuery?: boolean): string;
 
 /**
  * Given a URI, returns the extension of the URI.
@@ -7364,7 +6766,7 @@ var extension = Cesium.getExtensionFromUri('/Gallery/simple.czml?value=true&exam
  * @param uri - The Uri.
  * @returns The extension of the Uri.
  */
-export function getExtensionFromUri(uri: string): string;
+declare function getExtensionFromUri(uri: string): string;
 
 /**
  * Given a URI, returns the last segment of the URI, removing any path or query information.
@@ -7374,7 +6776,7 @@ var fileName = Cesium.getFilenameFromUri('/Gallery/simple.czml?value=true&exampl
  * @param uri - The Uri.
  * @returns The last segment of the Uri.
  */
-export function getFilenameFromUri(uri: string): string;
+declare function getFilenameFromUri(uri: string): string;
 
 /**
  * Extract a pixel array from a loaded image.  Draws the image
@@ -7384,7 +6786,7 @@ into a canvas so it can read the pixels back.
  * @param height - The height of the image. If not defined, then image.height is assigned.
  * @returns The pixels of the image.
  */
-export function getImagePixels(image: HTMLImageElement, width: number, height: number): ImageData;
+declare function getImagePixels(image: HTMLImageElement, width: number, height: number): ImageData;
 
 /**
  * Gets a timestamp that can be used in measuring the time between events.  Timestamps
@@ -7393,14 +6795,14 @@ measured from.  This function uses performance.now() if it is available, or Date
 otherwise.
  * @returns The timestamp in milliseconds since some unspecified reference time.
  */
-export function getTimestamp(): number;
+declare function getTimestamp(): number;
 
 /**
  * Provides metadata using the Google Earth Enterprise REST API. This is used by the GoogleEarthEnterpriseImageryProvider
  and GoogleEarthEnterpriseTerrainProvider to share metadata requests.
  * @param resourceOrUrl - The url of the Google Earth Enterprise server hosting the imagery
  */
-export class GoogleEarthEnterpriseMetadata {
+declare class GoogleEarthEnterpriseMetadata {
     constructor(resourceOrUrl: Resource | string);
     /**
      * True if imagery is available.
@@ -7445,7 +6847,7 @@ export class GoogleEarthEnterpriseMetadata {
     /**
      * Gets a promise that resolves to true when the metadata is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Converts a tiles (x, y, level) position into a quadkey used to request an image
     from a Google Earth Enterprise server.
@@ -7490,7 +6892,7 @@ var terrainData = new Cesium.GoogleEarthEnterpriseTerrainData({
                  otherwise, false.
  * @param [options.credits] - Array of credits for this tile.
  */
-export class GoogleEarthEnterpriseTerrainData {
+declare class GoogleEarthEnterpriseTerrainData {
     constructor(options: {
         buffer: ArrayBuffer;
         negativeAltitudeExponentBias: number;
@@ -7569,7 +6971,7 @@ var gee = new Cesium.GoogleEarthEnterpriseTerrainProvider({
  * @param [options.ellipsoid] - The ellipsoid.  If not specified, the WGS84 ellipsoid is used.
  * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
  */
-export class GoogleEarthEnterpriseTerrainProvider {
+declare class GoogleEarthEnterpriseTerrainProvider {
     constructor(options: {
         url: Resource | string;
         metadata: GoogleEarthEnterpriseMetadata;
@@ -7602,7 +7004,7 @@ export class GoogleEarthEnterpriseTerrainProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
     the source of the terrain.  This function should not be called before {@link GoogleEarthEnterpriseTerrainProvider#ready} returns true.
@@ -7676,7 +7078,7 @@ In addition to submillisecond precision, this object can also represent leap sec
  * @param [millisecond] - The millisecond of the second as a floating point number with range [0.0, 1000.0).
  * @param [isLeapSecond] - Whether this time is during a leap second.
  */
-export class GregorianDate {
+declare class GregorianDate {
     constructor(year?: number, month?: number, day?: number, hour?: number, minute?: number, second?: number, millisecond?: number, isLeapSecond?: boolean);
     /**
      * Gets or sets the year as a whole number.
@@ -7731,7 +7133,7 @@ var geometry = new Cesium.GroundPolylineGeometry({
  * @param [options.loop = false] - Whether during geometry creation a line segment will be added between the last and first line positions to make this Polyline a loop.
  * @param [options.arcType = ArcType.GEODESIC] - The type of line the polyline segments must follow. Valid options are {@link ArcType.GEODESIC} and {@link ArcType.RHUMB}.
  */
-export class GroundPolylineGeometry {
+declare class GroundPolylineGeometry {
     constructor(options: {
         positions: Cartesian3[];
         width?: number;
@@ -7764,14 +7166,14 @@ export class GroundPolylineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: PolygonGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: PolygonGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
      * @param [startingIndex = 0] - The starting index of the element to be unpacked.
      * @param [result] - The object into which to store the result.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PolygonGeometry): void;
+    static unpack(array: Number[], startingIndex?: number, result?: PolygonGeometry): void;
 }
 
 /**
@@ -7783,7 +7185,7 @@ angles are below the plane. Range is the distance from the center of the frame.
  * @param [pitch = 0.0] - The pitch angle in radians.
  * @param [range = 0.0] - The distance from the center in meters.
  */
-export class HeadingPitchRange {
+declare class HeadingPitchRange {
     constructor(heading?: number, pitch?: number, range?: number);
     /**
      * Heading is the rotation from the local north direction where a positive angle is increasing eastward.
@@ -7815,7 +7217,7 @@ the positive x axis.
  * @param [pitch = 0.0] - The pitch component in radians.
  * @param [roll = 0.0] - The roll component in radians.
  */
-export class HeadingPitchRoll {
+declare class HeadingPitchRoll {
     constructor(heading?: number, pitch?: number, roll?: number);
     /**
      * Gets or sets the heading.
@@ -7904,7 +7306,7 @@ export class HeadingPitchRoll {
 /**
  * The encoding that is used for a heightmap
  */
-export enum HeightmapEncoding {
+declare enum HeightmapEncoding {
     /**
      * No encoding
      */
@@ -7982,7 +7384,7 @@ var terrainData = new Cesium.HeightmapTerrainData({
  * @param [options.createdByUpsampling = false] - True if this instance was created by upsampling another instance;
                  otherwise, false.
  */
-export class HeightmapTerrainData {
+declare class HeightmapTerrainData {
     constructor(options: {
         buffer: Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array;
         width: number;
@@ -8062,7 +7464,7 @@ export class HeightmapTerrainData {
 /**
  * An {@link InterpolationAlgorithm} for performing Hermite interpolation.
  */
-export namespace HermitePolynomialApproximation {
+declare namespace HermitePolynomialApproximation {
     /**
      * Given the desired degree, returns the number of data points required for interpolation.
      * @param degree - The desired degree of interpolation.
@@ -8082,7 +7484,7 @@ export namespace HermitePolynomialApproximation {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    function interpolateOrderZero(x: number, xTable: number[], yTable: number[], yStride: number, result?: number[]): number[];
+    function interpolateOrderZero(x: number, xTable: Number[], yTable: Number[], yStride: number, result?: Number[]): Number[];
     /**
      * Interpolates values using Hermite Polynomial Approximation.
      * @param x - The independent variable for which the dependent variables will be interpolated.
@@ -8097,7 +7499,7 @@ export namespace HermitePolynomialApproximation {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    function interpolate(x: number, xTable: number[], yTable: number[], yStride: number, inputOrder: number, outputOrder: number, result?: number[]): number[];
+    function interpolate(x: number, xTable: Number[], yTable: Number[], yStride: number, inputOrder: number, outputOrder: number, result?: Number[]): Number[];
 }
 
 /**
@@ -8140,9 +7542,9 @@ var p0 = spline.evaluate(times[0]);
  * @param options.inTangents - The array of {@link Cartesian3} incoming tangents at each control point.
  * @param options.outTangents - The array of {@link Cartesian3} outgoing tangents at each control point.
  */
-export class HermiteSpline {
+declare class HermiteSpline {
     constructor(options: {
-        times: number[];
+        times: Number[];
         points: Cartesian3[];
         inTangents: Cartesian3[];
         outTangents: Cartesian3[];
@@ -8150,7 +7552,7 @@ export class HermiteSpline {
     /**
      * An array of times for the control points.
      */
-    readonly times: number[];
+    readonly times: Number[];
     /**
      * An array of {@link Cartesian3} control points.
      */
@@ -8196,7 +7598,7 @@ export class HermiteSpline {
      * @returns A hermite spline.
      */
     static createC1(options: {
-        times: number[];
+        times: Number[];
         points: Cartesian3[];
         tangents: Cartesian3[];
     }): HermiteSpline;
@@ -8221,7 +7623,7 @@ export class HermiteSpline {
      * @returns A hermite spline or a linear spline if less than 3 control points were given.
      */
     static createNaturalCubic(options: {
-        times: number[];
+        times: Number[];
         points: Cartesian3[];
     }): HermiteSpline | LinearSpline;
     /**
@@ -8249,7 +7651,7 @@ export class HermiteSpline {
      * @returns A hermite spline or a linear spline if less than 3 control points were given.
      */
     static createClampedCubic(options: {
-        times: number[];
+        times: Number[];
         points: Cartesian3[];
         firstTangent: Cartesian3;
         lastTangent: Cartesian3;
@@ -8285,31 +7687,31 @@ export class HermiteSpline {
 /**
  * Hilbert Order helper functions.
  */
-export namespace HilbertOrder { }
+declare namespace HilbertOrder { }
 
 /**
  * Constants for WebGL index datatypes.  These corresponds to the
 <code>type</code> parameter of {@link http://www.khronos.org/opengles/sdk/docs/man/xhtml/glDrawElements.xml|drawElements}.
  */
-export enum IndexDatatype {
+declare enum IndexDatatype {
     /**
      * 8-bit unsigned byte corresponding to <code>UNSIGNED_BYTE</code> and the type
     of an element in <code>Uint8Array</code>.
      */
-    UNSIGNED_BYTE = WebGLConstants.UNSIGNED_BYTE,
+    UNSIGNED_BYTE = "WebGLConstants.UNSIGNED_BYTE",
     /**
      * 16-bit unsigned short corresponding to <code>UNSIGNED_SHORT</code> and the type
     of an element in <code>Uint16Array</code>.
      */
-    UNSIGNED_SHORT = WebGLConstants.UNSIGNED_SHORT,
+    UNSIGNED_SHORT = "WebGLConstants.UNSIGNED_SHORT",
     /**
      * 32-bit unsigned int corresponding to <code>UNSIGNED_INT</code> and the type
     of an element in <code>Uint32Array</code>.
      */
-    UNSIGNED_INT = WebGLConstants.UNSIGNED_INT
+    UNSIGNED_INT = "WebGLConstants.UNSIGNED_INT"
 }
 
-export namespace InterpolationAlgorithm {
+declare namespace InterpolationAlgorithm {
     /**
      * Gets the name of this interpolation algorithm.
      */
@@ -8332,7 +7734,7 @@ export namespace InterpolationAlgorithm {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    function interpolateOrderZero(x: number, xTable: number[], yTable: number[], yStride: number, result?: number[]): number[];
+    function interpolateOrderZero(x: number, xTable: Number[], yTable: Number[], yStride: number, result?: Number[]): Number[];
     /**
      * Performs higher order interpolation.  Not all interpolators need to support high-order interpolation,
     if this function remains undefined on implementing objects, interpolateOrderZero will be used instead.
@@ -8348,13 +7750,13 @@ export namespace InterpolationAlgorithm {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    function interpolate(x: number, xTable: number[], yTable: number[], yStride: number, inputOrder: number, outputOrder: number, result?: number[]): number[];
+    function interpolate(x: number, xTable: Number[], yTable: Number[], yStride: number, inputOrder: number, outputOrder: number, result?: Number[]): Number[];
 }
 
 /**
  * The interface for interpolation algorithms.
  */
-export interface InterpolationAlgorithm {
+declare interface InterpolationAlgorithm {
 }
 
 /**
@@ -8363,7 +7765,7 @@ object is located. The object can either be fully contained within the frustum (
 partially inside the frustum and partially outside (INTERSECTING), or somewhere entirely
 outside of the frustum's 6 planes (OUTSIDE).
  */
-export enum Intersect {
+declare enum Intersect {
     /**
      * Represents that an object is not contained within the frustum.
      */
@@ -8381,7 +7783,7 @@ export enum Intersect {
 /**
  * Contains functions for operating on 2D triangles.
  */
-export namespace Intersections2D {
+declare namespace Intersections2D {
     /**
      * Splits a 2D triangle at given axis-aligned threshold value and returns the resulting
     polygon on a given side of the threshold.  The resulting polygon may have 0, 1, 2,
@@ -8406,7 +7808,7 @@ export namespace Intersections2D {
                         the new vertex lies on, and the fraction of the distance from the first
                         vertex to the second one.
      */
-    function clipTriangleAtAxisAlignedThreshold(threshold: number, keepAbove: boolean, u0: number, u1: number, u2: number, result?: number[]): number[];
+    function clipTriangleAtAxisAlignedThreshold(threshold: number, keepAbove: boolean, u0: number, u1: number, u2: number, result?: Number[]): Number[];
     /**
      * Compute the barycentric coordinates of a 2D position within a 2D triangle.
      * @example
@@ -8448,7 +7850,7 @@ export namespace Intersections2D {
 /**
  * Functions for computing the intersection between geometries such as rays, planes, triangles, and ellipsoids.
  */
-export namespace IntersectionTests {
+declare namespace IntersectionTests {
     /**
      * Computes the intersection of a ray and a plane.
     计算一个射线和一个平面的交点
@@ -8577,7 +7979,7 @@ export namespace IntersectionTests {
  * @param [start = 0.0] - The beginning of the interval.
  * @param [stop = 0.0] - The end of the interval.
  */
-export class Interval {
+declare class Interval {
     constructor(start?: number, stop?: number);
     /**
      * The beginning of the interval.
@@ -8596,7 +7998,7 @@ An ion access token is only required if you are using any ion related APIs.
 A default access token is provided for evaluation purposes only.
 Sign up for a free ion account and get your own access token at {@link https://cesium.com}
  */
-export namespace Ion {
+declare namespace Ion {
     /**
      * Gets or sets the default Cesium ion access token.
      */
@@ -8614,7 +8016,7 @@ export namespace Ion {
  * @param [options.accessToken = Ion.defaultAccessToken] - The access token to use.
  * @param [options.server = Ion.defaultServer] - The resource to the Cesium ion API server.
  */
-export class IonGeocoderService {
+declare class IonGeocoderService {
     constructor(options: {
         scene: Scene;
         accessToken?: string;
@@ -8633,7 +8035,7 @@ This object is normally not instantiated directly, use {@link IonResource.fromAs
  * @param endpoint - The result of the Cesium ion asset endpoint service.
  * @param endpointResource - The resource used to retreive the endpoint.
  */
-export class IonResource extends Resource {
+declare class IonResource extends Resource {
     constructor(endpoint: any, endpointResource: Resource);
     /**
      * Asynchronously creates an instance.
@@ -8704,12 +8106,12 @@ export class IonResource extends Resource {
  * @param year - The year to be tested.
  * @returns True if <code>year</code> is a leap year.
  */
-export function isLeapYear(year: number): boolean;
+declare function isLeapYear(year: number): boolean;
 
 /**
  * Constants related to ISO8601 support.
  */
-export namespace Iso8601 {
+declare namespace Iso8601 {
     /**
      * A {@link JulianDate} representing the earliest time representable by an ISO8601 date.
     This is equivalent to the date string '0000-01-01T00:00:00Z'
@@ -8737,7 +8139,7 @@ leap seconds, the date is always stored in the International Atomic Time standar
  * @param [secondsOfDay = 0.0] - The number of seconds into the current Julian Day Number.  Fractional seconds, negative seconds and seconds greater than a day will be handled correctly.
  * @param [timeStandard = TimeStandard.UTC] - The time standard in which the first two parameters are defined.
  */
-export class JulianDate {
+declare class JulianDate {
     constructor(julianDayNumber?: number, secondsOfDay?: number, timeStandard?: TimeStandard);
     /**
      * Gets or sets the number of whole days.
@@ -8955,7 +8357,7 @@ export class JulianDate {
  * This enumerated type is for representing keyboard modifiers. These are keys
 that are held down in addition to other event types.
  */
-export enum KeyboardEventModifier {
+declare enum KeyboardEventModifier {
     /**
      * Represents the shift key being held down.
      */
@@ -8973,7 +8375,7 @@ export enum KeyboardEventModifier {
 /**
  * An {@link InterpolationAlgorithm} for performing Lagrange interpolation.
  */
-export namespace LagrangePolynomialApproximation {
+declare namespace LagrangePolynomialApproximation {
     /**
      * Given the desired degree, returns the number of data points required for interpolation.
      * @param degree - The desired degree of interpolation.
@@ -8992,7 +8394,7 @@ export namespace LagrangePolynomialApproximation {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    function interpolateOrderZero(x: number, xTable: number[], yTable: number[], yStride: number, result?: number[]): number[];
+    function interpolateOrderZero(x: number, xTable: Number[], yTable: Number[], yStride: number, result?: Number[]): Number[];
 }
 
 /**
@@ -9001,7 +8403,7 @@ numerical offset representing the number of seconds TAI is ahead of the UTC time
  * @param [date] - A Julian date representing the time of the leap second.
  * @param [offset] - The cumulative number of seconds that TAI is ahead of UTC at the provided date.
  */
-export class LeapSecond {
+declare class LeapSecond {
     constructor(date?: JulianDate, offset?: number);
     /**
      * Gets or sets the date at which this leap second occurs.
@@ -9017,7 +8419,7 @@ export class LeapSecond {
 /**
  * An {@link InterpolationAlgorithm} for performing linear interpolation.
  */
-export namespace LinearApproximation {
+declare namespace LinearApproximation {
     /**
      * Given the desired degree, returns the number of data points required for interpolation.
     Since linear interpolation can only generate a first degree polynomial, this function
@@ -9038,7 +8440,7 @@ export namespace LinearApproximation {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    function interpolateOrderZero(x: number, xTable: number[], yTable: number[], yStride: number, result?: number[]): number[];
+    function interpolateOrderZero(x: number, xTable: Number[], yTable: Number[], yStride: number, result?: Number[]): Number[];
 }
 
 /**
@@ -9062,15 +8464,15 @@ var p0 = spline.evaluate(times[0]);
                The values are in no way connected to the clock time. They are the parameterization for the curve.
  * @param options.points - The array of {@link Cartesian3} control points.
  */
-export class LinearSpline {
+declare class LinearSpline {
     constructor(options: {
-        times: number[];
+        times: Number[];
         points: Cartesian3[];
     });
     /**
      * An array of times for the control points.
      */
-    readonly times: number[];
+    readonly times: Number[];
     /**
      * An array of {@link Cartesian3} control points.
      */
@@ -9107,7 +8509,7 @@ export class LinearSpline {
  * Defines how geodetic ellipsoid coordinates ({@link Cartographic}) project to a
 flat map like Cesium's 2D and Columbus View modes.
  */
-export class MapProjection {
+declare class MapProjection {
     constructor();
     /**
      * Gets the {@link Ellipsoid}.
@@ -9139,7 +8541,7 @@ export class MapProjection {
 /**
  * Math functions.
  */
-export namespace Math {
+declare module "Math" {
     /**
      * 0.1
      */
@@ -9256,7 +8658,7 @@ export namespace Math {
     function sign(value: number): number;
     /**
      * Returns 1.0 if the given value is positive or zero, and -1.0 if it is negative.
-    This is similar to {@link Math#sign} except that returns 1.0 instead of
+    This is similar to {@link CesiumMath#sign} except that returns 1.0 instead of
     0.0 when the input value is 0.0.
      * @param value - The value to return the sign of.
      * @returns The sign of value.
@@ -9416,13 +8818,13 @@ export namespace Math {
     /**
      * Produces an angle in the range -Pi <= angle <= Pi which is equivalent to the provided angle.
      * @param angle - in radians
-     * @returns The angle in the range [<code>-Math.PI</code>, <code>Math.PI</code>].
+     * @returns The angle in the range [<code>-CesiumMath.PI</code>, <code>CesiumMath.PI</code>].
      */
     function negativePiToPi(angle: number): number;
     /**
      * Produces an angle in the range 0 <= angle <= 2Pi which is equivalent to the provided angle.
      * @param angle - in radians
-     * @returns The angle in the range [0, <code>Math.TWO_PI</code>].
+     * @returns The angle in the range [0, <code>CesiumMath.TWO_PI</code>].
      */
     function zeroToTwoPi(angle: number): number;
     /**
@@ -9551,7 +8953,7 @@ export namespace Math {
     function clamp(value: number, min: number, max: number): number;
     /**
      * Sets the seed used by the random number generator
-    in {@link Math#nextRandomNumber}.
+    in {@link CesiumMath#nextRandomNumber}.
      * @param seed - An integer used as the seed.
      */
     function setRandomNumberSeed(seed: number): void;
@@ -9633,7 +9035,7 @@ export namespace Math {
     function fastApproximateAtan2(x: number, y: number): number;
 }
 
-export interface Matrix2 extends ArrayLike<number> {
+declare interface Matrix2 extends ArrayLike<number> {
 }
 
 /**
@@ -9644,7 +9046,7 @@ Constructor parameters are in row-major order for code readability.
  * @param [column0Row1 = 0.0] - The value for column 0, row 1.
  * @param [column1Row1 = 0.0] - The value for column 1, row 1.
  */
-export class Matrix2 implements ArrayLike<number> {
+declare class Matrix2 implements ArrayLike<number> {
     constructor(column0Row0?: number, column1Row0?: number, column0Row1?: number, column1Row1?: number);
     /**
      * The number of elements used to pack the object into an array.
@@ -9657,7 +9059,7 @@ export class Matrix2 implements ArrayLike<number> {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Matrix2, array: number[], startingIndex?: number): number[];
+    static pack(value: Matrix2, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -9665,7 +9067,7 @@ export class Matrix2 implements ArrayLike<number> {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Matrix2 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Matrix2): Matrix2;
+    static unpack(array: Number[], startingIndex?: number, result?: Matrix2): Matrix2;
     /**
      * Duplicates a Matrix2 instance.
      * @param matrix - The matrix to duplicate.
@@ -9691,14 +9093,14 @@ export class Matrix2 implements ArrayLike<number> {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Matrix2 instance if one was not provided.
      */
-    static fromArray(array: number[], startingIndex?: number, result?: Matrix2): Matrix2;
+    static fromArray(array: Number[], startingIndex?: number, result?: Matrix2): Matrix2;
     /**
      * Creates a Matrix2 instance from a column-major order array.
      * @param values - The column-major order array.
      * @param [result] - The object in which the result will be stored, if undefined a new instance will be created.
      * @returns The modified result parameter, or a new Matrix2 instance if one was not provided.
      */
-    static fromColumnMajorArray(values: number[], result?: Matrix2): Matrix2;
+    static fromColumnMajorArray(values: Number[], result?: Matrix2): Matrix2;
     /**
      * Creates a Matrix2 instance from a row-major order array.
     The resulting matrix will be in column-major order.
@@ -9706,7 +9108,7 @@ export class Matrix2 implements ArrayLike<number> {
      * @param [result] - The object in which the result will be stored, if undefined a new instance will be created.
      * @returns The modified result parameter, or a new Matrix2 instance if one was not provided.
      */
-    static fromRowMajorArray(values: number[], result?: Matrix2): Matrix2;
+    static fromRowMajorArray(values: Number[], result?: Matrix2): Matrix2;
     /**
      * Computes a Matrix2 instance representing a non-uniform scale.
      * @example
@@ -9750,7 +9152,7 @@ export class Matrix2 implements ArrayLike<number> {
      * @param [result] - The Array onto which to store the result.
      * @returns The modified Array parameter or a new Array instance if one was not provided.
      */
-    static toArray(matrix: Matrix2, result?: number[]): number[];
+    static toArray(matrix: Matrix2, result?: Number[]): Number[];
     /**
      * Computes the array index of the element at the provided row and column.
      * @example
@@ -9971,7 +9373,7 @@ export class Matrix2 implements ArrayLike<number> {
     toString(): string;
 }
 
-export interface Matrix3 extends ArrayLike<number> {
+declare interface Matrix3 extends ArrayLike<number> {
 }
 
 /**
@@ -9987,7 +9389,7 @@ Constructor parameters are in row-major order for code readability.
  * @param [column1Row2 = 0.0] - The value for column 1, row 2.
  * @param [column2Row2 = 0.0] - The value for column 2, row 2.
  */
-export class Matrix3 implements ArrayLike<number> {
+declare class Matrix3 implements ArrayLike<number> {
     constructor(column0Row0?: number, column1Row0?: number, column2Row0?: number, column0Row1?: number, column1Row1?: number, column2Row1?: number, column0Row2?: number, column1Row2?: number, column2Row2?: number);
     /**
      * The number of elements used to pack the object into an array.
@@ -10000,7 +9402,7 @@ export class Matrix3 implements ArrayLike<number> {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Matrix3, array: number[], startingIndex?: number): number[];
+    static pack(value: Matrix3, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -10008,7 +9410,7 @@ export class Matrix3 implements ArrayLike<number> {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Matrix3 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Matrix3): Matrix3;
+    static unpack(array: Number[], startingIndex?: number, result?: Matrix3): Matrix3;
     /**
      * Duplicates a Matrix3 instance.
      * @param matrix - The matrix to duplicate.
@@ -10035,14 +9437,14 @@ export class Matrix3 implements ArrayLike<number> {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Matrix3 instance if one was not provided.
      */
-    static fromArray(array: number[], startingIndex?: number, result?: Matrix3): Matrix3;
+    static fromArray(array: Number[], startingIndex?: number, result?: Matrix3): Matrix3;
     /**
      * Creates a Matrix3 instance from a column-major order array.
      * @param values - The column-major order array.
      * @param [result] - The object in which the result will be stored, if undefined a new instance will be created.
      * @returns The modified result parameter, or a new Matrix3 instance if one was not provided.
      */
-    static fromColumnMajorArray(values: number[], result?: Matrix3): Matrix3;
+    static fromColumnMajorArray(values: Number[], result?: Matrix3): Matrix3;
     /**
      * Creates a Matrix3 instance from a row-major order array.
     The resulting matrix will be in column-major order.
@@ -10050,7 +9452,7 @@ export class Matrix3 implements ArrayLike<number> {
      * @param [result] - The object in which the result will be stored, if undefined a new instance will be created.
      * @returns The modified result parameter, or a new Matrix3 instance if one was not provided.
      */
-    static fromRowMajorArray(values: number[], result?: Matrix3): Matrix3;
+    static fromRowMajorArray(values: Number[], result?: Matrix3): Matrix3;
     /**
      * Computes a 3x3 rotation matrix from the provided quaternion.
     从一个四元数取得一个3x3的旋转矩阵
@@ -10148,7 +9550,7 @@ export class Matrix3 implements ArrayLike<number> {
      * @param [result] - The Array onto which to store the result.
      * @returns The modified Array parameter or a new Array instance if one was not provided.
      */
-    static toArray(matrix: Matrix3, result?: number[]): number[];
+    static toArray(matrix: Matrix3, result?: Number[]): Number[];
     /**
      * Computes the array index of the element at the provided row and column.
      * @example
@@ -10434,7 +9836,7 @@ export class Matrix3 implements ArrayLike<number> {
     toString(): string;
 }
 
-export interface Matrix4 extends ArrayLike<number> {
+declare interface Matrix4 extends ArrayLike<number> {
 }
 
 /**
@@ -10457,7 +9859,7 @@ Constructor parameters are in row-major order for code readability.
  * @param [column2Row3 = 0.0] - The value for column 2, row 3.
  * @param [column3Row3 = 0.0] - The value for column 3, row 3.
  */
-export class Matrix4 implements ArrayLike<number> {
+declare class Matrix4 implements ArrayLike<number> {
     constructor(column0Row0?: number, column1Row0?: number, column2Row0?: number, column3Row0?: number, column0Row1?: number, column1Row1?: number, column2Row1?: number, column3Row1?: number, column0Row2?: number, column1Row2?: number, column2Row2?: number, column3Row2?: number, column0Row3?: number, column1Row3?: number, column2Row3?: number, column3Row3?: number);
     /**
      * The number of elements used to pack the object into an array.
@@ -10470,7 +9872,7 @@ export class Matrix4 implements ArrayLike<number> {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Matrix4, array: number[], startingIndex?: number): number[];
+    static pack(value: Matrix4, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -10478,7 +9880,7 @@ export class Matrix4 implements ArrayLike<number> {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Matrix4 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Matrix4): Matrix4;
+    static unpack(array: Number[], startingIndex?: number, result?: Matrix4): Matrix4;
     /**
      * Duplicates a Matrix4 instance.
      * @param matrix - The matrix to duplicate.
@@ -10506,14 +9908,14 @@ export class Matrix4 implements ArrayLike<number> {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Matrix4 instance if one was not provided.
      */
-    static fromArray(array: number[], startingIndex?: number, result?: Matrix4): Matrix4;
+    static fromArray(array: Number[], startingIndex?: number, result?: Matrix4): Matrix4;
     /**
      * Computes a Matrix4 instance from a column-major order array.
      * @param values - The column-major order array.
      * @param [result] - The object in which the result will be stored, if undefined a new instance will be created.
      * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
      */
-    static fromColumnMajorArray(values: number[], result?: Matrix4): Matrix4;
+    static fromColumnMajorArray(values: Number[], result?: Matrix4): Matrix4;
     /**
      * Computes a Matrix4 instance from a row-major order array.
     The resulting matrix will be in column-major order.
@@ -10521,7 +9923,7 @@ export class Matrix4 implements ArrayLike<number> {
      * @param [result] - The object in which the result will be stored, if undefined a new instance will be created.
      * @returns The modified result parameter, or a new Matrix4 instance if one was not provided.
      */
-    static fromRowMajorArray(values: number[], result?: Matrix4): Matrix4;
+    static fromRowMajorArray(values: Number[], result?: Matrix4): Matrix4;
     /**
      * Computes a Matrix4 instance from a Matrix3 representing the rotation
     and a Cartesian3 representing the translation.
@@ -10686,7 +10088,7 @@ export class Matrix4 implements ArrayLike<number> {
      * @param [result] - The Array onto which to store the result.
      * @returns The modified Array parameter or a new Array instance if one was not provided.
      */
-    static toArray(matrix: Matrix4, result?: number[]): number[];
+    static toArray(matrix: Matrix4, result?: Number[]): Number[];
     /**
      * Computes the array index of the element at the provided row and column.
      * @example
@@ -11267,7 +10669,7 @@ Cesium.mergeSort(array, function(a, b, position) {
  * @param comparator - The function to use to compare elements in the array.
  * @param [userDefinedObject] - Any item to pass as the third parameter to <code>comparator</code>.
  */
-export function mergeSort(array: any[], comparator: mergeSortComparator, userDefinedObject?: any): void;
+declare function mergeSort(array: any[], comparator: mergeSortComparator, userDefinedObject?: any): void;
 
 /**
  * A function used to compare two items while performing a merge sort.
@@ -11279,7 +10681,7 @@ export function mergeSort(array: any[], comparator: mergeSortComparator, userDef
  * @param b - An item in the array.
  * @param [userDefinedObject] - An object that was passed to {@link mergeSort}.
  */
-export type mergeSortComparator = (a: any, b: any, userDefinedObject?: any) => number;
+declare type mergeSortComparator = (a: any, b: any, userDefinedObject?: any) => number;
 
 /**
  * Represents a scalar value's lower and upper bound at a near distance and far distance in eye space.
@@ -11290,7 +10692,7 @@ export type mergeSortComparator = (a: any, b: any, userDefinedObject?: any) => n
  * @param [far = 1.0] - The upper bound of the camera range.最大相机高度。
  * @param [farValue = 0.0] - The value at the upper bound of the camera range.当在最大相机边界时设定的值。
  */
-export class NearFarScalar {
+declare class NearFarScalar {
     constructor(near?: number, nearValue?: number, far?: number, farValue?: number);
     /**
      * The lower bound of the camera range.
@@ -11326,7 +10728,7 @@ export class NearFarScalar {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: NearFarScalar, array: number[], startingIndex?: number): number[];
+    static pack(value: NearFarScalar, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -11334,7 +10736,7 @@ export class NearFarScalar {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new NearFarScalar instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: NearFarScalar): NearFarScalar;
+    static unpack(array: Number[], startingIndex?: number, result?: NearFarScalar): NearFarScalar;
     /**
      * Compares the provided NearFarScalar and returns <code>true</code> if they are equal,
     <code>false</code> otherwise.
@@ -11371,7 +10773,7 @@ will produce multiple values with the same name.
  * @param obj - The object containing data to encode.
  * @returns An encoded query string.
  */
-export function objectToQuery(obj: any): string;
+declare function objectToQuery(obj: any): string;
 
 /**
  * Creates an Occluder derived from an object's position and radius, as well as the camera position.
@@ -11385,7 +10787,7 @@ var occluder = new Cesium.Occluder(occluderBoundingSphere, cameraPosition);
  * @param occluderBoundingSphere - The bounding sphere surrounding the occluder.
  * @param cameraPosition - The coordinate of the viewer/camera.
  */
-export class Occluder {
+declare class Occluder {
     constructor(occluderBoundingSphere: BoundingSphere, cameraPosition: Cartesian3);
     /**
      * The position of the occluder.
@@ -11502,7 +10904,7 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
  * @param [options.pretty] - When set to 1 results are 'pretty' printed for easier reading. Useful for debugging.
  * @param [options.proximity] - Provides the geocoder with a hint to bias results in favour of those closer to the specified location (For example: 41.40139,2.12870).
  */
-export class OpenCageGeocoderService {
+declare class OpenCageGeocoderService {
     constructor(url: Resource | string, apiKey: string, params?: {
         abbrv?: number;
     });
@@ -11534,7 +10936,7 @@ var obb = new Cesium.OrientedBoundingBox(center, halfAxes);
                                          Equivalently, the transformation matrix, to rotate and scale a 0x0x0
                                          cube centered at the origin.
  */
-export class OrientedBoundingBox {
+declare class OrientedBoundingBox {
     constructor(center?: Cartesian3, halfAxes?: Matrix3);
     /**
      * The center of the box.
@@ -11555,7 +10957,7 @@ export class OrientedBoundingBox {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: OrientedBoundingBox, array: number[], startingIndex?: number): number[];
+    static pack(value: OrientedBoundingBox, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -11563,7 +10965,7 @@ export class OrientedBoundingBox {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new OrientedBoundingBox instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: OrientedBoundingBox): OrientedBoundingBox;
+    static unpack(array: Number[], startingIndex?: number, result?: OrientedBoundingBox): OrientedBoundingBox;
     /**
      * Computes an instance of an OrientedBoundingBox of the given positions.
     This is an implementation of Stefan Gottschalk's Collision Queries using Oriented Bounding Boxes solution (PHD thesis).
@@ -11712,7 +11114,7 @@ frustum.far = 50.0 * maxRadii;
  * @param [options.near = 1.0] - The distance of the near plane.
  * @param [options.far = 500000000.0] - The distance of the far plane.
  */
-export class OrthographicFrustum {
+declare class OrthographicFrustum {
     constructor(options?: {
         width?: number;
         aspectRatio?: number;
@@ -11746,7 +11148,7 @@ export class OrthographicFrustum {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: OrthographicFrustum, array: number[], startingIndex?: number): number[];
+    static pack(value: OrthographicFrustum, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -11754,7 +11156,7 @@ export class OrthographicFrustum {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new OrthographicFrustum instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: OrthographicFrustum): OrthographicFrustum;
+    static unpack(array: Number[], startingIndex?: number, result?: OrthographicFrustum): OrthographicFrustum;
     /**
      * Gets the orthographic projection matrix computed from the view frustum.
      */
@@ -11833,7 +11235,7 @@ frustum.far = 50.0 * maxRadii;
  * @param [options.near = 1.0] - The near clipping plane distance.
  * @param [options.far = 500000000.0] - The far clipping plane distance.
  */
-export class OrthographicOffCenterFrustum {
+declare class OrthographicOffCenterFrustum {
     constructor(options?: {
         left?: number;
         right?: number;
@@ -11921,7 +11323,7 @@ export class OrthographicOffCenterFrustum {
     equalsEpsilon(other: OrthographicOffCenterFrustum, relativeEpsilon: number, absoluteEpsilon?: number): boolean;
 }
 
-export namespace Packable {
+declare namespace Packable {
     /**
      * The number of elements used to pack the object into an array.
      */
@@ -11932,7 +11334,7 @@ export namespace Packable {
      * @param array - The array to pack into.
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      */
-    function pack(value: any, array: number[], startingIndex?: number): void;
+    function pack(value: any, array: Number[], startingIndex?: number): void;
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -11940,7 +11342,7 @@ export namespace Packable {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Object instance if one was not provided.
      */
-    function unpack(array: number[], startingIndex?: number, result?: any): any;
+    function unpack(array: Number[], startingIndex?: number, result?: any): any;
 }
 
 /**
@@ -11948,7 +11350,7 @@ export namespace Packable {
 elements in an array.  These methods and properties are expected to be
 defined on a constructor function.
  */
-export interface Packable {
+declare interface Packable {
 }
 
 /**
@@ -11956,7 +11358,7 @@ export interface Packable {
 different representation than their packed value.  These methods and
 properties are expected to be defined on a constructor function.
  */
-export namespace PackableForInterpolation {
+declare namespace PackableForInterpolation {
     /**
      * The number of elements used to store the object into an array in its interpolatable form.
      */
@@ -11968,7 +11370,7 @@ export namespace PackableForInterpolation {
      * @param [lastIndex = packedArray.length] - The index of the last element to be converted.
      * @param [result] - The object into which to store the result.
      */
-    function convertPackedArrayForInterpolation(packedArray: number[], startingIndex?: number, lastIndex?: number, result?: number[]): void;
+    function convertPackedArrayForInterpolation(packedArray: Number[], startingIndex?: number, lastIndex?: number, result?: Number[]): void;
     /**
      * Retrieves an instance from a packed array converted with {@link PackableForInterpolation.convertPackedArrayForInterpolation}.
      * @param array - The array previously packed for interpolation.
@@ -11978,7 +11380,7 @@ export namespace PackableForInterpolation {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Object instance if one was not provided.
      */
-    function unpackInterpolationResult(array: number[], sourceArray: number[], startingIndex?: number, lastIndex?: number, result?: any): any;
+    function unpackInterpolationResult(array: Number[], sourceArray: Number[], startingIndex?: number, lastIndex?: number, result?: any): any;
 }
 
 /**
@@ -11995,7 +11397,7 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
 });
  * @param url - The endpoint to the Pelias server.
  */
-export class PeliasGeocoderService {
+declare class PeliasGeocoderService {
     constructor(url: Resource | string);
     /**
      * The Resource used to access the Pelias endpoint.
@@ -12028,7 +11430,7 @@ plane from the origin/camera position.
  * @param [options.xOffset = 0.0] - The offset in the x direction.
  * @param [options.yOffset = 0.0] - The offset in the y direction.
  */
-export class PerspectiveFrustum {
+declare class PerspectiveFrustum {
     constructor(options?: {
         fov?: number;
         aspectRatio?: number;
@@ -12074,7 +11476,7 @@ export class PerspectiveFrustum {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: PerspectiveFrustum, array: number[], startingIndex?: number): number[];
+    static pack(value: PerspectiveFrustum, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -12082,7 +11484,7 @@ export class PerspectiveFrustum {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new PerspectiveFrustum instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PerspectiveFrustum): PerspectiveFrustum;
+    static unpack(array: Number[], startingIndex?: number, result?: PerspectiveFrustum): PerspectiveFrustum;
     /**
      * Gets the perspective projection matrix computed from the view frustum.
      */
@@ -12178,7 +11580,7 @@ plane from the origin/camera position.
  * @param [options.near = 1.0] - The near clipping plane distance.
  * @param [options.far = 500000000.0] - The far clipping plane distance.
  */
-export class PerspectiveOffCenterFrustum {
+declare class PerspectiveOffCenterFrustum {
     constructor(options?: {
         left?: number;
         right?: number;
@@ -12288,7 +11690,7 @@ export class PerspectiveOffCenterFrustum {
 Example pins generated using both the maki icon set, which ships with Cesium, and single character text.
 </div>
  */
-export class PinBuilder {
+declare class PinBuilder {
     constructor();
     /**
      * Creates an empty pin of the specified color and size.
@@ -12327,87 +11729,87 @@ export class PinBuilder {
 /**
  * The format of a pixel, i.e., the number of components it has and what they represent.
  */
-export enum PixelFormat {
+declare enum PixelFormat {
     /**
      * A pixel format containing a depth value.
      */
-    DEPTH_COMPONENT = WebGLConstants.DEPTH_COMPONENT,
+    DEPTH_COMPONENT = "WebGLConstants.DEPTH_COMPONENT",
     /**
      * A pixel format containing a depth and stencil value, most often used with {@link PixelDatatype.UNSIGNED_INT_24_8}.
      */
-    DEPTH_STENCIL = WebGLConstants.DEPTH_STENCIL,
+    DEPTH_STENCIL = "WebGLConstants.DEPTH_STENCIL",
     /**
      * A pixel format containing an alpha channel.
      */
-    ALPHA = WebGLConstants.ALPHA,
+    ALPHA = "WebGLConstants.ALPHA",
     /**
      * A pixel format containing red, green, and blue channels.
      */
-    RGB = WebGLConstants.RGB,
+    RGB = "WebGLConstants.RGB",
     /**
      * A pixel format containing red, green, blue, and alpha channels.
      */
-    RGBA = WebGLConstants.RGBA,
+    RGBA = "WebGLConstants.RGBA",
     /**
      * A pixel format containing a luminance (intensity) channel.
      */
-    LUMINANCE = WebGLConstants.LUMINANCE,
+    LUMINANCE = "WebGLConstants.LUMINANCE",
     /**
      * A pixel format containing luminance (intensity) and alpha channels.
      */
-    LUMINANCE_ALPHA = WebGLConstants.LUMINANCE_ALPHA,
+    LUMINANCE_ALPHA = "WebGLConstants.LUMINANCE_ALPHA",
     /**
      * A pixel format containing red, green, and blue channels that is DXT1 compressed.
      */
-    RGB_DXT1 = WebGLConstants.COMPRESSED_RGB_S3TC_DXT1_EXT,
+    RGB_DXT1 = "WebGLConstants.COMPRESSED_RGB_S3TC_DXT1_EXT",
     /**
      * A pixel format containing red, green, blue, and alpha channels that is DXT1 compressed.
      */
-    RGBA_DXT1 = WebGLConstants.COMPRESSED_RGBA_S3TC_DXT1_EXT,
+    RGBA_DXT1 = "WebGLConstants.COMPRESSED_RGBA_S3TC_DXT1_EXT",
     /**
      * A pixel format containing red, green, blue, and alpha channels that is DXT3 compressed.
      */
-    RGBA_DXT3 = WebGLConstants.COMPRESSED_RGBA_S3TC_DXT3_EXT,
+    RGBA_DXT3 = "WebGLConstants.COMPRESSED_RGBA_S3TC_DXT3_EXT",
     /**
      * A pixel format containing red, green, blue, and alpha channels that is DXT5 compressed.
      */
-    RGBA_DXT5 = WebGLConstants.COMPRESSED_RGBA_S3TC_DXT5_EXT,
+    RGBA_DXT5 = "WebGLConstants.COMPRESSED_RGBA_S3TC_DXT5_EXT",
     /**
      * A pixel format containing red, green, and blue channels that is PVR 4bpp compressed.
      */
-    RGB_PVRTC_4BPPV1 = WebGLConstants.COMPRESSED_RGB_PVRTC_4BPPV1_IMG,
+    RGB_PVRTC_4BPPV1 = "WebGLConstants.COMPRESSED_RGB_PVRTC_4BPPV1_IMG",
     /**
      * A pixel format containing red, green, and blue channels that is PVR 2bpp compressed.
      */
-    RGB_PVRTC_2BPPV1 = WebGLConstants.COMPRESSED_RGB_PVRTC_2BPPV1_IMG,
+    RGB_PVRTC_2BPPV1 = "WebGLConstants.COMPRESSED_RGB_PVRTC_2BPPV1_IMG",
     /**
      * A pixel format containing red, green, blue, and alpha channels that is PVR 4bpp compressed.
      */
-    RGBA_PVRTC_4BPPV1 = WebGLConstants.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG,
+    RGBA_PVRTC_4BPPV1 = "WebGLConstants.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG",
     /**
      * A pixel format containing red, green, blue, and alpha channels that is PVR 2bpp compressed.
      */
-    RGBA_PVRTC_2BPPV1 = WebGLConstants.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG,
+    RGBA_PVRTC_2BPPV1 = "WebGLConstants.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG",
     /**
      * A pixel format containing red, green, blue, and alpha channels that is ASTC compressed.
      */
-    RGBA_ASTC = WebGLConstants.COMPRESSED_RGBA_ASTC_4x4_WEBGL,
+    RGBA_ASTC = "WebGLConstants.COMPRESSED_RGBA_ASTC_4x4_WEBGL",
     /**
      * A pixel format containing red, green, and blue channels that is ETC1 compressed.
      */
-    RGB_ETC1 = WebGLConstants.COMPRESSED_RGB_ETC1_WEBGL,
+    RGB_ETC1 = "WebGLConstants.COMPRESSED_RGB_ETC1_WEBGL",
     /**
      * A pixel format containing red, green, and blue channels that is ETC2 compressed.
      */
-    RGB8_ETC2 = WebGLConstants.COMPRESSED_RGB8_ETC2,
+    RGB8_ETC2 = "WebGLConstants.COMPRESSED_RGB8_ETC2",
     /**
      * A pixel format containing red, green, blue, and alpha channels that is ETC2 compressed.
      */
-    RGBA8_ETC2_EAC = WebGLConstants.COMPRESSED_RGBA8_ETC2_EAC,
+    RGBA8_ETC2_EAC = "WebGLConstants.COMPRESSED_RGBA8_ETC2_EAC",
     /**
      * A pixel format containing red, green, blue, and alpha channels that is BC7 compressed.
      */
-    RGBA_BC7 = WebGLConstants.COMPRESSED_RGBA_BPTC_UNORM
+    RGBA_BC7 = "WebGLConstants.COMPRESSED_RGBA_BPTC_UNORM"
 }
 
 /**
@@ -12428,7 +11830,7 @@ is on.  If <code>distance</code> is positive, the origin is in the half-space
 in the direction of the normal; if negative, the origin is in the half-space
 opposite to the normal; if zero, the plane passes through the origin.
  */
-export class Plane {
+declare class Plane {
     constructor(normal: Cartesian3, distance: number);
     /**
      * The plane's normal.
@@ -12527,7 +11929,7 @@ export class Plane {
  * @param [options] - Object with the following properties:
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  */
-export class PlaneGeometry {
+declare class PlaneGeometry {
     constructor(options?: {
         vertexFormat?: VertexFormat;
     });
@@ -12542,7 +11944,7 @@ export class PlaneGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: PlaneGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: PlaneGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -12550,7 +11952,7 @@ export class PlaneGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new PlaneGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PlaneGeometry): PlaneGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: PlaneGeometry): PlaneGeometry;
     /**
      * Computes the geometric representation of a plane, including its vertices, indices, and a bounding sphere.
      * @param planeGeometry - A description of the plane.
@@ -12562,7 +11964,7 @@ export class PlaneGeometry {
 /**
  * Describes geometry representing the outline of a plane centered at the origin, with a unit width and length.
  */
-export class PlaneOutlineGeometry {
+declare class PlaneOutlineGeometry {
     constructor();
     /**
      * The number of elements used to pack the object into an array.
@@ -12574,7 +11976,7 @@ export class PlaneOutlineGeometry {
      * @param array - The array to pack into.
      * @returns The array that was packed into
      */
-    static pack(value: PlaneOutlineGeometry, array: number[]): number[];
+    static pack(value: PlaneOutlineGeometry, array: Number[]): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -12582,7 +11984,7 @@ export class PlaneOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new PlaneOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PlaneOutlineGeometry): PlaneOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: PlaneOutlineGeometry): PlaneOutlineGeometry;
     /**
      * Computes the geometric representation of an outline of a plane, including its vertices, indices, and a bounding sphere.
      * @returns The computed vertices and indices.
@@ -12605,7 +12007,7 @@ var b = Cesium.pointInsideTriangle(p,
  * @param p2 - The third point of the triangle.
  * @returns <code>true</code> if the point is inside the triangle; otherwise, <code>false</code>.
  */
-export function pointInsideTriangle(point: Cartesian2 | Cartesian3, p0: Cartesian2 | Cartesian3, p1: Cartesian2 | Cartesian3, p2: Cartesian2 | Cartesian3): boolean;
+declare function pointInsideTriangle(point: Cartesian2 | Cartesian3, p0: Cartesian2 | Cartesian3, p1: Cartesian2 | Cartesian3, p2: Cartesian2 | Cartesian3): boolean;
 
 /**
  * A description of a polygon on the ellipsoid. The polygon is defined by a polygon hierarchy. Polygon geometry can be rendered with both {@link Primitive} and {@link GroundPrimitive}.
@@ -12684,19 +12086,19 @@ var geometry = Cesium.PolygonGeometry.createGeometry(extrudedPolygon);
  * @param [options.st] - 自定义UV坐标
  * @param [options.stRotation = 0.0] - The rotation of the texture coordinates, in radians. A positive rotation is counter-clockwise.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.perPositionHeight = false] - Use the height of options.positions for each position instead of using options.height to determine the height.
  * @param [options.closeTop = true] - When false, leaves off the top of an extruded polygon open.
  * @param [options.closeBottom = true] - When false, leaves off the bottom of an extruded polygon open.
  * @param [options.arcType = ArcType.GEODESIC] - The type of line the polygon edges must follow. Valid options are {@link ArcType.GEODESIC} and {@link ArcType.RHUMB}.
  */
-export class PolygonGeometry {
+declare class PolygonGeometry {
     constructor(options: {
         polygonHierarchy: PolygonHierarchy;
         height?: number;
         extrudedHeight?: number;
         vertexFormat?: VertexFormat;
-        indices?: number[];
+        indices?: Number[];
         st?: Float32Array;
         stRotation?: number;
         ellipsoid?: Ellipsoid;
@@ -12739,7 +12141,7 @@ export class PolygonGeometry {
      * @param [options.st] - 自定义UV坐标
      * @param [options.stRotation = 0.0] - The rotation of the texture coordinates, in radians. A positive rotation is counter-clockwise.
      * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
-     * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+     * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
      * @param [options.perPositionHeight = false] - Use the height of options.positions for each position instead of using options.height to determine the height.
      * @param [options.closeTop = true] - When false, leaves off the top of an extruded polygon open.
      * @param [options.closeBottom = true] - When false, leaves off the bottom of an extruded polygon open.
@@ -12750,7 +12152,7 @@ export class PolygonGeometry {
         height?: number;
         extrudedHeight?: number;
         vertexFormat?: VertexFormat;
-        indices?: number[];
+        indices?: Number[];
         st?: Float32Array;
         stRotation?: number;
         ellipsoid?: Ellipsoid;
@@ -12767,19 +12169,19 @@ export class PolygonGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: PolygonGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: PolygonGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
      * @param [startingIndex = 0] - The starting index of the element to be unpacked.
      * @param [result] - The object into which to store the result.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PolygonGeometry): void;
+    static unpack(array: Number[], startingIndex?: number, result?: PolygonGeometry): void;
     /**
      * Returns the bounding rectangle given the provided options
      * @param options - Object with the following properties:
      * @param options.polygonHierarchy - A polygon hierarchy that can include holes.
-     * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions sampled.
+     * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions sampled.
      * @param [options.arcType = ArcType.GEODESIC] - The type of line the polygon edges must follow. Valid options are {@link ArcType.GEODESIC} and {@link ArcType.RHUMB}.
      * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
      * @param [result] - An object in which to store the result.
@@ -12805,7 +12207,7 @@ The holes themselves may also have holes which nest inner polygons.
  * @param [positions] - A linear ring defining the outer boundary of the polygon or hole.
  * @param [holes] - An array of polygon hierarchies defining holes in the polygon.
  */
-export class PolygonHierarchy {
+declare class PolygonHierarchy {
     constructor(positions?: Cartesian3[], holes?: PolygonHierarchy[]);
     /**
      * A linear ring defining the outer boundary of the polygon or hole.
@@ -12891,11 +12293,11 @@ var geometry = Cesium.PolygonOutlineGeometry.createGeometry(extrudedPolygon);
  * @param [options.extrudedHeight] - The distance in meters between the polygon's extruded face and the ellipsoid surface.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.perPositionHeight = false] - Use the height of options.positions for each position instead of using options.height to determine the height.
  * @param [options.arcType = ArcType.GEODESIC] - The type of path the outline must follow. Valid options are {@link ArcType.GEODESIC} and {@link ArcType.RHUMB}.
  */
-export class PolygonOutlineGeometry {
+declare class PolygonOutlineGeometry {
     constructor(options: {
         polygonHierarchy: PolygonHierarchy;
         height?: number;
@@ -12917,7 +12319,7 @@ export class PolygonOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: PolygonOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: PolygonOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -12925,7 +12327,7 @@ export class PolygonOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new PolygonOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PolygonOutlineGeometry): PolygonOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: PolygonOutlineGeometry): PolygonOutlineGeometry;
     /**
      * A description of a polygon outline from an array of positions.
      * @example
@@ -12945,7 +12347,7 @@ export class PolygonOutlineGeometry {
      * @param [options.height = 0.0] - The height of the polygon.
      * @param [options.extrudedHeight] - The height of the polygon extrusion.
      * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
-     * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+     * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
      * @param [options.perPositionHeight = false] - Use the height of options.positions for each position instead of using options.height to determine the height.
      * @param [options.arcType = ArcType.GEODESIC] - The type of path the outline must follow. Valid options are {@link LinkType.GEODESIC} and {@link ArcType.RHUMB}.
      */
@@ -12987,11 +12389,11 @@ var geometry = Cesium.PolylineGeometry.createGeometry(polyline);
  * @param [options.colors] - An Array of {@link Color} defining the per vertex or per segment colors.
  * @param [options.colorsPerVertex = false] - A boolean that determines whether the colors will be flat across each segment of the line or interpolated across the vertices.
  * @param [options.arcType = ArcType.GEODESIC] - The type of line the polyline segments must follow.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude if options.arcType is not ArcType.NONE. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude if options.arcType is not ArcType.NONE. Determines the number of positions in the buffer.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
  */
-export class PolylineGeometry {
+declare class PolylineGeometry {
     constructor(options: {
         positions: Cartesian3[];
         width?: number;
@@ -13013,7 +12415,7 @@ export class PolylineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: PolylineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: PolylineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -13021,7 +12423,7 @@ export class PolylineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new PolylineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PolylineGeometry): PolylineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: PolylineGeometry): PolylineGeometry;
     /**
      * Computes the geometric representation of a polyline, including its vertices, indices, and a bounding sphere.
      * @param polylineGeometry - A description of the polyline.
@@ -13054,11 +12456,11 @@ var volume = new Cesium.PolylineVolumeGeometry({
  * @param options.polylinePositions - An array of {@link Cartesian3} positions that define the center of the polyline volume.
  * @param options.shapePositions - An array of {@link Cartesian2} positions that define the shape to be extruded along the polyline
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  * @param [options.cornerType = CornerType.ROUNDED] - Determines the style of the corners.
  */
-export class PolylineVolumeGeometry {
+declare class PolylineVolumeGeometry {
     constructor(options: {
         polylinePositions: Cartesian3[];
         shapePositions: Cartesian2[];
@@ -13078,7 +12480,7 @@ export class PolylineVolumeGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: PolylineVolumeGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: PolylineVolumeGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -13086,7 +12488,7 @@ export class PolylineVolumeGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new PolylineVolumeGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PolylineVolumeGeometry): PolylineVolumeGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: PolylineVolumeGeometry): PolylineVolumeGeometry;
     /**
      * Computes the geometric representation of a polyline with a volume, including its vertices, indices, and a bounding sphere.
      * @param polylineVolumeGeometry - A description of the polyline volume.
@@ -13118,10 +12520,10 @@ var volumeOutline = new Cesium.PolylineVolumeOutlineGeometry({
  * @param options.polylinePositions - An array of positions that define the center of the polyline volume.
  * @param options.shapePositions - An array of positions that define the shape to be extruded along the polyline
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.cornerType = CornerType.ROUNDED] - Determines the style of the corners.
  */
-export class PolylineVolumeOutlineGeometry {
+declare class PolylineVolumeOutlineGeometry {
     constructor(options: {
         polylinePositions: Cartesian3[];
         shapePositions: Cartesian2[];
@@ -13140,7 +12542,7 @@ export class PolylineVolumeOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: PolylineVolumeOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: PolylineVolumeOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -13148,7 +12550,7 @@ export class PolylineVolumeOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new PolylineVolumeOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PolylineVolumeOutlineGeometry): PolylineVolumeOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: PolylineVolumeOutlineGeometry): PolylineVolumeOutlineGeometry;
     /**
      * Computes the geometric representation of the outline of a polyline with a volume, including its vertices, indices, and a bounding sphere.
      * @param polylineVolumeOutlineGeometry - A description of the polyline volume outline.
@@ -13160,45 +12562,45 @@ export class PolylineVolumeOutlineGeometry {
 /**
  * The type of a geometric primitive, i.e., points, lines, and triangles.
  */
-export enum PrimitiveType {
+declare enum PrimitiveType {
     /**
      * Points primitive where each vertex (or index) is a separate point.
      */
-    POINTS = WebGLConstants.POINTS,
+    POINTS = "WebGLConstants.POINTS",
     /**
      * Lines primitive where each two vertices (or indices) is a line segment.  Line segments are not necessarily connected.
      */
-    LINES = WebGLConstants.LINES,
+    LINES = "WebGLConstants.LINES",
     /**
      * Line loop primitive where each vertex (or index) after the first connects a line to
     the previous vertex, and the last vertex implicitly connects to the first.
      */
-    LINE_LOOP = WebGLConstants.LINE_LOOP,
+    LINE_LOOP = "WebGLConstants.LINE_LOOP",
     /**
      * Line strip primitive where each vertex (or index) after the first connects a line to the previous vertex.
      */
-    LINE_STRIP = WebGLConstants.LINE_STRIP,
+    LINE_STRIP = "WebGLConstants.LINE_STRIP",
     /**
      * Triangles primitive where each three vertices (or indices) is a triangle.  Triangles do not necessarily share edges.
      */
-    TRIANGLES = WebGLConstants.TRIANGLES,
+    TRIANGLES = "WebGLConstants.TRIANGLES",
     /**
      * Triangle strip primitive where each vertex (or index) after the first two connect to
     the previous two vertices forming a triangle.  For example, this can be used to model a wall.
      */
-    TRIANGLE_STRIP = WebGLConstants.TRIANGLE_STRIP,
+    TRIANGLE_STRIP = "WebGLConstants.TRIANGLE_STRIP",
     /**
      * Triangle fan primitive where each vertex (or index) after the first two connect to
     the previous vertex and the first vertex forming a triangle.  For example, this can be used
     to model a cone or circle.
      */
-    TRIANGLE_FAN = WebGLConstants.TRIANGLE_FAN
+    TRIANGLE_FAN = "WebGLConstants.TRIANGLE_FAN"
 }
 
 /**
  * Base class for proxying requested made by {@link Resource}.
  */
-export class Proxy {
+declare class Proxy {
     constructor();
     /**
      * Get the final URL to use to request a given resource.
@@ -13211,7 +12613,7 @@ export class Proxy {
 /**
  * Defines functions for 2nd order polynomial functions of one variable with only real coefficients.
  */
-export namespace QuadraticRealPolynomial {
+declare namespace QuadraticRealPolynomial {
     /**
      * Provides the discriminant of the quadratic equation from the supplied coefficients.
      * @param a - The coefficient of the 2nd order monomial.
@@ -13227,7 +12629,7 @@ export namespace QuadraticRealPolynomial {
      * @param c - The coefficient of the 0th order monomial.
      * @returns The real valued roots.
      */
-    function computeRealRoots(a: number, b: number, c: number): number[];
+    function computeRealRoots(a: number, b: number, c: number): Number[];
 }
 
 /**
@@ -13297,7 +12699,7 @@ and 32767 at the maximum height in the tile.
  * @param [options.waterMask] - The buffer containing the watermask.
  * @param [options.credits] - Array of credits for this tile.
  */
-export class QuantizedMeshTerrainData {
+declare class QuantizedMeshTerrainData {
     constructor(options: {
         quantizedVertices: Uint16Array;
         indices: Uint16Array | Uint32Array;
@@ -13306,10 +12708,10 @@ export class QuantizedMeshTerrainData {
         boundingSphere: BoundingSphere;
         orientedBoundingBox?: OrientedBoundingBox;
         horizonOcclusionPoint: Cartesian3;
-        westIndices: number[];
-        southIndices: number[];
-        eastIndices: number[];
-        northIndices: number[];
+        westIndices: Number[];
+        southIndices: Number[];
+        eastIndices: Number[];
+        northIndices: Number[];
         westSkirtHeight: number;
         southSkirtHeight: number;
         eastSkirtHeight: number;
@@ -13379,7 +12781,7 @@ export class QuantizedMeshTerrainData {
 /**
  * Defines functions for 4th order polynomial functions of one variable with only real coefficients.
  */
-export namespace QuarticRealPolynomial {
+declare namespace QuarticRealPolynomial {
     /**
      * Provides the discriminant of the quartic equation from the supplied coefficients.
      * @param a - The coefficient of the 4th order monomial.
@@ -13399,7 +12801,7 @@ export namespace QuarticRealPolynomial {
      * @param e - The coefficient of the 0th order monomial.
      * @returns The real valued roots.
      */
-    function computeRealRoots(a: number, b: number, c: number, d: number, e: number): number[];
+    function computeRealRoots(a: number, b: number, c: number, d: number, e: number): Number[];
 }
 
 /**
@@ -13409,7 +12811,7 @@ export namespace QuarticRealPolynomial {
  * @param [z = 0.0] - The Z component.
  * @param [w = 0.0] - The W component.
  */
-export class Quaternion {
+declare class Quaternion {
     constructor(x?: number, y?: number, z?: number, w?: number);
     /**
      * The X component.
@@ -13463,7 +12865,7 @@ export class Quaternion {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Quaternion, array: number[], startingIndex?: number): number[];
+    static pack(value: Quaternion, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -13471,7 +12873,7 @@ export class Quaternion {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Quaternion instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Quaternion): Quaternion;
+    static unpack(array: Number[], startingIndex?: number, result?: Quaternion): Quaternion;
     /**
      * The number of elements used to store the object into an array in its interpolatable form.
      */
@@ -13483,7 +12885,7 @@ export class Quaternion {
      * @param [lastIndex = packedArray.length] - The index of the last element to be converted.
      * @param [result] - The object into which to store the result.
      */
-    static convertPackedArrayForInterpolation(packedArray: number[], startingIndex?: number, lastIndex?: number, result?: number[]): void;
+    static convertPackedArrayForInterpolation(packedArray: Number[], startingIndex?: number, lastIndex?: number, result?: Number[]): void;
     /**
      * Retrieves an instance from a packed array converted with {@link convertPackedArrayForInterpolation}.
      * @param array - The array previously packed for interpolation.
@@ -13493,7 +12895,7 @@ export class Quaternion {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Quaternion instance if one was not provided.
      */
-    static unpackInterpolationResult(array: number[], sourceArray: number[], firstIndex?: number, lastIndex?: number, result?: Quaternion): Quaternion;
+    static unpackInterpolationResult(array: Number[], sourceArray: Number[], firstIndex?: number, lastIndex?: number, result?: Quaternion): Quaternion;
     /**
      * Duplicates a Quaternion instance.
      * @param quaternion - The quaternion to duplicate.
@@ -13748,15 +13150,15 @@ The generated curve is in the class C<sup>1</sup>.
                The values are in no way connected to the clock time. They are the parameterization for the curve.
  * @param options.points - The array of {@link Quaternion} control points.
  */
-export class QuaternionSpline {
+declare class QuaternionSpline {
     constructor(options: {
-        times: number[];
+        times: Number[];
         points: Quaternion[];
     });
     /**
      * An array of times for the control points.
      */
-    readonly times: number[];
+    readonly times: Number[];
     /**
      * An array of {@link Quaternion} control points.
      */
@@ -13804,12 +13206,12 @@ the value in the object will be an array of values.
  * @param queryString - The query string.
  * @returns An object containing the parameters parsed from the query string.
  */
-export function queryToObject(queryString: string): any;
+declare function queryToObject(queryString: string): any;
 
 /**
  * A queue that can enqueue items at the end, and dequeue items from the front.
  */
-export class Queue {
+declare class Queue {
     constructor();
     /**
      * The length of the queue.
@@ -13846,7 +13248,7 @@ export class Queue {
     sort(compareFunction: Queue.Comparator): void;
 }
 
-export namespace Queue {
+declare namespace Queue {
     /**
      * A function used to compare two items while sorting a queue.
      * @example
@@ -13864,7 +13266,7 @@ export namespace Queue {
  * @param [origin = Cartesian3.ZERO] - The origin of the ray.
  * @param [direction = Cartesian3.ZERO] - The direction of the ray.
  */
-export class Ray {
+declare class Ray {
     constructor(origin?: Cartesian3, direction?: Cartesian3);
     /**
      * The origin of the ray.
@@ -13903,7 +13305,7 @@ export class Ray {
  * @param [east = 0.0] - The easternmost longitude, in radians, in the range [-Pi, Pi].
  * @param [north = 0.0] - The northernmost latitude, in radians, in the range [-Pi/2, Pi/2].
  */
-export class Rectangle {
+declare class Rectangle {
     constructor(west?: number, south?: number, east?: number, north?: number);
     /**
      * The westernmost longitude in radians in the range [-Pi, Pi].
@@ -13940,7 +13342,7 @@ export class Rectangle {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Rectangle, array: number[], startingIndex?: number): number[];
+    static pack(value: Rectangle, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -13948,7 +13350,7 @@ export class Rectangle {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Rectangle instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Rectangle): Rectangle;
+    static unpack(array: Number[], startingIndex?: number, result?: Rectangle): Rectangle;
     /**
      * Computes the width of a rectangle in radians.
      * @param rectangle - The rectangle to compute the width of.
@@ -14173,13 +13575,13 @@ var geometry = Cesium.RectangleGeometry.createGeometry(rectangle);
  * @param options.rectangle - A cartographic rectangle with north, south, east and west properties in radians.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid on which the rectangle lies.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.height = 0.0] - The distance in meters between the rectangle and the ellipsoid surface.
  * @param [options.rotation = 0.0] - The rotation of the rectangle, in radians. A positive rotation is counter-clockwise.
  * @param [options.stRotation = 0.0] - The rotation of the texture coordinates, in radians. A positive rotation is counter-clockwise.
  * @param [options.extrudedHeight] - The distance in meters between the rectangle's extruded face and the ellipsoid surface.
  */
-export class RectangleGeometry {
+declare class RectangleGeometry {
     constructor(options: {
         rectangle: Rectangle;
         vertexFormat?: VertexFormat;
@@ -14201,7 +13603,7 @@ export class RectangleGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: RectangleGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: RectangleGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -14209,13 +13611,13 @@ export class RectangleGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new RectangleGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: RectangleGeometry): RectangleGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: RectangleGeometry): RectangleGeometry;
     /**
      * Computes the bounding rectangle based on the provided options
      * @param options - Object with the following properties:
      * @param options.rectangle - A cartographic rectangle with north, south, east and west properties in radians.
      * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid on which the rectangle lies.
-     * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+     * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
      * @param [options.rotation = 0.0] - The rotation of the rectangle, in radians. A positive rotation is counter-clockwise.
      * @param [result] - An object in which to store the result.
      * @returns The result rectangle
@@ -14246,12 +13648,12 @@ var geometry = Cesium.RectangleOutlineGeometry.createGeometry(rectangle);
  * @param options - Object with the following properties:
  * @param options.rectangle - A cartographic rectangle with north, south, east and west properties in radians.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid on which the rectangle lies.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.height = 0.0] - The distance in meters between the rectangle and the ellipsoid surface.
  * @param [options.rotation = 0.0] - The rotation of the rectangle, in radians. A positive rotation is counter-clockwise.
  * @param [options.extrudedHeight] - The distance in meters between the rectangle's extruded face and the ellipsoid surface.
  */
-export class RectangleOutlineGeometry {
+declare class RectangleOutlineGeometry {
     constructor(options: {
         rectangle: Rectangle;
         ellipsoid?: Ellipsoid;
@@ -14271,7 +13673,7 @@ export class RectangleOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: RectangleOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: RectangleOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -14279,7 +13681,7 @@ export class RectangleOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Quaternion instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: RectangleOutlineGeometry): RectangleOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: RectangleOutlineGeometry): RectangleOutlineGeometry;
     /**
      * Computes the geometric representation of an outline of a rectangle, including its vertices, indices, and a bounding sphere.
      * @param rectangleGeometry - A description of the rectangle outline.
@@ -14291,7 +13693,7 @@ export class RectangleOutlineGeometry {
 /**
  * Constants for identifying well-known reference frames.
  */
-export enum ReferenceFrame {
+declare enum ReferenceFrame {
     /**
      * The fixed frame.
      */
@@ -14314,7 +13716,7 @@ export enum ReferenceFrame {
  * @param [options.throttleByServer = false] - Whether to throttle the request by server.
  * @param [options.type = RequestType.OTHER] - The type of request.
  */
-export class Request {
+declare class Request {
     constructor(options?: {
         url?: string;
         requestFunction?: Request.RequestCallback;
@@ -14376,7 +13778,7 @@ export class Request {
     clone(result?: Request): Request;
 }
 
-export namespace Request {
+declare namespace Request {
     /**
      * The function that makes the actual data request.
      */
@@ -14405,13 +13807,13 @@ tick();
  * @param callback - The function to call when the next frame should be drawn.
  * @returns An ID that can be passed to {@link cancelAnimationFrame} to cancel the request.
  */
-export function requestAnimationFrame(callback: requestAnimationFrameCallback): number;
+declare function requestAnimationFrame(callback: requestAnimationFrameCallback): number;
 
 /**
  * A function that will be called when the next frame should be drawn.
  * @param timestamp - A timestamp for the frame, in milliseconds.
  */
-export type requestAnimationFrameCallback = (timestamp: number) => void;
+declare type requestAnimationFrameCallback = (timestamp: number) => void;
 
 /**
  * An event that is raised when a request encounters an error.
@@ -14420,7 +13822,7 @@ export type requestAnimationFrameCallback = (timestamp: number) => void;
  * @param [responseHeaders] - The response headers, represented either as an object literal or as a
                        string in the format returned by XMLHttpRequest's getAllResponseHeaders() function.
  */
-export class RequestErrorEvent {
+declare class RequestErrorEvent {
     constructor(statusCode?: number, response?: any, responseHeaders?: string | any);
     /**
      * The HTTP error status code, such as 404.  If the error does not have a particular
@@ -14450,7 +13852,7 @@ to retain control over the number of requests in CesiumJS is important because d
 a lot of new requests may be generated and a lot of in-flight requests may become redundant. The request scheduler manually constrains the
 number of requests so that newer requests wait in a shorter queue and don't have to compete for bandwidth with requests that have expired.
  */
-export namespace RequestScheduler {
+declare namespace RequestScheduler {
     /**
      * The maximum number of simultaneous active requests. Un-throttled requests do not observe this limit.
      */
@@ -14478,7 +13880,7 @@ export namespace RequestScheduler {
 /**
  * State of the request.
  */
-export enum RequestState {
+declare enum RequestState {
     /**
      * Initial unissued state.
      */
@@ -14508,7 +13910,7 @@ export enum RequestState {
 /**
  * An enum identifying the type of request. Used for finer grained logging and priority sorting.
  */
-export enum RequestType {
+declare enum RequestType {
     /**
      * Terrain request.
      */
@@ -14568,7 +13970,7 @@ var resource = new Resource({
  * @param [options.retryAttempts = 0] - The number of times the retryCallback should be called before giving up.
  * @param [options.request] - A Request object that will be used. Intended for internal use only.
  */
-export class Resource {
+declare class Resource {
     constructor(options: {
         url: string;
         queryParameters?: any;
@@ -14865,7 +14267,7 @@ export class Resource {
     });
      * @returns a promise that will resolve to the requested data when loaded. Returns undefined if <code>request.throttle</code> is true and the request does not have high enough priority.
      */
-    fetchText(): Promise<string> | undefined;
+    fetchText(): Promise<String> | undefined;
     /**
      * Creates a Resource and calls fetchText() on it.
      * @param options - A url or an object with the following properties
@@ -14888,7 +14290,7 @@ export class Resource {
         retryCallback?: Resource.RetryCallback;
         retryAttempts?: number;
         request?: Request;
-    }): Promise<string> | undefined;
+    }): Promise<String> | undefined;
     /**
      * Asynchronously loads the given resource as JSON.  Returns a promise that will resolve to
     a JSON object once loaded, or reject if the resource failed to load.  The data is loaded
@@ -15376,13 +14778,13 @@ export class Resource {
     static readonly DEFAULT: Resource;
 }
 
-export namespace Resource {
+declare namespace Resource {
     /**
      * A function that returns the value of the property.
      * @param [resource] - The resource that failed to load.
      * @param [error] - The error that occurred during the loading of the resource.
      */
-    type RetryCallback = (resource?: Resource, error?: Error) => boolean | Promise<boolean>;
+    type RetryCallback = (resource?: Resource, error?: Error) => boolean | Promise<Boolean>;
 }
 
 /**
@@ -15395,7 +14797,7 @@ to a developer error, e.g., invalid argument, that usually indicates a bug in th
 calling code.
  * @param [message] - The error message for this exception.
  */
-export class RuntimeError extends Error {
+declare class RuntimeError extends Error {
     constructor(message?: string);
     /**
      * 'RuntimeError' indicating that this exception was thrown due to a runtime error.
@@ -15441,7 +14843,7 @@ Cesium.when(promise, function(updatedPositions) {
  * @param positions - The positions to update with terrain heights.
  * @returns A promise that resolves to the provided list of positions when terrain the query has completed.
  */
-export function sampleTerrain(terrainProvider: TerrainProvider, level: number, positions: Cartographic[]): Promise<Cartographic[]>;
+declare function sampleTerrain(terrainProvider: TerrainProvider, level: number, positions: Cartographic[]): Promise<Cartographic[]>;
 
 /**
  * Initiates a sampleTerrain() request at the maximum available tile level for a terrain dataset.
@@ -15462,14 +14864,14 @@ Cesium.when(promise, function(updatedPositions) {
  * @returns A promise that resolves to the provided list of positions when terrain the query has completed.  This
                                     promise will reject if the terrain provider's `availability` property is undefined.
  */
-export function sampleTerrainMostDetailed(terrainProvider: TerrainProvider, positions: Cartographic[]): Promise<Cartographic[]>;
+declare function sampleTerrainMostDetailed(terrainProvider: TerrainProvider, positions: Cartographic[]): Promise<Cartographic[]>;
 
 /**
  * Handles user input events. Custom functions can be added to be executed on
 when the user enters input.
  * @param [element = document] - The element to add events to.
  */
-export class ScreenSpaceEventHandler {
+declare class ScreenSpaceEventHandler {
     constructor(element?: HTMLCanvasElement);
     /**
      * Set a function to be executed on an input event.
@@ -15527,7 +14929,7 @@ export class ScreenSpaceEventHandler {
 /**
  * This enumerated type is for classifying mouse events: down, up, click, double click, move and move while a button is held down.
  */
-export enum ScreenSpaceEventType {
+declare enum ScreenSpaceEventType {
     /**
      * Represents a mouse left button down event.
      */
@@ -15608,7 +15010,7 @@ export enum ScreenSpaceEventType {
 });
  * @param [show = true] - Determines if the geometry instance will be shown.
  */
-export class ShowGeometryInstanceAttribute {
+declare class ShowGeometryInstanceAttribute {
     constructor(show?: boolean);
     /**
      * The values for the attributes stored in a typed array.
@@ -15645,7 +15047,7 @@ export class ShowGeometryInstanceAttribute {
  * Contains functions for finding the Cartesian coordinates of the sun and the moon in the
 Earth-centered inertial frame.
  */
-export namespace Simon1994PlanetaryPositions {
+declare namespace Simon1994PlanetaryPositions {
     /**
      * Computes the position of the Sun in the Earth-centered inertial frame
      * @param [julianDate] - The time at which to compute the Sun's position, if not provided the current system time is used.
@@ -15680,10 +15082,10 @@ var geometry = Cesium.SimplePolylineGeometry.createGeometry(polyline);
  * @param [options.colors] - An Array of {@link Color} defining the per vertex or per segment colors.
  * @param [options.colorsPerVertex = false] - A boolean that determines whether the colors will be flat across each segment of the line or interpolated across the vertices.
  * @param [options.arcType = ArcType.GEODESIC] - The type of line the polyline segments must follow.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude if options.arcType is not ArcType.NONE. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude if options.arcType is not ArcType.NONE. Determines the number of positions in the buffer.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
  */
-export class SimplePolylineGeometry {
+declare class SimplePolylineGeometry {
     constructor(options: {
         positions: Cartesian3[];
         colors?: Color[];
@@ -15703,7 +15105,7 @@ export class SimplePolylineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: SimplePolylineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: SimplePolylineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -15711,7 +15113,7 @@ export class SimplePolylineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new SimplePolylineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: SimplePolylineGeometry): SimplePolylineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: SimplePolylineGeometry): SimplePolylineGeometry;
     /**
      * Computes the geometric representation of a simple polyline, including its vertices, indices, and a bounding sphere.
      * @param simplePolylineGeometry - A description of the polyline.
@@ -15734,7 +15136,7 @@ var geometry = Cesium.SphereGeometry.createGeometry(sphere);
  * @param [options.slicePartitions = 64] - The number of times to partition the ellipsoid into radial slices.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  */
-export class SphereGeometry {
+declare class SphereGeometry {
     constructor(options?: {
         radius?: number;
         stackPartitions?: number;
@@ -15752,7 +15154,7 @@ export class SphereGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: SphereGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: SphereGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -15760,7 +15162,7 @@ export class SphereGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new SphereGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: SphereGeometry): SphereGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: SphereGeometry): SphereGeometry;
     /**
      * Computes the geometric representation of a sphere, including its vertices, indices, and a bounding sphere.
      * @param sphereGeometry - A description of the sphere.
@@ -15784,7 +15186,7 @@ var geometry = Cesium.SphereOutlineGeometry.createGeometry(sphere);
  * @param [options.slicePartitions = 8] - The count of slices for the sphere (Equal to the number of radial lines).
  * @param [options.subdivisions = 200] - The number of points per line, determining the granularity of the curvature .
  */
-export class SphereOutlineGeometry {
+declare class SphereOutlineGeometry {
     constructor(options?: {
         radius?: number;
         stackPartitions?: number;
@@ -15802,7 +15204,7 @@ export class SphereOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: SphereOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: SphereOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -15810,7 +15212,7 @@ export class SphereOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new SphereOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: SphereOutlineGeometry): SphereOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: SphereOutlineGeometry): SphereOutlineGeometry;
     /**
      * Computes the geometric representation of an outline of a sphere, including its vertices, indices, and a bounding sphere.
      * @param sphereGeometry - A description of the sphere outline.
@@ -15825,7 +15227,7 @@ export class SphereOutlineGeometry {
  * @param [cone = 0.0] - The angular coordinate measured from the positive z-axis and toward the negative z-axis.
  * @param [magnitude = 1.0] - The linear coordinate measured from the origin.
  */
-export class Spherical {
+declare class Spherical {
     constructor(clock?: number, cone?: number, magnitude?: number);
     /**
      * The clock component.
@@ -15905,12 +15307,12 @@ export class Spherical {
  * Creates a curve parameterized and evaluated by time. This type describes an interface
 and is not intended to be instantiated directly.
  */
-export class Spline {
+declare class Spline {
     constructor();
     /**
      * An array of times for the control points.
      */
-    times: number[];
+    times: Number[];
     /**
      * An array of control points.
      */
@@ -15921,7 +15323,7 @@ export class Spline {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new instance of the point on the curve at the given time.
      */
-    evaluate(time: number, result?: Cartesian3 | Quaternion | number[]): Cartesian3 | Quaternion | number[];
+    evaluate(time: number, result?: Cartesian3 | Quaternion | Number[]): Cartesian3 | Quaternion | Number[];
     /**
      * Finds an index <code>i</code> in <code>times</code> such that the parameter
     <code>time</code> is in the interval <code>[times[i], times[i + 1]]</code>.
@@ -15949,7 +15351,7 @@ export class Spline {
  * @param array - The array to divide.
  * @param numberOfArrays - The number of arrays to divide the provided array into.
  */
-export function subdivideArray(array: any[], numberOfArrays: number): void;
+declare function subdivideArray(array: any[], numberOfArrays: number): void;
 
 /**
  * A wrapper around a web worker that allows scheduling tasks for a given worker,
@@ -15961,7 +15363,7 @@ The Worker is not constructed until a task is scheduled.
                                        scheduleTask will not queue any more tasks, allowing
                                        work to be rescheduled in future frames.
  */
-export class TaskProcessor {
+declare class TaskProcessor {
     constructor(workerPath: string, maximumActiveTasks?: number);
     /**
      * Schedule a task to be processed by the web worker asynchronously.  If there are currently more
@@ -16024,7 +15426,7 @@ export class TaskProcessor {
  * Terrain data for a single tile.  This type describes an
 interface and is not intended to be instantiated directly.
  */
-export class TerrainData {
+declare class TerrainData {
     constructor();
     /**
      * An array of credits for this tile.
@@ -16087,7 +15489,7 @@ export class TerrainData {
 organized into a pyramid of tiles according to a {@link TilingScheme}.  This type describes an
 interface and is not intended to be instantiated directly.
  */
-export class TerrainProvider {
+declare class TerrainProvider {
     constructor();
     /**
      * Gets an event that is raised when the terrain provider encounters an asynchronous error..  By subscribing
@@ -16113,7 +15515,7 @@ export class TerrainProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
     indicates which areas of the globe are water rather than land, so they can be rendered
@@ -16202,7 +15604,7 @@ export class TerrainProvider {
  * @param tilingScheme - The tiling scheme in which to report availability.
  * @param maximumLevel - The maximum tile level that is potentially available.
  */
-export class TileAvailability {
+declare class TileAvailability {
     constructor(tilingScheme: TilingScheme, maximumLevel: number);
     /**
      * Marks a rectangular range of tiles in a particular level as being available.  For best performance,
@@ -16272,7 +15674,7 @@ export class TileAvailability {
  * @param [timesRetried = 0] - The number of times this operation has been retried.
  * @param [error] - The error or exception that occurred, if any.
  */
-export class TileProviderError {
+declare class TileProviderError {
     constructor(provider: ImageryProvider | TerrainProvider, message: string, x?: number, y?: number, level?: number, timesRetried?: number, error?: Error);
     /**
      * The {@link ImageryProvider} or {@link TerrainProvider} that experienced the error.
@@ -16345,7 +15747,7 @@ export class TileProviderError {
     static handleSuccess(previousError: TileProviderError): void;
 }
 
-export namespace TileProviderError {
+declare namespace TileProviderError {
     /**
      * A function that will be called to retry the operation.
      */
@@ -16359,7 +15761,7 @@ At level of detail one, each of the level zero tiles has four children, two in e
 At level of detail two, each of the level one tiles has four children, two in each direction.
 This continues for as many levels as are present in the geometry or imagery source.
  */
-export class TilingScheme {
+declare class TilingScheme {
     constructor();
     /**
      * Gets the ellipsoid that is tiled by the tiling scheme.
@@ -16477,7 +15879,7 @@ var containsDate = Cesium.TimeInterval.contains(timeInterval, dateToCheck);
  * @param [options.isStopIncluded = true] - <code>true</code> if <code>options.stop</code> is included in the interval, <code>false</code> otherwise.
  * @param [options.data] - Arbitrary data associated with this interval.
  */
-export class TimeInterval {
+declare class TimeInterval {
     constructor(options?: {
         start?: JulianDate;
         stop?: JulianDate;
@@ -16610,7 +16012,7 @@ export class TimeInterval {
     static readonly EMPTY: TimeInterval;
 }
 
-export namespace TimeInterval {
+declare namespace TimeInterval {
     /**
      * Function interface for merging interval data.
      * @param leftData - The first data instance.
@@ -16629,7 +16031,7 @@ export namespace TimeInterval {
  * A non-overlapping collection of {@link TimeInterval} instances sorted by start time.
  * @param [intervals] - An array of intervals to add to the collection.
  */
-export class TimeIntervalCollection {
+declare class TimeIntervalCollection {
     constructor(intervals?: TimeInterval[]);
     /**
      * Gets an event that is raised whenever the collection of intervals change.
@@ -16796,7 +16198,7 @@ export class TimeIntervalCollection {
      * @returns The modified result parameter or a new instance if none was provided.
      */
     static fromIso8601DateArray(options: {
-        iso8601Dates: string[];
+        iso8601Dates: String[];
         isStartIncluded?: boolean;
         isStopIncluded?: boolean;
         leadingInterval?: boolean;
@@ -16832,7 +16234,7 @@ export class TimeIntervalCollection {
 /**
  * Provides the type of time standards which JulianDate can take as input.
  */
-export enum TimeStandard {
+declare enum TimeStandard {
     /**
      * Represents the coordinated Universal Time (UTC) time standard.
     
@@ -16851,7 +16253,7 @@ export enum TimeStandard {
 /**
  * Contains functions for transforming positions to various reference frames.
  */
-export namespace Transforms {
+declare namespace Transforms {
     /**
      * Generates a function that computes a 4x4 transformation matrix from a reference frame
     centered at the provided origin to the provided ellipsoid's fixed reference frame.
@@ -17115,7 +16517,7 @@ export namespace Transforms {
  * @param [rotation = Quaternion.IDENTITY] - A {@link Quaternion} specifying the (x, y, z, w) rotation to apply to the node.
  * @param [scale = new Cartesian3(1.0, 1.0, 1.0)] - A {@link Cartesian3} specifying the (x, y, z) scaling to apply to the node.
  */
-export class TranslationRotationScale {
+declare class TranslationRotationScale {
     constructor(translation?: Cartesian3, rotation?: Quaternion, scale?: Cartesian3);
     /**
      * Gets or sets the (x, y, z) translation to apply to the node.
@@ -17142,7 +16544,7 @@ export class TranslationRotationScale {
  * Uses the Tridiagonal Matrix Algorithm, also known as the Thomas Algorithm, to solve
 a system of linear equations where the coefficient matrix is a tridiagonal matrix.
  */
-export namespace TridiagonalSystemSolver {
+declare namespace TridiagonalSystemSolver {
     /**
      * Solves a tridiagonal system of linear equations.
      * @example
@@ -17164,14 +16566,14 @@ export namespace TridiagonalSystemSolver {
      * @param right - An array of Cartesians with length <code>n</code> that is the right side of the system of equations.
      * @returns An array of Cartesians with length <code>n</code> that is the solution to the tridiagonal system of equations.
      */
-    function solve(diagonal: number[], lower: number[], upper: number[], right: Cartesian3[]): Cartesian3[];
+    function solve(diagonal: Number[], lower: Number[], upper: Number[], right: Cartesian3[]): Cartesian3[];
 }
 
 /**
  * A singleton that contains all of the servers that are trusted. Credentials will be sent with
 any requests to these servers.
  */
-export namespace TrustedServers {
+declare namespace TrustedServers {
     /**
      * Adds a trusted server to the registry
      * @example
@@ -17228,7 +16630,7 @@ var format = new Cesium.VertexFormat({
 });
  * @param [options] - An object with boolean properties corresponding to VertexFormat properties as shown in the code example.
  */
-export class VertexFormat {
+declare class VertexFormat {
     constructor(options?: any);
     /**
      * When <code>true</code>, the vertex has a 3D position attribute.
@@ -17318,7 +16720,7 @@ export class VertexFormat {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: VertexFormat, array: number[], startingIndex?: number): number[];
+    static pack(value: VertexFormat, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -17326,7 +16728,7 @@ export class VertexFormat {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new VertexFormat instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: VertexFormat): VertexFormat;
+    static unpack(array: Number[], startingIndex?: number, result?: VertexFormat): VertexFormat;
     /**
      * Duplicates a VertexFormat instance.
      * @param vertexFormat - The vertex format to duplicate.
@@ -17344,7 +16746,7 @@ export class VertexFormat {
  * @param [options.epoch = Iso8601.MINIMUM_VALUE] - The simulation time that marks the start of the video.
  * @param [options.tolerance = 1.0] - The maximum amount of time, in seconds, that the clock and video can diverge.
  */
-export class VideoSynchronizer {
+declare class VideoSynchronizer {
     constructor(options?: {
         clock?: Clock;
         element?: HTMLVideoElement;
@@ -17388,7 +16790,7 @@ is visible during horizon culling. An occluder may fully block an occludee, in w
 it has no visibility, may partially block an occludee from view, or may not block it at all,
 leading to full visibility.
  */
-export enum Visibility {
+declare enum Visibility {
     /**
      * Represents that no part of an object is visible.
      */
@@ -17417,7 +16819,7 @@ viewer.terrainProvider = terrainProvider;
                    specified, the WGS84 ellipsoid is used.
  * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
  */
-export class VRTheWorldTerrainProvider {
+declare class VRTheWorldTerrainProvider {
     constructor(options: {
         url: Resource | string;
         ellipsoid?: Ellipsoid;
@@ -17446,7 +16848,7 @@ export class VRTheWorldTerrainProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets a value indicating whether or not the provider includes a water mask.  The water mask
     indicates which areas of the globe are water rather than land, so they can be rendered
@@ -17520,7 +16922,7 @@ var wall = new Cesium.WallGeometry({
 var geometry = Cesium.WallGeometry.createGeometry(wall);
  * @param options - Object with the following properties:
  * @param options.positions - An array of Cartesian objects, which are the points of the wall.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.maximumHeights] - An array parallel to <code>positions</code> that give the maximum height of the
        wall at <code>positions</code>. If undefined, the height of each position in used.
  * @param [options.minimumHeights] - An array parallel to <code>positions</code> that give the minimum height of the
@@ -17528,12 +16930,12 @@ var geometry = Cesium.WallGeometry.createGeometry(wall);
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid for coordinate manipulation
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  */
-export class WallGeometry {
+declare class WallGeometry {
     constructor(options: {
         positions: Cartesian3[];
         granularity?: number;
-        maximumHeights?: number[];
-        minimumHeights?: number[];
+        maximumHeights?: Number[];
+        minimumHeights?: Number[];
         ellipsoid?: Ellipsoid;
         vertexFormat?: VertexFormat;
     });
@@ -17548,7 +16950,7 @@ export class WallGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: WallGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: WallGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -17556,7 +16958,7 @@ export class WallGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new WallGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: WallGeometry): WallGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: WallGeometry): WallGeometry;
     /**
      * A description of a wall, which is similar to a KML line string. A wall is defined by a series of points,
     which extrude down to the ground. Optionally, they can extrude downwards to a specified height.
@@ -17615,19 +17017,19 @@ var wall = new Cesium.WallOutlineGeometry({
 var geometry = Cesium.WallOutlineGeometry.createGeometry(wall);
  * @param options - Object with the following properties:
  * @param options.positions - An array of Cartesian objects, which are the points of the wall.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.maximumHeights] - An array parallel to <code>positions</code> that give the maximum height of the
        wall at <code>positions</code>. If undefined, the height of each position in used.
  * @param [options.minimumHeights] - An array parallel to <code>positions</code> that give the minimum height of the
        wall at <code>positions</code>. If undefined, the height at each position is 0.0.
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid for coordinate manipulation
  */
-export class WallOutlineGeometry {
+declare class WallOutlineGeometry {
     constructor(options: {
         positions: Cartesian3[];
         granularity?: number;
-        maximumHeights?: number[];
-        minimumHeights?: number[];
+        maximumHeights?: Number[];
+        minimumHeights?: Number[];
         ellipsoid?: Ellipsoid;
     });
     /**
@@ -17641,7 +17043,7 @@ export class WallOutlineGeometry {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: WallOutlineGeometry, array: number[], startingIndex?: number): number[];
+    static pack(value: WallOutlineGeometry, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -17649,7 +17051,7 @@ export class WallOutlineGeometry {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new WallOutlineGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: WallOutlineGeometry): WallOutlineGeometry;
+    static unpack(array: Number[], startingIndex?: number, result?: WallOutlineGeometry): WallOutlineGeometry;
     /**
      * A description of a walloutline. A wall is defined by a series of points,
     which extrude down to the ground. Optionally, they can extrude downwards to a specified height.
@@ -17690,12 +17092,606 @@ export class WallOutlineGeometry {
 }
 
 /**
+ * Enum containing WebGL Constant values by name.
+for use without an active WebGL context, or in cases where certain constants are unavailable using the WebGL context
+(For example, in [Safari 9]{@link https://github.com/CesiumGS/cesium/issues/2989}).
+
+These match the constants from the [WebGL 1.0]{@link https://www.khronos.org/registry/webgl/specs/latest/1.0/}
+and [WebGL 2.0]{@link https://www.khronos.org/registry/webgl/specs/latest/2.0/}
+specifications.
+ */
+declare enum WebGLConstants {
+    DEPTH_BUFFER_BIT = 256,
+    STENCIL_BUFFER_BIT = 1024,
+    COLOR_BUFFER_BIT = 16384,
+    POINTS = 0,
+    LINES = 1,
+    LINE_LOOP = 2,
+    LINE_STRIP = 3,
+    TRIANGLES = 4,
+    TRIANGLE_STRIP = 5,
+    TRIANGLE_FAN = 6,
+    ZERO = 0,
+    ONE = 1,
+    SRC_COLOR = 768,
+    ONE_MINUS_SRC_COLOR = 769,
+    SRC_ALPHA = 770,
+    ONE_MINUS_SRC_ALPHA = 771,
+    DST_ALPHA = 772,
+    ONE_MINUS_DST_ALPHA = 773,
+    DST_COLOR = 774,
+    ONE_MINUS_DST_COLOR = 775,
+    SRC_ALPHA_SATURATE = 776,
+    FUNC_ADD = 32774,
+    BLEND_EQUATION = 32777,
+    BLEND_EQUATION_RGB = 32777,
+    BLEND_EQUATION_ALPHA = 34877,
+    FUNC_SUBTRACT = 32778,
+    FUNC_REVERSE_SUBTRACT = 32779,
+    BLEND_DST_RGB = 32968,
+    BLEND_SRC_RGB = 32969,
+    BLEND_DST_ALPHA = 32970,
+    BLEND_SRC_ALPHA = 32971,
+    CONSTANT_COLOR = 32769,
+    ONE_MINUS_CONSTANT_COLOR = 32770,
+    CONSTANT_ALPHA = 32771,
+    ONE_MINUS_CONSTANT_ALPHA = 32772,
+    BLEND_COLOR = 32773,
+    ARRAY_BUFFER = 34962,
+    ELEMENT_ARRAY_BUFFER = 34963,
+    ARRAY_BUFFER_BINDING = 34964,
+    ELEMENT_ARRAY_BUFFER_BINDING = 34965,
+    STREAM_DRAW = 35040,
+    STATIC_DRAW = 35044,
+    DYNAMIC_DRAW = 35048,
+    BUFFER_SIZE = 34660,
+    BUFFER_USAGE = 34661,
+    CURRENT_VERTEX_ATTRIB = 34342,
+    FRONT = 1028,
+    BACK = 1029,
+    FRONT_AND_BACK = 1032,
+    CULL_FACE = 2884,
+    BLEND = 3042,
+    DITHER = 3024,
+    STENCIL_TEST = 2960,
+    DEPTH_TEST = 2929,
+    SCISSOR_TEST = 3089,
+    POLYGON_OFFSET_FILL = 32823,
+    SAMPLE_ALPHA_TO_COVERAGE = 32926,
+    SAMPLE_COVERAGE = 32928,
+    NO_ERROR = 0,
+    INVALID_ENUM = 1280,
+    INVALID_VALUE = 1281,
+    INVALID_OPERATION = 1282,
+    OUT_OF_MEMORY = 1285,
+    CW = 2304,
+    CCW = 2305,
+    LINE_WIDTH = 2849,
+    ALIASED_POINT_SIZE_RANGE = 33901,
+    ALIASED_LINE_WIDTH_RANGE = 33902,
+    CULL_FACE_MODE = 2885,
+    FRONT_FACE = 2886,
+    DEPTH_RANGE = 2928,
+    DEPTH_WRITEMASK = 2930,
+    DEPTH_CLEAR_VALUE = 2931,
+    DEPTH_FUNC = 2932,
+    STENCIL_CLEAR_VALUE = 2961,
+    STENCIL_FUNC = 2962,
+    STENCIL_FAIL = 2964,
+    STENCIL_PASS_DEPTH_FAIL = 2965,
+    STENCIL_PASS_DEPTH_PASS = 2966,
+    STENCIL_REF = 2967,
+    STENCIL_VALUE_MASK = 2963,
+    STENCIL_WRITEMASK = 2968,
+    STENCIL_BACK_FUNC = 34816,
+    STENCIL_BACK_FAIL = 34817,
+    STENCIL_BACK_PASS_DEPTH_FAIL = 34818,
+    STENCIL_BACK_PASS_DEPTH_PASS = 34819,
+    STENCIL_BACK_REF = 36003,
+    STENCIL_BACK_VALUE_MASK = 36004,
+    STENCIL_BACK_WRITEMASK = 36005,
+    VIEWPORT = 2978,
+    SCISSOR_BOX = 3088,
+    COLOR_CLEAR_VALUE = 3106,
+    COLOR_WRITEMASK = 3107,
+    UNPACK_ALIGNMENT = 3317,
+    PACK_ALIGNMENT = 3333,
+    MAX_TEXTURE_SIZE = 3379,
+    MAX_VIEWPORT_DIMS = 3386,
+    SUBPIXEL_BITS = 3408,
+    RED_BITS = 3410,
+    GREEN_BITS = 3411,
+    BLUE_BITS = 3412,
+    ALPHA_BITS = 3413,
+    DEPTH_BITS = 3414,
+    STENCIL_BITS = 3415,
+    POLYGON_OFFSET_UNITS = 10752,
+    POLYGON_OFFSET_FACTOR = 32824,
+    TEXTURE_BINDING_2D = 32873,
+    SAMPLE_BUFFERS = 32936,
+    SAMPLES = 32937,
+    SAMPLE_COVERAGE_VALUE = 32938,
+    SAMPLE_COVERAGE_INVERT = 32939,
+    COMPRESSED_TEXTURE_FORMATS = 34467,
+    DONT_CARE = 4352,
+    FASTEST = 4353,
+    NICEST = 4354,
+    GENERATE_MIPMAP_HINT = 33170,
+    BYTE = 5120,
+    UNSIGNED_BYTE = 5121,
+    SHORT = 5122,
+    UNSIGNED_SHORT = 5123,
+    INT = 5124,
+    UNSIGNED_INT = 5125,
+    FLOAT = 5126,
+    DEPTH_COMPONENT = 6402,
+    ALPHA = 6406,
+    RGB = 6407,
+    RGBA = 6408,
+    LUMINANCE = 6409,
+    LUMINANCE_ALPHA = 6410,
+    UNSIGNED_SHORT_4_4_4_4 = 32819,
+    UNSIGNED_SHORT_5_5_5_1 = 32820,
+    UNSIGNED_SHORT_5_6_5 = 33635,
+    FRAGMENT_SHADER = 35632,
+    VERTEX_SHADER = 35633,
+    MAX_VERTEX_ATTRIBS = 34921,
+    MAX_VERTEX_UNIFORM_VECTORS = 36347,
+    MAX_VARYING_VECTORS = 36348,
+    MAX_COMBINED_TEXTURE_IMAGE_UNITS = 35661,
+    MAX_VERTEX_TEXTURE_IMAGE_UNITS = 35660,
+    MAX_TEXTURE_IMAGE_UNITS = 34930,
+    MAX_FRAGMENT_UNIFORM_VECTORS = 36349,
+    SHADER_TYPE = 35663,
+    DELETE_STATUS = 35712,
+    LINK_STATUS = 35714,
+    VALIDATE_STATUS = 35715,
+    ATTACHED_SHADERS = 35717,
+    ACTIVE_UNIFORMS = 35718,
+    ACTIVE_ATTRIBUTES = 35721,
+    SHADING_LANGUAGE_VERSION = 35724,
+    CURRENT_PROGRAM = 35725,
+    NEVER = 512,
+    LESS = 513,
+    EQUAL = 514,
+    LEQUAL = 515,
+    GREATER = 516,
+    NOTEQUAL = 517,
+    GEQUAL = 518,
+    ALWAYS = 519,
+    KEEP = 7680,
+    REPLACE = 7681,
+    INCR = 7682,
+    DECR = 7683,
+    INVERT = 5386,
+    INCR_WRAP = 34055,
+    DECR_WRAP = 34056,
+    VENDOR = 7936,
+    RENDERER = 7937,
+    VERSION = 7938,
+    NEAREST = 9728,
+    LINEAR = 9729,
+    NEAREST_MIPMAP_NEAREST = 9984,
+    LINEAR_MIPMAP_NEAREST = 9985,
+    NEAREST_MIPMAP_LINEAR = 9986,
+    LINEAR_MIPMAP_LINEAR = 9987,
+    TEXTURE_MAG_FILTER = 10240,
+    TEXTURE_MIN_FILTER = 10241,
+    TEXTURE_WRAP_S = 10242,
+    TEXTURE_WRAP_T = 10243,
+    TEXTURE_2D = 3553,
+    TEXTURE = 5890,
+    TEXTURE_CUBE_MAP = 34067,
+    TEXTURE_BINDING_CUBE_MAP = 34068,
+    TEXTURE_CUBE_MAP_POSITIVE_X = 34069,
+    TEXTURE_CUBE_MAP_NEGATIVE_X = 34070,
+    TEXTURE_CUBE_MAP_POSITIVE_Y = 34071,
+    TEXTURE_CUBE_MAP_NEGATIVE_Y = 34072,
+    TEXTURE_CUBE_MAP_POSITIVE_Z = 34073,
+    TEXTURE_CUBE_MAP_NEGATIVE_Z = 34074,
+    MAX_CUBE_MAP_TEXTURE_SIZE = 34076,
+    TEXTURE0 = 33984,
+    TEXTURE1 = 33985,
+    TEXTURE2 = 33986,
+    TEXTURE3 = 33987,
+    TEXTURE4 = 33988,
+    TEXTURE5 = 33989,
+    TEXTURE6 = 33990,
+    TEXTURE7 = 33991,
+    TEXTURE8 = 33992,
+    TEXTURE9 = 33993,
+    TEXTURE10 = 33994,
+    TEXTURE11 = 33995,
+    TEXTURE12 = 33996,
+    TEXTURE13 = 33997,
+    TEXTURE14 = 33998,
+    TEXTURE15 = 33999,
+    TEXTURE16 = 34000,
+    TEXTURE17 = 34001,
+    TEXTURE18 = 34002,
+    TEXTURE19 = 34003,
+    TEXTURE20 = 34004,
+    TEXTURE21 = 34005,
+    TEXTURE22 = 34006,
+    TEXTURE23 = 34007,
+    TEXTURE24 = 34008,
+    TEXTURE25 = 34009,
+    TEXTURE26 = 34010,
+    TEXTURE27 = 34011,
+    TEXTURE28 = 34012,
+    TEXTURE29 = 34013,
+    TEXTURE30 = 34014,
+    TEXTURE31 = 34015,
+    ACTIVE_TEXTURE = 34016,
+    REPEAT = 10497,
+    CLAMP_TO_EDGE = 33071,
+    MIRRORED_REPEAT = 33648,
+    FLOAT_VEC2 = 35664,
+    FLOAT_VEC3 = 35665,
+    FLOAT_VEC4 = 35666,
+    INT_VEC2 = 35667,
+    INT_VEC3 = 35668,
+    INT_VEC4 = 35669,
+    BOOL = 35670,
+    BOOL_VEC2 = 35671,
+    BOOL_VEC3 = 35672,
+    BOOL_VEC4 = 35673,
+    FLOAT_MAT2 = 35674,
+    FLOAT_MAT3 = 35675,
+    FLOAT_MAT4 = 35676,
+    SAMPLER_2D = 35678,
+    SAMPLER_CUBE = 35680,
+    VERTEX_ATTRIB_ARRAY_ENABLED = 34338,
+    VERTEX_ATTRIB_ARRAY_SIZE = 34339,
+    VERTEX_ATTRIB_ARRAY_STRIDE = 34340,
+    VERTEX_ATTRIB_ARRAY_TYPE = 34341,
+    VERTEX_ATTRIB_ARRAY_NORMALIZED = 34922,
+    VERTEX_ATTRIB_ARRAY_POINTER = 34373,
+    VERTEX_ATTRIB_ARRAY_BUFFER_BINDING = 34975,
+    IMPLEMENTATION_COLOR_READ_TYPE = 35738,
+    IMPLEMENTATION_COLOR_READ_FORMAT = 35739,
+    COMPILE_STATUS = 35713,
+    LOW_FLOAT = 36336,
+    MEDIUM_FLOAT = 36337,
+    HIGH_FLOAT = 36338,
+    LOW_INT = 36339,
+    MEDIUM_INT = 36340,
+    HIGH_INT = 36341,
+    FRAMEBUFFER = 36160,
+    RENDERBUFFER = 36161,
+    RGBA4 = 32854,
+    RGB5_A1 = 32855,
+    RGB565 = 36194,
+    DEPTH_COMPONENT16 = 33189,
+    STENCIL_INDEX = 6401,
+    STENCIL_INDEX8 = 36168,
+    DEPTH_STENCIL = 34041,
+    RENDERBUFFER_WIDTH = 36162,
+    RENDERBUFFER_HEIGHT = 36163,
+    RENDERBUFFER_INTERNAL_FORMAT = 36164,
+    RENDERBUFFER_RED_SIZE = 36176,
+    RENDERBUFFER_GREEN_SIZE = 36177,
+    RENDERBUFFER_BLUE_SIZE = 36178,
+    RENDERBUFFER_ALPHA_SIZE = 36179,
+    RENDERBUFFER_DEPTH_SIZE = 36180,
+    RENDERBUFFER_STENCIL_SIZE = 36181,
+    FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE = 36048,
+    FRAMEBUFFER_ATTACHMENT_OBJECT_NAME = 36049,
+    FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL = 36050,
+    FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = 36051,
+    COLOR_ATTACHMENT0 = 36064,
+    DEPTH_ATTACHMENT = 36096,
+    STENCIL_ATTACHMENT = 36128,
+    DEPTH_STENCIL_ATTACHMENT = 33306,
+    NONE = 0,
+    FRAMEBUFFER_COMPLETE = 36053,
+    FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 36054,
+    FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = 36055,
+    FRAMEBUFFER_INCOMPLETE_DIMENSIONS = 36057,
+    FRAMEBUFFER_UNSUPPORTED = 36061,
+    FRAMEBUFFER_BINDING = 36006,
+    RENDERBUFFER_BINDING = 36007,
+    MAX_RENDERBUFFER_SIZE = 34024,
+    INVALID_FRAMEBUFFER_OPERATION = 1286,
+    UNPACK_FLIP_Y_WEBGL = 37440,
+    UNPACK_PREMULTIPLY_ALPHA_WEBGL = 37441,
+    CONTEXT_LOST_WEBGL = 37442,
+    UNPACK_COLORSPACE_CONVERSION_WEBGL = 37443,
+    BROWSER_DEFAULT_WEBGL = 37444,
+    COMPRESSED_RGB_S3TC_DXT1_EXT = 33776,
+    COMPRESSED_RGBA_S3TC_DXT1_EXT = 33777,
+    COMPRESSED_RGBA_S3TC_DXT3_EXT = 33778,
+    COMPRESSED_RGBA_S3TC_DXT5_EXT = 33779,
+    COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 35840,
+    COMPRESSED_RGB_PVRTC_2BPPV1_IMG = 35841,
+    COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = 35842,
+    COMPRESSED_RGBA_PVRTC_2BPPV1_IMG = 35843,
+    COMPRESSED_RGBA_ASTC_4x4_WEBGL = 37808,
+    COMPRESSED_RGB_ETC1_WEBGL = 36196,
+    COMPRESSED_RGBA_BPTC_UNORM = 36492,
+    HALF_FLOAT_OES = 36193,
+    DOUBLE = 5130,
+    READ_BUFFER = 3074,
+    UNPACK_ROW_LENGTH = 3314,
+    UNPACK_SKIP_ROWS = 3315,
+    UNPACK_SKIP_PIXELS = 3316,
+    PACK_ROW_LENGTH = 3330,
+    PACK_SKIP_ROWS = 3331,
+    PACK_SKIP_PIXELS = 3332,
+    COLOR = 6144,
+    DEPTH = 6145,
+    STENCIL = 6146,
+    RED = 6403,
+    RGB8 = 32849,
+    RGBA8 = 32856,
+    RGB10_A2 = 32857,
+    TEXTURE_BINDING_3D = 32874,
+    UNPACK_SKIP_IMAGES = 32877,
+    UNPACK_IMAGE_HEIGHT = 32878,
+    TEXTURE_3D = 32879,
+    TEXTURE_WRAP_R = 32882,
+    MAX_3D_TEXTURE_SIZE = 32883,
+    UNSIGNED_INT_2_10_10_10_REV = 33640,
+    MAX_ELEMENTS_VERTICES = 33000,
+    MAX_ELEMENTS_INDICES = 33001,
+    TEXTURE_MIN_LOD = 33082,
+    TEXTURE_MAX_LOD = 33083,
+    TEXTURE_BASE_LEVEL = 33084,
+    TEXTURE_MAX_LEVEL = 33085,
+    MIN = 32775,
+    MAX = 32776,
+    DEPTH_COMPONENT24 = 33190,
+    MAX_TEXTURE_LOD_BIAS = 34045,
+    TEXTURE_COMPARE_MODE = 34892,
+    TEXTURE_COMPARE_FUNC = 34893,
+    CURRENT_QUERY = 34917,
+    QUERY_RESULT = 34918,
+    QUERY_RESULT_AVAILABLE = 34919,
+    STREAM_READ = 35041,
+    STREAM_COPY = 35042,
+    STATIC_READ = 35045,
+    STATIC_COPY = 35046,
+    DYNAMIC_READ = 35049,
+    DYNAMIC_COPY = 35050,
+    MAX_DRAW_BUFFERS = 34852,
+    DRAW_BUFFER0 = 34853,
+    DRAW_BUFFER1 = 34854,
+    DRAW_BUFFER2 = 34855,
+    DRAW_BUFFER3 = 34856,
+    DRAW_BUFFER4 = 34857,
+    DRAW_BUFFER5 = 34858,
+    DRAW_BUFFER6 = 34859,
+    DRAW_BUFFER7 = 34860,
+    DRAW_BUFFER8 = 34861,
+    DRAW_BUFFER9 = 34862,
+    DRAW_BUFFER10 = 34863,
+    DRAW_BUFFER11 = 34864,
+    DRAW_BUFFER12 = 34865,
+    DRAW_BUFFER13 = 34866,
+    DRAW_BUFFER14 = 34867,
+    DRAW_BUFFER15 = 34868,
+    MAX_FRAGMENT_UNIFORM_COMPONENTS = 35657,
+    MAX_VERTEX_UNIFORM_COMPONENTS = 35658,
+    SAMPLER_3D = 35679,
+    SAMPLER_2D_SHADOW = 35682,
+    FRAGMENT_SHADER_DERIVATIVE_HINT = 35723,
+    PIXEL_PACK_BUFFER = 35051,
+    PIXEL_UNPACK_BUFFER = 35052,
+    PIXEL_PACK_BUFFER_BINDING = 35053,
+    PIXEL_UNPACK_BUFFER_BINDING = 35055,
+    FLOAT_MAT2x3 = 35685,
+    FLOAT_MAT2x4 = 35686,
+    FLOAT_MAT3x2 = 35687,
+    FLOAT_MAT3x4 = 35688,
+    FLOAT_MAT4x2 = 35689,
+    FLOAT_MAT4x3 = 35690,
+    SRGB = 35904,
+    SRGB8 = 35905,
+    SRGB8_ALPHA8 = 35907,
+    COMPARE_REF_TO_TEXTURE = 34894,
+    RGBA32F = 34836,
+    RGB32F = 34837,
+    RGBA16F = 34842,
+    RGB16F = 34843,
+    VERTEX_ATTRIB_ARRAY_INTEGER = 35069,
+    MAX_ARRAY_TEXTURE_LAYERS = 35071,
+    MIN_PROGRAM_TEXEL_OFFSET = 35076,
+    MAX_PROGRAM_TEXEL_OFFSET = 35077,
+    MAX_VARYING_COMPONENTS = 35659,
+    TEXTURE_2D_ARRAY = 35866,
+    TEXTURE_BINDING_2D_ARRAY = 35869,
+    R11F_G11F_B10F = 35898,
+    UNSIGNED_INT_10F_11F_11F_REV = 35899,
+    RGB9_E5 = 35901,
+    UNSIGNED_INT_5_9_9_9_REV = 35902,
+    TRANSFORM_FEEDBACK_BUFFER_MODE = 35967,
+    MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS = 35968,
+    TRANSFORM_FEEDBACK_VARYINGS = 35971,
+    TRANSFORM_FEEDBACK_BUFFER_START = 35972,
+    TRANSFORM_FEEDBACK_BUFFER_SIZE = 35973,
+    TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN = 35976,
+    RASTERIZER_DISCARD = 35977,
+    MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS = 35978,
+    MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS = 35979,
+    INTERLEAVED_ATTRIBS = 35980,
+    SEPARATE_ATTRIBS = 35981,
+    TRANSFORM_FEEDBACK_BUFFER = 35982,
+    TRANSFORM_FEEDBACK_BUFFER_BINDING = 35983,
+    RGBA32UI = 36208,
+    RGB32UI = 36209,
+    RGBA16UI = 36214,
+    RGB16UI = 36215,
+    RGBA8UI = 36220,
+    RGB8UI = 36221,
+    RGBA32I = 36226,
+    RGB32I = 36227,
+    RGBA16I = 36232,
+    RGB16I = 36233,
+    RGBA8I = 36238,
+    RGB8I = 36239,
+    RED_INTEGER = 36244,
+    RGB_INTEGER = 36248,
+    RGBA_INTEGER = 36249,
+    SAMPLER_2D_ARRAY = 36289,
+    SAMPLER_2D_ARRAY_SHADOW = 36292,
+    SAMPLER_CUBE_SHADOW = 36293,
+    UNSIGNED_INT_VEC2 = 36294,
+    UNSIGNED_INT_VEC3 = 36295,
+    UNSIGNED_INT_VEC4 = 36296,
+    INT_SAMPLER_2D = 36298,
+    INT_SAMPLER_3D = 36299,
+    INT_SAMPLER_CUBE = 36300,
+    INT_SAMPLER_2D_ARRAY = 36303,
+    UNSIGNED_INT_SAMPLER_2D = 36306,
+    UNSIGNED_INT_SAMPLER_3D = 36307,
+    UNSIGNED_INT_SAMPLER_CUBE = 36308,
+    UNSIGNED_INT_SAMPLER_2D_ARRAY = 36311,
+    DEPTH_COMPONENT32F = 36012,
+    DEPTH32F_STENCIL8 = 36013,
+    FLOAT_32_UNSIGNED_INT_24_8_REV = 36269,
+    FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING = 33296,
+    FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE = 33297,
+    FRAMEBUFFER_ATTACHMENT_RED_SIZE = 33298,
+    FRAMEBUFFER_ATTACHMENT_GREEN_SIZE = 33299,
+    FRAMEBUFFER_ATTACHMENT_BLUE_SIZE = 33300,
+    FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE = 33301,
+    FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE = 33302,
+    FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE = 33303,
+    FRAMEBUFFER_DEFAULT = 33304,
+    UNSIGNED_INT_24_8 = 34042,
+    DEPTH24_STENCIL8 = 35056,
+    UNSIGNED_NORMALIZED = 35863,
+    DRAW_FRAMEBUFFER_BINDING = 36006,
+    READ_FRAMEBUFFER = 36008,
+    DRAW_FRAMEBUFFER = 36009,
+    READ_FRAMEBUFFER_BINDING = 36010,
+    RENDERBUFFER_SAMPLES = 36011,
+    FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER = 36052,
+    MAX_COLOR_ATTACHMENTS = 36063,
+    COLOR_ATTACHMENT1 = 36065,
+    COLOR_ATTACHMENT2 = 36066,
+    COLOR_ATTACHMENT3 = 36067,
+    COLOR_ATTACHMENT4 = 36068,
+    COLOR_ATTACHMENT5 = 36069,
+    COLOR_ATTACHMENT6 = 36070,
+    COLOR_ATTACHMENT7 = 36071,
+    COLOR_ATTACHMENT8 = 36072,
+    COLOR_ATTACHMENT9 = 36073,
+    COLOR_ATTACHMENT10 = 36074,
+    COLOR_ATTACHMENT11 = 36075,
+    COLOR_ATTACHMENT12 = 36076,
+    COLOR_ATTACHMENT13 = 36077,
+    COLOR_ATTACHMENT14 = 36078,
+    COLOR_ATTACHMENT15 = 36079,
+    FRAMEBUFFER_INCOMPLETE_MULTISAMPLE = 36182,
+    MAX_SAMPLES = 36183,
+    HALF_FLOAT = 5131,
+    RG = 33319,
+    RG_INTEGER = 33320,
+    R8 = 33321,
+    RG8 = 33323,
+    R16F = 33325,
+    R32F = 33326,
+    RG16F = 33327,
+    RG32F = 33328,
+    R8I = 33329,
+    R8UI = 33330,
+    R16I = 33331,
+    R16UI = 33332,
+    R32I = 33333,
+    R32UI = 33334,
+    RG8I = 33335,
+    RG8UI = 33336,
+    RG16I = 33337,
+    RG16UI = 33338,
+    RG32I = 33339,
+    RG32UI = 33340,
+    VERTEX_ARRAY_BINDING = 34229,
+    R8_SNORM = 36756,
+    RG8_SNORM = 36757,
+    RGB8_SNORM = 36758,
+    RGBA8_SNORM = 36759,
+    SIGNED_NORMALIZED = 36764,
+    COPY_READ_BUFFER = 36662,
+    COPY_WRITE_BUFFER = 36663,
+    COPY_READ_BUFFER_BINDING = 36662,
+    COPY_WRITE_BUFFER_BINDING = 36663,
+    UNIFORM_BUFFER = 35345,
+    UNIFORM_BUFFER_BINDING = 35368,
+    UNIFORM_BUFFER_START = 35369,
+    UNIFORM_BUFFER_SIZE = 35370,
+    MAX_VERTEX_UNIFORM_BLOCKS = 35371,
+    MAX_FRAGMENT_UNIFORM_BLOCKS = 35373,
+    MAX_COMBINED_UNIFORM_BLOCKS = 35374,
+    MAX_UNIFORM_BUFFER_BINDINGS = 35375,
+    MAX_UNIFORM_BLOCK_SIZE = 35376,
+    MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS = 35377,
+    MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS = 35379,
+    UNIFORM_BUFFER_OFFSET_ALIGNMENT = 35380,
+    ACTIVE_UNIFORM_BLOCKS = 35382,
+    UNIFORM_TYPE = 35383,
+    UNIFORM_SIZE = 35384,
+    UNIFORM_BLOCK_INDEX = 35386,
+    UNIFORM_OFFSET = 35387,
+    UNIFORM_ARRAY_STRIDE = 35388,
+    UNIFORM_MATRIX_STRIDE = 35389,
+    UNIFORM_IS_ROW_MAJOR = 35390,
+    UNIFORM_BLOCK_BINDING = 35391,
+    UNIFORM_BLOCK_DATA_SIZE = 35392,
+    UNIFORM_BLOCK_ACTIVE_UNIFORMS = 35394,
+    UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES = 35395,
+    UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER = 35396,
+    UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 35398,
+    INVALID_INDEX = 4294967295,
+    MAX_VERTEX_OUTPUT_COMPONENTS = 37154,
+    MAX_FRAGMENT_INPUT_COMPONENTS = 37157,
+    MAX_SERVER_WAIT_TIMEOUT = 37137,
+    OBJECT_TYPE = 37138,
+    SYNC_CONDITION = 37139,
+    SYNC_STATUS = 37140,
+    SYNC_FLAGS = 37141,
+    SYNC_FENCE = 37142,
+    SYNC_GPU_COMMANDS_COMPLETE = 37143,
+    UNSIGNALED = 37144,
+    SIGNALED = 37145,
+    ALREADY_SIGNALED = 37146,
+    TIMEOUT_EXPIRED = 37147,
+    CONDITION_SATISFIED = 37148,
+    WAIT_FAILED = 37149,
+    SYNC_FLUSH_COMMANDS_BIT = 1,
+    VERTEX_ATTRIB_ARRAY_DIVISOR = 35070,
+    ANY_SAMPLES_PASSED = 35887,
+    ANY_SAMPLES_PASSED_CONSERVATIVE = 36202,
+    SAMPLER_BINDING = 35097,
+    RGB10_A2UI = 36975,
+    INT_2_10_10_10_REV = 36255,
+    TRANSFORM_FEEDBACK = 36386,
+    TRANSFORM_FEEDBACK_PAUSED = 36387,
+    TRANSFORM_FEEDBACK_ACTIVE = 36388,
+    TRANSFORM_FEEDBACK_BINDING = 36389,
+    COMPRESSED_R11_EAC = 37488,
+    COMPRESSED_SIGNED_R11_EAC = 37489,
+    COMPRESSED_RG11_EAC = 37490,
+    COMPRESSED_SIGNED_RG11_EAC = 37491,
+    COMPRESSED_RGB8_ETC2 = 37492,
+    COMPRESSED_SRGB8_ETC2 = 37493,
+    COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 = 37494,
+    COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 = 37495,
+    COMPRESSED_RGBA8_ETC2_EAC = 37496,
+    COMPRESSED_SRGB8_ALPHA8_ETC2_EAC = 37497,
+    TEXTURE_IMMUTABLE_FORMAT = 37167,
+    MAX_ELEMENT_INDEX = 36203,
+    TEXTURE_IMMUTABLE_LEVELS = 33503,
+    MAX_TEXTURE_MAX_ANISOTROPY_EXT = 34047
+}
+
+/**
  * The map projection used by Google Maps, Bing Maps, and most of ArcGIS Online, EPSG:3857.  This
 projection use longitude and latitude expressed with the WGS84 and transforms them to Mercator using
 the spherical (rather than ellipsoidal) equations.
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid.
  */
-export class WebMercatorProjection {
+declare class WebMercatorProjection {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * Gets the {@link Ellipsoid}.
@@ -17748,6 +17744,11 @@ export class WebMercatorProjection {
      * @returns The equivalent cartographic coordinates.
      */
     unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
+    /**
+     * 表示该对象不是经纬度坐标系
+     * @returns 不是经纬度坐标系
+     */
+    isGeographic(): boolean;
 }
 
 /**
@@ -17769,7 +17770,7 @@ the WGS84 ellipsoid.
        globe is covered in the longitude direction and an equal distance is covered in the latitude
        direction, resulting in a square projection.
  */
-export class WebMercatorTilingScheme {
+declare class WebMercatorTilingScheme {
     constructor(options?: {
         ellipsoid?: Ellipsoid;
         numberOfLevelZeroTilesX?: number;
@@ -17866,19 +17867,19 @@ var p0 = spline.evaluate(times[0]);
                the glTF from which the morph targets come. This means for 2 targets, weights = [w(0,0), w(0,1), w(1,0), w(1,1) ...]
                where i and j in w(i,j) are the time indices and target indices, respectively.
  */
-export class WeightSpline {
+declare class WeightSpline {
     constructor(options: {
-        times: number[];
-        weights: number[];
+        times: Number[];
+        weights: Number[];
     });
     /**
      * An array of times for the control weights.
      */
-    readonly times: number[];
+    readonly times: Number[];
     /**
      * An array of floating-point array control weights.
      */
-    readonly weights: number[];
+    readonly weights: Number[];
     /**
      * Finds an index <code>i</code> in <code>times</code> such that the parameter
     <code>time</code> is in the interval <code>[times[i], times[i + 1]]</code>.
@@ -17904,21 +17905,21 @@ export class WeightSpline {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new instance of the point on the curve at the given time.
      */
-    evaluate(time: number, result?: number[]): number[];
+    evaluate(time: number, result?: Number[]): Number[];
 }
 
 /**
  * Winding order defines the order of vertices for a triangle to be considered front-facing.
  */
-export enum WindingOrder {
+declare enum WindingOrder {
     /**
      * Vertices are in clockwise order.
      */
-    CLOCKWISE = WebGLConstants.CW,
+    CLOCKWISE = "WebGLConstants.CW",
     /**
      * Vertices are in counter-clockwise order.
      */
-    COUNTER_CLOCKWISE = WebGLConstants.CCW
+    COUNTER_CLOCKWISE = "WebGLConstants.CCW"
 }
 
 /**
@@ -17939,7 +17940,7 @@ If text is blank, returns undefined.
                   from measureText will also be added to the returned canvas. If text is
                   blank, returns undefined.
  */
-export function writeTextToCanvas(text: string, options?: {
+declare function writeTextToCanvas(text: string, options?: {
     font?: string;
     textBaseline?: string;
     fill?: boolean;
@@ -17951,7 +17952,7 @@ export function writeTextToCanvas(text: string, options?: {
     padding?: number;
 }): HTMLCanvasElement | undefined;
 
-export namespace BillboardGraphics {
+declare namespace BillboardGraphics {
     /**
      * Initialization options for the BillboardGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the billboard.
@@ -18009,7 +18010,7 @@ Example billboards
 </p>
  * @param [options] - Object describing initialization options
  */
-export class BillboardGraphics {
+declare class BillboardGraphics {
     constructor(options?: BillboardGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -18181,7 +18182,7 @@ export class BillboardGraphics {
  * @param entityCluster - The entity cluster to manage the collection of billboards and optionally cluster with other entities.
  * @param entityCollection - The entityCollection to visualize.
  */
-export class BillboardVisualizer {
+declare class BillboardVisualizer {
     constructor(entityCluster: EntityCluster, entityCollection: EntityCollection);
     /**
      * Updates the primitives created by this visualizer to match their
@@ -18207,7 +18208,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class BoxGeometryUpdater {
+declare class BoxGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -18223,7 +18224,7 @@ export class BoxGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate): GeometryInstance;
 }
 
-export namespace BoxGraphics {
+declare namespace BoxGraphics {
     /**
      * Initialization options for the BoxGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the box.
@@ -18255,7 +18256,7 @@ export namespace BoxGraphics {
  * Describes a box. The center position and orientation are determined by the containing {@link Entity}.
  * @param [options] - Object describing initialization options
  */
-export class BoxGraphics {
+declare class BoxGraphics {
     constructor(options?: BoxGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -18324,7 +18325,7 @@ export class BoxGraphics {
  * @param callback - The function to be called when the property is evaluated.
  * @param isConstant - <code>true</code> when the callback function returns the same value every time, <code>false</code> if the value will change.
  */
-export class CallbackProperty {
+declare class CallbackProperty {
     constructor(callback: CallbackProperty.Callback, isConstant: boolean);
     /**
      * Gets a value indicating if this property is constant.
@@ -18357,7 +18358,7 @@ export class CallbackProperty {
     equals(other?: Property): boolean;
 }
 
-export namespace CallbackProperty {
+declare namespace CallbackProperty {
     /**
      * A function that returns the value of the property.
      * @param [time] - The time for which to retrieve the value.
@@ -18366,7 +18367,7 @@ export namespace CallbackProperty {
     type Callback = (time?: JulianDate, result?: any) => any;
 }
 
-export namespace Cesium3DTilesetGraphics {
+declare namespace Cesium3DTilesetGraphics {
     /**
      * Initialization options for the Cesium3DTilesetGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the tileset.
@@ -18386,7 +18387,7 @@ The tileset modelMatrix is determined by the containing Entity position and orie
 or is left unset if position is undefined.
  * @param [options] - Object describing initialization options
  */
-export class Cesium3DTilesetGraphics {
+declare class Cesium3DTilesetGraphics {
     constructor(options?: Cesium3DTilesetGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -18423,7 +18424,7 @@ export class Cesium3DTilesetGraphics {
  * @param scene - The scene the primitives will be rendered in.
  * @param entityCollection - The entityCollection to visualize.
  */
-export class Cesium3DTilesetVisualizer {
+declare class Cesium3DTilesetVisualizer {
     constructor(scene: Scene, entityCollection: EntityCollection);
     /**
      * Updates models created this visualizer to match their
@@ -18450,7 +18451,7 @@ export class Cesium3DTilesetVisualizer {
  * @param [options.oddColor = Color.BLACK] - A Property specifying the second {@link Color}.
  * @param [options.repeat = new Cartesian2(2.0, 2.0)] - A {@link Cartesian2} Property specifying how many times the tiles repeat in each direction.
  */
-export class CheckerboardMaterialProperty {
+declare class CheckerboardMaterialProperty {
     constructor(options?: {
         evenColor?: Property | Color;
         oddColor?: Property | Color;
@@ -18505,7 +18506,7 @@ export class CheckerboardMaterialProperty {
  * A {@link MaterialProperty} that maps to solid color {@link Material} uniforms.
  * @param [color = Color.WHITE] - The {@link Color} Property to be used.
  */
-export class ColorMaterialProperty {
+declare class ColorMaterialProperty {
     constructor(color?: Property | Color);
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -18554,7 +18555,7 @@ EntityCollection is used.
  * @param [collections] - The initial list of EntityCollection instances to merge.
  * @param [owner] - The data source (or composite entity collection) which created this collection.
  */
-export class CompositeEntityCollection {
+declare class CompositeEntityCollection {
     constructor(collections?: EntityCollection[], owner?: DataSource | CompositeEntityCollection);
     /**
      * Gets the event that is fired when entities are added or removed from the collection.
@@ -18678,7 +18679,7 @@ export class CompositeEntityCollection {
 /**
  * A {@link CompositeProperty} which is also a {@link MaterialProperty}.
  */
-export class CompositeMaterialProperty {
+declare class CompositeMaterialProperty {
     constructor();
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -18721,7 +18722,7 @@ export class CompositeMaterialProperty {
  * A {@link CompositeProperty} which is also a {@link PositionProperty}.
  * @param [referenceFrame = ReferenceFrame.FIXED] - The reference frame in which the position is defined.
  */
-export class CompositePositionProperty {
+declare class CompositePositionProperty {
     constructor(referenceFrame?: ReferenceFrame);
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -18793,7 +18794,7 @@ composite.intervals.addInterval(Cesium.TimeInterval.fromIso8601({
     data : sampledProperty
 }));
  */
-export class CompositeProperty {
+declare class CompositeProperty {
     constructor();
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -18832,7 +18833,7 @@ export class CompositeProperty {
  * @param [value] - The property value.
  * @param [referenceFrame = ReferenceFrame.FIXED] - The reference frame in which the position is defined.
  */
-export class ConstantPositionProperty {
+declare class ConstantPositionProperty {
     constructor(value?: Cartesian3, referenceFrame?: ReferenceFrame);
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -18883,7 +18884,7 @@ export class ConstantPositionProperty {
  * A {@link Property} whose value does not change with respect to simulation time.
  * @param [value] - The property value.
  */
-export class ConstantProperty {
+declare class ConstantProperty {
     constructor(value?: any);
     /**
      * Gets a value indicating if this property is constant.
@@ -18933,7 +18934,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class CorridorGeometryUpdater {
+declare class CorridorGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -18949,7 +18950,7 @@ export class CorridorGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate): GeometryInstance;
 }
 
-export namespace CorridorGraphics {
+declare namespace CorridorGraphics {
     /**
      * Initialization options for the CorridorGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the corridor.
@@ -18999,7 +19000,7 @@ conforms to the curvature of the globe. It can be placed on the surface or at al
 and can optionally be extruded into a volume.
  * @param [options] - Object describing initialization options
  */
-export class CorridorGraphics {
+declare class CorridorGraphics {
     constructor(options?: CorridorGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -19112,7 +19113,7 @@ var entity = dataSource.entities.add({
 viewer.dataSources.add(dataSource);
  * @param [name] - A human-readable name for this instance.
  */
-export class CustomDataSource {
+declare class CustomDataSource {
     constructor(name?: string);
     /**
      * Gets or sets a human-readable name for this instance.
@@ -19167,7 +19168,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class CylinderGeometryUpdater {
+declare class CylinderGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -19183,7 +19184,7 @@ export class CylinderGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate): GeometryInstance;
 }
 
-export namespace CylinderGraphics {
+declare namespace CylinderGraphics {
     /**
      * Initialization options for the CylinderGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the cylinder.
@@ -19224,7 +19225,7 @@ export namespace CylinderGraphics {
 The center position and orientation are determined by the containing {@link Entity}.
  * @param [options] - Object describing initialization options
  */
-export class CylinderGraphics {
+declare class CylinderGraphics {
     constructor(options?: CylinderGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -19304,7 +19305,7 @@ export class CylinderGraphics {
     merge(source: CylinderGraphics): void;
 }
 
-export namespace CzmlDataSource {
+declare namespace CzmlDataSource {
     /**
      * Initialization options for the `load` method.
      * @property [sourceUri] - Overrides the url to use for resolving relative links.
@@ -19320,7 +19321,7 @@ export namespace CzmlDataSource {
  * A {@link DataSource} which processes {@link https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CZML-Guide|CZML}.
  * @param [name] - An optional name for the data source.  This value will be overwritten if a loaded document contains a name.
  */
-export class CzmlDataSource {
+declare class CzmlDataSource {
     constructor(name?: string);
     /**
      * Creates a Promise to a new instance loaded with the provided CZML data.
@@ -19450,7 +19451,7 @@ export class CzmlDataSource {
 {@link EntityCollection} for generic consumption. This object is an interface
 for documentation purposes and is not intended to be instantiated directly.
  */
-export class DataSource {
+declare class DataSource {
     constructor();
     /**
      * Gets a human-readable name for this instance.
@@ -19503,7 +19504,7 @@ export class DataSource {
  * Represents desired clock settings for a particular {@link DataSource}.  These settings may be applied
 to the {@link Clock} when the DataSource is loaded.
  */
-export class DataSourceClock {
+declare class DataSourceClock {
     constructor();
     /**
      * Gets the event that is raised whenever a new property is assigned.
@@ -19567,7 +19568,7 @@ export class DataSourceClock {
 /**
  * A collection of {@link DataSource} instances.
  */
-export class DataSourceCollection {
+declare class DataSourceCollection {
     constructor();
     /**
      * Gets the number of data sources in this collection.
@@ -19680,7 +19681,7 @@ export class DataSourceCollection {
  * @param [options.visualizersCallback = DataSourceDisplay.defaultVisualizersCallback] - A function which creates an array of visualizers used for visualization.
        If undefined, all standard visualizers are used.
  */
-export class DataSourceDisplay {
+declare class DataSourceDisplay {
     constructor(options: {
         scene: Scene;
         dataSourceCollection: DataSourceCollection;
@@ -19737,7 +19738,7 @@ export class DataSourceDisplay {
     update(time: JulianDate): boolean;
 }
 
-export namespace DataSourceDisplay {
+declare namespace DataSourceDisplay {
     /**
      * A function which creates an array of visualizers used for visualization.
      * @example
@@ -19756,7 +19757,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class EllipseGeometryUpdater {
+declare class EllipseGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -19776,7 +19777,7 @@ export class EllipseGeometryUpdater {
     readonly onTerrain: boolean;
 }
 
-export namespace EllipseGraphics {
+declare namespace EllipseGraphics {
     /**
      * Initialization options for the EllipseGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the ellipse.
@@ -19831,7 +19832,7 @@ at altitude and can optionally be extruded into a volume.
 The center point is determined by the containing {@link Entity}.
  * @param [options] - Object describing initialization options
  */
-export class EllipseGraphics {
+declare class EllipseGraphics {
     constructor(options?: EllipseGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -19942,7 +19943,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class EllipsoidGeometryUpdater {
+declare class EllipsoidGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -19962,7 +19963,7 @@ export class EllipsoidGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate, skipModelMatrix?: boolean, modelMatrixResult?: Matrix4): GeometryInstance;
 }
 
-export namespace EllipsoidGraphics {
+declare namespace EllipsoidGraphics {
     /**
      * Initialization options for the EllipsoidGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the ellipsoid.
@@ -20010,7 +20011,7 @@ export namespace EllipsoidGraphics {
  * Describe an ellipsoid or sphere.  The center position and orientation are determined by the containing {@link Entity}.
  * @param [options] - Object describing initialization options
  */
-export class EllipsoidGraphics {
+declare class EllipsoidGraphics {
     constructor(options?: EllipsoidGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -20106,7 +20107,7 @@ export class EllipsoidGraphics {
     merge(source: EllipsoidGraphics): void;
 }
 
-export namespace Entity {
+declare namespace Entity {
     /**
      * Initialization options for the Entity constructor
      * @property [id] - A unique identifier for this object. If none is provided, a GUID is generated.
@@ -20176,7 +20177,7 @@ They can be created manually and added to {@link Viewer#entities} or be produced
 data sources, such as {@link CzmlDataSource} and {@link GeoJsonDataSource}.
  * @param [options] - Object describing initialization options
  */
-export class Entity {
+declare class Entity {
     constructor(options?: Entity.ConstructorOptions);
     /**
      * Gets or sets the entity collection that this entity belongs to.
@@ -20372,7 +20373,7 @@ export class Entity {
  * @param [options.clusterPoints = true] - Whether or not to cluster the points of an entity.
  * @param [options.show = true] - Determines if the entities in the cluster will be shown.
  */
-export class EntityCluster {
+declare class EntityCluster {
     constructor(options?: {
         enabled?: boolean;
         pixelRange?: number;
@@ -20425,7 +20426,7 @@ export class EntityCluster {
     destroy(): void;
 }
 
-export namespace EntityCluster {
+declare namespace EntityCluster {
     /**
      * A event listener function used to style clusters.
      * @example
@@ -20445,7 +20446,7 @@ export namespace EntityCluster {
  * An observable collection of {@link Entity} instances where each entity has a unique id.
  * @param [owner] - The data source (or composite entity collection) which created this collection.
  */
-export class EntityCollection {
+declare class EntityCollection {
     constructor(owner?: DataSource | CompositeEntityCollection);
     /**
      * Prevents {@link EntityCollection#collectionChanged} events from being raised
@@ -20552,7 +20553,7 @@ export class EntityCollection {
  * @param scene - The scene to use.
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid to use for orienting the camera.
  */
-export class EntityView {
+declare class EntityView {
     constructor(entity: Entity, scene: Scene, ellipsoid?: Ellipsoid);
     /**
      * The entity to track with the camera.
@@ -20588,7 +20589,7 @@ export class EntityView {
  * @property kml - The generated KML.
  * @property externalFiles - An object dictionary of external files
  */
-export type exportKmlResultKml = {
+declare type exportKmlResultKml = {
     kml: string;
     externalFiles: {
         [key: string]: Blob;
@@ -20598,7 +20599,7 @@ export type exportKmlResultKml = {
 /**
  * @property kmz - The generated kmz file.
  */
-export type exportKmlResultKmz = {
+declare type exportKmlResultKmz = {
     kmz: Blob;
 };
 
@@ -20634,7 +20635,7 @@ color is used. Canvas objects are exported as PNG images.
  * @param [options.kmz = false] - If true KML and external files will be compressed into a kmz file.
  * @returns A promise that resolved to an object containing the KML string and a dictionary of external file blobs, or a kmz file as a blob if options.kmz is true.
  */
-export function exportKml(options: {
+declare function exportKml(options: {
     entities: EntityCollection;
     ellipsoid?: Ellipsoid;
     modelCallback?: exportKmlModelCallback;
@@ -20652,9 +20653,9 @@ or otherwise returned with the KML string when exporting.
  * @param time - The time that any properties should use to get the value.
  * @param externalFiles - An object that maps a filename to a Blob or a Promise that resolves to a Blob.
  */
-export type exportKmlModelCallback = (model: ModelGraphics, time: JulianDate, externalFiles: any) => string;
+declare type exportKmlModelCallback = (model: ModelGraphics, time: JulianDate, externalFiles: any) => string;
 
-export namespace GeoJsonDataSource {
+declare namespace GeoJsonDataSource {
     /**
      * Initialization options for the `load` method.
      * @property [sourceUri] - Overrides the url to use for resolving relative links.
@@ -20703,7 +20704,7 @@ viewer.dataSources.add(Cesium.GeoJsonDataSource.load('../../SampleData/ne_10m_us
  * @param [name] - The name of this data source.  If undefined, a name will be taken from
                        the name of the GeoJSON file.
  */
-export class GeoJsonDataSource {
+declare class GeoJsonDataSource {
     constructor(name?: string);
     /**
      * Creates a Promise to a new instance loaded with the provided GeoJSON or TopoJSON data.
@@ -20859,13 +20860,13 @@ export class GeoJsonDataSource {
  * @param options.geometryPropertyName - The geometry property name
  * @param options.observedPropertyNames - The entity properties this geometry cares about
  */
-export class GeometryUpdater {
+declare class GeometryUpdater {
     constructor(options: {
         entity: Entity;
         scene: Scene;
         geometryOptions: any;
         geometryPropertyName: string;
-        observedPropertyNames: string[];
+        observedPropertyNames: String[];
     });
     /**
      * Gets the unique ID associated with this updater
@@ -20975,7 +20976,7 @@ export class GeometryUpdater {
  * @param [primitives = scene.primitives] - A collection to add primitives related to the entities
  * @param [groundPrimitives = scene.groundPrimitives] - A collection to add ground primitives related to the entities
  */
-export class GeometryVisualizer {
+declare class GeometryVisualizer {
     constructor(scene: Scene, entityCollection: EntityCollection, primitives?: PrimitiveCollection, groundPrimitives?: PrimitiveCollection);
     /**
      * Updates all of the primitives created by this visualizer to match their
@@ -21005,7 +21006,7 @@ export class GeometryVisualizer {
  * @param [options.lineThickness = new Cartesian2(1.0, 1.0)] - A {@link Cartesian2} Property specifying the thickness of grid lines along each axis.
  * @param [options.lineOffset = new Cartesian2(0.0, 0.0)] - A {@link Cartesian2} Property specifying starting offset of grid lines along each axis.
  */
-export class GridMaterialProperty {
+declare class GridMaterialProperty {
     constructor(options?: {
         color?: Property | Color;
         cellAlpha?: Property | number;
@@ -21075,13 +21076,13 @@ export class GridMaterialProperty {
  * @param options.geometryPropertyName - The geometry property name
  * @param options.observedPropertyNames - The entity properties this geometry cares about
  */
-export class GroundGeometryUpdater {
+declare class GroundGeometryUpdater {
     constructor(options: {
         entity: Entity;
         scene: Scene;
         geometryOptions: any;
         geometryPropertyName: string;
-        observedPropertyNames: string[];
+        observedPropertyNames: String[];
     });
     /**
      * Gets the zindex
@@ -21101,7 +21102,7 @@ export class GroundGeometryUpdater {
  * @param [options.color = Color.WHITE] - The color applied to the image
  * @param [options.transparent = false] - Set to true when the image has transparency (for example, when a png has transparent sections)
  */
-export class ImageMaterialProperty {
+declare class ImageMaterialProperty {
     constructor(options?: {
         image?: Property | string | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
         repeat?: Property | Cartesian2;
@@ -21162,11 +21163,11 @@ export class ImageMaterialProperty {
  * @param position - camera position
  * @param headingPitchRoll - camera orientation
  */
-export class KmlCamera {
+declare class KmlCamera {
     constructor(position: Cartesian3, headingPitchRoll: HeadingPitchRoll);
 }
 
-export namespace KmlDataSource {
+declare namespace KmlDataSource {
     /**
      * Initialization options for the `load` method.
      * @property camera - The camera that is used for viewRefreshModes and sending camera properties to network links.
@@ -21215,7 +21216,7 @@ viewer.dataSources.add(Cesium.KmlDataSource.load('../../SampleData/facilities.km
  * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
  * @param [options.classificationType] - An enum Property specifying whether this polyline will classify terrain, 3D Tiles, or both when on the ground.
  */
-export class KmlDataSource {
+declare class KmlDataSource {
     constructor(options: {
         camera: Camera;
         canvas: HTMLCanvasElement;
@@ -21320,7 +21321,7 @@ export class KmlDataSource {
 /**
  * Contains KML Feature data loaded into the <code>Entity.kml</code> property by {@link KmlDataSource}.
  */
-export class KmlFeatureData {
+declare class KmlFeatureData {
     constructor();
     /**
      * Gets the atom syndication format author field.
@@ -21350,7 +21351,7 @@ export class KmlFeatureData {
     extendedData: string;
 }
 
-export namespace KmlFeatureData {
+declare namespace KmlFeatureData {
     /**
      * @property name - Gets the name.
      * @property uri - Gets the URI.
@@ -21383,7 +21384,7 @@ export namespace KmlFeatureData {
  * @param position - camera position
  * @param headingPitchRange - camera orientation
  */
-export class KmlLookAt {
+declare class KmlLookAt {
     constructor(position: Cartesian3, headingPitchRange: HeadingPitchRange);
 }
 
@@ -21394,7 +21395,7 @@ guide the camera to a specified destinations on given time intervals.
  * @param id - id parsed from KML
  * @param playlist - array with KmlTourFlyTos and KmlTourWaits
  */
-export class KmlTour {
+declare class KmlTour {
     constructor(name: string, id: string, playlist: any[]);
     /**
      * Id of kml gx:Tour entry
@@ -21464,7 +21465,7 @@ using a specified flyToMode over a given number of seconds.
  * @param flyToMode - KML fly to mode: bounce, smooth, etc
  * @param view - KmlCamera or KmlLookAt
  */
-export class KmlTourFlyTo {
+declare class KmlTourFlyTo {
     constructor(duration: number, flyToMode: string, view: KmlCamera | KmlLookAt);
     /**
      * Play this playlist entry
@@ -21486,7 +21487,7 @@ export class KmlTourFlyTo {
     getCameraOptions(cameraOptions: any): any;
 }
 
-export namespace KmlTourFlyTo {
+declare namespace KmlTourFlyTo {
     /**
      * A function that will be executed when the flight completes.
      * @param terminated - true if {@link KmlTourFlyTo#stop} was
@@ -21499,7 +21500,7 @@ export namespace KmlTourFlyTo {
  * Pauses the KmlTour for a given number of seconds.
  * @param duration - entry duration
  */
-export class KmlTourWait {
+declare class KmlTourWait {
     constructor(duration: number);
     /**
      * Play this playlist entry
@@ -21512,7 +21513,7 @@ export class KmlTourWait {
     stop(): void;
 }
 
-export namespace KmlTourWait {
+declare namespace KmlTourWait {
     /**
      * A function which will be called when playback ends.
      * @param terminated - true if {@link KmlTourWait#stop} was
@@ -21521,7 +21522,7 @@ export namespace KmlTourWait {
     type DoneCallback = (terminated: boolean) => void;
 }
 
-export namespace LabelGraphics {
+declare namespace LabelGraphics {
     /**
      * Initialization options for the LabelGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the label.
@@ -21581,7 +21582,7 @@ Example labels
 </p>
  * @param [options] - Object describing initialization options
  */
-export class LabelGraphics {
+declare class LabelGraphics {
     constructor(options?: LabelGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -21744,7 +21745,7 @@ in {@link Entity#label} to a {@link Label}.
  * @param entityCluster - The entity cluster to manage the collection of billboards and optionally cluster with other entities.
  * @param entityCollection - The entityCollection to visualize.
  */
-export class LabelVisualizer {
+declare class LabelVisualizer {
     constructor(entityCluster: EntityCluster, entityCollection: EntityCollection);
     /**
      * Updates the primitives created by this visualizer to match their
@@ -21768,7 +21769,7 @@ export class LabelVisualizer {
  * The interface for all {@link Property} objects that represent {@link Material} uniforms.
 This type defines an interface and cannot be instantiated directly.
  */
-export class MaterialProperty {
+declare class MaterialProperty {
     constructor();
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -21803,7 +21804,7 @@ export class MaterialProperty {
     equals(other?: Property): boolean;
 }
 
-export namespace ModelGraphics {
+declare namespace ModelGraphics {
     /**
      * Initialization options for the ModelGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the model.
@@ -21866,7 +21867,7 @@ Cameras and lights are not currently supported.
 </p>
  * @param [options] - Object describing initialization options
  */
-export class ModelGraphics {
+declare class ModelGraphics {
     constructor(options?: ModelGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -21989,7 +21990,7 @@ export class ModelGraphics {
  * @param scene - The scene the primitives will be rendered in.
  * @param entityCollection - The entityCollection to visualize.
  */
-export class ModelVisualizer {
+declare class ModelVisualizer {
     constructor(scene: Scene, entityCollection: EntityCollection);
     /**
      * Updates models created this visualizer to match their
@@ -22016,7 +22017,7 @@ export class ModelVisualizer {
  * @param [options.rotation = Quaternion.IDENTITY] - A {@link Quaternion} Property specifying the (x, y, z, w) rotation to apply to the node.
  * @param [options.scale = new Cartesian3(1.0, 1.0, 1.0)] - A {@link Cartesian3} Property specifying the (x, y, z) scaling to apply to the node.
  */
-export class NodeTransformationProperty {
+declare class NodeTransformationProperty {
     constructor(options?: {
         translation?: Property | Cartesian3;
         rotation?: Property | Quaternion;
@@ -22061,7 +22062,7 @@ export class NodeTransformationProperty {
     equals(other?: Property): boolean;
 }
 
-export namespace PathGraphics {
+declare namespace PathGraphics {
     /**
      * Initialization options for the PathGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the path.
@@ -22087,7 +22088,7 @@ export namespace PathGraphics {
  * Describes a polyline defined as the path made by an {@link Entity} as it moves over time.
  * @param [options] - Object describing initialization options
  */
-export class PathGraphics {
+declare class PathGraphics {
     constructor(options?: PathGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -22140,7 +22141,7 @@ export class PathGraphics {
  * @param scene - The scene the primitives will be rendered in.
  * @param entityCollection - The entityCollection to visualize.
  */
-export class PathVisualizer {
+declare class PathVisualizer {
     constructor(scene: Scene, entityCollection: EntityCollection);
     /**
      * Updates all of the primitives created by this visualizer to match their
@@ -22166,7 +22167,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class PlaneGeometryUpdater {
+declare class PlaneGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -22182,7 +22183,7 @@ export class PlaneGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate): GeometryInstance;
 }
 
-export namespace PlaneGraphics {
+declare namespace PlaneGraphics {
     /**
      * Initialization options for the PlaneGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the plane.
@@ -22214,7 +22215,7 @@ export namespace PlaneGraphics {
  * Describes a plane. The center position and orientation are determined by the containing {@link Entity}.
  * @param [options] - Object describing initialization options
  */
-export class PlaneGraphics {
+declare class PlaneGraphics {
     constructor(options?: PlaneGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -22278,7 +22279,7 @@ export class PlaneGraphics {
     merge(source: PlaneGraphics): void;
 }
 
-export namespace PointGraphics {
+declare namespace PointGraphics {
     /**
      * Initialization options for the PointGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the point.
@@ -22310,7 +22311,7 @@ export namespace PointGraphics {
  * Describes a graphical point located at the position of the containing {@link Entity}.
  * @param [options] - Object describing initialization options
  */
-export class PointGraphics {
+declare class PointGraphics {
     constructor(options?: PointGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -22381,7 +22382,7 @@ export class PointGraphics {
  * @param entityCluster - The entity cluster to manage the collection of billboards and optionally cluster with other entities.
  * @param entityCollection - The entityCollection to visualize.
  */
-export class PointVisualizer {
+declare class PointVisualizer {
     constructor(entityCluster: EntityCluster, entityCollection: EntityCollection);
     /**
      * Updates the primitives created by this visualizer to match their
@@ -22407,7 +22408,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class PolygonGeometryUpdater {
+declare class PolygonGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -22423,7 +22424,7 @@ export class PolygonGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate): GeometryInstance;
 }
 
-export namespace PolygonGraphics {
+declare namespace PolygonGraphics {
     /**
      * Initialization options for the PolygonGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the polygon.
@@ -22479,7 +22480,7 @@ The polygon conforms to the curvature of the globe and can be placed on the surf
 at altitude and can optionally be extruded into a volume.
  * @param [options] - Object describing initialization options
  */
-export class PolygonGraphics {
+declare class PolygonGraphics {
     constructor(options?: PolygonGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -22595,7 +22596,7 @@ export class PolygonGraphics {
  * A {@link MaterialProperty} that maps to PolylineArrow {@link Material} uniforms.
  * @param [color = Color.WHITE] - The {@link Color} Property to be used.
  */
-export class PolylineArrowMaterialProperty {
+declare class PolylineArrowMaterialProperty {
     constructor(color?: Property | Color);
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -22642,7 +22643,7 @@ export class PolylineArrowMaterialProperty {
  * @param [options.dashLength = 16.0] - A numeric Property specifying the length of the dash pattern in pixels.
  * @param [options.dashPattern = 255.0] - A numeric Property specifying a 16 bit pattern for the dash
  */
-export class PolylineDashMaterialProperty {
+declare class PolylineDashMaterialProperty {
     constructor(options?: {
         color?: Property | Color;
         gapColor?: Property | Color;
@@ -22704,7 +22705,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class PolylineGeometryUpdater {
+declare class PolylineGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Gets the unique ID associated with this updater
@@ -22826,7 +22827,7 @@ export class PolylineGeometryUpdater {
  * @param [options.glowPower = 0.25] - A numeric Property specifying the strength of the glow, as a percentage of the total line width.
  * @param [options.taperPower = 1.0] - A numeric Property specifying the strength of the tapering effect, as a percentage of the total line length.  If 1.0 or higher, no taper effect is used.
  */
-export class PolylineGlowMaterialProperty {
+declare class PolylineGlowMaterialProperty {
     constructor(options?: {
         color?: Property | Color;
         glowPower?: Property | number;
@@ -22877,7 +22878,7 @@ export class PolylineGlowMaterialProperty {
     equals(other?: Property): boolean;
 }
 
-export namespace PolylineGraphics {
+declare namespace PolylineGraphics {
     /**
      * Initialization options for the PolylineGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the polyline.
@@ -22915,7 +22916,7 @@ and each additional position defines a line segment from the previous position. 
 can be linear connected points, great arcs, or clamped to terrain.
  * @param [options] - Object describing initialization options
  */
-export class PolylineGraphics {
+declare class PolylineGraphics {
     constructor(options?: PolylineGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -22997,7 +22998,7 @@ export class PolylineGraphics {
  * @param [options.outlineColor = Color.BLACK] - A Property specifying the {@link Color} of the outline.
  * @param [options.outlineWidth = 1.0] - A numeric Property specifying the width of the outline, in pixels.
  */
-export class PolylineOutlineMaterialProperty {
+declare class PolylineOutlineMaterialProperty {
     constructor(options?: {
         color?: Property | Color;
         outlineColor?: Property | Color;
@@ -23055,7 +23056,7 @@ export class PolylineOutlineMaterialProperty {
  * @param [primitives = scene.primitives] - A collection to add primitives related to the entities
  * @param [groundPrimitives = scene.groundPrimitives] - A collection to add ground primitives related to the entities
  */
-export class PolylineVisualizer {
+declare class PolylineVisualizer {
     constructor(scene: Scene, entityCollection: EntityCollection, primitives?: PrimitiveCollection, groundPrimitives?: PrimitiveCollection);
     /**
      * Updates all of the primitives created by this visualizer to match their
@@ -23082,7 +23083,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class PolylineVolumeGeometryUpdater {
+declare class PolylineVolumeGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -23098,7 +23099,7 @@ export class PolylineVolumeGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate): GeometryInstance;
 }
 
-export namespace PolylineVolumeGraphics {
+declare namespace PolylineVolumeGraphics {
     /**
      * Initialization options for the PolylineVolumeGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the volume.
@@ -23135,7 +23136,7 @@ export namespace PolylineVolumeGraphics {
 The resulting volume conforms to the curvature of the globe.
  * @param [options] - Object describing initialization options
  */
-export class PolylineVolumeGraphics {
+declare class PolylineVolumeGraphics {
     constructor(options?: PolylineVolumeGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -23212,7 +23213,7 @@ export class PolylineVolumeGraphics {
 location as a {@link Cartesian3} with an associated {@link ReferenceFrame}.
 This type defines an interface and cannot be instantiated directly.
  */
-export class PositionProperty {
+declare class PositionProperty {
     constructor();
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -23259,7 +23260,7 @@ of other PositionProperty instances.
  * @param [value] - An array of Property instances.
  * @param [referenceFrame = ReferenceFrame.FIXED] - The reference frame in which the position is defined.
  */
-export class PositionPropertyArray {
+declare class PositionPropertyArray {
     constructor(value?: Property[], referenceFrame?: ReferenceFrame);
     /**
      * Gets a value indicating if this property is constant.  This property
@@ -23309,7 +23310,7 @@ export class PositionPropertyArray {
  * The interface for all properties, which represent a value that can optionally vary over time.
 This type defines an interface and cannot be instantiated directly.
  */
-export class Property {
+declare class Property {
     constructor();
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -23343,7 +23344,7 @@ export class Property {
 of other property instances.
  * @param [value] - An array of Property instances.
  */
-export class PropertyArray {
+declare class PropertyArray {
     constructor(value?: Property[]);
     /**
      * Gets a value indicating if this property is constant.  This property
@@ -23377,7 +23378,7 @@ export class PropertyArray {
     equals(other?: Property): boolean;
 }
 
-export interface PropertyBag extends DictionaryLike {
+declare interface PropertyBag extends DictionaryLike {
 }
 
 /**
@@ -23385,7 +23386,7 @@ export interface PropertyBag extends DictionaryLike {
  * @param [value] - An object, containing key-value mapping of property names to properties.
  * @param [createPropertyCallback] - A function that will be called when the value of any of the properties in value are not a Property.
  */
-export class PropertyBag implements DictionaryLike {
+declare class PropertyBag implements DictionaryLike {
     constructor(value?: any, createPropertyCallback?: (...params: any[]) => any);
     /**
      * Gets the names of all properties registered on this instance.
@@ -23450,7 +23451,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class RectangleGeometryUpdater {
+declare class RectangleGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -23466,7 +23467,7 @@ export class RectangleGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate): GeometryInstance;
 }
 
-export namespace RectangleGraphics {
+declare namespace RectangleGraphics {
     /**
      * Initialization options for the RectangleGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the rectangle.
@@ -23516,7 +23517,7 @@ The rectangle conforms to the curvature of the globe and can be placed on the su
 at altitude and can optionally be extruded into a volume.
  * @param [options] - Object describing initialization options
  */
-export class RectangleGraphics {
+declare class RectangleGraphics {
     constructor(options?: RectangleGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -23650,8 +23651,8 @@ collection.add(object5);
  * @param targetId - The id of the entity which is being referenced.
  * @param targetPropertyNames - The names of the property on the target entity which we will use.
  */
-export class ReferenceProperty {
-    constructor(targetCollection: EntityCollection, targetId: string, targetPropertyNames: string[]);
+declare class ReferenceProperty {
+    constructor(targetCollection: EntityCollection, targetId: string, targetPropertyNames: String[]);
     /**
      * Gets a value indicating if this property is constant.
      */
@@ -23677,7 +23678,7 @@ export class ReferenceProperty {
     /**
      * Gets the array of property names used to retrieve the referenced property.
      */
-    readonly targetPropertyNames: string[];
+    readonly targetPropertyNames: String[];
     /**
      * Gets the resolved instance of the underlying referenced property.
      */
@@ -23723,7 +23724,7 @@ export class ReferenceProperty {
     equals(other?: Property): boolean;
 }
 
-export namespace Rotation {
+declare namespace Rotation {
     /**
      * The number of elements used to pack the object into an array.
      */
@@ -23735,7 +23736,7 @@ export namespace Rotation {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    function pack(value: Rotation, array: number[], startingIndex?: number): number[];
+    function pack(value: Rotation, array: Number[], startingIndex?: number): Number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -23743,7 +23744,7 @@ export namespace Rotation {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Rotation instance if one was not provided.
      */
-    function unpack(array: number[], startingIndex?: number, result?: Rotation): Rotation;
+    function unpack(array: Number[], startingIndex?: number, result?: Rotation): Rotation;
     /**
      * Converts a packed array into a form suitable for interpolation.
      * @param packedArray - The packed array.
@@ -23751,7 +23752,7 @@ export namespace Rotation {
      * @param [lastIndex = packedArray.length] - The index of the last element to be converted.
      * @param [result] - The object into which to store the result.
      */
-    function convertPackedArrayForInterpolation(packedArray: number[], startingIndex?: number, lastIndex?: number, result?: number[]): void;
+    function convertPackedArrayForInterpolation(packedArray: Number[], startingIndex?: number, lastIndex?: number, result?: Number[]): void;
     /**
      * Retrieves an instance from a packed array converted with {@link Rotation.convertPackedArrayForInterpolation}.
      * @param array - The array previously packed for interpolation.
@@ -23761,7 +23762,7 @@ export namespace Rotation {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Rotation instance if one was not provided.
      */
-    function unpackInterpolationResult(array: number[], sourceArray: number[], firstIndex?: number, lastIndex?: number, result?: Rotation): Rotation;
+    function unpackInterpolationResult(array: Number[], sourceArray: Number[], firstIndex?: number, lastIndex?: number, result?: Rotation): Rotation;
 }
 
 /**
@@ -23784,7 +23785,7 @@ property.addSample(time3, Cesium.Math.toRadians(350));
 //return value is in radians, not degrees.
 property.getValue(time2);
  */
-export interface Rotation {
+declare interface Rotation {
 }
 
 /**
@@ -23793,7 +23794,7 @@ export interface Rotation {
  * @param [referenceFrame = ReferenceFrame.FIXED] - The reference frame in which the position is defined.
  * @param [numberOfDerivatives = 0] - The number of derivatives that accompany each position; i.e. velocity, acceleration, etc...
  */
-export class SampledPositionProperty {
+declare class SampledPositionProperty {
     constructor(referenceFrame?: ReferenceFrame, numberOfDerivatives?: number);
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -23888,7 +23889,7 @@ export class SampledPositionProperty {
      * @param packedSamples - The array of packed samples.
      * @param [epoch] - If any of the dates in packedSamples are numbers, they are considered an offset from this epoch, in seconds.
      */
-    addSamplesPackedArray(packedSamples: number[], epoch?: JulianDate): void;
+    addSamplesPackedArray(packedSamples: Number[], epoch?: JulianDate): void;
     /**
      * Removes a sample at the given time, if present.
      * @param time - The sample time.
@@ -23946,7 +23947,7 @@ var result = property.getValue(Cesium.JulianDate.fromIso8601('2012-08-01T00:02:3
  * @param type - The type of property.
  * @param [derivativeTypes] - When supplied, indicates that samples will contain derivative information of the specified types.
  */
-export class SampledProperty {
+declare class SampledProperty {
     constructor(type: number | Packable, derivativeTypes?: Packable[]);
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -24032,7 +24033,7 @@ export class SampledProperty {
      * @param packedSamples - The array of packed samples.
      * @param [epoch] - If any of the dates in packedSamples are numbers, they are considered an offset from this epoch, in seconds.
      */
-    addSamplesPackedArray(packedSamples: number[], epoch?: JulianDate): void;
+    addSamplesPackedArray(packedSamples: Number[], epoch?: JulianDate): void;
     /**
      * Removes a sample at the given time, if present.
      * @param time - The sample time.
@@ -24062,7 +24063,7 @@ export class SampledProperty {
  * @param [options.offset = 0] - A numeric Property specifying how far into the pattern to start the material.
  * @param [options.repeat = 1] - A numeric Property specifying how many times the stripes repeat.
  */
-export class StripeMaterialProperty {
+declare class StripeMaterialProperty {
     constructor(options?: {
         orientation?: Property | StripeOrientation;
         evenColor?: Property | Color;
@@ -24129,7 +24130,7 @@ export class StripeMaterialProperty {
 /**
  * Defined the orientation of stripes in {@link StripeMaterialProperty}.
  */
-export enum StripeOrientation {
+declare enum StripeOrientation {
     /**
      * Horizontal orientation.
      */
@@ -24144,7 +24145,7 @@ export enum StripeOrientation {
  * A {@link TimeIntervalCollectionProperty} which is also a {@link PositionProperty}.
  * @param [referenceFrame = ReferenceFrame.FIXED] - The reference frame in which the position is defined.
  */
-export class TimeIntervalCollectionPositionProperty {
+declare class TimeIntervalCollectionPositionProperty {
     constructor(referenceFrame?: ReferenceFrame);
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -24221,7 +24222,7 @@ composite.intervals.addInterval(Cesium.TimeInterval.fromIso8601({
     data : new Cesium.Cartesian2(85.0, 4.1)
 }));
  */
-export class TimeIntervalCollectionProperty {
+declare class TimeIntervalCollectionProperty {
     constructor();
     /**
      * Gets a value indicating if this property is constant.  A property is considered
@@ -24268,7 +24269,7 @@ var entity = viewer.entities.add({
  * @param [position] - The position property used to compute the orientation.
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid used to determine which way is up.
  */
-export class VelocityOrientationProperty {
+declare class VelocityOrientationProperty {
     constructor(position?: PositionProperty, ellipsoid?: Ellipsoid);
     /**
      * Gets a value indicating if this property is constant.
@@ -24319,7 +24320,7 @@ var entity = viewer.entities.add({
  * @param [position] - The position property used to compute the velocity.
  * @param [normalize = true] - Whether to normalize the computed velocity vector.
  */
-export class VelocityVectorProperty {
+declare class VelocityVectorProperty {
     constructor(position?: PositionProperty, normalize?: boolean);
     /**
      * Gets a value indicating if this property is constant.
@@ -24361,7 +24362,7 @@ export class VelocityVectorProperty {
 This object is an interface for documentation purposes and is not intended
 to be instantiated directly.
  */
-export class Visualizer {
+declare class Visualizer {
     constructor();
     /**
      * Updates the visualization to the provided time.
@@ -24388,7 +24389,7 @@ Clients do not normally create this class directly, but instead rely on {@link D
  * @param entity - The entity containing the geometry to be visualized.
  * @param scene - The scene where visualization is taking place.
  */
-export class WallGeometryUpdater {
+declare class WallGeometryUpdater {
     constructor(entity: Entity, scene: Scene);
     /**
      * Creates the geometry instance which represents the fill of the geometry.
@@ -24404,7 +24405,7 @@ export class WallGeometryUpdater {
     createOutlineGeometryInstance(time: JulianDate): GeometryInstance;
 }
 
-export namespace WallGraphics {
+declare namespace WallGraphics {
     /**
      * Initialization options for the WallGraphics constructor
      * @property [show = true] - A boolean Property specifying the visibility of the wall.
@@ -24441,7 +24442,7 @@ export namespace WallGraphics {
 The wall conforms to the curvature of the globe and can be placed along the surface or at altitude.
  * @param [options] - Object describing initialization options
  */
-export class WallGraphics {
+declare class WallGraphics {
     constructor(options?: WallGraphics.ConstructorOptions);
     /**
      * Gets the event that is raised whenever a property or sub-property is changed or modified.
@@ -24518,7 +24519,7 @@ export class WallGraphics {
 /**
  * 通用算法工具集
  */
-export class AlgorithmLib {
+declare class AlgorithmLib {
     constructor();
     /**
      * 线性插值（二维坐标）
@@ -24690,7 +24691,7 @@ export class AlgorithmLib {
      * @param [result] - 经纬度（含高度）度数组
      * @returns 经纬度数组
      */
-    static Cartesian3ArrayToDegrees(positions: Cartesian3[], result?: number[]): number[];
+    static Cartesian3ArrayToDegrees(positions: Cartesian3[], result?: Number[]): Number[];
     /**
      * 通过两点确定一个正方形
     
@@ -24735,7 +24736,7 @@ export class AlgorithmLib {
 /**
  * 热力图对象
  */
-export class CesiumHeatmap {
+declare class CesiumHeatmap {
     constructor();
     /**
      * @example
@@ -24909,7 +24910,7 @@ debug模式生成的碰撞盒所使用的位置是上一帧的碰撞检测结果
 开启碰撞盒检查主要是为了方便调整碰撞盒与模型相匹配。<br/>
 相机做为碰撞对象时，开启碰撞盒检查，相机会被碰撞盒包在里面。
  */
-export class CollisionDetectionByRender {
+declare class CollisionDetectionByRender {
     constructor(viewer: Viewer, collider: Camera | MapGISM3D | Entity, options?: {
         colliderLength?: number;
         colliderWidth?: number;
@@ -25020,7 +25021,7 @@ export class CollisionDetectionByRender {
  * @param options.callBack - 结果回调函数
  * @param [options.terrainLevel = -1] - 地形取高程时使用的地形层级，默认使用最精细级
  */
-export class CutFillAnalysis {
+declare class CutFillAnalysis {
     constructor(viewer: any, options: {
         dataLyers?: any;
         xPaneNum?: number;
@@ -25108,7 +25109,7 @@ export class CutFillAnalysis {
 /**
  * 地形，用于地形填挖方分析时计算采样点高程
  */
-export var terrainProvider: any;
+declare var terrainProvider: any;
 
 /**
  * 洪水淹没分析
@@ -25125,7 +25126,7 @@ export var terrainProvider: any;
  * @param [options.animationSpeed = 0.01] - 水纹速度
  * @param [options.frequency = 1000] - 水纹频率
  */
-export class FloodAnalysis {
+declare class FloodAnalysis {
     constructor(viewer: any, dotsList: Cartesian3[], options: {
         startHeight?: number;
         minHeight?: number;
@@ -25239,7 +25240,7 @@ flood.start();
  * @param [options.floodSpeed = 1.0] - 水面的淹没速度，单位为米/每秒
  * @param [options.closeBorder = false] - 是否为水面创建边界面
  */
-export class FloodAnalysisReflection {
+declare class FloodAnalysisReflection {
     constructor(options: {
         viewer: Viewer;
         water: WaterReflection;
@@ -25373,7 +25374,7 @@ scenePro = new Cesium.SceneProjector({
  * @param options.showLine - 视锥体是否显示
  * @param options.hideVPInvisible - 观察点(viewPosition)不可见时隐藏视频投影
  */
-export class SceneProjector {
+declare class SceneProjector {
     constructor(options: {
         scene: Scene;
         pass?: Pass;
@@ -25554,7 +25555,7 @@ scene.primitives.remove(scenePro);
  * @param [options.caculateProjectedData = false] - 是否计算投影帧数据
  * @param options.onCanplay - 场景投放可以投放的回调事件
  */
-export class SceneProjectorEx {
+declare class SceneProjectorEx {
     constructor(options: {
         scene: Scene;
         pass?: Pass;
@@ -25670,7 +25671,7 @@ export class SceneProjectorEx {
  * @param options.geometry - 剖面几何对象.
  * @param options.clippingType - 裁剪类型.
  */
-export function SectionRender(options: {
+declare function SectionRender(options: {
     geometry: any;
     clippingType: any;
 }): void;
@@ -25694,7 +25695,7 @@ export function SectionRender(options: {
  * @param [options.intervalTime = 20] - 动画中每次分析的时间间隔，单位为分钟
  * @param [options.removeAnimatePoint = false] - 是否移除动画效果最后的绘制结果，默认不移除
  */
-export class ShadowAnalysis {
+declare class ShadowAnalysis {
     constructor(viewer: any, options: {
         pointsArray: Cartesian3[];
         startTime: any;
@@ -25849,7 +25850,7 @@ colorScheme=[<br/>
  * @param [options.minHeight = 1] - 插值点最小高度，单位米
  * @param [options.maxHeight = 10] - 插值点最大高度，单位米
  */
-export class ShadowRateAnalysis {
+declare class ShadowRateAnalysis {
     constructor(viewer: any, options: {
         pointsArray?: Cartesian3[];
         startTime?: JulianDate;
@@ -25932,7 +25933,7 @@ var skyLineAn = new Cesium.SkyLineAnalysis(
  * @param [options.color = new Color(1.0,0.0,0.0,1.0)] - 天际线颜色
  * @param options.analysisEndCallBack - 回调函数,返回天际线点坐标数组,点坐标为世界坐标
  */
-export class SkyLineAnalysis {
+declare class SkyLineAnalysis {
     constructor(options: {
         scene: any;
         color?: Color;
@@ -25951,7 +25952,7 @@ export class SkyLineAnalysis {
 /**
  * 可视域分析
  */
-export class ViewshedAnalysis {
+declare class ViewshedAnalysis {
     constructor();
     /**
      * 视点
@@ -25989,6 +25990,18 @@ export class ViewshedAnalysis {
      * 不可视区域的颜色
      */
     unVisibleColor: Color;
+    /**
+     * 可视域分析结果区域的渲染通道
+     */
+    pass: number;
+    /**
+     * 可视域分析辅助视锥网表面颜色
+     */
+    fanColor: Color;
+    /**
+     * 可视域分析辅助视锥网线条颜色
+     */
+    fanLineColor: Color;
 }
 
 /**
@@ -26070,7 +26083,7 @@ visiblity.destroy();
  * @param [options.fanColor = new Color(79 / 255, 238 / 255, 215 / 255, 0.2)] - 环型通视分析视窗颜色
  * @param [options.fanGridColor = Cesium.Color.WHITE] - 环型通视分析视窗网格颜色
  */
-export class VisiblityAnalysis {
+declare class VisiblityAnalysis {
     constructor(options: {
         scene: Scene;
         visibleColor?: Color;
@@ -26164,7 +26177,7 @@ export class VisiblityAnalysis {
  * @param [options.speedFactor = 0.5] - 粒子速度，决定了粒子移动的速度有多快
  * @param [options.lineWidth = 2] - 线宽
  */
-export class Wind3D {
+declare class Wind3D {
     constructor(viewer: any, data: any, options: {
         particlesNumber?: number;
         fadeOpacity?: number;
@@ -26311,7 +26324,7 @@ cameraRoaming.stop();
  * @param [options.rotateStep = 1] - 旋转步长，单位为度
  * @param [options.initView] - 初始视角，参数与{@link Camera#setView}方法相同，开始漫游时视角将重置到该视角，若不设置则默认从当前视角开始漫游
  */
-export class KeyboardCameraController {
+declare class KeyboardCameraController {
     constructor(viewer: any, options: {
         enableMouseLook?: boolean;
         enableDynamicMoveStep?: boolean;
@@ -26368,11 +26381,11 @@ export class KeyboardCameraController {
  * @param [options.width = 20] - 面默认大小
  * @param [options.alpha = 1.0] - 初始化半透明参数
  */
-export class AttributeSurfacePrimitive {
+declare class AttributeSurfacePrimitive {
     constructor(options: {
         viewer: any;
         pnts: Cartesian3[][];
-        uvs: number[];
+        uvs: Number[];
         attSpan: number;
         width?: number;
         alpha?: number;
@@ -26529,10 +26542,10 @@ graphic.style.offsetHeight = 2000;
  * @param [options.enableVFC = false] - 是否开启模型内部的视锥体检测，即标绘在模型内部是否隐藏，仅当类型为div时生效
  * @param [options.disappearByDistance = 20000000] - 根据div对象和主相机的距离，显示或隐藏div对象
  */
-export class Graphic {
+declare class Graphic {
     constructor(options: {
         type?: string;
-        positions?: Cartesian3[] | number[];
+        positions?: Cartesian3[] | Number[];
         style?: any;
         editPointStyle?: any;
         attributes?: any;
@@ -26670,7 +26683,7 @@ export class Graphic {
      * 计算顶点坐标之间的距离
      * @returns 返回坐标之间的距离数组
      */
-    getDistances(): number[];
+    getDistances(): Number[];
     /**
      * 从图层中移除图元
      */
@@ -26721,7 +26734,7 @@ export class Graphic {
 /**
  * 图元样式库
  */
-export class Style {
+declare class Style {
     constructor();
     /**
      * 创建样式
@@ -27538,7 +27551,7 @@ export class Style {
  * @param [options.labelsOption] - 动态注记选项，参考{@link Style.LabelNoteStyle}。
  * @param [options.labelDynamicEntityVisualizer] - 动态注记视图类，处理动态注记
  */
-export class MapGISFeatureGeojsonProvider {
+declare class MapGISFeatureGeojsonProvider {
     constructor(options: {
         url: string;
         is3d?: boolean;
@@ -27778,7 +27791,7 @@ on a {@link Globe}.
  * @param [options.swipeEnabled = false] - 开启卷帘对比分析
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
-export class MapGISFeatureLayer {
+declare class MapGISFeatureLayer {
     constructor(imageryProvider: ImageryProvider, options?: {
         rectangle?: Rectangle;
         alpha?: number | ((...params: any[]) => any);
@@ -28322,7 +28335,7 @@ export class MapGISFeatureLayer {
  * @param [options.labelsOption] - 动态注记选项，参考{@link Style.LabelNoteStyle}。
  * @param [options.labelDynamicEntityVisualizer] - 动态注记视图类，处理动态注记
  */
-export class MapGISFeatureProvider {
+declare class MapGISFeatureProvider {
     constructor(options: {
         url: string;
         is3d?: boolean;
@@ -28356,7 +28369,7 @@ export class MapGISFeatureProvider {
                 timeAsc?: boolean;
                 buildingsLimit?: number;
                 colors?: Color[];
-                times?: number[];
+                times?: Number[];
                 updateColor?: boolean;
                 updateHeight?: boolean;
                 onReady?: (...params: any[]) => any;
@@ -28493,7 +28506,7 @@ scene.primitives.add(labels);      // Add regular primitive
  * @param [options.show = true] - Determines if the primitives in the collection will be shown.
  * @param [options.destroyPrimitives = true] - Determines if primitives in the collection are destroyed when they are removed.
  */
-export class MapGISFeatureTilePrimitiveCollection {
+declare class MapGISFeatureTilePrimitiveCollection {
     constructor(options?: {
         show?: boolean;
         destroyPrimitives?: boolean;
@@ -28708,7 +28721,7 @@ on a {@link Globe}.
  * @param [options.swipeEnabled = false] - 开启卷帘对比分析
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
-export class MapGISGeojsonLayer {
+declare class MapGISGeojsonLayer {
     constructor(imageryProvider: ImageryProvider, options?: {
         rectangle?: Rectangle;
         alpha?: number | ((...params: any[]) => any);
@@ -28983,7 +28996,7 @@ export class MapGISGeojsonLayer {
  * @param [options.labelsOption] - 动态注记选项，参考{@link Style.LabelNoteStyle}。
  * @param [options.labelDynamicEntityVisualizer] - 动态注记视图类，处理动态注记
  */
-export class MapGISGeojsonProvider {
+declare class MapGISGeojsonProvider {
     constructor(options: {
         url: string;
         maxCount?: number;
@@ -29053,7 +29066,7 @@ scene.primitives.add(labels);      // Add regular primitive
  * @param [options.show = true] - Determines if the primitives in the collection will be shown.
  * @param [options.destroyPrimitives = true] - Determines if primitives in the collection are destroyed when they are removed.
  */
-export class MapGISGeojsonTilePrimitiveCollection {
+declare class MapGISGeojsonTilePrimitiveCollection {
     constructor(options?: {
         show?: boolean;
         destroyPrimitives?: boolean;
@@ -29230,13 +29243,13 @@ volume.animationProgress = 0.5;
  * @param options.polylinePositions - An array of {@link Cartesian3} positions that define the center of the polyline volume.
  * @param options.shapePositions - An array of {@link Cartesian2} positions that define the shape to be extruded along the polyline
  * @param [options.ellipsoid = Ellipsoid.WGS84] - The ellipsoid to be used as a reference.
- * @param [options.granularity = Math.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+ * @param [options.granularity = CesiumMath.RADIANS_PER_DEGREE] - The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
  * @param [options.vertexFormat = VertexFormat.DEFAULT] - The vertex attributes to be computed.
  * @param [options.cornerType = CornerType.ROUNDED] - Determines the style of the corners.
  * @param [options.animationDuration = 3] - 动画的持续时间。
  * @param [options.animationRate = 1] - 动画的播放速率。
  */
-export class PolylineVolumeAnimationGeometry extends PolylineVolumeGeometry {
+declare class PolylineVolumeAnimationGeometry extends PolylineVolumeGeometry {
     constructor(options: {
         polylinePositions: Cartesian3[];
         shapePositions: Cartesian2[];
@@ -29346,7 +29359,7 @@ var graphicsLayer = new Cesium.GraphicsLayer(viewer, {
  * @param [options.toolTipDom] - 重写整个提示框dom对象
  * @param [options.enableToolTip = true] - 是否显示提示框
  */
-export class GraphicsLayer {
+declare class GraphicsLayer {
     constructor(viewer: Viewer, options: {
         getGraphic?: (...params: any[]) => any;
         revokeModel?: (...params: any[]) => any;
@@ -29595,7 +29608,7 @@ export class GraphicsLayer {
   }
   alert(map.isEmpty());
  */
-export class HashMap {
+declare class HashMap {
     constructor();
     /**
      * HashMap 容器的长度
@@ -29658,7 +29671,7 @@ export class HashMap {
  * @param [options.transaction] - A Transaction object that will be used.{@ Link Transaction} Intended for internal use only.
  * @param [options.debugShowLog = false] - For debugging only.
  */
-export class TransactionImplement {
+declare class TransactionImplement {
     constructor(options: {
         version?: number;
         nameDB?: string;
@@ -29805,7 +29818,7 @@ on a {@link Globe}.
  * @param layerInfo - 从IGS查询到的图层的信息，如最大最小比例尺，避让等
  * @param labelExtend - 参考{@link Style.LabelNoteStyle}
  */
-export class MapGISLabelLayer {
+declare class MapGISLabelLayer {
     constructor(labelUrl: string, scene: Scene, options: any, layerInfo: any, labelExtend: any);
     readonly readyPromise: Promise<MapGISLabelLayer>;
     readonly labels: LabelCollection;
@@ -29902,7 +29915,7 @@ export class MapGISLabelLayer {
 /**
  * @param scene - 场景对象
  */
-export class Layers {
+declare class Layers {
     constructor(scene: Scene);
     /**
      * M3D 图层管理容器
@@ -30970,7 +30983,7 @@ the content is loaded on-demand when needed based on the view.
 Do not construct this directly, instead access tiles through {@link MapGIS3DTileset#tileVisible}.
 </p>
  */
-export class MapGIS3DTile {
+declare class MapGIS3DTile {
     constructor();
     /**
      * The local transform of this tile.
@@ -31057,7 +31070,7 @@ handler.setInputAction(function(movement) {
     }
 }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
  */
-export class MapGIS3DTileFeature {
+declare class MapGIS3DTileFeature {
     constructor();
     /**
      * Gets or sets if the feature will be shown. This is set for all features
@@ -31098,7 +31111,7 @@ export class MapGIS3DTileFeature {
      * @param [results] - An array into which to store the results.
      * @returns The names of the feature's properties.
      */
-    getPropertyNames(results?: string[]): string[];
+    getPropertyNames(results?: String[]): String[];
     /**
      * Returns a copy of the value of the feature's property with the given name. This includes properties from this feature's
     class and inherited classes when using a batch table hierarchy.
@@ -31219,9 +31232,9 @@ var tileset = scene.primitives.add(new Cesium.MapGIS3DTileset({
  * @param [options.swipeEnabled = false] - 开启卷帘对比分析
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
  */
-export class MapGIS3DTileset {
+declare class MapGIS3DTileset {
     constructor(options: {
-        url: Resource | string | Promise<Resource> | Promise<string>;
+        url: Resource | string | Promise<Resource> | Promise<String>;
         show?: boolean;
         modelMatrix?: Matrix4;
         shadows?: ShadowMode;
@@ -31983,7 +31996,7 @@ export class MapGIS3DTileset {
     destroy(): void;
 }
 
-export namespace MapGIS3DTileset {
+declare namespace MapGIS3DTileset {
     /**
      * Optimization option. Used as a callback when {@link MapGIS3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
     interpolating between {@link MapGIS3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link MapGIS3DTileset#maximumScreenSpaceError}.
@@ -32000,7 +32013,7 @@ export namespace MapGIS3DTileset {
  * @param options.url - 用于请求数据的url
  * @param options.m3dtreeParent - 构建过程中用于指定树节点的父节点
  */
-export class M3DTree {
+declare class M3DTree {
     constructor(options: {
         url: string;
         m3dtreeParent: any;
@@ -32057,7 +32070,7 @@ the content is loaded on-demand when needed based on the view.
 Do not construct this directly, instead access tiles through {@link Cesium3DTileset#tileVisible}.
 </p>
  */
-export class MapGISM3D {
+declare class MapGISM3D {
     constructor();
     /**
      * The final computed transform of this tile.
@@ -32213,9 +32226,9 @@ var tileset = scene.primitives.add(new Cesium.MapGISM3DSet({
  * @param [options.stretchReferenceHeight = 0] - 模型向下拉伸的参考高度
  * @param [options.stretchFactor = 1] - 模型向下拉伸的系数
  */
-export class MapGISM3DSet {
+declare class MapGISM3DSet {
     constructor(options: {
-        url: Resource | string | Promise<Resource> | Promise<string>;
+        url: Resource | string | Promise<Resource> | Promise<String>;
         show?: boolean;
         modelMatrix?: Matrix4;
         shadows?: ShadowMode;
@@ -32684,6 +32697,60 @@ export class MapGISM3DSet {
     </p>
      */
     debugShowUrl: boolean;
+    /**
+     * 开启剖切封边属性过滤时需要被剖切封边的属性列表
+     * @example
+     * 1. 单值
+    {
+       field: 'OID',
+       type: 'unique',
+       valueGroups: [1, 2, 3, 4, 5],
+    }
+    
+    2. 分段
+    {
+       field: 'OID',
+       type: 'range',
+       valueGroups: [
+          { start: 0, end: 3 },
+          { start: 9, end: 20 }
+       ],
+    }
+    
+    3. 包含
+    {
+       field: 'name',
+       type: 'contain',
+       valueGroups: ['mapgis', 'zondy'],
+    }
+    
+    viewer.scene.layers.appendM3DLayer(url, {
+        loaded: function(layer) {
+            layer.cuttingFilter = [
+                {
+                    field: 'OID',
+                    type: 'unique',
+                    valueGroups: [1, 2, 3, 4, 5],
+                }
+            ]
+        }
+    });
+     */
+    cuttingFilter: any[];
+    /**
+     * 是否开启剖切封边属性过滤
+     * @example
+     * var tileset = viewer.scene.primitives.add(new Cesium.MapGISM3DSet({
+      url: 'http://localhost:8002/M3D/layer/layer.mcj',
+    }));
+    // 开启剖切属性过滤
+    tileset.enableCuttingFilter = true;
+     */
+    enableCuttingFilter: boolean;
+    /**
+     * 剖切属性过滤数据纹理对象
+     */
+    cuttingFilterTexture: Texture;
     /**
      * Gets the tileset's asset object property, which contains metadata about the tileset.
     <p>
@@ -33189,23 +33256,12 @@ export class MapGISM3DSet {
 /**
  * feat:2897 要素合并模型爆炸分析 孙永政 2024.5.30
  */
-export var enableExplosion: any;
+declare var enableExplosion: any;
 
 /**
  * feat:2105 模型剖切纹理封边
  */
-export var clippingFillImage: any;
-
-export namespace MapGISM3DSet {
-    /**
-     * Optimization option. Used as a callback when {@link MapGISM3DSet#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
-    interpolating between {@link MapGISM3DSet#foveatedMinimumScreenSpaceErrorRelaxation} and {@link MapGISM3DSet#maximumScreenSpaceError}.
-     * @param p - The start value to interpolate.
-     * @param q - The end value to interpolate.
-     * @param time - The time of interpolation generally in the range <code>[0.0, 1.0]</code>.
-     */
-    type foveatedInterpolationCallback = (p: number, q: number, time: number) => number;
-}
+declare var clippingFillImage: any;
 
 /**
  * The content of a tile in a {@link Cesium3DTileset}.
@@ -33217,7 +33273,7 @@ Access derived objects through {@link Cesium3DTile#content}.
 This type describes an interface and is not intended to be instantiated directly.
 </p>
  */
-export class MapGISM3DTileContent {
+declare class MapGISM3DTileContent {
     constructor();
     /**
      * Determines if the tile's batch table has a property.  If it does, each feature in
@@ -33248,7 +33304,7 @@ export class MapGISM3DTileContent {
  * @param [options.count] - 波纹数量
  * @param [options.gradient] - 梯度拖尾效果，取值范围[0,1]
  */
-export class CircleWaveMaterialProperty {
+declare class CircleWaveMaterialProperty {
     constructor(options: {
         color?: Color;
         count?: number;
@@ -33599,7 +33655,7 @@ index = viewer.scene.layers.appendM3DLayer(url, {
  * @param [options.vertexShaderText = ''] - 传入的顶点着色器代码，必须重写fragmentMain方法
  * @param [options.fragmentShaderText = ''] - 传入的片元着色器代码，必须重写vertexMain方法
  */
-export class CustomShader {
+declare class CustomShader {
     constructor(options?: {
         uniforms?: any[];
         varyings?: any[];
@@ -33617,7 +33673,7 @@ export class CustomShader {
  * @param [options.direction] - 动态纹理中image流动的方向，1.0：顺时针，2.0：逆时针，3.0：由上到下，4.0：由下到上
  * @param [options.repeat] - 在X轴方向与Y轴方向重复的次数
  */
-export class PolylineTrailLinkMaterialProperty {
+declare class PolylineTrailLinkMaterialProperty {
     constructor(options: {
         image?: string;
         color?: Color;
@@ -33632,7 +33688,7 @@ export class PolylineTrailLinkMaterialProperty {
  * @param [options.color] - 颜色
  * @param [option.speed] - 速度因子，推荐值域范围0到1之间
  */
-export class RadarMaterialProperty {
+declare class RadarMaterialProperty {
     constructor(options: {
         color?: Color;
     });
@@ -33674,7 +33730,7 @@ var water = new Cesium.WaterReflection({
  * @param [options.distortionScale = 25.0] - 水面反射的扭曲尺度
  * @param [options.flowSpeed = 10.0] - 水流的速度
  */
-export class WaterReflection {
+declare class WaterReflection {
     constructor(options: {
         viewer: Viewer;
         positions: Cartographic[];
@@ -33736,7 +33792,7 @@ export class WaterReflection {
  * @param [options.startBreath] - 开启呼吸灯效果
  * @param [options.breathSpeed] - 呼吸灯速度,建议取值区间(0,0.1)，值越小，闪烁速度越慢
  */
-export class BloomEffect {
+declare class BloomEffect {
     constructor(viewer: Viewer, positions: Cartesian3[], transform: Matrix4, options?: {
         maxHeight?: number;
         minHeight?: number;
@@ -33800,7 +33856,7 @@ export class BloomEffect {
  * @param scanColor - 特效颜色
  * @param duration - 持续时间
  */
-export class CircleScanEffect {
+declare class CircleScanEffect {
     constructor(viewer: Viewer, options: any, center: Cartesian3, radius: number, scanColor: Color, duration: number);
 }
 
@@ -33821,7 +33877,7 @@ export class CircleScanEffect {
  * @param [options.gridLineColor = lightColor] - 栅格线颜色
  * @param [options.gridRowNum = 2] - 栅格行数
  */
-export class DynamicLightLineEffect {
+declare class DynamicLightLineEffect {
     constructor(viewer: any, positions: any[], transform: Matrix4, options: {
         direction?: number;
         max?: number;
@@ -33896,7 +33952,7 @@ GlobeEffect.removeSkyBox(); //移除天空盒
  * @param [options.cloudsDuration = 100000] - 旋转周期时间，单位毫秒。
  * @param [options.cloudsImgSource = buildModuleUrl('Assets/Images/clouds.png')] - 云层图片路径。
  */
-export class GlobeEffect {
+declare class GlobeEffect {
     constructor(viewer: Viewer);
     /**
      * 添加云效果
@@ -33975,7 +34031,7 @@ heightLimited.remove();
  * @param [options.height = 10] - 限高高度
  * @param [options.blendTransparency = 0.8] - 限高颜色混合比例0-1
  */
-export class HeightLimited {
+declare class HeightLimited {
     constructor(viewer: Viewer, options: {
         posArray: number;
         limitedColor?: Color;
@@ -34008,7 +34064,7 @@ export class HeightLimited {
  * @param [options.lightColor = new Cesium.Color(1.0, 0.0, 0.0, 0.5)] - 高亮特效颜色，特效处理后为渐变色
  * @param [options.mixFactor = 0.8] - 混合因子系数，模型本身颜色与特效颜色混合度
  */
-export class HeightModelEffect {
+declare class HeightModelEffect {
     constructor(viewer: any, positions: Cartesian3[], options: {
         maxHeight?: number;
         minHeight?: number;
@@ -34057,7 +34113,7 @@ export class HeightModelEffect {
  * @param [options.color = new Cesium.Color(1.0, 0.0, 0.0, 0.5)] - 动态亮线特效颜色
  * @param [options.duration = 3000] - 特效运动周期，单位毫秒
  */
-export class LineScanEffect {
+declare class LineScanEffect {
     constructor(viewer: Viewer, positions: any[], transform: Matrix4, options: {
         direction?: number;
         max?: number;
@@ -34100,7 +34156,7 @@ export class LineScanEffect {
  * @param scanCircleNum - 圆形的数目
  * @param scanCircleDistance - 各圆形间距
  */
-export class RadarScanEffect {
+declare class RadarScanEffect {
     constructor(viewer: Viewer, options: any, center: Cartesian3, radius: number, height: number, scanColor: Color, duration: number, transform: number, scanCircleNum: number, scanCircleDistance: number);
     /**
      * 添加雷达扫描特效
@@ -34153,7 +34209,7 @@ roamParticle.remove();//移除模型与粒子
  * @param [options.maximumImageSize] - 最大Image尺寸
  * @param [options.gravity] - 粒子重力
  */
-export class RoamParticle {
+declare class RoamParticle {
     constructor(viewer: any, options: {
         imageUrl: string;
         modelUrl: string;
@@ -34289,7 +34345,7 @@ export class RoamParticle {
  * @param type - 探照灯类型，默认2.0
  * @param width - 探照灯宽度
  */
-export class SearchlightEffect {
+declare class SearchlightEffect {
     constructor(viewer: Viewer, position: Cartesian3, directionPosition: Cartesian3, transform: Matrix4, options: any, searchlightColor: Color, mixFactor: number, duration: number, type: number, width: number);
     /**
      * 探照灯宽度
@@ -34333,7 +34389,7 @@ export class SearchlightEffect {
  * @param [options.pitch] - 偏航角
  * @param [options.roll] - 翻滚角
  */
-export class StableParticle {
+declare class StableParticle {
     constructor(viewer: any, imageUrl: string, position: Cartesian3, options: {
         modelUrl: string;
         minimumPixelSize?: number;
@@ -34471,7 +34527,7 @@ export class StableParticle {
  * 天气特效：雨、雪、雾
  * @param viewer - 视图对象
  */
-export class WeatherEffect {
+declare class WeatherEffect {
     constructor(viewer: Viewer);
     /**
      * 添加雨
@@ -34547,7 +34603,7 @@ export class WeatherEffect {
  * @param [options] - 附加选项
  * @param [options.windowlightColor] - 窗户灯颜色
  */
-export class WindowLightEffect {
+declare class WindowLightEffect {
     constructor(viewer: Viewer, position: Cartesian3, transform: Matrix4, options?: {
         windowlightColor?: Color;
     });
@@ -34568,12 +34624,12 @@ export class WindowLightEffect {
 /**
  * 百度坐标投影变换
  */
-export function BaiduProject(options: any): void;
+declare function BaiduProject(options: any): void;
 
 /**
  * @param [ellipsoid = Ellipsoid.WGS84] - 默认采取WGS椭球.
  */
-export class BaiduProjection {
+declare class BaiduProjection {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * 获取椭球 {@link Ellipsoid}.
@@ -34629,7 +34685,7 @@ export class BaiduProjection {
 /**
  * 提供了百度坐标（BD-09）、国测局坐标（火星坐标，GCJ-02）、和 WGS-84 坐标系之间的转换
  */
-export var CoordnateTransform: any;
+declare var CoordnateTransform: any;
 
 /**
  * 实现自定义投影坐标系与地理坐标系经纬度（弧度表示）之间的投影变换
@@ -34637,7 +34693,7 @@ export var CoordnateTransform: any;
  * @param [wkt = 'EPSG:3857'] - 投影坐标系的通识文本（Well Known Text）
  * @param [proj4] - 投影变换对象
  */
-export class CustomProjection {
+declare class CustomProjection {
     constructor(ellipsoid?: Ellipsoid, wkt?: string, proj4?: any);
     /**
      * 参考椭球体对象
@@ -34666,7 +34722,7 @@ export class CustomProjection {
 /**
  * @param [ellipsoid = Ellipsoid.WGS84] - 默认采取WGS椭球.
  */
-export class GaodeProjection {
+declare class GaodeProjection {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * 获取椭球 {@link Ellipsoid}.
@@ -34723,7 +34779,7 @@ export class GaodeProjection {
  * 本投影变换区别于{@link GeographicProjection}的关键在于加入了GCJ-02的坐标转换
  * @param [ellipsoid = Ellipsoid.WGS84] - 默认采取WGS椭球.
  */
-export class LonlatProjection {
+declare class LonlatProjection {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * 获取椭球 {@link Ellipsoid}.
@@ -34751,7 +34807,14 @@ export class LonlatProjection {
     unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
 }
 
-export namespace BaiduImageryProvider {
+/**
+ * 判断projection对象投影是否是地理经纬度坐标系
+ * @example
+ * isGeographic = Cesium.isGeographic(projection);
+ */
+declare function isGeographic(projection: any): boolean;
+
+declare namespace BaiduImageryProvider {
     /**
      * 百度地图-无偏显示
      * @property url - 百度地图url
@@ -34775,7 +34838,7 @@ export namespace BaiduImageryProvider {
 });
  * @param options - 初始化构造参数
  */
-export class BaiduImageryProvider {
+declare class BaiduImageryProvider {
     constructor(options: BaiduImageryProvider.ConstructorOptions);
     /**
      * 瓦片数据源默认透明度, 0.0表示透明，1.0表示不透明.
@@ -34864,7 +34927,7 @@ export class BaiduImageryProvider {
     /**
      * 当瓦片数据源准备好后返回一个promise外部使用.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * 瓦片数据源的证书.  在{@link BaiduImageryProvider#ready} 返回true前无法获取.
      */
@@ -34919,7 +34982,7 @@ export class BaiduImageryProvider {
  * @param [options.proxy] - 转发代理
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度 GeographicTilingScheme,web墨卡托 WebMercatorTilingScheme
  */
-export class BaiduMapImagerProvider {
+declare class BaiduMapImagerProvider {
     constructor(options: {
         tileWidth?: number;
         tileHeight?: number;
@@ -34930,7 +34993,7 @@ export class BaiduMapImagerProvider {
     });
 }
 
-export namespace GaodeImageryProvider {
+declare namespace GaodeImageryProvider {
     /**
      * 百度地图-无偏显示
      * @property url - 百度地图url
@@ -34954,7 +35017,7 @@ export namespace GaodeImageryProvider {
 });
  * @param options - 初始化构造参数
  */
-export class GaodeImageryProvider {
+declare class GaodeImageryProvider {
     constructor(options: GaodeImageryProvider.ConstructorOptions);
     /**
      * 瓦片数据源默认透明度, 0.0表示透明，1.0表示不透明.
@@ -35043,7 +35106,7 @@ export class GaodeImageryProvider {
     /**
      * 当瓦片数据源准备好后返回一个promise外部使用.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * 瓦片数据源的证书.  在{@link GaodeImageryProvider#ready} 返回true前无法获取.
      */
@@ -35097,7 +35160,7 @@ export class GaodeImageryProvider {
  * @param [options.proxy] - 转发代理
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度 GeographicTilingScheme,web墨卡托 WebMercatorTilingScheme
  */
-export class GoogleMapImageryProvider {
+declare class GoogleMapImageryProvider {
     constructor(options: {
         tileWidth?: number;
         tileHeight?: number;
@@ -35108,7 +35171,7 @@ export class GoogleMapImageryProvider {
     });
 }
 
-export namespace MapGISCustomImageryProvider {
+declare namespace MapGISCustomImageryProvider {
     /**
      * MapGIS-自定义裁图
      * @property url - MapGIS自定义裁图Url
@@ -35137,7 +35200,7 @@ export namespace MapGISCustomImageryProvider {
  * @param [options.bounds] - 默认 [[-180, -90],[180, 90]]
  * @param [options.dpi = 96] - 默认96可选 96 0.28
  */
-export class MapGISCustomImageryProvider {
+declare class MapGISCustomImageryProvider {
     constructor(options: {
         epsg?: string;
         resolutions?: string;
@@ -35232,7 +35295,7 @@ export class MapGISCustomImageryProvider {
     /**
      * 当瓦片数据源准备好后返回一个promise外部使用.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * 瓦片数据源的证书.  在{@link MapGISCustomImageryProvider#ready} 返回true前无法获取.
      */
@@ -35324,7 +35387,7 @@ export class MapGISCustomImageryProvider {
  * @param [options.dynamicLayers] - 设置动态图层信息
  * @param [options.build2DImageResource] - 重载build2DImageResource方法，来重载瓦片的请求逻辑
  */
-export class MapGISMapServerImageryProvider {
+declare class MapGISMapServerImageryProvider {
     constructor(options: {
         url: string;
         httpMethod?: string;
@@ -35365,116 +35428,85 @@ export class MapGISMapServerImageryProvider {
 
 /**
  * MapGISTerrainProvider MapGIS地形provider
- * @param [options.showSkirt = true] - 是否显示裙边
- * @param [options.range] - 数据范围
- * @param [options.terrainFormat = true] - 如果使用地形缓存值为false，否则为true
- * @param [options.proxy] - 使用代理
- * @param [options.requestVertexNormals = true] - 是否使用地形法向
- * @param [options.maxLevel = 20] - 最大级别
+ * @param [options.url = null] - 服务基地址，当类型为字符串或者Cesium.Resource时，
+表示仅加载一个DEM地形服务，如果是一个数组，则表示加载多个DEM地形服务，
+此时传入的格式变为了[{url:'',range:{},range3D:{},requestVertexNormals:true,maxLevel:20}]
+ * @param [options.tilingScheme = Cesium.GeographicTilingScheme()] - 地形的平铺方案
+ * @param [options.range = null] - 地形二维范围
+ * @param [options.range3D = null] - 地形三维范围
+ * @param [options.requestVertexNormals = false] - 是否请求法向量
+ * @param [options.maxLevel = 20] - 地形最大显示级数
+ * @param [options.terrainColorTblInfo = null] - 地形分析-高程赋色功能的色表，格式为['#000000', '#2747E0', '#D33B7D', '#D33038', '#FF9742', '#ffd700', '#FFFFFF']
+ * @param [options.terrainColorTblMinHeight = null] - 地形分析-高程赋色功能的最小高度
+ * @param [options.terrainColorTblMaxHeight = null] - 地形分析-高程赋色功能的最大高度
+ * @param [options.proxy = null] - 请求拦截器，可对最后发出的请求链接进行编辑
  */
-export class MapGISTerrainProvider {
+declare class MapGISTerrainProvider {
     constructor(options: {
-        showSkirt?: boolean;
+        url?: string | Resource | object[];
+        tilingScheme?: any;
         range?: any;
-        terrainFormat?: boolean;
-        proxy?: Proxy;
+        range3D?: any;
         requestVertexNormals?: boolean;
         maxLevel?: number;
+        terrainColorTblInfo?: any[];
+        terrainColorTblMinHeight?: number;
+        terrainColorTblMaxHeight?: number;
+        proxy?: Cesium.Proxy;
     });
     /**
-     * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
-    to the event, you will be notified of the error and can potentially recover from it.  Event listeners
-    are passed an instance of {@link TileProviderError}.
+     * 服务基地址
      */
-    errorEvent: Event;
+    url: string;
     /**
-     * 是否显示裙边（只有MapGIS的地形可以设置）
+     * 地形的平铺方案
      */
-    showSkirt: boolean;
+    tilingScheme: any;
     /**
-     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
-    the source of the terrain.  This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
+     * 地形二维范围
      */
-    credit: Credit;
+    range: any;
     /**
-     * Gets the tiling scheme used by this provider.  This function should
-    not be called before {@link MapGISTerrainProvider#ready} returns true.
+     * 地形三维范围
      */
-    tilingScheme: GeographicTilingScheme;
+    range3D: any;
     /**
-     * Gets a value indicating whether or not the provider is ready for use.
+     * 请求拦截器，可对最后发出的请求链接进行编辑
      */
-    ready: boolean;
+    proxy: Proxy;
     /**
-     * Gets a promise that resolves to true when the provider is ready for use.
+     * 地形最大显示级数
      */
-    readonly readyPromise: Promise<boolean>;
+    maxLevel: number;
     /**
-     * Gets a value indicating whether or not the provider includes a water mask.  The water mask
-    indicates which areas of the globe are water rather than land, so they can be rendered
-    as a reflective surface with animated waves.  This function should not be
-    called before {@link MapGISTerrainProvider#ready} returns true.
-     */
-    hasWaterMask: boolean;
-    /**
-     * Gets a value indicating whether or not the requested tiles include vertex normals.
-    This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
-     */
-    hasVertexNormals: boolean;
-    /**
-     * Gets a value indicating whether or not the requested tiles include metadata.
-    This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
-     */
-    hasMetadata: boolean;
-    /**
-     * Boolean flag that indicates if the client should request vertex normals from the server.
-    Vertex normals data is appended to the standard tile mesh data only if the client requests the vertex normals and
-    if the server provides vertex normals.
-     */
-    requestVertexNormals: boolean;
-    /**
-     * 获取地形色表信息
+     * 地形分析-高程赋色功能的色表，格式为['#000000', '#2747E0', '#D33B7D', '#D33038', '#FF9742', '#ffd700', '#FFFFFF']
      */
     terrainColorTblInfo: any[];
     /**
-     * 获取地形范围
-     */
-    range3D: any[];
-    /**
-     * 获取地形色表最大高程
-     */
-    terrainColorTblMaxHeight: number;
-    /**
-     * 获取地形色表最小高程
+     * 地形分析-高程赋色功能的最小高度
      */
     terrainColorTblMinHeight: number;
     /**
-     * Boolean flag that indicates if the client should request a watermask from the server.
-    Watermask data is appended to the standard tile mesh data only if the client requests the watermask and
-    if the server provides a watermask.
+     * 地形分析-高程赋色功能的最大高度
      */
-    requestWaterMask: boolean;
+    terrainColorTblMaxHeight: number;
     /**
-     * Boolean flag that indicates if the client should request metadata from the server.
-    Metadata is appended to the standard tile mesh data only if the client requests the metadata and
-    if the server provides a metadata.
+     * 重写Cesium.TerrainProvider的requestTileGeometry方法，
+    重写了该方法，则被认为是一个TerrainProvider
+    通过该方法请求地形瓦片数据
+     * @param x - 行号
+     * @param y - 列号
+     * @param level - 级数
+     * @param request - Cesium的请求相关对象
+     * @returns 请求完毕的回调
      */
-    requestMetadata: boolean;
+    requestTileGeometry(x: number, y: number, level: number, request: Cesium.Request): Promise;
     /**
-     * Gets an object that can be used to determine availability of terrain from this provider, such as
-    at points and in rectangles.  This function should not be called before
-    {@link MapGISTerrainProvider#ready} returns true.  This property may be undefined if availability
-    information is not available.
-     */
-    availability: TileAvailability;
-    /**
-     * 是否显示地形
-     */
-    show: boolean;
-    /**
-     * Gets the maximum geometric error allowed in a tile at a given level.
-     * @param level - The tile level for which to get the maximum geometric error.
-     * @returns The maximum geometric error.
+     * 重写Cesium.TerrainProvider的getLevelMaximumGeometricError方法，
+    重写了该方法，则被认为是一个TerrainProvider
+    通过给定的级数计算最大几何误差，并返回
+     * @param level - 级数
+     * @returns 最大几何误差
      */
     getLevelMaximumGeometricError(level: number): number;
     /**
@@ -35486,13 +35518,21 @@ export class MapGISTerrainProvider {
      */
     getTileDataAvailable(x: number, y: number, level: number): boolean;
     /**
-     * Makes sure we load availability data for a tile
-     * @param x - The X coordinate of the tile for which to request geometry.
-     * @param y - The Y coordinate of the tile for which to request geometry.
-     * @param level - The level of the tile for which to request geometry.
-     * @returns Undefined if nothing need to be loaded or a Promise that resolves when all required tiles are loaded
+     * 地形是否可用
      */
-    loadTileDataAvailability(x: number, y: number, level: number): undefined | Promise<void>;
+    readonly ready: boolean;
+    /**
+     * 地形可用后的回调，此时地形数据不一定加载完毕
+     */
+    readonly readyPromise: Promise<Boolean>;
+    /**
+     * 是否应用地形法向量
+     */
+    readonly hasVertexNormals: boolean;
+    /**
+     * 是否请求法向量
+     */
+    readonly requestVertexNormals: boolean;
 }
 
 /**
@@ -35520,7 +35560,7 @@ export class MapGISTerrainProvider {
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
  * @param [options.buildImageResource] - 重载buildImageResource方法，来重载瓦片的请求逻辑
  */
-export class MapGISTileServerImageProvider {
+declare class MapGISTileServerImageProvider {
     constructor(options: {
         url: string;
         headers?: any;
@@ -35568,7 +35608,7 @@ export class MapGISTileServerImageProvider {
  * @param [options.proxy] - 转发代理
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度 GeographicTilingScheme,web墨卡托 WebMercatorTilingScheme
  */
-export class OpenWeatherImageryProvider {
+declare class OpenWeatherImageryProvider {
     constructor(options: {
         tileWidth?: number;
         tileHeight?: number;
@@ -35626,7 +35666,7 @@ terrainAnalyse.destroy();
  * @param [options.bandPositionsColorsArray] - 等值面高度和颜色数组
  * @param [options.selectedShading] - //地形分析渲染类型包括高程赋色'elevation'、坡度分析'slope'、坡向分析'aspect',坡向箭头+坡度颜色分析'arrowAspectSlope',等值面分析'elevationBand'。
  */
-export class TerrainAnalyse {
+declare class TerrainAnalyse {
     constructor(viewer: Viewer, options?: {
         contourColor?: Color;
         contourWidth?: number;
@@ -35775,7 +35815,7 @@ if(!Cesium.defined(terrainProfile)){
  * @param [options.resultShowType = 2] - 结果展示形式.0代表仅场景中展示结果(直接在地形上绘制结果),1表示仅echart图表中展示结果,2表示场景和图表都展示结果
  * @param [options.positions] - 可选,Cartesian3数组，需要分析的坐标点集,数组内至少要有两个点.如果未传入positions,则接口内部调用绘制的接口,进行绘制获取点集
  */
-export class TerrainProfile {
+declare class TerrainProfile {
     constructor(viewer: Viewer, options?: {
         echart?: any;
         polygonColor?: Color;
@@ -35845,7 +35885,7 @@ example  ：
    {url:'http://t0.tianditu.com/DataServer?T=vec_c&X={x}&Y={y}&L={l}'}      //天地图经纬度数据
    {url:'http://glcdata.tianditu.com/DataServer?T=glc_c&X={x}&Y={y}&L={l}'} //30米全球地表覆盖数据服务
  */
-export class TiandituImageryProvider {
+declare class TiandituImageryProvider {
     constructor(options: {
         url: string;
         token: string;
@@ -35919,7 +35959,7 @@ export class TiandituImageryProvider {
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
  */
-export class WfsProvider {
+declare class WfsProvider {
     constructor(options: {
         url: string;
         typeName: string;
@@ -35987,7 +36027,7 @@ export class WfsProvider {
 /**
  * 用于保存图片
  */
-export class ReImg {
+declare class ReImg {
     constructor();
     /**
      * 从 canvas 中获取图片信息
@@ -36023,7 +36063,7 @@ M3DSet.geometryClipper = geometryClipper;
 // 给地形添加几何体裁剪
 viewer.scene.globe.geometryClipper = geometryClipper;
  */
-export class ClippingGeometry {
+declare class ClippingGeometry {
     constructor(viewer: Viewer);
     /**
      * 裁剪几何
@@ -36156,7 +36196,7 @@ export class ClippingGeometry {
 /**
  * 裁剪几何体类型
  */
-export enum ClippingGeometryType {
+declare enum ClippingGeometryType {
     /**
      * 盒子几何体
      */
@@ -36216,7 +36256,7 @@ export enum ClippingGeometryType {
  * @param options - 对象
  * @param [option.show = true] - 是否显示视图
  */
-export class DynamicEntityVisualizer {
+declare class DynamicEntityVisualizer {
     constructor(scene: Scene, options: any);
 }
 
@@ -36300,7 +36340,7 @@ viewer.entities.add({
 independentTranslucency.enabled = false;
  * @param viewer - 显示三维地球场景的对象
  */
-export class GlobeIndependentTranslucency {
+declare class GlobeIndependentTranslucency {
     constructor(viewer: Viewer);
     /**
      * 是否开启地表透明
@@ -36401,7 +36441,7 @@ var groundPrimitive = generater.generateGroundPrimitive(projectedFrameData, proj
 viewer.scene.primitives.add(groundPrimitive);
  * @param scene - 场景对象
  */
-export class GroundPrimitiveRectangleGenerater {
+declare class GroundPrimitiveRectangleGenerater {
     constructor(scene: Scene);
     /**
      * 使用GroundPrimitive渲染一帧投影
@@ -36427,22 +36467,22 @@ export class GroundPrimitiveRectangleGenerater {
 /**
  * 光源id
  */
-export var id: any;
+declare var id: any;
 
 /**
  * 光源方向
  */
-export var direction: any;
+declare var direction: any;
 
 /**
  * 光源颜色
  */
-export var color: any;
+declare var color: any;
 
 /**
  * 光源强度
  */
-export var intensity: any;
+declare var intensity: any;
 
 /**
  * 点光源,从一个点向各个方向发射的光源
@@ -36452,7 +36492,7 @@ export var intensity: any;
  * @param options.decay - 衰减量
  * @param options.distance - 光照距离
  */
-export function PointLight(options: {
+declare function PointLight(options: {
     position: Cartesian3;
     color: Color;
     intensity: number;
@@ -36463,32 +36503,32 @@ export function PointLight(options: {
 /**
  * 光源id
  */
-export var id: any;
+declare var id: any;
 
 /**
  * 点光源位置
  */
-export var position: any;
+declare var position: any;
 
 /**
  * 光源颜色
  */
-export var color: any;
+declare var color: any;
 
 /**
  * 光源强度
  */
-export var intensity: any;
+declare var intensity: any;
 
 /**
  * 衰减量
  */
-export var decay: any;
+declare var decay: any;
 
 /**
  * 光照距离，表示从光源到关照强度为0的距离
  */
-export var distance: any;
+declare var distance: any;
 
 /**
  * 聚光灯
@@ -36501,7 +36541,7 @@ export var distance: any;
  * @param [options.decay = 2.0] - 衰减因子
  * @param [options.penumbra = 0.0] - 聚光锥的半影衰减百分比,在0和1之间的值
  */
-export function SpotLight(options: {
+declare function SpotLight(options: {
     position: Cartesian3;
     direction: Cartesian3;
     color?: Color;
@@ -36515,52 +36555,52 @@ export function SpotLight(options: {
 /**
  * 光源id
  */
-export var id: any;
+declare var id: any;
 
 /**
  * 点光源位置
  */
-export var position: any;
+declare var position: any;
 
 /**
  * 光源方向
  */
-export var direction: any;
+declare var direction: any;
 
 /**
  * 光线散射角度，最大为Math.PI/2
  */
-export var angle: any;
+declare var angle: any;
 
 /**
  * 光源颜色
  */
-export var color: any;
+declare var color: any;
 
 /**
  * 光源强度
  */
-export var intensity: any;
+declare var intensity: any;
 
 /**
  * 衰减量
  */
-export var decay: any;
+declare var decay: any;
 
 /**
  * 光照距离，表示从光源到关照强度为0的距离
  */
-export var distance: any;
+declare var distance: any;
 
 /**
  * 聚光锥的半影衰减百分比
  */
-export var penumbra: any;
+declare var penumbra: any;
 
 /**
  * 轮廓显示模式
  */
-export enum OutlineRenderMode {
+declare enum OutlineRenderMode {
     /**
      * 填充模式
      */
@@ -36591,7 +36631,7 @@ export enum OutlineRenderMode {
  * @param [options.colorScheme] - 配色方案
  * @param [options.loaded] - 加载完成回调函数
  */
-export class VoxelPrimitive {
+declare class VoxelPrimitive {
     constructor(url: string, options: {
         show?: boolean;
         minThreshold?: number;
@@ -36657,7 +36697,7 @@ export class VoxelPrimitive {
  * @param scene - 场景对象
  * @param options - 可选参数
  */
-export class SceneLayer {
+declare class SceneLayer {
     constructor(scene: Scene, options: any);
     /**
      * 版本信息
@@ -36693,27 +36733,27 @@ export class SceneLayer {
      * 获取g3d图层中的全部索引
      * @returns 索引数组
      */
-    getAllLayerIndexes(): string[];
+    getAllLayerIndexes(): String[];
     /**
      * 获取m3d图层中的全部索引
      * @returns 索引数组
      */
-    getM3DLayerIndexes(): string[];
+    getM3DLayerIndexes(): String[];
     /**
      * 获取地形图层中的全部索引
      * @returns 索引数组
      */
-    getTerrainLayerIndexes(): string[];
+    getTerrainLayerIndexes(): String[];
     /**
      * 获取矢量图层中的全部索引
      * @returns 索引数组
      */
-    getVectorLayerIndexes(): string[];
+    getVectorLayerIndexes(): String[];
     /**
      * 获取标注图层中的全部索引
      * @returns 索引数组
      */
-    getLabelLayerIndexes(): string[];
+    getLabelLayerIndexes(): String[];
     /**
      * 获取全部 Layers
      */
@@ -36743,7 +36783,7 @@ export class SceneLayer {
      * @param layerIndexes - layerIndex 数组
      * @returns 获取  图层集
      */
-    getLayersByIndexes(layerIndexes: number[]): (MapGISM3DSet | MapGISTerrainProvider)[];
+    getLayersByIndexes(layerIndexes: Number[]): (MapGISM3DSet | MapGISTerrainProvider)[];
     /**
      * 模型单体化,仅支持get方式查询
      * @example
@@ -36816,7 +36856,7 @@ export class SceneLayer {
      * 按照图层序号数组进行控制是否可见
      * @param layerIndexes - 图层序号数组
      */
-    showByLayerIndexes(layerIndexes: number[], isVisible: boolean): void;
+    showByLayerIndexes(layerIndexes: Number[], isVisible: boolean): void;
     /**
      * 控制指定序号图层的透明度
      */
@@ -36825,7 +36865,7 @@ export class SceneLayer {
      * 按照图层序号数组进行控制透明度
      * @param layerIndexes - 图层序号数组
      */
-    translucencyByLayerIndexes(layerIndexes: number[], translucency: number): void;
+    translucencyByLayerIndexes(layerIndexes: Number[], translucency: number): void;
     /**
      * 清理当前 SceneLayer 图层
      * @param [destroy = true] - 是否销毁内存
@@ -36852,7 +36892,7 @@ export class SceneLayer {
  * @param [options.nearFarScalar = new NearFarScalar(0, 1, 5000000, 0)] - 在指定距离内是否可见
  * @param [options.textHeightOffset = 0] - 字体高度的偏移值
  */
-export class ThemeManager {
+declare class ThemeManager {
     constructor(viewer: any, options: {
         queryUrl: string;
         successCallback: (...params: any[]) => any;
@@ -36987,8 +37027,6 @@ const tilingScheme = new Cesium.CustomTilingScheme({
   wkid: 4547,
   wkt: '+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs', // https://epsg.io/4547
   tileInfo, // 瓦片的属性信息，地图服务可以不提供该参数
-  numberOfLevelZeroTilesX: 1, // 瓦片树第0级的X方向所包含的瓦片个数
-  numberOfLevelZeroTilesY: 1, // 瓦片树第0级的Y方向所包含的瓦片个数
   rectangleSouthwest: new Cesium.Cartesian2(extent.xmin, extent.ymin), // 投影矩形范围的西南角
   rectangleNortheast: new Cesium.Cartesian2(extent.xmax, extent.ymax), // 投影矩形范围的东北角
   proj4, // 投影变换对象
@@ -36998,20 +37036,18 @@ const tilingScheme = new Cesium.CustomTilingScheme({
  * @param [options.wkt] - 投影坐标系的通识文本（Well Known Text）
  * @param [options.wkid] - 投影坐标系的通识编码（Well Known ID）
  * @param [options.tileInfo] - 瓦片的属性信息，地图服务可以不提供该参数，该参数有固定的格式要求，详见下方示例
- * @param [options.numberOfLevelZeroTilesX = 1] - 瓦片树第0级的X方向所包含的瓦片个数
- * @param [options.numberOfLevelZeroTilesY = 1] - 瓦片树第0级的Y方向所包含的瓦片个数
+ * @param [options.axisDirection] - 瓦片组织方向(裁图方向)。axisDirection.x=1代表x轴由左往右为正，axisDirection.x=-1代表x轴由右往左为正；axisDirection.y=1代表x轴由下往上为正，axisDirection.y=-1代表x轴由上往下为正。例如wmts的axisDirection为{x:1,y:-1}。
  * @param [options.rectangleSouthwest] - 投影矩形范围的西南角
  * @param [options.rectangleNortheast] - 投影矩形范围的东北角
  * @param [options.proj4] - 投影变换对象
  */
-export class CustomTilingScheme {
+declare class CustomTilingScheme {
     constructor(options?: {
         ellipsoid?: Ellipsoid;
         wkt?: string;
         wkid?: string;
         tileInfo?: any;
-        numberOfLevelZeroTilesX?: number;
-        numberOfLevelZeroTilesY?: number;
+        axisDirection?: any;
         rectangleSouthwest?: Cartesian2;
         rectangleNortheast?: Cartesian2;
         proj4?: any;
@@ -37091,13 +37127,32 @@ export class CustomTilingScheme {
  * @param [options.bounds] - 默认 [[-180, -90],[180, 90]]
  * @param [options.dpi = 96] - 默认96可选 96 0.28
  */
-export function MapGISCustomTilingScheme(options: {
+declare function MapGISCustomTilingScheme(options: {
     epsg?: string;
     resolutions?: string;
     origin?: string;
     bounds?: string;
     dpi?: string;
 }): void;
+
+/**
+ * @param options - 构造参数
+ * @param options.rectangleSouthwest - 必传。图层西南角范围
+ * @param options.rectangleNortheast - 必传。图层东北角范围
+ * @param options.tileSize - 可选。瓦片大小，默认为256
+ * @param options.numberOfMinLevelTilesX - 可选。最小级别数x轴方向瓦片数量
+ * @param options.minLevel - 可选。最小级别数，默认为0级
+ * @param options.isGeographic - 可选。是否为地理经纬度坐标，默认为true，是地理经纬度坐标
+ * @returns tileInfo对象
+ */
+declare function createCommonTileInfo(options: {
+    rectangleSouthwest: any;
+    rectangleNortheast: any;
+    tileSize: number;
+    numberOfMinLevelTilesX: number;
+    minLevel: number;
+    isGeographic: boolean;
+}): any;
 
 /**
  * 角度测量工具
@@ -37116,7 +37171,7 @@ export function MapGISCustomTilingScheme(options: {
  * @param [options.isFixAxis = true] - isFixAxis 是指南针模式还是测量夹角模式，true：指南针，false：夹角
  * @param [options.isSemiCircle = true] - isSemiCircle 当处于测量夹角模式时，是否支持钝角测量，true：否，false：是
  */
-export class AngulationTool {
+declare class AngulationTool {
     constructor(viewer: any, options: {
         callBack?: boolean;
         labelCallBack?: boolean;
@@ -37321,7 +37376,7 @@ export class AngulationTool {
  * @param [options.firstPersonCameraFocusOffset = {offsetX: 0,offsetY: 0,offsetZ: 0}] - 第一人称视角下，相机焦点的偏移值。向前：offsetX；向左：offsetY；向上:offsetZ
  * @param [options.modelOffset = {offsetX: 0,offsetY: 0,offsetZ: 0}] - 模型相对自身的平移值，单位为米。向前：offsetX；向左：offsetY；向上:offsetZ
  */
-export class AnimationTool {
+declare class AnimationTool {
     constructor(viewer: any, options: {
         toolType?: string;
         heading?: number;
@@ -37555,7 +37610,7 @@ export class AnimationTool {
 /**
  * 用于设置漫游开始时间,解决漫游时因时间引起的光照问题
  */
-export var startTime: any;
+declare var startTime: any;
 
 /**
  * 三维场景裁剪工具集
@@ -37563,7 +37618,7 @@ export var startTime: any;
  * @param [options] - 可选参数
  * @param [options.onErrorCallback] - 发生错误时的回调函数，type：错误类型，msg：错误信息。0：点数量小于2；1：为凹多边形，不支持；2：有空对象；3：格式不是笛卡尔对象；4：裁剪体高度不正确
  */
-export class CuttingTool {
+declare class CuttingTool {
     constructor(viewer: Viewer, layers: MapGISM3DSet[], options?: {
         onErrorCallback?: (...params: any[]) => any;
     });
@@ -37707,7 +37762,7 @@ export class CuttingTool {
 // 修改绘制类型，支持，贴地，贴模型等参数设置
  * @param viewer - 视图对象
  */
-export class DrawElement {
+declare class DrawElement {
     constructor(viewer: Viewer);
     /**
      * 停止绘制
@@ -37860,10 +37915,10 @@ export class DrawElement {
 /**
  * 压平工具
  */
-export class FlattenTool {
+declare class FlattenTool {
     constructor(scene: Scene);
     /**
-     * 模型压平
+     * 模型压平（该功能目前不支持M3D 2.0）
      * @example
      * var flattenTool = new Cesium.FlattenTool(viewer.scene);
     var positions;
@@ -37882,12 +37937,13 @@ export class FlattenTool {
             viewer.scene.primitives.add(polygon);
         }
     });
-    flattenTool.modelFlatten(positions, 10, tileSetList);
+    flattenTool.modelFlatten(positions, 10, true, tileSetList);
      * @param positionArray - 压平区域多边形顶点坐标数组，封闭多边形
      * @param flattenHeight - 压平到指定高度，绝对海拔高度，单位米
+     * @param flattenWithId - 是否根据id压平
      * @param [tileSetList] - 参与压平的MapGISM3DSet列表
      */
-    modelFlatten(positionArray: any[], flattenHeight: number, tileSetList?: MapGISM3DSet[]): void;
+    modelFlatten(positionArray: any[], flattenHeight: number, flattenWithId: boolean, tileSetList?: MapGISM3DSet[]): void;
     /**
      * 移除模型压平
      */
@@ -37899,7 +37955,7 @@ export class FlattenTool {
  * @param graphicsLayer - 编辑的图层对象
  * @param [options.isContinued = true] - 是否连续绘制
  */
-export class DrawTool {
+declare class DrawTool {
     constructor(viewer: Viewer, graphicsLayer: any, options: {
         isContinued?: boolean;
     });
@@ -37962,7 +38018,7 @@ export class DrawTool {
 /**
  * 标绘编辑工具
  */
-export class EditTool {
+declare class EditTool {
     constructor(viewer: Viewer, graphicsLayer: any, options: any);
     /**
      * 返回当前选中图形
@@ -38029,14 +38085,14 @@ export class EditTool {
 /**
  * 获取/设置模型编辑器
  */
-export var getViewModel: any;
+declare var getViewModel: any;
 
 /**
  * 绘制工具
  * @param graphicsLayer - 编辑的图层对象
  * @param [options.isContinued = true] - 是否连续绘制
  */
-export class SelectTool {
+declare class SelectTool {
     constructor(viewer: Viewer, graphicsLayer: any, options: {
         isContinued?: boolean;
     });
@@ -38064,7 +38120,7 @@ export class SelectTool {
  * @param [options.mouseMove] - 鼠标移动事件
  * @param [options.mouseDown] - 鼠标左键按下事件
  */
-export class GraphicTransformTool {
+declare class GraphicTransformTool {
     constructor(graphic: Graphic, options: {
         mouseUp?: any;
         mouseMove?: any;
@@ -38185,7 +38241,7 @@ measureAreaTool.startTool();  //开始测量
  * @param [options.scaleByDistance] - 标签代销随视角高度缩放函数，用户可自定义，不传则使用默认函数,会传入一个当前的相机视角高度,返回一个NearFarScale函数对象，详见下方示例
  * @param [options.isContinueDraw = true] - 是否连续绘制，true：是，false：否
  */
-export class MeasureAreaTool {
+declare class MeasureAreaTool {
     constructor(viewer: any, options: {
         callBack?: (...params: any[]) => any;
         labelCallBack?: (...params: any[]) => any;
@@ -38316,7 +38372,7 @@ export class MeasureAreaTool {
  * @param [options.scaleByDistance] - 标签大小随视角高度缩放函数，用户可自定义，不传则使用默认函数,会传入一个当前的相机视角高度,返回一个NearFarScale函数对象，详见下方示例
  * @param [options.isContinueDraw = true] - 是否连续绘制，true：是，false：否
  */
-export class MeasureLengthTool {
+declare class MeasureLengthTool {
     constructor(viewer: any, options: {
         callBack?: (...params: any[]) => any;
         labelCallBack?: (...params: any[]) => any;
@@ -38410,7 +38466,7 @@ export class MeasureLengthTool {
  * @param [options.backgroundColor = new Color(0, 0, 0, 0.4)] - lable 背景的颜色
  * @param [options.pixelOffset = new Cartesian2(0, -4)] - label 相对于设定点的偏移位置
  */
-export class MeasureSlopeTool {
+declare class MeasureSlopeTool {
     constructor(viewer: any, options: {
         callBack?: boolean;
         labelCallBack?: boolean;
@@ -38466,7 +38522,7 @@ export class MeasureSlopeTool {
  * @param boundingSphere - 模型的包围盒
  * @param originOffset - 编辑轴偏移值,默认Cartesian3.UNIT_X
  */
-export class ModelEditor {
+declare class ModelEditor {
     constructor(options: any, container: any, scene: any, transform: any, boundingSphere: any, originOffset: any);
 }
 
@@ -38474,7 +38530,7 @@ export class ModelEditor {
  * 模型爆炸工具集
  * @param viewer - 场景视图
  */
-export class ModelExplosion {
+declare class ModelExplosion {
     constructor(viewer: Viewer);
     /**
      * 单图层-中心点爆炸-有动画
@@ -38622,7 +38678,7 @@ export class ModelExplosion {
 /**
  * 模型爆炸的状态类型
  */
-export enum ModelExplosionType {
+declare enum ModelExplosionType {
     /**
      * 非爆炸状态，常规状态
      */
@@ -38648,7 +38704,7 @@ export enum ModelExplosionType {
  * @param [options.enableFrameFunction = true] - 启用帧函数，即每一帧执行过滤操作，针对lod的模型实时过滤
  * @param [options.enableCartesian = false] - 是否使用笛卡尔坐标,[cartesian3,cartesian3,cartesian3,...]
  */
-export class ModelFilterTool {
+declare class ModelFilterTool {
     constructor(layer?: any, options?: {
         enableFrameFunction?: any;
         enableCartesian?: any;
@@ -38683,7 +38739,7 @@ export class ModelFilterTool {
 模型对象为空时，需要在调用具体的变换接口时指定要变换的模型。
 推荐在调用变换接口时指定模型。
  */
-export class ModelTransformTool {
+declare class ModelTransformTool {
     constructor(layer?: SceneLayer | MapGISM3DSet | Cesium3DTileset | undefined);
     /**
      * 模型旋转
@@ -38715,7 +38771,7 @@ export class ModelTransformTool {
     // 通过headingpitchroll控制
     modelTransformTool.rotateLocal({
         // 绕Z轴旋转90度
-        rotation: new Cesium.HeadingPitchRoll(Math.toRadians(90), 0, 0),
+        rotation: new Cesium.HeadingPitchRoll(CesiumMath.toRadians(90), 0, 0),
         model: model,
         rotationPoint: model.boundingSphere.center
     })
@@ -38838,7 +38894,7 @@ export class ModelTransformTool {
 /**
  * @param viewerCesiumWidget - The Viewer or CesiumWidget instance
  */
-export class CesiumNavigation {
+declare class CesiumNavigation {
     constructor(viewerCesiumWidget: Viewer | CesiumWidget);
 }
 
@@ -38846,7 +38902,7 @@ export class CesiumNavigation {
  * The view-model for a control in the navigation control tool bar
  * @param terria - The Terria instance.
  */
-export class NavigationControl {
+declare class NavigationControl {
     constructor(terria: any);
 }
 
@@ -38860,7 +38916,7 @@ viewer.extend(NavigationTool);
  * @param viewer - The viewer instance.
  * @param options - The options.
  */
-export class NavigationTool {
+declare class NavigationTool {
     constructor(viewer: Viewer, options: any);
     /**
      * @param cesiumWidget - The cesium widget instance.
@@ -38873,7 +38929,7 @@ export class NavigationTool {
  * The model for a zoom in control in the navigation control tool bar
  * @param terria - The Terria instance.
  */
-export class ResetViewNavigationControl {
+declare class ResetViewNavigationControl {
     constructor(terria: any);
     /**
      * Gets or sets the name of the control which is set as the control's title.
@@ -38907,7 +38963,7 @@ export class ResetViewNavigationControl {
  * The view-model for a control in the user interface
  * @param terria - The Terria instance.
  */
-export class UserInterfaceControl {
+declare class UserInterfaceControl {
     constructor(terria: any);
     /**
      * Gets or sets the name of the control which is set as the controls title.
@@ -38954,14 +39010,14 @@ export class UserInterfaceControl {
 /**
  * Gets a value indicating whether this button has text associated with it.
  */
-export var hasText: any;
+declare var hasText: any;
 
 /**
  * The model for a zoom in control in the navigation control tool bar
  * @param terria - The Terria instance.
  * @param zoomIn - is used for zooming in (true) or out (false)
  */
-export class ZoomNavigationControl {
+declare class ZoomNavigationControl {
     constructor(terria: any, zoomIn: boolean);
     /**
      * Gets or sets the name of the control which is set as the control's title.
@@ -38998,7 +39054,7 @@ tool.start();
  * @param type - 数据类型，m3d模型缓存：'model'，地形：'terrain',通用：'general'
  * @param callBackFuntion - 用于返回结果的回调函数，参数result为结果，使用经纬度坐标Cartographic的数组进行存储
  */
-export class SampleElevationTool {
+declare class SampleElevationTool {
     constructor(viewer: any, positions: any[], type: string, callBackFuntion: (...params: any[]) => any);
     /**
      * 采样高程
@@ -39014,7 +39070,7 @@ export class SampleElevationTool {
  * @param div - HTML elements  一般传Viewer.container
  * @param [options.toolTipDom] - 重写整个提示框dom对象
  */
-export class Tooltip {
+declare class Tooltip {
     constructor(div: Element, options: {
         toolTipDom?: any;
     });
@@ -39117,7 +39173,7 @@ scene.camera.enableTerrainAdjustmentWhenLoading = false;
  * @param [options.enableScaleByDistance = true] - 是否启用标签随视角高度缩放功能
  * @param [options.scaleByDistance = null] - 标签大小随视角高度缩放函数，用户可自定义，不传则使用默认函数,会传入一个当前的相机视角高度,返回一个NearFarScale函数对象，详见下方示例
  */
-export class TriangulationTool {
+declare class TriangulationTool {
     constructor(viewer: any, options: {
         callBack?: boolean;
         labelCallBack?: boolean;
@@ -39174,28 +39230,28 @@ export class TriangulationTool {
 /**
  * Interceptors拦截器工具类封装
  */
-export function InterceptorsUtil(): void;
+declare function InterceptorsUtil(): void;
 
 /**
  * 基于GPU加速的阴影计算工具封装
  * @param positions - 需要分析的顶点
  */
-export function ShadowRateDrawCommand(scene: Scene, positions: Cartesian3): void;
+declare function ShadowRateDrawCommand(scene: Scene, positions: Cartesian3): void;
 
 /**
  * Topo工具类封装
  */
-export function TopoJSONUtil(): void;
+declare function TopoJSONUtil(): void;
 
 /**
  * UrlUtil工具类封装
  */
-export function UrlUtil(): void;
+declare function UrlUtil(): void;
 
 /**
- * Topo工具类封装
+ * 工具类封装
  */
-export function XmlUtil(): void;
+declare function XmlUtil(): void;
 
 /**
  * MapGIS矢量地图文档
@@ -39252,7 +39308,7 @@ export function XmlUtil(): void;
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
  */
-export class MapGISVectorGeojsonProvider {
+declare class MapGISVectorGeojsonProvider {
     constructor(options: {
         url: string;
         is3d?: boolean;
@@ -39486,7 +39542,7 @@ on a {@link Globe}.
  * @param [options.colorToAlpha] - Color to be used as alpha.
  * @param [options.colorToAlphaThreshold = 0.004] - Threshold for color-to-alpha.
  */
-export class MapGISVectorLayer {
+declare class MapGISVectorLayer {
     constructor(imageryProvider: ImageryProvider, options?: {
         rectangle?: Rectangle;
         alpha?: number | ((...params: any[]) => any);
@@ -40016,7 +40072,7 @@ export class MapGISVectorLayer {
  * @param [options.tilingScheme] - 服务的平铺方案:经纬度GeographicTilingScheme,web墨卡托WebMercatorTilingScheme
  * @param [options.extensions] - 扩展参数，需要确保服务端支持
  */
-export class MapGISVectorProvider {
+declare class MapGISVectorProvider {
     constructor(options: {
         url: string;
         is3d?: boolean;
@@ -40050,7 +40106,7 @@ export class MapGISVectorProvider {
                 timeAsc?: boolean;
                 buildingsLimit?: number;
                 colors?: Color[];
-                times?: number[];
+                times?: Number[];
                 updateColor?: boolean;
                 updateHeight?: boolean;
                 onReady?: (...params: any[]) => any;
@@ -40183,7 +40239,7 @@ scene.primitives.add(labels);      // Add regular primitive
  * @param [options.show = true] - Determines if the primitives in the collection will be shown.
  * @param [options.destroyPrimitives = true] - Determines if primitives in the collection are destroyed when they are removed.
  */
-export class MapGISVectorTilePrimitiveCollection {
+declare class MapGISVectorTilePrimitiveCollection {
     constructor(options?: {
         show?: boolean;
         destroyPrimitives?: boolean;
@@ -40315,7 +40371,7 @@ export class MapGISVectorTilePrimitiveCollection {
  * 可视化分析
  * @param scene - 场景对象
  */
-export class VisualAnalysisManager {
+declare class VisualAnalysisManager {
     constructor(scene: Scene);
     /**
      * 分析对象的个数
@@ -40346,19 +40402,27 @@ export class VisualAnalysisManager {
      * 根据索引获取可视化分析
      */
     getVisualAnalysisByID(ID: number | string): any | undefined;
+    /**
+     * 获取所有分析类对象
+     */
+    getAll(): any[];
+    /**
+     * 获取可视域分析的可视率（主相机视角下的可视率）
+     */
+    getViewshedVisibleRate(): number;
 }
 
 /**
  * 伯灵噪声算法，参考地址： https://cs.nyu.edu/~perlin/noise/
  */
-export class ImprovedNoise {
+declare class ImprovedNoise {
     constructor();
 }
 
 /**
  * The render pass for a command.
  */
-export enum Pass {
+declare enum Pass {
     /**
      * 环境渲染通道(绘制大气，天空盒等)
      */
@@ -40428,16 +40492,16 @@ export enum Pass {
 /**
  * The data type of a pixel.
  */
-export enum PixelDatatype {
-    UNSIGNED_BYTE = WebGLConstants.UNSIGNED_BYTE,
-    UNSIGNED_SHORT = WebGLConstants.UNSIGNED_SHORT,
-    UNSIGNED_INT = WebGLConstants.UNSIGNED_INT,
-    FLOAT = WebGLConstants.FLOAT,
-    HALF_FLOAT = WebGLConstants.HALF_FLOAT_OES,
-    UNSIGNED_INT_24_8 = WebGLConstants.UNSIGNED_INT_24_8,
-    UNSIGNED_SHORT_4_4_4_4 = WebGLConstants.UNSIGNED_SHORT_4_4_4_4,
-    UNSIGNED_SHORT_5_5_5_1 = WebGLConstants.UNSIGNED_SHORT_5_5_5_1,
-    UNSIGNED_SHORT_5_6_5 = WebGLConstants.UNSIGNED_SHORT_5_6_5
+declare enum PixelDatatype {
+    UNSIGNED_BYTE = "WebGLConstants.UNSIGNED_BYTE",
+    UNSIGNED_SHORT = "WebGLConstants.UNSIGNED_SHORT",
+    UNSIGNED_INT = "WebGLConstants.UNSIGNED_INT",
+    FLOAT = "WebGLConstants.FLOAT",
+    HALF_FLOAT = "WebGLConstants.HALF_FLOAT_OES",
+    UNSIGNED_INT_24_8 = "WebGLConstants.UNSIGNED_INT_24_8",
+    UNSIGNED_SHORT_4_4_4_4 = "WebGLConstants.UNSIGNED_SHORT_4_4_4_4",
+    UNSIGNED_SHORT_5_5_5_1 = "WebGLConstants.UNSIGNED_SHORT_5_5_5_1",
+    UNSIGNED_SHORT_5_6_5 = "WebGLConstants.UNSIGNED_SHORT_5_6_5"
 }
 
 /**
@@ -40473,7 +40537,7 @@ export enum PixelDatatype {
  * @param [options.source] - 纹理的数据源对象
  * @param [options.sampler] - 采样器对象
  */
-export class Texture3D {
+declare class Texture3D {
     constructor(options: {
         width?: number;
         height?: number;
@@ -40490,43 +40554,43 @@ export class Texture3D {
 /**
  * Enumerates all possible filters used when magnifying WebGL textures.
  */
-export enum TextureMagnificationFilter {
+declare enum TextureMagnificationFilter {
     /**
      * Samples the texture by returning the closest pixel.
      */
-    NEAREST = WebGLConstants.NEAREST,
+    NEAREST = "WebGLConstants.NEAREST",
     /**
      * Samples the texture through bi-linear interpolation of the four nearest pixels. This produces smoother results than <code>NEAREST</code> filtering.
      */
-    LINEAR = WebGLConstants.LINEAR
+    LINEAR = "WebGLConstants.LINEAR"
 }
 
 /**
  * Enumerates all possible filters used when minifying WebGL textures.
  */
-export enum TextureMinificationFilter {
+declare enum TextureMinificationFilter {
     /**
      * Samples the texture by returning the closest pixel.
      */
-    NEAREST = WebGLConstants.NEAREST,
+    NEAREST = "WebGLConstants.NEAREST",
     /**
      * Samples the texture through bi-linear interpolation of the four nearest pixels. This produces smoother results than <code>NEAREST</code> filtering.
      */
-    LINEAR = WebGLConstants.LINEAR,
+    LINEAR = "WebGLConstants.LINEAR",
     /**
      * Selects the nearest mip level and applies nearest sampling within that level.
     <p>
     Requires that the texture has a mipmap. The mip level is chosen by the view angle and screen-space size of the texture.
     </p>
      */
-    NEAREST_MIPMAP_NEAREST = WebGLConstants.NEAREST_MIPMAP_NEAREST,
+    NEAREST_MIPMAP_NEAREST = "WebGLConstants.NEAREST_MIPMAP_NEAREST",
     /**
      * Selects the nearest mip level and applies linear sampling within that level.
     <p>
     Requires that the texture has a mipmap. The mip level is chosen by the view angle and screen-space size of the texture.
     </p>
      */
-    LINEAR_MIPMAP_NEAREST = WebGLConstants.LINEAR_MIPMAP_NEAREST,
+    LINEAR_MIPMAP_NEAREST = "WebGLConstants.LINEAR_MIPMAP_NEAREST",
     /**
      * Read texture values with nearest sampling from two adjacent mip levels and linearly interpolate the results.
     <p>
@@ -40536,7 +40600,7 @@ export enum TextureMinificationFilter {
     Requires that the texture has a mipmap. The mip level is chosen by the view angle and screen-space size of the texture.
     </p>
      */
-    NEAREST_MIPMAP_LINEAR = WebGLConstants.NEAREST_MIPMAP_LINEAR,
+    NEAREST_MIPMAP_LINEAR = "WebGLConstants.NEAREST_MIPMAP_LINEAR",
     /**
      * Read texture values with linear sampling from two adjacent mip levels and linearly interpolate the results.
     <p>
@@ -40546,7 +40610,7 @@ export enum TextureMinificationFilter {
     Requires that the texture has a mipmap. The mip level is chosen by the view angle and screen-space size of the texture.
     </p>
      */
-    LINEAR_MIPMAP_LINEAR = WebGLConstants.LINEAR_MIPMAP_LINEAR
+    LINEAR_MIPMAP_LINEAR = "WebGLConstants.LINEAR_MIPMAP_LINEAR"
 }
 
 /**
@@ -40561,7 +40625,7 @@ this base <code>Appearance</code> interface.
  * @param [options.fragmentShaderSource] - Optional GLSL fragment shader source to override the default fragment shader.
  * @param [options.renderState] - Optional render state to override the default render state.
  */
-export class Appearance {
+declare class Appearance {
     constructor(options?: {
         translucent?: boolean;
         closed?: boolean;
@@ -40617,7 +40681,7 @@ export class Appearance {
     getRenderState(): any;
 }
 
-export namespace ArcGisMapServerImageryProvider {
+declare namespace ArcGisMapServerImageryProvider {
     /**
      * Initialization options for the ArcGisMapServerImageryProvider constructor
      * @property url - The URL of the ArcGIS MapServer service.
@@ -40654,6 +40718,8 @@ export namespace ArcGisMapServerImageryProvider {
      * @property [tileHeight = 256] - The height of each tile in pixels.  This parameter is ignored when accessing a tiled server.
      * @property [maximumLevel] - The maximum tile level to request, or undefined if there is no maximum.  This parameter is ignored when accessing
                                            a tiled server.
+     * @property [options.headers] - HTTP请求头
+     * @param [options.extensions = []] - 扩展参数，会将扩展参数中的非空参数拼接到请求接口上，示例：[{ key: '参数名', value: '参数值' }]
      */
     type ConstructorOptions = {
         url: Resource | string;
@@ -40681,7 +40747,7 @@ used, if available.
 });
  * @param options - Object describing initialization options
  */
-export class ArcGisMapServerImageryProvider {
+declare class ArcGisMapServerImageryProvider {
     constructor(options: ArcGisMapServerImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -40798,7 +40864,7 @@ export class ArcGisMapServerImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link ArcGisMapServerImageryProvider#ready} returns true.
@@ -40863,7 +40929,7 @@ export class ArcGisMapServerImageryProvider {
 /**
  * An enum describing the x, y, and z axes and helper conversion functions.
  */
-export enum Axis {
+declare enum Axis {
     /**
      * Denotes the x-axis.
      */
@@ -40888,7 +40954,7 @@ properties are set by calling {@link BillboardCollection#add}.
 Example billboards
 </div>
  */
-export class Billboard {
+declare class Billboard {
     constructor();
     /**
      * 获取帧率（每秒钟播放的帧图片数量），该参数仅在使用GIF和APNG时生效。
@@ -41241,7 +41307,7 @@ export class Billboard {
     equals(other: Billboard): boolean;
 }
 
-export namespace Billboard {
+declare namespace Billboard {
     /**
      * A function that creates an image.
      * @param id - The identifier of the image to load.
@@ -41283,7 +41349,7 @@ setting the technique to BlendOption.OPAQUE or BlendOption.TRANSLUCENT can impro
  * @param [options.swipeEnabled = false] - 开启卷帘对比分析
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
-export class BillboardCollection {
+declare class BillboardCollection {
     constructor(options?: {
         modelMatrix?: Matrix4;
         debugShowBoundingVolume?: boolean;
@@ -41492,7 +41558,7 @@ export class BillboardCollection {
     destroy(): void;
 }
 
-export namespace BingMapsImageryProvider {
+declare namespace BingMapsImageryProvider {
     /**
      * Initialization options for the BingMapsImageryProvider constructor
      * @property url - The url of the Bing Maps server hosting the imagery.
@@ -41531,7 +41597,7 @@ export namespace BingMapsImageryProvider {
 });
  * @param options - Object describing initialization options
  */
-export class BingMapsImageryProvider {
+declare class BingMapsImageryProvider {
     constructor(options: BingMapsImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -41651,7 +41717,7 @@ export class BingMapsImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link BingMapsImageryProvider#ready} returns true.
@@ -41723,7 +41789,7 @@ export class BingMapsImageryProvider {
 /**
  * The types of imagery provided by Bing Maps.
  */
-export enum BingMapsStyle {
+declare enum BingMapsStyle {
     /**
      * Aerial imagery.
      */
@@ -41769,97 +41835,97 @@ export enum BingMapsStyle {
 /**
  * Determines how two pixels' values are combined.
  */
-export enum BlendEquation {
+declare enum BlendEquation {
     /**
      * Pixel values are added componentwise.  This is used in additive blending for translucency.
      */
-    ADD = WebGLConstants.FUNC_ADD,
+    ADD = "WebGLConstants.FUNC_ADD",
     /**
      * Pixel values are subtracted componentwise (source - destination).  This is used in alpha blending for translucency.
      */
-    SUBTRACT = WebGLConstants.FUNC_SUBTRACT,
+    SUBTRACT = "WebGLConstants.FUNC_SUBTRACT",
     /**
      * Pixel values are subtracted componentwise (destination - source).
      */
-    REVERSE_SUBTRACT = WebGLConstants.FUNC_REVERSE_SUBTRACT,
+    REVERSE_SUBTRACT = "WebGLConstants.FUNC_REVERSE_SUBTRACT",
     /**
      * Pixel values are given to the minimum function (min(source, destination)).
     
     This equation operates on each pixel color component.
      */
-    MIN = WebGLConstants.MIN,
+    MIN = "WebGLConstants.MIN",
     /**
      * Pixel values are given to the maximum function (max(source, destination)).
     
     This equation operates on each pixel color component.
      */
-    MAX = WebGLConstants.MAX
+    MAX = "WebGLConstants.MAX"
 }
 
 /**
  * Determines how blending factors are computed.
  */
-export enum BlendFunction {
+declare enum BlendFunction {
     /**
      * The blend factor is zero.
      */
-    ZERO = WebGLConstants.ZERO,
+    ZERO = "WebGLConstants.ZERO",
     /**
      * The blend factor is one.
      */
-    ONE = WebGLConstants.ONE,
+    ONE = "WebGLConstants.ONE",
     /**
      * The blend factor is the source color.
      */
-    SOURCE_COLOR = WebGLConstants.SRC_COLOR,
+    SOURCE_COLOR = "WebGLConstants.SRC_COLOR",
     /**
      * The blend factor is one minus the source color.
      */
-    ONE_MINUS_SOURCE_COLOR = WebGLConstants.ONE_MINUS_SRC_COLOR,
+    ONE_MINUS_SOURCE_COLOR = "WebGLConstants.ONE_MINUS_SRC_COLOR",
     /**
      * The blend factor is the destination color.
      */
-    DESTINATION_COLOR = WebGLConstants.DST_COLOR,
+    DESTINATION_COLOR = "WebGLConstants.DST_COLOR",
     /**
      * The blend factor is one minus the destination color.
      */
-    ONE_MINUS_DESTINATION_COLOR = WebGLConstants.ONE_MINUS_DST_COLOR,
+    ONE_MINUS_DESTINATION_COLOR = "WebGLConstants.ONE_MINUS_DST_COLOR",
     /**
      * The blend factor is the source alpha.
      */
-    SOURCE_ALPHA = WebGLConstants.SRC_ALPHA,
+    SOURCE_ALPHA = "WebGLConstants.SRC_ALPHA",
     /**
      * The blend factor is one minus the source alpha.
      */
-    ONE_MINUS_SOURCE_ALPHA = WebGLConstants.ONE_MINUS_SRC_ALPHA,
+    ONE_MINUS_SOURCE_ALPHA = "WebGLConstants.ONE_MINUS_SRC_ALPHA",
     /**
      * The blend factor is the destination alpha.
      */
-    DESTINATION_ALPHA = WebGLConstants.DST_ALPHA,
+    DESTINATION_ALPHA = "WebGLConstants.DST_ALPHA",
     /**
      * The blend factor is one minus the destination alpha.
      */
-    ONE_MINUS_DESTINATION_ALPHA = WebGLConstants.ONE_MINUS_DST_ALPHA,
+    ONE_MINUS_DESTINATION_ALPHA = "WebGLConstants.ONE_MINUS_DST_ALPHA",
     /**
      * The blend factor is the constant color.
      */
-    CONSTANT_COLOR = WebGLConstants.CONSTANT_COLOR,
+    CONSTANT_COLOR = "WebGLConstants.CONSTANT_COLOR",
     /**
      * The blend factor is one minus the constant color.
      */
-    ONE_MINUS_CONSTANT_COLOR = WebGLConstants.ONE_MINUS_CONSTANT_COLOR,
+    ONE_MINUS_CONSTANT_COLOR = "WebGLConstants.ONE_MINUS_CONSTANT_COLOR",
     /**
      * The blend factor is the constant alpha.
      */
-    CONSTANT_ALPHA = WebGLConstants.CONSTANT_ALPHA,
+    CONSTANT_ALPHA = "WebGLConstants.CONSTANT_ALPHA",
     /**
      * The blend factor is one minus the constant alpha.
      */
-    ONE_MINUS_CONSTANT_ALPHA = WebGLConstants.ONE_MINUS_CONSTANT_ALPHA,
+    ONE_MINUS_CONSTANT_ALPHA = "WebGLConstants.ONE_MINUS_CONSTANT_ALPHA",
     /**
      * The blend factor is the saturated source alpha.
      */
-    SOURCE_ALPHA_SATURATE = WebGLConstants.SRC_ALPHA_SATURATE
+    SOURCE_ALPHA_SATURATE = "WebGLConstants.SRC_ALPHA_SATURATE"
 }
 
 /**
@@ -41870,7 +41936,7 @@ destination fragments when rendering.
 This is a helper when using custom render states with {@link Appearance#renderState}.
 </p>
  */
-export namespace BlendingState {
+declare namespace BlendingState {
     /**
      * Blending is disabled.
      */
@@ -41892,7 +41958,7 @@ export namespace BlendingState {
 /**
  * Determines how opaque and translucent parts of billboards, points, and labels are blended with the scene.
  */
-export enum BlendOption {
+declare enum BlendOption {
     /**
      * The billboards, points, or labels in the collection are completely opaque.
      */
@@ -41912,7 +41978,7 @@ export enum BlendOption {
 Particles will be positioned randomly within the box and have initial velocities emanating from the center of the box.
  * @param dimensions - The width, height and depth dimensions of the box.
  */
-export class BoxEmitter {
+declare class BoxEmitter {
     constructor(dimensions: Cartesian3);
     /**
      * The width, height and depth dimensions of the box in meters.
@@ -41941,7 +42007,7 @@ camera.frustum.near = 1.0;
 camera.frustum.far = 2.0;
  * @param scene - The scene.
  */
-export class Camera {
+declare class Camera {
     constructor(scene: Scene);
     /**
      * The position of the camera.
@@ -42555,7 +42621,7 @@ export class Camera {
     switchToOrthographicFrustum(): void;
 }
 
-export namespace Camera {
+declare namespace Camera {
     /**
      * A function that will execute when a flight completes.
      */
@@ -42572,7 +42638,7 @@ left mouse button down, mouse move, mouse move, left mouse button up. These even
 one event with a start and end position of the mouse.
  * @param [canvas = document] - The element to handle events for.
  */
-export class CameraEventAggregator {
+declare class CameraEventAggregator {
     constructor(canvas?: HTMLCanvasElement);
     /**
      * Gets the current mouse position.
@@ -42658,7 +42724,7 @@ export class CameraEventAggregator {
 /**
  * Enumerates the available input for interacting with the camera.
  */
-export enum CameraEventType {
+declare enum CameraEventType {
     /**
      * A left mouse button press followed by moving the mouse and releasing the button.
      */
@@ -42688,7 +42754,7 @@ the content is loaded on-demand when needed based on the view.
 Do not construct this directly, instead access tiles through {@link Cesium3DTileset#tileVisible}.
 </p>
  */
-export class Cesium3DTile {
+declare class Cesium3DTile {
     constructor();
     /**
      * The local transform of this tile.
@@ -42768,7 +42834,7 @@ tileset's color blend mode.
 }
 </code></pre>
  */
-export enum Cesium3DTileColorBlendMode {
+declare enum Cesium3DTileColorBlendMode {
     /**
      * Multiplies the source color by the feature color.
      */
@@ -42793,7 +42859,7 @@ Access derived objects through {@link Cesium3DTile#content}.
 This type describes an interface and is not intended to be instantiated directly.
 </p>
  */
-export class Cesium3DTileContent {
+declare class Cesium3DTileContent {
     constructor();
     /**
      * Gets the number of features in the tile.
@@ -42884,7 +42950,7 @@ export class Cesium3DTileContent {
  * @param [options.binaryFormat] - 自定义content是否支持二进制格式。
  * @param [option.parseContentFunction] - 根据当前自定义content类型创建对应Content内容的方法，需提供解析对应类型的方法。
  */
-export class Cesium3DTileCustomContent {
+declare class Cesium3DTileCustomContent {
     constructor(options: {
         key?: string;
         binaryFormat?: boolean;
@@ -42922,7 +42988,7 @@ handler.setInputAction(function(movement) {
     }
 }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
  */
-export class Cesium3DTileFeature {
+declare class Cesium3DTileFeature {
     constructor();
     /**
      * Gets or sets if the feature will be shown. This is set for all features
@@ -42963,7 +43029,7 @@ export class Cesium3DTileFeature {
      * @param [results] - An array into which to store the results.
      * @returns The names of the feature's properties.
      */
-    getPropertyNames(results?: string[]): string[];
+    getPropertyNames(results?: String[]): String[];
     /**
      * Returns a copy of the value of the feature's property with the given name. This includes properties from this feature's
     class and inherited classes when using a batch table hierarchy.
@@ -43030,7 +43096,7 @@ handler.setInputAction(function(movement) {
     }
 }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
  */
-export class Cesium3DTilePointFeature {
+declare class Cesium3DTilePointFeature {
     constructor();
     /**
      * Gets or sets if the feature will be shown. This is set for all features
@@ -43205,7 +43271,7 @@ export class Cesium3DTilePointFeature {
      * @param [results] - An array into which to store the results.
      * @returns The names of the feature's properties.
      */
-    getPropertyNames(results?: string[]): string[];
+    getPropertyNames(results?: String[]): String[];
     /**
      * Returns a copy of the value of the feature's property with the given name. This includes properties from this feature's
     class and inherited classes when using a batch table hierarchy.
@@ -43340,9 +43406,9 @@ var tileset = scene.primitives.add(new Cesium.Cesium3DTileset({
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
  * @param [option.customContentRegister] - 传入自定义渲染类型，示例如下：
  */
-export class Cesium3DTileset {
+declare class Cesium3DTileset {
     constructor(options: {
-        url: Resource | string | Promise<Resource> | Promise<string>;
+        url: Resource | string | Promise<Resource> | Promise<String>;
         show?: boolean;
         modelMatrix?: Matrix4;
         shadows?: ShadowMode;
@@ -44130,7 +44196,7 @@ export class Cesium3DTileset {
     destroy(): void;
 }
 
-export namespace Cesium3DTileset {
+declare namespace Cesium3DTileset {
     /**
      * Optimization option. Used as a callback when {@link Cesium3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
     interpolating between {@link Cesium3DTileset#foveatedMinimumScreenSpaceErrorRelaxation} and {@link Cesium3DTileset#maximumScreenSpaceError}.
@@ -44168,7 +44234,7 @@ Evaluates an expression defined using the
 });
  * @param [style] - The url of a style or an object defining a style.
  */
-export class Cesium3DTileStyle {
+declare class Cesium3DTileStyle {
     constructor(style?: Resource | string | any);
     /**
      * Gets the object defining the style using the
@@ -44836,7 +44902,7 @@ export class Cesium3DTileStyle {
 Particles will be positioned within a circle and have initial velocities going along the z vector.
  * @param [radius = 1.0] - The radius of the circle in meters.
  */
-export class CircleEmitter {
+declare class CircleEmitter {
     constructor(radius?: number);
     /**
      * The radius of the circle in meters.
@@ -44887,7 +44953,7 @@ are also valid if they are extruded volumes; otherwise, they will not be rendere
  * @param [options.swipeEnabled = false] - 开启卷帘对比分析
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
-export class ClassificationPrimitive {
+declare class ClassificationPrimitive {
     constructor(options?: {
         geometryInstances?: any[] | GeometryInstance;
         appearance?: Appearance;
@@ -45034,7 +45100,7 @@ export class ClassificationPrimitive {
 /**
  * Whether a classification affects terrain, 3D Tiles or both.
  */
-export enum ClassificationType {
+declare enum ClassificationType {
     /**
      * Only terrain will be classified.
      */
@@ -45059,7 +45125,7 @@ is on.  If <code>distance</code> is positive, the origin is in the half-space
 in the direction of the normal; if negative, the origin is in the half-space
 opposite to the normal; if zero, the plane passes through the origin.
  */
-export class ClippingPlane {
+declare class ClippingPlane {
     constructor(normal: Cartesian3, distance: number);
     /**
      * The shortest distance from the origin to the plane.  The sign of
@@ -45127,7 +45193,7 @@ viewer.zoomTo(entity);
  * @param [options.edgeColor = Color.WHITE] - The color applied to highlight the edge along which an object is clipped.
  * @param [options.edgeWidth = 0.0] - The width, in pixels, of the highlight applied to the edge along which an object is clipped.
  */
-export class ClippingPlaneCollection {
+declare class ClippingPlaneCollection {
     constructor(options?: {
         planes?: ClippingPlane[];
         enabled?: boolean;
@@ -45243,7 +45309,7 @@ HIGHLIGHT multiplies the source color by the target color
 REPLACE replaces the source color with the target color
 MIX blends the source color and target color together
  */
-export enum ColorBlendMode {
+declare enum ColorBlendMode {
     HIGHLIGHT = 0,
     REPLACE = 1,
     MIX = 2
@@ -45270,7 +45336,7 @@ expression.evaluateColor(feature, result); // returns a Cesium.Color object
  * @param [conditionsExpression] - The conditions expression defined using the 3D Tiles Styling language.
  * @param [defines] - Defines in the style.
  */
-export class ConditionsExpression {
+declare class ConditionsExpression {
     constructor(conditionsExpression?: any, defines?: any);
     /**
      * Gets the conditions expression defined in the 3D Tiles Styling language.
@@ -45307,7 +45373,7 @@ export class ConditionsExpression {
 Particles will be positioned at the tip of the cone and have initial velocities going towards the base.
  * @param [angle = Cesium.Math.toRadians(30.0)] - The angle of the cone in radians.
  */
-export class ConeEmitter {
+declare class ConeEmitter {
     constructor(angle?: number);
 }
 
@@ -45315,7 +45381,7 @@ export class ConeEmitter {
  * @property height - The height.
  * @property color - The color at this height.
  */
-export type createElevationBandMaterialEntry = {
+declare type createElevationBandMaterialEntry = {
     height: number;
     color: Color;
 };
@@ -45325,7 +45391,7 @@ export type createElevationBandMaterialEntry = {
  * @property [extendDownwards = false] - If <code>true</code>, the band's minimum elevation color will extend infinitely downwards.
  * @property [extendUpwards = false] - If <code>true</code>, the band's maximum elevation color will extend infinitely upwards.
  */
-export type createElevationBandMaterialBand = {
+declare type createElevationBandMaterialBand = {
     entries: createElevationBandMaterialEntry[];
     extendDownwards?: boolean;
     extendUpwards?: boolean;
@@ -45364,7 +45430,7 @@ interpolates between them for the final color. This material supports hundreds o
  * @param options.layers - A list of bands ordered from lowest to highest precedence.
  * @returns A new {@link Material} instance.
  */
-export function createElevationBandMaterial(options: {
+declare function createElevationBandMaterial(options: {
     scene: Scene;
     layers: createElevationBandMaterialBand[];
 }): Material;
@@ -45402,7 +45468,7 @@ viewer.scene.primitives.add(Cesium.createOsmBuildings({
  * @param [options.showOutline = true] - Whether to show outlines around buildings. When true,
        outlines are displayed. When false, outlines are not displayed.
  */
-export function createOsmBuildings(options?: {
+declare function createOsmBuildings(options?: {
     defaultColor?: Color;
     style?: Cesium3DTileStyle;
     showOutline?: boolean;
@@ -45425,7 +45491,7 @@ present, it is not drawn.
  * @param [options.modelMatrix = Matrix4.IDENTITY] - The model matrix that transforms to transform the geometry from model to world coordinates.
  * @returns A new <code>Primitive</code> instance with geometry for the vectors.
  */
-export function createTangentSpaceDebugPrimitive(options: {
+declare function createTangentSpaceDebugPrimitive(options: {
     geometry: Geometry;
     length?: number;
     modelMatrix?: Matrix4;
@@ -45448,7 +45514,7 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
  * @param [options] - Object with the following properties:
  * @param [options.style = IonWorldImageryStyle] - The style of base imagery, only AERIAL, AERIAL_WITH_LABELS, and ROAD are currently supported.
  */
-export function createWorldImagery(options?: {
+declare function createWorldImagery(options?: {
     style?: IonWorldImageryStyle;
 }): IonImageryProvider;
 
@@ -45460,7 +45526,7 @@ export function createWorldImagery(options?: {
  * @param [delimiter = ' • '] - The string to separate text credits
  * @param [viewport = document.body] - The HTML element that will contain the credits popup
  */
-export class CreditDisplay {
+declare class CreditDisplay {
     constructor(container: HTMLElement, delimiter?: string, viewport?: HTMLElement);
     /**
      * The HTML element where credits will be displayed.
@@ -45517,19 +45583,19 @@ export class CreditDisplay {
 /**
  * Determines which triangles, if any, are culled.
  */
-export enum CullFace {
+declare enum CullFace {
     /**
      * Front-facing triangles are culled.
      */
-    FRONT = WebGLConstants.FRONT,
+    FRONT = "WebGLConstants.FRONT",
     /**
      * Back-facing triangles are culled.
      */
-    BACK = WebGLConstants.BACK,
+    BACK = "WebGLConstants.BACK",
     /**
      * Both front-facing and back-facing triangles are culled.
      */
-    FRONT_AND_BACK = WebGLConstants.FRONT_AND_BACK
+    FRONT_AND_BACK = "WebGLConstants.FRONT_AND_BACK"
 }
 
 /**
@@ -45554,7 +45620,7 @@ from [-1.0, 1.0] to (-1.0, 1.0).
  * @param [options.fragmentShaderSource] - Optional GLSL fragment shader source to override the default fragment shader.
  * @param [options.renderState] - Optional render state to override the default render state.
  */
-export class DebugAppearance {
+declare class DebugAppearance {
     constructor(options: {
         attributeName: string;
         perInstanceAttribute?: boolean;
@@ -45633,10 +45699,10 @@ export class DebugAppearance {
  * @param [options.show = true] - Determines if this primitive will be shown.
  * @param [options.id] - A user-defined object to return when the instance is picked with {@link Scene#pick}.
  */
-export class DebugCameraPrimitive {
+declare class DebugCameraPrimitive {
     constructor(options: {
         camera: Camera;
-        frustumSplits?: number[];
+        frustumSplits?: Number[];
         color?: Color;
         updateOnChange?: boolean;
         show?: boolean;
@@ -45696,7 +45762,7 @@ This is for debugging only; it is not optimized for production use.
  * @param [options.show = true] - Determines if this primitive will be shown.
  * @param [options.id] - A user-defined object to return when the instance is picked with {@link Scene#pick}
  */
-export class DebugModelMatrixPrimitive {
+declare class DebugModelMatrixPrimitive {
     constructor(options?: {
         length?: number;
         width?: number;
@@ -45750,39 +45816,39 @@ export class DebugModelMatrixPrimitive {
 /**
  * Determines the function used to compare two depths for the depth test.
  */
-export enum DepthFunction {
+declare enum DepthFunction {
     /**
      * The depth test never passes.
      */
-    NEVER = WebGLConstants.NEVER,
+    NEVER = "WebGLConstants.NEVER",
     /**
      * The depth test passes if the incoming depth is less than the stored depth.
      */
-    LESS = WebGLConstants.LESS,
+    LESS = "WebGLConstants.LESS",
     /**
      * The depth test passes if the incoming depth is equal to the stored depth.
      */
-    EQUAL = WebGLConstants.EQUAL,
+    EQUAL = "WebGLConstants.EQUAL",
     /**
      * The depth test passes if the incoming depth is less than or equal to the stored depth.
      */
-    LESS_OR_EQUAL = WebGLConstants.LEQUAL,
+    LESS_OR_EQUAL = "WebGLConstants.LEQUAL",
     /**
      * The depth test passes if the incoming depth is greater than the stored depth.
      */
-    GREATER = WebGLConstants.GREATER,
+    GREATER = "WebGLConstants.GREATER",
     /**
      * The depth test passes if the incoming depth is not equal to the stored depth.
      */
-    NOT_EQUAL = WebGLConstants.NOTEQUAL,
+    NOT_EQUAL = "WebGLConstants.NOTEQUAL",
     /**
      * The depth test passes if the incoming depth is greater than or equal to the stored depth.
      */
-    GREATER_OR_EQUAL = WebGLConstants.GEQUAL,
+    GREATER_OR_EQUAL = "WebGLConstants.GEQUAL",
     /**
      * The depth test always passes.
      */
-    ALWAYS = WebGLConstants.ALWAYS
+    ALWAYS = "WebGLConstants.ALWAYS"
 }
 
 /**
@@ -45792,7 +45858,7 @@ export enum DepthFunction {
  * @param [options.color = Color.WHITE] - The color of the light.
  * @param [options.intensity = 1.0] - The intensity of the light.
  */
-export class DirectionalLight {
+declare class DirectionalLight {
     constructor(options: {
         direction: Cartesian3;
         color?: Color;
@@ -45817,7 +45883,7 @@ export class DirectionalLight {
 This policy discards {@link DiscardEmptyTileImagePolicy.EMPTY_IMAGE}, which is
 expected to be used in place of any empty tile images by the image loading code.
  */
-export class DiscardEmptyTileImagePolicy {
+declare class DiscardEmptyTileImagePolicy {
     constructor();
     /**
      * Determines if the discard policy is ready to process images.
@@ -45847,7 +45913,7 @@ export class DiscardEmptyTileImagePolicy {
                  if all of the pixelsToCheck in the missingImageUrl have an alpha value of 0.  If false, the
                  discard check will proceed no matter the values of the pixelsToCheck.
  */
-export class DiscardMissingTileImagePolicy {
+declare class DiscardMissingTileImagePolicy {
     constructor(options: {
         missingImageUrl: Resource | string;
         pixelsToCheck: Cartesian2[];
@@ -45894,7 +45960,7 @@ fewer vertex attributes since the fragment shader can procedurally compute <code
  * @param [options.fragmentShaderSource] - Optional GLSL fragment shader source to override the default fragment shader.
  * @param [options.renderState] - Optional render state to override the default render state.
  */
-export class EllipsoidSurfaceAppearance {
+declare class EllipsoidSurfaceAppearance {
     constructor(options?: {
         flat?: boolean;
         faceForward?: boolean;
@@ -46009,7 +46075,7 @@ expression.evaluateColor(feature, result); // returns a Cesium.Color object
  * @param [expression] - The expression defined using the 3D Tiles Styling language.
  * @param [defines] - Defines in the style.
  */
-export class Expression {
+declare class Expression {
     constructor(expression?: string, defines?: any);
     /**
      * Gets the expression defined in the 3D Tiles Styling language.
@@ -46045,7 +46111,7 @@ export class Expression {
  * Blends the atmosphere to geometry far from the camera for horizon views. Allows for additional
 performance improvements by rendering less geometry and dispatching less terrain requests.
  */
-export class Fog {
+declare class Fog {
     constructor();
     /**
      * <code>true</code> if fog is enabled, <code>false</code> otherwise.
@@ -46092,7 +46158,7 @@ instead of constructing an instance explicitly.
        the end of the warmup period.  If the frame rate averages less than this during any samplingWindow after the warmupPeriod, the
        lowFrameRate event will be raised and the page will redirect to the redirectOnLowFrameRateUrl, if any.
  */
-export class FrameRateMonitor {
+declare class FrameRateMonitor {
     constructor(options?: {
         scene: Scene;
         samplingWindow?: number;
@@ -46200,7 +46266,7 @@ export class FrameRateMonitor {
        in order to produce an array of picked {@link ImageryLayerFeatureInfo} instances.  If this parameter is not specified,
        a default function for the type of response is used.
  */
-export class GetFeatureInfoFormat {
+declare class GetFeatureInfoFormat {
     constructor(type: string, format?: string, callback?: (...params: any[]) => any);
 }
 
@@ -46210,7 +46276,7 @@ and imagery layers ({@link Globe#imageryLayers}).  Access the globe using {@link
  * @param [ellipsoid = Ellipsoid.WGS84] - Determines the size and shape of the
 globe.
  */
-export class Globe {
+declare class Globe {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * Determines if the globe will be shown.
@@ -46484,7 +46550,7 @@ export class Globe {
 /**
  * Properties for controlling globe translucency.
  */
-export class GlobeTranslucency {
+declare class GlobeTranslucency {
     constructor();
     /**
      * When true, the globe is rendered as a translucent surface.
@@ -46570,7 +46636,7 @@ export class GlobeTranslucency {
     rectangle: Rectangle;
 }
 
-export namespace GoogleEarthEnterpriseImageryProvider {
+declare namespace GoogleEarthEnterpriseImageryProvider {
     /**
      * Initialization options for the GoogleEarthEnterpriseImageryProvider constructor
      * @property url - The url of the Google Earth Enterprise server hosting the imagery.
@@ -46602,7 +46668,7 @@ var gee = new Cesium.GoogleEarthEnterpriseImageryProvider({
 });
  * @param options - Object describing initialization options
  */
-export class GoogleEarthEnterpriseImageryProvider {
+declare class GoogleEarthEnterpriseImageryProvider {
     constructor(options: GoogleEarthEnterpriseImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -46708,7 +46774,7 @@ export class GoogleEarthEnterpriseImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link GoogleEarthEnterpriseImageryProvider#ready} returns true.
@@ -46759,7 +46825,7 @@ export class GoogleEarthEnterpriseImageryProvider {
     pickFeatures(x: number, y: number, level: number, longitude: number, latitude: number): Promise<ImageryLayerFeatureInfo[]> | undefined;
 }
 
-export namespace GoogleEarthEnterpriseMapsProvider {
+declare namespace GoogleEarthEnterpriseMapsProvider {
     /**
      * Initialization options for the GoogleEarthEnterpriseMapsProvider constructor
      * @property url - The url of the Google Earth server hosting the imagery.
@@ -46820,7 +46886,7 @@ Notes: This imagery provider does not work with the public Google Earth servers.
 });
  * @param options - Object describing initialization options
  */
-export class GoogleEarthEnterpriseMapsProvider {
+declare class GoogleEarthEnterpriseMapsProvider {
     constructor(options: GoogleEarthEnterpriseMapsProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -46944,7 +47010,7 @@ export class GoogleEarthEnterpriseMapsProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link GoogleEarthEnterpriseMapsProvider#ready} returns true.
@@ -46999,7 +47065,7 @@ export class GoogleEarthEnterpriseMapsProvider {
     static logoUrl: string;
 }
 
-export namespace GridImageryProvider {
+declare namespace GridImageryProvider {
     /**
      * Initialization options for the GridImageryProvider constructor
      * @property [tilingScheme = new GeographicTilingScheme()] - The tiling scheme for which to draw tiles.
@@ -47034,7 +47100,7 @@ export namespace GridImageryProvider {
 May be useful for custom rendering effects or debugging terrain.
  * @param options - Object describing initialization options
  */
-export class GridImageryProvider {
+declare class GridImageryProvider {
     constructor(options: GridImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -47136,7 +47202,7 @@ export class GridImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link GridImageryProvider#ready} returns true.
@@ -47256,7 +47322,7 @@ scene.groundPrimitives.add(new Cesium.GroundPolylinePrimitive({
  * @param [options.debugShowBoundingVolume = false] - For debugging only. Determines if this primitive's commands' bounding spheres are shown.
  * @param [options.debugShowShadowVolume = false] - For debugging only. Determines if the shadow volume for each geometry in the primitive is drawn. Must be <code>true</code> on creation to have effect.
  */
-export class GroundPolylinePrimitive {
+declare class GroundPolylinePrimitive {
     constructor(options?: {
         geometryInstances?: any[] | GeometryInstance;
         appearance?: Appearance;
@@ -47469,7 +47535,7 @@ scene.primitives.add(new Cesium.GroundPrimitive({
  * @param [options.swipeEnabled = false] - 开启卷帘对比分析
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
-export class GroundPrimitive {
+declare class GroundPrimitive {
     constructor(options?: {
         geometryInstances?: any[] | GeometryInstance;
         appearance?: Appearance;
@@ -47631,7 +47697,7 @@ export class GroundPrimitive {
 /**
  * Represents the position relative to the terrain.
  */
-export enum HeightReference {
+declare enum HeightReference {
     /**
      * The position is absolute.
      */
@@ -47656,7 +47722,7 @@ of the anchor position.
 <img src='Images/Billboard.setHorizontalOrigin.png' width='648' height='196' /><br />
 </div>
  */
-export enum HorizontalOrigin {
+declare enum HorizontalOrigin {
     /**
      * The origin is at the horizontal center of the object.
      */
@@ -47757,7 +47823,7 @@ on a {@link Globe}.
  * @param [options.colorToAlpha] - Color to be used as alpha.
  * @param [options.colorToAlphaThreshold = 0.004] - Threshold for color-to-alpha.
  */
-export class ImageryLayer {
+declare class ImageryLayer {
     constructor(imageryProvider: ImageryProvider, options?: {
         rectangle?: Rectangle;
         alpha?: number | ((...params: any[]) => any);
@@ -47979,7 +48045,7 @@ export class ImageryLayer {
 /**
  * An ordered collection of imagery layers.
  */
-export class ImageryLayerCollection {
+declare class ImageryLayerCollection {
     constructor();
     /**
      * An event that is raised when a layer is added to the collection.  Event handlers are passed the layer that
@@ -48182,7 +48248,7 @@ export class ImageryLayerCollection {
 /**
  * Describes a rasterized feature, such as a point, polygon, polyline, etc., in an imagery layer.
  */
-export class ImageryLayerFeatureInfo {
+declare class ImageryLayerFeatureInfo {
     constructor();
     /**
      * Gets or sets the name of the feature.
@@ -48225,7 +48291,7 @@ export class ImageryLayerFeatureInfo {
  * Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
 interface and is not intended to be instantiated directly.
  */
-export class ImageryProvider {
+declare class ImageryProvider {
     constructor();
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -48280,7 +48346,7 @@ export class ImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
     not be called before {@link ImageryProvider#ready} returns true.
@@ -48347,6 +48413,10 @@ export class ImageryProvider {
      */
     readonly hasAlphaChannel: boolean;
     /**
+     * 超过最大最小层级范围图像是否进行图像的拉伸。此值未定义或者设置为true时,如果图像level小于minimumLevel或者大于maximumLevel，图像会进行拉伸。反之，如果图像level小于minimumLevel或者大于maximumLevel，不会再请求图像以及拉伸图像。
+     */
+    isStretchImage: string | undefined;
+    /**
      * Gets the credits to be displayed when a given tile is displayed.
      * @param x - The tile X coordinate.
      * @param y - The tile Y coordinate.
@@ -48399,7 +48469,7 @@ export class ImageryProvider {
 /**
  * The direction to display an ImageryLayer relative to the {@link Scene#imagerySplitPosition}.
  */
-export enum ImagerySplitDirection {
+declare enum ImagerySplitDirection {
     /**
      * Display the ImageryLayer to the left of the {@link Scene#imagerySplitPosition}.
      */
@@ -48414,7 +48484,7 @@ export enum ImagerySplitDirection {
     RIGHT = 1
 }
 
-export namespace IonImageryProvider {
+declare namespace IonImageryProvider {
     /**
      * Initialization options for the TileMapServiceImageryProvider constructor
      * @property assetId - An ion imagery asset ID
@@ -48434,7 +48504,7 @@ export namespace IonImageryProvider {
  * viewer.imageryLayers.addImageryProvider(new Cesium.IonImageryProvider({ assetId : 23489024 }));
  * @param options - Object describing initialization options
  */
-export class IonImageryProvider {
+declare class IonImageryProvider {
     constructor(options: IonImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -48489,7 +48559,7 @@ export class IonImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
     not be called before {@link IonImageryProvider#ready} returns true.
@@ -48596,7 +48666,7 @@ export class IonImageryProvider {
 /**
  * The types of imagery provided by {@link createWorldImagery}.
  */
-export enum IonWorldImageryStyle {
+declare enum IonWorldImageryStyle {
     /**
      * Aerial imagery.
      */
@@ -48615,7 +48685,7 @@ export enum IonWorldImageryStyle {
  * A Label draws viewport-aligned text positioned in the 3D scene.  This constructor
 should not be used directly, instead create labels by calling {@link LabelCollection#add}.
  */
-export class Label {
+declare class Label {
     constructor();
     /**
      * Determines if this label will be shown.  Use this to hide or show a label, instead
@@ -48932,7 +49002,7 @@ setting the technique to BlendOption.OPAQUE or BlendOption.TRANSLUCENT can impro
  * @param [options.swipeEnabled = false] - 开启卷帘对比分析
  * @param [options.swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0。
  */
-export class LabelCollection {
+declare class LabelCollection {
     constructor(options?: {
         modelMatrix?: Matrix4;
         debugShowBoundingVolume?: boolean;
@@ -49103,7 +49173,7 @@ export class LabelCollection {
 /**
  * Describes how to draw a label.
  */
-export enum LabelStyle {
+declare enum LabelStyle {
     /**
      * Fill the text of the label, but do not outline.
      */
@@ -49121,7 +49191,7 @@ export enum LabelStyle {
 /**
  * A light source. This type describes an interface and is not intended to be instantiated directly.
  */
-export class Light {
+declare class Light {
     constructor();
     /**
      * The color of the light.
@@ -49136,7 +49206,7 @@ export class Light {
 /**
  * 光照枚举：'DAYNIGHT_SHADING','VERTEX_LIGHTING'.
  */
-export enum LightingMode {
+declare enum LightingMode {
     /**
      * 太阳光照.
      */
@@ -49147,7 +49217,7 @@ export enum LightingMode {
     VERTEX_LIGHTING = 1
 }
 
-export namespace MapboxImageryProvider {
+declare namespace MapboxImageryProvider {
     /**
      * Initialization options for the MapboxImageryProvider constructor
      * @property [url = 'https://api.mapbox.com/v4/'] - The Mapbox server url.
@@ -49185,7 +49255,7 @@ var mapbox = new Cesium.MapboxImageryProvider({
 });
  * @param options - Object describing initialization options
  */
-export class MapboxImageryProvider {
+declare class MapboxImageryProvider {
     constructor(options: MapboxImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -49244,7 +49314,7 @@ export class MapboxImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
     not be called before {@link MapboxImageryProvider#ready} returns true.
@@ -49348,7 +49418,7 @@ export class MapboxImageryProvider {
     pickFeatures(x: number, y: number, level: number, longitude: number, latitude: number): Promise<ImageryLayerFeatureInfo[]> | undefined;
 }
 
-export namespace MapboxStyleImageryProvider {
+declare namespace MapboxStyleImageryProvider {
     /**
      * Initialization options for the MapboxStyleImageryProvider constructor
      * @property [url = 'https://api.mapbox.com/styles/v1/'] - The Mapbox server url.
@@ -49390,7 +49460,7 @@ var mapbox = new Cesium.MapboxStyleImageryProvider({
 });
  * @param options - Object describing initialization options
  */
-export class MapboxStyleImageryProvider {
+declare class MapboxStyleImageryProvider {
     constructor(options: MapboxStyleImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -49449,7 +49519,7 @@ export class MapboxStyleImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the rectangle, in radians, of the imagery provided by the instance.  This function should
     not be called before {@link MapboxStyleImageryProvider#ready} returns true.
@@ -49556,7 +49626,7 @@ export class MapboxStyleImageryProvider {
 /**
  * Describes how the map will operate in 2D.
  */
-export enum MapMode2D {
+declare enum MapMode2D {
     /**
      * The 2D map can be rotated about the z axis.
      */
@@ -49778,7 +49848,7 @@ polygon.material = new Cesium.Material({
  * @param [options.magnificationFilter = TextureMagnificationFilter.LINEAR] - The {@link TextureMagnificationFilter} to apply to this material's textures.
  * @param options.fabric - The fabric JSON used to generate the material.
  */
-export class Material {
+declare class Material {
     constructor(options?: {
         strict?: boolean;
         translucent?: boolean | ((...params: any[]) => any);
@@ -50010,7 +50080,7 @@ that supports shading with materials.
  * @param [options.fragmentShaderSource] - Optional GLSL fragment shader source to override the default fragment shader.
  * @param [options.renderState] - Optional render state to override the default render state.
  */
-export class MaterialAppearance {
+declare class MaterialAppearance {
     constructor(options?: {
         flat?: boolean;
         faceForward?: boolean;
@@ -50101,7 +50171,7 @@ export class MaterialAppearance {
     getRenderState(): any;
 }
 
-export namespace MaterialAppearance {
+declare namespace MaterialAppearance {
     type MaterialSupportType = {
         vertexFormat: VertexFormat;
         vertexShaderSource: string;
@@ -50225,7 +50295,7 @@ relative to a local origin.
  * @param [options.hasSectionGeometry = false] - 是否会存在剖面几何，如果后续会addSectionGeometry方法给m3d图层设置剖切面设置为true
  * @param [options.textureCoordScale] - 模型纹理拉伸比例，默认不发生变化
  */
-export class Model {
+declare class Model {
     constructor(options?: {
         gltf?: any | ArrayBuffer | Uint8Array;
         basePath?: Resource | string;
@@ -50702,7 +50772,7 @@ for the same glTF animation, each with a different start time.
 Create this by calling {@link ModelAnimationCollection#add}.
 </p>
  */
-export class ModelAnimation {
+declare class ModelAnimation {
     constructor();
     /**
      * When <code>true</code>, the animation is removed after it stops playing.
@@ -50788,7 +50858,7 @@ export class ModelAnimation {
 /**
  * A collection of active model animations.  Access this using {@link Model#activeAnimations}.
  */
-export class ModelAnimationCollection {
+declare class ModelAnimationCollection {
     constructor();
     /**
      * The event fired when an animation is added to the collection.  This can be used, for
@@ -50957,7 +51027,7 @@ export class ModelAnimationCollection {
 /**
  * Determines if and how a glTF animation is looped.
  */
-export enum ModelAnimationLoop {
+declare enum ModelAnimationLoop {
     /**
      * Play the animation once; do not loop it.
      */
@@ -50981,7 +51051,7 @@ This class allows changing these values at runtime.
 Use {@link Model#getMaterial} to create an instance.
 </p>
  */
-export class ModelMaterial {
+declare class ModelMaterial {
     constructor();
     /**
      * The value of the <code>name</code> property of this material.
@@ -51018,7 +51088,7 @@ export class ModelMaterial {
 Use {@link Model#getMesh} to create an instance.
 </p>
  */
-export class ModelMesh {
+declare class ModelMesh {
     constructor();
     /**
      * The value of the <code>name</code> property of this mesh.
@@ -51047,7 +51117,7 @@ Use {@link Model#getNode} to create an instance.
  * var node = model.getNode('LOD3sp');
 node.matrix = Cesium.Matrix4.fromScale(new Cesium.Cartesian3(5.0, 1.0, 1.0), node.matrix);
  */
-export class ModelNode {
+declare class ModelNode {
     constructor();
     /**
      * The value of the <code>name</code> property of this node.
@@ -51087,7 +51157,7 @@ export class ModelNode {
  * @param [options.ellipsoid = Ellipsoid.MOON] - The moon ellipsoid.
  * @param [options.onlySunLighting = true] - Use the sun as the only light source.
  */
-export class Moon {
+declare class Moon {
     constructor(options?: {
         show?: boolean;
         textureUrl?: string;
@@ -51134,7 +51204,7 @@ export class Moon {
 /**
  * A {@link TileDiscardPolicy} specifying that tile images should never be discard.
  */
-export class NeverTileDiscardPolicy {
+declare class NeverTileDiscardPolicy {
     constructor();
     /**
      * Determines if the discard policy is ready to process images.
@@ -51149,7 +51219,7 @@ export class NeverTileDiscardPolicy {
     shouldDiscardImage(image: HTMLImageElement): boolean;
 }
 
-export namespace OpenStreetMapImageryProvider {
+declare namespace OpenStreetMapImageryProvider {
     /**
      * Initialization options for the OpenStreetMapImageryProvider constructor
      * @property [url = 'https://a.tile.openstreetmap.org'] - The OpenStreetMap server url.
@@ -51182,7 +51252,7 @@ servers, so you must conform to their
 });
  * @param options - Object describing initialization options
  */
-export class OpenStreetMapImageryProvider extends UrlTemplateImageryProvider {
+declare class OpenStreetMapImageryProvider extends UrlTemplateImageryProvider {
     constructor(options: OpenStreetMapImageryProvider.ConstructorOptions);
 }
 
@@ -51200,7 +51270,7 @@ export class OpenStreetMapImageryProvider extends UrlTemplateImageryProvider {
  * @param [options.endScale = 1.0] - The scale of the particle when it dies.
  * @param [options.imageSize = new Cartesian2(1.0, 1.0)] - The dimensions, width by height, to scale the particle image in pixels.
  */
-export class Particle {
+declare class Particle {
     constructor(options: {
         mass?: number;
         position?: Cartesian3;
@@ -51270,7 +51340,7 @@ export class Particle {
  * @param [options.minimum = 0.0] - The minimum number of particles emmitted in the burst.
  * @param [options.maximum = 50.0] - The maximum number of particles emitted in the burst.
  */
-export class ParticleBurst {
+declare class ParticleBurst {
     constructor(options?: {
         time?: number;
         minimum?: number;
@@ -51302,7 +51372,7 @@ An object that initializes a {@link Particle} from a {@link ParticleSystem}.
 This type describes an interface and is not intended to be instantiated directly.
 </p>
  */
-export class ParticleEmitter {
+declare class ParticleEmitter {
     constructor();
 }
 
@@ -51339,7 +51409,7 @@ export class ParticleEmitter {
  * @param [options.minimumMass] - Sets the minimum bound for the mass of a particle in kilograms. A particle's actual mass will be chosen as a random amount above this value.
  * @param [options.maximumMass] - Sets the maximum mass of particles in kilograms. A particle's actual mass will be chosen as a random amount below this value.
  */
-export class ParticleSystem {
+declare class ParticleSystem {
     constructor(options?: {
         show?: boolean;
         updateCallback?: ParticleSystem.updateCallback;
@@ -51495,9 +51565,9 @@ export class ParticleSystem {
 修改说明：更新粒子池时使新添加的公告牌不可见
 修改人：孙永政 2023年10月8日
  */
-export var show: any;
+declare var show: any;
 
-export namespace ParticleSystem {
+declare namespace ParticleSystem {
     /**
      * A function used to modify attributes of the particle at each time step. This can include force modifications,
     color, sizing, etc.
@@ -51570,7 +51640,7 @@ var rectanglePrimitive = new Cesium.Primitive({
  * @param [options.fragmentShaderSource] - Optional GLSL fragment shader source to override the default fragment shader.
  * @param [options.renderState] - Optional render state to override the default render state.
  */
-export class PerInstanceColorAppearance {
+declare class PerInstanceColorAppearance {
     constructor(options?: {
         flat?: boolean;
         faceForward?: boolean;
@@ -51678,7 +51748,7 @@ point clouds using 3D Tiles.
  * @param [options.backFaceCulling = false] - Determines whether back-facing points are hidden. This option works only if data has normals included.
  * @param [options.normalShading = true] - Determines whether a point cloud that contains normals is shaded by the scene's light source.
  */
-export class PointCloudShading {
+declare class PointCloudShading {
     constructor(options?: {
         attenuation?: boolean;
         geometricErrorScale?: number;
@@ -51744,7 +51814,7 @@ export class PointCloudShading {
 and rendered using a {@link PointPrimitiveCollection}.  A point is created and its initial
 properties are set by calling {@link PointPrimitiveCollection#add}.
  */
-export class PointPrimitive {
+declare class PointPrimitive {
     constructor();
     /**
      * Determines if this point will be shown.  Use this to hide or show a point, instead
@@ -51887,7 +51957,7 @@ is used for rendering both opaque and translucent points. However, if either all
 setting the technique to BlendOption.OPAQUE or BlendOption.TRANSLUCENT can improve performance by up to 2x.
  * @param [options.show = true] - Determines if the primitives in the collection will be shown.
  */
-export class PointPrimitiveCollection {
+declare class PointPrimitiveCollection {
     constructor(options?: {
         modelMatrix?: Matrix4;
         debugShowBoundingVolume?: boolean;
@@ -52048,7 +52118,7 @@ export class PointPrimitiveCollection {
  * @param [options.distanceDisplayCondition] - The condition specifying at what distance from the camera that this polyline will be displayed.
  * @param polylineCollection - The renderable polyline collection.
  */
-export class Polyline {
+declare class Polyline {
     constructor(options: {
         show?: boolean;
         width?: number;
@@ -52131,7 +52201,7 @@ polylines.add({
  * @param [options.debugShowBoundingVolume = false] - For debugging only. Determines if this primitive's commands' bounding spheres are shown.
  * @param [options.show = true] - Determines if the polylines in the collection will be shown.
  */
-export class PolylineCollection {
+declare class PolylineCollection {
     constructor(options?: {
         modelMatrix?: Matrix4;
         debugShowBoundingVolume?: boolean;
@@ -52286,7 +52356,7 @@ var primitive = new Cesium.Primitive({
  * @param [options.fragmentShaderSource] - Optional GLSL fragment shader source to override the default fragment shader.
  * @param [options.renderState] - Optional render state to override the default render state.
  */
-export class PolylineColorAppearance {
+declare class PolylineColorAppearance {
     constructor(options?: {
         translucent?: boolean;
         vertexShaderSource?: string;
@@ -52380,7 +52450,7 @@ export class PolylineColorAppearance {
  * @param [options.fragmentShaderSource] - Optional GLSL fragment shader source to override the default fragment shader.
  * @param [options.renderState] - Optional render state to override the default render state.
  */
-export class PolylineMaterialAppearance {
+declare class PolylineMaterialAppearance {
     constructor(options?: {
         translucent?: boolean;
         material?: Material;
@@ -52511,7 +52581,7 @@ stage.selected = [cesium3DTileFeature];
  * @param [options.scissorRectangle] - The rectangle to use for the scissor test.
  * @param [options.name = createGuid()] - The unique name of this post-process stage for reference by other stages in a composite. If a name is not supplied, a GUID will be generated.
  */
-export class PostProcessStage {
+declare class PostProcessStage {
     constructor(options: {
         fragmentShader: string;
         uniforms?: any;
@@ -52642,7 +52712,7 @@ If the ambient occlusion or bloom stages are enabled, they will execute before a
 If the FXAA stage is enabled, it will execute after all other stages.
 </p>
  */
-export class PostProcessStageCollection {
+declare class PostProcessStageCollection {
     constructor();
     /**
      * Determines if all of the post-process stages in the collection are ready to be executed.
@@ -52830,7 +52900,7 @@ scene.postProcessStages.add(new Cesium.PostProcessStageComposite({
  * @param [options.name = createGuid()] - The unique name of this post-process stage for reference by other composites. If a name is not supplied, a GUID will be generated.
  * @param [options.uniforms] - An alias to the uniforms of post-process stages.
  */
-export class PostProcessStageComposite {
+declare class PostProcessStageComposite {
     constructor(options: {
         stages: any[];
         inputPreviousStageTexture?: boolean;
@@ -52898,7 +52968,7 @@ export class PostProcessStageComposite {
 /**
  * Contains functions for creating common post-process stages.
  */
-export namespace PostProcessStageLibrary {
+declare namespace PostProcessStageLibrary {
     /**
      * Creates a post-process stage that applies a Gaussian blur to the input texture. This stage is usually applied in conjunction with another stage.
     <p>
@@ -53099,7 +53169,7 @@ export namespace PostProcessStageLibrary {
 /**
  * Determines how input texture to a {@link PostProcessStage} is sampled.
  */
-export enum PostProcessStageSampleMode {
+declare enum PostProcessStageSampleMode {
     /**
      * Samples the texture by returning the closest texel.
      */
@@ -53205,12 +53275,13 @@ scene.primitives.add(new Cesium.Primitive({
  * @param [options.compressVertices = true] - When <code>true</code>, the geometry vertices are compressed, which will save memory.
  * @param [options.releaseGeometryInstances = true] - When <code>true</code>, the primitive does not keep a reference to the input <code>geometryInstances</code> to save memory.
  * @param [options.allowPicking = true] - When <code>true</code>, each geometry instance will only be pickable with {@link Scene#pick}.  When <code>false</code>, GPU memory is saved.
+ * @param [options.participatePicking = true] - 是否参与场景pick。为true则代表可以被场景拾取到。为false组则代表不在场景拾取的图元中。
  * @param [options.cull = true] - When <code>true</code>, the renderer frustum culls and horizon culls the primitive's commands based on their bounding volume.  Set this to <code>false</code> for a small performance gain if you are manually culling the primitive.
  * @param [options.asynchronous = true] - Determines if the primitive will be created asynchronously or block until ready.
  * @param [options.debugShowBoundingVolume = false] - For debugging only. Determines if this primitive's commands' bounding spheres are shown.
  * @param [options.shadows = ShadowMode.DISABLED] - Determines whether this primitive casts or receives shadows from light sources.
  */
-export class Primitive {
+declare class Primitive {
     constructor(options?: {
         geometryInstances?: GeometryInstance[] | GeometryInstance;
         appearance?: Appearance;
@@ -53222,6 +53293,7 @@ export class Primitive {
         compressVertices?: boolean;
         releaseGeometryInstances?: boolean;
         allowPicking?: boolean;
+        participatePicking?: boolean;
         cull?: boolean;
         asynchronous?: boolean;
         debugShowBoundingVolume?: boolean;
@@ -53313,6 +53385,10 @@ export class Primitive {
      */
     readonly allowPicking: boolean;
     /**
+     * 是否参与场景pick。为true则代表可以被场景拾取到。为false组则代表不在场景拾取的图元中。
+     */
+    readonly participatePicking: boolean;
+    /**
      * Determines if the geometry instances will be created and batched on a web worker.
      */
     readonly asynchronous: boolean;
@@ -53391,7 +53467,7 @@ scene.primitives.add(labels);      // Add regular primitive
  * @param [options.show = true] - Determines if the primitives in the collection will be shown.
  * @param [options.destroyPrimitives = true] - Determines if primitives in the collection are destroyed when they are removed.
  */
-export class PrimitiveCollection {
+declare class PrimitiveCollection {
     constructor(options?: {
         show?: boolean;
         destroyPrimitives?: boolean;
@@ -53576,7 +53652,7 @@ var scene = new Cesium.Scene({
  * @param [options.requestRenderMode = false] - If true, rendering a frame will only occur when needed as determined by changes within the scene. Enabling improves performance of the application, but requires using {@link Scene#requestRender} to render a new frame explicitly in this mode. This will be necessary in many cases after making changes to the scene in other parts of the API. See {@link https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/|Improving Performance with Explicit Rendering}.
  * @param [options.maximumRenderTimeChange = 0.0] - If requestRenderMode is true, this value defines the maximum change in simulation time allowed before a render is requested. See {@link https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/|Improving Performance with Explicit Rendering}.
  */
-export class Scene {
+declare class Scene {
     constructor(options?: {
         canvas: HTMLCanvasElement;
         contextOptions?: any;
@@ -54271,7 +54347,7 @@ export class Scene {
     Set {@link Scene#pickTranslucentDepth} to <code>true</code> to include the depth of
     translucent primitives; otherwise, this essentially picks through translucent primitives.
     </p>
-     * @param windowPosition - Window coordinates to perform picking on.
+     * @param windowPosition - Window coordinates to perform picking on. windowPosition中x取值范围为[0,viewer.canvas.width-1],y取值范围为[0,viewer.canvas.height-1]。
      * @param [result] - The object on which to restore the result.
      * @returns The cartesian position.
      */
@@ -54429,13 +54505,13 @@ export class Scene {
      * 根据屏幕坐标返回对应的世界坐标，支持拾取模型缓存、实体（Entity），图元（Primitive）、地形上的点坐标<br>
     请注意如下几种情况无法返回世界坐标：<br>
     1、当 {@link Scene#useDepthPicking} 设置为false时，无法拾取模型缓存、实体（Entity），图元（Primitive）上的点坐标，会返回undefined<br>
-    2、当 {@link Scene#pickTranslucentDepth} 设置为false，且模型缓存、实体（Entity），图元（Primitive）设置为半透明时，在鼠标移动事件中无法拾取点坐标，会返回undefined<br>
+    2、当 {@link Scene#pickTranslucentDepth} 设置为false，且实体（Entity），图元（Primitive）设置为半透明时，在鼠标移动事件中无法拾取点坐标，会返回undefined<br>
     3、当 {@link Scene#mode} 设置为 {@link SceneMode#SCENE2D} 时 ，无法拾取实体（Entity），图元（Primitive）上点坐标的高程<br>
      * @param screePosition - 屏幕坐标
      * @param cartesian - 返回的世界坐标
-     * @returns 返回的世界坐标，当没有拾取到点坐标时，返回undefined
+     * @returns 返回的世界坐标，当没有拾取到点坐标时，返回Cartesian3.ZERO
      */
-    getCartesian3Position(screePosition: Cartesian2, cartesian: Cartesian3): Cartesian3 | undefined;
+    getCartesian3Position(screePosition: Cartesian2, cartesian: Cartesian3): Cartesian3 | Cartesian3.ZERO;
     /**
      * 设置单体要素高亮
      * @param layerList - 图层列表
@@ -54451,7 +54527,7 @@ export class Scene {
      * @param [options.edgeColor = new Cesium.Color(0, 0, 1, 1.0)] - 描边颜色 默认红色
      * @param [options.isReset = true] - 重置单体数据的颜色
      */
-    startCustomDisplay(layerList: MapGISM3DSet[], idList: number[], options: {
+    startCustomDisplay(layerList: MapGISM3DSet[], idList: Number[], options: {
         color?: Color;
         colorBlendMode?: Cesium3DTileColorBlendMode;
         colorBlendAmount?: number;
@@ -54471,7 +54547,7 @@ export class Scene {
      * @param layerList - 图层列表
      * @param idList - id列表
      */
-    stopCustomDisplayByIds(layerList: MapGISM3DSet[], idList: number[]): void;
+    stopCustomDisplayByIds(layerList: MapGISM3DSet[], idList: Number[]): void;
     /**
      * 添加光源
      */
@@ -54486,7 +54562,7 @@ export class Scene {
  * @property center - 圆心位置
  * @property radius - 半径
  */
-export type Spyglass = {
+declare type Spyglass = {
     center: Cartesian2;
     radius: number;
 };
@@ -54496,7 +54572,7 @@ export type Spyglass = {
  * @property type - 卷帘对比分析模式
  * @property inverse - 是否反转分析范围
  */
-export type SwiperController = {
+declare type SwiperController = {
     region: number | Cartesian4 | Spyglass | Cartesian2[];
     type: SwipeModeType;
     inverse: boolean;
@@ -54505,7 +54581,7 @@ export type SwiperController = {
 /**
  * Indicates if the scene is viewed in 3D, 2D, or 2.5D Columbus view.
  */
-export enum SceneMode {
+declare enum SceneMode {
     /**
      * Morphing between mode, e.g., 3D to 2D.
      */
@@ -54528,7 +54604,7 @@ export enum SceneMode {
 /**
  * Functions that do scene-dependent transforms between rendering-related coordinate systems.
  */
-export namespace SceneTransforms {
+declare namespace SceneTransforms {
     /**
      * Transforms a position in WGS84 coordinates to window coordinates.  This is commonly used to place an
     HTML element at the same screen position as an object in the scene.
@@ -54571,7 +54647,7 @@ export namespace SceneTransforms {
  * Modifies the camera position and orientation based on mouse input to a canvas.
  * @param scene - The scene.
  */
-export class ScreenSpaceCameraController {
+declare class ScreenSpaceCameraController {
     constructor(scene: Scene);
     /**
      * If true, inputs are allowed conditionally with the flags enableTranslate, enableZoom,
@@ -54747,7 +54823,7 @@ for applications that require ultra precise shadows.
  * @param [options.normalOffset = true] - Whether a normal bias is applied to shadows.
  * @param [options.fadingEnabled = true] - Whether shadows start to fade out once the light gets closer to the horizon.
  */
-export class ShadowMap {
+declare class ShadowMap {
     constructor(options: {
         lightCamera: Camera;
         enabled?: boolean;
@@ -54796,7 +54872,7 @@ export class ShadowMap {
  * Specifies whether the object casts or receives shadows from light sources when
 shadows are enabled.
  */
-export enum ShadowMode {
+declare enum ShadowMode {
     /**
      * The object does not cast or receive shadows.
      */
@@ -54815,7 +54891,7 @@ export enum ShadowMode {
     RECEIVE_ONLY = 3
 }
 
-export namespace SingleTileImageryProvider {
+declare namespace SingleTileImageryProvider {
     /**
      * Initialization options for the SingleTileImageryProvider constructor
      * @property url - The url for the tile.
@@ -54836,7 +54912,7 @@ export namespace SingleTileImageryProvider {
 {@link GeographicTilingScheme}.
  * @param options - Object describing initialization options
  */
-export class SingleTileImageryProvider {
+declare class SingleTileImageryProvider {
     constructor(options: SingleTileImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -54942,7 +55018,7 @@ export class SingleTileImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link SingleTileImageryProvider#ready} returns true.
@@ -55004,7 +55080,7 @@ This is only supported in 3D. Atmosphere is faded out when morphing to 2D or Col
  * scene.skyAtmosphere = new Cesium.SkyAtmosphere();
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid that the atmosphere is drawn around.
  */
-export class SkyAtmosphere {
+declare class SkyAtmosphere {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * Determines if the atmosphere is shown.
@@ -55076,7 +55152,7 @@ the sky box must not exceed {@link Scene#maximumCubeMapSize}.
  * @param [options.sources] - The source URL or <code>Image</code> object for each of the six cube map faces.  See the example below.
  * @param [options.show = true] - Determines if this primitive will be shown.
  */
-export class SkyBox {
+declare class SkyBox {
     constructor(options: {
         sources?: any;
         show?: boolean;
@@ -55127,7 +55203,7 @@ export class SkyBox {
 Particles will be positioned randomly within the sphere and have initial velocities emanating from the center of the sphere.
  * @param [radius = 1.0] - The radius of the sphere in meters.
  */
-export class SphereEmitter {
+declare class SphereEmitter {
     constructor(radius?: number);
     /**
      * The radius of the sphere in meters.
@@ -55138,77 +55214,77 @@ export class SphereEmitter {
 /**
  * Determines the function used to compare stencil values for the stencil test.
  */
-export enum StencilFunction {
+declare enum StencilFunction {
     /**
      * The stencil test never passes.
      */
-    NEVER = WebGLConstants.NEVER,
+    NEVER = "WebGLConstants.NEVER",
     /**
      * The stencil test passes when the masked reference value is less than the masked stencil value.
      */
-    LESS = WebGLConstants.LESS,
+    LESS = "WebGLConstants.LESS",
     /**
      * The stencil test passes when the masked reference value is equal to the masked stencil value.
      */
-    EQUAL = WebGLConstants.EQUAL,
+    EQUAL = "WebGLConstants.EQUAL",
     /**
      * The stencil test passes when the masked reference value is less than or equal to the masked stencil value.
      */
-    LESS_OR_EQUAL = WebGLConstants.LEQUAL,
+    LESS_OR_EQUAL = "WebGLConstants.LEQUAL",
     /**
      * The stencil test passes when the masked reference value is greater than the masked stencil value.
      */
-    GREATER = WebGLConstants.GREATER,
+    GREATER = "WebGLConstants.GREATER",
     /**
      * The stencil test passes when the masked reference value is not equal to the masked stencil value.
      */
-    NOT_EQUAL = WebGLConstants.NOTEQUAL,
+    NOT_EQUAL = "WebGLConstants.NOTEQUAL",
     /**
      * The stencil test passes when the masked reference value is greater than or equal to the masked stencil value.
      */
-    GREATER_OR_EQUAL = WebGLConstants.GEQUAL,
+    GREATER_OR_EQUAL = "WebGLConstants.GEQUAL",
     /**
      * The stencil test always passes.
      */
-    ALWAYS = WebGLConstants.ALWAYS
+    ALWAYS = "WebGLConstants.ALWAYS"
 }
 
 /**
  * Determines the action taken based on the result of the stencil test.
  */
-export enum StencilOperation {
+declare enum StencilOperation {
     /**
      * Sets the stencil buffer value to zero.
      */
-    ZERO = WebGLConstants.ZERO,
+    ZERO = "WebGLConstants.ZERO",
     /**
      * Does not change the stencil buffer.
      */
-    KEEP = WebGLConstants.KEEP,
+    KEEP = "WebGLConstants.KEEP",
     /**
      * Replaces the stencil buffer value with the reference value.
      */
-    REPLACE = WebGLConstants.REPLACE,
+    REPLACE = "WebGLConstants.REPLACE",
     /**
      * Increments the stencil buffer value, clamping to unsigned byte.
      */
-    INCREMENT = WebGLConstants.INCR,
+    INCREMENT = "WebGLConstants.INCR",
     /**
      * Decrements the stencil buffer value, clamping to zero.
      */
-    DECREMENT = WebGLConstants.DECR,
+    DECREMENT = "WebGLConstants.DECR",
     /**
      * Bitwise inverts the existing stencil buffer value.
      */
-    INVERT = WebGLConstants.INVERT,
+    INVERT = "WebGLConstants.INVERT",
     /**
      * Increments the stencil buffer value, wrapping to zero when exceeding the unsigned byte range.
      */
-    INCREMENT_WRAP = WebGLConstants.INCR_WRAP,
+    INCREMENT_WRAP = "WebGLConstants.INCR_WRAP",
     /**
      * Decrements the stencil buffer value, wrapping to the maximum unsigned byte instead of going below zero.
      */
-    DECREMENT_WRAP = WebGLConstants.DECR_WRAP
+    DECREMENT_WRAP = "WebGLConstants.DECR_WRAP"
 }
 
 /**
@@ -55221,7 +55297,7 @@ Derived classes of this interface evaluate expressions in the
 This type describes an interface and is not intended to be instantiated directly.
 </p>
  */
-export class StyleExpression {
+declare class StyleExpression {
     constructor();
     /**
      * Evaluates the result of an expression, optionally using the provided feature's properties. If the result of
@@ -55255,7 +55331,7 @@ export class StyleExpression {
  * @example
  * scene.sun = new Cesium.Sun();
  */
-export class Sun {
+declare class Sun {
     constructor();
     /**
      * Determines if the sun will be shown.
@@ -55296,7 +55372,7 @@ export class Sun {
  * @param [options.color = Color.WHITE] - The light's color.
  * @param [options.intensity = 2.0] - The light's intensity.
  */
-export class SunLight {
+declare class SunLight {
     constructor(options?: {
         color?: Color;
         intensity?: number;
@@ -55314,7 +55390,7 @@ export class SunLight {
 /**
  * 卷帘对比分析模式 {@link Scene#swipeController}.
  */
-export enum SwipeModeType {
+declare enum SwipeModeType {
     NONE = -1,
     /**
      * 水平模式
@@ -55338,7 +55414,7 @@ export enum SwipeModeType {
     POLYGON = 4
 }
 
-export namespace TileCoordinatesImageryProvider {
+declare namespace TileCoordinatesImageryProvider {
     /**
      * Initialization options for the TileCoordinatesImageryProvider constructor
      * @property [tilingScheme = new GeographicTilingScheme()] - The tiling scheme for which to draw tiles.
@@ -55364,7 +55440,7 @@ a label inside it indicating the X, Y, Level coordinates of the tile.  This is m
 debugging terrain and imagery rendering problems.
  * @param [options] - Object describing initialization options
  */
-export class TileCoordinatesImageryProvider {
+declare class TileCoordinatesImageryProvider {
     constructor(options?: TileCoordinatesImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -55466,7 +55542,7 @@ export class TileCoordinatesImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link TileCoordinatesImageryProvider#ready} returns true.
@@ -55521,7 +55597,7 @@ export class TileCoordinatesImageryProvider {
  * A policy for discarding tile images according to some criteria.  This type describes an
 interface and is not intended to be instantiated directly.
  */
-export class TileDiscardPolicy {
+declare class TileDiscardPolicy {
     constructor();
     /**
      * Determines if the discard policy is ready to process images.
@@ -55536,7 +55612,7 @@ export class TileDiscardPolicy {
     shouldDiscardImage(image: HTMLImageElement): boolean;
 }
 
-export namespace TileMapServiceImageryProvider {
+declare namespace TileMapServiceImageryProvider {
     /**
      * Initialization options for the TileMapServiceImageryProvider constructor
      * @property [url = '.'] - Path to image tiles on server.
@@ -55559,7 +55635,7 @@ export namespace TileMapServiceImageryProvider {
     Specifying this option will do the same, allowing for loading of these incorrect tilesets.
      */
     type ConstructorOptions = {
-        url?: Resource | string | Promise<Resource> | Promise<string>;
+        url?: Resource | string | Promise<Resource> | Promise<String>;
         fileExtension?: string;
         credit?: Credit | string;
         minimumLevel?: number;
@@ -55589,7 +55665,7 @@ export namespace TileMapServiceImageryProvider {
 });
  * @param options - Object describing initialization options
  */
-export class TileMapServiceImageryProvider extends UrlTemplateImageryProvider {
+declare class TileMapServiceImageryProvider extends UrlTemplateImageryProvider {
     constructor(options: TileMapServiceImageryProvider.ConstructorOptions);
 }
 
@@ -55601,7 +55677,7 @@ export class TileMapServiceImageryProvider extends UrlTemplateImageryProvider {
  * @param options.requestImageFunction - A function that will request imagery tiles.
  * @param options.reloadFunction - A function that will be called when all imagery tiles need to be reloaded.
  */
-export class TimeDynamicImagery {
+declare class TimeDynamicImagery {
     constructor(options: {
         clock: Clock;
         times: TimeIntervalCollection;
@@ -55659,7 +55735,7 @@ small or the clock is sufficiently slow then no frames will be skipped.
  * @param [options.style] - The style, defined using the {@link https://github.com/CesiumGS/3d-tiles/tree/main/specification/Styling|3D Tiles Styling language}, applied to each point in the point cloud.
  * @param [options.clippingPlanes] - The {@link ClippingPlaneCollection} used to selectively disable rendering the point cloud.
  */
-export class TimeDynamicPointCloud {
+declare class TimeDynamicPointCloud {
     constructor(options: {
         clock: Clock;
         intervals: TimeIntervalCollection;
@@ -55796,7 +55872,7 @@ export class TimeDynamicPointCloud {
     destroy(): void;
 }
 
-export namespace UrlTemplateImageryProvider {
+declare namespace UrlTemplateImageryProvider {
     /**
      * Initialization options for the UrlTemplateImageryProvider constructor
      * @property [options] - Object with the following properties:
@@ -55881,13 +55957,14 @@ export namespace UrlTemplateImageryProvider {
            that this can be dynamically overridden by modifying the {@link UriTemplateImageryProvider#enablePickFeatures}
            property.
      * @property [customTags] - Allow to replace custom keywords in the URL template. The object must have strings as keys and functions as values.
+     * @property [extensions = []] - 扩展参数，会将扩展参数中的费控参数拼接到请求接口上，示例：[{ key: '参数名', value: '参数值' }]
      */
     type ConstructorOptions = {
         options?: Promise<object> | any;
         url: Resource | string;
         pickFeaturesUrl?: Resource | string;
         urlSchemeZeroPadding?: any;
-        subdomains?: string | string[];
+        subdomains?: string | String[];
         credit?: Credit | string;
         minimumLevel?: number;
         maximumLevel?: number;
@@ -55900,6 +55977,7 @@ export namespace UrlTemplateImageryProvider {
         getFeatureInfoFormats?: GetFeatureInfoFormat[];
         enablePickFeatures?: boolean;
         customTags?: any;
+        extensions?: object[];
     };
 }
 
@@ -55939,7 +56017,7 @@ var custom = new Cesium.UrlTemplateImageryProvider({
 });
  * @param options - Object describing initialization options
  */
-export class UrlTemplateImageryProvider {
+declare class UrlTemplateImageryProvider {
     constructor(options: UrlTemplateImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -55995,6 +56073,13 @@ export class UrlTemplateImageryProvider {
     source does not support picking features or if you don't want this provider's features to be pickable.
      */
     enablePickFeatures: boolean;
+    /**
+     * fix(5749): UrlTemplateImageryProvider解析Url，再拼接错误
+    修改人: 杨琨 2024-07-08
+    修改说明: 临时解决UrlUtil.correctUrl方法无法识别format=format/png，是一个参数还是一个接口，从而直接把/png字符串拼接到基地址后面的问题(baseUrl/png?)
+    提供一个扩展参数对象，让用户可以自定义传参
+     */
+    extensions: any;
     /**
      * Gets the URL template to use to request tiles.  It has the following keywords:
     <ul>
@@ -56106,7 +56191,7 @@ export class UrlTemplateImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link UrlTemplateImageryProvider#ready} returns true.
@@ -56174,7 +56259,7 @@ the anchor position.
 <img src='Images/Billboard.setVerticalOrigin.png' width='695' height='175' /><br />
 </div>
  */
-export enum VerticalOrigin {
+declare enum VerticalOrigin {
     /**
      * The origin is at the vertical center between <code>BASELINE</code> and <code>TOP</code>.
      */
@@ -56201,7 +56286,7 @@ viewportQuad.material.uniforms.color = new Cesium.Color(1.0, 0.0, 0.0, 1.0);
  * @param [rectangle] - The {@link BoundingRectangle} defining the quad's position within the viewport.
  * @param [material] - The {@link Material} defining the surface appearance of the viewport quad.
  */
-export class ViewportQuad {
+declare class ViewportQuad {
     constructor(rectangle?: BoundingRectangle, material?: Material);
     /**
      * Determines if the viewport quad primitive will be shown.
@@ -56257,7 +56342,7 @@ export class ViewportQuad {
     destroy(): void;
 }
 
-export namespace WebMapServiceImageryProvider {
+declare namespace WebMapServiceImageryProvider {
     /**
      * Initialization options for the WebMapServiceImageryProvider constructor
      * @property url - The URL of the WMS service. The URL supports the same keywords as the {@link UrlTemplateImageryProvider}.
@@ -56313,7 +56398,7 @@ export namespace WebMapServiceImageryProvider {
         crs?: string;
         srs?: string;
         credit?: Credit | string;
-        subdomains?: string | string[];
+        subdomains?: string | String[];
         clock?: Clock;
         times?: TimeIntervalCollection;
         isReverseBBOX?: boolean;
@@ -56332,7 +56417,7 @@ export namespace WebMapServiceImageryProvider {
 viewer.imageryLayers.addImageryProvider(provider);
  * @param options - Object describing initialization options
  */
-export class WebMapServiceImageryProvider {
+declare class WebMapServiceImageryProvider {
     constructor(options: WebMapServiceImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -56448,7 +56533,7 @@ export class WebMapServiceImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link WebMapServiceImageryProvider#ready} returns true.
@@ -56532,7 +56617,7 @@ export class WebMapServiceImageryProvider {
     static readonly GetFeatureInfoDefaultParameters: any;
 }
 
-export namespace WebMapTileServiceImageryProvider {
+declare namespace WebMapTileServiceImageryProvider {
     /**
      * Initialization options for the WebMapTileServiceImageryProvider constructor
      * @property url - The base URL for the WMTS GetTile operation (for KVP-encoded requests) or the tile-URL template (for RESTful requests). The tile-URL template should contain the following variables: &#123;style&#125;, &#123;TileMatrixSet&#125;, &#123;TileMatrix&#125;, &#123;TileRow&#125;, &#123;TileCol&#125;. The first two are optional if actual values are hardcoded or not required by the server. The &#123;s&#125; keyword may be used to specify subdomains.
@@ -56574,7 +56659,7 @@ export namespace WebMapTileServiceImageryProvider {
         maximumLevel?: number;
         ellipsoid?: Ellipsoid;
         credit?: Credit | string;
-        subdomains?: string | string[];
+        subdomains?: string | String[];
     };
 }
 
@@ -56630,7 +56715,7 @@ var weather = new Cesium.WebMapTileServiceImageryProvider({
 viewer.imageryLayers.addImageryProvider(weather);
  * @param options - Object describing initialization options
  */
-export class WebMapTileServiceImageryProvider {
+declare class WebMapTileServiceImageryProvider {
     constructor(options: WebMapTileServiceImageryProvider.ConstructorOptions);
     /**
      * The default alpha blending value of this provider, with 0.0 representing fully transparent and
@@ -56740,7 +56825,7 @@ export class WebMapTileServiceImageryProvider {
     /**
      * Gets a promise that resolves to true when the provider is ready for use.
      */
-    readonly readyPromise: Promise<boolean>;
+    readonly readyPromise: Promise<Boolean>;
     /**
      * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
     the source of the imagery.  This function should not be called before {@link WebMapTileServiceImageryProvider#ready} returns true.
@@ -56843,7 +56928,7 @@ Cesium.requestAnimationFrame(tick);
  * @param container - The DOM element or ID that will contain the widget.
  * @param viewModel - The view model used by this widget.
  */
-export class Animation {
+declare class Animation {
     constructor(container: Element | string, viewModel: AnimationViewModel);
     /**
      * Gets the parent container.
@@ -56881,7 +56966,7 @@ export class Animation {
  * The view model for the {@link Animation} widget.
  * @param clockViewModel - The ClockViewModel instance to use.
  */
-export class AnimationViewModel {
+declare class AnimationViewModel {
     constructor(clockViewModel: ClockViewModel);
     /**
      * Gets or sets whether the shuttle ring is currently being dragged.  This property is observable.
@@ -56916,7 +57001,7 @@ export class AnimationViewModel {
     /**
      * Gets or sets the default array of known clock multipliers associated with new instances of the shuttle ring.
      */
-    static defaultTicks: number[];
+    static defaultTicks: Number[];
     /**
      * Gets or sets the default time formatter used by new instances.
      */
@@ -56925,7 +57010,7 @@ export class AnimationViewModel {
      * Gets a copy of the array of positive known clock multipliers to associate with the shuttle ring.
      * @returns The array of known clock multipliers associated with the shuttle ring.
      */
-    getShuttleRingTicks(): number[];
+    getShuttleRingTicks(): Number[];
     /**
      * Sets the array of positive known clock multipliers to associate with the shuttle ring.
     These values will have negative equivalents created for them and sets both the minimum
@@ -56934,7 +57019,7 @@ export class AnimationViewModel {
     automatically, and duplicate values will be removed.
      * @param positiveTicks - The list of known positive clock multipliers to associate with the shuttle ring.
      */
-    setShuttleRingTicks(positiveTicks: number[]): void;
+    setShuttleRingTicks(positiveTicks: Number[]): void;
     /**
      * Gets a command that decreases the speed of animation.
      */
@@ -56973,7 +57058,7 @@ export class AnimationViewModel {
     timeFormatter: AnimationViewModel.TimeFormatter;
 }
 
-export namespace AnimationViewModel {
+declare namespace AnimationViewModel {
     /**
      * A function that formats a date for display.
      * @param date - The date to be formatted
@@ -57058,7 +57143,7 @@ var baseLayerPicker = new Cesium.BaseLayerPicker('baseLayerPickerContainer', {
  * @param [options.terrainProviderViewModels = []] - The array of ProviderViewModel instances to use for terrain.
  * @param [options.selectedTerrainProviderViewModel] - The view model for the current base terrain layer, if not supplied the first available terrain layer is used.
  */
-export class BaseLayerPicker {
+declare class BaseLayerPicker {
     constructor(container: Element | string, options: {
         globe: Globe;
         imageryProviderViewModels?: ProviderViewModel[];
@@ -57094,7 +57179,7 @@ export class BaseLayerPicker {
  * @param [options.terrainProviderViewModels = []] - The array of ProviderViewModel instances to use for terrain.
  * @param [options.selectedTerrainProviderViewModel] - The view model for the current base terrain layer, if not supplied the first available terrain layer is used.
  */
-export class BaseLayerPickerViewModel {
+declare class BaseLayerPickerViewModel {
     constructor(options: {
         globe: Globe;
         imageryProviderViewModels?: ProviderViewModel[];
@@ -57152,7 +57237,7 @@ export class BaseLayerPickerViewModel {
  * @param options.creationFunction - A function or Command
        that creates one or more providers which will be added to the globe when this item is selected.
  */
-export class ProviderViewModel {
+declare class ProviderViewModel {
     constructor(options: {
         name: string;
         tooltip: string;
@@ -57183,7 +57268,7 @@ export class ProviderViewModel {
     readonly category: string;
 }
 
-export namespace ProviderViewModel {
+declare namespace ProviderViewModel {
     /**
      * A function which creates one or more providers.
      */
@@ -57195,7 +57280,7 @@ export namespace ProviderViewModel {
  * @param container - The DOM element or ID that will contain the widget.
  * @param scene - the Scene instance to use.
  */
-export class Cesium3DTilesInspector {
+declare class Cesium3DTilesInspector {
     constructor(container: Element | string, scene: Scene);
     /**
      * Gets the parent container.
@@ -57221,7 +57306,7 @@ export class Cesium3DTilesInspector {
  * @param scene - The scene instance to use.
  * @param performanceContainer - The container for the performance display
  */
-export class Cesium3DTilesInspectorViewModel {
+declare class Cesium3DTilesInspectorViewModel {
     constructor(scene: Scene, performanceContainer: HTMLElement);
     /**
      * Gets or sets the flag to enable performance display.  This property is observable.
@@ -57274,7 +57359,7 @@ export class Cesium3DTilesInspectorViewModel {
     /**
      * Gets the names of the properties in the tileset.  This property is observable.
      */
-    readonly properties: string[];
+    readonly properties: String[];
     /**
      * Gets or sets the flag to enable dynamic screen space error.  This property is observable.
      */
@@ -57515,7 +57600,7 @@ export class Cesium3DTilesInspectorViewModel {
  * @param container - The DOM element or ID that will contain the widget.
  * @param scene - The Scene instance to use.
  */
-export class CesiumInspector {
+declare class CesiumInspector {
     constructor(container: Element | string, scene: Scene);
     /**
      * Gets the parent container.
@@ -57541,7 +57626,7 @@ export class CesiumInspector {
  * @param scene - The scene instance to use.
  * @param performanceContainer - The instance to use for performance container.
  */
-export class CesiumInspectorViewModel {
+declare class CesiumInspectorViewModel {
     constructor(scene: Scene, performanceContainer: Element);
     /**
      * Gets or sets the show frustums state.  This property is observable.
@@ -57803,7 +57888,7 @@ var widget = new Cesium.CesiumWidget('cesiumContainer', {
  * @param [options.requestRenderMode = false] - If true, rendering a frame will only occur when needed as determined by changes within the scene. Enabling improves performance of the application, but requires using {@link Scene#requestRender} to render a new frame explicitly in this mode. This will be necessary in many cases after making changes to the scene in other parts of the API. See {@link https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/|Improving Performance with Explicit Rendering}.
  * @param [options.maximumRenderTimeChange = 0.0] - If requestRenderMode is true, this value defines the maximum change in simulation time allowed before a render is requested. See {@link https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/|Improving Performance with Explicit Rendering}.
  */
-export class CesiumWidget {
+declare class CesiumWidget {
     constructor(container: Element | string, options?: {
         clock?: Clock;
         imageryProvider?: ImageryProvider | false;
@@ -57941,7 +58026,7 @@ export class CesiumWidget {
  * A view model which exposes a {@link Clock} for user interfaces.
  * @param [clock] - The clock object wrapped by this view model, if undefined a new instance will be created.
  */
-export class ClockViewModel {
+declare class ClockViewModel {
     constructor(clock?: Clock);
     /**
      * Gets the current system time.
@@ -58025,7 +58110,7 @@ value of <code>canExecute</code> and throw if false.
 This type describes an interface and is not intended to be instantiated directly.
 See {@link createCommand} to create a command from a function.
  */
-export class Command {
+declare class Command {
     constructor();
     /**
      * Gets whether this command can currently be executed.  This property is observable.
@@ -58055,14 +58140,14 @@ a command has been or is about to be executed.
  * @param func - The function to execute.
  * @param [canExecute = true] - A boolean indicating whether the function can currently be executed.
  */
-export function createCommand(func: (...params: any[]) => any, canExecute?: boolean): void;
+declare function createCommand(func: (...params: any[]) => any, canExecute?: boolean): void;
 
 /**
  * A single button widget for toggling fullscreen mode.
  * @param container - The DOM element or ID that will contain the widget.
  * @param [fullscreenElement = document.body] - The element or id to be placed into fullscreen mode.
  */
-export class FullscreenButton {
+declare class FullscreenButton {
     constructor(container: Element | string, fullscreenElement?: Element | string);
     /**
      * Gets the parent container.
@@ -58088,7 +58173,7 @@ export class FullscreenButton {
  * @param [fullscreenElement = document.body] - The element or id to be placed into fullscreen mode.
  * @param [container] - The DOM element or ID that will contain the widget.
  */
-export class FullscreenButtonViewModel {
+declare class FullscreenButtonViewModel {
     constructor(fullscreenElement?: Element | string, container?: Element | string);
     /**
      * Gets whether or not fullscreen mode is active.  This property is observable.
@@ -58133,7 +58218,7 @@ performed using {@link https://cesium.com/cesium-ion/|Cesium ion}.
  * @param [options.flightDuration = 1.5] - The duration of the camera flight to an entered location, in seconds.
  * @param [options.destinationFound = GeocoderViewModel.flyToDestination] - A callback function that is called after a successful geocode.  If not supplied, the default behavior is to fly the camera to the result destination.
  */
-export class Geocoder {
+declare class Geocoder {
     constructor(options: {
         container: Element | string;
         scene: Scene;
@@ -58165,7 +58250,7 @@ export class Geocoder {
     destroy(): void;
 }
 
-export namespace Geocoder {
+declare namespace Geocoder {
     /**
      * A function that handles the result of a successful geocode.
      * @param viewModel - The view model.
@@ -58184,7 +58269,7 @@ export namespace Geocoder {
  * @param [options.flightDuration] - The duration of the camera flight to an entered location, in seconds.
  * @param [options.destinationFound = GeocoderViewModel.flyToDestination] - A callback function that is called after a successful geocode.  If not supplied, the default behavior is to fly the camera to the result destination.
  */
-export class GeocoderViewModel {
+declare class GeocoderViewModel {
     constructor(options: {
         scene: Scene;
         geocoderServices?: GeocoderService[];
@@ -58255,7 +58340,7 @@ export class GeocoderViewModel {
  * @param scene - The Scene instance to use.
  * @param [duration] - The time, in seconds, it takes to complete the camera flight home.
  */
-export class HomeButton {
+declare class HomeButton {
     constructor(container: Element | string, scene: Scene, duration?: number);
     /**
      * Gets the parent container.
@@ -58281,7 +58366,7 @@ export class HomeButton {
  * @param scene - The scene instance to use.
  * @param [duration] - The duration of the camera flight in seconds.
  */
-export class HomeButtonViewModel {
+declare class HomeButtonViewModel {
     constructor(scene: Scene, duration?: number);
     /**
      * Gets or sets the tooltip.  This property is observable.
@@ -58307,7 +58392,7 @@ export class HomeButtonViewModel {
  * A widget for displaying information or a description.
  * @param container - The DOM element or ID that will contain the widget.
  */
-export class InfoBox {
+declare class InfoBox {
     constructor(container: Element | string);
     /**
      * Gets the parent container.
@@ -58335,7 +58420,7 @@ export class InfoBox {
 /**
  * The view model for {@link InfoBox}.
  */
-export class InfoBoxViewModel {
+declare class InfoBoxViewModel {
     constructor();
     /**
      * Gets or sets the maximum height of the info box in pixels.  This property is observable.
@@ -58394,7 +58479,7 @@ var navigationHelpButton = new Cesium.NavigationHelpButton({
  * @param options.container - The DOM element or ID that will contain the widget.
  * @param [options.instructionsInitiallyVisible = false] - True if the navigation instructions should initially be visible; otherwise, false.
  */
-export class NavigationHelpButton {
+declare class NavigationHelpButton {
     constructor(options: {
         container: Element | string;
         instructionsInitiallyVisible?: boolean;
@@ -58421,7 +58506,7 @@ export class NavigationHelpButton {
 /**
  * The view model for {@link NavigationHelpButton}.
  */
-export class NavigationHelpButtonViewModel {
+declare class NavigationHelpButtonViewModel {
     constructor();
     /**
      * Gets or sets whether the instructions are currently shown.  This property is observable.
@@ -58454,7 +58539,7 @@ export class NavigationHelpButtonViewModel {
        message to display when a low frame rate is detected.  The message is interpeted as HTML, so make sure
        it comes from a trusted source so that your application is not vulnerable to cross-site scripting attacks.
  */
-export class PerformanceWatchdog {
+declare class PerformanceWatchdog {
     constructor(options?: {
         container: Element | string;
         scene: Scene;
@@ -58487,7 +58572,7 @@ export class PerformanceWatchdog {
        message to display when a low frame rate is detected.  The message is interpeted as HTML, so make sure
        it comes from a trusted source so that your application is not vulnerable to cross-site scripting attacks.
  */
-export class PerformanceWatchdogViewModel {
+declare class PerformanceWatchdogViewModel {
     constructor(options?: {
         scene: Scene;
         lowFrameRateMessage?: string;
@@ -58527,7 +58612,7 @@ var projectionPicker = new Cesium.ProjectionPicker('projectionPickerContainer', 
  * @param container - The DOM element or ID that will contain the widget.
  * @param scene - The Scene instance to use.
  */
-export class ProjectionPicker {
+declare class ProjectionPicker {
     constructor(container: Element | string, scene: Scene);
     /**
      * Gets the parent container.
@@ -58552,7 +58637,7 @@ export class ProjectionPicker {
  * The view model for {@link ProjectionPicker}.
  * @param scene - The Scene to switch projections.
  */
-export class ProjectionPickerViewModel {
+declare class ProjectionPickerViewModel {
     constructor(scene: Scene);
     /**
      * Gets or sets whether the button drop-down is currently visible.  This property is observable.
@@ -58620,7 +58705,7 @@ var sceneModePicker = new Cesium.SceneModePicker('sceneModePickerContainer', sce
  * @param scene - The Scene instance to use.
  * @param [duration = 2.0] - The time, in seconds, it takes for the scene to transition.
  */
-export class SceneModePicker {
+declare class SceneModePicker {
     constructor(container: Element | string, scene: Scene, duration?: number);
     /**
      * Gets the parent container.
@@ -58646,7 +58731,7 @@ export class SceneModePicker {
  * @param scene - The Scene to morph
  * @param [duration = 2.0] - The duration of scene morph animations, in seconds
  */
-export class SceneModePickerViewModel {
+declare class SceneModePickerViewModel {
     constructor(scene: Scene, duration?: number);
     /**
      * Gets or sets the current SceneMode.  This property is observable.
@@ -58712,7 +58797,7 @@ export class SceneModePickerViewModel {
  * @param container - The DOM element or ID that will contain the widget.
  * @param scene - The Scene instance to use.
  */
-export class SelectionIndicator {
+declare class SelectionIndicator {
     constructor(container: Element | string, scene: Scene);
     /**
      * Gets the parent container.
@@ -58739,7 +58824,7 @@ export class SelectionIndicator {
  * @param selectionIndicatorElement - The element containing all elements that make up the selection indicator.
  * @param container - The DOM element that contains the widget.
  */
-export class SelectionIndicatorViewModel {
+declare class SelectionIndicatorViewModel {
     constructor(scene: Scene, selectionIndicatorElement: Element, container: Element);
     /**
      * Gets or sets the world position of the object for which to display the selection indicator.
@@ -58789,7 +58874,7 @@ export class SelectionIndicatorViewModel {
     scene: Scene;
 }
 
-export namespace SelectionIndicatorViewModel {
+declare namespace SelectionIndicatorViewModel {
     /**
      * A function that converts the world position of an object to a screen space position.
      * @param position - The position in WGS84 (world) coordinates.
@@ -58822,7 +58907,7 @@ The parameter to this binding is an object with the following properties:
 // or the whole object can be observable from the view model
 <div data-bind="cesiumSvgPath: svgPathOptions"></div>
  */
-export namespace SvgPathBindingHandler {
+declare namespace SvgPathBindingHandler {
     function register(): void;
 }
 
@@ -58831,7 +58916,7 @@ export namespace SvgPathBindingHandler {
  * @param container - The parent HTML container node for this widget.
  * @param clock - The clock to use.
  */
-export class Timeline {
+declare class Timeline {
     constructor(container: Element, clock: Clock);
     /**
      * Gets the parent container.
@@ -58865,7 +58950,7 @@ export class Timeline {
  * @param [options.toggled = false] - A boolean indicating whether the button should be initially toggled.
  * @param [options.tooltip = ''] - A string containing the button's tooltip.
  */
-export class ToggleButtonViewModel {
+declare class ToggleButtonViewModel {
     constructor(command: Command, options?: {
         toggled?: boolean;
         tooltip?: string;
@@ -58884,7 +58969,7 @@ export class ToggleButtonViewModel {
     command: Command;
 }
 
-export namespace Viewer {
+declare namespace Viewer {
     /**
      * Initialization options for the Viewer constructor
      * @property [animation = true] - If set to false, the Animation widget will not be created.
@@ -59026,7 +59111,7 @@ viewer.dropError.addEventListener(function(dropHandler, name, error) {
  * @param container - The DOM element or ID that will contain the widget.
  * @param [options] - Object describing initialization options
  */
-export class Viewer {
+declare class Viewer {
     constructor(container: Element | string, options?: Viewer.ConstructorOptions);
     /**
      * Gets the parent container.
@@ -59269,7 +59354,7 @@ export class Viewer {
      * @param [offset] - The offset from the center of the entity in the local east-north-up reference frame.
      * @returns A Promise that resolves to true if the zoom was successful or false if the target is not currently visualized in the scene or the zoom was cancelled.
      */
-    zoomTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud>, offset?: HeadingPitchRange): Promise<boolean>;
+    zoomTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud>, offset?: HeadingPitchRange): Promise<Boolean>;
     /**
      * Flies the camera to the provided entity, entities, or data source.
     If the data source is still in the process of loading or the visualization is otherwise still loading,
@@ -59295,7 +59380,7 @@ export class Viewer {
         duration?: number;
         maximumHeight?: number;
         offset?: HeadingPitchRange;
-    }): Promise<boolean>;
+    }): Promise<Boolean>;
     /**
      * 根据屏幕坐标返回对应的世界坐标，支持拾取模型缓存、实体（Entity），图元（Primitive）、地形上的点坐标<br>
     请注意如下几种情况无法返回世界坐标：<br>
@@ -59363,7 +59448,7 @@ a parameter to {@link Viewer#extend}, as shown in the example below.
 viewer.extend(Cesium.viewerCesium3DTilesInspectorMixin);
  * @param viewer - The viewer instance.
  */
-export function viewerCesium3DTilesInspectorMixin(viewer: Viewer): void;
+declare function viewerCesium3DTilesInspectorMixin(viewer: Viewer): void;
 
 /**
  * A mixin which adds the CesiumInspector widget to the Viewer widget.
@@ -59374,7 +59459,7 @@ a parameter to {@link Viewer#extend}, as shown in the example below.
 viewer.extend(Cesium.viewerCesiumInspectorMixin);
  * @param viewer - The viewer instance.
  */
-export function viewerCesiumInspectorMixin(viewer: Viewer): void;
+declare function viewerCesiumInspectorMixin(viewer: Viewer): void;
 
 /**
  * A mixin which adds default drag and drop support for CZML files to the Viewer widget.
@@ -59395,7 +59480,7 @@ viewer.dropError.addEventListener(function(viewerArg, source, error) {
  * @param [options.clampToGround = true] - When true, datasources are clamped to the ground.
  * @param [options.proxy] - The proxy to be used for KML network links.
  */
-export function viewerDragDropMixin(viewer: Viewer, options?: {
+declare function viewerDragDropMixin(viewer: Viewer, options?: {
     dropTarget?: Element | string;
     clearOnDrop?: boolean;
     flyToOnDrop?: boolean;
@@ -59418,7 +59503,7 @@ viewer.extend(Cesium.viewerPerformanceWatchdogMixin, {
        message to display when a low frame rate is detected.  The message is interpeted as HTML, so make sure
        it comes from a trusted source so that your application is not vulnerable to cross-site scripting attacks.
  */
-export function viewerPerformanceWatchdogMixin(viewer: Viewer, options?: {
+declare function viewerPerformanceWatchdogMixin(viewer: Viewer, options?: {
     lowFrameRateMessage?: string;
 }): void;
 
@@ -59428,7 +59513,7 @@ export function viewerPerformanceWatchdogMixin(viewer: Viewer, options?: {
  * @param scene - The scene.
  * @param [vrElement = document.body] - The element or id to be placed into vr mode.
  */
-export class VRButton {
+declare class VRButton {
     constructor(container: Element | string, scene: Scene, vrElement?: Element | string);
     /**
      * Gets the parent container.
@@ -59454,7 +59539,7 @@ export class VRButton {
  * @param scene - The scene.
  * @param [vrElement = document.body] - The element or id to be placed into VR mode.
  */
-export class VRButtonViewModel {
+declare class VRButtonViewModel {
     constructor(scene: Scene, vrElement?: Element | string);
     /**
      * Gets whether or not VR mode is active.
@@ -59488,603 +59573,3 @@ export class VRButtonViewModel {
     destroy(): void;
 }
 
-
-
-
-}
-
-declare module "cesium/Source/Core/ArcGISTiledElevationTerrainProvider" { import { ArcGISTiledElevationTerrainProvider } from 'cesium'; export default ArcGISTiledElevationTerrainProvider; }
-declare module "cesium/Source/Core/ArcType" { import { ArcType } from 'cesium'; export default ArcType; }
-declare module "cesium/Source/Core/AssociativeArray" { import { AssociativeArray } from 'cesium'; export default AssociativeArray; }
-declare module "cesium/Source/Core/AxisAlignedBoundingBox" { import { AxisAlignedBoundingBox } from 'cesium'; export default AxisAlignedBoundingBox; }
-declare module "cesium/Source/Core/barycentricCoordinates" { import { barycentricCoordinates } from 'cesium'; export default barycentricCoordinates; }
-declare module "cesium/Source/Core/binarySearch" { import { binarySearch } from 'cesium'; export default binarySearch; }
-declare module "cesium/Source/Core/BingMapsGeocoderService" { import { BingMapsGeocoderService } from 'cesium'; export default BingMapsGeocoderService; }
-declare module "cesium/Source/Core/BoundingRectangle" { import { BoundingRectangle } from 'cesium'; export default BoundingRectangle; }
-declare module "cesium/Source/Core/BoundingSphere" { import { BoundingSphere } from 'cesium'; export default BoundingSphere; }
-declare module "cesium/Source/Core/BoxGeometry" { import { BoxGeometry } from 'cesium'; export default BoxGeometry; }
-declare module "cesium/Source/Core/BoxOutlineGeometry" { import { BoxOutlineGeometry } from 'cesium'; export default BoxOutlineGeometry; }
-declare module "cesium/Source/Core/buildModuleUrl" { import { buildModuleUrl } from 'cesium'; export default buildModuleUrl; }
-declare module "cesium/Source/Core/cancelAnimationFrame" { import { cancelAnimationFrame } from 'cesium'; export default cancelAnimationFrame; }
-declare module "cesium/Source/Core/Cartesian2" { import { Cartesian2 } from 'cesium'; export default Cartesian2; }
-declare module "cesium/Source/Core/Cartesian3" { import { Cartesian3 } from 'cesium'; export default Cartesian3; }
-declare module "cesium/Source/Core/Cartesian4" { import { Cartesian4 } from 'cesium'; export default Cartesian4; }
-declare module "cesium/Source/Core/Cartographic" { import { Cartographic } from 'cesium'; export default Cartographic; }
-declare module "cesium/Source/Core/CartographicGeocoderService" { import { CartographicGeocoderService } from 'cesium'; export default CartographicGeocoderService; }
-declare module "cesium/Source/Core/CatmullRomSpline" { import { CatmullRomSpline } from 'cesium'; export default CatmullRomSpline; }
-declare module "cesium/Source/Core/CesiumTerrainProvider" { import { CesiumTerrainProvider } from 'cesium'; export default CesiumTerrainProvider; }
-declare module "cesium/Source/Core/CircleGeometry" { import { CircleGeometry } from 'cesium'; export default CircleGeometry; }
-declare module "cesium/Source/Core/CircleOutlineGeometry" { import { CircleOutlineGeometry } from 'cesium'; export default CircleOutlineGeometry; }
-declare module "cesium/Source/Core/Clock" { import { Clock } from 'cesium'; export default Clock; }
-declare module "cesium/Source/Core/ClockRange" { import { ClockRange } from 'cesium'; export default ClockRange; }
-declare module "cesium/Source/Core/ClockStep" { import { ClockStep } from 'cesium'; export default ClockStep; }
-declare module "cesium/Source/Core/clone" { import { clone } from 'cesium'; export default clone; }
-declare module "cesium/Source/Core/Color" { import { Color } from 'cesium'; export default Color; }
-declare module "cesium/Source/Core/ColorGeometryInstanceAttribute" { import { ColorGeometryInstanceAttribute } from 'cesium'; export default ColorGeometryInstanceAttribute; }
-declare module "cesium/Source/Core/combine" { import { combine } from 'cesium'; export default combine; }
-declare module "cesium/Source/Core/ComponentDatatype" { import { ComponentDatatype } from 'cesium'; export default ComponentDatatype; }
-declare module "cesium/Source/Core/CompressedTextureBuffer" { import { CompressedTextureBuffer } from 'cesium'; export default CompressedTextureBuffer; }
-declare module "cesium/Source/Core/CoplanarPolygonGeometry" { import { CoplanarPolygonGeometry } from 'cesium'; export default CoplanarPolygonGeometry; }
-declare module "cesium/Source/Core/CoplanarPolygonOutlineGeometry" { import { CoplanarPolygonOutlineGeometry } from 'cesium'; export default CoplanarPolygonOutlineGeometry; }
-declare module "cesium/Source/Core/CornerType" { import { CornerType } from 'cesium'; export default CornerType; }
-declare module "cesium/Source/Core/CorridorGeometry" { import { CorridorGeometry } from 'cesium'; export default CorridorGeometry; }
-declare module "cesium/Source/Core/CorridorOutlineGeometry" { import { CorridorOutlineGeometry } from 'cesium'; export default CorridorOutlineGeometry; }
-declare module "cesium/Source/Core/createGuid" { import { createGuid } from 'cesium'; export default createGuid; }
-declare module "cesium/Source/Core/createWorldTerrain" { import { createWorldTerrain } from 'cesium'; export default createWorldTerrain; }
-declare module "cesium/Source/Core/Credit" { import { Credit } from 'cesium'; export default Credit; }
-declare module "cesium/Source/Core/CubicRealPolynomial" { import { CubicRealPolynomial } from 'cesium'; export default CubicRealPolynomial; }
-declare module "cesium/Source/Core/CullingVolume" { import { CullingVolume } from 'cesium'; export default CullingVolume; }
-declare module "cesium/Source/Core/CustomHeightmapTerrainProvider" { import { CustomHeightmapTerrainProvider } from 'cesium'; export default CustomHeightmapTerrainProvider; }
-declare module "cesium/Source/Core/CylinderGeometry" { import { CylinderGeometry } from 'cesium'; export default CylinderGeometry; }
-declare module "cesium/Source/Core/CylinderOutlineGeometry" { import { CylinderOutlineGeometry } from 'cesium'; export default CylinderOutlineGeometry; }
-declare module "cesium/Source/Core/DefaultProxy" { import { DefaultProxy } from 'cesium'; export default DefaultProxy; }
-declare module "cesium/Source/Core/defaultValue" { import { defaultValue } from 'cesium'; export default defaultValue; }
-declare module "cesium/Source/Core/defined" { import { defined } from 'cesium'; export default defined; }
-declare module "cesium/Source/Core/destroyObject" { import { destroyObject } from 'cesium'; export default destroyObject; }
-declare module "cesium/Source/Core/DeveloperError" { import { DeveloperError } from 'cesium'; export default DeveloperError; }
-declare module "cesium/Source/Core/DistanceDisplayCondition" { import { DistanceDisplayCondition } from 'cesium'; export default DistanceDisplayCondition; }
-declare module "cesium/Source/Core/DistanceDisplayConditionGeometryInstanceAttribute" { import { DistanceDisplayConditionGeometryInstanceAttribute } from 'cesium'; export default DistanceDisplayConditionGeometryInstanceAttribute; }
-declare module "cesium/Source/Core/EasingFunction" { import { EasingFunction } from 'cesium'; export default EasingFunction; }
-declare module "cesium/Source/Core/EllipseGeometry" { import { EllipseGeometry } from 'cesium'; export default EllipseGeometry; }
-declare module "cesium/Source/Core/EllipseOutlineGeometry" { import { EllipseOutlineGeometry } from 'cesium'; export default EllipseOutlineGeometry; }
-declare module "cesium/Source/Core/Ellipsoid" { import { Ellipsoid } from 'cesium'; export default Ellipsoid; }
-declare module "cesium/Source/Core/EllipsoidGeodesic" { import { EllipsoidGeodesic } from 'cesium'; export default EllipsoidGeodesic; }
-declare module "cesium/Source/Core/EllipsoidGeometry" { import { EllipsoidGeometry } from 'cesium'; export default EllipsoidGeometry; }
-declare module "cesium/Source/Core/EllipsoidOutlineGeometry" { import { EllipsoidOutlineGeometry } from 'cesium'; export default EllipsoidOutlineGeometry; }
-declare module "cesium/Source/Core/EllipsoidRhumbLine" { import { EllipsoidRhumbLine } from 'cesium'; export default EllipsoidRhumbLine; }
-declare module "cesium/Source/Core/EllipsoidTangentPlane" { import { EllipsoidTangentPlane } from 'cesium'; export default EllipsoidTangentPlane; }
-declare module "cesium/Source/Core/EllipsoidTerrainProvider" { import { EllipsoidTerrainProvider } from 'cesium'; export default EllipsoidTerrainProvider; }
-declare module "cesium/Source/Core/Event" { import { Event } from 'cesium'; export default Event; }
-declare module "cesium/Source/Core/EventHelper" { import { EventHelper } from 'cesium'; export default EventHelper; }
-declare module "cesium/Source/Core/ExtrapolationType" { import { ExtrapolationType } from 'cesium'; export default ExtrapolationType; }
-declare module "cesium/Source/Core/FeatureDetection" { import { FeatureDetection } from 'cesium'; export default FeatureDetection; }
-declare module "cesium/Source/Core/formatError" { import { formatError } from 'cesium'; export default formatError; }
-declare module "cesium/Source/Core/FrustumGeometry" { import { FrustumGeometry } from 'cesium'; export default FrustumGeometry; }
-declare module "cesium/Source/Core/FrustumOutlineGeometry" { import { FrustumOutlineGeometry } from 'cesium'; export default FrustumOutlineGeometry; }
-declare module "cesium/Source/Core/Fullscreen" { import { Fullscreen } from 'cesium'; export default Fullscreen; }
-declare module "cesium/Source/Core/GeocoderService" { import { GeocoderService } from 'cesium'; export default GeocoderService; }
-declare module "cesium/Source/Core/GeocodeType" { import { GeocodeType } from 'cesium'; export default GeocodeType; }
-declare module "cesium/Source/Core/GeographicProjection" { import { GeographicProjection } from 'cesium'; export default GeographicProjection; }
-declare module "cesium/Source/Core/GeographicTilingScheme" { import { GeographicTilingScheme } from 'cesium'; export default GeographicTilingScheme; }
-declare module "cesium/Source/Core/Geometry" { import { Geometry } from 'cesium'; export default Geometry; }
-declare module "cesium/Source/Core/GeometryAttribute" { import { GeometryAttribute } from 'cesium'; export default GeometryAttribute; }
-declare module "cesium/Source/Core/GeometryAttributes" { import { GeometryAttributes } from 'cesium'; export default GeometryAttributes; }
-declare module "cesium/Source/Core/GeometryFactory" { import { GeometryFactory } from 'cesium'; export default GeometryFactory; }
-declare module "cesium/Source/Core/GeometryInstance" { import { GeometryInstance } from 'cesium'; export default GeometryInstance; }
-declare module "cesium/Source/Core/GeometryInstanceAttribute" { import { GeometryInstanceAttribute } from 'cesium'; export default GeometryInstanceAttribute; }
-declare module "cesium/Source/Core/GeometryPipeline" { import { GeometryPipeline } from 'cesium'; export default GeometryPipeline; }
-declare module "cesium/Source/Core/getAbsoluteUri" { import { getAbsoluteUri } from 'cesium'; export default getAbsoluteUri; }
-declare module "cesium/Source/Core/getBaseUri" { import { getBaseUri } from 'cesium'; export default getBaseUri; }
-declare module "cesium/Source/Core/getExtensionFromUri" { import { getExtensionFromUri } from 'cesium'; export default getExtensionFromUri; }
-declare module "cesium/Source/Core/getFilenameFromUri" { import { getFilenameFromUri } from 'cesium'; export default getFilenameFromUri; }
-declare module "cesium/Source/Core/getImagePixels" { import { getImagePixels } from 'cesium'; export default getImagePixels; }
-declare module "cesium/Source/Core/getTimestamp" { import { getTimestamp } from 'cesium'; export default getTimestamp; }
-declare module "cesium/Source/Core/GoogleEarthEnterpriseMetadata" { import { GoogleEarthEnterpriseMetadata } from 'cesium'; export default GoogleEarthEnterpriseMetadata; }
-declare module "cesium/Source/Core/GoogleEarthEnterpriseTerrainData" { import { GoogleEarthEnterpriseTerrainData } from 'cesium'; export default GoogleEarthEnterpriseTerrainData; }
-declare module "cesium/Source/Core/GoogleEarthEnterpriseTerrainProvider" { import { GoogleEarthEnterpriseTerrainProvider } from 'cesium'; export default GoogleEarthEnterpriseTerrainProvider; }
-declare module "cesium/Source/Core/GregorianDate" { import { GregorianDate } from 'cesium'; export default GregorianDate; }
-declare module "cesium/Source/Core/GroundPolylineGeometry" { import { GroundPolylineGeometry } from 'cesium'; export default GroundPolylineGeometry; }
-declare module "cesium/Source/Core/HeadingPitchRange" { import { HeadingPitchRange } from 'cesium'; export default HeadingPitchRange; }
-declare module "cesium/Source/Core/HeadingPitchRoll" { import { HeadingPitchRoll } from 'cesium'; export default HeadingPitchRoll; }
-declare module "cesium/Source/Core/HeightmapEncoding" { import { HeightmapEncoding } from 'cesium'; export default HeightmapEncoding; }
-declare module "cesium/Source/Core/HeightmapTerrainData" { import { HeightmapTerrainData } from 'cesium'; export default HeightmapTerrainData; }
-declare module "cesium/Source/Core/HermitePolynomialApproximation" { import { HermitePolynomialApproximation } from 'cesium'; export default HermitePolynomialApproximation; }
-declare module "cesium/Source/Core/HermiteSpline" { import { HermiteSpline } from 'cesium'; export default HermiteSpline; }
-declare module "cesium/Source/Core/HilbertOrder" { import { HilbertOrder } from 'cesium'; export default HilbertOrder; }
-declare module "cesium/Source/Core/IndexDatatype" { import { IndexDatatype } from 'cesium'; export default IndexDatatype; }
-declare module "cesium/Source/Core/InterpolationAlgorithm" { import { InterpolationAlgorithm } from 'cesium'; export default InterpolationAlgorithm; }
-declare module "cesium/Source/Core/Intersect" { import { Intersect } from 'cesium'; export default Intersect; }
-declare module "cesium/Source/Core/Intersections2D" { import { Intersections2D } from 'cesium'; export default Intersections2D; }
-declare module "cesium/Source/Core/IntersectionTests" { import { IntersectionTests } from 'cesium'; export default IntersectionTests; }
-declare module "cesium/Source/Core/Interval" { import { Interval } from 'cesium'; export default Interval; }
-declare module "cesium/Source/Core/Ion" { import { Ion } from 'cesium'; export default Ion; }
-declare module "cesium/Source/Core/IonGeocoderService" { import { IonGeocoderService } from 'cesium'; export default IonGeocoderService; }
-declare module "cesium/Source/Core/IonResource" { import { IonResource } from 'cesium'; export default IonResource; }
-declare module "cesium/Source/Core/isLeapYear" { import { isLeapYear } from 'cesium'; export default isLeapYear; }
-declare module "cesium/Source/Core/Iso8601" { import { Iso8601 } from 'cesium'; export default Iso8601; }
-declare module "cesium/Source/Core/JulianDate" { import { JulianDate } from 'cesium'; export default JulianDate; }
-declare module "cesium/Source/Core/KeyboardEventModifier" { import { KeyboardEventModifier } from 'cesium'; export default KeyboardEventModifier; }
-declare module "cesium/Source/Core/LagrangePolynomialApproximation" { import { LagrangePolynomialApproximation } from 'cesium'; export default LagrangePolynomialApproximation; }
-declare module "cesium/Source/Core/LeapSecond" { import { LeapSecond } from 'cesium'; export default LeapSecond; }
-declare module "cesium/Source/Core/LinearApproximation" { import { LinearApproximation } from 'cesium'; export default LinearApproximation; }
-declare module "cesium/Source/Core/LinearSpline" { import { LinearSpline } from 'cesium'; export default LinearSpline; }
-declare module "cesium/Source/Core/MapProjection" { import { MapProjection } from 'cesium'; export default MapProjection; }
-declare module "cesium/Source/Core/Math" { import { Math } from 'cesium'; export default Math; }
-declare module "cesium/Source/Core/Matrix2" { import { Matrix2 } from 'cesium'; export default Matrix2; }
-declare module "cesium/Source/Core/Matrix3" { import { Matrix3 } from 'cesium'; export default Matrix3; }
-declare module "cesium/Source/Core/Matrix4" { import { Matrix4 } from 'cesium'; export default Matrix4; }
-declare module "cesium/Source/Core/mergeSort" { import { mergeSort } from 'cesium'; export default mergeSort; }
-declare module "cesium/Source/Core/NearFarScalar" { import { NearFarScalar } from 'cesium'; export default NearFarScalar; }
-declare module "cesium/Source/Core/objectToQuery" { import { objectToQuery } from 'cesium'; export default objectToQuery; }
-declare module "cesium/Source/Core/Occluder" { import { Occluder } from 'cesium'; export default Occluder; }
-declare module "cesium/Source/Core/OpenCageGeocoderService" { import { OpenCageGeocoderService } from 'cesium'; export default OpenCageGeocoderService; }
-declare module "cesium/Source/Core/OrientedBoundingBox" { import { OrientedBoundingBox } from 'cesium'; export default OrientedBoundingBox; }
-declare module "cesium/Source/Core/OrthographicFrustum" { import { OrthographicFrustum } from 'cesium'; export default OrthographicFrustum; }
-declare module "cesium/Source/Core/OrthographicOffCenterFrustum" { import { OrthographicOffCenterFrustum } from 'cesium'; export default OrthographicOffCenterFrustum; }
-declare module "cesium/Source/Core/Packable" { import { Packable } from 'cesium'; export default Packable; }
-declare module "cesium/Source/Core/PackableForInterpolation" { import { PackableForInterpolation } from 'cesium'; export default PackableForInterpolation; }
-declare module "cesium/Source/Core/PeliasGeocoderService" { import { PeliasGeocoderService } from 'cesium'; export default PeliasGeocoderService; }
-declare module "cesium/Source/Core/PerspectiveFrustum" { import { PerspectiveFrustum } from 'cesium'; export default PerspectiveFrustum; }
-declare module "cesium/Source/Core/PerspectiveOffCenterFrustum" { import { PerspectiveOffCenterFrustum } from 'cesium'; export default PerspectiveOffCenterFrustum; }
-declare module "cesium/Source/Core/PinBuilder" { import { PinBuilder } from 'cesium'; export default PinBuilder; }
-declare module "cesium/Source/Core/PixelFormat" { import { PixelFormat } from 'cesium'; export default PixelFormat; }
-declare module "cesium/Source/Core/Plane" { import { Plane } from 'cesium'; export default Plane; }
-declare module "cesium/Source/Core/PlaneGeometry" { import { PlaneGeometry } from 'cesium'; export default PlaneGeometry; }
-declare module "cesium/Source/Core/PlaneOutlineGeometry" { import { PlaneOutlineGeometry } from 'cesium'; export default PlaneOutlineGeometry; }
-declare module "cesium/Source/Core/pointInsideTriangle" { import { pointInsideTriangle } from 'cesium'; export default pointInsideTriangle; }
-declare module "cesium/Source/Core/PolygonGeometry" { import { PolygonGeometry } from 'cesium'; export default PolygonGeometry; }
-declare module "cesium/Source/Core/PolygonHierarchy" { import { PolygonHierarchy } from 'cesium'; export default PolygonHierarchy; }
-declare module "cesium/Source/Core/PolygonOutlineGeometry" { import { PolygonOutlineGeometry } from 'cesium'; export default PolygonOutlineGeometry; }
-declare module "cesium/Source/Core/PolylineGeometry" { import { PolylineGeometry } from 'cesium'; export default PolylineGeometry; }
-declare module "cesium/Source/Core/PolylineVolumeGeometry" { import { PolylineVolumeGeometry } from 'cesium'; export default PolylineVolumeGeometry; }
-declare module "cesium/Source/Core/PolylineVolumeOutlineGeometry" { import { PolylineVolumeOutlineGeometry } from 'cesium'; export default PolylineVolumeOutlineGeometry; }
-declare module "cesium/Source/Core/PrimitiveType" { import { PrimitiveType } from 'cesium'; export default PrimitiveType; }
-declare module "cesium/Source/Core/Proxy" { import { Proxy } from 'cesium'; export default Proxy; }
-declare module "cesium/Source/Core/QuadraticRealPolynomial" { import { QuadraticRealPolynomial } from 'cesium'; export default QuadraticRealPolynomial; }
-declare module "cesium/Source/Core/QuantizedMeshTerrainData" { import { QuantizedMeshTerrainData } from 'cesium'; export default QuantizedMeshTerrainData; }
-declare module "cesium/Source/Core/QuarticRealPolynomial" { import { QuarticRealPolynomial } from 'cesium'; export default QuarticRealPolynomial; }
-declare module "cesium/Source/Core/Quaternion" { import { Quaternion } from 'cesium'; export default Quaternion; }
-declare module "cesium/Source/Core/QuaternionSpline" { import { QuaternionSpline } from 'cesium'; export default QuaternionSpline; }
-declare module "cesium/Source/Core/queryToObject" { import { queryToObject } from 'cesium'; export default queryToObject; }
-declare module "cesium/Source/Core/Queue" { import { Queue } from 'cesium'; export default Queue; }
-declare module "cesium/Source/Core/Ray" { import { Ray } from 'cesium'; export default Ray; }
-declare module "cesium/Source/Core/Rectangle" { import { Rectangle } from 'cesium'; export default Rectangle; }
-declare module "cesium/Source/Core/RectangleGeometry" { import { RectangleGeometry } from 'cesium'; export default RectangleGeometry; }
-declare module "cesium/Source/Core/RectangleOutlineGeometry" { import { RectangleOutlineGeometry } from 'cesium'; export default RectangleOutlineGeometry; }
-declare module "cesium/Source/Core/ReferenceFrame" { import { ReferenceFrame } from 'cesium'; export default ReferenceFrame; }
-declare module "cesium/Source/Core/Request" { import { Request } from 'cesium'; export default Request; }
-declare module "cesium/Source/Core/requestAnimationFrame" { import { requestAnimationFrame } from 'cesium'; export default requestAnimationFrame; }
-declare module "cesium/Source/Core/RequestErrorEvent" { import { RequestErrorEvent } from 'cesium'; export default RequestErrorEvent; }
-declare module "cesium/Source/Core/RequestScheduler" { import { RequestScheduler } from 'cesium'; export default RequestScheduler; }
-declare module "cesium/Source/Core/RequestState" { import { RequestState } from 'cesium'; export default RequestState; }
-declare module "cesium/Source/Core/RequestType" { import { RequestType } from 'cesium'; export default RequestType; }
-declare module "cesium/Source/Core/Resource" { import { Resource } from 'cesium'; export default Resource; }
-declare module "cesium/Source/Core/RuntimeError" { import { RuntimeError } from 'cesium'; export default RuntimeError; }
-declare module "cesium/Source/Core/sampleTerrain" { import { sampleTerrain } from 'cesium'; export default sampleTerrain; }
-declare module "cesium/Source/Core/sampleTerrainMostDetailed" { import { sampleTerrainMostDetailed } from 'cesium'; export default sampleTerrainMostDetailed; }
-declare module "cesium/Source/Core/ScreenSpaceEventHandler" { import { ScreenSpaceEventHandler } from 'cesium'; export default ScreenSpaceEventHandler; }
-declare module "cesium/Source/Core/ScreenSpaceEventType" { import { ScreenSpaceEventType } from 'cesium'; export default ScreenSpaceEventType; }
-declare module "cesium/Source/Core/ShowGeometryInstanceAttribute" { import { ShowGeometryInstanceAttribute } from 'cesium'; export default ShowGeometryInstanceAttribute; }
-declare module "cesium/Source/Core/Simon1994PlanetaryPositions" { import { Simon1994PlanetaryPositions } from 'cesium'; export default Simon1994PlanetaryPositions; }
-declare module "cesium/Source/Core/SimplePolylineGeometry" { import { SimplePolylineGeometry } from 'cesium'; export default SimplePolylineGeometry; }
-declare module "cesium/Source/Core/SphereGeometry" { import { SphereGeometry } from 'cesium'; export default SphereGeometry; }
-declare module "cesium/Source/Core/SphereOutlineGeometry" { import { SphereOutlineGeometry } from 'cesium'; export default SphereOutlineGeometry; }
-declare module "cesium/Source/Core/Spherical" { import { Spherical } from 'cesium'; export default Spherical; }
-declare module "cesium/Source/Core/Spline" { import { Spline } from 'cesium'; export default Spline; }
-declare module "cesium/Source/Core/subdivideArray" { import { subdivideArray } from 'cesium'; export default subdivideArray; }
-declare module "cesium/Source/Core/TaskProcessor" { import { TaskProcessor } from 'cesium'; export default TaskProcessor; }
-declare module "cesium/Source/Core/TerrainData" { import { TerrainData } from 'cesium'; export default TerrainData; }
-declare module "cesium/Source/Core/TerrainProvider" { import { TerrainProvider } from 'cesium'; export default TerrainProvider; }
-declare module "cesium/Source/Core/TileAvailability" { import { TileAvailability } from 'cesium'; export default TileAvailability; }
-declare module "cesium/Source/Core/TileProviderError" { import { TileProviderError } from 'cesium'; export default TileProviderError; }
-declare module "cesium/Source/Core/TilingScheme" { import { TilingScheme } from 'cesium'; export default TilingScheme; }
-declare module "cesium/Source/Core/TimeInterval" { import { TimeInterval } from 'cesium'; export default TimeInterval; }
-declare module "cesium/Source/Core/TimeIntervalCollection" { import { TimeIntervalCollection } from 'cesium'; export default TimeIntervalCollection; }
-declare module "cesium/Source/Core/TimeStandard" { import { TimeStandard } from 'cesium'; export default TimeStandard; }
-declare module "cesium/Source/Core/Transforms" { import { Transforms } from 'cesium'; export default Transforms; }
-declare module "cesium/Source/Core/TranslationRotationScale" { import { TranslationRotationScale } from 'cesium'; export default TranslationRotationScale; }
-declare module "cesium/Source/Core/TridiagonalSystemSolver" { import { TridiagonalSystemSolver } from 'cesium'; export default TridiagonalSystemSolver; }
-declare module "cesium/Source/Core/TrustedServers" { import { TrustedServers } from 'cesium'; export default TrustedServers; }
-declare module "cesium/Source/Core/VertexFormat" { import { VertexFormat } from 'cesium'; export default VertexFormat; }
-declare module "cesium/Source/Core/VideoSynchronizer" { import { VideoSynchronizer } from 'cesium'; export default VideoSynchronizer; }
-declare module "cesium/Source/Core/Visibility" { import { Visibility } from 'cesium'; export default Visibility; }
-declare module "cesium/Source/Core/VRTheWorldTerrainProvider" { import { VRTheWorldTerrainProvider } from 'cesium'; export default VRTheWorldTerrainProvider; }
-declare module "cesium/Source/Core/WallGeometry" { import { WallGeometry } from 'cesium'; export default WallGeometry; }
-declare module "cesium/Source/Core/WallOutlineGeometry" { import { WallOutlineGeometry } from 'cesium'; export default WallOutlineGeometry; }
-declare module "cesium/Source/Core/WebGLConstants" { import { WebGLConstants } from 'cesium'; export default WebGLConstants; }
-declare module "cesium/Source/Core/WebMercatorProjection" { import { WebMercatorProjection } from 'cesium'; export default WebMercatorProjection; }
-declare module "cesium/Source/Core/WebMercatorTilingScheme" { import { WebMercatorTilingScheme } from 'cesium'; export default WebMercatorTilingScheme; }
-declare module "cesium/Source/Core/WeightSpline" { import { WeightSpline } from 'cesium'; export default WeightSpline; }
-declare module "cesium/Source/Core/WindingOrder" { import { WindingOrder } from 'cesium'; export default WindingOrder; }
-declare module "cesium/Source/Core/writeTextToCanvas" { import { writeTextToCanvas } from 'cesium'; export default writeTextToCanvas; }
-declare module "cesium/Source/DataSources/BillboardGraphics" { import { BillboardGraphics } from 'cesium'; export default BillboardGraphics; }
-declare module "cesium/Source/DataSources/BillboardVisualizer" { import { BillboardVisualizer } from 'cesium'; export default BillboardVisualizer; }
-declare module "cesium/Source/DataSources/BoxGeometryUpdater" { import { BoxGeometryUpdater } from 'cesium'; export default BoxGeometryUpdater; }
-declare module "cesium/Source/DataSources/BoxGraphics" { import { BoxGraphics } from 'cesium'; export default BoxGraphics; }
-declare module "cesium/Source/DataSources/CallbackProperty" { import { CallbackProperty } from 'cesium'; export default CallbackProperty; }
-declare module "cesium/Source/DataSources/Cesium3DTilesetGraphics" { import { Cesium3DTilesetGraphics } from 'cesium'; export default Cesium3DTilesetGraphics; }
-declare module "cesium/Source/DataSources/Cesium3DTilesetVisualizer" { import { Cesium3DTilesetVisualizer } from 'cesium'; export default Cesium3DTilesetVisualizer; }
-declare module "cesium/Source/DataSources/CheckerboardMaterialProperty" { import { CheckerboardMaterialProperty } from 'cesium'; export default CheckerboardMaterialProperty; }
-declare module "cesium/Source/DataSources/ColorMaterialProperty" { import { ColorMaterialProperty } from 'cesium'; export default ColorMaterialProperty; }
-declare module "cesium/Source/DataSources/CompositeEntityCollection" { import { CompositeEntityCollection } from 'cesium'; export default CompositeEntityCollection; }
-declare module "cesium/Source/DataSources/CompositeMaterialProperty" { import { CompositeMaterialProperty } from 'cesium'; export default CompositeMaterialProperty; }
-declare module "cesium/Source/DataSources/CompositePositionProperty" { import { CompositePositionProperty } from 'cesium'; export default CompositePositionProperty; }
-declare module "cesium/Source/DataSources/CompositeProperty" { import { CompositeProperty } from 'cesium'; export default CompositeProperty; }
-declare module "cesium/Source/DataSources/ConstantPositionProperty" { import { ConstantPositionProperty } from 'cesium'; export default ConstantPositionProperty; }
-declare module "cesium/Source/DataSources/ConstantProperty" { import { ConstantProperty } from 'cesium'; export default ConstantProperty; }
-declare module "cesium/Source/DataSources/CorridorGeometryUpdater" { import { CorridorGeometryUpdater } from 'cesium'; export default CorridorGeometryUpdater; }
-declare module "cesium/Source/DataSources/CorridorGraphics" { import { CorridorGraphics } from 'cesium'; export default CorridorGraphics; }
-declare module "cesium/Source/DataSources/CustomDataSource" { import { CustomDataSource } from 'cesium'; export default CustomDataSource; }
-declare module "cesium/Source/DataSources/CylinderGeometryUpdater" { import { CylinderGeometryUpdater } from 'cesium'; export default CylinderGeometryUpdater; }
-declare module "cesium/Source/DataSources/CylinderGraphics" { import { CylinderGraphics } from 'cesium'; export default CylinderGraphics; }
-declare module "cesium/Source/DataSources/CzmlDataSource" { import { CzmlDataSource } from 'cesium'; export default CzmlDataSource; }
-declare module "cesium/Source/DataSources/DataSource" { import { DataSource } from 'cesium'; export default DataSource; }
-declare module "cesium/Source/DataSources/DataSourceClock" { import { DataSourceClock } from 'cesium'; export default DataSourceClock; }
-declare module "cesium/Source/DataSources/DataSourceCollection" { import { DataSourceCollection } from 'cesium'; export default DataSourceCollection; }
-declare module "cesium/Source/DataSources/DataSourceDisplay" { import { DataSourceDisplay } from 'cesium'; export default DataSourceDisplay; }
-declare module "cesium/Source/DataSources/EllipseGeometryUpdater" { import { EllipseGeometryUpdater } from 'cesium'; export default EllipseGeometryUpdater; }
-declare module "cesium/Source/DataSources/EllipseGraphics" { import { EllipseGraphics } from 'cesium'; export default EllipseGraphics; }
-declare module "cesium/Source/DataSources/EllipsoidGeometryUpdater" { import { EllipsoidGeometryUpdater } from 'cesium'; export default EllipsoidGeometryUpdater; }
-declare module "cesium/Source/DataSources/EllipsoidGraphics" { import { EllipsoidGraphics } from 'cesium'; export default EllipsoidGraphics; }
-declare module "cesium/Source/DataSources/Entity" { import { Entity } from 'cesium'; export default Entity; }
-declare module "cesium/Source/DataSources/EntityCluster" { import { EntityCluster } from 'cesium'; export default EntityCluster; }
-declare module "cesium/Source/DataSources/EntityCollection" { import { EntityCollection } from 'cesium'; export default EntityCollection; }
-declare module "cesium/Source/DataSources/EntityView" { import { EntityView } from 'cesium'; export default EntityView; }
-declare module "cesium/Source/DataSources/exportKml" { import { exportKml } from 'cesium'; export default exportKml; }
-declare module "cesium/Source/DataSources/GeoJsonDataSource" { import { GeoJsonDataSource } from 'cesium'; export default GeoJsonDataSource; }
-declare module "cesium/Source/DataSources/GeometryUpdater" { import { GeometryUpdater } from 'cesium'; export default GeometryUpdater; }
-declare module "cesium/Source/DataSources/GeometryVisualizer" { import { GeometryVisualizer } from 'cesium'; export default GeometryVisualizer; }
-declare module "cesium/Source/DataSources/GridMaterialProperty" { import { GridMaterialProperty } from 'cesium'; export default GridMaterialProperty; }
-declare module "cesium/Source/DataSources/GroundGeometryUpdater" { import { GroundGeometryUpdater } from 'cesium'; export default GroundGeometryUpdater; }
-declare module "cesium/Source/DataSources/ImageMaterialProperty" { import { ImageMaterialProperty } from 'cesium'; export default ImageMaterialProperty; }
-declare module "cesium/Source/DataSources/KmlCamera" { import { KmlCamera } from 'cesium'; export default KmlCamera; }
-declare module "cesium/Source/DataSources/KmlDataSource" { import { KmlDataSource } from 'cesium'; export default KmlDataSource; }
-declare module "cesium/Source/DataSources/KmlLookAt" { import { KmlLookAt } from 'cesium'; export default KmlLookAt; }
-declare module "cesium/Source/DataSources/KmlTour" { import { KmlTour } from 'cesium'; export default KmlTour; }
-declare module "cesium/Source/DataSources/KmlTourFlyTo" { import { KmlTourFlyTo } from 'cesium'; export default KmlTourFlyTo; }
-declare module "cesium/Source/DataSources/KmlTourWait" { import { KmlTourWait } from 'cesium'; export default KmlTourWait; }
-declare module "cesium/Source/DataSources/LabelGraphics" { import { LabelGraphics } from 'cesium'; export default LabelGraphics; }
-declare module "cesium/Source/DataSources/LabelVisualizer" { import { LabelVisualizer } from 'cesium'; export default LabelVisualizer; }
-declare module "cesium/Source/DataSources/MaterialProperty" { import { MaterialProperty } from 'cesium'; export default MaterialProperty; }
-declare module "cesium/Source/DataSources/ModelGraphics" { import { ModelGraphics } from 'cesium'; export default ModelGraphics; }
-declare module "cesium/Source/DataSources/ModelVisualizer" { import { ModelVisualizer } from 'cesium'; export default ModelVisualizer; }
-declare module "cesium/Source/DataSources/NodeTransformationProperty" { import { NodeTransformationProperty } from 'cesium'; export default NodeTransformationProperty; }
-declare module "cesium/Source/DataSources/PathGraphics" { import { PathGraphics } from 'cesium'; export default PathGraphics; }
-declare module "cesium/Source/DataSources/PathVisualizer" { import { PathVisualizer } from 'cesium'; export default PathVisualizer; }
-declare module "cesium/Source/DataSources/PlaneGeometryUpdater" { import { PlaneGeometryUpdater } from 'cesium'; export default PlaneGeometryUpdater; }
-declare module "cesium/Source/DataSources/PlaneGraphics" { import { PlaneGraphics } from 'cesium'; export default PlaneGraphics; }
-declare module "cesium/Source/DataSources/PointGraphics" { import { PointGraphics } from 'cesium'; export default PointGraphics; }
-declare module "cesium/Source/DataSources/PointVisualizer" { import { PointVisualizer } from 'cesium'; export default PointVisualizer; }
-declare module "cesium/Source/DataSources/PolygonGeometryUpdater" { import { PolygonGeometryUpdater } from 'cesium'; export default PolygonGeometryUpdater; }
-declare module "cesium/Source/DataSources/PolygonGraphics" { import { PolygonGraphics } from 'cesium'; export default PolygonGraphics; }
-declare module "cesium/Source/DataSources/PolylineArrowMaterialProperty" { import { PolylineArrowMaterialProperty } from 'cesium'; export default PolylineArrowMaterialProperty; }
-declare module "cesium/Source/DataSources/PolylineDashMaterialProperty" { import { PolylineDashMaterialProperty } from 'cesium'; export default PolylineDashMaterialProperty; }
-declare module "cesium/Source/DataSources/PolylineGeometryUpdater" { import { PolylineGeometryUpdater } from 'cesium'; export default PolylineGeometryUpdater; }
-declare module "cesium/Source/DataSources/PolylineGlowMaterialProperty" { import { PolylineGlowMaterialProperty } from 'cesium'; export default PolylineGlowMaterialProperty; }
-declare module "cesium/Source/DataSources/PolylineGraphics" { import { PolylineGraphics } from 'cesium'; export default PolylineGraphics; }
-declare module "cesium/Source/DataSources/PolylineOutlineMaterialProperty" { import { PolylineOutlineMaterialProperty } from 'cesium'; export default PolylineOutlineMaterialProperty; }
-declare module "cesium/Source/DataSources/PolylineVisualizer" { import { PolylineVisualizer } from 'cesium'; export default PolylineVisualizer; }
-declare module "cesium/Source/DataSources/PolylineVolumeGeometryUpdater" { import { PolylineVolumeGeometryUpdater } from 'cesium'; export default PolylineVolumeGeometryUpdater; }
-declare module "cesium/Source/DataSources/PolylineVolumeGraphics" { import { PolylineVolumeGraphics } from 'cesium'; export default PolylineVolumeGraphics; }
-declare module "cesium/Source/DataSources/PositionProperty" { import { PositionProperty } from 'cesium'; export default PositionProperty; }
-declare module "cesium/Source/DataSources/PositionPropertyArray" { import { PositionPropertyArray } from 'cesium'; export default PositionPropertyArray; }
-declare module "cesium/Source/DataSources/Property" { import { Property } from 'cesium'; export default Property; }
-declare module "cesium/Source/DataSources/PropertyArray" { import { PropertyArray } from 'cesium'; export default PropertyArray; }
-declare module "cesium/Source/DataSources/PropertyBag" { import { PropertyBag } from 'cesium'; export default PropertyBag; }
-declare module "cesium/Source/DataSources/RectangleGeometryUpdater" { import { RectangleGeometryUpdater } from 'cesium'; export default RectangleGeometryUpdater; }
-declare module "cesium/Source/DataSources/RectangleGraphics" { import { RectangleGraphics } from 'cesium'; export default RectangleGraphics; }
-declare module "cesium/Source/DataSources/ReferenceProperty" { import { ReferenceProperty } from 'cesium'; export default ReferenceProperty; }
-declare module "cesium/Source/DataSources/Rotation" { import { Rotation } from 'cesium'; export default Rotation; }
-declare module "cesium/Source/DataSources/SampledPositionProperty" { import { SampledPositionProperty } from 'cesium'; export default SampledPositionProperty; }
-declare module "cesium/Source/DataSources/SampledProperty" { import { SampledProperty } from 'cesium'; export default SampledProperty; }
-declare module "cesium/Source/DataSources/StripeMaterialProperty" { import { StripeMaterialProperty } from 'cesium'; export default StripeMaterialProperty; }
-declare module "cesium/Source/DataSources/StripeOrientation" { import { StripeOrientation } from 'cesium'; export default StripeOrientation; }
-declare module "cesium/Source/DataSources/TimeIntervalCollectionPositionProperty" { import { TimeIntervalCollectionPositionProperty } from 'cesium'; export default TimeIntervalCollectionPositionProperty; }
-declare module "cesium/Source/DataSources/TimeIntervalCollectionProperty" { import { TimeIntervalCollectionProperty } from 'cesium'; export default TimeIntervalCollectionProperty; }
-declare module "cesium/Source/DataSources/VelocityOrientationProperty" { import { VelocityOrientationProperty } from 'cesium'; export default VelocityOrientationProperty; }
-declare module "cesium/Source/DataSources/VelocityVectorProperty" { import { VelocityVectorProperty } from 'cesium'; export default VelocityVectorProperty; }
-declare module "cesium/Source/DataSources/Visualizer" { import { Visualizer } from 'cesium'; export default Visualizer; }
-declare module "cesium/Source/DataSources/WallGeometryUpdater" { import { WallGeometryUpdater } from 'cesium'; export default WallGeometryUpdater; }
-declare module "cesium/Source/DataSources/WallGraphics" { import { WallGraphics } from 'cesium'; export default WallGraphics; }
-declare module "cesium/Source/MapGIS/AlgorithmLib" { import { AlgorithmLib } from 'cesium'; export default AlgorithmLib; }
-declare module "cesium/Source/MapGIS/GraphicsLayer" { import { GraphicsLayer } from 'cesium'; export default GraphicsLayer; }
-declare module "cesium/Source/MapGIS/HashMap" { import { HashMap } from 'cesium'; export default HashMap; }
-declare module "cesium/Source/MapGIS/Layers" { import { Layers } from 'cesium'; export default Layers; }
-declare module "cesium/Source/MapGIS/ReImg" { import { ReImg } from 'cesium'; export default ReImg; }
-declare module "cesium/Source/MapGIS/SceneLayer" { import { SceneLayer } from 'cesium'; export default SceneLayer; }
-declare module "cesium/Source/MapGIS/ThemeManager" { import { ThemeManager } from 'cesium'; export default ThemeManager; }
-declare module "cesium/Source/MapGIS/VisualAnalysisManager" { import { VisualAnalysisManager } from 'cesium'; export default VisualAnalysisManager; }
-declare module "cesium/Source/Renderer/ImprovedNoise" { import { ImprovedNoise } from 'cesium'; export default ImprovedNoise; }
-declare module "cesium/Source/Renderer/Pass" { import { Pass } from 'cesium'; export default Pass; }
-declare module "cesium/Source/Renderer/PixelDatatype" { import { PixelDatatype } from 'cesium'; export default PixelDatatype; }
-declare module "cesium/Source/Renderer/Texture3D" { import { Texture3D } from 'cesium'; export default Texture3D; }
-declare module "cesium/Source/Renderer/TextureMagnificationFilter" { import { TextureMagnificationFilter } from 'cesium'; export default TextureMagnificationFilter; }
-declare module "cesium/Source/Renderer/TextureMinificationFilter" { import { TextureMinificationFilter } from 'cesium'; export default TextureMinificationFilter; }
-declare module "cesium/Source/Scene/Appearance" { import { Appearance } from 'cesium'; export default Appearance; }
-declare module "cesium/Source/Scene/ArcGisMapServerImageryProvider" { import { ArcGisMapServerImageryProvider } from 'cesium'; export default ArcGisMapServerImageryProvider; }
-declare module "cesium/Source/Scene/Axis" { import { Axis } from 'cesium'; export default Axis; }
-declare module "cesium/Source/Scene/Billboard" { import { Billboard } from 'cesium'; export default Billboard; }
-declare module "cesium/Source/Scene/BillboardCollection" { import { BillboardCollection } from 'cesium'; export default BillboardCollection; }
-declare module "cesium/Source/Scene/BingMapsImageryProvider" { import { BingMapsImageryProvider } from 'cesium'; export default BingMapsImageryProvider; }
-declare module "cesium/Source/Scene/BingMapsStyle" { import { BingMapsStyle } from 'cesium'; export default BingMapsStyle; }
-declare module "cesium/Source/Scene/BlendEquation" { import { BlendEquation } from 'cesium'; export default BlendEquation; }
-declare module "cesium/Source/Scene/BlendFunction" { import { BlendFunction } from 'cesium'; export default BlendFunction; }
-declare module "cesium/Source/Scene/BlendingState" { import { BlendingState } from 'cesium'; export default BlendingState; }
-declare module "cesium/Source/Scene/BlendOption" { import { BlendOption } from 'cesium'; export default BlendOption; }
-declare module "cesium/Source/Scene/BoxEmitter" { import { BoxEmitter } from 'cesium'; export default BoxEmitter; }
-declare module "cesium/Source/Scene/Camera" { import { Camera } from 'cesium'; export default Camera; }
-declare module "cesium/Source/Scene/CameraEventAggregator" { import { CameraEventAggregator } from 'cesium'; export default CameraEventAggregator; }
-declare module "cesium/Source/Scene/CameraEventType" { import { CameraEventType } from 'cesium'; export default CameraEventType; }
-declare module "cesium/Source/Scene/Cesium3DTile" { import { Cesium3DTile } from 'cesium'; export default Cesium3DTile; }
-declare module "cesium/Source/Scene/Cesium3DTileColorBlendMode" { import { Cesium3DTileColorBlendMode } from 'cesium'; export default Cesium3DTileColorBlendMode; }
-declare module "cesium/Source/Scene/Cesium3DTileContent" { import { Cesium3DTileContent } from 'cesium'; export default Cesium3DTileContent; }
-declare module "cesium/Source/Scene/Cesium3DTileCustomContent" { import { Cesium3DTileCustomContent } from 'cesium'; export default Cesium3DTileCustomContent; }
-declare module "cesium/Source/Scene/Cesium3DTileFeature" { import { Cesium3DTileFeature } from 'cesium'; export default Cesium3DTileFeature; }
-declare module "cesium/Source/Scene/Cesium3DTilePointFeature" { import { Cesium3DTilePointFeature } from 'cesium'; export default Cesium3DTilePointFeature; }
-declare module "cesium/Source/Scene/Cesium3DTileset" { import { Cesium3DTileset } from 'cesium'; export default Cesium3DTileset; }
-declare module "cesium/Source/Scene/Cesium3DTileStyle" { import { Cesium3DTileStyle } from 'cesium'; export default Cesium3DTileStyle; }
-declare module "cesium/Source/Scene/CircleEmitter" { import { CircleEmitter } from 'cesium'; export default CircleEmitter; }
-declare module "cesium/Source/Scene/ClassificationPrimitive" { import { ClassificationPrimitive } from 'cesium'; export default ClassificationPrimitive; }
-declare module "cesium/Source/Scene/ClassificationType" { import { ClassificationType } from 'cesium'; export default ClassificationType; }
-declare module "cesium/Source/Scene/ClippingPlane" { import { ClippingPlane } from 'cesium'; export default ClippingPlane; }
-declare module "cesium/Source/Scene/ClippingPlaneCollection" { import { ClippingPlaneCollection } from 'cesium'; export default ClippingPlaneCollection; }
-declare module "cesium/Source/Scene/ColorBlendMode" { import { ColorBlendMode } from 'cesium'; export default ColorBlendMode; }
-declare module "cesium/Source/Scene/ConditionsExpression" { import { ConditionsExpression } from 'cesium'; export default ConditionsExpression; }
-declare module "cesium/Source/Scene/ConeEmitter" { import { ConeEmitter } from 'cesium'; export default ConeEmitter; }
-declare module "cesium/Source/Scene/createElevationBandMaterial" { import { createElevationBandMaterial } from 'cesium'; export default createElevationBandMaterial; }
-declare module "cesium/Source/Scene/createOsmBuildings" { import { createOsmBuildings } from 'cesium'; export default createOsmBuildings; }
-declare module "cesium/Source/Scene/createTangentSpaceDebugPrimitive" { import { createTangentSpaceDebugPrimitive } from 'cesium'; export default createTangentSpaceDebugPrimitive; }
-declare module "cesium/Source/Scene/createWorldImagery" { import { createWorldImagery } from 'cesium'; export default createWorldImagery; }
-declare module "cesium/Source/Scene/CreditDisplay" { import { CreditDisplay } from 'cesium'; export default CreditDisplay; }
-declare module "cesium/Source/Scene/CullFace" { import { CullFace } from 'cesium'; export default CullFace; }
-declare module "cesium/Source/Scene/DebugAppearance" { import { DebugAppearance } from 'cesium'; export default DebugAppearance; }
-declare module "cesium/Source/Scene/DebugCameraPrimitive" { import { DebugCameraPrimitive } from 'cesium'; export default DebugCameraPrimitive; }
-declare module "cesium/Source/Scene/DebugModelMatrixPrimitive" { import { DebugModelMatrixPrimitive } from 'cesium'; export default DebugModelMatrixPrimitive; }
-declare module "cesium/Source/Scene/DepthFunction" { import { DepthFunction } from 'cesium'; export default DepthFunction; }
-declare module "cesium/Source/Scene/DirectionalLight" { import { DirectionalLight } from 'cesium'; export default DirectionalLight; }
-declare module "cesium/Source/Scene/DiscardEmptyTileImagePolicy" { import { DiscardEmptyTileImagePolicy } from 'cesium'; export default DiscardEmptyTileImagePolicy; }
-declare module "cesium/Source/Scene/DiscardMissingTileImagePolicy" { import { DiscardMissingTileImagePolicy } from 'cesium'; export default DiscardMissingTileImagePolicy; }
-declare module "cesium/Source/Scene/EllipsoidSurfaceAppearance" { import { EllipsoidSurfaceAppearance } from 'cesium'; export default EllipsoidSurfaceAppearance; }
-declare module "cesium/Source/Scene/Expression" { import { Expression } from 'cesium'; export default Expression; }
-declare module "cesium/Source/Scene/Fog" { import { Fog } from 'cesium'; export default Fog; }
-declare module "cesium/Source/Scene/FrameRateMonitor" { import { FrameRateMonitor } from 'cesium'; export default FrameRateMonitor; }
-declare module "cesium/Source/Scene/GetFeatureInfoFormat" { import { GetFeatureInfoFormat } from 'cesium'; export default GetFeatureInfoFormat; }
-declare module "cesium/Source/Scene/Globe" { import { Globe } from 'cesium'; export default Globe; }
-declare module "cesium/Source/Scene/GlobeTranslucency" { import { GlobeTranslucency } from 'cesium'; export default GlobeTranslucency; }
-declare module "cesium/Source/Scene/GoogleEarthEnterpriseImageryProvider" { import { GoogleEarthEnterpriseImageryProvider } from 'cesium'; export default GoogleEarthEnterpriseImageryProvider; }
-declare module "cesium/Source/Scene/GoogleEarthEnterpriseMapsProvider" { import { GoogleEarthEnterpriseMapsProvider } from 'cesium'; export default GoogleEarthEnterpriseMapsProvider; }
-declare module "cesium/Source/Scene/GridImageryProvider" { import { GridImageryProvider } from 'cesium'; export default GridImageryProvider; }
-declare module "cesium/Source/Scene/GroundPolylinePrimitive" { import { GroundPolylinePrimitive } from 'cesium'; export default GroundPolylinePrimitive; }
-declare module "cesium/Source/Scene/GroundPrimitive" { import { GroundPrimitive } from 'cesium'; export default GroundPrimitive; }
-declare module "cesium/Source/Scene/HeightReference" { import { HeightReference } from 'cesium'; export default HeightReference; }
-declare module "cesium/Source/Scene/HorizontalOrigin" { import { HorizontalOrigin } from 'cesium'; export default HorizontalOrigin; }
-declare module "cesium/Source/Scene/ImageryLayer" { import { ImageryLayer } from 'cesium'; export default ImageryLayer; }
-declare module "cesium/Source/Scene/ImageryLayerCollection" { import { ImageryLayerCollection } from 'cesium'; export default ImageryLayerCollection; }
-declare module "cesium/Source/Scene/ImageryLayerFeatureInfo" { import { ImageryLayerFeatureInfo } from 'cesium'; export default ImageryLayerFeatureInfo; }
-declare module "cesium/Source/Scene/ImageryProvider" { import { ImageryProvider } from 'cesium'; export default ImageryProvider; }
-declare module "cesium/Source/Scene/ImagerySplitDirection" { import { ImagerySplitDirection } from 'cesium'; export default ImagerySplitDirection; }
-declare module "cesium/Source/Scene/IonImageryProvider" { import { IonImageryProvider } from 'cesium'; export default IonImageryProvider; }
-declare module "cesium/Source/Scene/IonWorldImageryStyle" { import { IonWorldImageryStyle } from 'cesium'; export default IonWorldImageryStyle; }
-declare module "cesium/Source/Scene/Label" { import { Label } from 'cesium'; export default Label; }
-declare module "cesium/Source/Scene/LabelCollection" { import { LabelCollection } from 'cesium'; export default LabelCollection; }
-declare module "cesium/Source/Scene/LabelStyle" { import { LabelStyle } from 'cesium'; export default LabelStyle; }
-declare module "cesium/Source/Scene/Light" { import { Light } from 'cesium'; export default Light; }
-declare module "cesium/Source/Scene/LightingMode" { import { LightingMode } from 'cesium'; export default LightingMode; }
-declare module "cesium/Source/Scene/MapboxImageryProvider" { import { MapboxImageryProvider } from 'cesium'; export default MapboxImageryProvider; }
-declare module "cesium/Source/Scene/MapboxStyleImageryProvider" { import { MapboxStyleImageryProvider } from 'cesium'; export default MapboxStyleImageryProvider; }
-declare module "cesium/Source/Scene/MapMode2D" { import { MapMode2D } from 'cesium'; export default MapMode2D; }
-declare module "cesium/Source/Scene/Material" { import { Material } from 'cesium'; export default Material; }
-declare module "cesium/Source/Scene/MaterialAppearance" { import { MaterialAppearance } from 'cesium'; export default MaterialAppearance; }
-declare module "cesium/Source/Scene/Model" { import { Model } from 'cesium'; export default Model; }
-declare module "cesium/Source/Scene/ModelAnimation" { import { ModelAnimation } from 'cesium'; export default ModelAnimation; }
-declare module "cesium/Source/Scene/ModelAnimationCollection" { import { ModelAnimationCollection } from 'cesium'; export default ModelAnimationCollection; }
-declare module "cesium/Source/Scene/ModelAnimationLoop" { import { ModelAnimationLoop } from 'cesium'; export default ModelAnimationLoop; }
-declare module "cesium/Source/Scene/ModelMaterial" { import { ModelMaterial } from 'cesium'; export default ModelMaterial; }
-declare module "cesium/Source/Scene/ModelMesh" { import { ModelMesh } from 'cesium'; export default ModelMesh; }
-declare module "cesium/Source/Scene/ModelNode" { import { ModelNode } from 'cesium'; export default ModelNode; }
-declare module "cesium/Source/Scene/Moon" { import { Moon } from 'cesium'; export default Moon; }
-declare module "cesium/Source/Scene/NeverTileDiscardPolicy" { import { NeverTileDiscardPolicy } from 'cesium'; export default NeverTileDiscardPolicy; }
-declare module "cesium/Source/Scene/OpenStreetMapImageryProvider" { import { OpenStreetMapImageryProvider } from 'cesium'; export default OpenStreetMapImageryProvider; }
-declare module "cesium/Source/Scene/Particle" { import { Particle } from 'cesium'; export default Particle; }
-declare module "cesium/Source/Scene/ParticleBurst" { import { ParticleBurst } from 'cesium'; export default ParticleBurst; }
-declare module "cesium/Source/Scene/ParticleEmitter" { import { ParticleEmitter } from 'cesium'; export default ParticleEmitter; }
-declare module "cesium/Source/Scene/ParticleSystem" { import { ParticleSystem } from 'cesium'; export default ParticleSystem; }
-declare module "cesium/Source/Scene/PerInstanceColorAppearance" { import { PerInstanceColorAppearance } from 'cesium'; export default PerInstanceColorAppearance; }
-declare module "cesium/Source/Scene/PointCloudShading" { import { PointCloudShading } from 'cesium'; export default PointCloudShading; }
-declare module "cesium/Source/Scene/PointPrimitive" { import { PointPrimitive } from 'cesium'; export default PointPrimitive; }
-declare module "cesium/Source/Scene/PointPrimitiveCollection" { import { PointPrimitiveCollection } from 'cesium'; export default PointPrimitiveCollection; }
-declare module "cesium/Source/Scene/Polyline" { import { Polyline } from 'cesium'; export default Polyline; }
-declare module "cesium/Source/Scene/PolylineCollection" { import { PolylineCollection } from 'cesium'; export default PolylineCollection; }
-declare module "cesium/Source/Scene/PolylineColorAppearance" { import { PolylineColorAppearance } from 'cesium'; export default PolylineColorAppearance; }
-declare module "cesium/Source/Scene/PolylineMaterialAppearance" { import { PolylineMaterialAppearance } from 'cesium'; export default PolylineMaterialAppearance; }
-declare module "cesium/Source/Scene/PostProcessStage" { import { PostProcessStage } from 'cesium'; export default PostProcessStage; }
-declare module "cesium/Source/Scene/PostProcessStageCollection" { import { PostProcessStageCollection } from 'cesium'; export default PostProcessStageCollection; }
-declare module "cesium/Source/Scene/PostProcessStageComposite" { import { PostProcessStageComposite } from 'cesium'; export default PostProcessStageComposite; }
-declare module "cesium/Source/Scene/PostProcessStageLibrary" { import { PostProcessStageLibrary } from 'cesium'; export default PostProcessStageLibrary; }
-declare module "cesium/Source/Scene/PostProcessStageSampleMode" { import { PostProcessStageSampleMode } from 'cesium'; export default PostProcessStageSampleMode; }
-declare module "cesium/Source/Scene/Primitive" { import { Primitive } from 'cesium'; export default Primitive; }
-declare module "cesium/Source/Scene/PrimitiveCollection" { import { PrimitiveCollection } from 'cesium'; export default PrimitiveCollection; }
-declare module "cesium/Source/Scene/Scene" { import { Scene } from 'cesium'; export default Scene; }
-declare module "cesium/Source/Scene/SceneMode" { import { SceneMode } from 'cesium'; export default SceneMode; }
-declare module "cesium/Source/Scene/SceneTransforms" { import { SceneTransforms } from 'cesium'; export default SceneTransforms; }
-declare module "cesium/Source/Scene/ScreenSpaceCameraController" { import { ScreenSpaceCameraController } from 'cesium'; export default ScreenSpaceCameraController; }
-declare module "cesium/Source/Scene/ShadowMap" { import { ShadowMap } from 'cesium'; export default ShadowMap; }
-declare module "cesium/Source/Scene/ShadowMode" { import { ShadowMode } from 'cesium'; export default ShadowMode; }
-declare module "cesium/Source/Scene/SingleTileImageryProvider" { import { SingleTileImageryProvider } from 'cesium'; export default SingleTileImageryProvider; }
-declare module "cesium/Source/Scene/SkyAtmosphere" { import { SkyAtmosphere } from 'cesium'; export default SkyAtmosphere; }
-declare module "cesium/Source/Scene/SkyBox" { import { SkyBox } from 'cesium'; export default SkyBox; }
-declare module "cesium/Source/Scene/SphereEmitter" { import { SphereEmitter } from 'cesium'; export default SphereEmitter; }
-declare module "cesium/Source/Scene/StencilFunction" { import { StencilFunction } from 'cesium'; export default StencilFunction; }
-declare module "cesium/Source/Scene/StencilOperation" { import { StencilOperation } from 'cesium'; export default StencilOperation; }
-declare module "cesium/Source/Scene/StyleExpression" { import { StyleExpression } from 'cesium'; export default StyleExpression; }
-declare module "cesium/Source/Scene/Sun" { import { Sun } from 'cesium'; export default Sun; }
-declare module "cesium/Source/Scene/SunLight" { import { SunLight } from 'cesium'; export default SunLight; }
-declare module "cesium/Source/Scene/SwipeModeType" { import { SwipeModeType } from 'cesium'; export default SwipeModeType; }
-declare module "cesium/Source/Scene/TileCoordinatesImageryProvider" { import { TileCoordinatesImageryProvider } from 'cesium'; export default TileCoordinatesImageryProvider; }
-declare module "cesium/Source/Scene/TileDiscardPolicy" { import { TileDiscardPolicy } from 'cesium'; export default TileDiscardPolicy; }
-declare module "cesium/Source/Scene/TileMapServiceImageryProvider" { import { TileMapServiceImageryProvider } from 'cesium'; export default TileMapServiceImageryProvider; }
-declare module "cesium/Source/Scene/TimeDynamicImagery" { import { TimeDynamicImagery } from 'cesium'; export default TimeDynamicImagery; }
-declare module "cesium/Source/Scene/TimeDynamicPointCloud" { import { TimeDynamicPointCloud } from 'cesium'; export default TimeDynamicPointCloud; }
-declare module "cesium/Source/Scene/UrlTemplateImageryProvider" { import { UrlTemplateImageryProvider } from 'cesium'; export default UrlTemplateImageryProvider; }
-declare module "cesium/Source/Scene/VerticalOrigin" { import { VerticalOrigin } from 'cesium'; export default VerticalOrigin; }
-declare module "cesium/Source/Scene/ViewportQuad" { import { ViewportQuad } from 'cesium'; export default ViewportQuad; }
-declare module "cesium/Source/Scene/WebMapServiceImageryProvider" { import { WebMapServiceImageryProvider } from 'cesium'; export default WebMapServiceImageryProvider; }
-declare module "cesium/Source/Scene/WebMapTileServiceImageryProvider" { import { WebMapTileServiceImageryProvider } from 'cesium'; export default WebMapTileServiceImageryProvider; }
-declare module "cesium/Source/Widgets/ClockViewModel" { import { ClockViewModel } from 'cesium'; export default ClockViewModel; }
-declare module "cesium/Source/Widgets/Command" { import { Command } from 'cesium'; export default Command; }
-declare module "cesium/Source/Widgets/createCommand" { import { createCommand } from 'cesium'; export default createCommand; }
-declare module "cesium/Source/Widgets/SvgPathBindingHandler" { import { SvgPathBindingHandler } from 'cesium'; export default SvgPathBindingHandler; }
-declare module "cesium/Source/Widgets/ToggleButtonViewModel" { import { ToggleButtonViewModel } from 'cesium'; export default ToggleButtonViewModel; }
-declare module "cesium/Source/MapGIS/Analysis/CesiumHeatmap" { import { CesiumHeatmap } from 'cesium'; export default CesiumHeatmap; }
-declare module "cesium/Source/MapGIS/Analysis/CollisionDetectionByRender" { import { CollisionDetectionByRender } from 'cesium'; export default CollisionDetectionByRender; }
-declare module "cesium/Source/MapGIS/Analysis/CutFillAnalysis" { import { CutFillAnalysis } from 'cesium'; export default CutFillAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/FloodAnalysis" { import { FloodAnalysis } from 'cesium'; export default FloodAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/FloodAnalysisReflection" { import { FloodAnalysisReflection } from 'cesium'; export default FloodAnalysisReflection; }
-declare module "cesium/Source/MapGIS/Analysis/SceneProjector" { import { SceneProjector } from 'cesium'; export default SceneProjector; }
-declare module "cesium/Source/MapGIS/Analysis/SceneProjectorEx" { import { SceneProjectorEx } from 'cesium'; export default SceneProjectorEx; }
-declare module "cesium/Source/MapGIS/Analysis/ShadowAnalysis" { import { ShadowAnalysis } from 'cesium'; export default ShadowAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/ShadowRateAnalysis" { import { ShadowRateAnalysis } from 'cesium'; export default ShadowRateAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/SkyLineAnalysis" { import { SkyLineAnalysis } from 'cesium'; export default SkyLineAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/ViewshedAnalysis" { import { ViewshedAnalysis } from 'cesium'; export default ViewshedAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/VisiblityAnalysis" { import { VisiblityAnalysis } from 'cesium'; export default VisiblityAnalysis; }
-declare module "cesium/Source/MapGIS/Analysis/Wind3D" { import { Wind3D } from 'cesium'; export default Wind3D; }
-declare module "cesium/Source/MapGIS/Controller/KeyboardCameraController" { import { KeyboardCameraController } from 'cesium'; export default KeyboardCameraController; }
-declare module "cesium/Source/MapGIS/Entity/AttributeSurfacePrimitive" { import { AttributeSurfacePrimitive } from 'cesium'; export default AttributeSurfacePrimitive; }
-declare module "cesium/Source/MapGIS/Entity/Graphic" { import { Graphic } from 'cesium'; export default Graphic; }
-declare module "cesium/Source/MapGIS/Entity/Style" { import { Style } from 'cesium'; export default Style; }
-declare module "cesium/Source/MapGIS/Feature/MapGISFeatureGeojsonProvider" { import { MapGISFeatureGeojsonProvider } from 'cesium'; export default MapGISFeatureGeojsonProvider; }
-declare module "cesium/Source/MapGIS/Feature/MapGISFeatureLayer" { import { MapGISFeatureLayer } from 'cesium'; export default MapGISFeatureLayer; }
-declare module "cesium/Source/MapGIS/Feature/MapGISFeatureProvider" { import { MapGISFeatureProvider } from 'cesium'; export default MapGISFeatureProvider; }
-declare module "cesium/Source/MapGIS/Feature/MapGISFeatureTilePrimitiveCollection" { import { MapGISFeatureTilePrimitiveCollection } from 'cesium'; export default MapGISFeatureTilePrimitiveCollection; }
-declare module "cesium/Source/MapGIS/Geojson/MapGISGeojsonLayer" { import { MapGISGeojsonLayer } from 'cesium'; export default MapGISGeojsonLayer; }
-declare module "cesium/Source/MapGIS/Geojson/MapGISGeojsonProvider" { import { MapGISGeojsonProvider } from 'cesium'; export default MapGISGeojsonProvider; }
-declare module "cesium/Source/MapGIS/Geojson/MapGISGeojsonTilePrimitiveCollection" { import { MapGISGeojsonTilePrimitiveCollection } from 'cesium'; export default MapGISGeojsonTilePrimitiveCollection; }
-declare module "cesium/Source/MapGIS/Geometry/PolylineVolumeAnimationGeometry" { import { PolylineVolumeAnimationGeometry } from 'cesium'; export default PolylineVolumeAnimationGeometry; }
-declare module "cesium/Source/MapGIS/IndexedDB/TransactionImplement" { import { TransactionImplement } from 'cesium'; export default TransactionImplement; }
-declare module "cesium/Source/MapGIS/Label/MapGISLabelLayer" { import { MapGISLabelLayer } from 'cesium'; export default MapGISLabelLayer; }
-declare module "cesium/Source/MapGIS/M3D/MapGIS3DTile" { import { MapGIS3DTile } from 'cesium'; export default MapGIS3DTile; }
-declare module "cesium/Source/MapGIS/M3D/MapGIS3DTileFeature" { import { MapGIS3DTileFeature } from 'cesium'; export default MapGIS3DTileFeature; }
-declare module "cesium/Source/MapGIS/M3D/MapGIS3DTileset" { import { MapGIS3DTileset } from 'cesium'; export default MapGIS3DTileset; }
-declare module "cesium/Source/MapGIS/M3dLayer/M3DTree" { import { M3DTree } from 'cesium'; export default M3DTree; }
-declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3D" { import { MapGISM3D } from 'cesium'; export default MapGISM3D; }
-declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DSet" { import { MapGISM3DSet } from 'cesium'; export default MapGISM3DSet; }
-declare module "cesium/Source/MapGIS/M3dLayer/MapGISM3DTileContent" { import { MapGISM3DTileContent } from 'cesium'; export default MapGISM3DTileContent; }
-declare module "cesium/Source/MapGIS/Material/CircleWaveMaterialProperty" { import { CircleWaveMaterialProperty } from 'cesium'; export default CircleWaveMaterialProperty; }
-declare module "cesium/Source/MapGIS/Material/CustomShader" { import { CustomShader } from 'cesium'; export default CustomShader; }
-declare module "cesium/Source/MapGIS/Material/PolylineTrailLinkMaterialProperty" { import { PolylineTrailLinkMaterialProperty } from 'cesium'; export default PolylineTrailLinkMaterialProperty; }
-declare module "cesium/Source/MapGIS/Material/RadarMaterialProperty" { import { RadarMaterialProperty } from 'cesium'; export default RadarMaterialProperty; }
-declare module "cesium/Source/MapGIS/Material/WaterReflection" { import { WaterReflection } from 'cesium'; export default WaterReflection; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/BloomEffect" { import { BloomEffect } from 'cesium'; export default BloomEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/CircleScanEffect" { import { CircleScanEffect } from 'cesium'; export default CircleScanEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/DynamicLightLineEffect" { import { DynamicLightLineEffect } from 'cesium'; export default DynamicLightLineEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/GlobeEffect" { import { GlobeEffect } from 'cesium'; export default GlobeEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/HeightLimited" { import { HeightLimited } from 'cesium'; export default HeightLimited; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/HeightModelEffect" { import { HeightModelEffect } from 'cesium'; export default HeightModelEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/LineScanEffect" { import { LineScanEffect } from 'cesium'; export default LineScanEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/RadarScanEffect" { import { RadarScanEffect } from 'cesium'; export default RadarScanEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/RoamParticle" { import { RoamParticle } from 'cesium'; export default RoamParticle; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/SearchlightEffect" { import { SearchlightEffect } from 'cesium'; export default SearchlightEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/StableParticle" { import { StableParticle } from 'cesium'; export default StableParticle; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/WeatherEffect" { import { WeatherEffect } from 'cesium'; export default WeatherEffect; }
-declare module "cesium/Source/MapGIS/PostProcessingEffects/WindowLightEffect" { import { WindowLightEffect } from 'cesium'; export default WindowLightEffect; }
-declare module "cesium/Source/MapGIS/Project/BaiduProject" { import { BaiduProject } from 'cesium'; export default BaiduProject; }
-declare module "cesium/Source/MapGIS/Project/BaiduProjection" { import { BaiduProjection } from 'cesium'; export default BaiduProjection; }
-declare module "cesium/Source/MapGIS/Project/CustomProjection" { import { CustomProjection } from 'cesium'; export default CustomProjection; }
-declare module "cesium/Source/MapGIS/Project/GaodeProjection" { import { GaodeProjection } from 'cesium'; export default GaodeProjection; }
-declare module "cesium/Source/MapGIS/Project/LonlatProjection" { import { LonlatProjection } from 'cesium'; export default LonlatProjection; }
-declare module "cesium/Source/MapGIS/Provider/BaiduImageryProvider" { import { BaiduImageryProvider } from 'cesium'; export default BaiduImageryProvider; }
-declare module "cesium/Source/MapGIS/Provider/BaiduMapImagerProvider" { import { BaiduMapImagerProvider } from 'cesium'; export default BaiduMapImagerProvider; }
-declare module "cesium/Source/MapGIS/Provider/GaodeImageryProvider" { import { GaodeImageryProvider } from 'cesium'; export default GaodeImageryProvider; }
-declare module "cesium/Source/MapGIS/Provider/GoogleMapImageryProvider" { import { GoogleMapImageryProvider } from 'cesium'; export default GoogleMapImageryProvider; }
-declare module "cesium/Source/MapGIS/Provider/MapGISCustomImageryProvider" { import { MapGISCustomImageryProvider } from 'cesium'; export default MapGISCustomImageryProvider; }
-declare module "cesium/Source/MapGIS/Provider/MapGISMapServerImageryProvider" { import { MapGISMapServerImageryProvider } from 'cesium'; export default MapGISMapServerImageryProvider; }
-declare module "cesium/Source/MapGIS/Provider/MapGISTerrainProvider" { import { MapGISTerrainProvider } from 'cesium'; export default MapGISTerrainProvider; }
-declare module "cesium/Source/MapGIS/Provider/MapGISTileServerImageProvider" { import { MapGISTileServerImageProvider } from 'cesium'; export default MapGISTileServerImageProvider; }
-declare module "cesium/Source/MapGIS/Provider/OpenWeatherImageryProvider" { import { OpenWeatherImageryProvider } from 'cesium'; export default OpenWeatherImageryProvider; }
-declare module "cesium/Source/MapGIS/Provider/TerrainAnalyse" { import { TerrainAnalyse } from 'cesium'; export default TerrainAnalyse; }
-declare module "cesium/Source/MapGIS/Provider/TerrainProfile" { import { TerrainProfile } from 'cesium'; export default TerrainProfile; }
-declare module "cesium/Source/MapGIS/Provider/TiandituImageryProvider" { import { TiandituImageryProvider } from 'cesium'; export default TiandituImageryProvider; }
-declare module "cesium/Source/MapGIS/Provider/WfsProvider" { import { WfsProvider } from 'cesium'; export default WfsProvider; }
-declare module "cesium/Source/MapGIS/Scene/ClippingGeometry" { import { ClippingGeometry } from 'cesium'; export default ClippingGeometry; }
-declare module "cesium/Source/MapGIS/Scene/ClippingGeometryType" { import { ClippingGeometryType } from 'cesium'; export default ClippingGeometryType; }
-declare module "cesium/Source/MapGIS/Scene/DynamicEntityVisualizer" { import { DynamicEntityVisualizer } from 'cesium'; export default DynamicEntityVisualizer; }
-declare module "cesium/Source/MapGIS/Scene/GlobeIndependentTranslucency" { import { GlobeIndependentTranslucency } from 'cesium'; export default GlobeIndependentTranslucency; }
-declare module "cesium/Source/MapGIS/Scene/GroundPrimitiveRectangleGenerater" { import { GroundPrimitiveRectangleGenerater } from 'cesium'; export default GroundPrimitiveRectangleGenerater; }
-declare module "cesium/Source/MapGIS/Scene/OutlineRenderMode" { import { OutlineRenderMode } from 'cesium'; export default OutlineRenderMode; }
-declare module "cesium/Source/MapGIS/Scene/VoxelPrimitive" { import { VoxelPrimitive } from 'cesium'; export default VoxelPrimitive; }
-declare module "cesium/Source/MapGIS/TilingScheme/CustomTilingScheme" { import { CustomTilingScheme } from 'cesium'; export default CustomTilingScheme; }
-declare module "cesium/Source/MapGIS/TilingScheme/MapGISCustomTilingScheme" { import { MapGISCustomTilingScheme } from 'cesium'; export default MapGISCustomTilingScheme; }
-declare module "cesium/Source/MapGIS/Tools/AngulationTool" { import { AngulationTool } from 'cesium'; export default AngulationTool; }
-declare module "cesium/Source/MapGIS/Tools/AnimationTool" { import { AnimationTool } from 'cesium'; export default AnimationTool; }
-declare module "cesium/Source/MapGIS/Tools/CuttingTool" { import { CuttingTool } from 'cesium'; export default CuttingTool; }
-declare module "cesium/Source/MapGIS/Tools/DrawElement" { import { DrawElement } from 'cesium'; export default DrawElement; }
-declare module "cesium/Source/MapGIS/Tools/FlattenTool" { import { FlattenTool } from 'cesium'; export default FlattenTool; }
-declare module "cesium/Source/MapGIS/Tools/GraphicTransformTool" { import { GraphicTransformTool } from 'cesium'; export default GraphicTransformTool; }
-declare module "cesium/Source/MapGIS/Tools/MeasureAreaTool" { import { MeasureAreaTool } from 'cesium'; export default MeasureAreaTool; }
-declare module "cesium/Source/MapGIS/Tools/MeasureLengthTool" { import { MeasureLengthTool } from 'cesium'; export default MeasureLengthTool; }
-declare module "cesium/Source/MapGIS/Tools/MeasureSlopeTool" { import { MeasureSlopeTool } from 'cesium'; export default MeasureSlopeTool; }
-declare module "cesium/Source/MapGIS/Tools/ModelExplosion" { import { ModelExplosion } from 'cesium'; export default ModelExplosion; }
-declare module "cesium/Source/MapGIS/Tools/ModelExplosionType" { import { ModelExplosionType } from 'cesium'; export default ModelExplosionType; }
-declare module "cesium/Source/MapGIS/Tools/ModelFilterTool" { import { ModelFilterTool } from 'cesium'; export default ModelFilterTool; }
-declare module "cesium/Source/MapGIS/Tools/ModelTransformTool" { import { ModelTransformTool } from 'cesium'; export default ModelTransformTool; }
-declare module "cesium/Source/MapGIS/Tools/SampleElevationTool" { import { SampleElevationTool } from 'cesium'; export default SampleElevationTool; }
-declare module "cesium/Source/MapGIS/Tools/Tooltip" { import { Tooltip } from 'cesium'; export default Tooltip; }
-declare module "cesium/Source/MapGIS/Tools/TriangulationTool" { import { TriangulationTool } from 'cesium'; export default TriangulationTool; }
-declare module "cesium/Source/MapGIS/Util/InterceptorsUtil" { import { InterceptorsUtil } from 'cesium'; export default InterceptorsUtil; }
-declare module "cesium/Source/MapGIS/Util/ShadowRateDrawCommand" { import { ShadowRateDrawCommand } from 'cesium'; export default ShadowRateDrawCommand; }
-declare module "cesium/Source/MapGIS/Util/TopoJSONUtil" { import { TopoJSONUtil } from 'cesium'; export default TopoJSONUtil; }
-declare module "cesium/Source/MapGIS/Util/UrlUtil" { import { UrlUtil } from 'cesium'; export default UrlUtil; }
-declare module "cesium/Source/MapGIS/Util/XmlUtil" { import { XmlUtil } from 'cesium'; export default XmlUtil; }
-declare module "cesium/Source/MapGIS/Vector/MapGISVectorGeojsonProvider" { import { MapGISVectorGeojsonProvider } from 'cesium'; export default MapGISVectorGeojsonProvider; }
-declare module "cesium/Source/MapGIS/Vector/MapGISVectorLayer" { import { MapGISVectorLayer } from 'cesium'; export default MapGISVectorLayer; }
-declare module "cesium/Source/MapGIS/Vector/MapGISVectorProvider" { import { MapGISVectorProvider } from 'cesium'; export default MapGISVectorProvider; }
-declare module "cesium/Source/MapGIS/Vector/MapGISVectorTilePrimitiveCollection" { import { MapGISVectorTilePrimitiveCollection } from 'cesium'; export default MapGISVectorTilePrimitiveCollection; }
-declare module "cesium/Source/Widgets/Animation/Animation" { import { Animation } from 'cesium'; export default Animation; }
-declare module "cesium/Source/Widgets/Animation/AnimationViewModel" { import { AnimationViewModel } from 'cesium'; export default AnimationViewModel; }
-declare module "cesium/Source/Widgets/BaseLayerPicker/BaseLayerPicker" { import { BaseLayerPicker } from 'cesium'; export default BaseLayerPicker; }
-declare module "cesium/Source/Widgets/BaseLayerPicker/BaseLayerPickerViewModel" { import { BaseLayerPickerViewModel } from 'cesium'; export default BaseLayerPickerViewModel; }
-declare module "cesium/Source/Widgets/BaseLayerPicker/ProviderViewModel" { import { ProviderViewModel } from 'cesium'; export default ProviderViewModel; }
-declare module "cesium/Source/Widgets/Cesium3DTilesInspector/Cesium3DTilesInspector" { import { Cesium3DTilesInspector } from 'cesium'; export default Cesium3DTilesInspector; }
-declare module "cesium/Source/Widgets/Cesium3DTilesInspector/Cesium3DTilesInspectorViewModel" { import { Cesium3DTilesInspectorViewModel } from 'cesium'; export default Cesium3DTilesInspectorViewModel; }
-declare module "cesium/Source/Widgets/CesiumInspector/CesiumInspector" { import { CesiumInspector } from 'cesium'; export default CesiumInspector; }
-declare module "cesium/Source/Widgets/CesiumInspector/CesiumInspectorViewModel" { import { CesiumInspectorViewModel } from 'cesium'; export default CesiumInspectorViewModel; }
-declare module "cesium/Source/Widgets/CesiumWidget/CesiumWidget" { import { CesiumWidget } from 'cesium'; export default CesiumWidget; }
-declare module "cesium/Source/Widgets/FullscreenButton/FullscreenButton" { import { FullscreenButton } from 'cesium'; export default FullscreenButton; }
-declare module "cesium/Source/Widgets/FullscreenButton/FullscreenButtonViewModel" { import { FullscreenButtonViewModel } from 'cesium'; export default FullscreenButtonViewModel; }
-declare module "cesium/Source/Widgets/Geocoder/Geocoder" { import { Geocoder } from 'cesium'; export default Geocoder; }
-declare module "cesium/Source/Widgets/Geocoder/GeocoderViewModel" { import { GeocoderViewModel } from 'cesium'; export default GeocoderViewModel; }
-declare module "cesium/Source/Widgets/HomeButton/HomeButton" { import { HomeButton } from 'cesium'; export default HomeButton; }
-declare module "cesium/Source/Widgets/HomeButton/HomeButtonViewModel" { import { HomeButtonViewModel } from 'cesium'; export default HomeButtonViewModel; }
-declare module "cesium/Source/Widgets/InfoBox/InfoBox" { import { InfoBox } from 'cesium'; export default InfoBox; }
-declare module "cesium/Source/Widgets/InfoBox/InfoBoxViewModel" { import { InfoBoxViewModel } from 'cesium'; export default InfoBoxViewModel; }
-declare module "cesium/Source/Widgets/NavigationHelpButton/NavigationHelpButton" { import { NavigationHelpButton } from 'cesium'; export default NavigationHelpButton; }
-declare module "cesium/Source/Widgets/NavigationHelpButton/NavigationHelpButtonViewModel" { import { NavigationHelpButtonViewModel } from 'cesium'; export default NavigationHelpButtonViewModel; }
-declare module "cesium/Source/Widgets/PerformanceWatchdog/PerformanceWatchdog" { import { PerformanceWatchdog } from 'cesium'; export default PerformanceWatchdog; }
-declare module "cesium/Source/Widgets/PerformanceWatchdog/PerformanceWatchdogViewModel" { import { PerformanceWatchdogViewModel } from 'cesium'; export default PerformanceWatchdogViewModel; }
-declare module "cesium/Source/Widgets/ProjectionPicker/ProjectionPicker" { import { ProjectionPicker } from 'cesium'; export default ProjectionPicker; }
-declare module "cesium/Source/Widgets/ProjectionPicker/ProjectionPickerViewModel" { import { ProjectionPickerViewModel } from 'cesium'; export default ProjectionPickerViewModel; }
-declare module "cesium/Source/Widgets/SceneModePicker/SceneModePicker" { import { SceneModePicker } from 'cesium'; export default SceneModePicker; }
-declare module "cesium/Source/Widgets/SceneModePicker/SceneModePickerViewModel" { import { SceneModePickerViewModel } from 'cesium'; export default SceneModePickerViewModel; }
-declare module "cesium/Source/Widgets/SelectionIndicator/SelectionIndicator" { import { SelectionIndicator } from 'cesium'; export default SelectionIndicator; }
-declare module "cesium/Source/Widgets/SelectionIndicator/SelectionIndicatorViewModel" { import { SelectionIndicatorViewModel } from 'cesium'; export default SelectionIndicatorViewModel; }
-declare module "cesium/Source/Widgets/Timeline/Timeline" { import { Timeline } from 'cesium'; export default Timeline; }
-declare module "cesium/Source/Widgets/Viewer/Viewer" { import { Viewer } from 'cesium'; export default Viewer; }
-declare module "cesium/Source/Widgets/Viewer/viewerCesium3DTilesInspectorMixin" { import { viewerCesium3DTilesInspectorMixin } from 'cesium'; export default viewerCesium3DTilesInspectorMixin; }
-declare module "cesium/Source/Widgets/Viewer/viewerCesiumInspectorMixin" { import { viewerCesiumInspectorMixin } from 'cesium'; export default viewerCesiumInspectorMixin; }
-declare module "cesium/Source/Widgets/Viewer/viewerDragDropMixin" { import { viewerDragDropMixin } from 'cesium'; export default viewerDragDropMixin; }
-declare module "cesium/Source/Widgets/Viewer/viewerPerformanceWatchdogMixin" { import { viewerPerformanceWatchdogMixin } from 'cesium'; export default viewerPerformanceWatchdogMixin; }
-declare module "cesium/Source/Widgets/VRButton/VRButton" { import { VRButton } from 'cesium'; export default VRButton; }
-declare module "cesium/Source/Widgets/VRButton/VRButtonViewModel" { import { VRButtonViewModel } from 'cesium'; export default VRButtonViewModel; }
-declare module "cesium/Source/MapGIS/Analysis/SectionAnalysis/SectionRender" { import { SectionRender } from 'cesium'; export default SectionRender; }
-declare module "cesium/Source/MapGIS/Scene/Light/PointLight" { import { PointLight } from 'cesium'; export default PointLight; }
-declare module "cesium/Source/MapGIS/Scene/Light/SpotLight" { import { SpotLight } from 'cesium'; export default SpotLight; }
-declare module "cesium/Source/MapGIS/Tools/GraphciTool/DrawTool" { import { DrawTool } from 'cesium'; export default DrawTool; }
-declare module "cesium/Source/MapGIS/Tools/GraphciTool/EditTool" { import { EditTool } from 'cesium'; export default EditTool; }
-declare module "cesium/Source/MapGIS/Tools/GraphciTool/SelectTool" { import { SelectTool } from 'cesium'; export default SelectTool; }
-declare module "cesium/Source/MapGIS/Tools/ModelEditor/ModelEditor" { import { ModelEditor } from 'cesium'; export default ModelEditor; }
-declare module "cesium/Source/MapGIS/Tools/Navigation/CesiumNavigation" { import { CesiumNavigation } from 'cesium'; export default CesiumNavigation; }
-declare module "cesium/Source/MapGIS/Tools/Navigation/NavigationControl" { import { NavigationControl } from 'cesium'; export default NavigationControl; }
-declare module "cesium/Source/MapGIS/Tools/Navigation/NavigationTool" { import { NavigationTool } from 'cesium'; export default NavigationTool; }
-declare module "cesium/Source/MapGIS/Tools/Navigation/ResetViewNavigationControl" { import { ResetViewNavigationControl } from 'cesium'; export default ResetViewNavigationControl; }
-declare module "cesium/Source/MapGIS/Tools/Navigation/UserInterfaceControl" { import { UserInterfaceControl } from 'cesium'; export default UserInterfaceControl; }
-declare module "cesium/Source/MapGIS/Tools/Navigation/ZoomNavigationControl" { import { ZoomNavigationControl } from 'cesium'; export default ZoomNavigationControl; }

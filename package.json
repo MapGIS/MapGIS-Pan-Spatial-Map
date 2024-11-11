@@ -19,7 +19,6 @@
     "@mapgis/mapbox-gl": "~17.2.0",
     "@mapgis/mapgis-pan-spatial-map-theme": "~17.2.0",
     "@mapgis/mapgis-pan-spatial-map-widgets": "~17.2.0",
-    "@mapgis/mapgis-pan-spatial-map-widgets-pro": "~17.2.0",
     "@mapgis/mapgis-pan-spatial-map-widgets-config-ui": "~17.2.0",
     "@mapgis/web-app-framework": "~17.2.0",
     "@mapgis/webclient-es6-mapboxgl": "~16.2.0",
