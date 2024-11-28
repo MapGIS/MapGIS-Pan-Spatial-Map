@@ -18,11 +18,15 @@ import Antd from 'ant-design-vue/es'
 import HeaderAvatar from '@/components/HeaderAvatar'
 import About from '@/components/About'
 // import widgetsFrame from '@mapgis/mapgis-pan-spatial-map-widgets-frame'
+import AntdModal from 'ant-design-vue/es/modal'
+import AntdMessage from 'ant-design-vue/es/message'
 
 import draggable from 'vuedraggable'
 
-Vue.use(MapgisUi)
+// Vue.use(MapgisUi)
 Vue.use(Antd)
+
+Vue.use(MapgisUi, { AntdModal, AntdMessage })
 Vue.use(WebAppFrameworkUI)
 // Vue.use(widgetsFrame)
 Vue.use(Theme, {
@@ -33,6 +37,7 @@ Vue.use(Theme, {
 })
 Vue.use(WebAppWidget)
 Vue.use(WidgetConfigUi)
+
 // Vue.component('MpPanSpatialMapHeaderAvatar', HeaderAvatar)
 // Vue.component('MpPanSpatialMapAbout', About)
 Vue.component('draggable', draggable)
@@ -40,5 +45,6 @@ Vue.component('draggable', draggable)
 window['@mapgis/web-app-framework'] = require('@mapgis/web-app-framework')
 window['@mapgis/webclient-vue-ui'] = require('@mapgis/webclient-vue-ui')
 window['@mapgis/webclient-es6-service'] = require('@mapgis/webclient-es6-service')
+window['@mapgis/webclient-common'] = require('@mapgis/webclient-common')
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')

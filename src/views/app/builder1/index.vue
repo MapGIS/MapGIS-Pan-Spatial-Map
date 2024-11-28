@@ -181,6 +181,8 @@ export default {
       this.application.document.defaultMap.removeAll()
       // 清除baseLayerMap
       this.application.document.baseLayerMap.removeAll()
+      this.formatContentWidgetStructure()
+      this.formatMapWidgets()
       this.$nextTick(() => {
         this.themeLoaded = true
       })
@@ -224,11 +226,19 @@ export default {
         contentWidgets: { groups }
       } = this.application
       groups.forEach(item => {
-        const { widgetStructure, widgets } = item
+        let { widgetStructure, widgets } = item
         const widgetInFolderArr = []
         if (widgetStructure && widgetStructure.length >= 0) {
           // 兼容数据，对没有未分组的contentWidgets构造未分组
           const hasUnGroup = widgetStructure.find(group => !group.id)
+
+          // 获取当前不存在的配置微件
+          const invalidWidgets = widgets.map(widget => {
+            if (widget.invalid) {
+              return widget.id
+            }
+          })
+
           if (!hasUnGroup) {
             const children = []
             widgetStructure.forEach(item => {
@@ -255,8 +265,30 @@ export default {
 
             widgetStructure.push({ label: '未分组', children: children })
           }
+
+          if (invalidWidgets.length > 0) {
+            // 删除widgets中不存在的配置微件
+            widgets = widgets.filter(widget => !invalidWidgets.includes(widget.id))
+            // 删除widgetStructure中不存在的配置微件
+            widgetStructure = widgetStructure.filter(structure => {
+              if (!invalidWidgets.includes(structure.id)) {
+                return true
+              }
+
+              if (structure.children) {
+                structure.children = structure.children.filter(widget => !invalidWidgets.includes(widget.id))
+                return true
+              }
+            })
+            item.widgets = widgets
+            item.widgetStructure = widgetStructure
+          }
         }
       })
+    },
+    formatMapWidgets() {
+      const { mapWidgets } = this.application
+      mapWidgets.widgets = mapWidgets.widgets.filter(widget => !widget.invalid)
     }
   }
 }
