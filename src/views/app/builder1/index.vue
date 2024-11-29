@@ -1,10 +1,13 @@
 <template>
   <!-- <mp-app-loader v-if="themeLoaded" :application="application" /> -->
-  <mapgis-ui-spin :spinning="!themeLoaded" tip="加载中..." class="app-builder-load">
+  <mapgis-ui-spin :spinning="hasReload" tip="加载中..." class="app-builder-load">
     <mp-app-builder1
       v-if="themeLoaded"
       :appConfig="application"
       :previewData="previewData"
+      :isManagerBuild="isManagerBuild"
+      :isManagerFullScreenBuild="isManagerFullScreenBuild"
+      @theme-style-change="themeStyleChange"
       @theme-change="themeChange"
       @app-builder-info-improt="appBuilderInfoImprot"
   /></mapgis-ui-spin>
@@ -23,7 +26,11 @@ export default {
       themeLoaded: false,
       appBuilderPreviewId: '', // 从云门户进入时的预览id
       portalPath: '', // 云门户地址
-      previewData: null
+      previewData: null,
+      hasReload: true, // 是否需要重新显示spin效果
+      isManagerBuild: false, // 是否管理平台链接引入
+      isManagerFullScreenBuild: false, // 是否管理平台链接引入并且全屏
+      isPortalPreview: false
     }
   },
   watch: {
@@ -42,6 +49,31 @@ export default {
           api.setAppBuilderRequestInstance(this.portalPath)
         } else {
           console.warn('未获取到云门户地址，云门户接口无法调用！！！')
+        }
+
+        if (val.action) {
+          switch (val.action) {
+            // 管理平台通过链接的方式引入应用搭建
+            case 'manager-build':
+              this.isManagerBuild = true
+              break
+            case 'portal-preview':
+              this.isPortalPreview = true
+              break
+            default:
+              break
+          }
+        }
+
+        if (val.mode) {
+          switch (val.mode) {
+            // 管理平台通过链接的方式引入应用搭建
+            case 'manager-full-screen':
+              this.isManagerFullScreenBuild = true
+              break
+            default:
+              break
+          }
         }
       }
     }
@@ -98,11 +130,19 @@ export default {
       this.previewData = config
       // 合并基础配置
       Object.assign(baseConfigInstance.config, baseConfig)
+      baseConfigInstance.config.initMode = this.application.document.maprender
       // 构造document对象
       this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
     }
+
     // 处理widgetStructure,默认带上未分组，方便应用搭建后续处理
     this.formatContentWidgetStructure()
+
+    // 门户预览直接跳转到一张图路由
+    if (this.isPortalPreview) {
+      localStorage.setItem('appConfig', JSON.stringify(this.application))
+      this.$router.push('/')
+    }
 
     const style = this.themeStyle()
     const opacity = this.themeOpacity()
@@ -112,22 +152,46 @@ export default {
     }
     mapgisui.setTheme(style.theme, payload)
     this.themeLoaded = true
+    this.hasReload = false
   },
   methods: {
     appBuilderInfoImprot(appConfig) {
       this.themeLoaded = false
+      this.hasReload = true
       const { baseConfig } = appConfig
       this.application = appConfig
       this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
       Object.assign(baseConfigInstance.config, baseConfig)
-      // this.$nextTick(() => {
-      //   this.themeLoaded = true
-      // })
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.themeLoaded = true
+      })
+      setTimeout(() => {
+        this.hasReload = false
       }, 2000)
     },
-    themeChange(themeStyle) {
+    themeChange(appConfig) {
+      this.hasReload = true
+      this.themeLoaded = false
+      const maprender = appConfig.document.maprender
+      delete appConfig.document
+      // 先设置成二维模式再设置appConfig
+      this.application.document.maprender = MapRender.MAPBOXGL
+      this.application = Object.assign(this.application, appConfig)
+      // 清除defaultMap
+      this.application.document.defaultMap.removeAll()
+      // 清除baseLayerMap
+      this.application.document.baseLayerMap.removeAll()
+      this.formatContentWidgetStructure()
+      this.formatMapWidgets()
+      this.$nextTick(() => {
+        this.themeLoaded = true
+      })
+      setTimeout(() => {
+        this.application.document.maprender = maprender
+        this.hasReload = false
+      }, 2000)
+    },
+    themeStyleChange(themeStyle) {
       mapgisui.setTheme(themeStyle.theme, themeStyle)
     },
     themeStyle() {
@@ -162,14 +226,69 @@ export default {
         contentWidgets: { groups }
       } = this.application
       groups.forEach(item => {
-        const { widgetStructure } = item
+        let { widgetStructure, widgets } = item
+        const widgetInFolderArr = []
         if (widgetStructure && widgetStructure.length >= 0) {
+          // 兼容数据，对没有未分组的contentWidgets构造未分组
           const hasUnGroup = widgetStructure.find(group => !group.id)
+
+          // 获取当前不存在的配置微件
+          const invalidWidgets = widgets.map(widget => {
+            if (widget.invalid) {
+              return widget.id
+            }
+          })
+
           if (!hasUnGroup) {
-            widgetStructure.push({ label: '未分组', children: [] })
+            const children = []
+            widgetStructure.forEach(item => {
+              if (item.id && item.type !== 'folder') {
+                children.push(item)
+              }
+
+              // 记录未分组中的所有微件
+              if (item.id && item.type === 'folder') {
+                const { children } = item
+                children.forEach(widget => {
+                  widgetInFolderArr.push(widget.id)
+                })
+              }
+            })
+            // 有的数据结构有问题 widgetStructure中无数据，但是widgets中有数据
+            widgets.forEach((item, index) => {
+              if (!widgetInFolderArr.includes(item.id)) {
+                // 往widgetStructure前面放
+                widgetStructure.splice(index, 1, { id: item.id })
+                children.push({ id: item.id })
+              }
+            })
+
+            widgetStructure.push({ label: '未分组', children: children })
+          }
+
+          if (invalidWidgets.length > 0) {
+            // 删除widgets中不存在的配置微件
+            widgets = widgets.filter(widget => !invalidWidgets.includes(widget.id))
+            // 删除widgetStructure中不存在的配置微件
+            widgetStructure = widgetStructure.filter(structure => {
+              if (!invalidWidgets.includes(structure.id)) {
+                return true
+              }
+
+              if (structure.children) {
+                structure.children = structure.children.filter(widget => !invalidWidgets.includes(widget.id))
+                return true
+              }
+            })
+            item.widgets = widgets
+            item.widgetStructure = widgetStructure
           }
         }
       })
+    },
+    formatMapWidgets() {
+      const { mapWidgets } = this.application
+      mapWidgets.widgets = mapWidgets.widgets.filter(widget => !widget.invalid)
     }
   }
 }
