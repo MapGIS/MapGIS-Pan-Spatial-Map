@@ -142,6 +142,7 @@ export default {
     if (this.isPortalPreview) {
       localStorage.setItem('appConfig', JSON.stringify(this.application))
       this.$router.push('/')
+      return
     }
 
     const style = this.themeStyle()
