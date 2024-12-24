@@ -109,11 +109,14 @@ export default {
       }
 
       // 初始化进入应用搭建时置空数据目录
-      const dataCatalogData = await api.getTreeData()
-      const updateData = dataCatalogData.data[0]
-      updateData.children = []
-      this.application.data = updateData
-      await api.updateTreeData({ dataList: [updateData] })
+      // 在一张图中打开时不做此操作
+      if (!(this.isManagerBuild || window.location === window.top.location)) {
+        const dataCatalogData = await api.getTreeData()
+        const updateData = dataCatalogData.data[0]
+        updateData.children = []
+        this.application.data = updateData
+        await api.updateTreeData({ dataList: [updateData] })
+      }
 
       /**
        * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
@@ -130,7 +133,9 @@ export default {
     } else {
       const config = await api.getAppBuilderConfigById(this.appBuilderPreviewId)
       const content = JSON.parse(config.content)
-      const { baseConfig } = content
+      const { baseConfig, catalogTreeData } = content
+      await api.updateTreeData({ dataList: catalogTreeData })
+      delete content.catalogTreeData
       this.application = content
       // 删除大对象
       delete config.content
@@ -256,15 +261,15 @@ export default {
 
               // 记录未分组中的所有微件
               if (item.id && item.type === 'folder') {
-                const { children } = item
-                children.forEach(widget => {
+                const childrenArr = item.children
+                childrenArr.forEach(widget => {
                   widgetInFolderArr.push(widget.id)
                 })
               }
             })
             // 有的数据结构有问题 widgetStructure中无数据，但是widgets中有数据
             widgets.forEach((item, index) => {
-              if (!widgetInFolderArr.includes(item.id)) {
+              if (!widgetInFolderArr.includes(item.id) && !children.find(widget => widget.id === item.id)) {
                 // 往widgetStructure前面放
                 widgetStructure.splice(index, 1, { id: item.id })
                 children.push({ id: item.id })
