@@ -19,7 +19,7 @@ const defaultRoutePath = '/map'
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   if (to.meta && typeof to.meta.title !== 'undefined') {
-    setDocumentTitle(`${i18nRender(to.meta.title)} - ${store.getters.domTitle}`)
+    setDocumentTitle(`${i18nRender(to.meta.title)}`)
   }
   if (['custom', 'portal'].includes(to.query.loginType)) {
     const queryParams = { ...to.query }
