@@ -7,6 +7,7 @@
       :previewData="previewData"
       :isManagerBuild="isManagerBuild"
       :isManagerFullScreenBuild="isManagerFullScreenBuild"
+      :appLoaderBackgroud="appLoaderBackgroud"
       @theme-style-change="themeStyleChange"
       @theme-change="themeChange"
       @app-builder-info-improt="appBuilderInfoImprot"
@@ -30,7 +31,8 @@ export default {
       hasReload: true, // 是否需要重新显示spin效果
       isManagerBuild: false, // 是否管理平台链接引入
       isManagerFullScreenBuild: false, // 是否管理平台链接引入并且全屏
-      isPortalPreview: false
+      isPortalPreview: false,
+      appLoaderBackgroud: ''
     }
   },
   watch: {
@@ -57,6 +59,7 @@ export default {
             case 'manager-build':
               this.isManagerBuild = true
               break
+            // 通过门户进入应用搭建预览
             case 'portal-preview':
               this.isPortalPreview = true
               break
@@ -110,12 +113,9 @@ export default {
 
       // 初始化进入应用搭建时置空数据目录
       // 在一张图中打开时不做此操作
+      // 在应用搭建预览（非云门户预览）时不做此操作
       if (!(this.isManagerBuild || window.location === window.top.location)) {
-        const dataCatalogData = await api.getTreeData()
-        const updateData = dataCatalogData.data[0]
-        updateData.children = []
-        this.application.data = updateData
-        await api.updateTreeData({ dataList: [updateData] })
+        this.updateTreeData()
       }
 
       /**
@@ -134,8 +134,13 @@ export default {
       const config = await api.getAppBuilderConfigById(this.appBuilderPreviewId)
       const content = JSON.parse(config.content)
       const { baseConfig, catalogTreeData } = content
-      await api.updateTreeData({ dataList: catalogTreeData })
-      delete content.catalogTreeData
+      // 如果有数据就更新数据目录，没有数据就置空数据目录
+      if (catalogTreeData) {
+        await api.updateTreeData({ dataList: catalogTreeData })
+        delete content.catalogTreeData
+      } else {
+        this.updateTreeData()
+      }
       this.application = content
       // 删除大对象
       delete config.content
@@ -149,6 +154,8 @@ export default {
 
     // 处理widgetStructure,默认带上未分组，方便应用搭建后续处理
     this.formatContentWidgetStructure()
+    // 设置应用搭建中app-loader区域的背景图地址
+    this.appLoaderBackgroud = `${publicPath}appBuilder/app-loader-bg.png`
 
     // 门户预览直接跳转到一张图路由
     if (this.isPortalPreview) {
@@ -308,6 +315,13 @@ export default {
     formatMapWidgets() {
       const { mapWidgets } = this.application
       mapWidgets.widgets = mapWidgets.widgets.filter(widget => !widget.invalid)
+    },
+    async updateTreeData() {
+      const dataCatalogData = await api.getTreeData()
+      const updateData = dataCatalogData.data[0]
+      updateData.children = []
+      this.application.data = updateData
+      await api.updateTreeData({ dataList: [updateData] })
     }
   }
 }
