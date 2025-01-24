@@ -1,18 +1,86 @@
 <template>
   <!-- <mp-app-loader v-if="themeLoaded" :application="application" /> -->
-  <mp-app-builder v-if="themeLoaded" :appConfig="application" @theme-change="themeChange" />
+  <mapgis-ui-spin :spinning="hasReload" tip="加载中..." class="app-builder-load">
+    <mp-app-builder1
+      v-if="themeLoaded"
+      :appConfig="application"
+      :previewData="previewData"
+      :dataCatalogData="dataCatalogData"
+      :isManagerBuild="isManagerBuild"
+      :isManagerFullScreenBuild="isManagerFullScreenBuild"
+      :appLoaderBackgroud="appLoaderBackgroud"
+      @theme-style-change="themeStyleChange"
+      @theme-change="themeChange"
+      @app-builder-info-improt="appBuilderInfoImprot"
+  /></mapgis-ui-spin>
 </template>
 
 <script>
-import { AppManager, MapRender, baseConfigInstance } from '@mapgis/web-app-framework'
+import { AppManager, MapRender, baseConfigInstance, loadConfigs, api } from '@mapgis/web-app-framework'
 import request from '@/utils/request'
 import mapgisui from '@mapgis/webclient-vue-ui'
+import storage from 'store'
 
 export default {
   data() {
     return {
       application: {},
-      themeLoaded: false
+      themeLoaded: false,
+      appBuilderPreviewId: '', // 从云门户进入时的预览id
+      portalPath: '', // 云门户地址
+      previewData: null,
+      hasReload: true, // 是否需要重新显示spin效果
+      isManagerBuild: false, // 是否管理平台链接引入
+      isManagerFullScreenBuild: false, // 是否管理平台链接引入并且全屏
+      isPortalPreview: false,
+      appLoaderBackgroud: '',
+      dataCatalogData: null // 左侧数据目录树（非微件）
+    }
+  },
+  watch: {
+    '$route.query': {
+      immediate: true,
+      handler(val) {
+        this.appBuilderPreviewId = val.appId
+        this.portalPath = val.portalPath
+        if (val.token) {
+          storage.set('app_builder_token', val.token)
+        } else {
+          console.warn('未获取到云门户用户token，云门户接口无法调用！！！')
+        }
+
+        if (val.portalPath || this.portalPath) {
+          api.setAppBuilderRequestInstance(this.portalPath)
+        } else {
+          console.warn('未获取到云门户地址，云门户接口无法调用！！！')
+        }
+
+        if (val.action) {
+          switch (val.action) {
+            // 管理平台通过链接的方式引入应用搭建
+            case 'manager-build':
+              this.isManagerBuild = true
+              break
+            // 通过门户进入应用搭建预览
+            case 'portal-preview':
+              this.isPortalPreview = true
+              break
+            default:
+              break
+          }
+        }
+
+        if (val.mode) {
+          switch (val.mode) {
+            // 管理平台通过链接的方式引入应用搭建
+            case 'manager-full-screen':
+              this.isManagerFullScreenBuild = true
+              break
+            default:
+              break
+          }
+        }
+      }
     }
   },
   computed: {},
@@ -28,18 +96,77 @@ export default {
       request,
       publicPath
     )
-    this.application = AppManager.getInstance().getApplication()
-    /**
-     * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
-     * 修改人：龚跃健
-     * 修改时间：2022/3/25
-     */
-    const initMode =
-      baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
-    if (!initMode || initMode === 'map') {
-      this.application.document.maprender = MapRender.MAPBOXGL
-    } else if (initMode === 'globe') {
-      this.application.document.maprender = MapRender.CESIUM
+    await loadConfigs()
+    if (!this.appBuilderPreviewId) {
+      this.application = AppManager.getInstance().getApplication()
+      // 获取云门户应用搭建配置信息
+      const baseConfigData = await api.getPortalAppBuilderConfig()
+      if (baseConfigData) {
+        const { data } = baseConfigData
+        const portalBaseConfig = {}
+        Object.keys(data).forEach(item => {
+          const config = data[item]
+          Object.assign(portalBaseConfig, JSON.parse(config.configValue))
+        })
+        portalBaseConfig.portalPath = this.portalPath
+        Object.assign(this.application.baseConfig, portalBaseConfig)
+        Object.assign(baseConfigInstance.config, portalBaseConfig)
+      }
+
+      // 初始化进入应用搭建时置空数据目录
+      // 在一张图中打开时不做此操作
+      // 在应用搭建预览（非云门户预览）时不做此操作
+      if (!(this.isManagerBuild || window.location === window.top.location)) {
+        this.application.data = []
+      }
+      const treeData = await api.getTreeData()
+      this.dataCatalogData = treeData.data
+
+      /**
+       * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
+       * 修改人：龚跃健
+       * 修改时间：2022/3/25
+       */
+      const initMode =
+        baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
+      if (!initMode || initMode === 'map') {
+        this.application.document.maprender = MapRender.MAPBOXGL
+      } else if (initMode === 'globe') {
+        this.application.document.maprender = MapRender.CESIUM
+      }
+    } else {
+      const config = await api.getAppBuilderConfigById(this.appBuilderPreviewId)
+      const content = JSON.parse(config.content)
+      const { baseConfig, catalogTreeData } = content
+      // 直接使用保存数据中的数据目录信息
+      if (catalogTreeData && catalogTreeData.length > 0) {
+        this.dataCatalogData = catalogTreeData
+        delete content.catalogTreeData
+      } else {
+        this.dataCatalogData = this.getInitCatalogTree()
+      }
+      // content中的data记录了初始化时的数据目录微件数据
+      this.application = content
+      // 删除大对象
+      delete config.content
+      this.previewData = config
+      // 合并基础配置
+      Object.assign(baseConfigInstance.config, baseConfig)
+      baseConfigInstance.config.initMode = this.application.document.maprender
+      // 构造document对象
+      this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
+    }
+
+    // 处理widgetStructure,默认带上未分组，方便应用搭建后续处理
+    this.formatContentWidgetStructure()
+    // 设置应用搭建中app-loader区域的背景图地址
+    this.appLoaderBackgroud = `${publicPath}appBuilder/app-loader-bg.png`
+
+    // 门户预览直接跳转到一张图路由
+    if (this.isPortalPreview) {
+      localStorage.setItem('appConfig', JSON.stringify(this.application))
+      this.$router.push('/')
+      return
     }
 
     const style = this.themeStyle()
@@ -50,9 +177,46 @@ export default {
     }
     mapgisui.setTheme(style.theme, payload)
     this.themeLoaded = true
+    this.hasReload = false
   },
   methods: {
-    themeChange(themeStyle) {
+    appBuilderInfoImprot(appConfig) {
+      this.themeLoaded = false
+      this.hasReload = true
+      const { baseConfig } = appConfig
+      this.application = appConfig
+      this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
+      Object.assign(baseConfigInstance.config, baseConfig)
+      this.$nextTick(() => {
+        this.themeLoaded = true
+      })
+      setTimeout(() => {
+        this.hasReload = false
+      }, 2000)
+    },
+    themeChange(appConfig) {
+      this.hasReload = true
+      this.themeLoaded = false
+      const maprender = appConfig.document.maprender
+      delete appConfig.document
+      // 先设置成二维模式再设置appConfig
+      this.application.document.maprender = MapRender.MAPBOXGL
+      this.application = Object.assign(this.application, appConfig)
+      // 清除defaultMap
+      this.application.document.defaultMap.removeAll()
+      // 清除baseLayerMap
+      this.application.document.baseLayerMap.removeAll()
+      this.formatContentWidgetStructure()
+      this.formatMapWidgets()
+      this.$nextTick(() => {
+        this.themeLoaded = true
+      })
+      setTimeout(() => {
+        this.application.document.maprender = maprender
+        this.hasReload = false
+      }, 2000)
+    },
+    themeStyleChange(themeStyle) {
       mapgisui.setTheme(themeStyle.theme, themeStyle)
     },
     themeStyle() {
@@ -81,9 +245,119 @@ export default {
         return this.application.theme.opacity || 1
       }
       return 1
+    },
+    formatContentWidgetStructure() {
+      const {
+        contentWidgets: { groups }
+      } = this.application
+      groups.forEach(item => {
+        let { widgetStructure, widgets } = item
+        const widgetInFolderArr = []
+        if (widgetStructure && widgetStructure.length >= 0) {
+          // 兼容数据，对没有未分组的contentWidgets构造未分组
+          const hasUnGroup = widgetStructure.find(group => !group.id)
+
+          // 获取当前不存在的配置微件
+          const invalidWidgets = widgets.map(widget => {
+            if (widget.invalid) {
+              return widget.id
+            }
+          })
+
+          if (!hasUnGroup) {
+            const children = []
+            widgetStructure.forEach(item => {
+              if (item.id && item.type !== 'folder') {
+                children.push(item)
+              }
+
+              // 记录未分组中的所有微件
+              if (item.id && item.type === 'folder') {
+                const childrenArr = item.children
+                childrenArr.forEach(widget => {
+                  widgetInFolderArr.push(widget.id)
+                })
+              }
+            })
+            // 有的数据结构有问题 widgetStructure中无数据，但是widgets中有数据
+            widgets.forEach((item, index) => {
+              if (!widgetInFolderArr.includes(item.id) && !children.find(widget => widget.id === item.id)) {
+                // 往widgetStructure前面放
+                widgetStructure.splice(index, 1, { id: item.id })
+                children.push({ id: item.id })
+              }
+            })
+
+            // 将未分组放到所有分组之前
+            const unGroupFolderIndex = widgetStructure.findIndex(item => item.type === 'folder')
+            if (unGroupFolderIndex > -1) {
+              widgetStructure.splice(unGroupFolderIndex, 1, { label: '未分组', children: children })
+            } else {
+              widgetStructure.push({ label: '未分组', children: children })
+            }
+          }
+
+          if (invalidWidgets.length > 0) {
+            // 删除widgets中不存在的配置微件
+            widgets = widgets.filter(widget => !invalidWidgets.includes(widget.id))
+            // 删除widgetStructure中不存在的配置微件
+            widgetStructure = widgetStructure.filter(structure => {
+              if (!invalidWidgets.includes(structure.id)) {
+                return true
+              }
+
+              if (structure.children) {
+                structure.children = structure.children.filter(widget => !invalidWidgets.includes(widget.id))
+                return true
+              }
+            })
+            item.widgets = widgets
+            item.widgetStructure = widgetStructure
+          }
+        }
+      })
+    },
+    formatMapWidgets() {
+      const { mapWidgets } = this.application
+      mapWidgets.widgets = mapWidgets.widgets.filter(widget => !widget.invalid)
+    },
+    async updateTreeData() {
+      const dataCatalogData = await api.getTreeData()
+      const updateData = dataCatalogData.data[0]
+      updateData.children = []
+      this.application.data = updateData
+      await api.updateTreeData({ dataList: [updateData] })
+    },
+    // 定义初始化时的数据目录树
+    getInitCatalogTree() {
+      return [
+        {
+          createBy: '',
+          createTime: null,
+          updateBy: 'admin',
+          updateTime: '',
+          remark: '',
+          dataId: 100,
+          dataName: 'root',
+          parentId: 0,
+          ancestors: '0',
+          orderNum: 1024,
+          description: '',
+          dataType: 0,
+          properties: null,
+          layerProperties: null,
+          extendedProperties: null,
+          children: []
+        }
+      ]
     }
   }
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.app-builder-load {
+  height: 100%;
+  width: 100%;
+}
+</style>
