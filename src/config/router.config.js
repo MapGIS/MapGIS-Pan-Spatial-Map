@@ -48,7 +48,7 @@ export const constantRouterMap = [
   {
     path: '/builder',
     name: 'Builder',
-    component: () => import(/* webpackChunkName: "builder" */ '@/views/app/builder1/index'),
+    component: () => import(/* webpackChunkName: "builder" */ '@/views/app/builder/index'),
     meta: { title: '应用搭建' }
   },
   {
