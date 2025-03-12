@@ -2940,6 +2940,11 @@ export class CesiumTerrainProvider {
      * @returns Undefined if nothing need to be loaded or a Promise that resolves when all required tiles are loaded
      */
     loadTileDataAvailability(x: number, y: number, level: number): undefined | Promise<void>;
+    /**
+     * Gets a value indicating whether or not the requested tiles include metadata.
+    This function should not be called before {@link CesiumTerrainProvider#ready} returns true.
+     */
+    readonly hasMetadata: boolean;
 }
 
 /**
@@ -6680,6 +6685,11 @@ export class GeographicProjection {
              created and returned.
      */
     unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
+    /**
+     * 表示该对象是经纬度坐标系
+     * @returns 是经纬度坐标系
+     */
+    isGeographic(): boolean;
 }
 
 /**
@@ -17748,6 +17758,11 @@ export class WebMercatorProjection {
      * @returns The equivalent cartographic coordinates.
      */
     unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
+    /**
+     * 表示该对象不是经纬度坐标系
+     * @returns 不是经纬度坐标系
+     */
+    isGeographic(): boolean;
 }
 
 /**
@@ -25989,6 +26004,18 @@ export class ViewshedAnalysis {
      * 不可视区域的颜色
      */
     unVisibleColor: Color;
+    /**
+     * 可视域分析结果区域的渲染通道
+     */
+    pass: number;
+    /**
+     * 可视域分析辅助视锥网表面颜色
+     */
+    fanColor: Color;
+    /**
+     * 可视域分析辅助视锥网线条颜色
+     */
+    fanLineColor: Color;
 }
 
 /**
@@ -26358,6 +26385,67 @@ export class KeyboardCameraController {
      * 停止场景相机漫游，若在全屏状态下，则无需调用该方法停止场景相机漫游，只需要按下<code>ESC</code>或<code>F11</code>
      */
     stop(): void;
+}
+
+/**
+ * MapGIS的TileAvailability类，重写了{@link TileAvailability}的所有方法，支持在内部自动筛选要使用的地形图层
+ * @param layers - 地形图层数组
+ */
+export class MapGISTileAvailability {
+    constructor(layers: object[]);
+    /**
+     * Marks a rectangular range of tiles in a particular level as being available.  For best performance,
+    add your ranges in order of increasing level.
+     * @param level - The level.
+     * @param startX - The X coordinate of the first available tiles at the level.
+     * @param startY - The Y coordinate of the first available tiles at the level.
+     * @param endX - The X coordinate of the last available tiles at the level.
+     * @param endY - The Y coordinate of the last available tiles at the level.
+     */
+    addAvailableTileRange(level: number, startX: number, startY: number, endX: number, endY: number): void;
+    /**
+     * Determines the level of the most detailed tile covering the position.  This function
+    usually completes in time logarithmic to the number of rectangles added with
+    {@link MapGISTileAvailability#addAvailableTileRange}.
+     * @param position - The position for which to determine the maximum available level.  The height component is ignored.
+     * @returns The level of the most detailed tile covering the position.
+     */
+    computeMaximumLevelAtPosition(position: Cartographic): number;
+    /**
+     * Finds the most detailed level that is available _everywhere_ within a given rectangle.  More detailed
+    tiles may be available in parts of the rectangle, but not the whole thing.  The return value of this
+    function may be safely passed to {@link sampleTerrain} for any position within the rectangle.  This function
+    usually completes in time logarithmic to the number of rectangles added with
+    {@link MapGISTileAvailability#addAvailableTileRange}.
+     * @param rectangle - The rectangle.
+     * @returns The best available level for the entire rectangle.
+     */
+    computeBestAvailableLevelOverRectangle(rectangle: Rectangle): number;
+    /**
+     * Determines if a particular tile is available.
+     * @param level - The tile level to check.
+     * @param x - The X coordinate of the tile to check.
+     * @param y - The Y coordinate of the tile to check.
+     * @returns True if the tile is available; otherwise, false.
+     */
+    isTileAvailable(level: number, x: number, y: number): boolean;
+    /**
+     * Computes a bit mask indicating which of a tile's four children exist.
+    If a child's bit is set, a tile is available for that child.  If it is cleared,
+    the tile is not available.  The bit values are as follows:
+    <table>
+        <tr><th>Bit Position</th><th>Bit Value</th><th>Child Tile</th></tr>
+        <tr><td>0</td><td>1</td><td>Southwest</td></tr>
+        <tr><td>1</td><td>2</td><td>Southeast</td></tr>
+        <tr><td>2</td><td>4</td><td>Northwest</td></tr>
+        <tr><td>3</td><td>8</td><td>Northeast</td></tr>
+    </table>
+     * @param level - The level of the parent tile.
+     * @param x - The X coordinate of the parent tile.
+     * @param y - The Y coordinate of the parent tile.
+     * @returns The bit mask indicating child availability.
+     */
+    computeChildMaskForTile(level: number, x: number, y: number): number;
 }
 
 /**
@@ -32685,6 +32773,60 @@ export class MapGISM3DSet {
      */
     debugShowUrl: boolean;
     /**
+     * 开启剖切封边属性过滤时需要被剖切封边的属性列表
+     * @example
+     * 1. 单值
+    {
+       field: 'OID',
+       type: 'unique',
+       valueGroups: [1, 2, 3, 4, 5],
+    }
+    
+    2. 分段
+    {
+       field: 'OID',
+       type: 'range',
+       valueGroups: [
+          { start: 0, end: 3 },
+          { start: 9, end: 20 }
+       ],
+    }
+    
+    3. 包含
+    {
+       field: 'name',
+       type: 'contain',
+       valueGroups: ['mapgis', 'zondy'],
+    }
+    
+    viewer.scene.layers.appendM3DLayer(url, {
+        loaded: function(layer) {
+            layer.cuttingFilter = [
+                {
+                    field: 'OID',
+                    type: 'unique',
+                    valueGroups: [1, 2, 3, 4, 5],
+                }
+            ]
+        }
+    });
+     */
+    cuttingFilter: any[];
+    /**
+     * 是否开启剖切封边属性过滤
+     * @example
+     * var tileset = viewer.scene.primitives.add(new Cesium.MapGISM3DSet({
+      url: 'http://localhost:8002/M3D/layer/layer.mcj',
+    }));
+    // 开启剖切属性过滤
+    tileset.enableCuttingFilter = true;
+     */
+    enableCuttingFilter: boolean;
+    /**
+     * 剖切属性过滤数据纹理对象
+     */
+    cuttingFilterTexture: Texture;
+    /**
      * Gets the tileset's asset object property, which contains metadata about the tileset.
     <p>
     See the {@link https://github.com/CesiumGS/3d-tiles/tree/master/specification#reference-asset|asset schema reference}
@@ -33181,6 +33323,11 @@ export class MapGISM3DSet {
      */
     sectionOnly(sectionOnly: boolean): void;
     /**
+     * 移除剖面几何
+     * @param geometry - 剖面几何对象
+     */
+    removeSectionGeometry(geometry: SectionPlaneGeometry): void;
+    /**
      * 移除所有的剖面几何
      */
     removeAllSectionGeometry(): void;
@@ -33195,17 +33342,6 @@ export var enableExplosion: any;
  * feat:2105 模型剖切纹理封边
  */
 export var clippingFillImage: any;
-
-export namespace MapGISM3DSet {
-    /**
-     * Optimization option. Used as a callback when {@link MapGISM3DSet#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
-    interpolating between {@link MapGISM3DSet#foveatedMinimumScreenSpaceErrorRelaxation} and {@link MapGISM3DSet#maximumScreenSpaceError}.
-     * @param p - The start value to interpolate.
-     * @param q - The end value to interpolate.
-     * @param time - The time of interpolation generally in the range <code>[0.0, 1.0]</code>.
-     */
-    type foveatedInterpolationCallback = (p: number, q: number, time: number) => number;
-}
 
 /**
  * The content of a tile in a {@link Cesium3DTileset}.
@@ -35365,134 +35501,154 @@ export class MapGISMapServerImageryProvider {
 
 /**
  * MapGISTerrainProvider MapGIS地形provider
- * @param [options.showSkirt = true] - 是否显示裙边
- * @param [options.range] - 数据范围
- * @param [options.terrainFormat = true] - 如果使用地形缓存值为false，否则为true
- * @param [options.proxy] - 使用代理
- * @param [options.requestVertexNormals = true] - 是否使用地形法向
- * @param [options.maxLevel = 20] - 最大级别
+ * @param [options.url = null] - 服务基地址，当类型为字符串或者Cesium.Resource时，
+表示仅加载一个DEM地形服务，如果是一个数组，则表示加载多个DEM地形服务，
+此时传入的格式变为了[{url:'',range:{},range3D:{},requestVertexNormals:true,maxLevel:20}]
+ * @param [options.tilingScheme = Cesium.GeographicTilingScheme()] - 地形的平铺方案
+ * @param [options.range = null] - 地形二维范围
+ * @param [options.range3D = null] - 地形三维范围
+ * @param [options.requestVertexNormals = false] - 是否请求法向量
+ * @param [options.maxLevel = 20] - 地形最大显示级数
+ * @param [options.terrainColorTblInfo = null] - 地形分析-高程赋色功能的色表，格式为['#000000', '#2747E0', '#D33B7D', '#D33038', '#FF9742', '#ffd700', '#FFFFFF']
+ * @param [options.terrainColorTblMinHeight = null] - 地形分析-高程赋色功能的最小高度
+ * @param [options.terrainColorTblMaxHeight = null] - 地形分析-高程赋色功能的最大高度
+ * @param [options.repeat = new Cartesian2(1, 1)] - 坡度箭头重复次数
+ * @param [options.proxy = null] - 请求拦截器，可对最后发出的请求链接进行编辑
+ * @param [options.credit = null] - A credit for the data source, which is displayed on the canvas
  */
 export class MapGISTerrainProvider {
     constructor(options: {
-        showSkirt?: boolean;
+        url?: string | Resource | object[];
+        tilingScheme?: any;
         range?: any;
-        terrainFormat?: boolean;
-        proxy?: Proxy;
+        range3D?: any;
         requestVertexNormals?: boolean;
         maxLevel?: number;
+        terrainColorTblInfo?: any[];
+        terrainColorTblMinHeight?: number;
+        terrainColorTblMaxHeight?: number;
+        repeat?: Cartesian2;
+        proxy?: Proxy;
+        credit?: Proxy;
     });
+    /**
+     * 服务基地址
+     */
+    url: string;
+    /**
+     * 地形二维范围
+     */
+    range: any;
+    /**
+     * 地形三维范围
+     */
+    range3D: any;
+    /**
+     * 请求拦截器，可对最后发出的请求链接进行编辑
+     */
+    proxy: Proxy;
+    /**
+     * 地形最大显示级数
+     */
+    maxLevel: number;
+    /**
+     * 地形分析-高程赋色功能的色表，格式为['#000000', '#2747E0', '#D33B7D', '#D33038', '#FF9742', '#ffd700', '#FFFFFF']
+     */
+    terrainColorTblInfo: any[];
+    /**
+     * 地形分析-高程赋色功能的最小高度
+     */
+    terrainColorTblMinHeight: number;
+    /**
+     * 地形分析-高程赋色功能的最大高度
+     */
+    terrainColorTblMaxHeight: number;
+    /**
+     * 重写Cesium.TerrainProvider的requestTileGeometry方法，
+    重写了该方法，则被认为是一个TerrainProvider
+    通过该方法请求地形瓦片数据
+     * @param x - 行号
+     * @param y - 列号
+     * @param level - 级数
+     * @param request - Cesium的请求相关对象
+     * @returns 请求完毕的回调
+     */
+    requestTileGeometry(x: number, y: number, level: number, request: Request): Promise<HeightmapTerrainData> | undefined;
+    /**
+     * 重写Cesium.TerrainProvider的getLevelMaximumGeometricError方法，
+    重写了该方法，则被认为是一个TerrainProvider
+    通过给定的级数计算最大几何误差，并返回
+     * @param level - 级数
+     * @returns 最大几何误差
+     */
+    getLevelMaximumGeometricError(level: number): number;
+    /**
+     * 确定一个地形瓦片是否被MapGISTerrainProvider中的某一个地形图层包含
+     * @param x - 地形瓦片的行号
+     * @param y - 地形瓦片的列号
+     * @param level - 地形瓦片的级数
+     * @returns 该地形瓦片是否被MapGISTerrainProvider包含
+     */
+    getTileDataAvailable(x: number, y: number, level: number): boolean;
+    /**
+     * 根据级数、行号和列号，请求一个包含在地形图层中的地形瓦片数据，如果有多个地形图层，则取匹配到的第一个地形图层
+     * @param x - 行号
+     * @param y - 列号
+     * @param level - 级数
+     * @returns 取得数据后的回调函数，没有匹配则返回undefined
+     */
+    loadTileDataAvailability(x: number, y: number, level: number): undefined | Promise<void>;
     /**
      * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
     to the event, you will be notified of the error and can potentially recover from it.  Event listeners
     are passed an instance of {@link TileProviderError}.
      */
-    errorEvent: Event;
+    readonly errorEvent: Event;
     /**
-     * 是否显示裙边（只有MapGIS的地形可以设置）
+     * Gets the credit to display when this terrain provider is active. Typically this is used to credit
+    the source of the terrain.  This function should not be called before {@link CesiumTerrainProvider#ready} returns true.
      */
-    showSkirt: boolean;
-    /**
-     * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
-    the source of the terrain.  This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
-     */
-    credit: Credit;
+    readonly credit: Credit;
     /**
      * Gets the tiling scheme used by this provider.  This function should
-    not be called before {@link MapGISTerrainProvider#ready} returns true.
+    not be called before {@link CesiumTerrainProvider#ready} returns true.
      */
-    tilingScheme: GeographicTilingScheme;
+    readonly tilingScheme: GeographicTilingScheme;
     /**
-     * Gets a value indicating whether or not the provider is ready for use.
+     * 地形是否可用
      */
-    ready: boolean;
+    readonly ready: boolean;
     /**
-     * Gets a promise that resolves to true when the provider is ready for use.
+     * 地形可用后的回调，此时地形数据不一定加载完毕
      */
     readonly readyPromise: Promise<boolean>;
     /**
-     * Gets a value indicating whether or not the provider includes a water mask.  The water mask
-    indicates which areas of the globe are water rather than land, so they can be rendered
-    as a reflective surface with animated waves.  This function should not be
-    called before {@link MapGISTerrainProvider#ready} returns true.
+     * 是否应用地形法向量
      */
-    hasWaterMask: boolean;
+    readonly hasVertexNormals: boolean;
     /**
-     * Gets a value indicating whether or not the requested tiles include vertex normals.
-    This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
+     * 是否请求法向量
      */
-    hasVertexNormals: boolean;
+    readonly requestVertexNormals: boolean;
     /**
-     * Gets a value indicating whether or not the requested tiles include metadata.
-    This function should not be called before {@link MapGISTerrainProvider#ready} returns true.
+     * 坡度箭头的重复次数
      */
-    hasMetadata: boolean;
+    repeat: Cartesian2;
     /**
-     * Boolean flag that indicates if the client should request vertex normals from the server.
-    Vertex normals data is appended to the standard tile mesh data only if the client requests the vertex normals and
-    if the server provides vertex normals.
-     */
-    requestVertexNormals: boolean;
-    /**
-     * 获取地形色表信息
-     */
-    terrainColorTblInfo: any[];
-    /**
-     * 获取地形范围
-     */
-    range3D: any[];
-    /**
-     * 获取地形色表最大高程
-     */
-    terrainColorTblMaxHeight: number;
-    /**
-     * 获取地形色表最小高程
-     */
-    terrainColorTblMinHeight: number;
-    /**
-     * Boolean flag that indicates if the client should request a watermask from the server.
-    Watermask data is appended to the standard tile mesh data only if the client requests the watermask and
-    if the server provides a watermask.
-     */
-    requestWaterMask: boolean;
-    /**
-     * Boolean flag that indicates if the client should request metadata from the server.
-    Metadata is appended to the standard tile mesh data only if the client requests the metadata and
-    if the server provides a metadata.
-     */
-    requestMetadata: boolean;
-    /**
-     * Gets an object that can be used to determine availability of terrain from this provider, such as
+     * 该属性记录了MapGISTerrainProvider下的地形图层支持的级数和每一级数支持显示的地形瓦片行列号范围；
+    当提供了一个地形瓦片的级数、行号和列号时，可通过该对象的isTileAvailable方法知道地形图层是否包含该地形瓦片；
+    当MapGISTerrainProvider未加载完毕时，不可访问该对象；
+    当服务元信息中未包含available属性时，该对象为空；
+    <br/>
+    Gets an object that can be used to determine availability of terrain from this provider, such as
     at points and in rectangles.  This function should not be called before
     {@link MapGISTerrainProvider#ready} returns true.  This property may be undefined if availability
-    information is not available.
+    information is not available. Note that this reflects tiles that are known to be available currently.
+    Additional tiles may be discovered to be available in the future, e.g. if availability information
+    exists deeper in the tree rather than it all being discoverable at the root. However, a tile that
+    is available now will not become unavailable in the future.
      */
-    availability: TileAvailability;
-    /**
-     * 是否显示地形
-     */
-    show: boolean;
-    /**
-     * Gets the maximum geometric error allowed in a tile at a given level.
-     * @param level - The tile level for which to get the maximum geometric error.
-     * @returns The maximum geometric error.
-     */
-    getLevelMaximumGeometricError(level: number): number;
-    /**
-     * Determines whether data for a tile is available to be loaded.
-     * @param x - The X coordinate of the tile for which to request geometry.
-     * @param y - The Y coordinate of the tile for which to request geometry.
-     * @param level - The level of the tile for which to request geometry.
-     * @returns Undefined if not supported or availability is unknown, otherwise true or false.
-     */
-    getTileDataAvailable(x: number, y: number, level: number): boolean;
-    /**
-     * Makes sure we load availability data for a tile
-     * @param x - The X coordinate of the tile for which to request geometry.
-     * @param y - The Y coordinate of the tile for which to request geometry.
-     * @param level - The level of the tile for which to request geometry.
-     * @returns Undefined if nothing need to be loaded or a Promise that resolves when all required tiles are loaded
-     */
-    loadTileDataAvailability(x: number, y: number, level: number): undefined | Promise<void>;
+    readonly availability: MapGISTileAvailability;
 }
 
 /**
@@ -36987,8 +37143,6 @@ const tilingScheme = new Cesium.CustomTilingScheme({
   wkid: 4547,
   wkt: '+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs', // https://epsg.io/4547
   tileInfo, // 瓦片的属性信息，地图服务可以不提供该参数
-  numberOfLevelZeroTilesX: 1, // 瓦片树第0级的X方向所包含的瓦片个数
-  numberOfLevelZeroTilesY: 1, // 瓦片树第0级的Y方向所包含的瓦片个数
   rectangleSouthwest: new Cesium.Cartesian2(extent.xmin, extent.ymin), // 投影矩形范围的西南角
   rectangleNortheast: new Cesium.Cartesian2(extent.xmax, extent.ymax), // 投影矩形范围的东北角
   proj4, // 投影变换对象
@@ -36998,8 +37152,7 @@ const tilingScheme = new Cesium.CustomTilingScheme({
  * @param [options.wkt] - 投影坐标系的通识文本（Well Known Text）
  * @param [options.wkid] - 投影坐标系的通识编码（Well Known ID）
  * @param [options.tileInfo] - 瓦片的属性信息，地图服务可以不提供该参数，该参数有固定的格式要求，详见下方示例
- * @param [options.numberOfLevelZeroTilesX = 1] - 瓦片树第0级的X方向所包含的瓦片个数
- * @param [options.numberOfLevelZeroTilesY = 1] - 瓦片树第0级的Y方向所包含的瓦片个数
+ * @param [options.axisDirection] - 瓦片组织方向(裁图方向)。axisDirection.x=1代表x轴由左往右为正，axisDirection.x=-1代表x轴由右往左为正；axisDirection.y=1代表x轴由下往上为正，axisDirection.y=-1代表x轴由上往下为正。例如wmts的axisDirection为{x:1,y:-1}。
  * @param [options.rectangleSouthwest] - 投影矩形范围的西南角
  * @param [options.rectangleNortheast] - 投影矩形范围的东北角
  * @param [options.proj4] - 投影变换对象
@@ -37010,8 +37163,7 @@ export class CustomTilingScheme {
         wkt?: string;
         wkid?: string;
         tileInfo?: any;
-        numberOfLevelZeroTilesX?: number;
-        numberOfLevelZeroTilesY?: number;
+        axisDirection?: any;
         rectangleSouthwest?: Cartesian2;
         rectangleNortheast?: Cartesian2;
         proj4?: any;
@@ -37698,6 +37850,11 @@ export class CuttingTool {
      * 开关当前被CuttingTool管理的裁剪体
      */
     enabled(value: boolean): void;
+    /**
+     * 显示或隐藏所有辅助剖切面(体)
+     * @param [showPlane = true] - 显示或隐藏所有辅助剖切面(体)，true为显示所有辅助剖切面(体)，false为隐藏所有辅助剖切面(体)
+     */
+    showCuttingPlane(showPlane?: boolean): void;
 }
 
 /**
@@ -37863,7 +38020,7 @@ export class DrawElement {
 export class FlattenTool {
     constructor(scene: Scene);
     /**
-     * 模型压平
+     * 模型压平（该功能目前不支持M3D 2.0）
      * @example
      * var flattenTool = new Cesium.FlattenTool(viewer.scene);
     var positions;
@@ -37882,12 +38039,13 @@ export class FlattenTool {
             viewer.scene.primitives.add(polygon);
         }
     });
-    flattenTool.modelFlatten(positions, 10, tileSetList);
+    flattenTool.modelFlatten(positions, 10, true, tileSetList);
      * @param positionArray - 压平区域多边形顶点坐标数组，封闭多边形
      * @param flattenHeight - 压平到指定高度，绝对海拔高度，单位米
+     * @param flattenWithId - 是否根据id压平
      * @param [tileSetList] - 参与压平的MapGISM3DSet列表
      */
-    modelFlatten(positionArray: any[], flattenHeight: number, tileSetList?: MapGISM3DSet[]): void;
+    modelFlatten(positionArray: any[], flattenHeight: number, flattenWithId: boolean, tileSetList?: MapGISM3DSet[]): void;
     /**
      * 移除模型压平
      */
@@ -38680,11 +38838,12 @@ export class ModelFilterTool {
 /**
  * 模型变换工具集
  * @param [layer] - 模型对象
+ * @param [callback] - 模型编辑工具编辑后的回调函数
 模型对象为空时，需要在调用具体的变换接口时指定要变换的模型。
 推荐在调用变换接口时指定模型。
  */
 export class ModelTransformTool {
-    constructor(layer?: SceneLayer | MapGISM3DSet | Cesium3DTileset | undefined);
+    constructor(layer?: SceneLayer | MapGISM3DSet | Cesium3DTileset | undefined, callback?: (...params: any[]) => any);
     /**
      * 模型旋转
      * @param [degree = 0] - 旋转角度，单位度
@@ -38731,6 +38890,12 @@ export class ModelTransformTool {
         model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset | SceneLayer;
         rotationPoint?: Cartesian3;
     }): void;
+    /**
+     * 根据模型的tansform矩阵获取欧拉角
+     * @param [model] - 模型对象；
+     * @param [rotationPoint] - 旋转中心；缺省时旋转中心默认为模型外包球中心
+     */
+    getEulerFromTransform(transformInLocal: Matrix4, model?: MapGISM3DSet | MapGISM3D | Cesium3DTileset, rotationPoint?: Cartesian3): void;
     /**
      * 设置M3D模型在笛卡尔世界坐标系下位置
      * @example
@@ -39193,7 +39358,7 @@ export function TopoJSONUtil(): void;
 export function UrlUtil(): void;
 
 /**
- * Topo工具类封装
+ * 工具类封装
  */
 export function XmlUtil(): void;
 
@@ -40346,6 +40511,14 @@ export class VisualAnalysisManager {
      * 根据索引获取可视化分析
      */
     getVisualAnalysisByID(ID: number | string): any | undefined;
+    /**
+     * 获取所有分析类对象
+     */
+    getAll(): any[];
+    /**
+     * 获取可视域分析的可视率（主相机视角下的可视率）
+     */
+    getViewshedVisibleRate(): number;
 }
 
 /**
@@ -40654,6 +40827,8 @@ export namespace ArcGisMapServerImageryProvider {
      * @property [tileHeight = 256] - The height of each tile in pixels.  This parameter is ignored when accessing a tiled server.
      * @property [maximumLevel] - The maximum tile level to request, or undefined if there is no maximum.  This parameter is ignored when accessing
                                            a tiled server.
+     * @property [options.headers] - HTTP请求头
+     * @param [options.extensions = []] - 扩展参数，会将扩展参数中的非空参数拼接到请求接口上，示例：[{ key: '参数名', value: '参数值' }]
      */
     type ConstructorOptions = {
         url: Resource | string;
@@ -48347,6 +48522,10 @@ export class ImageryProvider {
      */
     readonly hasAlphaChannel: boolean;
     /**
+     * 超过最大最小层级范围图像是否进行图像的拉伸。此值未定义或者设置为true时,如果图像level小于minimumLevel或者大于maximumLevel，图像会进行拉伸。反之，如果图像level小于minimumLevel或者大于maximumLevel，不会再请求图像以及拉伸图像。
+     */
+    isStretchImage: string | undefined;
+    /**
      * Gets the credits to be displayed when a given tile is displayed.
      * @param x - The tile X coordinate.
      * @param y - The tile Y coordinate.
@@ -53205,6 +53384,7 @@ scene.primitives.add(new Cesium.Primitive({
  * @param [options.compressVertices = true] - When <code>true</code>, the geometry vertices are compressed, which will save memory.
  * @param [options.releaseGeometryInstances = true] - When <code>true</code>, the primitive does not keep a reference to the input <code>geometryInstances</code> to save memory.
  * @param [options.allowPicking = true] - When <code>true</code>, each geometry instance will only be pickable with {@link Scene#pick}.  When <code>false</code>, GPU memory is saved.
+ * @param [options.participatePicking = true] - 是否参与场景pick。为true则代表可以被场景拾取到。为false组则代表不在场景拾取的图元中。
  * @param [options.cull = true] - When <code>true</code>, the renderer frustum culls and horizon culls the primitive's commands based on their bounding volume.  Set this to <code>false</code> for a small performance gain if you are manually culling the primitive.
  * @param [options.asynchronous = true] - Determines if the primitive will be created asynchronously or block until ready.
  * @param [options.debugShowBoundingVolume = false] - For debugging only. Determines if this primitive's commands' bounding spheres are shown.
@@ -53222,6 +53402,7 @@ export class Primitive {
         compressVertices?: boolean;
         releaseGeometryInstances?: boolean;
         allowPicking?: boolean;
+        participatePicking?: boolean;
         cull?: boolean;
         asynchronous?: boolean;
         debugShowBoundingVolume?: boolean;
@@ -53312,6 +53493,10 @@ export class Primitive {
      * When <code>true</code>, each geometry instance will only be pickable with {@link Scene#pick}.  When <code>false</code>, GPU memory is saved.         *
      */
     readonly allowPicking: boolean;
+    /**
+     * 是否参与场景pick。为true则代表可以被场景拾取到。为false组则代表不在场景拾取的图元中。
+     */
+    readonly participatePicking: boolean;
     /**
      * Determines if the geometry instances will be created and batched on a web worker.
      */
@@ -54271,7 +54456,7 @@ export class Scene {
     Set {@link Scene#pickTranslucentDepth} to <code>true</code> to include the depth of
     translucent primitives; otherwise, this essentially picks through translucent primitives.
     </p>
-     * @param windowPosition - Window coordinates to perform picking on.
+     * @param windowPosition - Window coordinates to perform picking on. windowPosition中x取值范围为[0,viewer.canvas.width-1],y取值范围为[0,viewer.canvas.height-1]。
      * @param [result] - The object on which to restore the result.
      * @returns The cartesian position.
      */
@@ -54429,13 +54614,13 @@ export class Scene {
      * 根据屏幕坐标返回对应的世界坐标，支持拾取模型缓存、实体（Entity），图元（Primitive）、地形上的点坐标<br>
     请注意如下几种情况无法返回世界坐标：<br>
     1、当 {@link Scene#useDepthPicking} 设置为false时，无法拾取模型缓存、实体（Entity），图元（Primitive）上的点坐标，会返回undefined<br>
-    2、当 {@link Scene#pickTranslucentDepth} 设置为false，且模型缓存、实体（Entity），图元（Primitive）设置为半透明时，在鼠标移动事件中无法拾取点坐标，会返回undefined<br>
+    2、当 {@link Scene#pickTranslucentDepth} 设置为false，且实体（Entity），图元（Primitive）设置为半透明时，在鼠标移动事件中无法拾取点坐标，会返回undefined<br>
     3、当 {@link Scene#mode} 设置为 {@link SceneMode#SCENE2D} 时 ，无法拾取实体（Entity），图元（Primitive）上点坐标的高程<br>
      * @param screePosition - 屏幕坐标
      * @param cartesian - 返回的世界坐标
-     * @returns 返回的世界坐标，当没有拾取到点坐标时，返回undefined
+     * @returns 返回的世界坐标，当没有拾取到点坐标时，返回Cartesian3.ZERO
      */
-    getCartesian3Position(screePosition: Cartesian2, cartesian: Cartesian3): Cartesian3 | undefined;
+    getCartesian3Position(screePosition: Cartesian2, cartesian: Cartesian3): Cartesian3;
     /**
      * 设置单体要素高亮
      * @param layerList - 图层列表
@@ -55881,6 +56066,7 @@ export namespace UrlTemplateImageryProvider {
            that this can be dynamically overridden by modifying the {@link UriTemplateImageryProvider#enablePickFeatures}
            property.
      * @property [customTags] - Allow to replace custom keywords in the URL template. The object must have strings as keys and functions as values.
+     * @property [extensions = []] - 扩展参数，会将扩展参数中的费控参数拼接到请求接口上，示例：[{ key: '参数名', value: '参数值' }]
      */
     type ConstructorOptions = {
         options?: Promise<object> | any;
@@ -55900,6 +56086,7 @@ export namespace UrlTemplateImageryProvider {
         getFeatureInfoFormats?: GetFeatureInfoFormat[];
         enablePickFeatures?: boolean;
         customTags?: any;
+        extensions?: object[];
     };
 }
 
@@ -55995,6 +56182,13 @@ export class UrlTemplateImageryProvider {
     source does not support picking features or if you don't want this provider's features to be pickable.
      */
     enablePickFeatures: boolean;
+    /**
+     * fix(5749): UrlTemplateImageryProvider解析Url，再拼接错误
+    修改人: 杨琨 2024-07-08
+    修改说明: 临时解决UrlUtil.correctUrl方法无法识别format=format/png，是一个参数还是一个接口，从而直接把/png字符串拼接到基地址后面的问题(baseUrl/png?)
+    提供一个扩展参数对象，让用户可以自定义传参
+     */
+    extensions: any;
     /**
      * Gets the URL template to use to request tiles.  It has the following keywords:
     <ul>
@@ -59949,6 +60143,7 @@ declare module "cesium/Source/MapGIS/Analysis/ViewshedAnalysis" { import { Views
 declare module "cesium/Source/MapGIS/Analysis/VisiblityAnalysis" { import { VisiblityAnalysis } from 'cesium'; export default VisiblityAnalysis; }
 declare module "cesium/Source/MapGIS/Analysis/Wind3D" { import { Wind3D } from 'cesium'; export default Wind3D; }
 declare module "cesium/Source/MapGIS/Controller/KeyboardCameraController" { import { KeyboardCameraController } from 'cesium'; export default KeyboardCameraController; }
+declare module "cesium/Source/MapGIS/Core/MapGISTileAvailability" { import { MapGISTileAvailability } from 'cesium'; export default MapGISTileAvailability; }
 declare module "cesium/Source/MapGIS/Entity/AttributeSurfacePrimitive" { import { AttributeSurfacePrimitive } from 'cesium'; export default AttributeSurfacePrimitive; }
 declare module "cesium/Source/MapGIS/Entity/Graphic" { import { Graphic } from 'cesium'; export default Graphic; }
 declare module "cesium/Source/MapGIS/Entity/Style" { import { Style } from 'cesium'; export default Style; }
