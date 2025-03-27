@@ -1,1 +1,26 @@
-define(["./PrimitivePipeline-a7cf99d1","./createTaskProcessorWorker","./Transforms-ce414632","./Matrix2-59fd2efe","./RuntimeError-24b14c10","./when-ae2e0b60","./ComponentDatatype-b7b5db18","./WebGLConstants-35626ea2","./combine-276652d0","./GeometryAttribute-5d30d102","./GeometryAttributes-5ce4955a","./GeometryPipeline-984d7313","./AttributeCompression-2f7b45b7","./EncodedCartesian3-3b6655b5","./IndexDatatype-6902a37d","./IntersectionTests-f71f97b3","./Plane-43337cee","./WebMercatorProjection-329b047d"],function(i,e,t,r,n,o,a,b,m,c,s,d,P,p,f,u,y,l){return e(function(e,t){return e=i.PrimitivePipeline.unpackCombineGeometryParameters(e),e=i.PrimitivePipeline.combineGeometry(e),i.PrimitivePipeline.packCombineGeometryResults(e,t)})});
+/**
+ * @license
+ * Cesium - https://github.com/CesiumGS/cesium
+ * Version 1.122.0
+ *
+ * Copyright 2011-2022 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+
+import{a as e}from"./chunk-MNC7I25M.js";import{a as r}from"./chunk-RHBLVWYJ.js";import"./chunk-233CTMIC.js";import"./chunk-RI54Y7QG.js";import"./chunk-Y2OVTRUS.js";import"./chunk-CHDRKMFE.js";import"./chunk-AQHT7SB6.js";import"./chunk-5DPH2YDL.js";import"./chunk-5A6A4ABM.js";import"./chunk-EPV44DUI.js";import"./chunk-KVTJ3ANR.js";import"./chunk-IKUVW36M.js";import"./chunk-EKJ3R65N.js";import"./chunk-T5OKL2DM.js";import"./chunk-CDTBDMY4.js";import"./chunk-LX4R5T4O.js";import"./chunk-YJOCDLI3.js";import"./chunk-3DX4WCAY.js";import"./chunk-CDG5PL45.js";import"./chunk-B3GSTU5G.js";import"./chunk-UQOFARAR.js";function n(o,t){let m=e.unpackCombineGeometryParameters(o),i=e.combineGeometry(m);return e.packCombineGeometryResults(i,t)}var c=r(n);export{c as default};

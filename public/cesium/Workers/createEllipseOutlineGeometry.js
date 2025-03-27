@@ -1,1 +1,26 @@
-define(["./Matrix2-59fd2efe","./when-ae2e0b60","./EllipseOutlineGeometry-ebd4f316","./RuntimeError-24b14c10","./ComponentDatatype-b7b5db18","./WebGLConstants-35626ea2","./GeometryOffsetAttribute-8c0bd3ce","./Transforms-ce414632","./combine-276652d0","./EllipseGeometryLibrary-c1a131e7","./GeometryAttribute-5d30d102","./GeometryAttributes-5ce4955a","./IndexDatatype-6902a37d"],function(r,n,i,e,t,o,l,a,c,d,s,b,m){return function(e,t){return(e=n.defined(t)?i.EllipseOutlineGeometry.unpack(e,t):e)._center=r.Cartesian3.clone(e._center),e._ellipsoid=r.Ellipsoid.clone(e._ellipsoid),i.EllipseOutlineGeometry.createGeometry(e)}});
+/**
+ * @license
+ * Cesium - https://github.com/CesiumGS/cesium
+ * Version 1.122.0
+ *
+ * Copyright 2011-2022 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+
+import{a as i}from"./chunk-RSDQOCXX.js";import"./chunk-F7PQBTTW.js";import"./chunk-I2E7XWPG.js";import"./chunk-5A6A4ABM.js";import"./chunk-EPV44DUI.js";import"./chunk-KVTJ3ANR.js";import"./chunk-IKUVW36M.js";import"./chunk-EKJ3R65N.js";import"./chunk-T5OKL2DM.js";import{a as t,d as c}from"./chunk-CDTBDMY4.js";import"./chunk-LX4R5T4O.js";import"./chunk-YJOCDLI3.js";import"./chunk-3DX4WCAY.js";import"./chunk-CDG5PL45.js";import"./chunk-B3GSTU5G.js";import{e as o}from"./chunk-UQOFARAR.js";function a(r,n){return o(n)&&(r=i.unpack(r,n)),r._center=t.clone(r._center),r._ellipsoid=c.clone(r._ellipsoid),i.createGeometry(r)}var p=a;export{p as default};
