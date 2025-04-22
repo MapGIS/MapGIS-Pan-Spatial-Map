@@ -7,12 +7,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "serve": "./shell/copy-assets.sh && node --max_old_space_size=13312 ./node_modules/@vue/cli-service/bin/vue-cli-service serve",
-    "build": "./shell/copy-assets.sh && node --max_old_space_size=13312 ./node_modules/@vue/cli-service/bin/vue-cli-service build",
+    "serve": "node ./shell/copy-assets.js && node --max_old_space_size=13312 ./node_modules/@vue/cli-service/bin/vue-cli-service serve",
+    "build": "node ./shell/copy-assets.js && node --max_old_space_size=13312 ./node_modules/@vue/cli-service/bin/vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "build:backend": "./shell/copy-assets.sh && node --max_old_space_size=13312 ./node_modules/@vue/cli-service/bin/vue-cli-service build --mode backend",
-    "build:preview": "./shell/copy-assets.sh && node --max_old_space_size=13312 ./node_modules/@vue/cli-service/bin/vue-cli-service build --mode preview",
+    "build:backend": "node ./shell/copy-assets.js && node --max_old_space_size=13312 ./node_modules/@vue/cli-service/bin/vue-cli-service build --mode backend",
+    "build:preview": "node ./shell/copy-assets.js && node --max_old_space_size=13312 ./node_modules/@vue/cli-service/bin/vue-cli-service build --mode preview",
     "lint:nofix": "vue-cli-service lint --no-fix"
   },
   "dependencies": {
