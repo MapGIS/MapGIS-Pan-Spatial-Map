@@ -33,4 +33,3 @@ new Vue({
 }).$mount('#main-app')
 window.MapgisApplicationVueRuntime = Vue
 window.Vue = Vue
-window.MAPGIS_BASE_URL = `/`
