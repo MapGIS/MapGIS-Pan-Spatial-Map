@@ -291,7 +291,7 @@ export default {
             // 将未分组放到所有分组之前
             const unGroupFolderIndex = widgetStructure.findIndex(item => item.type === 'folder')
             if (unGroupFolderIndex > -1) {
-              widgetStructure.splice(unGroupFolderIndex, 1, { label: '未分组', children: children })
+              widgetStructure.splice(unGroupFolderIndex, 0, { label: '未分组', children: children })
             } else {
               widgetStructure.push({ label: '未分组', children: children })
             }
