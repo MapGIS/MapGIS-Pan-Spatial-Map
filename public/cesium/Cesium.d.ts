@@ -26549,6 +26549,7 @@ export namespace MapGISM3DSet {
      * @property [callback = null] - 每次MapGISM3DSet执行更新函数前，执行的回调函数
      * @property [password] - M3D 数据密码
      * @property [ignoreJSONAttributes = false] - 是否忽略M3D中JSON类型的属性值（目前仅M3D 2.0中可能包含JSON类型的属性值）
+     * @property [decryptOptions = null] - 解密参数。仅支持从IGS发布的M3d服务解密，传入参数参考 {"algorithm": "AES", "key": "8qir7iUmia5cWaFM9K7tZMHkeiPeN016HT5aied5dak=","iv": "SM4zEgrEtaD/nqDKAUh5uA=="}
      */
     type ConstructorOptions = {
         show?: boolean;
@@ -26624,6 +26625,7 @@ export namespace MapGISM3DSet {
         callback?: (...params: any[]) => any;
         password?: Uint8Array;
         ignoreJSONAttributes?: boolean;
+        decryptOptions?: any;
     };
     /**
      * Optimization option. Used as a callback when {@link MapGISM3DSet#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
@@ -31212,7 +31214,8 @@ export namespace Cesium3DTileset {
      * @property [textureCoordScale = new Cartesian2(1.0, 1.0)] - 模型纹理拉伸比例，默认不发生变化
      * @property [swipeEnabled = false] - 开启卷帘对比分析
      * @property [swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
-     * @property [option.customContentRegister] - 传入自定义渲染类型
+     * @property [customContentRegister] - 传入自定义渲染类型
+     * @property [decryptOptions = null] - 解密参数。仅支持从IGS发布的3DTiles服务解密，传入参数参考 {"algorithm": "AES", "key": "8qir7iUmia5cWaFM9K7tZMHkeiPeN016HT5aied5dak=","iv": "SM4zEgrEtaD/nqDKAUh5uA=="}
      */
     type ConstructorOptions = {
         show?: boolean;
@@ -31280,6 +31283,8 @@ export namespace Cesium3DTileset {
         textureCoordScale?: Cartesian2;
         swipeEnabled?: boolean;
         swipeInverse?: number;
+        customContentRegister?: Cesium3DTileCustomContent;
+        decryptOptions?: any;
     };
     /**
      * Optimization option. Used as a callback when {@link Cesium3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,

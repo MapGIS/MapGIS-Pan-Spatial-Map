@@ -23,4 +23,4 @@
  * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
  */
 
-import{b as t}from"./chunk-EKJ3R65N.js";import{a as r}from"./chunk-CDG5PL45.js";import{a as m}from"./chunk-B3GSTU5G.js";import{e as i}from"./chunk-UQOFARAR.js";function d(e){if(e=r(e,r.EMPTY_OBJECT),!i(e.geometry))throw new m("options.geometry is required.");this.geometry=e.geometry,this.modelMatrix=t.clone(r(e.modelMatrix,t.IDENTITY)),this.id=e.id,this.pickPrimitive=e.pickPrimitive,this.attributes=r(e.attributes,{}),this.westHemisphereGeometry=void 0,this.eastHemisphereGeometry=void 0}var s=d;export{s as a};
+import{b as t}from"./chunk-N4QPWDDM.js";import{a as r}from"./chunk-CDG5PL45.js";import{a as m}from"./chunk-B3GSTU5G.js";import{e as i}from"./chunk-UQOFARAR.js";function d(e){if(e=r(e,r.EMPTY_OBJECT),!i(e.geometry))throw new m("options.geometry is required.");this.geometry=e.geometry,this.modelMatrix=t.clone(r(e.modelMatrix,t.IDENTITY)),this.id=e.id,this.pickPrimitive=e.pickPrimitive,this.attributes=r(e.attributes,{}),this.westHemisphereGeometry=void 0,this.eastHemisphereGeometry=void 0}var s=d;export{s as a};
