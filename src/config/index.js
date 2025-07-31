@@ -22,4 +22,7 @@ if (process.env.NODE_ENV === 'production') {
   window.externalPublicPath = `/${window._CONFIG['productName']}/static/web-ui/`
   // eslint-disable-next-line camelcase, no-undef
   __webpack_public_path__ = window.externalPublicPath
+  window.MAPGIS_BASE_URL = `/${window._CONFIG['productName']}/static/web-ui/`
+} else {
+  window.MAPGIS_BASE_URL = `/`
 }
