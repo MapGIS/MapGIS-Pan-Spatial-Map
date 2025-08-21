@@ -2928,6 +2928,10 @@ export class CesiumTerrainProvider {
      */
     readonly errorEvent: Event;
     /**
+     * 当地形数据中包含法向量标志变量发生变化时触发的事件
+     */
+    readonly hasVertexNormalsChanged: Event;
+    /**
      * Gets the credit to display when this terrain provider is active.  Typically this is used to credit
     the source of the terrain.
      */
@@ -25596,6 +25600,76 @@ export class SceneProjectorEx {
 export function SectionCylinderGeometry(height: number, topRadius: number, bottomRadius: number, position: Cartesian3): void;
 
 /**
+ * 剖面几何类
+ * @param options - 剖面几何类构造参数
+ * @param [options.positions] - 位置数组
+ * @param [options.isHorizontal] - 是否生成水平面，默认为false。设置为true时，会生成水平切面，假设输入AB两点，获取A点沿AB方向上且无限接近于A点且高度一致的点C， 切面点的计算根据A点地心向量叉乘Ac向量后乘以切面深度得出。需要注意在topHeight和bottomHeight不一致时，根据切面方向的不同切面深度也会发生变化。
+ * @param [options.topHeight = 1000] - 上切面高度
+ * @param [options.bottomHeight = 1000] - 下切面高度
+ */
+export class SectionPlaneGeometry {
+    constructor(options: {
+        positions?: Cartesian3[];
+        isHorizontal?: boolean;
+        topHeight?: number;
+        bottomHeight?: number;
+    });
+    /**
+     * 获取几何对应的顶点数组对象
+     * @param context - 上下文对象
+     * @returns 顶点数组对象
+     */
+    getVertexArray(context: Context): VertexArray;
+    /**
+     * 根据空间中的四个点构建一个剖面几何
+     * @example
+     * let sectionPlaneGeometry = Cesium.SectionPlaneGeometry.createPlaneGeometryByPositions(positions[0], positions[1], positions[2], positions[3])
+     */
+    static createPlaneGeometryByPositions(topPoint1: Cartesian3, topPoint2: Cartesian3, bottomPoint1: Cartesian3, bottomPoint2: Cartesian3): SectionPlaneGeometry;
+    /**
+     * 根据多个MapGISM3DSet和统一的海拔高度构建一个水平的剖面几何
+     * @example
+     * let sectionPlaneGeometry = Cesium.SectionPlaneGeometry.createPlaneGeometryByHeight([m3dLayer], -800)
+     * @param layers - m3d图层列表
+     * @param height - 海拔高度
+     */
+    static createPlaneGeometryByHeight(layers: MapGISM3DSet[], height: number): SectionPlaneGeometry;
+}
+
+/**
+ * 剖面区几何类
+ * @property [options.positions] - 位置数组
+ * @property [minHeight = 1000] - 最小高程
+ * @property [maxHeight = 1000] - 最大高程
+ * @param options - 剖面区构造参数
+ */
+export class SectionPolygonGeometry {
+    constructor(options: any);
+    /**
+     * 获取几何对应的顶点数组对象
+     * @param context - 上下文对象
+     * @returns 顶点数组对象
+     */
+    getVertexArray(context: Context): VertexArray;
+    /**
+     * 剖面区控制点
+     */
+    positions: Cartesian3[];
+    /**
+     * 销毁对象
+     */
+    destroy(): void;
+    /**
+     * 最小高程
+    */
+    minHeight?: number;
+    /**
+     * 最大高程
+    */
+    maxHeight?: number;
+}
+
+/**
  * 地质体剖切绘制类
  * @param options.geometry - 剖面几何对象
  * @param options.clippingType - 裁剪类型
@@ -25623,11 +25697,11 @@ export class ViewshedAnalysis {
      */
     viewRadius: number;
     /**
-     * 水平夹角
+     * 水平夹角（取值应小于180）
      */
     horizontAngle: number;
     /**
-     * 垂直夹角
+     * 垂直夹角（取值应小于180）
      */
     verticalAngle: number;
     /**
@@ -26550,6 +26624,12 @@ export namespace MapGISM3DSet {
      * @property [password] - M3D 数据密码
      * @property [ignoreJSONAttributes = false] - 是否忽略M3D中JSON类型的属性值（目前仅M3D 2.0中可能包含JSON类型的属性值）
      * @property [decryptOptions = null] - 解密参数。仅支持从IGS发布的M3d服务解密，传入参数参考 {"algorithm": "AES", "key": "8qir7iUmia5cWaFM9K7tZMHkeiPeN016HT5aied5dak=","iv": "SM4zEgrEtaD/nqDKAUh5uA=="}
+     * @property [brightness = 0.0] - 模型的亮度，取值范围：[-1, 1]
+     * @property [exposure = 0.0] - 模型的曝光度，取值范围：[-1, +∞]
+     * @property [contrast = 1.0] - 模型的对比度，取值范围：[0, +∞]
+     * @property [hue = 0.0] - 模型的色相，取值范围：[0, +∞]
+     * @property [saturation = 0.0] - 模型的饱和度，取值范围：[-1, +1]
+     * @property [gamma = 1.0] - 模型的伽马值，取值范围：[0, +∞]
      */
     type ConstructorOptions = {
         show?: boolean;
@@ -26626,6 +26706,12 @@ export namespace MapGISM3DSet {
         password?: Uint8Array;
         ignoreJSONAttributes?: boolean;
         decryptOptions?: any;
+        brightness?: number;
+        exposure?: number;
+        contrast?: number;
+        hue?: number;
+        saturation?: number;
+        gamma?: number;
     };
     /**
      * Optimization option. Used as a callback when {@link MapGISM3DSet#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
@@ -27756,14 +27842,14 @@ export class MapGISM3DSet {
      */
     modelFlatten(positionArray: any[], flattenHeight: number, flattenIDs: Color[]): void;
     /**
-     * 添加剖面几何，只支持M3D 2.0
+     * 添加剖面几何，只支持M3D 2.0及以上版本
      * @param options.geometry - 剖面几何，支持输入SectionPlaneGeometry、SectionCylinderGeometry、SectionPolygonGeometry几何对象
      */
     addSectionGeometry(options: {
         geometry: any;
     }): void;
     /**
-     * 是否只显示模型剖面，仅当通过{@link MapGISM3DSet#addSectionGeometry}接口传入剖面几何时，该接口才有效。
+     * 是否只显示模型剖面，仅当通过{@link MapGISM3DSet#addSectionGeometry}接口传入剖面几何时，该接口才有效。只支持M3D 2.0及以上版本
      * @param sectionOnly - 是否只显示模型剖面
      */
     sectionOnly(sectionOnly: boolean): void;
@@ -27776,6 +27862,22 @@ export class MapGISM3DSet {
      * 移除所有的剖面几何
      */
     removeAllSectionGeometry(): void;
+    /**
+     * 是否执行模型压平
+     */
+    isFlatten: number;
+    /**
+     * 指定压平高度
+     */
+    flattenHeight: number;
+    /**
+     * 指定压平范围
+     */
+    positionArray: any[];
+    /**
+     * 压平范围多边形数组长度
+     */
+    arrayLength: number;
 }
 
 /**
@@ -28105,10 +28207,10 @@ export class FlattenTool {
     flattenTool.modelFlatten(positions, 10, true, tileSetList);
      * @param positionArray - 压平区域多边形顶点坐标数组，封闭多边形
      * @param flattenHeight - 压平到指定高度，绝对海拔高度，单位米
-     * @param flattenWithId - 是否根据id压平
-     * @param [tileSetList] - 参与压平的MapGISM3DSet列表
+     * @param flattenWithId - 是否根据id压平（要素压平），仅支持MapGISM3DSet
+     * @param [tileSetList] - 参与压平的MapGISM3DSet或Cesium3DTileset列表。可选，如果不传，默认所有图层的MapGISM3DSet或Cesium3DTileset
      */
-    modelFlatten(positionArray: any[], flattenHeight: number, flattenWithId: boolean, tileSetList?: MapGISM3DSet[]): void;
+    modelFlatten(positionArray: any[], flattenHeight: number, flattenWithId: boolean, tileSetList?: any[][]): void;
     /**
      * 移除模型压平
      */
@@ -32188,6 +32290,17 @@ export class Cesium3DTileset {
      * @returns The height of the cartographic or undefined if it could not be found.
      */
     getHeight(cartographic: Cartographic, scene: Scene): number | undefined;
+    /**
+     * 模型压平
+     * @param positionArray - 压平区域多边形顶点坐标数组，封闭多边形
+     * @param flattenHeight - 压平到指定高度，绝对海拔高度，单位米
+     * @param flattenIDs - 要不压平的模型pickID
+     */
+    modelFlatten(positionArray: any[], flattenHeight: number, flattenIDs: Color[]): void;
+    /**
+     * 移除模型压平
+     */
+    removeModelFlatten(): void;
 }
 
 /**
