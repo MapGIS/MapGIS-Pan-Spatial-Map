@@ -65,6 +65,8 @@ export default {
             case 'portal-preview':
               this.isPortalPreview = true
               break
+            // 通过门户进入应用搭建编辑
+            case 'portal-edit':
             default:
               break
           }
@@ -113,14 +115,20 @@ export default {
         Object.assign(baseConfigInstance.config, portalBaseConfig)
       }
 
+      const treeData = await api.getTreeData()
+
       // 初始化进入应用搭建时置空数据目录
       // 在一张图中打开时不做此操作
       // 在应用搭建预览（非云门户预览）时不做此操作
       if (!(this.isManagerBuild || window.location === window.top.location)) {
         this.application.data = []
+        // 重置数据目录的数据
+        treeData.data[0].children.splice(0)
+        const initTreeData = treeData.data
+        this.dataCatalogData = initTreeData
+      } else {
+        this.dataCatalogData = treeData.data
       }
-      const treeData = await api.getTreeData()
-      this.dataCatalogData = treeData.data
 
       /**
        * 修改说明：退出登录，再次进入地图视图界面，这里需要初始化maprender的值
@@ -165,7 +173,11 @@ export default {
     // 门户预览直接跳转到一张图路由
     if (this.isPortalPreview) {
       localStorage.setItem('appConfig', JSON.stringify(this.application))
-      this.$router.push('/')
+      const data = {
+        type: 'app-builder-portal-preview',
+        appBuilderPreviewUrl: `${window.location.origin}/${window._CONFIG['productName']}/web`
+      }
+      window.top.postMessage(data, '*')
       return
     }
 
