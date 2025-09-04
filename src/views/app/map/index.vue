@@ -106,7 +106,7 @@ export default {
       }
     },
     updateTokenInfo(dataNode, tokenInfo) {
-      if (dataNode.children && dataNode.children) {
+      if (dataNode.children && dataNode.children.length) {
         dataNode.children.forEach(item => {
           this.updateTokenInfo(item, tokenInfo)
         })
