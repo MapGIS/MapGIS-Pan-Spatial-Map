@@ -173,13 +173,16 @@ export default {
     // 门户预览直接跳转到一张图路由
     if (this.isPortalPreview) {
       localStorage.setItem('appConfig', JSON.stringify(this.application))
-      const data = {
+      const appBuilderPreviewData = {
         type: 'app-builder-portal-preview',
         appBuilderPreviewUrl: `${window.location.origin}/${window._CONFIG['productName']}/web`
       }
-      window.top.postMessage(data, '*')
+      window.top.postMessage(appBuilderPreviewData, '*')
       return
     }
+
+    // 更新云门户服务的token信息，保证服务能够正常访问
+    this.updatePortalDataCatologTokenInfo()
 
     const style = this.themeStyle()
     const opacity = this.themeOpacity()
@@ -362,6 +365,34 @@ export default {
           children: []
         }
       ]
+    },
+    // 更新门户数据资源的token信息
+    updatePortalDataCatologTokenInfo() {
+      const { data } = this.application
+      const portalToken = localStorage.getItem('app_builder_token')
+      const tokenInfo = {
+        tokenKey: 'Authorization',
+        tokenValue: 'Bearer ' + JSON.parse(portalToken)
+      }
+      if (data && data.length) {
+        data.forEach(item => {
+          this.updateTokenInfo(item, tokenInfo)
+        })
+      }
+    },
+    updateTokenInfo(dataNode, tokenInfo) {
+      if (dataNode.children && dataNode.children.length) {
+        dataNode.children.forEach(item => {
+          this.updateTokenInfo(item, tokenInfo)
+        })
+      } else {
+        const serviceSource = dataNode.extend?.serviceSource
+        // 来自门户的服务更新token信息
+        if (serviceSource === 'fromCloudPortal') {
+          dataNode.tokenKey = tokenInfo.tokenKey
+          dataNode.token = tokenInfo.tokenValue
+        }
+      }
     }
   }
 }
