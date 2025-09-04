@@ -35,6 +35,7 @@ export default {
       // 更新云门户服务的token信息，保证服务能够正常访问
       this.updatePortalDataCatologTokenInfo()
       this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
+      baseConfigInstance.config = this.application.baseConfig
     } else {
       this.application = AppManager.getInstance().getApplication()
       /**
