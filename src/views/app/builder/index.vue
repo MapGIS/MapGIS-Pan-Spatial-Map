@@ -103,11 +103,9 @@ export default {
       this.application = AppManager.getInstance().getApplication()
       // 获取云门户应用搭建配置信息
       const baseConfigData = await api.getPortalAppBuilderConfig()
-      if (baseConfigData) {
-        const { data } = baseConfigData
+      if (baseConfigData && baseConfigData.length) {
         const portalBaseConfig = {}
-        Object.keys(data).forEach(item => {
-          const config = data[item]
+        baseConfigData.forEach(config => {
           Object.assign(portalBaseConfig, JSON.parse(config.configValue))
         })
         portalBaseConfig.portalPath = this.portalPath
@@ -160,6 +158,7 @@ export default {
       this.previewData = config
       // 合并基础配置
       Object.assign(baseConfigInstance.config, baseConfig)
+      this.application.baseConfig.initMode = this.application.document.maprender
       baseConfigInstance.config.initMode = this.application.document.maprender
       // 构造document对象
       this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
