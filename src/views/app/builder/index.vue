@@ -158,10 +158,16 @@ export default {
       this.previewData = config
       // 合并基础配置
       Object.assign(baseConfigInstance.config, baseConfig)
-      this.application.baseConfig.initMode = this.application.document.maprender
-      baseConfigInstance.config.initMode = this.application.document.maprender
+      // this.application.baseConfig.initMode = this.application.document.maprender
+      // baseConfigInstance.config.initMode = this.application.document.maprender
       // 构造document对象
-      this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
+      const initMode =
+        baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
+      if (!initMode || initMode === 'map') {
+        this.application.document = AppManager.getInstance().generateDocument(MapRender.MAPBOXGL)
+      } else if (initMode === 'globe') {
+        this.application.document = AppManager.getInstance().generateDocument(MapRender.CESIUM)
+      }
     }
 
     // 处理widgetStructure,默认带上未分组，方便应用搭建后续处理
