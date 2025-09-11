@@ -34,9 +34,16 @@ export default {
       localStorage.removeItem('appConfig')
       // 更新云门户服务的token信息，保证服务能够正常访问
       this.updatePortalDataCatologTokenInfo()
-      this.application.baseConfig.initMode = this.application.document.maprender
-      this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
+      // this.application.baseConfig.initMode = this.application.document.maprender
+      // this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
       baseConfigInstance.config = this.application.baseConfig
+      const initMode =
+        baseConfigInstance.config && baseConfigInstance.config.initMode ? baseConfigInstance.config.initMode : undefined
+      if (!initMode || initMode === 'map') {
+        this.application.document = AppManager.getInstance().generateDocument(MapRender.MAPBOXGL)
+      } else if (initMode === 'globe') {
+        this.application.document = AppManager.getInstance().generateDocument(MapRender.CESIUM)
+      }
     } else {
       this.application = AppManager.getInstance().getApplication()
       /**
