@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { AppManager, MapRender, baseConfigInstance, loadConfigs, api } from '@mapgis/web-app-framework'
+import { AppManager, MapRender, baseConfigInstance, loadConfigs, api, WidgetState } from '@mapgis/web-app-framework'
 import request from '@/utils/request'
 import mapgisui from '@mapgis/webclient-vue-ui'
 import storage from 'store'
@@ -99,6 +99,9 @@ export default {
       publicPath
     )
     await loadConfigs()
+
+    // 获取微件信息
+    const widgets = await api.getWidgetList()
     if (!this.appBuilderPreviewId) {
       this.application = AppManager.getInstance().getApplication()
       // 获取云门户应用搭建配置信息
@@ -170,8 +173,9 @@ export default {
       }
     }
 
-    // 处理widgetStructure,默认带上未分组，方便应用搭建后续处理
-    this.formatContentWidgetStructure()
+    // 1.处理widgetStructure,默认带上未分组，方便应用搭建后续处理 2.处理不存在的微件，将不存在的微件移除
+    this.formatContentWidgetStructure(widgets)
+    this.formatMapWidgets(widgets)
     // 设置应用搭建中app-loader区域的背景图地址
     this.appLoaderBackgroud = `${publicPath}appBuilder/app-loader-bg.png`
 
@@ -214,7 +218,7 @@ export default {
         this.hasReload = false
       }, 2000)
     },
-    themeChange(appConfig) {
+    async themeChange(appConfig) {
       this.hasReload = true
       this.themeLoaded = false
       const maprender = appConfig.document.maprender
@@ -226,7 +230,9 @@ export default {
       this.application.document.defaultMap.removeAll()
       // 清除baseLayerMap
       this.application.document.baseLayerMap.removeAll()
-      this.formatContentWidgetStructure()
+      // 获取微件信息
+      const widgets = await api.getWidgetList()
+      this.formatContentWidgetStructure(widgets)
       this.formatMapWidgets()
       this.$nextTick(() => {
         this.themeLoaded = true
@@ -266,23 +272,41 @@ export default {
       }
       return 1
     },
-    formatContentWidgetStructure() {
+    // 处理内容微件
+    formatContentWidgetStructure(allWidgets) {
       const {
         contentWidgets: { groups }
       } = this.application
       groups.forEach(item => {
         let { widgetStructure, widgets } = item
+        // 将微件的状态置为关闭
+        widgets.forEach(widget => {
+          widget.state = WidgetState.CLOSED
+        })
+
         const widgetInFolderArr = []
         if (widgetStructure && widgetStructure.length >= 0) {
           // 兼容数据，对没有未分组的contentWidgets构造未分组
           const hasUnGroup = widgetStructure.find(group => !group.id)
 
           // 获取当前不存在的配置微件
-          const invalidWidgets = widgets.map(widget => {
-            if (widget.invalid) {
+          const invalidWidgets = widgets
+            .filter(widget => {
+              // 已被标记为无效的微件
+              if (widget.invalid) {
+                return true
+              }
+
+              // 不在微件列表中的微件
+              const widgetName = widget.uri.split('/')[1]
+              const targetWidget = allWidgets.rows.find(widget => widget.widgetName === widgetName)
+              if (!targetWidget) {
+                return true
+              }
+            })
+            .map(widget => {
               return widget.id
-            }
-          })
+            })
 
           if (!hasUnGroup) {
             const children = []
@@ -322,12 +346,12 @@ export default {
             widgets = widgets.filter(widget => !invalidWidgets.includes(widget.id))
             // 删除widgetStructure中不存在的配置微件
             widgetStructure = widgetStructure.filter(structure => {
-              if (!invalidWidgets.includes(structure.id)) {
+              if (structure.children) {
+                structure.children = structure.children.filter(widget => !invalidWidgets.includes(widget.id))
                 return true
               }
 
-              if (structure.children) {
-                structure.children = structure.children.filter(widget => !invalidWidgets.includes(widget.id))
+              if (!invalidWidgets.includes(structure.id)) {
                 return true
               }
             })
@@ -337,9 +361,25 @@ export default {
         }
       })
     },
-    formatMapWidgets() {
+    // 处理地图微件
+    formatMapWidgets(allWidgets) {
       const { mapWidgets } = this.application
-      mapWidgets.widgets = mapWidgets.widgets.filter(widget => !widget.invalid)
+      mapWidgets.widgets = mapWidgets.widgets.filter(widget => {
+        // 未被标记为无效的微件
+        if (!widget.invalid) {
+          return true
+        }
+        // 在微件列表中的微件
+        const widgetName = widget.uri.split('/')[1]
+        const targetWidget = allWidgets.rows.find(widget => widget.widgetName === widgetName)
+        if (targetWidget) {
+          return true
+        }
+      })
+      // 设置微件状态
+      mapWidgets.widgets.forEach(widget => {
+        widget.state = WidgetState.CLOSED
+      })
     },
     async updateTreeData() {
       const dataCatalogData = await api.getTreeData()
