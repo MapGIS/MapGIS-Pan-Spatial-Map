@@ -149,6 +149,7 @@ export default {
       const { baseConfig, catalogTreeData } = content
       // 直接使用保存数据中的数据目录信息
       if (catalogTreeData && catalogTreeData.length > 0) {
+        this.updateCatalogTreeData(catalogTreeData)
         this.dataCatalogData = catalogTreeData
         delete content.catalogTreeData
       } else {
@@ -176,6 +177,10 @@ export default {
     // 1.处理widgetStructure,默认带上未分组，方便应用搭建后续处理 2.处理不存在的微件，将不存在的微件移除
     this.formatContentWidgetStructure(widgets)
     this.formatMapWidgets(widgets)
+
+    // 更新云门户服务的token信息、组装服务全路径，保证服务能够正常访问
+    this.updatePortalDataCatolog()
+
     // 设置应用搭建中app-loader区域的背景图地址
     this.appLoaderBackgroud = `${publicPath}appBuilder/app-loader-bg.png`
 
@@ -189,9 +194,6 @@ export default {
       window.top.postMessage(appBuilderPreviewData, '*')
       return
     }
-
-    // 更新云门户服务的token信息，保证服务能够正常访问
-    this.updatePortalDataCatologTokenInfo()
 
     const style = this.themeStyle()
     const opacity = this.themeOpacity()
@@ -412,7 +414,7 @@ export default {
       ]
     },
     // 更新门户数据资源的token信息
-    updatePortalDataCatologTokenInfo() {
+    updatePortalDataCatolog() {
       const { data } = this.application
       const portalToken = localStorage.getItem('app_builder_token')
       const tokenInfo = {
@@ -421,14 +423,14 @@ export default {
       }
       if (data && data.length) {
         data.forEach(item => {
-          this.updateTokenInfo(item, tokenInfo)
+          this.updateNodeInfo(item, tokenInfo)
         })
       }
     },
-    updateTokenInfo(dataNode, tokenInfo) {
+    updateNodeInfo(dataNode, tokenInfo) {
       if (dataNode.children && dataNode.children.length) {
         dataNode.children.forEach(item => {
-          this.updateTokenInfo(item, tokenInfo)
+          this.updateNodeInfo(item, tokenInfo)
         })
       } else {
         const serviceSource = dataNode.extend?.serviceSource
@@ -436,6 +438,50 @@ export default {
         if (serviceSource === 'fromCloudPortal') {
           dataNode.tokenKey = tokenInfo.tokenKey
           dataNode.token = tokenInfo.tokenValue
+          // 判断忘地址是否为相对地址
+          if (dataNode.serverUrl && dataNode.serverUrl.startsWith('/')) {
+            const { origin } = window.location
+            // 组装完整的url路径
+            dataNode.serverUrl = decodeURIComponent(origin + dataNode.serverUrl)
+          }
+        }
+      }
+    },
+    updateCatalogTreeData(data) {
+      const portalToken = localStorage.getItem('app_builder_token')
+      const tokenInfo = {
+        tokenKey: 'Authorization',
+        tokenValue: 'Bearer ' + JSON.parse(portalToken)
+      }
+      if (data && data.length) {
+        data.forEach(item => {
+          this.updateTreeNodeInfo(item, tokenInfo)
+        })
+      }
+    },
+    updateTreeNodeInfo(dataNode, tokenInfo) {
+      if (dataNode.children && dataNode.children.length) {
+        dataNode.children.forEach(item => {
+          this.updateTreeNodeInfo(item, tokenInfo)
+        })
+      } else {
+        let serviceSource
+        if (dataNode.extendedProperties) {
+          const extendedProperties = JSON.parse(dataNode.extendedProperties)
+          serviceSource = extendedProperties?.serviceSource
+        }
+        // 左侧目录树设置token信息，补全服务url
+        if (serviceSource === 'fromCloudPortal') {
+          const properties = JSON.parse(dataNode.properties)
+          properties.tokenKey = tokenInfo.tokenKey
+          properties.token = tokenInfo.tokenValue
+          // 判断忘地址是否为相对地址
+          if (properties.serverUrl && properties.serverUrl.startsWith('/')) {
+            const { origin } = window.location
+            // 组装完整的url路径
+            properties.serverUrl = decodeURIComponent(origin + properties.serverUrl)
+          }
+          dataNode.properties = JSON.stringify(properties)
         }
       }
     }
