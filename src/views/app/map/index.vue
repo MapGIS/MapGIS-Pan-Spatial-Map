@@ -32,8 +32,6 @@ export default {
     if (appConfig) {
       this.application = JSON.parse(appConfig)
       localStorage.removeItem('appConfig')
-      // 更新云门户服务的token信息，保证服务能够正常访问
-      this.updatePortalDataCatologTokenInfo()
       // this.application.baseConfig.initMode = this.application.document.maprender
       // this.application.document = AppManager.getInstance().generateDocument(this.application.document.maprender)
       baseConfigInstance.config = this.application.baseConfig
@@ -99,34 +97,6 @@ export default {
         return this.application.theme.opacity || 1
       }
       return 1
-    },
-    // 更新门户数据资源的token信息
-    updatePortalDataCatologTokenInfo() {
-      const { data } = this.application
-      const portalToken = localStorage.getItem('app_builder_token')
-      const tokenInfo = {
-        tokenKey: 'Authorization',
-        tokenValue: 'Bearer ' + JSON.parse(portalToken)
-      }
-      if (data && data.length) {
-        data.forEach(item => {
-          this.updateTokenInfo(item, tokenInfo)
-        })
-      }
-    },
-    updateTokenInfo(dataNode, tokenInfo) {
-      if (dataNode.children && dataNode.children.length) {
-        dataNode.children.forEach(item => {
-          this.updateTokenInfo(item, tokenInfo)
-        })
-      } else {
-        const serviceSource = dataNode.extend?.serviceSource
-        // 来自门户的服务更新token信息
-        if (serviceSource === 'fromCloudPortal') {
-          dataNode.tokenKey = tokenInfo.tokenKey
-          dataNode.token = tokenInfo.tokenValue
-        }
-      }
     }
   }
 }
