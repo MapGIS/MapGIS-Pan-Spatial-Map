@@ -121,7 +121,7 @@ export default {
       // 初始化进入应用搭建时置空数据目录
       // 在一张图中打开时不做此操作
       // 在应用搭建预览（非云门户预览）时不做此操作
-      if (!(this.isManagerBuild || window.location === window.top.location)) {
+      if (!this.isManagerBuild) {
         this.application.data = []
         // 重置数据目录的数据
         treeData.data[0].children.splice(0)
@@ -433,16 +433,42 @@ export default {
           this.updateNodeInfo(item, tokenInfo)
         })
       } else {
-        const serviceSource = dataNode.extend?.serviceSource
+        let serviceSource = dataNode.extend?.serviceSource
+
+        /**
+         * 修正数据目录微件中的目录树错误数据,通过数据目录的导入接口返回的数据错误，serviceSource的值会变成 '\'fromCloudPortal'\'，保存后会有问题，为了能够正常解析保存错误的数据，此处进行修正
+         */
+        if (serviceSource) {
+          if (serviceSource === 'fromCloudPortal' || serviceSource.includes('fromCloudPortal')) {
+            serviceSource = 'fromCloudPortal'
+            // 修正错误数据
+            dataNode.extend.serviceSource = 'fromCloudPortal'
+          } else {
+            dataNode.extend.serviceSource = 'fromOther'
+          }
+        }
         // 来自门户的服务更新token信息
         if (serviceSource === 'fromCloudPortal') {
           dataNode.tokenKey = tokenInfo.tokenKey
           dataNode.token = tokenInfo.tokenValue
-          // 判断忘地址是否为相对地址
-          if (dataNode.serverUrl && dataNode.serverUrl.startsWith('/')) {
+          // 处理门户地址
+          if (dataNode.serverUrl) {
+            // 判断是否为完整路径
+            let isFullPath
+            let urlInfo
+            try {
+              urlInfo = new URL(dataNode.serverUrl)
+              isFullPath = true
+            } catch (error) {}
+
             const { origin } = window.location
-            // 组装完整的url路径
-            dataNode.serverUrl = decodeURIComponent(origin + dataNode.serverUrl)
+            if (dataNode.serverUrl.startsWith('/')) {
+              // 组装完整的url路径
+              dataNode.serverUrl = decodeURIComponent(origin + dataNode.serverUrl)
+            } else if (isFullPath) {
+              // 全路径进行域名替换
+              dataNode.serverUrl = decodeURIComponent(dataNode.serverUrl.replace(urlInfo.origin, origin))
+            }
           }
         }
       }
@@ -469,17 +495,44 @@ export default {
         if (dataNode.extendedProperties) {
           const extendedProperties = JSON.parse(dataNode.extendedProperties)
           serviceSource = extendedProperties?.serviceSource
+          /**
+           * 修正应用搭建左侧非微件数据目录错误数据,通过数据目录的导入接口返回的数据错误，serviceSource的值会变成 '\'fromCloudPortal'\'，保存后会有问题，为了能够正常解析保存错误的数据，此处进行修正
+           */
+          if (serviceSource) {
+            if (serviceSource === 'fromCloudPortal' || serviceSource.includes('fromCloudPortal')) {
+              if (serviceSource !== 'fromCloudPortal') {
+                // 修正错误数据
+                extendedProperties.serviceSource = 'fromCloudPortal'
+              }
+              serviceSource = 'fromCloudPortal'
+            } else {
+              extendedProperties.serviceSource = 'fromOther'
+            }
+            dataNode.extendedProperties = JSON.stringify(extendedProperties)
+          }
         }
         // 左侧目录树设置token信息，补全服务url
         if (serviceSource === 'fromCloudPortal') {
           const properties = JSON.parse(dataNode.properties)
           properties.tokenKey = tokenInfo.tokenKey
           properties.token = tokenInfo.tokenValue
-          // 判断忘地址是否为相对地址
-          if (properties.serverUrl && properties.serverUrl.startsWith('/')) {
+          // 处理门户地址
+          if (properties.serverUrl) {
+            // 判断是否为完整路径
+            let isFullPath
+            let urlInfo
+            try {
+              urlInfo = new URL(properties.serverUrl)
+              isFullPath = true
+            } catch (error) {}
             const { origin } = window.location
-            // 组装完整的url路径
-            properties.serverUrl = decodeURIComponent(origin + properties.serverUrl)
+            if (properties.serverUrl.startsWith('/')) {
+              // 组装完整的url路径
+              properties.serverUrl = decodeURIComponent(origin + properties.serverUrl)
+            } else if (isFullPath) {
+              // 全路径进行域名替换
+              properties.serverUrl = decodeURIComponent(properties.serverUrl.replace(urlInfo.origin, origin))
+            }
           }
           dataNode.properties = JSON.stringify(properties)
         }
