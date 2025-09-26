@@ -188,6 +188,8 @@ export default {
 
     // 门户预览直接跳转到一张图路由
     if (this.isPortalPreview) {
+      // 添加预览标识
+      this.application.preview = true
       localStorage.setItem('appConfig', JSON.stringify(this.application))
       const appBuilderPreviewData = {
         type: 'app-builder-portal-preview',
