@@ -147,6 +147,8 @@ export default {
       const config = await api.getAppBuilderConfigById(this.appBuilderPreviewId)
       const content = JSON.parse(config.content)
       const { baseConfig, catalogTreeData } = content
+      // 更新门户地址
+      baseConfig.portalPath = this.portalPath
       // 直接使用保存数据中的数据目录信息
       if (catalogTreeData && catalogTreeData.length > 0) {
         this.updateCatalogTreeData(catalogTreeData)
