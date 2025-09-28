@@ -31318,6 +31318,7 @@ export namespace Cesium3DTileset {
      * @property [swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
      * @property [customContentRegister] - 传入自定义渲染类型
      * @property [decryptOptions = null] - 解密参数。仅支持从IGS发布的3DTiles服务解密，传入参数参考 {"algorithm": "AES", "key": "8qir7iUmia5cWaFM9K7tZMHkeiPeN016HT5aied5dak=","iv": "SM4zEgrEtaD/nqDKAUh5uA=="}
+     * @property [generateUniqueId = false] - 是否为瓦片集中每个要素生成唯一的ID标识符（属性名称为uniqueId，属性内容为UUID，若当前要素中不存在任何属性或已存在uniqueId属性，则不会生成）
      */
     type ConstructorOptions = {
         show?: boolean;
@@ -31387,6 +31388,7 @@ export namespace Cesium3DTileset {
         swipeInverse?: number;
         customContentRegister?: Cesium3DTileCustomContent;
         decryptOptions?: any;
+        generateUniqueId?: boolean;
     };
     /**
      * Optimization option. Used as a callback when {@link Cesium3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
