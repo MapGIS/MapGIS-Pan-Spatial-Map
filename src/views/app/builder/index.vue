@@ -47,6 +47,10 @@ export default {
           storage.set('app_builder_token', val.token)
         } else {
           console.warn('未获取到云门户用户token，云门户接口无法调用！！！')
+          // 如果此时localStorage中门户的token依然存在则清除
+          if (storage.get('app_builder_token')) {
+            storage.remove('app_builder_token')
+          }
         }
 
         if (val.portalPath || this.portalPath) {
@@ -420,11 +424,15 @@ export default {
     // 更新门户数据资源的token信息
     updatePortalDataCatolog() {
       const { data } = this.application
-      const portalToken = localStorage.getItem('app_builder_token')
-      const tokenInfo = {
-        tokenKey: 'Authorization',
-        tokenValue: 'Bearer ' + JSON.parse(portalToken)
-      }
+      const portalToken = storage.get('app_builder_token')
+
+      // 更新数据目录来自门户服务的token信息
+      const tokenInfo = portalToken
+        ? {
+            tokenKey: 'Authorization',
+            tokenValue: 'Bearer ' + portalToken
+          }
+        : null
       if (data && data.length) {
         data.forEach(item => {
           this.updateNodeInfo(item, tokenInfo)
@@ -453,8 +461,15 @@ export default {
         }
         // 来自门户的服务更新token信息
         if (serviceSource === 'fromCloudPortal') {
-          dataNode.tokenKey = tokenInfo.tokenKey
-          dataNode.token = tokenInfo.tokenValue
+          // 有token信息则更新token，没有则置空节点token信息
+          if (tokenInfo) {
+            dataNode.tokenKey = tokenInfo.tokenKey
+            dataNode.token = tokenInfo.tokenValue
+          } else {
+            dataNode.tokenKey = ''
+            dataNode.token = ''
+          }
+
           // 处理门户地址
           if (dataNode.serverUrl) {
             // 判断是否为完整路径
@@ -478,11 +493,13 @@ export default {
       }
     },
     updateCatalogTreeData(data) {
-      const portalToken = localStorage.getItem('app_builder_token')
-      const tokenInfo = {
-        tokenKey: 'Authorization',
-        tokenValue: 'Bearer ' + JSON.parse(portalToken)
-      }
+      const portalToken = storage.get('app_builder_token')
+      const tokenInfo = portalToken
+        ? {
+            tokenKey: 'Authorization',
+            tokenValue: 'Bearer ' + portalToken
+          }
+        : null
       if (data && data.length) {
         data.forEach(item => {
           this.updateTreeNodeInfo(item, tokenInfo)
@@ -518,8 +535,16 @@ export default {
         // 左侧目录树设置token信息，补全服务url
         if (serviceSource === 'fromCloudPortal') {
           const properties = JSON.parse(dataNode.properties)
-          properties.tokenKey = tokenInfo.tokenKey
-          properties.token = tokenInfo.tokenValue
+
+          // 有token信息则更新token，没有则置空节点token信息
+          if (tokenInfo) {
+            properties.tokenKey = tokenInfo.tokenKey
+            properties.token = tokenInfo.tokenValue
+          } else {
+            properties.tokenKey = ''
+            properties.token = ''
+          }
+
           // 处理门户地址
           if (properties.serverUrl) {
             // 判断是否为完整路径
