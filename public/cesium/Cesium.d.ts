@@ -28180,6 +28180,13 @@ export enum SwipeModeType {
 export function createClippingFillImageFunction(url: string, context: any): void;
 
 /**
+ * 返回UUID
+ * @example
+ * this.uuid = Cesium.createUUID();
+ */
+export function createUUID(): string;
+
+/**
  * 压平工具
  */
 export class FlattenTool {
