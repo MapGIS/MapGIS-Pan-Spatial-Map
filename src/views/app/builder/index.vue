@@ -308,7 +308,8 @@ export default {
               }
 
               // 不在微件列表中的微件
-              const widgetName = widget.uri.split('/')[1]
+              const strs = widget.uri.split('/')
+              const widgetName = strs[strs.length - 1]
               const targetWidget = allWidgets.rows.find(widget => widget.widgetName === widgetName)
               if (!targetWidget) {
                 return true
@@ -317,6 +318,25 @@ export default {
             .map(widget => {
               return widget.id
             })
+
+          // 处理widgetStructure中存在的无效微件
+          widgetStructure.forEach(item => {
+            // 处理分组
+            if (item.type === 'folder' || item.children) {
+              item.children.forEach(child => {
+                const widget = widgets.find(widget => widget.id === child.id)
+                // 如果在当前widgetStructure对应的widgets中不存在该微件，则表明该微件已删除
+                if (!widget) {
+                  invalidWidgets.push(child.id)
+                }
+              })
+            } else {
+              const widget = widgets.find(widget => widget.id === item.id)
+              if (!widget) {
+                invalidWidgets.push(item.id)
+              }
+            }
+          })
 
           if (!hasUnGroup) {
             const children = []
@@ -380,7 +400,8 @@ export default {
           return true
         }
         // 在微件列表中的微件
-        const widgetName = widget.uri.split('/')[1]
+        const strs = widget.uri.split('/')
+        const widgetName = strs[strs.length - 1]
         const targetWidget = allWidgets.rows.find(widget => widget.widgetName === widgetName)
         if (targetWidget) {
           return true
