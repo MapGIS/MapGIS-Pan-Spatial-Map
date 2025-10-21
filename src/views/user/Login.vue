@@ -69,6 +69,7 @@
       <div v-if="otherLoginItemEnabled" class="user-login-other">
         <span v-if="otherLoginValid">{{ $t('user.login.others') }}</span>
         <cas-login :config="casConfig"></cas-login>
+        <custom-login :loginExtendLinks="loginExtendLinks"></custom-login>
         <third-login :config="oauthConfig" ref="thirdLogin"></third-login>
       </div>
     </mapgis-ui-form-model>
@@ -83,12 +84,14 @@ import { LOGIN_USERNAME, LOGIN_SECRET_KEY, LOGIN_REMEMBERME } from '@/store/muta
 import storage from 'store'
 import ThirdLogin from './third/ThirdLogin'
 import CasLogin from './cas/CasLogin'
+import CustomLogin from './custom/CustomLogin'
 import { encrypt, decrypt } from '@/utils/jsencrypt'
 
 export default {
   components: {
     ThirdLogin,
-    CasLogin
+    CasLogin,
+    CustomLogin
   },
   mixins: [serverMixin],
   data() {
@@ -116,12 +119,17 @@ export default {
         captchaEnabled: false,
         maxRetryCount: 1
       },
+      loginExtendLinks: [],
       rememberMeConfigEnabled: false
     }
   },
   computed: {
     otherLoginValid() {
-      return (this.casConfig.enabled && this.casConfig.isReserveDefaultLogin) || this.oauthConfig.length
+      return (
+        (this.casConfig.enabled && this.casConfig.isReserveDefaultLogin) ||
+        this.oauthConfig.length ||
+        (this.loginExtendLinks && this.loginExtendLinks.length > 0)
+      )
     },
     captchaEnabled() {
       if (this.loginConfig.captchaEnabled && (this.isNeedCaptcha || this.loginConfig.maxRetryCount === 0)) {
@@ -143,6 +151,7 @@ export default {
     this.casConfig = this.systemConfig.casConfig
     this.oauthConfig = this.systemConfig.oauthConfig
     this.loginConfig = this.systemConfig.loginConfig
+    this.loginExtendLinks = this.systemConfig.loginExtendLinks
 
     if (this.captchaEnabled) {
       this.getCode()
@@ -198,18 +207,23 @@ export default {
       })
     },
     loginSuccess(res) {
-      const redirect = this.$route.query.redirect
-      if (redirect) {
-        let decodeRedirect = decodeURIComponent(redirect)
-
-        if (decodeRedirect.startsWith('/')) {
-          decodeRedirect = decodeRedirect.slice(1)
-          location.href = `${window._CONFIG['routerBase']}${decodeRedirect}`
-        } else {
-          location.href = decodeRedirect
-        }
+      if (`${window._CONFIG.VUE_APP_DEFAULT_ROUTE}`) {
+        // 如果配置了默认路由，则跳转到默认路由
+        location.href = `${window._CONFIG['defaultRoute']}`
       } else {
-        location.href = `${window._CONFIG['routerBase']}`
+        const redirect = this.$route.query.redirect
+        if (redirect) {
+          let decodeRedirect = decodeURIComponent(redirect)
+
+          if (decodeRedirect.startsWith('/')) {
+            decodeRedirect = decodeRedirect.slice(1)
+            location.href = `${window._CONFIG['routerBase']}${decodeRedirect}`
+          } else {
+            location.href = decodeRedirect
+          }
+        } else {
+          location.href = `${window._CONFIG['routerBase']}`
+        }
       }
       this.handleCloseLoginError()
     },

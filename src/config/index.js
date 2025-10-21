@@ -17,6 +17,8 @@ Vue.prototype.API_BASE_URL = window._CONFIG.VUE_APP_API_BASE_URL
 window._CONFIG['domainURL'] = Vue.prototype.API_BASE_URL
 // 设置全局路由BASE
 window._CONFIG['routerBase'] = `/${window._CONFIG['productName']}/web/`
+// 设置默认路由
+window._CONFIG['defaultRoute'] = `/${window._CONFIG['productName']}/${window._CONFIG.VUE_APP_DEFAULT_ROUTE}`
 // 设置公共路径
 if (process.env.NODE_ENV === 'production') {
   window.externalPublicPath = `/${window._CONFIG['productName']}/static/web-ui/`

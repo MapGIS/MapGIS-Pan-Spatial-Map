@@ -27,7 +27,12 @@ router.beforeEach((to, from, next) => {
     delete queryParams.loginType
     store.dispatch('customLogin', queryParams).then(() => {
       if (loginType === 'custom') {
-        next('/')
+        if (`${window._CONFIG.VUE_APP_DEFAULT_ROUTE}`) {
+          // 如果配置了默认路由，则跳转到默认路由
+          location.href = `${window._CONFIG['defaultRoute']}`
+        } else {
+          next('/')
+        }
       } else if (loginType === 'portal') {
         next()
       }
