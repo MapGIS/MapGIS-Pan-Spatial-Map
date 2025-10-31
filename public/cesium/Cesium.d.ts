@@ -47022,7 +47022,8 @@ export namespace WebMapServiceImageryProvider {
      * @property [clock] - A Clock instance that is used when determining the value for the time dimension. Required when `times` is specified.
      * @property [times] - TimeIntervalCollection with its data property being an object containing time dynamic dimension and their values.
      * @property [getFeatureInfoUrl] - The getFeatureInfo URL of the WMS service. If the property is not defined then we use the property value of url.
-     * @property [isReverseBBOX] - 是否反转bbox的坐标点顺序，是否反转取决于不同公司的后端出图接口对于出图范围(bbox)坐标点顺序的定义;<br/>
+     * @property [isReverseBBOX] - 计划废弃，请用isReverseXY代替。是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；<br/>
+     * @property [isReverseXY] - 是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；<br/>
     MapGIS和GeoServer：1.1.1版本的WMS服务中，bbox的坐标顺序是XY，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
     ArcGIS：1.1.1：无此版本出图服务，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
      */
@@ -47048,6 +47049,7 @@ export namespace WebMapServiceImageryProvider {
         times?: TimeIntervalCollection;
         getFeatureInfoUrl?: Resource | string;
         isReverseBBOX?: boolean;
+        isReverseXY?: boolean | null;
     };
 }
 
@@ -47070,7 +47072,11 @@ export class WebMapServiceImageryProvider {
     MapGIS和GeoServer：1.1.1版本的WMS服务中，bbox的坐标顺序是XY，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
     ArcGIS：1.1.1：无此版本出图服务，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
      */
-    isReverseBBOX: boolean;
+    isReverseBBOX: boolean | null;
+    /**
+     * 是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；
+     */
+    isReverseXY: boolean | null;
     /**
      * Gets the URL of the WMS server.
      */
