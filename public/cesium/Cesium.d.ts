@@ -6023,6 +6023,11 @@ export class Ellipsoid {
      */
     static readonly MOON: Ellipsoid;
     /**
+     * An Ellipsoid instance initialized to a sphere with the mean radii of Mars.
+    Source: https://epsg.io/104905
+     */
+    static readonly MARS: Ellipsoid;
+    /**
      * The default ellipsoid used when not otherwise specified.
      * @example
      * Cesium.Ellipsoid.default = Cesium.Ellipsoid.MOON;
@@ -6800,6 +6805,22 @@ properties, otherwise, falls back on toString().
  * @returns A string containing the formatted error.
  */
 export function formatError(object: any): string;
+
+/**
+ * Utilities helpful for setting a default value for a parameter.
+ */
+export namespace Frozen {
+    /**
+     * A frozen empty object that can be used as the default value for options passed as
+    an object literal.
+     */
+    var EMPTY_OBJECT: any;
+    /**
+     * A frozen empty array that can be used as the default value for options passed as
+    an array literal.
+     */
+    var EMPTY_ARRAY: any[];
+}
 
 /**
  * Describes a frustum at the given the origin and orientation.
@@ -12984,6 +13005,22 @@ export enum PixelFormat {
      * A pixel format containing red, green, blue, and alpha channels.
      */
     RGBA = WebGLConstants.RGBA,
+    /**
+     * A pixel format containing a red channel as an integer.
+     */
+    RED_INTEGER = WebGLConstants.RED_INTEGER,
+    /**
+     * A pixel format containing red and green channels as integers.
+     */
+    RG_INTEGER = WebGLConstants.RG_INTEGER,
+    /**
+     * A pixel format containing red, green, and blue channels as integers.
+     */
+    RGB_INTEGER = WebGLConstants.RGB_INTEGER,
+    /**
+     * A pixel format containing red, green, blue, and alpha channels as integers.
+     */
+    RGBA_INTEGER = WebGLConstants.RGBA_INTEGER,
     /**
      * A pixel format containing a luminance (intensity) channel.
      */
@@ -25945,6 +25982,78 @@ export class AttributeSurfacePrimitive {
 }
 
 /**
+ * 构建矩形几何体
+ */
+export function getFullscreenQuad(): void;
+
+/**
+ * 动物集群类
+ * @param viewer - Cesium场景视图对象
+ * @param options.position - 集群位置，笛卡尔坐标
+ * @param options.dimensions - 集群范围，单位米
+ * @param options.url - 模型文件路径
+ * @param [options.count = 100] - 集群数量,正整数，最小取值为1
+ * @param [options.scale = 1] - 模型大小缩放比例，默认值为1.0
+ * @param [options.maxSpeed = 15] - 模型最大速度，默认值为15，单位米/秒，调整会影响集群运动结果
+ * @param [options.separationDistance = 1] - 集群分离距离，集群个体间距小于该距离时，会进行分离，默认值为1.0，单位米，调整会影响集群运动结果
+ * @param [options.alignmentDistance = 20] - 集群对齐距离，集群个体间距小于该距离时，会进行对齐，默认值为20.0，单位米，调整会影响集群运动结果
+ * @param [options.cohesionDistance = 5] - 集群聚合距离，集群个体间距小于该距离时，会进行相互聚合，默认值为5.0，单位米，调整会影响集群运动结果
+ * @param [options.freedomFactor = 0.0] - 自由度，集群个体是否按照约定的分离、对齐、聚合等行为规范行动，自由度越大，越多个体不按约定行动，取值范围为[0,1],默认值为0.5
+ * @param [options.show = true] - 集群是否显示，默认为true
+ */
+export class Boids {
+    constructor(options: {
+        position: Cartesian3;
+        dimensions: Cartesian3;
+        url: string;
+        count?: number;
+        scale?: number;
+        maxSpeed?: number;
+        separationDistance?: number;
+        alignmentDistance?: number;
+        cohesionDistance?: any;
+        freedomFactor?: any;
+        show?: boolean;
+    }, viewer: Cesium.Viewer);
+    /**
+     * 销毁对象
+     */
+    destroy(): void;
+    /**
+     * 分离距离，集群个体间距小于该距离时，会进行分离，默认值为1.0，单位米，调整会影响集群运动结果
+     */
+    separationDistance: number;
+    /**
+     * 对齐距离，集群个体间距小于该距离时，会进行速度对齐，默认值为20.0，单位米，调整会影响集群运动结果
+     */
+    alignmentDistance: number;
+    /**
+     * 聚合距离，集群个体间距小于该距离时，会进行聚合，默认值为5.0，单位米，调整会影响集群运动结果
+     */
+    cohesionDistance: number;
+    /**
+     * 自由度，集群个体是否按照约定的分离、对齐、聚合等行为规范行动，自由度越大，越多个体不按约定行动，取值范围为[0,1],默认值为0.5
+     */
+    freedomFactor: number;
+    /**
+     * 模型大小缩放比例，默认值为1.0
+     */
+    scale: number;
+    /**
+     * 模型实例个数，默认值为100
+     */
+    count: number;
+    /**
+     * 最大速度，默认值为15.0，单位米/秒，调整会影响集群运动结果
+     */
+    maxSpeed: number;
+    /**
+     * 集群的可见性，默认值为true
+     */
+    show: number[];
+}
+
+/**
  * feat(2266): 三维钻孔分析下沉，提供接口支持渲染地矿自定义瓦片类型
  * @example
  * const tileset = await Cesium.Cesium3DTileset.fromUrl(
@@ -26630,6 +26739,8 @@ export namespace MapGISM3DSet {
      * @property [hue = 0.0] - 模型的色相，取值范围：[0, +∞]
      * @property [saturation = 0.0] - 模型的饱和度，取值范围：[-1, +1]
      * @property [gamma = 1.0] - 模型的伽马值，取值范围：[0, +∞]
+     * @property [enablePbrLighting = true] - 是否开启PBR光照
+     * @property [enableVerticalExaggeration = true] - 是否应用场景夸张效果
      */
     type ConstructorOptions = {
         show?: boolean;
@@ -26712,6 +26823,8 @@ export namespace MapGISM3DSet {
         hue?: number;
         saturation?: number;
         gamma?: number;
+        enablePbrLighting?: boolean;
+        enableVerticalExaggeration?: boolean;
     };
     /**
      * Optimization option. Used as a callback when {@link MapGISM3DSet#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
@@ -27598,6 +27711,14 @@ export class MapGISM3DSet {
      */
     textureCoordScale: Cartesian2;
     /**
+     * PBR光照
+     */
+    enablePbrLighting: boolean;
+    /**
+     * 是否应用场景夸张效果
+     */
+    enableVerticalExaggeration: boolean;
+    /**
      * 是否开启几何体裁剪 <br/>
     需要配合{@link ClippingGeometry}使用
      */
@@ -27721,6 +27842,75 @@ export class MapGISM3DSet {
     M3D2.1版本新增支持
      */
     readonly layerinfo: any;
+    /**
+     * 在进行M3D 2.1属性查询时，若属性数据存储在DB文件中，则需要在外部构造webclient-common接口中的<code>M3DServer</code>或<code>SceneServer</code>服务对象 <br/>
+    然后将上述构造的服务对象作为该传入到MapGISM3DSet对象上，后续在进行要素属性查询时则可以调用服务对象上的IGS接口查询属性，否则只能获取到<code>TID</code>属性信息
+     * @example
+     * // 1. 根据数据服务类型构造对应的服务对象（M3DServer或SceneServer）
+    // 从webclient-common中引入M3DServer或SceneServer的两种方法
+    // npm & ES Module
+    $ npm i @mapgis/webclient-common
+    import { M3DServer, SceneServer } from "@mapgis/webclient-common";
+    // CDN
+    <script src="http://127.0.0.1:8080/webclient-common.js"></script>
+    const M3DServer = zondy.service.M3DServer;
+    const SceneServer = zondy.service.SceneServer;
+    
+    // 2. 构造M3DServer或SceneServer服务对象
+    const m3dServer = new M3DServer({ url })
+    // or
+    const sceneServer = new SceneServer({ url })
+    
+    // 3. 将上述构造的服务对象作为参数传递给MapGISM3DSet对象的server参数的两种方法
+    // 构造方法fromUrl中作为参数传递
+    async function createModel(url) {
+      try {
+        const m3dServer = new zondy.service.M3DServer({
+          url,
+        });
+        tileset = await Cesium.MapGISM3DSet.fromUrl(url, {
+          server: m3dServer,
+        });
+        viewer.scene.primitives.add(tileset);
+        viewer.zoomTo(tileset);
+      } catch (error) {
+        console.log(`Error loading tileset: ${error}`);
+      }
+    }
+    // 实例化MapGISM3DSet对象后添加参数的方式
+    tileset.server = m3dServer;
+    // or
+    tileset.server = sceneServer;
+    
+    // 4. 使用属性查询方法
+    // 由于属性查询需要借助服务对象的属性查询接口，因此无论是feature.getPropertyIds()还是feature.getProperty()，其返回结果都是Promise对象
+    // 具体使用方法请参考MapGISM3DSet文档最上方示例中关于“M3D属性查询接口及注意事项”的部分，其使用方法与M3D 2.1属性外置的方式基本一致
+    
+    // 5. 注意事项
+    // 对于M3D 2.1属性存储在DB文件中的属性值查询，可以调用feature.getProperty()而不传参数，表示查询全部属性值，如下面代码；除此之外必须传入属性名，如feature.getProperty("PropertyId")
+    const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+    handler.setInputAction(async (movement) => {
+      const feature = viewer.scene.pick(movement.position);
+      if (feature instanceof Cesium.Cesium3DTileFeature) {
+        const propertyIds = await feature.getPropertyIds();
+        console.log(propertyIds);
+        // 可以为feature.getProperty()方法不传入参数来获取全部属性值
+        const property = await feature.getProperty();
+        console.log(property);
+       }
+     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+     */
+    server: any;
+    /**
+     * 栅格体元的体渲染方式： <br/>
+    目前专用于栅格体元，支持两种方式：VoxelRenderType.stretchValue拉伸渐变渲染、VoxelRenderType.uniqueValue单值渲染
+     */
+    renderType: string;
+    /**
+     * 光线步进的步数 <br/>
+    目前专用于栅格体元，用于控制体渲染中光线步进算法的步进步数，步数越高，采样精度越高，但同时采样多了性能也会降低，需根据实际需要平衡好效果和性能
+     */
+    steps: number;
     /**
      * Creates a {@link https://github.com/CesiumGS/3d-tiles/tree/main/specification|3D Tiles tileset},
     used for streaming massive heterogeneous 3D geospatial datasets, from a Cesium ion asset ID.
@@ -27862,22 +28052,6 @@ export class MapGISM3DSet {
      * 移除所有的剖面几何
      */
     removeAllSectionGeometry(): void;
-    /**
-     * 是否执行模型压平
-     */
-    isFlatten: number;
-    /**
-     * 指定压平高度
-     */
-    flattenHeight: number;
-    /**
-     * 指定压平范围
-     */
-    positionArray: any[];
-    /**
-     * 压平范围多边形数组长度
-     */
-    arrayLength: number;
 }
 
 /**
@@ -28070,6 +28244,10 @@ export class MapGISVoxelPrimitive {
      */
     show: boolean;
     /**
+     * 体渲染方式：VoxelRenderType.stretchValue拉伸渐变渲染、VoxelRenderType.uniqueValue单值渲染
+     */
+    renderType: string;
+    /**
      * 设置配色方案
      * @example
      * const canvas2d = document.createElement('canvas');
@@ -28174,10 +28352,31 @@ export enum SwipeModeType {
 }
 
 /**
+ * 栅格体元的渲染类型，目前专用于栅格体元数据,临时为山东金矿项目新增，支持 "stretchValue"、"uniqueValue"
+ */
+export enum VoxelRenderType {
+    /**
+     * 拉伸渐变渲染
+     */
+    stretchValue = "stretchValue",
+    /**
+     * 单值渲染
+     */
+    uniqueValue = "uniqueValue"
+}
+
+/**
  * 模型纹理封边
  * @param url - 资源路径
  */
 export function createClippingFillImageFunction(url: string, context: any): void;
+
+/**
+ * 返回UUID
+ * @example
+ * this.uuid = Cesium.createUUID();
+ */
+export function createUUID(): string;
 
 /**
  * 压平工具
@@ -28398,9 +28597,13 @@ export enum Pass {
      */
     MAPGIS_3D_TILE = 12,
     /**
+     * 3D Gaussian splatting 渲染通道
+     */
+    GAUSSIAN_SPLATS = 16,
+    /**
      * 通道总数 不参与渲染
      */
-    NUMBER_OF_PASSES = 16
+    NUMBER_OF_PASSES = 17
 }
 
 /**
@@ -31318,6 +31521,10 @@ export namespace Cesium3DTileset {
      * @property [swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
      * @property [customContentRegister] - 传入自定义渲染类型
      * @property [decryptOptions = null] - 解密参数。仅支持从IGS发布的3DTiles服务解密，传入参数参考 {"algorithm": "AES", "key": "8qir7iUmia5cWaFM9K7tZMHkeiPeN016HT5aied5dak=","iv": "SM4zEgrEtaD/nqDKAUh5uA=="}
+     * @property [fillClip = false] - 是否需要创建3D Tiles 1.0/1.1剖切封边填充面
+     * @property [enablePbrLighting = true] - 是否开启PBR光照
+     * @property [enableVerticalExaggeration = true] - 是否应用场景夸张效果
+     * @property [generateUniqueId = false] - 是否为瓦片集中每个要素生成唯一的ID标识符（属性名称为uniqueId，属性内容为UUID，若当前要素中不存在任何属性或已存在uniqueId属性，则不会生成）
      */
     type ConstructorOptions = {
         show?: boolean;
@@ -31387,6 +31594,10 @@ export namespace Cesium3DTileset {
         swipeInverse?: number;
         customContentRegister?: Cesium3DTileCustomContent;
         decryptOptions?: any;
+        fillClip?: boolean;
+        enablePbrLighting?: boolean;
+        enableVerticalExaggeration?: boolean;
+        generateUniqueId?: boolean;
     };
     /**
      * Optimization option. Used as a callback when {@link Cesium3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
@@ -32177,6 +32388,30 @@ export class Cesium3DTileset {
     伽马值必须大于0
      */
     gamma: number;
+    /**
+     * 是否执行模型压平
+     */
+    isFlatten: number;
+    /**
+     * 指定压平高度
+     */
+    flattenHeight: number;
+    /**
+     * 指定压平范围
+     */
+    positionArray: any[];
+    /**
+     * 压平范围多边形数组长度
+     */
+    arrayLength: number;
+    /**
+     * PBR光照
+     */
+    enablePbrLighting: boolean;
+    /**
+     * 是否应用场景夸张效果
+     */
+    enableVerticalExaggeration: boolean;
     /**
      * Creates a {@link https://github.com/CesiumGS/3d-tiles/tree/main/specification|3D Tiles tileset},
     used for streaming massive heterogeneous 3D geospatial datasets, from a Cesium ion asset ID.
@@ -33583,12 +33818,16 @@ const polygons = new Cesium.ClippingPolygonCollection({
  * @param [options.polygons = []] - An array of {@link ClippingPolygon} objects used to selectively disable rendering on the inside of each polygon.
  * @param [options.enabled = true] - Determines whether the clipping polygons are active.
  * @param [options.inverse = false] - If true, a region will be clipped if it is outside of every polygon in the collection. Otherwise, a region will only be clipped if it is on the inside of any polygon.
+ * @param [options.minHeight] - 多边形裁剪区域的最小高度
+ * @param [options.maxHeight] - 多边形裁剪区域的最大高度
  */
 export class ClippingPolygonCollection {
     constructor(options?: {
         polygons?: ClippingPolygon[];
         enabled?: boolean;
         inverse?: boolean;
+        minHeight?: number;
+        maxHeight?: number;
     });
     /**
      * An event triggered when a new clipping polygon is added to the collection.  Event handlers
@@ -35071,6 +35310,99 @@ export class FrameRateMonitor {
     assign the return value (<code>undefined</code>) to the object as done in the example.
      */
     destroy(): void;
+}
+
+/**
+ * Represents the contents of a glTF or glb using the {@link https://github.com/CesiumGS/glTF/tree/draft-splat-spz/extensions/2.0/Khronos/KHR_gaussian_splatting | KHR_gaussian_splatting} and {@link https://github.com/CesiumGS/glTF/tree/draft-splat-spz/extensions/2.0/Khronos/KHR_gaussian_splatting_compression_spz_2 | KHR_gaussian_splatting_compression_spz_2} extensions.
+<p>
+Implements the {@link Cesium3DTileContent} interface.
+</p>
+ */
+export class GaussianSplat3DTileContent {
+    constructor();
+    /**
+     * Performs checks to ensure that the provided tileset has the Gaussian Splatting extensions.
+     * @param tileset - The tileset to check for the extensions.
+     * @returns Returns <code>true</code> if the necessary extensions are included in the tileset.
+     */
+    static tilesetRequiresGaussianSplattingExt(tileset: Cesium3DTileset): boolean;
+    /**
+     * Gets the number of features in the tile. Currently this is always zero.
+     */
+    readonly featuresLength: number;
+    /**
+     * Equal to the number of Gaussian splats in the tile. Each splat is represented by a median point and a set of attributes, so we can
+    treat this as the number of points in the tile.
+     */
+    readonly pointsLength: number;
+    /**
+     * Gets the number of triangles in the tile. Currently this is always zero because Gaussian splats are not represented as triangles in the tile content.
+    <p>
+     */
+    readonly trianglesLength: number;
+    /**
+     * The number of bytes used by the geometry attributes of this content.
+    <p>
+     */
+    readonly geometryByteLength: number;
+    /**
+     * The number of bytes used by the textures of this content.
+    <p>
+     */
+    readonly texturesByteLength: number;
+    /**
+     * Gets the amount of memory used by the batch table textures and any binary
+    metadata properties not accounted for in geometryByteLength or
+    texturesByteLength
+    <p>
+     */
+    readonly batchTableByteLength: number;
+    /**
+     * Gets the array of {@link Cesium3DTileContent} objects for contents that contain other contents, such as composite tiles. The inner contents may in turn have inner contents, such as a composite tile that contains a composite tile.
+     */
+    readonly innerContents: any[];
+    /**
+     * Returns true when the tile's content is ready to render; otherwise false
+     */
+    readonly ready: boolean;
+    /**
+     * Returns true when the tile's content is transformed to world coordinates; otherwise false
+    <p>
+     */
+    readonly transformed: boolean;
+    /**
+     * The tileset that this content belongs to.
+    <p>
+     */
+    readonly tileset: Cesium3DTileset;
+    /**
+     * The tile that this content belongs to.
+    <p>
+     */
+    readonly tile: Cesium3DTile;
+    /**
+     * The resource that this content was loaded from.
+    <p>
+     */
+    readonly url: Resource;
+    /**
+     * Returns whether the feature has this property.
+     * @param batchId - The batchId for the feature.
+     * @param name - The case-sensitive name of the property.
+     * @returns <code>true</code> if the feature has this property; otherwise, <code>false</code>.
+     */
+    hasProperty(batchId: number, name: string): boolean;
+    /**
+     * Returns the {@link Cesium3DTileFeature} object for the feature with the
+    given <code>batchId</code>.  This object is used to get and modify the
+    feature's properties.
+    <p>
+    Features in a tile are ordered by <code>batchId</code>, an index used to retrieve their metadata from the batch table.
+    </p>
+     * @param batchId - The batchId for the feature.
+     * @returns The corresponding {@link Cesium3DTileFeature} object.
+     */
+    getFeature(batchId: number): Cesium3DTileFeature;
 }
 
 /**
@@ -44534,6 +44866,19 @@ export class Scene {
      */
     hue: number;
     /**
+     * 控制是否开启场景积雪，仅包含场景中的模型（Cesium3DTileset和MapGISM3DSet）和地形 <br/>
+    若模型或地形自身存在法向量，则会使用这些法向量来计算积雪效果，若不存在法向量则会实时计算近似法向量
+     */
+    enableSnowpack: boolean;
+    /**
+     * 场景积雪的透明度，取值在0到1之间
+     */
+    snowpackAlpha: number;
+    /**
+     * 场景积雪的强度，取值在0到1之间
+     */
+    snowpackDensity: number;
+    /**
      * Determines if a compressed texture format is supported.
      * @param format - The texture format. May be the name of the format or the WebGL extension name, e.g. s3tc or WEBGL_compressed_texture_s3tc.
      * @returns Whether or not the format is supported.
@@ -47013,7 +47358,8 @@ export namespace WebMapServiceImageryProvider {
      * @property [clock] - A Clock instance that is used when determining the value for the time dimension. Required when `times` is specified.
      * @property [times] - TimeIntervalCollection with its data property being an object containing time dynamic dimension and their values.
      * @property [getFeatureInfoUrl] - The getFeatureInfo URL of the WMS service. If the property is not defined then we use the property value of url.
-     * @property [isReverseBBOX] - 是否反转bbox的坐标点顺序，是否反转取决于不同公司的后端出图接口对于出图范围(bbox)坐标点顺序的定义;<br/>
+     * @property [isReverseBBOX] - 计划废弃，请用isReverseXY代替。是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；<br/>
+     * @property [isReverseXY] - 是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；<br/>
     MapGIS和GeoServer：1.1.1版本的WMS服务中，bbox的坐标顺序是XY，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
     ArcGIS：1.1.1：无此版本出图服务，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
      */
@@ -47039,6 +47385,7 @@ export namespace WebMapServiceImageryProvider {
         times?: TimeIntervalCollection;
         getFeatureInfoUrl?: Resource | string;
         isReverseBBOX?: boolean;
+        isReverseXY?: boolean | null;
     };
 }
 
@@ -47061,7 +47408,11 @@ export class WebMapServiceImageryProvider {
     MapGIS和GeoServer：1.1.1版本的WMS服务中，bbox的坐标顺序是XY，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
     ArcGIS：1.1.1：无此版本出图服务，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
      */
-    isReverseBBOX: boolean;
+    isReverseBBOX: boolean | null;
+    /**
+     * 是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；
+     */
+    isReverseXY: boolean | null;
     /**
      * Gets the URL of the WMS server.
      */
