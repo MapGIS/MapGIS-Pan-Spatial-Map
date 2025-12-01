@@ -11,5 +11,7 @@ window._CONFIG = {
   // 国际化支持
   VUE_APP_SUPPROT_INTERNATIONALIZATION: 'false',
   // 接口父路径(当值不为空时会覆盖env配置)
-  VUE_APP_API_BASE_URL: ''
+  VUE_APP_API_BASE_URL: '',
+  // 默认路由
+  VUE_APP_DEFAULT_ROUTE: ''
 }

@@ -23,3 +23,5 @@ package-lock.json
 
 !.vscode/settings.json
 !.vscode/extensions.json
+public/webclient-cesium-plugin-resource
+public/webclient-common-resource

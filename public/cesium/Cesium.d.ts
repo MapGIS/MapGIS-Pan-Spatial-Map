@@ -28180,6 +28180,13 @@ export enum SwipeModeType {
 export function createClippingFillImageFunction(url: string, context: any): void;
 
 /**
+ * 返回UUID
+ * @example
+ * this.uuid = Cesium.createUUID();
+ */
+export function createUUID(): string;
+
+/**
  * 压平工具
  */
 export class FlattenTool {
@@ -31318,6 +31325,7 @@ export namespace Cesium3DTileset {
      * @property [swipeInverse = 0] - 单独控制该图层是否进行反转。小于0不反转，大于0时反转，等于0失效。该属性的控制优先级高于{@link Scene#swipeController}中的inverse属性.若要取消该属性对本图层的独立控制需要将该属性置为0.
      * @property [customContentRegister] - 传入自定义渲染类型
      * @property [decryptOptions = null] - 解密参数。仅支持从IGS发布的3DTiles服务解密，传入参数参考 {"algorithm": "AES", "key": "8qir7iUmia5cWaFM9K7tZMHkeiPeN016HT5aied5dak=","iv": "SM4zEgrEtaD/nqDKAUh5uA=="}
+     * @property [generateUniqueId = false] - 是否为瓦片集中每个要素生成唯一的ID标识符（属性名称为uniqueId，属性内容为UUID，若当前要素中不存在任何属性或已存在uniqueId属性，则不会生成）
      */
     type ConstructorOptions = {
         show?: boolean;
@@ -31387,6 +31395,7 @@ export namespace Cesium3DTileset {
         swipeInverse?: number;
         customContentRegister?: Cesium3DTileCustomContent;
         decryptOptions?: any;
+        generateUniqueId?: boolean;
     };
     /**
      * Optimization option. Used as a callback when {@link Cesium3DTileset#foveatedScreenSpaceError} is true to control how much to raise the screen space error for tiles outside the foveated cone,
@@ -47013,7 +47022,8 @@ export namespace WebMapServiceImageryProvider {
      * @property [clock] - A Clock instance that is used when determining the value for the time dimension. Required when `times` is specified.
      * @property [times] - TimeIntervalCollection with its data property being an object containing time dynamic dimension and their values.
      * @property [getFeatureInfoUrl] - The getFeatureInfo URL of the WMS service. If the property is not defined then we use the property value of url.
-     * @property [isReverseBBOX] - 是否反转bbox的坐标点顺序，是否反转取决于不同公司的后端出图接口对于出图范围(bbox)坐标点顺序的定义;<br/>
+     * @property [isReverseBBOX] - 计划废弃，请用isReverseXY代替。是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；<br/>
+     * @property [isReverseXY] - 是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；<br/>
     MapGIS和GeoServer：1.1.1版本的WMS服务中，bbox的坐标顺序是XY，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
     ArcGIS：1.1.1：无此版本出图服务，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
      */
@@ -47039,6 +47049,7 @@ export namespace WebMapServiceImageryProvider {
         times?: TimeIntervalCollection;
         getFeatureInfoUrl?: Resource | string;
         isReverseBBOX?: boolean;
+        isReverseXY?: boolean | null;
     };
 }
 
@@ -47061,7 +47072,11 @@ export class WebMapServiceImageryProvider {
     MapGIS和GeoServer：1.1.1版本的WMS服务中，bbox的坐标顺序是XY，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
     ArcGIS：1.1.1：无此版本出图服务，1.3.0版本的WMS服务中，地理坐标系以及高斯坐标系的bbox的坐标顺序是YX，其他坐标系的bbox的坐标顺序是XY;<br/>
      */
-    isReverseBBOX: boolean;
+    isReverseBBOX: boolean | null;
+    /**
+     * 是否翻转出图范围bbox参数的x、y坐标。程序会根据已知服务发布厂商的规则计算该值，如果用户设置了该值则以用户设置的为准；
+     */
+    isReverseXY: boolean | null;
     /**
      * Gets the URL of the WMS server.
      */
