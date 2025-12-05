@@ -219,7 +219,14 @@ export default {
             decodeRedirect = decodeRedirect.slice(1)
             location.href = `${window._CONFIG['routerBase']}${decodeRedirect}`
           } else {
-            location.href = decodeRedirect
+            /*
+             * fix: 【url跳转漏洞(中危)】-参数被发现保存有 URL 值，并导致 Web 应用程序将请求重定向至指定的 URL。
+             * 通过将 URL 值修改为指向恶意站点，攻击者可以成功发起网络钓鱼诈骗并窃取用户凭证。
+             * 修改说明: 非相对地址跳转到${window._CONFIG['routerBase']}，不再直接跳转到设置的redirect地址
+             * 版权所有: 武汉中地数码科技有限公司
+             * 修改人: 龚跃健 2025-12-5
+             */
+            location.href = `${window._CONFIG['routerBase']}`
           }
         } else {
           location.href = `${window._CONFIG['routerBase']}`
