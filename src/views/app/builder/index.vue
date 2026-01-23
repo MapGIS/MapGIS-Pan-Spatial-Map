@@ -501,13 +501,12 @@ export default {
               isFullPath = true
             } catch (error) {}
 
-            const { origin } = window.location
             if (dataNode.serverUrl.startsWith('/')) {
               // 组装完整的url路径
-              dataNode.serverUrl = decodeURIComponent(origin + dataNode.serverUrl)
+              dataNode.serverUrl = decodeURIComponent(this.portalPath + dataNode.serverUrl)
             } else if (isFullPath) {
               // 全路径进行域名替换
-              dataNode.serverUrl = decodeURIComponent(dataNode.serverUrl.replace(urlInfo.origin, origin))
+              dataNode.serverUrl = decodeURIComponent(dataNode.serverUrl.replace(urlInfo.origin, this.portalPath))
             }
           }
         }
@@ -575,13 +574,12 @@ export default {
               urlInfo = new URL(properties.serverUrl)
               isFullPath = true
             } catch (error) {}
-            const { origin } = window.location
             if (properties.serverUrl.startsWith('/')) {
               // 组装完整的url路径
-              properties.serverUrl = decodeURIComponent(origin + properties.serverUrl)
+              properties.serverUrl = decodeURIComponent(this.portalPath + properties.serverUrl)
             } else if (isFullPath) {
               // 全路径进行域名替换
-              properties.serverUrl = decodeURIComponent(properties.serverUrl.replace(urlInfo.origin, origin))
+              properties.serverUrl = decodeURIComponent(properties.serverUrl.replace(urlInfo.origin, this.portalPath))
             }
           }
           dataNode.properties = JSON.stringify(properties)
